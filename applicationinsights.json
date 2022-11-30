@@ -1,0 +1,32 @@
+{
+  "role": {
+    "name": "hmpps-template-kotlin"
+  },
+  "customDimensions": {
+    "service.version": "${BUILD_NUMBER}"
+  },
+  "instrumentation": {
+    "logging": {
+      "level": "DEBUG"
+    }
+  },
+  "selfDiagnostics": {
+    "destination": "console"
+  },
+  "preview": {
+    "sampling": {
+      "overrides": [
+        {
+          "attributes": [
+            {
+              "key": "http.url",
+              "value": "https?://[^/]+/health.*",
+              "matchType": "regexp"
+            }
+          ],
+          "percentage": 10
+        }
+      ]
+    }
+  }
+}

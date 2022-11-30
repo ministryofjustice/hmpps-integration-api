@@ -1,0 +1,17 @@
+version: "3"
+services:
+  hmpps-template-kotlin:
+    build:
+      context: .
+    network_mode: "host"
+    container_name: hmpps-template-kotlin
+    ports:
+      - "8081:8080"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health/ping"]
+    environment:
+      - SERVER_PORT=8080
+      - SPRING_PROFILES_ACTIVE=dev
+
+networks:
+  hmpps:
