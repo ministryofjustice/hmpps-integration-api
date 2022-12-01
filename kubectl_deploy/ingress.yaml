@@ -1,24 +1,24 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: <ingress-name>
-  namespace: <namespace-name>
+  name: hmpps-integration-api
+  namespace: hmpps-integration-api-development
   annotations:
-    external-dns.alpha.kubernetes.io/set-identifier: <ingress-name>-<namespace-name>-<colour>
+    external-dns.alpha.kubernetes.io/set-identifier: hmpps-integration-api-hmpps-integration-api-development-green
     external-dns.alpha.kubernetes.io/aws-weight: "100"
 spec:
   ingressClassName: default
   tls:
     - hosts:
-      - helloworld-rubyapp.apps.live.cloud-platform.service.justice.gov.uk
+      - hmpps-integration-api-development.apps.live.cloud-platform.service.justice.gov.uk
   rules:
-  - host: helloworld-rubyapp.apps.live.cloud-platform.service.justice.gov.uk
+  - host: hmpps-integration-api-development.apps.live.cloud-platform.service.justice.gov.uk
     http:
       paths:
         - path: /
           pathType: ImplementationSpecific
           backend:
             service:
-              name: rubyapp-service
+              name: hmpps-integration-api-service
               port:
-                number: 4567
+                number: 8080

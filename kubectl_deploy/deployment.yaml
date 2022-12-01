@@ -1,19 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: helloworld-rubyapp
+  name: hmpps-integration-api-app
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: helloworld-rubyapp
+      app: hmpps-integration-api-app
   template:
     metadata:
       labels:
-        app: helloworld-rubyapp
+        app: hmpps-integration-api-app
     spec:
       containers:
-        - name: rubyapp
-          image: ministryofjustice/cloud-platform-helloworld-ruby:1.1
+        - name: hmpps-integration-api-app
+          image: 754256621582.dkr.ecr.eu-west-2.amazonaws.com/hmpps-integration-api-team/hmpps-integration-api-development-ecr:1.0
           ports:
-            - containerPort: 4567
+            - containerPort: 8080
