@@ -17,3 +17,9 @@ spec:
           image: 754256621582.dkr.ecr.eu-west-2.amazonaws.com/hmpps-integration-api-team/hmpps-integration-api-development-ecr:latest
           ports:
             - containerPort: 8080
+          env:
+            - name: TOPSECRET
+              valueFrom:
+                secretKeyRef:
+                  name: top-secret
+                  key: password

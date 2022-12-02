@@ -33,4 +33,4 @@ COPY ./scripts ./scripts
 
 USER 2000
 
-CMD ./scripts/boot.sh
+CMD sh -c "./scripts/boot.sh"
