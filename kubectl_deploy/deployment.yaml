@@ -14,6 +14,6 @@ spec:
     spec:
       containers:
         - name: hmpps-integration-api-app
-          image: 754256621582.dkr.ecr.eu-west-2.amazonaws.com/hmpps-integration-api-team/hmpps-integration-api-development-ecr:1.0
+          image: 754256621582.dkr.ecr.eu-west-2.amazonaws.com/hmpps-integration-api-team/hmpps-integration-api-development-ecr:latest
           ports:
             - containerPort: 8080
