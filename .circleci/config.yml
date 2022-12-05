@@ -65,6 +65,7 @@ workflows:
               ignore: /.*/
       - hmpps/helm_lint:
           name: helm_lint
+          env: development
       - build:
           name: build
           context: hmpps-integration-api-development
