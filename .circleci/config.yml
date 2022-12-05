@@ -43,6 +43,7 @@ workflows:
               ignore: /.*/
       - hmpps/helm_lint:
           name: helm_lint
+          env: "development"
       - hmpps/build_multiplatform_docker:
           name: build_docker
           filters:
