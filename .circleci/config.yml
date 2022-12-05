@@ -33,7 +33,6 @@ jobs:
       - store_artifacts:
           path: build/reports/tests
   build:
-    name: build
     docker:
       - image: ministryofjustice/cloud-platform-tools
     steps:
