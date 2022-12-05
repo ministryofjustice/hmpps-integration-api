@@ -43,29 +43,32 @@ workflows:
               ignore: /.*/
       - hmpps/helm_lint:
           name: helm_lint
-          env: "development"
-      - hmpps/build_multiplatform_docker:
-          name: build_docker
-          filters:
-            branches:
-              only:
-                - main
-      - hmpps/deploy_env:
-          name: deploy_dev
-          env: "development"
-          jira_update: true
-          context:
-            - hmpps-common-vars
-            - hmpps-integration-api-development
-          filters:
-            branches:
-              only:
-                - main
+      - build:
+          context: hmpps-integration-api-development
           requires:
             - validate
-            - build_docker
             - helm_lint
-          helm_timeout: 5m
+          docker:
+            - image: ministryofjustice/cloud-platform-tools
+          steps:
+            - checkout
+            - setup_remote_docker:
+                docker_layer_caching: true
+            - run:
+                name: Build application Docker image
+                command: |
+                  docker build -t hmpps-integration-api .
+            - deploy:
+                name: Push application Docker image
+                command: |
+                  login="$(AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION} AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} aws ecr get-login --no-include-email)"
+                  ${login}
+                  docker tag app "${ECR_ENDPOINT}:${CIRCLE_SHA1}"
+                  docker push "${ECR_ENDPOINT}:${CIRCLE_SHA1}"
+                  if [ "${CIRCLE_BRANCH}" == "main" ]; then
+                    docker tag app "${ECR_ENDPOINT}:latest"
+                    docker push "${ECR_ENDPOINT}:latest"
+                  fi
   security:
     triggers:
       - schedule:
