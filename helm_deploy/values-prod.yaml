@@ -1,9 +1,9 @@
 ---
-# Per environment values which override defaults in hmpps-template-kotlin/values.yaml
+# Per environment values which override defaults in hmpps-integration-api/values.yaml
 
 generic-service:
   ingress:
-    host: hmpps-template-kotlin.hmpps.service.justice.gov.uk
+    host: hmpps-integration-api.hmpps.service.justice.gov.uk
 
 # CloudPlatform AlertManager receiver to route prometheus alerts to slack
 # See https://user-guide.cloud-platform.service.justice.gov.uk/documentation/monitoring-an-app/how-to-create-alarms.html#creating-your-own-custom-alerts

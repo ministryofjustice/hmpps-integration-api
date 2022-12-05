@@ -1,0 +1,105 @@
+version: 2.1
+
+orbs:
+  hmpps: ministryofjustice/hmpps@6
+
+parameters:
+  alerts-slack-channel:
+    type: string
+    default: hmpps-integration-api
+  releases-slack-channel:
+    type: string
+    default: hmpps-integration-api
+
+jobs:
+  validate:
+    executor:
+      name: hmpps/java
+      tag: "19.0"
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - gradle-{{ checksum "build.gradle.kts" }}
+            - gradle-
+      - run:
+          command: ./gradlew check
+      - save_cache:
+          paths:
+            - ~/.gradle
+          key: gradle-{{ checksum "build.gradle.kts" }}
+      - store_test_results:
+          path: build/test-results
+      - store_artifacts:
+          path: build/reports/tests
+
+workflows:
+  version: 2
+  build-test-and-deploy:
+    jobs:
+      - validate:
+          filters:
+            tags:
+              ignore: /.*/
+      - hmpps/helm_lint:
+          name: helm_lint
+      - hmpps/build_multiplatform_docker:
+          name: build_docker
+          filters:
+            branches:
+              only:
+                - main
+      - hmpps/deploy_env:
+          name: deploy_dev
+          env: "development"
+          jira_update: true
+          context:
+            - hmpps-common-vars
+            - hmpps-integration-api-development
+          filters:
+            branches:
+              only:
+                - main
+          requires:
+            - validate
+            - build_docker
+            - helm_lint
+          helm_timeout: 5m
+  security:
+    triggers:
+      - schedule:
+          cron: "11 5 * * 1-5"
+          filters:
+            branches:
+              only:
+                - main
+    jobs:
+      - hmpps/gradle_owasp_dependency_check:
+          slack_channel: << pipeline.parameters.alerts-slack-channel >>
+          context:
+            - hmpps-common-vars
+      - hmpps/trivy_latest_scan:
+          slack_channel: << pipeline.parameters.alerts-slack-channel >>
+          context:
+            - hmpps-common-vars
+      - hmpps/veracode_pipeline_scan:
+          slack_channel: << pipeline.parameters.alerts-slack-channel >>
+          context:
+            - veracode-credentials
+            - hmpps-common-vars
+  security-weekly:
+    triggers:
+      - schedule:
+          cron: "0 5 * * 1"
+          filters:
+            branches:
+              only:
+                - main
+    jobs:
+      - hmpps/veracode_policy_scan:
+          slack_channel: << pipeline.parameters.alerts-slack-channel >>
+          context:
+            - veracode-credentials
+            - hmpps-common-vars
+
+

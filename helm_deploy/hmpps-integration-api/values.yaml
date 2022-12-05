@@ -1,11 +1,11 @@
 ---
 generic-service:
-  nameOverride: hmpps-template-kotlin
+  nameOverride: hmpps-integration-api
 
   replicaCount: 4
 
   image:
-    repository: quay.io/hmpps/hmpps-template-kotlin
+    repository: quay.io/hmpps/hmpps-integration-api
     tag: app_version    # override at deployment time
     port: 8080
 
@@ -14,7 +14,7 @@ generic-service:
     v1_2_enabled: true
     v0_47_enabled: false
     host: app-hostname.local    # override per environment
-    tlsSecretName: hmpps-template-kotlin-cert
+    tlsSecretName: hmpps-integration-api-cert
 
   # Environment variables to load into the deployment
   env:
@@ -30,7 +30,7 @@ generic-service:
   #     [name of environment variable as seen by app]: [key of kubernetes secret to load]
 
   namespace_secrets:
-    hmpps-template-kotlin:
+    hmpps-integration-api:
       APPINSIGHTS_INSTRUMENTATIONKEY: "APPINSIGHTS_INSTRUMENTATIONKEY"
 
   allowlist:
@@ -44,4 +44,4 @@ generic-service:
     cloudplatform-live-3: "35.177.252.54/32"
 
 generic-prometheus-alerts:
-  targetApplication: hmpps-template-kotlin
+  targetApplication: hmpps-integration-api

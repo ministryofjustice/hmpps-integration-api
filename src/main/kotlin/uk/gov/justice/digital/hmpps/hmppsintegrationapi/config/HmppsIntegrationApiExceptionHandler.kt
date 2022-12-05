@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.hmppstemplatepackagename.config
+package uk.gov.justice.digital.hmpps.hmppsintegrationapi.config
 
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice
 import javax.validation.ValidationException
 
 @RestControllerAdvice
-class HmppsTemplateKotlinExceptionHandler {
+class HmppsIntegrationApiExceptionHandler {
   @ExceptionHandler(ValidationException::class)
   fun handleValidationException(e: Exception): ResponseEntity<ErrorResponse> {
     log.info("Validation exception: {}", e.message)

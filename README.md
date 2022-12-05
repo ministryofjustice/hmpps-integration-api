@@ -1,4 +1,5 @@
-# hmpps-template-kotlin
+# HMPPS Integration API
+
 [![repo standards badge](https://img.shields.io/badge/dynamic/json?color=blue&style=flat&logo=github&label=MoJ%20Compliant&query=%24.result&url=https%3A%2F%2Foperations-engineering-reports.cloud-platform.service.justice.gov.uk%2Fapi%2Fv1%2Fcompliant_public_repositories%2Fhmpps-template-kotlin)](https://operations-engineering-reports.cloud-platform.service.justice.gov.uk/public-github-repositories.html#hmpps-template-kotlin "Link to report")
 [![CircleCI](https://circleci.com/gh/ministryofjustice/hmpps-template-kotlin/tree/main.svg?style=svg)](https://circleci.com/gh/ministryofjustice/hmpps-template-kotlin)
 [![Docker Repository on Quay](https://quay.io/repository/hmpps/hmpps-template-kotlin/status "Docker Repository on Quay")](https://quay.io/repository/hmpps/hmpps-template-kotlin)
