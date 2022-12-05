@@ -32,6 +32,29 @@ jobs:
           path: build/test-results
       - store_artifacts:
           path: build/reports/tests
+  build:
+    name: build
+    docker:
+      - image: ministryofjustice/cloud-platform-tools
+    steps:
+      - checkout
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - run:
+          name: Build application Docker image
+          command: |
+            docker build -t hmpps-integration-api .
+      - deploy:
+          name: Push application Docker image
+          command: |
+            login="$(AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION} AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} aws ecr get-login --no-include-email)"
+            ${login}
+            docker tag app "${ECR_ENDPOINT}:${CIRCLE_SHA1}"
+            docker push "${ECR_ENDPOINT}:${CIRCLE_SHA1}"
+            if [ "${CIRCLE_BRANCH}" == "main" ]; then
+              docker tag app "${ECR_ENDPOINT}:latest"
+              docker push "${ECR_ENDPOINT}:latest"
+            fi
 
 workflows:
   version: 2
@@ -44,31 +67,11 @@ workflows:
       - hmpps/helm_lint:
           name: helm_lint
       - build:
+          name: build
           context: hmpps-integration-api-development
           requires:
             - validate
             - helm_lint
-          docker:
-            - image: ministryofjustice/cloud-platform-tools
-          steps:
-            - checkout
-            - setup_remote_docker:
-                docker_layer_caching: true
-            - run:
-                name: Build application Docker image
-                command: |
-                  docker build -t hmpps-integration-api .
-            - deploy:
-                name: Push application Docker image
-                command: |
-                  login="$(AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION} AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} aws ecr get-login --no-include-email)"
-                  ${login}
-                  docker tag app "${ECR_ENDPOINT}:${CIRCLE_SHA1}"
-                  docker push "${ECR_ENDPOINT}:${CIRCLE_SHA1}"
-                  if [ "${CIRCLE_BRANCH}" == "main" ]; then
-                    docker tag app "${ECR_ENDPOINT}:latest"
-                    docker push "${ECR_ENDPOINT}:latest"
-                  fi
   security:
     triggers:
       - schedule:
