@@ -66,7 +66,7 @@ jobs:
           name: Install demo helm chart
           command: |
             if [ "${CIRCLE_BRANCH}" == "main" ]; then
-              helm upgrade ${CIRCLE_PROJECT_REPONAME} -f values.yaml -f values-development.yaml ./helm_deploy --install --namespace=${K8S_NAMESPACE} 
+              helm upgrade ${CIRCLE_PROJECT_REPONAME} -f ./helm_deploy/hmpps-integration-api/values.yaml -f ./helm_deploy/values-development.yaml ./helm_deploy --install --namespace=${K8S_NAMESPACE} 
             fi
             kubectl --namespace=${K8S_NAMESPACE} get pods
 workflows:
