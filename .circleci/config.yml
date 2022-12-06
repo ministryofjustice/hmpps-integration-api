@@ -70,6 +70,8 @@ workflows:
           requires:
             - validate
             - helm_lint
+      - hmpps/create_app_version:
+          name: create_app_version
       - hmpps/deploy_env:
           name: deploy_dev
           context:
