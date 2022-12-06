@@ -72,6 +72,11 @@ workflows:
             - helm_lint
       - hmpps/deploy_env:
           name: deploy_dev
+          environment:
+            KUBE_ENV_CACERT: $K8S_CLUSTER_CERT
+            KUBE_ENV_NAME: $K8S_CLUSTER_NAME
+            KUBE_ENV_NAMESPACE: $K8S_NAMESPACE
+            KUBE_ENV_TOKEN: $K8S_TOKEN
           context:
             - hmpps-integration-api-development
             - hmpps-common-vars
