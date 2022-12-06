@@ -53,6 +53,7 @@ jobs:
               docker tag hmpps-integration-api "${ECR_ENDPOINT}:latest"
               docker push "${ECR_ENDPOINT}:latest"
             fi
+      - hmpps/create_app_version
 workflows:
   version: 2
   build-test-and-deploy:
@@ -70,8 +71,6 @@ workflows:
           requires:
             - validate
             - helm_lint
-      - hmpps/create_app_version:
-          name: create_app_version
       - hmpps/deploy_env:
           name: deploy_dev
           context:
