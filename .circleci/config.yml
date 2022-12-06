@@ -56,9 +56,6 @@ jobs:
 workflows:
   version: 2
   build-test-and-deploy:
-    context:
-      - hmpps-integration-api-development
-      - hmpps-common-vars
     jobs:
       - validate:
           filters:
@@ -69,11 +66,15 @@ workflows:
           env: development
       - build:
           name: build
+          context: hmpps-integration-api-development
           requires:
             - validate
             - helm_lint
       - hmpps/deploy_env:
           name: deploy_dev
+          context:
+            - hmpps-integration-api-development
+            - hmpps-common-vars
           env: "development"
           helm_timeout: 5m
           slack_channel_name: hmpps-integration-api
