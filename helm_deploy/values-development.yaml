@@ -4,6 +4,9 @@
 generic-service:
   replicaCount: 2
 
+  image:
+    repository: 754256621582.dkr.ecr.eu-west-2.amazonaws.com/hmpps-integration-api-team/hmpps-integration-api-development-ecr
+
   ingress:
     host: hmpps-integration-api-development.apps.live.cloud-platform.service.justice.gov.uk
 

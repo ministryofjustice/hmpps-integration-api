@@ -53,6 +53,22 @@ jobs:
               docker tag hmpps-integration-api "${ECR_ENDPOINT}:latest"
               docker push "${ECR_ENDPOINT}:latest"
             fi
+      - run:
+          name: Authenticate with cluster
+          command: |
+            echo -n ${K8S_CLUSTER_CERT} | base64 -d > ./ca.crt
+            kubectl config set-cluster ${K8S_CLUSTER_NAME} --certificate-authority=./ca.crt --server=https://${K8S_CLUSTER_NAME}
+            kubectl config set-credentials circleci --token=${K8S_TOKEN}
+            kubectl config set-context ${K8S_CLUSTER_NAME} --cluster=${K8S_CLUSTER_NAME} --user=circleci --namespace=${K8S_NAMESPACE}
+            kubectl config use-context ${K8S_CLUSTER_NAME}
+            kubectl --namespace=${K8S_NAMESPACE} get pods
+      - run:
+          name: Install demo helm chart
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "main" ]; then
+              helm upgrade ${CIRCLE_PROJECT_REPONAME} -f values.yaml -f values-development.yaml ./helm_deploy --install --namespace=${K8S_NAMESPACE} 
+            fi
+            kubectl --namespace=${K8S_NAMESPACE} get pods
 workflows:
   version: 2
   build-test-and-deploy:
