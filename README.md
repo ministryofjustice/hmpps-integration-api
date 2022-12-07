@@ -43,3 +43,15 @@ The `rename-project.bash` script takes a single argument - the name of the proje
 * The main package name (project name with hyphens removed)
 
 It then performs a search and replace and directory renames so the project is ready to be used.
+
+## Useful Commands
+git 
+### kubectl
+Get detailed information on a specific pod `kubectl describe pod <podname> -n hmpps-integration-api-development`
+
+### aws
+List images in the ECR `aws ecr describe-images --repository-name=hmpps-integration-api-team/hmpps-integration-api-development-ecr`
+
+### cloud-platform
+
+### 
