@@ -14,7 +14,6 @@ generic-service:
     v1_2_enabled: true
     v0_47_enabled: false
     host: app-hostname.local    # override per environment
-    tlsSecretName: hmpps-integration-api-cert
 
   # Environment variables to load into the deployment
   env:
