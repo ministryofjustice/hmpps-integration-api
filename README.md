@@ -86,6 +86,12 @@ To get detailed information on a specific pod:
 kubectl describe pod <podname> -n hmpps-integration-api-<environment>
 ```
 
+To view logs of a pod:
+
+```
+kubectl logs <pod-name> -n hmpps-integration-api-<environment>
+```
+
 To delete all ingress, services, pods and deployments:
 
 ```
