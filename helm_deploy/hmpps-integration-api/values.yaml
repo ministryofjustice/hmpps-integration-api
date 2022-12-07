@@ -33,7 +33,6 @@ generic-service:
     cloudplatform-live-1: "35.178.209.113/32"
     cloudplatform-live-2: "3.8.51.207/32"
     cloudplatform-live-3: "35.177.252.54/32"
-    matt-test: "81.131.99.176/32"
 
 generic-prometheus-alerts:
   targetApplication: hmpps-integration-api
