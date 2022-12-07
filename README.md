@@ -46,11 +46,59 @@ It then performs a search and replace and directory renames so the project is re
 
 ## Useful Commands
 git 
+
 ### kubectl
-Get detailed information on a specific pod `kubectl describe pod <podname> -n hmpps-integration-api-development`
+
+To report on all resources for a namespace, run the script:
+
+```
+./scripts/report-kubernetes.sh <namespace>
+# E.g ./scripts/report-kubernetes.sh development
+```
+
+To get ingress information for a namespace:
+
+```
+kubectl get ingress -n hmpps-integration-api-<environment>
+```
+
+To get a list of all services for a namespace:
+
+```
+kubectl get service -n hmpps-integration-api-<environment>
+```
+
+To get a list of all deployments for a namespace:
+
+```
+kubectl get deployment -n hmpps-integration-api-<environment>
+```
+
+To get a list of all pods for a namespace:
+
+```
+kubectl get pod -n hmpps-integration-api-<environment>
+```
+
+To get detailed information on a specific pod:
+
+```
+kubectl describe pod <podname> -n hmpps-integration-api-<environment>
+```
+
+To delete all ingress, services, pods and deployments:
+
+```
+kubectl delete pod,svc,deployment,ingress --all -n hmpps-integration-api-<environment> 
+```
 
 ### aws
-List images in the ECR `aws ecr describe-images --repository-name=hmpps-integration-api-team/hmpps-integration-api-development-ecr`
+
+To list images in the ECR repository:
+
+```
+aws ecr describe-images --repository-name=hmpps-integration-api-team/hmpps-integration-api-<environment>-ecr
+```
 
 ### cloud-platform
 
