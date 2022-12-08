@@ -45,67 +45,62 @@ The `rename-project.bash` script takes a single argument - the name of the proje
 It then performs a search and replace and directory renames so the project is ready to be used.
 
 ## Useful Commands
-git 
+Some commands that you might find useful when working with the environment.
 
 ### kubectl
 
-To report on all resources for a namespace, run the script:
-
+To report on all resources for an environment, run the script:
 ```
 ./scripts/report-kubernetes.sh <namespace>
 # E.g ./scripts/report-kubernetes.sh development
 ```
 
-To get ingress information for a namespace:
+Alternatively, the commands below yield information on specific resources.
 
+To get ingress information for a namespace:
 ```
-kubectl get ingress -n hmpps-integration-api-<environment>
+kubectl get ingress -n <namespace>
 ```
 
 To get a list of all services for a namespace:
-
 ```
-kubectl get service -n hmpps-integration-api-<environment>
+kubectl get service -n <namespace>
 ```
 
 To get a list of all deployments for a namespace:
-
 ```
-kubectl get deployment -n hmpps-integration-api-<environment>
+kubectl get deployment -n <namespace>
 ```
 
 To get a list of all pods for a namespace:
-
 ```
-kubectl get pod -n hmpps-integration-api-<environment>
+kubectl get pod -n <namespace>
 ```
 
 To get detailed information on a specific pod:
-
 ```
-kubectl describe pod <podname> -n hmpps-integration-api-<environment>
+kubectl describe pod <podname> -n <namespace>
 ```
 
 To view logs of a pod:
-
 ```
-kubectl logs <pod-name> -n hmpps-integration-api-<environment>
+kubectl logs <pod-name> -n <namespace>
+```
+
+To perform a command within a pod:
+```
+kubectl exec <pod-name> -c <container-name> -n <namespace> <command>
+#E.g. kubectl exec hmpps-integration-api-5b8f4f9699-wbwgf -c hmpps-integration-api -n hmpps-integration-api-development -- curl http://localhost:8080/
 ```
 
 To delete all ingress, services, pods and deployments:
-
 ```
-kubectl delete pod,svc,deployment,ingress --all -n hmpps-integration-api-<environment> 
+kubectl delete pod,svc,deployment,ingress --all -n <namespace>
 ```
 
 ### aws
 
 To list images in the ECR repository:
-
 ```
 aws ecr describe-images --repository-name=hmpps-integration-api-team/hmpps-integration-api-<environment>-ecr
 ```
-
-### cloud-platform
-
-### 
