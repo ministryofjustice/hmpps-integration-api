@@ -9,7 +9,7 @@
 Information on the technology stack chosen for the HMPPS-Integration-API project
 
 ### [Cloud Platform](https://user-guide.cloud-platform.service.justice.gov.uk/#cloud-platform-user-guide)
-A hosting platform which offers numerous tools such as logging, monitoring and alerting for our services.
+MoJ's cloud hosting platform built on top of AWS. which offers numerous tools such as logging, monitoring and alerting for our services.
 
 ### [Kubernetes](https://kubernetes.io/docs/home/)
 Creates 'pods' to host our environment. Manages auto-scaling, load balancing and networking to our application.
@@ -23,11 +23,10 @@ Our built artefacts are stored within an ECR. The CI/CD pipeline will store and 
 ### [Circle CI](https://circleci.com/developer)
 _This may yet be switched for Github Actions depending on investigation_
 
-### [AWS](https://aws.amazon.com/)
-Services utilise AWS features through cloud platform.
-
 Used for our build platform, responsible for executing workflows to build, validate, test and deploy our project.
 
+### [AWS](https://aws.amazon.com/)
+Services utilise AWS features through cloud platform.
 
 ## Useful Commands
 Commands that you might find useful when working with the environment.
