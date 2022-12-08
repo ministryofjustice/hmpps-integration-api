@@ -5,47 +5,32 @@
 [![Docker Repository on Quay](https://quay.io/repository/hmpps/hmpps-template-kotlin/status "Docker Repository on Quay")](https://quay.io/repository/hmpps/hmpps-template-kotlin)
 [![API docs](https://img.shields.io/badge/API_docs_-view-85EA2D.svg?logo=swagger)](https://hmpps-template-kotlin-dev.hmpps.service.justice.gov.uk/webjars/swagger-ui/index.html?configUrl=/v3/api-docs)
 
-This is a skeleton project from which to create new kotlin projects from.
+## Infrastructure Tech Stack
+Information on the technology stack chosen for the HMPPS-Integration-API project
 
-# Instructions
+### [Cloud Platform](https://user-guide.cloud-platform.service.justice.gov.uk/#cloud-platform-user-guide)
+A hosting platform which offers numerous tools such as logging, monitoring and alerting for our services.
 
-If this is a HMPPS project then the project will be created as part of bootstrapping - 
-see https://github.com/ministryofjustice/dps-project-bootstrap.
+### [Kubernetes](https://kubernetes.io/docs/home/)
+Creates 'pods' to host our environment. Manages auto-scaling, load balancing and networking to our application.
 
-## Creating a CloudPlatform namespace
+### [Docker](https://www.docker.com/)
+The API is built into docker images which are deployed to our containers.
 
-When deploying to a new namespace, you may wish to use this template kotlin project namespace as the basis for your new namespace:
+### [AWS Elastic Container Registry](https://aws.amazon.com/ecr/)
+Our built artefacts are stored within an ECR. The CI/CD pipeline will store and retrieve them from here as required.
 
-<https://github.com/ministryofjustice/cloud-platform-environments/tree/main/namespaces/live.cloud-platform.service.justice.gov.uk/hmpps-template-kotlin>
+### [Circle CI](https://circleci.com/developer)
+_This may yet be switched for Github Actions depending on investigation_
 
-Copy this folder, update all the existing namespace references, and submit a PR to the CloudPlatform team. Further instructions from the CloudPlatform team can be found here: <https://user-guide.cloud-platform.service.justice.gov.uk/#cloud-platform-user-guide>
+### [AWS](https://aws.amazon.com/)
+Services utilise AWS features through cloud platform.
 
-## Renaming from HMPPS Template Kotlin - github Actions
+Used for our build platform, responsible for executing workflows to build, validate, test and deploy our project.
 
-Once the new repository is deployed. Navigate to the repository in github, and select the `Actions` tab.
-Click the link to `Enable Actions on this repository`.
-
-Find the Action workflow named: `rename-project-create-pr` and click `Run workflow`.  This workflow will
-execute the `rename-project.bash` and create Pull Request for you to review.  Review the PR and merge.
-
-Note: ideally this workflow would run automatically however due to a recent change github Actions are not
-enabled by default on newly created repos. There is no way to enable Actions other then to click the button in the UI.
-If this situation changes we will update this project so that the workflow is triggered during the bootstrap project.
-Further reading: <https://github.community/t/workflow-isnt-enabled-in-repos-generated-from-template/136421>
-
-## Manually renaming from HMPPS Template Kotlin
-
-Run the `rename-project.bash` and create a PR.
-
-The `rename-project.bash` script takes a single argument - the name of the project and calculates from it:
-* The main class name (project name converted to pascal case) 
-* The project description (class name with spaces between the words)
-* The main package name (project name with hyphens removed)
-
-It then performs a search and replace and directory renames so the project is ready to be used.
 
 ## Useful Commands
-Some commands that you might find useful when working with the environment.
+Commands that you might find useful when working with the environment.
 
 ### kubectl
 
