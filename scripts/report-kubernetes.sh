@@ -1,5 +1,12 @@
 #!/bin/sh
 
+# $# Gets the number of args passed
+if [ $# -eq 0 ]
+then
+  echo "You must pass in an environment name e.g. bash ./scripts/report-kubernetes.sh development"
+  exit
+fi
+
 environment=$1
 
 echo "Ingress:"
