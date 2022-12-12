@@ -3,15 +3,46 @@ services:
   hmpps-integration-api:
     build:
       context: .
-    network_mode: "host"
-    container_name: hmpps-integration-api
+    container_name: hmpps-template-kotlin
     ports:
       - "8081:8080"
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/health/ping"]
+    depends_on:
+      - oauth-server
+      - prison-api
     environment:
       - SERVER_PORT=8080
       - SPRING_PROFILES_ACTIVE=dev
+      - OAUTH_ENDPOINT_URL=http://oauth-server:8080/auth/
+      - PRISON_ENDPOINT_URL=http://prison-api:8080/auth/
+      - LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_WEB=TRACE
+
+  oauth-server:
+    image: quay.io/hmpps/hmpps-auth:latest
+    container_name: oauth-server
+    ports:
+      - "9090:8080"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/auth/health"]
+    environment:
+      - SERVER_PORT=8080
+      - SPRING_PROFILES_ACTIVE=dev
+      - LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_WEB=TRACE
+
+  prison-api:
+    image: quay.io/hmpps/prison-api:latest
+    container_name: prison-api
+    depends_on:
+      - oauth-server
+    ports:
+      - "8080:8080"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+    environment:
+      - SERVER_PORT=8080
+      - SPRING_PROFILES_ACTIVE=nomis-hsqldb
+      - LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_WEB=TRACE
 
 networks:
   hmpps:
