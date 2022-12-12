@@ -20,13 +20,13 @@ The API is built into docker images which are deployed to our containers.
 ### [AWS Elastic Container Registry](https://aws.amazon.com/ecr/)
 Our built artefacts are stored within an ECR. The CI/CD pipeline will store and retrieve them from here as required.
 
-### [Circle CI](https://circleci.com/developer)
-_This may yet be switched for Github Actions depending on investigation_
+### [CircleCI](https://circleci.com/developer)
+_This may yet be switched for GitHub Actions depending on investigation_
 
 Used for our build platform, responsible for executing workflows to build, validate, test and deploy our project.
 
 ### [AWS](https://aws.amazon.com/)
-Services utilise AWS features through cloud platform.
+Services utilise AWS features through Cloud Platform.
 
 ## Useful Commands
 Commands that you might find useful when working with the environment.
@@ -34,57 +34,57 @@ Commands that you might find useful when working with the environment.
 ### kubectl
 
 To report on all resources for an environment, run the script:
-```
-./scripts/report-kubernetes.sh <namespace>
+```bash
+./scripts/report-kubernetes.sh <environment>
 # E.g ./scripts/report-kubernetes.sh development
 ```
 
 Alternatively, the commands below yield information on specific resources.
 
 To get ingress information for a namespace:
-```
+```bash
 kubectl get ingress -n <namespace>
 ```
 
 To get a list of all services for a namespace:
-```
+```bash
 kubectl get service -n <namespace>
 ```
 
 To get a list of all deployments for a namespace:
-```
+```bash
 kubectl get deployment -n <namespace>
 ```
 
 To get a list of all pods for a namespace:
-```
+```bash
 kubectl get pod -n <namespace>
 ```
 
 To get detailed information on a specific pod:
-```
+```bash
 kubectl describe pod <podname> -n <namespace>
 ```
 
 To view logs of a pod:
-```
+```bash
 kubectl logs <pod-name> -n <namespace>
 ```
 
 To perform a command within a pod:
-```
+```bash
 kubectl exec <pod-name> -c <container-name> -n <namespace> <command>
-#E.g. kubectl exec hmpps-integration-api-5b8f4f9699-wbwgf -c hmpps-integration-api -n hmpps-integration-api-development -- curl http://localhost:8080/
+# E.g. kubectl exec hmpps-integration-api-5b8f4f9699-wbwgf -c hmpps-integration-api -n hmpps-integration-api-development -- curl http://localhost:8080/
 ```
 
 To delete all ingress, services, pods and deployments:
-```
+```bash
 kubectl delete pod,svc,deployment,ingress --all -n <namespace>
 ```
 
 ### aws
 
 To list images in the ECR repository:
-```
+```bash
 aws ecr describe-images --repository-name=hmpps-integration-api-team/hmpps-integration-api-<environment>-ecr
 ```
