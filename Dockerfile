@@ -29,8 +29,7 @@ COPY --from=builder --chown=appuser:appgroup /app/build/libs/hmpps-integration-a
 COPY --from=builder --chown=appuser:appgroup /app/build/libs/applicationinsights-agent*.jar /app/agent.jar
 COPY --from=builder --chown=appuser:appgroup /app/applicationinsights.json /app
 COPY --from=builder --chown=appuser:appgroup /app/applicationinsights.dev.json /app
-COPY ./scripts ./scripts
 
 USER 2000
 
-CMD sh -c "./scripts/boot.sh"
+ENTRYPOINT ["java", "-XX:+AlwaysActAsServerClassMachine", "-javaagent:/app/agent.jar", "-jar", "/app/app.jar"]
