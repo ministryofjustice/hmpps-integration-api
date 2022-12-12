@@ -1,9 +1,16 @@
 version: "3"
 services:
+  fake-mapps:
+    build:
+      context: ../scripts
+    container_name: fake-mapps
+    depends_on:
+      - hmpps-integration-api
+
   hmpps-integration-api:
     build:
       context: .
-    container_name: hmpps-template-kotlin
+    container_name: hmpps-integration-api
     ports:
       - "8081:8080"
     healthcheck:
