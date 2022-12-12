@@ -78,8 +78,8 @@ workflows:
             - hmpps-common-vars
           env: "development"
           helm_timeout: 5m
-          slack_channel_name: hmpps-integration-api
-          slack_notification: true
+          slack_channel_name: << pipeline.parameters.releases-slack-channel >>
+          slack_notification: false
           filters:
             branches:
               only:
@@ -96,7 +96,6 @@ workflows:
                 - main
     jobs:
       - hmpps/gradle_owasp_dependency_check:
-          slack_channel: << pipeline.parameters.alerts-slack-channel >>
           context:
             - hmpps-common-vars
       - hmpps/trivy_latest_scan:
@@ -104,7 +103,6 @@ workflows:
           context:
             - hmpps-common-vars
       - hmpps/veracode_pipeline_scan:
-          slack_channel: << pipeline.parameters.alerts-slack-channel >>
           context:
             - veracode-credentials
             - hmpps-common-vars
@@ -118,9 +116,6 @@ workflows:
                 - main
     jobs:
       - hmpps/veracode_policy_scan:
-          slack_channel: << pipeline.parameters.alerts-slack-channel >>
           context:
             - veracode-credentials
             - hmpps-common-vars
-
-
