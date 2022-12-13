@@ -99,7 +99,9 @@ workflows:
           context:
             - hmpps-common-vars
       - hmpps/trivy_latest_scan:
+          image_name: $ECR_ENDPOINT
           context:
+            - hmpps-integration-api-development
             - hmpps-common-vars
       - hmpps/veracode_pipeline_scan:
           context:
