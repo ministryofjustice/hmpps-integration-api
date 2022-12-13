@@ -1,0 +1,5 @@
+FROM ubuntu:latest
+RUN apt-get update && apt-get install -y bash curl vim
+COPY ./scripts/run_test.sh .
+
+CMD sleep infinity
