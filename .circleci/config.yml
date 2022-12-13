@@ -62,9 +62,6 @@ workflows:
           filters:
             tags:
               ignore: /.*/
-            branches:
-              only:
-                - main
       - hmpps/helm_lint:
           name: helm_lint
           env: development
