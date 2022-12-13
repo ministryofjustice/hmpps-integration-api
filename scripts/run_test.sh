@@ -2,14 +2,7 @@
 
 set -e
 
-result=`curl 127.0.0.1:8081/offences/all`
-expected_result="{}"
+curl http://hmpps-integration-api:8080/offences/all > /tmp/result
+expected_substring="severityRanking"
 
-if [[ $result -ne $expected_result ]] {
-  echo "test failed"
-  exit 1
-}
-
-echo $result
-echo "test passed"
-exit 0
+grep $expected_substring /tmp/result
