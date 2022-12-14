@@ -28,9 +28,19 @@ internal class PersonControllerTest(
     }
 
     it("responds with a 200 OK status") {
+      val person = Person(id, "Billy", "Bob")
+      Mockito.`when`(getPersonService.execute(id)).thenReturn(person)
       val result = mockMvc.perform(get("/persons/$id")).andReturn()
 
       result.response.status.shouldBe(200)
+    }
+
+    @Throws
+    it("responds with a 404 NOT FOUND status") {
+      val id_that_does_not_exist = 777
+      val result = mockMvc.perform(get("/persons/$id_that_does_not_exist")).andReturn()
+
+      result.response.status.shouldBe(404)
     }
 
     it("retrieves a person with the matching ID") {
