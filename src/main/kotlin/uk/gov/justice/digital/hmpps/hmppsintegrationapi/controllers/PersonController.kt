@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/persons")
-class PersonController {
+class PersonController() {
 
   @GetMapping("{id}")
   fun getPerson() {
