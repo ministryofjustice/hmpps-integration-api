@@ -14,6 +14,8 @@ dependencies {
   testImplementation("io.kotest:kotest-assertions-core-jvm:5.5.4")
   testImplementation("io.kotest.extensions:kotest-extensions-wiremock:1.0.3")
   testImplementation("io.kotest.extensions:kotest-extensions-spring:1.1.2")
+  testImplementation("org.mockito:mockito-core:4.9.0")
+
   annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 }
 
