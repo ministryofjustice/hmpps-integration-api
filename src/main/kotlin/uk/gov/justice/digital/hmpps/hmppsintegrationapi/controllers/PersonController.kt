@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService
 
 @RestController
@@ -12,7 +13,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonServic
 class PersonController(@Autowired val getPersonService: GetPersonService) {
 
   @GetMapping("{id}")
-  fun getPerson(@PathVariable id: Int) {
-    getPersonService.execute(id)
+  fun getPerson(@PathVariable id: Int): Person? {
+    return getPersonService.execute(id)
   }
 }
