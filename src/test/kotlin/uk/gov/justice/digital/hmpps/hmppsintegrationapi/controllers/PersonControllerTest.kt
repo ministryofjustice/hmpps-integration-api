@@ -24,28 +24,28 @@ internal class PersonControllerTest(
     val id = 1
 
     beforeTest {
-      Mockito.reset(getPersonService);
+      Mockito.reset(getPersonService)
     }
 
     it("responds with a 200 OK status") {
-      val result = mockMvc.perform(get("/persons/$id")).andReturn();
+      val result = mockMvc.perform(get("/persons/$id")).andReturn()
 
-      result.response.status.shouldBe(200);
+      result.response.status.shouldBe(200)
     }
 
     it("retrieves a person with the matching ID") {
-      mockMvc.perform(get("/persons/$id")).andReturn();
+      mockMvc.perform(get("/persons/$id")).andReturn()
 
-      verify(getPersonService, times(1)).execute(id);
+      verify(getPersonService, times(1)).execute(id)
     }
 
     it("returns a person with the matching ID") {
       val person = Person(id, "Billy", "Bob")
       Mockito.`when`(getPersonService.execute(id)).thenReturn(person)
 
-      val result = mockMvc.perform(get("/persons/$id")).andReturn();
+      val result = mockMvc.perform(get("/persons/$id")).andReturn()
 
-      result.response.contentAsString.shouldNotBeEmpty();
+      result.response.contentAsString.shouldNotBeEmpty()
       JSONObject(result.response.contentAsString)["id"].shouldBe(person.id)
       JSONObject(result.response.contentAsString)["firstName"].shouldBe(person.firstName)
       JSONObject(result.response.contentAsString)["lastName"].shouldBe(person.lastName)
