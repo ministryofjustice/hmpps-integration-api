@@ -12,7 +12,7 @@ parameters:
     default: hmpps-integration-api
 
 jobs:
-  lint:
+  lint-code:
     executor:
       name: hmpps/java
       tag: "19.0"
@@ -23,13 +23,13 @@ jobs:
             - gradle-{{ checksum "build.gradle.kts" }}
             - gradle-
       - run:
-          name: Run linting
+          name: Lint code
           command: ./gradlew ktlintCheck
       - save_cache:
           paths:
             - ~/.gradle
           key: gradle-{{ checksum "build.gradle.kts" }}
-  test:
+  unit-tests:
     executor:
       name: hmpps/java
       tag: "19.0"
@@ -40,7 +40,7 @@ jobs:
             - gradle-{{ checksum "build.gradle.kts" }}
             - gradle-
       - run:
-          name: Run tests
+          name: Run unit tests
           command: ./gradlew test
       - save_cache:
           paths:
@@ -48,7 +48,7 @@ jobs:
           key: gradle-{{ checksum "build.gradle.kts" }}
       - store_test_results:
           path: build/test-results
-  build:
+  create-and-push-image-to-ecr:
     docker:
       - image: ministryofjustice/cloud-platform-tools
     steps:
@@ -74,20 +74,22 @@ workflows:
   version: 2
   build-test-and-deploy:
     jobs:
-      - lint
-      - test
+      - lint-code
+      - unit-tests
       - hmpps/helm_lint:
-          name: helm_lint
+          name: lint-helm-charts
           env: development
-      - build:
-          name: build
-          context: hmpps-integration-api-development
+      - create-and-push-image-to-ecr:
+          name: create-and-push-image-to-development-ecr
           requires:
-            - lint
-            - test
-            - helm_lint
+            - lint-code
+            - unit-tests
+            - lint-helm-charts
+          context: hmpps-integration-api-development
       - hmpps/deploy_env:
-          name: deploy_dev
+          name: deploy-to-development
+          requires:
+            - create-and-push-image-to-development-ecr
           context:
             - hmpps-integration-api-development
             - hmpps-common-vars
@@ -95,12 +97,6 @@ workflows:
           helm_timeout: 5m
           slack_channel_name: << pipeline.parameters.releases-slack-channel >>
           slack_notification: false
-          filters:
-            branches:
-              only:
-                - main
-          requires:
-            - build
   security:
     triggers:
       - schedule:
