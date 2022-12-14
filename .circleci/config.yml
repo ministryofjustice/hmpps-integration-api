@@ -12,7 +12,7 @@ parameters:
     default: hmpps-integration-api
 
 jobs:
-  validate:
+  lint:
     executor:
       name: hmpps/java
       tag: "19.0"
@@ -23,15 +23,31 @@ jobs:
             - gradle-{{ checksum "build.gradle.kts" }}
             - gradle-
       - run:
-          command: ./gradlew check
+          name: Run linting
+          command: ./gradlew ktlintCheck
+      - save_cache:
+          paths:
+            - ~/.gradle
+          key: gradle-{{ checksum "build.gradle.kts" }}
+  test:
+    executor:
+      name: hmpps/java
+      tag: "19.0"
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - gradle-{{ checksum "build.gradle.kts" }}
+            - gradle-
+      - run:
+          name: Run tests
+          command: ./gradlew test
       - save_cache:
           paths:
             - ~/.gradle
           key: gradle-{{ checksum "build.gradle.kts" }}
       - store_test_results:
           path: build/test-results
-      - store_artifacts:
-          path: build/reports/tests
   build:
     docker:
       - image: ministryofjustice/cloud-platform-tools
@@ -58,10 +74,8 @@ workflows:
   version: 2
   build-test-and-deploy:
     jobs:
-      - validate:
-          filters:
-            tags:
-              ignore: /.*/
+      - lint
+      - test
       - hmpps/helm_lint:
           name: helm_lint
           env: development
@@ -69,7 +83,8 @@ workflows:
           name: build
           context: hmpps-integration-api-development
           requires:
-            - validate
+            - lint
+            - test
             - helm_lint
       - hmpps/deploy_env:
           name: deploy_dev
