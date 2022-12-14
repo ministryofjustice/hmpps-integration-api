@@ -66,10 +66,9 @@ jobs:
             AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION} AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} aws ecr get-login-password | docker login --username AWS --password-stdin 754256621582.dkr.ecr.eu-west-2.amazonaws.com
             docker tag hmpps-integration-api "${ECR_ENDPOINT}:${CIRCLE_SHA1}"
             docker push "${ECR_ENDPOINT}:${CIRCLE_SHA1}"
-            if [ "${CIRCLE_BRANCH}" == "main" ]; then
-              docker tag hmpps-integration-api "${ECR_ENDPOINT}:${APP_VERSION}"
-              docker push "${ECR_ENDPOINT}:${APP_VERSION}"
-            fi
+            docker tag hmpps-integration-api "${ECR_ENDPOINT}:${APP_VERSION}"
+            docker push "${ECR_ENDPOINT}:${APP_VERSION}"
+
 workflows:
   version: 2
   build-test-and-deploy:
@@ -81,18 +80,26 @@ workflows:
           env: development
       - create-and-push-image-to-ecr:
           name: create-and-push-image-to-development-ecr
+          context: hmpps-integration-api-development
           requires:
             - lint-code
             - unit-tests
             - lint-helm-charts
-          context: hmpps-integration-api-development
+          filters:
+            branches:
+              only:
+                - main
       - hmpps/deploy_env:
           name: deploy-to-development
-          requires:
-            - create-and-push-image-to-development-ecr
           context:
             - hmpps-integration-api-development
             - hmpps-common-vars
+          requires:
+            - create-and-push-image-to-development-ecr
+          filters:
+            branches:
+              only:
+                - main
           env: "development"
           helm_timeout: 5m
           slack_channel_name: << pipeline.parameters.releases-slack-channel >>
