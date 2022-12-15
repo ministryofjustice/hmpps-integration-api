@@ -4,6 +4,91 @@
 [![CircleCI](https://circleci.com/gh/ministryofjustice/hmpps-integration-api/tree/main.svg?style=svg)](https://circleci.com/gh/ministryofjustice/hmpps-integration-api)
 [![API docs](https://img.shields.io/badge/API_docs_-view-85EA2D.svg?logo=swagger)](https://hmpps-integration-api-development.apps.live.cloud-platform.service.justice.gov.uk/swagger-ui/index.html)
 
+## Contents
+
+- [Getting started](#getting-started)
+  - [Using IntelliJ IDEA](#using-intellij-idea)
+- [Usage](#usage)
+  - [Running the application](#running-the-application)
+  - [Running the tests](#running-the-tests)
+  - [Running the linter](#running-the-linter)
+  - [Running all checks](#running-all-checks)
+- [Infrastructure Tech Stack](#infrastructure-tech-stack)
+  - [Cloud Platform](#cloud-platform)
+  - [Kubernetes](#kubernetes)
+  - [Docker](#docker)
+  - [AWS Elastic Container Registry](#aws-elastic-container-registry)
+  - [CircleCI](#circleci)
+  - [AWS](#aws)
+- [Useful Commands](#useful-commands)
+  - [kubectl](#kubectl)
+  - [aws](#aws-1)
+
+## Getting started
+
+### Using IntelliJ IDEA
+
+When using an IDE like [IntelliJ IDEA](https://www.jetbrains.com/idea/), getting started is very simple as it will handle installing the required Java SDK and [Gradle](https://gradle.org/) versions. The following are the steps for using IntelliJ but other IDEs will prove similar.
+
+1. Clone the repo.
+
+```bash
+git clone git@github.com:ministryofjustice/hmpps-integration-api.git
+```
+
+1. Launch IntelliJ and open the `hmpps-integration-api` project by navigating to the location of the repository.
+
+Upon opening the project, IntelliJ will begin downloading and installing necessary dependencies which may take a few minutes.
+
+## Usage
+
+### Running the application
+
+To run the application using IntelliJ:
+
+1. Select the `HmppsIntegrationApi` run configuration file.
+2. Click the run button.
+
+To run the application using the command line:
+
+```bash
+./gradlew bootRun
+```
+
+### Running the tests
+
+The testing framework used in this project is [Kotest](https://kotest.io/).
+
+To run the tests using IntelliJ:
+
+1. Install the [Kotest IntelliJ plugin](https://kotest.io/docs/intellij/intellij-plugin.html).
+
+This provides the ability to easily run a test as it provides run buttons (gutter icons) next to each test and test file.
+
+2. Click the run button beside a test or test file.
+
+To run the application using the command line:
+
+```bash
+./gradlew test
+```
+
+### Running the linter
+
+To lint the code using [Ktlint](https://pinterest.github.io/ktlint/):
+
+```bash
+./gradlew ktlintCheck
+```
+
+### Running all checks
+
+To run all the tests and linting:
+
+```bash
+./gradlew check
+```
+
 ## Infrastructure Tech Stack
 Information on the technology stack chosen for the HMPPS-Integration-API project
 
