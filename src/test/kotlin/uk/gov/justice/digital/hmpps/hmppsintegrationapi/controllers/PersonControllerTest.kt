@@ -12,8 +12,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService
 
@@ -39,10 +37,10 @@ internal class PersonControllerTest(
 
     it("responds with a 404 NOT FOUND status") {
       val id_that_does_not_exist = 777
+      Mockito.`when`(getPersonService.execute(id)).thenReturn(null)
+      val result = mockMvc.perform(get("/persons/$id_that_does_not_exist")).andReturn()
 
-      mockMvc.perform(get("/persons/$id_that_does_not_exist"))
-        .andDo(print())
-        .andExpect(status().isNotFound)
+      result.response.status.shouldBe(404)
     }
 
     it("retrieves a person with the matching ID") {
