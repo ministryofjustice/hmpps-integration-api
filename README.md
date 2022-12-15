@@ -10,6 +10,7 @@
   - [Using IntelliJ IDEA](#using-intellij-idea)
 - [Usage](#usage)
   - [Running the application](#running-the-application)
+    - [With dependent services](#with-dependent-services)
   - [Running the tests](#running-the-tests)
   - [Running the linter](#running-the-linter)
   - [Running all checks](#running-all-checks)
@@ -36,7 +37,7 @@ When using an IDE like [IntelliJ IDEA](https://www.jetbrains.com/idea/), getting
 git clone git@github.com:ministryofjustice/hmpps-integration-api.git
 ```
 
-1. Launch IntelliJ and open the `hmpps-integration-api` project by navigating to the location of the repository.
+2. Launch IntelliJ and open the `hmpps-integration-api` project by navigating to the location of the repository.
 
 Upon opening the project, IntelliJ will begin downloading and installing necessary dependencies which may take a few minutes.
 
@@ -54,6 +55,57 @@ To run the application using the command line:
 ```bash
 ./gradlew bootRun
 ```
+
+Then visit [http://localhost:8080](http://localhost:8080).
+
+#### With dependent services
+
+It's possible to run the application with dependent services like the [NOMIS / Prison API](https://github.com/ministryofjustice/prison-api) and [HMPPS Auth](https://github.com/ministryofjustice/hmpps-auth) with Docker using [docker-compose](https://docs.docker.com/compose/).
+
+1. Build and start the containers for each service.
+
+```bash
+docker-compose up --build
+```
+
+Each service is then accessible at:
+
+- [http://localhost:8080](http://localhost:8080) for this application
+- [http://localhost:8081](http://localhost:8081) for the Prison API
+- [http://localhost:9090](http://localhost:9090) for the HMPPS Auth service
+
+As part of getting the HMPPS Auth service running locally, [the in-memory database is seeded with data including a number of clients](https://github.com/ministryofjustice/hmpps-auth/blob/main/src/main/resources/db/dev/data/auth/V900_0__clients.sql). A client can have different permissions i.e. read, write, reporting, although strangely the column name is called ​​autoapprove.
+
+In order to call endpoints of the Prison API, an access token must be provided that is generated from the HMPPS Auth service.
+
+2. Generate a token for a HMPPS Auth client.
+
+```bash
+curl -X POST "http://localhost:9090/auth/oauth/token?grant_type=client_credentials" \
+  -H 'Content-Type: application/json' \
+  -H "Authorization: Basic $(echo -n "prisoner-offender-search-client:clientsecret" | base64)"
+```
+
+This uses the client ID: `prisoner-offender-search-client` and the client secret: `clientsecret`. A number of seeded clients use the same client secret.
+
+A JWT token is returned as a result, it will look like this:
+
+```json
+{
+   "access_token":"eyJhbGciOiJSUzI1NiIs ...BAtWD653XpCzn8A",
+   "token_type":"bearer",
+   "expires_in":3599,
+   "scope":"read write",
+   "sub":"prisoner-offender-search-client",
+   "auth_source":"none",
+   "jti":"Ptr-MIdUBDGDOl8_qqeIuNV9Wpc",
+   "iss":"http://localhost:9090/auth/issuer"
+}
+```
+
+Using the value of `access_token`, you can call the Prison API using it as a Bearer Token.
+
+There are a couple of options for calling the Prison API such as [curl](https://curl.se/), [Postman](https://www.postman.com/) and using in-built Swagger UI via the browser at [http://localhost:8081/swagger-ui/index.html](http://localhost:8081/swagger-ui/index.html) which documents the available API endpoints.
 
 ### Running the tests
 
