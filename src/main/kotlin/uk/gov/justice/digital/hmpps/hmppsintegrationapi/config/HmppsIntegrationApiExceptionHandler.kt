@@ -38,7 +38,7 @@ class HmppsIntegrationApiExceptionHandler {
           userMessage = "404 Not found error: ${e.message}",
           developerMessage = e.message
         )
-    )
+      )
   }
 
   @ExceptionHandler(java.lang.Exception::class)
