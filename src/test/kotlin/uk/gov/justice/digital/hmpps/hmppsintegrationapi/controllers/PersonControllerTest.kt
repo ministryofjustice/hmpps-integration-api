@@ -9,9 +9,14 @@ import org.mockito.internal.verification.VerificationModeFactory.times
 import org.mockito.kotlin.verify
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
+import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
+import org.springframework.http.MediaType
+import org.springframework.mock.web.MockHttpServletResponse
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService
 
@@ -35,12 +40,12 @@ internal class PersonControllerTest(
       result.response.status.shouldBe(200)
     }
 
-    @Throws
     it("responds with a 404 NOT FOUND status") {
       val id_that_does_not_exist = 777
-      val result = mockMvc.perform(get("/persons/$id_that_does_not_exist")).andReturn()
 
-      result.response.status.shouldBe(404)
+      mockMvc.perform(get("/persons/${id_that_does_not_exist}"))
+        .andDo(print())
+        .andExpect(status().isNotFound)
     }
 
     it("retrieves a person with the matching ID") {

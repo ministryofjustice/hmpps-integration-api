@@ -4,9 +4,11 @@ import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.HttpStatus.BAD_REQUEST
 import org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR
+import org.springframework.http.HttpStatus.NOT_FOUND
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import javax.validation.ValidationException
 
 @RestControllerAdvice
@@ -23,6 +25,20 @@ class HmppsIntegrationApiExceptionHandler {
           developerMessage = e.message
         )
       )
+  }
+
+  @ExceptionHandler(EntityNotFoundException::class)
+  fun handle(e: EntityNotFoundException): ResponseEntity<ErrorResponse> {
+    log.error("Not found (404) returned with message {}", e.message)
+    return ResponseEntity
+      .status(NOT_FOUND)
+      .body(
+        ErrorResponse(
+          status = NOT_FOUND,
+          userMessage = "404 Not found error: ${e.message}",
+          developerMessage = e.message
+        )
+    )
   }
 
   @ExceptionHandler(java.lang.Exception::class)
