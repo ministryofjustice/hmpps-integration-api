@@ -4,6 +4,9 @@ authenticate-docker:
 build-dev:
 	docker-compose build
 
+build:
+    docker build -t hmpps-integration-api .
+
 serve: build-dev
 	docker-compose up -d
 
@@ -13,8 +16,13 @@ publish: build-dev
 stop:
 	docker-compose down
 
-test: serve
+unit-test:
 	./gradlew test
-	docker-compose exec client ./run_test.sh
 
-.PHONY: authenticate-docker build-dev test serve publish
+smoke-test: serve
+	# docker-compose exec client ./run_test.sh
+	echo "TODO"
+
+test: unit-test smoke-test
+
+.PHONY: authenticate-docker build-dev test serve publish unit-test smoke-test build
