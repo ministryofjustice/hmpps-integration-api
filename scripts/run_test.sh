@@ -2,7 +2,9 @@
 
 set -e
 
-curl http://hmpps-integration-api:8080/offences/all > /tmp/result
+curl http://hmpps-integration-api:8080/persons/1 > /tmp/result
 expected_substring="severityRanking"
 
+cat /tmp/result
 grep $expected_substring /tmp/result
+
