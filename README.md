@@ -21,10 +21,10 @@
 
 ## About this project
 
-A long-lived API that exposes data from the HMPPS systems such as NOMIS, nDelius and OASys by being a single entry point for consumers. It's built using [Spring Boot](https://spring.io/projects/spring-boot/) and [Kotlin](https://kotlinlang.org/) as well as the following technologies for its infrastructure:
+A long-lived API that exposes data from HMPPS systems such as NOMIS, nDelius and OASys, providing a single point of entry for consumers. It's built using [Spring Boot](https://spring.io/projects/spring-boot/) and [Kotlin](https://kotlinlang.org/) as well as the following technologies for its infrastructure:
 
-- [AWS](https://aws.amazon.com/) - Services utilise AWS features through Cloud Platform such as [Elastic Container Registry (ECR)](https://aws.amazon.com/ecr/) to store our built artefacts. The CI/CD pipeline stores and retrieves them from there as required.
-- [CircleCI](https://circleci.com/developer) - Used for our build platform, responsible for executing workflows to build, validate, test and deploy our project. (_This may yet be switched for GitHub Actions depending on investigation_)
+- [AWS](https://aws.amazon.com/) - Services utilise AWS features through Cloud Platform such as [Elastic Container Registry (ECR)](https://aws.amazon.com/ecr/) to store our built artifacts. The CI/CD pipeline stores and retrieves them from there as required.
+- [CircleCI](https://circleci.com/developer) - Used for our build platform, responsible for executing workflows to build, validate, test and deploy our project. (_This may yet be switched for GitHub Actions depending on investigation._)
 - [Cloud Platform](https://user-guide.cloud-platform.service.justice.gov.uk/#cloud-platform-user-guide) - Ministry of Justice's (MoJ) cloud hosting platform built on top of AWS which offers numerous tools such as logging, monitoring and alerting for our services.
 - [Docker](https://www.docker.com/) - The API is built into docker images which are deployed to our containers.
 - [Kubernetes](https://kubernetes.io/docs/home/) - Creates 'pods' to host our environment. Manages auto-scaling, load balancing and networking to our application.
