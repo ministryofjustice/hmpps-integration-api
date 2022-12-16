@@ -6,6 +6,7 @@
 
 ## Contents
 
+- [About this project](#about-this-project)
 - [Getting started](#getting-started)
   - [Using IntelliJ IDEA](#using-intellij-idea)
 - [Usage](#usage)
@@ -14,16 +15,19 @@
   - [Running the tests](#running-the-tests)
   - [Running the linter](#running-the-linter)
   - [Running all checks](#running-all-checks)
-- [Infrastructure Tech Stack](#infrastructure-tech-stack)
-  - [Cloud Platform](#cloud-platform)
-  - [Kubernetes](#kubernetes)
-  - [Docker](#docker)
-  - [AWS Elastic Container Registry](#aws-elastic-container-registry)
-  - [CircleCI](#circleci)
-  - [AWS](#aws)
-- [Useful Commands](#useful-commands)
+- [Useful commands](#useful-commands)
   - [kubectl](#kubectl)
-  - [aws](#aws-1)
+  - [aws](#aws)
+
+## About this project
+
+A long-lived API that exposes data from HMPPS systems such as National Offender Management Information System (NOMIS), nDelius (probation system) and Offender Assessment System (OASys), providing a single point of entry for consumers. It's built using [Spring Boot](https://spring.io/projects/spring-boot/) and [Kotlin](https://kotlinlang.org/) as well as the following technologies for its infrastructure:
+
+- [AWS](https://aws.amazon.com/) - Services utilise AWS features through Cloud Platform such as [Elastic Container Registry (ECR)](https://aws.amazon.com/ecr/) to store our built artifacts. The CI/CD pipeline stores and retrieves them from there as required.
+- [CircleCI](https://circleci.com/developer) - Used for our build platform, responsible for executing workflows to build, validate, test and deploy our project. (_This may yet be switched for GitHub Actions depending on investigation._)
+- [Cloud Platform](https://user-guide.cloud-platform.service.justice.gov.uk/#cloud-platform-user-guide) - Ministry of Justice's (MoJ) cloud hosting platform built on top of AWS which offers numerous tools such as logging, monitoring and alerting for our services.
+- [Docker](https://www.docker.com/) - The API is built into docker images which are deployed to our containers.
+- [Kubernetes](https://kubernetes.io/docs/home/) - Creates 'pods' to host our environment. Manages auto-scaling, load balancing and networking to our application.
 
 ## Getting started
 
@@ -141,82 +145,64 @@ To run all the tests and linting:
 ./gradlew check
 ```
 
-## Infrastructure Tech Stack
-Information on the technology stack chosen for the HMPPS-Integration-API project
-
-### [Cloud Platform](https://user-guide.cloud-platform.service.justice.gov.uk/#cloud-platform-user-guide)
-MoJ's cloud hosting platform built on top of AWS. which offers numerous tools such as logging, monitoring and alerting for our services.
-
-### [Kubernetes](https://kubernetes.io/docs/home/)
-Creates 'pods' to host our environment. Manages auto-scaling, load balancing and networking to our application.
-
-### [Docker](https://www.docker.com/)
-The API is built into docker images which are deployed to our containers.
-
-### [AWS Elastic Container Registry](https://aws.amazon.com/ecr/)
-Our built artefacts are stored within an ECR. The CI/CD pipeline will store and retrieve them from here as required.
-
-### [CircleCI](https://circleci.com/developer)
-_This may yet be switched for GitHub Actions depending on investigation_
-
-Used for our build platform, responsible for executing workflows to build, validate, test and deploy our project.
-
-### [AWS](https://aws.amazon.com/)
-Services utilise AWS features through Cloud Platform.
-
-## Useful Commands
-Commands that you might find useful when working with the environment.
+## Useful commands
 
 ### kubectl
 
 To report on all resources for an environment, run the script:
+
 ```bash
 ./scripts/report-kubernetes.sh <environment>
 # E.g ./scripts/report-kubernetes.sh development
 ```
 
-Alternatively, the commands below yield information on specific resources.
+<details>
+  <summary>Alternatively, the commands to yield information on specific resources.</summary>
+  <br>
 
-To get ingress information for a namespace:
-```bash
-kubectl get ingress -n <namespace>
-```
+  To get ingress information for a namespace:
 
-To get a list of all services for a namespace:
-```bash
-kubectl get service -n <namespace>
-```
+  ```bash
+  kubectl get ingress -n <namespace>
+  ```
 
-To get a list of all deployments for a namespace:
-```bash
-kubectl get deployment -n <namespace>
-```
+  To get a list of all services for a namespace:
+  ```bash
+  kubectl get service -n <namespace>
+  ```
 
-To get a list of all pods for a namespace:
-```bash
-kubectl get pod -n <namespace>
-```
+  To get a list of all deployments for a namespace:
+  ```bash
+  kubectl get deployment -n <namespace>
+  ```
 
-To get detailed information on a specific pod:
-```bash
-kubectl describe pod <podname> -n <namespace>
-```
+  To get a list of all pods for a namespace:
+  ```bash
+  kubectl get pod -n <namespace>
+  ```
 
-To view logs of a pod:
-```bash
-kubectl logs <pod-name> -n <namespace>
-```
+  To get detailed information on a specific pod:
+  ```bash
+  kubectl describe pod <podname> -n <namespace>
+  ```
 
-To perform a command within a pod:
-```bash
-kubectl exec <pod-name> -c <container-name> -n <namespace> <command>
-# E.g. kubectl exec hmpps-integration-api-5b8f4f9699-wbwgf -c hmpps-integration-api -n hmpps-integration-api-development -- curl http://localhost:8080/
-```
+  To view logs of a pod:
+  ```bash
+  kubectl logs <pod-name> -n <namespace>
+  ```
 
-To delete all ingress, services, pods and deployments:
-```bash
-kubectl delete pod,svc,deployment,ingress --all -n <namespace>
-```
+  To perform a command within a pod:
+
+  ```bash
+  kubectl exec <pod-name> -c <container-name> -n <namespace> <command>
+  # E.g. kubectl exec hmpps-integration-api-5b8f4f9699-wbwgf -c hmpps-integration-api -n hmpps-integration-api-development -- curl http://localhost:8080/
+  ```
+
+  To delete all ingress, services, pods and deployments:
+  ```bash
+  kubectl delete pod,svc,deployment,ingress --all -n <namespace>
+  ```
+</details>
 
 ### aws
 
