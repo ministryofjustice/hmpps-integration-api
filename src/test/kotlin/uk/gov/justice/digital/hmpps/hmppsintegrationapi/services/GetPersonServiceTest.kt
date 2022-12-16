@@ -25,7 +25,7 @@ internal class GetPersonServiceTest(
     val id = 1
     val getPersonService = GetPersonService(nomisGateway)
 
-    val personFromNomis = Person(id, "Billy", "Bob")
+    val personFromNomis = Person("Billy", "Bob")
     Mockito.`when`(nomisGateway.getPerson(id)).thenReturn(personFromNomis)
 
     val person = getPersonService.execute(id)

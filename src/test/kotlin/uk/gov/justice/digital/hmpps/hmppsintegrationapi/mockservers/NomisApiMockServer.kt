@@ -22,7 +22,7 @@ class NomisApiMockServer : WireMockServer(WIREMOCK_PORT) {
                 "firstName": "John",
                 "lastName": "Smith"
               }
-              """.trimIndent()
+            """.trimIndent()
           )
       )
     )

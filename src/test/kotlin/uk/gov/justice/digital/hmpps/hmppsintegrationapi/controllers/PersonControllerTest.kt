@@ -28,7 +28,7 @@ internal class PersonControllerTest(
     }
 
     it("responds with a 200 OK status") {
-      val person = Person(id, "Billy", "Bob")
+      val person = Person("Billy", "Bob")
       Mockito.`when`(getPersonService.execute(id)).thenReturn(person)
       val result = mockMvc.perform(get("/persons/$id")).andReturn()
 
@@ -36,9 +36,9 @@ internal class PersonControllerTest(
     }
 
     it("responds with a 404 NOT FOUND status") {
-      val id_that_does_not_exist = 777
+      val idThatDoesNotExist = 777
       Mockito.`when`(getPersonService.execute(id)).thenReturn(null)
-      val result = mockMvc.perform(get("/persons/$id_that_does_not_exist")).andReturn()
+      val result = mockMvc.perform(get("/persons/$idThatDoesNotExist")).andReturn()
 
       result.response.status.shouldBe(404)
     }
@@ -50,13 +50,12 @@ internal class PersonControllerTest(
     }
 
     it("returns a person with the matching ID") {
-      val person = Person(id, "Billy", "Bob")
+      val person = Person("Billy", "Bob")
       Mockito.`when`(getPersonService.execute(id)).thenReturn(person)
 
       val result = mockMvc.perform(get("/persons/$id")).andReturn()
 
       result.response.contentAsString.shouldNotBeEmpty()
-      JSONObject(result.response.contentAsString)["id"].shouldBe(person.id)
       JSONObject(result.response.contentAsString)["firstName"].shouldBe(person.firstName)
       JSONObject(result.response.contentAsString)["lastName"].shouldBe(person.lastName)
     }
