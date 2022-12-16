@@ -8,7 +8,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Person
 @Service
 class GetPersonService(@Autowired val nomisGateway: NomisGateway) {
   fun execute(id: Int): Person? {
-    nomisGateway.getPerson(id)
-    return null
+    return nomisGateway.getPerson(id)
   }
 }
