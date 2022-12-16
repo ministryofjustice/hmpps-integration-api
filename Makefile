@@ -10,7 +10,7 @@ build:
 serve: build-dev
 	docker-compose up -d
 
-publish: build-dev
+publish:
 	./scripts/publish.sh
 
 stop:
