@@ -5,7 +5,7 @@ build-dev:
 	docker-compose build
 
 build:
-    docker build -t hmpps-integration-api .
+	docker build -t hmpps-integration-api .
 
 serve: build-dev
 	docker-compose up -d
@@ -25,4 +25,7 @@ smoke-test: serve
 
 test: unit-test smoke-test
 
-.PHONY: authenticate-docker build-dev test serve publish unit-test smoke-test build
+lint:
+	./gradlew ktlintCheck
+
+.PHONY: authenticate-docker build-dev test serve publish unit-test smoke-test build lint

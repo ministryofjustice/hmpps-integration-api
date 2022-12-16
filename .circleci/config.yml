@@ -24,7 +24,7 @@ jobs:
             - gradle-
       - run:
           name: Lint code
-          command: ./gradlew ktlintCheck
+          command: make lint
       - save_cache:
           paths:
             - ~/.gradle
@@ -41,7 +41,7 @@ jobs:
             - gradle-
       - run:
           name: Run unit tests
-          command: ./gradlew test
+          command: make unit-test
       - save_cache:
           paths:
             - ~/.gradle
