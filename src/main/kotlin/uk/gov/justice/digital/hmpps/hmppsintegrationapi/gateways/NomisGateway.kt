@@ -4,13 +4,13 @@ import org.apache.tomcat.util.json.JSONParser
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.WebClient
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Person
-import java.util.*
+import java.util.Base64
 
 @Component
 class NomisGateway {
   private lateinit var token: String
 
-  constructor() {
+  init {
     val getOAuthUrl = "http://localhost:9090/auth/oauth/token?grant_type=client_credentials"
     val builder: WebClient.Builder = WebClient.builder()
 

@@ -1,9 +1,9 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers
 
 import com.github.tomakehurst.wiremock.WireMockServer
-import com.github.tomakehurst.wiremock.client.WireMock.*
-import java.util.*
-import kotlin.reflect.full.companionObject
+import com.github.tomakehurst.wiremock.client.WireMock.aResponse
+import com.github.tomakehurst.wiremock.client.WireMock.get
+import com.github.tomakehurst.wiremock.client.WireMock.matching
 
 class NomisApiMockServer : WireMockServer(WIREMOCK_PORT) {
   companion object {
@@ -26,7 +26,7 @@ class NomisApiMockServer : WireMockServer(WIREMOCK_PORT) {
                 "firstName": "John",
                 "lastName": "Smith"
               }
-            """.trimIndent()
+              """.trimIndent()
             )
         )
     )
