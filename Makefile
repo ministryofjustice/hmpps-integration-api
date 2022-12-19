@@ -28,4 +28,7 @@ test: unit-test smoke-test
 lint:
 	./gradlew ktlintCheck
 
+format:
+	./gradlew ktlintFormat
+
 .PHONY: authenticate-docker build-dev test serve publish unit-test smoke-test build lint
