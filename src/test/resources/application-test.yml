@@ -4,3 +4,11 @@ server:
 management.endpoint:
   health.cache.time-to-live: 0
   info.cache.time-to-live: 0
+
+services:
+  prison-api:
+    base-url: http://localhost:8081
+  hmpps-auth:
+    base-url: http://localhost:9090
+    client: client
+    client-secret: client-secret

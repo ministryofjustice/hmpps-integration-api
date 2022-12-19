@@ -1,5 +1,7 @@
 services:
   prison-api:
-    base-url: "http://localhost:8081"
+    base-url: http://localhost:8081
   hmpps-auth:
-    base-url: "LOCAL-OtherTestURL"
+    base-url: http://localhost:9090
+    client: delius
+    client-secret: clientsecret
