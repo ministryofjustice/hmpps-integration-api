@@ -1,0 +1,5 @@
+services:
+  prison-api:
+    base-url: "http://localhost:8081"
+  hmpps-auth:
+    base-url: "LOCAL-OtherTestURL"

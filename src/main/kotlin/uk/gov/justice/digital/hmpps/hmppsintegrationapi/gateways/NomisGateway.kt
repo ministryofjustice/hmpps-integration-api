@@ -7,7 +7,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Person
 import java.util.Base64
 
 @Component
-class NomisGateway {
+class NomisGateway(val prisonApiClient: WebClient) {
   private lateinit var token: String
 
   init {
@@ -28,10 +28,9 @@ class NomisGateway {
   }
 
   fun getPerson(id: String): Person? {
-    val getOffenderUrl = "http://localhost:8081/api/offenders/$id"
-    val builder: WebClient.Builder = WebClient.builder()
+    val getOffenderUrl = "/api/offenders/$id"
 
-    return builder.build()
+    return prisonApiClient
       .get()
       .uri(getOffenderUrl)
       .header("Authorization", "Bearer $token")

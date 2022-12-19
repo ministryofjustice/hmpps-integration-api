@@ -49,3 +49,9 @@ management:
     info:
       cache:
         time-to-live: 2000ms
+
+services:
+  prison-api:
+    base-url: "TestURL"
+  hmpps-auth:
+    base-url: "OtherTestURL"
