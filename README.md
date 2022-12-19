@@ -148,10 +148,16 @@ file.
 
 2. Click the run button beside a test or test file.
 
-To run the application using the command line:
+To run all tests using the command line:
 
 ```bash
 make test
+```
+
+To run unit tests using the command line:
+
+```bash
+make unit-test
 ```
 
 ### Running the linter
