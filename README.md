@@ -151,7 +151,7 @@ file.
 To run the application using the command line:
 
 ```bash
-./gradlew test
+make test
 ```
 
 ### Running the linter
@@ -159,13 +159,13 @@ To run the application using the command line:
 To lint the code using [Ktlint](https://pinterest.github.io/ktlint/):
 
 ```bash
-./gradlew ktlintCheck
+make lint
 ```
 
 To autofix any styling issues with the code:
 
 ```bash
-./gradlew ktlintFormat
+make format
 ```
 
 ### Running all checks
@@ -173,7 +173,7 @@ To autofix any styling issues with the code:
 To run all the tests and linting:
 
 ```bash
-./gradlew check
+make check
 ```
 
 ## Useful commands
