@@ -17,7 +17,7 @@ class NomisGatewayTest : DescribeSpec({
 
   describe("#getPerson") {
     it("returns a person with the matching ID") {
-      val offenderNo = 1
+      val offenderNo = "abc123"
       nomisApiMockServer.stubGetOffender(offenderNo)
       val nomisGateway = NomisGateway()
 

@@ -21,7 +21,7 @@ internal class PersonControllerTest(
   @MockBean val getPersonService: GetPersonService
 ) : DescribeSpec({
   describe("GET /persons/{id}") {
-    val id = 1
+    val id = "abc123"
 
     beforeTest {
       Mockito.reset(getPersonService)
@@ -30,14 +30,16 @@ internal class PersonControllerTest(
     it("responds with a 200 OK status") {
       val person = Person("Billy", "Bob")
       Mockito.`when`(getPersonService.execute(id)).thenReturn(person)
+
       val result = mockMvc.perform(get("/persons/$id")).andReturn()
 
       result.response.status.shouldBe(200)
     }
 
     it("responds with a 404 NOT FOUND status") {
-      val idThatDoesNotExist = 777
+      val idThatDoesNotExist = "zyx987"
       Mockito.`when`(getPersonService.execute(id)).thenReturn(null)
+
       val result = mockMvc.perform(get("/persons/$idThatDoesNotExist")).andReturn()
 
       result.response.status.shouldBe(404)

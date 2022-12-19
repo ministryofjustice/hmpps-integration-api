@@ -9,7 +9,7 @@ class NomisApiMockServer : WireMockServer(WIREMOCK_PORT) {
     private const val WIREMOCK_PORT = 8081
   }
 
-  fun stubGetOffender(offenderNo: Int) {
+  fun stubGetOffender(offenderNo: String) {
     stubFor(
       get("/api/offenders/$offenderNo").willReturn(
         aResponse()

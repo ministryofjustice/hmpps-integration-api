@@ -9,11 +9,10 @@ import org.springframework.boot.test.mock.mockito.MockBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NomisGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Person
 
-internal class GetPersonServiceTest(
-  @MockBean val nomisGateway: NomisGateway
-) : DescribeSpec({
+internal class GetPersonServiceTest(@MockBean val nomisGateway: NomisGateway) : DescribeSpec({
+  val id = "abc123"
+
   it("retrieves a person from NOMIS") {
-    val id = 1
     val getPersonService = GetPersonService(nomisGateway)
 
     getPersonService.execute(id)
@@ -22,7 +21,6 @@ internal class GetPersonServiceTest(
   }
 
   it("returns a person") {
-    val id = 1
     val getPersonService = GetPersonService(nomisGateway)
 
     val personFromNomis = Person("Billy", "Bob")
