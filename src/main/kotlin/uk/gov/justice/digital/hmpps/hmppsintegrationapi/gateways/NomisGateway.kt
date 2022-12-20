@@ -10,14 +10,18 @@ class NomisGateway(val prisonApiClient: WebClient, hmppsAuthClient: WebClient) {
   private lateinit var prisonApiToken: String
 
   init {
-    val response = hmppsAuthClient
-      .post()
-      .uri("/auth/oauth/token?grant_type=client_credentials")
-      .retrieve()
-      .bodyToMono(String::class.java)
-      .block()
+    try {
+      val response = hmppsAuthClient
+        .post()
+        .uri("/auth/oauth/token?grant_type=client_credentials")
+        .retrieve()
+        .bodyToMono(String::class.java)
+        .block()
 
-    prisonApiToken = JSONParser(response).parseObject()["access_token"].toString()
+      prisonApiToken = JSONParser(response).parseObject()["access_token"].toString()
+    } catch (exception: Exception) {
+      System.err.println("Error: Unable to connect to HMPPS Auth service. [${exception.message}]")
+    }
   }
 
   fun getPerson(id: String): Person? {
