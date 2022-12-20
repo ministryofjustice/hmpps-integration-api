@@ -11,7 +11,7 @@ open class ExternalHealthIndicator(url: String) : HealthIndicator {
   private val healthUrl = url
 
   override fun health(): Health {
-    var healthStatus : Health.Builder = Health.up()
+    var healthStatus: Health.Builder = Health.up()
       .withDetail("healthurl", healthUrl)
 
     val client = HttpClient.newBuilder().build()
@@ -21,7 +21,7 @@ open class ExternalHealthIndicator(url: String) : HealthIndicator {
 
     val response = try {
       client.send(request, HttpResponse.BodyHandlers.ofString())
-    } catch (e : Exception){
+    } catch (e: Exception) {
       println("Failed to connect to HMPPS Auth")
       return healthStatus.down()
         .withDetail("error", e::class.simpleName)
