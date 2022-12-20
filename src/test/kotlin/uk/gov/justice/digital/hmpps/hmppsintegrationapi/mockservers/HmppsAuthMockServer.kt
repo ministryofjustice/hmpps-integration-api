@@ -6,7 +6,7 @@ import com.github.tomakehurst.wiremock.client.WireMock
 class HmppsAuthMockServer : WireMockServer(WIREMOCK_PORT) {
   companion object {
     val TOKEN = "bearer-token"
-    private const val WIREMOCK_PORT = 9090
+    private const val WIREMOCK_PORT = 3000
   }
 
   fun stubGetOauthToken(client: String, clientSecret: String) {

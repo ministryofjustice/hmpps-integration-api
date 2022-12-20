@@ -7,8 +7,8 @@ management.endpoint:
 
 services:
   prison-api:
-    base-url: http://localhost:8081
+    base-url: http://localhost:4000
   hmpps-auth:
-    base-url: http://localhost:9090
+    base-url: http://localhost:3000
     client: client
     client-secret: client-secret

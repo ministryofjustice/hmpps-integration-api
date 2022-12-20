@@ -7,7 +7,7 @@ import com.github.tomakehurst.wiremock.client.WireMock.matching
 
 class NomisApiMockServer : WireMockServer(WIREMOCK_PORT) {
   companion object {
-    private const val WIREMOCK_PORT = 8081
+    private const val WIREMOCK_PORT = 4000
   }
 
   fun stubGetOffender(offenderNo: String) {
