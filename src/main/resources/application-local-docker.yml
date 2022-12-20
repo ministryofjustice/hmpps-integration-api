@@ -1,0 +1,7 @@
+services:
+  prison-api:
+    base-url: http://prison-api:8080
+  hmpps-auth:
+    base-url: http://oauth-server:8080
+    client: delius
+    client-secret: clientsecret

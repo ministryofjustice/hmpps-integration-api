@@ -31,4 +31,7 @@ lint:
 format:
 	./gradlew ktlintFormat
 
+check:
+	./gradlew check
+
 .PHONY: authenticate-docker build-dev test serve publish unit-test smoke-test build lint
