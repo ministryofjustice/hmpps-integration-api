@@ -10,9 +10,9 @@ import java.net.http.HttpResponse
 open class ExternalHealthIndicator(url: String) : HealthIndicator {
   private val healthUrl = url
 
-  //Note, since we're overriding the default health here, we only have control over the overall health status.
-  //Unfortunately returning heathStatus.down causes the overall status to be down whereas we only want to fail
-  //that specific component.
+  // Note, since we're overriding the default health here, we only have control over the overall health status.
+  // Unfortunately returning heathStatus.down causes the overall status to be down whereas we only want to fail
+  // that specific component.
   override fun health(): Health {
     var healthStatus: Health.Builder = Health.up()
       .withDetail("healthurl", healthUrl)
@@ -25,7 +25,7 @@ open class ExternalHealthIndicator(url: String) : HealthIndicator {
     val response = try {
       client.send(request, HttpResponse.BodyHandlers.ofString())
     } catch (e: Exception) {
-      println("Failed to connect to health endpoint $healthUrl")
+      System.err.println("Failed to connect to health endpoint $healthUrl are these services running?")
       return healthStatus.up()
         .withDetail("status", "This component is down")
         .withException(e)
