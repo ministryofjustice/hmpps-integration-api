@@ -17,15 +17,10 @@ class WebClients {
 
   @Bean
   fun hmppsAuthClient(
-    @Value("\${services.hmpps-auth.base-url}") hmppsAuthUrl: String,
-    @Value("\${services.hmpps-auth.client}") client: String,
-    @Value("\${services.hmpps-auth.client-secret}") clientSecret: String,
-  ): WebClient {
-    val encodedBasicAuth = Base64.getEncoder().encodeToString("$client:$clientSecret".toByteArray())
+    @Value("\${services.hmpps-auth.base-url}") hmppsAuthUrl: String): WebClient {
 
     return WebClient.builder()
       .baseUrl(hmppsAuthUrl)
-      .defaultHeader("Authorization", "Basic $encodedBasicAuth")
       .build()
   }
 }
