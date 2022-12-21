@@ -9,7 +9,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NomisAuthenticationFailedException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.AuthenticationFailedException
 import javax.validation.ValidationException
 
 @RestControllerAdvice
@@ -42,15 +42,15 @@ class HmppsIntegrationApiExceptionHandler {
       )
   }
 
-  @ExceptionHandler(NomisAuthenticationFailedException::class)
-  fun handleNomisAuthenticationFailedException(e: NomisAuthenticationFailedException): ResponseEntity<ErrorResponse?>? {
-    log.error("Authentication with NOMIS error: {}", e)
+  @ExceptionHandler(AuthenticationFailedException::class)
+  fun handleAuthenticationFailedException(e: AuthenticationFailedException): ResponseEntity<ErrorResponse?>? {
+    log.error("Authentication error: {}", e)
     return ResponseEntity
       .status(INTERNAL_SERVER_ERROR)
       .body(
         ErrorResponse(
           status = INTERNAL_SERVER_ERROR,
-          userMessage = "Authentication with NOMIS error: ${e.message}",
+          userMessage = "Authentication error: ${e.message}",
           developerMessage = e.message
         )
       )
