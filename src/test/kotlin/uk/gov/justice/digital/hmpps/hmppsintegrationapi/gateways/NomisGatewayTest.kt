@@ -1,61 +1,52 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways
 
-import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
+import org.mockito.Mockito
+import org.mockito.internal.verification.VerificationModeFactory
+import org.mockito.kotlin.any
+import org.mockito.kotlin.verify
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
+import org.springframework.boot.test.mock.mockito.MockBean
+import org.springframework.test.context.ActiveProfiles
+import org.springframework.test.context.ContextConfiguration
+import org.springframework.web.reactive.function.client.WebClient
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.WebClients
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.NomisApiMockServer
 
-class NomisGatewayTest(@Autowired nomisGateway2: NomisGateway) : DescribeSpec({
-  val nomisApiMockServer = NomisApiMockServer()
-  val hmppsAuthMockServer = HmppsAuthMockServer()
-  val offenderNo = "abc123"
+@ContextConfiguration(initializers = [ConfigDataApplicationContextInitializer::class], classes = [(WebClients::class)])
+@ActiveProfiles("test")
+class NomisGatewayTest(@Autowired prisonApiClient: WebClient, @MockBean val hmppsAuthGateway: HmppsAuthGateway) :
+  DescribeSpec({
+    val nomisApiMockServer = NomisApiMockServer()
+    val offenderNo = "abc123"
 
-  beforeEach {
-    nomisApiMockServer.start()
-    hmppsAuthMockServer.start()
+    beforeEach {
+      nomisApiMockServer.start()
+      nomisApiMockServer.stubGetOffender(offenderNo)
 
-    nomisApiMockServer.stubGetOffender(offenderNo)
-    hmppsAuthMockServer.stubGetSuccessOAuthToken("client", "client-secret")
-  }
-
-  afterTest {
-    nomisApiMockServer.stop()
-    hmppsAuthMockServer.stop()
-  }
-
-  describe("#getPerson") {
-    describe("when authentication is unsuccessful") {
-      it("throws an exception if connection is refused") {
-        //val nomisGateway = NomisGateway()
-
-        hmppsAuthMockServer.stop()
-
-        val exception = shouldThrow<AuthenticationFailedException> {
-          nomisGateway2.getPerson(offenderNo)
-        }
-
-        exception.message.shouldBe("Connection to localhost:3000 failed for NOMIS.")
-      }
-
-      it("throws an exception if auth service is unavailable") {
-        val nomisGateway = NomisGateway()
-
-        hmppsAuthMockServer.stubGetConnectExceptionOAuthToken()
-
-        val exception = shouldThrow<AuthenticationFailedException> {
-          nomisGateway.getPerson(offenderNo)
-        }
-
-        exception.message.shouldBe("localhost:3000 is unavailable for NOMIS.")
-      }
+      Mockito.`when`(hmppsAuthGateway.authenticate(any())).thenReturn(
+        HmppsAuthMockServer.TOKEN
+      )
     }
 
-    describe("when authenticated is successful") {
+    afterTest {
+      nomisApiMockServer.stop()
+    }
+
+    describe("#getPerson") {
+      it("authenticates using HMPPS Auth with credentials") {
+        val nomisGateway = NomisGateway(prisonApiClient, hmppsAuthGateway)
+
+        nomisGateway.getPerson(offenderNo)
+
+        verify(hmppsAuthGateway, VerificationModeFactory.times(1)).authenticate(any())
+      }
+
       it("returns a person with the matching ID") {
-        val nomisGateway = NomisGateway()
+        val nomisGateway = NomisGateway(prisonApiClient, hmppsAuthGateway)
 
         val person = nomisGateway.getPerson(offenderNo)
 
@@ -63,5 +54,4 @@ class NomisGatewayTest(@Autowired nomisGateway2: NomisGateway) : DescribeSpec({
         person?.lastName.shouldBe("Smith")
       }
     }
-  }
-})
+  })

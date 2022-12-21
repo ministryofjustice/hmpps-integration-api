@@ -28,7 +28,7 @@ abstract class IntegrationTestBase {
       nomisApiMockServer.start()
       hmppsAuthMockServer.start()
 
-      hmppsAuthMockServer.stubGetSuccessOAuthToken("client", "client-secret")
+      hmppsAuthMockServer.stubGetOAuthToken("client", "client-secret")
     }
 
     @AfterAll

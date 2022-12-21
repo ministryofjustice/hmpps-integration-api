@@ -11,7 +11,7 @@ class HmppsAuthMockServer : WireMockServer(WIREMOCK_PORT) {
 
   private val authUrl = "/auth/oauth/token?grant_type=client_credentials"
 
-  fun stubGetSuccessOAuthToken(client: String, clientSecret: String) {
+  fun stubGetOAuthToken(client: String, clientSecret: String) {
     stubFor(
       WireMock.post(authUrl)
         .withBasicAuth(client, clientSecret)
@@ -30,11 +30,20 @@ class HmppsAuthMockServer : WireMockServer(WIREMOCK_PORT) {
     )
   }
 
-  fun stubGetConnectExceptionOAuthToken() {
+  fun stubServiceUnavailableForGetOAuthToken() {
     stubFor(
       WireMock.post(authUrl)
         .willReturn(
           WireMock.serviceUnavailable()
+        )
+    )
+  }
+
+  fun stubUnauthorizedForGetOAAuthToken() {
+    stubFor(
+      WireMock.post(authUrl)
+        .willReturn(
+          WireMock.unauthorized()
         )
     )
   }

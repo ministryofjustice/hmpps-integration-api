@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.web.reactive.function.client.WebClient
-import java.util.Base64
 
 @Configuration
 class WebClients {
@@ -17,7 +16,8 @@ class WebClients {
 
   @Bean
   fun hmppsAuthClient(
-    @Value("\${services.hmpps-auth.base-url}") hmppsAuthUrl: String): WebClient {
+    @Value("\${services.hmpps-auth.base-url}") hmppsAuthUrl: String
+  ): WebClient {
 
     return WebClient.builder()
       .baseUrl(hmppsAuthUrl)
