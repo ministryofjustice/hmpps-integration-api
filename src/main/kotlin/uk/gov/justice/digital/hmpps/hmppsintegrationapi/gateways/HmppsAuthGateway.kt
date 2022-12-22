@@ -5,10 +5,10 @@ import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.WebClientRequestException
 import org.springframework.web.reactive.function.client.WebClientResponseException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.AuthenticationFailedException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Credentials
 import java.lang.RuntimeException
 
-class AuthenticationFailedException(message: String) : RuntimeException(message)
 
 // Provides a place for all interaction with the auth gateway
 @Component

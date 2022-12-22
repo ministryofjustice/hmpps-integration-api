@@ -9,6 +9,7 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.web.reactive.function.client.WebClient
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.WebClients
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.AuthenticationFailedException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Credentials
 
