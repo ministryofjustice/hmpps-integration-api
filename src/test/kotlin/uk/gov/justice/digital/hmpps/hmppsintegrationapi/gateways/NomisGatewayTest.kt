@@ -2,10 +2,8 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways
 
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
-import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory
-import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.any
 import org.mockito.kotlin.verify
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
@@ -17,7 +15,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.NomisApiMock
 
 @ContextConfiguration(initializers = [ConfigDataApplicationContextInitializer::class], classes = [NomisGateway::class, HmppsAuthGateway::class])
 @ActiveProfiles("test")
-@ExtendWith(MockitoExtension::class)
 class NomisGatewayTest(@MockBean val hmppsAuthGateway: HmppsAuthGateway, private val nomisGateway: NomisGateway) :
   DescribeSpec({
     val nomisApiMockServer = NomisApiMockServer()
