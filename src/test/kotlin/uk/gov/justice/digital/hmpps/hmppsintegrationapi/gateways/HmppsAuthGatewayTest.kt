@@ -3,36 +3,33 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
-import org.springframework.web.reactive.function.client.WebClient
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.WebClients
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.AuthenticationFailedException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Credentials
 
-@ContextConfiguration(initializers = [ConfigDataApplicationContextInitializer::class], classes = [(WebClients::class)])
+@ContextConfiguration(initializers = [ConfigDataApplicationContextInitializer::class], classes = [(HmppsAuthGateway::class)])
 @ActiveProfiles("test")
-class HmppsAuthGatewayTest(@Autowired hmppsAuthClient: WebClient) :
+class HmppsAuthGatewayTest(hmppsAuthGateway: HmppsAuthGateway) :
   DescribeSpec({
     val hmppsAuthMockServer = HmppsAuthMockServer()
 
+    // Executes before each test
     beforeEach {
       hmppsAuthMockServer.start()
 
       hmppsAuthMockServer.stubGetOAuthToken("username", "password")
     }
 
+    // Executes after each test
     afterTest {
       hmppsAuthMockServer.stop()
     }
 
     it("throws an exception if connection is refused") {
       hmppsAuthMockServer.stop()
-
-      val hmppsAuthGateway = HmppsAuthGateway(hmppsAuthClient)
 
       val exception = shouldThrow<AuthenticationFailedException> {
         hmppsAuthGateway.authenticate(Credentials("username", "password"))
@@ -44,8 +41,6 @@ class HmppsAuthGatewayTest(@Autowired hmppsAuthClient: WebClient) :
     it("throws an exception if auth service is unavailable") {
       hmppsAuthMockServer.stubServiceUnavailableForGetOAuthToken()
 
-      val hmppsAuthGateway = HmppsAuthGateway(hmppsAuthClient)
-
       val exception = shouldThrow<AuthenticationFailedException> {
         hmppsAuthGateway.authenticate(Credentials("username", "password"))
       }
@@ -55,8 +50,6 @@ class HmppsAuthGatewayTest(@Autowired hmppsAuthClient: WebClient) :
 
     it("throws an exception if credentials are invalid") {
       hmppsAuthMockServer.stubUnauthorizedForGetOAAuthToken()
-
-      val hmppsAuthGateway = HmppsAuthGateway(hmppsAuthClient)
 
       val exception = shouldThrow<AuthenticationFailedException> {
         hmppsAuthGateway.authenticate(Credentials("invalid", "invalid"))

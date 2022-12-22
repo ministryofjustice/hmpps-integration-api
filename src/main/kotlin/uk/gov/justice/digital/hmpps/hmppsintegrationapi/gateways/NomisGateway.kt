@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways
 
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.WebClient
@@ -7,7 +8,12 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Credentials
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Person
 
 @Component
-class NomisGateway(val prisonApiClient: WebClient, val hmppsAuthGateway: HmppsAuthGateway) {
+class NomisGateway(@Value("\${services.prison-api.base-url}") baseUrl: String) {
+  private val webClient: WebClient = WebClient.builder().baseUrl(baseUrl).build()
+
+  @Autowired
+  lateinit var hmppsAuthGateway: HmppsAuthGateway
+
   @Value("\${services.prison-api.hmpps-auth.username}")
   private lateinit var username: String
 
@@ -17,7 +23,7 @@ class NomisGateway(val prisonApiClient: WebClient, val hmppsAuthGateway: HmppsAu
   fun getPerson(id: String): Person? {
     val token = hmppsAuthGateway.authenticate(Credentials(username, password))
 
-    return prisonApiClient
+    return webClient
       .get()
       .uri("/api/offenders/$id")
       .header("Authorization", "Bearer $token")
