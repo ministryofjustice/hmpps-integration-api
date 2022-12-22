@@ -16,14 +16,12 @@ class HmppsAuthGatewayTest(hmppsAuthGateway: HmppsAuthGateway) :
   DescribeSpec({
     val hmppsAuthMockServer = HmppsAuthMockServer()
 
-    // Executes before each test
     beforeEach {
       hmppsAuthMockServer.start()
 
       hmppsAuthMockServer.stubGetOAuthToken("username", "password")
     }
 
-    // Executes after each test
     afterTest {
       hmppsAuthMockServer.stop()
     }
