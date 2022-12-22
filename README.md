@@ -39,6 +39,8 @@ following technologies for its infrastructure:
 - [Kubernetes](https://kubernetes.io/docs/home/) - Creates 'pods' to host our environment. Manages auto-scaling, load
   balancing and networking to our application.
 
+![Context Diagram](docs/diagrams/context-diagram.png)
+
 ## Getting started
 
 ### Using IntelliJ IDEA
