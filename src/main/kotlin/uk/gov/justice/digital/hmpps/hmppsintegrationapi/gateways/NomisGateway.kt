@@ -1,34 +1,32 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways
 
-import org.apache.tomcat.util.json.JSONParser
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.WebClient
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Credentials
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Person
 
 @Component
-class NomisGateway(val prisonApiClient: WebClient, hmppsAuthClient: WebClient) {
-  private lateinit var prisonApiToken: String
+class NomisGateway(@Value("\${services.prison-api.base-url}") baseUrl: String) {
+  private val webClient: WebClient = WebClient.builder().baseUrl(baseUrl).build()
 
-  init {
-    try {
-      val response = hmppsAuthClient
-        .post()
-        .uri("/auth/oauth/token?grant_type=client_credentials")
-        .retrieve()
-        .bodyToMono(String::class.java)
-        .block()
+  @Autowired
+  lateinit var hmppsAuthGateway: HmppsAuthGateway
 
-      prisonApiToken = JSONParser(response).parseObject()["access_token"].toString()
-    } catch (exception: Exception) {
-      System.err.println("Error: Unable to connect to HMPPS Auth service. [${exception.message}]")
-    }
-  }
+  @Value("\${services.prison-api.hmpps-auth.username}")
+  private lateinit var username: String
+
+  @Value("\${services.prison-api.hmpps-auth.password}")
+  private lateinit var password: String
 
   fun getPerson(id: String): Person? {
-    return prisonApiClient
+    val token = hmppsAuthGateway.getClientToken(Credentials(username, password))
+
+    return webClient
       .get()
       .uri("/api/offenders/$id")
-      .header("Authorization", "Bearer $prisonApiToken")
+      .header("Authorization", "Bearer $token")
       .retrieve()
       .bodyToMono(Person::class.java)
       .block()

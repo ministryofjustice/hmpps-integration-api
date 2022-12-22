@@ -1,7 +1,10 @@
 services:
   prison-api:
     base-url: http://localhost:8081
+    # Each application will likely have it's own credentials for its authentication method
+    hmpps-auth:
+      username: delius
+      password: clientsecret
   hmpps-auth:
     base-url: http://localhost:9090
-    client: delius
-    client-secret: clientsecret
+

@@ -2,39 +2,49 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways
 
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.WebClients
+import org.mockito.Mockito
+import org.mockito.internal.verification.VerificationModeFactory
+import org.mockito.kotlin.any
+import org.mockito.kotlin.verify
+import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
+import org.springframework.boot.test.mock.mockito.MockBean
+import org.springframework.test.context.ActiveProfiles
+import org.springframework.test.context.ContextConfiguration
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.NomisApiMockServer
 
-class NomisGatewayTest : DescribeSpec({
-  val nomisApiMockServer = NomisApiMockServer()
-  val hmppsAuthMockServer = HmppsAuthMockServer()
-  val offenderNo = "abc123"
+@ContextConfiguration(initializers = [ConfigDataApplicationContextInitializer::class], classes = [NomisGateway::class, HmppsAuthGateway::class])
+@ActiveProfiles("test")
+class NomisGatewayTest(@MockBean val hmppsAuthGateway: HmppsAuthGateway, private val nomisGateway: NomisGateway) :
+  DescribeSpec({
+    val nomisApiMockServer = NomisApiMockServer()
+    val offenderNo = "abc123"
 
-  beforeTest {
-    nomisApiMockServer.start()
-    hmppsAuthMockServer.start()
+    beforeEach {
+      nomisApiMockServer.start()
+      nomisApiMockServer.stubGetOffender(offenderNo)
 
-    nomisApiMockServer.stubGetOffender(offenderNo)
-    hmppsAuthMockServer.stubGetOauthToken("client", "client-secret")
-  }
-
-  afterTest {
-    nomisApiMockServer.stop()
-    hmppsAuthMockServer.stop()
-  }
-
-  describe("#getPerson") {
-    it("returns a person with the matching ID") {
-      val webClients = WebClients()
-      val prisonApiClient = webClients.prisonApiClient(nomisApiMockServer.baseUrl())
-      val hmppsAuthClient = webClients.hmppsAuthClient(hmppsAuthMockServer.baseUrl(), "client", "client-secret")
-      val nomisGateway = NomisGateway(prisonApiClient, hmppsAuthClient)
-
-      val person = nomisGateway.getPerson(offenderNo)
-
-      person?.firstName.shouldBe("John")
-      person?.lastName.shouldBe("Smith")
+      Mockito.`when`(hmppsAuthGateway.getClientToken(any())).thenReturn(
+        HmppsAuthMockServer.TOKEN
+      )
     }
-  }
-})
+
+    afterTest {
+      nomisApiMockServer.stop()
+    }
+
+    describe("#getPerson") {
+      it("authenticates using HMPPS Auth with credentials") {
+        nomisGateway.getPerson(offenderNo)
+
+        verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken(any())
+      }
+
+      it("returns a person with the matching ID") {
+        val person = nomisGateway.getPerson(offenderNo)
+
+        person?.firstName.shouldBe("John")
+        person?.lastName.shouldBe("Smith")
+      }
+    }
+  })

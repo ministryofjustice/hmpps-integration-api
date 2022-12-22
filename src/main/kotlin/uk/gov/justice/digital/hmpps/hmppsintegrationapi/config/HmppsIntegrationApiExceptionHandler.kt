@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus.NOT_FOUND
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.AuthenticationFailedException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import javax.validation.ValidationException
 
@@ -36,6 +37,20 @@ class HmppsIntegrationApiExceptionHandler {
         ErrorResponse(
           status = NOT_FOUND,
           userMessage = "404 Not found error: ${e.message}",
+          developerMessage = e.message
+        )
+      )
+  }
+
+  @ExceptionHandler(AuthenticationFailedException::class)
+  fun handleAuthenticationFailedException(e: AuthenticationFailedException): ResponseEntity<ErrorResponse?>? {
+    log.error("Authentication error: {}", e)
+    return ResponseEntity
+      .status(INTERNAL_SERVER_ERROR)
+      .body(
+        ErrorResponse(
+          status = INTERNAL_SERVER_ERROR,
+          userMessage = "Authentication error: ${e.message}",
           developerMessage = e.message
         )
       )

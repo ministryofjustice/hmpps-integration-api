@@ -53,7 +53,8 @@ management:
 services:
   prison-api:
     base-url: "TestURL"
+    hmpps-auth:
+      username: fakeuser
+      password: fakepass
   hmpps-auth:
     base-url: "OtherTestURL"
-    client: fakecredentials
-    client-secret: fake-secret

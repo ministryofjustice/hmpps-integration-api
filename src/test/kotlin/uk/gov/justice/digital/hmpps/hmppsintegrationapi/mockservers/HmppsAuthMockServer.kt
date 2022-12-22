@@ -5,13 +5,15 @@ import com.github.tomakehurst.wiremock.client.WireMock
 
 class HmppsAuthMockServer : WireMockServer(WIREMOCK_PORT) {
   companion object {
-    val TOKEN = "bearer-token"
+    val TOKEN = "mock-bearer-token"
     private const val WIREMOCK_PORT = 3000
   }
 
-  fun stubGetOauthToken(client: String, clientSecret: String) {
+  private val authUrl = "/auth/oauth/token?grant_type=client_credentials"
+
+  fun stubGetOAuthToken(client: String, clientSecret: String) {
     stubFor(
-      WireMock.post("/auth/oauth/token?grant_type=client_credentials")
+      WireMock.post(authUrl)
         .withBasicAuth(client, clientSecret)
         .willReturn(
           WireMock.aResponse()
@@ -24,6 +26,24 @@ class HmppsAuthMockServer : WireMockServer(WIREMOCK_PORT) {
                 }
               """.trimIndent()
             )
+        )
+    )
+  }
+
+  fun stubServiceUnavailableForGetOAuthToken() {
+    stubFor(
+      WireMock.post(authUrl)
+        .willReturn(
+          WireMock.serviceUnavailable()
+        )
+    )
+  }
+
+  fun stubUnauthorizedForGetOAAuthToken() {
+    stubFor(
+      WireMock.post(authUrl)
+        .willReturn(
+          WireMock.unauthorized()
         )
     )
   }
