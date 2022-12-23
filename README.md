@@ -8,26 +8,26 @@
 
 - [About this project](#about-this-project)
 - [Getting started](#getting-started)
-  - [Using IntelliJ IDEA](#using-intellij-idea)
+    - [Using IntelliJ IDEA](#using-intellij-idea)
 - [Usage](#usage)
-  - [Running the application](#running-the-application)
-    - [With dependent services](#with-dependent-services)
-  - [Running the tests](#running-the-tests)
-  - [Running the linter](#running-the-linter)
-  - [Running all checks](#running-all-checks)
-  - [Updating diagrams](#updating-diagrams)
-    - [Using Visual Studio Code](#using-visual-studio-code)
-    - [Using PlantUML Web Server](#using-plantuml-web-server)
+    - [Running the application](#running-the-application)
+        - [With dependent services](#with-dependent-services)
+    - [Running the tests](#running-the-tests)
+    - [Running the linter](#running-the-linter)
+    - [Running all checks](#running-all-checks)
+    - [Updating diagrams](#updating-diagrams)
+        - [Using Visual Studio Code](#using-visual-studio-code)
+        - [Using PlantUML Web Server](#using-plantuml-web-server)
 - [Useful commands](#useful-commands)
-  - [kubectl](#kubectl)
-  - [aws](#aws)
+    - [kubectl](#kubectl)
+    - [aws](#aws)
 
 ## About this project
 
-A long-lived API that exposes data from HMPPS systems such as National Offender Management Information System (NOMIS),
-nDelius (probation system) and Offender Assessment System (OASys), providing a single point of entry for consumers. It's
-built using [Spring Boot](https://spring.io/projects/spring-boot/) and [Kotlin](https://kotlinlang.org/) as well as the
-following technologies for its infrastructure:
+A long-lived API that exposes data from HMPPS systems such as the National Offender Management Information System (
+NOMIS), nDelius (probation system) and Offender Assessment System (OASys), providing a single point of entry for
+consumers. It's built using [Spring Boot](https://spring.io/projects/spring-boot/) and [Kotlin](https://kotlinlang.org/)
+as well as the following technologies for its infrastructure:
 
 - [AWS](https://aws.amazon.com/) - Services utilise AWS features through Cloud Platform such
   as [Elastic Container Registry (ECR)](https://aws.amazon.com/ecr/) to store our built artifacts. The CI/CD pipeline
@@ -90,7 +90,7 @@ using [docker-compose](https://docs.docker.com/compose/).
 1. Build and start the containers for each service.
 
 ```bash
-docker-compose up --build
+make serve
 ```
 
 Each service is then accessible at:
@@ -189,9 +189,11 @@ make check
 
 ### Updating diagrams
 
-Diagrams such as our [context diagram](/docs/diagrams/context-diagram.png) are created using [PlantUML](https://plantuml.com/) i.e. diagrams as code.
+Diagrams such as our [context diagram](/docs/diagrams/context-diagram.png) are created
+using [PlantUML](https://plantuml.com/) i.e. diagrams as code.
 
-> 💡 **Hint:** For [C4 diagrams](https://c4model.com/), see [PlantUML library for C4](https://github.com/plantuml-stdlib/C4-PlantUML) for more information.
+> 💡 **Hint:** For [C4 diagrams](https://c4model.com/),
+> see [PlantUML library for C4](https://github.com/plantuml-stdlib/C4-PlantUML) for more information.
 
 #### Using Visual Studio Code
 
@@ -206,14 +208,16 @@ Diagrams such as our [context diagram](/docs/diagrams/context-diagram.png) are c
 }
 ```
 
-This tells the PlantUML extension to use the PlantUML server to render diagrams. It's also possible to point to a locally hosted server by changing the value of `plantuml.server`.
+This tells the PlantUML extension to use the PlantUML server to render diagrams. It's also possible to point to a
+locally hosted server by changing the value of `plantuml.server`.
 
 4. Edit the `.puml` file for the diagram.
 5. Preview any changes to the diagram by using `Alt + D` on Windows or `Option + D` on MacOS.
 
 When all changes have been made:
 
-6. With the diagram file open, using `Ctrl + shift + P` on Windows or `command + shift + P` on MacOS and searching "export current diagram", choose the `PlantUML: Export Current Diagram` option.
+6. With the diagram file open, using `Ctrl + shift + P` on Windows or `command + shift + P` on MacOS and searching "
+   export current diagram", choose the `PlantUML: Export Current Diagram` option.
 
 This will display options for different file types to export to.
 
