@@ -33,3 +33,7 @@ tasks {
     }
   }
 }
+
+testlogger {
+  theme = com.adarshr.gradle.testlogger.theme.ThemeType.MOCHA
+}
