@@ -21,6 +21,7 @@
 - [Useful commands](#useful-commands)
     - [kubectl](#kubectl)
     - [aws](#aws)
+- [License](#license)
 
 ## About this project
 
@@ -317,3 +318,7 @@ To list images in the ECR repository:
 ```bash
 aws ecr describe-images --repository-name=hmpps-integration-api-team/hmpps-integration-api-<environment>-ecr
 ```
+
+## License
+
+[MIT License](LICENSE)
