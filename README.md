@@ -252,8 +252,8 @@ This will open the diagram on the current tab.
 To report on all resources for an environment, run the script:
 
 ```bash
-./scripts/report-kubernetes.sh <environment>
-# E.g ./scripts/report-kubernetes.sh development
+./scripts/report_kubernetes.sh <environment>
+# E.g ./scripts/report_kubernetes.sh development
 ```
 
 <details>
