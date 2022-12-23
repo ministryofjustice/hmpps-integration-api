@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.health
 
+import org.slf4j.LoggerFactory
 import org.springframework.boot.actuate.health.Health
 import org.springframework.boot.actuate.health.HealthIndicator
 import java.net.URI
@@ -9,6 +10,7 @@ import java.net.http.HttpResponse
 
 open class ExternalHealthIndicator(url: String) : HealthIndicator {
   private val healthUrl = url
+  private val log = LoggerFactory.getLogger(this::class.java)
 
   // Note, since we're overriding the default health here, we only have control over the overall health status.
   // Unfortunately returning heathStatus.down causes the overall status to be down whereas we only want to fail
@@ -25,7 +27,7 @@ open class ExternalHealthIndicator(url: String) : HealthIndicator {
     val response = try {
       client.send(request, HttpResponse.BodyHandlers.ofString())
     } catch (e: Exception) {
-      System.err.println("Failed to connect to health endpoint $healthUrl are these services running?")
+      log.error("Failed to connect to health endpoint $healthUrl are these services running?")
       return healthStatus.up()
         .withDetail("status", "This component is down")
         .withException(e)
