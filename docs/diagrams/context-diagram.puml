@@ -28,8 +28,8 @@ Rel(hmpps_integration_api, nomis, "Uses")
 Rel(hmpps_integration_api, ndelius, "Uses")
 Rel(hmpps_integration_api, oasys, "Uses")
 
-Rel_Right(external_system, hmpps_integration_api, "Uses")
-Rel_Left(mapps, hmpps_integration_api, "Uses")
+Rel_Right(mapps, hmpps_integration_api, "Uses")
+Rel_Left(external_system, hmpps_integration_api, "Uses")
 
 SHOW_DYNAMIC_LEGEND()
 
