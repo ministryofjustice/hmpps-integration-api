@@ -44,7 +44,7 @@ class HmppsIntegrationApiExceptionHandler {
 
   @ExceptionHandler(AuthenticationFailedException::class)
   fun handleAuthenticationFailedException(e: AuthenticationFailedException): ResponseEntity<ErrorResponse?>? {
-    log.error("Authentication error: {}", e)
+    log.error("Authentication error: {}", e.message)
     return ResponseEntity
       .status(INTERNAL_SERVER_ERROR)
       .body(
