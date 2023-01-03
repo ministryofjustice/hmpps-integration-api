@@ -11,6 +11,7 @@ generic-service:
     host: hmpps-integration-api-development.apps.live.cloud-platform.service.justice.gov.uk
 
   env:
+    SPRING_PROFILES_ACTIVE: development
     APPLICATIONINSIGHTS_CONFIGURATION_FILE: applicationinsights.dev.json
 
   allowlist:

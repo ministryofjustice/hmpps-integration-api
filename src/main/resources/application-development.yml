@@ -1,0 +1,9 @@
+services:
+  prison-api:
+    base-url: https://api-dev.prison.service.justice.gov.uk
+    hmpps-auth:
+      username: todo
+      password: todo
+  hmpps-auth:
+    base-url: https://sign-in-dev.hmpps.service.justice.gov.uk
+
