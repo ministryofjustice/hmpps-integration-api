@@ -100,6 +100,31 @@ workflows:
           helm_timeout: 5m
           slack_channel_name: << pipeline.parameters.releases-slack-channel >>
           slack_notification: false
+
+      - create-and-push-image-to-ecr:
+          name: create-and-push-image-to-production-ecr
+          context: hmpps-integration-api-production
+          requires:
+            - deploy-to-development
+          filters:
+            branches:
+              only:
+                - main
+      - hmpps/deploy_env:
+          name: deploy-to-production
+          context:
+            - hmpps-integration-api-production
+            - hmpps-common-vars
+          requires:
+            - create-and-push-image-to-production-ecr
+          filters:
+            branches:
+              only:
+                - main
+          env: "production"
+          helm_timeout: 5m
+          slack_channel_name: << pipeline.parameters.releases-slack-channel >>
+          slack_notification: false
   security:
     triggers:
       - schedule:
