@@ -24,7 +24,13 @@ class NomisApiMockServer : WireMockServer(WIREMOCK_PORT) {
               { 
                 "offenderNo": "$offenderNo",
                 "firstName": "John",
-                "lastName": "Smith"
+                "lastName": "Smith",
+                "aliases": [
+                  {
+                    "firstName": "Joey",
+                    "lastName": "Smiles"
+                  }
+                ]
               }
               """.trimIndent()
             )

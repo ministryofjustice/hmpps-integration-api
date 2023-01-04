@@ -45,6 +45,8 @@ class NomisGatewayTest(@MockBean val hmppsAuthGateway: HmppsAuthGateway, private
 
         person?.firstName.shouldBe("John")
         person?.lastName.shouldBe("Smith")
+        person?.aliases?.first()?.firstName.shouldBe("Joey")
+        person?.aliases?.first()?.lastName.shouldBe("Smiles")
       }
     }
   })

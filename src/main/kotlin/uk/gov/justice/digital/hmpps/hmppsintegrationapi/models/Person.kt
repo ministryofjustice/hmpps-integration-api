@@ -15,5 +15,12 @@ data class Person(
     example = "Morgan",
     type = "string",
   )
+  val lastName: String,
+
+  val aliases: List<Alias> = listOf()
+)
+
+data class Alias(
+  val firstName: String,
   val lastName: String
 )
