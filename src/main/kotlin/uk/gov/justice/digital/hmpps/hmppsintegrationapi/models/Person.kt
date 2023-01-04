@@ -21,6 +21,17 @@ data class Person(
 )
 
 data class Alias(
+  @field:Schema(
+    description = "First name",
+    example = "John",
+    type = "string",
+  )
   val firstName: String,
+
+  @field:Schema(
+    description = "Last name",
+    example = "Marston",
+    type = "string",
+  )
   val lastName: String
 )
