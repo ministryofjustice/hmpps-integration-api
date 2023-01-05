@@ -1,6 +1,6 @@
 #!/bin/bash
 
-max_retry=50
+max_retry=100
 tries=0
 
 until $(curl http://prison-api:8080/health); do
