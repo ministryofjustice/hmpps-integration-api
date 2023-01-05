@@ -3,7 +3,7 @@
 max_retry=50
 tries=0
 
-until $(curl --output /dev/null --silent --head --fail http://prison-api:8080/health); do
+until $(curl http://prison-api:8080/health); do
   if [ $tries -gt $max_retry ]; then
     echo ""
     exit 1
