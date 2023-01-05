@@ -54,6 +54,9 @@ jobs:
     steps:
       - checkout
       - run:
+          name: Start Docker
+          command: sudo service docker start
+      - run:
           name: Run smoke tests
           command: make smoke-test
   create-and-push-image-to-ecr:
