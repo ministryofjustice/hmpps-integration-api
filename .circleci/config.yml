@@ -53,9 +53,8 @@ jobs:
       - image: cimg/base:current
     steps:
       - checkout
-      - run:
-          name: Start Docker
-          command: sudo service docker start
+      - setup_remote_docker:
+          docker_layer_caching: true
       - run:
           name: Run smoke tests
           command: make smoke-test
