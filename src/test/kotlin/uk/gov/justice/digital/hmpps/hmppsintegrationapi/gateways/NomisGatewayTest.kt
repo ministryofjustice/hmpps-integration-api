@@ -9,16 +9,12 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.verify
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
 import org.springframework.boot.test.mock.mockito.MockBean
-import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.NomisApiMockServer
 
-@ContextConfiguration(
-  initializers = [ConfigDataApplicationContextInitializer::class],
-  classes = [NomisGateway::class, HmppsAuthGateway::class]
-)
-@ActiveProfiles("test")
+
+@ContextConfiguration(initializers = [ConfigDataApplicationContextInitializer::class], classes = [NomisGateway::class, HmppsAuthGateway::class])
 class NomisGatewayTest(@MockBean val hmppsAuthGateway: HmppsAuthGateway, private val nomisGateway: NomisGateway) :
   DescribeSpec({
     val nomisApiMockServer = NomisApiMockServer()
