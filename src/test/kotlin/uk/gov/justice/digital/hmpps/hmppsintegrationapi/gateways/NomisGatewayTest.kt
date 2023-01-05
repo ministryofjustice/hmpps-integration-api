@@ -13,7 +13,6 @@ import org.springframework.test.context.ContextConfiguration
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.NomisApiMockServer
 
-
 @ContextConfiguration(initializers = [ConfigDataApplicationContextInitializer::class], classes = [NomisGateway::class, HmppsAuthGateway::class])
 class NomisGatewayTest(@MockBean val hmppsAuthGateway: HmppsAuthGateway, private val nomisGateway: NomisGateway) :
   DescribeSpec({
