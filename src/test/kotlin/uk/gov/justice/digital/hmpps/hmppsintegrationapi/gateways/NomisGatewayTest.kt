@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways
 
 import io.kotest.core.spec.style.DescribeSpec
+import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory
@@ -25,7 +26,22 @@ class NomisGatewayTest(@MockBean val hmppsAuthGateway: HmppsAuthGateway, private
 
     beforeEach {
       nomisApiMockServer.start()
-      nomisApiMockServer.stubGetOffender(offenderNo)
+      nomisApiMockServer.stubGetOffender(
+        offenderNo,
+        """
+        { 
+          "offenderNo": "$offenderNo",
+          "firstName": "John",
+          "lastName": "Smith",
+          "aliases": [
+            {
+              "firstName": "Joey",
+              "lastName": "Smiles"
+            }
+          ]
+        }
+        """
+      )
 
       Mockito.`when`(hmppsAuthGateway.getClientToken(any())).thenReturn(
         HmppsAuthMockServer.TOKEN
@@ -50,6 +66,24 @@ class NomisGatewayTest(@MockBean val hmppsAuthGateway: HmppsAuthGateway, private
         person?.lastName.shouldBe("Smith")
         person?.aliases?.first()?.firstName.shouldBe("Joey")
         person?.aliases?.first()?.lastName.shouldBe("Smiles")
+      }
+
+      it("returns a person without aliases when none are found") {
+        nomisApiMockServer.stubGetOffender(
+          offenderNo,
+          """
+          { 
+            "offenderNo": "$offenderNo",
+            "firstName": "John",
+            "lastName": "Smith",
+            "aliases": []
+          }
+          """
+        )
+
+        val person = nomisGateway.getPerson(offenderNo)
+
+        person?.aliases.shouldBeEmpty()
       }
     }
   })
