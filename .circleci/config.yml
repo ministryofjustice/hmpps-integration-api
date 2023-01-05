@@ -49,9 +49,8 @@ jobs:
       - store_test_results:
           path: build/test-results
   smoke-tests:
-    executor:
-      name: hmpps/default_small
-      tag: 3.11.1
+    docker:
+      - image: cimg/base:current
     steps:
       - checkout
       - run:
