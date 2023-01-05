@@ -61,6 +61,7 @@ jobs:
   create-and-push-image-to-ecr:
     docker:
       - image: ministryofjustice/cloud-platform-tools
+    resource_class: large
     steps:
       - checkout
       - setup_remote_docker:
