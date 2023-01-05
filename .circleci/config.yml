@@ -48,6 +48,15 @@ jobs:
           key: gradle-{{ checksum "build.gradle.kts" }}
       - store_test_results:
           path: build/test-results
+  smoke-tests:
+    executor:
+      name: hmpps/default_small
+      tag: 3.11.1
+    steps:
+      - checkout
+      - run:
+          name: Run smoke tests
+          command: make smoke-test
   create-and-push-image-to-ecr:
     docker:
       - image: ministryofjustice/cloud-platform-tools
@@ -71,6 +80,7 @@ workflows:
     jobs:
       - lint-code
       - unit-tests
+      - smoke-tests
       - hmpps/helm_lint:
           name: lint-helm-charts
           env: development
@@ -80,6 +90,7 @@ workflows:
           requires:
             - lint-code
             - unit-tests
+            - smoke-tests
             - lint-helm-charts
           filters:
             branches:
