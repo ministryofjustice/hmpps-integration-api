@@ -10,7 +10,7 @@ class NomisApiMockServer : WireMockServer(WIREMOCK_PORT) {
     private const val WIREMOCK_PORT = 4000
   }
 
-  fun stubGetOffender(offenderNo: String) {
+  fun stubGetOffender(offenderNo: String, body: String) {
     stubFor(
       get("/api/offenders/$offenderNo")
         .withHeader(
@@ -19,15 +19,7 @@ class NomisApiMockServer : WireMockServer(WIREMOCK_PORT) {
           aResponse()
             .withHeader("Content-Type", "application/json")
             .withStatus(200)
-            .withBody(
-              """
-              { 
-                "offenderNo": "$offenderNo",
-                "firstName": "John",
-                "lastName": "Smith"
-              }
-              """.trimIndent()
-            )
+            .withBody(body.trimIndent())
         )
     )
   }
