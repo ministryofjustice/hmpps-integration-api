@@ -20,8 +20,8 @@ unit-test:
 	./gradlew test
 
 smoke-test: serve
-	# docker-compose exec client ./run_test.sh
-	echo "TODO"
+	docker-compose exec client ./wait_for_prison_api_to_be_ready.sh
+	docker-compose exec client ./run_test.sh
 
 test: unit-test smoke-test
 
