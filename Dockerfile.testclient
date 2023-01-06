@@ -1,5 +1,6 @@
 FROM ubuntu:latest
 RUN apt-get update && apt-get install -y bash curl vim
 COPY ./scripts/run_test.sh .
+COPY ./scripts/wait_for_prison_api_to_be_ready.sh .
 
 CMD sleep infinity
