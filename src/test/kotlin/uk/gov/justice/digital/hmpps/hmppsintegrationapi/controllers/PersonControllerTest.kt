@@ -15,7 +15,6 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Alias
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService
-import java.time.LocalDate
 
 @WebMvcTest(controllers = [PersonController::class])
 internal class PersonControllerTest(
@@ -54,8 +53,7 @@ internal class PersonControllerTest(
     }
 
     it("returns a person with the matching ID") {
-      val person =
-        Person("Billy", "Bob", aliases = listOf(Alias("Bill", "Bobbers", null, LocalDate.parse("1990-04-05"))))
+      val person = Person("Billy", "Bob", aliases = listOf(Alias("Bill", "Bobbers")))
       Mockito.`when`(getPersonService.execute(id)).thenReturn(person)
 
       val result = mockMvc.perform(get("/persons/$id")).andReturn()
@@ -63,8 +61,7 @@ internal class PersonControllerTest(
       result.response.contentAsString.shouldNotBeEmpty()
       JSONObject(result.response.contentAsString)["firstName"].shouldBe(person.firstName)
       JSONObject(result.response.contentAsString)["lastName"].shouldBe(person.lastName)
-      println(result.response)
-//      JSONObject(result.response.contentAsString)["dateOfBirth"].shouldBe(person.lastName)
+      println("aliases: " + JSONObject(result.response.contentAsString)["aliases"])
     }
   }
 })
