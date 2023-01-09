@@ -1,7 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models
 
-import com.fasterxml.jackson.annotation.JsonGetter
-import com.fasterxml.jackson.annotation.JsonSetter
+import com.fasterxml.jackson.annotation.JsonAlias
 import io.swagger.v3.oas.annotations.media.Schema
 import java.time.LocalDate
 
@@ -21,8 +20,7 @@ data class Alias(
   val lastName: String,
 
   val middleName: String? = null,
-) {
+
+  @JsonAlias("dob")
   var dateOfBirth: LocalDate? = null
-    @JsonGetter("dateOfBirth") get
-    @JsonSetter("dob") set
-}
+)

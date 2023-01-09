@@ -53,8 +53,8 @@ internal class PersonControllerTest(
 
     it("returns a person with the matching ID") {
       val person = Person(
-        "Billy", "Bob", null, LocalDate.parse("1970-10-10"),
-        aliases = listOf(Alias("Bill", "Bobbers"))
+        "Billy", "Bob", dateOfBirth = LocalDate.parse("1970-10-10"),
+        aliases = listOf(Alias("Bill", "Bobbers", dateOfBirth = LocalDate.parse("1970-03-01")))
       )
       Mockito.`when`(getPersonService.execute(id)).thenReturn(person)
 
@@ -72,7 +72,7 @@ internal class PersonControllerTest(
               "firstName": "Bill",
               "lastName": "Bobbers",
               "middleName": null,
-              "dateOfBirth": null
+              "dateOfBirth": "1970-03-01"
             }
           ]
         }
