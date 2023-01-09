@@ -7,5 +7,6 @@ curl http://hmpps-integration-api:8080/persons/${existing_person_id} > /tmp/resu
 expected_substring='{"firstName":"DANIEL","lastName":"SMELLEY"}'
 
 echo "Running smoke test on prison API.."
+cat /tmp/result
 grep $expected_substring /tmp/result > /dev/null
 
