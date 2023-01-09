@@ -12,8 +12,12 @@ import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.context.ContextConfiguration
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.NomisApiMockServer
+import java.time.LocalDate
 
-@ContextConfiguration(initializers = [ConfigDataApplicationContextInitializer::class], classes = [NomisGateway::class, HmppsAuthGateway::class])
+@ContextConfiguration(
+  initializers = [ConfigDataApplicationContextInitializer::class],
+  classes = [NomisGateway::class, HmppsAuthGateway::class]
+)
 class NomisGatewayTest(@MockBean val hmppsAuthGateway: HmppsAuthGateway, private val nomisGateway: NomisGateway) :
   DescribeSpec({
     val nomisApiMockServer = NomisApiMockServer()
@@ -27,11 +31,15 @@ class NomisGatewayTest(@MockBean val hmppsAuthGateway: HmppsAuthGateway, private
         { 
           "offenderNo": "$offenderNo",
           "firstName": "John",
+          "middleName": "Muriel",
           "lastName": "Smith",
+          "dateOfBirth": "1970-03-15",
           "aliases": [
             {
               "firstName": "Joey",
-              "lastName": "Smiles"
+              "middleName": "Martin",
+              "lastName": "Smiles",
+              "dob": "1975-10-12"
             }
           ]
         }
@@ -58,12 +66,16 @@ class NomisGatewayTest(@MockBean val hmppsAuthGateway: HmppsAuthGateway, private
         val person = nomisGateway.getPerson(offenderNo)
 
         person?.firstName.shouldBe("John")
+        person?.middleName.shouldBe("Muriel")
         person?.lastName.shouldBe("Smith")
+        person?.dateOfBirth.shouldBe(LocalDate.parse("1970-03-15"))
         person?.aliases?.first()?.firstName.shouldBe("Joey")
+        person?.aliases?.first()?.middleName.shouldBe("Martin")
         person?.aliases?.first()?.lastName.shouldBe("Smiles")
+        person?.aliases?.first()?.dateOfBirth.shouldBe(LocalDate.parse("1975-10-12"))
       }
 
-      it("returns a person without aliases when none are found") {
+      it("returns a person without aliases when no aliases are found") {
         nomisApiMockServer.stubGetOffender(
           offenderNo,
           """
