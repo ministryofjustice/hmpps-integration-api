@@ -2,8 +2,6 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.controllers
 
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
-import io.kotest.matchers.string.shouldNotBeEmpty
-import org.json.JSONObject
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory.times
 import org.mockito.kotlin.verify
@@ -15,6 +13,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Alias
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService
+import java.time.LocalDate
 
 @WebMvcTest(controllers = [PersonController::class])
 internal class PersonControllerTest(
@@ -53,15 +52,32 @@ internal class PersonControllerTest(
     }
 
     it("returns a person with the matching ID") {
-      val person = Person("Billy", "Bob", aliases = listOf(Alias("Bill", "Bobbers")))
+      val person = Person(
+        "Billy", "Bob", null, LocalDate.parse("1970-10-10"),
+        aliases = listOf(Alias("Bill", "Bobbers"))
+      )
       Mockito.`when`(getPersonService.execute(id)).thenReturn(person)
 
       val result = mockMvc.perform(get("/persons/$id")).andReturn()
 
-      result.response.contentAsString.shouldNotBeEmpty()
-      JSONObject(result.response.contentAsString)["firstName"].shouldBe(person.firstName)
-      JSONObject(result.response.contentAsString)["lastName"].shouldBe(person.lastName)
-      println("aliases: " + JSONObject(result.response.contentAsString)["aliases"])
+      result.response.contentAsString.shouldBe(
+        """
+        {
+          "firstName": "Billy",
+          "lastName": "Bob",
+          "middleName": null,
+          "dateOfBirth": "1970-10-10",
+          "aliases": [
+            {
+              "firstName": "Bill",
+              "lastName": "Bobbers",
+              "middleName": null,
+              "dateOfBirth": null
+            }
+          ]
+        }
+        """.replace("\\s".toRegex(), "")
+      )
     }
   }
 })
