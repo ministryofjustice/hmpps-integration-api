@@ -1,16 +1,16 @@
 # See the available options: https://tdt-documentation.london.cloudapps.digital/configure_project/global_configuration/#configure-your-documentation-site
 
 # Host to use for canonical URL generation (without trailing slash)
-host: https://ministryofjustice.github.io/template-documentation-site
+host: https://ministryofjustice.github.io/hmpps-integration-api-docs
 
 # Header-related options
 show_govuk_logo: true
-service_name: Template Documentation Site
+service_name: HMPPS Integration API Documentation
 service_link: /
 
 # Links to show on right-hand-side of header
 header_links:
-  GitHub: https://github.com/ministryofjustice/template-documentation-site
+  GitHub: https://github.com/ministryofjustice/hmpps-integration-api-docs
 
 # Enables search functionality. This indexes pages only and is not recommended for single-page sites.
 enable_search: true
@@ -30,5 +30,5 @@ max_toc_heading_level: 3
 prevent_indexing: true
 
 show_contribution_banner: true
-github_repo: ministryofjustice/template-documentation-site
+github_repo: ministryofjustice/hmpps-integration-api-docs
 github_branch: main
