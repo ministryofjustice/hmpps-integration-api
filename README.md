@@ -1,43 +1,6 @@
-# Template Documentation Site
+# HMPPS Integration API Documentation Site
 
 [![repo standards badge](https://img.shields.io/badge/dynamic/json?color=blue&style=for-the-badge&logo=github&label=MoJ%20Compliant&query=%24.result&url=https%3A%2F%2Foperations-engineering-reports.cloud-platform.service.justice.gov.uk%2Fapi%2Fv1%2Fcompliant_public_repositories%2Ftemplate-documentation-site)](https://operations-engineering-reports.cloud-platform.service.justice.gov.uk/public-github-repositories.html#template-documentation-site "Link to report")
-
-Use this repository template to create a documentation website using the GOV.UK [Technical Documentation Template](https://tdt-documentation.london.cloudapps.digital/) and its [source code](https://github.com/alphagov/tech-docs-template).
-
-This is recommended for MOJ's technical documentation because:
-
-- The template uses the [GOV.UK Design System](https://design-system.service.gov.uk/) and makes it also consistent with many tech docs sites such as MOJ [MOJ Technical Guidance](https://technical-guidance.service.justice.gov.uk/#moj-technical-guidance), [MOJ Security Guidance](https://security-guidance.service.justice.gov.uk/), and [Cloud Platform User Guide](https://user-guide.cloud-platform.service.justice.gov.uk/).
-
-- This is a [list](https://github.com/alphagov/tech-docs-gem/network/dependents) of other sites that use the govuk_tech_docs gem.
-
-- Both engineers and non-technical people can write your documentation using the [‘docs as code’](https://technology.blog.gov.uk/2017/08/25/why-we-use-a-docs-as-code-approach-for-technical-documentation/) approach.
-
-Publishing is done by the Github Action [publish.yml](.github/workflows/publish.yml) that makes use of [tech-docs-github-pages-publisher](https://github.com/ministryofjustice/tech-docs-github-pages-publisher) docker container.
-
-## To create a site
-
-1. Create a repository from this template.
-
-2. Make the "normal" changes:
-
-   - Edit the copy of this README.md file, deleting everything up to the `---`
-   - Grant permission/s to the appropriate MoJ team/s with at least one team having Admin permissions.
-   - Try not to add individual users to the repository, instead use a team.
-   - To add an Outside Collaborator to the repository follow the guidelines on the [GitHub-collaborator repository](https://github.com/ministryofjustice/github-collaborators).
-   - Ensure branch protection is set up on the main branch.
-   - [Optional] Modify the CODEOWNERS file and state the team or users that can authorise PR's.
-   - Modify the Dependabot file to suit the [dependency manager](https://docs.github.com/en/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file#package-ecosystem) you plan to use and for [automated pull requests for package updates](https://docs.github.com/en/code-security/supply-chain-security/keeping-your-dependencies-updated-automatically/enabling-and-disabling-dependabot-version-updates#enabling-dependabot-version-updates). Dependabot is enabled in the settings by default.
-   - Modify the short description found on the right side of the README.md file.
-   - Ensure as many of the [GitHub Standards](https://github.com/ministryofjustice/github-repository-standards) rules are maintained as possibly can.
-   - Modify the MoJ Compliant Badge url using these [instructions](https://github.com/orgs/ministryofjustice/teams/operations-engineering/discussions).
-
-3. In your repository settings, in the Pages section for 'Build and deployment' 'Source' change to the option 'GitHubs Actions' after your first push/merge to `main`, the Github Action will create the the gh-pages. The link will be in repository settings Pages section.
-
-4. Edit [config/tech-docs.yml](config/tech-docs.yml) to set appropriate values for the [template configuration](#template-configuration).
-
-5. [Edit your content](#editing).
-
-**The docs folder is used by gh-pages to host the website. Do not delete.**
 
 ---
 
