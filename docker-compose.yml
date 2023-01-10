@@ -6,7 +6,8 @@ services:
       dockerfile: Dockerfile.testclient
     container_name: client
     depends_on:
-      - hmpps-integration-api
+      hmpps-integration-api:
+        condition: service_healthy
 
   hmpps-integration-api:
     build:
@@ -17,8 +18,8 @@ services:
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:8080/health/ping" ]
     depends_on:
-      - oauth-server
-      - prison-api
+      prison-api:
+        condition: service_healthy
     environment:
       - SERVER_PORT=8080
       - SPRING_PROFILES_ACTIVE=local-docker
@@ -45,6 +46,9 @@ services:
       - "8081:8080"
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:8080/health" ]
+      interval: 1s
+      timeout: 120s
+      retries: 100
     environment:
       - SERVER_PORT=8080
       - SPRING_PROFILES_ACTIVE=nomis-hsqldb
