@@ -6,7 +6,7 @@ host: https://ministryofjustice.github.io/hmpps-integration-api-docs
 # Header-related options
 show_govuk_logo: true
 service_name: HMPPS Integration API Documentation
-service_link: /
+service_link: /hmpps-integration-api-docs
 
 # Links to show on right-hand-side of header
 header_links:

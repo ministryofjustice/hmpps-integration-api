@@ -66,3 +66,4 @@ jobs:
           npm install linkinator
           npx linkinator . --recurse --markdown \
           #  --skip https://github.com/ministryofjustice/dns \
+          #  --skip https://ministryofjustice.github.io/hmpps-integration-api-docs/images/govuk-large.png \
