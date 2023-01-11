@@ -14,9 +14,6 @@ generic-service:
     SPRING_PROFILES_ACTIVE: development
     APPLICATIONINSIGHTS_CONFIGURATION_FILE: applicationinsights.dev.json
 
-  allowlist:
-    office: "0.0.0.0/0"
-
 # CloudPlatform AlertManager receiver to route prometheus alerts to slack
 # See https://user-guide.cloud-platform.service.justice.gov.uk/documentation/monitoring-an-app/how-to-create-alarms.html#creating-your-own-custom-alerts
 generic-prometheus-alerts:
