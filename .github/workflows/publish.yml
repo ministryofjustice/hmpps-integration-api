@@ -65,5 +65,5 @@ jobs:
           tar -xvf artifact.tar
           npm install linkinator
           npx linkinator . --recurse --markdown \
+          --skip https://ministryofjustice.github.io/hmpps-integration-api-docs/images/govuk-large.png \
           #  --skip https://github.com/ministryofjustice/dns \
-          #  --skip https://ministryofjustice.github.io/hmpps-integration-api-docs/images/govuk-large.png \
