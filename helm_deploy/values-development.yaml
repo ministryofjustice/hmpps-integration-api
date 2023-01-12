@@ -13,8 +13,8 @@ generic-service:
   env:
     SPRING_PROFILES_ACTIVE: development
     APPLICATIONINSIGHTS_CONFIGURATION_FILE: applicationinsights.dev.json
-    CLIENT_ID: ${CLIENT_ID}
-    CLIENT_SECRET: ${CLIENT_SECRET}
+    CLIENT_ID: $(CLIENT_ID)
+    CLIENT_SECRET: $(CLIENT_SECRET)
 
   namespace-secrets:
     client-credentials:
