@@ -2,13 +2,13 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models
 
 import java.util.Base64
 
-data class Credentials(val username: String?, val password: String?) {
-  // Converts credentials to base64 for basic authentication
-  fun toBase64(): String? {
-    if (username == null || password == null) {
-      return null
-    }
+data class Credentials(val username: String, val password: String) {
+  fun toBasicAuth(): String {
+    val decodedUsername = String(Base64.getDecoder().decode(username)).trim()
+    val decodedPassword = String(Base64.getDecoder().decode(password)).trim()
 
-    return Base64.getEncoder().encodeToString("$username:$password".toByteArray())
+    val encodedCredentials = Base64.getEncoder().encodeToString("$decodedUsername:$decodedPassword".toByteArray())
+
+    return "Basic $encodedCredentials"
   }
 }
