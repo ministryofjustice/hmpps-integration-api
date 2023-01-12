@@ -15,13 +15,11 @@ class HmppsAuthGateway(@Value("\${services.hmpps-auth.base-url}") hmppsAuthUrl: 
   private val webClient: WebClient = WebClient.builder().baseUrl(hmppsAuthUrl).build()
 
   override fun getClientToken(credentials: Credentials): String {
-    val encodedCredentials = credentials.toBase64()
-
     return try {
       val response = webClient
         .post()
         .uri("/auth/oauth/token?grant_type=client_credentials")
-        .header("Authorization", "Basic $encodedCredentials")
+        .header("Authorization", credentials.toBasicAuth())
         .retrieve()
         .bodyToMono(String::class.java)
         .block()

@@ -1,27 +1,14 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models
 
 import io.kotest.core.spec.style.DescribeSpec
-import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
 
 class CredentialsTest : DescribeSpec({
-  describe("#toBase64") {
-    it("encodes username and password to Base64 for basic authentication") {
-      val credentials = Credentials("username", "password")
+  describe("#toBasicAuth") {
+    it("returns username and password for basic authentication header") {
+      val credentials = Credentials("dXNlcm5hbWUK", "cGFzc3dvcmQK")
 
-      credentials.toBase64().shouldBe("dXNlcm5hbWU6cGFzc3dvcmQ=")
-    }
-
-    it("returns null if username is null") {
-      val credentials = Credentials(null, "password")
-
-      credentials.toBase64().shouldBeNull()
-    }
-
-    it("returns null if password is null") {
-      val credentials = Credentials("username", null)
-
-      credentials.toBase64().shouldBeNull()
+      credentials.toBasicAuth().shouldBe("Basic dXNlcm5hbWU6cGFzc3dvcmQ=")
     }
   }
 })
