@@ -265,7 +265,7 @@ To delete all ingress, services, pods and deployments:
 To list images in the ECR repository:
 
 ```bash
-aws ecr describe-images --repository-name=hmpps-integration-api-team/hmpps-integration-api-<environment>-ecr
+aws ecr describe-images --repository-name=hmpps-integration-api-admin-team/hmpps-integration-api-<environment>-ecr
 ```
 
 ## License
