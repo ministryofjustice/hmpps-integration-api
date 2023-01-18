@@ -11,6 +11,7 @@ new [context](https://circleci.com/docs/contexts/) must be created for it that c
 - `KUBE_ENV_NAME`
 - `KUBE_ENV_NAMESPACE`
 - `KUBE_ENV_API`
+- `ECR_ENDPOINT`
 
 ## Prerequisites
 
@@ -70,3 +71,4 @@ kubectl -n hmpps-integration-api-<environment> get secrets <circleci-token-secre
 ```
 
 16. Add an environment variable called `KUBE_ENV_CACERT` and set the value to the response of the previous command.
+17. Add an environment variable called `ECR_ENDPOINT` and set the value to the ECR name e.g. `754256621582.dkr.ecr.eu-west-2.amazonaws.com/hmpps-integration-api-admin-team/hmpps-integration-api-development-ecr`.
