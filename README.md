@@ -188,17 +188,17 @@ make check
 ```
 
 ### Request Logging
-This can be done within `logback-spring.xml`. To enable request logging, update the value of the 'level' property within
-the logger named "<application>.config.RequestLogger" to the desired [logger level](https://docs.spring.io/spring-boot/docs/2.1.13.RELEASE/reference/html/boot-features-logging.html).
+This can be done within `logback-spring.xml`. To enable request logging, update the value of the `level` property within
+the logger named `<application>.config.RequestLogger` to the desired [logger level](https://docs.spring.io/spring-boot/docs/2.1.13.RELEASE/reference/html/boot-features-logging.html).
 
 ```
-    <logger name="uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.RequestLogger" additivity="false" level="DEBUG">
-        <appender-ref ref="logAppender"/>
-        <appender-ref ref="consoleAppender"/>
-    </logger>
+  <logger name="uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.RequestLogger" additivity="false" level="DEBUG">
+      <appender-ref ref="logAppender"/>
+      <appender-ref ref="consoleAppender"/>
+  </logger>
 ```
 
-Note, this will only specifically enable the RequestLogger.
+Note, this will only specifically enable the `RequestLogger`.
 
 ## Documentation
 - [Updating diagrams](/docs/updating-diagrams.md)
