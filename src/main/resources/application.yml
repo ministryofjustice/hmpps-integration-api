@@ -2,12 +2,6 @@ info.app:
   name: HMPPS Integration API
   version: 1.0
 
-org:
-  springframework:
-    web:
-      filter:
-        CommonsRequestLoggingFilter: DEBUG
-
 spring:
   application:
     name: hmpps-integration-api
