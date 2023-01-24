@@ -1,5 +1,4 @@
-# 0002- Use PlantUML as our diagrams as code tool
-
+# 0002 - Use PlantUML to create diagrams
 2023-01-24
 
 ## Status
@@ -8,22 +7,27 @@ Accepted
 
 ## Context
 
-Rather than generating diagrams manually, we want to generate diagrams as code. 
-This allows us to store them alongside our code in Git, it also alleviates the requirement of installing various tools
-on everybody's workstations to update and manage them and allows us to version control our diagrams.
+We need diagrams to visualise our architecture. We had decided that diagrams as code were the way forward due to
+the following reasons:
+- Can be stored in source control
+- Multiple output formats
+- Consistency, everyone will get the same output
 
-We need to determine which software we want to use for diagrams as code. Research has been done on various tools such 
-as [Structurizr](https://structurizr.com/) and [PlantUML](https://plantuml.com/)
+We had not yet decided the tool we would use.
+
+Research was done on the following tools: [Structurizr](https://structurizr.com/) and [PlantUML](https://plantuml.com/)
 
 ## Decision
 
-We have decided to use PlantUML for the following reasons:
-- We already have some experience within the PlantUML team
+We have decided to use PlantUML for the following reasons
+- Existing experience within the team
 - The [C4-PlantUML](https://github.com/plantuml-stdlib/C4-PlantUML#getting-started) project we'd use is actively updated
-- Changes to diagrams will be immediately re-rendered
+- We already have diagrams built with PlantUML
 
 ## Consequences
 
-1. Our GitHub repo will contain some references to PlantUML
-2. Our [Docs Site](https://ministryofjustice.github.io/hmpps-integration-api-docs/) can reference diagrams hosted in our
-main repo
+1. Our GitHub repository will contain references to PlantUML and diagrams, as well as the corresponding PlantUML code to
+generate them.
+2. Our [API Documentation](https://ministryofjustice.github.io/hmpps-integration-api-docs/) will provide links to diagrams 
+hosted in our main repository.
+3. When making changes to `.puml` files. We need to be conscious to re-generate diagrams manually.
