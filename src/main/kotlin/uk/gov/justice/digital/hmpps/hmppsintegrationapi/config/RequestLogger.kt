@@ -26,7 +26,7 @@ class RequestLogger() : HandlerInterceptor {
     val requestIp: String = "New Request from " + request.remoteAddr
     val method: String = "Method: " + request.method
     val endpoint: String = "Request URI: " + request.requestURI // Could this expose authentication credentials?
-    val requestURL: String = "Request URI: " + request.requestURL
+    val requestURL: String = "Full Request URL: " + request.requestURL
     val body: String = "Body: " + request.reader.lines().collect(Collectors.joining()) ?: "NULL"
 
     return "$requestIp \n $method \n $endpoint \n $body \n $requestURL"
