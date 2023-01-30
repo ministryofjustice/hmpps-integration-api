@@ -35,3 +35,5 @@ prevent_indexing: true
 show_contribution_banner: true
 github_repo: ministryofjustice/hmpps-integration-api-docs
 github_branch: main
+
+api_path: source/openapi.yaml

@@ -3,6 +3,7 @@ GEM
   specs:
 
 PLATFORMS
+  arm64-darwin-21
   x64-mingw32
   x86_64-darwin-20
   x86_64-linux
@@ -13,4 +14,4 @@ RUBY VERSION
    ruby 3.1.0
 
 BUNDLED WITH
-   2.3.12
+   2.4.5
