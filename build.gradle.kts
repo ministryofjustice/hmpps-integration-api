@@ -10,10 +10,6 @@ configurations {
 dependencies {
   implementation("org.springframework.boot:spring-boot-starter-webflux")
 
-  implementation("org.springdoc:springdoc-openapi-data-rest:1.6.14")
-  implementation("org.springdoc:springdoc-openapi-ui:1.6.14")
-  implementation("org.springdoc:springdoc-openapi-kotlin:1.6.14")
-
   testImplementation("io.kotest:kotest-runner-junit5-jvm:5.5.4")
   testImplementation("io.kotest:kotest-assertions-core-jvm:5.5.4")
   testImplementation("io.kotest.extensions:kotest-extensions-wiremock:1.0.3")
