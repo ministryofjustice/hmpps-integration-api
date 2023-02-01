@@ -11,9 +11,9 @@ class GetPersonService(
   @Autowired val nomisGateway: NomisGateway,
   @Autowired val prisonerOffenderSearchGateway: PrisonerOffenderSearchGateway
 ) {
-  fun execute(id: String): Person? {
-    prisonerOffenderSearchGateway.getPerson(id)
-
-    return nomisGateway.getPerson(id)
+  fun execute(id: String): Map<String, Person?> {
+    val personFromPrisonerOffenderSearch = prisonerOffenderSearchGateway.getPerson(id)
+    val personFromNomisGateway = nomisGateway.getPerson(id)
+    return mapOf("nomis" to personFromNomisGateway, "prisonerOffenderSearch" to personFromPrisonerOffenderSearch)
   }
 }

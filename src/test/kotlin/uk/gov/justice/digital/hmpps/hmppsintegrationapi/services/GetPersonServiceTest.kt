@@ -41,10 +41,18 @@ internal class GetPersonServiceTest(
     val getPersonService = GetPersonService(nomisGateway, prisonerOffenderSearchGateway)
 
     val personFromNomis = Person("Billy", "Bob")
+    val personFromPrisonerOffenderSearch = Person("Sally", "Sob")
+
     Mockito.`when`(nomisGateway.getPerson(id)).thenReturn(personFromNomis)
+    Mockito.`when`(prisonerOffenderSearchGateway.getPerson(id)).thenReturn(personFromPrisonerOffenderSearch)
 
-    val person = getPersonService.execute(id)
+    val result = getPersonService.execute(id)
 
-    person.shouldBe(personFromNomis)
+    val expectedResult = mapOf(
+      "nomis" to Person("Billy", "Bob"),
+      "prisonerOffenderSearch" to Person("Sally", "Sob")
+    )
+
+    result.shouldBe(expectedResult)
   }
 })
