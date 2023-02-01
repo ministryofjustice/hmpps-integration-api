@@ -16,8 +16,9 @@ class PersonController(@Autowired val getPersonService: GetPersonService) {
   fun getPerson(@PathVariable id: String): Map<String, Person?> {
     val result = getPersonService.execute(id)
 
-    if (result.isEmpty())
+    if (result.isNullOrEmpty()) {
       throw EntityNotFoundException("Could not find person with id: $id")
+    }
 
     return result
   }
