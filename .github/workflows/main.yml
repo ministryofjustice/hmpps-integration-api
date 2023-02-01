@@ -1,4 +1,4 @@
-name: Generate Plant UML Diagrams
+name: Generate PlantUML Diagrams
 
 on: 
   - workflow_dispatch
@@ -14,10 +14,10 @@ jobs:
       BRANCH_NAME: ${{ github.head_ref || github.ref_name }} 
     steps:
     - uses: actions/checkout@v3
-    - name: Download Graphviz Dependency
+    - name: Install Graphviz Dependency
       run: |
         sudo apt-get install graphviz
-    - name: Download PlantUML
+    - name: Install PlantUML
       run: |
         wget https://github.com/plantuml/plantuml/releases/download/v1.2023.1/plantuml.jar
         java -jar plantuml.jar -version
@@ -26,10 +26,10 @@ jobs:
         java -jar plantuml.jar *.puml
     - name: Setup Git Config
       run: |
-        git config user.name "Github Actions Bot"
+        git config user.name "GitHub Actions PlantUML Bot"
         git config user.email "<>"
     - name: Commit images
       run: |
         git add *.png
-        git commit -m "Refreshed plantuml diagrams" || true
+        git commit -m "Exported .PUML PlantUML diagrams to .PNG" || true
         git push origin ${BRANCH_NAME}
