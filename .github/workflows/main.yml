@@ -28,6 +28,7 @@ jobs:
         git config user.email "<>"
     - name: Commit images
       run: |
+        git show-ref
         git add *.png
         git commit -m "Refreshed Plantuml diagrams" || true
-        git push origin/main 
+        git push origin HEAD:main 
