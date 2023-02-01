@@ -1,4 +1,9 @@
 services:
+  prisoner-offender-search:
+    base-url: https://prisoner-offender-search-dev.prison.service.justice.gov.uk
+    hmpps-auth:
+      username: ${CLIENT_ID}
+      password: ${CLIENT_SECRET}
   prison-api:
     base-url: http://localhost:8081
     # Each application will likely have it's own credentials for its authentication method

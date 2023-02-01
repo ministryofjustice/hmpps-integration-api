@@ -56,5 +56,10 @@ services:
     hmpps-auth:
       username: fakeuser
       password: fakepass
+  prisoner-offender-search:
+    base-url: "TestURL"
+    hmpps-auth:
+      username: fakeuser
+      password: fakepass
   hmpps-auth:
     base-url: "OtherTestURL"

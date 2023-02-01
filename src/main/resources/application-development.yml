@@ -4,6 +4,10 @@ services:
     hmpps-auth:
       username: ${CLIENT_ID}
       password: ${CLIENT_SECRET}
+  prisoner-offender-search:
+    base-url: https://prisoner-offender-search-dev.prison.service.justice.gov.uk
+    hmpps-auth:
+      username: ${CLIENT_ID}
+      password: ${CLIENT_SECRET}
   hmpps-auth:
     base-url: https://sign-in-dev.hmpps.service.justice.gov.uk
-

@@ -8,6 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDO
 import org.springframework.test.web.reactive.server.WebTestClient
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.NomisApiMockServer
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.PrisonerOffenderSearchApiMockServer
 
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 abstract class IntegrationTestBase {
@@ -18,6 +19,7 @@ abstract class IntegrationTestBase {
 
   companion object {
     private val nomisApiMockServer = NomisApiMockServer()
+    private val prisonerOffenderSearchApiMockServer = PrisonerOffenderSearchApiMockServer()
     private val hmppsAuthMockServer = HmppsAuthMockServer()
 
     @BeforeAll
@@ -25,6 +27,7 @@ abstract class IntegrationTestBase {
     fun startMockServers() {
       nomisApiMockServer.start()
       hmppsAuthMockServer.start()
+      prisonerOffenderSearchApiMockServer.start();
 
       hmppsAuthMockServer.stubGetOAuthToken("client", "client-secret")
     }
@@ -34,6 +37,7 @@ abstract class IntegrationTestBase {
     fun stopMockServers() {
       nomisApiMockServer.stop()
       hmppsAuthMockServer.stop()
+      prisonerOffenderSearchApiMockServer.stop()
     }
   }
 }
