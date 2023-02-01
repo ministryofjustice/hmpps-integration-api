@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run: 
-        working-directory: ./diagrams
+        working-directory: ./docs/diagrams
     env:
       BRANCH_NAME: ${{ github.head_ref || github.ref_name }} 
     steps:
