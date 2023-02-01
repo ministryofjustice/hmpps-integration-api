@@ -1,4 +1,4 @@
-name: code-formatter
+name: Format code
 
 on:
   pull_request:
@@ -6,9 +6,12 @@ on:
 
 jobs:
   format-code:
+    name: 🧹 Format code
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: ministryofjustice/github-actions/code-formatter@v10
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Format code
+        uses: ministryofjustice/github-actions/code-formatter@v10
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

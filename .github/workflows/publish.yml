@@ -21,6 +21,7 @@ concurrency:
 
 jobs:
   build:
+    name: 🏗 Build application
     runs-on: ubuntu-latest
     container:
       image: ministryofjustice/tech-docs-github-pages-publisher:v3
@@ -38,6 +39,7 @@ jobs:
           retention-days: 1
 
   deploy:
+    name: 🚀 Deploy application
     needs: build
     environment:
       name: github-pages
@@ -50,16 +52,17 @@ jobs:
         id: deployment
         uses: actions/deploy-pages@v1
 
-  url-check:
+  check-for-broken-links:
+    name: 🔗 Check for broken links
     needs: deploy
     runs-on: ubuntu-latest
     steps:
-      - name: Download a Build Artifact from build
+      - name: Download built artifact
         uses: actions/download-artifact@v3
         with:
           name: github-pages
           path: github-pages
-      - name: Unpack files and check URL links
+      - name: Unpack built artifact and check for broken links
         run: |
           cd github-pages
           tar -xvf artifact.tar
