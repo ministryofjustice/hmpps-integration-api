@@ -30,4 +30,4 @@ jobs:
       run: |
         git add *.png
         git commit -m "Refreshed Plantuml diagrams" || true
-        git push origin main 
+        git push origin/main 
