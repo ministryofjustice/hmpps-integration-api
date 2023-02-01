@@ -1,4 +1,4 @@
-name: Generate PlantUML Diagrams
+name: Generate Plant UML Diagrams
 
 on: 
   - workflow_dispatch
@@ -9,7 +9,9 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run: 
-        working-directory: ./docs/diagrams
+        working-directory: ./diagrams
+    env:
+      BRANCH_NAME: ${{ github.head_ref || github.ref_name }} 
     steps:
     - uses: actions/checkout@v3
     - name: Download Graphviz Dependency
@@ -28,8 +30,6 @@ jobs:
         git config user.email "<>"
     - name: Commit images
       run: |
-        git show-ref
-        git pull
         git add *.png
-        git commit -m "Refreshed Plantuml diagrams" || true
-        git push origin HEAD:main 
+        git commit -m "Refreshed plantuml diagrams" || true
+        git push origin ${BRANCH_NAME}
