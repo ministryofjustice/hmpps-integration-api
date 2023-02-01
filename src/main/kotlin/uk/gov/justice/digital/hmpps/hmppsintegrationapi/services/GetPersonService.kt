@@ -14,6 +14,7 @@ class GetPersonService(
   fun execute(id: String): Map<String, Person?> {
     val personFromPrisonerOffenderSearch = prisonerOffenderSearchGateway.getPerson(id)
     val personFromNomisGateway = nomisGateway.getPerson(id)
+
     return mapOf("nomis" to personFromNomisGateway, "prisonerOffenderSearch" to personFromPrisonerOffenderSearch)
   }
 }

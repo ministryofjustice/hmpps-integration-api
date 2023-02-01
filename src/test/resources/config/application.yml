@@ -13,3 +13,8 @@ services:
       password: Y2xpZW50LXNlY3JldAo=  # client-secret encoded in Base64
   hmpps-auth:
     base-url: http://localhost:3000
+  prisoner-offender-search:
+    base-url: http://localhost:4001
+    hmpps-auth:
+      username: Y2xpZW50Cg==
+      password: Y2xpZW50LXNlY3JldAo=

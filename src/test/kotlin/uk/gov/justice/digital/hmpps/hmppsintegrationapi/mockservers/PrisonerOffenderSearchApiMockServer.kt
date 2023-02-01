@@ -12,7 +12,7 @@ class PrisonerOffenderSearchApiMockServer : WireMockServer(WIREMOCK_PORT) {
 
   fun stubGetPrisoner(prisonerId: String, body: String) {
     stubFor(
-      get("/api/prisoner/$prisonerId")
+      get("/prisoner/$prisonerId")
         .withHeader(
           "Authorization", matching("Bearer ${HmppsAuthMockServer.TOKEN}")
         ).willReturn(
