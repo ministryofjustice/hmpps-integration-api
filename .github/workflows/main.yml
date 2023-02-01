@@ -29,6 +29,7 @@ jobs:
     - name: Commit images
       run: |
         git show-ref
+        git pull
         git add *.png
         git commit -m "Refreshed Plantuml diagrams" || true
         git push origin HEAD:main 
