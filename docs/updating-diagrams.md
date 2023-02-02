@@ -27,30 +27,14 @@ locally hosted server by changing the value of `plantuml.server`.
 
 When all changes have been made:
 
-6. With the diagram file open, using `Ctrl + shift + P` on Windows or `command + shift + P` on MacOS and searching "
-   export current diagram", choose the `PlantUML: Export Current Diagram` option.
+6. Push your code back to the repository, the [Generate PlantUML Diagrams GitHub Action](#automatic-diagram-generation) will generate the required `.png`
+   files automatically.
 
-This will display options for different file types to export to.
+## Automatic Diagram Generation
 
-7. Choose the `png` option.
+We have a GitHub Actions workflow named [Generate PlantUML Diagrams](https://github.com/ministryofjustice/hmpps-integration-api/blob/main/.github/workflows/generate-plantuml-diagrams.yml)
+has been created to assist in the generation of diagrams. This automatically creates `.png` diagrams for each `.puml`
+file within the `./docs/diagrams` directory. The benefit of this workflow is that the author does not have to manually
+generate these diagrams.
 
-The exported diagram will then appear in an `out` directory in the root of the repository.
-
-8. Move the exported diagram to where the current diagram is located to replace it.
-
-## Using PlantUML Web Server
-
-[PlantUML Web Server](http://www.plantuml.com/plantuml/uml/) allows live editing through the browser.
-
-1. Go to [PlantUML Web Server](http://www.plantuml.com/plantuml/uml/) in a browser.
-2. Copy the contents of the `.puml` file of the diagram from the repository.
-3. Paste the contents into the box of PlantUML Web Server browser tab.
-4. Make the changes to the code to update the diagram.
-
-When all changes have been made:
-
-5. Click the `PNG` link.
-
-This will open the diagram on the current tab.
-
-6. Download and replace the exported diagram in the repository.
+This will execute on all branches on a `git push`. The workflow can also be executed manually via the [GitHub Actions page](https://github.com/ministryofjustice/hmpps-integration-api/actions).
