@@ -27,7 +27,7 @@ abstract class IntegrationTestBase {
     fun startMockServers() {
       nomisApiMockServer.start()
       hmppsAuthMockServer.start()
-      prisonerOffenderSearchApiMockServer.start();
+      prisonerOffenderSearchApiMockServer.start()
 
       hmppsAuthMockServer.stubGetOAuthToken("client", "client-secret")
     }
