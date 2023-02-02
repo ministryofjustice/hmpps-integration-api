@@ -14,10 +14,10 @@ class PrisonerOffenderSearchGateway(@Value("\${services.prisoner-offender-search
   @Autowired
   lateinit var hmppsAuthGateway: HmppsAuthGateway
 
-  @Value("\${services.prisoner-offender-search.hmpps-auth.username}")
+  @Value("\${hmpps-auth.username}")
   private lateinit var username: String
 
-  @Value("\${services.prisoner-offender-search.hmpps-auth.password}")
+  @Value("\${hmpps-auth.password}")
   private lateinit var password: String
 
   fun getPerson(id: String): Person? {
