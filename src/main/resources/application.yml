@@ -50,10 +50,6 @@ management:
       cache:
         time-to-live: 2000ms
 
-hmpps-auth:
-  username: fakeuser
-  password: fakepass
-
 services:
   prison-api:
     base-url: "TestURL"
@@ -61,3 +57,5 @@ services:
     base-url: "TestURL"
   hmpps-auth:
     base-url: "OtherTestURL"
+    username: ZGVsaXVzCg==
+    password: Y2xpZW50c2VjcmV0Cg==

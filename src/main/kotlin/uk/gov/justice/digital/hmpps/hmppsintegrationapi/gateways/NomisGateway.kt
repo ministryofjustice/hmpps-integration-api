@@ -14,10 +14,10 @@ class NomisGateway(@Value("\${services.prison-api.base-url}") baseUrl: String) {
   @Autowired
   lateinit var hmppsAuthGateway: HmppsAuthGateway
 
-  @Value("\${hmpps-auth.username}")
+  @Value("\${services.hmpps-auth.username}")
   private lateinit var username: String
 
-  @Value("\${hmpps-auth.password}")
+  @Value("\${services.hmpps-auth.password}")
   private lateinit var password: String
 
   fun getPerson(id: String): Person? {

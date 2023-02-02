@@ -1,7 +1,3 @@
-hmpps-auth:
-  username: ZGVsaXVzCg==  # delius encoded in Base64
-  password: Y2xpZW50c2VjcmV0Cg==  # clientsecret encoded in Base64
-
 services:
   prisoner-offender-search:
     base-url: http://prisoner-offender-search:4010
