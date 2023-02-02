@@ -1,4 +1,4 @@
-version: "3"
+version: "3.9"
 services:
   client:
     build:
@@ -20,6 +20,8 @@ services:
     depends_on:
       prison-api:
         condition: service_healthy
+      prisoner-offender-search:
+        condition: service_started
     environment:
       - SERVER_PORT=8080
       - SPRING_PROFILES_ACTIVE=local-docker
