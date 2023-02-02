@@ -54,5 +54,14 @@ services:
       - SPRING_PROFILES_ACTIVE=nomis-hsqldb
       - LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_WEB=TRACE
 
+  prisoner-offender-search:
+    image: stoplight/prism:4
+    #    command: 'mock -h 0.0.0.0 https://prisoner-offender-search-dev.prison.service.justice.gov.uk/v3/api-docs'
+    command: 'mock -h 0.0.0.0 /tmp/api-docs.json'
+    volumes:
+      - ./api-docs.json:/tmp/api-docs.json:ro
+    ports:
+      - '4010:4010'
+
 networks:
   hmpps:
