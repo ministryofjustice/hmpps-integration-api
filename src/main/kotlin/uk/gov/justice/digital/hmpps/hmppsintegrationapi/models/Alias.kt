@@ -6,6 +6,7 @@ import java.time.LocalDate
 data class Alias(
   val firstName: String,
   val lastName: String,
+  @JsonAlias("middleNames")
   val middleName: String? = null,
   @JsonAlias("dob")
   var dateOfBirth: LocalDate? = null
