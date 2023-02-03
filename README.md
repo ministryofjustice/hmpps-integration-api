@@ -99,10 +99,7 @@ Each service is then accessible at:
 - [http://localhost:8081](http://localhost:8081) for the Prison API
 - [http://localhost:9090](http://localhost:9090) for the HMPPS Auth service
 
-As part of getting the HMPPS Auth service running
-locally, [the in-memory database is seeded with data including a number of clients](https://github.com/ministryofjustice/hmpps-auth/blob/main/src/main/resources/db/dev/data/auth/V900_0__clients.sql)
-. A client can have different permissions i.e. read, write, reporting, although strangely the column name is called
-​​autoapprove.
+As part of getting the HMPPS Auth service running locally, [the in-memory database is seeded with data including a number of clients](https://github.com/ministryofjustice/hmpps-auth/blob/main/src/main/resources/db/dev/data/auth/V900_0__clients.sql). A client can have different permissions i.e. read, write, reporting, although strangely the column name is called `​​autoapprove`.
 
 In order to call endpoints of the Prison API, an access token must be provided that is generated from the HMPPS Auth
 service.
@@ -165,6 +162,12 @@ To run unit tests using the command line:
 make unit-test
 ```
 
+To run smoke tests using the command line:
+
+```bash
+make smoke-test
+```
+
 ### Running the linter
 
 To lint the code using [Ktlint](https://pinterest.github.io/ktlint/):
@@ -188,14 +191,15 @@ make check
 ```
 
 ### Request Logging
+
 This can be done within `logback-spring.xml`. To enable request logging, update the value of the `level` property within
 the logger named `<application>.config.RequestLogger` to the desired [logger level](https://docs.spring.io/spring-boot/docs/2.1.13.RELEASE/reference/html/boot-features-logging.html).
 
-```
-  <logger name="uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.RequestLogger" additivity="false" level="DEBUG">
-      <appender-ref ref="logAppender"/>
-      <appender-ref ref="consoleAppender"/>
-  </logger>
+```xml
+<logger name="uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.RequestLogger" additivity="false" level="DEBUG">
+    <appender-ref ref="logAppender"/>
+    <appender-ref ref="consoleAppender"/>
+</logger>
 ```
 
 Note, this will only specifically enable the `RequestLogger`.
@@ -221,52 +225,52 @@ To report on all resources for an environment, run the script:
 
 To get ingress information for a namespace:
 
-  ```bash
-  kubectl get ingress -n <namespace>
-  ```
+```bash
+kubectl get ingress -n <namespace>
+```
 
 To get a list of all services for a namespace:
 
-  ```bash
-  kubectl get service -n <namespace>
-  ```
+```bash
+kubectl get service -n <namespace>
+```
 
 To get a list of all deployments for a namespace:
 
-  ```bash
-  kubectl get deployment -n <namespace>
-  ```
+```bash
+kubectl get deployment -n <namespace>
+```
 
 To get a list of all pods for a namespace:
 
-  ```bash
-  kubectl get pod -n <namespace>
-  ```
+```bash
+kubectl get pod -n <namespace>
+```
 
 To get detailed information on a specific pod:
 
-  ```bash
-  kubectl describe pod <podname> -n <namespace>
-  ```
+```bash
+kubectl describe pod <podname> -n <namespace>
+```
 
 To view logs of a pod:
 
-  ```bash
-  kubectl logs <pod-name> -n <namespace>
-  ```
+```bash
+kubectl logs <pod-name> -n <namespace>
+```
 
 To perform a command within a pod:
 
-  ```bash
-  kubectl exec <pod-name> -c <container-name> -n <namespace> <command>
-  # E.g. kubectl exec hmpps-integration-api-5b8f4f9699-wbwgf -c hmpps-integration-api -n hmpps-integration-api-development -- curl http://localhost:8080/
-  ```
+```bash
+kubectl exec <pod-name> -c <container-name> -n <namespace> <command>
+# E.g. kubectl exec hmpps-integration-api-5b8f4f9699-wbwgf -c hmpps-integration-api -n hmpps-integration-api-development -- curl http://localhost:8080/
+```
 
 To delete all ingress, services, pods and deployments:
 
-  ```bash
-  kubectl delete pod,svc,deployment,ingress --all -n <namespace>
-  ```
+```bash
+kubectl delete pod,svc,deployment,ingress --all -n <namespace>
+```
 
 </details>
 
