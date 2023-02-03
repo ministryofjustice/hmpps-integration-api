@@ -7,7 +7,6 @@ import org.springframework.boot.test.context.ConfigDataApplicationContextInitial
 import org.springframework.test.context.ContextConfiguration
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.AuthenticationFailedException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Credentials
 
 @ContextConfiguration(initializers = [ConfigDataApplicationContextInitializer::class], classes = [(HmppsAuthGateway::class)])
 class HmppsAuthGatewayTest(hmppsAuthGateway: HmppsAuthGateway) :

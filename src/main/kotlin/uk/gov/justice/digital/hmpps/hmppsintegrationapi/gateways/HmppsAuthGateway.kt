@@ -22,7 +22,7 @@ class HmppsAuthGateway(@Value("\${services.hmpps-auth.base-url}") hmppsAuthUrl: 
 
   override fun getClientToken(): String {
     val credentials = Credentials(username, password)
-    
+
     return try {
       val response = webClient
         .post()
