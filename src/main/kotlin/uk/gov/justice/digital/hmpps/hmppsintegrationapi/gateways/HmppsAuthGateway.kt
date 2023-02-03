@@ -14,7 +14,15 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Credentials
 class HmppsAuthGateway(@Value("\${services.hmpps-auth.base-url}") hmppsAuthUrl: String) : IAuthGateway {
   private val webClient: WebClient = WebClient.builder().baseUrl(hmppsAuthUrl).build()
 
-  override fun getClientToken(credentials: Credentials): String {
+  @Value("\${services.hmpps-auth.username}")
+  private lateinit var username: String
+
+  @Value("\${services.hmpps-auth.password}")
+  private lateinit var password: String
+
+  override fun getClientToken(): String {
+    val credentials = Credentials(username, password)
+
     return try {
       val response = webClient
         .post()

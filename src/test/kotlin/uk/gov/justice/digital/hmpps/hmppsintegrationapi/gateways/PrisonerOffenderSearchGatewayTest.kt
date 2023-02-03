@@ -5,7 +5,6 @@ import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory
-import org.mockito.kotlin.any
 import org.mockito.kotlin.verify
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
 import org.springframework.boot.test.mock.mockito.MockBean
@@ -48,7 +47,7 @@ class PrisonerOffenderSearchGatewayTest(
         """
     )
 
-    Mockito.`when`(hmppsAuthGateway.getClientToken(any())).thenReturn(
+    Mockito.`when`(hmppsAuthGateway.getClientToken()).thenReturn(
       HmppsAuthMockServer.TOKEN
     )
   }
@@ -61,7 +60,7 @@ class PrisonerOffenderSearchGatewayTest(
     it("authenticates using HMPPS Auth with credentials") {
       prisonerOffenderSearchGateway.getPerson(offenderNo)
 
-      verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken(any())
+      verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken()
     }
 
     it("returns a person with the matching ID") {

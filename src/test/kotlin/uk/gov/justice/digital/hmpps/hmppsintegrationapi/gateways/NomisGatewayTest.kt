@@ -5,7 +5,6 @@ import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory
-import org.mockito.kotlin.any
 import org.mockito.kotlin.verify
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
 import org.springframework.boot.test.mock.mockito.MockBean
@@ -28,7 +27,7 @@ class NomisGatewayTest(@MockBean val hmppsAuthGateway: HmppsAuthGateway, private
       nomisApiMockServer.stubGetOffender(
         offenderNo,
         """
-        { 
+        {
           "offenderNo": "$offenderNo",
           "firstName": "John",
           "middleName": "Muriel",
@@ -46,7 +45,7 @@ class NomisGatewayTest(@MockBean val hmppsAuthGateway: HmppsAuthGateway, private
         """
       )
 
-      Mockito.`when`(hmppsAuthGateway.getClientToken(any())).thenReturn(
+      Mockito.`when`(hmppsAuthGateway.getClientToken()).thenReturn(
         HmppsAuthMockServer.TOKEN
       )
     }
@@ -59,7 +58,7 @@ class NomisGatewayTest(@MockBean val hmppsAuthGateway: HmppsAuthGateway, private
       it("authenticates using HMPPS Auth with credentials") {
         nomisGateway.getPerson(offenderNo)
 
-        verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken(any())
+        verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken()
       }
 
       it("returns a person with the matching ID") {
@@ -79,7 +78,7 @@ class NomisGatewayTest(@MockBean val hmppsAuthGateway: HmppsAuthGateway, private
         nomisApiMockServer.stubGetOffender(
           offenderNo,
           """
-          { 
+          {
             "offenderNo": "$offenderNo",
             "firstName": "John",
             "lastName": "Smith",
