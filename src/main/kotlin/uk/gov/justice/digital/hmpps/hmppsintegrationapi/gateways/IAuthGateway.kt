@@ -4,5 +4,5 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Credentials
 
 // A method of authenticating via basic authentication
 interface IAuthGateway {
-  fun getClientToken(credentials: Credentials): String
+  fun getClientToken(): String
 }

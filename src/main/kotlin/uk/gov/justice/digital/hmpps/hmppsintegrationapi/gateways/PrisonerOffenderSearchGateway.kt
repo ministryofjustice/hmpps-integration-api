@@ -14,14 +14,8 @@ class PrisonerOffenderSearchGateway(@Value("\${services.prisoner-offender-search
   @Autowired
   lateinit var hmppsAuthGateway: HmppsAuthGateway
 
-  @Value("\${services.hmpps-auth.username}")
-  private lateinit var username: String
-
-  @Value("\${services.hmpps-auth.password}")
-  private lateinit var password: String
-
   fun getPerson(id: String): Person? {
-    val token = hmppsAuthGateway.getClientToken(Credentials(username, password))
+    val token = hmppsAuthGateway.getClientToken()
 
     return webClient
       .get()

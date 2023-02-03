@@ -28,7 +28,7 @@ class HmppsAuthGatewayTest(hmppsAuthGateway: HmppsAuthGateway) :
       hmppsAuthMockServer.stop()
 
       val exception = shouldThrow<AuthenticationFailedException> {
-        hmppsAuthGateway.getClientToken(Credentials("username", "password"))
+        hmppsAuthGateway.getClientToken()
       }
 
       exception.message.shouldBe("Connection to localhost:3000 failed for NOMIS.")
@@ -38,7 +38,7 @@ class HmppsAuthGatewayTest(hmppsAuthGateway: HmppsAuthGateway) :
       hmppsAuthMockServer.stubServiceUnavailableForGetOAuthToken()
 
       val exception = shouldThrow<AuthenticationFailedException> {
-        hmppsAuthGateway.getClientToken(Credentials("username", "password"))
+        hmppsAuthGateway.getClientToken()
       }
 
       exception.message.shouldBe("localhost:3000 is unavailable for NOMIS.")
@@ -48,7 +48,7 @@ class HmppsAuthGatewayTest(hmppsAuthGateway: HmppsAuthGateway) :
       hmppsAuthMockServer.stubUnauthorizedForGetOAAuthToken()
 
       val exception = shouldThrow<AuthenticationFailedException> {
-        hmppsAuthGateway.getClientToken(Credentials("invalid", "invalid"))
+        hmppsAuthGateway.getClientToken()
       }
 
       exception.message.shouldBe("Invalid credentials used for NOMIS.")
