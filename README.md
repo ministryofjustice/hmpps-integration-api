@@ -20,6 +20,7 @@
 - [Useful commands](#useful-commands)
     - [kubectl](#kubectl)
     - [aws](#aws)
+- [Related repositories](#related-repositories)
 - [License](#license)
 
 ## About this project
@@ -281,6 +282,12 @@ To list images in the ECR repository:
 ```bash
 aws ecr describe-images --repository-name=hmpps-integration-api-admin-team/hmpps-integration-api-<environment>-ecr
 ```
+
+## Related repositories
+
+| Name                                                                                                   | Purpose                                   |
+| ------------------------------------------------------------------------------------------------------ | ----------------------------------------- |
+| [HMPPS Integration API Documentation](https://github.com/ministryofjustice/hmpps-integration-api-docs) | Provides documentation for API consumers. |
 
 ## License
 
