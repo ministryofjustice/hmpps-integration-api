@@ -33,35 +33,44 @@ components:
         firstName:
           type: string
           example: Arthur
+          description: first name
         middleName:
           type: string
           example: John
           nullable: true
+          description: middle name
         lastName:
           type: string
           example: Morgan
+          description: last name
         dateOfBirth:
           type: string
           format: date
           example: 1965-12-01
+          description: date of birth
         aliases:
           type: array
           items:
             $ref: "#/components/schemas/Alias"
+          description: list of aliases
     Alias:
       type: object
       properties:
         firstName:
           type: string
           example: John
+          description: first name
         middleName:
           type: string
           example: Michael
           nullable: true
+          description: middle name
         lastName:
           type: string
           example: Marston
+          description: last name
         dateOfBirth:
           type: string
           format: date
           example: 1965-12-01
+          description: date of birth
