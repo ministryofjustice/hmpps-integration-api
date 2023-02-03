@@ -3,9 +3,9 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.shouldBe
-import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory
 import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.context.ContextConfiguration
@@ -45,7 +45,7 @@ class NomisGatewayTest(@MockBean val hmppsAuthGateway: HmppsAuthGateway, private
         """
       )
 
-      Mockito.`when`(hmppsAuthGateway.getClientToken()).thenReturn(
+      whenever(hmppsAuthGateway.getClientToken()).thenReturn(
         HmppsAuthMockServer.TOKEN
       )
     }
