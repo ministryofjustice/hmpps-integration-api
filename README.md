@@ -34,8 +34,7 @@ as well as the following technologies for its infrastructure:
   as [Elastic Container Registry (ECR)](https://aws.amazon.com/ecr/) to store our built artifacts. The CI/CD pipeline
   stores and retrieves them from there as required.
 - [CircleCI](https://circleci.com/developer) - Used for our build platform, responsible for executing workflows to
-  build, validate, test and deploy our project. (_This may yet be switched for GitHub Actions depending on
-  investigation._)
+  build, validate, test and deploy our project.
 - [Cloud Platform](https://user-guide.cloud-platform.service.justice.gov.uk/#cloud-platform-user-guide) - Ministry of
   Justice's (MoJ) cloud hosting platform built on top of AWS which offers numerous tools such as logging, monitoring and
   alerting for our services.
