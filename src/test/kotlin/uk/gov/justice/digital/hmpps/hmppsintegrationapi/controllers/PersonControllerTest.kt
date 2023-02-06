@@ -5,6 +5,7 @@ import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory.times
 import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.boot.test.mock.mockito.MockBean
@@ -33,7 +34,7 @@ internal class PersonControllerTest(
         "nomis" to Person("Billy", "Bob"),
         "prisonerOffenderSearch" to Person("Sally", "Sob")
       )
-      Mockito.`when`(getPersonService.execute(id)).thenReturn(person)
+      whenever(getPersonService.execute(id)).thenReturn(person)
 
       val result = mockMvc.perform(get("/persons/$id")).andReturn()
 
@@ -42,7 +43,7 @@ internal class PersonControllerTest(
 
     it("responds with a 404 NOT FOUND status") {
       val idThatDoesNotExist = "zyx987"
-      Mockito.`when`(getPersonService.execute(id)).thenReturn(null)
+      whenever(getPersonService.execute(id)).thenReturn(null)
 
       val result = mockMvc.perform(get("/persons/$idThatDoesNotExist")).andReturn()
 
@@ -66,7 +67,7 @@ internal class PersonControllerTest(
         "prisonerOffenderSearch" to Person("Sally", "Sob")
       )
 
-      Mockito.`when`(getPersonService.execute(id)).thenReturn(stubbedResponse)
+      whenever(getPersonService.execute(id)).thenReturn(stubbedResponse)
 
       val expectedResult = mockMvc.perform(get("/persons/$id")).andReturn()
       println(expectedResult.response.contentAsString)

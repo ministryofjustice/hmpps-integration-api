@@ -5,6 +5,7 @@ import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory
 import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import org.springframework.boot.test.mock.mockito.MockBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NomisGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffenderSearchGateway
@@ -43,8 +44,8 @@ internal class GetPersonServiceTest(
     val personFromNomis = Person("Billy", "Bob")
     val personFromPrisonerOffenderSearch = Person("Sally", "Sob")
 
-    Mockito.`when`(nomisGateway.getPerson(id)).thenReturn(personFromNomis)
-    Mockito.`when`(prisonerOffenderSearchGateway.getPerson(id)).thenReturn(personFromPrisonerOffenderSearch)
+    whenever(nomisGateway.getPerson(id)).thenReturn(personFromNomis)
+    whenever(prisonerOffenderSearchGateway.getPerson(id)).thenReturn(personFromPrisonerOffenderSearch)
 
     val result = getPersonService.execute(id)
 
