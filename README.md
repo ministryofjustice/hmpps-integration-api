@@ -63,6 +63,12 @@ git clone git@github.com:ministryofjustice/hmpps-integration-api.git
 Upon opening the project, IntelliJ will begin downloading and installing necessary dependencies which may take a few
 minutes.
 
+3. Enable pre-commit hooks for formatting and linting code.
+
+```bash
+./gradlew addKtlintFormatGitPreCommitHook addKtlintCheckGitPreCommitHook
+```
+
 ## Usage
 
 ### Running the application
