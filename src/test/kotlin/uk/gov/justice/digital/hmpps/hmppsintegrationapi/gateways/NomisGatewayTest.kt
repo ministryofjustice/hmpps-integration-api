@@ -45,9 +45,7 @@ class NomisGatewayTest(@MockBean val hmppsAuthGateway: HmppsAuthGateway, private
         """
       )
 
-      whenever(hmppsAuthGateway.getClientToken()).thenReturn(
-        HmppsAuthMockServer.TOKEN
-      )
+      whenever(hmppsAuthGateway.getClientToken("NOMIS")).thenReturn(HmppsAuthMockServer.TOKEN)
     }
 
     afterTest {
@@ -58,7 +56,7 @@ class NomisGatewayTest(@MockBean val hmppsAuthGateway: HmppsAuthGateway, private
       it("authenticates using HMPPS Auth with credentials") {
         nomisGateway.getPerson(offenderNo)
 
-        verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken()
+        verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("NOMIS")
       }
 
       it("returns a person with the matching ID") {

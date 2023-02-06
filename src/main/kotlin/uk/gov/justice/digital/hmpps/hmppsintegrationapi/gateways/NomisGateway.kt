@@ -14,7 +14,7 @@ class NomisGateway(@Value("\${services.prison-api.base-url}") baseUrl: String) {
   lateinit var hmppsAuthGateway: HmppsAuthGateway
 
   fun getPerson(id: String): Person? {
-    val token = hmppsAuthGateway.getClientToken()
+    val token = hmppsAuthGateway.getClientToken("NOMIS")
 
     return webClient
       .get()

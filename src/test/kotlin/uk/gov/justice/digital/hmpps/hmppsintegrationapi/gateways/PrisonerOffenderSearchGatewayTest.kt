@@ -47,7 +47,7 @@ class PrisonerOffenderSearchGatewayTest(
         """
     )
 
-    whenever(hmppsAuthGateway.getClientToken()).thenReturn(HmppsAuthMockServer.TOKEN)
+    whenever(hmppsAuthGateway.getClientToken("Prisoner Offender Search")).thenReturn(HmppsAuthMockServer.TOKEN)
   }
 
   afterTest {
@@ -58,7 +58,7 @@ class PrisonerOffenderSearchGatewayTest(
     it("authenticates using HMPPS Auth with credentials") {
       prisonerOffenderSearchGateway.getPerson(offenderNo)
 
-      verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken()
+      verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("Prisoner Offender Search")
     }
 
     it("returns a person with the matching ID") {
