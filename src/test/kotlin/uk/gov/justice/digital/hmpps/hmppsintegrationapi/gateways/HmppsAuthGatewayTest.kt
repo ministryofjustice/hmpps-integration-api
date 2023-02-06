@@ -8,7 +8,10 @@ import org.springframework.test.context.ContextConfiguration
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.AuthenticationFailedException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
 
-@ContextConfiguration(initializers = [ConfigDataApplicationContextInitializer::class], classes = [(HmppsAuthGateway::class)])
+@ContextConfiguration(
+  initializers = [ConfigDataApplicationContextInitializer::class],
+  classes = [(HmppsAuthGateway::class)]
+)
 class HmppsAuthGatewayTest(hmppsAuthGateway: HmppsAuthGateway) :
   DescribeSpec({
     val hmppsAuthMockServer = HmppsAuthMockServer()
@@ -27,7 +30,7 @@ class HmppsAuthGatewayTest(hmppsAuthGateway: HmppsAuthGateway) :
       hmppsAuthMockServer.stop()
 
       val exception = shouldThrow<AuthenticationFailedException> {
-        hmppsAuthGateway.getClientToken()
+        hmppsAuthGateway.getClientToken("NOMIS")
       }
 
       exception.message.shouldBe("Connection to localhost:3000 failed for NOMIS.")
@@ -37,7 +40,7 @@ class HmppsAuthGatewayTest(hmppsAuthGateway: HmppsAuthGateway) :
       hmppsAuthMockServer.stubServiceUnavailableForGetOAuthToken()
 
       val exception = shouldThrow<AuthenticationFailedException> {
-        hmppsAuthGateway.getClientToken()
+        hmppsAuthGateway.getClientToken("NOMIS")
       }
 
       exception.message.shouldBe("localhost:3000 is unavailable for NOMIS.")
@@ -47,7 +50,7 @@ class HmppsAuthGatewayTest(hmppsAuthGateway: HmppsAuthGateway) :
       hmppsAuthMockServer.stubUnauthorizedForGetOAAuthToken()
 
       val exception = shouldThrow<AuthenticationFailedException> {
-        hmppsAuthGateway.getClientToken()
+        hmppsAuthGateway.getClientToken("NOMIS")
       }
 
       exception.message.shouldBe("Invalid credentials used for NOMIS.")
