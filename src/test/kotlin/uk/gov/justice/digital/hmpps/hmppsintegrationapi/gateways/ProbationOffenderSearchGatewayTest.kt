@@ -13,7 +13,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ProbationOff
 
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
-  classes = [PrisonerOffenderSearchGateway::class, HmppsAuthGateway::class]
+  classes = [ProbationOffenderSearchGateway::class, HmppsAuthGateway::class]
 )
 class ProbationOffenderSearchGatewayTest(
   @MockBean val hmppsAuthGateway: HmppsAuthGateway,
@@ -24,14 +24,39 @@ class ProbationOffenderSearchGatewayTest(
 
   beforeEach {
     probationOffenderSearchApiMockServer.start()
-    probationOffenderSearchApiMockServer.stubGetPrisoner(
-      nomsNumber,
+    probationOffenderSearchApiMockServer.stubGetOffenderSearch(
+      "{\"nomsNumber\": \"$nomsNumber\"}",
       """
+        [
+           {
+            "firstName": "Jonathan",
+            "middleNames": [
+              "Echo"
+            ],
+            "surname": "Bravo",
+            "dateOfBirth": "1970-02-07",
+            "otherIds": {
+              "nomsNumber": "$nomsNumber",
+            },
+            "offenderAliases": [
+              {
+                "dateOfBirth": "2000-02-07",
+                "firstName": "John",
+                "middleNames": [
+                  "Candle"
+               ],
+                "surname": "Wick",
+              }
+            ], 
+          }
+        ]
       """
     )
 
     val test = ProbationOffenderSearchGatewayTest::class // just for debugging, delete
-    whenever(hmppsAuthGateway.getClientToken(ProbationOffenderSearchGatewayTest::class.simpleName!!)).thenReturn(HmppsAuthMockServer.TOKEN)
+    whenever(hmppsAuthGateway.getClientToken(ProbationOffenderSearchGatewayTest::class.simpleName!!)).thenReturn(
+      HmppsAuthMockServer.TOKEN
+    )
   }
 
   afterTest {
@@ -42,7 +67,10 @@ class ProbationOffenderSearchGatewayTest(
     it("authenticates using HMPPS Auth with credentials") {
       probationOffenderSearchGateway.getPerson(nomsNumber)
 
-      verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken(ProbationOffenderSearchGatewayTest::class.simpleName!!)
+      verify(
+        hmppsAuthGateway,
+        VerificationModeFactory.times(1)
+      ).getClientToken(ProbationOffenderSearchGatewayTest::class.simpleName!!)
     }
 
     it("returns a person with the matching ID") {
@@ -61,7 +89,7 @@ class ProbationOffenderSearchGatewayTest(
     }
 
     it("returns a person without aliases when no aliases are found") {
-      probationOffenderSearchApiMockServer.stubGetPrisoner(
+      probationOffenderSearchApiMockServer.stubGetOffenderSearch(
         nomsNumber,
         """
         """
