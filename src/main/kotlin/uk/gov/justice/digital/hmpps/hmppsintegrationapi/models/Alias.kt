@@ -5,6 +5,7 @@ import java.time.LocalDate
 
 data class Alias(
   val firstName: String,
+  @JsonAlias("surname")
   val lastName: String,
   @JsonAlias("middleNames")
   val middleName: String? = null,
