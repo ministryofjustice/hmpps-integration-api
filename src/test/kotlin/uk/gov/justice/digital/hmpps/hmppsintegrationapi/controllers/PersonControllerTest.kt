@@ -5,6 +5,7 @@ import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory.times
 import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.boot.test.mock.mockito.MockBean
@@ -29,8 +30,11 @@ internal class PersonControllerTest(
     }
 
     it("responds with a 200 OK status") {
-      val person = Person("Billy", "Bob")
-      Mockito.`when`(getPersonService.execute(id)).thenReturn(person)
+      val person = mapOf(
+        "nomis" to Person("Billy", "Bob"),
+        "prisonerOffenderSearch" to Person("Sally", "Sob")
+      )
+      whenever(getPersonService.execute(id)).thenReturn(person)
 
       val result = mockMvc.perform(get("/persons/$id")).andReturn()
 
@@ -39,7 +43,7 @@ internal class PersonControllerTest(
 
     it("responds with a 404 NOT FOUND status") {
       val idThatDoesNotExist = "zyx987"
-      Mockito.`when`(getPersonService.execute(id)).thenReturn(null)
+      whenever(getPersonService.execute(id)).thenReturn(null)
 
       val result = mockMvc.perform(get("/persons/$idThatDoesNotExist")).andReturn()
 
@@ -53,29 +57,44 @@ internal class PersonControllerTest(
     }
 
     it("returns a person with the matching ID") {
-      val person = Person(
-        "Billy", "Bob", dateOfBirth = LocalDate.parse("1970-10-10"),
-        aliases = listOf(Alias("Bill", "Bobbers", dateOfBirth = LocalDate.parse("1970-03-01")))
+      val stubbedResponse = mapOf<String, Person?>(
+        "nomis" to Person(
+          "Billy",
+          "Bob",
+          dateOfBirth = LocalDate.parse("1970-10-10"),
+          aliases = listOf(Alias("Bill", "Bobbers", dateOfBirth = LocalDate.parse("1970-03-01")))
+        ),
+        "prisonerOffenderSearch" to Person("Sally", "Sob")
       )
-      Mockito.`when`(getPersonService.execute(id)).thenReturn(person)
 
-      val result = mockMvc.perform(get("/persons/$id")).andReturn()
+      whenever(getPersonService.execute(id)).thenReturn(stubbedResponse)
 
-      result.response.contentAsString.shouldBe(
+      val expectedResult = mockMvc.perform(get("/persons/$id")).andReturn()
+      println(expectedResult.response.contentAsString)
+      expectedResult.response.contentAsString.shouldBe(
         """
-        {
-          "firstName": "Billy",
-          "lastName": "Bob",
-          "middleName": null,
-          "dateOfBirth": "1970-10-10",
-          "aliases": [
-            {
-              "firstName": "Bill",
-              "lastName": "Bobbers",
-              "middleName": null,
-              "dateOfBirth": "1970-03-01"
-            }
-          ]
+         {
+          "nomis": {
+            "firstName": "Billy",
+            "lastName": "Bob",
+            "middleName": null,
+            "dateOfBirth": "1970-10-10",
+            "aliases": [
+              {
+                "firstName": "Bill",
+                "lastName": "Bobbers",
+                "middleName": null,
+                "dateOfBirth": "1970-03-01"
+              }
+            ]
+          },
+          "prisonerOffenderSearch": {
+            "firstName": "Sally",
+            "lastName": "Sob",
+            "middleName": null,
+            "dateOfBirth": null,
+            "aliases": []
+          }
         }
         """.removeWhitespaceAndNewlines()
       )

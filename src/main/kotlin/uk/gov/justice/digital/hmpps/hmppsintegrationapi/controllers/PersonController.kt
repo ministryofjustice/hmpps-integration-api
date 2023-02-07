@@ -13,8 +13,12 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonServic
 @RequestMapping("/persons")
 class PersonController(@Autowired val getPersonService: GetPersonService) {
   @GetMapping("{id}")
-  fun getPerson(@PathVariable id: String): Person? {
-    val result = getPersonService.execute(id) ?: throw EntityNotFoundException("Could not find person with id: $id")
+  fun getPerson(@PathVariable id: String): Map<String, Person?> {
+    val result = getPersonService.execute(id)
+
+    if (result.isNullOrEmpty()) {
+      throw EntityNotFoundException("Could not find person with id: $id")
+    }
 
     return result
   }

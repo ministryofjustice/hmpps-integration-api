@@ -3,10 +3,9 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.shouldBe
-import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory
-import org.mockito.kotlin.any
 import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.context.ContextConfiguration
@@ -28,7 +27,7 @@ class NomisGatewayTest(@MockBean val hmppsAuthGateway: HmppsAuthGateway, private
       nomisApiMockServer.stubGetOffender(
         offenderNo,
         """
-        { 
+        {
           "offenderNo": "$offenderNo",
           "firstName": "John",
           "middleName": "Muriel",
@@ -46,9 +45,7 @@ class NomisGatewayTest(@MockBean val hmppsAuthGateway: HmppsAuthGateway, private
         """
       )
 
-      Mockito.`when`(hmppsAuthGateway.getClientToken(any())).thenReturn(
-        HmppsAuthMockServer.TOKEN
-      )
+      whenever(hmppsAuthGateway.getClientToken("NOMIS")).thenReturn(HmppsAuthMockServer.TOKEN)
     }
 
     afterTest {
@@ -59,7 +56,7 @@ class NomisGatewayTest(@MockBean val hmppsAuthGateway: HmppsAuthGateway, private
       it("authenticates using HMPPS Auth with credentials") {
         nomisGateway.getPerson(offenderNo)
 
-        verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken(any())
+        verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("NOMIS")
       }
 
       it("returns a person with the matching ID") {
@@ -79,7 +76,7 @@ class NomisGatewayTest(@MockBean val hmppsAuthGateway: HmppsAuthGateway, private
         nomisApiMockServer.stubGetOffender(
           offenderNo,
           """
-          { 
+          {
             "offenderNo": "$offenderNo",
             "firstName": "John",
             "lastName": "Smith",

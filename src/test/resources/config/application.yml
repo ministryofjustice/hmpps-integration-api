@@ -8,8 +8,9 @@ management.endpoint:
 services:
   prison-api:
     base-url: http://localhost:4000
-    hmpps-auth:
-      username: Y2xpZW50Cg==  # client encoded in Base64
-      password: Y2xpZW50LXNlY3JldAo=  # client-secret encoded in Base64
   hmpps-auth:
     base-url: http://localhost:3000
+    username: Y2xpZW50Cg==
+    password: Y2xpZW50LXNlY3JldAo=
+  prisoner-offender-search:
+    base-url: http://localhost:4001

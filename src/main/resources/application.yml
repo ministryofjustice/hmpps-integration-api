@@ -53,8 +53,9 @@ management:
 services:
   prison-api:
     base-url: "TestURL"
-    hmpps-auth:
-      username: fakeuser
-      password: fakepass
+  prisoner-offender-search:
+    base-url: "TestURL"
   hmpps-auth:
     base-url: "OtherTestURL"
+    username: ZGVsaXVzCg==
+    password: Y2xpZW50c2VjcmV0Cg==

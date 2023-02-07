@@ -1,11 +1,7 @@
 services:
+  prisoner-offender-search:
+    base-url: http://localhost:4010
   prison-api:
     base-url: http://localhost:8081
-    # Each application will likely have it's own credentials for its authentication method
-    # These are test values
-    hmpps-auth:
-      username: ZGVsaXVzCg==  # delius encoded in Base64
-      password: Y2xpZW50c2VjcmV0Cg==  # clientsecret encoded in Base64
   hmpps-auth:
     base-url: http://localhost:9090
-

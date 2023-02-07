@@ -32,9 +32,10 @@ When all changes have been made:
 
 ## Automatic Diagram Generation
 
-A GitHub Action named [Generate PlantUML Diagrams](https://github.com/ministryofjustice/hmpps-integration-api/blob/main/.github/workflows/generate-plantuml-diagrams.yml)
+We have a GitHub Actions workflow named [Generate PlantUML Diagrams](https://github.com/ministryofjustice/hmpps-integration-api/blob/main/.github/workflows/generate-plantuml-diagrams.yml)
+
 has been created to assist in the generation of diagrams. This automatically creates `.png` diagrams for each `.puml`
 file within the `./docs/diagrams` directory. The benefit of this workflow is that the author does not have to manually
 generate these diagrams.
 
-This will execute on all branches on a `git push`. The Action can also be executed manually via the Github Actions page.
+This will execute on all branches on a `git push`. The workflow can also be executed manually via the [GitHub Actions page](https://github.com/ministryofjustice/hmpps-integration-api/actions).
