@@ -13,11 +13,11 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ProbationOff
 
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
-  classes = [ProbationOffenderSearchGateway::class, HmppsAuthGateway::class]
+  classes = [ProbationOffenderSearchGateway::class, HmppsAuthGateway::class],
 )
 class ProbationOffenderSearchGatewayTest(
   @MockBean val hmppsAuthGateway: HmppsAuthGateway,
-  private val probationOffenderSearchGateway: ProbationOffenderSearchGateway
+  private val probationOffenderSearchGateway: ProbationOffenderSearchGateway,
 ) : DescribeSpec({
   val probationOffenderSearchApiMockServer = ProbationOffenderSearchApiMockServer()
   val nomsNumber = "xyz4321"
@@ -36,7 +36,7 @@ class ProbationOffenderSearchGatewayTest(
             "surname": "Bravo",
             "dateOfBirth": "1970-02-07",
             "otherIds": {
-              "nomsNumber": "$nomsNumber",
+              "nomsNumber": "$nomsNumber"
             },
             "offenderAliases": [
               {
@@ -45,17 +45,17 @@ class ProbationOffenderSearchGatewayTest(
                 "middleNames": [
                   "Candle"
                ],
-                "surname": "Wick",
+                "surname": "Wick"
               }
-            ], 
+            ]
           }
         ]
-      """
+      """,
     )
 
     val test = ProbationOffenderSearchGatewayTest::class // just for debugging, delete
     whenever(hmppsAuthGateway.getClientToken(ProbationOffenderSearchGatewayTest::class.simpleName!!)).thenReturn(
-      HmppsAuthMockServer.TOKEN
+      HmppsAuthMockServer.TOKEN,
     )
   }
 
@@ -69,7 +69,7 @@ class ProbationOffenderSearchGatewayTest(
 
       verify(
         hmppsAuthGateway,
-        VerificationModeFactory.times(1)
+        VerificationModeFactory.times(1),
       ).getClientToken(ProbationOffenderSearchGatewayTest::class.simpleName!!)
     }
 
@@ -92,7 +92,7 @@ class ProbationOffenderSearchGatewayTest(
       probationOffenderSearchApiMockServer.stubGetOffenderSearch(
         nomsNumber,
         """
-        """
+        """,
       )
 
       val person = probationOffenderSearchGateway.getPerson(nomsNumber)

@@ -10,18 +10,18 @@ class ProbationOffenderSearchApiMockServer : WireMockServer(WIREMOCK_PORT) {
 
   fun stubGetOffenderSearch(requestBody: String, responseBody: String) {
     stubFor(
-      get("/search")
+      post("/search")
         .withHeader(
           "Authorization",
-          matching("Bearer ${HmppsAuthMockServer.TOKEN}")
+          matching("Bearer ${HmppsAuthMockServer.TOKEN}"),
         )
         .withRequestBody(equalToJson(requestBody))
         .willReturn(
           aResponse()
             .withHeader("Content-Type", "application/json")
             .withStatus(200)
-            .withBody(responseBody.trimIndent())
-        )
+            .withBody(responseBody.trimIndent()),
+        ),
     )
   }
 }

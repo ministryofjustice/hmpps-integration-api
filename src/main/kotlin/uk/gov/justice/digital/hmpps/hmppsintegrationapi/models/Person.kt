@@ -5,9 +5,11 @@ import java.time.LocalDate
 
 data class Person(
   val firstName: String,
+  @JsonAlias("surname")
   val lastName: String,
-  @JsonAlias("middleNames")
+//  @JsonAlias("middleNames")
   val middleName: String? = null,
+  val middleNames: List<String>? = null,
   val dateOfBirth: LocalDate? = null,
-  val aliases: List<Alias> = listOf()
+  val aliases: List<Alias> = listOf(),
 )
