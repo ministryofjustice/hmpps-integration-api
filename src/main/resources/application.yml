@@ -59,3 +59,5 @@ services:
     base-url: "OtherTestURL"
     username: ZGVsaXVzCg==
     password: Y2xpZW50c2VjcmV0Cg==
+  probation-offender-search:
+    base-url: http://localhost:4002
