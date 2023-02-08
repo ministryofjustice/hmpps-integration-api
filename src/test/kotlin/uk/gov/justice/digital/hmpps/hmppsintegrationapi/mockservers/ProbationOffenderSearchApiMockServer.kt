@@ -11,7 +11,7 @@ class ProbationOffenderSearchApiMockServer : WireMockServer(WIREMOCK_PORT) {
     private const val WIREMOCK_PORT = 4002
   }
 
-  fun stubGetOffenderSearch(requestBody: String, responseBody: String) {
+  fun stubPostOffenderSearch(requestBody: String, responseBody: String) {
     stubFor(
       post("/search")
         .withHeader(

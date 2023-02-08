@@ -26,7 +26,7 @@ class ProbationOffenderSearchGatewayTest(
 
   beforeEach {
     probationOffenderSearchApiMockServer.start()
-    probationOffenderSearchApiMockServer.stubGetOffenderSearch(
+    probationOffenderSearchApiMockServer.stubPostOffenderSearch(
       "{\"nomsNumber\": \"$nomsNumber\"}",
       """
         [
@@ -80,7 +80,7 @@ class ProbationOffenderSearchGatewayTest(
     }
 
     it("returns a person without aliases when no aliases are found") {
-      probationOffenderSearchApiMockServer.stubGetOffenderSearch(
+      probationOffenderSearchApiMockServer.stubPostOffenderSearch(
         "{\"nomsNumber\": \"$nomsNumber\"}",
         """
           [
