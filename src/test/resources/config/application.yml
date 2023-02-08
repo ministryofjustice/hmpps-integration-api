@@ -14,3 +14,5 @@ services:
     password: Y2xpZW50LXNlY3JldAo=
   prisoner-offender-search:
     base-url: http://localhost:4001
+  probation-offender-search:
+    base-url: http://localhost:4002
