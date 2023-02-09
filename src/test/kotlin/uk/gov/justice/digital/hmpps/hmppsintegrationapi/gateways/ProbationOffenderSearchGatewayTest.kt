@@ -32,6 +32,10 @@ class ProbationOffenderSearchGatewayTest(
         [
            {
             "firstName": "Jonathan",
+            "middleNames": [
+              "Echo",
+              "Fred"
+            ],
             "surname": "Bravo",
             "dateOfBirth": "1970-02-07",
             "otherIds": {
@@ -41,6 +45,9 @@ class ProbationOffenderSearchGatewayTest(
               {
                 "dateOfBirth": "2000-02-07",
                 "firstName": "John",
+                "middleNames": [
+                  "Tom"
+                ],
                 "surname": "Wick"
               }
             ]
@@ -72,9 +79,11 @@ class ProbationOffenderSearchGatewayTest(
       val person = probationOffenderSearchGateway.getPerson(nomsNumber)
 
       person?.firstName.shouldBe("Jonathan")
+      person?.middleName.shouldBe("Echo Fred")
       person?.lastName.shouldBe("Bravo")
       person?.dateOfBirth.shouldBe(LocalDate.parse("1970-02-07"))
       person?.aliases?.first()?.firstName.shouldBe("John")
+      person?.aliases?.first()?.middleName.shouldBe("Tom")
       person?.aliases?.first()?.lastName.shouldBe("Wick")
       person?.aliases?.first()?.dateOfBirth.shouldBe(LocalDate.parse("2000-02-07"))
     }
