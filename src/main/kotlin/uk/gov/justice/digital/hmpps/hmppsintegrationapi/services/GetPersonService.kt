@@ -15,11 +15,11 @@ class GetPersonService(
 ) {
   fun execute(id: String): Map<String, Person?> {
     val personFromPrisonerOffenderSearch = prisonerOffenderSearchGateway.getPerson(id)
-    val personFromNomisGateway = nomisGateway.getPerson(id)
+    val personFromNomis = nomisGateway.getPerson(id)
     val personFromProbationOffenderSearch = probationOffenderSearchGateway.getPerson(id)
 
     return mapOf(
-      "nomis" to personFromNomisGateway,
+      "nomis" to personFromNomis,
       "prisonerOffenderSearch" to personFromPrisonerOffenderSearch,
       "probationOffenderSearch" to personFromProbationOffenderSearch
     )
