@@ -7,7 +7,7 @@ import java.time.LocalDate
 data class Prisoner(
   val firstName: String,
   val lastName: String,
-  val middleNames: String?,
+  val middleNames: String? = null,
   val dateOfBirth: LocalDate? = null,
   val aliases: List<PrisonerAlias> = listOf(),
 ) {

@@ -7,7 +7,7 @@ import java.time.LocalDate
 data class Offender(
   val firstName: String,
   val lastName: String,
-  val middleName: String?,
+  val middleName: String? = null,
   val dateOfBirth: LocalDate? = null,
   val aliases: List<OffenderAlias> = listOf()
 ) {
