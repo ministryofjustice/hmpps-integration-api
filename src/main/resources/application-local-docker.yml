@@ -1,4 +1,6 @@
 services:
+  probation-offender-search:
+    base-url: http://probation-offender-search:4010
   prisoner-offender-search:
     base-url: http://prisoner-offender-search:4010
   prison-api:
