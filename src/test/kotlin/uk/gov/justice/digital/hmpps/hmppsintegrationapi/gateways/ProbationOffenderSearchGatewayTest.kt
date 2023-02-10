@@ -17,7 +17,7 @@ import java.time.LocalDate
 
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
-  classes = [ProbationOffenderSearchGateway::class, HmppsAuthGateway::class],
+  classes = [ProbationOffenderSearchGateway::class],
 )
 class ProbationOffenderSearchGatewayTest(
   @MockBean val hmppsAuthGateway: HmppsAuthGateway,

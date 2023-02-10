@@ -2,12 +2,14 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways
 
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.collections.shouldBeEmpty
+import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
 import org.mockito.internal.verification.VerificationModeFactory
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
 import org.springframework.boot.test.mock.mockito.MockBean
+import org.springframework.http.HttpStatus
 import org.springframework.test.context.ContextConfiguration
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.PrisonerOffenderSearchApiMockServer
@@ -15,7 +17,7 @@ import java.time.LocalDate
 
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
-  classes = [PrisonerOffenderSearchGateway::class, HmppsAuthGateway::class]
+  classes = [PrisonerOffenderSearchGateway::class]
 )
 class PrisonerOffenderSearchGatewayTest(
   @MockBean val hmppsAuthGateway: HmppsAuthGateway,
@@ -90,6 +92,38 @@ class PrisonerOffenderSearchGatewayTest(
       val person = prisonerOffenderSearchGateway.getPerson(offenderNo)
 
       person?.aliases.shouldBeEmpty()
+    }
+
+    it("returns null when 400 Bad Request is returned") {
+      prisonerOffenderSearchApiMockServer.stubGetPrisoner(
+        offenderNo,
+        """
+          {
+            "developerMessage": "reason for bad request"
+          }
+          """,
+        HttpStatus.BAD_REQUEST
+      )
+
+      val person = prisonerOffenderSearchGateway.getPerson(offenderNo)
+
+      person?.shouldBeNull()
+    }
+
+    it("returns null when 404 Not Found is returned") {
+      prisonerOffenderSearchApiMockServer.stubGetPrisoner(
+        offenderNo,
+        """
+          {
+            "developerMessage": "cannot find person"
+          }
+          """,
+        HttpStatus.NOT_FOUND
+      )
+
+      val person = prisonerOffenderSearchGateway.getPerson(offenderNo)
+
+      person?.shouldBeNull()
     }
   }
 })
