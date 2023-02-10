@@ -22,6 +22,8 @@ services:
         condition: service_healthy
       prisoner-offender-search:
         condition: service_started
+      probation-offender-search:
+        condition: service_started
     environment:
       - SERVER_PORT=8080
       - SPRING_PROFILES_ACTIVE=local-docker
@@ -60,8 +62,16 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.setup-prisoner-offender-search
+    container_name: prisoner-offender-search
     ports:
       - "4010:4010"
+
+  probation-offender-search:
+    image: stoplight/prism:4
+    container_name: probation-offender-search
+    command: 'mock -h 0.0.0.0 https://probation-offender-search-dev.hmpps.service.justice.gov.uk/v3/api-docs'
+    ports:
+      - '4020:4010'
 
 networks:
   hmpps:
