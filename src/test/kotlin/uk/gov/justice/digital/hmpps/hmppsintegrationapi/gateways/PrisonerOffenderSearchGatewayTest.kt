@@ -40,7 +40,7 @@ class PrisonerOffenderSearchGatewayTest(
               "firstName": "Joey",
               "middleNames": "Martin",
               "lastName": "Smiles",
-              "dob": "1975-10-12"
+              "dateOfBirth": "1975-10-12"
             }
           ]
         }
