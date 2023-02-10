@@ -13,10 +13,14 @@ class GetPersonService(
   @Autowired val prisonerOffenderSearchGateway: PrisonerOffenderSearchGateway,
   @Autowired val probationOffenderSearchGateway: ProbationOffenderSearchGateway
 ) {
-  fun execute(id: String): Map<String, Person?> {
+  fun execute(id: String): Map<String, Person?>? {
     val personFromPrisonerOffenderSearch = prisonerOffenderSearchGateway.getPerson(id)
     val personFromNomis = nomisGateway.getPerson(id)
     val personFromProbationOffenderSearch = probationOffenderSearchGateway.getPerson(id)
+
+    if (personFromPrisonerOffenderSearch == null && personFromNomis == null && personFromProbationOffenderSearch == null) {
+      return null
+    }
 
     return mapOf(
       "nomis" to personFromNomis,
