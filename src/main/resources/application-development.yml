@@ -3,6 +3,8 @@ services:
     base-url: https://api-dev.prison.service.justice.gov.uk
   prisoner-offender-search:
     base-url: https://prisoner-offender-search-dev.prison.service.justice.gov.uk
+  probation-offender-search:
+    base-url: https://probation-offender-search-dev.hmpps.service.justice.gov.uk
   hmpps-auth:
     base-url: https://sign-in-dev.hmpps.service.justice.gov.uk
     username: ${CLIENT_ID}
