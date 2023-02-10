@@ -9,7 +9,7 @@ data class Offender(
   val lastName: String,
   val middleName: String? = null,
   val dateOfBirth: LocalDate? = null,
-  val aliases: List<OffenderAlias> = listOf()
+  val aliases: List<uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.Alias> = listOf()
 ) {
   fun toPerson(): Person = Person(
     this.firstName,
