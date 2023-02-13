@@ -2,6 +2,7 @@ authenticate-docker:
 	./scripts/authenticate_docker.sh
 
 build-dev:
+	docker-compose pull oauth-server prison-api
 	docker-compose build
 
 build:
