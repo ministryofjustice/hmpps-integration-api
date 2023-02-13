@@ -2,6 +2,7 @@ authenticate-docker:
 	./scripts/authenticate_docker.sh
 
 build-dev:
+	docker-compose build oauth-server --no-cache
 	docker-compose build
 
 build:

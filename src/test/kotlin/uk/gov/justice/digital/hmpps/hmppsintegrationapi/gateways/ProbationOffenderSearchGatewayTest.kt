@@ -10,18 +10,20 @@ import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.HttpStatus
+import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ProbationOffenderSearchApiMockServer
 import java.time.LocalDate
 
+@ActiveProfiles("test")
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
-  classes = [ProbationOffenderSearchGateway::class],
+  classes = [ProbationOffenderSearchGateway::class]
 )
 class ProbationOffenderSearchGatewayTest(
   @MockBean val hmppsAuthGateway: HmppsAuthGateway,
-  private val probationOffenderSearchGateway: ProbationOffenderSearchGateway,
+  private val probationOffenderSearchGateway: ProbationOffenderSearchGateway
 ) : DescribeSpec({
   val probationOffenderSearchApiMockServer = ProbationOffenderSearchApiMockServer()
   val nomsNumber = "xyz4321"
@@ -55,11 +57,11 @@ class ProbationOffenderSearchGatewayTest(
             ]
           }
         ]
-      """,
+      """
     )
 
     whenever(hmppsAuthGateway.getClientToken("Probation Offender Search")).thenReturn(
-      HmppsAuthMockServer.TOKEN,
+      HmppsAuthMockServer.TOKEN
     )
   }
 
@@ -73,7 +75,7 @@ class ProbationOffenderSearchGatewayTest(
 
       verify(
         hmppsAuthGateway,
-        VerificationModeFactory.times(1),
+        VerificationModeFactory.times(1)
       ).getClientToken("Probation Offender Search")
     }
 
@@ -105,7 +107,7 @@ class ProbationOffenderSearchGatewayTest(
             "offenderAliases": []
           }
         ]
-        """,
+        """
       )
 
       val person = probationOffenderSearchGateway.getPerson(nomsNumber)
