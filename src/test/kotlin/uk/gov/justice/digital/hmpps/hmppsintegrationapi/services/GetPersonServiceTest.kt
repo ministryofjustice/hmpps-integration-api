@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 
 import io.kotest.core.spec.style.DescribeSpec
+import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory
@@ -68,5 +69,15 @@ internal class GetPersonServiceTest(
     )
 
     result.shouldBe(expectedResult)
+  }
+
+  it("returns null when a person isn't found in any APIs") {
+    whenever(nomisGateway.getPerson(id)).thenReturn(null)
+    whenever(prisonerOffenderSearchGateway.getPerson(id)).thenReturn(null)
+    whenever(probationOffenderSearchGateway.getPerson(id)).thenReturn(null)
+
+    val result = getPersonService.execute(id)
+
+    result.shouldBeNull()
   }
 })

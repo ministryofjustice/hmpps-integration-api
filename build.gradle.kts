@@ -9,6 +9,7 @@ configurations {
 
 dependencies {
   implementation("org.springframework.boot:spring-boot-starter-webflux")
+  implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1")
 
   testImplementation("io.kotest:kotest-runner-junit5-jvm:5.5.4")
   testImplementation("io.kotest:kotest-assertions-core-jvm:5.5.4")

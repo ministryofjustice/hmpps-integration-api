@@ -24,18 +24,23 @@ internal class PersonControllerTest(
 ) : DescribeSpec({
   describe("GET /persons/{id}") {
     val id = "abc123"
+    val person = mapOf(
+      "nomis" to Person(
+        "Billy",
+        "Bob",
+        dateOfBirth = LocalDate.parse("1970-10-10"),
+        aliases = listOf(Alias("Bill", "Bobbers", dateOfBirth = LocalDate.parse("1970-03-01")))
+      ),
+      "prisonerOffenderSearch" to Person("Sally", "Sob"),
+      "probationOffenderSearch" to Person("Silly", "Sobbers"),
+    )
 
     beforeTest {
       Mockito.reset(getPersonService)
+      whenever(getPersonService.execute(id)).thenReturn(person)
     }
 
     it("responds with a 200 OK status") {
-      val person = mapOf(
-        "nomis" to Person("Billy", "Bob"),
-        "prisonerOffenderSearch" to Person("Sally", "Sob")
-      )
-      whenever(getPersonService.execute(id)).thenReturn(person)
-
       val result = mockMvc.perform(get("/persons/$id")).andReturn()
 
       result.response.status.shouldBe(200)
@@ -57,21 +62,9 @@ internal class PersonControllerTest(
     }
 
     it("returns a person with the matching ID") {
-      val stubbedResponse = mapOf<String, Person?>(
-        "nomis" to Person(
-          "Billy",
-          "Bob",
-          dateOfBirth = LocalDate.parse("1970-10-10"),
-          aliases = listOf(Alias("Bill", "Bobbers", dateOfBirth = LocalDate.parse("1970-03-01")))
-        ),
-        "prisonerOffenderSearch" to Person("Sally", "Sob")
-      )
+      val result = mockMvc.perform(get("/persons/$id")).andReturn()
 
-      whenever(getPersonService.execute(id)).thenReturn(stubbedResponse)
-
-      val expectedResult = mockMvc.perform(get("/persons/$id")).andReturn()
-      println(expectedResult.response.contentAsString)
-      expectedResult.response.contentAsString.shouldBe(
+      result.response.contentAsString.shouldBe(
         """
          {
           "nomis": {
@@ -91,6 +84,13 @@ internal class PersonControllerTest(
           "prisonerOffenderSearch": {
             "firstName": "Sally",
             "lastName": "Sob",
+            "middleName": null,
+            "dateOfBirth": null,
+            "aliases": []
+          },
+          "probationOffenderSearch": {
+            "firstName": "Silly",
+            "lastName": "Sobbers",
             "middleName": null,
             "dateOfBirth": null,
             "aliases": []
