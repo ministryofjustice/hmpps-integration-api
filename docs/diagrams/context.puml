@@ -1,0 +1,30 @@
+@startuml context-diagram
+
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+
+skinparam linetype polyline
+
+title HMPPS Integration API - Context Diagram
+
+AddElementTag("not_yet_implemented", $bgColor="#b5bac9", $fontColor="#9C9C9C")
+
+System_Ext(consumer, "Consumer Application", "An authenticated service that will consume API.")
+
+Boundary(moj, "Ministry of Justice (MoJ)", "Ministerial Department") {
+  Boundary(hmpps, "His Majesty's Prison and Probation Service (HMPPS)", "Executive Agency") {
+    System(hmpps_integration_api, "Integration API", "A single point of entry for services to retrieve data from multiple HMPPS systems.")
+
+    SystemQueue_Ext(messaging, "Messaging System", "SNS/SQS Service",$tags="not_yet_implemented")
+
+    System_Ext(upstream, "Upstream Systems", "Integrated systems where data is retrieved from")
+  }
+}
+
+Rel_Down(consumer, hmpps_integration_api, "Uses")
+Rel_Right(hmpps_integration_api, messaging, "Posts Update")
+Rel_Up(messaging, consumer, "Retrieves Updates")
+Rel(hmpps_integration_api, upstream, "Queries for data")
+
+SHOW_DYNAMIC_LEGEND()
+
+@enduml
