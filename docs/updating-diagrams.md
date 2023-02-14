@@ -1,6 +1,6 @@
 # Updating diagrams
 
-Diagrams such as our [context diagram](/docs/diagrams/context-diagram.png) are created
+Diagrams such as our [context diagram](/docs/diagrams/context.png) are created
 using [PlantUML](https://plantuml.com/) i.e. diagrams as code.
 
 > 💡 **Hint:** For [C4 diagrams](https://c4model.com/),
