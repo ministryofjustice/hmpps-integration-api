@@ -1,8 +1,8 @@
-@startuml container-aws
+@startuml aws-deployment
 
    !include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
 
-   title HMPPS Integration API - Container Diagram for connectivity with the API
+   title HMPPS Integration API - Deployment Diagram to illustrate connectivity
 
    AddRelTag("mTLS", $textColor=$ARROW_COLOR, $lineColor=$ARROW_COLOR, $lineStyle=DottedLine())
 
