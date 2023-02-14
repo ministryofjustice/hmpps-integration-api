@@ -29,9 +29,9 @@ services:
       - SPRING_PROFILES_ACTIVE=local-docker
       - LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_WEB=TRACE
 
-  oauth-server:
+  hmpps-auth:
     image: quay.io/hmpps/hmpps-auth:latest
-    container_name: oauth-server
+    container_name: hmpps-auth
     ports:
       - "9090:8080"
     healthcheck:
@@ -45,7 +45,7 @@ services:
     image: quay.io/hmpps/prison-api:latest
     container_name: prison-api
     depends_on:
-      - oauth-server
+      - hmpps-auth
     ports:
       - "8081:8080"
     healthcheck:
