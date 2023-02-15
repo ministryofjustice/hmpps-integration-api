@@ -42,7 +42,7 @@ as well as the following technologies for its infrastructure:
 - [Kubernetes](https://kubernetes.io/docs/home/) - Creates 'pods' to host our environment. Manages auto-scaling, load
   balancing and networking to our application.
 
-![Context Diagram](docs/diagrams/context.png)
+![Context Diagram](docs/diagrams/context.svg)
 
 ## Getting started
 

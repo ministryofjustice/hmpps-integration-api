@@ -23,13 +23,13 @@ jobs:
         java -jar plantuml.jar -version
     - name: Generate Diagrams
       run: | 
-        java -jar plantuml.jar *.puml
+        java -jar plantuml.jar -svg *.puml
     - name: Setup Git Config
       run: |
         git config user.name "GitHub Actions PlantUML Bot"
         git config user.email "<>"
     - name: Commit images
       run: |
-        git add *.png
-        git commit -m "Exported .PUML PlantUML diagrams to .PNG" || true
+        git add *.svg
+        git commit -m "Exported .PUML PlantUML diagrams to .SVG" || true
         git push origin ${BRANCH_NAME}
