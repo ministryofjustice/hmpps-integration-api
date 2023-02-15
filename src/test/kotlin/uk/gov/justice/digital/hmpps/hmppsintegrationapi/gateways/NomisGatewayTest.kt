@@ -4,6 +4,7 @@ import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
+import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -28,9 +29,21 @@ class NomisGatewayTest(@MockBean val hmppsAuthGateway: HmppsAuthGateway, private
 
     beforeEach {
       nomisApiMockServer.start()
-      nomisApiMockServer.stubGetOffender(
-        offenderNo,
-        """
+      Mockito.reset(hmppsAuthGateway)
+
+      whenever(hmppsAuthGateway.getClientToken("NOMIS")).thenReturn(HmppsAuthMockServer.TOKEN)
+    }
+
+    afterTest {
+      nomisApiMockServer.stop()
+    }
+
+    describe("#getPerson") {
+
+      beforeTest {
+        nomisApiMockServer.stubGetOffender(
+          offenderNo,
+          """
         {
           "offenderNo": "$offenderNo",
           "firstName": "John",
@@ -47,16 +60,9 @@ class NomisGatewayTest(@MockBean val hmppsAuthGateway: HmppsAuthGateway, private
           ]
         }
         """
-      )
+        )
+      }
 
-      whenever(hmppsAuthGateway.getClientToken("NOMIS")).thenReturn(HmppsAuthMockServer.TOKEN)
-    }
-
-    afterTest {
-      nomisApiMockServer.stop()
-    }
-
-    describe("#getPerson") {
       it("authenticates using HMPPS Auth with credentials") {
         nomisGateway.getPerson(offenderNo)
 
@@ -124,6 +130,39 @@ class NomisGatewayTest(@MockBean val hmppsAuthGateway: HmppsAuthGateway, private
         val person = nomisGateway.getPerson(offenderNo)
 
         person?.shouldBeNull()
+      }
+    }
+
+    describe("#getPersonImageMetadata") {
+
+      beforeTest {
+        nomisApiMockServer.stubGetOffenderImageDetails(
+          offenderNo,
+          """
+          [
+            {
+              "imageId": 24213,
+              "captureDate": "2008-08-27",
+              "imageView": "FACE",
+              "imageOrientation": "FRONT",
+              "imageType": "OFF_BKG"
+            }
+          ]
+        """
+        )
+      }
+
+      it("authenticates using HMPPS Auth with credentials") {
+        nomisGateway.getImageMetadataForPerson(offenderNo)
+
+        verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("NOMIS")
+      }
+
+      it("returns image metadata for the matching person ID") {
+        val imageMetadata = nomisGateway.getImageMetadataForPerson(offenderNo)
+
+        imageMetadata.first().id.shouldBe(24213)
+        imageMetadata.first().captureDate.shouldBe(LocalDate.parse("2008-08-27"))
       }
     }
   })
