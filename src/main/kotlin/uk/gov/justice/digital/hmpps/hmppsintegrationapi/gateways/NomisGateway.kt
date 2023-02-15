@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.WebClientResponseException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ImageMetadata
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.Offender
 
@@ -37,5 +38,9 @@ class NomisGateway(@Value("\${services.prison-api.base-url}") baseUrl: String) {
     } catch (exception: WebClientResponseException.NotFound) {
       null
     }
+  }
+
+  fun getImageMetadataForPerson(id: String): List<ImageMetadata> {
+    return listOf()
   }
 }
