@@ -6,8 +6,8 @@ import java.time.LocalDate
 class ImageDetail(
   val imageId: Int,
   val captureDate: LocalDate
-  ) {
-  fun toImageMetadata() : ImageMetadata = ImageMetadata(
+) {
+  fun toImageMetadata(): ImageMetadata = ImageMetadata(
     this.imageId,
     this.captureDate
   )
