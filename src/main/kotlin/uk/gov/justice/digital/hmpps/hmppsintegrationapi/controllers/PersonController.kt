@@ -29,8 +29,9 @@ class PersonController(
   }
 
   @GetMapping("{id}/images")
-  fun getPersonImages(@PathVariable id: String): List<ImageMetadata> {
-    getImageMetadataForPersonService.execute(id)
-    return listOf()
+  fun getPersonImages(@PathVariable id: String): Map<String, List<ImageMetadata>> {
+    val images = getImageMetadataForPersonService.execute(id)
+
+    return mapOf("images" to images)
   }
 }

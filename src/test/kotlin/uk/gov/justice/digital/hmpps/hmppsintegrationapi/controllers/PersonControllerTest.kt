@@ -13,6 +13,7 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Alias
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ImageMetadata
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetImageMetadataForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService
@@ -105,6 +106,18 @@ internal class PersonControllerTest(
   }
 
   describe("GET /persons/{id}/images") {
+    beforeTest {
+      Mockito.reset(getImageMetadataForPersonService)
+      whenever(getImageMetadataForPersonService.execute(id)).thenReturn(
+        listOf(
+          ImageMetadata(
+            id = 1,
+            captureDate = LocalDate.parse("2023-03-01")
+          )
+        )
+      )
+    }
+
     it("responds with a 200 OK status") {
       val result = mockMvc.perform(get("/persons/$id/images")).andReturn()
 
@@ -115,6 +128,23 @@ internal class PersonControllerTest(
       mockMvc.perform(get("/persons/$id/images")).andReturn()
 
       verify(getImageMetadataForPersonService, times(1)).execute(id)
+    }
+
+    it("returns the metadata of images for a person with the matching ID") {
+      val result = mockMvc.perform(get("/persons/$id/images")).andReturn()
+
+      result.response.contentAsString.shouldBe(
+        """
+        {
+          "images": [
+            {
+              "id": 1,
+              "captureDate": "2023-03-01"
+            }
+          ]
+        }
+        """.removeWhitespaceAndNewlines()
+      )
     }
   }
 })
