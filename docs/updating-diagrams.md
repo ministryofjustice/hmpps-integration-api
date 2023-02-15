@@ -1,6 +1,6 @@
 # Updating diagrams
 
-Diagrams such as our [context diagram](/docs/diagrams/context.png) are created
+Diagrams such as our [context diagram](/docs/diagrams/context.svg) are created
 using [PlantUML](https://plantuml.com/) i.e. diagrams as code.
 
 > 💡 **Hint:** For [C4 diagrams](https://c4model.com/),
@@ -27,13 +27,13 @@ locally hosted server by changing the value of `plantuml.server`.
 
 When all changes have been made:
 
-6. Push your code back to the repository, the [Generate PlantUML Diagrams GitHub Action](#automatic-diagram-generation) will generate the required `.png`
+6. Push your code back to the repository, the [Generate PlantUML Diagrams GitHub Action](#automatic-diagram-generation) will generate the required output file.
    files automatically.
 
 ## Automatic Diagram Generation
 
 We have a GitHub Actions workflow named [Generate PlantUML Diagrams](https://github.com/ministryofjustice/hmpps-integration-api/blob/main/.github/workflows/generate-plantuml-diagrams.yml)
-has been created to assist in the generation of diagrams. This automatically creates `.png` diagrams for each `.puml`
+has been created to assist in the generation of diagrams. This automatically creates `.svg` diagrams for each `.puml`
 file within the `./docs/diagrams` directory. The benefit of this workflow is that the author does not have to manually
 generate these diagrams.
 
