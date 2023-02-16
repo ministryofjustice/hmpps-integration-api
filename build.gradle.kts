@@ -25,25 +25,21 @@ java {
 }
 
 tasks {
-  withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
-    kotlinOptions {
-      jvmTarget = "18"
-    }
-  }
-
   register<Test>("unitTest") {
-    useJUnitPlatform()
-
     filter {
       excludeTestsMatching("uk.gov.justice.digital.hmpps.hmppsintegrationapi.smoke*")
     }
   }
 
   register<Test>("smokeTest") {
-    useJUnitPlatform()
-
     filter {
       includeTestsMatching("uk.gov.justice.digital.hmpps.hmppsintegrationapi.smoke*")
+    }
+  }
+
+  withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+    kotlinOptions {
+      jvmTarget = "18"
     }
   }
 }
