@@ -102,7 +102,9 @@ make serve
 Each service is then accessible at:
 
 - [http://localhost:8080](http://localhost:8080) for this application
-- [http://localhost:8081](http://localhost:8081) for the Prison API
+- [http://localhost:4030](http://localhost:4030) for the Prison API
+- [http://localhost:4020](http://localhost:4020) for the Probation Offender Search
+- [http://localhost:4010](http://localhost:4010) for the Prisoner Offender Search
 - [http://localhost:9090](http://localhost:9090) for the HMPPS Auth service
 
 As part of getting the HMPPS Auth service running locally, [the in-memory database is seeded with data including a number of clients](https://github.com/ministryofjustice/hmpps-auth/blob/main/src/main/resources/db/dev/data/auth/V900_0__clients.sql). A client can have different permissions i.e. read, write, reporting, although strangely the column name is called `​​autoapprove`.

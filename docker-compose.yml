@@ -21,9 +21,9 @@ services:
       prison-api:
         condition: service_healthy
       prisoner-offender-search:
-        condition: service_started
+        condition: service_healthy
       probation-offender-search:
-        condition: service_started
+        condition: service_healthy
     environment:
       - SERVER_PORT=8080
       - SPRING_PROFILES_ACTIVE=local-docker
@@ -42,27 +42,27 @@ services:
       - LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_WEB=TRACE
 
   prison-api:
-    image: quay.io/hmpps/prison-api:latest
+    image: stoplight/prism:4
     container_name: prison-api
-    depends_on:
-      - hmpps-auth
-    ports:
-      - "8081:8080"
+    command: 'mock -h 0.0.0.0 https://api-dev.prison.service.justice.gov.uk/v3/api-docs'
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8080/health" ]
-      interval: 1s
-      timeout: 120s
-      retries: 100
-    environment:
-      - SERVER_PORT=8080
-      - SPRING_PROFILES_ACTIVE=nomis-hsqldb
-      - LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_WEB=TRACE
+      test: 'wget --header="Authorization: Bearer abc" http://127.0.0.1:4010/api/offenders/A1234AL -O /dev/null'
+    depends_on:
+      hmpps-auth:
+        condition: service_healthy
+    ports:
+      - '4030:4010'
 
   prisoner-offender-search:
     build:
       context: .
       dockerfile: Dockerfile.setup-prisoner-offender-search
     container_name: prisoner-offender-search
+    healthcheck:
+      test: 'wget --header="Authorization: Bearer abc" http://127.0.0.1:4010/prisoner/A1234AL -O /dev/null'
+    depends_on:
+      hmpps-auth:
+        condition: service_healthy
     ports:
       - "4010:4010"
 
@@ -70,6 +70,11 @@ services:
     image: stoplight/prism:4
     container_name: probation-offender-search
     command: 'mock -h 0.0.0.0 https://probation-offender-search-dev.hmpps.service.justice.gov.uk/v3/api-docs'
+    healthcheck:
+      test: 'wget http://0.0.0.0:4010/synthetic-monitor -O /dev/null'
+    depends_on:
+      hmpps-auth:
+        condition: service_healthy
     ports:
       - '4020:4010'
 
