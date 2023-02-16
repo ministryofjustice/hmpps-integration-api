@@ -4,6 +4,6 @@ services:
   prisoner-offender-search:
     base-url: http://localhost:4010
   prison-api:
-    base-url: http://localhost:8081
+    base-url: http://localhost:4030
   hmpps-auth:
     base-url: http://localhost:9090
