@@ -18,10 +18,10 @@ stop:
 	docker-compose down
 
 unit-test:
-	./gradlew test
+	./gradlew unitTest
 
 smoke-test: serve
-	docker-compose exec client ./run_test.sh
+	./gradlew smokeTest
 
 test: unit-test smoke-test
 
