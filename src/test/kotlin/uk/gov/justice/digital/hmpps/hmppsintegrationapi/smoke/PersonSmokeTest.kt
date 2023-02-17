@@ -1,7 +1,9 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.smoke
 
 import io.kotest.core.spec.style.DescribeSpec
+import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
@@ -21,5 +23,29 @@ class PersonSmokeTest : DescribeSpec({
     )
 
     response.body().shouldContain("\"nomis\":{\"firstName\":\"string\",\"lastName\":\"string\"")
+  }
+
+  it("returns image metadata for a person") {
+    val id = "A1234AL"
+
+    val response = httpClient.send(
+      httpRequest.uri(URI.create("$baseUrl/persons/$id/images")).build(),
+      HttpResponse.BodyHandlers.ofString()
+    )
+
+    response.body().shouldBe(
+      """
+      {
+        "images": [
+          {
+            "captureDate": "2019-08-24",
+            "view": "string",
+            "orientation": "string",
+            "type": "string"
+          }
+        ]
+      }
+      """.removeWhitespaceAndNewlines()
+    )
   }
 })

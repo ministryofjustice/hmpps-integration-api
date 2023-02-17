@@ -2,7 +2,7 @@ authenticate-docker:
 	./scripts/authenticate_docker.sh
 
 build-dev:
-	docker-compose pull hmpps-auth prison-api
+	docker-compose pull hmpps-auth
 	docker-compose build
 
 build:

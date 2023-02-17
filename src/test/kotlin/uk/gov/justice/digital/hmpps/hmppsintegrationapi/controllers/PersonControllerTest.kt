@@ -13,17 +13,21 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Alias
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ImageMetadata
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Person
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetImageMetadataForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService
 import java.time.LocalDate
 
 @WebMvcTest(controllers = [PersonController::class])
 internal class PersonControllerTest(
   @Autowired val mockMvc: MockMvc,
-  @MockBean val getPersonService: GetPersonService
+  @MockBean val getPersonService: GetPersonService,
+  @MockBean val getImageMetadataForPersonService: GetImageMetadataForPersonService
 ) : DescribeSpec({
+
+  val id = "abc123"
   describe("GET /persons/{id}") {
-    val id = "abc123"
     val person = mapOf(
       "nomis" to Person(
         "Billy",
@@ -32,7 +36,7 @@ internal class PersonControllerTest(
         aliases = listOf(Alias("Bill", "Bobbers", dateOfBirth = LocalDate.parse("1970-03-01")))
       ),
       "prisonerOffenderSearch" to Person("Sally", "Sob"),
-      "probationOffenderSearch" to Person("Silly", "Sobbers"),
+      "probationOffenderSearch" to Person("Silly", "Sobbers")
     )
 
     beforeTest {
@@ -95,6 +99,53 @@ internal class PersonControllerTest(
             "dateOfBirth": null,
             "aliases": []
           }
+        }
+        """.removeWhitespaceAndNewlines()
+      )
+    }
+  }
+
+  describe("GET /persons/{id}/images") {
+    beforeTest {
+      Mockito.reset(getImageMetadataForPersonService)
+      whenever(getImageMetadataForPersonService.execute(id)).thenReturn(
+        listOf(
+          ImageMetadata(
+            captureDate = LocalDate.parse("2023-03-01"),
+            view = "FACE",
+            orientation = "FRONT",
+            type = "OFF_BKG"
+          )
+        )
+      )
+    }
+
+    it("responds with a 200 OK status") {
+      val result = mockMvc.perform(get("/persons/$id/images")).andReturn()
+
+      result.response.status.shouldBe(200)
+    }
+
+    it("retrieves the metadata of images for a person with the matching ID") {
+      mockMvc.perform(get("/persons/$id/images")).andReturn()
+
+      verify(getImageMetadataForPersonService, times(1)).execute(id)
+    }
+
+    it("returns the metadata of images for a person with the matching ID") {
+      val result = mockMvc.perform(get("/persons/$id/images")).andReturn()
+
+      result.response.contentAsString.shouldBe(
+        """
+        {
+          "images": [
+            {
+              "captureDate": "2023-03-01",
+              "view": "FACE",
+              "orientation": "FRONT",
+              "type": "OFF_BKG"
+            }
+          ]
         }
         """.removeWhitespaceAndNewlines()
       )

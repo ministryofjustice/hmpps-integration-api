@@ -1,9 +1,11 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways
 
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
+import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -12,6 +14,7 @@ import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.NomisApiMockServer
 import java.time.LocalDate
@@ -28,9 +31,21 @@ class NomisGatewayTest(@MockBean val hmppsAuthGateway: HmppsAuthGateway, private
 
     beforeEach {
       nomisApiMockServer.start()
-      nomisApiMockServer.stubGetOffender(
-        offenderNo,
-        """
+      Mockito.reset(hmppsAuthGateway)
+
+      whenever(hmppsAuthGateway.getClientToken("NOMIS")).thenReturn(HmppsAuthMockServer.TOKEN)
+    }
+
+    afterTest {
+      nomisApiMockServer.stop()
+    }
+
+    describe("#getPerson") {
+
+      beforeTest {
+        nomisApiMockServer.stubGetOffender(
+          offenderNo,
+          """
         {
           "offenderNo": "$offenderNo",
           "firstName": "John",
@@ -47,16 +62,9 @@ class NomisGatewayTest(@MockBean val hmppsAuthGateway: HmppsAuthGateway, private
           ]
         }
         """
-      )
+        )
+      }
 
-      whenever(hmppsAuthGateway.getClientToken("NOMIS")).thenReturn(HmppsAuthMockServer.TOKEN)
-    }
-
-    afterTest {
-      nomisApiMockServer.stop()
-    }
-
-    describe("#getPerson") {
       it("authenticates using HMPPS Auth with credentials") {
         nomisGateway.getPerson(offenderNo)
 
@@ -124,6 +132,59 @@ class NomisGatewayTest(@MockBean val hmppsAuthGateway: HmppsAuthGateway, private
         val person = nomisGateway.getPerson(offenderNo)
 
         person?.shouldBeNull()
+      }
+    }
+
+    describe("#getPersonImageMetadata") {
+
+      beforeTest {
+        nomisApiMockServer.stubGetOffenderImageDetails(
+          offenderNo,
+          """
+          [
+            {
+              "imageId": 24213,
+              "captureDate": "2008-08-27",
+              "imageView": "FACE",
+              "imageOrientation": "FRONT",
+              "imageType": "OFF_BKG"
+            }
+          ]
+        """
+        )
+      }
+
+      it("authenticates using HMPPS Auth with credentials") {
+        nomisGateway.getImageMetadataForPerson(offenderNo)
+
+        verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("NOMIS")
+      }
+
+      it("returns image metadata for the matching person ID") {
+        val imageMetadata = nomisGateway.getImageMetadataForPerson(offenderNo)
+
+        imageMetadata.first().captureDate.shouldBe(LocalDate.parse("2008-08-27"))
+        imageMetadata.first().view.shouldBe("FACE")
+        imageMetadata.first().orientation.shouldBe("FRONT")
+        imageMetadata.first().type.shouldBe("OFF_BKG")
+      }
+
+      it("returns a person without image metadata when no images are found") {
+        nomisApiMockServer.stubGetOffenderImageDetails(offenderNo, "[]")
+
+        val imageMetadata = nomisGateway.getImageMetadataForPerson(offenderNo)
+
+        imageMetadata.shouldBeEmpty()
+      }
+
+      it("throws an exception when 404 Not Found is returned") {
+        nomisApiMockServer.stubGetOffenderImageDetails(offenderNo, "", HttpStatus.NOT_FOUND)
+
+        val exception = shouldThrow<EntityNotFoundException> {
+          nomisGateway.getImageMetadataForPerson(offenderNo)
+        }
+
+        exception.message.shouldBe("Could not find person with id: $offenderNo")
       }
     }
   })
