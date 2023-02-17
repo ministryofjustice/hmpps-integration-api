@@ -11,30 +11,28 @@ AddElementTag("not_yet_implemented", $bgColor="#D3D3D3", $fontColor="#9C9C9C")
 System_Ext(consumer, "Consumer Application", "An authenticated consumer of the Integration API.")
 
 Boundary(aws_cloudplatform, "Cloud Platform", "A Kubernetes cluster using Amazon Web Services", $link="https://user-guide.cloud-platform.service.justice.gov.uk/documentation/concepts/cp-tech-overview.html") {
-    Boundary(hmpps_integration_api, "HMPPS Integration API", "A single point of entry for services to retrieve data from multiple HMPPS systems.", $link="https://github.com/ministryofjustice/hmpps-integration-api"){
-        Container(springboot_api, "REST API", "Springboot Kotlin API", "Uses gateways....")
+    Boundary(hmpps_integration_api, "HMPPS Integration API", "A single point of entry for services to retrieve data from multiple HMPPS systems."){
+        Container(springboot_api, "REST API", "Springboot Kotlin API", "Uses gateways to pull data from upstream systems. DTO's are configured to transform the format of the data as it passes through.", $link="https://github.com/ministryofjustice/hmpps-integration-api")
             SystemQueue_Ext(messaging, "Messaging System", "SNS/SQS Service.",$tags="not_yet_implemented")
     }
 
-    Container(hmpps_auth, "HMPPS Auth", "Authentication service", $link="https://github.com/ministryofjustice/hmpps-auth")
+    Container(hmpps_auth, "HMPPS Auth", "Springboot Kotlin API", "	UI and OAuth2 server integrating with NOMIS database, nDelius (via community api) and an auth database for storing external users", $link="https://github.com/ministryofjustice/hmpps-auth")
 
     Boundary(upstream, "Legacy Upstream Systems", "Various HMPPS upstream systems, these will eventually be replaced"){
-        Container(prison_api, "Prison API", "Springboot Java API", "API over NOMIS DB used by Digital Prison team applications and services")
-
-        Container(probation_offender_search, "Probation Offender Search", "Springboot Kotlin API", "API over the NDelius offender data held in Elasticsearch")
-
-        Container(prison_offender_search, "Prisoner Offender Search", "API over the NOMIS prisoner data held in Elasticsearch",  "Springboot Kotlin API")
+        Container(prison_api, "Prison API", "Springboot Java API", "API over NOMIS DB used by Digital Prison team applications and services", $link="https://github.com/ministryofjustice/prison-api")
+        Container(probation_offender_search, "Probation Offender Search", "Springboot Kotlin API", "API over the NDelius offender data held in Elasticsearch", $link="https://probation-offender-search-dev.hmpps.service.justice.gov.uk/swagger-ui/index.html")
+        Container(prison_offender_search, "Prisoner Offender Search", "Springboot Kotlin API", "API over the NOMIS prisoner data held in Elasticsearch", $link="https://github.com/ministryofjustice/prisoner-offender-search")
+        Container(oasys, "OASys", "Springboot Kotlin API", "REST access to the OASYS Oracle DB offender assessment information", $link="https://github.com/ministryofjustice/offender-assessments-api-kotlin", $tags="not_yet_implemented")
+        Lay_L(prison_offender_search, prison_api)
     }
+
+    Container(oasys, "OASys", "Springboot Kotlin API", "REST access to the OASYS Oracle DB offender assessment information")
 }
 
 Rel(consumer, springboot_api, "Makes API calls to", "JSON/HTTPS")
 Rel(consumer, messaging, "Retrieves updates")
-
 Rel_Right(springboot_api, messaging, "Posts updates")
-
-
 Rel_Right(springboot_api, hmpps_auth, "Authenticates", "Bearer Token")
-
 Rel_Down(springboot_api, upstream, "Makes API calls to", "JSON/HTTPS")
 
 SHOW_DYNAMIC_LEGEND()
