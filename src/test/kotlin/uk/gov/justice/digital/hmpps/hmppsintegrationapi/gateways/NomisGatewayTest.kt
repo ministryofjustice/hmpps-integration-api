@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways
 
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.nulls.shouldBeNull
@@ -13,6 +14,8 @@ import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.AuthenticationFailedException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.NomisApiMockServer
 import java.time.LocalDate
@@ -163,6 +166,24 @@ class NomisGatewayTest(@MockBean val hmppsAuthGateway: HmppsAuthGateway, private
 
         imageMetadata.first().id.shouldBe(24213)
         imageMetadata.first().captureDate.shouldBe(LocalDate.parse("2008-08-27"))
+      }
+
+      it("returns a person without image metadata when no images are found") {
+        nomisApiMockServer.stubGetOffenderImageDetails(offenderNo, "[]")
+
+        val imageMetadata = nomisGateway.getImageMetadataForPerson(offenderNo)
+
+        imageMetadata.shouldBeEmpty()
+      }
+
+      it("throws an exception when 404 Not Found is returned") {
+        nomisApiMockServer.stubGetOffenderImageDetails(offenderNo, "", HttpStatus.NOT_FOUND)
+
+        val exception = shouldThrow<EntityNotFoundException> {
+          nomisGateway.getImageMetadataForPerson(offenderNo)
+        }
+
+        exception.message.shouldBe("Could not find person with id: $offenderNo");
       }
     }
   })

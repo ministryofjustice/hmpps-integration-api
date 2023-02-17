@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.WebClientResponseException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ImageMetadata
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.ImageDetail
@@ -44,14 +45,18 @@ class NomisGateway(@Value("\${services.prison-api.base-url}") baseUrl: String) {
   fun getImageMetadataForPerson(id: String): List<ImageMetadata> {
     val token = hmppsAuthGateway.getClientToken("NOMIS")
 
-    return webClient
-      .get()
-      .uri("/api/images/offenders/$id")
-      .header("Authorization", "Bearer $token")
-      .retrieve()
-      .bodyToFlux(ImageDetail::class.java)
-      .map { imageDetails -> imageDetails.toImageMetadata() }
-      .collectList()
-      .block()
+    return try {
+      webClient
+        .get()
+        .uri("/api/images/offenders/$id")
+        .header("Authorization", "Bearer $token")
+        .retrieve()
+        .bodyToFlux(ImageDetail::class.java)
+        .map { imageDetails -> imageDetails.toImageMetadata() }
+        .collectList()
+        .block()
+    } catch (exception: WebClientResponseException.NotFound){
+      throw EntityNotFoundException("Could not find person with id: $id")
+    }
   }
 }
