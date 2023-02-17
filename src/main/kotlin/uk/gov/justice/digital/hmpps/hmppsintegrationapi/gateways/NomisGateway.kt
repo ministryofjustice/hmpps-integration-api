@@ -55,7 +55,7 @@ class NomisGateway(@Value("\${services.prison-api.base-url}") baseUrl: String) {
         .map { imageDetails -> imageDetails.toImageMetadata() }
         .collectList()
         .block()
-    } catch (exception: WebClientResponseException.NotFound){
+    } catch (exception: WebClientResponseException.NotFound) {
       throw EntityNotFoundException("Could not find person with id: $id")
     }
   }
