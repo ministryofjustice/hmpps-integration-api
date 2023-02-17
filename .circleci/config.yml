@@ -49,13 +49,14 @@ jobs:
       - store_test_results:
           path: build/test-results
   smoke-tests:
-    docker:
-      - image: cimg/base:current
-    resource_class: xlarge
+    machine:
+      image: ubuntu-2204:2022.10.2
     steps:
       - checkout
-      - setup_remote_docker:
-          docker_layer_caching: true
+      - restore_cache:
+          keys:
+            - gradle-{{ checksum "build.gradle.kts" }}
+            - gradle-
       - run:
           name: Run smoke tests
           command: make smoke-test

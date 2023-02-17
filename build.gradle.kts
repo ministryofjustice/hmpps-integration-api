@@ -25,9 +25,18 @@ java {
 }
 
 tasks {
-  withType<Test>().configureEach {
-    useJUnitPlatform()
+  register<Test>("unitTest") {
+    filter {
+      excludeTestsMatching("uk.gov.justice.digital.hmpps.hmppsintegrationapi.smoke*")
+    }
   }
+
+  register<Test>("smokeTest") {
+    filter {
+      includeTestsMatching("uk.gov.justice.digital.hmpps.hmppsintegrationapi.smoke*")
+    }
+  }
+
   withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
     kotlinOptions {
       jvmTarget = "18"
