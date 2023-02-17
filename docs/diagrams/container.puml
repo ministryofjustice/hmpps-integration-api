@@ -1,6 +1,6 @@
 @startuml container
 
-!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
 
 skinparam linetype polyline
 
@@ -12,25 +12,26 @@ System_Ext(consumer, "Consumer Application", "An authenticated consumer of the I
 
 Boundary(aws_cloudplatform, "Cloud Platform", "A Kubernetes cluster using Amazon Web Services", $link="https://user-guide.cloud-platform.service.justice.gov.uk/documentation/concepts/cp-tech-overview.html") {
     Boundary(hmpps_integration_api, "HMPPS Integration API", "A single point of entry for services to retrieve data from multiple HMPPS systems.", $link="https://github.com/ministryofjustice/hmpps-integration-api"){
-        System(springboot_api, "REST API", "Uses gateways...." , "Springboot Kotlin API")
+        Container(springboot_api, "REST API", "Springboot Kotlin API", "Uses gateways....")
             SystemQueue_Ext(messaging, "Messaging System", "SNS/SQS Service.",$tags="not_yet_implemented")
     }
 
-    System(hmpps_auth, "HMPPS Auth", "Authentication service", $link="https://github.com/ministryofjustice/hmpps-auth")
+    Container(hmpps_auth, "HMPPS Auth", "Authentication service", $link="https://github.com/ministryofjustice/hmpps-auth")
 
     Boundary(upstream, "Legacy Upstream Systems", "Various HMPPS upstream systems, these will eventually be replaced"){
-        System(prison_api, "Prison API", "API over NOMIS DB used by Digital Prison team applications and services", "Springboot Java API")
+        Container(prison_api, "Prison API", "Springboot Java API", "API over NOMIS DB used by Digital Prison team applications and services")
 
-        System(probation_offender_search, "Probation Offender Search", "API over the NDelius offender data held in Elasticsearch", "Springboot Kotlin API")
+        Container(probation_offender_search, "Probation Offender Search", "Springboot Kotlin API", "API over the NDelius offender data held in Elasticsearch")
 
-        System(prison_offender_search, "Prisoner Offender Search", "API over the NOMIS prisoner data held in Elasticsearch",  "Springboot Kotlin API")
+        Container(prison_offender_search, "Prisoner Offender Search", "API over the NOMIS prisoner data held in Elasticsearch",  "Springboot Kotlin API")
     }
 }
 
 Rel(consumer, springboot_api, "Makes API calls to", "JSON/HTTPS")
+Rel(consumer, messaging, "Retrieves updates")
 
 Rel_Right(springboot_api, messaging, "Posts updates")
-Rel_Up(messaging, consumer, "Retrieves updates")
+
 
 Rel_Right(springboot_api, hmpps_auth, "Authenticates", "Bearer Token")
 
