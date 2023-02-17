@@ -163,8 +163,10 @@ class NomisGatewayTest(@MockBean val hmppsAuthGateway: HmppsAuthGateway, private
       it("returns image metadata for the matching person ID") {
         val imageMetadata = nomisGateway.getImageMetadataForPerson(offenderNo)
 
-        imageMetadata.first().id.shouldBe(24213)
         imageMetadata.first().captureDate.shouldBe(LocalDate.parse("2008-08-27"))
+        imageMetadata.first().view.shouldBe("FACE")
+        imageMetadata.first().orientation.shouldBe("FRONT")
+        imageMetadata.first().type.shouldBe("OFF_BKG")
       }
 
       it("returns a person without image metadata when no images are found") {

@@ -111,8 +111,10 @@ internal class PersonControllerTest(
       whenever(getImageMetadataForPersonService.execute(id)).thenReturn(
         listOf(
           ImageMetadata(
-            id = 1,
-            captureDate = LocalDate.parse("2023-03-01")
+            captureDate = LocalDate.parse("2023-03-01"),
+            view = "FACE",
+            orientation = "FRONT",
+            type = "OFF_BKG"
           )
         )
       )
@@ -138,8 +140,10 @@ internal class PersonControllerTest(
         {
           "images": [
             {
-              "id": 1,
-              "captureDate": "2023-03-01"
+              "captureDate": "2023-03-01",
+              "view": "FACE",
+              "orientation": "FRONT",
+              "type": "OFF_BKG"
             }
           ]
         }

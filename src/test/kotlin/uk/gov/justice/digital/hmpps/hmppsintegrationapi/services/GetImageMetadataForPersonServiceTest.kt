@@ -36,8 +36,10 @@ internal class GetImageMetadataForPersonServiceTest(
   it("returns metadata for a persons images") {
     val imageMetadataFromNomis = listOf(
       ImageMetadata(
-        id = 1,
-        captureDate = LocalDate.parse("2023-03-01")
+        captureDate = LocalDate.parse("2023-03-01"),
+        view = "FACE",
+        orientation = "FRONT",
+        type = "OFF_BKG"
       )
     )
 
