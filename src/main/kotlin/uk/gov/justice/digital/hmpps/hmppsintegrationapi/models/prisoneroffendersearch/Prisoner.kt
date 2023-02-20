@@ -12,11 +12,11 @@ data class Prisoner(
   val aliases: List<PrisonerAlias> = listOf(),
 ) {
   fun toPerson(): Person = Person(
-    this.firstName,
-    this.lastName,
-    this.middleNames,
-    this.dateOfBirth,
-    this.aliases.map {
+    firstName = this.firstName,
+    lastName = this.lastName,
+    middleName = this.middleNames,
+    dateOfBirth = this.dateOfBirth,
+    aliases = this.aliases.map {
       Alias(
         it.firstName,
         it.lastName,
