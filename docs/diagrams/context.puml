@@ -4,7 +4,7 @@
 
 skinparam linetype polyline
 
-title HMPPS Integration API - Context Diagram
+title [Context] HMPPS Integration API
 
 AddElementTag("not_yet_implemented", $bgColor="#D3D3D3", $fontColor="#9C9C9C")
 
@@ -12,7 +12,7 @@ System_Ext(consumer, "Consumer Application", "An authenticated consumer of the I
 
 Boundary(moj, "Ministry of Justice (MoJ)", "Ministerial Department") {
   Boundary(hmpps, "His Majesty's Prison and Probation Service (HMPPS)", "Executive Agency") {
-    System(hmpps_integration_api, "Integration API", "A single point of entry for services to retrieve data from multiple HMPPS systems.")
+    System(hmpps_integration_api, "HMPPS Integration API", "A single point of entry for services to retrieve data from multiple HMPPS systems.")
 
     SystemQueue_Ext(messaging, "Messaging System", "SNS/SQS Service.",$tags="not_yet_implemented")
 
