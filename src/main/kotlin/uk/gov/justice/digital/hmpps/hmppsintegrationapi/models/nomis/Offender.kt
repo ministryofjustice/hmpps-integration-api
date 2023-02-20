@@ -13,10 +13,17 @@ data class Offender(
   val aliases: List<nomisAlias> = listOf()
 ) {
   fun toPerson(): Person = Person(
-    this.firstName,
-    this.lastName,
-    this.middleName,
-    this.dateOfBirth,
-    this.aliases.map { Alias(it.firstName, it.lastName, it.middleName, it.dob) }
+    firstName = this.firstName,
+    lastName = this.lastName,
+    middleName = this.middleName,
+    dateOfBirth = this.dateOfBirth,
+    aliases = this.aliases.map {
+      Alias(
+        it.firstName,
+        it.lastName,
+        it.middleName,
+        it.dob
+      )
+    }
   )
 }

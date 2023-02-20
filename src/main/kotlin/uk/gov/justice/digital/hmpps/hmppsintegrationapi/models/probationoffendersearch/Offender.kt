@@ -12,10 +12,17 @@ data class Offender(
   val offenderAliases: List<OffenderAlias> = listOf(),
 ) {
   fun toPerson(): Person = Person(
-    this.firstName,
-    this.surname,
-    this.middleNames.joinToString(" "),
-    this.dateOfBirth,
-    this.offenderAliases.map { Alias(it.firstName, it.surname, it.middleNames.joinToString(" "), it.dateOfBirth) }
+    firstName = this.firstName,
+    lastName = this.surname,
+    middleName = this.middleNames.joinToString(" "),
+    dateOfBirth = this.dateOfBirth,
+    aliases = this.offenderAliases.map {
+      Alias(
+        it.firstName,
+        it.surname,
+        it.middleNames.joinToString(" "),
+        it.dateOfBirth
+      )
+    }
   )
 }
