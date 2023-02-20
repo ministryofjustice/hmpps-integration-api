@@ -34,8 +34,10 @@ services:
 
   prison-api:
     image: stoplight/prism:4
+    volumes:
+      - ./temp_prisonapi_schema.json:/tmp/temp_prisonapi_schema.json
     container_name: prison-api
-    command: 'mock -h 0.0.0.0 https://api-dev.prison.service.justice.gov.uk/v3/api-docs'
+    command: 'mock -h 0.0.0.0 /tmp/temp_prisonapi_schema.json'
     healthcheck:
       test: 'wget --header="Authorization: Bearer abc" http://127.0.0.1:4010/api/offenders/A1234AL -O /dev/null'
     depends_on:
