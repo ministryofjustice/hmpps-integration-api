@@ -8,13 +8,13 @@ class ImageDetail(
   val captureDate: LocalDate,
   val imageView: String,
   val imageOrientation: String,
-  val imageType: String,
+  val imageType: String
 ) {
   fun toImageMetadata(): ImageMetadata = ImageMetadata(
-    imageId = this.imageId,
+    id = this.imageId,
     captureDate = this.captureDate,
     view = this.imageView,
     orientation = this.imageOrientation,
-    type = this.imageType,
+    type = this.imageType
   )
 }

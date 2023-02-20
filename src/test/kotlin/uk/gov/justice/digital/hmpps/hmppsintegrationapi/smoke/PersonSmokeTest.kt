@@ -38,6 +38,7 @@ class PersonSmokeTest : DescribeSpec({
       {
         "images": [
           {
+            "id": 123,
             "captureDate": "2019-08-24",
             "view": "string",
             "orientation": "string",
