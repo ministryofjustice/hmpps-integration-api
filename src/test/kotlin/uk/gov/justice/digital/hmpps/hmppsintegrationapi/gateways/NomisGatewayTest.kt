@@ -205,7 +205,17 @@ class NomisGatewayTest(@MockBean val hmppsAuthGateway: HmppsAuthGateway, private
 
         val image = nomisGateway.getImageData(imageId)
 
-        image.shouldBe(expectedImage);
+        image.shouldBe(expectedImage)
+      }
+
+      it("throws an exception when 404 Not Found is returned") {
+        nomisApiMockServer.stubGetImageData(imageId, HttpStatus.NOT_FOUND)
+
+        val exception = shouldThrow<EntityNotFoundException> {
+          nomisGateway.getImageData(imageId)
+        }
+
+        exception.message.shouldBe("Could not find image with id: $imageId")
       }
     }
   })

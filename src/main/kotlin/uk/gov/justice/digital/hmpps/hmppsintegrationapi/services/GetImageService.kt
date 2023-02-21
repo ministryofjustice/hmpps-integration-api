@@ -6,9 +6,5 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NomisGateway
 
 @Service
 class GetImageService(@Autowired val nomisGateway: NomisGateway) {
-  fun execute(id: Int): ByteArray? {
-    val image = nomisGateway.getImageData(id)
-
-    return image
-  }
+  fun execute(id: Int): ByteArray = nomisGateway.getImageData(id)
 }

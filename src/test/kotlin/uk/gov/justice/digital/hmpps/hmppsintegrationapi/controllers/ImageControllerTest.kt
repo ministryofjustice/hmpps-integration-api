@@ -33,15 +33,6 @@ internal class ImageControllerTest(
       result.response.status.shouldBe(200)
     }
 
-    it("responds with a 404 NOT FOUND status") {
-      val idThatDoesNotExist = "98765"
-      whenever(getImageService.execute(id)).thenReturn(null)
-
-      val result = mockMvc.perform(get("/images/$idThatDoesNotExist")).andReturn()
-
-      result.response.status.shouldBe(404)
-    }
-
     it("retrieves a image with the matching ID") {
       mockMvc.perform(get("/images/$id")).andReturn()
 
