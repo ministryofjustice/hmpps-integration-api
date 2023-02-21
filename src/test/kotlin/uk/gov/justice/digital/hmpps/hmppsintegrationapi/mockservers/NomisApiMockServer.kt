@@ -48,7 +48,7 @@ class NomisApiMockServer : WireMockServer(WIREMOCK_PORT) {
           aResponse()
             .withHeader("Content-Type", "image/jpeg")
             .withStatus(status.value())
-            .withBodyFile("./arrival.jpg")
+            .withBodyFile("example.jpg")
         )
     )
   }

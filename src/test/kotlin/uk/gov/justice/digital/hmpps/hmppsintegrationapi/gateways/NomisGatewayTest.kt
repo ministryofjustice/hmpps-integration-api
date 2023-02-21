@@ -17,6 +17,7 @@ import org.springframework.test.context.ContextConfiguration
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.NomisApiMockServer
+import java.io.File
 import java.time.LocalDate
 
 @ActiveProfiles("test")
@@ -199,10 +200,12 @@ class NomisGatewayTest(@MockBean val hmppsAuthGateway: HmppsAuthGateway, private
         verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("NOMIS")
       }
 
-//      it("returns a image with the matching ID") {
-//        val person = nomisGateway.getImageData(imageId)
-//
-//
-//      }
+      it("returns an image with the matching ID") {
+        val expectedImage = File("src/test/resources/__files/example.jpg").readBytes()
+
+        val image = nomisGateway.getImageData(imageId)
+
+        image.shouldBe(expectedImage);
+      }
     }
   })
