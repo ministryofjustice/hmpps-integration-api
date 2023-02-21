@@ -38,4 +38,18 @@ class NomisApiMockServer : WireMockServer(WIREMOCK_PORT) {
         )
     )
   }
+
+  fun stubGetImageData(imageId: Int, status: HttpStatus = HttpStatus.OK) {
+    stubFor(
+      get("/api/images/$imageId/data")
+        .withHeader(
+          "Authorization", matching("Bearer ${HmppsAuthMockServer.TOKEN}")
+        ).willReturn(
+          aResponse()
+            .withHeader("Content-Type", "image/jpeg")
+            .withStatus(status.value())
+            .withBodyFile("./arrival.jpg")
+        )
+    )
+  }
 }

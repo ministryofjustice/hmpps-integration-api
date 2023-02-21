@@ -60,5 +60,17 @@ class NomisGateway(@Value("\${services.prison-api.base-url}") baseUrl: String) {
     }
   }
 
-  fun getImageData(id: Int): ByteArray = byteArrayOf()
+  fun getImageData(id: Int): ByteArray {
+    val token = hmppsAuthGateway.getClientToken("NOMIS")
+
+    webClient
+      .get()
+      .uri("/api/images/$id/data")
+      .header("Authorization", "Bearer $token")
+      .retrieve()
+      .bodyToMono(ByteArray::class.java)
+      .block()
+
+    return byteArrayOf()
+  }
 }

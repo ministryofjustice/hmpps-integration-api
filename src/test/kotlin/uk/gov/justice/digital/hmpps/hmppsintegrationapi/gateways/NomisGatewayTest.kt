@@ -41,7 +41,6 @@ class NomisGatewayTest(@MockBean val hmppsAuthGateway: HmppsAuthGateway, private
     }
 
     describe("#getPerson") {
-
       beforeTest {
         nomisApiMockServer.stubGetOffender(
           offenderNo,
@@ -136,7 +135,6 @@ class NomisGatewayTest(@MockBean val hmppsAuthGateway: HmppsAuthGateway, private
     }
 
     describe("#getPersonImageMetadata") {
-
       beforeTest {
         nomisApiMockServer.stubGetOffenderImageDetails(
           offenderNo,
@@ -186,5 +184,25 @@ class NomisGatewayTest(@MockBean val hmppsAuthGateway: HmppsAuthGateway, private
 
         exception.message.shouldBe("Could not find person with id: $offenderNo")
       }
+    }
+
+    describe("#getImageData") {
+      val imageId = 5678
+
+      beforeTest {
+        nomisApiMockServer.stubGetImageData(imageId)
+      }
+
+      it("authenticates using HMPPS Auth with credentials") {
+        nomisGateway.getImageData(imageId)
+
+        verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("NOMIS")
+      }
+
+//      it("returns a image with the matching ID") {
+//        val person = nomisGateway.getImageData(imageId)
+//
+//
+//      }
     }
   })
