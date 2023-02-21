@@ -59,4 +59,6 @@ class NomisGateway(@Value("\${services.prison-api.base-url}") baseUrl: String) {
       throw EntityNotFoundException("Could not find person with id: $id")
     }
   }
+
+  fun getImageData(id: Int): ByteArray = byteArrayOf()
 }
