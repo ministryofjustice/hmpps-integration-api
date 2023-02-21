@@ -4,7 +4,7 @@ import org.springframework.stereotype.Service
 
 @Service
 class GetImageService() {
-  fun execute(id: String): ByteArray? {
+  fun execute(id: Int): ByteArray? {
     return byteArrayOf()
   }
 }

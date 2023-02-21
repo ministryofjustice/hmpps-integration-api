@@ -14,7 +14,7 @@ class ImageController(
   @Autowired val getImageService: GetImageService
 ) {
   @GetMapping("{id}")
-  fun getImage(@PathVariable id: String): ByteArray? {
+  fun getImage(@PathVariable id: Int): ByteArray? {
     val image = getImageService.execute(id)
 
     if (image == null) {

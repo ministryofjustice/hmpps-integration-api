@@ -18,7 +18,7 @@ internal class ImageControllerTest(
   @Autowired val mockMvc: MockMvc,
   @MockBean val getImageService: GetImageService,
 ) : DescribeSpec({
-  val id = "2461788"
+  val id = 2461788
   val image = byteArrayOf(0x48, 101, 108, 108, 111)
 
   describe("GET /images/{id}") {
