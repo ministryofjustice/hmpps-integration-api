@@ -43,12 +43,11 @@ _Wrapped in a JSON Object_
 
 ## Decision
 
-We have decided that all responses will be wrapped within a JSON object. This gives us more flexibility should we need to make adjustments to the object's schema.
+We have decided that all responses will be wrapped in a JSON object.
 
-If we responded with an array. Let's say we needed to add an additional property to the response, this would change the data type of the response and therefore break consumers.
+This makes our API easier to use; Consumers do not need to build cases to support a response sometimes being an Array, and other times being a JSON object.
 
-This also makes our API easier to use; Consumers do not need to build cases to support a response sometimes being an Array, and other times being a JSON object.
-
+It also gives us the ability to add more fields as required, since consumers can ignore the new field if they don't use it. If we responded with an array and were to add a new field, the response would change from an array to a JSON object; This would break consumers.
 
 ## Consequences
 
