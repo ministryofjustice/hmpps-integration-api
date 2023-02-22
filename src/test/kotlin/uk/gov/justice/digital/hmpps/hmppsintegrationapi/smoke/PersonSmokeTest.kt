@@ -14,7 +14,31 @@ class PersonSmokeTest : DescribeSpec({
   val httpClient = HttpClient.newBuilder().build()
   val httpRequest = HttpRequest.newBuilder()
 
-  it("returns a person from NOMIS, Prisoner Offender Search and Probation Offender Search") {
+  it("returns a list of person from appropriate upstream systems") {
+    val firstName = "John"
+
+    val response = httpClient.send(
+      httpRequest.uri(URI.create("$baseUrl/persons?firstName=$firstName")).build(),
+      HttpResponse.BodyHandlers.ofString()
+    )
+
+    response.body().shouldContain(
+      """
+      {
+         "persons":[
+            {
+               "firstName":"John"
+            },
+            {
+               "firstName":"Sally"
+            }
+         ]
+      }
+      """.trimIndent()
+    )
+  }
+
+  it("returns a person from NOMIS, Prisoner Offender Search and Probation Offender Search when given an id") {
     val id = "A1234AL"
 
     val response = httpClient.send(
