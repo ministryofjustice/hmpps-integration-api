@@ -59,4 +59,20 @@ class NomisGateway(@Value("\${services.prison-api.base-url}") baseUrl: String) {
       throw EntityNotFoundException("Could not find person with id: $id")
     }
   }
+
+  fun getImageData(id: Int): ByteArray {
+    val token = hmppsAuthGateway.getClientToken("NOMIS")
+
+    return try {
+      webClient
+        .get()
+        .uri("/api/images/$id/data")
+        .header("Authorization", "Bearer $token")
+        .retrieve()
+        .bodyToMono(ByteArray::class.java)
+        .block()!!
+    } catch (exception: WebClientResponseException.NotFound) {
+      throw EntityNotFoundException("Could not find image with id: $id")
+    }
+  }
 }

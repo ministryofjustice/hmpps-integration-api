@@ -17,6 +17,7 @@ import org.springframework.test.context.ContextConfiguration
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.NomisApiMockServer
+import java.io.File
 import java.time.LocalDate
 
 @ActiveProfiles("test")
@@ -41,7 +42,6 @@ class NomisGatewayTest(@MockBean val hmppsAuthGateway: HmppsAuthGateway, private
     }
 
     describe("#getPerson") {
-
       beforeTest {
         nomisApiMockServer.stubGetOffender(
           offenderNo,
@@ -136,7 +136,6 @@ class NomisGatewayTest(@MockBean val hmppsAuthGateway: HmppsAuthGateway, private
     }
 
     describe("#getPersonImageMetadata") {
-
       beforeTest {
         nomisApiMockServer.stubGetOffenderImageDetails(
           offenderNo,
@@ -185,6 +184,38 @@ class NomisGatewayTest(@MockBean val hmppsAuthGateway: HmppsAuthGateway, private
         }
 
         exception.message.shouldBe("Could not find person with id: $offenderNo")
+      }
+    }
+
+    describe("#getImageData") {
+      val imageId = 5678
+
+      beforeTest {
+        nomisApiMockServer.stubGetImageData(imageId)
+      }
+
+      it("authenticates using HMPPS Auth with credentials") {
+        nomisGateway.getImageData(imageId)
+
+        verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("NOMIS")
+      }
+
+      it("returns an image with the matching ID") {
+        val expectedImage = File("src/test/resources/__files/example.jpg").readBytes()
+
+        val image = nomisGateway.getImageData(imageId)
+
+        image.shouldBe(expectedImage)
+      }
+
+      it("throws an exception when 404 Not Found is returned") {
+        nomisApiMockServer.stubGetImageData(imageId, HttpStatus.NOT_FOUND)
+
+        val exception = shouldThrow<EntityNotFoundException> {
+          nomisGateway.getImageData(imageId)
+        }
+
+        exception.message.shouldBe("Could not find image with id: $imageId")
       }
     }
   })

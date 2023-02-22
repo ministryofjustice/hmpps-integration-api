@@ -34,15 +34,10 @@ services:
 
   prison-api:
     image: stoplight/prism:4
-    volumes:
-      - ./temp_prisonapi_schema.json:/tmp/temp_prisonapi_schema.json
     container_name: prison-api
-    command: 'mock -h 0.0.0.0 /tmp/temp_prisonapi_schema.json'
+    command: 'mock -h 0.0.0.0 https://api-dev.prison.service.justice.gov.uk/v3/api-docs'
     healthcheck:
       test: 'wget --header="Authorization: Bearer abc" http://127.0.0.1:4010/api/offenders/A1234AL -O /dev/null'
-    depends_on:
-      hmpps-auth:
-        condition: service_healthy
     ports:
       - '4030:4010'
 
@@ -53,9 +48,6 @@ services:
     container_name: prisoner-offender-search
     healthcheck:
       test: 'wget --header="Authorization: Bearer abc" http://127.0.0.1:4010/prisoner/A1234AL -O /dev/null'
-    depends_on:
-      hmpps-auth:
-        condition: service_healthy
     ports:
       - "4010:4010"
 
@@ -65,9 +57,6 @@ services:
     command: 'mock -h 0.0.0.0 https://probation-offender-search-dev.hmpps.service.justice.gov.uk/v3/api-docs'
     healthcheck:
       test: 'wget http://0.0.0.0:4010/synthetic-monitor -O /dev/null'
-    depends_on:
-      hmpps-auth:
-        condition: service_healthy
     ports:
       - '4020:4010'
 
