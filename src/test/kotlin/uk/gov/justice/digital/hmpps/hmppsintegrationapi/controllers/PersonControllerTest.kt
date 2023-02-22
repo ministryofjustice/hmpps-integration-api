@@ -26,25 +26,34 @@ internal class PersonControllerTest(
   @MockBean val getImageMetadataForPersonService: GetImageMetadataForPersonService
 ) : DescribeSpec({
 
-  describe("GET /persons") {
+  describe("GET /person") {
     val firstName = "Barry"
     val lastName = "Allen"
 
     beforeTest {
       Mockito.reset(getPersonService)
-      whenever(getPersonService.execute()).thenReturn(
+      whenever(getPersonService.execute(firstName, lastName)).thenReturn(
         listOf(
           Person(
             firstName = "Oliver",
             lastName = "Queen",
             middleName = "Jonas",
-            dateOfBirth = "1985-05-16"
+            dateOfBirth = LocalDate.parse("2023-03-01")
+          ),
+          Person(
+            firstName = "Fred",
+            lastName = "Flinstone",
+            middleName = "Rock",
+            dateOfBirth = LocalDate.parse("2022-07-22")
           )
         )
       )
     }
 
     it("responds with a 200 OK status") {
+      val result = mockMvc.perform(get("/persons?firstName=$firstName,lastName=$lastName")).andReturn()
+
+      result.response.status.shouldBe(200)
     }
   }
 
