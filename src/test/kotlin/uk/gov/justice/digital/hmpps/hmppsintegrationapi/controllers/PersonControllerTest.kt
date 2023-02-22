@@ -26,6 +26,28 @@ internal class PersonControllerTest(
   @MockBean val getImageMetadataForPersonService: GetImageMetadataForPersonService
 ) : DescribeSpec({
 
+  describe("GET /persons") {
+    val firstName = "Barry"
+    val lastName = "Allen"
+
+    beforeTest {
+      Mockito.reset(getPersonService)
+      whenever(getPersonService.execute()).thenReturn(
+        listOf(
+          Person(
+            firstName = "Oliver",
+            lastName = "Queen",
+            middleName = "Jonas",
+            dateOfBirth = "1985-05-16"
+          )
+        )
+      )
+    }
+
+    it("responds with a 200 OK status") {
+    }
+  }
+
   val id = "abc123"
   describe("GET /persons/{id}") {
     val person = mapOf(
