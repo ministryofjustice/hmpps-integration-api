@@ -1,4 +1,4 @@
-# 0004 - Lists returned with root JSON object
+# 0004 - Always return a JSON object for JSON responses
 
 2023-02-21
 
@@ -11,21 +11,21 @@ Accepted
 It is common for a number of endpoints to return a list of objects (person images is an example of this). Either an array can be returned as the response, or it can be wrapped within a JSON root object.
 
 _Array Response_
-```
+```json
 [
   {
-    "firstName" : "John"
+    "firstName" : "John",
     "lastName" : "Smith"
   },
   {
-    "firstName" : "Sue"
+    "firstName" : "Sue",
     "lastName" : "Storm"
   }
 ]
 ```
 
 _Wrapped in a JSON Object_
-```
+```json
 {
   "persons" : 
   [
