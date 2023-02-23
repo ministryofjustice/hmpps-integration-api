@@ -36,4 +36,4 @@ show_contribution_banner: true
 github_repo: ministryofjustice/hmpps-integration-api-docs
 github_branch: main
 
-api_path: source/openapi.yaml
+api_path: https://raw.githubusercontent.com/ministryofjustice/hmpps-integration-api/main/openapi.yml
