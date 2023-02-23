@@ -26,7 +26,7 @@ internal class PersonControllerTest(
   @MockBean val getImageMetadataForPersonService: GetImageMetadataForPersonService
 ) : DescribeSpec({
 
-  describe("GET /person") {
+  describe("GET /persons") {
     val firstName = "Barry"
     val lastName = "Allen"
 
@@ -51,7 +51,7 @@ internal class PersonControllerTest(
     }
 
     it("responds with a 200 OK status") {
-      val result = mockMvc.perform(get("/persons?firstName=$firstName,lastName=$lastName")).andReturn()
+      val result = mockMvc.perform(get("/persons?firstName=$firstName&lastName=$lastName")).andReturn()
 
       result.response.status.shouldBe(200)
     }

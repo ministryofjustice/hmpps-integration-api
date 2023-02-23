@@ -15,7 +15,7 @@ class PersonController(
   @Autowired val getImageMetadataForPersonService: GetImageMetadataForPersonService
 ) {
 
-  @GetMapping()
+  @GetMapping("")
   fun getPerson(@RequestParam firstName: String, @RequestParam lastName: String): Map<String, List<Person>> {
     val persons = getPersonService.execute(firstName, lastName)
 
