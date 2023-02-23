@@ -32,17 +32,18 @@ internal class PersonControllerTest(
 
     beforeTest {
       Mockito.reset(getPersonService)
+
       whenever(getPersonService.execute(firstName, lastName)).thenReturn(
         listOf(
           Person(
-            firstName = "Oliver",
-            lastName = "Queen",
+            firstName = "Barry",
+            lastName = "Allen",
             middleName = "Jonas",
             dateOfBirth = LocalDate.parse("2023-03-01")
           ),
           Person(
-            firstName = "Fred",
-            lastName = "Flinstone",
+            firstName = "Barry",
+            lastName = "Allen",
             middleName = "Rock",
             dateOfBirth = LocalDate.parse("2022-07-22")
           )
@@ -55,10 +56,64 @@ internal class PersonControllerTest(
 
       result.response.status.shouldBe(200)
     }
+
+    it("responds with an empty list embedded in a json object") {
+      val firstNameThatDoesNotExist = "Bob21345"
+      val lastNameThatDoesNotExist = "Gun36773"
+
+      whenever(getPersonService.execute(firstNameThatDoesNotExist, lastNameThatDoesNotExist)).thenReturn(
+        listOf()
+      )
+
+      val result = mockMvc.perform(get("/persons?firstName=$firstNameThatDoesNotExist&lastName=$lastNameThatDoesNotExist")).andReturn()
+
+      result.response.contentAsString.shouldBe(
+        """
+          {
+            "persons":[]
+          }
+          """.removeWhitespaceAndNewlines()
+      )
+    }
+
+    it("retrieves a person with matching search criteria") {
+      mockMvc.perform(get("/persons?firstName=$firstName&lastName=$lastName")).andReturn()
+
+      verify(getPersonService, times(1)).execute(firstName, lastName)
+    }
+
+    it("returns a person with matching search criteria") {
+      val result = mockMvc.perform(get("/persons?firstName=$firstName&lastName=$lastName")).andReturn()
+
+      result.response.contentAsString.shouldBe(
+        """
+          {
+            "persons":
+            [
+              {
+                "firstName":"Barry",
+                "lastName":"Allen",
+                "middleName":"Jonas",
+                "dateOfBirth":"2023-03-01",
+                "aliases":[]
+               },
+               {
+                 "firstName":"Barry",
+                 "lastName":"Allen",
+                 "middleName":"Rock",
+                 "dateOfBirth":"2022-07-22",
+                 "aliases":[]
+               }
+             ]
+           }
+        """.removeWhitespaceAndNewlines()
+      )
+    }
   }
 
-  val id = "abc123"
   describe("GET /persons/{id}") {
+    val id = "abc123"
+
     val person = mapOf(
       "nomis" to Person(
         "Billy",
@@ -137,6 +192,8 @@ internal class PersonControllerTest(
   }
 
   describe("GET /persons/{id}/images") {
+    val id = "abc123"
+
     beforeTest {
       Mockito.reset(getImageMetadataForPersonService)
       whenever(getImageMetadataForPersonService.execute(id)).thenReturn(
