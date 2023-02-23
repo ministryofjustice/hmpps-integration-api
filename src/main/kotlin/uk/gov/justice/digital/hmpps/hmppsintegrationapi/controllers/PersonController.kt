@@ -1,10 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.controllers
 
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ImageMetadata
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Person
@@ -19,7 +16,7 @@ class PersonController(
 ) {
 
   @GetMapping("")
-  fun getPerson(@RequestParam firstName: String, @RequestParam lastName: String): Map<String, List<Person>> {
+  fun getPerson(@RequestParam firstName: String, @RequestParam lastName: String): Map<String, List<Person?>> {
     val persons = getPersonService.execute(firstName, lastName)
 
     return mapOf("persons" to persons)

@@ -40,4 +40,6 @@ class ProbationOffenderSearchGateway(@Value("\${services.probation-offender-sear
       null
     }
   }
+
+  fun getPersons(firstName: String, lastName: String) = listOf<Person?>()
 }
