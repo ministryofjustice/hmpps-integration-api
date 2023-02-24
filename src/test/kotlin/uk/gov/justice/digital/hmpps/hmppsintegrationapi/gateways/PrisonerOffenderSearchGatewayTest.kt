@@ -39,8 +39,8 @@ class PrisonerOffenderSearchGatewayTest(
   }
 
   describe("#getPerson(s)") {
-    val firstName = "Peter"
-    val lastName = "Parker"
+    val firstName = "PETER"
+    val lastName = "PHILLIPS"
 
     beforeEach {
       prisonerOffenderSearchApiMockServer.stubGetPrisoners(File("src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/stubGetPrisoners.json").readText())
@@ -55,7 +55,11 @@ class PrisonerOffenderSearchGatewayTest(
     it("returns person(s) with the matching first name and last name") {
       val persons = prisonerOffenderSearchGateway.getPrisoners(firstName, lastName)
 
-      persons.count().shouldBe(999)
+      persons.count().shouldBe(4)
+      persons.forEach {
+        it?.firstName.shouldBe(firstName)
+        it?.lastName.shouldBe(lastName)
+      }
     }
   }
 

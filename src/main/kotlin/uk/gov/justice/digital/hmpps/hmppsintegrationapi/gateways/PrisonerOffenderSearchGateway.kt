@@ -9,8 +9,8 @@ import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.BodyInserters
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.WebClientResponseException
-import org.springframework.web.reactive.function.client.bodyToMono
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Person
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.GlobalSearch
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.Prisoner
 
 @Component
@@ -50,9 +50,9 @@ class PrisonerOffenderSearchGateway(@Value("\${services.prisoner-offender-search
       .header("Authorization", "Bearer $token")
       .body(BodyInserters.fromValue(mapOf("firstName" to firstName, "lastName" to lastName)))
       .retrieve()
-      .bodyToMono(String::class.java)
+      .bodyToMono(GlobalSearch::class.java)
       .block()
 
-    return emptyList()
+    return response.content.map { it.toPerson() }
   }
 }
