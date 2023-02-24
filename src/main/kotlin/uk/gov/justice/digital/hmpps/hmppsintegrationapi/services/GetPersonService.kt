@@ -15,8 +15,8 @@ class GetPersonService(
 ) {
 
   fun execute(firstName: String, lastName: String): List<Person?> {
-    val personsFromPrisonerOffenderSearch = prisonerOffenderSearchGateway.getPersons(firstName, lastName)
-    val personsFromProbationOffenderSearch = probationOffenderSearchGateway.getPersons(firstName, lastName)
+    val personsFromPrisonerOffenderSearch = prisonerOffenderSearchGateway.getPrisoners(firstName, lastName)
+    val personsFromProbationOffenderSearch = probationOffenderSearchGateway.getPrisoners(firstName, lastName)
 
     return personsFromPrisonerOffenderSearch + personsFromProbationOffenderSearch
   }

@@ -6,8 +6,10 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
+import org.springframework.web.reactive.function.BodyInserters
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.WebClientResponseException
+import org.springframework.web.reactive.function.client.bodyToMono
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.Prisoner
 
@@ -39,5 +41,18 @@ class PrisonerOffenderSearchGateway(@Value("\${services.prisoner-offender-search
     }
   }
 
-  fun getPersons(firstName: String, lastName: String) = listOf<Person?>()
+  fun getPrisoners(firstName: String, lastName: String): List<Person?> {
+    val token = hmppsAuthGateway.getClientToken("Prisoner Offender Search")
+
+    val response = webClient
+      .post()
+      .uri("/global-search")
+      .header("Authorization", "Bearer $token")
+      .body(BodyInserters.fromValue(mapOf("firstName" to firstName, "lastName" to lastName)))
+      .retrieve()
+      .bodyToMono(String::class.java)
+      .block()
+
+    return emptyList()
+  }
 }

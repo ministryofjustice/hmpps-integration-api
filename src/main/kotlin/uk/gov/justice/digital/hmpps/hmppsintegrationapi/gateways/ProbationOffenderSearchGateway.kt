@@ -41,5 +41,5 @@ class ProbationOffenderSearchGateway(@Value("\${services.probation-offender-sear
     }
   }
 
-  fun getPersons(firstName: String, lastName: String) = listOf<Person?>()
+  fun getPrisoners(firstName: String, lastName: String) = listOf<Person?>()
 }

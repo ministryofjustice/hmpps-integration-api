@@ -39,13 +39,13 @@ internal class GetPersonServiceTest(
     it("returns person(s) from Prisoner Offender Search") {
       getPersonService.execute(firstName, lastName)
 
-      verify(prisonerOffenderSearchGateway, VerificationModeFactory.times(1)).getPersons(firstName, lastName)
+      verify(prisonerOffenderSearchGateway, VerificationModeFactory.times(1)).getPrisoners(firstName, lastName)
     }
 
     it("returns person(s) from Probation Offender Search") {
       getPersonService.execute(firstName, lastName)
 
-      verify(probationOffenderSearchGateway, VerificationModeFactory.times(1)).getPersons(firstName, lastName)
+      verify(probationOffenderSearchGateway, VerificationModeFactory.times(1)).getPrisoners(firstName, lastName)
     }
 
     it("returns person(s)") {
@@ -56,8 +56,8 @@ internal class GetPersonServiceTest(
         Person("Bruce", "Wayne", middleName = "John")
       )
 
-      whenever(prisonerOffenderSearchGateway.getPersons(firstName, lastName)).thenReturn(personsFromPrisonerOffenderSearch)
-      whenever(probationOffenderSearchGateway.getPersons(firstName, lastName)).thenReturn(personsFromProbationOffenderSearch)
+      whenever(prisonerOffenderSearchGateway.getPrisoners(firstName, lastName)).thenReturn(personsFromPrisonerOffenderSearch)
+      whenever(probationOffenderSearchGateway.getPrisoners(firstName, lastName)).thenReturn(personsFromProbationOffenderSearch)
 
       val expectedResult = listOf(
         Person(firstName, lastName, middleName = "Gary"),
@@ -66,6 +66,14 @@ internal class GetPersonServiceTest(
 
       val result = getPersonService.execute(firstName, lastName)
       result.shouldBe(expectedResult)
+    }
+
+    it("returns an empty list when no person(s) are found") {
+      whenever(prisonerOffenderSearchGateway.getPrisoners(firstName, lastName)).thenReturn(emptyList())
+      whenever(probationOffenderSearchGateway.getPrisoners(firstName, lastName)).thenReturn(emptyList())
+
+      val result = getPersonService.execute(firstName, lastName)
+      result.shouldBe(emptyList())
     }
   }
 

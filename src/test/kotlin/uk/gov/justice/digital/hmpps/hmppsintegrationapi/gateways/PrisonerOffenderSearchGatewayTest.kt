@@ -14,6 +14,7 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.PrisonerOffenderSearchApiMockServer
+import java.io.File
 import java.time.LocalDate
 
 @ActiveProfiles("test")
@@ -26,13 +27,45 @@ class PrisonerOffenderSearchGatewayTest(
   private val prisonerOffenderSearchGateway: PrisonerOffenderSearchGateway
 ) : DescribeSpec({
   val prisonerOffenderSearchApiMockServer = PrisonerOffenderSearchApiMockServer()
-  val offenderNo = "abc123"
 
   beforeEach {
     prisonerOffenderSearchApiMockServer.start()
-    prisonerOffenderSearchApiMockServer.stubGetPrisoner(
-      offenderNo,
-      """
+
+    whenever(hmppsAuthGateway.getClientToken("Prisoner Offender Search")).thenReturn(HmppsAuthMockServer.TOKEN)
+  }
+
+  afterTest {
+    prisonerOffenderSearchApiMockServer.stop()
+  }
+
+  describe("#getPerson(s)") {
+    val firstName = "Peter"
+    val lastName = "Parker"
+
+    beforeEach {
+      prisonerOffenderSearchApiMockServer.stubGetPrisoners(File("src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/stubGetPrisoners.json").readText())
+    }
+
+    it("authenticates using HMPPS Auth with credentials") {
+      prisonerOffenderSearchGateway.getPrisoners(firstName, lastName)
+
+      verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("Prisoner Offender Search")
+    }
+
+    it("returns person(s) with the matching first name and last name") {
+      val persons = prisonerOffenderSearchGateway.getPrisoners(firstName, lastName)
+
+      persons.count().shouldBe(999)
+    }
+  }
+
+  describe("#getPerson") {
+    val offenderNo = "abc123"
+
+    beforeEach {
+      prisonerOffenderSearchApiMockServer.stubGetPrisoner(
+        offenderNo,
+        """
         {
           "offenderNo": "$offenderNo",
           "firstName": "John",
@@ -49,16 +82,9 @@ class PrisonerOffenderSearchGatewayTest(
           ]
         }
         """
-    )
+      )
+    }
 
-    whenever(hmppsAuthGateway.getClientToken("Prisoner Offender Search")).thenReturn(HmppsAuthMockServer.TOKEN)
-  }
-
-  afterTest {
-    prisonerOffenderSearchApiMockServer.stop()
-  }
-
-  describe("#getPerson") {
     it("authenticates using HMPPS Auth with credentials") {
       prisonerOffenderSearchGateway.getPerson(offenderNo)
 
