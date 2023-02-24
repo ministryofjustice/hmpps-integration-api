@@ -1,0 +1,231 @@
+[
+  {
+    "offenderId": 2500523983,
+    "title": "Mr",
+    "firstName": "Bob",
+    "middleNames": [],
+    "surname": "Smith",
+    "dateOfBirth": "1995-05-06",
+    "gender": "Male",
+    "otherIds": {
+      "crn": "X400800"
+    },
+    "contactDetails": {
+      "phoneNumbers": [],
+      "emailAddresses": []
+    },
+    "offenderProfile": {
+      "offenderLanguages": {
+        "requiresInterpreter": false
+      },
+      "remandStatus": "Bail - Conditional",
+      "previousConviction": {
+        "detail": {}
+      }
+    },
+    "offenderManagers": [
+      {
+        "staff": {
+          "code": "N07UATU",
+          "forenames": "Unallocated Staff(N07)",
+          "surname": "Staff"
+        },
+        "partitionArea": "National Data",
+        "softDeleted": false,
+        "team": {
+          "code": "N07UAT",
+          "description": "Unallocated Team(N07)",
+          "district": {
+            "code": "N07UAT",
+            "description": "Unallocated Level 3(N07)"
+          },
+          "borough": {
+            "code": "N07UAT",
+            "description": "Unallocated Level 2(N07)"
+          }
+        },
+        "probationArea": {
+          "code": "N07",
+          "description": "London",
+          "nps": false
+        },
+        "fromDate": "1900-01-01",
+        "active": true,
+        "allocationReason": {
+          "code": "IN1",
+          "description": "Initial Allocation"
+        }
+      }
+    ],
+    "softDeleted": false,
+    "currentDisposal": "0",
+    "partitionArea": "National Data",
+    "currentRestriction": false,
+    "restrictionMessage": "This is a restricted offender record. Please contact a system administrator",
+    "currentExclusion": false,
+    "exclusionMessage": "You are excluded from viewing this offender record. Please contact a system administrator",
+    "currentTier": "UD0",
+    "activeProbationManagedSentence": false,
+    "probationStatus": {
+      "status": "NOT_SENTENCED",
+      "inBreach": false,
+      "preSentenceActivity": true,
+      "awaitingPsr": true
+    },
+    "age": 27
+  },
+  {
+    "offenderId": 2500663690,
+    "title": "Mr",
+    "firstName": "Bob",
+    "middleNames": [],
+    "surname": "Smith",
+    "dateOfBirth": "1986-03-16",
+    "gender": "Male",
+    "otherIds": {
+      "crn": "X469867"
+    },
+    "contactDetails": {
+      "phoneNumbers": [],
+      "emailAddresses": []
+    },
+    "offenderProfile": {
+      "offenderLanguages": {
+        "requiresInterpreter": false
+      },
+      "previousConviction": {
+        "detail": {}
+      }
+    },
+    "offenderManagers": [
+      {
+        "staff": {
+          "code": "N07UATU",
+          "forenames": "Unallocated Staff(N07)",
+          "surname": "Staff"
+        },
+        "partitionArea": "National Data",
+        "softDeleted": false,
+        "team": {
+          "code": "N07UAT",
+          "description": "Unallocated Team(N07)",
+          "district": {
+            "code": "N07UAT",
+            "description": "Unallocated Level 3(N07)"
+          },
+          "borough": {
+            "code": "N07UAT",
+            "description": "Unallocated Level 2(N07)"
+          }
+        },
+        "probationArea": {
+          "code": "N07",
+          "description": "London",
+          "nps": false
+        },
+        "fromDate": "1900-01-01",
+        "active": true,
+        "allocationReason": {
+          "code": "IN1",
+          "description": "Initial Allocation"
+        }
+      }
+    ],
+    "softDeleted": false,
+    "currentDisposal": "0",
+    "partitionArea": "National Data",
+    "currentRestriction": false,
+    "restrictionMessage": "This is a restricted offender record. Please contact a system administrator",
+    "currentExclusion": false,
+    "exclusionMessage": "You are excluded from viewing this offender record. Please contact a system administrator",
+    "currentTier": "UD0",
+    "activeProbationManagedSentence": false,
+    "probationStatus": {
+      "status": "NOT_SENTENCED",
+      "inBreach": false,
+      "preSentenceActivity": true,
+      "awaitingPsr": false
+    },
+    "age": 36
+  },
+  {
+    "offenderId": 2500754688,
+    "title": "Dr",
+    "firstName": "bob",
+    "middleNames": [],
+    "surname": "smith",
+    "dateOfBirth": "2000-07-13",
+    "gender": "Male",
+    "otherIds": {
+      "crn": "X527925"
+    },
+    "contactDetails": {
+      "phoneNumbers": [
+        {
+          "number": "07796544642",
+          "type": "MOBILE"
+        }
+      ],
+      "emailAddresses": []
+    },
+    "offenderProfile": {
+      "offenderLanguages": {
+        "requiresInterpreter": false
+      },
+      "previousConviction": {
+        "detail": {}
+      }
+    },
+    "offenderManagers": [
+      {
+        "staff": {
+          "code": "N07UATU",
+          "forenames": "Unallocated Staff(N07)",
+          "surname": "Staff"
+        },
+        "partitionArea": "National Data",
+        "softDeleted": false,
+        "team": {
+          "code": "N07UAT",
+          "description": "Unallocated Team(N07)",
+          "district": {
+            "code": "N07UAT",
+            "description": "Unallocated Level 3(N07)"
+          },
+          "borough": {
+            "code": "N07UAT",
+            "description": "Unallocated Level 2(N07)"
+          }
+        },
+        "probationArea": {
+          "code": "N07",
+          "description": "London",
+          "nps": false
+        },
+        "fromDate": "1900-01-01",
+        "active": true,
+        "allocationReason": {
+          "code": "IN1",
+          "description": "Initial Allocation"
+        }
+      }
+    ],
+    "softDeleted": false,
+    "currentDisposal": "0",
+    "partitionArea": "National Data",
+    "currentRestriction": false,
+    "restrictionMessage": "This is a restricted offender record. Please contact a system administrator",
+    "currentExclusion": false,
+    "exclusionMessage": "You are excluded from viewing this offender record. Please contact a system administrator",
+    "currentTier": "UD0",
+    "activeProbationManagedSentence": false,
+    "probationStatus": {
+      "status": "PREVIOUSLY_KNOWN",
+      "previouslyKnownTerminationDate": "2011-07-13",
+      "inBreach": false,
+      "preSentenceActivity": true,
+      "awaitingPsr": false
+    },
+    "age": 22
+  }
+]

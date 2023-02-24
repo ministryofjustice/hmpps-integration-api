@@ -14,6 +14,7 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ProbationOffenderSearchApiMockServer
+import java.io.File
 import java.time.LocalDate
 
 @ActiveProfiles("test")
@@ -26,13 +27,68 @@ class ProbationOffenderSearchGatewayTest(
   private val probationOffenderSearchGateway: ProbationOffenderSearchGateway
 ) : DescribeSpec({
   val probationOffenderSearchApiMockServer = ProbationOffenderSearchApiMockServer()
-  val nomsNumber = "xyz4321"
 
   beforeEach {
     probationOffenderSearchApiMockServer.start()
-    probationOffenderSearchApiMockServer.stubPostOffenderSearch(
-      "{\"nomsNumber\": \"$nomsNumber\", \"valid\": true}",
-      """
+
+    whenever(hmppsAuthGateway.getClientToken("Probation Offender Search")).thenReturn(
+      HmppsAuthMockServer.TOKEN
+    )
+  }
+
+  afterTest {
+    probationOffenderSearchApiMockServer.stop()
+  }
+
+  describe("#getPerson(s)") {
+    val firstName = "PETER"
+    val lastName = "PHILLIPS"
+
+    beforeEach {
+      prisonerOffenderSearchApiMockServer.stubGetPrisoners(File("src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/stubGetPrisoners.json").readText())
+    }
+
+    it("authenticates using HMPPS Auth with credentials") {
+      prisonerOffenderSearchGateway.getPrisoners(firstName, lastName)
+
+      verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("Prisoner Offender Search")
+    }
+
+    it("returns person(s) with the matching first name and last name") {
+      val persons = prisonerOffenderSearchGateway.getPrisoners(firstName, lastName)
+
+      persons.count().shouldBe(4)
+      persons.forEach {
+        it?.firstName.shouldBe(firstName)
+        it?.lastName.shouldBe(lastName)
+      }
+    }
+
+    it("returns an empty list of Person if no matching person") {
+      val firstNameThatDoesNotExist = "ZYX321"
+      val lastNameThatDoesNotExist = "GHJ345"
+
+      prisonerOffenderSearchApiMockServer.stubGetPrisoners(
+        """
+        {
+          "content": []
+        }
+        """
+      )
+
+      val persons = prisonerOffenderSearchGateway.getPrisoners(firstNameThatDoesNotExist, lastNameThatDoesNotExist)
+
+      persons.shouldBeEmpty()
+    }
+  }
+
+  describe("#getPerson") {
+    val nomsNumber = "xyz4321"
+
+    beforeEach {
+      probationOffenderSearchApiMockServer.stubPostOffenderSearch(
+        "{\"nomsNumber\": \"$nomsNumber\", \"valid\": true}",
+        """
         [
            {
             "firstName": "Jonathan",
@@ -58,18 +114,9 @@ class ProbationOffenderSearchGatewayTest(
           }
         ]
       """
-    )
+      )
+    }
 
-    whenever(hmppsAuthGateway.getClientToken("Probation Offender Search")).thenReturn(
-      HmppsAuthMockServer.TOKEN
-    )
-  }
-
-  afterTest {
-    probationOffenderSearchApiMockServer.stop()
-  }
-
-  describe("#getPerson") {
     it("authenticates using HMPPS Auth with credentials") {
       probationOffenderSearchGateway.getPerson(nomsNumber)
 
