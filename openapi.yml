@@ -75,6 +75,39 @@ paths:
               examples:
                 PersonNotFoundError:
                   $ref: "#/components/examples/PersonNotFoundError"
+  /persons/{id}/addresses:
+    get:
+      tags:
+        - persons
+      summary: Returns addresses associated with a person.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successfully found a person with the provided ID.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  addresses:
+                    type: array
+                    minItems: 0
+                    items:
+                      $ref: "#/components/schemas/Address"
+        "404":
+          description: Failed to find a person with the provided ID.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                PersonNotFoundError:
+                  $ref: "#/components/examples/PersonNotFoundError"
 
   /images/{id}:
     get:
@@ -107,6 +140,12 @@ paths:
 
 components:
   schemas:
+    Address:
+      type: object
+      properties:
+        postcode:
+          type: string
+          example: SW1H 9AJ
     Alias:
       type: object
       properties:
