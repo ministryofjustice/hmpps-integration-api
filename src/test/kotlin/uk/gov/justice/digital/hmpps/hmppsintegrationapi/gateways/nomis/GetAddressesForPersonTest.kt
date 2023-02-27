@@ -1,10 +1,9 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.nomis
 
-import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldContain
-import io.kotest.matchers.shouldBe
+import io.kotest.matchers.nulls.shouldBeNull
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory
 import org.mockito.kotlin.verify
@@ -14,7 +13,6 @@ import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NomisGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
@@ -63,7 +61,7 @@ class GetAddressesForPersonTest(
   it("returns addresses for a person with the matching ID") {
     val addresses = nomisGateway.getAddressesForPerson(offenderNo)
 
-    addresses.shouldContain(Address(postcode = "SA1 1DP"))
+    addresses?.shouldContain(Address(postcode = "SA1 1DP"))
   }
 
   it("returns an empty list when no addresses are found") {
@@ -74,7 +72,7 @@ class GetAddressesForPersonTest(
     addresses.shouldBeEmpty()
   }
 
-  it("throws an exception when 404 Not Found is returned") {
+  it("returns null when 404 Not Found is returned") {
     nomisApiMockServer.stubGetOffenderAddresses(
       offenderNo,
       """
@@ -85,10 +83,8 @@ class GetAddressesForPersonTest(
       HttpStatus.NOT_FOUND
     )
 
-    val exception = shouldThrow<EntityNotFoundException> {
-      nomisGateway.getAddressesForPerson(offenderNo)
-    }
+    val addresses = nomisGateway.getAddressesForPerson(offenderNo)
 
-    exception.message.shouldBe("Could not find person with id: $offenderNo")
+    addresses.shouldBeNull()
   }
 })

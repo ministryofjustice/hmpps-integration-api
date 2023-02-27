@@ -194,5 +194,13 @@ internal class PersonControllerTest(
         """.removeWhitespaceAndNewlines()
       )
     }
+
+    it("responds with a 404 NOT FOUND status when person isn't found") {
+      whenever(getAddressesForPersonService.execute(id)).thenReturn(null)
+
+      val result = mockMvc.perform(get("/persons/$id/addresses")).andReturn()
+
+      result.response.status.shouldBe(404)
+    }
   }
 })

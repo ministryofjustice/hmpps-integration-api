@@ -11,10 +11,14 @@ class GetAddressesForPersonService(
   @Autowired val probationOffenderSearchGateway: ProbationOffenderSearchGateway,
   @Autowired val nomisGateway: NomisGateway
 ) {
-  fun execute(id: String): List<Address> {
+  fun execute(id: String): List<Address>? {
     val addressesFromProbationOffenderSearch = probationOffenderSearchGateway.getAddressesForPerson(id)
     val addressesFromNomis = nomisGateway.getAddressesForPerson(id)
 
-    return addressesFromProbationOffenderSearch + addressesFromNomis
+    if (addressesFromNomis == null && addressesFromProbationOffenderSearch == null) {
+      return null
+    }
+
+    return addressesFromProbationOffenderSearch?.plus(addressesFromNomis.orEmpty())
   }
 }
