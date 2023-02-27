@@ -13,7 +13,9 @@ class ImageSmokeTest : DescribeSpec({
   val httpClient = HttpClient.newBuilder().build()
   val httpRequest = HttpRequest.newBuilder()
 
-  it("returns an image from NOMIS") {
+  // This test is skipped because the Prison API's endpoint for getting image data/content
+  // has changed and Prism is unable to return a valid response.
+  xit("returns an image from NOMIS") {
     val id = 2461788
 
     val response = httpClient.send(
