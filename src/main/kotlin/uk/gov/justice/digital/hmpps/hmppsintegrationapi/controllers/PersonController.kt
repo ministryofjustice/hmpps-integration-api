@@ -19,7 +19,7 @@ class PersonController(
   @Autowired val getImageMetadataForPersonService: GetImageMetadataForPersonService
 ) {
 
-  @GetMapping("")
+  @GetMapping("foobar")
   fun getPerson(@RequestParam firstName: String, @RequestParam lastName: String): Map<String, List<Person?>> {
     val persons = getPersonService.execute(firstName, lastName)
 
@@ -33,7 +33,7 @@ class PersonController(
     if (result.isNullOrEmpty()) {
       throw EntityNotFoundException("Could not find person with id: $id")
     }
-
+    println("HERE")
     return result
   }
 

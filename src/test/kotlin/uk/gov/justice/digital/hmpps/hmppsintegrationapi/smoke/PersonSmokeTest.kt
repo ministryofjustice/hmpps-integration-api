@@ -14,11 +14,12 @@ class PersonSmokeTest : DescribeSpec({
   val httpClient = HttpClient.newBuilder().build()
   val httpRequest = HttpRequest.newBuilder()
 
-  it("returns a list of person from appropriate upstream systems") {
+  it("returns a list of persons using first name and last name as search parameters") {
     val firstName = "John"
+    val lastName = "Wayne"
 
     val response = httpClient.send(
-      httpRequest.uri(URI.create("$baseUrl/persons?firstName=$firstName")).build(),
+      httpRequest.uri(URI.create("$baseUrl/persons/foobar?firstName=$firstName&lastName=$lastName")).build(),
       HttpResponse.BodyHandlers.ofString()
     )
 
@@ -28,10 +29,14 @@ class PersonSmokeTest : DescribeSpec({
          "persons":[
             {
                "firstName":"John"
+               "lastName":"Wayne"
+               "middleName": "Guy"
             },
             {
-               "firstName":"Sally"
-            }
+               "firstName":"John"
+               "lastName":"Wayne"
+               "middleName": "Friend"
+            },
          ]
       }
       """.trimIndent()

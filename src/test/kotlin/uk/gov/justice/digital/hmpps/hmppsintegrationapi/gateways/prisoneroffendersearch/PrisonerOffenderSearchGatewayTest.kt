@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways
+package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.prisoneroffendersearch
 
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.collections.shouldBeEmpty
@@ -12,6 +12,8 @@ import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.PrisonerOffenderSearchApiMockServer
 import java.io.File
@@ -43,7 +45,10 @@ class PrisonerOffenderSearchGatewayTest(
     val lastName = "PHILLIPS"
 
     beforeEach {
-      prisonerOffenderSearchApiMockServer.stubGetPrisoners(File("src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/stubGetPrisoners.json").readText())
+      prisonerOffenderSearchApiMockServer.stubPostPrisonerSearch(
+        "{\"firstName\": \"$firstName\", \"lastName\": \"$lastName\"}",
+        File("src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/prisoneroffendersearch/stubGetPrisoners.json").readText()
+      )
     }
 
     it("authenticates using HMPPS Auth with credentials") {
@@ -52,7 +57,7 @@ class PrisonerOffenderSearchGatewayTest(
       verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("Prisoner Offender Search")
     }
 
-    it("returns person(s) with the matching first name and last name") {
+    it("returns person(s) when performing a search") {
       val persons = prisonerOffenderSearchGateway.getPrisoners(firstName, lastName)
 
       persons.count().shouldBe(4)
@@ -66,7 +71,8 @@ class PrisonerOffenderSearchGatewayTest(
       val firstNameThatDoesNotExist = "ZYX321"
       val lastNameThatDoesNotExist = "GHJ345"
 
-      prisonerOffenderSearchApiMockServer.stubGetPrisoners(
+      prisonerOffenderSearchApiMockServer.stubPostPrisonerSearch(
+        "{\"firstName\": \"$firstNameThatDoesNotExist\", \"lastName\": \"$lastNameThatDoesNotExist\"}",
         """
         {
           "content": []

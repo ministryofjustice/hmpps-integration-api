@@ -50,7 +50,7 @@ internal class GetPersonServiceTest(
 
     it("returns person(s)") {
       val personsFromPrisonerOffenderSearch = listOf(
-        Person("Bruce", "Wayne", middleName = "Gary"),
+        Person("Bruce", "Wayne", middleName = "Gary")
       )
       val personsFromProbationOffenderSearch = listOf(
         Person("Bruce", "Wayne", middleName = "John")
@@ -61,7 +61,7 @@ internal class GetPersonServiceTest(
 
       val expectedResult = listOf(
         Person(firstName, lastName, middleName = "Gary"),
-        Person(firstName, lastName, middleName = "John"),
+        Person(firstName, lastName, middleName = "John")
       )
 
       val result = getPersonService.execute(firstName, lastName)

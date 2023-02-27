@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways
+package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.probationoffendersearch
 
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.collections.shouldBeEmpty
@@ -12,6 +12,8 @@ import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ProbationOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ProbationOffenderSearchApiMockServer
 import java.io.File
@@ -45,7 +47,7 @@ class ProbationOffenderSearchGatewayTest(
     beforeEach {
       probationOffenderSearchApiMockServer.stubPostOffenderSearch(
         "{\"firstName\": \"$firstName\", \"surname\": \"$surname\"}",
-        File("src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/stubGetOffenders.json").readText()
+        File("src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/probationoffendersearch/stubGetOffenders.json").readText()
       )
     }
 
