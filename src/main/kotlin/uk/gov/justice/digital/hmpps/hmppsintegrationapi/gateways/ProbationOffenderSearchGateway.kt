@@ -38,26 +38,21 @@ class ProbationOffenderSearchGateway(@Value("\${services.probation-offender-sear
     } catch (exception: WebClientResponseException.BadRequest) {
       log.error("${exception.message} - ${Json.parseToJsonElement(exception.responseBodyAsString).jsonObject["developerMessage"]}")
       null
-    } catch (exception: WebClientResponseException.NotFound) {
-      null
     }
   }
 
   fun getAddressesForPerson(id: String): List<Address> {
     val token = hmppsAuthGateway.getClientToken("Probation Offender Search")
 
-    return try {
-      webClient
-        .post()
-        .uri("/search")
-        .header("Authorization", "Bearer $token")
-        .body(BodyInserters.fromValue(mapOf("nomsNumber" to id, "valid" to true)))
-        .retrieve()
-        .bodyToFlux(Offender::class.java)
-        .map { offender -> offender.contactDetails.addresses.map { address -> address.toAddress() } }
-        .blockFirst() as List<Address>
-    } catch (exception: WebClientResponseException.NotFound) {
-      throw EntityNotFoundException("Could not find person with id: $id")
-    }
+    val offender = webClient
+      .post()
+      .uri("/search")
+      .header("Authorization", "Bearer $token")
+      .body(BodyInserters.fromValue(mapOf("nomsNumber" to id, "valid" to true)))
+      .retrieve()
+      .bodyToFlux(Offender::class.java)
+      .blockFirst() ?: throw EntityNotFoundException("Could not find person with id: $id")
+
+    return offender.contactDetails.addresses.map { address -> address.toAddress() }
   }
 }

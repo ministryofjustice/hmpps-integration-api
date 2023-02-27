@@ -131,15 +131,10 @@ class ProbationOffenderSearchGatewayTest(
       person?.shouldBeNull()
     }
 
-    it("returns null when 404 Not Found is returned") {
+    it("returns null when no results are returned") {
       probationOffenderSearchApiMockServer.stubPostOffenderSearch(
         "{\"nomsNumber\": \"$nomsNumber\", \"valid\": true}",
-        """
-          {
-            "developerMessage": "cannot find person"
-          }
-          """,
-        HttpStatus.NOT_FOUND
+        "[]"
       )
 
       val person = probationOffenderSearchGateway.getPerson(nomsNumber)

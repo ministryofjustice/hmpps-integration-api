@@ -11,7 +11,6 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
 import org.springframework.boot.test.mock.mockito.MockBean
-import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
@@ -103,15 +102,10 @@ class GetAddressesForPersonTest(
     addresses.shouldBeEmpty()
   }
 
-  it("throws an exception when 404 Not Found is returned") {
+  it("throws an exception when no results are returned") {
     probationOffenderSearchApiMockServer.stubPostOffenderSearch(
       "{\"nomsNumber\": \"$nomsNumber\", \"valid\": true}",
-      """
-        {
-          "developerMessage": "cannot find person"
-        }
-        """,
-      HttpStatus.NOT_FOUND
+      "[]"
     )
 
     val exception = shouldThrow<EntityNotFoundException> {
