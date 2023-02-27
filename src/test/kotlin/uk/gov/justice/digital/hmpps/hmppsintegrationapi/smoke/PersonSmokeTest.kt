@@ -38,7 +38,7 @@ class PersonSmokeTest : DescribeSpec({
         "firstName":"string",
         "lastName":"string"
       """.removeWhitespaceAndNewlines()
-      )
+    )
   }
 
   it("returns a person from NOMIS, Prisoner Offender Search and Probation Offender Search when given an id") {
