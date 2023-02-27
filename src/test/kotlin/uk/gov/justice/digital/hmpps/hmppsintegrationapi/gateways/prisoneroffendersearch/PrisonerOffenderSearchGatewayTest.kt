@@ -12,6 +12,7 @@ import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
@@ -46,7 +47,13 @@ class PrisonerOffenderSearchGatewayTest(
 
     beforeEach {
       prisonerOffenderSearchApiMockServer.stubPostPrisonerSearch(
-        "{\"firstName\": \"$firstName\", \"lastName\": \"$lastName\"}",
+        """
+            {
+              "firstName":"$firstName",
+              "lastName":"$lastName",
+              "includeAliases":true
+            }
+          """.removeWhitespaceAndNewlines(),
         File("src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/prisoneroffendersearch/stubGetPrisoners.json").readText()
       )
     }
@@ -72,7 +79,13 @@ class PrisonerOffenderSearchGatewayTest(
       val lastNameThatDoesNotExist = "GHJ345"
 
       prisonerOffenderSearchApiMockServer.stubPostPrisonerSearch(
-        "{\"firstName\": \"$firstNameThatDoesNotExist\", \"lastName\": \"$lastNameThatDoesNotExist\"}",
+        """
+            {
+              "firstName":"$firstNameThatDoesNotExist",
+              "lastName":"$lastNameThatDoesNotExist",
+              "includeAliases":true
+            }
+          """.removeWhitespaceAndNewlines(),
         """
         {
           "content": []

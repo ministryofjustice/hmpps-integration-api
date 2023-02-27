@@ -12,6 +12,7 @@ import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ProbationOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
@@ -46,7 +47,13 @@ class ProbationOffenderSearchGatewayTest(
 
     beforeEach {
       probationOffenderSearchApiMockServer.stubPostOffenderSearch(
-        "{\"firstName\": \"$firstName\", \"surname\": \"$surname\"}",
+        """
+            {
+              "firstName":"$firstName",
+              "surname":"$surname",
+              "valid":true
+            }
+          """.removeWhitespaceAndNewlines(),
         File("src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/probationoffendersearch/stubGetOffenders.json").readText()
       )
     }
