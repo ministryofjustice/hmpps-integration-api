@@ -48,7 +48,7 @@ class PrisonerOffenderSearchGateway(@Value("\${services.prisoner-offender-search
       .post()
       .uri("/global-search")
       .header("Authorization", "Bearer $token")
-      .body(BodyInserters.fromValue(mapOf("firstName" to firstName, "lastName" to lastName)))
+      .body(BodyInserters.fromValue(mapOf("firstName" to firstName, "lastName" to lastName, "includeAliases" to true)))
       .retrieve()
       .bodyToMono(GlobalSearch::class.java)
       .block()

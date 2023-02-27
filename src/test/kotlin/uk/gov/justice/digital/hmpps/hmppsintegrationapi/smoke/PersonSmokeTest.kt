@@ -4,6 +4,7 @@ import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
+import wiremock.org.eclipse.jetty.http.HttpStatus
 import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
@@ -15,32 +16,29 @@ class PersonSmokeTest : DescribeSpec({
   val httpRequest = HttpRequest.newBuilder()
 
   it("returns a list of persons using first name and last name as search parameters") {
-    val firstName = "John"
-    val lastName = "Wayne"
+    val firstName = "Example_First_Name"
+    val lastName = "Example_Last_Name"
+    val queryParams = "firstName=$firstName&lastName=$lastName"
 
     val response = httpClient.send(
-      httpRequest.uri(URI.create("$baseUrl/persons/foobar?firstName=$firstName&lastName=$lastName")).build(),
+      httpRequest.uri(URI.create("$baseUrl/persons?$queryParams")).build(),
       HttpResponse.BodyHandlers.ofString()
     )
 
+    response.statusCode().shouldBe(HttpStatus.OK_200)
+    response.body().shouldContain("\"persons\":[")
     response.body().shouldContain(
       """
-      {
-         "persons":[
-            {
-               "firstName":"John"
-               "lastName":"Wayne"
-               "middleName": "Guy"
-            },
-            {
-               "firstName":"John"
-               "lastName":"Wayne"
-               "middleName": "Friend"
-            },
-         ]
-      }
-      """.trimIndent()
+        "firstName":"Robert",
+        "lastName":"Larsen"
+      """.removeWhitespaceAndNewlines()
     )
+    response.body().shouldContain(
+      """
+        "firstName":"string",
+        "lastName":"string"
+      """.removeWhitespaceAndNewlines()
+      )
   }
 
   it("returns a person from NOMIS, Prisoner Offender Search and Probation Offender Search when given an id") {

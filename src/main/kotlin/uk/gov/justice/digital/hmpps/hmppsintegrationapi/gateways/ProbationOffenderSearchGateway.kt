@@ -48,7 +48,7 @@ class ProbationOffenderSearchGateway(@Value("\${services.probation-offender-sear
       .post()
       .uri("/search")
       .header("Authorization", "Bearer $token")
-      .body(BodyInserters.fromValue(mapOf("firstName" to firstName, "surname" to surname)))
+      .body(BodyInserters.fromValue(mapOf("firstName" to firstName, "surname" to surname, "valid" to true)))
       .retrieve()
       .bodyToFlux(Offender::class.java)
       .map { offender -> offender.toPerson() }
