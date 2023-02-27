@@ -5,5 +5,5 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Address
 data class Address(
   val postcode: String
 ) {
-  fun toAddress(): Address = Address(postcode = this.postcode)
+  fun toAddress() = Address(postcode = this.postcode)
 }
