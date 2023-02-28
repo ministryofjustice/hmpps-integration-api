@@ -23,7 +23,7 @@ class PersonController(
 ) {
 
   @GetMapping
-  fun getPerson(@RequestParam firstName: String, @RequestParam lastName: String): Map<String, List<Person?>> {
+  fun getPersons(@RequestParam firstName: String, @RequestParam lastName: String): Map<String, List<Person?>> {
     val persons = getPersonService.execute(firstName, lastName)
 
     return mapOf("persons" to persons)
