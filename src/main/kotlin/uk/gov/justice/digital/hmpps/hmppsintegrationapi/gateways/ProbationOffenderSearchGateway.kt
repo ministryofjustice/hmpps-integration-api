@@ -55,7 +55,6 @@ class ProbationOffenderSearchGateway(@Value("\${services.probation-offender-sear
       .block() as List<Person>
   }
 
-
   fun getAddressesForPerson(id: String): List<Address>? {
     val token = hmppsAuthGateway.getClientToken("Probation Offender Search")
 
