@@ -56,7 +56,7 @@ class ProbationOffenderSearchGatewayTest(
               "valid":true
             }
           """.removeWhitespaceAndNewlines(),
-        File("src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/probationoffendersearch/stubGetOffenders.json").readText()
+        File("src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/probationoffendersearch/fixtures/GetOffendersResponse.json").readText()
       )
     }
 

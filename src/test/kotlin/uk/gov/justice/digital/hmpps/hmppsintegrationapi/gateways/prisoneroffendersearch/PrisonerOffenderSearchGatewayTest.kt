@@ -56,7 +56,7 @@ class PrisonerOffenderSearchGatewayTest(
               "includeAliases":true
             }
           """.removeWhitespaceAndNewlines(),
-        File("src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/prisoneroffendersearch/stubGetPrisoners.json").readText()
+        File("src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/prisoneroffendersearch/fixtures/GetPrisonersResponse.json").readText()
       )
     }
 
