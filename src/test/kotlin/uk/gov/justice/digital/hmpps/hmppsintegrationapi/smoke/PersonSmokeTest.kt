@@ -15,6 +15,8 @@ class PersonSmokeTest : DescribeSpec({
   val httpClient = HttpClient.newBuilder().build()
   val httpRequest = HttpRequest.newBuilder()
 
+  val id = "A1234AL"
+
   it("returns a list of persons using first name and last name as search parameters") {
     val firstName = "Example_First_Name"
     val lastName = "Example_Last_Name"
@@ -41,62 +43,58 @@ class PersonSmokeTest : DescribeSpec({
     )
   }
 
-  describe("returns a person from NOMIS, Prisoner Offender Search and Probation Offender Search when given an id") {
-    val id = "A1234AL"
+  it("returns a person from NOMIS, Prisoner Offender Search and Probation Offender Search") {
+    val response = httpClient.send(
+      httpRequest.uri(URI.create("$baseUrl/persons/$id")).build(),
+      HttpResponse.BodyHandlers.ofString()
+    )
 
-    it("returns a person from NOMIS, Prisoner Offender Search and Probation Offender Search") {
-      val response = httpClient.send(
-        httpRequest.uri(URI.create("$baseUrl/persons/$id")).build(),
-        HttpResponse.BodyHandlers.ofString()
-      )
+    response.body().shouldContain("\"nomis\":{\"firstName\":\"string\",\"lastName\":\"string\"")
+  }
 
-      response.body().shouldContain("\"nomis\":{\"firstName\":\"string\",\"lastName\":\"string\"")
+  it("returns image metadata for a person") {
+    val response = httpClient.send(
+      httpRequest.uri(URI.create("$baseUrl/persons/$id/images")).build(),
+      HttpResponse.BodyHandlers.ofString()
+    )
+
+    response.body().shouldBe(
+      """
+    {
+      "images": [
+        {
+          "id": 2461788,
+          "captureDate": "2008-08-27",
+          "view": "FACE",
+          "orientation": "FRONT",
+          "type": "OFF_BKG"
+        }
+      ]
     }
+    """.removeWhitespaceAndNewlines()
+    )
+  }
 
-    it("returns image metadata for a person") {
-      val response = httpClient.send(
-        httpRequest.uri(URI.create("$baseUrl/persons/$id/images")).build(),
-        HttpResponse.BodyHandlers.ofString()
-      )
+  it("returns addresses for a person") {
+    val response = httpClient.send(
+      httpRequest.uri(URI.create("$baseUrl/persons/$id/addresses")).build(),
+      HttpResponse.BodyHandlers.ofString()
+    )
 
-      response.body().shouldBe(
-        """
-      {
-        "images": [
-          {
-            "id": 2461788,
-            "captureDate": "2008-08-27",
-            "view": "FACE",
-            "orientation": "FRONT",
-            "type": "OFF_BKG"
-          }
-        ]
-      }
-      """.removeWhitespaceAndNewlines()
-      )
+    response.statusCode().shouldBe(HttpStatus.OK.value())
+    response.body().shouldBe(
+      """
+    {
+      "addresses": [
+        {
+          "postcode": "string"
+        },
+        {
+          "postcode": "LI1 5TH"
+        }
+      ]
     }
-
-    it("returns addresses for a person") {
-      val response = httpClient.send(
-        httpRequest.uri(URI.create("$baseUrl/persons/$id/addresses")).build(),
-        HttpResponse.BodyHandlers.ofString()
-      )
-
-      response.statusCode().shouldBe(HttpStatus.OK.value())
-      response.body().shouldBe(
-        """
-      {
-        "addresses": [
-          {
-            "postcode": "string"
-          },
-          {
-            "postcode": "LI1 5TH"
-          }
-        ]
-      }
-      """.removeWhitespaceAndNewlines()
-      )
-    }
+    """.removeWhitespaceAndNewlines()
+    )
   }
 })
