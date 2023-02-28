@@ -38,6 +38,7 @@ paths:
                     minItems: 0
                     items:
                       $ref: "#/components/schemas/Person"
+
   /persons/{id}:
     get:
       tags:
@@ -106,6 +107,7 @@ paths:
               examples:
                 PersonNotFoundError:
                   $ref: "#/components/examples/PersonNotFoundError"
+
   /persons/{id}/addresses:
     get:
       tags:
