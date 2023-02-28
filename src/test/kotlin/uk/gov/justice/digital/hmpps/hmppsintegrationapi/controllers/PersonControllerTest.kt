@@ -195,7 +195,7 @@ internal class PersonControllerTest(
   }
 
   describe("GET /persons/{id}/images") {
-    val id = "abc123"
+    val id = "def456"
 
     beforeTest {
       Mockito.reset(getImageMetadataForPersonService)
@@ -246,7 +246,7 @@ internal class PersonControllerTest(
   }
 
   describe("GET /persons/{id}/addresses") {
-    val id = "abc123"
+    val id = "ghi789"
 
     beforeTest {
       Mockito.reset(getAddressesForPersonService)

@@ -61,13 +61,13 @@ class PrisonerOffenderSearchGatewayTest(
     }
 
     it("authenticates using HMPPS Auth with credentials") {
-      prisonerOffenderSearchGateway.getPrisoners(firstName, lastName)
+      prisonerOffenderSearchGateway.getPersons(firstName, lastName)
 
       verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("Prisoner Offender Search")
     }
 
     it("returns person(s) when performing a search") {
-      val persons = prisonerOffenderSearchGateway.getPrisoners(firstName, lastName)
+      val persons = prisonerOffenderSearchGateway.getPersons(firstName, lastName)
 
       persons.count().shouldBe(4)
       persons.forEach {
@@ -95,7 +95,7 @@ class PrisonerOffenderSearchGatewayTest(
         """
       )
 
-      val persons = prisonerOffenderSearchGateway.getPrisoners(firstNameThatDoesNotExist, lastNameThatDoesNotExist)
+      val persons = prisonerOffenderSearchGateway.getPersons(firstNameThatDoesNotExist, lastNameThatDoesNotExist)
 
       persons.shouldBeEmpty()
     }
