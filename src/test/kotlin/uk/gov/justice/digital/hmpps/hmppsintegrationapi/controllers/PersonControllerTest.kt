@@ -20,18 +20,106 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetAddressesForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetImageMetadataForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonsService
 import java.time.LocalDate
 
 @WebMvcTest(controllers = [PersonController::class])
 internal class PersonControllerTest(
   @Autowired val mockMvc: MockMvc,
   @MockBean val getPersonService: GetPersonService,
+  @MockBean val getPersonsService: GetPersonsService,
   @MockBean val getImageMetadataForPersonService: GetImageMetadataForPersonService,
   @MockBean val getAddressesForPersonService: GetAddressesForPersonService,
 ) : DescribeSpec({
 
-  val id = "abc123"
+  describe("GET /persons") {
+    val firstName = "Barry"
+    val lastName = "Allen"
+
+    beforeTest {
+      Mockito.reset(getPersonsService)
+
+      whenever(getPersonsService.execute(firstName, lastName)).thenReturn(
+        listOf(
+          Person(
+            firstName = "Barry",
+            lastName = "Allen",
+            middleName = "Jonas",
+            dateOfBirth = LocalDate.parse("2023-03-01")
+          ),
+          Person(
+            firstName = "Barry",
+            lastName = "Allen",
+            middleName = "Rock",
+            dateOfBirth = LocalDate.parse("2022-07-22")
+          )
+        )
+      )
+    }
+
+    it("responds with a 200 OK status") {
+      val result = mockMvc.perform(get("/persons?firstName=$firstName&lastName=$lastName")).andReturn()
+
+      result.response.status.shouldBe(200)
+    }
+
+    it("returns an empty list embedded in a JSON object when no matching people") {
+      val firstNameThatDoesNotExist = "Bob21345"
+      val lastNameThatDoesNotExist = "Gun36773"
+
+      whenever(getPersonsService.execute(firstNameThatDoesNotExist, lastNameThatDoesNotExist)).thenReturn(
+        listOf()
+      )
+
+      val result = mockMvc.perform(get("/persons?firstName=$firstNameThatDoesNotExist&lastName=$lastNameThatDoesNotExist")).andReturn()
+
+      result.response.contentAsString.shouldBe(
+        """
+          {
+            "persons":[]
+          }
+          """.removeWhitespaceAndNewlines()
+      )
+    }
+
+    it("retrieves a person with matching search criteria") {
+      mockMvc.perform(get("/persons?firstName=$firstName&lastName=$lastName")).andReturn()
+
+      verify(getPersonsService, times(1)).execute(firstName, lastName)
+    }
+
+    it("returns a person with matching search criteria") {
+      val result = mockMvc.perform(get("/persons?firstName=$firstName&lastName=$lastName")).andReturn()
+
+      result.response.contentAsString.shouldBe(
+        """
+          {
+            "persons":
+            [
+              {
+                "firstName":"Barry",
+                "lastName":"Allen",
+                "middleName":"Jonas",
+                "dateOfBirth":"2023-03-01",
+                "aliases":[]
+               },
+               {
+                 "firstName":"Barry",
+                 "lastName":"Allen",
+                 "middleName":"Rock",
+                 "dateOfBirth":"2022-07-22",
+                 "aliases":[]
+               }
+             ]
+           }
+        """.removeWhitespaceAndNewlines()
+      )
+    }
+  }
+
   describe("GET /persons/{id}") {
+    val id = "abc123"
+
     val person = mapOf(
       "nomis" to Person(
         "Billy",
@@ -110,6 +198,8 @@ internal class PersonControllerTest(
   }
 
   describe("GET /persons/{id}/images") {
+    val id = "def456"
+
     beforeTest {
       Mockito.reset(getImageMetadataForPersonService)
       whenever(getImageMetadataForPersonService.execute(id)).thenReturn(
@@ -159,6 +249,8 @@ internal class PersonControllerTest(
   }
 
   describe("GET /persons/{id}/addresses") {
+    val id = "ghi789"
+
     beforeTest {
       Mockito.reset(getAddressesForPersonService)
       whenever(getAddressesForPersonService.execute(id)).thenReturn(

@@ -40,6 +40,21 @@ class ProbationOffenderSearchGateway(@Value("\${services.probation-offender-sear
     }
   }
 
+  fun getPersons(firstName: String, surname: String): List<Person> {
+    val token = hmppsAuthGateway.getClientToken("Probation Offender Search")
+
+    return webClient
+      .post()
+      .uri("/search")
+      .header("Authorization", "Bearer $token")
+      .body(BodyInserters.fromValue(mapOf("firstName" to firstName, "surname" to surname, "valid" to true)))
+      .retrieve()
+      .bodyToFlux(Offender::class.java)
+      .map { offender -> offender.toPerson() }
+      .collectList()
+      .block() as List<Person>
+  }
+
   fun getAddressesForPerson(id: String): List<Address>? {
     val token = hmppsAuthGateway.getClientToken("Probation Offender Search")
 

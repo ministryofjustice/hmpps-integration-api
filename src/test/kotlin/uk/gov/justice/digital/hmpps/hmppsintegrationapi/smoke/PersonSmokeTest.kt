@@ -14,7 +14,34 @@ class PersonSmokeTest : DescribeSpec({
   val baseUrl = "http://localhost:8080"
   val httpClient = HttpClient.newBuilder().build()
   val httpRequest = HttpRequest.newBuilder()
+
   val id = "A1234AL"
+
+  it("returns a list of persons using first name and last name as search parameters") {
+    val firstName = "Example_First_Name"
+    val lastName = "Example_Last_Name"
+    val queryParams = "firstName=$firstName&lastName=$lastName"
+
+    val response = httpClient.send(
+      httpRequest.uri(URI.create("$baseUrl/persons?$queryParams")).build(),
+      HttpResponse.BodyHandlers.ofString()
+    )
+
+    response.statusCode().shouldBe(HttpStatus.OK.value())
+    response.body().shouldContain("\"persons\":[")
+    response.body().shouldContain(
+      """
+        "firstName":"Robert",
+        "lastName":"Larsen"
+      """.removeWhitespaceAndNewlines()
+    )
+    response.body().shouldContain(
+      """
+        "firstName":"string",
+        "lastName":"string"
+      """.removeWhitespaceAndNewlines()
+    )
+  }
 
   it("returns a person from NOMIS, Prisoner Offender Search and Probation Offender Search") {
     val response = httpClient.send(
@@ -33,18 +60,18 @@ class PersonSmokeTest : DescribeSpec({
 
     response.body().shouldBe(
       """
-      {
-        "images": [
-          {
-            "id": 2461788,
-            "captureDate": "2008-08-27",
-            "view": "FACE",
-            "orientation": "FRONT",
-            "type": "OFF_BKG"
-          }
-        ]
-      }
-      """.removeWhitespaceAndNewlines()
+    {
+      "images": [
+        {
+          "id": 2461788,
+          "captureDate": "2008-08-27",
+          "view": "FACE",
+          "orientation": "FRONT",
+          "type": "OFF_BKG"
+        }
+      ]
+    }
+    """.removeWhitespaceAndNewlines()
     )
   }
 
@@ -57,17 +84,17 @@ class PersonSmokeTest : DescribeSpec({
     response.statusCode().shouldBe(HttpStatus.OK.value())
     response.body().shouldBe(
       """
-      {
-        "addresses": [
-          {
-            "postcode": "string"
-          },
-          {
-            "postcode": "LI1 5TH"
-          }
-        ]
-      }
-      """.removeWhitespaceAndNewlines()
+    {
+      "addresses": [
+        {
+          "postcode": "string"
+        },
+        {
+          "postcode": "LI1 5TH"
+        }
+      ]
+    }
+    """.removeWhitespaceAndNewlines()
     )
   }
 })

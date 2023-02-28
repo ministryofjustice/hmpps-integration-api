@@ -1,0 +1,75 @@
+[
+  {
+    "offenderId": 2500858686,
+    "firstName": "Matt",
+    "middleNames": [],
+    "surname": "Nolan",
+    "dateOfBirth": "1966-10-25",
+    "gender": "Male",
+    "otherIds": {
+      "crn": "X595043"
+    },
+    "contactDetails": {
+      "phoneNumbers": [],
+      "emailAddresses": []
+    },
+    "offenderProfile": {
+      "offenderLanguages": {
+        "requiresInterpreter": false
+      },
+      "previousConviction": {
+        "detail": {}
+      }
+    },
+    "offenderManagers": [
+      {
+        "staff": {
+          "code": "N55UATU",
+          "forenames": "Unallocated",
+          "surname": "Staff"
+        },
+        "partitionArea": "National Data",
+        "softDeleted": false,
+        "team": {
+          "code": "N55UAT",
+          "description": "Unallocated Team(N55)",
+          "district": {
+            "code": "N55UAT",
+            "description": "Unallocated Level 3(N55)"
+          },
+          "borough": {
+            "code": "N55UAT",
+            "description": "Unallocated Level 2(N55)"
+          }
+        },
+        "probationArea": {
+          "code": "N55",
+          "description": "Yorkshire and The Humber",
+          "nps": false
+        },
+        "fromDate": "1900-01-01",
+        "active": true,
+        "allocationReason": {
+          "code": "IN1",
+          "description": "Initial Allocation"
+        }
+      }
+    ],
+    "softDeleted": false,
+    "currentDisposal": "0",
+    "partitionArea": "National Data",
+    "currentRestriction": false,
+    "restrictionMessage": "This is a restricted record. Please contact a system administrator",
+    "currentExclusion": false,
+    "exclusionMessage": "You are excluded from viewing this record. Please contact a system administrator",
+    "currentTier": "UD0",
+    "activeProbationManagedSentence": false,
+    "probationStatus": {
+      "status": "NOT_SENTENCED",
+      "inBreach": false,
+      "preSentenceActivity": false,
+      "awaitingPsr": false
+    },
+    "age": 56
+  }
+]
