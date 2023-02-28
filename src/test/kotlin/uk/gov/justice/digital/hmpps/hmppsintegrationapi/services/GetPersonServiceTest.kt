@@ -25,6 +25,7 @@ internal class GetPersonServiceTest(
   @MockBean val probationOffenderSearchGateway: ProbationOffenderSearchGateway,
   private val getPersonService: GetPersonService
 ) : DescribeSpec({
+  val id = "abc123"
 
   beforeEach {
     Mockito.reset(nomisGateway)
@@ -32,100 +33,51 @@ internal class GetPersonServiceTest(
     Mockito.reset(probationOffenderSearchGateway)
   }
 
-  describe("by search criteria") {
-    val firstName = "Bruce"
-    val lastName = "Wayne"
+  it("retrieves a person from NOMIS") {
+    getPersonService.execute(id)
 
-    it("returns person(s) from Prisoner Offender Search") {
-      getPersonService.execute(firstName, lastName)
-
-      verify(prisonerOffenderSearchGateway, VerificationModeFactory.times(1)).getPersons(firstName, lastName)
-    }
-
-    it("returns person(s) from Probation Offender Search") {
-      getPersonService.execute(firstName, lastName)
-
-      verify(probationOffenderSearchGateway, VerificationModeFactory.times(1)).getPersons(firstName, lastName)
-    }
-
-    it("returns person(s)") {
-      val personsFromPrisonerOffenderSearch = listOf(
-        Person("Bruce", "Wayne", middleName = "Gary")
-      )
-      val personsFromProbationOffenderSearch = listOf(
-        Person("Bruce", "Wayne", middleName = "John")
-      )
-
-      whenever(prisonerOffenderSearchGateway.getPersons(firstName, lastName)).thenReturn(personsFromPrisonerOffenderSearch)
-      whenever(probationOffenderSearchGateway.getPersons(firstName, lastName)).thenReturn(personsFromProbationOffenderSearch)
-
-      val expectedResult = listOf(
-        Person(firstName, lastName, middleName = "Gary"),
-        Person(firstName, lastName, middleName = "John")
-      )
-
-      val result = getPersonService.execute(firstName, lastName)
-      result.shouldBe(expectedResult)
-    }
-
-    it("returns an empty list when no person(s) are found") {
-      whenever(prisonerOffenderSearchGateway.getPersons(firstName, lastName)).thenReturn(emptyList())
-      whenever(probationOffenderSearchGateway.getPersons(firstName, lastName)).thenReturn(emptyList())
-
-      val result = getPersonService.execute(firstName, lastName)
-      result.shouldBe(emptyList())
-    }
+    verify(nomisGateway, VerificationModeFactory.times(1)).getPerson(id)
   }
 
-  describe("by id") {
-    val id = "abc123"
+  it("retrieves a person from Prisoner Offender Search") {
+    getPersonService.execute(id)
 
-    it("retrieves a person from NOMIS") {
-      getPersonService.execute(id)
+    verify(prisonerOffenderSearchGateway, VerificationModeFactory.times(1)).getPerson(id)
+  }
 
-      verify(nomisGateway, VerificationModeFactory.times(1)).getPerson(id)
-    }
+  it("retrieves a person from Probation Offender Search") {
+    getPersonService.execute(id)
 
-    it("retrieves a person from Prisoner Offender Search") {
-      getPersonService.execute(id)
+    verify(probationOffenderSearchGateway, VerificationModeFactory.times(1)).getPerson(id)
+  }
 
-      verify(prisonerOffenderSearchGateway, VerificationModeFactory.times(1)).getPerson(id)
-    }
+  it("returns a person") {
+    val personFromNomis = Person("Billy", "Bob")
+    val personFromPrisonerOffenderSearch = Person("Sally", "Sob")
+    val personFromProbationOffenderSearch = Person("Molly", "Mob")
 
-    it("retrieves a person from Probation Offender Search") {
-      getPersonService.execute(id)
+    whenever(nomisGateway.getPerson(id)).thenReturn(personFromNomis)
+    whenever(prisonerOffenderSearchGateway.getPerson(id)).thenReturn(personFromPrisonerOffenderSearch)
+    whenever(probationOffenderSearchGateway.getPerson(id)).thenReturn(personFromProbationOffenderSearch)
 
-      verify(probationOffenderSearchGateway, VerificationModeFactory.times(1)).getPerson(id)
-    }
+    val result = getPersonService.execute(id)
 
-    it("returns a person") {
-      val personFromNomis = Person("Billy", "Bob")
-      val personFromPrisonerOffenderSearch = Person("Sally", "Sob")
-      val personFromProbationOffenderSearch = Person("Molly", "Mob")
+    val expectedResult = mapOf(
+      "nomis" to Person("Billy", "Bob"),
+      "prisonerOffenderSearch" to Person("Sally", "Sob"),
+      "probationOffenderSearch" to Person("Molly", "Mob")
+    )
 
-      whenever(nomisGateway.getPerson(id)).thenReturn(personFromNomis)
-      whenever(prisonerOffenderSearchGateway.getPerson(id)).thenReturn(personFromPrisonerOffenderSearch)
-      whenever(probationOffenderSearchGateway.getPerson(id)).thenReturn(personFromProbationOffenderSearch)
+    result.shouldBe(expectedResult)
+  }
 
-      val result = getPersonService.execute(id)
+  it("returns null when a person isn't found in any APIs") {
+    whenever(nomisGateway.getPerson(id)).thenReturn(null)
+    whenever(prisonerOffenderSearchGateway.getPerson(id)).thenReturn(null)
+    whenever(probationOffenderSearchGateway.getPerson(id)).thenReturn(null)
 
-      val expectedResult = mapOf(
-        "nomis" to Person("Billy", "Bob"),
-        "prisonerOffenderSearch" to Person("Sally", "Sob"),
-        "probationOffenderSearch" to Person("Molly", "Mob")
-      )
+    val result = getPersonService.execute(id)
 
-      result.shouldBe(expectedResult)
-    }
-
-    it("returns null when a person isn't found in any APIs") {
-      whenever(nomisGateway.getPerson(id)).thenReturn(null)
-      whenever(prisonerOffenderSearchGateway.getPerson(id)).thenReturn(null)
-      whenever(probationOffenderSearchGateway.getPerson(id)).thenReturn(null)
-
-      val result = getPersonService.execute(id)
-
-      result.shouldBeNull()
-    }
+    result.shouldBeNull()
   }
 })

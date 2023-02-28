@@ -19,12 +19,14 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetAddressesForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetImageMetadataForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonsService
 import java.time.LocalDate
 
 @WebMvcTest(controllers = [PersonController::class])
 internal class PersonControllerTest(
   @Autowired val mockMvc: MockMvc,
   @MockBean val getPersonService: GetPersonService,
+  @MockBean val getPersonsService: GetPersonsService,
   @MockBean val getImageMetadataForPersonService: GetImageMetadataForPersonService,
   @MockBean val getAddressesForPersonService: GetAddressesForPersonService,
 ) : DescribeSpec({
@@ -34,9 +36,9 @@ internal class PersonControllerTest(
     val lastName = "Allen"
 
     beforeTest {
-      Mockito.reset(getPersonService)
+      Mockito.reset(getPersonsService)
 
-      whenever(getPersonService.execute(firstName, lastName)).thenReturn(
+      whenever(getPersonsService.execute(firstName, lastName)).thenReturn(
         listOf(
           Person(
             firstName = "Barry",
@@ -60,11 +62,11 @@ internal class PersonControllerTest(
       result.response.status.shouldBe(200)
     }
 
-    it("responds with an empty list embedded in a json object") {
+    it("returns an empty list embedded in a JSON object when no matching people") {
       val firstNameThatDoesNotExist = "Bob21345"
       val lastNameThatDoesNotExist = "Gun36773"
 
-      whenever(getPersonService.execute(firstNameThatDoesNotExist, lastNameThatDoesNotExist)).thenReturn(
+      whenever(getPersonsService.execute(firstNameThatDoesNotExist, lastNameThatDoesNotExist)).thenReturn(
         listOf()
       )
 
@@ -82,7 +84,7 @@ internal class PersonControllerTest(
     it("retrieves a person with matching search criteria") {
       mockMvc.perform(get("/persons?firstName=$firstName&lastName=$lastName")).andReturn()
 
-      verify(getPersonService, times(1)).execute(firstName, lastName)
+      verify(getPersonsService, times(1)).execute(firstName, lastName)
     }
 
     it("returns a person with matching search criteria") {

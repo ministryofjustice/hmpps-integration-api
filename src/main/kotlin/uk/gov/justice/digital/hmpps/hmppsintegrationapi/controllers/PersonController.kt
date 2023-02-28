@@ -13,18 +13,20 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetAddressesForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetImageMetadataForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonsService
 
 @RestController
 @RequestMapping("/persons")
 class PersonController(
   @Autowired val getPersonService: GetPersonService,
+  @Autowired val getPersonsService: GetPersonsService,
   @Autowired val getImageMetadataForPersonService: GetImageMetadataForPersonService,
   @Autowired val getAddressesForPersonService: GetAddressesForPersonService
 ) {
 
   @GetMapping
   fun getPersons(@RequestParam firstName: String, @RequestParam lastName: String): Map<String, List<Person?>> {
-    val persons = getPersonService.execute(firstName, lastName)
+    val persons = getPersonsService.execute(firstName, lastName)
 
     return mapOf("persons" to persons)
   }
