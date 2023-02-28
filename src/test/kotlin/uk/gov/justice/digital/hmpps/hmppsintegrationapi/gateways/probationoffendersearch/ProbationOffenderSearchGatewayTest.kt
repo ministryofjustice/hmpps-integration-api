@@ -43,7 +43,7 @@ class ProbationOffenderSearchGatewayTest(
     probationOffenderSearchApiMockServer.stop()
   }
 
-  describe("#getPerson(s)") {
+  describe("#getPersons") {
     val firstName = "Matt"
     val surname = "Nolan"
 

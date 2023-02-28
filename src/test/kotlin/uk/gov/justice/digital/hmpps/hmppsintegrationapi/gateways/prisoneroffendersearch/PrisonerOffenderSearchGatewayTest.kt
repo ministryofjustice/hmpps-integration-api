@@ -43,7 +43,7 @@ class PrisonerOffenderSearchGatewayTest(
     prisonerOffenderSearchApiMockServer.stop()
   }
 
-  describe("#getPerson(s)") {
+  describe("#getPersons") {
     val firstName = "PETER"
     val lastName = "PHILLIPS"
 
