@@ -51,7 +51,8 @@ class PersonController(
 
   @GetMapping("{id}/addresses")
   fun getPersonAddresses(@PathVariable id: String): Map<String, List<Address>> {
-    val addresses = getAddressesForPersonService.execute(id)
+    val addresses =
+      getAddressesForPersonService.execute(id) ?: throw EntityNotFoundException("Could not find person with id: $id")
 
     return mapOf("addresses" to addresses)
   }

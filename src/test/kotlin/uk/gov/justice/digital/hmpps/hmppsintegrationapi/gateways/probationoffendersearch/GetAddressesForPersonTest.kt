@@ -1,10 +1,9 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.probationoffendersearch
 
-import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldContain
-import io.kotest.matchers.shouldBe
+import io.kotest.matchers.nulls.shouldBeNull
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory
 import org.mockito.kotlin.verify
@@ -13,7 +12,6 @@ import org.springframework.boot.test.context.ConfigDataApplicationContextInitial
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ProbationOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
@@ -75,7 +73,7 @@ class GetAddressesForPersonTest(
   it("returns addresses for a person with the matching ID") {
     val addresses = probationOffenderSearchGateway.getAddressesForPerson(nomsNumber)
 
-    addresses.shouldContain(Address(postcode = "M3 2JA"))
+    addresses?.shouldContain(Address(postcode = "M3 2JA"))
   }
 
   it("returns an empty list when no addresses are found") {
@@ -102,16 +100,14 @@ class GetAddressesForPersonTest(
     addresses.shouldBeEmpty()
   }
 
-  it("throws an exception when no results are returned") {
+  it("returns null when no results are returned") {
     probationOffenderSearchApiMockServer.stubPostOffenderSearch(
       "{\"nomsNumber\": \"$nomsNumber\", \"valid\": true}",
       "[]"
     )
 
-    val exception = shouldThrow<EntityNotFoundException> {
-      probationOffenderSearchGateway.getAddressesForPerson(nomsNumber)
-    }
+    val addresses = probationOffenderSearchGateway.getAddressesForPerson(nomsNumber)
 
-    exception.message.shouldBe("Could not find person with id: $nomsNumber")
+    addresses.shouldBeNull()
   }
 })

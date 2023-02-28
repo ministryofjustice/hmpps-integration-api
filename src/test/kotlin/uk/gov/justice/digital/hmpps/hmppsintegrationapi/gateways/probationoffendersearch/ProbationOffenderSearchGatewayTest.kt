@@ -168,7 +168,7 @@ class ProbationOffenderSearchGatewayTest(
       person?.shouldBeNull()
     }
 
-    it("returns null when no results are returned") {
+    it("returns null when no offenders are returned") {
       probationOffenderSearchApiMockServer.stubPostOffenderSearch(
         "{\"nomsNumber\": \"$nomsNumber\", \"valid\": true}",
         "[]"
