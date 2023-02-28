@@ -12,9 +12,11 @@ import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Address
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Alias
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ImageMetadata
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Person
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetAddressesForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetImageMetadataForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService
 import java.time.LocalDate
@@ -23,7 +25,8 @@ import java.time.LocalDate
 internal class PersonControllerTest(
   @Autowired val mockMvc: MockMvc,
   @MockBean val getPersonService: GetPersonService,
-  @MockBean val getImageMetadataForPersonService: GetImageMetadataForPersonService
+  @MockBean val getImageMetadataForPersonService: GetImageMetadataForPersonService,
+  @MockBean val getAddressesForPersonService: GetAddressesForPersonService,
 ) : DescribeSpec({
 
   describe("GET /persons") {
@@ -156,7 +159,7 @@ internal class PersonControllerTest(
 
       result.response.contentAsString.shouldBe(
         """
-         {
+        {
           "nomis": {
             "firstName": "Billy",
             "lastName": "Bob",
@@ -234,6 +237,47 @@ internal class PersonControllerTest(
               "view": "FACE",
               "orientation": "FRONT",
               "type": "OFF_BKG"
+            }
+          ]
+        }
+        """.removeWhitespaceAndNewlines()
+      )
+    }
+  }
+
+  describe("GET /persons/{id}/addresses") {
+    val id = "abc123"
+
+    beforeTest {
+      Mockito.reset(getAddressesForPersonService)
+      whenever(getAddressesForPersonService.execute(id)).thenReturn(
+        listOf(
+          Address(postcode = "SE1 1TE")
+        )
+      )
+    }
+
+    it("responds with a 200 OK status") {
+      val result = mockMvc.perform(get("/persons/$id/addresses")).andReturn()
+
+      result.response.status.shouldBe(200)
+    }
+
+    it("retrieves the addresses for a person with the matching ID") {
+      mockMvc.perform(get("/persons/$id/addresses")).andReturn()
+
+      verify(getAddressesForPersonService, times(1)).execute(id)
+    }
+
+    it("returns the addresses for a person with the matching ID") {
+      val result = mockMvc.perform(get("/persons/$id/addresses")).andReturn()
+
+      result.response.contentAsString.shouldBe(
+        """
+        {
+          "addresses": [
+            {
+              "postcode": "SE1 1TE"
             }
           ]
         }

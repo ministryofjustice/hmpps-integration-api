@@ -3,8 +3,8 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.smoke
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
+import org.springframework.http.HttpStatus
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
-import wiremock.org.eclipse.jetty.http.HttpStatus
 import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
@@ -25,7 +25,7 @@ class PersonSmokeTest : DescribeSpec({
       HttpResponse.BodyHandlers.ofString()
     )
 
-    response.statusCode().shouldBe(HttpStatus.OK_200)
+    response.statusCode().shouldBe(HttpStatus.OK.value())
     response.body().shouldContain("\"persons\":[")
     response.body().shouldContain(
       """
@@ -41,27 +41,26 @@ class PersonSmokeTest : DescribeSpec({
     )
   }
 
-  it("returns a person from NOMIS, Prisoner Offender Search and Probation Offender Search when given an id") {
+  describe("returns a person from NOMIS, Prisoner Offender Search and Probation Offender Search when given an id") {
     val id = "A1234AL"
 
-    val response = httpClient.send(
-      httpRequest.uri(URI.create("$baseUrl/persons/$id")).build(),
-      HttpResponse.BodyHandlers.ofString()
-    )
+    it("returns a person from NOMIS, Prisoner Offender Search and Probation Offender Search") {
+      val response = httpClient.send(
+        httpRequest.uri(URI.create("$baseUrl/persons/$id")).build(),
+        HttpResponse.BodyHandlers.ofString()
+      )
 
-    response.body().shouldContain("\"nomis\":{\"firstName\":\"string\",\"lastName\":\"string\"")
-  }
+      response.body().shouldContain("\"nomis\":{\"firstName\":\"string\",\"lastName\":\"string\"")
+    }
 
-  it("returns image metadata for a person") {
-    val id = "A1234AL"
+    it("returns image metadata for a person") {
+      val response = httpClient.send(
+        httpRequest.uri(URI.create("$baseUrl/persons/$id/images")).build(),
+        HttpResponse.BodyHandlers.ofString()
+      )
 
-    val response = httpClient.send(
-      httpRequest.uri(URI.create("$baseUrl/persons/$id/images")).build(),
-      HttpResponse.BodyHandlers.ofString()
-    )
-
-    response.body().shouldBe(
-      """
+      response.body().shouldBe(
+        """
       {
         "images": [
           {
@@ -74,6 +73,30 @@ class PersonSmokeTest : DescribeSpec({
         ]
       }
       """.removeWhitespaceAndNewlines()
-    )
+      )
+    }
+
+    it("returns addresses for a person") {
+      val response = httpClient.send(
+        httpRequest.uri(URI.create("$baseUrl/persons/$id/addresses")).build(),
+        HttpResponse.BodyHandlers.ofString()
+      )
+
+      response.statusCode().shouldBe(HttpStatus.OK.value())
+      response.body().shouldBe(
+        """
+      {
+        "addresses": [
+          {
+            "postcode": "string"
+          },
+          {
+            "postcode": "LI1 5TH"
+          }
+        ]
+      }
+      """.removeWhitespaceAndNewlines()
+      )
+    }
   }
 })

@@ -14,5 +14,13 @@ class StringExtensionTest : DescribeSpec({
       }
       """.removeWhitespaceAndNewlines().shouldBe("{\"never\":\"gonna\",\"give\":\"you\",\"up\":null}")
     }
+
+    it("maintains spaces in values") {
+      """
+      {
+        "cat": "meow meow"
+      }
+      """.removeWhitespaceAndNewlines().shouldBe("{\"cat\":\"meow meow\"}")
+    }
   }
 })

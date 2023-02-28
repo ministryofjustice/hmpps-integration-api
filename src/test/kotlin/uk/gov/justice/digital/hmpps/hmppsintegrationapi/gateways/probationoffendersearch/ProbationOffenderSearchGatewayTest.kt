@@ -61,13 +61,13 @@ class ProbationOffenderSearchGatewayTest(
     }
 
     it("authenticates using HMPPS Auth with credentials") {
-      probationOffenderSearchGateway.getOffenders(firstName, surname)
+      probationOffenderSearchGateway.getPersons(firstName, surname)
 
       verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("Probation Offender Search")
     }
 
     it("returns person(s) when performing a search") {
-      val persons = probationOffenderSearchGateway.getOffenders(firstName, surname)
+      val persons = probationOffenderSearchGateway.getPersons(firstName, surname)
 
       persons?.count().shouldBe(1)
       persons?.first()?.firstName.shouldBe(firstName)
@@ -168,15 +168,10 @@ class ProbationOffenderSearchGatewayTest(
       person?.shouldBeNull()
     }
 
-    it("returns null when 404 Not Found is returned") {
+    it("returns null when no results are returned") {
       probationOffenderSearchApiMockServer.stubPostOffenderSearch(
         "{\"nomsNumber\": \"$nomsNumber\", \"valid\": true}",
-        """
-          {
-            "developerMessage": "cannot find person"
-          }
-          """,
-        HttpStatus.NOT_FOUND
+        "[]"
       )
 
       val person = probationOffenderSearchGateway.getPerson(nomsNumber)

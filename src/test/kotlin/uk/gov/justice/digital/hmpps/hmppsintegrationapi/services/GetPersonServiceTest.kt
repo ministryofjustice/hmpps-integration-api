@@ -45,7 +45,7 @@ internal class GetPersonServiceTest(
     it("returns person(s) from Probation Offender Search") {
       getPersonService.execute(firstName, lastName)
 
-      verify(probationOffenderSearchGateway, VerificationModeFactory.times(1)).getOffenders(firstName, lastName)
+      verify(probationOffenderSearchGateway, VerificationModeFactory.times(1)).getPersons(firstName, lastName)
     }
 
     it("returns person(s)") {
@@ -57,7 +57,7 @@ internal class GetPersonServiceTest(
       )
 
       whenever(prisonerOffenderSearchGateway.getPrisoners(firstName, lastName)).thenReturn(personsFromPrisonerOffenderSearch)
-      whenever(probationOffenderSearchGateway.getOffenders(firstName, lastName)).thenReturn(personsFromProbationOffenderSearch)
+      whenever(probationOffenderSearchGateway.getPersons(firstName, lastName)).thenReturn(personsFromProbationOffenderSearch)
 
       val expectedResult = listOf(
         Person(firstName, lastName, middleName = "Gary"),
@@ -70,7 +70,7 @@ internal class GetPersonServiceTest(
 
     it("returns an empty list when no person(s) are found") {
       whenever(prisonerOffenderSearchGateway.getPrisoners(firstName, lastName)).thenReturn(emptyList())
-      whenever(probationOffenderSearchGateway.getOffenders(firstName, lastName)).thenReturn(emptyList())
+      whenever(probationOffenderSearchGateway.getPersons(firstName, lastName)).thenReturn(emptyList())
 
       val result = getPersonService.execute(firstName, lastName)
       result.shouldBe(emptyList())
