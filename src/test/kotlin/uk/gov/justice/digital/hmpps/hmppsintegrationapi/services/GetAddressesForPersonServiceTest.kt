@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.collections.shouldContain
+import io.kotest.matchers.nulls.shouldBeNull
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory
 import org.mockito.kotlin.verify
@@ -53,7 +54,16 @@ internal class GetAddressesForPersonServiceTest(
 
     val result = getAddressesForPersonService.execute(id)
 
-    result.shouldContain(addressesFromProbationOffenderSearch)
-    result.shouldContain(addressesFromNomis)
+    result?.shouldContain(addressesFromProbationOffenderSearch)
+    result?.shouldContain(addressesFromNomis)
+  }
+
+  it("returns null when person cannot be found in all upstream APIs") {
+    whenever(probationOffenderSearchGateway.getAddressesForPerson(id)).thenReturn(null)
+    whenever(nomisGateway.getAddressesForPerson(id)).thenReturn(null)
+
+    val result = getAddressesForPersonService.execute(id)
+
+    result.shouldBeNull()
   }
 })

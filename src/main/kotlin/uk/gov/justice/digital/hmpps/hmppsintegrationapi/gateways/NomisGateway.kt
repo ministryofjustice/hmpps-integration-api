@@ -78,7 +78,7 @@ class NomisGateway(@Value("\${services.prison-api.base-url}") baseUrl: String) {
     }
   }
 
-  fun getAddressesForPerson(id: String): List<Address> {
+  fun getAddressesForPerson(id: String): List<Address>? {
     val token = hmppsAuthGateway.getClientToken("NOMIS")
 
     return try {
@@ -92,7 +92,7 @@ class NomisGateway(@Value("\${services.prison-api.base-url}") baseUrl: String) {
         .collectList()
         .block() as List<Address>
     } catch (exception: WebClientResponseException.NotFound) {
-      throw EntityNotFoundException("Could not find person with id: $id")
+      null
     }
   }
 }

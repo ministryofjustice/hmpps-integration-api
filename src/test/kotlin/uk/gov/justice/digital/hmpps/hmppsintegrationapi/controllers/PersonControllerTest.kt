@@ -9,6 +9,7 @@ import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.boot.test.mock.mockito.MockBean
+import org.springframework.http.HttpStatus
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
@@ -170,7 +171,7 @@ internal class PersonControllerTest(
     it("responds with a 200 OK status") {
       val result = mockMvc.perform(get("/persons/$id/addresses")).andReturn()
 
-      result.response.status.shouldBe(200)
+      result.response.status.shouldBe(HttpStatus.OK.value())
     }
 
     it("retrieves the addresses for a person with the matching ID") {
@@ -193,6 +194,14 @@ internal class PersonControllerTest(
         }
         """.removeWhitespaceAndNewlines()
       )
+    }
+
+    it("responds with a 404 NOT FOUND status when person isn't found") {
+      whenever(getAddressesForPersonService.execute(id)).thenReturn(null)
+
+      val result = mockMvc.perform(get("/persons/$id/addresses")).andReturn()
+
+      result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
     }
   }
 })

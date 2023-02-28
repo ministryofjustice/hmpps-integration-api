@@ -9,7 +9,6 @@ import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.BodyInserters
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.WebClientResponseException
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Address
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.probationoffendersearch.Offender
@@ -41,7 +40,7 @@ class ProbationOffenderSearchGateway(@Value("\${services.probation-offender-sear
     }
   }
 
-  fun getAddressesForPerson(id: String): List<Address> {
+  fun getAddressesForPerson(id: String): List<Address>? {
     val token = hmppsAuthGateway.getClientToken("Probation Offender Search")
 
     val offender = webClient
@@ -51,7 +50,7 @@ class ProbationOffenderSearchGateway(@Value("\${services.probation-offender-sear
       .body(BodyInserters.fromValue(mapOf("nomsNumber" to id, "valid" to true)))
       .retrieve()
       .bodyToFlux(Offender::class.java)
-      .blockFirst() ?: throw EntityNotFoundException("Could not find person with id: $id")
+      .blockFirst() ?: return null
 
     return offender.contactDetails.addresses.map { address -> address.toAddress() }
   }
