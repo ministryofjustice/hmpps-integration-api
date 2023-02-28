@@ -27,7 +27,7 @@ paths:
           description: The last name of the person
       responses:
         "200":
-          description: Successfully performed the query on upstream APIs. May result in an empty list if no results were found.
+          description: Successfully performed the query on upstream APIs. An empty list is returned when no results are found.
           content:
             application/json:
               schema:
