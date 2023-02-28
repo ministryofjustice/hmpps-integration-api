@@ -7,6 +7,37 @@ info:
   version: 0.0.1
 
 paths:
+  /persons:
+    get:
+      tags:
+        - persons
+      summary: Returns person(s) by search criteria
+      parameters:
+        - in: query
+          name: firstName
+          schema:
+            type: string
+          required: true
+          description: The first name of the person
+        - in: query
+          name: lastName
+          schema:
+            type: string
+          required: true
+          description: The last name of the person
+      responses:
+        "200":
+          description: Successfully performed the query on upstream APIs. May result in an empty list if no results were found.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  persons:
+                    type: array
+                    minItems: 0
+                    items:
+                      $ref: "#/components/schemas/Person"
   /persons/{id}:
     get:
       tags:
