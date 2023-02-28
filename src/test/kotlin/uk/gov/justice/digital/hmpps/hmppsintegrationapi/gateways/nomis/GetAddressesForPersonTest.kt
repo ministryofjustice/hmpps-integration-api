@@ -72,7 +72,7 @@ class GetAddressesForPersonTest(
     addresses.shouldBeEmpty()
   }
 
-  it("returns null when 404 Not Found is returned") {
+  it("returns null when 404 NOT FOUND is returned") {
     nomisApiMockServer.stubGetOffenderAddresses(
       offenderNo,
       """
