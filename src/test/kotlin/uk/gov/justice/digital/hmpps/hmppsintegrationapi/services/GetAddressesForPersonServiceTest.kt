@@ -58,7 +58,7 @@ internal class GetAddressesForPersonServiceTest(
     result?.shouldContain(addressesFromNomis)
   }
 
-  it("returns null when person cannot be found in all APIs") {
+  it("returns null when person cannot be found in all upstream APIs") {
     whenever(probationOffenderSearchGateway.getAddressesForPerson(id)).thenReturn(null)
     whenever(nomisGateway.getAddressesForPerson(id)).thenReturn(null)
 
