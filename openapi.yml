@@ -7,6 +7,47 @@ info:
   version: 0.0.1
 
 paths:
+  /persons:
+    get:
+      tags:
+        - persons
+      summary: Returns person(s) by search criteria. At least one query parameter must be specified.
+      parameters:
+        - in: query
+          name: first_name
+          schema:
+            type: string
+          required: false
+          description: The first name of the person
+        - in: query
+          name: last_name
+          schema:
+            type: string
+          required: false
+          description: The last name of the person
+      responses:
+        "200":
+          description: Successfully performed the query on upstream APIs. An empty list is returned when no results are found.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  persons:
+                    type: array
+                    minItems: 0
+                    items:
+                      $ref: "#/components/schemas/Person"
+        "400":
+          description: There were no query parameters passed in. At least one must be specified.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                NoQueryParametersBadRequestError:
+                  $ref: "#/components/examples/NoQueryParametersBadRequestError"
+
   /persons/{id}:
     get:
       tags:
@@ -75,6 +116,7 @@ paths:
               examples:
                 PersonNotFoundError:
                   $ref: "#/components/examples/PersonNotFoundError"
+
   /persons/{id}/addresses:
     get:
       tags:
@@ -248,4 +290,11 @@ components:
         errorCode: null
         userMessage: "404 Not found error: Could not find an image with id: 123456"
         developerMessage: "Could not find an image with id: 123456"
+        moreInfo: null
+    NoQueryParametersBadRequestError:
+      value:
+        status: 400,
+        errorCode: null,
+        userMessage: "Validation failure: No query parameters specified.",
+        developerMessage: "No query parameters specified.",
         moreInfo: null
