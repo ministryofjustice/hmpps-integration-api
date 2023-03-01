@@ -103,6 +103,33 @@ class PrisonerOffenderSearchGatewayTest(
       persons.first().lastName.shouldBe("Kenobi")
     }
 
+    it("returns person(s) when searching on last name only") {
+      prisonerOffenderSearchApiMockServer.stubPostPrisonerSearch(
+        """
+        {
+          "lastName":"Binks",
+          "includeAliases":true
+        }
+        """.removeWhitespaceAndNewlines(),
+        """
+        {
+          "content": [
+            {
+              "firstName": "Jar Jar",
+              "lastName": "Binks"
+            }
+          ]
+        } 
+        """.trimIndent()
+      )
+
+      val persons = prisonerOffenderSearchGateway.getPersons(null, "Binks")
+
+      persons.count().shouldBe(1)
+      persons.first().firstName.shouldBe("Jar Jar")
+      persons.first().lastName.shouldBe("Binks")
+    }
+
     it("returns an empty list of Person if no matching person") {
       val firstNameThatDoesNotExist = "ZYX321"
       val lastNameThatDoesNotExist = "GHJ345"
