@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.controllers
 
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.string.shouldContain
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory.times
 import org.mockito.kotlin.verify
@@ -71,7 +72,9 @@ internal class PersonControllerTest(
         listOf()
       )
 
-      val result = mockMvc.perform(get("/persons?firstName=$firstNameThatDoesNotExist&lastName=$lastNameThatDoesNotExist")).andReturn()
+      val result =
+        mockMvc.perform(get("/persons?firstName=$firstNameThatDoesNotExist&lastName=$lastNameThatDoesNotExist"))
+          .andReturn()
 
       result.response.contentAsString.shouldBe(
         """
@@ -126,6 +129,13 @@ internal class PersonControllerTest(
       mockMvc.perform(get("/persons?lastName=$lastName")).andReturn()
 
       verify(getPersonsService, times(1)).execute(null, lastName)
+    }
+
+    it("responds with a 400 BAD REQUEST status when no search criteria provided") {
+      val result = mockMvc.perform(get("/persons")).andReturn()
+
+      result.response.status.shouldBe(400)
+      result.response.contentAsString.shouldContain("No query parameters specified.")
     }
   }
 

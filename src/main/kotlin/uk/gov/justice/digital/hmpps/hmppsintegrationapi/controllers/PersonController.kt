@@ -14,6 +14,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetAddressesFor
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetImageMetadataForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonsService
+import javax.validation.ValidationException
 
 @RestController
 @RequestMapping("/persons")
@@ -25,7 +26,14 @@ class PersonController(
 ) {
 
   @GetMapping
-  fun getPersons(@RequestParam(required = false) firstName: String?, @RequestParam(required = false) lastName: String?): Map<String, List<Person?>> {
+  fun getPersons(
+    @RequestParam(required = false) firstName: String?,
+    @RequestParam(required = false) lastName: String?
+  ): Map<String, List<Person?>> {
+    if (firstName == null && lastName == null) {
+      throw ValidationException("No query parameters specified.")
+    }
+
     val persons = getPersonsService.execute(firstName, lastName)
 
     return mapOf("persons" to persons)
