@@ -59,7 +59,7 @@ internal class PersonControllerTest(
     }
 
     it("responds with a 200 OK status") {
-      val result = mockMvc.perform(get("/persons?firstName=$firstName&lastName=$lastName")).andReturn()
+      val result = mockMvc.perform(get("/persons?first_name=$firstName&last_name=$lastName")).andReturn()
 
       result.response.status.shouldBe(200)
     }
@@ -73,7 +73,7 @@ internal class PersonControllerTest(
       )
 
       val result =
-        mockMvc.perform(get("/persons?firstName=$firstNameThatDoesNotExist&lastName=$lastNameThatDoesNotExist"))
+        mockMvc.perform(get("/persons?first_name=$firstNameThatDoesNotExist&last_name=$lastNameThatDoesNotExist"))
           .andReturn()
 
       result.response.contentAsString.shouldBe(
@@ -86,13 +86,13 @@ internal class PersonControllerTest(
     }
 
     it("retrieves a person with matching search criteria") {
-      mockMvc.perform(get("/persons?firstName=$firstName&lastName=$lastName")).andReturn()
+      mockMvc.perform(get("/persons?first_name=$firstName&last_name=$lastName")).andReturn()
 
       verify(getPersonsService, times(1)).execute(firstName, lastName)
     }
 
     it("returns a person with matching first and last name") {
-      val result = mockMvc.perform(get("/persons?firstName=$firstName&lastName=$lastName")).andReturn()
+      val result = mockMvc.perform(get("/persons?first_name=$firstName&last_name=$lastName")).andReturn()
 
       result.response.contentAsString.shouldBe(
         """
@@ -120,13 +120,13 @@ internal class PersonControllerTest(
     }
 
     it("retrieves a person with matching first name") {
-      mockMvc.perform(get("/persons?firstName=$firstName")).andReturn()
+      mockMvc.perform(get("/persons?first_name=$firstName")).andReturn()
 
       verify(getPersonsService, times(1)).execute(firstName, null)
     }
 
     it("retrieves a person with matching last name") {
-      mockMvc.perform(get("/persons?lastName=$lastName")).andReturn()
+      mockMvc.perform(get("/persons?last_name=$lastName")).andReturn()
 
       verify(getPersonsService, times(1)).execute(null, lastName)
     }

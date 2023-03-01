@@ -27,8 +27,8 @@ class PersonController(
 
   @GetMapping
   fun getPersons(
-    @RequestParam(required = false) firstName: String?,
-    @RequestParam(required = false) lastName: String?
+    @RequestParam(required = false, name = "first_name") firstName: String?,
+    @RequestParam(required = false, name = "last_name") lastName: String?
   ): Map<String, List<Person?>> {
     if (firstName == null && lastName == null) {
       throw ValidationException("No query parameters specified.")
