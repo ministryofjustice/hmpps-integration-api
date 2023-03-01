@@ -44,11 +44,13 @@ class PrisonerOffenderSearchGateway(@Value("\${services.prisoner-offender-search
   fun getPersons(firstName: String?, lastName: String?): List<Person> {
     val token = hmppsAuthGateway.getClientToken("Prisoner Offender Search")
 
+    val requestBody = mapOf("firstName" to firstName, "lastName" to lastName, "includeAliases" to true)
+
     val response = webClient
       .post()
       .uri("/global-search")
       .header("Authorization", "Bearer $token")
-      .body(BodyInserters.fromValue(mapOf("firstName" to firstName, "lastName" to lastName, "includeAliases" to true)))
+      .body(BodyInserters.fromValue(requestBody.filterValues { it != null }))
       .retrieve()
       .bodyToMono(GlobalSearch::class.java)
       .block()
