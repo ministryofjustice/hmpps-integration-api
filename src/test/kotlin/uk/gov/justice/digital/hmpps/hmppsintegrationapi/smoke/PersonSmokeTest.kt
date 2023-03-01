@@ -20,7 +20,7 @@ class PersonSmokeTest : DescribeSpec({
   it("returns a list of persons using first name and last name as search parameters") {
     val firstName = "Example_First_Name"
     val lastName = "Example_Last_Name"
-    val queryParams = "firstName=$firstName&lastName=$lastName"
+    val queryParams = "first_name=$firstName&last_name=$lastName"
 
     val response = httpClient.send(
       httpRequest.uri(URI.create("$baseUrl/persons?$queryParams")).build(),

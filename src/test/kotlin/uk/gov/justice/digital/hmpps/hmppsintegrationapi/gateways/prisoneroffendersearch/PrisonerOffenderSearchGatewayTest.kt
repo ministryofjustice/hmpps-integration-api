@@ -66,7 +66,7 @@ class PrisonerOffenderSearchGatewayTest(
       verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("Prisoner Offender Search")
     }
 
-    it("returns person(s) when performing a search") {
+    it("returns person(s) when searching on first and last name") {
       val persons = prisonerOffenderSearchGateway.getPersons(firstName, lastName)
 
       persons.count().shouldBe(4)
@@ -74,6 +74,60 @@ class PrisonerOffenderSearchGatewayTest(
         it?.firstName.shouldBe(firstName)
         it?.lastName.shouldBe(lastName)
       }
+    }
+
+    it("returns person(s) when searching on first name only") {
+      prisonerOffenderSearchApiMockServer.stubPostPrisonerSearch(
+        """
+        {
+          "firstName":"Obi-Wan",
+          "includeAliases":true
+        }
+        """.removeWhitespaceAndNewlines(),
+        """
+        {
+          "content": [
+            {
+              "firstName": "Obi-Wan",
+              "lastName": "Kenobi"
+            }
+          ]
+        } 
+        """.trimIndent()
+      )
+
+      val persons = prisonerOffenderSearchGateway.getPersons("Obi-Wan", null)
+
+      persons.count().shouldBe(1)
+      persons.first().firstName.shouldBe("Obi-Wan")
+      persons.first().lastName.shouldBe("Kenobi")
+    }
+
+    it("returns person(s) when searching on last name only") {
+      prisonerOffenderSearchApiMockServer.stubPostPrisonerSearch(
+        """
+        {
+          "lastName":"Binks",
+          "includeAliases":true
+        }
+        """.removeWhitespaceAndNewlines(),
+        """
+        {
+          "content": [
+            {
+              "firstName": "Jar Jar",
+              "lastName": "Binks"
+            }
+          ]
+        } 
+        """.trimIndent()
+      )
+
+      val persons = prisonerOffenderSearchGateway.getPersons(null, "Binks")
+
+      persons.count().shouldBe(1)
+      persons.first().firstName.shouldBe("Jar Jar")
+      persons.first().lastName.shouldBe("Binks")
     }
 
     it("returns an empty list of Person if no matching person") {

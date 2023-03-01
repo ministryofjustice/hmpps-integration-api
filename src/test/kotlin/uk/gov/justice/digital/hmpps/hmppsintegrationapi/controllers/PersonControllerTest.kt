@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.controllers
 
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.string.shouldContain
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory.times
 import org.mockito.kotlin.verify
@@ -58,7 +59,7 @@ internal class PersonControllerTest(
     }
 
     it("responds with a 200 OK status") {
-      val result = mockMvc.perform(get("/persons?firstName=$firstName&lastName=$lastName")).andReturn()
+      val result = mockMvc.perform(get("/persons?first_name=$firstName&last_name=$lastName")).andReturn()
 
       result.response.status.shouldBe(200)
     }
@@ -71,7 +72,9 @@ internal class PersonControllerTest(
         listOf()
       )
 
-      val result = mockMvc.perform(get("/persons?firstName=$firstNameThatDoesNotExist&lastName=$lastNameThatDoesNotExist")).andReturn()
+      val result =
+        mockMvc.perform(get("/persons?first_name=$firstNameThatDoesNotExist&last_name=$lastNameThatDoesNotExist"))
+          .andReturn()
 
       result.response.contentAsString.shouldBe(
         """
@@ -83,13 +86,13 @@ internal class PersonControllerTest(
     }
 
     it("retrieves a person with matching search criteria") {
-      mockMvc.perform(get("/persons?firstName=$firstName&lastName=$lastName")).andReturn()
+      mockMvc.perform(get("/persons?first_name=$firstName&last_name=$lastName")).andReturn()
 
       verify(getPersonsService, times(1)).execute(firstName, lastName)
     }
 
-    it("returns a person with matching search criteria") {
-      val result = mockMvc.perform(get("/persons?firstName=$firstName&lastName=$lastName")).andReturn()
+    it("returns a person with matching first and last name") {
+      val result = mockMvc.perform(get("/persons?first_name=$firstName&last_name=$lastName")).andReturn()
 
       result.response.contentAsString.shouldBe(
         """
@@ -114,6 +117,25 @@ internal class PersonControllerTest(
            }
         """.removeWhitespaceAndNewlines()
       )
+    }
+
+    it("retrieves a person with matching first name") {
+      mockMvc.perform(get("/persons?first_name=$firstName")).andReturn()
+
+      verify(getPersonsService, times(1)).execute(firstName, null)
+    }
+
+    it("retrieves a person with matching last name") {
+      mockMvc.perform(get("/persons?last_name=$lastName")).andReturn()
+
+      verify(getPersonsService, times(1)).execute(null, lastName)
+    }
+
+    it("responds with a 400 BAD REQUEST status when no search criteria provided") {
+      val result = mockMvc.perform(get("/persons")).andReturn()
+
+      result.response.status.shouldBe(400)
+      result.response.contentAsString.shouldContain("No query parameters specified.")
     }
   }
 

@@ -62,16 +62,63 @@ class ProbationOffenderSearchGatewayTest(
 
     it("authenticates using HMPPS Auth with credentials") {
       probationOffenderSearchGateway.getPersons(firstName, surname)
-
       verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("Probation Offender Search")
     }
 
-    it("returns person(s) when performing a search") {
+    it("returns person(s) when searching on first and last name") {
       val persons = probationOffenderSearchGateway.getPersons(firstName, surname)
 
       persons?.count().shouldBe(1)
       persons?.first()?.firstName.shouldBe(firstName)
       persons?.first()?.lastName.shouldBe(surname)
+    }
+
+    it("returns person(s) when searching on first name only") {
+      probationOffenderSearchApiMockServer.stubPostOffenderSearch(
+        """
+        {
+          "firstName":"Ahsoka",
+          "valid":true
+        }
+        """.removeWhitespaceAndNewlines(),
+        """
+        [
+          {
+            "firstName": "Ahsoka",
+            "surname": "Tano"
+          }
+        ]
+        """.trimIndent()
+      )
+      val persons = probationOffenderSearchGateway.getPersons("Ahsoka", null)
+
+      persons?.count().shouldBe(1)
+      persons?.first()?.firstName.shouldBe("Ahsoka")
+      persons?.first()?.lastName.shouldBe("Tano")
+    }
+
+    it("returns person(s) when searching on last name only") {
+      probationOffenderSearchApiMockServer.stubPostOffenderSearch(
+        """
+        {
+          "surname":"Tano",
+          "valid":true
+        }
+        """.removeWhitespaceAndNewlines(),
+        """
+        [
+          {
+            "firstName": "Ahsoka",
+            "surname": "Tano"
+          }
+        ]
+        """.trimIndent()
+      )
+      val persons = probationOffenderSearchGateway.getPersons(null, "Tano")
+
+      persons?.count().shouldBe(1)
+      persons?.first()?.firstName.shouldBe("Ahsoka")
+      persons?.first()?.lastName.shouldBe("Tano")
     }
   }
 
