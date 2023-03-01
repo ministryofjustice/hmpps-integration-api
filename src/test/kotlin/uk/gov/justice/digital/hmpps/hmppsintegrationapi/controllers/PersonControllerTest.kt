@@ -88,7 +88,7 @@ internal class PersonControllerTest(
       verify(getPersonsService, times(1)).execute(firstName, lastName)
     }
 
-    it("returns a person with matching search criteria") {
+    it("returns a person with matching first and last name") {
       val result = mockMvc.perform(get("/persons?firstName=$firstName&lastName=$lastName")).andReturn()
 
       result.response.contentAsString.shouldBe(
@@ -114,6 +114,18 @@ internal class PersonControllerTest(
            }
         """.removeWhitespaceAndNewlines()
       )
+    }
+
+    it("retrieves a person with matching first name") {
+      mockMvc.perform(get("/persons?firstName=$firstName")).andReturn()
+
+      verify(getPersonsService, times(1)).execute(firstName, null)
+    }
+
+    it("retrieves a person with matching last name") {
+      mockMvc.perform(get("/persons?lastName=$lastName")).andReturn()
+
+      verify(getPersonsService, times(1)).execute(null, lastName)
     }
   }
 

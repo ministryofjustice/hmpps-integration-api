@@ -41,7 +41,7 @@ class PrisonerOffenderSearchGateway(@Value("\${services.prisoner-offender-search
     }
   }
 
-  fun getPersons(firstName: String, lastName: String): List<Person> {
+  fun getPersons(firstName: String?, lastName: String?): List<Person> {
     val token = hmppsAuthGateway.getClientToken("Prisoner Offender Search")
 
     val response = webClient
