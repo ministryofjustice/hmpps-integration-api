@@ -293,8 +293,8 @@ components:
         moreInfo: null
     NoQueryParametersBadRequestError:
       value:
-        status: 400
-        errorCode: null
-        userMessage: "400 No query parameters error: There must be at least one query parameter"
-        developerMessage: "At least one query parameter must be specified"
+        status: 400,
+        errorCode: null,
+        userMessage: "Validation failure: No query parameters specified.",
+        developerMessage: "No query parameters specified.",
         moreInfo: null
