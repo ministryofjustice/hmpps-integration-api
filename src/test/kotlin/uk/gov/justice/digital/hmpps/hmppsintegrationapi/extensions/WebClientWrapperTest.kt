@@ -3,13 +3,18 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.GenericApiMockServer
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.DataTransferObject.DataTransferObject
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Person
 
-class TestModel(val sourceName: String) {
-  // fun toTestDomainModel() => TestDomainModel(sourceName)
+data class TestDomainModel(val name: String)
+
+class SimpleTestModel(val sourceName: String) {
+  fun toTestDomainModel() = TestDomainModel(sourceName)
 }
 
-class TestDomainModel(val name: String)
+class ComplexTestModel(val sourceName: String) : DataTransferObject<TestDomainModel> {
+  override fun toDomain() = TestDomainModel(sourceName)
+}
 
 class WebClientWrapperTest : DescribeSpec({
   val mockServer = GenericApiMockServer()
@@ -35,13 +40,23 @@ class WebClientWrapperTest : DescribeSpec({
   }
 
   describe("#makeWebClientRequest") {
-    it("makes a get request") {
+    it("makes a simple get request") {
       val token = "4567"
 
       val webClient = WebClientWrapper(baseUrl = mockServer.baseUrl(), uri = "/test/$id", authToken = token)
-      val person = webClient.get<Person>()
+      val person = webClient.simpleGet<SimpleTestModel>()
+      val domainPerson = person?.toTestDomainModel() //conversion is performed manually
 
-      person?.firstName.shouldBe("Frank")
+      domainPerson?.name.shouldBe("Harold")
+    }
+
+    it("makes a complex get request") {
+      val token = "4567"
+
+      val webClient = WebClientWrapper(baseUrl = mockServer.baseUrl(), uri = "/test/$id", authToken = token)
+      val person = webClient.complexGet<ComplexTestModel, TestDomainModel>() //conversion is performed for us
+
+      person?.name.shouldBe("Harold")
     }
   }
 })
