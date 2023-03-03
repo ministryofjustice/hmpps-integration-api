@@ -1,8 +1,9 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions
 
+import org.springframework.web.reactive.function.BodyInserters
 import org.springframework.web.reactive.function.client.WebClient
-import org.springframework.web.reactive.function.client.bodyToMono
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.DataTransferObject.DataTransferObject
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Person
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.probationoffendersearch.Offender
 
 class WebClientWrapper(
   val baseUrl: String,
@@ -13,34 +14,25 @@ class WebClientWrapper(
     .baseUrl(baseUrl)
     .build()
 
-  // notes: Make uri part of the method
   // can we make authorisation easier to configure?, it may not always be bearer
-  // what if we want one or many objects? How do we do this?
 
-  /**
-   * Perform a GET request on an endpoint.
-   * @param <T> The type expected back from the request
-   * @param <K> The type to convert to when returning the object
-   * @return A domain object
-   */
-  inline fun <reified T, K> getMany(uri: String): List<K> where T : DataTransferObject<K> {
-    return client.get()
-      .uri(uri)
-      .header("Authorization", "Bearer $authToken")
-      .retrieve()
-      .bodyToFlux(T::class.java)
-      .map { it.toDomain() }
-      .collectList()
-      .block() as List<K>
-  }
-
-  inline fun <reified T, K> getOne(uri: String): K? where T : DataTransferObject<K> {
+  inline fun <reified T> get(uri: String): T? {
     return client.get()
       .uri(uri)
       .header("Authorization", "Bearer $authToken")
       .retrieve()
       .bodyToMono(T::class.java)
-      .map { it.toDomain() }
       .block()
+  }
+
+  inline fun <reified T> post(uri: String, requestBody: Map<String, String>): List<T> {
+    return client.post()
+      .uri(uri)
+      .header("Authorization", "Bearer $authToken")
+      .body(BodyInserters.fromValue(requestBody))
+      .retrieve()
+      .bodyToFlux(T::class.java)
+      .collectList()
+      .block() as List<T>
   }
 }

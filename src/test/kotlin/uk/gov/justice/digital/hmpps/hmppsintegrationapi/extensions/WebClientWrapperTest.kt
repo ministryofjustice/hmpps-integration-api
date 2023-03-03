@@ -1,34 +1,20 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions
 
-import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.DescribeSpec
+import io.kotest.inspectors.shouldForAll
 import io.kotest.matchers.shouldBe
-import io.kotest.matchers.types.shouldBeTypeOf
-import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.GenericApiMockServer
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.DataTransferObject.DataTransferObject
+data class TestDomainModel(val firstName: String)
 
-data class TestDomainModel(val name: String)
-
-class TestModel(val sourceName: String) : DataTransferObject<TestDomainModel> {
-  override fun toDomain() = TestDomainModel(sourceName)
+data class TestModel(val sourceName: String) {
+  fun toDomain() = TestDomainModel(sourceName)
 }
+
 
 class WebClientWrapperTest : DescribeSpec({
   val mockServer = GenericApiMockServer()
   val id = "ABC1234"
   val token = "4567"
-
-  beforeTest() {
-    mockServer.stubGetTest(
-      id,
-      """
-        {
-          "sourceName" : "Harold"
-        }
-        """
-    )
-  }
 
   beforeEach() {
     mockServer.start()
@@ -38,20 +24,66 @@ class WebClientWrapperTest : DescribeSpec({
     mockServer.stop()
   }
 
-  it("returns a person") {
+  it("performs a get request") {
+    mockServer.stubGetTest(
+      id,
+        """
+          {
+            "sourceName" : "Harold"
+          }
+          """.removeWhitespaceAndNewlines()
+    )
+
     val webClient = WebClientWrapper(baseUrl = mockServer.baseUrl(), authToken = token)
 
-    val person = webClient.getOne<TestModel, TestDomainModel>("/test/$id")
+    val testModel = webClient.get<TestModel>("/test/$id")
+    val testDomainModel = testModel?.toDomain()
 
-    person.shouldBeTypeOf<TestDomainModel>()
-    person?.name.shouldBe("Harold")
+    testDomainModel?.firstName.shouldBe("Harold")
   }
 
-  it("returns a 404 not found") {
-    val webClient = WebClientWrapper(baseUrl = mockServer.baseUrl(), authToken = token)
+  it ("performs a post request where the response is an array"){
+    mockServer.stubPostTest(
+      """
+        [
+          {
+            "sourceName": "Paul"
+          },
+          {
+            "sourceName": "Paul"
+          }
+        ]
+      """.removeWhitespaceAndNewlines()
+    )
 
-    shouldThrow<WebClientResponseException.NotFound> {
-      webClient.getOne<TestModel, TestDomainModel>("/test/$id")
-    }
+    val webClient = WebClientWrapper(baseUrl = mockServer.baseUrl(), authToken = token)
+    val testModel = webClient.post<TestModel>("/testPost", mapOf("sourceName" to "Paul"))
+    val testDomainModels = testModel.map { it.toDomain() }
+
+    testDomainModels.shouldForAll { it.firstName.shouldBe("Paul") }
+  }
+
+  it ("performs a post request where the response is a json object"){
+    mockServer.stubPostTest(
+      """
+        {
+          "content":
+          [
+            {
+              "sourceName": "Paul"
+            },
+            {
+              "sourceName": "Paul"
+            }
+          ]
+        }
+      """.removeWhitespaceAndNewlines()
+    )
+
+    val webClient = WebClientWrapper(baseUrl = mockServer.baseUrl(), authToken = token)
+    val testModel = webClient.post<TestModel>("/testPost", mapOf("sourceName" to "Paul"))
+    val testDomainModels = testModel.map { it.toDomain() }
+
+    testDomainModels.shouldForAll { it.firstName.shouldBe("Paul") }
   }
 })

@@ -20,4 +20,15 @@ class GenericApiMockServer : WireMockServer(WIREMOCK_PORT) {
       )
     )
   }
+
+  fun stubPostTest(body: String, status: HttpStatus = HttpStatus.OK) {
+    stubFor(
+      WireMock.post("/testPost").willReturn(
+        WireMock.aResponse()
+          .withHeader("Content-Type", "application/json")
+          .withStatus(status.value())
+          .withBody(body.trimIndent())
+      )
+    )
+  }
 }
