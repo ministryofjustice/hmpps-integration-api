@@ -2,7 +2,7 @@
 
 [![repo standards badge](https://img.shields.io/badge/dynamic/json?color=blue&style=flat&logo=github&label=MoJ%20Compliant&query=%24.result&url=https%3A%2F%2Foperations-engineering-reports.cloud-platform.service.justice.gov.uk%2Fapi%2Fv1%2Fcompliant_public_repositories%2Fhmpps-integration-api)](https://operations-engineering-reports.cloud-platform.service.justice.gov.uk/public-github-repositories.html#hmpps-integration-api "Link to report")
 [![CircleCI](https://circleci.com/gh/ministryofjustice/hmpps-integration-api/tree/main.svg?style=svg)](https://circleci.com/gh/ministryofjustice/hmpps-integration-api)
-[![API docs](https://img.shields.io/badge/API_docs_-view-85EA2D.svg?logo=swagger)](https://hmpps-integration-api-development.apps.live.cloud-platform.service.justice.gov.uk/swagger-ui/index.html)
+[![API docs](https://img.shields.io/badge/API_docs_-view-85EA2D.svg?logo=swagger)](https://ministryofjustice.github.io/hmpps-integration-api-docs/)
 
 ## Contents
 
@@ -107,7 +107,10 @@ Each service is then accessible at:
 - [http://localhost:4010](http://localhost:4010) for the Prisoner Offender Search
 - [http://localhost:9090](http://localhost:9090) for the HMPPS Auth service
 
-As part of getting the HMPPS Auth service running locally, [the in-memory database is seeded with data including a number of clients](https://github.com/ministryofjustice/hmpps-auth/blob/main/src/main/resources/db/dev/data/auth/V900_0__clients.sql). A client can have different permissions i.e. read, write, reporting, although strangely the column name is called `​​autoapprove`.
+As part of getting the HMPPS Auth service running
+locally, [the in-memory database is seeded with data including a number of clients](https://github.com/ministryofjustice/hmpps-auth/blob/main/src/main/resources/db/dev/data/auth/V900_0__clients.sql)
+. A client can have different permissions i.e. read, write, reporting, although strangely the column name is
+called `​​autoapprove`.
 
 In order to call endpoints of the Prison API, an access token must be provided that is generated from the HMPPS Auth
 service.
@@ -201,9 +204,12 @@ make check
 ### Request Logging
 
 This can be done within `logback-spring.xml`. To enable request logging, update the value of the `level` property within
-the logger named `<application>.config.RequestLogger` to the desired [logger level](https://docs.spring.io/spring-boot/docs/2.1.13.RELEASE/reference/html/boot-features-logging.html).
+the logger named `<application>.config.RequestLogger` to the
+desired [logger level](https://docs.spring.io/spring-boot/docs/2.1.13.RELEASE/reference/html/boot-features-logging.html)
+.
 
 ```xml
+
 <logger name="uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.RequestLogger" additivity="false" level="DEBUG">
     <appender-ref ref="logAppender"/>
     <appender-ref ref="consoleAppender"/>
@@ -213,6 +219,7 @@ the logger named `<application>.config.RequestLogger` to the desired [logger lev
 Note, this will only specifically enable the `RequestLogger`.
 
 ## Documentation
+
 - [Updating diagrams](/docs/updating-diagrams.md)
 - [Setting up a CircleCI context for deployment](/docs/setting-up-circleci-context-for-deployment.md)
 
