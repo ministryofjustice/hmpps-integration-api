@@ -61,7 +61,7 @@ internal class PersonControllerTest(
     it("responds with a 200 OK status") {
       val result = mockMvc.perform(get("/persons?first_name=$firstName&last_name=$lastName")).andReturn()
 
-      result.response.status.shouldBe(200)
+      result.response.status.shouldBe(HttpStatus.OK.value())
     }
 
     it("returns an empty list embedded in a JSON object when no matching people") {
@@ -134,7 +134,7 @@ internal class PersonControllerTest(
     it("responds with a 400 BAD REQUEST status when no search criteria provided") {
       val result = mockMvc.perform(get("/persons")).andReturn()
 
-      result.response.status.shouldBe(400)
+      result.response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
       result.response.contentAsString.shouldContain("No query parameters specified.")
     }
   }
@@ -161,7 +161,7 @@ internal class PersonControllerTest(
     it("responds with a 200 OK status") {
       val result = mockMvc.perform(get("/persons/$id")).andReturn()
 
-      result.response.status.shouldBe(200)
+      result.response.status.shouldBe(HttpStatus.OK.value())
     }
 
     it("responds with a 404 NOT FOUND status") {
@@ -170,7 +170,7 @@ internal class PersonControllerTest(
 
       val result = mockMvc.perform(get("/persons/$idThatDoesNotExist")).andReturn()
 
-      result.response.status.shouldBe(404)
+      result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
     }
 
     it("retrieves a person with the matching ID") {
@@ -240,7 +240,7 @@ internal class PersonControllerTest(
     it("responds with a 200 OK status") {
       val result = mockMvc.perform(get("/persons/$id/images")).andReturn()
 
-      result.response.status.shouldBe(200)
+      result.response.status.shouldBe(HttpStatus.OK.value())
     }
 
     it("retrieves the metadata of images for a person with the matching ID") {

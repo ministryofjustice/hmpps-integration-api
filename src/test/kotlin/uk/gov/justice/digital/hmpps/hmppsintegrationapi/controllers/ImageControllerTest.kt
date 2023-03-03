@@ -9,6 +9,7 @@ import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.boot.test.mock.mockito.MockBean
+import org.springframework.http.HttpStatus
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetImageService
@@ -30,7 +31,7 @@ internal class ImageControllerTest(
     it("responds with a 200 OK status") {
       val result = mockMvc.perform(get("/images/$id")).andReturn()
 
-      result.response.status.shouldBe(200)
+      result.response.status.shouldBe(HttpStatus.OK.value())
     }
 
     it("retrieves a image with the matching ID") {
