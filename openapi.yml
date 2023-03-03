@@ -1,7 +1,8 @@
 openapi: 3.0.0
 info:
   title: HMPPS Integration API
-  description: A long-lived API that exposes data from HMPPS systems such as the National Offender Management Information
+  description:
+    A long-lived API that exposes data from HMPPS systems such as the National Offender Management Information
     System (NOMIS), nDelius (probation system) and Offender Assessment System (OASys), providing a single point
     of entry for consumers.
   version: 0.0.1
@@ -295,6 +296,6 @@ components:
       value:
         status: 400,
         errorCode: null,
-        userMessage: "Validation failure: No query parameters specified.",
-        developerMessage: "No query parameters specified.",
+        userMessage: "Validation failure: No query parameters specified."
+        developerMessage: "No query parameters specified."
         moreInfo: null
