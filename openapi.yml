@@ -1,0 +1,300 @@
+openapi: 3.0.0
+info:
+  title: HMPPS Integration API
+  description: A long-lived API that exposes data from HMPPS systems such as the National Offender Management Information
+    System (NOMIS), nDelius (probation system) and Offender Assessment System (OASys), providing a single point
+    of entry for consumers.
+  version: 0.0.1
+
+paths:
+  /persons:
+    get:
+      tags:
+        - persons
+      summary: Returns person(s) by search criteria. At least one query parameter must be specified.
+      parameters:
+        - in: query
+          name: first_name
+          schema:
+            type: string
+          required: false
+          description: The first name of the person
+        - in: query
+          name: last_name
+          schema:
+            type: string
+          required: false
+          description: The last name of the person
+      responses:
+        "200":
+          description: Successfully performed the query on upstream APIs. An empty list is returned when no results are found.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  persons:
+                    type: array
+                    minItems: 0
+                    items:
+                      $ref: "#/components/schemas/Person"
+        "400":
+          description: There were no query parameters passed in. At least one must be specified.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                NoQueryParametersBadRequestError:
+                  $ref: "#/components/examples/NoQueryParametersBadRequestError"
+
+  /persons/{id}:
+    get:
+      tags:
+        - persons
+      summary: Returns a person.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successfully found a person with the provided ID.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  nomis:
+                    $ref: "#/components/schemas/Person"
+                  prisonerOffenderSearch:
+                    $ref: "#/components/schemas/Person"
+                  probationOffenderSearch:
+                    $ref: "#/components/schemas/Person"
+        "404":
+          description: Failed to find a person with the provided ID.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                PersonNotFoundError:
+                  $ref: "#/components/examples/PersonNotFoundError"
+
+  /persons/{id}/images:
+    get:
+      tags:
+        - persons
+      summary: Returns metadata of images associated with a person.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successfully found a person with the provided ID.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  images:
+                    type: array
+                    minItems: 0
+                    items:
+                      $ref: "#/components/schemas/Image"
+        "404":
+          description: Failed to find a person with the provided ID.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                PersonNotFoundError:
+                  $ref: "#/components/examples/PersonNotFoundError"
+
+  /persons/{id}/addresses:
+    get:
+      tags:
+        - persons
+      summary: Returns addresses associated with a person.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successfully found a person with the provided ID.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  addresses:
+                    type: array
+                    minItems: 0
+                    items:
+                      $ref: "#/components/schemas/Address"
+        "404":
+          description: Failed to find a person with the provided ID.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                PersonNotFoundError:
+                  $ref: "#/components/examples/PersonNotFoundError"
+
+  /images/{id}:
+    get:
+      tags:
+        - images
+      summary: Returns an image in bytes.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successfully found an image with the provided ID.
+          content:
+            image/jpeg:
+              schema:
+                type: string
+                format: byte
+        "404":
+          description: Failed to find an image with the provided ID.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                ImageNotFoundError:
+                  $ref: "#/components/examples/ImageNotFoundError"
+
+components:
+  schemas:
+    Address:
+      type: object
+      properties:
+        postcode:
+          type: string
+          example: SW1H 9AJ
+    Alias:
+      type: object
+      properties:
+        firstName:
+          type: string
+          example: John
+          description: first name
+        middleName:
+          type: string
+          example: Michael
+          nullable: true
+          description: middle name
+        lastName:
+          type: string
+          example: Marston
+          description: last name
+        dateOfBirth:
+          type: string
+          format: date
+          example: 1965-12-01
+          description: date of birth
+    Error:
+      type: object
+      properties:
+        status:
+          type: integer
+          enum: [ 400, 404, 500 ]
+        errorCode:
+          type: integer
+          nullable: true
+          example: null
+        userMessage:
+          type: string
+        developerMessage:
+          type: string
+        moreInfo:
+          type: string
+          nullable: true
+          example: null
+    Image:
+      type: object
+      properties:
+        id:
+          type: integer
+          minimum: 1
+          format: int64
+          example: 2461788
+        captureDate:
+          type: string
+          format: date
+          example: 2015-05-27
+        view:
+          type: string
+          example: FACE
+        orientation:
+          type: string
+          example: FRONT
+        type:
+          type: string
+          example: OFF_BKG
+    Person:
+      type: object
+      properties:
+        firstName:
+          type: string
+          example: Arthur
+          description: first name
+        middleName:
+          type: string
+          example: John
+          nullable: true
+          description: middle name
+        lastName:
+          type: string
+          example: Morgan
+          description: last name
+        dateOfBirth:
+          type: string
+          format: date
+          example: 1965-12-01
+          description: date of birth
+        aliases:
+          type: array
+          minItems: 0
+          items:
+            $ref: "#/components/schemas/Alias"
+          description: list of aliases
+
+  examples:
+    PersonNotFoundError:
+      value:
+        status: 404
+        errorCode: null
+        userMessage: "404 Not found error: Could not find person with id: A1234AL"
+        developerMessage: "Could not find person with id: A1234AL"
+        moreInfo: null
+    ImageNotFoundError:
+      value:
+        status: 404
+        errorCode: null
+        userMessage: "404 Not found error: Could not find an image with id: 123456"
+        developerMessage: "Could not find an image with id: 123456"
+        moreInfo: null
+    NoQueryParametersBadRequestError:
+      value:
+        status: 400,
+        errorCode: null,
+        userMessage: "Validation failure: No query parameters specified.",
+        developerMessage: "No query parameters specified.",
+        moreInfo: null

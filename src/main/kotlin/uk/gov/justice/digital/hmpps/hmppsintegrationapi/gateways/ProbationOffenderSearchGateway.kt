@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.BodyInserters
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.WebClientResponseException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Address
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.probationoffendersearch.Offender
 
@@ -36,8 +37,38 @@ class ProbationOffenderSearchGateway(@Value("\${services.probation-offender-sear
     } catch (exception: WebClientResponseException.BadRequest) {
       log.error("${exception.message} - ${Json.parseToJsonElement(exception.responseBodyAsString).jsonObject["developerMessage"]}")
       null
-    } catch (exception: WebClientResponseException.NotFound) {
-      null
     }
+  }
+
+  fun getPersons(firstName: String?, surname: String?): List<Person> {
+    val token = hmppsAuthGateway.getClientToken("Probation Offender Search")
+
+    val requestBody = mapOf("firstName" to firstName, "surname" to surname, "valid" to true)
+
+    return webClient
+      .post()
+      .uri("/search")
+      .header("Authorization", "Bearer $token")
+      .body(BodyInserters.fromValue(requestBody.filterValues { it != null }))
+      .retrieve()
+      .bodyToFlux(Offender::class.java)
+      .map { offender -> offender.toPerson() }
+      .collectList()
+      .block() as List<Person>
+  }
+
+  fun getAddressesForPerson(id: String): List<Address>? {
+    val token = hmppsAuthGateway.getClientToken("Probation Offender Search")
+
+    val offender = webClient
+      .post()
+      .uri("/search")
+      .header("Authorization", "Bearer $token")
+      .body(BodyInserters.fromValue(mapOf("nomsNumber" to id, "valid" to true)))
+      .retrieve()
+      .bodyToFlux(Offender::class.java)
+      .blockFirst() ?: return null
+
+    return offender.contactDetails.addresses.map { address -> address.toAddress() }
   }
 }
