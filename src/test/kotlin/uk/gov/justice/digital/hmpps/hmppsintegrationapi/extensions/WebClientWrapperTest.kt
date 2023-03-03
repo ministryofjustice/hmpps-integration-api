@@ -1,24 +1,23 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions
 
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.types.shouldBeTypeOf
+import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.GenericApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.DataTransferObject.DataTransferObject
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Person
 
 data class TestDomainModel(val name: String)
 
-class SimpleTestModel(val sourceName: String) {
-  fun toTestDomainModel() = TestDomainModel(sourceName)
-}
-
-class ComplexTestModel(val sourceName: String) : DataTransferObject<TestDomainModel> {
+class TestModel(val sourceName: String) : DataTransferObject<TestDomainModel> {
   override fun toDomain() = TestDomainModel(sourceName)
 }
 
 class WebClientWrapperTest : DescribeSpec({
   val mockServer = GenericApiMockServer()
   val id = "ABC1234"
+  val token = "4567"
 
   beforeTest() {
     mockServer.stubGetTest(
@@ -39,24 +38,20 @@ class WebClientWrapperTest : DescribeSpec({
     mockServer.stop()
   }
 
-  describe("#makeWebClientRequest") {
-    it("makes a simple get request") {
-      val token = "4567"
+  it("returns a person") {
+    val webClient = WebClientWrapper(baseUrl = mockServer.baseUrl(), authToken = token)
 
-      val webClient = WebClientWrapper(baseUrl = mockServer.baseUrl(), uri = "/test/$id", authToken = token)
-      val person = webClient.simpleGet<SimpleTestModel>()
-      val domainPerson = person?.toTestDomainModel() //conversion is performed manually
+    val person = webClient.getOne<TestModel, TestDomainModel>("/test/$id")
 
-      domainPerson?.name.shouldBe("Harold")
-    }
+    person.shouldBeTypeOf<TestDomainModel>()
+    person?.name.shouldBe("Harold")
+  }
 
-    it("makes a complex get request") {
-      val token = "4567"
+  it("returns a 404 not found") {
+    val webClient = WebClientWrapper(baseUrl = mockServer.baseUrl(), authToken = token)
 
-      val webClient = WebClientWrapper(baseUrl = mockServer.baseUrl(), uri = "/test/$id", authToken = token)
-      val person = webClient.complexGet<ComplexTestModel, TestDomainModel>() //conversion is performed for us
-
-      person?.name.shouldBe("Harold")
+    shouldThrow<WebClientResponseException.NotFound> {
+      webClient.getOne<TestModel, TestDomainModel>("/test/$id")
     }
   }
 })
