@@ -22,7 +22,6 @@
                 <Pattern>${LOG_PATTERN}</Pattern>
             </layout>
         </appender>
-        <appender name="logAppender" class="com.microsoft.applicationinsights.logback.ApplicationInsightsAppender"/>
     </springProfile>
 
     <logger name="uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.RequestLogger" additivity="false" level="DEBUG">
