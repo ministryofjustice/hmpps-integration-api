@@ -5,10 +5,11 @@ import kotlinx.serialization.json.jsonObject
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.http.HttpMethod
 import org.springframework.stereotype.Component
-import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Address
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ImageMetadata
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Person
@@ -18,7 +19,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.Address as 
 
 @Component
 class NomisGateway(@Value("\${services.prison-api.base-url}") baseUrl: String) {
-  private val webClient: WebClient = WebClient.builder().baseUrl(baseUrl).build()
+  private val webClient = WebClientWrapper(baseUrl)
   private val log = LoggerFactory.getLogger(this::class.java)
 
   @Autowired
@@ -28,14 +29,7 @@ class NomisGateway(@Value("\${services.prison-api.base-url}") baseUrl: String) {
     val token = hmppsAuthGateway.getClientToken("NOMIS")
 
     return try {
-      webClient
-        .get()
-        .uri("/api/offenders/$id")
-        .header("Authorization", "Bearer $token")
-        .retrieve()
-        .bodyToFlux(Offender::class.java)
-        .map { offender -> offender.toPerson() }
-        .blockFirst()
+      webClient.request<Offender>(HttpMethod.GET, "/api/offenders/$id", token).toPerson()
     } catch (exception: WebClientResponseException.BadRequest) {
       log.error("${exception.message} - ${Json.parseToJsonElement(exception.responseBodyAsString).jsonObject["developerMessage"]}")
       null
@@ -48,15 +42,8 @@ class NomisGateway(@Value("\${services.prison-api.base-url}") baseUrl: String) {
     val token = hmppsAuthGateway.getClientToken("NOMIS")
 
     return try {
-      webClient
-        .get()
-        .uri("/api/images/offenders/$id")
-        .header("Authorization", "Bearer $token")
-        .retrieve()
-        .bodyToFlux(ImageDetail::class.java)
-        .map { imageDetails -> imageDetails.toImageMetadata() }
-        .collectList()
-        .block() as List<ImageMetadata>
+      webClient.requestList<ImageDetail>(HttpMethod.GET, "api/images/offenders/$id", token)
+        .map { it.toImageMetadata() }
     } catch (exception: WebClientResponseException.NotFound) {
       throw EntityNotFoundException("Could not find person with id: $id")
     }
@@ -66,13 +53,7 @@ class NomisGateway(@Value("\${services.prison-api.base-url}") baseUrl: String) {
     val token = hmppsAuthGateway.getClientToken("NOMIS")
 
     return try {
-      webClient
-        .get()
-        .uri("/api/images/$id/data")
-        .header("Authorization", "Bearer $token")
-        .retrieve()
-        .bodyToMono(ByteArray::class.java)
-        .block()!!
+      webClient.request<ByteArray>(HttpMethod.GET, "/api/images/$id/data", token)
     } catch (exception: WebClientResponseException.NotFound) {
       throw EntityNotFoundException("Could not find image with id: $id")
     }
@@ -82,15 +63,8 @@ class NomisGateway(@Value("\${services.prison-api.base-url}") baseUrl: String) {
     val token = hmppsAuthGateway.getClientToken("NOMIS")
 
     return try {
-      webClient
-        .get()
-        .uri("/api/offenders/$id/addresses")
-        .header("Authorization", "Bearer $token")
-        .retrieve()
-        .bodyToFlux(AddressFromNomis::class.java)
-        .map { addressFromNomis -> addressFromNomis.toAddress() }
-        .collectList()
-        .block() as List<Address>
+      webClient.requestList<AddressFromNomis>(HttpMethod.GET, "/api/offenders/$id/addresses", token)
+        .map { it.toAddress() }
     } catch (exception: WebClientResponseException.NotFound) {
       null
     }

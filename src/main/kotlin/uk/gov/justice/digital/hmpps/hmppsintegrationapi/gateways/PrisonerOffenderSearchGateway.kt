@@ -5,17 +5,17 @@ import kotlinx.serialization.json.jsonObject
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.http.HttpMethod
 import org.springframework.stereotype.Component
-import org.springframework.web.reactive.function.BodyInserters
-import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.WebClientResponseException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.GlobalSearch
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.Prisoner
 
 @Component
 class PrisonerOffenderSearchGateway(@Value("\${services.prisoner-offender-search.base-url}") baseUrl: String) {
-  private val webClient: WebClient = WebClient.builder().baseUrl(baseUrl).build()
+  private val webClient = WebClientWrapper(baseUrl)
   private val log = LoggerFactory.getLogger(this::class.java)
 
   @Autowired
@@ -25,14 +25,7 @@ class PrisonerOffenderSearchGateway(@Value("\${services.prisoner-offender-search
     val token = hmppsAuthGateway.getClientToken("Prisoner Offender Search")
 
     return try {
-      webClient
-        .get()
-        .uri("/prisoner/$id")
-        .header("Authorization", "Bearer $token")
-        .retrieve()
-        .bodyToFlux(Prisoner::class.java)
-        .map { prisoner -> prisoner.toPerson() }
-        .blockFirst()
+      webClient.request<Prisoner>(HttpMethod.GET, "/prisoner/$id", token).toPerson()
     } catch (exception: WebClientResponseException.BadRequest) {
       log.error("${exception.message} - ${Json.parseToJsonElement(exception.responseBodyAsString).jsonObject["developerMessage"]}")
       null
@@ -45,16 +38,9 @@ class PrisonerOffenderSearchGateway(@Value("\${services.prisoner-offender-search
     val token = hmppsAuthGateway.getClientToken("Prisoner Offender Search")
 
     val requestBody = mapOf("firstName" to firstName, "lastName" to lastName, "includeAliases" to true)
+      .filterValues { it != null }
 
-    val response = webClient
-      .post()
-      .uri("/global-search")
-      .header("Authorization", "Bearer $token")
-      .body(BodyInserters.fromValue(requestBody.filterValues { it != null }))
-      .retrieve()
-      .bodyToMono(GlobalSearch::class.java)
-      .block()
-
-    return response.content.map { it.toPerson() }
+    return webClient.request<GlobalSearch>(HttpMethod.POST, "/global-search", token, requestBody)
+      .content.map { it.toPerson() }
   }
 }

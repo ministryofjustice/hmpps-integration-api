@@ -3,13 +3,16 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.inspectors.shouldForAll
 import io.kotest.matchers.shouldBe
+import org.springframework.http.HttpMethod
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.GenericApiMockServer
-data class TestDomainModel(val firstName: String)
 
-data class TestModel(val sourceName: String) {
-  fun toDomain() = TestDomainModel(sourceName)
+data class TestModel(val sourceName: String, val sourceLastName: String?) {
+  fun toDomain() = TestDomainModel(sourceName, sourceLastName)
 }
 
+data class SearchModel(val content: List<TestModel>)
+
+data class TestDomainModel(val firstName: String, val lastName: String?)
 
 class WebClientWrapperTest : DescribeSpec({
   val mockServer = GenericApiMockServer()
@@ -24,25 +27,24 @@ class WebClientWrapperTest : DescribeSpec({
     mockServer.stop()
   }
 
-  it("performs a get request") {
+  it("performs a request where the result is a json object") {
     mockServer.stubGetTest(
       id,
-        """
+      """
           {
             "sourceName" : "Harold"
           }
           """.removeWhitespaceAndNewlines()
     )
 
-    val webClient = WebClientWrapper(baseUrl = mockServer.baseUrl(), authToken = token)
-
-    val testModel = webClient.get<TestModel>("/test/$id")
-    val testDomainModel = testModel?.toDomain()
+    val webClient = WebClientWrapper(baseUrl = mockServer.baseUrl())
+    val testModel = webClient.request<TestModel>(HttpMethod.GET, "/test/$id", token)
+    val testDomainModel = testModel.toDomain()
 
     testDomainModel?.firstName.shouldBe("Harold")
   }
 
-  it ("performs a post request where the response is an array"){
+  it("performs a post request where the response is an array") {
     mockServer.stubPostTest(
       """
         [
@@ -56,34 +58,44 @@ class WebClientWrapperTest : DescribeSpec({
       """.removeWhitespaceAndNewlines()
     )
 
-    val webClient = WebClientWrapper(baseUrl = mockServer.baseUrl(), authToken = token)
-    val testModel = webClient.post<TestModel>("/testPost", mapOf("sourceName" to "Paul"))
-    val testDomainModels = testModel.map { it.toDomain() }
+    val webClient = WebClientWrapper(baseUrl = mockServer.baseUrl())
+    val testModels = webClient.requestList<TestModel>(
+      HttpMethod.POST,
+      "/testPost",
+      token,
+      mapOf("sourceName" to "Paul")
+    )
+
+    val testDomainModels = testModels.map { it.toDomain() }
 
     testDomainModels.shouldForAll { it.firstName.shouldBe("Paul") }
   }
 
-  it ("performs a post request where the response is a json object"){
+  it("performs a post request where the response is a json object") {
     mockServer.stubPostTest(
       """
         {
           "content":
           [
             {
-              "sourceName": "Paul"
+              "sourceName": "Paul",
+              "sourceLastName": "Paper"
             },
             {
-              "sourceName": "Paul"
+              "sourceName": "Paul",
+              "sourceLastName": "Card"
             }
           ]
         }
       """.removeWhitespaceAndNewlines()
     )
 
-    val webClient = WebClientWrapper(baseUrl = mockServer.baseUrl(), authToken = token)
-    val testModel = webClient.post<TestModel>("/testPost", mapOf("sourceName" to "Paul"))
-    val testDomainModels = testModel.map { it.toDomain() }
+    val webClient = WebClientWrapper(baseUrl = mockServer.baseUrl())
+    val searchModel = webClient.request<SearchModel>(HttpMethod.POST, "/testPost", token, mapOf("sourceName" to "Paul"))
+    val testDomainModels = searchModel.content.map { it.toDomain() }
 
     testDomainModels.shouldForAll { it.firstName.shouldBe("Paul") }
+    testDomainModels.first().lastName.shouldBe("Paper")
+    testDomainModels.last().lastName.shouldBe("Card")
   }
 })
