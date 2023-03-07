@@ -5,17 +5,17 @@ import kotlinx.serialization.json.jsonObject
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.http.HttpMethod
 import org.springframework.stereotype.Component
-import org.springframework.web.reactive.function.BodyInserters
-import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.WebClientResponseException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Address
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.probationoffendersearch.Offender
 
 @Component
 class ProbationOffenderSearchGateway(@Value("\${services.probation-offender-search.base-url}") baseUrl: String) {
-  private val webClient: WebClient = WebClient.builder().baseUrl(baseUrl).build()
+  private val webClient = WebClientWrapper(baseUrl)
   private val log = LoggerFactory.getLogger(this::class.java)
 
   @Autowired
@@ -25,15 +25,14 @@ class ProbationOffenderSearchGateway(@Value("\${services.probation-offender-sear
     val token = hmppsAuthGateway.getClientToken("Probation Offender Search")
 
     return try {
-      webClient
-        .post()
-        .uri("/search")
-        .header("Authorization", "Bearer $token")
-        .body(BodyInserters.fromValue(mapOf("nomsNumber" to id, "valid" to true)))
-        .retrieve()
-        .bodyToFlux(Offender::class.java)
-        .map { offender -> offender.toPerson() }
-        .blockFirst()
+      val offenders = webClient.requestList<Offender>(
+        HttpMethod.POST,
+        "/search",
+        token,
+        mapOf("nomsNumber" to id, "valid" to true)
+      ) ?: return null
+
+      if (offenders.isNotEmpty()) offenders.first().toPerson() else null
     } catch (exception: WebClientResponseException.BadRequest) {
       log.error("${exception.message} - ${Json.parseToJsonElement(exception.responseBodyAsString).jsonObject["developerMessage"]}")
       null
@@ -44,31 +43,24 @@ class ProbationOffenderSearchGateway(@Value("\${services.probation-offender-sear
     val token = hmppsAuthGateway.getClientToken("Probation Offender Search")
 
     val requestBody = mapOf("firstName" to firstName, "surname" to surname, "valid" to true)
+      .filterValues { it != null }
 
-    return webClient
-      .post()
-      .uri("/search")
-      .header("Authorization", "Bearer $token")
-      .body(BodyInserters.fromValue(requestBody.filterValues { it != null }))
-      .retrieve()
-      .bodyToFlux(Offender::class.java)
-      .map { offender -> offender.toPerson() }
-      .collectList()
-      .block() as List<Person>
+    return webClient.requestList<Offender>(HttpMethod.POST, "/search", token, requestBody)
+      .map { it.toPerson() }
   }
 
   fun getAddressesForPerson(id: String): List<Address>? {
     val token = hmppsAuthGateway.getClientToken("Probation Offender Search")
 
-    val offender = webClient
-      .post()
-      .uri("/search")
-      .header("Authorization", "Bearer $token")
-      .body(BodyInserters.fromValue(mapOf("nomsNumber" to id, "valid" to true)))
-      .retrieve()
-      .bodyToFlux(Offender::class.java)
-      .blockFirst() ?: return null
+    val requestBody = mapOf("nomsNumber" to id, "valid" to true)
 
-    return offender.contactDetails.addresses.map { address -> address.toAddress() }
+    val offender = webClient.requestList<Offender>(HttpMethod.POST, "/search", token, requestBody)
+
+    if (offender.isEmpty()) return null
+
+    return if (offender.first().contactDetails.addresses.isNotEmpty())
+      offender.first().contactDetails.addresses.map { it.toAddress() }
+    else
+      listOf()
   }
 }
