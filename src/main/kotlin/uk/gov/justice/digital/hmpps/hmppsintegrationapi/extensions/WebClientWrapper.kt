@@ -12,7 +12,6 @@ class WebClientWrapper(
     .baseUrl(baseUrl)
     .build()
 
-  // can we make authorisation easier to configure?, it may not always be bearer
   inline fun <reified T> request(method: HttpMethod, uri: String, token: String, requestBody: Map<String, Any?>? = null): T {
     val responseBodySpec = client.method(method)
       .uri(uri)
