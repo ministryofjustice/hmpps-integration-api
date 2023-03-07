@@ -11,7 +11,6 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-webflux")
   implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1")
 
-  runtimeOnly("org.springframework.boot:spring-boot-properties-migrator")
   testImplementation("io.kotest:kotest-runner-junit5-jvm:5.5.4")
   testImplementation("io.kotest:kotest-assertions-core-jvm:5.5.4")
   testImplementation("com.github.tomakehurst:wiremock-jre8-standalone:2.35.0")
