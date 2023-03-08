@@ -1,11 +1,11 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.config
 
-import jakarta.servlet.http.HttpServletRequest
-import jakarta.servlet.http.HttpServletResponse
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.HandlerInterceptor
 import java.util.stream.Collectors
+import javax.servlet.http.HttpServletRequest
+import javax.servlet.http.HttpServletResponse
 
 // Intercepts incoming requests and logs them
 @Component

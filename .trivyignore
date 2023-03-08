@@ -32,3 +32,6 @@ CVE-2022-42889
 # Suppression for h2 2.1.214 password on command line vulnerability
 #   can be suppressed as we only run h2 locally and not on build environments
 CVE-2022-45868
+# Suppression for spring-web 5.3.24 as bundled with spring boot
+#   can be suppressed as we are not using java serialization and deserialization explicitly
+CVE-2016-1000027

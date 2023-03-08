@@ -6,6 +6,7 @@
 
     <springProperty scope="context" name="app" source="spring.application.name"/>
 
+
     <springProfile name="dev || stdout">
         <appender name="consoleAppender" class="ch.qos.logback.core.helpers.NOPAppender"/>
         <appender name="logAppender" class="ch.qos.logback.core.ConsoleAppender">
@@ -21,39 +22,44 @@
                 <Pattern>${LOG_PATTERN}</Pattern>
             </layout>
         </appender>
+        <appender name="logAppender" class="com.microsoft.applicationinsights.logback.ApplicationInsightsAppender"/>
     </springProfile>
 
     <logger name="uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.RequestLogger" additivity="false" level="DEBUG">
+        <appender-ref ref="logAppender"/>
         <appender-ref ref="consoleAppender"/>
     </logger>
 
     <logger name="uk.gov.justice.digital.hmpps.hmppsintegrationapi" additivity="false"
             level="DEBUG">
+        <appender-ref ref="logAppender"/>
         <appender-ref ref="consoleAppender"/>
     </logger>
 
     <logger name="uk.gov.justice.digital.hmpps" additivity="false" level="DEBUG">
-        <appender-ref ref="consoleAppender"/>
+        <appender-ref ref="logAppender"/>
     </logger>
 
     <logger name="org.springframework" additivity="false" level="INFO">
-        <appender-ref ref="consoleAppender"/>
+        <appender-ref ref="logAppender"/>
     </logger>
 
     <logger name="com.microsoft.applicationinsights" additivity="false" level="INFO">
-        <appender-ref ref="consoleAppender"/>
+        <appender-ref ref="logAppender"/>
     </logger>
 
     <logger name="org.apache.catalina" additivity="false" level="INFO">
+        <appender-ref ref="logAppender"/>
         <appender-ref ref="consoleAppender"/>
     </logger>
 
     <logger name="org.springframework.boot" additivity="false" level="INFO">
+        <appender-ref ref="logAppender"/>
         <appender-ref ref="consoleAppender"/>
     </logger>
 
     <root level="INFO">
-        <appender-ref ref="consoleAppender"/>
+        <appender-ref ref="logAppender"/>
     </root>
 
 </configuration>
