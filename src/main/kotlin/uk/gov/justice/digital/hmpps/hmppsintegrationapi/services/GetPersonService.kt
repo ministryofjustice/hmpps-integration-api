@@ -14,13 +14,6 @@ class GetPersonService(
   @Autowired val probationOffenderSearchGateway: ProbationOffenderSearchGateway
 ) {
 
-  fun execute(firstName: String, lastName: String): List<Person?> {
-    val personsFromPrisonerOffenderSearch = prisonerOffenderSearchGateway.getPersons(firstName, lastName)
-    val personsFromProbationOffenderSearch = probationOffenderSearchGateway.getPersons(firstName, lastName)
-
-    return personsFromPrisonerOffenderSearch + personsFromProbationOffenderSearch
-  }
-
   fun execute(id: String): Map<String, Person?>? {
     val personFromPrisonerOffenderSearch = prisonerOffenderSearchGateway.getPerson(id)
     val personFromNomis = nomisGateway.getPerson(id)
