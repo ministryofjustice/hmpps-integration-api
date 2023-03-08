@@ -24,6 +24,10 @@ generic-service:
     APPLICATIONINSIGHTS_CONNECTION_STRING: "InstrumentationKey=$(APPINSIGHTS_INSTRUMENTATIONKEY)"
     APPLICATIONINSIGHTS_CONFIGURATION_FILE: applicationinsights.json
 
+  namespace_secrets:
+    hmpps-integration-api:
+      APPINSIGHTS_INSTRUMENTATIONKEY: "APPINSIGHTS_INSTRUMENTATIONKEY"
+
   allowlist:
     office: "217.33.148.210/32"
     health-kick: "35.177.252.195/32"
