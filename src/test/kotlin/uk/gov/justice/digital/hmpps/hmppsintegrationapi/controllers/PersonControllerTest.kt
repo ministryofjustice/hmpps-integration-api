@@ -108,14 +108,16 @@ internal class PersonControllerTest(
                 "lastName":"Allen",
                 "middleName":"Jonas",
                 "dateOfBirth":"2023-03-01",
-                "aliases":[]
+                "aliases":[],
+                "prisonerId": null
                },
                {
                  "firstName":"Barry",
                  "lastName":"Allen",
                  "middleName":"Rock",
                  "dateOfBirth":"2022-07-22",
-                 "aliases":[]
+                 "aliases":[],
+                "prisonerId": null
                }
              ]
            }
@@ -146,12 +148,7 @@ internal class PersonControllerTest(
   describe("GET /persons/{id}") {
 
     val person = mapOf(
-      "nomis" to Person(
-        "Billy",
-        "Bob",
-        dateOfBirth = LocalDate.parse("1970-10-10"),
-        aliases = listOf(Alias("Bill", "Bobbers", dateOfBirth = LocalDate.parse("1970-03-01"))),
-      ),
+      "nomis" to null,
       "prisonerOffenderSearch" to Person("Sally", "Sob"),
       "probationOffenderSearch" to Person("Silly", "Sobbers"),
     )
@@ -189,33 +186,22 @@ internal class PersonControllerTest(
       result.response.contentAsString.shouldBe(
         """
         {
-          "nomis": {
-            "firstName": "Billy",
-            "lastName": "Bob",
-            "middleName": null,
-            "dateOfBirth": "1970-10-10",
-            "aliases": [
-              {
-                "firstName": "Bill",
-                "lastName": "Bobbers",
-                "middleName": null,
-                "dateOfBirth": "1970-03-01"
-              }
-            ]
-          },
+          "nomis": null,
           "prisonerOffenderSearch": {
             "firstName": "Sally",
             "lastName": "Sob",
             "middleName": null,
             "dateOfBirth": null,
-            "aliases": []
+            "aliases": [],
+            "prisonerId":null
           },
           "probationOffenderSearch": {
             "firstName": "Silly",
             "lastName": "Sobbers",
             "middleName": null,
             "dateOfBirth": null,
-            "aliases": []
+            "aliases": [],
+            "prisonerId":null
           }
         }
         """.removeWhitespaceAndNewlines(),
