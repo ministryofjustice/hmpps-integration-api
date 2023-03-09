@@ -24,13 +24,13 @@ class PersonController(
   @Autowired val getPersonService: GetPersonService,
   @Autowired val getPersonsService: GetPersonsService,
   @Autowired val getImageMetadataForPersonService: GetImageMetadataForPersonService,
-  @Autowired val getAddressesForPersonService: GetAddressesForPersonService
+  @Autowired val getAddressesForPersonService: GetAddressesForPersonService,
 ) {
 
   @GetMapping
   fun getPersons(
     @RequestParam(required = false, name = "first_name") firstName: String?,
-    @RequestParam(required = false, name = "last_name") lastName: String?
+    @RequestParam(required = false, name = "last_name") lastName: String?,
   ): Map<String, List<Person?>> {
     if (firstName == null && lastName == null) {
       throw ValidationException("No query parameters specified.")
@@ -54,17 +54,19 @@ class PersonController(
     return result
   }
 
-  @GetMapping("{id}/images")
-  fun getPersonImages(@PathVariable id: String): Map<String, List<ImageMetadata>> {
-    val images = getImageMetadataForPersonService.execute(id)
+  @GetMapping("{encodedPncId}/images")
+  fun getPersonImages(@PathVariable encodedPncId: String): Map<String, List<ImageMetadata>> {
+    val pncId = URLDecoder.decode(encodedPncId, StandardCharsets.UTF_8)
+    val images = getImageMetadataForPersonService.execute(pncId)
 
     return mapOf("images" to images)
   }
 
-  @GetMapping("{id}/addresses")
-  fun getPersonAddresses(@PathVariable id: String): Map<String, List<Address>> {
+  @GetMapping("{encodedPncId}/addresses")
+  fun getPersonAddresses(@PathVariable encodedPncId: String): Map<String, List<Address>> {
+    val pncId = URLDecoder.decode(encodedPncId, StandardCharsets.UTF_8)
     val addresses =
-      getAddressesForPersonService.execute(id) ?: throw EntityNotFoundException("Could not find person with id: $id")
+      getAddressesForPersonService.execute(pncId) ?: throw EntityNotFoundException("Could not find person with id: $pncId")
 
     return mapOf("addresses" to addresses)
   }
