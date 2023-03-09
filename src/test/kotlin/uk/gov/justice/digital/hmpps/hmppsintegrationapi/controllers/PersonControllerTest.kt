@@ -22,6 +22,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetAddressesFor
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetImageMetadataForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonsService
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 import java.time.LocalDate
 
 @WebMvcTest(controllers = [PersonController::class])
@@ -140,7 +142,8 @@ internal class PersonControllerTest(
   }
 
   describe("GET /persons/{id}") {
-    val id = "abc123"
+    val pncId = "2003/13116M"
+    val encodedPncId = URLEncoder.encode(pncId, StandardCharsets.UTF_8)
 
     val person = mapOf(
       "nomis" to Person(
@@ -155,32 +158,33 @@ internal class PersonControllerTest(
 
     beforeTest {
       Mockito.reset(getPersonService)
-      whenever(getPersonService.execute(id)).thenReturn(person)
+      whenever(getPersonService.execute(pncId)).thenReturn(person)
     }
 
     it("responds with a 200 OK status") {
-      val result = mockMvc.perform(get("/persons/$id")).andReturn()
+      val result = mockMvc.perform(get("/persons/$encodedPncId")).andReturn()
 
       result.response.status.shouldBe(HttpStatus.OK.value())
     }
 
     it("responds with a 404 NOT FOUND status") {
-      val idThatDoesNotExist = "zyx987"
-      whenever(getPersonService.execute(id)).thenReturn(null)
+      val idThatDoesNotExist = "9999/11111Z"
+      whenever(getPersonService.execute(idThatDoesNotExist)).thenReturn(null)
 
-      val result = mockMvc.perform(get("/persons/$idThatDoesNotExist")).andReturn()
+      val encodedIdThatDoesNotExist = URLEncoder.encode(idThatDoesNotExist, StandardCharsets.UTF_8)
+      val result = mockMvc.perform(get("/persons/$encodedIdThatDoesNotExist")).andReturn()
 
       result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
     }
 
     it("retrieves a person with the matching ID") {
-      mockMvc.perform(get("/persons/$id")).andReturn()
+      mockMvc.perform(get("/persons/$encodedPncId")).andReturn()
 
-      verify(getPersonService, times(1)).execute(id)
+      verify(getPersonService, times(1)).execute(pncId)
     }
 
     it("returns a person with the matching ID") {
-      val result = mockMvc.perform(get("/persons/$id")).andReturn()
+      val result = mockMvc.perform(get("/persons/$encodedPncId")).andReturn()
 
       result.response.contentAsString.shouldBe(
         """

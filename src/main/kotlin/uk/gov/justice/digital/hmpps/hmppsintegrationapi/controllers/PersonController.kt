@@ -15,6 +15,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetAddressesFor
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetImageMetadataForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonsService
+import java.net.URLDecoder
+import java.nio.charset.StandardCharsets
 
 @RestController
 @RequestMapping("/persons")
@@ -39,12 +41,14 @@ class PersonController(
     return mapOf("persons" to persons)
   }
 
-  @GetMapping("{id}")
-  fun getPerson(@PathVariable id: String): Map<String, Person?> {
-    val result = getPersonService.execute(id)
+  @GetMapping("{encodedPncId}")
+  fun getPerson(@PathVariable encodedPncId: String): Map<String, Person?> {
+    val pncId = URLDecoder.decode(encodedPncId, StandardCharsets.UTF_8)
+
+    val result = getPersonService.execute(pncId)
 
     if (result.isNullOrEmpty()) {
-      throw EntityNotFoundException("Could not find person with id: $id")
+      throw EntityNotFoundException("Could not find person with id: $pncId")
     }
 
     return result

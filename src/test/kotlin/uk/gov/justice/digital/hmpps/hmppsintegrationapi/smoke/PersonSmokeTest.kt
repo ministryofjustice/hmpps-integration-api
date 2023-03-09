@@ -6,16 +6,19 @@ import io.kotest.matchers.string.shouldContain
 import org.springframework.http.HttpStatus
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import java.net.URI
+import java.net.URLEncoder
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse
+import java.nio.charset.StandardCharsets
 
 class PersonSmokeTest : DescribeSpec({
   val baseUrl = "http://localhost:8080"
   val httpClient = HttpClient.newBuilder().build()
   val httpRequest = HttpRequest.newBuilder()
 
-  val id = "A1234AL"
+  val pncId = "2003/13116M"
+  val encodedPncId = URLEncoder.encode(pncId, StandardCharsets.UTF_8)
 
   it("returns a list of persons using first name and last name as search parameters") {
     val firstName = "Example_First_Name"
@@ -45,7 +48,7 @@ class PersonSmokeTest : DescribeSpec({
 
   it("returns a person from NOMIS, Prisoner Offender Search and Probation Offender Search") {
     val response = httpClient.send(
-      httpRequest.uri(URI.create("$baseUrl/persons/$id")).build(),
+      httpRequest.uri(URI.create("$baseUrl/persons/$encodedPncId")).build(),
       HttpResponse.BodyHandlers.ofString()
     )
 
@@ -54,7 +57,7 @@ class PersonSmokeTest : DescribeSpec({
 
   it("returns image metadata for a person") {
     val response = httpClient.send(
-      httpRequest.uri(URI.create("$baseUrl/persons/$id/images")).build(),
+      httpRequest.uri(URI.create("$baseUrl/persons/$encodedPncId/images")).build(),
       HttpResponse.BodyHandlers.ofString()
     )
 
@@ -77,7 +80,7 @@ class PersonSmokeTest : DescribeSpec({
 
   it("returns addresses for a person") {
     val response = httpClient.send(
-      httpRequest.uri(URI.create("$baseUrl/persons/$id/addresses")).build(),
+      httpRequest.uri(URI.create("$baseUrl/persons/$encodedPncId/addresses")).build(),
       HttpResponse.BodyHandlers.ofString()
     )
 
