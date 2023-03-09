@@ -32,21 +32,21 @@ Consider the following example.
 
 _Upstream system 'a' model_
 ```kotlin
- data class human(val name: String){
+ data class Human(val name: String){
      toDomain() = Person(name, null)
  }
 ```
 
 _Upstream system 'b' model_
 ```kotlin
- data class person(val name: String, val surname: String){
+ data class Person(val name: String, val surname: String){
      toDomain() = Person(name, surname)
  }
 ```
 
 _Our 'domain' model_
 ```kotlin
- data class person(val firstName: String, val lastName: String?)
+ data class Person(val firstName: String, val lastName: String?)
 ```
 
 This allows us to control how we map from upstream systems to our own objects. If we get a failure during the mapping process
