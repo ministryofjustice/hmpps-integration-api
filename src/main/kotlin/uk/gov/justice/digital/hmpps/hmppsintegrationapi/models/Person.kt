@@ -12,4 +12,5 @@ data class Person(
   val dateOfBirth: LocalDate? = null,
   @JsonAlias("offenderAliases")
   val aliases: List<Alias> = listOf(),
+  val prisonerId: String? = null
 )
