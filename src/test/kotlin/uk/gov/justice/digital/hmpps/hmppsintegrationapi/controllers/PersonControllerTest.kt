@@ -210,8 +210,6 @@ internal class PersonControllerTest(
   }
 
   describe("GET /persons/$encodedPncId/images") {
-    val id = "def456"
-
     beforeTest {
       Mockito.reset(getImageMetadataForPersonService)
       whenever(getImageMetadataForPersonService.execute(pncId)).thenReturn(
