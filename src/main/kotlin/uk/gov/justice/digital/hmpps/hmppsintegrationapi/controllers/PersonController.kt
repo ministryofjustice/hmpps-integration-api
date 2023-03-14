@@ -15,8 +15,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetAddressesFor
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetImageMetadataForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonsService
-import java.net.URLDecoder
-import java.nio.charset.StandardCharsets
 
 @RestController
 @RequestMapping("/persons")
