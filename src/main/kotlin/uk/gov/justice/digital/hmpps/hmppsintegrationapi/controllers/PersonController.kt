@@ -41,32 +41,28 @@ class PersonController(
     return mapOf("persons" to persons)
   }
 
-  @GetMapping("{encodedPncId}")
-  fun getPerson(@PathVariable encodedPncId: String): Map<String, Person?> {
-    val pncId = URLDecoder.decode(encodedPncId, StandardCharsets.UTF_8)
-
-    val result = getPersonService.execute(pncId)
+  @GetMapping("{decodedPncId}")
+  fun getPerson(@PathVariable decodedPncId: String): Map<String, Person?> {
+    val result = getPersonService.execute(decodedPncId)
 
     if (result.isNullOrEmpty()) {
-      throw EntityNotFoundException("Could not find person with id: $pncId")
+      throw EntityNotFoundException("Could not find person with id: $decodedPncId")
     }
 
     return result
   }
 
-  @GetMapping("{encodedPncId}/images")
-  fun getPersonImages(@PathVariable encodedPncId: String): Map<String, List<ImageMetadata>> {
-    val pncId = URLDecoder.decode(encodedPncId, StandardCharsets.UTF_8)
-    val images = getImageMetadataForPersonService.execute(pncId)
+  @GetMapping("{decodedPncId}/images")
+  fun getPersonImages(@PathVariable decodedPncId: String): Map<String, List<ImageMetadata>> {
+    val images = getImageMetadataForPersonService.execute(decodedPncId)
 
     return mapOf("images" to images)
   }
 
-  @GetMapping("{encodedPncId}/addresses")
-  fun getPersonAddresses(@PathVariable encodedPncId: String): Map<String, List<Address>> {
-    val pncId = URLDecoder.decode(encodedPncId, StandardCharsets.UTF_8)
+  @GetMapping("{decodedPncId}/addresses")
+  fun getPersonAddresses(@PathVariable decodedPncId: String): Map<String, List<Address>> {
     val addresses =
-      getAddressesForPersonService.execute(pncId) ?: throw EntityNotFoundException("Could not find person with id: $pncId")
+      getAddressesForPersonService.execute(decodedPncId) ?: throw EntityNotFoundException("Could not find person with id: $decodedPncId")
 
     return mapOf("addresses" to addresses)
   }

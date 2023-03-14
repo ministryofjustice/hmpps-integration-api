@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions
+package uk.gov.justice.digital.hmpps.hmppsintegrationapi.config
 
 import org.apache.catalina.connector.Connector
 import org.apache.tomcat.util.buf.EncodedSolidusHandling
