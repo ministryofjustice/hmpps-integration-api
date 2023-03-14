@@ -33,10 +33,10 @@ internal class GetImageMetadataForPersonServiceTest(
     whenever(prisonerOffenderSearchGateway.getPersons(pncId = pncId)).thenReturn(
       listOf(
         Person(
-        firstName = "Joey",
-        lastName = "Tribbiani",
-        prisonerId = prisonerNumber
-      )
+          firstName = "Joey",
+          lastName = "Tribbiani",
+          prisonerId = prisonerNumber
+        )
       )
     )
   }
