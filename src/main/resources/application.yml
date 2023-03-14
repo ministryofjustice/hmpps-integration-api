@@ -3,10 +3,13 @@ info.app:
   version: 1.0
 
 spring:
+  mvc:
+    log-request-details: true
   application:
     name: hmpps-integration-api
   codec:
     max-in-memory-size: 10MB
+    log-request-details: true
 
   jackson:
     date-format: "yyyy-MM-dd HH:mm:ss"
@@ -24,6 +27,8 @@ server:
     context-path: /
   forward-headers-strategy: native
   tomcat:
+    accesslog:
+      enabled: true
     remoteip:
       remote-ip-header: x-forwarded-for
       protocol-header: x-forwarded-proto
@@ -61,3 +66,27 @@ services:
     password: Y2xpZW50c2VjcmV0Cg==
   probation-offender-search:
     base-url: http://localhost:4002
+
+logging:
+  level:
+    org:
+      springframework:
+        web:
+          server:
+            adapter:
+              HttpWebHandlerAdapter: "TRACE"
+
+org:
+  apache:
+    tomcat:
+      util:
+        buf:
+          UDecoder:
+            ALLOW_ENCODED_SLASH: true
+
+
+
+    catalina:
+      connector:
+        Connector:
+          encodedSolidusHandling: "PASS_THROUGH"

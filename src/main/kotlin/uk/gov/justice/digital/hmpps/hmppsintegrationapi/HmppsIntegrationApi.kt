@@ -7,5 +7,6 @@ import org.springframework.boot.runApplication
 class HmppsIntegrationApi
 
 fun main(args: Array<String>) {
+  System.setProperty("apache.tomcat.util.buf.UDecoder.ALLOW_ENCODED_SLASH", "true")
   runApplication<HmppsIntegrationApi>(*args)
 }

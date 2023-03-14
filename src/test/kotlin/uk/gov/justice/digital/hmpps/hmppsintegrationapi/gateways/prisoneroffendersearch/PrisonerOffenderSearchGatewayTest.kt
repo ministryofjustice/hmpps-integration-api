@@ -46,6 +46,8 @@ class PrisonerOffenderSearchGatewayTest(
   describe("#getPersons") {
     val firstName = "PETER"
     val lastName = "PHILLIPS"
+    val pncId = "2003/13116A"
+    val prisonerNumber = "A1234AA"
 
     beforeEach {
       prisonerOffenderSearchApiMockServer.stubPostPrisonerSearch(
@@ -53,6 +55,7 @@ class PrisonerOffenderSearchGatewayTest(
             {
               "firstName":"$firstName",
               "lastName":"$lastName",
+              "pncId":"$pncId",
               "includeAliases":true
             }
           """.removeWhitespaceAndNewlines(),
@@ -92,7 +95,7 @@ class PrisonerOffenderSearchGatewayTest(
               "lastName": "Kenobi"
             }
           ]
-        } 
+        }
         """.trimIndent()
       )
 
@@ -101,6 +104,35 @@ class PrisonerOffenderSearchGatewayTest(
       persons.count().shouldBe(1)
       persons.first().firstName.shouldBe("Obi-Wan")
       persons.first().lastName.shouldBe("Kenobi")
+    }
+
+    it("returns person(s) when searching on pncId only") {
+      prisonerOffenderSearchApiMockServer.stubPostPrisonerSearch(
+        """
+        {
+          "prisonerIdentifier":"2012/394773H",
+          "includeAliases":true
+        }
+        """.removeWhitespaceAndNewlines(),
+        """
+        {
+          "content": [
+            {
+              "firstName": "Obi-Wan",
+              "lastName": "Kenobi",
+              "prisonerNumber": "A1234AA"
+            }
+          ]
+        }
+        """.trimIndent()
+      )
+
+      val persons = prisonerOffenderSearchGateway.getPersons(pncId = pncId)
+
+      persons.count().shouldBe(1)
+      persons.first().firstName.shouldBe("Obi-Wan")
+      persons.first().lastName.shouldBe("Kenobi")
+      persons.first().prisonerId.shouldBe("A1234AA")
     }
 
     it("returns person(s) when searching on last name only") {
@@ -119,7 +151,7 @@ class PrisonerOffenderSearchGatewayTest(
               "lastName": "Binks"
             }
           ]
-        } 
+        }
         """.trimIndent()
       )
 

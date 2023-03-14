@@ -34,10 +34,10 @@ class PrisonerOffenderSearchGateway(@Value("\${services.prisoner-offender-search
     }
   }
 
-  fun getPersons(firstName: String?, lastName: String?): List<Person> {
+  fun getPersons(firstName: String? = null, lastName: String? = null, pncId: String? = null): List<Person> {
     val token = hmppsAuthGateway.getClientToken("Prisoner Offender Search")
 
-    val requestBody = mapOf("firstName" to firstName, "lastName" to lastName, "includeAliases" to true)
+    val requestBody = mapOf("firstName" to firstName, "lastName" to lastName, "includeAliases" to true, "prisonerIdentifier" to pncId)
       .filterValues { it != null }
 
     return webClient.request<GlobalSearch>(HttpMethod.POST, "/global-search", token, requestBody)

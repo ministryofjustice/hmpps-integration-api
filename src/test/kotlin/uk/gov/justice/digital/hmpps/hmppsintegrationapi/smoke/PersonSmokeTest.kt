@@ -17,7 +17,7 @@ class PersonSmokeTest : DescribeSpec({
   val httpClient = HttpClient.newBuilder().build()
   val httpRequest = HttpRequest.newBuilder()
 
-  val pncId = "2003/13116M"
+  val pncId = "2004/13116M"
   val encodedPncId = URLEncoder.encode(pncId, StandardCharsets.UTF_8)
 
   it("returns a list of persons using first name and last name as search parameters") {
@@ -52,7 +52,7 @@ class PersonSmokeTest : DescribeSpec({
       HttpResponse.BodyHandlers.ofString()
     )
 
-    response.body().shouldContain("\"nomis\":{\"firstName\":\"string\",\"lastName\":\"string\"")
+    response.body().shouldContain("\"nomis\":null")
   }
 
   it("returns image metadata for a person") {

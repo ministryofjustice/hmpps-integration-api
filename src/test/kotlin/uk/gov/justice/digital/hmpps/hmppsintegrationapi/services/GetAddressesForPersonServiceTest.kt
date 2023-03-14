@@ -35,13 +35,21 @@ internal class GetAddressesForPersonServiceTest(
     Mockito.reset(probationOffenderSearchGateway)
     Mockito.reset(nomisGateway)
 
-    whenever(prisonerOffenderSearchGateway.getPerson(pncId)).thenReturn(
-      Person(
-        firstName = "Qui-gon",
-        lastName = "Jin",
-        prisonerId = prisonerNumber
+    whenever(prisonerOffenderSearchGateway.getPersons(pncId)).thenReturn(
+      listOf(Person(
+          firstName = "Qui-gon",
+          lastName = "Jin",
+          prisonerId = "A1234AA"
+        )
       )
     )
+
+//    whenever(prisonerOffenderSearchGateway.getPerson(pncId)).thenReturn(
+//      Person(
+//        firstName = "Qui-gon",
+//        lastName = "Jin"
+//      )
+//    )
   }
 
   it("retrieves addresses for a person from Probation Offender Search") {
