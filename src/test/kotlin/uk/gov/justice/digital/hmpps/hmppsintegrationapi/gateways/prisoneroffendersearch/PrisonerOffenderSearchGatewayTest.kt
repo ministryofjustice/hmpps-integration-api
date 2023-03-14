@@ -47,7 +47,6 @@ class PrisonerOffenderSearchGatewayTest(
     val firstName = "PETER"
     val lastName = "PHILLIPS"
     val pncId = "2003/13116A"
-    val prisonerNumber = "A1234AA"
 
     beforeEach {
       prisonerOffenderSearchApiMockServer.stubPostPrisonerSearch(
@@ -55,7 +54,7 @@ class PrisonerOffenderSearchGatewayTest(
             {
               "firstName":"$firstName",
               "lastName":"$lastName",
-              "pncId":"$pncId",
+              "prisonerIdentifier": "$pncId",
               "includeAliases":true
             }
           """.removeWhitespaceAndNewlines(),
@@ -64,19 +63,23 @@ class PrisonerOffenderSearchGatewayTest(
     }
 
     it("authenticates using HMPPS Auth with credentials") {
-      prisonerOffenderSearchGateway.getPersons(firstName, lastName)
+      prisonerOffenderSearchGateway.getPersons(firstName, lastName, pncId)
 
       verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("Prisoner Offender Search")
     }
 
-    it("returns person(s) when searching on first and last name") {
-      val persons = prisonerOffenderSearchGateway.getPersons(firstName, lastName)
+    it("returns person(s) when searching on PNC ID, first and last name") {
+      val persons = prisonerOffenderSearchGateway.getPersons(firstName, lastName, pncId)
 
       persons.count().shouldBe(4)
       persons.forEach {
-        it?.firstName.shouldBe(firstName)
-        it?.lastName.shouldBe(lastName)
+        it.firstName.shouldBe(firstName)
+        it.lastName.shouldBe(lastName)
       }
+      persons[0].prisonerId.shouldBe("A7796DY")
+      persons[1].prisonerId.shouldBe("G9347GV")
+      persons[2].prisonerId.shouldBe("A5043DY")
+      persons[3].prisonerId.shouldBe("A5083DY")
     }
 
     it("returns person(s) when searching on first name only") {
@@ -110,7 +113,7 @@ class PrisonerOffenderSearchGatewayTest(
       prisonerOffenderSearchApiMockServer.stubPostPrisonerSearch(
         """
         {
-          "prisonerIdentifier":"2012/394773H",
+          "prisonerIdentifier":"$pncId",
           "includeAliases":true
         }
         """.removeWhitespaceAndNewlines(),

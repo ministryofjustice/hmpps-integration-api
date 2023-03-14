@@ -28,37 +28,36 @@ internal class GetAddressesForPersonServiceTest(
 ) : DescribeSpec({
   val pncId = "2003/13116M"
   val prisonerNumber = "A5553AA"
-  val id = "foobar"
 
   beforeEach {
     Mockito.reset(prisonerOffenderSearchGateway)
     Mockito.reset(probationOffenderSearchGateway)
     Mockito.reset(nomisGateway)
 
-    whenever(prisonerOffenderSearchGateway.getPersons(pncId)).thenReturn(
-      listOf(Person(
+    whenever(prisonerOffenderSearchGateway.getPersons(pncId = pncId)).thenReturn(
+      listOf(
+        Person(
           firstName = "Qui-gon",
           lastName = "Jin",
-          prisonerId = "A1234AA"
+          prisonerId = prisonerNumber
         )
       )
     )
-
-//    whenever(prisonerOffenderSearchGateway.getPerson(pncId)).thenReturn(
-//      Person(
-//        firstName = "Qui-gon",
-//        lastName = "Jin"
-//      )
-//    )
   }
 
-  it("retrieves addresses for a person from Probation Offender Search") {
+  it("retrieves prisoner ID from Prisoner Offender Search") {
+    getAddressesForPersonService.execute(pncId)
+
+    verify(prisonerOffenderSearchGateway, VerificationModeFactory.times(1)).getPersons(pncId = pncId)
+  }
+
+  it("retrieves addresses for a person from Probation Offender Search using PND ID") {
     getAddressesForPersonService.execute(pncId)
 
     verify(probationOffenderSearchGateway, VerificationModeFactory.times(1)).getAddressesForPerson(pncId)
   }
 
-  it("retrieves addresses for a person from NOMIS") {
+  it("retrieves addresses for a person from NOMIS using prisoner number") {
     getAddressesForPersonService.execute(pncId)
 
     verify(nomisGateway, VerificationModeFactory.times(1)).getAddressesForPerson(prisonerNumber)
