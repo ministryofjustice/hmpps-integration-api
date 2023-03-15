@@ -49,10 +49,10 @@ class ProbationOffenderSearchGateway(@Value("\${services.probation-offender-sear
       .map { it.toPerson() }
   }
 
-  fun getAddressesForPerson(id: String): List<Address>? {
+  fun getAddressesForPerson(pncId: String): List<Address>? {
     val token = hmppsAuthGateway.getClientToken("Probation Offender Search")
 
-    val requestBody = mapOf("nomsNumber" to id, "valid" to true)
+    val requestBody = mapOf("pncNumber" to pncId, "valid" to true)
 
     val offender = webClient.requestList<Offender>(HttpMethod.POST, "/search", token, requestBody)
 

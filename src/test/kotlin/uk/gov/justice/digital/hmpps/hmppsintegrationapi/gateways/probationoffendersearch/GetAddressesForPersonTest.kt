@@ -28,20 +28,17 @@ class GetAddressesForPersonTest(
   private val probationOffenderSearchGateway: ProbationOffenderSearchGateway
 ) : DescribeSpec({
   val probationOffenderSearchApiMockServer = ProbationOffenderSearchApiMockServer()
-  val nomsNumber = "qwe678"
+  val pncId = "2002/1121M"
 
   beforeEach {
     probationOffenderSearchApiMockServer.start()
     probationOffenderSearchApiMockServer.stubPostOffenderSearch(
-      "{\"nomsNumber\": \"$nomsNumber\", \"valid\": true}",
+      "{\"pncNumber\": \"$pncId\", \"valid\": true}",
       """
         [
           {
             "firstName": "English",
             "surname": "Breakfast",
-            "otherIds": {
-              "nomsNumber": "$nomsNumber"
-            },
             "contactDetails": {
               "addresses": [
                 {
@@ -65,28 +62,25 @@ class GetAddressesForPersonTest(
   }
 
   it("authenticates using HMPPS Auth with credentials") {
-    probationOffenderSearchGateway.getAddressesForPerson(nomsNumber)
+    probationOffenderSearchGateway.getAddressesForPerson(pncId)
 
     verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("Probation Offender Search")
   }
 
   it("returns addresses for a person with the matching ID") {
-    val addresses = probationOffenderSearchGateway.getAddressesForPerson(nomsNumber)
+    val addresses = probationOffenderSearchGateway.getAddressesForPerson(pncId)
 
     addresses?.shouldContain(Address(postcode = "M3 2JA"))
   }
 
   it("returns an empty list when no addresses are found") {
     probationOffenderSearchApiMockServer.stubPostOffenderSearch(
-      "{\"nomsNumber\": \"$nomsNumber\", \"valid\": true}",
+      "{\"pncNumber\": \"$pncId\", \"valid\": true}",
       """
         [
           {
             "firstName": "English",
             "surname": "Breakfast",
-            "otherIds": {
-              "nomsNumber": "$nomsNumber"
-            },
             "contactDetails": {
               "addresses": []
             }
@@ -95,18 +89,18 @@ class GetAddressesForPersonTest(
         """
     )
 
-    val addresses = probationOffenderSearchGateway.getAddressesForPerson(nomsNumber)
+    val addresses = probationOffenderSearchGateway.getAddressesForPerson(pncId)
 
     addresses.shouldBeEmpty()
   }
 
   it("returns null when no results are returned") {
     probationOffenderSearchApiMockServer.stubPostOffenderSearch(
-      "{\"nomsNumber\": \"$nomsNumber\", \"valid\": true}",
+      "{\"pncNumber\": \"$pncId\", \"valid\": true}",
       "[]"
     )
 
-    val addresses = probationOffenderSearchGateway.getAddressesForPerson(nomsNumber)
+    val addresses = probationOffenderSearchGateway.getAddressesForPerson(pncId)
 
     addresses.shouldBeNull()
   }
