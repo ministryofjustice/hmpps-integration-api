@@ -49,20 +49,16 @@ paths:
                 NoQueryParametersBadRequestError:
                   $ref: "#/components/examples/NoQueryParametersBadRequestError"
 
-  /persons/{id}:
+  /persons/{encodedPncId}:
     get:
       tags:
         - persons
       summary: Returns a person.
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
+        - $ref: "#/components/parameters/EncodedPncId"
       responses:
         "200":
-          description: Successfully found a person with the provided ID.
+          description: Successfully found a person with the provided PNC ID.
           content:
             application/json:
               schema:
@@ -75,7 +71,7 @@ paths:
                   probationOffenderSearch:
                     $ref: "#/components/schemas/Person"
         "404":
-          description: Failed to find a person with the provided ID.
+          description: Failed to find a person with the provided PNC ID.
           content:
             application/json:
               schema:
@@ -84,20 +80,16 @@ paths:
                 PersonNotFoundError:
                   $ref: "#/components/examples/PersonNotFoundError"
 
-  /persons/{id}/images:
+  /persons/{encodedPncId}/images:
     get:
       tags:
         - persons
       summary: Returns metadata of images associated with a person.
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
+        - $ref: "#/components/parameters/EncodedPncId"
       responses:
         "200":
-          description: Successfully found a person with the provided ID.
+          description: Successfully found a person with the provided PNC ID.
           content:
             application/json:
               schema:
@@ -109,7 +101,7 @@ paths:
                     items:
                       $ref: "#/components/schemas/Image"
         "404":
-          description: Failed to find a person with the provided ID.
+          description: Failed to find a person with the provided PNC ID.
           content:
             application/json:
               schema:
@@ -118,20 +110,16 @@ paths:
                 PersonNotFoundError:
                   $ref: "#/components/examples/PersonNotFoundError"
 
-  /persons/{id}/addresses:
+  /persons/{encodedPncId}/addresses:
     get:
       tags:
         - persons
       summary: Returns addresses associated with a person.
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
+        - $ref: "#/components/parameters/EncodedPncId"
       responses:
         "200":
-          description: Successfully found a person with the provided ID.
+          description: Successfully found a person with the provided PNC ID.
           content:
             application/json:
               schema:
@@ -143,7 +131,7 @@ paths:
                     items:
                       $ref: "#/components/schemas/Address"
         "404":
-          description: Failed to find a person with the provided ID.
+          description: Failed to find a person with the provided PNC ID.
           content:
             application/json:
               schema:
@@ -182,6 +170,15 @@ paths:
                   $ref: "#/components/examples/ImageNotFoundError"
 
 components:
+  parameters:
+    EncodedPncId:
+      name: encodedPncId
+      description: A URL-encoded Police National Computer (PNC) identifier.
+      example: 2008%2F0545166T
+      in: path
+      required: true
+      schema:
+        type: string
   schemas:
     Address:
       type: object
@@ -276,14 +273,18 @@ components:
           items:
             $ref: "#/components/schemas/Alias"
           description: list of aliases
+        prisonerId:
+          type: string
+          example: A1234AA
+          description: A prisoner identifier from Prison API (NOMIS)
 
   examples:
     PersonNotFoundError:
       value:
         status: 404
         errorCode: null
-        userMessage: "404 Not found error: Could not find person with id: A1234AL"
-        developerMessage: "Could not find person with id: A1234AL"
+        userMessage: "404 Not found error: Could not find person with PNC id: 2003/0011991D"
+        developerMessage: "Could not find person with PNC id: 2003/0011991D"
         moreInfo: null
     ImageNotFoundError:
       value:
