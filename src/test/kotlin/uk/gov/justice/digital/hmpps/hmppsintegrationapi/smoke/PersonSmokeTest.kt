@@ -52,7 +52,42 @@ class PersonSmokeTest : DescribeSpec({
       HttpResponse.BodyHandlers.ofString()
     )
 
-    response.body().shouldContain("\"nomis\":null")
+    response.body().shouldBe(
+      """
+        {
+          "prisonerOffenderSearch": {
+            "firstName": "Robert",
+            "lastName": "Larsen",
+            "middleName": "John James",
+            "dateOfBirth": "1975-04-02",
+            "aliases": [
+              {
+                "firstName": "Robert",
+                "lastName": "Lorsen",
+                "middleName": "Trevor",
+                "dateOfBirth": "1975-04-02"
+              }
+            ],
+            "prisonerId": "A1234AA"
+          },
+          "probationOffenderSearch": {
+            "firstName": "string",
+            "lastName": "string",
+            "middleName": "string",
+            "dateOfBirth": "2019-08-24",
+            "aliases": [
+              {
+                "firstName": "string",
+                "lastName": "string",
+                "middleName": "string",
+                "dateOfBirth": "2019-08-24"
+              }
+            ],
+            "prisonerId": null
+          }
+        }
+      """.removeWhitespaceAndNewlines()
+    )
   }
 
   it("returns image metadata for a person") {
