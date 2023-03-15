@@ -33,9 +33,10 @@ services:
       - LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_WEB=TRACE
 
   prison-api:
-    image: stoplight/prism:4
+    build:
+      context: .
+      dockerfile: Dockerfile.setup-prison-api
     container_name: prison-api
-    command: 'mock -h 0.0.0.0 https://api-dev.prison.service.justice.gov.uk/v3/api-docs'
     healthcheck:
       test: 'wget --header="Authorization: Bearer abc" http://127.0.0.1:4010/api/offenders/A1234AL -O /dev/null'
     ports:
@@ -52,9 +53,10 @@ services:
       - "4010:4010"
 
   probation-offender-search:
-    image: stoplight/prism:4
+    build:
+      context: .
+      dockerfile: Dockerfile.setup-probation-offender-search
     container_name: probation-offender-search
-    command: 'mock -h 0.0.0.0 https://probation-offender-search-dev.hmpps.service.justice.gov.uk/v3/api-docs'
     healthcheck:
       test: 'wget http://0.0.0.0:4010/synthetic-monitor -O /dev/null'
     ports:
