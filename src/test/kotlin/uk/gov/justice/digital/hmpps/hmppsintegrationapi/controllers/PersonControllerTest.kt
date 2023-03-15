@@ -56,8 +56,8 @@ internal class PersonControllerTest(
             lastName = "Allen",
             middleName = "Rock",
             dateOfBirth = LocalDate.parse("2022-07-22")
-          ),
-        ),
+          )
+        )
       )
     }
 
