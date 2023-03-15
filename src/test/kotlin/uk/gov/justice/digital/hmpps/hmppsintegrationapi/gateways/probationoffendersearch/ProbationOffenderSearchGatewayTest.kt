@@ -138,9 +138,6 @@ class ProbationOffenderSearchGatewayTest(
             ],
             "surname": "Bravo",
             "dateOfBirth": "1970-02-07",
-            "otherIds": {
-              "pncNumber": "$pncId"
-            },
             "offenderAliases": [
               {
                 "dateOfBirth": "2000-02-07",
@@ -185,9 +182,6 @@ class ProbationOffenderSearchGatewayTest(
             "firstName": "Jonathan",
             "surname": "Bravo",
             "dateOfBirth": "1970-02-07",
-            "otherIds": {
-              "pncNumber": "$pncId"
-            },
             "offenderAliases": []
           }
         ]
