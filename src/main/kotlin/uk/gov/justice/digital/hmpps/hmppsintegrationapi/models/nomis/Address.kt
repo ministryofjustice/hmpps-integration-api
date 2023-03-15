@@ -1,9 +1,9 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis
 
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Address
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Address as IntegrationAPIAddress
 
 data class Address(
   val postalCode: String
 ) {
-  fun toAddress() = Address(postcode = this.postalCode)
+  fun toAddress() = IntegrationAPIAddress(postcode = this.postalCode)
 }
