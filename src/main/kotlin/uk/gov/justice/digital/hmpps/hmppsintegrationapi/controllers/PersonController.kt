@@ -15,6 +15,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetAddressesFor
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetImageMetadataForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonsService
+import java.net.URLDecoder
+import java.nio.charset.StandardCharsets
 
 @RestController
 @RequestMapping("/persons")
@@ -39,28 +41,31 @@ class PersonController(
     return mapOf("persons" to persons)
   }
 
-  @GetMapping("{decodedPncId}")
-  fun getPerson(@PathVariable decodedPncId: String): Map<String, Person?> {
-    val result = getPersonService.execute(decodedPncId)
+  @GetMapping("{encodedPncId}")
+  fun getPerson(@PathVariable encodedPncId: String): Map<String, Person?> {
+    val pncId = URLDecoder.decode(encodedPncId, StandardCharsets.UTF_8)
+    val result = getPersonService.execute(pncId)
 
     if (result.isNullOrEmpty()) {
-      throw EntityNotFoundException("Could not find person with id: $decodedPncId")
+      throw EntityNotFoundException("Could not find person with id: $pncId")
     }
 
     return result
   }
 
-  @GetMapping("{decodedPncId}/images")
-  fun getPersonImages(@PathVariable decodedPncId: String): Map<String, List<ImageMetadata>> {
-    val images = getImageMetadataForPersonService.execute(decodedPncId)
+  @GetMapping("{encodedPncId}/images")
+  fun getPersonImages(@PathVariable encodedPncId: String): Map<String, List<ImageMetadata>> {
+    val pncId = URLDecoder.decode(encodedPncId, StandardCharsets.UTF_8)
+    val images = getImageMetadataForPersonService.execute(pncId)
 
     return mapOf("images" to images)
   }
 
-  @GetMapping("{decodedPncId}/addresses")
-  fun getPersonAddresses(@PathVariable decodedPncId: String): Map<String, List<Address>> {
+  @GetMapping("{encodedPncId}/addresses")
+  fun getPersonAddresses(@PathVariable encodedPncId: String): Map<String, List<Address>> {
+    val pncId = URLDecoder.decode(encodedPncId, StandardCharsets.UTF_8)
     val addresses =
-      getAddressesForPersonService.execute(decodedPncId) ?: throw EntityNotFoundException("Could not find person with id: $decodedPncId")
+      getAddressesForPersonService.execute(pncId) ?: throw EntityNotFoundException("Could not find person with id: $pncId")
 
     return mapOf("addresses" to addresses)
   }
