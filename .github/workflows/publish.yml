@@ -69,4 +69,4 @@ jobs:
           npm install linkinator
           npx linkinator . --recurse --markdown \
           --skip https://ministryofjustice.github.io/hmpps-integration-api-docs/images/govuk-large.png \
-          #  --skip https://github.com/ministryofjustice/dns \
+          --skip https://www.cloudflare.com/en-gb/learning/access-management/what-is-mutual-tls/
