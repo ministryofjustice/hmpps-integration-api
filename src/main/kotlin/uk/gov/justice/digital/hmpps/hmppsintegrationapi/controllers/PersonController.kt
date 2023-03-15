@@ -22,13 +22,13 @@ class PersonController(
   @Autowired val getPersonService: GetPersonService,
   @Autowired val getPersonsService: GetPersonsService,
   @Autowired val getImageMetadataForPersonService: GetImageMetadataForPersonService,
-  @Autowired val getAddressesForPersonService: GetAddressesForPersonService,
+  @Autowired val getAddressesForPersonService: GetAddressesForPersonService
 ) {
 
   @GetMapping
   fun getPersons(
     @RequestParam(required = false, name = "first_name") firstName: String?,
-    @RequestParam(required = false, name = "last_name") lastName: String?,
+    @RequestParam(required = false, name = "last_name") lastName: String?
   ): Map<String, List<Person?>> {
     if (firstName == null && lastName == null) {
       throw ValidationException("No query parameters specified.")

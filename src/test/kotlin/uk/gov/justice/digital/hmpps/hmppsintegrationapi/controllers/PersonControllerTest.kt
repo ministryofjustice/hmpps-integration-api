@@ -49,13 +49,13 @@ internal class PersonControllerTest(
             firstName = "Barry",
             lastName = "Allen",
             middleName = "Jonas",
-            dateOfBirth = LocalDate.parse("2023-03-01"),
+            dateOfBirth = LocalDate.parse("2023-03-01")
           ),
           Person(
             firstName = "Barry",
             lastName = "Allen",
             middleName = "Rock",
-            dateOfBirth = LocalDate.parse("2022-07-22"),
+            dateOfBirth = LocalDate.parse("2022-07-22")
           ),
         ),
       )
@@ -72,7 +72,7 @@ internal class PersonControllerTest(
       val lastNameThatDoesNotExist = "Gun36773"
 
       whenever(getPersonsService.execute(firstNameThatDoesNotExist, lastNameThatDoesNotExist)).thenReturn(
-        listOf(),
+        listOf()
       )
 
       val result =
@@ -84,7 +84,7 @@ internal class PersonControllerTest(
           {
             "persons":[]
           }
-          """.removeWhitespaceAndNewlines(),
+          """.removeWhitespaceAndNewlines()
       )
     }
 
@@ -120,7 +120,7 @@ internal class PersonControllerTest(
                }
              ]
            }
-        """.removeWhitespaceAndNewlines(),
+        """.removeWhitespaceAndNewlines()
       )
     }
 
@@ -149,7 +149,7 @@ internal class PersonControllerTest(
     val person = mapOf(
       "nomis" to null,
       "prisonerOffenderSearch" to Person("Sally", "Sob"),
-      "probationOffenderSearch" to Person("Silly", "Sobbers"),
+      "probationOffenderSearch" to Person("Silly", "Sobbers")
     )
 
     beforeTest {
@@ -203,7 +203,7 @@ internal class PersonControllerTest(
             "prisonerId":null
           }
         }
-        """.removeWhitespaceAndNewlines(),
+        """.removeWhitespaceAndNewlines()
       )
     }
   }
@@ -252,7 +252,7 @@ internal class PersonControllerTest(
             }
           ]
         }
-        """.removeWhitespaceAndNewlines(),
+        """.removeWhitespaceAndNewlines()
       )
     }
   }
@@ -291,7 +291,7 @@ internal class PersonControllerTest(
             }
           ]
         }
-        """.removeWhitespaceAndNewlines(),
+        """.removeWhitespaceAndNewlines()
       )
     }
 
