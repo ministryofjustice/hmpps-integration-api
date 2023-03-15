@@ -10,7 +10,9 @@ import org.springframework.boot.test.context.ConfigDataApplicationContextInitial
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.context.ContextConfiguration
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NomisGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ImageMetadata
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Person
 import java.time.LocalDate
 
 @ContextConfiguration(
@@ -19,18 +21,36 @@ import java.time.LocalDate
 )
 internal class GetImageMetadataForPersonServiceTest(
   @MockBean val nomisGateway: NomisGateway,
+  @MockBean val prisonerOffenderSearchGateway: PrisonerOffenderSearchGateway,
   private val getImageMetadataForPersonService: GetImageMetadataForPersonService
 ) : DescribeSpec({
-  val id = "abc123"
+  val pncId = "2003/13116M"
+  val prisonerNumber = "abc123"
 
   beforeEach {
     Mockito.reset(nomisGateway)
+
+    whenever(prisonerOffenderSearchGateway.getPersons(pncId = pncId)).thenReturn(
+      listOf(
+        Person(
+          firstName = "Joey",
+          lastName = "Tribbiani",
+          prisonerId = prisonerNumber
+        )
+      )
+    )
+  }
+
+  it("retrieves prisoner ID from Prisoner Offender Search") {
+    getImageMetadataForPersonService.execute(pncId)
+
+    verify(prisonerOffenderSearchGateway, VerificationModeFactory.times(1)).getPersons(pncId = pncId)
   }
 
   it("retrieves images details from NOMIS") {
-    getImageMetadataForPersonService.execute(id)
+    getImageMetadataForPersonService.execute(pncId)
 
-    verify(nomisGateway, VerificationModeFactory.times(1)).getImageMetadataForPerson(id)
+    verify(nomisGateway, VerificationModeFactory.times(1)).getImageMetadataForPerson(prisonerNumber)
   }
 
   it("returns metadata for a persons images") {
@@ -43,10 +63,9 @@ internal class GetImageMetadataForPersonServiceTest(
         type = "OFF_BKG"
       )
     )
+    whenever(nomisGateway.getImageMetadataForPerson(prisonerNumber)).thenReturn(imageMetadataFromNomis)
 
-    whenever(nomisGateway.getImageMetadataForPerson(id)).thenReturn(imageMetadataFromNomis)
-
-    val result = getImageMetadataForPersonService.execute(id)
+    val result = getImageMetadataForPersonService.execute(pncId)
 
     result.shouldBe(imageMetadataFromNomis)
   }

@@ -15,13 +15,14 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Address
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Alias
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ImageMetadata
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetAddressesForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetImageMetadataForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonsService
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 import java.time.LocalDate
 
 @WebMvcTest(controllers = [PersonController::class])
@@ -32,6 +33,8 @@ internal class PersonControllerTest(
   @MockBean val getImageMetadataForPersonService: GetImageMetadataForPersonService,
   @MockBean val getAddressesForPersonService: GetAddressesForPersonService,
 ) : DescribeSpec({
+  val pncId = "2003/13116M"
+  val encodedPncId = URLEncoder.encode(pncId, StandardCharsets.UTF_8)
 
   describe("GET /persons") {
     val firstName = "Barry"
@@ -104,14 +107,16 @@ internal class PersonControllerTest(
                 "lastName":"Allen",
                 "middleName":"Jonas",
                 "dateOfBirth":"2023-03-01",
-                "aliases":[]
+                "aliases":[],
+                "prisonerId": null
                },
                {
                  "firstName":"Barry",
                  "lastName":"Allen",
                  "middleName":"Rock",
                  "dateOfBirth":"2022-07-22",
-                 "aliases":[]
+                 "aliases":[],
+                "prisonerId": null
                }
              ]
            }
@@ -140,78 +145,62 @@ internal class PersonControllerTest(
   }
 
   describe("GET /persons/{id}") {
-    val id = "abc123"
 
     val person = mapOf(
-      "nomis" to Person(
-        "Billy",
-        "Bob",
-        dateOfBirth = LocalDate.parse("1970-10-10"),
-        aliases = listOf(Alias("Bill", "Bobbers", dateOfBirth = LocalDate.parse("1970-03-01")))
-      ),
+      "nomis" to null,
       "prisonerOffenderSearch" to Person("Sally", "Sob"),
       "probationOffenderSearch" to Person("Silly", "Sobbers")
     )
 
     beforeTest {
       Mockito.reset(getPersonService)
-      whenever(getPersonService.execute(id)).thenReturn(person)
+      whenever(getPersonService.execute(pncId)).thenReturn(person)
     }
 
     it("responds with a 200 OK status") {
-      val result = mockMvc.perform(get("/persons/$id")).andReturn()
+      val result = mockMvc.perform(get("/persons/$encodedPncId")).andReturn()
 
       result.response.status.shouldBe(HttpStatus.OK.value())
     }
 
     it("responds with a 404 NOT FOUND status") {
-      val idThatDoesNotExist = "zyx987"
-      whenever(getPersonService.execute(id)).thenReturn(null)
+      val idThatDoesNotExist = "9999/11111Z"
+      whenever(getPersonService.execute(idThatDoesNotExist)).thenReturn(null)
 
-      val result = mockMvc.perform(get("/persons/$idThatDoesNotExist")).andReturn()
+      val encodedIdThatDoesNotExist = URLEncoder.encode(idThatDoesNotExist, StandardCharsets.UTF_8)
+      val result = mockMvc.perform(get("/persons/$encodedIdThatDoesNotExist")).andReturn()
 
       result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
     }
 
     it("retrieves a person with the matching ID") {
-      mockMvc.perform(get("/persons/$id")).andReturn()
+      mockMvc.perform(get("/persons/$encodedPncId")).andReturn()
 
-      verify(getPersonService, times(1)).execute(id)
+      verify(getPersonService, times(1)).execute(pncId)
     }
 
     it("returns a person with the matching ID") {
-      val result = mockMvc.perform(get("/persons/$id")).andReturn()
+      val result = mockMvc.perform(get("/persons/$encodedPncId")).andReturn()
 
       result.response.contentAsString.shouldBe(
         """
         {
-          "nomis": {
-            "firstName": "Billy",
-            "lastName": "Bob",
-            "middleName": null,
-            "dateOfBirth": "1970-10-10",
-            "aliases": [
-              {
-                "firstName": "Bill",
-                "lastName": "Bobbers",
-                "middleName": null,
-                "dateOfBirth": "1970-03-01"
-              }
-            ]
-          },
+          "nomis": null,
           "prisonerOffenderSearch": {
             "firstName": "Sally",
             "lastName": "Sob",
             "middleName": null,
             "dateOfBirth": null,
-            "aliases": []
+            "aliases": [],
+            "prisonerId":null
           },
           "probationOffenderSearch": {
             "firstName": "Silly",
             "lastName": "Sobbers",
             "middleName": null,
             "dateOfBirth": null,
-            "aliases": []
+            "aliases": [],
+            "prisonerId":null
           }
         }
         """.removeWhitespaceAndNewlines()
@@ -219,38 +208,36 @@ internal class PersonControllerTest(
     }
   }
 
-  describe("GET /persons/{id}/images") {
-    val id = "def456"
-
+  describe("GET /persons/$encodedPncId/images") {
     beforeTest {
       Mockito.reset(getImageMetadataForPersonService)
-      whenever(getImageMetadataForPersonService.execute(id)).thenReturn(
+      whenever(getImageMetadataForPersonService.execute(pncId)).thenReturn(
         listOf(
           ImageMetadata(
             id = 2461788,
             captureDate = LocalDate.parse("2023-03-01"),
             view = "FACE",
             orientation = "FRONT",
-            type = "OFF_BKG"
-          )
-        )
+            type = "OFF_BKG",
+          ),
+        ),
       )
     }
 
     it("responds with a 200 OK status") {
-      val result = mockMvc.perform(get("/persons/$id/images")).andReturn()
+      val result = mockMvc.perform(get("/persons/$encodedPncId/images")).andReturn()
 
       result.response.status.shouldBe(HttpStatus.OK.value())
     }
 
     it("retrieves the metadata of images for a person with the matching ID") {
-      mockMvc.perform(get("/persons/$id/images")).andReturn()
+      mockMvc.perform(get("/persons/$encodedPncId/images")).andReturn()
 
-      verify(getImageMetadataForPersonService, times(1)).execute(id)
+      verify(getImageMetadataForPersonService, times(1)).execute(pncId)
     }
 
     it("returns the metadata of images for a person with the matching ID") {
-      val result = mockMvc.perform(get("/persons/$id/images")).andReturn()
+      val result = mockMvc.perform(get("/persons/$encodedPncId/images")).andReturn()
 
       result.response.contentAsString.shouldBe(
         """
@@ -270,32 +257,30 @@ internal class PersonControllerTest(
     }
   }
 
-  describe("GET /persons/{id}/addresses") {
-    val id = "ghi789"
-
+  describe("GET /persons/{encodedPncId}/addresses") {
     beforeTest {
       Mockito.reset(getAddressesForPersonService)
-      whenever(getAddressesForPersonService.execute(id)).thenReturn(
+      whenever(getAddressesForPersonService.execute(pncId)).thenReturn(
         listOf(
-          Address(postcode = "SE1 1TE")
-        )
+          Address(postcode = "SE1 1TE"),
+        ),
       )
     }
 
     it("responds with a 200 OK status") {
-      val result = mockMvc.perform(get("/persons/$id/addresses")).andReturn()
+      val result = mockMvc.perform(get("/persons/$encodedPncId/addresses")).andReturn()
 
       result.response.status.shouldBe(HttpStatus.OK.value())
     }
 
     it("retrieves the addresses for a person with the matching ID") {
-      mockMvc.perform(get("/persons/$id/addresses")).andReturn()
+      mockMvc.perform(get("/persons/$encodedPncId/addresses")).andReturn()
 
-      verify(getAddressesForPersonService, times(1)).execute(id)
+      verify(getAddressesForPersonService, times(1)).execute(pncId)
     }
 
     it("returns the addresses for a person with the matching ID") {
-      val result = mockMvc.perform(get("/persons/$id/addresses")).andReturn()
+      val result = mockMvc.perform(get("/persons/$encodedPncId/addresses")).andReturn()
 
       result.response.contentAsString.shouldBe(
         """
@@ -311,9 +296,9 @@ internal class PersonControllerTest(
     }
 
     it("responds with a 404 NOT FOUND status when person isn't found") {
-      whenever(getAddressesForPersonService.execute(id)).thenReturn(null)
+      whenever(getAddressesForPersonService.execute(pncId)).thenReturn(null)
 
-      val result = mockMvc.perform(get("/persons/$id/addresses")).andReturn()
+      val result = mockMvc.perform(get("/persons/$encodedPncId/addresses")).andReturn()
 
       result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
     }
