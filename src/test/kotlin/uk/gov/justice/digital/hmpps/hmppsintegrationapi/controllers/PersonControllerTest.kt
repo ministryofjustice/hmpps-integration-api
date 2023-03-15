@@ -145,9 +145,7 @@ internal class PersonControllerTest(
   }
 
   describe("GET /persons/{id}") {
-
     val person = mapOf(
-      "nomis" to null,
       "prisonerOffenderSearch" to Person("Sally", "Sob"),
       "probationOffenderSearch" to Person("Silly", "Sobbers")
     )
@@ -185,7 +183,6 @@ internal class PersonControllerTest(
       result.response.contentAsString.shouldBe(
         """
         {
-          "nomis": null,
           "prisonerOffenderSearch": {
             "firstName": "Sally",
             "lastName": "Sob",

@@ -123,11 +123,11 @@ class ProbationOffenderSearchGatewayTest(
   }
 
   describe("#getPerson") {
-    val nomsNumber = "xyz4321"
+    val pncId = "2002/1121M"
 
     beforeEach {
       probationOffenderSearchApiMockServer.stubPostOffenderSearch(
-        "{\"nomsNumber\": \"$nomsNumber\", \"valid\": true}",
+        "{\"pncNumber\": \"$pncId\", \"valid\": true}",
         """
         [
            {
@@ -138,9 +138,6 @@ class ProbationOffenderSearchGatewayTest(
             ],
             "surname": "Bravo",
             "dateOfBirth": "1970-02-07",
-            "otherIds": {
-              "nomsNumber": "$nomsNumber"
-            },
             "offenderAliases": [
               {
                 "dateOfBirth": "2000-02-07",
@@ -158,13 +155,13 @@ class ProbationOffenderSearchGatewayTest(
     }
 
     it("authenticates using HMPPS Auth with credentials") {
-      probationOffenderSearchGateway.getPerson(nomsNumber)
+      probationOffenderSearchGateway.getPerson(pncId)
 
       verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("Probation Offender Search")
     }
 
     it("returns a person with the matching ID") {
-      val person = probationOffenderSearchGateway.getPerson(nomsNumber)
+      val person = probationOffenderSearchGateway.getPerson(pncId)
 
       person?.firstName.shouldBe("Jonathan")
       person?.middleName.shouldBe("Echo Fred")
@@ -178,30 +175,27 @@ class ProbationOffenderSearchGatewayTest(
 
     it("returns a person without aliases when no aliases are found") {
       probationOffenderSearchApiMockServer.stubPostOffenderSearch(
-        "{\"nomsNumber\": \"$nomsNumber\", \"valid\": true}",
+        "{\"pncNumber\": \"$pncId\", \"valid\": true}",
         """
           [
            {
             "firstName": "Jonathan",
             "surname": "Bravo",
             "dateOfBirth": "1970-02-07",
-            "otherIds": {
-              "nomsNumber": "$nomsNumber"
-            },
             "offenderAliases": []
           }
         ]
         """
       )
 
-      val person = probationOffenderSearchGateway.getPerson(nomsNumber)
+      val person = probationOffenderSearchGateway.getPerson(pncId)
 
       person?.aliases.shouldBeEmpty()
     }
 
     it("returns null when 400 Bad Request is returned") {
       probationOffenderSearchApiMockServer.stubPostOffenderSearch(
-        "{\"nomsNumber\": \"$nomsNumber\", \"valid\": true}",
+        "{\"pncNumber\": \"$pncId\", \"valid\": true}",
         """
           {
             "developerMessage": "reason for bad request"
@@ -210,18 +204,18 @@ class ProbationOffenderSearchGatewayTest(
         HttpStatus.BAD_REQUEST
       )
 
-      val person = probationOffenderSearchGateway.getPerson(nomsNumber)
+      val person = probationOffenderSearchGateway.getPerson(pncId)
 
       person?.shouldBeNull()
     }
 
     it("returns null when no offenders are returned") {
       probationOffenderSearchApiMockServer.stubPostOffenderSearch(
-        "{\"nomsNumber\": \"$nomsNumber\", \"valid\": true}",
+        "{\"pncNumber\": \"$pncId\", \"valid\": true}",
         "[]"
       )
 
-      val person = probationOffenderSearchGateway.getPerson(nomsNumber)
+      val person = probationOffenderSearchGateway.getPerson(pncId)
 
       person?.shouldBeNull()
     }
