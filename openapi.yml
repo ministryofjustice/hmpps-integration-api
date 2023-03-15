@@ -64,8 +64,6 @@ paths:
               schema:
                 type: object
                 properties:
-                  nomis:
-                    $ref: "#/components/schemas/Person"
                   prisonerOffenderSearch:
                     $ref: "#/components/schemas/Person"
                   probationOffenderSearch:
