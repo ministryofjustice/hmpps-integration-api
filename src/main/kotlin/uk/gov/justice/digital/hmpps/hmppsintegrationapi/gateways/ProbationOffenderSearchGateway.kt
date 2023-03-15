@@ -21,7 +21,7 @@ class ProbationOffenderSearchGateway(@Value("\${services.probation-offender-sear
   @Autowired
   lateinit var hmppsAuthGateway: HmppsAuthGateway
 
-  fun getPerson(id: String): Person? {
+  fun getPerson(pncId: String): Person? {
     val token = hmppsAuthGateway.getClientToken("Probation Offender Search")
 
     return try {
@@ -29,8 +29,8 @@ class ProbationOffenderSearchGateway(@Value("\${services.probation-offender-sear
         HttpMethod.POST,
         "/search",
         token,
-        mapOf("nomsNumber" to id, "valid" to true)
-      ) ?: return null
+        mapOf("pncNumber" to pncId, "valid" to true)
+      )
 
       if (offenders.isNotEmpty()) offenders.first().toPerson() else null
     } catch (exception: WebClientResponseException.BadRequest) {
