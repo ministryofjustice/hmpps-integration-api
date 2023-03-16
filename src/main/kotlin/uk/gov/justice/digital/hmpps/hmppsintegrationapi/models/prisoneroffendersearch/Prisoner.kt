@@ -10,7 +10,7 @@ data class Prisoner(
   val middleNames: String? = null,
   val dateOfBirth: LocalDate? = null,
   val aliases: List<PrisonerAlias> = listOf(),
-  val prisonerNumber: String? = null
+  val prisonerNumber: String? = null,
 ) {
   fun toPerson(): Person = Person(
     firstName = this.firstName,
@@ -22,9 +22,9 @@ data class Prisoner(
         it.firstName,
         it.lastName,
         it.middleNames,
-        it.dateOfBirth
+        it.dateOfBirth,
       )
     },
-    prisonerId = this.prisonerNumber
+    prisonerId = this.prisonerNumber,
   )
 }

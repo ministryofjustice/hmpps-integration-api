@@ -22,11 +22,11 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Address
 @ActiveProfiles("test")
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
-  classes = [NomisGateway::class]
+  classes = [NomisGateway::class],
 )
 class GetAddressesForPersonTest(
   @MockBean val hmppsAuthGateway: HmppsAuthGateway,
-  private val nomisGateway: NomisGateway
+  private val nomisGateway: NomisGateway,
 ) : DescribeSpec({
   val nomisApiMockServer = NomisApiMockServer()
   val offenderNo = "abc123"
@@ -41,7 +41,7 @@ class GetAddressesForPersonTest(
               "postalCode": "SA1 1DP"
             }
           ]
-        """
+        """,
     )
 
     Mockito.reset(hmppsAuthGateway)
@@ -80,11 +80,11 @@ class GetAddressesForPersonTest(
           "developerMessage": "cannot find person"
         }
         """,
-      HttpStatus.NOT_FOUND
+      HttpStatus.NOT_FOUND,
     )
 
     val addresses = nomisGateway.getAddressesForPerson(offenderNo)
 
     addresses.shouldBeNull()
   }
-})
+},)

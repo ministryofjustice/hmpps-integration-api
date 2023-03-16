@@ -14,8 +14,9 @@ class RequestLogger() : HandlerInterceptor {
 
   override fun preHandle(request: HttpServletRequest, response: HttpServletResponse, handler: Any): Boolean {
     // log. allows us ot log at different levels
-    if (log.isDebugEnabled)
+    if (log.isDebugEnabled) {
       log.debug(RetrieveRequestData(request))
+    }
 
     // Informs the super to continue processing this request
     return true

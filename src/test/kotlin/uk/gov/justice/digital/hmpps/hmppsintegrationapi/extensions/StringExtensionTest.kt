@@ -23,4 +23,4 @@ class StringExtensionTest : DescribeSpec({
       """.removeWhitespaceAndNewlines().shouldBe("{\"cat\":\"meow meow\"}")
     }
   }
-})
+},)

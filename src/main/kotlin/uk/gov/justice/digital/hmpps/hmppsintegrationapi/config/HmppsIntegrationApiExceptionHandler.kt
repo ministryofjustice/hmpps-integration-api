@@ -23,8 +23,8 @@ class HmppsIntegrationApiExceptionHandler {
         ErrorResponse(
           status = BAD_REQUEST,
           userMessage = "Validation failure: ${e.message}",
-          developerMessage = e.message
-        )
+          developerMessage = e.message,
+        ),
       )
   }
 
@@ -37,8 +37,8 @@ class HmppsIntegrationApiExceptionHandler {
         ErrorResponse(
           status = NOT_FOUND,
           userMessage = "404 Not found error: ${e.message}",
-          developerMessage = e.message
-        )
+          developerMessage = e.message,
+        ),
       )
   }
 
@@ -51,8 +51,8 @@ class HmppsIntegrationApiExceptionHandler {
         ErrorResponse(
           status = INTERNAL_SERVER_ERROR,
           userMessage = "Authentication error: ${e.message}",
-          developerMessage = e.message
-        )
+          developerMessage = e.message,
+        ),
       )
   }
 
@@ -65,8 +65,8 @@ class HmppsIntegrationApiExceptionHandler {
         ErrorResponse(
           status = INTERNAL_SERVER_ERROR,
           userMessage = "Unexpected error: ${e.message}",
-          developerMessage = e.message
-        )
+          developerMessage = e.message,
+        ),
       )
   }
 
@@ -80,14 +80,14 @@ data class ErrorResponse(
   val errorCode: Int? = null,
   val userMessage: String? = null,
   val developerMessage: String? = null,
-  val moreInfo: String? = null
+  val moreInfo: String? = null,
 ) {
   constructor(
     status: HttpStatus,
     errorCode: Int? = null,
     userMessage: String? = null,
     developerMessage: String? = null,
-    moreInfo: String? = null
+    moreInfo: String? = null,
   ) :
     this(status.value(), errorCode, userMessage, developerMessage, moreInfo)
 }

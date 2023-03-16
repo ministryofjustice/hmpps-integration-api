@@ -46,4 +46,4 @@ internal class ImageControllerTest(
       result.response.contentAsByteArray.shouldBe(image)
     }
   }
-})
+},)

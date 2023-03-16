@@ -24,11 +24,11 @@ import java.time.LocalDate
 @ActiveProfiles("test")
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
-  classes = [PrisonerOffenderSearchGateway::class]
+  classes = [PrisonerOffenderSearchGateway::class],
 )
 class PrisonerOffenderSearchGatewayTest(
   @MockBean val hmppsAuthGateway: HmppsAuthGateway,
-  private val prisonerOffenderSearchGateway: PrisonerOffenderSearchGateway
+  private val prisonerOffenderSearchGateway: PrisonerOffenderSearchGateway,
 ) : DescribeSpec({
   val prisonerOffenderSearchApiMockServer = PrisonerOffenderSearchApiMockServer()
 
@@ -58,7 +58,7 @@ class PrisonerOffenderSearchGatewayTest(
               "includeAliases":true
             }
           """.removeWhitespaceAndNewlines(),
-        File("src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/prisoneroffendersearch/fixtures/GetPrisonersResponse.json").readText()
+        File("src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/prisoneroffendersearch/fixtures/GetPrisonersResponse.json").readText(),
       )
     }
 
@@ -99,7 +99,7 @@ class PrisonerOffenderSearchGatewayTest(
             }
           ]
         }
-        """.trimIndent()
+        """.trimIndent(),
       )
 
       val persons = prisonerOffenderSearchGateway.getPersons("Obi-Wan", null)
@@ -127,7 +127,7 @@ class PrisonerOffenderSearchGatewayTest(
             }
           ]
         }
-        """.trimIndent()
+        """.trimIndent(),
       )
 
       val persons = prisonerOffenderSearchGateway.getPersons(pncId = pncId)
@@ -155,7 +155,7 @@ class PrisonerOffenderSearchGatewayTest(
             }
           ]
         }
-        """.trimIndent()
+        """.trimIndent(),
       )
 
       val persons = prisonerOffenderSearchGateway.getPersons(null, "Binks")
@@ -181,7 +181,7 @@ class PrisonerOffenderSearchGatewayTest(
         {
           "content": []
         }
-        """
+        """,
       )
 
       val persons = prisonerOffenderSearchGateway.getPersons(firstNameThatDoesNotExist, lastNameThatDoesNotExist)
@@ -212,7 +212,7 @@ class PrisonerOffenderSearchGatewayTest(
             }
           ]
         }
-        """
+        """,
       )
     }
 
@@ -245,7 +245,7 @@ class PrisonerOffenderSearchGatewayTest(
             "lastName": "Smith",
             "aliases": []
           }
-          """
+          """,
       )
 
       val person = prisonerOffenderSearchGateway.getPerson(offenderNo)
@@ -261,7 +261,7 @@ class PrisonerOffenderSearchGatewayTest(
             "developerMessage": "reason for bad request"
           }
           """,
-        HttpStatus.BAD_REQUEST
+        HttpStatus.BAD_REQUEST,
       )
 
       val person = prisonerOffenderSearchGateway.getPerson(offenderNo)
@@ -277,7 +277,7 @@ class PrisonerOffenderSearchGatewayTest(
             "developerMessage": "cannot find person"
           }
           """,
-        HttpStatus.NOT_FOUND
+        HttpStatus.NOT_FOUND,
       )
 
       val person = prisonerOffenderSearchGateway.getPerson(offenderNo)
@@ -285,4 +285,4 @@ class PrisonerOffenderSearchGatewayTest(
       person?.shouldBeNull()
     }
   }
-})
+},)

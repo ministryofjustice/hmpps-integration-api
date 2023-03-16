@@ -16,7 +16,7 @@ class TomcatConfig {
       factory.addConnectorCustomizers(
         TomcatConnectorCustomizer { connector: Connector ->
           connector.encodedSolidusHandling = EncodedSolidusHandling.PASS_THROUGH.value
-        }
+        },
       )
     }
   }

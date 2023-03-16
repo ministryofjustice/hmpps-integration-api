@@ -24,11 +24,11 @@ import java.time.LocalDate
 @ActiveProfiles("test")
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
-  classes = [ProbationOffenderSearchGateway::class]
+  classes = [ProbationOffenderSearchGateway::class],
 )
 class ProbationOffenderSearchGatewayTest(
   @MockBean val hmppsAuthGateway: HmppsAuthGateway,
-  private val probationOffenderSearchGateway: ProbationOffenderSearchGateway
+  private val probationOffenderSearchGateway: ProbationOffenderSearchGateway,
 ) : DescribeSpec({
   val probationOffenderSearchApiMockServer = ProbationOffenderSearchApiMockServer()
 
@@ -56,7 +56,7 @@ class ProbationOffenderSearchGatewayTest(
               "valid":true
             }
           """.removeWhitespaceAndNewlines(),
-        File("src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/probationoffendersearch/fixtures/GetOffendersResponse.json").readText()
+        File("src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/probationoffendersearch/fixtures/GetOffendersResponse.json").readText(),
       )
     }
 
@@ -88,7 +88,7 @@ class ProbationOffenderSearchGatewayTest(
             "surname": "Tano"
           }
         ]
-        """.trimIndent()
+        """.trimIndent(),
       )
       val persons = probationOffenderSearchGateway.getPersons("Ahsoka", null)
 
@@ -112,7 +112,7 @@ class ProbationOffenderSearchGatewayTest(
             "surname": "Tano"
           }
         ]
-        """.trimIndent()
+        """.trimIndent(),
       )
       val persons = probationOffenderSearchGateway.getPersons(null, "Tano")
 
@@ -150,7 +150,7 @@ class ProbationOffenderSearchGatewayTest(
             ]
           }
         ]
-      """
+      """,
       )
     }
 
@@ -185,7 +185,7 @@ class ProbationOffenderSearchGatewayTest(
             "offenderAliases": []
           }
         ]
-        """
+        """,
       )
 
       val person = probationOffenderSearchGateway.getPerson(pncId)
@@ -201,7 +201,7 @@ class ProbationOffenderSearchGatewayTest(
             "developerMessage": "reason for bad request"
           }
           """,
-        HttpStatus.BAD_REQUEST
+        HttpStatus.BAD_REQUEST,
       )
 
       val person = probationOffenderSearchGateway.getPerson(pncId)
@@ -212,7 +212,7 @@ class ProbationOffenderSearchGatewayTest(
     it("returns null when no offenders are returned") {
       probationOffenderSearchApiMockServer.stubPostOffenderSearch(
         "{\"pncNumber\": \"$pncId\", \"valid\": true}",
-        "[]"
+        "[]",
       )
 
       val person = probationOffenderSearchGateway.getPerson(pncId)
@@ -220,4 +220,4 @@ class ProbationOffenderSearchGatewayTest(
       person?.shouldBeNull()
     }
   }
-})
+},)

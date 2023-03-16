@@ -29,7 +29,7 @@ class ProbationOffenderSearchGateway(@Value("\${services.probation-offender-sear
         HttpMethod.POST,
         "/search",
         token,
-        mapOf("pncNumber" to pncId, "valid" to true)
+        mapOf("pncNumber" to pncId, "valid" to true),
       )
 
       if (offenders.isNotEmpty()) offenders.first().toPerson() else null
@@ -58,9 +58,10 @@ class ProbationOffenderSearchGateway(@Value("\${services.probation-offender-sear
 
     if (offender.isEmpty()) return null
 
-    return if (offender.first().contactDetails.addresses.isNotEmpty())
+    return if (offender.first().contactDetails.addresses.isNotEmpty()) {
       offender.first().contactDetails.addresses.map { it.toAddress() }
-    else
+    } else {
       listOf()
+    }
   }
 }

@@ -34,7 +34,7 @@ class WebClientWrapperTest : DescribeSpec({
           {
             "sourceName" : "Harold"
           }
-          """.removeWhitespaceAndNewlines()
+          """.removeWhitespaceAndNewlines(),
     )
 
     val webClient = WebClientWrapper(baseUrl = mockServer.baseUrl())
@@ -55,7 +55,7 @@ class WebClientWrapperTest : DescribeSpec({
             "sourceName": "Paul"
           }
         ]
-      """.removeWhitespaceAndNewlines()
+      """.removeWhitespaceAndNewlines(),
     )
 
     val webClient = WebClientWrapper(baseUrl = mockServer.baseUrl())
@@ -63,7 +63,7 @@ class WebClientWrapperTest : DescribeSpec({
       HttpMethod.POST,
       "/testPost",
       token,
-      mapOf("sourceName" to "Paul")
+      mapOf("sourceName" to "Paul"),
     )
 
     val testDomainModels = testModels.map { it.toDomain() }
@@ -87,7 +87,7 @@ class WebClientWrapperTest : DescribeSpec({
             }
           ]
         }
-      """.removeWhitespaceAndNewlines()
+      """.removeWhitespaceAndNewlines(),
     )
 
     val webClient = WebClientWrapper(baseUrl = mockServer.baseUrl())
@@ -98,4 +98,4 @@ class WebClientWrapperTest : DescribeSpec({
     testDomainModels.first().lastName.shouldBe("Paper")
     testDomainModels.last().lastName.shouldBe("Card")
   }
-})
+},)

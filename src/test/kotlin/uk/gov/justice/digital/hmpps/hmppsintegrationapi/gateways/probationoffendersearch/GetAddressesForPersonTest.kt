@@ -21,11 +21,11 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Address
 @ActiveProfiles("test")
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
-  classes = [ProbationOffenderSearchGateway::class]
+  classes = [ProbationOffenderSearchGateway::class],
 )
 class GetAddressesForPersonTest(
   @MockBean val hmppsAuthGateway: HmppsAuthGateway,
-  private val probationOffenderSearchGateway: ProbationOffenderSearchGateway
+  private val probationOffenderSearchGateway: ProbationOffenderSearchGateway,
 ) : DescribeSpec({
   val probationOffenderSearchApiMockServer = ProbationOffenderSearchApiMockServer()
   val pncId = "2002/1121M"
@@ -48,12 +48,12 @@ class GetAddressesForPersonTest(
             }
           }
         ]
-      """
+      """,
     )
 
     Mockito.reset(hmppsAuthGateway)
     whenever(hmppsAuthGateway.getClientToken("Probation Offender Search")).thenReturn(
-      HmppsAuthMockServer.TOKEN
+      HmppsAuthMockServer.TOKEN,
     )
   }
 
@@ -86,7 +86,7 @@ class GetAddressesForPersonTest(
             }
           }
         ]
-        """
+        """,
     )
 
     val addresses = probationOffenderSearchGateway.getAddressesForPerson(pncId)
@@ -97,11 +97,11 @@ class GetAddressesForPersonTest(
   it("returns null when no results are returned") {
     probationOffenderSearchApiMockServer.stubPostOffenderSearch(
       "{\"pncNumber\": \"$pncId\", \"valid\": true}",
-      "[]"
+      "[]",
     )
 
     val addresses = probationOffenderSearchGateway.getAddressesForPerson(pncId)
 
     addresses.shouldBeNull()
   }
-})
+},)

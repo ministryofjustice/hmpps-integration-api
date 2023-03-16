@@ -34,10 +34,11 @@ open class ExternalHealthIndicator(url: String) : HealthIndicator {
         .build()
     }
 
-    if (response.statusCode() != 200)
+    if (response.statusCode() != 200) {
       return healthStatus.up()
         .withDetail("httpStatusCode", response.statusCode())
         .build()
+    }
 
     return healthStatus.build()
   }

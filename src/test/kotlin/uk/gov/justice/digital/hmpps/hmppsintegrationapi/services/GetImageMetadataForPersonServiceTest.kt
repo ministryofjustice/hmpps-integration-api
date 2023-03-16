@@ -17,12 +17,12 @@ import java.time.LocalDate
 
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
-  classes = [GetImageMetadataForPersonService::class]
+  classes = [GetImageMetadataForPersonService::class],
 )
 internal class GetImageMetadataForPersonServiceTest(
   @MockBean val nomisGateway: NomisGateway,
   @MockBean val prisonerOffenderSearchGateway: PrisonerOffenderSearchGateway,
-  private val getImageMetadataForPersonService: GetImageMetadataForPersonService
+  private val getImageMetadataForPersonService: GetImageMetadataForPersonService,
 ) : DescribeSpec({
   val pncId = "2003/13116M"
   val prisonerNumber = "abc123"
@@ -35,9 +35,9 @@ internal class GetImageMetadataForPersonServiceTest(
         Person(
           firstName = "Joey",
           lastName = "Tribbiani",
-          prisonerId = prisonerNumber
-        )
-      )
+          prisonerId = prisonerNumber,
+        ),
+      ),
     )
   }
 
@@ -60,8 +60,8 @@ internal class GetImageMetadataForPersonServiceTest(
         captureDate = LocalDate.parse("2023-03-01"),
         view = "FACE",
         orientation = "FRONT",
-        type = "OFF_BKG"
-      )
+        type = "OFF_BKG",
+      ),
     )
     whenever(nomisGateway.getImageMetadataForPerson(prisonerNumber)).thenReturn(imageMetadataFromNomis)
 
@@ -69,4 +69,4 @@ internal class GetImageMetadataForPersonServiceTest(
 
     result.shouldBe(imageMetadataFromNomis)
   }
-})
+},)

@@ -16,8 +16,8 @@ class GenericApiMockServer : WireMockServer(WIREMOCK_PORT) {
         WireMock.aResponse()
           .withHeader("Content-Type", "application/json")
           .withStatus(status.value())
-          .withBody(body.trimIndent())
-      )
+          .withBody(body.trimIndent()),
+      ),
     )
   }
 
@@ -27,8 +27,8 @@ class GenericApiMockServer : WireMockServer(WIREMOCK_PORT) {
         WireMock.aResponse()
           .withHeader("Content-Type", "application/json")
           .withStatus(status.value())
-          .withBody(body.trimIndent())
-      )
+          .withBody(body.trimIndent()),
+      ),
     )
   }
 }

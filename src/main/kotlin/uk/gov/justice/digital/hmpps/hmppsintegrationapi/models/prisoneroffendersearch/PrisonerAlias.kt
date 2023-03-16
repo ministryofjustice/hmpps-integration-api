@@ -6,5 +6,5 @@ data class PrisonerAlias(
   val firstName: String,
   val lastName: String,
   val middleNames: String? = null,
-  var dateOfBirth: LocalDate? = null
+  var dateOfBirth: LocalDate? = null,
 )

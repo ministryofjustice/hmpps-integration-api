@@ -21,8 +21,8 @@ class ProbationOffenderSearchApiMockServer : WireMockServer(WIREMOCK_PORT) {
           aResponse()
             .withHeader("Content-Type", "application/json")
             .withStatus(status.value())
-            .withBody(responseBody.trimIndent())
-        )
+            .withBody(responseBody.trimIndent()),
+        ),
     )
   }
 }

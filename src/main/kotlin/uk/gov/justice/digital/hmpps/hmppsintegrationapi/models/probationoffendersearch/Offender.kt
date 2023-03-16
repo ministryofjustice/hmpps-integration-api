@@ -10,7 +10,7 @@ data class Offender(
   val middleNames: List<String> = listOf(),
   val dateOfBirth: LocalDate? = null,
   val offenderAliases: List<OffenderAlias> = listOf(),
-  val contactDetails: ContactDetails = ContactDetails()
+  val contactDetails: ContactDetails = ContactDetails(),
 ) {
   fun toPerson(): Person = Person(
     firstName = this.firstName,
@@ -22,8 +22,8 @@ data class Offender(
         it.firstName,
         it.surname,
         it.middleNames.joinToString(" "),
-        it.dateOfBirth
+        it.dateOfBirth,
       )
-    }
+    },
   )
 }

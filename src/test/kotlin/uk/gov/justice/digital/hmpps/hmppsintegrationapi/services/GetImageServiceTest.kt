@@ -13,11 +13,11 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NomisGateway
 
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
-  classes = [GetImageService::class]
+  classes = [GetImageService::class],
 )
 internal class GetImageServiceTest(
   @MockBean val nomisGateway: NomisGateway,
-  private val getImageService: GetImageService
+  private val getImageService: GetImageService,
 ) : DescribeSpec({
   val id = 12345
 
@@ -40,4 +40,4 @@ internal class GetImageServiceTest(
 
     result.shouldBe(image)
   }
-})
+},)

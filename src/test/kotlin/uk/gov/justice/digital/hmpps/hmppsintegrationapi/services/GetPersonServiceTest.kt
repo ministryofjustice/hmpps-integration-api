@@ -16,12 +16,12 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Person
 
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
-  classes = [GetPersonService::class]
+  classes = [GetPersonService::class],
 )
 internal class GetPersonServiceTest(
   @MockBean val prisonerOffenderSearchGateway: PrisonerOffenderSearchGateway,
   @MockBean val probationOffenderSearchGateway: ProbationOffenderSearchGateway,
-  private val getPersonService: GetPersonService
+  private val getPersonService: GetPersonService,
 ) : DescribeSpec({
   val pncId = "2003/13116M"
 
@@ -34,9 +34,9 @@ internal class GetPersonServiceTest(
         Person(
           firstName = "Qui-gon",
           lastName = "Jin",
-          prisonerId = "A1234AA"
-        )
-      )
+          prisonerId = "A1234AA",
+        ),
+      ),
     )
   }
 
@@ -63,7 +63,7 @@ internal class GetPersonServiceTest(
 
     val expectedResult = mapOf(
       "prisonerOffenderSearch" to Person("Sally", "Sob"),
-      "probationOffenderSearch" to Person("Molly", "Mob")
+      "probationOffenderSearch" to Person("Molly", "Mob"),
     )
 
     result.shouldBe(expectedResult)
@@ -77,4 +77,4 @@ internal class GetPersonServiceTest(
 
     result.shouldBeNull()
   }
-})
+},)

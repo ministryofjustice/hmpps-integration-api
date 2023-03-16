@@ -18,13 +18,13 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Person
 
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
-  classes = [GetAddressesForPersonService::class]
+  classes = [GetAddressesForPersonService::class],
 )
 internal class GetAddressesForPersonServiceTest(
   @MockBean val probationOffenderSearchGateway: ProbationOffenderSearchGateway,
   @MockBean val prisonerOffenderSearchGateway: PrisonerOffenderSearchGateway,
   @MockBean val nomisGateway: NomisGateway,
-  private val getAddressesForPersonService: GetAddressesForPersonService
+  private val getAddressesForPersonService: GetAddressesForPersonService,
 ) : DescribeSpec({
   val pncId = "2003/13116M"
   val prisonerNumber = "A5553AA"
@@ -39,9 +39,9 @@ internal class GetAddressesForPersonServiceTest(
         Person(
           firstName = "Qui-gon",
           lastName = "Jin",
-          prisonerId = prisonerNumber
-        )
-      )
+          prisonerId = prisonerNumber,
+        ),
+      ),
     )
   }
 
@@ -69,8 +69,8 @@ internal class GetAddressesForPersonServiceTest(
 
     whenever(probationOffenderSearchGateway.getAddressesForPerson(pncId)).thenReturn(
       listOf(
-        addressesFromProbationOffenderSearch
-      )
+        addressesFromProbationOffenderSearch,
+      ),
     )
     whenever(nomisGateway.getAddressesForPerson(prisonerNumber)).thenReturn(listOf(addressesFromNomis))
 
@@ -88,4 +88,4 @@ internal class GetAddressesForPersonServiceTest(
 
     result.shouldBeNull()
   }
-})
+},)

@@ -24,9 +24,9 @@ class HmppsAuthMockServer : WireMockServer(WIREMOCK_PORT) {
                 { 
                   "access_token": "$TOKEN"
                 }
-              """.trimIndent()
-            )
-        )
+              """.trimIndent(),
+            ),
+        ),
     )
   }
 
@@ -34,8 +34,8 @@ class HmppsAuthMockServer : WireMockServer(WIREMOCK_PORT) {
     stubFor(
       WireMock.post(authUrl)
         .willReturn(
-          WireMock.serviceUnavailable()
-        )
+          WireMock.serviceUnavailable(),
+        ),
     )
   }
 
@@ -43,8 +43,8 @@ class HmppsAuthMockServer : WireMockServer(WIREMOCK_PORT) {
     stubFor(
       WireMock.post(authUrl)
         .willReturn(
-          WireMock.unauthorized()
-        )
+          WireMock.unauthorized(),
+        ),
     )
   }
 }
