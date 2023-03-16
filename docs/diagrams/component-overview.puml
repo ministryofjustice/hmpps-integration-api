@@ -1,0 +1,27 @@
+@startuml component-overview
+
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+skinparam linetype polyline
+
+title [Component Overview] HMPPS Integration API
+
+System_Ext(consumer, "Consumer Application", "An authenticated consumer of the Integration API.")
+
+Boundary(spring_boot_api, "HMPPS Integration REST API", "Spring Boot Kotlin API"){
+    Container(controller, "Controller", "Spring Boot API Controller", "Receives the request, uses Spring Boot functionality to route to the correct method, also validates incoming requests. Each method has a matching service.") 
+    Container(service, "Service", "Spring Boot Service Bean", "Responsible for deciding which gateways to call to get the necessary data, as well as consolidating responses from one or many gateways.")
+    Container(gateway, "Gateway", "Spring Boot Component Bean", "Makes a request on upstream systems to return data to the calling service. Converts response data into domain models for the service.")
+}
+
+System_Ext(upstream, "Upstream Systems", "Integrated systems where data is retrieved from.")
+
+
+Rel(consumer, controller, "Makes API calls to", "JSON/HTTPS")
+Rel_Down(controller, service, "Uses")
+Rel_Down(service, gateway, "Uses")
+Rel_Down(gateway, upstream, "Makes API calls to", "JSON/HTTPS")
+
+SHOW_DYNAMIC_LEGEND()
+
+@enduml
