@@ -10,6 +10,8 @@ configurations {
 dependencies {
   implementation("org.springframework.boot:spring-boot-starter-webflux")
   implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1")
+  implementation("io.sentry:sentry-spring-boot-starter-jakarta:6.15.0")
+  implementation("io.sentry:sentry-logback:6.15.0")
 
   testImplementation("io.kotest:kotest-runner-junit5-jvm:5.5.4")
   testImplementation("io.kotest:kotest-assertions-core-jvm:5.5.4")
