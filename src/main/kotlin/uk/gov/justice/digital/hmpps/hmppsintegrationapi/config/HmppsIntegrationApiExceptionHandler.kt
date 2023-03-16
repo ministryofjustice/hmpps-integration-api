@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.config
 
+import io.sentry.Sentry
 import jakarta.validation.ValidationException
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
@@ -16,7 +17,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFound
 class HmppsIntegrationApiExceptionHandler {
   @ExceptionHandler(ValidationException::class)
   fun handleValidationException(e: Exception): ResponseEntity<ErrorResponse> {
-    log.info("Validation exception: {}", e.message)
+    log_and_capture("Validation exception: {}", e)
     return ResponseEntity
       .status(BAD_REQUEST)
       .body(
@@ -30,7 +31,7 @@ class HmppsIntegrationApiExceptionHandler {
 
   @ExceptionHandler(EntityNotFoundException::class)
   fun handle(e: EntityNotFoundException): ResponseEntity<ErrorResponse> {
-    log.error("Not found (404) returned with message {}", e.message)
+    log_and_capture("Not found (404) returned with message {}", e)
     return ResponseEntity
       .status(NOT_FOUND)
       .body(
@@ -44,7 +45,7 @@ class HmppsIntegrationApiExceptionHandler {
 
   @ExceptionHandler(AuthenticationFailedException::class)
   fun handleAuthenticationFailedException(e: AuthenticationFailedException): ResponseEntity<ErrorResponse?>? {
-    log.error("Authentication error: {}", e.message)
+    log_and_capture("Authentication error: {}", e)
     return ResponseEntity
       .status(INTERNAL_SERVER_ERROR)
       .body(
@@ -58,7 +59,7 @@ class HmppsIntegrationApiExceptionHandler {
 
   @ExceptionHandler(java.lang.Exception::class)
   fun handleException(e: java.lang.Exception): ResponseEntity<ErrorResponse?>? {
-    log.error("Unexpected exception", e)
+    log_and_capture("Unexpected exception", e)
     return ResponseEntity
       .status(INTERNAL_SERVER_ERROR)
       .body(
@@ -68,6 +69,11 @@ class HmppsIntegrationApiExceptionHandler {
           developerMessage = e.message,
         ),
       )
+  }
+
+  private fun log_and_capture(message: String, e: Exception) {
+    log.error(message, e.message)
+    Sentry.captureException(e)
   }
 
   companion object {
