@@ -27,6 +27,7 @@ generic-service:
   namespace_secrets:
     hmpps-integration-api:
       APPINSIGHTS_INSTRUMENTATIONKEY: "APPINSIGHTS_INSTRUMENTATIONKEY"
+      SENTRY_DSN: "SENTRY_DSN"
 
   allowlist:
     office: "217.33.148.210/32"

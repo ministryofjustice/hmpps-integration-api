@@ -61,3 +61,6 @@ services:
     password: Y2xpZW50c2VjcmV0Cg==
   probation-offender-search:
     base-url: http://localhost:4002
+
+sentry:
+  traces-sample-rate: "0.05"
