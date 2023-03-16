@@ -9,8 +9,8 @@ title [Component Overview] HMPPS Integration API
 System_Ext(consumer, "Consumer Application", "An authenticated consumer of the Integration API.")
 
 Boundary(spring_boot_api, "HMPPS Integration REST API", "Spring Boot Kotlin API"){
-    Container(controller, "Controller", "Spring Boot API Controller", "Receives the request, uses Spring Boot functionality to route to the correct method, also validates incoming requests. Each method has a matching service.") 
-    Container(service, "Service", "Spring Boot Service Bean", "Responsible for deciding which gateways to call to get the necessary data, as well as consolidating responses from one or many gateways.")
+    Container(controller, "Controller", "Spring Boot API Controller", "Receives the request, uses Spring Boot functionality to route to the correct method, also validates incoming requests. Each method has a matching service. Also commonly known as a 'resource'.") 
+    Container(service, "Service", "Spring Boot Service Bean", "Responsible for deciding which gateways to call to get the necessary data, as well as consolidating responses from one or many gateways. Also commonly known as a 'use case'")
     Container(gateway, "Gateway", "Spring Boot Component Bean", "Makes a request on upstream systems to return data to the calling service. Converts response data into domain models for the service.")
 }
 
