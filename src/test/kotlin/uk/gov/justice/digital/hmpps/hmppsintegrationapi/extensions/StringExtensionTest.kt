@@ -23,4 +23,14 @@ class StringExtensionTest : DescribeSpec({
       """.removeWhitespaceAndNewlines().shouldBe("{\"cat\":\"meow meow\"}")
     }
   }
+
+  describe("#decodeUrlCharacters") {
+    it("decodes URL encoded string") {
+      "never%21gonna%26give%2Fyou%23up".decodeUrlCharacters().shouldBe("never!gonna&give/you#up")
+    }
+
+    it("returns same string when no URL encoded characters") {
+      "never/gonna/give/you/up".decodeUrlCharacters().shouldBe("never/gonna/give/you/up")
+    }
+  }
 },)
