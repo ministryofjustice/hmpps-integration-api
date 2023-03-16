@@ -24,9 +24,9 @@ class StringExtensionTest : DescribeSpec({
     }
   }
 
-  describe("#decodeUrl") {
+  describe("#decodeUrlCharacters") {
     it("decodes URL encoded string") {
-      "never%21gonna%26give%2Fyou%23up".decodeUrl().shouldBe("never!gonna&give/you#up")
+      "never%21gonna%26give%2Fyou%23up".decodeUrlCharacters().shouldBe("never!gonna&give/you#up")
     }
   }
 },)

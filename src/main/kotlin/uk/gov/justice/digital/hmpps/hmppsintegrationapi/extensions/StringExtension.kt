@@ -5,4 +5,4 @@ import java.nio.charset.StandardCharsets
 
 fun String.removeWhitespaceAndNewlines(): String = this.replace("(\"[^\"]*\")|\\s".toRegex(), "\$1")
 
-fun String.decodeUrl(): String = URLDecoder.decode(this, StandardCharsets.UTF_8)
+fun String.decodeUrlCharacters(): String = URLDecoder.decode(this, StandardCharsets.UTF_8)

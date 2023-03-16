@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.decodeUrl
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.decodeUrlCharacters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Address
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ImageMetadata
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Person
@@ -42,7 +42,7 @@ class PersonController(
 
   @GetMapping("{encodedPncId}")
   fun getPerson(@PathVariable encodedPncId: String): Map<String, Person?> {
-    val pncId = encodedPncId.decodeUrl()
+    val pncId = encodedPncId.decodeUrlCharacters()
     val result = getPersonService.execute(pncId)
 
     if (result.isNullOrEmpty()) {
@@ -54,7 +54,7 @@ class PersonController(
 
   @GetMapping("{encodedPncId}/images")
   fun getPersonImages(@PathVariable encodedPncId: String): Map<String, List<ImageMetadata>> {
-    val pncId = encodedPncId.decodeUrl()
+    val pncId = encodedPncId.decodeUrlCharacters()
     val images = getImageMetadataForPersonService.execute(pncId)
 
     return mapOf("images" to images)
@@ -62,7 +62,7 @@ class PersonController(
 
   @GetMapping("{encodedPncId}/addresses")
   fun getPersonAddresses(@PathVariable encodedPncId: String): Map<String, List<Address>> {
-    val pncId = encodedPncId.decodeUrl()
+    val pncId = encodedPncId.decodeUrlCharacters()
     val addresses = getAddressesForPersonService.execute(pncId)
       ?: throw EntityNotFoundException("Could not find person with id: $pncId")
 
