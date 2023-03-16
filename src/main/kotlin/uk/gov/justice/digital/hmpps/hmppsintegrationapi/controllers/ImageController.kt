@@ -11,7 +11,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetImageService
 @RestController
 @RequestMapping("/images")
 class ImageController(
-  @Autowired val getImageService: GetImageService
+  @Autowired val getImageService: GetImageService,
 ) {
   @GetMapping("{id}")
   fun getImage(@PathVariable id: Int): ResponseEntity<ByteArray> {

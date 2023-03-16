@@ -9,7 +9,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Person
 @Service
 class GetPersonsService(
   @Autowired val prisonerOffenderSearchGateway: PrisonerOffenderSearchGateway,
-  @Autowired val probationOffenderSearchGateway: ProbationOffenderSearchGateway
+  @Autowired val probationOffenderSearchGateway: ProbationOffenderSearchGateway,
 ) {
 
   fun execute(firstName: String?, lastName: String?): List<Person?> {

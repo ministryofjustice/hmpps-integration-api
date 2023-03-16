@@ -5,7 +5,7 @@ import org.springframework.web.reactive.function.BodyInserters
 import org.springframework.web.reactive.function.client.WebClient
 
 class WebClientWrapper(
-  val baseUrl: String
+  val baseUrl: String,
 ) {
   val client: WebClient = WebClient
     .builder()
@@ -17,8 +17,9 @@ class WebClientWrapper(
       .uri(uri)
       .header("Authorization", "Bearer $token")
 
-    if (method == HttpMethod.POST && requestBody != null)
+    if (method == HttpMethod.POST && requestBody != null) {
       responseBodySpec.body(BodyInserters.fromValue(requestBody))
+    }
 
     return responseBodySpec.retrieve()
       .bodyToMono(T::class.java)
@@ -30,8 +31,9 @@ class WebClientWrapper(
       .uri(uri)
       .header("Authorization", "Bearer $token")
 
-    if (method == HttpMethod.POST && requestBody != null)
+    if (method == HttpMethod.POST && requestBody != null) {
       responseBodySpec.body(BodyInserters.fromValue(requestBody))
+    }
 
     return responseBodySpec.retrieve()
       .bodyToFlux(T::class.java)

@@ -7,5 +7,5 @@ data class ImageMetadata(
   val captureDate: LocalDate,
   val view: String,
   val orientation: String,
-  val type: String
+  val type: String,
 )

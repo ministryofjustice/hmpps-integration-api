@@ -3,7 +3,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.probationoffende
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Address as IntegrationAPIAddress
 
 data class Address(
-  val postcode: String?
+  val postcode: String?,
 ) {
   fun toAddress() = IntegrationAPIAddress(postcode = this.postcode)
 }

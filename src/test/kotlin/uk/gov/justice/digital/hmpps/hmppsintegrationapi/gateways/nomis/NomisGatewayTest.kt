@@ -25,7 +25,7 @@ import java.time.LocalDate
 @ActiveProfiles("test")
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
-  classes = [NomisGateway::class]
+  classes = [NomisGateway::class],
 )
 class NomisGatewayTest(@MockBean val hmppsAuthGateway: HmppsAuthGateway, private val nomisGateway: NomisGateway) :
   DescribeSpec({
@@ -63,7 +63,7 @@ class NomisGatewayTest(@MockBean val hmppsAuthGateway: HmppsAuthGateway, private
             }
           ]
         }
-        """
+        """,
         )
       }
 
@@ -96,7 +96,7 @@ class NomisGatewayTest(@MockBean val hmppsAuthGateway: HmppsAuthGateway, private
             "lastName": "Smith",
             "aliases": []
           }
-          """
+          """,
         )
 
         val person = nomisGateway.getPerson(offenderNo)
@@ -112,7 +112,7 @@ class NomisGatewayTest(@MockBean val hmppsAuthGateway: HmppsAuthGateway, private
             "developerMessage": "reason for bad request"
           }
           """,
-          HttpStatus.BAD_REQUEST
+          HttpStatus.BAD_REQUEST,
         )
 
         val person = nomisGateway.getPerson(offenderNo)
@@ -128,7 +128,7 @@ class NomisGatewayTest(@MockBean val hmppsAuthGateway: HmppsAuthGateway, private
             "developerMessage": "cannot find person"
           }
           """,
-          HttpStatus.NOT_FOUND
+          HttpStatus.NOT_FOUND,
         )
 
         val person = nomisGateway.getPerson(offenderNo)
@@ -151,7 +151,7 @@ class NomisGatewayTest(@MockBean val hmppsAuthGateway: HmppsAuthGateway, private
               "imageType": "OFF_BKG"
             }
           ]
-        """
+        """,
         )
       }
 
@@ -220,4 +220,4 @@ class NomisGatewayTest(@MockBean val hmppsAuthGateway: HmppsAuthGateway, private
         exception.message.shouldBe("Could not find image with id: $imageId")
       }
     }
-  })
+  },)

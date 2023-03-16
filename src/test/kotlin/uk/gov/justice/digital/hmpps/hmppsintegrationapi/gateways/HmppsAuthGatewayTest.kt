@@ -12,7 +12,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMoc
 @ActiveProfiles("test")
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
-  classes = [(HmppsAuthGateway::class)]
+  classes = [(HmppsAuthGateway::class)],
 )
 class HmppsAuthGatewayTest(hmppsAuthGateway: HmppsAuthGateway) :
   DescribeSpec({
@@ -57,4 +57,4 @@ class HmppsAuthGatewayTest(hmppsAuthGateway: HmppsAuthGateway) :
 
       exception.message.shouldBe("Invalid credentials used for NOMIS.")
     }
-  })
+  },)

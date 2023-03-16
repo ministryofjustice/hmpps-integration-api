@@ -6,5 +6,5 @@ data class OffenderAlias(
   val firstName: String,
   val surname: String,
   val middleNames: List<String> = listOf(),
-  var dateOfBirth: LocalDate? = null
+  var dateOfBirth: LocalDate? = null,
 )

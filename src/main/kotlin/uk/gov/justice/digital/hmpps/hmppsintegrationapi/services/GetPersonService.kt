@@ -9,7 +9,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Person
 @Service
 class GetPersonService(
   @Autowired val prisonerOffenderSearchGateway: PrisonerOffenderSearchGateway,
-  @Autowired val probationOffenderSearchGateway: ProbationOffenderSearchGateway
+  @Autowired val probationOffenderSearchGateway: ProbationOffenderSearchGateway,
 ) {
   fun execute(pncId: String): Map<String, Person?>? {
     val personFromPrisonerOffenderSearch = prisonerOffenderSearchGateway.getPersons(pncId = pncId)
@@ -21,7 +21,7 @@ class GetPersonService(
 
     return mapOf(
       "prisonerOffenderSearch" to personFromPrisonerOffenderSearch.first(),
-      "probationOffenderSearch" to personFromProbationOffenderSearch
+      "probationOffenderSearch" to personFromProbationOffenderSearch,
     )
   }
 }

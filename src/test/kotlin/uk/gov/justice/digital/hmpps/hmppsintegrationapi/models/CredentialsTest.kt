@@ -11,4 +11,4 @@ class CredentialsTest : DescribeSpec({
       credentials.toBasicAuth().shouldBe("Basic dXNlcm5hbWU6cGFzc3dvcmQ=")
     }
   }
-})
+},)

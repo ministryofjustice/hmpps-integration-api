@@ -27,7 +27,7 @@ class PersonSmokeTest : DescribeSpec({
 
     val response = httpClient.send(
       httpRequest.uri(URI.create("$baseUrl/persons?$queryParams")).build(),
-      HttpResponse.BodyHandlers.ofString()
+      HttpResponse.BodyHandlers.ofString(),
     )
 
     response.statusCode().shouldBe(HttpStatus.OK.value())
@@ -36,20 +36,20 @@ class PersonSmokeTest : DescribeSpec({
       """
         "firstName":"Robert",
         "lastName":"Larsen"
-      """.removeWhitespaceAndNewlines()
+      """.removeWhitespaceAndNewlines(),
     )
     response.body().shouldContain(
       """
         "firstName":"string",
         "lastName":"string"
-      """.removeWhitespaceAndNewlines()
+      """.removeWhitespaceAndNewlines(),
     )
   }
 
   it("returns a person from NOMIS, Prisoner Offender Search and Probation Offender Search") {
     val response = httpClient.send(
       httpRequest.uri(URI.create("$baseUrl/persons/$encodedPncId")).build(),
-      HttpResponse.BodyHandlers.ofString()
+      HttpResponse.BodyHandlers.ofString(),
     )
 
     response.body().shouldBe(
@@ -86,14 +86,14 @@ class PersonSmokeTest : DescribeSpec({
             "prisonerId": null
           }
         }
-      """.removeWhitespaceAndNewlines()
+      """.removeWhitespaceAndNewlines(),
     )
   }
 
   it("returns image metadata for a person") {
     val response = httpClient.send(
       httpRequest.uri(URI.create("$baseUrl/persons/$encodedPncId/images")).build(),
-      HttpResponse.BodyHandlers.ofString()
+      HttpResponse.BodyHandlers.ofString(),
     )
 
     response.body().shouldBe(
@@ -109,14 +109,14 @@ class PersonSmokeTest : DescribeSpec({
         }
       ]
     }
-    """.removeWhitespaceAndNewlines()
+    """.removeWhitespaceAndNewlines(),
     )
   }
 
   it("returns addresses for a person") {
     val response = httpClient.send(
       httpRequest.uri(URI.create("$baseUrl/persons/$encodedPncId/addresses")).build(),
-      HttpResponse.BodyHandlers.ofString()
+      HttpResponse.BodyHandlers.ofString(),
     )
 
     response.statusCode().shouldBe(HttpStatus.OK.value())
@@ -132,7 +132,7 @@ class PersonSmokeTest : DescribeSpec({
         }
       ]
     }
-    """.removeWhitespaceAndNewlines()
+    """.removeWhitespaceAndNewlines(),
     )
   }
-})
+},)

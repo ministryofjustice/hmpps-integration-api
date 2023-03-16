@@ -15,13 +15,14 @@ class NomisApiMockServer : WireMockServer(WIREMOCK_PORT) {
     stubFor(
       get("/api/offenders/$offenderNo")
         .withHeader(
-          "Authorization", matching("Bearer ${HmppsAuthMockServer.TOKEN}")
+          "Authorization",
+          matching("Bearer ${HmppsAuthMockServer.TOKEN}"),
         ).willReturn(
           aResponse()
             .withHeader("Content-Type", "application/json")
             .withStatus(status.value())
-            .withBody(body.trimIndent())
-        )
+            .withBody(body.trimIndent()),
+        ),
     )
   }
 
@@ -29,13 +30,14 @@ class NomisApiMockServer : WireMockServer(WIREMOCK_PORT) {
     stubFor(
       get("/api/images/offenders/$offenderNo")
         .withHeader(
-          "Authorization", matching("Bearer ${HmppsAuthMockServer.TOKEN}")
+          "Authorization",
+          matching("Bearer ${HmppsAuthMockServer.TOKEN}"),
         ).willReturn(
           aResponse()
             .withHeader("Content-Type", "application/json")
             .withStatus(status.value())
-            .withBody(body.trimIndent())
-        )
+            .withBody(body.trimIndent()),
+        ),
     )
   }
 
@@ -43,13 +45,14 @@ class NomisApiMockServer : WireMockServer(WIREMOCK_PORT) {
     stubFor(
       get("/api/images/$imageId/data")
         .withHeader(
-          "Authorization", matching("Bearer ${HmppsAuthMockServer.TOKEN}")
+          "Authorization",
+          matching("Bearer ${HmppsAuthMockServer.TOKEN}"),
         ).willReturn(
           aResponse()
             .withHeader("Content-Type", "image/jpeg")
             .withStatus(status.value())
-            .withBodyFile("example.jpg")
-        )
+            .withBodyFile("example.jpg"),
+        ),
     )
   }
 
@@ -57,13 +60,14 @@ class NomisApiMockServer : WireMockServer(WIREMOCK_PORT) {
     stubFor(
       get("/api/offenders/$offenderNo/addresses")
         .withHeader(
-          "Authorization", matching("Bearer ${HmppsAuthMockServer.TOKEN}")
+          "Authorization",
+          matching("Bearer ${HmppsAuthMockServer.TOKEN}"),
         ).willReturn(
           aResponse()
             .withHeader("Content-Type", "application/json")
             .withStatus(status.value())
-            .withBody(body.trimIndent())
-        )
+            .withBody(body.trimIndent()),
+        ),
     )
   }
 }

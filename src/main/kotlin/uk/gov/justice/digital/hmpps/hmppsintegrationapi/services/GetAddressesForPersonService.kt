@@ -11,7 +11,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Address
 class GetAddressesForPersonService(
   @Autowired val probationOffenderSearchGateway: ProbationOffenderSearchGateway,
   @Autowired val prisonerOffenderSearchGateway: PrisonerOffenderSearchGateway,
-  @Autowired val nomisGateway: NomisGateway
+  @Autowired val nomisGateway: NomisGateway,
 ) {
   fun execute(pncId: String): List<Address>? {
     val personFromPrisonerOffenderSearch = prisonerOffenderSearchGateway.getPersons(pncId = pncId)
@@ -19,8 +19,9 @@ class GetAddressesForPersonService(
     val addressesFromNomis = nomisGateway.getAddressesForPerson(personFromPrisonerOffenderSearch.first().prisonerId!!)
     val addressesFromProbationOffenderSearch = probationOffenderSearchGateway.getAddressesForPerson(pncId)
 
-    if (addressesFromNomis == null && addressesFromProbationOffenderSearch == null)
+    if (addressesFromNomis == null && addressesFromProbationOffenderSearch == null) {
       return null
+    }
 
     return addressesFromProbationOffenderSearch?.plus(addressesFromNomis.orEmpty())
   }

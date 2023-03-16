@@ -6,5 +6,5 @@ data class Alias(
   val firstName: String,
   val lastName: String,
   val middleName: String? = null,
-  var dob: LocalDate? = null
+  var dob: LocalDate? = null,
 )

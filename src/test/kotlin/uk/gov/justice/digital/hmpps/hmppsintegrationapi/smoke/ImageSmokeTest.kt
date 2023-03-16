@@ -18,10 +18,10 @@ class ImageSmokeTest : DescribeSpec({
 
     val response = httpClient.send(
       httpRequest.uri(URI.create("$baseUrl/images/$id")).build(),
-      HttpResponse.BodyHandlers.ofString()
+      HttpResponse.BodyHandlers.ofString(),
     )
 
     response.statusCode().shouldBe(HttpStatus.OK.value())
     response.headers().map()["content-type"]?.first().shouldBe("image/jpeg")
   }
-})
+},)

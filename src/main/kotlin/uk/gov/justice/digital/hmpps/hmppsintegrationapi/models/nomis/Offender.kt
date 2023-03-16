@@ -10,7 +10,7 @@ data class Offender(
   val lastName: String,
   val middleName: String? = null,
   val dateOfBirth: LocalDate? = null,
-  val aliases: List<nomisAlias> = listOf()
+  val aliases: List<nomisAlias> = listOf(),
 ) {
   fun toPerson(): Person = Person(
     firstName = this.firstName,
@@ -22,8 +22,8 @@ data class Offender(
         it.firstName,
         it.lastName,
         it.middleName,
-        it.dob
+        it.dob,
       )
-    }
+    },
   )
 }

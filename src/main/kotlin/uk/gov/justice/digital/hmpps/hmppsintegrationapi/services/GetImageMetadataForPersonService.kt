@@ -9,7 +9,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ImageMetadata
 @Service
 class GetImageMetadataForPersonService(
   @Autowired val nomisGateway: NomisGateway,
-  @Autowired val prisonerOffenderSearchGateway: PrisonerOffenderSearchGateway
+  @Autowired val prisonerOffenderSearchGateway: PrisonerOffenderSearchGateway,
 ) {
   fun execute(pncId: String): List<ImageMetadata> {
     val personFromPrisonerOffenderSearch = prisonerOffenderSearchGateway.getPersons(pncId = pncId)
