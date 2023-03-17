@@ -8,15 +8,17 @@ Accepted
 
 ## Context
 
-Users must be able to search the system for nominals on Police National Computer (PNC) ID. PNC ID is a unique person
-identifier. RESTful API design convention would typically state that that path parameters are used to identify a specific resource or resources.
+Users must be able to search the system for a person by Police National Computer (PNC) ID. PNC ID is a unique person
+identifier. RESTful API design convention would typically state that path parameters are used to identify a specific
+resource or resources.
 However, passing PNC IDs into our API as path parameters is problematised by the fact that PNC IDs contain a forward
-slash (e.g., 12/345345B) which is a path delimiter. This meant that any requests containing a forward slash would not correctly be routed to our controller.
+slash (e.g., 12/345345B). Forward slashes are path delimiters, so any requests containing a forward slash would not
+correctly be routed to our controller.
 
 We considered two options for dealing with the forward slash in PNC ID:    
 **1. Encode the PNC ID**
 
-- The PNC ID 12/345345B would be passed to the /persons end-point URL-encoded as 12%2F345345B.
+- The PNC ID 12/345345B would be passed to the `/persons` end-point URL-encoded as 12%2F345345B.
 
 Considerations:
 
@@ -28,11 +30,13 @@ Considerations:
 
 Considerations:
 
-- Query parameters should be used to sort or filter on resources and so this usage is not best practice.
+- RESTful API convention is that path parameters should be used to identify a specific resource or resources, so
+  the usage of query parameters here would be atypical.
 - It is best practice to use logical nesting on end-points to show relationships. Using query parameters for PNC ID is
   likely to cause confusion by detaching it from that with which it is most closely associated. An example is
-  persons/images?pnc_id=id, where PNC ID relates foremost to persons rather than images but the URL distorts this
-  relationship.
+  our `/persons/{pncId}/images` end-point that retrieves images related to the person with the specified PNC ID. If
+  the decision were taken to use query parameters for PNC ID, the path would become `persons/images?pnc_id=pncId`; PNC
+  ID relates foremost to persons rather than images but this relationship is distorted by the URL.
 
 ## Decision
 
@@ -48,4 +52,9 @@ This choice was preferred because:
 
 ## Consequences
 
-- The documentation will need to explain the URL encoding process clearly for consumers. 
+- Consumers will need to URL-encode path parameters that contain a forward slash.
+- The documentation will need to explain the URL encoding process clearly for consumers.
+- This API uses Apache Tomcat, a web server and Servlet container for Java code. There is a reported security
+  vulnerability in the case that Tomcat is used behind a proxy, whereby using URL-encoded path parameters exposes a
+  directory traversal vulnerability. This vulnerability may allow attackers to work around the context restrictions of
+  the proxy. Consequently, this API should not at any point in the future be used as a proxy.
