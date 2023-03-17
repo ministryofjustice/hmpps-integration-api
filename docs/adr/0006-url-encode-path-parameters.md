@@ -9,7 +9,7 @@ Accepted
 ## Context
 
 Users must be able to search the system for nominals on Police National Computer (PNC) ID. PNC ID is a unique person
-identifier. RESTful API design convention is that path parameters are used to identify a specific resource or resources.
+identifier. RESTful API design convention would typically state that that path parameters are used to identify a specific resource or resources.
 However, passing PNC IDs into our API as path parameters is problematised by the fact that PNC IDs contain a forward
 slash (e.g., 12/345345B) which is the URO standard path delimiter.
 
