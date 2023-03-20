@@ -1,35 +1,35 @@
 name: Generate PlantUML Diagrams
 
-on: 
+on:
   - workflow_dispatch
   - push
-    
-jobs: 
+
+jobs:
   generate-diagrams:
     runs-on: ubuntu-latest
     defaults:
-      run: 
+      run:
         working-directory: ./docs/diagrams
     env:
-      BRANCH_NAME: ${{ github.head_ref || github.ref_name }} 
+      BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
     steps:
-    - uses: actions/checkout@v3
-    - name: Install Graphviz Dependency
-      run: |
-        sudo apt-get install graphviz
-    - name: Install PlantUML
-      run: |
-        wget https://github.com/plantuml/plantuml/releases/download/v1.2023.1/plantuml.jar
-        java -jar plantuml.jar -version
-    - name: Generate Diagrams
-      run: | 
-        java -jar plantuml.jar -svg *.puml
-    - name: Setup Git Config
-      run: |
-        git config user.name "GitHub Actions PlantUML Bot"
-        git config user.email "<>"
-    - name: Commit images
-      run: |
-        git add *.svg
-        git commit -m "Exported .PUML PlantUML diagrams to .SVG" || true
-        git push origin ${BRANCH_NAME}
+      - uses: actions/checkout@v3
+      - name: Install Graphviz Dependency
+        run: |
+          sudo apt-get install graphviz
+      - name: Install PlantUML
+        run: |
+          wget https://github.com/plantuml/plantuml/releases/download/v1.2023.1/plantuml.jar
+          java -jar plantuml.jar -version
+      - name: Generate Diagrams
+        run: |
+          java -jar plantuml.jar -svg *.puml
+      - name: Setup Git Config
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+      - name: Commit images
+        run: |
+          git add *.svg
+          git commit -m "Exported .PUML PlantUML diagrams to .SVG" || true
+          git push origin ${BRANCH_NAME}
