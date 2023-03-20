@@ -4,7 +4,7 @@
 
 skinparam linetype polyline
 
-title [Context] HMPPS Integration API
+title [Context] HMPPS Integration API EXAMPLE
 
 AddElementTag("not_yet_implemented", $bgColor="#D3D3D3", $fontColor="#9C9C9C")
 
