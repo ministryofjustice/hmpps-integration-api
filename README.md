@@ -1,27 +1,29 @@
-# HMPPS Integration API
+# HMPPS Integration API <!-- omit in toc -->
 
 [![repo standards badge](https://img.shields.io/badge/dynamic/json?color=blue&style=flat&logo=github&label=MoJ%20Compliant&query=%24.result&url=https%3A%2F%2Foperations-engineering-reports.cloud-platform.service.justice.gov.uk%2Fapi%2Fv1%2Fcompliant_public_repositories%2Fhmpps-integration-api)](https://operations-engineering-reports.cloud-platform.service.justice.gov.uk/public-github-repositories.html#hmpps-integration-api "Link to report")
 [![CircleCI](https://circleci.com/gh/ministryofjustice/hmpps-integration-api/tree/main.svg?style=svg)](https://circleci.com/gh/ministryofjustice/hmpps-integration-api)
 [![API docs](https://img.shields.io/badge/API_docs_-view-85EA2D.svg?logo=swagger)](https://ministryofjustice.github.io/hmpps-integration-api-docs/)
 
-## Contents
+## Contents <!-- omit in toc -->
 
 - [About this project](#about-this-project)
-- [External Dependencies](#external-dependencies)
-- [Environments](#environments)
+- [External dependencies](#external-dependencies)
+  - [This solution is dependent on](#this-solution-is-dependent-on)
+  - [These things depend upon this solution](#these-things-depend-upon-this-solution)
 - [Getting started](#getting-started)
-    - [Using IntelliJ IDEA](#using-intellij-idea)
+  - [Using IntelliJ IDEA](#using-intellij-idea)
 - [Usage](#usage)
-    - [Running the application](#running-the-application)
-        - [With dependent services](#with-dependent-services)
-    - [Running the tests](#running-the-tests)
-    - [Running the linter](#running-the-linter)
-    - [Running all checks](#running-all-checks)
-    - [Request logging](#request-logging)
+  - [Running the application](#running-the-application)
+    - [With dependent services](#with-dependent-services)
+  - [Running the tests](#running-the-tests)
+  - [Running the linter](#running-the-linter)
+  - [Running all checks](#running-all-checks)
+  - [Request Logging](#request-logging)
 - [Documentation](#documentation)
+- [Developer guides](#developer-guides)
 - [Useful commands](#useful-commands)
-    - [kubectl](#kubectl)
-    - [aws](#aws)
+  - [kubectl](#kubectl)
+  - [aws](#aws)
 - [Related repositories](#related-repositories)
 - [License](#license)
 
@@ -64,12 +66,12 @@ as well as the following technologies for its infrastructure:
 
 This API is designed to run in 4 environments:
 
-| Name           | Deployed | Data                                                | Purpose                                           |
-|----------------|----------|------------------------------------------------|--------------------------------------------------------|
-| Local          | N/A      | Prism Stub                                         | Local Feature Development                          |
-| Development    | On Merge  | T3/Development Seed                                | Internal Testing                                  |
-| Pre-Production | On Merge  | Real - copy of live imported every couple of weeks | Internal Testing / QA / External Consumer Testing |
-| Production     | Manually  | Real                                               | Live Services                                     |
+| Name           | Deployed | Data                                               | Purpose                                           |
+| -------------- | -------- | -------------------------------------------------- | ------------------------------------------------- |
+| Local          | N/A      | Prism Stub                                         | Local Feature Development                         |
+| Development    | On Merge | T3/Development Seed                                | Internal Testing                                  |
+| Pre-Production | On Merge | Real - copy of live imported every couple of weeks | Internal Testing / QA / External Consumer Testing |
+| Production     | Manually | Real                                               | Live Services                                     |
 
 ## Getting started
 
@@ -246,6 +248,10 @@ desired [logger level](https://docs.spring.io/spring-boot/docs/2.1.13.RELEASE/re
 Note, this will only specifically enable the `RequestLogger`.
 
 ## Documentation
+
+- [Architecture diagrams](/docs/diagrams)
+
+## Developer guides
 
 - [Updating diagrams](/docs/updating-diagrams.md)
 - [Setting up a CircleCI context for deployment](/docs/setting-up-circleci-context-for-deployment.md)
