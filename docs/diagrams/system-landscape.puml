@@ -2,7 +2,8 @@
 
    !include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
 
-   title HMPPS Integration API - Deployment Diagram to illustrate connectivity
+   title HMPPS Integration API - System Landscape
+   skinparam linetype polyline
 
    AddRelTag("mTLS", $textColor=$ARROW_COLOR, $lineColor=$ARROW_COLOR, $lineStyle=DottedLine())
 
@@ -15,24 +16,37 @@
    }
 
    Boundary(hmpps, "His Majesty's Prison and Probation Service (HMPPS)", "Executive Agency") {
+      Boundary(aws, "Amazon Web Services", "AWS"){
+         System(route53, "Route 53", "Provides DNS services.")
+         System(apigateway, "API Gateway", "Routes traffic to internal Kubernetes Ingress URL.")
+         System(s3, "S3 Truststore", "Authorised client certificate storage.")
+         
+         Rel(route53, apigateway, "Forwards integration requests to")
+         Rel(apigateway, s3, "Checks certificates against")
+      }
+
+      Boundary(logging, "Logging & Metrics"){
+         System(kibana, "Kibana", "Performance metrics.")
+         System(insights, "Azure Insights", "Usage metrics.")
+         System(sentry, "Sentry", "Error logging.")
+      }
+
       Boundary(cloudplatform, "Cloud Platform", "Elastic Kubernetes Service"){
          System(hmpps_integration_api, "Integration API", "A single point of entry for services to retrieve data from multiple HMPPS systems.")
       }
 
-      Boundary(aws, "Amazon Web Services", "AWS"){
-         System(route53, "Route 53", "DNS record for our domain.")
-         System(apigateway, "API Gateway", "Routes traffic to internal Kubernetes Ingress URL")
-         System(s3, "S3 Truststore", "Authorised client certificate storage")
-      }
+      Rel(apigateway, hmpps_integration_api, "Forwards requests")
+      Rel(hmpps_integration_api, logging, "Publishes logs to")
    }
 
    Rel_Right(mapps, route53, "Uses", "HTTPS", $link="https://development.integration-api.hmpps.service.justice.gov.uk/")
-   Rel_Right(external_system, route53, "Uses", "HTTPS", $link="https://development.integration-api.hmpps.service.justice.gov.uk/")
-   Rel_Down(route53, apigateway, "Forwards integration requests to")
    BiRel_Right(mapps, apigateway, "Certificate exchange", "mTLS", $tags="mTLS")
-   Rel_Right(apigateway, hmpps_integration_api, "Forwards requests")
-   Rel_Down(apigateway, s3, "Checks certificates against")
+   
+   Rel_Left(external_system, route53, "Uses", "HTTPS", $link="https://development.integration-api.hmpps.service.justice.gov.uk/")
+   BiRel_Left(external_system, apigateway, "Certificate exchange", "mTLS", $tags="mTLS")
+
+
+   Lay_Left(kibana, insights)
 
    SHOW_DYNAMIC_LEGEND()
-
 @enduml
