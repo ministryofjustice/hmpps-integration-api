@@ -54,7 +54,7 @@ as well as the following technologies for its infrastructure:
 - [Cloud Platform](https://user-guide.cloud-platform.service.justice.gov.uk/)
 - [Amazon Web Services (AWS)](https://aws.amazon.com/) in eu-west-2 (London)
   - [Simple Storage Service (S3)](https://aws.amazon.com/s3/)
-  - ECR
+  - [Elastic Container Registry (ECR)](https://aws.amazon.com/ecr/)
 
 #### These things depend upon this solution
 - Consumer Applications (MAPPS)
