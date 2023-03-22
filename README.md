@@ -8,6 +8,7 @@
 
 - [About this project](#about-this-project)
 - [External Dependencies](#external-dependencies)
+- [Environments](#environments)
 - [Getting started](#getting-started)
     - [Using IntelliJ IDEA](#using-intellij-idea)
 - [Usage](#usage)
@@ -58,6 +59,17 @@ as well as the following technologies for its infrastructure:
 
 #### These things depend upon this solution
 - Consumer Applications (MAPPS)
+
+## Environments
+
+This API is designed to run in 4 environments:
+
+| Name           | Deployed | Data                                                | Purpose                                           |
+|----------------|----------|------------------------------------------------|--------------------------------------------------------|
+| Local          | N/A      | Prism Stub                                         | Local Feature Development                          |
+| Development    | On Merge  | T3/Development Seed                                | Internal Testing                                  |
+| Pre-Production | On Merge  | Real - copy of live imported every couple of weeks | Internal Testing / QA / External Consumer Testing |
+| Production     | Manually  | Real                                               | Live Services                                     |
 
 ## Getting started
 
