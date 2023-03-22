@@ -7,6 +7,7 @@
 ## Contents
 
 - [About this project](#about-this-project)
+- [External Dependencies](#external-dependencies)
 - [Getting started](#getting-started)
     - [Using IntelliJ IDEA](#using-intellij-idea)
 - [Usage](#usage)
@@ -17,7 +18,6 @@
     - [Running all checks](#running-all-checks)
     - [Request logging](#request-logging)
 - [Documentation](#documentation)
-- [External Dependencies](#external-dependencies)
 - [Useful commands](#useful-commands)
     - [kubectl](#kubectl)
     - [aws](#aws)
