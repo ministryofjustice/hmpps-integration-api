@@ -47,9 +47,9 @@ as well as the following technologies for its infrastructure:
 
 ### External dependencies
 #### This solution is dependent on
-- [NOMIS database via the Prison API](https://github.com/ministryofjustice/prison-api)
+- [Prison API](https://github.com/ministryofjustice/prison-api)
 - [Prisoner Offender Search](https://github.com/ministryofjustice/prisoner-offender-search)
-- [nDelius database via the Probation Offender Search](https://github.com/ministryofjustice/probation-offender-search)
+- [Probation Offender Search](https://github.com/ministryofjustice/probation-offender-search)
 - [HMPPS Auth](https://github.com/ministryofjustice/hmpps-auth)
 - [Cloud Platform](https://user-guide.cloud-platform.service.justice.gov.uk/)
 - [Amazon Web Services (AWS)](https://aws.amazon.com/) in eu-west-2 (London)
