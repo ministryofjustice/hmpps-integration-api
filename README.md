@@ -53,7 +53,7 @@ as well as the following technologies for its infrastructure:
 - [HMPPS Auth](https://github.com/ministryofjustice/hmpps-auth)
 - [Cloud Platform](https://user-guide.cloud-platform.service.justice.gov.uk/)
 - [Amazon Web Services (AWS)](https://aws.amazon.com/) in eu-west-2 (London)
-  - S3
+  - [Simple Storage Service (S3)](https://aws.amazon.com/s3/)
   - ECR
 
 #### These things depend upon this solution
