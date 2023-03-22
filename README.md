@@ -17,6 +17,7 @@
     - [Running all checks](#running-all-checks)
     - [Request logging](#request-logging)
 - [Documentation](#documentation)
+- [External Dependencies](#external-dependencies)
 - [Useful commands](#useful-commands)
     - [kubectl](#kubectl)
     - [aws](#aws)
@@ -43,6 +44,20 @@ as well as the following technologies for its infrastructure:
   balancing and networking to our application.
 
 ![Context Diagram](docs/diagrams/context.svg)
+
+### External dependencies
+#### This solution is dependent on
+- [NOMIS database via the Prison API](https://github.com/ministryofjustice/prison-api)
+- [Prisoner Offender Search](https://github.com/ministryofjustice/prisoner-offender-search)
+- [nDelius database via the Probation Offender Search](https://github.com/ministryofjustice/probation-offender-search)
+- [HMPPS Auth](https://github.com/ministryofjustice/hmpps-auth)
+- [Cloud Platform](https://user-guide.cloud-platform.service.justice.gov.uk/)
+- [Amazon Web Services (AWS)](https://aws.amazon.com/) in eu-west-2 (London)
+  - [Simple Storage Service (S3)](https://aws.amazon.com/s3/)
+  - [Elastic Container Registry (ECR)](https://aws.amazon.com/ecr/)
+
+#### These things depend upon this solution
+- Consumer Applications (MAPPS)
 
 ## Getting started
 
