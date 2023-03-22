@@ -52,7 +52,7 @@ as well as the following technologies for its infrastructure:
 - [nDelius database via the Probation Offender Search](https://github.com/ministryofjustice/probation-offender-search)
 - [HMPPS Auth](https://github.com/ministryofjustice/hmpps-auth)
 - [Cloud Platform](https://user-guide.cloud-platform.service.justice.gov.uk/)
-- AWS in eu-west-2 (London)
+- [Amazon Web Services (AWS)](https://aws.amazon.com/) in eu-west-2 (London)
   - S3
   - ECR
 
