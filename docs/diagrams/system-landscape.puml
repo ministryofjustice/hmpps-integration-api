@@ -2,7 +2,7 @@
 
    !include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
 
-   title HMPPS Integration API - System Landscape
+   title [System Landscape] HMPPS Integration API
    skinparam linetype polyline
 
    AddRelTag("mTLS", $textColor=$ARROW_COLOR, $lineColor=$ARROW_COLOR, $lineStyle=DottedLine())
