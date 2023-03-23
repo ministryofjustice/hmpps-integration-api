@@ -1,0 +1,50 @@
+@startuml aws-deployment
+
+   !include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+   title [Infrastructure] HMPPS Integration API
+   skinparam linetype polyline
+
+   !global $ADDITIONAL_POD = "#91bbff"
+
+   AddRelTag("mTLS", $textColor=$ARROW_COLOR, $lineColor=$ARROW_COLOR, $lineStyle=DottedLine())
+   AddElementTag("additional_pods", $bgColor=$ADDITIONAL_POD, $fontColor=$WHITE)
+
+   System_Ext(consumer, "Consumer Application", "An authenticated consumer of the Integration API.")
+
+   Boundary(aws, "Amazon Web Services", "AWS"){
+
+      Container(apigateway, "Gateway", "API Gateway", "Routes traffic to internal Kubernetes Ingress URL.")
+
+      Boundary(cloudplatform, "Cloud Platform"){
+         Container(s3, "Truststore", "S3", "Authorised client certificate storage.")
+         Container(acm, "Certificate Manager", "Amazon Certificate Manager", "Provides SSL certificate")
+         Container(route53, "Domain Name Service" ,"Route 53", "integration-api.hmpps.service.justice.gov.uk")
+      
+         Boundary(eks, "Kubernetes", "Elastic Kubernetes Cluster"){
+            Container(hmpps_integration_api_pod, "Integration API", "Pod", "A single point of entry for services to retrieve data from multiple HMPPS systems.")
+         }
+      }
+
+      Rel(apigateway, s3, "Fetch certificate authority")
+      Rel(apigateway, acm, "Uses")
+   }
+
+
+   Container(kibana, "Performance Logging", "Kibana")
+   Rel(hmpps_integration_api_pod, kibana, "Publishes to")
+   Container(insights, "Usage Metrics", "Azure Insights")
+   Rel(hmpps_integration_api_pod, insights, "Publishes to")
+   Container(sentry, "Error Logging", "Sentry")
+   Rel(hmpps_integration_api_pod, sentry, "Publishes to")
+
+
+   Rel(apigateway, hmpps_integration_api_pod, "Forwards requests")
+   
+   Rel_Right(consumer, route53, "DNS Request", $link="https://development.integration-api.hmpps.service.justice.gov.uk/")
+   BiRel_Right(consumer, apigateway, "Certificate exchange", "mTLS", $tags="mTLS")
+
+   Lay_Left(kibana, insights)
+
+   SHOW_DYNAMIC_LEGEND()
+@enduml
