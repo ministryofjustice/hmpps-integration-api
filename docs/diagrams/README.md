@@ -31,6 +31,10 @@ The [component diagram](https://c4model.com/#ComponentDiagram) provides an overv
 
 [![Deployment diagram](./aws-deployment.svg)](./aws-deployment.svg)
 
+### Infrastructure diagram
+
+[![Infrastructure diagram](./infrastructure.svg)](./infrastructure.svg)
+
 ### Testing strategy diagram
 
 [![Testing strategy diagram](./testing-strategy.svg)](./testing-strategy.svg)
