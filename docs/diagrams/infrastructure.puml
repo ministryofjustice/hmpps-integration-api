@@ -1,0 +1,45 @@
+@startuml infrastructure
+
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+title [Infrastructure] HMPPS Integration API
+
+skinparam linetype polyline
+
+AddRelTag("mTLS", $textColor=$ARROW_COLOR, $lineColor=$ARROW_COLOR, $lineStyle=DottedLine())
+
+System_Ext(consumer, "Consumer Application", "An authenticated consumer of the Integration API.")
+
+Boundary(aws, "Amazon Web Services", "AWS"){
+  Container(api_gateway, "Gateway", "API Gateway", "Routes traffic to internal Kubernetes Ingress URL.")
+
+  Boundary(cloudplatform, "Cloud Platform"){
+    Container(route53, "Domain Name Service" ,"Route 53", "integration-api.hmpps.service.justice.gov.uk")
+    Container(s3, "Truststore", "S3", "Authorised client certificate storage.")
+    Container(acm, "Certificate Manager", "Amazon Certificate Manager", "Provides SSL certificate.")
+
+    Boundary(eks, "Kubernetes", "Elastic Kubernetes Cluster"){
+      Container(hmpps_integration_api_pod, "Integration API", "Pod", "A single point of entry for services to retrieve data from multiple HMPPS systems.")
+    }
+  }
+
+  Rel(api_gateway, s3, "Fetches certificate authority")
+  Rel(api_gateway, acm, "Fetches the server certificate")
+}
+
+Container(kibana, "Performance Logging", "Kibana")
+Rel(hmpps_integration_api_pod, kibana, "Publishes to")
+Container(insights, "Usage Metrics", "Azure Insights")
+Rel(hmpps_integration_api_pod, insights, "Publishes to")
+Container(sentry, "Error Logging", "Sentry")
+Rel(hmpps_integration_api_pod, sentry, "Publishes to")
+
+Rel(api_gateway, hmpps_integration_api_pod, "Forwards requests")
+
+BiRel(consumer, route53, "Authenticates", "mTLS", $tags="mTLS")
+Rel(consumer, api_gateway, "Authenticates", "mTLS")
+Rel(route53, api_gateway, "Performs DNS look-up")
+
+SHOW_DYNAMIC_LEGEND()
+
+@enduml
