@@ -10,35 +10,37 @@ AddRelTag("mTLS", $textColor=$ARROW_COLOR, $lineColor=$ARROW_COLOR, $lineStyle=D
 
 System_Ext(consumer, "Consumer Application", "An authenticated consumer of the Integration API.")
 
-Boundary(aws, "Amazon Web Services", "AWS"){
+Boundary(aws, "Amazon Web Services (AWS)"){
   Container(api_gateway, "Gateway", "API Gateway", "Routes traffic to internal Kubernetes Ingress URL.")
 
   Boundary(cloudplatform, "Cloud Platform"){
     Container(route53, "Domain Name Service" ,"Route 53", "integration-api.hmpps.service.justice.gov.uk")
-    Container(s3, "Truststore", "S3", "Authorised client certificate storage.")
-    Container(acm, "Certificate Manager", "Amazon Certificate Manager", "Provides SSL certificate.")
+    Container(s3, "Truststore", "Simple Storage Service (S3)", "Stores certificate authority for mutual TLS.")
+    Container(acm, "Certificate Manager", "Amazon Certificate Manager (ACM)", "Provides server SSL certificate.")
 
-    Boundary(eks, "Kubernetes", "Elastic Kubernetes Cluster"){
-      Container(hmpps_integration_api_pod, "Integration API", "Pod", "A single point of entry for services to retrieve data from multiple HMPPS systems.")
+    Boundary(eks, "Kubernetes Cluster"){
+      Container(hmpps_integration_api_pod, "Integration API", "Service", "A single point of entry for services to retrieve data from multiple HMPPS systems.")
     }
   }
 
-  Rel(api_gateway, s3, "Fetches certificate authority")
-  Rel(api_gateway, acm, "Fetches the server certificate")
+  Rel(api_gateway, s3, "Verifies client certificate")
+  Rel(api_gateway, acm, "Uses")
 }
 
-Container(kibana, "Performance Logging", "Kibana")
+Container(kibana, "Monitoring and Alerting", "ELK Stack")
 Rel(hmpps_integration_api_pod, kibana, "Publishes to")
-Container(insights, "Usage Metrics", "Azure Insights")
+
+Boundary(azure, "Microsoft Azure"){
+  Container(insights, "Usage Metrics", "Application Insights")
+}
 Rel(hmpps_integration_api_pod, insights, "Publishes to")
 Container(sentry, "Error Logging", "Sentry")
 Rel(hmpps_integration_api_pod, sentry, "Publishes to")
 
 Rel(api_gateway, hmpps_integration_api_pod, "Forwards requests")
 
-BiRel(consumer, route53, "Authenticates", "mTLS", $tags="mTLS")
+Rel(consumer, route53, "Performs DNS look-up", $tags="mTLS")
 Rel(consumer, api_gateway, "Authenticates", "mTLS")
-Rel(route53, api_gateway, "Performs DNS look-up")
 
 SHOW_DYNAMIC_LEGEND()
 
