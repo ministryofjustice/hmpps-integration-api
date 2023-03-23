@@ -1,6 +1,17 @@
-# Diagrams
+# Diagrams <!-- omit in toc -->
 
 The [C4 model](https://c4model.com/) is used for visualising the technical architecture of the service.
+
+## Contents <!-- omit in toc -->
+
+- [Core diagrams](#core-diagrams)
+  - [Context diagram](#context-diagram)
+  - [Container diagram](#container-diagram)
+  - [Component diagram](#component-diagram)
+- [Supplementary diagrams](#supplementary-diagrams)
+  - [Deployment diagram](#deployment-diagram)
+  - [Infrastructure diagram](#infrastructure-diagram)
+  - [Testing strategy diagram](#testing-strategy-diagram)
 
 ## Core diagrams
 
@@ -38,5 +49,3 @@ The [component diagram](https://c4model.com/#ComponentDiagram) provides an overv
 ### Testing strategy diagram
 
 [![Testing strategy diagram](./testing-strategy.svg)](./testing-strategy.svg)
-
-
