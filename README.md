@@ -10,6 +10,8 @@
 - [External dependencies](#external-dependencies)
   - [This solution is dependent on](#this-solution-is-dependent-on)
   - [These things depend upon this solution](#these-things-depend-upon-this-solution)
+- [Cloud Platform](#cloud-platform)
+- [Environments](#environments)
 - [Security](#security)
 - [Getting started](#getting-started)
   - [Using IntelliJ IDEA](#using-intellij-idea)
@@ -62,6 +64,10 @@ as well as the following technologies for its infrastructure:
 
 #### These things depend upon this solution
 - Consumer Applications (MAPPS)
+
+## Cloud Platform
+
+This service runs on [MOJ's Cloud Platform](https://user-guide.cloud-platform.service.justice.gov.uk/)
 
 ## Environments
 
