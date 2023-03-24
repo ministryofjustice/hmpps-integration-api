@@ -68,7 +68,8 @@ class PersonSmokeTest : DescribeSpec({
                 "dateOfBirth": "1975-04-02"
               }
             ],
-            "prisonerId": "A1234AA"
+            "prisonerId": "A1234AA",
+            "pncId": "12/394773H"
           },
           "probationOffenderSearch": {
             "firstName": "string",
@@ -83,7 +84,8 @@ class PersonSmokeTest : DescribeSpec({
                 "dateOfBirth": "2019-08-24"
               }
             ],
-            "prisonerId": null
+            "prisonerId": null,
+            "pncId": "string"
           }
         }
       """.removeWhitespaceAndNewlines(),

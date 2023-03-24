@@ -275,6 +275,10 @@ components:
           type: string
           example: A1234AA
           description: A prisoner identifier from Prison API (NOMIS)
+        pncId:
+          type: string
+          example: 2008/0545166T
+          description: An identifier from the Police National Computer (PNC)
 
   examples:
     PersonNotFoundError:

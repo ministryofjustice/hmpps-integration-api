@@ -11,6 +11,7 @@ data class Prisoner(
   val dateOfBirth: LocalDate? = null,
   val aliases: List<PrisonerAlias> = listOf(),
   val prisonerNumber: String? = null,
+  val pncNumber: String? = null,
 ) {
   fun toPerson(): Person = Person(
     firstName = this.firstName,
@@ -26,5 +27,6 @@ data class Prisoner(
       )
     },
     prisonerId = this.prisonerNumber,
+    pncId = this.pncNumber,
   )
 }

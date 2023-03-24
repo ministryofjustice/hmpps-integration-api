@@ -80,6 +80,11 @@ class PrisonerOffenderSearchGatewayTest(
       persons[1].prisonerId.shouldBe("G9347GV")
       persons[2].prisonerId.shouldBe("A5043DY")
       persons[3].prisonerId.shouldBe("A5083DY")
+
+      persons[0].pncId.shouldBeNull()
+      persons[1].pncId.shouldBe("95/289622B")
+      persons[2].pncId.shouldBeNull()
+      persons[3].pncId.shouldBe("03/11985X")
     }
 
     it("returns person(s) when searching on first name only") {

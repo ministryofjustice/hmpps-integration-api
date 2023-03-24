@@ -11,6 +11,7 @@ data class Offender(
   val dateOfBirth: LocalDate? = null,
   val offenderAliases: List<OffenderAlias> = listOf(),
   val contactDetails: ContactDetails = ContactDetails(),
+  val otherIds: OtherIds = OtherIds(),
 ) {
   fun toPerson(): Person = Person(
     firstName = this.firstName,
@@ -25,5 +26,6 @@ data class Offender(
         it.dateOfBirth,
       )
     },
+    pncId = otherIds.pncNumber,
   )
 }

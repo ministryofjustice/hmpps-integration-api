@@ -7,7 +7,8 @@
     "dateOfBirth": "1966-10-25",
     "gender": "Male",
     "otherIds": {
-      "crn": "X595043"
+      "crn": "X595043",
+      "pncNumber": "2018/0123456X"
     },
     "contactDetails": {
       "phoneNumbers": [],
