@@ -90,7 +90,7 @@ Below is a list of protected resources that make up the service, and access leve
 | Access               | Controlled by                                                 | Limited to                      |
 |----------------------|---------------------------------------------------------------|---------------------------------|
 | API                  | API Keys, Certificates                                        | Registered External consumers   |
-| AWS Account (Live)   | IAM users with Access credentials and 2 Factor Authentication | Members of Cloud Platform team  |
+| AWS Account (Live)   | IAM users with access credentials and two-factor authentication (2FA) | Members of Cloud Platform team  |
 | Namespace Secrets    | GitHub teams                                                  | HMPPS Integration API engineers |
 | S3 Bucket            | IAM policy, Bucket Policy                                     | HMPPS Integration API engineers |
 | ECR                  | IAM policy, IAM User                                          | HMPPS Integration API engineers |
