@@ -1,47 +1,56 @@
 @startuml deployment
 
-!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
-!define SPRITESURL https://raw.githubusercontent.com/plantuml-stdlib/gilbarbara-plantuml-sprites/master/sprites
-!includeurl SPRITESURL/helm.puml
-!includeurl SPRITESURL/github-icon.puml
-!includeurl SPRITESURL/gradle.puml
-!includeurl SPRITESURL/kotlin.puml
-!includeurl SPRITESURL/kubernetes.puml
+    !include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+    !define SPRITESURL https://raw.githubusercontent.com/plantuml-stdlib/gilbarbara-plantuml-sprites/master/sprites
+    !includeurl SPRITESURL/helm.puml
+    !includeurl SPRITESURL/github-icon.puml
+    !includeurl SPRITESURL/gradle.puml
+    !includeurl SPRITESURL/kotlin.puml
+    !includeurl SPRITESURL/kubernetes.puml
 
-skinparam linetype polyline
+    skinparam linetype polyline
 
-Title [Deployment] HMPPS Integration API
+    Title [Deployment Flow] HMPPS Integration API
 
-Person(engineer, "Engineer")
-
-Boundary(local, "Local", "Developer Machine"){
-    Container(hmpps_integration_api, "HMPPS Integration API", "A single point of entry for services to retrieve data from multiple HMPPS systems.", $sprite=kotlin*0.4)
-}
-
-Rel(engineer, local, "Uses")
-
-Container(git, "Github", "Source Control", $sprite=github-icon*0.4)
-
-Rel(local, git, "Commits to", "SSH")
-
-
-Boundary(circleci, "Circle CI", "Deployment Pipeline"){
-    Container(lint, "Lint", "Uses gradle to perform linting task on code", $sprite=gradle*0.4)
-    Container(unittest, "Unit Test", "Uses gradle to perform unit tests", $sprite=gradle*0.4)
-    Container(smoketest, "Smoke Test", "Uses gradle to perform tests", $sprite=gradle*0.4)
-    Lay_D(lint, unittest)
-    Lay_D(unittest, smoketest)
-    
-    Container(helm, "Helm Deploy", "HELMINESS", $sprite=helm*0.4)
-}
-
-Boundary(cloudplatform, "Cloud Platform", "Elastic Kubernetes Service"){
-    Boundary(aws, "Amazon Web Services"){
-        Container(hmpps_integration_api_pod1, "HMPPS Integration API", "An instance of HMPPS Integration API within a Kubernetes Pod.", $sprite=kubernetes*0.4)
-        Container(hmpps_integration_api_pod2, "HMPPS Integration API", "An instance of HMPPS Integration API within a Kubernetes Pod.", $sprite=kubernetes*0.4)
+    Boundary(dev, "Developer"){
+        Person(engineer, "Engineer")
+        Boundary(local, "Local", "Developer Machine"){
+            Container(hmpps_integration_api, "HMPPS Integration API", "Local Code", "A single point of entry for services to retrieve data from multiple HMPPS systems.", $sprite=kotlin*0.4)
+        }
     }
-}
 
-SHOW_DYNAMIC_LEGEND()
+    Container(git, "Source Control", "Git", $sprite=github-icon*0.6)
+
+    Boundary(circleci, "Circle CI", "Deployment Pipeline"){
+        Boundary(checks, "Code Checks"){
+            Container(lint, "Lint", "Uses gradle to perform linting task on code", $sprite=gradle*0.4)
+            Container(unittest, "Unit Test", "Uses gradle to perform unit tests", $sprite=gradle*0.4)
+            Container(smoketest, "Smoke Test", "Uses gradle to perform tests", $sprite=gradle*0.4)
+        }
+        Container(pushtoecr, "Push to ECR", )
+        
+        Container(helm, "Helm Deploy", "HELMINESS", $sprite=helm*0.6)
+    }
+
+    Boundary(cloudplatform, "Cloud Platform", "Kubernetes"){
+        Boundary(aws, "Amazon Web Services"){
+            Container(ecr, "Container Registry", "Elastic Container Registry (ECR)")
+            Boundary(service, "Service", "Kubernetes"){
+                Container(hmpps_integration_api_pod1, "HMPPS Integration API", "Pod", "An instance of HMPPS Integration API", $sprite=kubernetes*0.4)
+                Container(hmpps_integration_api_pod2, "HMPPS Integration API", "Pod", "An instance of HMPPS Integration API", $sprite=kubernetes*0.4)
+            }
+        }
+    }
+
+    Container(email, "Notification", "eMail")
+
+    Rel(engineer, local, "Writes code")
+    Rel(dev, git, "Commits to", "SSH")
+    Rel(git, circleci, "Pipeline Integration")
+    Rel(circleci, cloudplatform, "Deploy to")
+
+    Rel(checks, email, "Failed Check")
+
+    SHOW_DYNAMIC_LEGEND()
 
 @enduml
