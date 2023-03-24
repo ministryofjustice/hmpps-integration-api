@@ -27,30 +27,48 @@
             Container(unittest, "Unit Test", "Uses gradle to perform unit tests", $sprite=gradle*0.6)
             Container(smoketest, "Smoke Test", "Uses gradle to perform tests", $sprite=gradle*0.6)
         }
-        Container(build, "Build", "Gradle", "Creates a build artefact", $sprite=gradle*0.6)
-        Container(helm, "Helm Deploy", "HELMINESS", $sprite=helm*0.6)
-    }
-
-
-    Boundary(aws, "Amazon Web Services"){
-            Boundary(cloudplatform, "Cloud Platform", "Kubernetes"){
-
-            Container(ecr, "Container Registry", "Elastic Container Registry (ECR)")
-            Boundary(service, "Service", "Kubernetes"){
-                Container(hmpps_integration_api_pod1, "HMPPS Integration API", "Pod", "An instance of HMPPS Integration API", $sprite=kubernetes*0.4)
-                Container(hmpps_integration_api_pod2, "HMPPS Integration API", "Pod", "An instance of HMPPS Integration API", $sprite=kubernetes*0.4)
-            }
+        Boundary(dev_build_and_deploy, "Development"){
+            Container(dev_build, "Build", "Gradle", "Creates a build artefact", $sprite=gradle*0.6)
+            Container(dev_helm, "Helm Deploy", "HELMINESS", $sprite=helm*0.6)
         }
-    }
+        Boundary(prod_build_and_deploy, "Production"){
+            Container(prod_build, "Build", "Gradle", "Creates a build artefact", $sprite=gradle*0.6)
+            Container(prod_helm, "Helm Deploy", "HELMINESS", $sprite=helm*0.6)
+        }
 
-    Container(email, "Notification", "eMail")
+        Boundary(aws, "Amazon Web Services"){
+            Boundary(dev_cp, "Cloud Platform Development", "Kubernetes"){
+
+                Container(dev_ecr, "Container Registry", "Elastic Container Registry (ECR)")
+                Boundary(dev_service, "Service", "Kubernetes"){
+                    Container(hmpps_integration_api_dev_pod1, "HMPPS Integration API", "Pod", "An instance of HMPPS Integration API", $sprite=kubernetes*0.4)
+                    Container(hmpps_integration_api_dev_pod2, "HMPPS Integration API", "Pod", "An instance of HMPPS Integration API", $sprite=kubernetes*0.4)
+                }
+            }
+            Boundary(prod_cp, "Cloud Platform Production", "Kubernetes"){
+
+                Container(prod_ecr, "Container Registry", "Elastic Container Registry (ECR)")
+                Boundary(prod_service, "Service", "Kubernetes"){
+                    Container(hmpps_integration_api_prod_pod1, "HMPPS Integration API", "Pod", "An instance of HMPPS Integration API", $sprite=kubernetes*0.4)
+                    Container(hmpps_integration_api_prod_pod2, "HMPPS Integration API", "Pod", "An instance of HMPPS Integration API", $sprite=kubernetes*0.4)
+                }
+            } 
+        }
+
+        Container(email, "Notification", "eMail")
+    }
 
     Rel(engineer, local, "Writes code")
     Rel(local, git, "Commits to", "SSH")
-    Rel(git, circleci, "Pipeline Integration")
-    Rel(checks, build, "Checks Successful")
-    Rel(build, ecr, "Pushes to")
-    Rel(circleci, service, "Deploy to")
+    Rel(git, checks, "Pipeline Integration")
+    Rel(checks, dev_build, "Checks Successful")
+    Rel(dev_build_and_deploy, prod_build_and_deploy, "Success!")
+    Rel(dev_build, dev_ecr, "Pushes to")
+    Rel(prod_build, prod_ecr, "Pushes to")
+    Rel(dev_helm, dev_service, "Pushes to")
+    Rel(prod_helm, prod_service, "Pushes to")
+    Rel(dev_build, dev_helm, "Deploy to")
+    Rel(prod_build, prod_helm, "Deploy to")
 
     Rel(checks, email, "Check Failed")
 
