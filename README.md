@@ -10,8 +10,6 @@
 - [External dependencies](#external-dependencies)
   - [This solution is dependent on](#this-solution-is-dependent-on)
   - [These things depend upon this solution](#these-things-depend-upon-this-solution)
-- [Cloud Platform](#cloud-platform)
-- [Environments](#environments)
 - [High Availability](#high-availability)
 - [Security](#security)
 - [Getting started](#getting-started)
