@@ -82,7 +82,7 @@ All in-flight requests are encrypted and sent over HTTPS over the public interne
 IP Restrictions are in place and will prevent the majority of unauthorised access attempts. We do not currently have AWS WAF applied on our ingress.
 All secrets are stored as Kubernetes secrets.
 
-The tokens provided by HMPPS Auth (to access downstream APIs such as Nomis) by default last 20 minutes before Refresh.
+The tokens provided by HMPPS Auth (to access upstream APIs such as NOMIS) by default last 20 minutes before refresh.
 These tokens have limited read-only access to accomplish only tasks required by the API.
 
 Below is a list of protected resources that make up the service, and access levels to those resources.
