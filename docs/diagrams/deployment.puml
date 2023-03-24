@@ -8,7 +8,7 @@
     !includeurl SPRITESURL/kotlin.puml
     !includeurl SPRITESURL/kubernetes.puml
 
-    skinparam linetype polyline
+    'skinparam linetype polyline
 
     Title [Deployment Flow] HMPPS Integration API
 
@@ -23,17 +23,18 @@
 
     Boundary(circleci, "Circle CI", "Deployment Pipeline"){
         Boundary(checks, "Code Checks"){
-            Container(lint, "Lint", "Uses gradle to perform linting task on code", $sprite=gradle*0.4)
-            Container(unittest, "Unit Test", "Uses gradle to perform unit tests", $sprite=gradle*0.4)
-            Container(smoketest, "Smoke Test", "Uses gradle to perform tests", $sprite=gradle*0.4)
+            Container(lint, "Lint", "Gradle", "Uses gradle to perform linting task on code", $sprite=gradle*0.6)
+            Container(unittest, "Unit Test", "Uses gradle to perform unit tests", $sprite=gradle*0.6)
+            Container(smoketest, "Smoke Test", "Uses gradle to perform tests", $sprite=gradle*0.6)
         }
-        Container(pushtoecr, "Push to ECR", )
-        
+        Container(build, "Build", "Gradle", "Creates a build artefact", $sprite=gradle*0.6)
         Container(helm, "Helm Deploy", "HELMINESS", $sprite=helm*0.6)
     }
 
-    Boundary(cloudplatform, "Cloud Platform", "Kubernetes"){
-        Boundary(aws, "Amazon Web Services"){
+
+    Boundary(aws, "Amazon Web Services"){
+            Boundary(cloudplatform, "Cloud Platform", "Kubernetes"){
+
             Container(ecr, "Container Registry", "Elastic Container Registry (ECR)")
             Boundary(service, "Service", "Kubernetes"){
                 Container(hmpps_integration_api_pod1, "HMPPS Integration API", "Pod", "An instance of HMPPS Integration API", $sprite=kubernetes*0.4)
@@ -45,11 +46,13 @@
     Container(email, "Notification", "eMail")
 
     Rel(engineer, local, "Writes code")
-    Rel(dev, git, "Commits to", "SSH")
+    Rel(local, git, "Commits to", "SSH")
     Rel(git, circleci, "Pipeline Integration")
-    Rel(circleci, cloudplatform, "Deploy to")
+    Rel(checks, build, "Checks Successful")
+    Rel(build, ecr, "Pushes to")
+    Rel(circleci, service, "Deploy to")
 
-    Rel(checks, email, "Failed Check")
+    Rel(checks, email, "Check Failed")
 
     SHOW_DYNAMIC_LEGEND()
 
