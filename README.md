@@ -77,7 +77,7 @@ This API is designed to run in 4 environments:
 ## Security
 This service is accessed exclusively through the API and has no other user interfaces.
 Onboarding new clients is a manual process and there is no other way to gain access credentials. 
-All in-flight requests are encrypted and sent over HTTPS over the public internet. Any data at rest is encrypted with AWS KMS.
+All in-flight requests are encrypted and sent over HTTPS over the public internet. Any data at rest is encrypted with AWS [Key Management Service (KMS)](https://aws.amazon.com/kms/).
 
 IP Restrictions are in place and will prevent the majority of unauthorised access attempts. We do not currently have AWS WAF applied on our ingress.
 All secrets are stored as Kubernetes secrets.
