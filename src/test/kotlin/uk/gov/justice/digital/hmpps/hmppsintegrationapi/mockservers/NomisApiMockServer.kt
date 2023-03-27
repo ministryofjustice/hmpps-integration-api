@@ -15,6 +15,10 @@ class NomisApiMockServer : WireMockServer(WIREMOCK_PORT) {
     stubFor(
       get("/api/offenders/$offenderNo")
         .withHeader(
+          "version",
+          matching("1.0"),
+        )
+        .withHeader(
           "Authorization",
           matching("Bearer ${HmppsAuthMockServer.TOKEN}"),
         ).willReturn(

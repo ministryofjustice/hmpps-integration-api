@@ -12,6 +12,20 @@ class WebClientWrapper(
     .baseUrl(baseUrl)
     .build()
 
+  inline fun <reified T> request(method: HttpMethod, uri: String, headers: Map<String, String>, requestBody: Map<String, Any?>? = null): T {
+    val responseBodySpec = client.method(method)
+      .uri(uri)
+      .headers { header -> headers.forEach { h -> header.set(h.key, h.value) } }
+
+    if (method == HttpMethod.POST && requestBody != null) {
+      responseBodySpec.body(BodyInserters.fromValue(requestBody))
+    }
+
+    return responseBodySpec.retrieve()
+      .bodyToMono(T::class.java)
+      .block()!!
+  }
+
   inline fun <reified T> request(method: HttpMethod, uri: String, token: String, requestBody: Map<String, Any?>? = null): T {
     val responseBodySpec = client.method(method)
       .uri(uri)

@@ -6,6 +6,7 @@ import io.kotest.matchers.shouldBe
 import org.springframework.http.HttpMethod
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.GenericApiMockServer
 
+data class StringModel(val headers: String) { }
 data class TestModel(val sourceName: String, val sourceLastName: String?) {
   fun toDomain() = TestDomainModel(sourceName, sourceLastName)
 }
@@ -97,5 +98,19 @@ class WebClientWrapperTest : DescribeSpec({
     testDomainModels.shouldForAll { it.firstName.shouldBe("Paul") }
     testDomainModels.first().lastName.shouldBe("Paper")
     testDomainModels.last().lastName.shouldBe("Card")
+  }
+
+  it("performs a request with multiple headers") {
+    mockServer.stubGetWithHeadersTest()
+
+    val headers = mapOf(
+      "foo" to "bar",
+      "bar" to "baz",
+    )
+
+    val webClient = WebClientWrapper(baseUrl = mockServer.baseUrl())
+    val result = webClient.request<StringModel>(HttpMethod.GET, "/test", headers=headers)
+
+    result.headers.shouldBe("headers matched")
   }
 },)

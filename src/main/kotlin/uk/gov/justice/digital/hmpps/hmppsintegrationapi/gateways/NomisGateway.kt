@@ -27,9 +27,13 @@ class NomisGateway(@Value("\${services.prison-api.base-url}") baseUrl: String) {
 
   fun getPerson(id: String): Person? {
     val token = hmppsAuthGateway.getClientToken("NOMIS")
+    val headers = mapOf(
+      "Authorization" to "Bearer $token",
+      "version" to "1.0",
+    )
 
     return try {
-      webClient.request<Offender>(HttpMethod.GET, "/api/offenders/$id", token).toPerson()
+      webClient.request<Offender>(HttpMethod.GET, "/api/offenders/$id", headers).toPerson()
     } catch (exception: WebClientResponseException.BadRequest) {
       log.error("${exception.message} - ${Json.parseToJsonElement(exception.responseBodyAsString).jsonObject["developerMessage"]}")
       null
