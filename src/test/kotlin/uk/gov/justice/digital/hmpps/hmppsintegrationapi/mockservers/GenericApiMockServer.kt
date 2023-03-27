@@ -27,11 +27,11 @@ class GenericApiMockServer : WireMockServer(WIREMOCK_PORT) {
     stubFor(
       WireMock.get("/test/$id")
         .willReturn(
-        WireMock.aResponse()
-          .withHeader("Content-Type", "application/json")
-          .withStatus(status.value())
-          .withBody(body.trimIndent()),
-      ),
+          WireMock.aResponse()
+            .withHeader("Content-Type", "application/json")
+            .withStatus(status.value())
+            .withBody(body.trimIndent()),
+        ),
     )
   }
 

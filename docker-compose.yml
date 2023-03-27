@@ -38,7 +38,7 @@ services:
       dockerfile: Dockerfile.setup-prison-api
     container_name: prison-api
     healthcheck:
-      test: 'wget --header="Authorization: Bearer abc" --header="version: 1.0" http://127.0.0.1:4010/api/offenders/A1234AL -O /dev/null'
+      test: 'wget --header="Authorization: Bearer abc" http://127.0.0.1:4010/api/offenders/A1234AL -O /dev/null'
     ports:
       - '4030:4010'
 
