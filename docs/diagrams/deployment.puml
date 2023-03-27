@@ -11,12 +11,13 @@
     'skinparam linetype polyline
 
     Title [Deployment Flow] HMPPS Integration API
+    
+    AddRelTag("flowpath", $textColor="#666666", $lineColor="#666666", $lineStyle = SolidLine())
 
-    Boundary(dev, "Developer"){
-        Person(engineer, "Engineer")
-        Boundary(local, "Local", "Developer Machine"){
-            Container(hmpps_integration_api, "HMPPS Integration API", "Local Code", "A single point of entry for services to retrieve data from multiple HMPPS systems.", $sprite=kotlin*0.4)
-        }
+    Person(engineer, "Engineer")
+
+    Boundary(local, "Local", "Developer Machine"){
+        Container(hmpps_integration_api, "HMPPS Integration API", "Local Code", "A single point of entry for services to retrieve data from multiple HMPPS systems.", $sprite=kotlin*0.4)
     }
 
     Container(git, "Source Control", "Git", $sprite=github-icon*0.6)
@@ -31,47 +32,52 @@
             Container(dev_build, "Build", "Gradle", "Creates a build artefact", $sprite=gradle*0.6)
             Container(dev_helm, "Helm Deploy", "HELMINESS", $sprite=helm*0.6)
         }
+
+        Boundary(dev_cp, "Cloud Platform Development", "Kubernetes"){
+
+            Container(dev_ecr, "Container Registry", "Elastic Container Registry (ECR)")
+            Boundary(dev_service, "Service", "Kubernetes"){
+                Container(hmpps_integration_api_dev_pod1, "HMPPS Integration API", "Pod", "An instance of HMPPS Integration API", $sprite=kubernetes*0.4)
+                Container(hmpps_integration_api_dev_pod2, "HMPPS Integration API", "Pod", "An instance of HMPPS Integration API", $sprite=kubernetes*0.4)
+            }
+        }
+
         Boundary(prod_build_and_deploy, "Production"){
             Container(prod_build, "Build", "Gradle", "Creates a build artefact", $sprite=gradle*0.6)
             Container(prod_helm, "Helm Deploy", "HELMINESS", $sprite=helm*0.6)
         }
-
-        Boundary(aws, "Amazon Web Services"){
-            Boundary(dev_cp, "Cloud Platform Development", "Kubernetes"){
-
-                Container(dev_ecr, "Container Registry", "Elastic Container Registry (ECR)")
-                Boundary(dev_service, "Service", "Kubernetes"){
-                    Container(hmpps_integration_api_dev_pod1, "HMPPS Integration API", "Pod", "An instance of HMPPS Integration API", $sprite=kubernetes*0.4)
-                    Container(hmpps_integration_api_dev_pod2, "HMPPS Integration API", "Pod", "An instance of HMPPS Integration API", $sprite=kubernetes*0.4)
-                }
+        
+        Boundary(prod_cp, "Cloud Platform Production", "Kubernetes"){
+            Container(prod_ecr, "Container Registry", "Elastic Container Registry (ECR)")
+            Boundary(prod_service, "Service", "Kubernetes"){
+                Container(hmpps_integration_api_prod_pod1, "HMPPS Integration API", "Pod", "An instance of HMPPS Integration API", $sprite=kubernetes*0.4)
+                Container(hmpps_integration_api_prod_pod2, "HMPPS Integration API", "Pod", "An instance of HMPPS Integration API", $sprite=kubernetes*0.4)
             }
-            Boundary(prod_cp, "Cloud Platform Production", "Kubernetes"){
-
-                Container(prod_ecr, "Container Registry", "Elastic Container Registry (ECR)")
-                Boundary(prod_service, "Service", "Kubernetes"){
-                    Container(hmpps_integration_api_prod_pod1, "HMPPS Integration API", "Pod", "An instance of HMPPS Integration API", $sprite=kubernetes*0.4)
-                    Container(hmpps_integration_api_prod_pod2, "HMPPS Integration API", "Pod", "An instance of HMPPS Integration API", $sprite=kubernetes*0.4)
-                }
-            } 
-        }
-
-        Container(email, "Notification", "eMail")
+        } 
     }
 
+    Container(email, "Notification", "Email")
+
+    'RELATIONSHIPS
     Rel(engineer, local, "Writes code")
-    Rel(local, git, "Commits to", "SSH")
+    Rel(hmpps_integration_api, git, "Committed to")
     Rel(git, checks, "Pipeline Integration")
-    Rel(checks, dev_build, "Checks Successful")
-    Rel(dev_build_and_deploy, prod_build_and_deploy, "Success!")
+
+    Rel(checks, dev_build, "On success")
+
     Rel(dev_build, dev_ecr, "Pushes to")
-    Rel(prod_build, prod_ecr, "Pushes to")
     Rel(dev_helm, dev_service, "Pushes to")
+    Rel_Right(dev_build, dev_helm, "Deploy to")
+
+    Rel(dev_cp, prod_build, "On success")
+
+    Rel(prod_build, prod_ecr, "Pushes to")
     Rel(prod_helm, prod_service, "Pushes to")
-    Rel(dev_build, dev_helm, "Deploy to")
-    Rel(prod_build, prod_helm, "Deploy to")
+    Rel_Right(prod_build, prod_helm, "Deploy to")
 
-    Rel(checks, email, "Check Failed")
+    Rel(circleci, email, "On stage(s) failed")
 
+    Lay_Right(unittest, smoketest)
     SHOW_DYNAMIC_LEGEND()
 
 @enduml
