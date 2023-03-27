@@ -22,10 +22,8 @@ class PrisonerOffenderSearchGateway(@Value("\${services.prisoner-offender-search
   lateinit var hmppsAuthGateway: HmppsAuthGateway
 
   fun getPerson(id: String): Person? {
-    val token = hmppsAuthGateway.getClientToken("Prisoner Offender Search")
-
     return try {
-      webClient.request<Prisoner>(HttpMethod.GET, "/prisoner/$id", token).toPerson()
+      webClient.request<Prisoner>(HttpMethod.GET, "/prisoner/$id", authenticationHeader()).toPerson()
     } catch (exception: WebClientResponseException.BadRequest) {
       log.error("${exception.message} - ${Json.parseToJsonElement(exception.responseBodyAsString).jsonObject["developerMessage"]}")
       null
@@ -35,12 +33,18 @@ class PrisonerOffenderSearchGateway(@Value("\${services.prisoner-offender-search
   }
 
   fun getPersons(firstName: String? = null, lastName: String? = null, pncId: String? = null): List<Person> {
-    val token = hmppsAuthGateway.getClientToken("Prisoner Offender Search")
-
     val requestBody = mapOf("firstName" to firstName, "lastName" to lastName, "includeAliases" to true, "prisonerIdentifier" to pncId)
       .filterValues { it != null }
 
-    return webClient.request<GlobalSearch>(HttpMethod.POST, "/global-search", token, requestBody)
+    return webClient.request<GlobalSearch>(HttpMethod.POST, "/global-search", authenticationHeader(), requestBody)
       .content.map { it.toPerson() }
+  }
+
+  private fun authenticationHeader(): Map<String, String> {
+    val token = hmppsAuthGateway.getClientToken("Prisoner Offender Search")
+
+    return mapOf(
+      "Authorization" to "Bearer $token",
+    )
   }
 }

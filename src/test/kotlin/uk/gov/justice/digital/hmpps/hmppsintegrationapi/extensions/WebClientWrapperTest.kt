@@ -6,6 +6,7 @@ import io.kotest.matchers.shouldBe
 import org.springframework.http.HttpMethod
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.GenericApiMockServer
 
+data class StringModel(val headers: String)
 data class TestModel(val sourceName: String, val sourceLastName: String?) {
   fun toDomain() = TestDomainModel(sourceName, sourceLastName)
 }
@@ -17,7 +18,7 @@ data class TestDomainModel(val firstName: String, val lastName: String?)
 class WebClientWrapperTest : DescribeSpec({
   val mockServer = GenericApiMockServer()
   val id = "ABC1234"
-  val token = "4567"
+  val headers = mapOf("foo" to "bar")
 
   beforeEach() {
     mockServer.start()
@@ -38,7 +39,7 @@ class WebClientWrapperTest : DescribeSpec({
     )
 
     val webClient = WebClientWrapper(baseUrl = mockServer.baseUrl())
-    val testModel = webClient.request<TestModel>(HttpMethod.GET, "/test/$id", token)
+    val testModel = webClient.request<TestModel>(HttpMethod.GET, "/test/$id", headers)
     val testDomainModel = testModel.toDomain()
 
     testDomainModel?.firstName.shouldBe("Harold")
@@ -62,7 +63,7 @@ class WebClientWrapperTest : DescribeSpec({
     val testModels = webClient.requestList<TestModel>(
       HttpMethod.POST,
       "/testPost",
-      token,
+      headers,
       mapOf("sourceName" to "Paul"),
     )
 
@@ -91,11 +92,39 @@ class WebClientWrapperTest : DescribeSpec({
     )
 
     val webClient = WebClientWrapper(baseUrl = mockServer.baseUrl())
-    val searchModel = webClient.request<SearchModel>(HttpMethod.POST, "/testPost", token, mapOf("sourceName" to "Paul"))
+    val searchModel = webClient.request<SearchModel>(HttpMethod.POST, "/testPost", headers, mapOf("sourceName" to "Paul"))
     val testDomainModels = searchModel.content.map { it.toDomain() }
 
     testDomainModels.shouldForAll { it.firstName.shouldBe("Paul") }
     testDomainModels.first().lastName.shouldBe("Paper")
     testDomainModels.last().lastName.shouldBe("Card")
+  }
+
+  it("performs a request with multiple headers for .request()") {
+    mockServer.stubGetWithHeadersTest()
+
+    val headers = mapOf(
+      "foo" to "bar",
+      "bar" to "baz",
+    )
+
+    val webClient = WebClientWrapper(baseUrl = mockServer.baseUrl())
+    val result = webClient.request<StringModel>(HttpMethod.GET, "/test", headers = headers)
+
+    result.headers.shouldBe("headers matched")
+  }
+
+  it("performs a request with multiple headers for .requestList()") {
+    mockServer.stubGetWithHeadersTest()
+
+    val headers = mapOf(
+      "foo" to "bar",
+      "bar" to "baz",
+    )
+
+    val webClient = WebClientWrapper(baseUrl = mockServer.baseUrl())
+    val result = webClient.requestList<StringModel>(HttpMethod.GET, "/test", headers = headers)
+
+    result.first().headers.shouldBe("headers matched")
   }
 },)

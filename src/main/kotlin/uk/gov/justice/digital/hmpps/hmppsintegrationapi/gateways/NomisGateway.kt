@@ -26,10 +26,8 @@ class NomisGateway(@Value("\${services.prison-api.base-url}") baseUrl: String) {
   lateinit var hmppsAuthGateway: HmppsAuthGateway
 
   fun getPerson(id: String): Person? {
-    val token = hmppsAuthGateway.getClientToken("NOMIS")
-
     return try {
-      webClient.request<Offender>(HttpMethod.GET, "/api/offenders/$id", token).toPerson()
+      webClient.request<Offender>(HttpMethod.GET, "/api/offenders/$id", authenticationHeader()).toPerson()
     } catch (exception: WebClientResponseException.BadRequest) {
       log.error("${exception.message} - ${Json.parseToJsonElement(exception.responseBodyAsString).jsonObject["developerMessage"]}")
       null
@@ -39,10 +37,8 @@ class NomisGateway(@Value("\${services.prison-api.base-url}") baseUrl: String) {
   }
 
   fun getImageMetadataForPerson(id: String): List<ImageMetadata> {
-    val token = hmppsAuthGateway.getClientToken("NOMIS")
-
     return try {
-      webClient.requestList<ImageDetail>(HttpMethod.GET, "api/images/offenders/$id", token)
+      webClient.requestList<ImageDetail>(HttpMethod.GET, "api/images/offenders/$id", authenticationHeader())
         .map { it.toImageMetadata() }
     } catch (exception: WebClientResponseException.NotFound) {
       throw EntityNotFoundException("Could not find person with id: $id")
@@ -50,23 +46,27 @@ class NomisGateway(@Value("\${services.prison-api.base-url}") baseUrl: String) {
   }
 
   fun getImageData(id: Int): ByteArray {
-    val token = hmppsAuthGateway.getClientToken("NOMIS")
-
     return try {
-      webClient.request<ByteArray>(HttpMethod.GET, "/api/images/$id/data", token)
+      webClient.request<ByteArray>(HttpMethod.GET, "/api/images/$id/data", authenticationHeader())
     } catch (exception: WebClientResponseException.NotFound) {
       throw EntityNotFoundException("Could not find image with id: $id")
     }
   }
 
   fun getAddressesForPerson(id: String): List<Address>? {
-    val token = hmppsAuthGateway.getClientToken("NOMIS")
-
     return try {
-      webClient.requestList<AddressFromNomis>(HttpMethod.GET, "/api/offenders/$id/addresses", token)
+      webClient.requestList<AddressFromNomis>(HttpMethod.GET, "/api/offenders/$id/addresses", authenticationHeader())
         .map { it.toAddress() }
     } catch (exception: WebClientResponseException.NotFound) {
       null
     }
+  }
+
+  private fun authenticationHeader(): Map<String, String> {
+    val token = hmppsAuthGateway.getClientToken("NOMIS")
+
+    return mapOf(
+      "Authorization" to "Bearer $token",
+    )
   }
 }

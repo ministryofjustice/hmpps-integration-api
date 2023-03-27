@@ -22,13 +22,11 @@ class ProbationOffenderSearchGateway(@Value("\${services.probation-offender-sear
   lateinit var hmppsAuthGateway: HmppsAuthGateway
 
   fun getPerson(pncId: String): Person? {
-    val token = hmppsAuthGateway.getClientToken("Probation Offender Search")
-
     return try {
       val offenders = webClient.requestList<Offender>(
         HttpMethod.POST,
         "/search",
-        token,
+        authenticationHeader(),
         mapOf("pncNumber" to pncId, "valid" to true),
       )
 
@@ -40,21 +38,17 @@ class ProbationOffenderSearchGateway(@Value("\${services.probation-offender-sear
   }
 
   fun getPersons(firstName: String?, surname: String?): List<Person> {
-    val token = hmppsAuthGateway.getClientToken("Probation Offender Search")
-
     val requestBody = mapOf("firstName" to firstName, "surname" to surname, "valid" to true)
       .filterValues { it != null }
 
-    return webClient.requestList<Offender>(HttpMethod.POST, "/search", token, requestBody)
+    return webClient.requestList<Offender>(HttpMethod.POST, "/search", authenticationHeader(), requestBody)
       .map { it.toPerson() }
   }
 
   fun getAddressesForPerson(pncId: String): List<Address>? {
-    val token = hmppsAuthGateway.getClientToken("Probation Offender Search")
-
     val requestBody = mapOf("pncNumber" to pncId, "valid" to true)
 
-    val offender = webClient.requestList<Offender>(HttpMethod.POST, "/search", token, requestBody)
+    val offender = webClient.requestList<Offender>(HttpMethod.POST, "/search", authenticationHeader(), requestBody)
 
     if (offender.isEmpty()) return null
 
@@ -63,5 +57,12 @@ class ProbationOffenderSearchGateway(@Value("\${services.probation-offender-sear
     } else {
       listOf()
     }
+  }
+  private fun authenticationHeader(): Map<String, String> {
+    val token = hmppsAuthGateway.getClientToken("Probation Offender Search")
+
+    return mapOf(
+      "Authorization" to "Bearer $token",
+    )
   }
 }
