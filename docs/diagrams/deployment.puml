@@ -12,7 +12,7 @@
 
     Title [Deployment Flow] HMPPS Integration API
     
-    AddRelTag("flowpath", $textColor="#666666", $lineColor="#666666", $lineStyle = SolidLine())
+    AddRelTag("subprocess", $textColor="#808080", $lineColor="#808080", $lineStyle = DashedLine())
 
     Person(engineer, "Engineer")
 
@@ -30,7 +30,7 @@
         }
         Boundary(dev_build_and_deploy, "Development"){
             Container(dev_build, "Build", "Gradle", "Creates a build artefact", $sprite=gradle*0.6)
-            Container(dev_helm, "Helm Deploy", "HELMINESS", $sprite=helm*0.6)
+            Container(dev_helm, "Deploy", "Helm", $sprite=helm*0.6)
         }
 
         Boundary(dev_cp, "Cloud Platform Development", "Kubernetes"){
@@ -44,7 +44,7 @@
 
         Boundary(prod_build_and_deploy, "Production"){
             Container(prod_build, "Build", "Gradle", "Creates a build artefact", $sprite=gradle*0.6)
-            Container(prod_helm, "Helm Deploy", "HELMINESS", $sprite=helm*0.6)
+            Container(prod_helm, "Deploy", "Helm", $sprite=helm*0.6)
         }
         
         Boundary(prod_cp, "Cloud Platform Production", "Kubernetes"){
@@ -61,19 +61,19 @@
     'RELATIONSHIPS
     Rel(engineer, local, "Writes code")
     Rel(hmpps_integration_api, git, "Committed to")
-    Rel(git, checks, "Pipeline Integration")
+    Rel(git, checks, "Automated pipeline integration")
 
     Rel(checks, dev_build, "On success")
 
-    Rel(dev_build, dev_ecr, "Pushes to")
-    Rel(dev_helm, dev_service, "Pushes to")
-    Rel_Right(dev_build, dev_helm, "Deploy to")
+    Rel(dev_build, dev_ecr, "Pushes to", $tags=subprocess)
+    Rel(dev_helm, dev_service, "Pushes to", $tags=subprocess)
+    Rel_Right(dev_build, dev_helm, "On success")
 
     Rel(dev_cp, prod_build, "On success")
 
-    Rel(prod_build, prod_ecr, "Pushes to")
-    Rel(prod_helm, prod_service, "Pushes to")
-    Rel_Right(prod_build, prod_helm, "Deploy to")
+    Rel(prod_build, prod_ecr, "Pushes to", $tags=subprocess)
+    Rel(prod_helm, prod_service, "Pushes to", $tags=subprocess)
+    Rel_Right(prod_build, prod_helm, "On success")
 
     Rel(circleci, email, "On stage(s) failed")
 
