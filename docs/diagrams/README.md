@@ -39,8 +39,9 @@ The [component diagram](https://c4model.com/#ComponentDiagram) provides an overv
 ## Supplementary diagrams
 
 ### Deployment diagram
+The [deployment diagram](./deployment.svg) provides a directional flow diagram that illustrates how the application is deployed.
 
-[![Deployment diagram](./aws-deployment.svg)](./aws-deployment.svg)
+[![Deployment diagram](./deployment.svg)](./deployment.svg)
 
 ### Infrastructure diagram
 
