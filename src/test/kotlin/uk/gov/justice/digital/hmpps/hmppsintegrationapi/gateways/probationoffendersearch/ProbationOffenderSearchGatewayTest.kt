@@ -68,9 +68,10 @@ class ProbationOffenderSearchGatewayTest(
     it("returns person(s) when searching on first and last name") {
       val persons = probationOffenderSearchGateway.getPersons(firstName, surname)
 
-      persons?.count().shouldBe(1)
-      persons?.first()?.firstName.shouldBe(firstName)
-      persons?.first()?.lastName.shouldBe(surname)
+      persons.count().shouldBe(1)
+      persons.first().firstName.shouldBe(firstName)
+      persons.first().lastName.shouldBe(surname)
+      persons.first().pncId.shouldBe("2018/0123456X")
     }
 
     it("returns person(s) when searching on first name only") {
@@ -92,9 +93,9 @@ class ProbationOffenderSearchGatewayTest(
       )
       val persons = probationOffenderSearchGateway.getPersons("Ahsoka", null)
 
-      persons?.count().shouldBe(1)
-      persons?.first()?.firstName.shouldBe("Ahsoka")
-      persons?.first()?.lastName.shouldBe("Tano")
+      persons.count().shouldBe(1)
+      persons.first()?.firstName.shouldBe("Ahsoka")
+      persons.first()?.lastName.shouldBe("Tano")
     }
 
     it("returns person(s) when searching on last name only") {
@@ -116,9 +117,9 @@ class ProbationOffenderSearchGatewayTest(
       )
       val persons = probationOffenderSearchGateway.getPersons(null, "Tano")
 
-      persons?.count().shouldBe(1)
-      persons?.first()?.firstName.shouldBe("Ahsoka")
-      persons?.first()?.lastName.shouldBe("Tano")
+      persons.count().shouldBe(1)
+      persons.first()?.firstName.shouldBe("Ahsoka")
+      persons.first()?.lastName.shouldBe("Tano")
     }
   }
 

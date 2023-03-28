@@ -108,7 +108,8 @@ internal class PersonControllerTest(
                 "middleName":"Jonas",
                 "dateOfBirth":"2023-03-01",
                 "aliases":[],
-                "prisonerId": null
+                "prisonerId": null,
+                "pncId": null
                },
                {
                  "firstName":"Barry",
@@ -116,7 +117,8 @@ internal class PersonControllerTest(
                  "middleName":"Rock",
                  "dateOfBirth":"2022-07-22",
                  "aliases":[],
-                "prisonerId": null
+                 "prisonerId": null,
+                 "pncId": null
                }
              ]
            }
@@ -189,7 +191,8 @@ internal class PersonControllerTest(
             "middleName": null,
             "dateOfBirth": null,
             "aliases": [],
-            "prisonerId":null
+            "prisonerId": null,
+            "pncId": null
           },
           "probationOffenderSearch": {
             "firstName": "Silly",
@@ -197,7 +200,8 @@ internal class PersonControllerTest(
             "middleName": null,
             "dateOfBirth": null,
             "aliases": [],
-            "prisonerId":null
+            "prisonerId": null,
+            "pncId": null
           }
         }
         """.removeWhitespaceAndNewlines(),
