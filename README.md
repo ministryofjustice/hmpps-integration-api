@@ -10,6 +10,7 @@
 - [External dependencies](#external-dependencies)
   - [This solution is dependent on](#this-solution-is-dependent-on)
   - [These things depend upon this solution](#these-things-depend-upon-this-solution)
+- [High Availability](#high-availability)
 - [Security](#security)
 - [Getting started](#getting-started)
   - [Using IntelliJ IDEA](#using-intellij-idea)
@@ -73,6 +74,17 @@ This API is designed to run in 4 environments:
 | Development    | On Merge | T3/Development Seed                                | Internal Testing                                  |
 | Pre-Production | On Merge | Real - copy of live imported every couple of weeks | Internal Testing / QA / External Consumer Testing |
 | Production     | Manually | Real                                               | Live Services                                     |
+
+## High Availability
+The API is hosted in 1 AWS region (London).
+Nodes are spread across multiple (up to 3) Availability Zones.
+
+- eu-west-2a
+- eu-west-2b
+- eu-west-2c
+
+Healthchecks are run by Kubernetes to assess the health of each node. If a node fails 3 times in a row, it is declared unhealthy and a new one put in to take its place.
+Kubernetes with auto heal and prevent any corrupt nodes from replacing existing healthy ones.
 
 ## Security
 This service is accessed exclusively through the API and has no other user interfaces.
