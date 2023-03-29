@@ -11,6 +11,7 @@
   - [This solution is dependent on](#this-solution-is-dependent-on)
   - [These things depend upon this solution](#these-things-depend-upon-this-solution)
 - [High Availability](#high-availability)
+- [Backups](#backups)
 - [Security](#security)
 - [Getting started](#getting-started)
   - [Using IntelliJ IDEA](#using-intellij-idea)
@@ -85,6 +86,15 @@ Nodes are spread across multiple (up to 3) Availability Zones.
 
 Healthchecks are run by Kubernetes to assess the health of each node. If a node fails 3 times in a row, it is declared unhealthy and a new one put in to take its place.
 Kubernetes with auto heal and prevent any corrupt nodes from replacing existing healthy ones.
+
+## Backups
+
+This is a transient API with no database, no data passing through the API is persisted.
+
+Only the following is persisted:
+- Mutual TLS certificate authority - S3 (versioning enabled)
+- API container Images - ECR (versioning enabled)
+- Application logs - AWS hosted ElasticSearch cluster (retention period of 30 days)
 
 ## Security
 This service is accessed exclusively through the API and has no other user interfaces.
