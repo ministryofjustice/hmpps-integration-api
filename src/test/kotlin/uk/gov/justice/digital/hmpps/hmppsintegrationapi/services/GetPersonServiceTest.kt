@@ -91,6 +91,6 @@ internal class GetPersonServiceTest(
 
     val result = getPersonService.execute(pncId)
 
-    result.shouldBe(expectedResult);
+    result.shouldBe(expectedResult)
   }
 },)
