@@ -94,7 +94,6 @@ This is a transient API with no database, no data passing through the API is per
 Only the following is persisted:
 - Mutual TLS certificate authority - S3 (versioning enabled)
 - API container Images - ECR (versioning enabled)
-- Application logs - AWS hosted ElasticSearch cluster (retention period of 30 days)
 
 ## Security
 This service is accessed exclusively through the API and has no other user interfaces.
