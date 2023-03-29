@@ -77,4 +77,20 @@ internal class GetPersonServiceTest(
 
     result.shouldBeNull()
   }
+
+  it("returns no results from prisoner offender search, but one from probation offender search") {
+    val personFromProbationOffenderSearch = Person("Molly", "Mob")
+
+    whenever(prisonerOffenderSearchGateway.getPersons(pncId = pncId)).thenReturn(emptyList())
+    whenever(probationOffenderSearchGateway.getPerson(pncId)).thenReturn(personFromProbationOffenderSearch)
+
+    val expectedResult = mapOf(
+      "prisonerOffenderSearch" to null,
+      "probationOffenderSearch" to Person("Molly", "Mob"),
+    )
+
+    val result = getPersonService.execute(pncId)
+
+    result.shouldBe(expectedResult)
+  }
 },)

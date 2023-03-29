@@ -12,15 +12,15 @@ class GetPersonService(
   @Autowired val probationOffenderSearchGateway: ProbationOffenderSearchGateway,
 ) {
   fun execute(pncId: String): Map<String, Person?>? {
-    val personFromPrisonerOffenderSearch = prisonerOffenderSearchGateway.getPersons(pncId = pncId)
+    val personsFromPrisonerOffenderSearch = prisonerOffenderSearchGateway.getPersons(pncId = pncId)
     val personFromProbationOffenderSearch = probationOffenderSearchGateway.getPerson(pncId)
 
-    if (personFromPrisonerOffenderSearch.isEmpty() && personFromProbationOffenderSearch == null) {
+    if (personsFromPrisonerOffenderSearch.isEmpty() && personFromProbationOffenderSearch == null) {
       return null
     }
 
     return mapOf(
-      "prisonerOffenderSearch" to personFromPrisonerOffenderSearch.first(),
+      "prisonerOffenderSearch" to personsFromPrisonerOffenderSearch.firstOrNull(),
       "probationOffenderSearch" to personFromProbationOffenderSearch,
     )
   }
