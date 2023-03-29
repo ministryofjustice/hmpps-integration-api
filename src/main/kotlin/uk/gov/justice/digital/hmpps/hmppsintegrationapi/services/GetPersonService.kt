@@ -19,10 +19,8 @@ class GetPersonService(
       return null
     }
 
-    val personFromPrisonerOffenderSearch = if (personsFromPrisonerOffenderSearch.isEmpty()) null else personsFromPrisonerOffenderSearch.first()
-
     return mapOf(
-      "prisonerOffenderSearch" to personFromPrisonerOffenderSearch,
+      "prisonerOffenderSearch" to personsFromPrisonerOffenderSearch.firstOrNull(),
       "probationOffenderSearch" to personFromProbationOffenderSearch,
     )
   }
