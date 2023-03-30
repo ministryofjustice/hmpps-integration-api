@@ -1,0 +1,100 @@
+---
+title: Get an image of a person without their PNC ID
+weight: 4
+---
+
+# Get an image of a person without their PNC ID
+
+## 1. Search for the person's PNC ID
+
+The `GET /persons` endpoint provides the ability to search for a person based on certain attributes such as first name
+and last name.
+
+An example curl command to search on the name "John Smith" looks like:
+
+```bash
+curl -H "x-api-key: some-client-api-key" \
+  https://development.integration-api.hmpps.service.justice.gov.uk/persons?first_name=John&last_name=Smith \
+  --cert client.pem \
+  --key client.key
+```
+
+This will return a list of [Person](/documentation/api/#schema-person) objects within a `persons` key. Each object
+contains identifying associated attributes, for example:
+
+```json
+{
+  "persons": [
+    {
+      "firstName": "John",
+      "lastName": "Smith",
+      "dateOfBirth": "1965-12-01",
+      "pncId": "2008/0545166T",
+      ...
+    }
+  ]
+}
+```
+
+Use the information provided in the API response to identify the relevant person and their PNC ID.
+
+See [searching for a person API endpoint](/documentation/api/#persons-encodedpncid) for more details.
+
+## 2. Get a list of images of the person using their PNC ID
+
+The `GET /persons/{encodedPncId}/images` endpoint returns a descriptive list of all images that are associated with a
+person.
+
+URL-encode the person's PNC ID by replacing the forward slash `/` with `%2F` and pass this in as a path parameter to the
+endpoint (read [why we URL-encode path parameters that contain forward slashes](https://github.com/ministryofjustice/hmpps-integration-api/blob/main/docs/adr/0006-url-encode-path-parameters.md)).
+
+An example curl command that returns a list of images associated with the PNC ID `2008/0545166T` looks like:
+
+```bash
+curl -H "x-api-key: some-client-api-key" \
+  https://development.integration-api.hmpps.service.justice.gov.uk/persons/2008%2F0545166T/images \
+  --cert client.pem \
+  --key client.key
+```
+
+This will return a list of [Image](/documentation/api/#schema-image) objects within a `images` key. Each object,
+alongside information about the properties of the image, includes an ID that can be used to retrieve the image itself in
+JPEG format. For example:
+
+```json
+{
+  "images": [
+    {
+      "id": 2461788,
+      "view": "FACE",
+      ...
+    }
+  ]
+}
+```
+
+Use the information provided in the API response to identify the relevant image and its ID.
+
+See [getting a list of images for a person API endpoint](/documentation/api/#persons-encodedpncid-images) for more
+details.
+
+## 3. Get an image using an ID
+
+The `GET images/{id}` endpoint returns the image with the associated ID.
+
+Pass the image ID in as a path parameter to the endpoint.
+
+An example curl command that returns an image associated with the ID `2461788` looks like:
+
+```bash
+curl -H "x-api-key: some-client-api-key" \
+  https://development.integration-api.hmpps.service.justice.gov.uk/images/2461788 \
+  --cert client.pem \
+  --key client.key
+```
+
+This will return the image in JPEG format.
+
+<img src="images/example-person-image.jpg" style="border-style: solid; border-color: grey;">
+
+See [getting an image API endpoint](/documentation/api/#images-id) for more details.

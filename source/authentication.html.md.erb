@@ -11,12 +11,12 @@ API consumers are authenticated on a service to service level using:
   the server and client side
 - API keys to track and manage usage of the client
 
-## Connecting using mutual TLS
+## Connect using mutual TLS
 
 Using two-way authentication allows HMPPS to additionally verify the identity of a consumer before securely providing
 any data. This means a certificate must be presented as part of making a request.
 
-## Sending an API key
+## Send an API key
 
 To provide an API key, add an HTTP header called `x-api-key` with the value of the API key to the API request, ensuring
 it's not encoded in Base 64. Without an API key, a `403 Forbidden` HTTP response is returned.
