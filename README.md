@@ -142,10 +142,8 @@ does not include any response data.
 Elasticsearch logs have a retention period of 30 days. See the [Application Log Collection and Storage](https://user-guide.cloud-platform.service.justice.gov.uk/documentation/logging-an-app/log-collection-and-storage.html)
 section of the Cloud Platform documentation for more detail.
 
-> Further information on how to use the access logs in Kibana can be found within the [Accessing Application Log Data](https://user-guide.cloud-platform.service.justice.gov.uk/documentation/logging-an-app/access-logs.html#accessing-ingress-logs) 
-> section of the Cloud Platform documentation.
-> 
-> To locate the logs you'll need the Cloud Platform namespace for this API.
+Further information on how to use the access logs in Kibana can be found within the [Accessing Application Log Data](https://user-guide.cloud-platform.service.justice.gov.uk/documentation/logging-an-app/access-logs.html#accessing-ingress-logs) 
+section of the Cloud Platform documentation. To locate the logs you'll need the Cloud Platform namespace for this API.
 
 ## Getting started
 
