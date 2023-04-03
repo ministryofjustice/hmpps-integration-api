@@ -16,10 +16,10 @@ generic-service:
     host: app-hostname.local    # override per environment
     tlsSecretName: ""
     annotations:
-      - nginx.ingress.kubernetes.io/auth-tls-verify-client: "on"
-      - nginx.ingress.kubernetes.io/auth-tls-secret: "api-gateway-authentication"
-      - nginx.ingress.kubernetes.io/auth-tls-verify-depth: "1"
-      - nginx.ingress.kubernetes.io/auth-tls-pass-certificate-to-upstream: "true"
+      nginx.ingress.kubernetes.io/auth-tls-verify-client: "on"
+      nginx.ingress.kubernetes.io/auth-tls-secret: "api-gateway-authentication"
+      nginx.ingress.kubernetes.io/auth-tls-verify-depth: "1"
+      nginx.ingress.kubernetes.io/auth-tls-pass-certificate-to-upstream: "true"
 
   # Environment variables to load into the deployment
   env:
