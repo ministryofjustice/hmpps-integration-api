@@ -8,7 +8,6 @@
 
 - [About this project](#about-this-project)
   - [External dependencies](#external-dependencies)
-- [Backups](#backups)
 - [Getting started](#getting-started)
   - [Using IntelliJ IDEA](#using-intellij-idea)
 - [Usage](#usage)
@@ -55,14 +54,6 @@ This solution is dependent on:
 These things depend upon this solution:
 
 - Consumer Applications (MAPPS)
-
-## Backups
-
-This is a transient API with no database, no data passing through the API is persisted.
-
-Only the following is persisted:
-- Mutual TLS certificate authority - S3 (versioning enabled)
-- API container Images - ECR (versioning enabled)
 
 ## Getting started
 
@@ -242,14 +233,15 @@ Note, this will only specifically enable the `RequestLogger`.
 
 - [Architecture diagrams](/docs/diagrams)
 - [Audit](/docs/audit)
+- [Backups](/docs/backups)
 - [Environments](/docs/environments)
 - [High availability](/docs/high-availability)
 - [Security](/docs/security)
 
 ## Developer guides
 
-- [Updating diagrams](/docs/updating-diagrams.md)
 - [Setting up a CircleCI context for deployment](/docs/setting-up-circleci-context-for-deployment.md)
+- [Updating diagrams](/docs/updating-diagrams.md)
 - [Useful commands](/docs/useful-commands.md)
 
 ## Related repositories
