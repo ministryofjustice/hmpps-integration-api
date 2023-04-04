@@ -1,4 +1,4 @@
-## Backups
+# Backups
 
 This is a transient API with no database, no data passing through the API is persisted.
 
