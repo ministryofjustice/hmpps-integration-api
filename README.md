@@ -65,6 +65,7 @@ Changes pushed or merged into to `main` are automatically published to GitHub Pa
 
 ## Reviewing
 
-Should you need to review the content of our documentation, ensure that the `review_in` field is updated as part of the pull request. This should be formatted `yyyy-mm-dd`.
+Should you need to review the content of our documentation, ensure that the `review_in` field is updated as part of the front matter of the markdown page. This should be formatted `yyyy-mm-dd`.
 
-A Ministry of Justice tool named [Tech Docs Monitor _also known as_ Daniel the Manual Spaniel](https://github.com/ministryofjustice/tech-docs-monitor) will send a notification to the slack channel specified in the `owner_slack` property when a document is due for review.
+A Ministry of Justice tool named [Tech Docs Monitor _also known as_ Daniel the Manual Spaniel](https://github.com/ministryofjustice/tech-docs-monitor) will send a notification to the Slack channel specified in the `owner_slack` property when a document is due for review.
+
