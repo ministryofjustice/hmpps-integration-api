@@ -8,7 +8,6 @@
 
 - [About this project](#about-this-project)
   - [External dependencies](#external-dependencies)
-- [High Availability](#high-availability)
 - [Backups](#backups)
 - [Getting started](#getting-started)
   - [Using IntelliJ IDEA](#using-intellij-idea)
@@ -56,18 +55,6 @@ This solution is dependent on:
 These things depend upon this solution:
 
 - Consumer Applications (MAPPS)
-
-## High Availability
-
-The API is hosted in 1 AWS region (London).
-Nodes are spread across multiple (up to 3) Availability Zones.
-
-- eu-west-2a
-- eu-west-2b
-- eu-west-2c
-
-Healthchecks are run by Kubernetes to assess the health of each node. If a node fails 3 times in a row, it is declared unhealthy and a new one put in to take its place.
-Kubernetes with auto heal and prevent any corrupt nodes from replacing existing healthy ones.
 
 ## Backups
 
@@ -256,6 +243,7 @@ Note, this will only specifically enable the `RequestLogger`.
 - [Architecture diagrams](/docs/diagrams)
 - [Audit](/docs/audit)
 - [Environments](/docs/environments)
+- [High availability](/docs/high-availability)
 - [Security](/docs/security)
 
 ## Developer guides
