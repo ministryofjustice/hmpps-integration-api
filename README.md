@@ -231,6 +231,7 @@ Note, this will only specifically enable the `RequestLogger`.
 
 ## Further documentation
 
+- [Architecture Decision Records (ADRs)](/docs/adr)
 - [Architecture diagrams](/docs/diagrams)
 - [Audit](/docs/audit)
 - [Backups](/docs/backups)
