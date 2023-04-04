@@ -8,7 +8,6 @@
 
 - [About this project](#about-this-project)
   - [External dependencies](#external-dependencies)
-- [Environments](#environments)
 - [High Availability](#high-availability)
 - [Backups](#backups)
 - [Getting started](#getting-started)
@@ -57,17 +56,6 @@ This solution is dependent on:
 These things depend upon this solution:
 
 - Consumer Applications (MAPPS)
-
-## Environments
-
-This API is designed to run in 4 environments:
-
-| Name           | Deployed | Data                                               | Purpose                                           |
-| -------------- | -------- | -------------------------------------------------- | ------------------------------------------------- |
-| Local          | N/A      | Prism Stub                                         | Local Feature Development                         |
-| Development    | On Merge | T3/Development Seed                                | Internal Testing                                  |
-| Pre-Production | On Merge | Real - copy of live imported every couple of weeks | Internal Testing / QA / External Consumer Testing |
-| Production     | Manually | Real                                               | Live Services                                     |
 
 ## High Availability
 
@@ -267,6 +255,7 @@ Note, this will only specifically enable the `RequestLogger`.
 
 - [Architecture diagrams](/docs/diagrams)
 - [Audit](/docs/audit)
+- [Environments](/docs/environments)
 - [Security](/docs/security)
 
 ## Developer guides
