@@ -233,11 +233,11 @@ Note, this will only specifically enable the `RequestLogger`.
 
 - [Architecture Decision Records (ADRs)](/docs/adr)
 - [Architecture diagrams](/docs/diagrams)
-- [Audit](/docs/audit)
-- [Backups](/docs/backups)
-- [Environments](/docs/environments)
-- [High availability](/docs/high-availability)
-- [Security](/docs/security)
+- [Audit](/docs/audit.md)
+- [Backups](/docs/backups.md)
+- [Environments](/docs/environments.md)
+- [High availability](/docs/high-availability.md)
+- [Security](/docs/security.md)
 
 ## Developer guides
 
