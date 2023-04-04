@@ -15,6 +15,11 @@ generic-service:
     v0_47_enabled: false
     host: app-hostname.local    # override per environment
     tlsSecretName: ""
+    annotations:
+      nginx.ingress.kubernetes.io/auth-tls-verify-client: "on"
+      nginx.ingress.kubernetes.io/auth-tls-secret: "hmpps-integration-api-development/api-gateway-authentication"
+      nginx.ingress.kubernetes.io/auth-tls-verify-depth: "1"
+      nginx.ingress.kubernetes.io/auth-tls-pass-certificate-to-upstream: "true"
 
   # Environment variables to load into the deployment
   env:
