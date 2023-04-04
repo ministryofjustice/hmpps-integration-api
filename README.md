@@ -32,7 +32,7 @@ consumers. It's built using [Spring Boot](https://spring.io/projects/spring-boot
 as well as the following technologies for its infrastructure:
 
 - [AWS](https://aws.amazon.com/) - Services utilise AWS features through Cloud Platform such
-  as [Elastic Container Registry (ECR)](https://aws.amazon.com/ecr/) to store our built artifacts. The CI/CD pipeline
+  as [Elastic Container Registry (ECR)](https://aws.amazon.com/ecr/) to store our built artifacts as well as [Simple Storage Service (S3)](https://aws.amazon.com/s3/). The CI/CD pipeline
   stores and retrieves them from there as required.
 - [CircleCI](https://circleci.com/developer) - Used for our build platform, responsible for executing workflows to
   build, validate, test and deploy our project.
@@ -53,10 +53,6 @@ This solution is dependent on:
 - [Prisoner Offender Search](https://github.com/ministryofjustice/prisoner-offender-search)
 - [Probation Offender Search](https://github.com/ministryofjustice/probation-offender-search)
 - [HMPPS Auth](https://github.com/ministryofjustice/hmpps-auth)
-- [Cloud Platform](https://user-guide.cloud-platform.service.justice.gov.uk/)
-- [Amazon Web Services (AWS)](https://aws.amazon.com/) in eu-west-2 (London)
-  - [Simple Storage Service (S3)](https://aws.amazon.com/s3/)
-  - [Elastic Container Registry (ECR)](https://aws.amazon.com/ecr/)
 
 These things depend upon this solution:
 
