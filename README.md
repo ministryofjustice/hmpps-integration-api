@@ -11,12 +11,6 @@
 - [Environments](#environments)
 - [High Availability](#high-availability)
 - [Backups](#backups)
-- [Audit](#audit)
-  - [Data Logs](#data-logs)
-  - [Deployment Logs](#deployment-logs)
-    - [Git](#git)
-    - [CircleCI](#circleci)
-  - [Access Logs](#access-logs)
 - [Getting started](#getting-started)
   - [Using IntelliJ IDEA](#using-intellij-idea)
 - [Usage](#usage)
@@ -101,39 +95,6 @@ This is a transient API with no database, no data passing through the API is per
 Only the following is persisted:
 - Mutual TLS certificate authority - S3 (versioning enabled)
 - API container Images - ECR (versioning enabled)
-## Audit
-This section contains information as to where relevant areas of logging can be located in the event of an audit.
-
-### Data Logs
-
-The HMPPS Integration API doesn't store any data itself; Further to this, It is also not capable of creating or modifying
-the data it works with. The API is a single point of contact which will query upstream system's. It will then consolidate,
-standardised and pass the resulting data back to the requester.
-
-### Deployment Logs
-
-Logs of each deployment can be located within the following areas:
-#### [Git](https://github.com/ministryofjustice/hmpps-integration-api)
-
-A list of the changes made to project can be found through the history of commits and pull requests.
-#### [CircleCI](https://app.circleci.com/pipelines/github/ministryofjustice/hmpps-integration-api)
-
-Build and deployment information. This is on a per-build basis.
-
-### Access Logs
-
-Logs that contain access to various endpoints throughout our system can be located through Elasticsearch. Our interface
-to Elasticsearch is a tool called [Kibana](https://kibana.cloud-platform.service.justice.gov.uk/).
-
-Logs contained within Elasticsearch will not contain any sensitive data. The logs will contain a request details as well
-as a timestamp as to when the record was accessed; This allows identification of the record. This information
-does not include any response data.
-
-Elasticsearch logs have a retention period of 30 days. See the [Application Log Collection and Storage](https://user-guide.cloud-platform.service.justice.gov.uk/documentation/logging-an-app/log-collection-and-storage.html)
-section of the Cloud Platform documentation for more detail.
-
-Further information on how to use the access logs in Kibana can be found within the [Accessing Application Log Data](https://user-guide.cloud-platform.service.justice.gov.uk/documentation/logging-an-app/access-logs.html#accessing-ingress-logs)
-section of the Cloud Platform documentation. To locate the logs you'll need the Cloud Platform namespace for this API.
 
 ## Getting started
 
@@ -312,6 +273,7 @@ Note, this will only specifically enable the `RequestLogger`.
 ## Further documentation
 
 - [Architecture diagrams](/docs/diagrams)
+- [Audit](/docs/audit)
 - [Security](/docs/security)
 
 ## Developer guides
