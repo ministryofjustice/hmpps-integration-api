@@ -8,7 +8,7 @@
 
 - [About this project](#about-this-project)
   - [External dependencies](#external-dependencies)
-- [Getting started](#getting-started)
+- [Get started](#get-started)
   - [Using IntelliJ IDEA](#using-intellij-idea)
 - [Usage](#usage)
   - [Running the application](#running-the-application)
@@ -16,7 +16,7 @@
   - [Running the tests](#running-the-tests)
   - [Running the linter](#running-the-linter)
   - [Running all checks](#running-all-checks)
-  - [Request Logging](#request-logging)
+  - [Request logging](#request-logging)
 - [Further documentation](#further-documentation)
 - [Developer guides](#developer-guides)
 - [Related repositories](#related-repositories)
@@ -55,7 +55,7 @@ These things depend upon this solution:
 
 - Consumer Applications (MAPPS)
 
-## Getting started
+## Get started
 
 ### Using IntelliJ IDEA
 
@@ -99,6 +99,10 @@ Then visit [http://localhost:8080](http://localhost:8080).
 
 #### With dependent services
 
+Simulators are used to run dependent services for running the application locally and in smoke tests.
+They use [Prism](https://github.com/stoplightio/prism) which creates a mock server
+based on an API's latest OpenAPI specification file.
+
 It's possible to run the application with dependent services like
 the [NOMIS / Prison API](https://github.com/ministryofjustice/prison-api)
 and [HMPPS Auth](https://github.com/ministryofjustice/hmpps-auth) with Docker
@@ -119,11 +123,9 @@ Each service is then accessible at:
 - [http://localhost:9090](http://localhost:9090) for the HMPPS Auth service
 
 As part of getting the HMPPS Auth service running
-locally, [the in-memory database is seeded with data including a number of clients](https://github.com/ministryofjustice/hmpps-auth/blob/main/src/main/resources/db/dev/data/auth/V900_0__clients.sql)
-. A client can have different permissions i.e. read, write, reporting, although strangely the column name is
-called `​​autoapprove`.
+locally, [the in-memory database is seeded with data including a number of clients](https://github.com/ministryofjustice/hmpps-auth/blob/main/src/main/resources/db/dev/data/auth/V900_0__clients.sql). A client can have different permissions i.e. read, write, reporting, although strangely the column name is called `​​autoapprove`.
 
-In order to call endpoints of the Prison API, an access token must be provided that is generated from the HMPPS Auth
+If you wish to call an endpoint of a dependent API directly, an access token must be provided that is generated from the HMPPS Auth
 service.
 
 2. Generate a token for a HMPPS Auth client.
@@ -131,32 +133,32 @@ service.
 ```bash
 curl -X POST "http://localhost:9090/auth/oauth/token?grant_type=client_credentials" \
   -H 'Content-Type: application/json' \
-  -H "Authorization: Basic $(echo -n "prisoner-offender-search-client:clientsecret" | base64)"
+  -H "Authorization: Basic $(echo -n "hmpps-integration-api-client:clientsecret" | base64)"
 ```
 
-This uses the client ID: `prisoner-offender-search-client` and the client secret: `clientsecret`. A number of seeded
+This uses the client ID: `hmpps-integration-api-client` and the client secret: `clientsecret`. A number of seeded
 clients use the same client secret.
 
 A JWT token is returned as a result, it will look like this:
 
 ```json
 {
-  "access_token": "eyJhbGciOiJSUzI1NiIs ...BAtWD653XpCzn8A",
+  "access_token": "eyJhbGciOiJSUzI1NiIs...BAtWD653XpCzn8A",
   "token_type": "bearer",
   "expires_in": 3599,
   "scope": "read write",
-  "sub": "prisoner-offender-search-client",
+  "sub": "hmpps-integration-api-client",
   "auth_source": "none",
   "jti": "Ptr-MIdUBDGDOl8_qqeIuNV9Wpc",
   "iss": "http://localhost:9090/auth/issuer"
 }
 ```
 
-Using the value of `access_token`, you can call the Prison API using it as a Bearer Token.
+Using the value of `access_token`, you can call a dependent API using it as a Bearer Token.
 
-There are a couple of options for calling the Prison API such as [curl](https://curl.se/)
-, [Postman](https://www.postman.com/) and using in-built Swagger UI via the browser
-at [http://localhost:8081/swagger-ui/index.html](http://localhost:8081/swagger-ui/index.html) which documents the
+There are a couple of options for doing so such as [curl](https://curl.se/),
+[Postman](https://www.postman.com/) and using in-built Swagger UI via the browser e.g.
+for Prison API at [http://localhost:4030/swagger-ui/index.html](http://localhost:4030/swagger-ui/index.html) which documents the
 available API endpoints.
 
 ### Running the tests
@@ -212,15 +214,13 @@ To run all the tests and linting:
 make check
 ```
 
-### Request Logging
+### Request logging
 
 This can be done within `logback-spring.xml`. To enable request logging, update the value of the `level` property within
-the logger named `<application>.config.RequestLogger` to the
-desired [logger level](https://docs.spring.io/spring-boot/docs/2.1.13.RELEASE/reference/html/boot-features-logging.html)
-.
+the logger named `<application>.config.RequestLogger` to the desired
+[logger level](https://docs.spring.io/spring-boot/docs/2.1.13.RELEASE/reference/html/boot-features-logging.html).
 
 ```xml
-
 <logger name="uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.RequestLogger" additivity="false" level="DEBUG">
     <appender-ref ref="logAppender"/>
     <appender-ref ref="consoleAppender"/>
