@@ -62,3 +62,9 @@ Aspects of the documentation site such as the header and sidebar can be configur
 ## Publishing
 
 Changes pushed or merged into to `main` are automatically published to GitHub Pages and viewable at https://ministryofjustice.github.io/hmpps-integration-api-docs.
+
+## Reviewing
+
+Should you need to review the content of our documentation, ensure that the `review_in` field is updated as part of the front matter of the markdown page. This should be formatted `yyyy-mm-dd`.
+
+A Ministry of Justice tool named [Tech Docs Monitor _also known as_ Daniel the Manual Spaniel](https://github.com/ministryofjustice/tech-docs-monitor) will send a notification to the Slack channel specified in the `owner_slack` property when a document is due for review.
