@@ -9,6 +9,8 @@ generic-service:
 
   ingress:
     host: hmpps-integration-api-development.apps.live.cloud-platform.service.justice.gov.uk
+    annotations:
+      nginx.ingress.kubernetes.io/auth-tls-secret: "hmpps-integration-api-development/api-gateway-authentication"
 
   env:
     SPRING_PROFILES_ACTIVE: development
