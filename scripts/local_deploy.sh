@@ -20,7 +20,7 @@ authenticate_docker() {
 }
 
 build_image() {
-  docker build -t $namespace .
+  docker build --platform linux/amd64 -t $namespace .
   docker tag $namespace "${repo_url}:latest"
 }
 

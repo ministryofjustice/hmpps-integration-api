@@ -1,6 +1,7 @@
 version: "3.9"
 services:
   hmpps-integration-api:
+    platform: "linux/amd64"
     build:
       context: .
     container_name: hmpps-integration-api
