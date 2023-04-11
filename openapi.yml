@@ -167,109 +167,122 @@ paths:
                 ImageNotFoundError:
                   $ref: "#/components/examples/ImageNotFoundError"
 
-  /persons/{Id}/accommodations:
+  /tbc/persons/{Id}/accommodations:
     get:
-      tags:
-        - Future Endpoints
       summary: Returns accommodation and referral information associated with a person.
       parameters:
         - $ref: "#/components/parameters/Id"
+      responses:
+        "200":
+          description: Success.
 
-  /persons/{Id}/adjudications:
+  /tbc/persons/{Id}/adjudications:
     get:
-      tags:
-        - Future Endpoints
       summary: Returns adjudications associated with a person.
       parameters:
         - $ref: "#/components/parameters/Id"
+      responses:
+        "200":
+          description: Success.
 
-  /persons/{Id}/interventions:
+  /tbc/persons/{Id}/interventions:
     get:
-      tags:
-        - Future Endpoints
       summary: Returns activities and Non-Statutory Interventions (NSIs) associated with a person.
       parameters:
         - $ref: "#/components/parameters/Id"
+      responses:
+        "200":
+          description: Success.
 
-  /persons/{Id}/key-workers:
+  /tbc/persons/{Id}/key-workers:
     get:
-      tags:
-        - Future Endpoints
       summary: Returns responsible officer history, transfer history and consolidated transfer review associated with a person.
       parameters:
         - $ref: "#/components/parameters/Id"
+      responses:
+        "200":
+          description: Success.
 
-  /persons/{Id}/licenses:
+  /tbc/persons/{Id}/licenses:
     get:
-      tags:
-        - Future Endpoints
       summary: Returns license conditions associated with a person.
       parameters:
         - $ref: "#/components/parameters/Id"
+      responses:
+        "200":
+          description: Success.
 
-  /persons/{Id}/offences:
+  /tbc/persons/{Id}/offences:
     get:
-      tags:
-        - Future Endpoints
       summary: Returns offences associated with a person.
       parameters:
         - $ref: "#/components/parameters/Id"
+      responses:
+        "200":
+          description: Success.
 
-  /persons/{Id}/prisoner-visits:
+  /tbc/persons/{Id}/prisoner-visits:
     get:
-      tags:
-        - Future Endpoints
       summary: Returns prisoner visits associated with a person.
       parameters:
         - $ref: "#/components/parameters/Id"
+      responses:
+        "200":
+          description: Success.
 
-  /persons/{Id}/probation-contact-events:
+  /tbc/persons/{Id}/probation-contact-events:
     get:
-      tags:
-        - Future Endpoints
       summary: Returns probation contact events associated with a person.
       parameters:
         - $ref: "#/components/parameters/Id"
+      responses:
+        "200":
+          description: Success.
 
-  /persons/{Id}/release-information:
+  /tbc/persons/{Id}/release-information:
     get:
-      tags:
-        - Future Endpoints
       summary: Returns release dates and information associated with a person.
       parameters:
         - $ref: "#/components/parameters/Id"
+      responses:
+        "200":
+          description: Success.
 
-  /persons/{Id}/risks:
+  /tbc/persons/{Id}/risks:
     get:
-      tags:
-        - Future Endpoints
       summary: Returns prisoner risks, alerts, personal circumstances, prisoner category, person assessments, risk of re-offending, OASys General Predictor (OGP) scores, OASys Violence Predictor (OVP) scores, likelihood of serious harm to others, concerns, RoSH (Risk of serious harm) summary, registration summary associated with a person.
       parameters:
         - $ref: "#/components/parameters/Id"
+      responses:
+        "200":
+          description: Success.
 
-  /persons/{Id}/sentences:
+  /tbc/persons/{Id}/sentences:
     get:
-      tags:
-        - Future Endpoints
       summary: Returns prisoner sentences, bookings / incarceration associated with a person.
       parameters:
         - $ref: "#/components/parameters/Id"
+      responses:
+        "200":
+          description: Success.
 
-  /persons/{Id}/security:
+  /tbc/persons/{Id}/security:
     get:
-      tags:
-        - Future Endpoints
       summary: Returns security information such as prisoner non-associations and prisoner incidents for a person.
       parameters:
         - $ref: "#/components/parameters/Id"
+      responses:
+        "200":
+          description: Success.
 
-  /persons/{Id}/special-needs:
+  /tbc/persons/{Id}/special-needs:
     get:
-      tags:
-        - Future Endpoints
       summary: Returns special needs such as drugs test summaries, drug history and drugs test lists associated with a person.
       parameters:
         - $ref: "#/components/parameters/Id"
+      responses:
+        "200":
+          description: Success.
 
 components:
   parameters:
