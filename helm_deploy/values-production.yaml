@@ -11,7 +11,12 @@ generic-service:
   ingress:
     host: hmpps-integration-api-production.apps.live.cloud-platform.service.justice.gov.uk
 
+  allowlist:
+    april: "81.98.147.183/32"
+    emile: "82.4.6.197/32"
+
 # CloudPlatform AlertManager receiver to route prometheus alerts to slack
 # See https://user-guide.cloud-platform.service.justice.gov.uk/documentation/monitoring-an-app/how-to-create-alarms.html#creating-your-own-custom-alerts
 generic-prometheus-alerts:
   alertSeverity: digital-prison-service
+
