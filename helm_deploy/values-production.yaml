@@ -10,6 +10,8 @@ generic-service:
 
   ingress:
     host: hmpps-integration-api-production.apps.live.cloud-platform.service.justice.gov.uk
+    annotations:
+      nginx.ingress.kubernetes.io/auth-tls-secret: "hmpps-integration-api-production/api-gateway-authentication"
 
   allowlist:
     april: "81.98.147.183/32"
