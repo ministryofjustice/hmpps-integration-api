@@ -15,7 +15,8 @@ generic-service:
 
   allowlist:
     april: "81.98.147.183/32"
-    emile: "82.4.6.197/32"
+    emile: "79.173.131.202/32"
+    ting: "86.16.172.60/32"
 
 # CloudPlatform AlertManager receiver to route prometheus alerts to slack
 # See https://user-guide.cloud-platform.service.justice.gov.uk/documentation/monitoring-an-app/how-to-create-alarms.html#creating-your-own-custom-alerts
