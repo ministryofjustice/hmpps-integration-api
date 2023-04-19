@@ -9,6 +9,11 @@ generic-service:
     SPRING_PROFILES_ACTIVE: production
     SENTRY_ENV: production
 
+  namespace_secrets:
+    client-credentials:
+      CLIENT_ID: "clientId"
+      CLIENT_SECRET: "clientSecret"
+
   ingress:
     host: hmpps-integration-api-production.apps.live.cloud-platform.service.justice.gov.uk
     annotations:
