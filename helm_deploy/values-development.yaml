@@ -23,7 +23,7 @@ generic-service:
       CLIENT_SECRET: "clientSecret"
 
   allowlist:
-    office: "0.0.0.0/0"
+    unrestricted: "0.0.0.0/0"
 
 # CloudPlatform AlertManager receiver to route prometheus alerts to slack
 # See https://user-guide.cloud-platform.service.justice.gov.uk/documentation/monitoring-an-app/how-to-create-alarms.html#creating-your-own-custom-alerts
