@@ -3,15 +3,21 @@
 
 generic-service:
   ingress:
-    host: hmpps-integration-api-preprod.hmpps.service.justice.gov.uk
+    host: hmpps-integration-api-pre-production.hmpps.service.justice.gov.uk
 
   env:
     APPLICATIONINSIGHTS_CONFIGURATION_FILE: applicationinsights.dev.json
     SENTRY_ENV: pre-production
 
-  allowlist:
-    april: "81.98.147.183/32"
-    emile: "82.4.6.197/32"
+  namespace_secrets:
+    client-credentials:
+      CLIENT_ID: "clientId"
+      CLIENT_SECRET: "clientSecret"
+
+  ingress:
+    host: hmpps-integration-api-pre-production.apps.live.cloud-platform.service.justice.gov.uk
+    annotations:
+      nginx.ingress.kubernetes.io/auth-tls-secret: "hmpps-integration-api-pre-production/client-certificate"
 
 # CloudPlatform AlertManager receiver to route prometheus alerts to slack
 # See https://user-guide.cloud-platform.service.justice.gov.uk/documentation/monitoring-an-app/how-to-create-alarms.html#creating-your-own-custom-alerts
