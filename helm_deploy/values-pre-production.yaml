@@ -2,9 +2,6 @@
 # Per environment values which override defaults in hmpps-integration-api/values.yaml
 
 generic-service:
-  ingress:
-    host: hmpps-integration-api-pre-production.hmpps.service.justice.gov.uk
-
   env:
     APPLICATIONINSIGHTS_CONFIGURATION_FILE: applicationinsights.dev.json
     SENTRY_ENV: pre-production
