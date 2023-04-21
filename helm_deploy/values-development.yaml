@@ -13,7 +13,7 @@ generic-service:
       nginx.ingress.kubernetes.io/auth-tls-secret: "hmpps-integration-api-development/api-gateway-authentication"
 
   allowlist:
-    test_no_access: "9.9.9.9/32"
+    emile: "82.4.6.197/32"
 
   env:
     SPRING_PROFILES_ACTIVE: development
