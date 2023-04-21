@@ -13,6 +13,7 @@ generic-service:
       nginx.ingress.kubernetes.io/auth-tls-secret: "hmpps-integration-api-pre-production/client-certificate"
 
   env:
+    SPRING_PROFILES_ACTIVE: pre-production
     APPLICATIONINSIGHTS_CONFIGURATION_FILE: applicationinsights.dev.json
     SENTRY_ENV: pre-production
 

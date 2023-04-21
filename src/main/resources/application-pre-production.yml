@@ -1,0 +1,11 @@
+services:
+  prison-api:
+    base-url: https://api-preprod.prison.service.justice.gov.uk
+  prisoner-offender-search:
+    base-url: https://prisoner-offender-search-preprod.prison.service.justice.gov.uk
+  probation-offender-search:
+    base-url: https://probation-offender-search-preprod.hmpps.service.justice.gov.uk
+  hmpps-auth:
+    base-url: https://sign-in-preprod.hmpps.service.justice.gov.uk/auth
+    username: ${CLIENT_ID}
+    password: ${CLIENT_SECRET}
