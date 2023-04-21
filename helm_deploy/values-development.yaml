@@ -12,6 +12,9 @@ generic-service:
     annotations:
       nginx.ingress.kubernetes.io/auth-tls-secret: "hmpps-integration-api-development/api-gateway-authentication"
 
+  allowlist:
+    test_no_access: "9.9.9.9/32"
+
   env:
     SPRING_PROFILES_ACTIVE: development
     APPLICATIONINSIGHTS_CONFIGURATION_FILE: applicationinsights.dev.json
