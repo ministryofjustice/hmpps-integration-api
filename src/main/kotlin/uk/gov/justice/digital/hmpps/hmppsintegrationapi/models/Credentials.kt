@@ -4,11 +4,7 @@ import java.util.Base64
 
 data class Credentials(val username: String, val password: String) {
   fun toBasicAuth(): String {
-    val decodedUsername = String(Base64.getDecoder().decode(username)).trim()
-    val decodedPassword = String(Base64.getDecoder().decode(password)).trim()
-
-    val encodedCredentials = Base64.getEncoder().encodeToString("$decodedUsername:$decodedPassword".toByteArray())
-
+    val encodedCredentials = Base64.getEncoder().encodeToString("$username:$password".toByteArray())
     return "Basic $encodedCredentials"
   }
 }

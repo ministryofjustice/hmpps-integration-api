@@ -6,6 +6,6 @@ services:
   probation-offender-search:
     base-url: https://probation-offender-search-preprod.hmpps.service.justice.gov.uk
   hmpps-auth:
-    base-url: https://sign-in-preprod.hmpps.service.justice.gov.uk/auth
+    base-url: https://sign-in-preprod.hmpps.service.justice.gov.uk
     username: ${CLIENT_ID}
     password: ${CLIENT_SECRET}
