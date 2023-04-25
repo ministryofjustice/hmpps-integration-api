@@ -17,6 +17,12 @@ generic-service:
     APPLICATIONINSIGHTS_CONFIGURATION_FILE: applicationinsights.dev.json
     SENTRY_ENV: pre-production
 
+  allowlist:
+    emile: "82.4.6.197/32"
+    matt: "86.133.179.207/32"
+    april: "81.98.147.183/32"
+    ting: "86.16.172.60/32"
+
   namespace_secrets:
     client-credentials:
       CLIENT_ID: "clientId"
