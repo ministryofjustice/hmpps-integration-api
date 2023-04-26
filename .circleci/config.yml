@@ -11,8 +11,39 @@ parameters:
     type: string
     default: hmpps-integration-api-alerts
 
+slack-fail-post-step: &slack-fail-post-step
+  post-steps:
+    - slack/notify:
+        event: fail
+        branch_pattern: main
+        channel: << pipeline.parameters.alerts-slack-channel >>
+        custom: |
+          {
+            "text": "",
+            "blocks": [
+              {
+                "type": "section",
+                "text": {
+                  "type": "mrkdwn",
+                  "text": "❌ *Failure* `${CIRCLE_PROJECT_REPONAME}` - `${CIRCLE_JOB}` (Build: #${CIRCLE_BUILD_NUM}) on `${CIRCLE_BRANCH}`"
+                }
+              },
+              {
+                "type": "actions",
+                "elements": [
+                  {
+                    "type": "button",
+                    "text": { "type": "plain_text", "text": "View Job" },
+                    "url": "${CIRCLE_BUILD_URL}"
+                  }
+                ]
+              }
+            ]
+          }
+
 jobs:
   lint-code:
+    <<: *slack-fail-post-step
     executor:
       name: hmpps/java
       tag: "19.0"
@@ -30,6 +61,7 @@ jobs:
             - ~/.gradle
           key: gradle-{{ checksum "build.gradle.kts" }}
   unit-tests:
+    <<: *slack-fail-post-step
     executor:
       name: hmpps/java
       tag: "19.0"
@@ -49,6 +81,7 @@ jobs:
       - store_test_results:
           path: build/test-results
   smoke-tests:
+    <<: *slack-fail-post-step
     machine:
       image: ubuntu-2204:2022.10.2
     steps:
@@ -61,6 +94,7 @@ jobs:
           name: Run smoke tests
           command: make smoke-test
   create-and-push-image-to-ecr:
+    <<: *slack-fail-post-step
     docker:
       - image: ministryofjustice/cloud-platform-tools
     steps:
@@ -112,8 +146,7 @@ workflows:
                 - main
           env: "development"
           helm_timeout: 5m
-          slack_channel_name: << pipeline.parameters.releases-slack-channel >>
-          slack_notification: true
+          <<: *slack-fail-post-step
 
       - create-and-push-image-to-ecr:
           name: create-and-push-image-to-pre-production-ecr
@@ -137,8 +170,7 @@ workflows:
                 - main
           env: "pre-production"
           helm_timeout: 5m
-          slack_channel_name: << pipeline.parameters.releases-slack-channel >>
-          slack_notification: true
+          <<: *slack-fail-post-step
 
       - create-and-push-image-to-ecr:
           name: create-and-push-image-to-production-ecr
@@ -149,6 +181,7 @@ workflows:
             branches:
               only:
                 - main
+          <<: *slack-fail-post-step
       - hmpps/deploy_env:
           name: deploy-to-production
           context:
@@ -162,8 +195,7 @@ workflows:
                 - main
           env: "production"
           helm_timeout: 5m
-          slack_channel_name: << pipeline.parameters.releases-slack-channel >>
-          slack_notification: true
+          <<: *slack-fail-post-step
   security:
     triggers:
       - schedule:
@@ -174,9 +206,11 @@ workflows:
                 - main
     jobs:
       - hmpps/gradle_owasp_dependency_check:
+          slack_channel: << pipeline.parameters.alerts-slack-channel >>
           context:
             - hmpps-common-vars
       - hmpps/veracode_pipeline_scan:
+          slack_channel: << pipeline.parameters.alerts-slack-channel >>
           context:
             - veracode-credentials
             - hmpps-common-vars
@@ -190,6 +224,7 @@ workflows:
                 - main
     jobs:
       - hmpps/veracode_policy_scan:
+          slack_channel: << pipeline.parameters.alerts-slack-channel >>
           context:
             - veracode-credentials
             - hmpps-common-vars
