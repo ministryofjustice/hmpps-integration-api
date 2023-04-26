@@ -6,10 +6,10 @@ orbs:
 parameters:
   alerts-slack-channel:
     type: string
-    default: hmpps-integration-api
+    default: hmpps-integration-api-alerts
   releases-slack-channel:
     type: string
-    default: hmpps-integration-api
+    default: hmpps-integration-api-alerts
 
 jobs:
   lint-code:
@@ -113,7 +113,7 @@ workflows:
           env: "development"
           helm_timeout: 5m
           slack_channel_name: << pipeline.parameters.releases-slack-channel >>
-          slack_notification: false
+          slack_notification: true
 
       - create-and-push-image-to-ecr:
           name: create-and-push-image-to-pre-production-ecr
@@ -138,7 +138,7 @@ workflows:
           env: "pre-production"
           helm_timeout: 5m
           slack_channel_name: << pipeline.parameters.releases-slack-channel >>
-          slack_notification: false
+          slack_notification: true
 
       - create-and-push-image-to-ecr:
           name: create-and-push-image-to-production-ecr
@@ -163,7 +163,7 @@ workflows:
           env: "production"
           helm_timeout: 5m
           slack_channel_name: << pipeline.parameters.releases-slack-channel >>
-          slack_notification: false
+          slack_notification: true
   security:
     triggers:
       - schedule:
