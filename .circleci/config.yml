@@ -94,7 +94,6 @@ jobs:
           name: Run smoke tests
           command: make smoke-test
   create-and-push-image-to-ecr:
-    <<: *slack-fail-post-step
     docker:
       - image: ministryofjustice/cloud-platform-tools
     steps:
