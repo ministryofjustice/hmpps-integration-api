@@ -112,9 +112,12 @@ workflows:
   version: 2
   build-test-and-deploy:
     jobs:
-      - lint-code
-      - unit-tests
-      - smoke-tests
+      - lint-code:
+          <<: *slack-fail-post-step
+      - unit-tests:
+          <<: *slack-fail-post-step
+      - smoke-tests:
+          <<: *slack-fail-post-step
       - hmpps/helm_lint:
           <<: *slack-fail-post-step
           name: lint-helm-charts
