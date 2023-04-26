@@ -9,26 +9,30 @@ using [PlantUML](https://plantuml.com/) i.e. diagrams as code.
 ## Using Visual Studio Code
 
 1. Install the [PlantUML extension](https://marketplace.visualstudio.com/items?itemName=jebbs.plantuml).
-2. Create a `.vscode/settings.json` if one does not exist.
-3. Within the `settings.json` file, add the follow properties:
+2. Run a local [PlantUML server](https://github.com/plantuml/plantuml-server) using Docker:
+
+```bash
+docker run --name plantuml -d -p 1234:8080 plantuml/plantuml-server:jetty
+```
+
+3. Create a `.vscode/settings.json` if one does not exist.
+4. Within the `settings.json` file, add the follow properties:
 
 ```json
 {
-  "plantuml.server": "https://www.plantuml.com/plantuml",
+  "plantuml.server": "http://localhost:1234",
   "plantuml.render": "PlantUMLServer"
 }
 ```
 
-This tells the PlantUML extension to use the PlantUML server to render diagrams. It's also possible to point to a
-locally hosted server by changing the value of `plantuml.server`.
+This tells the PlantUML extension to use the local PlantUML server to render diagrams.
 
-4. Edit the `.puml` file for the diagram.
-5. Preview any changes to the diagram by using `Alt + D` on Windows or `Option + D` on MacOS.
+5. Edit the `.puml` file for the diagram.
+6. Preview any changes to the diagram by using `Alt + D` on Windows or `Option + D` on MacOS.
 
 When all changes have been made:
 
-6. Push your code back to the repository, the [Generate PlantUML Diagrams GitHub Action](#automatic-diagram-generation) will generate the required output file.
-   files automatically.
+7. Push your code back to the repository, the [Generate PlantUML Diagrams GitHub Action](#automatic-diagram-generation) will generate the required output file(s) automatically.
 
 ## Automatic Diagram Generation
 
