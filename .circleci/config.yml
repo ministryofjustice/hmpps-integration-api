@@ -2,6 +2,7 @@ version: 2.1
 
 orbs:
   hmpps: ministryofjustice/hmpps@6
+  slack: circleci/slack@4.12.1
 
 parameters:
   alerts-slack-channel:
@@ -10,6 +11,36 @@ parameters:
   releases-slack-channel:
     type: string
     default: hmpps-integration-api-alerts
+
+slack-fail-post-step: &slack-fail-post-step
+  post-steps:
+    - slack/notify:
+        event: fail
+        branch_pattern: main
+        channel: << pipeline.parameters.alerts-slack-channel >>
+        custom: |
+          {
+            "text": "",
+            "blocks": [
+              {
+                "type": "section",
+                "text": {
+                  "type": "mrkdwn",
+                  "text": "❌ *Failure* `${CIRCLE_PROJECT_REPONAME}` - `${CIRCLE_JOB}` (Build: #${CIRCLE_BUILD_NUM}) on `${CIRCLE_BRANCH}`"
+                }
+              },
+              {
+                "type": "actions",
+                "elements": [
+                  {
+                    "type": "button",
+                    "text": { "type": "plain_text", "text": "View Job" },
+                    "url": "${CIRCLE_BUILD_URL}"
+                  }
+                ]
+              }
+            ]
+          }
 
 jobs:
   lint-code:
@@ -81,13 +112,18 @@ workflows:
   version: 2
   build-test-and-deploy:
     jobs:
-      - lint-code
-      - unit-tests
-      - smoke-tests
+      - lint-code:
+          <<: *slack-fail-post-step
+      - unit-tests:
+          <<: *slack-fail-post-step
+      - smoke-tests:
+          <<: *slack-fail-post-step
       - hmpps/helm_lint:
+          <<: *slack-fail-post-step
           name: lint-helm-charts
           env: development
       - create-and-push-image-to-ecr:
+          <<: *slack-fail-post-step
           name: create-and-push-image-to-development-ecr
           context: hmpps-integration-api-development
           requires:
@@ -100,6 +136,7 @@ workflows:
               only:
                 - main
       - hmpps/deploy_env:
+          <<: *slack-fail-post-step
           name: deploy-to-development
           context:
             - hmpps-integration-api-development
@@ -113,9 +150,10 @@ workflows:
           env: "development"
           helm_timeout: 5m
           slack_channel_name: << pipeline.parameters.releases-slack-channel >>
-          slack_notification: true
+          slack_notification: false
 
       - create-and-push-image-to-ecr:
+          <<: *slack-fail-post-step
           name: create-and-push-image-to-pre-production-ecr
           context: hmpps-integration-api-pre-production
           requires:
@@ -125,6 +163,7 @@ workflows:
               only:
                 - main
       - hmpps/deploy_env:
+          <<: *slack-fail-post-step
           name: deploy-to-pre-production
           context:
             - hmpps-integration-api-pre-production
@@ -138,9 +177,10 @@ workflows:
           env: "pre-production"
           helm_timeout: 5m
           slack_channel_name: << pipeline.parameters.releases-slack-channel >>
-          slack_notification: true
+          slack_notification: false
 
       - create-and-push-image-to-ecr:
+          <<: *slack-fail-post-step
           name: create-and-push-image-to-production-ecr
           context: hmpps-integration-api-production
           requires:
@@ -150,6 +190,7 @@ workflows:
               only:
                 - main
       - hmpps/deploy_env:
+          <<: *slack-fail-post-step
           name: deploy-to-production
           context:
             - hmpps-integration-api-production
@@ -163,7 +204,7 @@ workflows:
           env: "production"
           helm_timeout: 5m
           slack_channel_name: << pipeline.parameters.releases-slack-channel >>
-          slack_notification: true
+          slack_notification: false
   security:
     triggers:
       - schedule:
@@ -174,9 +215,11 @@ workflows:
                 - main
     jobs:
       - hmpps/gradle_owasp_dependency_check:
+          slack_channel: << pipeline.parameters.alerts-slack-channel >>
           context:
             - hmpps-common-vars
       - hmpps/veracode_pipeline_scan:
+          slack_channel: << pipeline.parameters.alerts-slack-channel >>
           context:
             - veracode-credentials
             - hmpps-common-vars
@@ -190,6 +233,7 @@ workflows:
                 - main
     jobs:
       - hmpps/veracode_policy_scan:
+          slack_channel: << pipeline.parameters.alerts-slack-channel >>
           context:
             - veracode-credentials
             - hmpps-common-vars
