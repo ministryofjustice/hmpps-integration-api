@@ -37,7 +37,7 @@ internal class PersonControllerTest(
   val encodedPncId = URLEncoder.encode(pncId, StandardCharsets.UTF_8)
 
   describe("GET /persons") {
-    val firstName = "Barry"
+    val firstName = "Barrz"
     val lastName = "Allen"
 
     beforeTest {
