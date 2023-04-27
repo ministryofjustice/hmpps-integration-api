@@ -48,7 +48,7 @@ class PersonController(
     if (result.isNullOrEmpty()) {
       throw EntityNotFoundException("Could not find person with id: $pncId")
     }
-    
+
     return result
   }
 
