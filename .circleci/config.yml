@@ -113,19 +113,29 @@ workflows:
   build-test-and-deploy:
     jobs:
       - lint-code:
+          context:
+            - hmpps-common-vars
           <<: *slack-fail-post-step
       - unit-tests:
+          context:
+            - hmpps-common-vars
           <<: *slack-fail-post-step
       - smoke-tests:
+          context:
+            - hmpps-common-vars
           <<: *slack-fail-post-step
       - hmpps/helm_lint:
+          context:
+            - hmpps-common-vars
           <<: *slack-fail-post-step
           name: lint-helm-charts
           env: development
       - create-and-push-image-to-ecr:
           <<: *slack-fail-post-step
           name: create-and-push-image-to-development-ecr
-          context: hmpps-integration-api-development
+          context:
+            - hmpps-integration-api-development
+            - hmpps-common-vars
           requires:
             - lint-code
             - unit-tests
@@ -155,7 +165,9 @@ workflows:
       - create-and-push-image-to-ecr:
           <<: *slack-fail-post-step
           name: create-and-push-image-to-pre-production-ecr
-          context: hmpps-integration-api-pre-production
+          context:
+            - hmpps-common-vars
+            - hmpps-integration-api-pre-production
           requires:
             - deploy-to-development
           filters:
@@ -182,7 +194,9 @@ workflows:
       - create-and-push-image-to-ecr:
           <<: *slack-fail-post-step
           name: create-and-push-image-to-production-ecr
-          context: hmpps-integration-api-production
+          context:
+            - hmpps-integration-api-production
+            - hmpps-common-vars
           requires:
             - deploy-to-pre-production
           filters:
