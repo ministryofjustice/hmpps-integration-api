@@ -149,6 +149,8 @@ workflows:
                 - main
           env: "development"
           helm_timeout: 5m
+          slack_channel_name: << pipeline.parameters.releases-slack-channel >>
+          slack_notification: false
 
       - create-and-push-image-to-ecr:
           <<: *slack-fail-post-step
@@ -174,6 +176,8 @@ workflows:
                 - main
           env: "pre-production"
           helm_timeout: 5m
+          slack_channel_name: << pipeline.parameters.releases-slack-channel >>
+          slack_notification: false
 
       - create-and-push-image-to-ecr:
           <<: *slack-fail-post-step
@@ -199,6 +203,8 @@ workflows:
                 - main
           env: "production"
           helm_timeout: 5m
+          slack_channel_name: << pipeline.parameters.releases-slack-channel >>
+          slack_notification: false
   security:
     triggers:
       - schedule:
