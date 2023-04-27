@@ -49,8 +49,6 @@ class PersonController(
       throw EntityNotFoundException("Could not find person with id: $pncId")
     }
 
-
-    
     return result
   }
 
