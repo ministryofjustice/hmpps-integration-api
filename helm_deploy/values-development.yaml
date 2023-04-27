@@ -17,9 +17,6 @@ generic-service:
     APPLICATIONINSIGHTS_CONFIGURATION_FILE: applicationinsights.dev.json
     SENTRY_ENV: development
 
-  allowlist:
-    unrestricted: "0.0.0.0/0"
-
   namespace_secrets:
     client-credentials:
       CLIENT_ID: "clientId"

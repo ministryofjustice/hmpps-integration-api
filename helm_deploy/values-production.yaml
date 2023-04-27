@@ -14,11 +14,6 @@ generic-service:
       CLIENT_ID: "clientId"
       CLIENT_SECRET: "clientSecret"
 
-  allowlist:
-    matt: "86.133.179.207/32"
-    april: "81.98.147.183/32"
-    ting: "86.16.172.60/32"
-
   ingress:
     host: hmpps-integration-api-production.apps.live.cloud-platform.service.justice.gov.uk
     annotations:
