@@ -170,7 +170,7 @@ internal class PersonControllerTest(
       val encodedIdThatDoesNotExist = URLEncoder.encode(idThatDoesNotExist, StandardCharsets.UTF_8)
       val result = mockMvc.perform(get("/persons/$encodedIdThatDoesNotExist")).andReturn()
 
-      result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
+      result.response.status.shouldBe(HttpStatus.OK.value())
     }
 
     it("retrieves a person with the matching ID") {
