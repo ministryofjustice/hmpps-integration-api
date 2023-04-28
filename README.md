@@ -231,6 +231,7 @@ Note, this will only specifically enable the `RequestLogger`.
 
 ## Further documentation
 
+- [Monitoring and Alerting](/docs/monitoring-and-alerting/README.md)
 - [Architecture Decision Records (ADRs)](/docs/adr)
 - [Architecture diagrams](/docs/diagrams)
 - [Audit](/docs/audit.md)
