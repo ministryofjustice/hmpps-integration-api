@@ -237,6 +237,7 @@ Note, this will only specifically enable the `RequestLogger`.
 - [Backups](/docs/backups.md)
 - [Environments](/docs/environments.md)
 - [High availability](/docs/high-availability.md)
+- [Monitoring and Alerting](/docs/monitoring-and-alerting/README.md)
 - [Security](/docs/security.md)
 
 ## Developer guides
