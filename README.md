@@ -231,13 +231,13 @@ Note, this will only specifically enable the `RequestLogger`.
 
 ## Further documentation
 
-- [Monitoring and Alerting](/docs/monitoring-and-alerting/README.md)
 - [Architecture Decision Records (ADRs)](/docs/adr)
 - [Architecture diagrams](/docs/diagrams)
 - [Audit](/docs/audit.md)
 - [Backups](/docs/backups.md)
 - [Environments](/docs/environments.md)
 - [High availability](/docs/high-availability.md)
+- [Monitoring and Alerting](/docs/monitoring-and-alerting/README.md)
 - [Security](/docs/security.md)
 
 ## Developer guides

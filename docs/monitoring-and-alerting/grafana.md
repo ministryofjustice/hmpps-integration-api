@@ -5,12 +5,15 @@ CPU usage, memory usage and networking details can be located in various graphs.
 dashboard can also be configured.
 
 ## Setup
-1. If you're a member of the Ministry of Justice Git Organisation you should be able to log in to [Grafana](https://grafana.live.cloud-platform.service.justice.gov.uk/?orgId=1).
+If you're a member of the Ministry of Justice GitHub Organisation you should be able to log in to [Grafana](https://grafana.live.cloud-platform.service.justice.gov.uk/?orgId=1).
 
 ## Steps
 1. Follow Cloud Platform's [documentation](https://user-guide.cloud-platform.service.justice.gov.uk/documentation/monitoring-an-app/prometheus.html#grafana)
 2. Access our [dashboard](https://grafana.live.cloud-platform.service.justice.gov.uk/d/golden-signals/golden-signals?orgId=1&var-namespace=hmpps-integration-api-development&var-service=hmpps-integration-api)
 3. Change the environment using the namespace drop-down menu on the top left (if necessary)
+   - [Development](https://grafana.live.cloud-platform.service.justice.gov.uk/d/golden-signals/golden-signals?orgId=1&var-service=hmpps-integration-api&var-namespace=hmpps-integration-api-development)
+   - [Pre-Production](https://grafana.live.cloud-platform.service.justice.gov.uk/d/golden-signals/golden-signals?orgId=1&var-service=hmpps-integration-api&var-namespace=hmpps-integration-api-pre-production)
+   - [Production](https://grafana.live.cloud-platform.service.justice.gov.uk/d/golden-signals/golden-signals?orgId=1&var-service=hmpps-integration-api&var-namespace=hmpps-integration-api-production)
 
 ## Example Use Case
 We've noticed that the API is responding slowly to specific requests. The Grafana metrics will allow us to check the

@@ -11,7 +11,7 @@ pod.
 Follow Cloud Platform's [documentation](https://user-guide.cloud-platform.service.justice.gov.uk/documentation/logging-an-app/access-logs.html#accessing-application-log-data)
 
 ## Steps
-[hmpps-integration-api-dashboard](https://kibana.cloud-platform.service.justice.gov.uk/_plugin/kibana/app/dashboards#/view/87dccad0-e503-11ed-a7a3-8d8f1c5a54a7?_g=(filters%3A!()%2CrefreshInterval%3A(pause%3A!t%2Cvalue%3A0)%2Ctime%3A(from%3Anow-1h%2Cto%3Anow)) is a direct link to the dashboard which the steps below lead you to.
+[hmpps-integration-api-dashboard](https://kibana.cloud-platform.service.justice.gov.uk/_plugin/kibana/goto/c78b76502b288a271254817cc39db78f) is a direct link to the dashboard which the steps below lead you to.
 1. Click the hamburger button on the top left
 2. Go to Dashboard
 3. Search for 'hmpps-integration-api-dashboard'

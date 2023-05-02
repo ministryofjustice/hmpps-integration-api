@@ -7,6 +7,8 @@ An HMPPS Azure account will be required to access application insights, please f
 During this process you will be required to add an entry to a configuration file, it's recommended that you use an entry
 from someone else on the HMPPS Integration API as a template for your own.
 
+[Here's](https://github.com/ministryofjustice/dso-infra-azure-ad/pull/1053) an example of a previous PR.
+
 ## Steps
 1. Log in to the [Application Insights dashboard](https://portal.azure.com/#view/HubsExtension/BrowseResource/resourceType/microsoft.insights%2Fcomponents)
 2. Select an environment

@@ -1,5 +1,5 @@
 # Kubernetes Logs
-Each pod the service is runs on has its own logs. These logs contain information which pertains to the instance of the API
+Each pod the service runs on has its own logs. These logs contain information which pertains to the instance of the API
 running within the pod. The sort of information that can be obtained from the Kubernetes logs is as follows:
 - Application and server hosting information such as local ports, versions and active profiles.
 - Incoming requests (does not contain sensitive information) i.e. request type, request URL and request body.
@@ -28,3 +28,5 @@ If successful, your terminal will display the logs for this pod.
 ### Example Use Case
 A consumer is getting unexpected data from the API, in such a scenario we can obtain the request details from the log and
 reproduce it ourselves.
+
+> It may also be beneficial to visit our Kubernetes [Useful Commands](https://github.com/ministryofjustice/hmpps-integration-api/blob/main/docs/useful-commands.md#kubectl) page.

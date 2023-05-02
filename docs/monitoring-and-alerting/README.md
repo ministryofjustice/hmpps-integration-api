@@ -5,7 +5,7 @@ examples of where each may be useful. This ensures contributors are well-equippe
 
 ## Services
 - [Azure Application Insights](azure-application-insights.md): Access metrics
+- [Grafana](grafana.md): Performance metrics
 - [Kubernetes](kubernetes.md): Pod specific application logs
 - [Kibana](kibana.md): Kubernetes application logs
 - [Sentry](sentry.md): Error logs
-- [Grafana](grafana.md): Performance metrics
