@@ -1,0 +1,64 @@
+@startuml certificates
+
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+!include <awslib/AWSSimplified.puml>
+!include <awslib/ApplicationIntegration/APIGateway.puml>
+!include <awslib/Storage/SimpleStorageService.puml>
+!include <awslib/Containers/ElasticKubernetesService.puml>
+
+!include <tupadr3/common>
+!include <office/Security/certificate.puml>
+!include <office/Servers/certificate_authority.puml>
+!include <office/Security/key_permissions.puml>
+!include <tupadr3/devicons/nginx.puml>
+
+AddBoundaryTag("system", $borderColor="Black", $shape = RoundedBoxShape(), $type="")
+
+Title [Certificates] HMPPS Integration API
+
+Boundary(consumer_app_group, "Consumer Application"){
+  Container(consumer_app, "Consumer Application", "API", "Requires data from HMPPS.")
+
+  Boundary(consumer_app_mutual_tls, "Mutual TLS authentication", ""){
+    OFF_CERTIFICATE(consumer_app_certificate, "Client Certificate\n(client.pem)")
+    OFF_KEY_PERMISSIONS(consumer_app_private_key, "Client Private Key\n(client.key)")
+    OFF_CERTIFICATE_AUTHORITY(consumer_app_public_ca, "Public CA")
+  }
+}
+
+Boundary(hmpps_integration_api, "HMPPS Integration API", "") {
+  APIGateway(api_gw, "API Gateway", "")
+
+  Boundary(mutual_tls, "Mutual TLS authentication", "") {
+    SimpleStorageService(s3_truststore, "S3 Bucket", "")
+    OFF_CERTIFICATE(api_gw_truststore, "Certificate Authority\n(truststore.pem)")
+    OFF_KEY_PERMISSIONS(hmpps_integration_api_private_key, "CA Private Key\n(ca.key)")
+  }
+
+  Boundary(client_cert_auth, "Client certificate authentication", "", $tags="system") {
+    OFF_CERTIFICATE(api_gw_certificate, "Client Certificate (apigw_client.pem)")
+    OFF_KEY_PERMISSIONS(api_gw_private_key, "Client Private Key (apigw_client.key)")
+
+    ElasticKubernetesService(hmpps_integration_api_eks, "Elastic Kubernetes Service", "")
+    OFF_CERTIFICATE(hmpps_integration_api_certificate, "Client Certificate (apigw_ca.pem)")
+  }
+}
+
+Lay_Right(consumer_app_group, hmpps_integration_api)
+Lay_Right(mutual_tls, client_cert_auth)
+
+' Consumer application
+Rel_Down(consumer_app_private_key, consumer_app, "Decrypts traffic")
+Rel_Down(consumer_app_certificate, consumer_app, "Proves identity")
+Rel_Down(consumer_app_public_ca, consumer_app, "Verifies server certificate")
+
+' HMPPS Integration API
+Rel_Down(api_gw_private_key, api_gw, "Decrypts traffic")
+Rel_Down(s3_truststore, api_gw, "Validates client certificates of consumers")
+Rel_Down(api_gw_truststore, s3_truststore, "Verifies client certificates")
+Rel_Down(api_gw_certificate, api_gw, "Proves identity")
+Rel_Down(hmpps_integration_api_certificate, hmpps_integration_api_eks, "Validates requests are from API Gateway")
+Rel_Down(hmpps_integration_api_private_key, hmpps_integration_api_eks, "Signs client certificates")
+
+@enduml
