@@ -14,7 +14,7 @@ import java.nio.charset.StandardCharsets
 
 class PersonSmokeTest : DescribeSpec({
   val baseUrl = "http://localhost:8080"
-  val basePath = "/v1/persons"
+  val basePath = "v1/persons"
   val httpClient = HttpClient.newBuilder().build()
   val httpRequest = HttpRequest.newBuilder()
 
