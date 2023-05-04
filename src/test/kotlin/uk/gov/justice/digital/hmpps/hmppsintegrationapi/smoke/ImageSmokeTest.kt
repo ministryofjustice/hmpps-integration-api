@@ -17,7 +17,7 @@ class ImageSmokeTest : DescribeSpec({
     val id = 2461788
 
     val response = httpClient.send(
-      httpRequest.uri(URI.create("$baseUrl/images/$id")).build(),
+      httpRequest.uri(URI.create("$baseUrl/v1/images/$id")).build(),
       HttpResponse.BodyHandlers.ofString(),
     )
 

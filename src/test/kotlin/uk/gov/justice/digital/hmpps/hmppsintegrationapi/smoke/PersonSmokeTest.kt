@@ -14,6 +14,7 @@ import java.nio.charset.StandardCharsets
 
 class PersonSmokeTest : DescribeSpec({
   val baseUrl = "http://localhost:8080"
+  val basePath = "v1/persons"
   val httpClient = HttpClient.newBuilder().build()
   val httpRequest = HttpRequest.newBuilder()
 
@@ -26,7 +27,7 @@ class PersonSmokeTest : DescribeSpec({
     val queryParams = "first_name=$firstName&last_name=$lastName"
 
     val response = httpClient.send(
-      httpRequest.uri(URI.create("$baseUrl/persons?$queryParams")).build(),
+      httpRequest.uri(URI.create("$baseUrl/$basePath?$queryParams")).build(),
       HttpResponse.BodyHandlers.ofString(),
     )
 
@@ -48,7 +49,7 @@ class PersonSmokeTest : DescribeSpec({
 
   it("returns a person from NOMIS, Prisoner Offender Search and Probation Offender Search") {
     val response = httpClient.send(
-      httpRequest.uri(URI.create("$baseUrl/persons/$encodedPncId")).build(),
+      httpRequest.uri(URI.create("$baseUrl/$basePath/$encodedPncId")).build(),
       HttpResponse.BodyHandlers.ofString(),
     )
 
@@ -94,7 +95,7 @@ class PersonSmokeTest : DescribeSpec({
 
   it("returns image metadata for a person") {
     val response = httpClient.send(
-      httpRequest.uri(URI.create("$baseUrl/persons/$encodedPncId/images")).build(),
+      httpRequest.uri(URI.create("$baseUrl/$basePath/$encodedPncId/images")).build(),
       HttpResponse.BodyHandlers.ofString(),
     )
 
@@ -117,7 +118,7 @@ class PersonSmokeTest : DescribeSpec({
 
   it("returns addresses for a person") {
     val response = httpClient.send(
-      httpRequest.uri(URI.create("$baseUrl/persons/$encodedPncId/addresses")).build(),
+      httpRequest.uri(URI.create("$baseUrl/$basePath/$encodedPncId/addresses")).build(),
       HttpResponse.BodyHandlers.ofString(),
     )
 

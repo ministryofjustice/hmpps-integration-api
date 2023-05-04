@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.hmppsintegrationapi.controllers
+package uk.gov.justice.digital.hmpps.hmppsintegrationapi.controllers.v1
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetImageService
 
 @RestController
-@RequestMapping("/images")
+@RequestMapping("/v1/images")
 class ImageController(
   @Autowired val getImageService: GetImageService,
 ) {

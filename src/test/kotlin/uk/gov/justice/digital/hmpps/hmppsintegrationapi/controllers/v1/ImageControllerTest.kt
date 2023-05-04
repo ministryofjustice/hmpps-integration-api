@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.hmppsintegrationapi.controllers
+package uk.gov.justice.digital.hmpps.hmppsintegrationapi.controllers.v1
 
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
@@ -21,27 +21,28 @@ internal class ImageControllerTest(
 ) : DescribeSpec({
   val id = 2461788
   val image = byteArrayOf(0x48, 101, 108, 108, 111)
+  val basePath = "/v1/images"
 
-  describe("GET /images/{id}") {
+  describe("GET $basePath/{id}") {
     beforeTest {
       Mockito.reset(getImageService)
       whenever(getImageService.execute(id)).thenReturn(image)
     }
 
     it("responds with a 200 OK status") {
-      val result = mockMvc.perform(get("/images/$id")).andReturn()
+      val result = mockMvc.perform(get("$basePath/$id")).andReturn()
 
       result.response.status.shouldBe(HttpStatus.OK.value())
     }
 
     it("retrieves a image with the matching ID") {
-      mockMvc.perform(get("/images/$id")).andReturn()
+      mockMvc.perform(get("$basePath/$id")).andReturn()
 
       verify(getImageService, VerificationModeFactory.times(1)).execute(id)
     }
 
     it("returns an image with the matching ID") {
-      val result = mockMvc.perform(get("/images/$id")).andReturn()
+      val result = mockMvc.perform(get("$basePath/$id")).andReturn()
 
       result.response.contentAsByteArray.shouldBe(image)
     }

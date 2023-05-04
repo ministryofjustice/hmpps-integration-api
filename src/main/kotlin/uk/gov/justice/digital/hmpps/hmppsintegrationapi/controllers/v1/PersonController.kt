@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.hmppsintegrationapi.controllers
+package uk.gov.justice.digital.hmpps.hmppsintegrationapi.controllers.v1
 
 import jakarta.validation.ValidationException
 import org.springframework.beans.factory.annotation.Autowired
@@ -18,7 +18,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonServic
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonsService
 
 @RestController
-@RequestMapping("/persons")
+@RequestMapping("/v1/persons")
 class PersonController(
   @Autowired val getPersonService: GetPersonService,
   @Autowired val getPersonsService: GetPersonsService,
