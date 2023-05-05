@@ -17,7 +17,7 @@ An example curl command to search on the name "John Smith" looks like:
 
 ```bash
 curl -H "x-api-key: some-client-api-key" \
-  https://development.integration-api.hmpps.service.justice.gov.uk/persons?first_name=John&last_name=Smith \
+  https://development.integration-api.hmpps.service.justice.gov.uk/v1/persons?first_name=John&last_name=Smith \
   --cert client.pem \
   --key client.key
 ```
@@ -45,7 +45,7 @@ See [searching for a person API endpoint](/documentation/api/#persons-encodedpnc
 
 ## 2. Get a list of images of the person using their PNC ID
 
-The `GET /persons/{encodedPncId}/images` endpoint returns a descriptive list of all images that are associated with a
+The `GET /v1/persons/{encodedPncId}/images` endpoint returns a descriptive list of all images that are associated with a
 person.
 
 URL-encode the person's PNC ID by replacing the forward slash `/` with `%2F` and pass this in as a path parameter to the
@@ -55,7 +55,7 @@ An example curl command that returns a list of images associated with the PNC ID
 
 ```bash
 curl -H "x-api-key: some-client-api-key" \
-  https://development.integration-api.hmpps.service.justice.gov.uk/persons/2008%2F0545166T/images \
+  https://development.integration-api.hmpps.service.justice.gov.uk/v1/persons/2008%2F0545166T/images \
   --cert client.pem \
   --key client.key
 ```
@@ -91,7 +91,7 @@ An example curl command that returns an image associated with the ID `2461788` l
 
 ```bash
 curl -H "x-api-key: some-client-api-key" \
-  https://development.integration-api.hmpps.service.justice.gov.uk/images/2461788 \
+  https://development.integration-api.hmpps.service.justice.gov.uk/v1/images/2461788 \
   --cert client.pem \
   --key client.key
 ```
