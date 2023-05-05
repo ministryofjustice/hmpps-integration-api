@@ -8,7 +8,7 @@ info:
   version: 0.0.1
 
 paths:
-  /persons:
+  /v1/persons:
     get:
       tags:
         - persons
@@ -49,7 +49,7 @@ paths:
                 NoQueryParametersBadRequestError:
                   $ref: "#/components/examples/NoQueryParametersBadRequestError"
 
-  /persons/{encodedPncId}:
+  /v1/persons/{encodedPncId}:
     get:
       tags:
         - persons
@@ -78,7 +78,7 @@ paths:
                 PersonNotFoundError:
                   $ref: "#/components/examples/PersonNotFoundError"
 
-  /persons/{encodedPncId}/images:
+  /v1/persons/{encodedPncId}/images:
     get:
       tags:
         - persons
@@ -108,7 +108,7 @@ paths:
                 PersonNotFoundError:
                   $ref: "#/components/examples/PersonNotFoundError"
 
-  /persons/{encodedPncId}/addresses:
+  /v1/persons/{encodedPncId}/addresses:
     get:
       tags:
         - persons
@@ -138,7 +138,7 @@ paths:
                 PersonNotFoundError:
                   $ref: "#/components/examples/PersonNotFoundError"
 
-  /images/{id}:
+  /v1/images/{id}:
     get:
       tags:
         - images
@@ -167,7 +167,7 @@ paths:
                 ImageNotFoundError:
                   $ref: "#/components/examples/ImageNotFoundError"
 
-  /{TBC}/persons/{Id}/accommodations:
+  /{TBC}/v1/persons/{Id}/accommodations:
     get:
       summary: FUTURE ENDPOINT - Returns accommodation and referral information associated with a person.
       parameters:
@@ -176,7 +176,7 @@ paths:
         "200":
           description: Success.
 
-  /{TBC}/persons/{Id}/adjudications:
+  /{TBC}/v1/persons/{Id}/adjudications:
     get:
       summary: FUTURE ENDPOINT - Returns adjudications associated with a person.
       parameters:
@@ -185,7 +185,7 @@ paths:
         "200":
           description: Success.
 
-  /{TBC}/persons/{Id}/interventions:
+  /{TBC}/v1/persons/{Id}/interventions:
     get:
       summary: FUTURE ENDPOINT - Returns activities and Non-Statutory Interventions (NSIs) associated with a person.
       parameters:
@@ -194,7 +194,7 @@ paths:
         "200":
           description: Success.
 
-  /{TBC}/persons/{Id}/key-workers:
+  /{TBC}/v1/persons/{Id}/key-workers:
     get:
       summary: FUTURE ENDPOINT - Returns responsible officer history, transfer history and consolidated transfer review associated with a person.
       parameters:
@@ -203,7 +203,7 @@ paths:
         "200":
           description: Success.
 
-  /{TBC}/persons/{Id}/licenses:
+  /{TBC}/v1/persons/{Id}/licenses:
     get:
       summary: FUTURE ENDPOINT - Returns license conditions associated with a person.
       parameters:
@@ -212,7 +212,7 @@ paths:
         "200":
           description: Success.
 
-  /{TBC}/persons/{Id}/offences:
+  /{TBC}/v1/persons/{Id}/offences:
     get:
       summary: FUTURE ENDPOINT -  Returns offences associated with a person.
       parameters:
@@ -221,7 +221,7 @@ paths:
         "200":
           description: Success.
 
-  /{TBC}/persons/{Id}/prisoner-visits:
+  /{TBC}/v1/persons/{Id}/prisoner-visits:
     get:
       summary: FUTURE ENDPOINT -  Returns prisoner visits associated with a person.
       parameters:
@@ -230,7 +230,7 @@ paths:
         "200":
           description: Success.
 
-  /{TBC}/persons/{Id}/probation-contact-events:
+  /{TBC}/v1/persons/{Id}/probation-contact-events:
     get:
       summary: FUTURE ENDPOINT - Returns probation contact events associated with a person.
       parameters:
@@ -239,7 +239,7 @@ paths:
         "200":
           description: Success.
 
-  /{TBC}/persons/{Id}/release-information:
+  /{TBC}/v1/persons/{Id}/release-information:
     get:
       summary: FUTURE ENDPOINT - Returns release dates and information associated with a person.
       parameters:
@@ -248,7 +248,7 @@ paths:
         "200":
           description: Success.
 
-  /{TBC}/persons/{Id}/risks:
+  /{TBC}/v1/persons/{Id}/risks:
     get:
       summary: FUTURE ENDPOINT - Returns prisoner risks, alerts, personal circumstances, prisoner category, person assessments, risk of re-offending, OASys General Predictor (OGP) scores, OASys Violence Predictor (OVP) scores, likelihood of serious harm to others, concerns, RoSH (Risk of serious harm) summary, registration summary associated with a person.
       parameters:
@@ -257,7 +257,7 @@ paths:
         "200":
           description: Success.
 
-  /{TBC}/persons/{Id}/sentences:
+  /{TBC}/v1/persons/{Id}/sentences:
     get:
       summary: FUTURE ENDPOINT - Returns prisoner sentences, bookings / incarceration associated with a person.
       parameters:
@@ -266,7 +266,7 @@ paths:
         "200":
           description: Success.
 
-  /{TBC}/persons/{Id}/security:
+  /{TBC}/v1/persons/{Id}/security:
     get:
       summary: FUTURE ENDPOINT - Returns security information such as prisoner non-associations and prisoner incidents for a person.
       parameters:
@@ -275,7 +275,7 @@ paths:
         "200":
           description: Success.
 
-  /{TBC}/persons/{Id}/special-needs:
+  /{TBC}/v1/persons/{Id}/special-needs:
     get:
       summary: FUTURE ENDPOINT -  Returns special needs such as drugs test summaries, drug history and drugs test lists associated with a person.
       parameters:
