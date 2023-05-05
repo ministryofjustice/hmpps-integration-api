@@ -3,7 +3,7 @@
 
 generic-service:
   image:
-    repository: 754256621582.dkr.ecr.eu-west-2.amazonaws.com/hmpps-integration-api-admin-team/hmpps-integration-api-production-ecr
+    repository: 754256621582.dkr.ecr.eu-west-2.amazonaws.com/hmpps-integration-api/hmpps-integration-api-production-ecr
 
   env:
     SPRING_PROFILES_ACTIVE: production

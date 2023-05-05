@@ -69,5 +69,5 @@ kubectl delete pod,svc,deployment,ingress --all -n <namespace>
 To list images in the ECR repository:
 
 ```bash
-aws ecr describe-images --repository-name=hmpps-integration-api-admin-team/hmpps-integration-api-<environment>-ecr
+aws ecr describe-images --repository-name=hmpps-integration-api/hmpps-integration-api-<environment>-ecr
 ```

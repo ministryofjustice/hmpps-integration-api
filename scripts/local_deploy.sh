@@ -9,7 +9,7 @@ set -e
 env=${1:-development}
 namespace=hmpps-integration-api-$env
 repo_host="754256621582.dkr.ecr.eu-west-2.amazonaws.com"
-repo_url="${repo_host}/hmpps-integration-api-admin-team/hmpps-integration-api-$env-ecr"
+repo_url="${repo_host}/hmpps-integration-api/hmpps-integration-api-$env-ecr"
 
 authenticate_docker() {
   export AWS_ACCESS_KEY_ID=`kubectl get secret ecr-repo-hmpps-integration-api-$env -o json -n $namespace |jq -r '.data.access_key_id' |base64 --decode`
