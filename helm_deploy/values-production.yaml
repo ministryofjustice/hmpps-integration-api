@@ -13,6 +13,9 @@ generic-service:
     client-credentials:
       CLIENT_ID: "clientId"
       CLIENT_SECRET: "clientSecret"
+    hmpps-integration-api:
+      APPINSIGHTS_INSTRUMENTATIONKEY: "APPINSIGHTS_INSTRUMENTATIONKEY"
+      SENTRY_DSN: "SENTRY_DSN"
 
   ingress:
     host: hmpps-integration-api-production.apps.live.cloud-platform.service.justice.gov.uk

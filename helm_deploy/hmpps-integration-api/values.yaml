@@ -31,10 +31,5 @@ generic-service:
   allowlist:
     unrestricted: "0.0.0.0/0"
 
-  namespace_secrets:
-    hmpps-integration-api:
-      APPINSIGHTS_INSTRUMENTATIONKEY: "APPINSIGHTS_INSTRUMENTATIONKEY"
-      SENTRY_DSN: "SENTRY_DSN"
-
 generic-prometheus-alerts:
   targetApplication: hmpps-integration-api
