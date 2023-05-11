@@ -6,7 +6,7 @@
 
 set -e
 
-env=${1:-development}
+env=${1:-dev}
 namespace=hmpps-integration-api-$env
 repo_host="754256621582.dkr.ecr.eu-west-2.amazonaws.com"
 repo_url="${repo_host}/hmpps-integration-api/hmpps-integration-api-$env-ecr"
