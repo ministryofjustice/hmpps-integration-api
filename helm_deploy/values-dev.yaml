@@ -18,9 +18,9 @@ generic-service:
     SENTRY_ENV: dev
 
   namespace_secrets:
-    client-credentials:
-      CLIENT_ID: "clientId"
-      CLIENT_SECRET: "clientSecret"
+    hmpps-auth:
+      CLIENT_ID: "client-id"
+      CLIENT_SECRET: "client-secret"
     services:
       APPINSIGHTS_INSTRUMENTATIONKEY: "azure-app-insights"
       SENTRY_DSN: "sentry"
