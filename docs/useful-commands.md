@@ -6,7 +6,7 @@ To report on all resources for an environment, run the script:
 
 ```bash
 ./scripts/report_kubernetes.sh <environment>
-# E.g ./scripts/report_kubernetes.sh development
+# E.g ./scripts/report_kubernetes.sh dev
 ```
 
 <details>
@@ -53,7 +53,7 @@ To perform a command within a pod:
 
 ```bash
 kubectl exec <pod-name> -c <container-name> -n <namespace> <command>
-# E.g. kubectl exec hmpps-integration-api-5b8f4f9699-wbwgf -c hmpps-integration-api -n hmpps-integration-api-development -- curl http://localhost:8080/
+# E.g. kubectl exec hmpps-integration-api-5b8f4f9699-wbwgf -c hmpps-integration-api -n hmpps-integration-api-dev -- curl http://localhost:8080/
 ```
 
 To delete all ingress, services, pods and deployments:

@@ -13,7 +13,7 @@
     'skinparam linetype polyline
 
     Title [Deployment Flow] HMPPS Integration API
-    
+
     AddRelTag("subprocess", $textColor="#808080", $lineColor="#808080", $lineStyle = DashedLine())
 
     !global $TEXT_HELMDEPLOY = "Configures hosting Kubernetes environment"
@@ -35,11 +35,11 @@
             Container(smoketest, "Smoke Test", "Gradle", $sprite=gradle*0.6)
         }
 
-        Boundary(dev_build_and_deploy, "Development"){
+        Boundary(dev_build_and_deploy, "Dev"){
             Container(dev_build, "Build", "Docker", $TEXT_DOCKERBUILD, $sprite=docker-icon*0.6)
             Container(dev_helm, "Deploy", "Helm", $TEXT_HELMDEPLOY, $sprite=helm*0.6)
 
-            Boundary(dev_cp, "Cloud Platform Development", "Kubernetes"){
+            Boundary(dev_cp, "Cloud Platform Dev", "Kubernetes"){
                 Container(dev_ecr, "Container Registry", "Elastic Container Registry (ECR)")
                 Boundary(dev_service, "Service", "Kubernetes"){
                     Container(hmpps_integration_api_dev_pod1, "HMPPS Integration API", "Pod", $TEXT_APIPOD, $sprite=kubernetes*0.4)
@@ -58,7 +58,7 @@
                     Container(hmpps_integration_api_preprod_pod1, "HMPPS Integration API", "Pod", $TEXT_APIPOD, $sprite=kubernetes*0.4)
                     Container(hmpps_integration_api_preprod_pod2, "HMPPS Integration API", "Pod", $TEXT_APIPOD, $sprite=kubernetes*0.4)
                 }
-            } 
+            }
         }
 
         Boundary(prod_build_and_deploy, "Production"){
@@ -66,14 +66,14 @@
             Container(prod_helm, "Deploy", "Helm", $TEXT_HELMDEPLOY, $sprite=helm*0.6)
 
             Container(approval, "Manual Approval", "Circle CI")
-            
+
             Boundary(prod_cp, "Cloud Platform Production", "Kubernetes"){
                 Container(prod_ecr, "Container Registry", "Elastic Container Registry (ECR)")
                 Boundary(prod_service, "Service", "Kubernetes"){
                     Container(hmpps_integration_api_prod_pod1, "HMPPS Integration API", "Pod", $TEXT_APIPOD, $sprite=kubernetes*0.4)
                     Container(hmpps_integration_api_prod_pod2, "HMPPS Integration API", "Pod", $TEXT_APIPOD, $sprite=kubernetes*0.4)
                 }
-            } 
+            }
         }
     }
 

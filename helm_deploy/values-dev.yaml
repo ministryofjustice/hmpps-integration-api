@@ -5,22 +5,25 @@ generic-service:
   replicaCount: 2
 
   image:
-    repository: 754256621582.dkr.ecr.eu-west-2.amazonaws.com/hmpps-integration-api/hmpps-integration-api-development-ecr
+    repository: 754256621582.dkr.ecr.eu-west-2.amazonaws.com/hmpps-integration-api/hmpps-integration-api-dev-ecr
 
   ingress:
-    host: hmpps-integration-api-development.apps.live.cloud-platform.service.justice.gov.uk
+    host: hmpps-integration-api-dev.apps.live.cloud-platform.service.justice.gov.uk
     annotations:
-      nginx.ingress.kubernetes.io/auth-tls-secret: "hmpps-integration-api-development/api-gateway-authentication"
+      nginx.ingress.kubernetes.io/auth-tls-secret: "hmpps-integration-api-dev/certificates"
 
   env:
-    SPRING_PROFILES_ACTIVE: development
+    SPRING_PROFILES_ACTIVE: dev
     APPLICATIONINSIGHTS_CONFIGURATION_FILE: applicationinsights.dev.json
-    SENTRY_ENV: development
+    SENTRY_ENV: dev
 
   namespace_secrets:
     client-credentials:
       CLIENT_ID: "clientId"
       CLIENT_SECRET: "clientSecret"
+    services:
+      APPINSIGHTS_INSTRUMENTATIONKEY: "azure-app-insights"
+      SENTRY_DSN: "sentry"
 
 # CloudPlatform AlertManager receiver to route prometheus alerts to slack
 # See https://user-guide.cloud-platform.service.justice.gov.uk/documentation/monitoring-an-app/how-to-create-alarms.html#creating-your-own-custom-alerts

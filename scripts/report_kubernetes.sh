@@ -3,7 +3,7 @@
 # $# Gets the number of args passed
 if [ $# -eq 0 ]
 then
-  echo "You must pass in an environment name e.g. bash ./scripts/report_kubernetes.sh development"
+  echo "You must pass in an environment name e.g. bash ./scripts/report_kubernetes.sh dev"
   exit
 fi
 

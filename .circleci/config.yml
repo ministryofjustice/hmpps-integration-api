@@ -129,12 +129,12 @@ workflows:
             - hmpps-common-vars
           <<: *slack-fail-post-step
           name: lint-helm-charts
-          env: development
+          env: dev
       - create-and-push-image-to-ecr:
           <<: *slack-fail-post-step
-          name: create-and-push-image-to-development-ecr
+          name: create-and-push-image-to-dev-ecr
           context:
-            - hmpps-integration-api-development
+            - hmpps-integration-api-dev
             - hmpps-common-vars
           requires:
             - lint-code
@@ -147,17 +147,17 @@ workflows:
                 - main
       - hmpps/deploy_env:
           <<: *slack-fail-post-step
-          name: deploy-to-development
+          name: deploy-to-dev
           context:
-            - hmpps-integration-api-development
+            - hmpps-integration-api-dev
             - hmpps-common-vars
           requires:
-            - create-and-push-image-to-development-ecr
+            - create-and-push-image-to-dev-ecr
           filters:
             branches:
               only:
                 - main
-          env: "development"
+          env: "dev"
           helm_timeout: 5m
           slack_channel_name: << pipeline.parameters.releases-slack-channel >>
           slack_notification: false
@@ -169,7 +169,7 @@ workflows:
             - hmpps-common-vars
             - hmpps-integration-api-pre-production
           requires:
-            - deploy-to-development
+            - deploy-to-dev
           filters:
             branches:
               only:
