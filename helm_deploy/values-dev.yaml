@@ -21,7 +21,7 @@ generic-service:
     hmpps-auth:
       CLIENT_ID: "client-id"
       CLIENT_SECRET: "client-secret"
-    services:
+    external-services:
       APPINSIGHTS_INSTRUMENTATIONKEY: "azure-app-insights"
       SENTRY_DSN: "sentry"
 
