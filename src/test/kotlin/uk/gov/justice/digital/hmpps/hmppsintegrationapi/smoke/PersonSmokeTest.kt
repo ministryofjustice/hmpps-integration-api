@@ -104,11 +104,10 @@ class PersonSmokeTest : DescribeSpec({
     {
       "images": [
         {
-          "id": 2461788,
-          "captureDate": "2008-08-27",
-          "view": "FACE",
-          "orientation": "FRONT",
-          "type": "OFF_BKG"
+          "id":2461788,
+          "captureDate":"2008-08-27",
+          "view":"OIC","orientation":"NECK",
+          "type":"OFF_IDM"
         }
       ]
     }
