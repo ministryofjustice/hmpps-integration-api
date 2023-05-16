@@ -80,12 +80,10 @@ internal class PersonControllerTest(
         mockMvc.perform(get("$basePath?first_name=$firstNameThatDoesNotExist&last_name=$lastNameThatDoesNotExist"))
           .andReturn()
 
+      print(result.response.contentAsString)
+
       result.response.contentAsString.shouldBe(
-        """
-          {
-            "persons":[]
-          }
-          """.removeWhitespaceAndNewlines(),
+        this::class.java.getResource("/fixtures/emptyPersonsSearch.json").readText(Charsets.UTF_8).removeWhitespaceAndNewlines()
       )
     }
 
@@ -99,31 +97,7 @@ internal class PersonControllerTest(
       val result = mockMvc.perform(get("$basePath?first_name=$firstName&last_name=$lastName")).andReturn()
 
       result.response.contentAsString.shouldBe(
-        """
-          {
-            "persons":
-            [
-              {
-                "firstName":"Barry",
-                "lastName":"Allen",
-                "middleName":"Jonas",
-                "dateOfBirth":"2023-03-01",
-                "aliases":[],
-                "prisonerId": null,
-                "pncId": null
-               },
-               {
-                 "firstName":"Barry",
-                 "lastName":"Allen",
-                 "middleName":"Rock",
-                 "dateOfBirth":"2022-07-22",
-                 "aliases":[],
-                 "prisonerId": null,
-                 "pncId": null
-               }
-             ]
-           }
-        """.removeWhitespaceAndNewlines(),
+        this::class.java.getResource("/fixtures/personSearchMatchingFirstAndLastName.json").readText(Charsets.UTF_8).removeWhitespaceAndNewlines()
       )
     }
 

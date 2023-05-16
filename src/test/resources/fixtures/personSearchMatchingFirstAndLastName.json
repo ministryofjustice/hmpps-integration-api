@@ -1,0 +1,47 @@
+{
+  "content":
+    [
+      {
+        "firstName":"Barry",
+        "lastName":"Allen",
+        "middleName":"Jonas",
+        "dateOfBirth":"2023-03-01",
+        "aliases":[],
+        "prisonerId":null,
+        "pncId":null
+      }, {
+        "firstName":"Barry",
+        "lastName":"Allen",
+        "middleName":"Rock",
+        "dateOfBirth":"2022-07-22",
+        "aliases":[],
+        "prisonerId":null,
+        "pncId":null
+      }
+    ],
+  "pageable":{
+    "sort":{
+      "empty":true,
+      "sorted":false,
+      "unsorted":true
+    },
+    "offset":0,
+    "pageNumber":0,
+    "pageSize":10,
+    "paged":true,
+    "unpaged":false
+  },
+  "totalPages":1,
+  "totalElements":2,
+  "last":true,
+  "size":10,
+  "number":0,
+  "sort":{
+    "empty":true,
+    "sorted":false,
+    "unsorted":true
+  },
+  "numberOfElements":2,
+  "first":true,
+  "empty":false
+}
