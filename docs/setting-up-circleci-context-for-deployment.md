@@ -34,14 +34,14 @@ new [context](https://circleci.com/docs/contexts/) must be created for it that c
 
 ```bash
 kubectl get secret aws-services -n hmpps-integration-api-<environment> -o json | jq -r ".data.ecr" | base64 --decode | jq -r '."access-credentials"."access-key-id"'
-# E.g. kubectl get secret services -n hmpps-integration-api-dev -o json | jq -r ".data.ecr" | base64 --decode | jq -r '."access-credentials"."access-key-id"'
+# E.g. kubectl get secret aws-services -n hmpps-integration-api-dev -o json | jq -r ".data.ecr" | base64 --decode | jq -r '."access-credentials"."access-key-id"'
 ```
 
 7. Add an environment variable called `AWS_SECRET_ACCESS_KEY` and set the value to the response of the command below.
 
 ```bash
 kubectl get secret aws-services -n hmpps-integration-api-<environment> -o json | jq -r ".data.ecr" | base64 --decode | jq -r '."access-credentials"."secret-access-key"'
-# E.g. kubectl get secret services -n hmpps-integration-api-dev -o json | jq -r ".data.ecr" | base64 --decode | jq -r '."access-credentials"."secret-access-key"'
+# E.g. kubectl get secret aws-services -n hmpps-integration-api-dev -o json | jq -r ".data.ecr" | base64 --decode | jq -r '."access-credentials"."secret-access-key"'
 ```
 
 8. Add an environment variable called `KUBE_ENV_NAMESPACE` and set the value to the Kubernetes namespace for the
@@ -78,5 +78,5 @@ kubectl -n hmpps-integration-api-<environment> get secrets <circleci-token-secre
 
 ```bash
 kubectl get secret aws-services -n hmpps-integration-api-<environment> -o json | jq -r ".data.ecr" | base64 --decode | jq -r '."repo-url"'
-# E.g. kubectl get secret services -n hmpps-integration-api-dev -o json | jq -r ".data.ecr" | base64 --decode | jq -r '."repo-url"'
+# E.g. kubectl get secret aws-services -n hmpps-integration-api-dev -o json | jq -r ".data.ecr" | base64 --decode | jq -r '."repo-url"'
 ```
