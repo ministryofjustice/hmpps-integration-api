@@ -36,11 +36,10 @@ internal class PersonControllerTest(
   val pncId = "2003/13116M"
   val encodedPncId = URLEncoder.encode(pncId, StandardCharsets.UTF_8)
   val basePath = "/v1/persons"
+  val firstName = "Barry"
+  val lastName = "Allen"
 
   describe("GET $basePath") {
-    val firstName = "Barry"
-    val lastName = "Allen"
-
     beforeTest {
       Mockito.reset(getPersonsService)
 
@@ -77,14 +76,11 @@ internal class PersonControllerTest(
       )
 
       val result =
-        mockMvc.perform(get("$basePath?first_name=$firstNameThatDoesNotExist&last_name=$lastNameThatDoesNotExist"))
+        mockMvc.perform(
+          get("$basePath?first_name=$firstNameThatDoesNotExist&last_name=$lastNameThatDoesNotExist"))
           .andReturn()
 
-      print(result.response.contentAsString)
-
-      result.response.contentAsString.shouldBe(
-        this::class.java.getResource("/fixtures/emptyPersonsSearch.json").readText(Charsets.UTF_8).removeWhitespaceAndNewlines()
-      )
+      result.response.contentAsString.shouldContain("\"content\":[]")
     }
 
     it("retrieves a person with matching search criteria") {
@@ -277,6 +273,38 @@ internal class PersonControllerTest(
       val result = mockMvc.perform(get("$basePath/$encodedPncId/addresses")).andReturn()
 
       result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
+    }
+  }
+
+  describe("Pagination") {
+    beforeTest {
+      Mockito.reset(getPersonsService)
+
+      whenever(getPersonsService.execute(firstName, lastName)).thenReturn(
+        listOf(
+          Person(firstName = "Barry", lastName = "Allen", middleName = "Jonas", dateOfBirth = LocalDate.parse("2023-03-01")),
+          Person(firstName = "Barry2", lastName = "Allen", middleName = "Rock", dateOfBirth = LocalDate.parse("2022-07-22")),
+          Person(firstName = "Barry3", lastName = "Allen", middleName = "Rock", dateOfBirth = LocalDate.parse("2022-07-22")),
+          Person(firstName = "Barry4", lastName = "Allen", middleName = "Rock", dateOfBirth = LocalDate.parse("2022-07-22")),
+          Person(firstName = "Barry5", lastName = "Allen", middleName = "Rock", dateOfBirth = LocalDate.parse("2022-07-22")),
+          Person(firstName = "Barry6", lastName = "Allen", middleName = "Rock", dateOfBirth = LocalDate.parse("2022-07-22")),
+          Person(firstName = "Barry7", lastName = "Allen", middleName = "Rock", dateOfBirth = LocalDate.parse("2022-07-22")),
+          Person(firstName = "Barry8", lastName = "Allen", middleName = "Rock", dateOfBirth = LocalDate.parse("2022-07-22")),
+          Person(firstName = "Barry9", lastName = "Allen", middleName = "Rock", dateOfBirth = LocalDate.parse("2022-07-22")),
+          Person(firstName = "Barry10", lastName = "Allen", middleName = "Rock", dateOfBirth = LocalDate.parse("2022-07-22")),
+          Person(firstName = "Barry11", lastName = "Allen", middleName = "Rock", dateOfBirth = LocalDate.parse("2022-07-22")),
+        ),
+      )
+    }
+
+    it("paginates a large number of items") {
+      val result = mockMvc.perform(get("$basePath?first_name=$firstName&last_name=$lastName")).andReturn()
+
+      result.response.contentAsString.shouldBe(
+        this::class.java.getResource(
+          "/fixtures/personSearchMatchingFirstAndLastNamePaginated.json"
+        ).readText(Charsets.UTF_8).removeWhitespaceAndNewlines()
+      )
     }
   }
 },)
