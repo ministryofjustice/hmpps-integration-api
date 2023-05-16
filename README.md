@@ -242,6 +242,7 @@ Note, this will only specifically enable the `RequestLogger`.
 
 ## Developer guides
 
+- [Creating an environment](/docs/creating-an-environment.md)
 - [Setting up a CircleCI context for deployment](/docs/setting-up-circleci-context-for-deployment.md)
 - [Updating diagrams](/docs/updating-diagrams.md)
 - [Useful commands](/docs/useful-commands.md)
