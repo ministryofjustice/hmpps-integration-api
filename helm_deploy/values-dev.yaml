@@ -10,7 +10,7 @@ generic-service:
   ingress:
     host: hmpps-integration-api-dev.apps.live.cloud-platform.service.justice.gov.uk
     annotations:
-      nginx.ingress.kubernetes.io/auth-tls-secret: "hmpps-integration-api-dev/certificates"
+      nginx.ingress.kubernetes.io/auth-tls-secret: "hmpps-integration-api-dev/client-certificate-auth"
 
   env:
     SPRING_PROFILES_ACTIVE: dev
@@ -21,7 +21,7 @@ generic-service:
     hmpps-auth:
       CLIENT_ID: "client-id"
       CLIENT_SECRET: "client-secret"
-    external-services:
+    other-services:
       APPINSIGHTS_INSTRUMENTATIONKEY: "azure-app-insights"
       SENTRY_DSN: "sentry"
 
