@@ -32,7 +32,7 @@ class PersonSmokeTest : DescribeSpec({
     )
 
     response.statusCode().shouldBe(HttpStatus.OK.value())
-    response.body().shouldContain("\"persons\":[")
+    response.body().shouldContain("\"content\":[")
     response.body().shouldContain(
       """
         "firstName":"Robert",

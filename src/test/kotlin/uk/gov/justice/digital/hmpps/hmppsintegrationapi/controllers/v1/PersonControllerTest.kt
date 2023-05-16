@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.controllers.v1
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
+import io.kotest.matchers.string.shouldNotContain
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory.times
 import org.mockito.kotlin.verify
@@ -36,11 +37,10 @@ internal class PersonControllerTest(
   val pncId = "2003/13116M"
   val encodedPncId = URLEncoder.encode(pncId, StandardCharsets.UTF_8)
   val basePath = "/v1/persons"
+  val firstName = "Barry"
+  val lastName = "Allen"
 
   describe("GET $basePath") {
-    val firstName = "Barry"
-    val lastName = "Allen"
-
     beforeTest {
       Mockito.reset(getPersonsService)
 
@@ -80,12 +80,10 @@ internal class PersonControllerTest(
         mockMvc.perform(get("$basePath?first_name=$firstNameThatDoesNotExist&last_name=$lastNameThatDoesNotExist"))
           .andReturn()
 
-      result.response.contentAsString.shouldBe(
+      result.response.contentAsString.shouldContain(
         """
-          {
-            "persons":[]
-          }
-          """.removeWhitespaceAndNewlines(),
+          "content":[]
+        """.removeWhitespaceAndNewlines(),
       )
     }
 
@@ -98,10 +96,10 @@ internal class PersonControllerTest(
     it("returns a person with matching first and last name") {
       val result = mockMvc.perform(get("$basePath?first_name=$firstName&last_name=$lastName")).andReturn()
 
-      result.response.contentAsString.shouldBe(
+      result.response.contentAsString.shouldContain(
         """
           {
-            "persons":
+            "content":
             [
               {
                 "firstName":"Barry",
@@ -122,7 +120,6 @@ internal class PersonControllerTest(
                  "pncId": null
                }
              ]
-           }
         """.removeWhitespaceAndNewlines(),
       )
     }
@@ -303,6 +300,83 @@ internal class PersonControllerTest(
       val result = mockMvc.perform(get("$basePath/$encodedPncId/addresses")).andReturn()
 
       result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
+    }
+  }
+
+  describe("Paginated results") {
+    it("returns pagination information for empty results") {
+      val firstNameThatDoesNotExist = "Bob21345"
+      val lastNameThatDoesNotExist = "Gun36773"
+
+      whenever(getPersonsService.execute(firstNameThatDoesNotExist, lastNameThatDoesNotExist)).thenReturn(
+        listOf(),
+      )
+
+      val result =
+        mockMvc.perform(get("$basePath?first_name=$firstNameThatDoesNotExist&last_name=$lastNameThatDoesNotExist"))
+          .andReturn()
+
+      result.response.contentAsString.shouldContain("\"offset\":0")
+      result.response.contentAsString.shouldContain("\"pageNumber\":0")
+      result.response.contentAsString.shouldContain("\"pageSize\":10")
+      result.response.contentAsString.shouldContain("\"paged\":true")
+      result.response.contentAsString.shouldContain("\"totalPages\":0")
+      result.response.contentAsString.shouldContain("\"totalElements\":0")
+      result.response.contentAsString.shouldContain("\"last\":true")
+      result.response.contentAsString.shouldContain("\"size\":10")
+      result.response.contentAsString.shouldContain("\"number\":0")
+      result.response.contentAsString.shouldContain("\"numberOfElements\":0")
+      result.response.contentAsString.shouldContain("\"first\":true")
+      result.response.contentAsString.shouldContain("\"empty\":true")
+    }
+
+    it("returns pagination information for one page of results") {
+      val list = List(3) { i -> Person(
+        firstName = "Barry $i",
+        lastName = "Allen $i",
+        middleName = "Jonas $i",
+        dateOfBirth = LocalDate.parse("2023-03-01"))
+      }
+
+      whenever(getPersonsService.execute(firstName, lastName)).thenReturn(list)
+
+      val result =
+        mockMvc.perform(get("$basePath?first_name=$firstName&last_name=$lastName"))
+          .andReturn()
+
+      result.response.contentAsString.shouldContain("\"totalPages\":1")
+      result.response.contentAsString.shouldContain("\"totalElements\":3")
+      result.response.contentAsString.shouldContain("\"last\":true")
+    }
+
+    it("returns pagination information for two pages of results") {
+      val list = List(20) { i -> Person(
+        firstName = "Barry $i",
+        lastName = "Allen $i",
+        dateOfBirth = LocalDate.parse("2023-03-01"))
+      }
+
+      whenever(getPersonsService.execute(firstName, lastName)).thenReturn(list)
+
+      val resultPage0 =
+        mockMvc.perform(get("$basePath?first_name=$firstName&last_name=$lastName"))
+          .andReturn()
+
+      resultPage0.response.contentAsString.shouldContain("\"totalPages\":2")
+      resultPage0.response.contentAsString.shouldContain("\"totalElements\":20")
+      resultPage0.response.contentAsString.shouldContain("\"last\":false")
+      resultPage0.response.contentAsString.shouldContain("\"first\":true")
+      resultPage0.response.contentAsString.shouldContain("Barry 1")
+      resultPage0.response.contentAsString.shouldNotContain("Barry 11")
+
+      val resultPage1 =
+        mockMvc.perform(get("$basePath?first_name=$firstName&last_name=$lastName&page=1"))
+          .andReturn()
+
+      resultPage1.response.contentAsString.shouldContain("\"last\":true")
+      resultPage1.response.contentAsString.shouldContain("\"first\":false")
+      resultPage1.response.contentAsString.shouldNotContain("Barry 1\"")
+      resultPage1.response.contentAsString.shouldContain("Barry 19")
     }
   }
 },)

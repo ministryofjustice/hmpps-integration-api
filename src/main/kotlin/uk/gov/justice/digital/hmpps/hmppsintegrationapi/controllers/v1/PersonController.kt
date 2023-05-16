@@ -2,11 +2,11 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.controllers.v1
 
 import jakarta.validation.ValidationException
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageImpl
+import org.springframework.data.domain.Pageable
+import org.springframework.data.web.PageableDefault
+import org.springframework.web.bind.annotation.*
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.decodeUrlCharacters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Address
@@ -30,14 +30,21 @@ class PersonController(
   fun getPersons(
     @RequestParam(required = false, name = "first_name") firstName: String?,
     @RequestParam(required = false, name = "last_name") lastName: String?,
-  ): Map<String, List<Person?>> {
+     @PageableDefault pageable: Pageable,
+  ): Page<Person?> {
     if (firstName == null && lastName == null) {
       throw ValidationException("No query parameters specified.")
     }
 
-    val persons = getPersonsService.execute(firstName, lastName)
+    val result = getPersonsService.execute(firstName, lastName)
 
-    return mapOf("persons" to persons)
+    val start = pageable.pageSize * pageable.pageNumber
+    val end = (start + pageable.pageSize).coerceAtMost(result.size)
+
+    if (start > end) {
+      return PageImpl(listOf<Person>(), pageable, result.size.toLong())
+    }
+    return PageImpl(result.subList(start, end), pageable, result.count().toLong())
   }
 
   @GetMapping("{encodedPncId}")
