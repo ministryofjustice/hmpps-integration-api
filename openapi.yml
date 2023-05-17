@@ -143,6 +143,8 @@ paths:
       tags:
         - images
       summary: Returns an image in bytes.
+      produces:
+        - image/jpeg
       parameters:
         - name: id
           in: path
