@@ -12,8 +12,8 @@ from someone else on the HMPPS Integration API as a template for your own.
 ## Steps
 1. Log in to the [Application Insights dashboard](https://portal.azure.com/#view/HubsExtension/BrowseResource/resourceType/microsoft.insights%2Fcomponents)
 2. Select an environment
-    1. Dev: `nomisapi-t3`
-    2. Pre-Production: `nomisapi-preprod`
+    1. dev: `nomisapi-t3`
+    2. preprod: `nomisapi-preprod`
     3. Production: `nomisapi-prod`
 4. Select `Logs` within the window
 5. Either select a preset query, or close the window to write your own

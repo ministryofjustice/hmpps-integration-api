@@ -35,7 +35,7 @@
             Container(smoketest, "Smoke Test", "Gradle", $sprite=gradle*0.6)
         }
 
-        Boundary(dev_build_and_deploy, "Dev"){
+        Boundary(dev_build_and_deploy, "Development"){
             Container(dev_build, "Build", "Docker", $TEXT_DOCKERBUILD, $sprite=docker-icon*0.6)
             Container(dev_helm, "Deploy", "Helm", $TEXT_HELMDEPLOY, $sprite=helm*0.6)
 
@@ -48,7 +48,7 @@
             }
         }
 
-        Boundary(preprod_build_and_deploy, "Pre-Production"){
+        Boundary(preprod_build_and_deploy, "Pre-production"){
             Container(preprod_build, "Build", "Docker", $TEXT_DOCKERBUILD, $sprite=docker-icon*0.6)
             Container(preprod_helm, "Deploy", "Helm", $TEXT_HELMDEPLOY, $sprite=helm*0.6)
 
