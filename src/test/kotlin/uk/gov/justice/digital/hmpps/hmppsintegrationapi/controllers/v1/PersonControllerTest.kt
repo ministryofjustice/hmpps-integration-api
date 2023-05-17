@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.controllers.v1
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
+import io.kotest.matchers.string.shouldInclude
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory.times
 import org.mockito.kotlin.verify
@@ -80,12 +81,10 @@ internal class PersonControllerTest(
         mockMvc.perform(get("$basePath?first_name=$firstNameThatDoesNotExist&last_name=$lastNameThatDoesNotExist"))
           .andReturn()
 
-      result.response.contentAsString.shouldBe(
+      result.response.contentAsString.shouldInclude(
         """
-          {
-            "persons":[]
-          }
-          """.removeWhitespaceAndNewlines(),
+          "content":[]
+        """.removeWhitespaceAndNewlines(),
       )
     }
 
@@ -98,10 +97,10 @@ internal class PersonControllerTest(
     it("returns a person with matching first and last name") {
       val result = mockMvc.perform(get("$basePath?first_name=$firstName&last_name=$lastName")).andReturn()
 
-      result.response.contentAsString.shouldBe(
+      result.response.contentAsString.shouldInclude(
         """
           {
-            "persons":
+            "content":
             [
               {
                 "firstName":"Barry",
@@ -122,7 +121,6 @@ internal class PersonControllerTest(
                  "pncId": null
                }
              ]
-           }
         """.removeWhitespaceAndNewlines(),
       )
     }
