@@ -303,4 +303,72 @@ internal class PersonControllerTest(
       result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
     }
   }
+
+  describe("Paginated results") {
+    it("returns pagination information for empty results") {
+      val firstNameThatDoesNotExist = "Bob21345"
+      val lastNameThatDoesNotExist = "Gun36773"
+
+      whenever(getPersonsService.execute(firstNameThatDoesNotExist, lastNameThatDoesNotExist)).thenReturn(
+        listOf(),
+      )
+
+      val result =
+        mockMvc.perform(get("$basePath?first_name=$firstNameThatDoesNotExist&last_name=$lastNameThatDoesNotExist"))
+          .andReturn()
+
+      result.response.contentAsString.shouldInclude(
+        """
+         "offset":0,
+         "pageNumber":0,
+         "pageSize":10,
+         "paged":true,
+         "unpaged":false
+         """.removeWhitespaceAndNewlines())
+
+      result.response.contentAsString.shouldInclude(
+        """
+         "totalPages":0,
+         "totalElements":0,
+         "last":true,
+         "size":10,
+         "number":0,
+         """.removeWhitespaceAndNewlines())
+
+      result.response.contentAsString.shouldInclude(
+        """
+        "numberOfElements":0,
+        "first":true,
+        "empty":true
+         """.removeWhitespaceAndNewlines())
+    }
+
+    it("returns pagination information for one page of results") {
+      val name = "Bob21345"
+      val lastName = "Gun36773"
+
+      val list = List(3) { i -> Person(
+        firstName = "Barry $i",
+        lastName = "Allen $i",
+        middleName = "Jonas $i",
+        dateOfBirth = LocalDate.parse("2023-03-01"))
+      }
+
+      whenever(getPersonsService.execute(name, lastName)).thenReturn(list)
+
+      val result =
+        mockMvc.perform(get("$basePath?first_name=$name&last_name=$lastName"))
+          .andReturn()
+
+      result.response.contentAsString.shouldInclude(
+        """
+          "totalPages":1,
+          "totalElements":3,
+          "last":true
+        """.removeWhitespaceAndNewlines())
+    }
+
+    it("returns pagination information for two pages of results") {
+    }
+  }
 },)
