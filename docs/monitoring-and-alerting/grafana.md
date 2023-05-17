@@ -1,6 +1,6 @@
 # Grafana
 Provides a graph-based dashboard view containing information on the performance of the service. The level at which this
-is provided is for the whole namespace (dev, pre-production or production). Details such as quantities of requests
+is provided is for the whole namespace (dev, preprod or production). Details such as quantities of requests
 CPU usage, memory usage and networking details can be located in various graphs. The period of data shown within the 
 dashboard can also be configured.
 
@@ -11,8 +11,8 @@ If you're a member of the Ministry of Justice GitHub Organisation you should be 
 1. Follow Cloud Platform's [documentation](https://user-guide.cloud-platform.service.justice.gov.uk/documentation/monitoring-an-app/prometheus.html#grafana)
 2. Access our [dashboard](https://grafana.live.cloud-platform.service.justice.gov.uk/d/golden-signals/golden-signals?orgId=1&var-namespace=hmpps-integration-api-dev&var-service=hmpps-integration-api)
 3. Change the environment using the namespace drop-down menu on the top left (if necessary)
-   - [Development](https://grafana.live.cloud-platform.service.justice.gov.uk/d/golden-signals/golden-signals?orgId=1&var-service=hmpps-integration-api&var-namespace=hmpps-integration-api-development)
-   - [Pre-Production](https://grafana.live.cloud-platform.service.justice.gov.uk/d/golden-signals/golden-signals?orgId=1&var-service=hmpps-integration-api&var-namespace=hmpps-integration-api-pre-production)
+   - [dev](https://grafana.live.cloud-platform.service.justice.gov.uk/d/golden-signals/golden-signals?orgId=1&var-service=hmpps-integration-api&var-namespace=hmpps-integration-api-dev)
+   - [preprod](https://grafana.live.cloud-platform.service.justice.gov.uk/d/golden-signals/golden-signals?orgId=1&var-service=hmpps-integration-api&var-namespace=hmpps-integration-api-preprod)
    - [Production](https://grafana.live.cloud-platform.service.justice.gov.uk/d/golden-signals/golden-signals?orgId=1&var-service=hmpps-integration-api&var-namespace=hmpps-integration-api-production)
 
 ## Example Use Case

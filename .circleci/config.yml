@@ -164,10 +164,10 @@ workflows:
 
       - create-and-push-image-to-ecr:
           <<: *slack-fail-post-step
-          name: create-and-push-image-to-pre-production-ecr
+          name: create-and-push-image-to-preprod-ecr
           context:
             - hmpps-common-vars
-            - hmpps-integration-api-pre-production
+            - hmpps-integration-api-preprod
           requires:
             - deploy-to-dev
           filters:
@@ -176,17 +176,17 @@ workflows:
                 - main
       - hmpps/deploy_env:
           <<: *slack-fail-post-step
-          name: deploy-to-pre-production
+          name: deploy-to-preprod
           context:
-            - hmpps-integration-api-pre-production
+            - hmpps-integration-api-preprod
             - hmpps-common-vars
           requires:
-            - create-and-push-image-to-pre-production-ecr
+            - create-and-push-image-to-preprod-ecr
           filters:
             branches:
               only:
                 - main
-          env: "pre-production"
+          env: "preprod"
           helm_timeout: 5m
           slack_channel_name: << pipeline.parameters.releases-slack-channel >>
           slack_notification: false
@@ -198,7 +198,7 @@ workflows:
             - hmpps-integration-api-production
             - hmpps-common-vars
           requires:
-            - deploy-to-pre-production
+            - deploy-to-preprod
           filters:
             branches:
               only:
