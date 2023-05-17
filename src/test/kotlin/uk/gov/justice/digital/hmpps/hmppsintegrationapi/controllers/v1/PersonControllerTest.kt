@@ -37,11 +37,10 @@ internal class PersonControllerTest(
   val pncId = "2003/13116M"
   val encodedPncId = URLEncoder.encode(pncId, StandardCharsets.UTF_8)
   val basePath = "/v1/persons"
+  val firstName = "Barry"
+  val lastName = "Allen"
 
   describe("GET $basePath") {
-    val firstName = "Barry"
-    val lastName = "Allen"
-
     beforeTest {
       Mockito.reset(getPersonsService)
 
@@ -317,36 +316,21 @@ internal class PersonControllerTest(
         mockMvc.perform(get("$basePath?first_name=$firstNameThatDoesNotExist&last_name=$lastNameThatDoesNotExist"))
           .andReturn()
 
-      result.response.contentAsString.shouldInclude(
-        """
-         "offset":0,
-         "pageNumber":0,
-         "pageSize":10,
-         "paged":true,
-         "unpaged":false
-         """.removeWhitespaceAndNewlines())
-
-      result.response.contentAsString.shouldInclude(
-        """
-         "totalPages":0,
-         "totalElements":0,
-         "last":true,
-         "size":10,
-         "number":0,
-         """.removeWhitespaceAndNewlines())
-
-      result.response.contentAsString.shouldInclude(
-        """
-        "numberOfElements":0,
-        "first":true,
-        "empty":true
-         """.removeWhitespaceAndNewlines())
+      result.response.contentAsString.shouldInclude("\"offset\":0")
+      result.response.contentAsString.shouldInclude("\"pageNumber\":0")
+      result.response.contentAsString.shouldInclude("\"pageSize\":10")
+      result.response.contentAsString.shouldInclude("\"paged\":true")
+      result.response.contentAsString.shouldInclude("\"totalPages\":0")
+      result.response.contentAsString.shouldInclude("\"totalElements\":0")
+      result.response.contentAsString.shouldInclude("\"last\":true")
+      result.response.contentAsString.shouldInclude("\"size\":10")
+      result.response.contentAsString.shouldInclude("\"number\":0")
+      result.response.contentAsString.shouldInclude("\"numberOfElements\":0")
+      result.response.contentAsString.shouldInclude("\"first\":true")
+      result.response.contentAsString.shouldInclude("\"empty\":true")
     }
 
     it("returns pagination information for one page of results") {
-      val name = "Bob21345"
-      val lastName = "Gun36773"
-
       val list = List(3) { i -> Person(
         firstName = "Barry $i",
         lastName = "Allen $i",
@@ -354,21 +338,34 @@ internal class PersonControllerTest(
         dateOfBirth = LocalDate.parse("2023-03-01"))
       }
 
-      whenever(getPersonsService.execute(name, lastName)).thenReturn(list)
+      whenever(getPersonsService.execute(firstName, lastName)).thenReturn(list)
 
       val result =
-        mockMvc.perform(get("$basePath?first_name=$name&last_name=$lastName"))
+        mockMvc.perform(get("$basePath?first_name=$firstName&last_name=$lastName"))
           .andReturn()
 
-      result.response.contentAsString.shouldInclude(
-        """
-          "totalPages":1,
-          "totalElements":3,
-          "last":true
-        """.removeWhitespaceAndNewlines())
+      result.response.contentAsString.shouldInclude("\"totalPages\":1")
+      result.response.contentAsString.shouldInclude("\"totalElements\":3")
+      result.response.contentAsString.shouldInclude("\"last\":true")
     }
 
     it("returns pagination information for two pages of results") {
+      val list = List(21) { i -> Person(
+        firstName = "Barry $i",
+        lastName = "Allen $i",
+        dateOfBirth = LocalDate.parse("2023-03-01"))
+      }
+
+      whenever(getPersonsService.execute(firstName, lastName)).thenReturn(list)
+
+      val result =
+        mockMvc.perform(get("$basePath?first_name=$firstName&last_name=$lastName"))
+          .andReturn()
+
+      result.response.contentAsString.shouldInclude("\"totalPages\":3")
+      result.response.contentAsString.shouldInclude("\"totalElements\":21")
+      result.response.contentAsString.shouldInclude("\"last\":false")
+      result.response.contentAsString.shouldInclude("\"first\":true")
     }
   }
 },)
