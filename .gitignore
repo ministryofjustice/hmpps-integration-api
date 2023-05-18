@@ -69,5 +69,10 @@ dps-gradle-spring-boot-suppressions.xml
 .editorconfig
 sonar-project.properties
 
-#Helm
+# Helm
 **/Chart.lock
+
+# Certificates
+*.key
+*.csr
+*.pem
