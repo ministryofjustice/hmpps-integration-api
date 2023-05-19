@@ -331,11 +331,13 @@ internal class PersonControllerTest(
     }
 
     it("returns pagination information for one page of results") {
-      val list = List(3) { i -> Person(
-        firstName = "Barry $i",
-        lastName = "Allen $i",
-        middleName = "Jonas $i",
-        dateOfBirth = LocalDate.parse("2023-03-01"))
+      val list = List(3) { i ->
+        Person(
+          firstName = "Barry $i",
+          lastName = "Allen $i",
+          middleName = "Jonas $i",
+          dateOfBirth = LocalDate.parse("2023-03-01"),
+        )
       }
 
       whenever(getPersonsService.execute(firstName, lastName)).thenReturn(list)
@@ -350,10 +352,12 @@ internal class PersonControllerTest(
     }
 
     it("returns pagination information for two pages of results") {
-      val list = List(20) { i -> Person(
-        firstName = "Barry $i",
-        lastName = "Allen $i",
-        dateOfBirth = LocalDate.parse("2023-03-01"))
+      val list = List(20) { i ->
+        Person(
+          firstName = "Barry $i",
+          lastName = "Allen $i",
+          dateOfBirth = LocalDate.parse("2023-03-01"),
+        )
       }
 
       whenever(getPersonsService.execute(firstName, lastName)).thenReturn(list)

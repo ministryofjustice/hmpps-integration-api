@@ -6,7 +6,11 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import org.springframework.data.web.PageableDefault
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.decodeUrlCharacters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Address
@@ -30,7 +34,7 @@ class PersonController(
   fun getPersons(
     @RequestParam(required = false, name = "first_name") firstName: String?,
     @RequestParam(required = false, name = "last_name") lastName: String?,
-     @PageableDefault pageable: Pageable,
+    @PageableDefault pageable: Pageable,
   ): Page<Person?> {
     if (firstName == null && lastName == null) {
       throw ValidationException("No query parameters specified.")
