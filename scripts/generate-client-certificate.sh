@@ -33,10 +33,15 @@ generate_client() {
   openssl x509 -req -in $environment-$client-client.csr -CA truststore.pem -CAkey truststore.key -set_serial 01 -out $environment-$client-client.pem -days 365 -sha256
 }
 
+post_clean() {
+  rm -fr truststore.pem truststore.key
+}
+
 main() {
   clean
   get_ca
   generate_client
+  post_clean
 }
 
 main
