@@ -14,7 +14,7 @@ from someone else on the HMPPS Integration API as a template for your own.
 2. Select an environment
     1. dev: `nomisapi-t3`
     2. preprod: `nomisapi-preprod`
-    3. Production: `nomisapi-prod`
+    3. prod: `nomisapi-prod`
 4. Select `Logs` within the window
 5. Either select a preset query, or close the window to write your own
 6. Filter the query on the following `| where cloud_RoleName = 'hmpps-integration-api`. This will restrict the query to

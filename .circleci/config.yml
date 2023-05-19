@@ -193,9 +193,9 @@ workflows:
 
       - create-and-push-image-to-ecr:
           <<: *slack-fail-post-step
-          name: create-and-push-image-to-production-ecr
+          name: create-and-push-image-to-prod-ecr
           context:
-            - hmpps-integration-api-production
+            - hmpps-integration-api-prod
             - hmpps-common-vars
           requires:
             - deploy-to-preprod
@@ -205,17 +205,17 @@ workflows:
                 - main
       - hmpps/deploy_env:
           <<: *slack-fail-post-step
-          name: deploy-to-production
+          name: deploy-to-prod
           context:
-            - hmpps-integration-api-production
+            - hmpps-integration-api-prod
             - hmpps-common-vars
           requires:
-            - create-and-push-image-to-production-ecr
+            - create-and-push-image-to-prod-ecr
           filters:
             branches:
               only:
                 - main
-          env: "production"
+          env: "prod"
           helm_timeout: 5m
           slack_channel_name: << pipeline.parameters.releases-slack-channel >>
           slack_notification: false
