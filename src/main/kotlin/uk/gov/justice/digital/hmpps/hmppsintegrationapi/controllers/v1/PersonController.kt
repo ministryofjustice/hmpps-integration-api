@@ -3,7 +3,6 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.controllers.v1
 import jakarta.validation.ValidationException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Page
-import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import org.springframework.data.web.PageableDefault
 import org.springframework.web.bind.annotation.GetMapping
@@ -20,6 +19,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetAddressesFor
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetImageMetadataForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonsService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.paginateWith
 
 @RestController
 @RequestMapping("/v1/persons")
@@ -42,13 +42,7 @@ class PersonController(
 
     val result = getPersonsService.execute(firstName, lastName)
 
-    val start = pageable.pageSize * pageable.pageNumber
-    val end = (start + pageable.pageSize).coerceAtMost(result.size)
-
-    if (start > end) {
-      return PageImpl(listOf<Person>(), pageable, result.size.toLong())
-    }
-    return PageImpl(result.subList(start, end), pageable, result.count().toLong())
+    return result.paginateWith(pageable)
   }
 
   @GetMapping("{encodedPncId}")

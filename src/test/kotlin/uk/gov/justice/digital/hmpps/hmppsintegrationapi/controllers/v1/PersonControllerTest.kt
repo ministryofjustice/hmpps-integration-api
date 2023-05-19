@@ -382,5 +382,24 @@ internal class PersonControllerTest(
       resultPage1.response.contentAsString.shouldNotContain("Barry 1\"")
       resultPage1.response.contentAsString.shouldContain("Barry 19")
     }
+
+    it("returns an empty list when a page requested is out of bounds") {
+      val pageNumberThatDoesntExist = 99
+      val list = listOf(
+        Person(
+          firstName = "Barry",
+          lastName = "Allen",
+          dateOfBirth = LocalDate.parse("2023-03-01"),
+        ),
+      )
+
+      whenever(getPersonsService.execute(firstName, lastName)).thenReturn(list)
+
+      val result =
+        mockMvc.perform(get("$basePath?first_name=$firstName&last_name=$lastName&page=$pageNumberThatDoesntExist"))
+          .andReturn()
+
+      result.response.contentAsString.shouldContain("\"content\":[]")
+    }
   }
 },)
