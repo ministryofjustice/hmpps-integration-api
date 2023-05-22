@@ -34,7 +34,7 @@ class PersonController(
   fun getPersons(
     @RequestParam(required = false, name = "first_name") firstName: String?,
     @RequestParam(required = false, name = "last_name") lastName: String?,
-    @PageableDefault pageable: Pageable,
+    @PageableDefault paginationOptions: Pageable,
   ): Page<Person?> {
     if (firstName == null && lastName == null) {
       throw ValidationException("No query parameters specified.")
@@ -42,7 +42,7 @@ class PersonController(
 
     val result = getPersonsService.execute(firstName, lastName)
 
-    return result.paginateWith(pageable)
+    return result.paginateWith(paginationOptions)
   }
 
   @GetMapping("{encodedPncId}")
