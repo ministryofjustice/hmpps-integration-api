@@ -4,7 +4,6 @@ import io.kotest.assertions.json.shouldEqualJson
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
-import io.kotest.matchers.string.shouldNotContain
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory.times
 import org.mockito.kotlin.verify
@@ -317,49 +316,38 @@ internal class PersonControllerTest(
         mockMvc.perform(get("$basePath?first_name=$firstNameThatDoesNotExist&last_name=$lastNameThatDoesNotExist"))
           .andReturn()
 
-      result.response.contentAsString.shouldBe("""
+      result.response.contentAsString.shouldEqualJson(
+        """
         {
           "content": [],
           "pageable": {
-          "sort": {
-          "empty": true,
-          "sorted": false,
-          "unsorted": true
-        },
-          "offset": 0,
-          "pageNumber": 0,
-          "pageSize": 10,
-          "paged": true,
-          "unpaged": false
-        },
+            "sort": {
+              "empty": true,
+              "sorted": false,
+              "unsorted": true
+            },
+            "offset": 0,
+            "pageNumber": 0,
+            "pageSize": 10,
+            "paged": true,
+            "unpaged": false
+          },
           "totalPages": 0,
           "totalElements": 0,
           "last": true,
           "size": 10,
           "number": 0,
           "sort": {
-          "empty": true,
-          "sorted": false,
-          "unsorted": true
-        },
+            "empty": true,
+            "sorted": false,
+            "unsorted": true
+          },
           "numberOfElements": 0,
           "first": true,
           "empty": true
         }
-        """.removeWhitespaceAndNewlines())
-
-//      result.response.contentAsString.shouldContain("\"offset\":0")
-//      result.response.contentAsString.shouldContain("\"pageNumber\":0")
-//      result.response.contentAsString.shouldContain("\"pageSize\":10")
-//      result.response.contentAsString.shouldContain("\"paged\":true")
-//      result.response.contentAsString.shouldContain("\"totalPages\":0")
-//      result.response.contentAsString.shouldContain("\"totalElements\":0")
-//      result.response.contentAsString.shouldContain("\"last\":true")
-//      result.response.contentAsString.shouldContain("\"size\":10")
-//      result.response.contentAsString.shouldContain("\"number\":0")
-//      result.response.contentAsString.shouldContain("\"numberOfElements\":0")
-//      result.response.contentAsString.shouldContain("\"first\":true")
-//      result.response.contentAsString.shouldContain("\"empty\":true")
+        """,
+      )
     }
 
     it("returns pagination information for one page of results") {
@@ -378,9 +366,66 @@ internal class PersonControllerTest(
         mockMvc.perform(get("$basePath?first_name=$firstName&last_name=$lastName"))
           .andReturn()
 
-      result.response.contentAsString.shouldContain("\"totalPages\":1")
-      result.response.contentAsString.shouldContain("\"totalElements\":3")
-      result.response.contentAsString.shouldContain("\"last\":true")
+      result.response.contentAsString.shouldEqualJson(
+        """
+        {
+          "content": [
+            {
+              "firstName": "Barry 0",
+              "lastName": "Allen 0",
+              "middleName": "Jonas 0",
+              "dateOfBirth": "2023-03-01",
+              "aliases": [],
+              "prisonerId": null,
+              "pncId": null
+            },
+            {
+              "firstName": "Barry 1",
+              "lastName": "Allen 1",
+              "middleName": "Jonas 1",
+              "dateOfBirth": "2023-03-01",
+              "aliases": [],
+              "prisonerId": null,
+              "pncId": null
+            },
+            {
+              "firstName": "Barry 2",
+              "lastName": "Allen 2",
+              "middleName": "Jonas 2",
+              "dateOfBirth": "2023-03-01",
+              "aliases": [],
+              "prisonerId": null,
+              "pncId": null
+            }
+          ],
+          "pageable": {
+            "sort": {
+              "empty": true,
+              "sorted": false,
+              "unsorted": true
+            },
+            "offset": 0,
+            "pageNumber": 0,
+            "pageSize": 10,
+            "paged": true,
+            "unpaged": false
+          },
+          "totalPages": 1,
+          "totalElements": 3,
+          "last": true,
+          "size": 10,
+          "number": 0,
+          "sort": {
+            "empty": true,
+            "sorted": false,
+            "unsorted": true
+          },
+          "numberOfElements": 3,
+          "first": true,
+          "empty": false
+        }
+        """,
+      )
     }
 
     it("returns pagination information for two pages of results") {
@@ -398,21 +443,257 @@ internal class PersonControllerTest(
         mockMvc.perform(get("$basePath?first_name=$firstName&last_name=$lastName"))
           .andReturn()
 
-      resultPage0.response.contentAsString.shouldContain("\"totalPages\":2")
-      resultPage0.response.contentAsString.shouldContain("\"totalElements\":20")
-      resultPage0.response.contentAsString.shouldContain("\"last\":false")
-      resultPage0.response.contentAsString.shouldContain("\"first\":true")
-      resultPage0.response.contentAsString.shouldContain("Barry 1")
-      resultPage0.response.contentAsString.shouldNotContain("Barry 11")
+      resultPage0.response.contentAsString.shouldEqualJson(
+        """
+        {
+          "content": [
+            {
+              "firstName": "Barry 0",
+              "lastName": "Allen 0",
+              "middleName": null,
+              "dateOfBirth": "2023-03-01",
+              "aliases": [],
+              "prisonerId": null,
+              "pncId": null
+            },
+            {
+              "firstName": "Barry 1",
+              "lastName": "Allen 1",
+              "middleName": null,
+              "dateOfBirth": "2023-03-01",
+              "aliases": [],
+              "prisonerId": null,
+              "pncId": null
+            },
+            {
+              "firstName": "Barry 2",
+              "lastName": "Allen 2",
+              "middleName": null,
+              "dateOfBirth": "2023-03-01",
+              "aliases": [],
+              "prisonerId": null,
+              "pncId": null
+            },
+            {
+              "firstName": "Barry 3",
+              "lastName": "Allen 3",
+              "middleName": null,
+              "dateOfBirth": "2023-03-01",
+              "aliases": [],
+              "prisonerId": null,
+              "pncId": null
+            },
+            {
+              "firstName": "Barry 4",
+              "lastName": "Allen 4",
+              "middleName": null,
+              "dateOfBirth": "2023-03-01",
+              "aliases": [],
+              "prisonerId": null,
+              "pncId": null
+            },
+            {
+              "firstName": "Barry 5",
+              "lastName": "Allen 5",
+              "middleName": null,
+              "dateOfBirth": "2023-03-01",
+              "aliases": [],
+              "prisonerId": null,
+              "pncId": null
+            },
+            {
+              "firstName": "Barry 6",
+              "lastName": "Allen 6",
+              "middleName": null,
+              "dateOfBirth": "2023-03-01",
+              "aliases": [],
+              "prisonerId": null,
+              "pncId": null
+            },
+            {
+              "firstName": "Barry 7",
+              "lastName": "Allen 7",
+              "middleName": null,
+              "dateOfBirth": "2023-03-01",
+              "aliases": [],
+              "prisonerId": null,
+              "pncId": null
+            },
+            {
+              "firstName": "Barry 8",
+              "lastName": "Allen 8",
+              "middleName": null,
+              "dateOfBirth": "2023-03-01",
+              "aliases": [],
+              "prisonerId": null,
+              "pncId": null
+            },
+            {
+              "firstName": "Barry 9",
+              "lastName": "Allen 9",
+              "middleName": null,
+              "dateOfBirth": "2023-03-01",
+              "aliases": [],
+              "prisonerId": null,
+              "pncId": null
+            }
+          ],
+          "pageable": {
+            "sort": {
+              "empty": true,
+              "sorted": false,
+              "unsorted": true
+            },
+            "offset": 0,
+            "pageNumber": 0,
+            "pageSize": 10,
+            "paged": true,
+            "unpaged": false
+          },
+          "last": false,
+          "totalPages": 2,
+          "totalElements": 20,
+          "first": true,
+          "size": 10,
+          "number": 0,
+          "sort": {
+            "empty": true,
+            "sorted": false,
+            "unsorted": true
+          },
+          "numberOfElements": 10,
+          "empty": false
+        }
+        """,
+      )
 
       val resultPage1 =
         mockMvc.perform(get("$basePath?first_name=$firstName&last_name=$lastName&page=1"))
           .andReturn()
 
-      resultPage1.response.contentAsString.shouldContain("\"last\":true")
-      resultPage1.response.contentAsString.shouldContain("\"first\":false")
-      resultPage1.response.contentAsString.shouldNotContain("Barry 1\"")
-      resultPage1.response.contentAsString.shouldContain("Barry 19")
+      resultPage1.response.contentAsString.shouldEqualJson(
+        """
+        {
+                    "content": [
+            {
+              "firstName": "Barry 10",
+              "lastName": "Allen 10",
+              "middleName": null,
+              "dateOfBirth": "2023-03-01",
+              "aliases": [],
+              "prisonerId": null,
+              "pncId": null
+            },
+            {
+              "firstName": "Barry 11",
+              "lastName": "Allen 11",
+              "middleName": null,
+              "dateOfBirth": "2023-03-01",
+              "aliases": [],
+              "prisonerId": null,
+              "pncId": null
+            },
+            {
+              "firstName": "Barry 12",
+              "lastName": "Allen 12",
+              "middleName": null,
+              "dateOfBirth": "2023-03-01",
+              "aliases": [],
+              "prisonerId": null,
+              "pncId": null
+            },
+            {
+              "firstName": "Barry 13",
+              "lastName": "Allen 13",
+              "middleName": null,
+              "dateOfBirth": "2023-03-01",
+              "aliases": [],
+              "prisonerId": null,
+              "pncId": null
+            },
+            {
+              "firstName": "Barry 14",
+              "lastName": "Allen 14",
+              "middleName": null,
+              "dateOfBirth": "2023-03-01",
+              "aliases": [],
+              "prisonerId": null,
+              "pncId": null
+            },
+            {
+              "firstName": "Barry 15",
+              "lastName": "Allen 15",
+              "middleName": null,
+              "dateOfBirth": "2023-03-01",
+              "aliases": [],
+              "prisonerId": null,
+              "pncId": null
+            },
+            {
+              "firstName": "Barry 16",
+              "lastName": "Allen 16",
+              "middleName": null,
+              "dateOfBirth": "2023-03-01",
+              "aliases": [],
+              "prisonerId": null,
+              "pncId": null
+            },
+            {
+              "firstName": "Barry 17",
+              "lastName": "Allen 17",
+              "middleName": null,
+              "dateOfBirth": "2023-03-01",
+              "aliases": [],
+              "prisonerId": null,
+              "pncId": null
+            },
+            {
+              "firstName": "Barry 18",
+              "lastName": "Allen 18",
+              "middleName": null,
+              "dateOfBirth": "2023-03-01",
+              "aliases": [],
+              "prisonerId": null,
+              "pncId": null
+            },
+            {
+              "firstName": "Barry 19",
+              "lastName": "Allen 19",
+              "middleName": null,
+              "dateOfBirth": "2023-03-01",
+              "aliases": [],
+              "prisonerId": null,
+              "pncId": null
+            }
+          ],
+          "pageable": {
+            "sort": {
+              "empty": true,
+              "sorted": false,
+              "unsorted": true
+            },
+            "offset": 10,
+            "pageNumber": 1,
+            "pageSize": 10,
+            "paged": true,
+            "unpaged": false
+          },
+          "last": true,
+          "totalPages": 2,
+          "totalElements": 20,
+          "first": false,
+          "size": 10,
+          "number": 1,
+          "sort": {
+            "empty": true,
+            "sorted": false,
+            "unsorted": true
+          },
+          "numberOfElements": 10,
+          "empty": false
+        }
+        """,
+      )
     }
 
     it("returns an empty list when a page requested is out of bounds") {
@@ -431,7 +712,38 @@ internal class PersonControllerTest(
         mockMvc.perform(get("$basePath?first_name=$firstName&last_name=$lastName&page=$pageNumberThatDoesntExist"))
           .andReturn()
 
-      result.response.contentAsString.shouldContain("\"content\":[]")
+      result.response.contentAsString.shouldEqualJson(
+        """
+        {
+          "content": [],
+          "pageable": {
+            "sort": {
+              "empty": true,
+              "sorted": false,
+              "unsorted": true
+            },
+            "offset": 990,
+            "pageNumber": 99,
+            "pageSize": 10,
+            "paged": true,
+            "unpaged": false
+          },
+          "totalPages": 1,
+          "totalElements": 1,
+          "last": true,
+          "size": 10,
+          "number": 99,
+          "sort": {
+            "empty": true,
+            "sorted": false,
+            "unsorted": true
+          },
+          "numberOfElements": 0,
+          "first": false,
+          "empty": true
+        }
+        """,
+      )
     }
   }
 },)
