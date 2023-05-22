@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.controllers.v1
 
+import io.kotest.assertions.json.shouldEqualJson
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
@@ -316,18 +317,49 @@ internal class PersonControllerTest(
         mockMvc.perform(get("$basePath?first_name=$firstNameThatDoesNotExist&last_name=$lastNameThatDoesNotExist"))
           .andReturn()
 
-      result.response.contentAsString.shouldContain("\"offset\":0")
-      result.response.contentAsString.shouldContain("\"pageNumber\":0")
-      result.response.contentAsString.shouldContain("\"pageSize\":10")
-      result.response.contentAsString.shouldContain("\"paged\":true")
-      result.response.contentAsString.shouldContain("\"totalPages\":0")
-      result.response.contentAsString.shouldContain("\"totalElements\":0")
-      result.response.contentAsString.shouldContain("\"last\":true")
-      result.response.contentAsString.shouldContain("\"size\":10")
-      result.response.contentAsString.shouldContain("\"number\":0")
-      result.response.contentAsString.shouldContain("\"numberOfElements\":0")
-      result.response.contentAsString.shouldContain("\"first\":true")
-      result.response.contentAsString.shouldContain("\"empty\":true")
+      result.response.contentAsString.shouldBe("""
+        {
+          "content": [],
+          "pageable": {
+          "sort": {
+          "empty": true,
+          "sorted": false,
+          "unsorted": true
+        },
+          "offset": 0,
+          "pageNumber": 0,
+          "pageSize": 10,
+          "paged": true,
+          "unpaged": false
+        },
+          "totalPages": 0,
+          "totalElements": 0,
+          "last": true,
+          "size": 10,
+          "number": 0,
+          "sort": {
+          "empty": true,
+          "sorted": false,
+          "unsorted": true
+        },
+          "numberOfElements": 0,
+          "first": true,
+          "empty": true
+        }
+        """.removeWhitespaceAndNewlines())
+
+//      result.response.contentAsString.shouldContain("\"offset\":0")
+//      result.response.contentAsString.shouldContain("\"pageNumber\":0")
+//      result.response.contentAsString.shouldContain("\"pageSize\":10")
+//      result.response.contentAsString.shouldContain("\"paged\":true")
+//      result.response.contentAsString.shouldContain("\"totalPages\":0")
+//      result.response.contentAsString.shouldContain("\"totalElements\":0")
+//      result.response.contentAsString.shouldContain("\"last\":true")
+//      result.response.contentAsString.shouldContain("\"size\":10")
+//      result.response.contentAsString.shouldContain("\"number\":0")
+//      result.response.contentAsString.shouldContain("\"numberOfElements\":0")
+//      result.response.contentAsString.shouldContain("\"first\":true")
+//      result.response.contentAsString.shouldContain("\"empty\":true")
     }
 
     it("returns pagination information for one page of results") {
