@@ -574,7 +574,7 @@ internal class PersonControllerTest(
       resultPage1.response.contentAsString.shouldEqualJson(
         """
         {
-                    "content": [
+          "content": [
             {
               "firstName": "Barry 10",
               "lastName": "Allen 10",
