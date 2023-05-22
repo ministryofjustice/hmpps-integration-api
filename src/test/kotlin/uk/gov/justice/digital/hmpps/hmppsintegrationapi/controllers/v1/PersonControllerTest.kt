@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.controllers.v1
 
+import io.kotest.assertions.json.shouldEqualJson
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
@@ -36,11 +37,10 @@ internal class PersonControllerTest(
   val pncId = "2003/13116M"
   val encodedPncId = URLEncoder.encode(pncId, StandardCharsets.UTF_8)
   val basePath = "/v1/persons"
+  val firstName = "Barry"
+  val lastName = "Allen"
 
   describe("GET $basePath") {
-    val firstName = "Barry"
-    val lastName = "Allen"
-
     beforeTest {
       Mockito.reset(getPersonsService)
 
@@ -80,12 +80,10 @@ internal class PersonControllerTest(
         mockMvc.perform(get("$basePath?first_name=$firstNameThatDoesNotExist&last_name=$lastNameThatDoesNotExist"))
           .andReturn()
 
-      result.response.contentAsString.shouldBe(
+      result.response.contentAsString.shouldContain(
         """
-          {
-            "persons":[]
-          }
-          """.removeWhitespaceAndNewlines(),
+          "content":[]
+        """.removeWhitespaceAndNewlines(),
       )
     }
 
@@ -98,10 +96,10 @@ internal class PersonControllerTest(
     it("returns a person with matching first and last name") {
       val result = mockMvc.perform(get("$basePath?first_name=$firstName&last_name=$lastName")).andReturn()
 
-      result.response.contentAsString.shouldBe(
+      result.response.contentAsString.shouldContain(
         """
           {
-            "persons":
+            "content":
             [
               {
                 "firstName":"Barry",
@@ -122,7 +120,6 @@ internal class PersonControllerTest(
                  "pncId": null
                }
              ]
-           }
         """.removeWhitespaceAndNewlines(),
       )
     }
@@ -303,6 +300,450 @@ internal class PersonControllerTest(
       val result = mockMvc.perform(get("$basePath/$encodedPncId/addresses")).andReturn()
 
       result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
+    }
+  }
+
+  describe("Paginated results") {
+    it("returns pagination information for empty results") {
+      val firstNameThatDoesNotExist = "Bob21345"
+      val lastNameThatDoesNotExist = "Gun36773"
+
+      whenever(getPersonsService.execute(firstNameThatDoesNotExist, lastNameThatDoesNotExist)).thenReturn(
+        listOf(),
+      )
+
+      val result =
+        mockMvc.perform(get("$basePath?first_name=$firstNameThatDoesNotExist&last_name=$lastNameThatDoesNotExist"))
+          .andReturn()
+
+      result.response.contentAsString.shouldEqualJson(
+        """
+        {
+          "content": [],
+          "pageable": {
+            "sort": {
+              "empty": true,
+              "sorted": false,
+              "unsorted": true
+            },
+            "offset": 0,
+            "pageNumber": 0,
+            "pageSize": 10,
+            "paged": true,
+            "unpaged": false
+          },
+          "totalPages": 0,
+          "totalElements": 0,
+          "last": true,
+          "size": 10,
+          "number": 0,
+          "sort": {
+            "empty": true,
+            "sorted": false,
+            "unsorted": true
+          },
+          "numberOfElements": 0,
+          "first": true,
+          "empty": true
+        }
+        """,
+      )
+    }
+
+    it("returns pagination information for one page of results") {
+      val list = List(3) { i ->
+        Person(
+          firstName = "Barry $i",
+          lastName = "Allen $i",
+          middleName = "Jonas $i",
+          dateOfBirth = LocalDate.parse("2023-03-01"),
+        )
+      }
+
+      whenever(getPersonsService.execute(firstName, lastName)).thenReturn(list)
+
+      val result =
+        mockMvc.perform(get("$basePath?first_name=$firstName&last_name=$lastName"))
+          .andReturn()
+
+      result.response.contentAsString.shouldEqualJson(
+        """
+        {
+          "content": [
+            {
+              "firstName": "Barry 0",
+              "lastName": "Allen 0",
+              "middleName": "Jonas 0",
+              "dateOfBirth": "2023-03-01",
+              "aliases": [],
+              "prisonerId": null,
+              "pncId": null
+            },
+            {
+              "firstName": "Barry 1",
+              "lastName": "Allen 1",
+              "middleName": "Jonas 1",
+              "dateOfBirth": "2023-03-01",
+              "aliases": [],
+              "prisonerId": null,
+              "pncId": null
+            },
+            {
+              "firstName": "Barry 2",
+              "lastName": "Allen 2",
+              "middleName": "Jonas 2",
+              "dateOfBirth": "2023-03-01",
+              "aliases": [],
+              "prisonerId": null,
+              "pncId": null
+            }
+          ],
+          "pageable": {
+            "sort": {
+              "empty": true,
+              "sorted": false,
+              "unsorted": true
+            },
+            "offset": 0,
+            "pageNumber": 0,
+            "pageSize": 10,
+            "paged": true,
+            "unpaged": false
+          },
+          "totalPages": 1,
+          "totalElements": 3,
+          "last": true,
+          "size": 10,
+          "number": 0,
+          "sort": {
+            "empty": true,
+            "sorted": false,
+            "unsorted": true
+          },
+          "numberOfElements": 3,
+          "first": true,
+          "empty": false
+        }
+        """,
+      )
+    }
+
+    it("returns pagination information for two pages of results") {
+      val list = List(20) { i ->
+        Person(
+          firstName = "Barry $i",
+          lastName = "Allen $i",
+          dateOfBirth = LocalDate.parse("2023-03-01"),
+        )
+      }
+
+      whenever(getPersonsService.execute(firstName, lastName)).thenReturn(list)
+
+      val resultPage0 =
+        mockMvc.perform(get("$basePath?first_name=$firstName&last_name=$lastName"))
+          .andReturn()
+
+      resultPage0.response.contentAsString.shouldEqualJson(
+        """
+        {
+          "content": [
+            {
+              "firstName": "Barry 0",
+              "lastName": "Allen 0",
+              "middleName": null,
+              "dateOfBirth": "2023-03-01",
+              "aliases": [],
+              "prisonerId": null,
+              "pncId": null
+            },
+            {
+              "firstName": "Barry 1",
+              "lastName": "Allen 1",
+              "middleName": null,
+              "dateOfBirth": "2023-03-01",
+              "aliases": [],
+              "prisonerId": null,
+              "pncId": null
+            },
+            {
+              "firstName": "Barry 2",
+              "lastName": "Allen 2",
+              "middleName": null,
+              "dateOfBirth": "2023-03-01",
+              "aliases": [],
+              "prisonerId": null,
+              "pncId": null
+            },
+            {
+              "firstName": "Barry 3",
+              "lastName": "Allen 3",
+              "middleName": null,
+              "dateOfBirth": "2023-03-01",
+              "aliases": [],
+              "prisonerId": null,
+              "pncId": null
+            },
+            {
+              "firstName": "Barry 4",
+              "lastName": "Allen 4",
+              "middleName": null,
+              "dateOfBirth": "2023-03-01",
+              "aliases": [],
+              "prisonerId": null,
+              "pncId": null
+            },
+            {
+              "firstName": "Barry 5",
+              "lastName": "Allen 5",
+              "middleName": null,
+              "dateOfBirth": "2023-03-01",
+              "aliases": [],
+              "prisonerId": null,
+              "pncId": null
+            },
+            {
+              "firstName": "Barry 6",
+              "lastName": "Allen 6",
+              "middleName": null,
+              "dateOfBirth": "2023-03-01",
+              "aliases": [],
+              "prisonerId": null,
+              "pncId": null
+            },
+            {
+              "firstName": "Barry 7",
+              "lastName": "Allen 7",
+              "middleName": null,
+              "dateOfBirth": "2023-03-01",
+              "aliases": [],
+              "prisonerId": null,
+              "pncId": null
+            },
+            {
+              "firstName": "Barry 8",
+              "lastName": "Allen 8",
+              "middleName": null,
+              "dateOfBirth": "2023-03-01",
+              "aliases": [],
+              "prisonerId": null,
+              "pncId": null
+            },
+            {
+              "firstName": "Barry 9",
+              "lastName": "Allen 9",
+              "middleName": null,
+              "dateOfBirth": "2023-03-01",
+              "aliases": [],
+              "prisonerId": null,
+              "pncId": null
+            }
+          ],
+          "pageable": {
+            "sort": {
+              "empty": true,
+              "sorted": false,
+              "unsorted": true
+            },
+            "offset": 0,
+            "pageNumber": 0,
+            "pageSize": 10,
+            "paged": true,
+            "unpaged": false
+          },
+          "last": false,
+          "totalPages": 2,
+          "totalElements": 20,
+          "first": true,
+          "size": 10,
+          "number": 0,
+          "sort": {
+            "empty": true,
+            "sorted": false,
+            "unsorted": true
+          },
+          "numberOfElements": 10,
+          "empty": false
+        }
+        """,
+      )
+
+      val resultPage1 =
+        mockMvc.perform(get("$basePath?first_name=$firstName&last_name=$lastName&page=1"))
+          .andReturn()
+
+      resultPage1.response.contentAsString.shouldEqualJson(
+        """
+        {
+          "content": [
+            {
+              "firstName": "Barry 10",
+              "lastName": "Allen 10",
+              "middleName": null,
+              "dateOfBirth": "2023-03-01",
+              "aliases": [],
+              "prisonerId": null,
+              "pncId": null
+            },
+            {
+              "firstName": "Barry 11",
+              "lastName": "Allen 11",
+              "middleName": null,
+              "dateOfBirth": "2023-03-01",
+              "aliases": [],
+              "prisonerId": null,
+              "pncId": null
+            },
+            {
+              "firstName": "Barry 12",
+              "lastName": "Allen 12",
+              "middleName": null,
+              "dateOfBirth": "2023-03-01",
+              "aliases": [],
+              "prisonerId": null,
+              "pncId": null
+            },
+            {
+              "firstName": "Barry 13",
+              "lastName": "Allen 13",
+              "middleName": null,
+              "dateOfBirth": "2023-03-01",
+              "aliases": [],
+              "prisonerId": null,
+              "pncId": null
+            },
+            {
+              "firstName": "Barry 14",
+              "lastName": "Allen 14",
+              "middleName": null,
+              "dateOfBirth": "2023-03-01",
+              "aliases": [],
+              "prisonerId": null,
+              "pncId": null
+            },
+            {
+              "firstName": "Barry 15",
+              "lastName": "Allen 15",
+              "middleName": null,
+              "dateOfBirth": "2023-03-01",
+              "aliases": [],
+              "prisonerId": null,
+              "pncId": null
+            },
+            {
+              "firstName": "Barry 16",
+              "lastName": "Allen 16",
+              "middleName": null,
+              "dateOfBirth": "2023-03-01",
+              "aliases": [],
+              "prisonerId": null,
+              "pncId": null
+            },
+            {
+              "firstName": "Barry 17",
+              "lastName": "Allen 17",
+              "middleName": null,
+              "dateOfBirth": "2023-03-01",
+              "aliases": [],
+              "prisonerId": null,
+              "pncId": null
+            },
+            {
+              "firstName": "Barry 18",
+              "lastName": "Allen 18",
+              "middleName": null,
+              "dateOfBirth": "2023-03-01",
+              "aliases": [],
+              "prisonerId": null,
+              "pncId": null
+            },
+            {
+              "firstName": "Barry 19",
+              "lastName": "Allen 19",
+              "middleName": null,
+              "dateOfBirth": "2023-03-01",
+              "aliases": [],
+              "prisonerId": null,
+              "pncId": null
+            }
+          ],
+          "pageable": {
+            "sort": {
+              "empty": true,
+              "sorted": false,
+              "unsorted": true
+            },
+            "offset": 10,
+            "pageNumber": 1,
+            "pageSize": 10,
+            "paged": true,
+            "unpaged": false
+          },
+          "last": true,
+          "totalPages": 2,
+          "totalElements": 20,
+          "first": false,
+          "size": 10,
+          "number": 1,
+          "sort": {
+            "empty": true,
+            "sorted": false,
+            "unsorted": true
+          },
+          "numberOfElements": 10,
+          "empty": false
+        }
+        """,
+      )
+    }
+
+    it("returns an empty list when a page requested is out of bounds") {
+      val pageNumberThatDoesntExist = 99
+      val list = listOf(
+        Person(
+          firstName = "Barry",
+          lastName = "Allen",
+          dateOfBirth = LocalDate.parse("2023-03-01"),
+        ),
+      )
+
+      whenever(getPersonsService.execute(firstName, lastName)).thenReturn(list)
+
+      val result =
+        mockMvc.perform(get("$basePath?first_name=$firstName&last_name=$lastName&page=$pageNumberThatDoesntExist"))
+          .andReturn()
+
+      result.response.contentAsString.shouldEqualJson(
+        """
+        {
+          "content": [],
+          "pageable": {
+            "sort": {
+              "empty": true,
+              "sorted": false,
+              "unsorted": true
+            },
+            "offset": 990,
+            "pageNumber": 99,
+            "pageSize": 10,
+            "paged": true,
+            "unpaged": false
+          },
+          "totalPages": 1,
+          "totalElements": 1,
+          "last": true,
+          "size": 10,
+          "number": 99,
+          "sort": {
+            "empty": true,
+            "sorted": false,
+            "unsorted": true
+          },
+          "numberOfElements": 0,
+          "first": false,
+          "empty": true
+        }
+        """,
+      )
     }
   }
 },)
