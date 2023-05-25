@@ -210,7 +210,7 @@ internal class PersonControllerTest(
       }
     }
 
-  describe("GET $basePath/$encodedPncId/images") {
+    describe("GET $basePath/$encodedPncId/images") {
       beforeTest {
         Mockito.reset(getImageMetadataForPersonService)
         whenever(getImageMetadataForPersonService.execute(pncId)).thenReturn(
@@ -223,7 +223,7 @@ internal class PersonControllerTest(
               orientation = "FRONT",
               type = "OFF_BKG",
             ),
-          )
+          ),
         )
       }
 
