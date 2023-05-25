@@ -26,6 +26,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonsServi
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 @WebMvcTest(controllers = [PersonController::class])
 internal class PersonControllerTest(
@@ -209,19 +210,20 @@ internal class PersonControllerTest(
       }
     }
 
-    describe("GET $basePath/$encodedPncId/images") {
+  describe("GET $basePath/$encodedPncId/images") {
       beforeTest {
         Mockito.reset(getImageMetadataForPersonService)
         whenever(getImageMetadataForPersonService.execute(pncId)).thenReturn(
           listOf(
             ImageMetadata(
               id = 2461788,
-              captureDate = LocalDate.parse("2023-03-01"),
+              active = true,
+              captureDateTime = LocalDateTime.parse("2023-03-01T13:20:00"),
               view = "FACE",
               orientation = "FRONT",
               type = "OFF_BKG",
             ),
-          ),
+          )
         )
       }
 
@@ -246,7 +248,8 @@ internal class PersonControllerTest(
           "images": [
             {
               "id" : 2461788,
-              "captureDate": "2023-03-01",
+              "active" : true,
+              "captureDateTime": "2023-03-01T13:20:00",
               "view": "FACE",
               "orientation": "FRONT",
               "type": "OFF_BKG"

@@ -21,6 +21,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMoc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.NomisApiMockServer
 import java.io.File
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 @ActiveProfiles("test")
 @ContextConfiguration(
@@ -145,7 +146,8 @@ class NomisGatewayTest(@MockBean val hmppsAuthGateway: HmppsAuthGateway, private
           [
             {
               "imageId": 24213,
-              "captureDate": "2008-08-27",
+              "active": true,
+              "captureDateTime": "2008-08-27T16:35:00",
               "imageView": "FACE",
               "imageOrientation": "FRONT",
               "imageType": "OFF_BKG"
@@ -164,7 +166,8 @@ class NomisGatewayTest(@MockBean val hmppsAuthGateway: HmppsAuthGateway, private
       it("returns image metadata for the matching person ID") {
         val imageMetadata = nomisGateway.getImageMetadataForPerson(offenderNo)
 
-        imageMetadata.first().captureDate.shouldBe(LocalDate.parse("2008-08-27"))
+        imageMetadata.first().active.shouldBe(true)
+        imageMetadata.first().captureDateTime.shouldBe(LocalDateTime.parse("2008-08-27T16:35:00"))
         imageMetadata.first().view.shouldBe("FACE")
         imageMetadata.first().orientation.shouldBe("FRONT")
         imageMetadata.first().type.shouldBe("OFF_BKG")

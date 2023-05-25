@@ -14,6 +14,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffende
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ImageMetadata
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Person
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
@@ -57,7 +58,8 @@ internal class GetImageMetadataForPersonServiceTest(
     val imageMetadataFromNomis = listOf(
       ImageMetadata(
         id = 2461788,
-        captureDate = LocalDate.parse("2023-03-01"),
+        active = false,
+        captureDateTime = LocalDateTime.parse("2023-03-01T08:30:45"),
         view = "FACE",
         orientation = "FRONT",
         type = "OFF_BKG",

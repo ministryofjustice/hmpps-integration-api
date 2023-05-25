@@ -374,9 +374,12 @@ components:
           minimum: 1
           format: int64
           example: 2461788
-        captureDate:
+        active:
+          type: boolean
+          example: true
+        captureDateTime:
           type: string
-          format: date
+          format: datetime
           example: 2015-05-27
         view:
           type: string
