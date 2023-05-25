@@ -30,18 +30,18 @@ paths:
           name: page
           schema:
             type: number
-            minimum: 0
-            default: 0
+            minimum: 1
+            default: 1
           required: false
-          description: Zero-based page index (0..N)
+          description: The page number (starting from 1)
         - in: query
-          name: size
+          name: per_page
           schema:
             type: number
             minimum: 1
             default: 10
           required: false
-          description: The size of the page to be returned
+          description: The maximum number of results for a page
       responses:
         "200":
           description: Successfully performed the query on upstream APIs. An empty list is returned when no results are found.
@@ -50,39 +50,13 @@ paths:
               schema:
                 type: object
                 properties:
-                  content:
+                  data:
                     type: array
                     minItems: 0
                     items:
                       $ref: "#/components/schemas/Person"
-                  pageable:
-                    $ref: "#/components/schemas/Pageable"
-                  totalPages:
-                    type: integer
-                    example: 1
-                  totalElements:
-                    type: integer
-                    example: 1
-                  last:
-                    type: boolean
-                    example: true
-                  size:
-                    type: integer
-                    example: 10
-                  number:
-                    type: integer
-                    example: 0
-                  sort:
-                    $ref: "#/components/schemas/Sort"
-                  numberOfElements:
-                    type: integer
-                    example: 1
-                  first:
-                    type: boolean
-                    example: true
-                  empty:
-                    type: boolean
-                    example: false
+                  pagination:
+                    $ref: "#/components/schemas/Pagination"
         "400":
           description: There were no query parameters passed in. At least one must be specified.
           content:
@@ -413,26 +387,33 @@ components:
         type:
           type: string
           example: OFF_BKG
-    Pageable:
+    Pagination:
       type: object
       properties:
-        sort:
-          $ref: "#/components/schemas/Sort"
-        offset:
-          type: integer
-          example: 0
-        pageNumber:
-          type: integer
-          example: 0
-        pageSize:
-          type: integer
-          example: 10
-        paged:
+        isLastPage:
           type: boolean
           example: true
-        unpaged:
-          type: boolean
-          example: false
+          description: Is the current page the last one?
+        count:
+          type: integer
+          example: 1
+          description: The number of results in `data` for the current page
+        page:
+          type: integer
+          example: 1
+          description: The current page number
+        perPage:
+          type: integer
+          example: 10
+          description: The maximum number of results in `data` for a page
+        totalCount:
+          type: integer
+          example: 1
+          description: The total number of results in `data` across all pages
+        totalPages:
+          type: integer
+          example: 1
+          description: The total number of pages
     Person:
       type: object
       properties:
@@ -468,18 +449,6 @@ components:
           type: string
           example: 2008/0545166T
           description: An identifier from the Police National Computer (PNC)
-    Sort:
-      type: object
-      properties:
-        empty:
-          type: boolean
-          example: true
-        sorted:
-          type: boolean
-          example: false
-        unsorted:
-          type: boolean
-          example: true
   examples:
     PersonNotFoundError:
       value:

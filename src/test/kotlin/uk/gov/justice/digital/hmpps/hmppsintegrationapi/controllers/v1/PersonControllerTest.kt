@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.controllers.v1
 
+import io.kotest.assertions.json.shouldContainJsonKeyValue
 import io.kotest.assertions.json.shouldEqualJson
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
@@ -33,73 +34,74 @@ internal class PersonControllerTest(
   @MockBean val getPersonsService: GetPersonsService,
   @MockBean val getImageMetadataForPersonService: GetImageMetadataForPersonService,
   @MockBean val getAddressesForPersonService: GetAddressesForPersonService,
-) : DescribeSpec({
-  val pncId = "2003/13116M"
-  val encodedPncId = URLEncoder.encode(pncId, StandardCharsets.UTF_8)
-  val basePath = "/v1/persons"
-  val firstName = "Barry"
-  val lastName = "Allen"
+) : DescribeSpec(
+  {
+    val pncId = "2003/13116M"
+    val encodedPncId = URLEncoder.encode(pncId, StandardCharsets.UTF_8)
+    val basePath = "/v1/persons"
+    val firstName = "Barry"
+    val lastName = "Allen"
 
-  describe("GET $basePath") {
-    beforeTest {
-      Mockito.reset(getPersonsService)
+    describe("GET $basePath") {
+      beforeTest {
+        Mockito.reset(getPersonsService)
 
-      whenever(getPersonsService.execute(firstName, lastName)).thenReturn(
-        listOf(
-          Person(
-            firstName = "Barry",
-            lastName = "Allen",
-            middleName = "Jonas",
-            dateOfBirth = LocalDate.parse("2023-03-01"),
+        whenever(getPersonsService.execute(firstName, lastName)).thenReturn(
+          listOf(
+            Person(
+              firstName = "Barry",
+              lastName = "Allen",
+              middleName = "Jonas",
+              dateOfBirth = LocalDate.parse("2023-03-01"),
+            ),
+            Person(
+              firstName = "Barry",
+              lastName = "Allen",
+              middleName = "Rock",
+              dateOfBirth = LocalDate.parse("2022-07-22"),
+            ),
           ),
-          Person(
-            firstName = "Barry",
-            lastName = "Allen",
-            middleName = "Rock",
-            dateOfBirth = LocalDate.parse("2022-07-22"),
-          ),
-        ),
-      )
-    }
+        )
+      }
 
-    it("responds with a 200 OK status") {
-      val result = mockMvc.perform(get("$basePath?first_name=$firstName&last_name=$lastName")).andReturn()
+      it("responds with a 200 OK status") {
+        val result = mockMvc.perform(get("$basePath?first_name=$firstName&last_name=$lastName")).andReturn()
 
-      result.response.status.shouldBe(HttpStatus.OK.value())
-    }
+        result.response.status.shouldBe(HttpStatus.OK.value())
+      }
 
-    it("returns an empty list embedded in a JSON object when no matching people") {
-      val firstNameThatDoesNotExist = "Bob21345"
-      val lastNameThatDoesNotExist = "Gun36773"
+      it("returns an empty list embedded in a JSON object when no matching people") {
+        val firstNameThatDoesNotExist = "Bob21345"
+        val lastNameThatDoesNotExist = "Gun36773"
 
-      whenever(getPersonsService.execute(firstNameThatDoesNotExist, lastNameThatDoesNotExist)).thenReturn(
-        listOf(),
-      )
+        whenever(getPersonsService.execute(firstNameThatDoesNotExist, lastNameThatDoesNotExist)).thenReturn(
+          listOf(),
+        )
 
-      val result =
-        mockMvc.perform(get("$basePath?first_name=$firstNameThatDoesNotExist&last_name=$lastNameThatDoesNotExist"))
-          .andReturn()
+        val result =
+          mockMvc.perform(get("$basePath?first_name=$firstNameThatDoesNotExist&last_name=$lastNameThatDoesNotExist"))
+            .andReturn()
 
-      result.response.contentAsString.shouldContain(
-        """
-          "content":[]
+        result.response.contentAsString.shouldContain(
+          """
+          "data":[]
         """.removeWhitespaceAndNewlines(),
-      )
-    }
+        )
+      }
 
-    it("retrieves a person with matching search criteria") {
-      mockMvc.perform(get("$basePath?first_name=$firstName&last_name=$lastName")).andReturn()
+      it("retrieves a person with matching search criteria") {
+        mockMvc.perform(get("$basePath?first_name=$firstName&last_name=$lastName")).andReturn()
 
-      verify(getPersonsService, times(1)).execute(firstName, lastName)
-    }
+        verify(getPersonsService, times(1)).execute(firstName, lastName)
+      }
 
-    it("returns a person with matching first and last name") {
-      val result = mockMvc.perform(get("$basePath?first_name=$firstName&last_name=$lastName")).andReturn()
+      it("returns a person with matching first and last name") {
+        val result = mockMvc.perform(get("$basePath?first_name=$firstName&last_name=$lastName")).andReturn()
 
-      result.response.contentAsString.shouldContain(
-        """
+        result.response.contentAsString.shouldContain(
+          """
           {
-            "content":
+            "data":
             [
               {
                 "firstName":"Barry",
@@ -121,67 +123,67 @@ internal class PersonControllerTest(
                }
              ]
         """.removeWhitespaceAndNewlines(),
+        )
+      }
+
+      it("retrieves a person with matching first name") {
+        mockMvc.perform(get("$basePath?first_name=$firstName")).andReturn()
+
+        verify(getPersonsService, times(1)).execute(firstName, null)
+      }
+
+      it("retrieves a person with matching last name") {
+        mockMvc.perform(get("$basePath?last_name=$lastName")).andReturn()
+
+        verify(getPersonsService, times(1)).execute(null, lastName)
+      }
+
+      it("responds with a 400 BAD REQUEST status when no search criteria provided") {
+        val result = mockMvc.perform(get(basePath)).andReturn()
+
+        result.response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
+        result.response.contentAsString.shouldContain("No query parameters specified.")
+      }
+    }
+
+    describe("GET $basePath/{id}") {
+      val person = mapOf(
+        "prisonerOffenderSearch" to Person("Sally", "Sob"),
+        "probationOffenderSearch" to Person("Silly", "Sobbers"),
       )
-    }
 
-    it("retrieves a person with matching first name") {
-      mockMvc.perform(get("$basePath?first_name=$firstName")).andReturn()
+      beforeTest {
+        Mockito.reset(getPersonService)
+        whenever(getPersonService.execute(pncId)).thenReturn(person)
+      }
 
-      verify(getPersonsService, times(1)).execute(firstName, null)
-    }
+      it("responds with a 200 OK status") {
+        val result = mockMvc.perform(get("$basePath/$encodedPncId")).andReturn()
 
-    it("retrieves a person with matching last name") {
-      mockMvc.perform(get("$basePath?last_name=$lastName")).andReturn()
+        result.response.status.shouldBe(HttpStatus.OK.value())
+      }
 
-      verify(getPersonsService, times(1)).execute(null, lastName)
-    }
+      it("responds with a 404 NOT FOUND status") {
+        val idThatDoesNotExist = "9999/11111Z"
+        whenever(getPersonService.execute(idThatDoesNotExist)).thenReturn(null)
 
-    it("responds with a 400 BAD REQUEST status when no search criteria provided") {
-      val result = mockMvc.perform(get(basePath)).andReturn()
+        val encodedIdThatDoesNotExist = URLEncoder.encode(idThatDoesNotExist, StandardCharsets.UTF_8)
+        val result = mockMvc.perform(get("$basePath/$encodedIdThatDoesNotExist")).andReturn()
 
-      result.response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
-      result.response.contentAsString.shouldContain("No query parameters specified.")
-    }
-  }
+        result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
+      }
 
-  describe("GET $basePath/{id}") {
-    val person = mapOf(
-      "prisonerOffenderSearch" to Person("Sally", "Sob"),
-      "probationOffenderSearch" to Person("Silly", "Sobbers"),
-    )
+      it("retrieves a person with the matching ID") {
+        mockMvc.perform(get("$basePath/$encodedPncId")).andReturn()
 
-    beforeTest {
-      Mockito.reset(getPersonService)
-      whenever(getPersonService.execute(pncId)).thenReturn(person)
-    }
+        verify(getPersonService, times(1)).execute(pncId)
+      }
 
-    it("responds with a 200 OK status") {
-      val result = mockMvc.perform(get("$basePath/$encodedPncId")).andReturn()
+      it("returns a person with the matching ID") {
+        val result = mockMvc.perform(get("$basePath/$encodedPncId")).andReturn()
 
-      result.response.status.shouldBe(HttpStatus.OK.value())
-    }
-
-    it("responds with a 404 NOT FOUND status") {
-      val idThatDoesNotExist = "9999/11111Z"
-      whenever(getPersonService.execute(idThatDoesNotExist)).thenReturn(null)
-
-      val encodedIdThatDoesNotExist = URLEncoder.encode(idThatDoesNotExist, StandardCharsets.UTF_8)
-      val result = mockMvc.perform(get("$basePath/$encodedIdThatDoesNotExist")).andReturn()
-
-      result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
-    }
-
-    it("retrieves a person with the matching ID") {
-      mockMvc.perform(get("$basePath/$encodedPncId")).andReturn()
-
-      verify(getPersonService, times(1)).execute(pncId)
-    }
-
-    it("returns a person with the matching ID") {
-      val result = mockMvc.perform(get("$basePath/$encodedPncId")).andReturn()
-
-      result.response.contentAsString.shouldBe(
-        """
+        result.response.contentAsString.shouldBe(
+          """
         {
           "prisonerOffenderSearch": {
             "firstName": "Sally",
@@ -203,43 +205,43 @@ internal class PersonControllerTest(
           }
         }
         """.removeWhitespaceAndNewlines(),
-      )
+        )
+      }
     }
-  }
 
-  describe("GET $basePath/$encodedPncId/images") {
-    beforeTest {
-      Mockito.reset(getImageMetadataForPersonService)
-      whenever(getImageMetadataForPersonService.execute(pncId)).thenReturn(
-        listOf(
-          ImageMetadata(
-            id = 2461788,
-            captureDate = LocalDate.parse("2023-03-01"),
-            view = "FACE",
-            orientation = "FRONT",
-            type = "OFF_BKG",
+    describe("GET $basePath/$encodedPncId/images") {
+      beforeTest {
+        Mockito.reset(getImageMetadataForPersonService)
+        whenever(getImageMetadataForPersonService.execute(pncId)).thenReturn(
+          listOf(
+            ImageMetadata(
+              id = 2461788,
+              captureDate = LocalDate.parse("2023-03-01"),
+              view = "FACE",
+              orientation = "FRONT",
+              type = "OFF_BKG",
+            ),
           ),
-        ),
-      )
-    }
+        )
+      }
 
-    it("responds with a 200 OK status") {
-      val result = mockMvc.perform(get("$basePath/$encodedPncId/images")).andReturn()
+      it("responds with a 200 OK status") {
+        val result = mockMvc.perform(get("$basePath/$encodedPncId/images")).andReturn()
 
-      result.response.status.shouldBe(HttpStatus.OK.value())
-    }
+        result.response.status.shouldBe(HttpStatus.OK.value())
+      }
 
-    it("retrieves the metadata of images for a person with the matching ID") {
-      mockMvc.perform(get("$basePath/$encodedPncId/images")).andReturn()
+      it("retrieves the metadata of images for a person with the matching ID") {
+        mockMvc.perform(get("$basePath/$encodedPncId/images")).andReturn()
 
-      verify(getImageMetadataForPersonService, times(1)).execute(pncId)
-    }
+        verify(getImageMetadataForPersonService, times(1)).execute(pncId)
+      }
 
-    it("returns the metadata of images for a person with the matching ID") {
-      val result = mockMvc.perform(get("$basePath/$encodedPncId/images")).andReturn()
+      it("returns the metadata of images for a person with the matching ID") {
+        val result = mockMvc.perform(get("$basePath/$encodedPncId/images")).andReturn()
 
-      result.response.contentAsString.shouldBe(
-        """
+        result.response.contentAsString.shouldBe(
+          """
         {
           "images": [
             {
@@ -252,37 +254,37 @@ internal class PersonControllerTest(
           ]
         }
         """.removeWhitespaceAndNewlines(),
-      )
-    }
-  }
-
-  describe("GET $basePath/{encodedPncId}/addresses") {
-    beforeTest {
-      Mockito.reset(getAddressesForPersonService)
-      whenever(getAddressesForPersonService.execute(pncId)).thenReturn(
-        listOf(
-          Address(postcode = "SE1 1TE"),
-        ),
-      )
+        )
+      }
     }
 
-    it("responds with a 200 OK status") {
-      val result = mockMvc.perform(get("$basePath/$encodedPncId/addresses")).andReturn()
+    describe("GET $basePath/{encodedPncId}/addresses") {
+      beforeTest {
+        Mockito.reset(getAddressesForPersonService)
+        whenever(getAddressesForPersonService.execute(pncId)).thenReturn(
+          listOf(
+            Address(postcode = "SE1 1TE"),
+          ),
+        )
+      }
 
-      result.response.status.shouldBe(HttpStatus.OK.value())
-    }
+      it("responds with a 200 OK status") {
+        val result = mockMvc.perform(get("$basePath/$encodedPncId/addresses")).andReturn()
 
-    it("retrieves the addresses for a person with the matching ID") {
-      mockMvc.perform(get("$basePath/$encodedPncId/addresses")).andReturn()
+        result.response.status.shouldBe(HttpStatus.OK.value())
+      }
 
-      verify(getAddressesForPersonService, times(1)).execute(pncId)
-    }
+      it("retrieves the addresses for a person with the matching ID") {
+        mockMvc.perform(get("$basePath/$encodedPncId/addresses")).andReturn()
 
-    it("returns the addresses for a person with the matching ID") {
-      val result = mockMvc.perform(get("$basePath/$encodedPncId/addresses")).andReturn()
+        verify(getAddressesForPersonService, times(1)).execute(pncId)
+      }
 
-      result.response.contentAsString.shouldBe(
-        """
+      it("returns the addresses for a person with the matching ID") {
+        val result = mockMvc.perform(get("$basePath/$encodedPncId/addresses")).andReturn()
+
+        result.response.contentAsString.shouldBe(
+          """
         {
           "addresses": [
             {
@@ -291,459 +293,393 @@ internal class PersonControllerTest(
           ]
         }
         """.removeWhitespaceAndNewlines(),
-      )
-    }
-
-    it("responds with a 404 NOT FOUND status when person isn't found") {
-      whenever(getAddressesForPersonService.execute(pncId)).thenReturn(null)
-
-      val result = mockMvc.perform(get("$basePath/$encodedPncId/addresses")).andReturn()
-
-      result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
-    }
-  }
-
-  describe("Paginated results") {
-    it("returns pagination information for empty results") {
-      val firstNameThatDoesNotExist = "Bob21345"
-      val lastNameThatDoesNotExist = "Gun36773"
-
-      whenever(getPersonsService.execute(firstNameThatDoesNotExist, lastNameThatDoesNotExist)).thenReturn(
-        listOf(),
-      )
-
-      val result =
-        mockMvc.perform(get("$basePath?first_name=$firstNameThatDoesNotExist&last_name=$lastNameThatDoesNotExist"))
-          .andReturn()
-
-      result.response.contentAsString.shouldEqualJson(
-        """
-        {
-          "content": [],
-          "pageable": {
-            "sort": {
-              "empty": true,
-              "sorted": false,
-              "unsorted": true
-            },
-            "offset": 0,
-            "pageNumber": 0,
-            "pageSize": 10,
-            "paged": true,
-            "unpaged": false
-          },
-          "totalPages": 0,
-          "totalElements": 0,
-          "last": true,
-          "size": 10,
-          "number": 0,
-          "sort": {
-            "empty": true,
-            "sorted": false,
-            "unsorted": true
-          },
-          "numberOfElements": 0,
-          "first": true,
-          "empty": true
-        }
-        """,
-      )
-    }
-
-    it("returns pagination information for one page of results") {
-      val list = List(3) { i ->
-        Person(
-          firstName = "Barry $i",
-          lastName = "Allen $i",
-          middleName = "Jonas $i",
-          dateOfBirth = LocalDate.parse("2023-03-01"),
         )
       }
 
-      whenever(getPersonsService.execute(firstName, lastName)).thenReturn(list)
+      it("responds with a 404 NOT FOUND status when person isn't found") {
+        whenever(getAddressesForPersonService.execute(pncId)).thenReturn(null)
 
-      val result =
-        mockMvc.perform(get("$basePath?first_name=$firstName&last_name=$lastName"))
-          .andReturn()
+        val result = mockMvc.perform(get("$basePath/$encodedPncId/addresses")).andReturn()
 
-      result.response.contentAsString.shouldEqualJson(
-        """
-        {
-          "content": [
-            {
-              "firstName": "Barry 0",
-              "lastName": "Allen 0",
-              "middleName": "Jonas 0",
-              "dateOfBirth": "2023-03-01",
-              "aliases": [],
-              "prisonerId": null,
-              "pncId": null
-            },
-            {
-              "firstName": "Barry 1",
-              "lastName": "Allen 1",
-              "middleName": "Jonas 1",
-              "dateOfBirth": "2023-03-01",
-              "aliases": [],
-              "prisonerId": null,
-              "pncId": null
-            },
-            {
-              "firstName": "Barry 2",
-              "lastName": "Allen 2",
-              "middleName": "Jonas 2",
-              "dateOfBirth": "2023-03-01",
-              "aliases": [],
-              "prisonerId": null,
-              "pncId": null
-            }
-          ],
-          "pageable": {
-            "sort": {
-              "empty": true,
-              "sorted": false,
-              "unsorted": true
-            },
-            "offset": 0,
-            "pageNumber": 0,
-            "pageSize": 10,
-            "paged": true,
-            "unpaged": false
-          },
-          "totalPages": 1,
-          "totalElements": 3,
-          "last": true,
-          "size": 10,
-          "number": 0,
-          "sort": {
-            "empty": true,
-            "sorted": false,
-            "unsorted": true
-          },
-          "numberOfElements": 3,
-          "first": true,
-          "empty": false
-        }
-        """,
-      )
+        result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
+      }
     }
 
-    it("returns pagination information for two pages of results") {
-      val list = List(20) { i ->
-        Person(
-          firstName = "Barry $i",
-          lastName = "Allen $i",
-          dateOfBirth = LocalDate.parse("2023-03-01"),
+    describe("Paginated results") {
+      it("returns pagination information for empty results") {
+        val firstNameThatDoesNotExist = "Bob21345"
+        val lastNameThatDoesNotExist = "Gun36773"
+
+        whenever(getPersonsService.execute(firstNameThatDoesNotExist, lastNameThatDoesNotExist)).thenReturn(
+          listOf(),
+        )
+
+        val result =
+          mockMvc.perform(get("$basePath?first_name=$firstNameThatDoesNotExist&last_name=$lastNameThatDoesNotExist"))
+            .andReturn()
+
+        result.response.contentAsString.shouldEqualJson(
+          """
+          {
+            "data": [],
+            "pagination": {
+              "isLastPage": true,
+              "count": 0,
+              "page": 1,
+              "perPage": 10,
+              "totalCount": 0,
+              "totalPages": 0
+            }
+          }
+          """,
         )
       }
 
-      whenever(getPersonsService.execute(firstName, lastName)).thenReturn(list)
+      it("returns pagination information for one page of results") {
+        val list = List(3) { i ->
+          Person(
+            firstName = "Barry $i",
+            lastName = "Allen $i",
+            middleName = "Jonas $i",
+            dateOfBirth = LocalDate.parse("2023-03-01"),
+          )
+        }
 
-      val resultPage0 =
-        mockMvc.perform(get("$basePath?first_name=$firstName&last_name=$lastName"))
-          .andReturn()
+        whenever(getPersonsService.execute(firstName, lastName)).thenReturn(list)
 
-      resultPage0.response.contentAsString.shouldEqualJson(
-        """
-        {
-          "content": [
-            {
-              "firstName": "Barry 0",
-              "lastName": "Allen 0",
-              "middleName": null,
-              "dateOfBirth": "2023-03-01",
-              "aliases": [],
-              "prisonerId": null,
-              "pncId": null
-            },
-            {
-              "firstName": "Barry 1",
-              "lastName": "Allen 1",
-              "middleName": null,
-              "dateOfBirth": "2023-03-01",
-              "aliases": [],
-              "prisonerId": null,
-              "pncId": null
-            },
-            {
-              "firstName": "Barry 2",
-              "lastName": "Allen 2",
-              "middleName": null,
-              "dateOfBirth": "2023-03-01",
-              "aliases": [],
-              "prisonerId": null,
-              "pncId": null
-            },
-            {
-              "firstName": "Barry 3",
-              "lastName": "Allen 3",
-              "middleName": null,
-              "dateOfBirth": "2023-03-01",
-              "aliases": [],
-              "prisonerId": null,
-              "pncId": null
-            },
-            {
-              "firstName": "Barry 4",
-              "lastName": "Allen 4",
-              "middleName": null,
-              "dateOfBirth": "2023-03-01",
-              "aliases": [],
-              "prisonerId": null,
-              "pncId": null
-            },
-            {
-              "firstName": "Barry 5",
-              "lastName": "Allen 5",
-              "middleName": null,
-              "dateOfBirth": "2023-03-01",
-              "aliases": [],
-              "prisonerId": null,
-              "pncId": null
-            },
-            {
-              "firstName": "Barry 6",
-              "lastName": "Allen 6",
-              "middleName": null,
-              "dateOfBirth": "2023-03-01",
-              "aliases": [],
-              "prisonerId": null,
-              "pncId": null
-            },
-            {
-              "firstName": "Barry 7",
-              "lastName": "Allen 7",
-              "middleName": null,
-              "dateOfBirth": "2023-03-01",
-              "aliases": [],
-              "prisonerId": null,
-              "pncId": null
-            },
-            {
-              "firstName": "Barry 8",
-              "lastName": "Allen 8",
-              "middleName": null,
-              "dateOfBirth": "2023-03-01",
-              "aliases": [],
-              "prisonerId": null,
-              "pncId": null
-            },
-            {
-              "firstName": "Barry 9",
-              "lastName": "Allen 9",
-              "middleName": null,
-              "dateOfBirth": "2023-03-01",
-              "aliases": [],
-              "prisonerId": null,
-              "pncId": null
+        val result =
+          mockMvc.perform(get("$basePath?first_name=$firstName&last_name=$lastName"))
+            .andReturn()
+
+        result.response.contentAsString.shouldEqualJson(
+          """
+          {
+            "data": [
+              {
+                "firstName": "Barry 0",
+                "lastName": "Allen 0",
+                "middleName": "Jonas 0",
+                "dateOfBirth": "2023-03-01",
+                "aliases": [],
+                "prisonerId": null,
+                "pncId": null
+              },
+              {
+                "firstName": "Barry 1",
+                "lastName": "Allen 1",
+                "middleName": "Jonas 1",
+                "dateOfBirth": "2023-03-01",
+                "aliases": [],
+                "prisonerId": null,
+                "pncId": null
+              },
+              {
+                "firstName": "Barry 2",
+                "lastName": "Allen 2",
+                "middleName": "Jonas 2",
+                "dateOfBirth": "2023-03-01",
+                "aliases": [],
+                "prisonerId": null,
+                "pncId": null
+              }
+            ],
+            "pagination": {
+              "isLastPage": true,
+              "count": 3,
+              "page": 1,
+              "perPage": 10,
+              "totalCount": 3,
+              "totalPages": 1
             }
-          ],
-          "pageable": {
-            "sort": {
-              "empty": true,
-              "sorted": false,
-              "unsorted": true
-            },
-            "offset": 0,
-            "pageNumber": 0,
-            "pageSize": 10,
-            "paged": true,
-            "unpaged": false
-          },
-          "last": false,
-          "totalPages": 2,
-          "totalElements": 20,
-          "first": true,
-          "size": 10,
-          "number": 0,
-          "sort": {
-            "empty": true,
-            "sorted": false,
-            "unsorted": true
-          },
-          "numberOfElements": 10,
-          "empty": false
+          }
+          """,
+        )
+      }
+
+      it("returns pagination information for two pages of results") {
+        val list = List(20) { i ->
+          Person(
+            firstName = "Barry $i",
+            lastName = "Allen $i",
+            dateOfBirth = LocalDate.parse("2023-03-01"),
+          )
         }
-        """,
-      )
 
-      val resultPage1 =
-        mockMvc.perform(get("$basePath?first_name=$firstName&last_name=$lastName&page=1"))
-          .andReturn()
+        whenever(getPersonsService.execute(firstName, lastName)).thenReturn(list)
 
-      resultPage1.response.contentAsString.shouldEqualJson(
-        """
-        {
-          "content": [
-            {
-              "firstName": "Barry 10",
-              "lastName": "Allen 10",
-              "middleName": null,
-              "dateOfBirth": "2023-03-01",
-              "aliases": [],
-              "prisonerId": null,
-              "pncId": null
-            },
-            {
-              "firstName": "Barry 11",
-              "lastName": "Allen 11",
-              "middleName": null,
-              "dateOfBirth": "2023-03-01",
-              "aliases": [],
-              "prisonerId": null,
-              "pncId": null
-            },
-            {
-              "firstName": "Barry 12",
-              "lastName": "Allen 12",
-              "middleName": null,
-              "dateOfBirth": "2023-03-01",
-              "aliases": [],
-              "prisonerId": null,
-              "pncId": null
-            },
-            {
-              "firstName": "Barry 13",
-              "lastName": "Allen 13",
-              "middleName": null,
-              "dateOfBirth": "2023-03-01",
-              "aliases": [],
-              "prisonerId": null,
-              "pncId": null
-            },
-            {
-              "firstName": "Barry 14",
-              "lastName": "Allen 14",
-              "middleName": null,
-              "dateOfBirth": "2023-03-01",
-              "aliases": [],
-              "prisonerId": null,
-              "pncId": null
-            },
-            {
-              "firstName": "Barry 15",
-              "lastName": "Allen 15",
-              "middleName": null,
-              "dateOfBirth": "2023-03-01",
-              "aliases": [],
-              "prisonerId": null,
-              "pncId": null
-            },
-            {
-              "firstName": "Barry 16",
-              "lastName": "Allen 16",
-              "middleName": null,
-              "dateOfBirth": "2023-03-01",
-              "aliases": [],
-              "prisonerId": null,
-              "pncId": null
-            },
-            {
-              "firstName": "Barry 17",
-              "lastName": "Allen 17",
-              "middleName": null,
-              "dateOfBirth": "2023-03-01",
-              "aliases": [],
-              "prisonerId": null,
-              "pncId": null
-            },
-            {
-              "firstName": "Barry 18",
-              "lastName": "Allen 18",
-              "middleName": null,
-              "dateOfBirth": "2023-03-01",
-              "aliases": [],
-              "prisonerId": null,
-              "pncId": null
-            },
-            {
-              "firstName": "Barry 19",
-              "lastName": "Allen 19",
-              "middleName": null,
-              "dateOfBirth": "2023-03-01",
-              "aliases": [],
-              "prisonerId": null,
-              "pncId": null
+        val resultPage1 =
+          mockMvc.perform(get("$basePath?first_name=$firstName&last_name=$lastName"))
+            .andReturn()
+
+        resultPage1.response.contentAsString.shouldEqualJson(
+          """
+          {
+            "data": [
+              {
+                "firstName": "Barry 0",
+                "lastName": "Allen 0",
+                "middleName": null,
+                "dateOfBirth": "2023-03-01",
+                "aliases": [],
+                "prisonerId": null,
+                "pncId": null
+              },
+              {
+                "firstName": "Barry 1",
+                "lastName": "Allen 1",
+                "middleName": null,
+                "dateOfBirth": "2023-03-01",
+                "aliases": [],
+                "prisonerId": null,
+                "pncId": null
+              },
+              {
+                "firstName": "Barry 2",
+                "lastName": "Allen 2",
+                "middleName": null,
+                "dateOfBirth": "2023-03-01",
+                "aliases": [],
+                "prisonerId": null,
+                "pncId": null
+              },
+              {
+                "firstName": "Barry 3",
+                "lastName": "Allen 3",
+                "middleName": null,
+                "dateOfBirth": "2023-03-01",
+                "aliases": [],
+                "prisonerId": null,
+                "pncId": null
+              },
+              {
+                "firstName": "Barry 4",
+                "lastName": "Allen 4",
+                "middleName": null,
+                "dateOfBirth": "2023-03-01",
+                "aliases": [],
+                "prisonerId": null,
+                "pncId": null
+              },
+              {
+                "firstName": "Barry 5",
+                "lastName": "Allen 5",
+                "middleName": null,
+                "dateOfBirth": "2023-03-01",
+                "aliases": [],
+                "prisonerId": null,
+                "pncId": null
+              },
+              {
+                "firstName": "Barry 6",
+                "lastName": "Allen 6",
+                "middleName": null,
+                "dateOfBirth": "2023-03-01",
+                "aliases": [],
+                "prisonerId": null,
+                "pncId": null
+              },
+              {
+                "firstName": "Barry 7",
+                "lastName": "Allen 7",
+                "middleName": null,
+                "dateOfBirth": "2023-03-01",
+                "aliases": [],
+                "prisonerId": null,
+                "pncId": null
+              },
+              {
+                "firstName": "Barry 8",
+                "lastName": "Allen 8",
+                "middleName": null,
+                "dateOfBirth": "2023-03-01",
+                "aliases": [],
+                "prisonerId": null,
+                "pncId": null
+              },
+              {
+                "firstName": "Barry 9",
+                "lastName": "Allen 9",
+                "middleName": null,
+                "dateOfBirth": "2023-03-01",
+                "aliases": [],
+                "prisonerId": null,
+                "pncId": null
+              }
+            ],
+            "pagination": {
+              "isLastPage": false,
+              "count": 10,
+              "page": 1,
+              "perPage": 10,
+              "totalCount": 20,
+              "totalPages": 2
             }
-          ],
-          "pageable": {
-            "sort": {
-              "empty": true,
-              "sorted": false,
-              "unsorted": true
-            },
-            "offset": 10,
-            "pageNumber": 1,
-            "pageSize": 10,
-            "paged": true,
-            "unpaged": false
-          },
-          "last": true,
-          "totalPages": 2,
-          "totalElements": 20,
-          "first": false,
-          "size": 10,
-          "number": 1,
-          "sort": {
-            "empty": true,
-            "sorted": false,
-            "unsorted": true
-          },
-          "numberOfElements": 10,
-          "empty": false
+          }
+          """,
+        )
+
+        val resultPage2 =
+          mockMvc.perform(get("$basePath?first_name=$firstName&last_name=$lastName&page=2"))
+            .andReturn()
+
+        resultPage2.response.contentAsString.shouldEqualJson(
+          """
+          {
+            "data": [
+              {
+                "firstName": "Barry 10",
+                "lastName": "Allen 10",
+                "middleName": null,
+                "dateOfBirth": "2023-03-01",
+                "aliases": [],
+                "prisonerId": null,
+                "pncId": null
+              },
+              {
+                "firstName": "Barry 11",
+                "lastName": "Allen 11",
+                "middleName": null,
+                "dateOfBirth": "2023-03-01",
+                "aliases": [],
+                "prisonerId": null,
+                "pncId": null
+              },
+              {
+                "firstName": "Barry 12",
+                "lastName": "Allen 12",
+                "middleName": null,
+                "dateOfBirth": "2023-03-01",
+                "aliases": [],
+                "prisonerId": null,
+                "pncId": null
+              },
+              {
+                "firstName": "Barry 13",
+                "lastName": "Allen 13",
+                "middleName": null,
+                "dateOfBirth": "2023-03-01",
+                "aliases": [],
+                "prisonerId": null,
+                "pncId": null
+              },
+              {
+                "firstName": "Barry 14",
+                "lastName": "Allen 14",
+                "middleName": null,
+                "dateOfBirth": "2023-03-01",
+                "aliases": [],
+                "prisonerId": null,
+                "pncId": null
+              },
+              {
+                "firstName": "Barry 15",
+                "lastName": "Allen 15",
+                "middleName": null,
+                "dateOfBirth": "2023-03-01",
+                "aliases": [],
+                "prisonerId": null,
+                "pncId": null
+              },
+              {
+                "firstName": "Barry 16",
+                "lastName": "Allen 16",
+                "middleName": null,
+                "dateOfBirth": "2023-03-01",
+                "aliases": [],
+                "prisonerId": null,
+                "pncId": null
+              },
+              {
+                "firstName": "Barry 17",
+                "lastName": "Allen 17",
+                "middleName": null,
+                "dateOfBirth": "2023-03-01",
+                "aliases": [],
+                "prisonerId": null,
+                "pncId": null
+              },
+              {
+                "firstName": "Barry 18",
+                "lastName": "Allen 18",
+                "middleName": null,
+                "dateOfBirth": "2023-03-01",
+                "aliases": [],
+                "prisonerId": null,
+                "pncId": null
+              },
+              {
+                "firstName": "Barry 19",
+                "lastName": "Allen 19",
+                "middleName": null,
+                "dateOfBirth": "2023-03-01",
+                "aliases": [],
+                "prisonerId": null,
+                "pncId": null
+              }
+            ],
+            "pagination": {
+              "isLastPage": true,
+              "count": 10,
+              "page": 2,
+              "perPage": 10,
+              "totalCount": 20,
+              "totalPages": 2
+            }
+          }
+          """,
+        )
+      }
+
+      it("returns an empty list when a page requested is out of bounds") {
+        val pageNumberThatDoesntExist = 99
+        val list = listOf(
+          Person(
+            firstName = "Barry",
+            lastName = "Allen",
+            dateOfBirth = LocalDate.parse("2023-03-01"),
+          ),
+        )
+
+        whenever(getPersonsService.execute(firstName, lastName)).thenReturn(list)
+
+        val result =
+          mockMvc.perform(get("$basePath?first_name=$firstName&last_name=$lastName&page=$pageNumberThatDoesntExist"))
+            .andReturn()
+
+        result.response.contentAsString.shouldEqualJson(
+          """
+          {
+            "data": [],
+            "pagination": {
+              "isLastPage": true,
+              "count": 0,
+              "page": 99,
+              "perPage": 10,
+              "totalCount": 1,
+              "totalPages": 1
+            }
+          }
+          """,
+        )
+      }
+
+      it("returns total pages for the number of results specified per page") {
+        val list = List(20) { i ->
+          Person(
+            firstName = "Barry $i",
+            lastName = "Allen $i",
+            dateOfBirth = LocalDate.parse("2023-03-01"),
+          )
         }
-        """,
-      )
+
+        whenever(getPersonsService.execute(firstName, lastName)).thenReturn(list)
+
+        val result =
+          mockMvc.perform(get("$basePath?first_name=$firstName&last_name=$lastName&perPage=5"))
+            .andReturn()
+
+        result.response.contentAsString.shouldContainJsonKeyValue("$.pagination.totalPages", 4)
+      }
     }
-
-    it("returns an empty list when a page requested is out of bounds") {
-      val pageNumberThatDoesntExist = 99
-      val list = listOf(
-        Person(
-          firstName = "Barry",
-          lastName = "Allen",
-          dateOfBirth = LocalDate.parse("2023-03-01"),
-        ),
-      )
-
-      whenever(getPersonsService.execute(firstName, lastName)).thenReturn(list)
-
-      val result =
-        mockMvc.perform(get("$basePath?first_name=$firstName&last_name=$lastName&page=$pageNumberThatDoesntExist"))
-          .andReturn()
-
-      result.response.contentAsString.shouldEqualJson(
-        """
-        {
-          "content": [],
-          "pageable": {
-            "sort": {
-              "empty": true,
-              "sorted": false,
-              "unsorted": true
-            },
-            "offset": 990,
-            "pageNumber": 99,
-            "pageSize": 10,
-            "paged": true,
-            "unpaged": false
-          },
-          "totalPages": 1,
-          "totalElements": 1,
-          "last": true,
-          "size": 10,
-          "number": 99,
-          "sort": {
-            "empty": true,
-            "sorted": false,
-            "unsorted": true
-          },
-          "numberOfElements": 0,
-          "first": false,
-          "empty": true
-        }
-        """,
-      )
-    }
-  }
-},)
+  },
+)
