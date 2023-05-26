@@ -111,7 +111,7 @@ paths:
               schema:
                 type: object
                 properties:
-                  images:
+                  data:
                     type: array
                     minItems: 0
                     items:
@@ -141,7 +141,7 @@ paths:
               schema:
                 type: object
                 properties:
-                  addresses:
+                  data:
                     type: array
                     minItems: 0
                     items:
