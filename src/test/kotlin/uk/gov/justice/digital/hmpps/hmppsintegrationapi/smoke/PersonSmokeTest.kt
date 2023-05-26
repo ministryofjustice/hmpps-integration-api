@@ -106,7 +106,7 @@ class PersonSmokeTest : DescribeSpec({
         {
           "id":2461788,
           "active":false,
-          "captureDateTime":"2021-07-05T10:35:17"
+          "captureDateTime":"2021-07-05T10:35:17",
           "view":"OIC",
           "orientation":"NECK",
           "type":"OFF_IDM"
