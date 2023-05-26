@@ -83,11 +83,7 @@ internal class PersonControllerTest(
           mockMvc.perform(get("$basePath?first_name=$firstNameThatDoesNotExist&last_name=$lastNameThatDoesNotExist"))
             .andReturn()
 
-        result.response.contentAsString.shouldContain(
-          """
-          "data":[]
-        """.removeWhitespaceAndNewlines(),
-        )
+        result.response.contentAsString.shouldContain("\"data\":[]".removeWhitespaceAndNewlines())
       }
 
       it("retrieves a person with matching search criteria") {
@@ -101,29 +97,27 @@ internal class PersonControllerTest(
 
         result.response.contentAsString.shouldContain(
           """
-          {
-            "data":
-            [
-              {
-                "firstName":"Barry",
-                "lastName":"Allen",
-                "middleName":"Jonas",
-                "dateOfBirth":"2023-03-01",
-                "aliases":[],
-                "prisonerId": null,
-                "pncId": null
-               },
-               {
-                 "firstName":"Barry",
-                 "lastName":"Allen",
-                 "middleName":"Rock",
-                 "dateOfBirth":"2022-07-22",
-                 "aliases":[],
-                 "prisonerId": null,
-                 "pncId": null
-               }
-             ]
-        """.removeWhitespaceAndNewlines(),
+          "data": [
+            {
+              "firstName":"Barry",
+              "lastName":"Allen",
+              "middleName":"Jonas",
+              "dateOfBirth":"2023-03-01",
+              "aliases":[],
+              "prisonerId": null,
+              "pncId": null
+            },
+            {
+               "firstName":"Barry",
+               "lastName":"Allen",
+               "middleName":"Rock",
+               "dateOfBirth":"2022-07-22",
+               "aliases":[],
+               "prisonerId": null,
+               "pncId": null
+            }
+          ]
+          """.removeWhitespaceAndNewlines(),
         )
       }
 
@@ -245,7 +239,7 @@ internal class PersonControllerTest(
         result.response.contentAsString.shouldBe(
           """
         {
-          "images": [
+          "data": [
             {
               "id" : 2461788,
               "active" : true,
@@ -289,7 +283,7 @@ internal class PersonControllerTest(
         result.response.contentAsString.shouldBe(
           """
         {
-          "addresses": [
+          "data": [
             {
               "postcode": "SE1 1TE"
             }

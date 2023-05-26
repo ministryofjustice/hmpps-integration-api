@@ -102,7 +102,7 @@ class PersonSmokeTest : DescribeSpec({
     response.body().shouldBe(
       """
     {
-      "images": [
+      "data": [
         {
           "id":2461788,
           "active":false,
@@ -127,7 +127,7 @@ class PersonSmokeTest : DescribeSpec({
     response.body().shouldBe(
       """
     {
-      "addresses": [
+      "data": [
         {
           "postcode": "string"
         },

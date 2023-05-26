@@ -61,7 +61,7 @@ class PersonController(
     val pncId = encodedPncId.decodeUrlCharacters()
     val images = getImageMetadataForPersonService.execute(pncId)
 
-    return mapOf("images" to images)
+    return mapOf("data" to images)
   }
 
   @GetMapping("{encodedPncId}/addresses")
@@ -70,6 +70,6 @@ class PersonController(
     val addresses = getAddressesForPersonService.execute(pncId)
       ?: throw EntityNotFoundException("Could not find person with id: $pncId")
 
-    return mapOf("addresses" to addresses)
+    return mapOf("data" to addresses)
   }
 }
