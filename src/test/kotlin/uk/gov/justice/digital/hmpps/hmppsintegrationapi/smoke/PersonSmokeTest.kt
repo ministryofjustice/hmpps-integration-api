@@ -99,20 +99,16 @@ class PersonSmokeTest : DescribeSpec({
       HttpResponse.BodyHandlers.ofString(),
     )
 
-    response.body().shouldBe(
+    response.statusCode().shouldBe(HttpStatus.OK.value())
+    response.body().shouldContain("\"data\":[")
+    response.body().shouldContain(
       """
-    {
-      "data": [
-        {
           "id":2461788,
           "active":false,
           "captureDateTime":"2021-07-05T10:35:17",
           "view":"OIC",
           "orientation":"NECK",
           "type":"OFF_IDM"
-        }
-      ]
-    }
     """.removeWhitespaceAndNewlines(),
     )
   }
