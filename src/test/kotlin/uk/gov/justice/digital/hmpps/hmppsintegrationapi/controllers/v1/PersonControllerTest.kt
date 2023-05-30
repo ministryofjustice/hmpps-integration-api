@@ -26,6 +26,7 @@ import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 import java.time.LocalDate
 import java.time.LocalDateTime
+import kotlin.random.Random
 
 @WebMvcTest(controllers = [PersonController::class])
 internal class PersonControllerTest(
@@ -239,6 +240,28 @@ internal class PersonControllerTest(
         )
       }
 
+      it("returns paginated results") {
+        val list = List(20) { _ ->
+          ImageMetadata(
+            id = Random.nextLong(),
+            active = Random.nextBoolean(),
+            captureDateTime = LocalDateTime.now(),
+            view = "OIC",
+            orientation = "NECK",
+            type = "OFF_IDM",
+          )
+        }
+
+        whenever(getImageMetadataForPersonService.execute(pncId)).thenReturn(list)
+
+        val result =
+          mockMvc.perform(get("$basePath/$encodedPncId/images?page=3&perPage=5"))
+            .andReturn()
+
+        result.response.contentAsString.shouldContainJsonKeyValue("$.pagination.page", 3)
+        result.response.contentAsString.shouldContainJsonKeyValue("$.pagination.totalPages", 4)
+      }
+
       it("responds with a 200 OK status") {
         val result = mockMvc.perform(get("$basePath/$encodedPncId/images")).andReturn()
 
@@ -253,22 +276,16 @@ internal class PersonControllerTest(
 
       it("returns the metadata of images for a person with the matching ID") {
         val result = mockMvc.perform(get("$basePath/$encodedPncId/images")).andReturn()
-
-        result.response.contentAsString.shouldBe(
+        result.response.contentAsString.shouldContain("\"data\":[")
+        result.response.contentAsString.shouldContain(
           """
-        {
-          "data": [
-            {
-              "id" : 2461788,
+            "id" : 2461788,
               "active" : true,
               "captureDateTime": "2023-03-01T13:20:00",
               "view": "FACE",
               "orientation": "FRONT",
               "type": "OFF_BKG"
-            }
-          ]
-        }
-        """.removeWhitespaceAndNewlines(),
+          """.removeWhitespaceAndNewlines(),
         )
       }
     }
