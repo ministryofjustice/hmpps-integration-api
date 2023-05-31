@@ -14,7 +14,7 @@ data class Address(
   val town: String?,
 ) {
   fun toAddress() = IntegrationAPIAddress(
-    country = "Probation - England",
+    country = "England",
     county = this.county,
     endDate = this.to,
     locality = this.district,
@@ -24,6 +24,6 @@ data class Address(
     startDate = this.from,
     street = this.streetName,
     town = this.town,
-    type = "Type?"
+    type = "Type?",
   )
 }

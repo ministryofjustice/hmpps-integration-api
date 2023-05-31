@@ -20,12 +20,12 @@ data class Address(
     county = this.county,
     endDate = this.endDate,
     locality = this.locality,
-    name = "Prison - ${this.flat}",
-    number = this.premise,
+    name = this.premise,
+    number = this.flat,
     postcode = this.postalCode,
     startDate = this.startDate,
     street = this.street,
     town = this.town,
-    type = this.addressType
+    type = this.addressType,
   )
 }

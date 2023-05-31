@@ -70,8 +70,33 @@ internal class GetAddressesForPersonServiceTest(
     }
 
     it("returns all addresses for a person") {
-      val addressesFromProbationOffenderSearch = Address(postcode = "SE1 1TE")
-      val addressesFromNomis = Address(postcode = "BS1 6PU")
+      val addressesFromProbationOffenderSearch = Address(
+        country = "England",
+        county = "Berkshire",
+        endDate = "2023-01-01",
+        locality = "Surrey",
+        name = "Some building name",
+        number = "90",
+        postcode = "SE1 1TE",
+        startDate = "2022-01-01",
+        street = "O'meara street",
+        town = "London Town",
+        type = "Type?",
+      )
+
+      val addressesFromNomis = Address(
+        postcode = "BS1 6PU",
+        country = "England",
+        county = "Berkshire",
+        endDate = "2023-01-01",
+        locality = "Surrey",
+        name = "Some building name",
+        number = "90",
+        startDate = "2022-01-01",
+        street = "O'meara street",
+        town = "London Town",
+        type = "Type?",
+      )
 
       whenever(probationOffenderSearchGateway.getAddressesForPerson(pncId)).thenReturn(
         Response(data = listOf(addressesFromProbationOffenderSearch)),

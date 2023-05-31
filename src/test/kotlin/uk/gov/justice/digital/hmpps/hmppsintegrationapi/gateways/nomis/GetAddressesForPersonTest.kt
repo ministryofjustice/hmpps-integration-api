@@ -39,7 +39,29 @@ class GetAddressesForPersonTest(
       """
           [
             {
-              "postalCode": "SA1 1DP"
+              "postalCode": "SA1 1DP",
+              "addressId": 123456,
+              "addressType": "someType",
+              "flat": "2",
+              "premise": "Cool Building",
+              "street": "BROOMFIELD ROAD",
+              "locality": "ERDINGTON",
+              "town": "Birmingham",
+              "county": "West Midlands",
+              "country": "England",
+              "primary": false,
+              "noFixedAddress": false,
+              "startDate": "2022-07-01",
+              "endDate": "2023-03-01",
+              "phones": [],
+              "addressUsages": [
+                {
+                  "addressId": 8681879,
+                  "addressUsage": "HOME",
+                  "addressUsageDescription": "Home",
+                  "activeFlag": false
+                }
+              ]
             }
           ]
         """,
@@ -65,17 +87,17 @@ class GetAddressesForPersonTest(
     response.data.shouldContain(
       Address(
         country = "England",
-        county = "Berkshire",
-        endDate = "2023-01-01",
-        locality = "Surrey",
-        name = "Some building name",
-        number = "90",
-        postcode = "EC2A 3QQ",
-        startDate = "2022-01-01",
-        street = "O'meara street",
-        town = "London Town",
-        type = "Type?"
-      )
+        county = "West Midlands",
+        endDate = "2023-03-01",
+        locality = "ERDINGTON",
+        name = "Cool Building",
+        number = "2",
+        postcode = "SA1 1DP",
+        startDate = "2022-07-01",
+        street = "BROOMFIELD ROAD",
+        town = "Birmingham",
+        type = "someType",
+      ),
     )
   }
 

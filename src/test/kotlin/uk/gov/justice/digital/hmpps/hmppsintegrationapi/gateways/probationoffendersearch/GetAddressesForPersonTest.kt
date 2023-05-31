@@ -43,7 +43,22 @@ class GetAddressesForPersonTest(
             "contactDetails": {
               "addresses": [
                 {
-                 "postcode": "M3 2JA"
+                  "id": 123456,
+                  "county": "SomeCounty",
+                  "from": "2022-08-06",
+                  "to": "2022-08-24",
+                  "noFixedAbode": false,
+                  "notes": "some interesting note",
+                  "addressNumber": "123",
+                  "streetName": "Some Road",
+                  "district": "Handsworth",
+                  "town": "Birmingham",
+                  "buildingName": "TheBuilding",
+                  "postcode": "B11 1CC",
+                  "status": {
+                    "code": "P",
+                    "description": "Previous"
+                  }
                 }
               ]
             }
@@ -71,7 +86,21 @@ class GetAddressesForPersonTest(
   it("returns addresses for a person with the matching ID") {
     val response = probationOffenderSearchGateway.getAddressesForPerson(pncId)
 
-    response.data.shouldContain(Address(postcode = "M3 2JA"))
+    response.data.shouldContain(
+      Address(
+        country = "England",
+        county = "SomeCounty",
+        endDate = "2022-08-24",
+        locality = "Handsworth",
+        name = "TheBuilding",
+        number = "123",
+        postcode = "B11 1CC",
+        startDate = "2022-08-06",
+        street = "Some Road",
+        town = "Birmingham",
+        type = "Type?",
+      ),
+    )
   }
 
   it("returns an empty list when no addresses are found") {

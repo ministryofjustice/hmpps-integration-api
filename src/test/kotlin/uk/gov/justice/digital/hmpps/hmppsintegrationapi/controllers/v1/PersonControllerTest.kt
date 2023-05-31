@@ -300,17 +300,17 @@ internal class PersonControllerTest(
           Response(
             data = listOf(
               Address(
-                postcode = "SE1 1TE",
+                postcode = "SE1 1TZ",
                 country = "England",
-                county = "London",
+                county = "Greater London",
                 endDate = "20 May 2023",
-                startDate = "10 May 2023",
-                locality = "whatever",
-                name = "Building Name?",
-                number = "Building Number?",
-                street = "O'meara",
-                town = "London",
-                type = "Type?"
+                startDate = "10 May 2021",
+                locality = "London Bridge",
+                name = "The chocolate factory",
+                number = "89",
+                street = "Omeara",
+                town = "London Town",
+                type = "Type?",
               ),
             ),
           ),
@@ -337,7 +337,17 @@ internal class PersonControllerTest(
         {
           "data": [
             {
-              "postcode": "SE1 1TE"
+              "country": "England",
+              "county": "Greater London",
+              "endDate": "20 May 2023",
+              "locality": "London Bridge",
+              "name": "The chocolate factory",
+              "number": "89",
+              "postcode": "SE1 1TZ",
+              "startDate": "10 May 2021",
+              "street": "Omeara",
+              "town": "London Town",
+              "type": "Type?"
             }
           ]
         }
