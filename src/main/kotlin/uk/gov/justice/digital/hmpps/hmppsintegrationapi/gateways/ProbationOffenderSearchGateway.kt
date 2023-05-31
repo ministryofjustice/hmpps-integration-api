@@ -11,6 +11,9 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Address
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Person
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Response
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApi
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.probationoffendersearch.Offender
 
 @Component
@@ -45,19 +48,30 @@ class ProbationOffenderSearchGateway(@Value("\${services.probation-offender-sear
       .map { it.toPerson() }
   }
 
-  fun getAddressesForPerson(pncId: String): List<Address>? {
+  fun getAddressesForPerson(pncId: String): Response<List<Address>> {
     val requestBody = mapOf("pncNumber" to pncId, "valid" to true)
 
     val offender = webClient.requestList<Offender>(HttpMethod.POST, "/search", authenticationHeader(), requestBody)
 
-    if (offender.isEmpty()) return null
+    if (offender.isEmpty()) {
+      return Response(
+        data = emptyList(),
+        errors = listOf(
+          UpstreamApiError(
+            causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH,
+            type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+          ),
+        ),
+      )
+    }
 
     return if (offender.first().contactDetails.addresses.isNotEmpty()) {
-      offender.first().contactDetails.addresses.map { it.toAddress() }
+      Response(data = offender.first().contactDetails.addresses.map { it.toAddress() })
     } else {
-      listOf()
+      Response(data = emptyList())
     }
   }
+
   private fun authenticationHeader(): Map<String, String> {
     val token = hmppsAuthGateway.getClientToken("Probation Offender Search")
 

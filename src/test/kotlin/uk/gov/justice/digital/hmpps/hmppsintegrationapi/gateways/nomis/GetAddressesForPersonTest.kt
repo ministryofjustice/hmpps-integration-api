@@ -1,9 +1,9 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.nomis
 
 import io.kotest.core.spec.style.DescribeSpec
+import io.kotest.matchers.booleans.shouldBeTrue
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldContain
-import io.kotest.matchers.nulls.shouldBeNull
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory
 import org.mockito.kotlin.verify
@@ -18,6 +18,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NomisGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.NomisApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Address
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApiError
 
 @ActiveProfiles("test")
 @ContextConfiguration(
@@ -59,20 +60,20 @@ class GetAddressesForPersonTest(
   }
 
   it("returns addresses for a person with the matching ID") {
-    val addresses = nomisGateway.getAddressesForPerson(offenderNo)
+    val response = nomisGateway.getAddressesForPerson(offenderNo)
 
-    addresses?.shouldContain(Address(postcode = "SA1 1DP"))
+    response.data.shouldContain(Address(postcode = "SA1 1DP"))
   }
 
   it("returns an empty list when no addresses are found") {
     nomisApiMockServer.stubGetOffenderAddresses(offenderNo, "[]")
 
-    val addresses = nomisGateway.getAddressesForPerson(offenderNo)
+    val response = nomisGateway.getAddressesForPerson(offenderNo)
 
-    addresses.shouldBeEmpty()
+    response.data.shouldBeEmpty()
   }
 
-  it("returns null when 404 NOT FOUND is returned") {
+  it("returns an error when 404 NOT FOUND is returned") {
     nomisApiMockServer.stubGetOffenderAddresses(
       offenderNo,
       """
@@ -83,8 +84,8 @@ class GetAddressesForPersonTest(
       HttpStatus.NOT_FOUND,
     )
 
-    val addresses = nomisGateway.getAddressesForPerson(offenderNo)
+    val response = nomisGateway.getAddressesForPerson(offenderNo)
 
-    addresses.shouldBeNull()
+    response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND).shouldBeTrue()
   }
 },)

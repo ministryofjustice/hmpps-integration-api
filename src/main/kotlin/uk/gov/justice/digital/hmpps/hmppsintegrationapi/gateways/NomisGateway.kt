@@ -13,6 +13,9 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrap
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Address
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ImageMetadata
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Person
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Response
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApi
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.ImageDetail
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.Offender
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.Address as AddressFromNomis
@@ -53,12 +56,25 @@ class NomisGateway(@Value("\${services.prison-api.base-url}") baseUrl: String) {
     }
   }
 
-  fun getAddressesForPerson(id: String): List<Address>? {
+  fun getAddressesForPerson(id: String): Response<List<Address>> {
     return try {
-      webClient.requestList<AddressFromNomis>(HttpMethod.GET, "/api/offenders/$id/addresses", authenticationHeader())
-        .map { it.toAddress() }
+      Response(
+        data = webClient.requestList<AddressFromNomis>(
+          HttpMethod.GET,
+          "/api/offenders/$id/addresses",
+          authenticationHeader(),
+        ).map { it.toAddress() },
+      )
     } catch (exception: WebClientResponseException.NotFound) {
-      null
+      Response(
+        data = emptyList(),
+        errors = listOf(
+          UpstreamApiError(
+            causedBy = UpstreamApi.NOMIS,
+            type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+          ),
+        ),
+      )
     }
   }
 
