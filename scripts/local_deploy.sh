@@ -12,8 +12,8 @@ repo_host="754256621582.dkr.ecr.eu-west-2.amazonaws.com"
 repo_url="${repo_host}/hmpps-integration-api/hmpps-integration-api-$env-ecr"
 
 authenticate_docker() {
-  export AWS_ACCESS_KEY_ID=`kubectl get secret ecr-repo-hmpps-integration-api-$env -o json -n $namespace |jq -r '.data.access_key_id' |base64 --decode`
-  export AWS_SECRET_ACCESS_KEY=`kubectl get secret ecr-repo-hmpps-integration-api-$env -o json -n $namespace |jq -r '.data.secret_access_key' |base64 --decode`
+  export AWS_ACCESS_KEY_ID=`kubectl get secret aws-services -o json -n hmpps-integration-api-$env |jq -r '.data.ecr' |base64 --decode |jq -r '."access-credentials"."access-key-id"'`
+  export AWS_SECRET_ACCESS_KEY=`kubectl get secret aws-services -o json -n hmpps-integration-api-$env |jq -r '.data.ecr' |base64 --decode |jq -r '."access-credentials"."secret-access-key"'`
   export AWS_DEFAULT_REGION=eu-west-2
 
   aws ecr get-login-password --region eu-west-2 | docker login --username AWS --password-stdin $repo_host
