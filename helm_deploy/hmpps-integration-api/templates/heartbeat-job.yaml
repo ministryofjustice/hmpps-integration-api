@@ -1,0 +1,22 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: heartbeat-job
+spec:
+  schedule: "*/5 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: heartbeat
+              image: ubuntu:latest
+              command:
+                - /bin/sh -c
+                - echo ${CERT} > ./client.pem &&
+                - echo ${KEY} > ./client.key &&
+                - curl ${SERVICE_URL} --cert ./client.pem --key ./client.key --header "x-api-key: ${API_KEY}"
+              envFrom:
+                - secretRef:
+                    name: heartbeat
+          restartPolicy: Never
