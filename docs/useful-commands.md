@@ -49,6 +49,12 @@ To view logs of a pod:
 kubectl logs <pod-name> -n <namespace>
 ```
 
+To monitor all pod logs in a namespace at once
+```bash
+kubectl get pods --show-labels -n <namespace>
+kubectl logs -n <namespace> -l pod-template-hash=<hash> -f 
+````
+
 To perform a command within a pod:
 
 ```bash
