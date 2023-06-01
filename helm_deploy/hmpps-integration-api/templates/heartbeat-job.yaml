@@ -15,7 +15,8 @@ spec:
                 - /bin/sh -c
                 - echo ${CERT} > ./client.pem &&
                 - echo ${KEY} > ./client.key &&
-                - curl ${SERVICE_URL} --cert ./client.pem --key ./client.key --header "x-api-key: ${API_KEY}"
+                - result=`curl ${SERVICE_URL} --cert ./client.pem --key ./client.key --header "x-api-key: ${API_KEY}" |grep firstName`
+                - if [ $result -ne 0 ]; then; echo "HEARTBEAT FAILED"; fi
               envFrom:
                 - secretRef:
                     name: heartbeat
