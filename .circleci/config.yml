@@ -3,6 +3,7 @@ version: 2.1
 orbs:
   hmpps: ministryofjustice/hmpps@6
   slack: circleci/slack@4.12.1
+  shellcheck: circleci/shellcheck@3
 
 parameters:
   alerts-slack-channel:
@@ -107,6 +108,14 @@ jobs:
           name: Push application Docker image
           command: |
             make publish
+  smoke-test-deployed-env:
+    machine:
+      image: ubuntu-2204:2022.10.2
+    steps:
+      - checkout
+      - run:
+          name: Run smoke tests
+          command: make smoke-test-deployed-env
 
 workflows:
   version: 2
@@ -130,6 +139,12 @@ workflows:
           <<: *slack-fail-post-step
           name: lint-helm-charts
           env: dev
+
+      - smoke-test-deployed-env:
+          context:
+            - hmpps-common-vars
+          <<: *slack-fail-post-step
+
       - create-and-push-image-to-ecr:
           <<: *slack-fail-post-step
           name: create-and-push-image-to-dev-ecr

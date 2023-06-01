@@ -23,6 +23,9 @@ unit-test:
 smoke-test: serve
 	./gradlew smokeTest
 
+smoke-test-deployed-env:
+	./scripts/smoke-test-deployed-environment.sh
+
 test: unit-test smoke-test
 
 lint:
