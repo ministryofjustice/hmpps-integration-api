@@ -49,11 +49,23 @@ To view logs of a pod:
 kubectl logs <pod-name> -n <namespace>
 ```
 
+To monitor all pod logs in a namespace at once
+```bash
+kubectl get pods --show-labels -n <namespace>
+# We need the pod-template-hash from the the first command
+kubectl logs -n <namespace> -l pod-template-hash=<pod-template-hash> -f 
+````
+
 To perform a command within a pod:
 
 ```bash
 kubectl exec <pod-name> -c <container-name> -n <namespace> <command>
 # E.g. kubectl exec hmpps-integration-api-5b8f4f9699-wbwgf -c hmpps-integration-api -n hmpps-integration-api-dev -- curl http://localhost:8080/
+```
+
+Open a shell into a pod:
+```bash
+kubectl exec --stdin -n <namespace> --tty <podname> -- /bin/bash
 ```
 
 To delete all ingress, services, pods and deployments:
