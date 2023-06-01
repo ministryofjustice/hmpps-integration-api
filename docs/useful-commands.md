@@ -52,7 +52,8 @@ kubectl logs <pod-name> -n <namespace>
 To monitor all pod logs in a namespace at once
 ```bash
 kubectl get pods --show-labels -n <namespace>
-kubectl logs -n <namespace> -l pod-template-hash=<hash> -f 
+# We need the pod-template-hash from the the first command
+kubectl logs -n <namespace> -l pod-template-hash=<pod-template-hash> -f 
 ````
 
 To perform a command within a pod:
