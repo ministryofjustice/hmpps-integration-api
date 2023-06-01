@@ -62,6 +62,11 @@ kubectl exec <pod-name> -c <container-name> -n <namespace> <command>
 # E.g. kubectl exec hmpps-integration-api-5b8f4f9699-wbwgf -c hmpps-integration-api -n hmpps-integration-api-dev -- curl http://localhost:8080/
 ```
 
+Open a shell into a pod:
+```bash
+kubectl exec --stdin -n <namespace> --tty <podname> -- /bin/bash
+```
+
 To delete all ingress, services, pods and deployments:
 
 ```bash
