@@ -3,20 +3,24 @@ kind: CronJob
 metadata:
   name: heartbeat-job
 spec:
-  schedule: "*/5 * * * *"
+  schedule: "* * * * *"
   jobTemplate:
     spec:
       template:
         spec:
+          securityContext:
+            runAsUser: 999
           containers:
             - name: heartbeat
-              image: ubuntu:latest
-              command:
-                - /bin/sh -c
-                - echo ${CERT} > ./client.pem &&
-                - echo ${KEY} > ./client.key &&
-                - result=`curl ${SERVICE_URL} --cert ./client.pem --key ./client.key --header "x-api-key: ${API_KEY}" |grep firstName`
-                - if [ $result -ne 0 ]; then; echo "HEARTBEAT FAILED"; fi
+              image: ghcr.io/ministryofjustice/hmpps-devops-tools:sha-66a32dc
+              args:
+                - /bin/sh
+                - -exc
+                - >-
+                   echo -n "${CERT}" > /tmp/client.pem &&
+                   echo -n "${KEY}" > /tmp/client.key &&
+                   curl ${SERVICE_URL} -H "x-api-key: ${API_KEY}" --cert /tmp/client.pem --key /tmp/client.key |grep firstName &&
+                   echo $?
               envFrom:
                 - secretRef:
                     name: heartbeat
