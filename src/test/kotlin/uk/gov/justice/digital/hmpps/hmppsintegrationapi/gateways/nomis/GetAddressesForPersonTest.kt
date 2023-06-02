@@ -15,9 +15,9 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NomisGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.generateTestAddress
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.NomisApiMockServer
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Address
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApiError
 
 @ActiveProfiles("test")
@@ -39,7 +39,29 @@ class GetAddressesForPersonTest(
       """
           [
             {
-              "postalCode": "SA1 1DP"
+              "postalCode": "SE1 1TZ",
+              "addressId": 123456,
+              "addressType": "someType",
+              "flat": "89",
+              "premise": "The chocolate factory",
+              "street": "Omeara",
+              "locality": "London Bridge",
+              "town": "London Town",
+              "county": "Greater London",
+              "country": "England",
+              "primary": false,
+              "noFixedAddress": false,
+              "startDate": "10 May 2021",
+              "endDate": "20 May 2023",
+              "phones": [],
+              "addressUsages": [
+                {
+                  "addressId": 8681879,
+                  "addressUsage": "HOME",
+                  "addressUsageDescription": "Home",
+                  "activeFlag": false
+                }
+              ]
             }
           ]
         """,
@@ -62,7 +84,7 @@ class GetAddressesForPersonTest(
   it("returns addresses for a person with the matching ID") {
     val response = nomisGateway.getAddressesForPerson(offenderNo)
 
-    response.data.shouldContain(Address(postcode = "SA1 1DP"))
+    response.data.shouldContain(generateTestAddress(type = "someType"))
   }
 
   it("returns an empty list when no addresses are found") {

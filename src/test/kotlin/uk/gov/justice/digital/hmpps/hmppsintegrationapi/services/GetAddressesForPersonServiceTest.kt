@@ -13,7 +13,7 @@ import org.springframework.test.context.ContextConfiguration
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NomisGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ProbationOffenderSearchGateway
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Address
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.generateTestAddress
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApi
@@ -64,8 +64,8 @@ internal class GetAddressesForPersonServiceTest(
     }
 
     it("returns all addresses for a person") {
-      val addressesFromProbationOffenderSearch = Address(postcode = "SE1 1TE")
-      val addressesFromNomis = Address(postcode = "BS1 6PU")
+      val addressesFromProbationOffenderSearch = generateTestAddress(name = "Probation Address")
+      val addressesFromNomis = generateTestAddress(name = "NOMIS Address")
 
       whenever(probationOffenderSearchGateway.getAddressesForPerson(pncId)).thenReturn(
         Response(data = listOf(addressesFromProbationOffenderSearch)),
