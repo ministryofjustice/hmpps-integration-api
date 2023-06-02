@@ -48,11 +48,19 @@ class NomisGateway(@Value("\${services.prison-api.base-url}") baseUrl: String) {
     }
   }
 
-  fun getImageData(id: Int): ByteArray {
+  fun getImageData(id: Int): Response<ByteArray> {
     return try {
-      webClient.request<ByteArray>(HttpMethod.GET, "/api/images/$id/data", authenticationHeader())
+      Response(data = webClient.request(HttpMethod.GET, "/api/images/$id/data", authenticationHeader()))
     } catch (exception: WebClientResponseException.NotFound) {
-      throw EntityNotFoundException("Could not find image with id: $id")
+      Response(
+        data = byteArrayOf(),
+        errors = listOf(
+          UpstreamApiError(
+            causedBy = UpstreamApi.NOMIS,
+            type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+          ),
+        ),
+      )
     }
   }
 
