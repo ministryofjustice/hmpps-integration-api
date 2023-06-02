@@ -5,13 +5,16 @@ set -o pipefail
 
 #curl -s -o /dev/null -w "%{http_code}%" -L "https://google.com";
 
-echo "Generating certificates";
-./scripts/generate-client-certificate.sh "${CIRCLE_PROJECT_REPONAME}" "heartbeat";
-echo "Certificates generated";
+echo "Retrieving certificates from context";
+CERT=${MTLS_CERT} > /tmp/client.pem
+KEY=${MTLS_KEY} >  /tmp/client.key
+echo "Certificates retrieved";
 
 echo "Retrieving API key from Circle CI secret";
-API_KEY=${HEARTBEAT_API_KEY}
-echo "Got test fake api key: ${API_KEY}"
+API_KEY=${API_KEY}
+
+curl ${SERVICE_URL} -H "x-api-key: ${API_KEY}" --cert /tmp/client.pem --key /tmp/client.key |grep firstName &&
+echo $?
 
 echo "fail on purpose"
 
