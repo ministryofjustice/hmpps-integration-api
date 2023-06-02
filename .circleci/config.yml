@@ -140,9 +140,10 @@ workflows:
           name: lint-helm-charts
           env: dev
 
-      - heartbeat:
+      - heartbeat-dev:
           context:
             - hmpps-common-vars
+            - hmpps-integration-api-dev
           <<: *slack-fail-post-step
 
       - create-and-push-image-to-ecr:
