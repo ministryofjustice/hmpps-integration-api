@@ -53,16 +53,17 @@ internal class GetPersonsServiceTest(
     whenever(prisonerOffenderSearchGateway.getPersons(firstName, lastName)).thenReturn(responseFromPrisonerOffenderSearch)
     whenever(probationOffenderSearchGateway.getPersons(firstName, lastName)).thenReturn(responseFromProbationOffenderSearch)
 
-    val result = getPersonsService.execute(firstName, lastName)
+    val response = getPersonsService.execute(firstName, lastName)
 
-    result.shouldBe(responseFromPrisonerOffenderSearch.data + responseFromProbationOffenderSearch.data)
+    response.data.shouldBe(responseFromPrisonerOffenderSearch.data + responseFromProbationOffenderSearch.data)
   }
 
   it("returns an empty list when no person(s) are found") {
     whenever(prisonerOffenderSearchGateway.getPersons(firstName, lastName)).thenReturn(Response(emptyList()))
     whenever(probationOffenderSearchGateway.getPersons(firstName, lastName)).thenReturn(Response(emptyList()))
 
-    val result = getPersonsService.execute(firstName, lastName)
-    result.shouldBe(emptyList())
+    val response = getPersonsService.execute(firstName, lastName)
+
+    response.data.shouldBe(emptyList())
   }
 },)

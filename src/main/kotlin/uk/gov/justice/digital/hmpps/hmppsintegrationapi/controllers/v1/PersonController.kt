@@ -40,9 +40,9 @@ class PersonController(
       throw ValidationException("No query parameters specified.")
     }
 
-    val results = getPersonsService.execute(firstName, lastName)
+    val response = getPersonsService.execute(firstName, lastName)
 
-    return results.paginateWith(page, perPage)
+    return response.data.paginateWith(page, perPage)
   }
 
   @GetMapping("{encodedPncId}")

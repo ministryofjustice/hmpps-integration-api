@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ProbationOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Person
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Response
 
 @Service
 class GetPersonsService(
@@ -12,10 +13,10 @@ class GetPersonsService(
   @Autowired val probationOffenderSearchGateway: ProbationOffenderSearchGateway,
 ) {
 
-  fun execute(firstName: String?, lastName: String?): List<Person?> {
+  fun execute(firstName: String?, lastName: String?): Response<List<Person>> {
     val responseFromPrisonerOffenderSearch = prisonerOffenderSearchGateway.getPersons(firstName, lastName)
     val personsFromProbationOffenderSearch = probationOffenderSearchGateway.getPersons(firstName, lastName)
 
-    return responseFromPrisonerOffenderSearch.data + personsFromProbationOffenderSearch.data
+    return Response(data = responseFromPrisonerOffenderSearch.data + personsFromProbationOffenderSearch.data)
   }
 }
