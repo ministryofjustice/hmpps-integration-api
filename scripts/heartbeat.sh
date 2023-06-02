@@ -13,7 +13,7 @@ echo "Certificates retrieved";
 echo "Retrieving API key from Circle CI secret";
 API_KEY=${API_KEY}
 
-curl "${SERVICE_URL}" -H "x-api-key: ${API_KEY}" --cert /tmp/client.pem --key /tmp/client.key |grep firstName &&
+curl "https://dev.integration-api.hmpps.service.justice.gov.uk/v1/persons?first_name=Frank" -H "x-api-key: ${API_KEY}" --cert /tmp/client.pem --key /tmp/client.key |grep firstName &&
 echo $?
 
 echo "fail on purpose"
