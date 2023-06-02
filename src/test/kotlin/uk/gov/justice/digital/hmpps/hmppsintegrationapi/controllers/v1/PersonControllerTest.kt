@@ -15,7 +15,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Address
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.generateTestAddress
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ImageMetadata
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Response
@@ -296,25 +296,7 @@ internal class PersonControllerTest(
     describe("GET $basePath/{encodedPncId}/addresses") {
       beforeTest {
         Mockito.reset(getAddressesForPersonService)
-        whenever(getAddressesForPersonService.execute(pncId)).thenReturn(
-          Response(
-            data = listOf(
-              Address(
-                postcode = "SE1 1TZ",
-                country = "England",
-                county = "Greater London",
-                endDate = "20 May 2023",
-                startDate = "10 May 2021",
-                locality = "London Bridge",
-                name = "The chocolate factory",
-                number = "89",
-                street = "Omeara",
-                town = "London Town",
-                type = "Type?",
-              ),
-            ),
-          ),
-        )
+        whenever(getAddressesForPersonService.execute(pncId)).thenReturn(Response(data = listOf(generateTestAddress())))
       }
 
       it("responds with a 200 OK status") {

@@ -15,9 +15,9 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NomisGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.generateTestAddress
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.NomisApiMockServer
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Address
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApiError
 
 @ActiveProfiles("test")
@@ -39,20 +39,20 @@ class GetAddressesForPersonTest(
       """
           [
             {
-              "postalCode": "SA1 1DP",
+              "postalCode": "SE1 1TZ",
               "addressId": 123456,
               "addressType": "someType",
-              "flat": "2",
-              "premise": "Cool Building",
-              "street": "BROOMFIELD ROAD",
-              "locality": "ERDINGTON",
-              "town": "Birmingham",
-              "county": "West Midlands",
+              "flat": "89",
+              "premise": "The chocolate factory",
+              "street": "Omeara",
+              "locality": "London Bridge",
+              "town": "London Town",
+              "county": "Greater London",
               "country": "England",
               "primary": false,
               "noFixedAddress": false,
-              "startDate": "2022-07-01",
-              "endDate": "2023-03-01",
+              "startDate": "10 May 2021",
+              "endDate": "20 May 2023",
               "phones": [],
               "addressUsages": [
                 {
@@ -84,21 +84,7 @@ class GetAddressesForPersonTest(
   it("returns addresses for a person with the matching ID") {
     val response = nomisGateway.getAddressesForPerson(offenderNo)
 
-    response.data.shouldContain(
-      Address(
-        country = "England",
-        county = "West Midlands",
-        endDate = "2023-03-01",
-        locality = "ERDINGTON",
-        name = "Cool Building",
-        number = "2",
-        postcode = "SA1 1DP",
-        startDate = "2022-07-01",
-        street = "BROOMFIELD ROAD",
-        town = "Birmingham",
-        type = "someType",
-      ),
-    )
+    response.data.shouldContain(generateTestAddress(type = "someType"))
   }
 
   it("returns an empty list when no addresses are found") {

@@ -14,9 +14,9 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ProbationOffenderSearchGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.generateTestAddress
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ProbationOffenderSearchApiMockServer
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Address
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApiError
 
 @ActiveProfiles("test")
@@ -44,17 +44,17 @@ class GetAddressesForPersonTest(
               "addresses": [
                 {
                   "id": 123456,
-                  "county": "SomeCounty",
-                  "from": "2022-08-06",
-                  "to": "2022-08-24",
+                  "county": "Greater London",
+                  "from": "10 May 2021",
+                  "to": "20 May 2023",
                   "noFixedAbode": false,
                   "notes": "some interesting note",
-                  "addressNumber": "123",
-                  "streetName": "Some Road",
-                  "district": "Handsworth",
-                  "town": "Birmingham",
-                  "buildingName": "TheBuilding",
-                  "postcode": "B11 1CC",
+                  "addressNumber": "89",
+                  "streetName": "Omeara",
+                  "district": "London Bridge",
+                  "town": "London Town",
+                  "buildingName": "The chocolate factory",
+                  "postcode": "SE1 1TZ",
                   "status": {
                     "code": "P",
                     "description": "Previous"
@@ -86,21 +86,7 @@ class GetAddressesForPersonTest(
   it("returns addresses for a person with the matching ID") {
     val response = probationOffenderSearchGateway.getAddressesForPerson(pncId)
 
-    response.data.shouldContain(
-      Address(
-        country = "England",
-        county = "SomeCounty",
-        endDate = "2022-08-24",
-        locality = "Handsworth",
-        name = "TheBuilding",
-        number = "123",
-        postcode = "B11 1CC",
-        startDate = "2022-08-06",
-        street = "Some Road",
-        town = "Birmingham",
-        type = "Type?",
-      ),
-    )
+    response.data.shouldContain(generateTestAddress())
   }
 
   it("returns an empty list when no addresses are found") {
