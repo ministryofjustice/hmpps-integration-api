@@ -62,7 +62,21 @@ class GetAddressesForPersonTest(
   it("returns addresses for a person with the matching ID") {
     val response = nomisGateway.getAddressesForPerson(offenderNo)
 
-    response.data.shouldContain(Address(postcode = "SA1 1DP"))
+    response.data.shouldContain(
+      Address(
+        country = "England",
+        county = "Berkshire",
+        endDate = "2023-01-01",
+        locality = "Surrey",
+        name = "Some building name",
+        number = "90",
+        postcode = "EC2A 3QQ",
+        startDate = "2022-01-01",
+        street = "O'meara street",
+        town = "London Town",
+        type = "Type?"
+      )
+    )
   }
 
   it("returns an empty list when no addresses are found") {

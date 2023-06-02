@@ -297,7 +297,23 @@ internal class PersonControllerTest(
       beforeTest {
         Mockito.reset(getAddressesForPersonService)
         whenever(getAddressesForPersonService.execute(pncId)).thenReturn(
-          Response(data = listOf(Address(postcode = "SE1 1TE"))),
+          Response(
+            data = listOf(
+              Address(
+                postcode = "SE1 1TE",
+                country = "England",
+                county = "London",
+                endDate = "20 May 2023",
+                startDate = "10 May 2023",
+                locality = "whatever",
+                name = "Building Name?",
+                number = "Building Number?",
+                street = "O'meara",
+                town = "London",
+                type = "Type?"
+              ),
+            ),
+          ),
         )
       }
 
