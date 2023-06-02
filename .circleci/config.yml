@@ -108,14 +108,14 @@ jobs:
           name: Push application Docker image
           command: |
             make publish
-  smoke-test-deployed-env:
+  heartbeat:
     machine:
       image: ubuntu-2204:2022.10.2
     steps:
       - checkout
       - run:
-          name: Run smoke tests
-          command: make smoke-test-deployed-env
+          name: Run heartbeat
+          command: make heartbeat
 
 workflows:
   version: 2
@@ -140,7 +140,7 @@ workflows:
           name: lint-helm-charts
           env: dev
 
-      - smoke-test-deployed-env:
+      - heartbeat:
           context:
             - hmpps-common-vars
           <<: *slack-fail-post-step

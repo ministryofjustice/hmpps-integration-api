@@ -23,8 +23,8 @@ unit-test:
 smoke-test: serve
 	./gradlew smokeTest
 
-smoke-test-deployed-env:
-	./scripts/smoke-test-deployed-environment.sh
+heartbeat:
+	./scripts/heartbeat.sh
 
 test: unit-test smoke-test
 
