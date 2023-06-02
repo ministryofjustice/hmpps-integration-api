@@ -140,7 +140,7 @@ workflows:
           name: lint-helm-charts
           env: dev
 
-      - heartbeat-dev:
+      - heartbeat:
           context:
             - hmpps-common-vars
             - hmpps-integration-api-dev
