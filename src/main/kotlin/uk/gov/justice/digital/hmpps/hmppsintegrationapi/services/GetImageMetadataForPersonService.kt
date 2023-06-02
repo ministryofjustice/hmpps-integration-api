@@ -12,8 +12,8 @@ class GetImageMetadataForPersonService(
   @Autowired val prisonerOffenderSearchGateway: PrisonerOffenderSearchGateway,
 ) {
   fun execute(pncId: String): List<ImageMetadata> {
-    val personFromPrisonerOffenderSearch = prisonerOffenderSearchGateway.getPersons(pncId = pncId)
+    val responseFromPrisonerOffenderSearch = prisonerOffenderSearchGateway.getPersons(pncId = pncId)
 
-    return nomisGateway.getImageMetadataForPerson(personFromPrisonerOffenderSearch.first().prisonerId!!)
+    return nomisGateway.getImageMetadataForPerson(responseFromPrisonerOffenderSearch.data.first().prisonerId!!)
   }
 }

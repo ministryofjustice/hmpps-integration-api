@@ -69,22 +69,22 @@ class PrisonerOffenderSearchGatewayTest(
     }
 
     it("returns person(s) when searching on PNC ID, first and last name") {
-      val persons = prisonerOffenderSearchGateway.getPersons(firstName, lastName, pncId)
+      val response = prisonerOffenderSearchGateway.getPersons(firstName, lastName, pncId)
 
-      persons.count().shouldBe(4)
-      persons.forEach {
+      response.data.count().shouldBe(4)
+      response.data.forEach {
         it.firstName.shouldBe(firstName)
         it.lastName.shouldBe(lastName)
       }
-      persons[0].prisonerId.shouldBe("A7796DY")
-      persons[1].prisonerId.shouldBe("G9347GV")
-      persons[2].prisonerId.shouldBe("A5043DY")
-      persons[3].prisonerId.shouldBe("A5083DY")
+      response.data[0].prisonerId.shouldBe("A7796DY")
+      response.data[1].prisonerId.shouldBe("G9347GV")
+      response.data[2].prisonerId.shouldBe("A5043DY")
+      response.data[3].prisonerId.shouldBe("A5083DY")
 
-      persons[0].pncId.shouldBeNull()
-      persons[1].pncId.shouldBe("95/289622B")
-      persons[2].pncId.shouldBeNull()
-      persons[3].pncId.shouldBe("03/11985X")
+      response.data[0].pncId.shouldBeNull()
+      response.data[1].pncId.shouldBe("95/289622B")
+      response.data[2].pncId.shouldBeNull()
+      response.data[3].pncId.shouldBe("03/11985X")
     }
 
     it("returns person(s) when searching on first name only") {
@@ -107,11 +107,11 @@ class PrisonerOffenderSearchGatewayTest(
         """.trimIndent(),
       )
 
-      val persons = prisonerOffenderSearchGateway.getPersons("Obi-Wan", null)
+      val response = prisonerOffenderSearchGateway.getPersons("Obi-Wan", null)
 
-      persons.count().shouldBe(1)
-      persons.first().firstName.shouldBe("Obi-Wan")
-      persons.first().lastName.shouldBe("Kenobi")
+      response.data.count().shouldBe(1)
+      response.data.first().firstName.shouldBe("Obi-Wan")
+      response.data.first().lastName.shouldBe("Kenobi")
     }
 
     it("returns person(s) when searching on pncId only") {
@@ -135,12 +135,12 @@ class PrisonerOffenderSearchGatewayTest(
         """.trimIndent(),
       )
 
-      val persons = prisonerOffenderSearchGateway.getPersons(pncId = pncId)
+      val response = prisonerOffenderSearchGateway.getPersons(pncId = pncId)
 
-      persons.count().shouldBe(1)
-      persons.first().firstName.shouldBe("Obi-Wan")
-      persons.first().lastName.shouldBe("Kenobi")
-      persons.first().prisonerId.shouldBe("A1234AA")
+      response.data.count().shouldBe(1)
+      response.data.first().firstName.shouldBe("Obi-Wan")
+      response.data.first().lastName.shouldBe("Kenobi")
+      response.data.first().prisonerId.shouldBe("A1234AA")
     }
 
     it("returns person(s) when searching on last name only") {
@@ -163,11 +163,11 @@ class PrisonerOffenderSearchGatewayTest(
         """.trimIndent(),
       )
 
-      val persons = prisonerOffenderSearchGateway.getPersons(null, "Binks")
+      val response = prisonerOffenderSearchGateway.getPersons(null, "Binks")
 
-      persons.count().shouldBe(1)
-      persons.first().firstName.shouldBe("Jar Jar")
-      persons.first().lastName.shouldBe("Binks")
+      response.data.count().shouldBe(1)
+      response.data.first().firstName.shouldBe("Jar Jar")
+      response.data.first().lastName.shouldBe("Binks")
     }
 
     it("returns an empty list of Person if no matching person") {
@@ -189,9 +189,9 @@ class PrisonerOffenderSearchGatewayTest(
         """,
       )
 
-      val persons = prisonerOffenderSearchGateway.getPersons(firstNameThatDoesNotExist, lastNameThatDoesNotExist)
+      val response = prisonerOffenderSearchGateway.getPersons(firstNameThatDoesNotExist, lastNameThatDoesNotExist)
 
-      persons.shouldBeEmpty()
+      response.data.shouldBeEmpty()
     }
   }
 

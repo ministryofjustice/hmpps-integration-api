@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Person
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.GlobalSearch
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.Prisoner
 
@@ -32,12 +33,15 @@ class PrisonerOffenderSearchGateway(@Value("\${services.prisoner-offender-search
     }
   }
 
-  fun getPersons(firstName: String? = null, lastName: String? = null, pncId: String? = null): List<Person> {
-    val requestBody = mapOf("firstName" to firstName, "lastName" to lastName, "includeAliases" to true, "prisonerIdentifier" to pncId)
-      .filterValues { it != null }
+  fun getPersons(firstName: String? = null, lastName: String? = null, pncId: String? = null): Response<List<Person>> {
+    val requestBody =
+      mapOf("firstName" to firstName, "lastName" to lastName, "includeAliases" to true, "prisonerIdentifier" to pncId)
+        .filterValues { it != null }
 
-    return webClient.request<GlobalSearch>(HttpMethod.POST, "/global-search", authenticationHeader(), requestBody)
-      .content.map { it.toPerson() }
+    return Response(
+      data = webClient.request<GlobalSearch>(HttpMethod.POST, "/global-search", authenticationHeader(), requestBody)
+        .content.map { it.toPerson() },
+    )
   }
 
   private fun authenticationHeader(): Map<String, String> {

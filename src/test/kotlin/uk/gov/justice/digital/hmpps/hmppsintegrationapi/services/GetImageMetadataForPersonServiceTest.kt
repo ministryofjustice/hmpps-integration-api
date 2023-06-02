@@ -13,6 +13,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NomisGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ImageMetadata
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Person
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Response
 import java.time.LocalDateTime
 
 @ContextConfiguration(
@@ -31,13 +32,7 @@ internal class GetImageMetadataForPersonServiceTest(
     Mockito.reset(nomisGateway)
 
     whenever(prisonerOffenderSearchGateway.getPersons(pncId = pncId)).thenReturn(
-      listOf(
-        Person(
-          firstName = "Joey",
-          lastName = "Tribbiani",
-          prisonerId = prisonerNumber,
-        ),
-      ),
+      Response(data = listOf(Person(firstName = "Joey", lastName = "Tribbiani", prisonerId = prisonerNumber))),
     )
   }
 

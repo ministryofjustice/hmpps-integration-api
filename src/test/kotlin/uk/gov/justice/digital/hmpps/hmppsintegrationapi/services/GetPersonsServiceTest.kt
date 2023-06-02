@@ -12,6 +12,7 @@ import org.springframework.test.context.ContextConfiguration
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ProbationOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Person
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Response
 
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
@@ -28,6 +29,8 @@ internal class GetPersonsServiceTest(
   beforeEach {
     Mockito.reset(prisonerOffenderSearchGateway)
     Mockito.reset(probationOffenderSearchGateway)
+
+    whenever(prisonerOffenderSearchGateway.getPersons(firstName, lastName)).thenReturn(Response(data = emptyList()))
   }
 
   it("returns person(s) from Prisoner Offender Search") {
@@ -43,19 +46,19 @@ internal class GetPersonsServiceTest(
   }
 
   it("returns person(s)") {
-    val personsFromPrisonerOffenderSearch = listOf(Person(firstName, lastName, middleName = "Gary"))
+    val responseFromPrisonerOffenderSearch = Response(data = listOf(Person(firstName, lastName, middleName = "Gary")))
     val personsFromProbationOffenderSearch = listOf(Person(firstName, lastName, middleName = "John"))
 
-    whenever(prisonerOffenderSearchGateway.getPersons(firstName, lastName)).thenReturn(personsFromPrisonerOffenderSearch)
+    whenever(prisonerOffenderSearchGateway.getPersons(firstName, lastName)).thenReturn(responseFromPrisonerOffenderSearch)
     whenever(probationOffenderSearchGateway.getPersons(firstName, lastName)).thenReturn(personsFromProbationOffenderSearch)
 
     val result = getPersonsService.execute(firstName, lastName)
 
-    result.shouldBe(personsFromPrisonerOffenderSearch + personsFromProbationOffenderSearch)
+    result.shouldBe(responseFromPrisonerOffenderSearch.data + personsFromProbationOffenderSearch)
   }
 
   it("returns an empty list when no person(s) are found") {
-    whenever(prisonerOffenderSearchGateway.getPersons(firstName, lastName)).thenReturn(emptyList())
+    whenever(prisonerOffenderSearchGateway.getPersons(firstName, lastName)).thenReturn(Response(emptyList()))
     whenever(probationOffenderSearchGateway.getPersons(firstName, lastName)).thenReturn(emptyList())
 
     val result = getPersonsService.execute(firstName, lastName)
