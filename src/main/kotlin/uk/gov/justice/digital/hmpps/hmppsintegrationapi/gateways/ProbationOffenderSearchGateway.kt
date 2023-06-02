@@ -40,12 +40,14 @@ class ProbationOffenderSearchGateway(@Value("\${services.probation-offender-sear
     }
   }
 
-  fun getPersons(firstName: String?, surname: String?): List<Person> {
+  fun getPersons(firstName: String?, surname: String?): Response<List<Person>> {
     val requestBody = mapOf("firstName" to firstName, "surname" to surname, "valid" to true)
       .filterValues { it != null }
 
-    return webClient.requestList<Offender>(HttpMethod.POST, "/search", authenticationHeader(), requestBody)
-      .map { it.toPerson() }
+    return Response(
+      data = webClient.requestList<Offender>(HttpMethod.POST, "/search", authenticationHeader(), requestBody)
+        .map { it.toPerson() },
+    )
   }
 
   fun getAddressesForPerson(pncId: String): Response<List<Address>> {

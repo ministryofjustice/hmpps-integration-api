@@ -51,18 +51,21 @@ internal class PersonControllerTest(
         Mockito.reset(getPersonsService)
 
         whenever(getPersonsService.execute(firstName, lastName)).thenReturn(
-          listOf(
-            Person(
-              firstName = "Barry",
-              lastName = "Allen",
-              middleName = "Jonas",
-              dateOfBirth = LocalDate.parse("2023-03-01"),
-            ),
-            Person(
-              firstName = "Barry",
-              lastName = "Allen",
-              middleName = "Rock",
-              dateOfBirth = LocalDate.parse("2022-07-22"),
+          Response(
+            data =
+            listOf(
+              Person(
+                firstName = "Barry",
+                lastName = "Allen",
+                middleName = "Jonas",
+                dateOfBirth = LocalDate.parse("2023-03-01"),
+              ),
+              Person(
+                firstName = "Barry",
+                lastName = "Allen",
+                middleName = "Rock",
+                dateOfBirth = LocalDate.parse("2022-07-22"),
+              ),
             ),
           ),
         )
@@ -78,9 +81,7 @@ internal class PersonControllerTest(
         val firstNameThatDoesNotExist = "Bob21345"
         val lastNameThatDoesNotExist = "Gun36773"
 
-        whenever(getPersonsService.execute(firstNameThatDoesNotExist, lastNameThatDoesNotExist)).thenReturn(
-          listOf(),
-        )
+        whenever(getPersonsService.execute(firstNameThatDoesNotExist, lastNameThatDoesNotExist)).thenReturn(Response(data = emptyList()))
 
         val result =
           mockMvc.perform(get("$basePath?first_name=$firstNameThatDoesNotExist&last_name=$lastNameThatDoesNotExist"))
@@ -125,15 +126,18 @@ internal class PersonControllerTest(
       }
 
       it("returns paginated results") {
-        val list = List(20) { i ->
-          Person(
-            firstName = "Barry $i",
-            lastName = "Allen $i",
-            dateOfBirth = LocalDate.parse("2023-03-01"),
-          )
-        }
-
-        whenever(getPersonsService.execute(firstName, lastName)).thenReturn(list)
+        whenever(getPersonsService.execute(firstName, lastName)).thenReturn(
+          Response(
+            data =
+            List(20) { i ->
+              Person(
+                firstName = "Barry $i",
+                lastName = "Allen $i",
+                dateOfBirth = LocalDate.parse("2023-03-01"),
+              )
+            },
+          ),
+        )
 
         val result =
           mockMvc.perform(get("$basePath?first_name=$firstName&last_name=$lastName&page=3&perPage=5"))
