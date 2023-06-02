@@ -16,6 +16,6 @@ class GetPersonsService(
     val responseFromPrisonerOffenderSearch = prisonerOffenderSearchGateway.getPersons(firstName, lastName)
     val personsFromProbationOffenderSearch = probationOffenderSearchGateway.getPersons(firstName, lastName)
 
-    return responseFromPrisonerOffenderSearch.data + personsFromProbationOffenderSearch
+    return responseFromPrisonerOffenderSearch.data + personsFromProbationOffenderSearch.data
   }
 }

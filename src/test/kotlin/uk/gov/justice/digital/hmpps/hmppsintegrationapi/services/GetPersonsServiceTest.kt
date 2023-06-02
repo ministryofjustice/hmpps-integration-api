@@ -31,6 +31,7 @@ internal class GetPersonsServiceTest(
     Mockito.reset(probationOffenderSearchGateway)
 
     whenever(prisonerOffenderSearchGateway.getPersons(firstName, lastName)).thenReturn(Response(data = emptyList()))
+    whenever(probationOffenderSearchGateway.getPersons(firstName, lastName)).thenReturn(Response(data = emptyList()))
   }
 
   it("returns person(s) from Prisoner Offender Search") {
@@ -47,19 +48,19 @@ internal class GetPersonsServiceTest(
 
   it("returns person(s)") {
     val responseFromPrisonerOffenderSearch = Response(data = listOf(Person(firstName, lastName, middleName = "Gary")))
-    val personsFromProbationOffenderSearch = listOf(Person(firstName, lastName, middleName = "John"))
+    val responseFromProbationOffenderSearch = Response(data = listOf(Person(firstName, lastName, middleName = "John")))
 
     whenever(prisonerOffenderSearchGateway.getPersons(firstName, lastName)).thenReturn(responseFromPrisonerOffenderSearch)
-    whenever(probationOffenderSearchGateway.getPersons(firstName, lastName)).thenReturn(personsFromProbationOffenderSearch)
+    whenever(probationOffenderSearchGateway.getPersons(firstName, lastName)).thenReturn(responseFromProbationOffenderSearch)
 
     val result = getPersonsService.execute(firstName, lastName)
 
-    result.shouldBe(responseFromPrisonerOffenderSearch.data + personsFromProbationOffenderSearch)
+    result.shouldBe(responseFromPrisonerOffenderSearch.data + responseFromProbationOffenderSearch.data)
   }
 
   it("returns an empty list when no person(s) are found") {
     whenever(prisonerOffenderSearchGateway.getPersons(firstName, lastName)).thenReturn(Response(emptyList()))
-    whenever(probationOffenderSearchGateway.getPersons(firstName, lastName)).thenReturn(emptyList())
+    whenever(probationOffenderSearchGateway.getPersons(firstName, lastName)).thenReturn(Response(emptyList()))
 
     val result = getPersonsService.execute(firstName, lastName)
     result.shouldBe(emptyList())
