@@ -143,7 +143,7 @@ workflows:
       - heartbeat:
           context:
             - hmpps-common-vars
-            - hmpps-integration-api-dev
+            - hmpps-integration-api-heartbeat-dev
           <<: *slack-fail-post-step
 
       - create-and-push-image-to-ecr:
