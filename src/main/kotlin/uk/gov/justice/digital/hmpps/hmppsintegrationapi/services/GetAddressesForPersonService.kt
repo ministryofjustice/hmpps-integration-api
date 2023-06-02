@@ -6,6 +6,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NomisGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ProbationOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Address
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Response
 
 @Service
 class GetAddressesForPersonService(
@@ -13,16 +14,12 @@ class GetAddressesForPersonService(
   @Autowired val prisonerOffenderSearchGateway: PrisonerOffenderSearchGateway,
   @Autowired val nomisGateway: NomisGateway,
 ) {
-  fun execute(pncId: String): List<Address>? {
+  fun execute(pncId: String): Response<List<Address>> {
     val personFromPrisonerOffenderSearch = prisonerOffenderSearchGateway.getPersons(pncId = pncId)
 
-    val addressesFromNomis = nomisGateway.getAddressesForPerson(personFromPrisonerOffenderSearch.first().prisonerId!!)
-    val addressesFromProbationOffenderSearch = probationOffenderSearchGateway.getAddressesForPerson(pncId)
+    val responseFromNomis = nomisGateway.getAddressesForPerson(personFromPrisonerOffenderSearch.first().prisonerId!!)
+    val responseFromProbationOffenderSearch = probationOffenderSearchGateway.getAddressesForPerson(pncId)
 
-    if (addressesFromNomis == null && addressesFromProbationOffenderSearch == null) {
-      return null
-    }
-
-    return addressesFromProbationOffenderSearch?.plus(addressesFromNomis.orEmpty())
+    return Response.merge(listOf(responseFromNomis, responseFromProbationOffenderSearch))
   }
 }

@@ -18,6 +18,9 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitesp
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Address
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ImageMetadata
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Person
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Response
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApi
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetAddressesForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetImageMetadataForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService
@@ -294,9 +297,7 @@ internal class PersonControllerTest(
       beforeTest {
         Mockito.reset(getAddressesForPersonService)
         whenever(getAddressesForPersonService.execute(pncId)).thenReturn(
-          listOf(
-            Address(postcode = "SE1 1TE"),
-          ),
+          Response(data = listOf(Address(postcode = "SE1 1TE"))),
         )
       }
 
@@ -329,7 +330,17 @@ internal class PersonControllerTest(
       }
 
       it("responds with a 404 NOT FOUND status when person isn't found") {
-        whenever(getAddressesForPersonService.execute(pncId)).thenReturn(null)
+        whenever(getAddressesForPersonService.execute(pncId)).thenReturn(
+          Response(
+            data = emptyList(),
+            errors = listOf(
+              UpstreamApiError(
+                causedBy = UpstreamApi.NOMIS,
+                type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+              ),
+            ),
+          ),
+        )
 
         val result = mockMvc.perform(get("$basePath/$encodedPncId/addresses")).andReturn()
 

@@ -12,6 +12,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.decodeUrlChar
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Address
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ImageMetadata
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Person
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetAddressesForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetImageMetadataForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService
@@ -72,9 +73,12 @@ class PersonController(
   @GetMapping("{encodedPncId}/addresses")
   fun getPersonAddresses(@PathVariable encodedPncId: String): Map<String, List<Address>> {
     val pncId = encodedPncId.decodeUrlCharacters()
-    val addresses = getAddressesForPersonService.execute(pncId)
-      ?: throw EntityNotFoundException("Could not find person with id: $pncId")
+    val response = getAddressesForPersonService.execute(pncId)
 
-    return mapOf("data" to addresses)
+    if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
+      throw EntityNotFoundException("Could not find person with id: $pncId")
+    }
+
+    return mapOf("data" to response.data)
   }
 }

@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.smoke
 
+import io.kotest.assertions.json.shouldEqualJson
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
@@ -120,19 +121,19 @@ class PersonSmokeTest : DescribeSpec({
     )
 
     response.statusCode().shouldBe(HttpStatus.OK.value())
-    response.body().shouldBe(
+    response.body().shouldEqualJson(
       """
-    {
-      "data": [
-        {
-          "postcode": "string"
-        },
-        {
-          "postcode": "LI1 5TH"
-        }
-      ]
-    }
-    """.removeWhitespaceAndNewlines(),
+      {
+        "data": [
+          {
+            "postcode": "LI1 5TH"
+          },
+          {
+            "postcode": "string"
+          }
+        ]
+      }
+      """,
     )
   }
 },)

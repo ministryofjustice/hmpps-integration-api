@@ -1,9 +1,9 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.probationoffendersearch
 
 import io.kotest.core.spec.style.DescribeSpec
+import io.kotest.matchers.booleans.shouldBeTrue
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldContain
-import io.kotest.matchers.nulls.shouldBeNull
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory
 import org.mockito.kotlin.verify
@@ -17,6 +17,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ProbationOffend
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ProbationOffenderSearchApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Address
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApiError
 
 @ActiveProfiles("test")
 @ContextConfiguration(
@@ -68,9 +69,9 @@ class GetAddressesForPersonTest(
   }
 
   it("returns addresses for a person with the matching ID") {
-    val addresses = probationOffenderSearchGateway.getAddressesForPerson(pncId)
+    val response = probationOffenderSearchGateway.getAddressesForPerson(pncId)
 
-    addresses?.shouldContain(Address(postcode = "M3 2JA"))
+    response.data.shouldContain(Address(postcode = "M3 2JA"))
   }
 
   it("returns an empty list when no addresses are found") {
@@ -89,19 +90,19 @@ class GetAddressesForPersonTest(
         """,
     )
 
-    val addresses = probationOffenderSearchGateway.getAddressesForPerson(pncId)
+    val response = probationOffenderSearchGateway.getAddressesForPerson(pncId)
 
-    addresses.shouldBeEmpty()
+    response.data.shouldBeEmpty()
   }
 
-  it("returns null when no results are returned") {
+  it("returns an error when no results are returned") {
     probationOffenderSearchApiMockServer.stubPostOffenderSearch(
       "{\"pncNumber\": \"$pncId\", \"valid\": true}",
       "[]",
     )
 
-    val addresses = probationOffenderSearchGateway.getAddressesForPerson(pncId)
+    val response = probationOffenderSearchGateway.getAddressesForPerson(pncId)
 
-    addresses.shouldBeNull()
+    response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND).shouldBeTrue()
   }
 },)
