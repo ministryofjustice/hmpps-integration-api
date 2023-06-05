@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.nomis
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.collections.shouldBeEmpty
+import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
@@ -19,6 +20,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGatewa
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NomisGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.NomisApiMockServer
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApi
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApiError
 import java.io.File
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -208,19 +211,19 @@ class NomisGatewayTest(@MockBean val hmppsAuthGateway: HmppsAuthGateway, private
       it("returns an image with the matching ID") {
         val expectedImage = File("src/test/resources/__files/example.jpg").readBytes()
 
-        val image = nomisGateway.getImageData(imageId)
+        val response = nomisGateway.getImageData(imageId)
 
-        image.shouldBe(expectedImage)
+        response.data.shouldBe(expectedImage)
       }
 
-      it("throws an exception when 404 Not Found is returned") {
+      it("returns an error when 404 Not Found is returned") {
         nomisApiMockServer.stubGetImageData(imageId, HttpStatus.NOT_FOUND)
 
-        val exception = shouldThrow<EntityNotFoundException> {
-          nomisGateway.getImageData(imageId)
-        }
+        val response = nomisGateway.getImageData(imageId)
 
-        exception.message.shouldBe("Could not find image with id: $imageId")
+        response.errors.shouldHaveSize(1)
+        response.errors.first().causedBy.shouldBe(UpstreamApi.NOMIS)
+        response.errors.first().type.shouldBe(UpstreamApiError.Type.ENTITY_NOT_FOUND)
       }
     }
   },)
