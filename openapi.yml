@@ -421,22 +421,28 @@ components:
           minimum: 1
           format: int64
           example: 2461788
+          description: The Image ID of the offender, in reference to a unique identifier created once an image is uploaded.
         active:
           type: boolean
           example: true
+          description: A flag to indicate whether an image is in active use. It is no guarantee that the latest uploaded image will be the active one.
         captureDateTime:
           type: string
-          format: datetime
+          format: date-time
           example: 2015-05-27T17:13:59
+          description: The Date and Time of when the image was captured
         view:
           type: string
           example: FACE
+          description: The view describes the primary foci, subject, or inner focus of the image. In practise this is the interior foci of what is captured in the 'orientation' field.
         orientation:
           type: string
           example: FRONT
+          description: The orientation describes the secondary foci, scope, or outer focus of the image, which is to be the anatomical body part or angle of an image. In practise this is the exterior foci of what is captured in the 'view' field.
         type:
           type: string
           example: OFF_BKG
+          description: The type describes the contextual foci, context or scenario within which the image was taken. It could be for a particular purpose or capturing the results of a particular type of incident.
     Pagination:
       type: object
       properties:
