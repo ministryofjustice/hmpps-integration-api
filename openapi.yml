@@ -342,9 +342,38 @@ components:
     Address:
       type: object
       properties:
+        country:
+          type: string
+          example: England
+        county:
+          type: string
+          example: Greater London
+        endDate:
+          type: string
+          example: 20 May 2023
+        locality:
+          type: string
+          example: London Bridge
+        name:
+          type: string
+        number:
+          type: string
+          example: 1
         postcode:
           type: string
-          example: SW1H 9AJ
+          example: SE1 1TE
+        startDate:
+          type: string
+          example: 1 January 2023
+        street:
+          type: string
+          example: O'Meara Street
+        town:
+          type: string
+          example: London
+        type:
+          type: string
+          example: Type?
     Alias:
       type: object
       properties:
