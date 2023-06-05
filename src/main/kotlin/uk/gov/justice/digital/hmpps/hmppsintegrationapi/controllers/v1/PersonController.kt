@@ -12,7 +12,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.decodeUrlChar
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Address
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ImageMetadata
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Person
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApi
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApiError.Type.ENTITY_NOT_FOUND
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetAddressesForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetImageMetadataForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService
@@ -75,7 +76,10 @@ class PersonController(
     val pncId = encodedPncId.decodeUrlCharacters()
     val response = getAddressesForPersonService.execute(pncId)
 
-    if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
+    if (
+      response.hasErrorCausedBy(ENTITY_NOT_FOUND, causedBy = UpstreamApi.NOMIS) &&
+      response.hasErrorCausedBy(ENTITY_NOT_FOUND, causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH)
+    ) {
       throw EntityNotFoundException("Could not find person with id: $pncId")
     }
 

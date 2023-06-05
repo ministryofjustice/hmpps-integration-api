@@ -341,13 +341,17 @@ internal class PersonControllerTest(
         )
       }
 
-      it("responds with a 404 NOT FOUND status when person isn't found") {
+      it("responds with a 404 NOT FOUND status when person isn't found in all upstream APIs") {
         whenever(getAddressesForPersonService.execute(pncId)).thenReturn(
           Response(
             data = emptyList(),
             errors = listOf(
               UpstreamApiError(
                 causedBy = UpstreamApi.NOMIS,
+                type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+              ),
+              UpstreamApiError(
+                causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH,
                 type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
               ),
             ),
@@ -358,6 +362,24 @@ internal class PersonControllerTest(
 
         result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
       }
+    }
+
+    it("responds with a 200 OK status when person is found in one upstream API but not another") {
+      whenever(getAddressesForPersonService.execute(pncId)).thenReturn(
+        Response(
+          data = emptyList(),
+          errors = listOf(
+            UpstreamApiError(
+              causedBy = UpstreamApi.NOMIS,
+              type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+            ),
+          ),
+        ),
+      )
+
+      val result = mockMvc.perform(get("$basePath/$encodedPncId/addresses")).andReturn()
+
+      result.response.status.shouldBe(HttpStatus.OK.value())
     }
   },
 )
