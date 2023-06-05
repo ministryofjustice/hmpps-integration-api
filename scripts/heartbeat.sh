@@ -10,9 +10,6 @@ echo -n "${MTLS_KEY}" | base64 --decode > /tmp/client.key
 echo "Certificates retrieved";
 
 echo "Retrieving API key from Circle CI secret";
-curl "${SERVICE_URL}" -H "x-api-key: ${API_KEY}" --cert /tmp/client.pem --key /tmp/client.key |grep firstName &&
-echo $?
-
-echo "fail on purpose"
-
-exit 1
+curl -s "${SERVICE_URL}" -H "x-api-key: ${API_KEY}" --cert /tmp/client.pem --key /tmp/client.key |grep firstName
+echo "Result was $?"
+exit $?
