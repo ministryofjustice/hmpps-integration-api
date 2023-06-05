@@ -427,7 +427,7 @@ components:
         captureDateTime:
           type: string
           format: datetime
-          example: 2015-05-27
+          example: 2015-05-27T17:13:59
         view:
           type: string
           example: FACE
