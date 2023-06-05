@@ -122,7 +122,7 @@ paths:
       responses:
         "200":
           description: Successfully found a person with the provided PNC ID.
-          data:
+          content:
             application/json:
               schema:
                 type: object
@@ -132,8 +132,8 @@ paths:
                     minItems: 0
                     items:
                       $ref: "#/components/schemas/Image"
-                    pagination:
-                      $ref: "#/components/schemas/Pagination"
+                  pagination:
+                    $ref: "#/components/schemas/Pagination"
         "404":
           description: Failed to find a person with the provided PNC ID.
           content:
