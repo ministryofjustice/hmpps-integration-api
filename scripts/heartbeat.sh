@@ -10,5 +10,11 @@ echo -n "${MTLS_KEY}" | base64 --decode > /tmp/client.key
 echo "Certificates retrieved";
 
 curl --silent "${SERVICE_URL}" -H "x-api-key: ${API_KEY}" --cert /tmp/client.pem --key /tmp/client.key | grep firstName
-echo "Assertion: firstName field exists. Result was $?"
+
+if [ $? -eq 0 ]
+then
+echo "Located firstName in response"
+echo "**SUCCESS**"
+fi
+
 exit $?
