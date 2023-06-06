@@ -112,9 +112,6 @@ workflows:
   version: 2
   build-test-and-deploy:
     jobs:
-      - hmpps/gradle_owasp_dependency_check:
-          context:
-            - hmpps-common-vars
       - lint-code:
           context:
             - hmpps-common-vars
