@@ -267,3 +267,21 @@ workflows:
           context:
             - veracode-credentials
             - hmpps-common-vars
+
+  heartbeat-interval:
+    triggers:
+      - schedule:
+          cron: "*/5 * * * *"
+          filters:
+            branches:
+              only:
+                - HIA-325-spike-bash-healthcheck-with-circleci
+    jobs:
+      - heartbeat:
+          name: heartbeat-dev
+          context:
+            - hmpps-integration-api-heartbeat-dev
+      - heartbeat:
+            name: heartbeat-preprod
+            context:
+              - hmpps-integration-api-heartbeat-preprod
