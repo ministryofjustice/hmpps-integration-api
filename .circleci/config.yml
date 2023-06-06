@@ -140,12 +140,6 @@ workflows:
           name: lint-helm-charts
           env: dev
 
-      - heartbeat:
-          context:
-            - hmpps-common-vars
-            - hmpps-integration-api-heartbeat-dev
-          <<: *slack-fail-post-step
-
       - create-and-push-image-to-ecr:
           <<: *slack-fail-post-step
           name: create-and-push-image-to-dev-ecr
@@ -178,6 +172,13 @@ workflows:
           slack_channel_name: << pipeline.parameters.releases-slack-channel >>
           slack_notification: false
 
+      - heartbeat:
+          <<: *slack-fail-post-step
+          name: heartbeat-dev
+          context:
+            - hmpps-common-vars
+            - hmpps-integration-api-heartbeat-dev
+
       - create-and-push-image-to-ecr:
           <<: *slack-fail-post-step
           name: create-and-push-image-to-preprod-ecr
@@ -186,6 +187,7 @@ workflows:
             - hmpps-integration-api-preprod
           requires:
             - deploy-to-dev
+            - heartbeat-dev
           filters:
             branches:
               only:
@@ -207,6 +209,13 @@ workflows:
           slack_channel_name: << pipeline.parameters.releases-slack-channel >>
           slack_notification: false
 
+      - heartbeat:
+          <<: *slack-fail-post-step
+          name: heartbeat-preprod
+          context:
+            - hmpps-common-vars
+            - hmpps-integration-api-heartbeat-preprod
+
       - create-and-push-image-to-ecr:
           <<: *slack-fail-post-step
           name: create-and-push-image-to-prod-ecr
@@ -215,6 +224,7 @@ workflows:
             - hmpps-common-vars
           requires:
             - deploy-to-preprod
+            - heartbeat-preprod
           filters:
             branches:
               only:
@@ -235,6 +245,13 @@ workflows:
           helm_timeout: 5m
           slack_channel_name: << pipeline.parameters.releases-slack-channel >>
           slack_notification: false
+
+      - heartbeat:
+          <<: *slack-fail-post-step
+          name: heartbeat-prod
+          context:
+            - hmpps-common-vars
+            - hmpps-integration-api-heartbeat-prod
   security:
     triggers:
       - schedule:
@@ -277,7 +294,20 @@ workflows:
                 - HIA-325-spike-bash-healthcheck-with-circleci
     jobs:
       - heartbeat:
-          name: heartbeat-dev
+          <<: *slack-fail-post-step
+          name: Heartbeat Development
           context:
             - hmpps-common-vars
             - hmpps-integration-api-heartbeat-dev
+      - heartbeat:
+          <<: *slack-fail-post-step
+          name: Heartbeat Pre-Production
+          context:
+            - hmpps-common-vars
+            - hmpps-integration-api-heartbeat-preprod
+      - heartbeat:
+          <<: *slack-fail-post-step
+          name: Heartbeat Production
+          context:
+            - hmpps-common-vars
+            - hmpps-integration-api-heartbeat-prod
