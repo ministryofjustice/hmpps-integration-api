@@ -8,6 +8,8 @@ for str in requiredVars[@]; do
   if [[ -z "${!$str}" ]]; then
     echo "CIRCLECI Context variable was undefined: $str"
     exit 1
+  else
+    echo "Found secret $str"
   fi
 done
 
