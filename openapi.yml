@@ -434,7 +434,7 @@ components:
         view:
           type: string
           example: FACE
-          description: The view describes the "close-up" primary foci, subject, or inner focus of the image. In practise this is the interior foci of what is captured in the 'orientation' field.
+          description: The view describes the "close-up" - primary foci, subject, or inner focus of the image. In practise this is the interior foci of what is captured in the 'orientation' field.
         orientation:
           type: string
           example: FRONT
