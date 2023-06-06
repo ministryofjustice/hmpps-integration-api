@@ -281,13 +281,3 @@ workflows:
           context:
             - hmpps-common-vars
             - hmpps-integration-api-heartbeat-dev
-      - heartbeat:
-          name: heartbeat-preprod
-          context:
-            - hmpps-common-vars
-            - hmpps-integration-api-heartbeat-preprod
-      - heartbeat:
-            name: heartbeat-prod
-            context:
-              - hmpps-common-vars
-              - hmpps-integration-api-heartbeat-prod

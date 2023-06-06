@@ -11,7 +11,7 @@ for str in "${requiredVars[@]}"; do
   fi
 done
 
-if [ $fail -eq 1 ]; then
+if [ $fail = 1 ]; then
   echo "**FAIL**: Missing env variables"
   exit 1
 fi
