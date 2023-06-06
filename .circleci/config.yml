@@ -270,7 +270,7 @@ workflows:
   heartbeat-interval:
     triggers:
       - schedule:
-          cron: "*/10 * * * *"
+          cron: "0 5 * * 1"
           filters:
             branches:
               only:
@@ -281,6 +281,6 @@ workflows:
           context:
             - hmpps-integration-api-heartbeat-dev
       - heartbeat:
-            name: heartbeat-preprod
-            context:
-              - hmpps-integration-api-heartbeat-preprod
+          name: heartbeat-preprod
+          context:
+            - hmpps-integration-api-heartbeat-preprod
