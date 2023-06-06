@@ -224,7 +224,7 @@ workflows:
             - hmpps-common-vars
           requires:
             - deploy-to-preprod
-            - heartbeat-preprod
+#            - heartbeat-preprod
           filters:
             branches:
               only:
