@@ -26,6 +26,8 @@ curl --silent "${SERVICE_URL}" -H "x-api-key: ${API_KEY}" --cert /tmp/client.pem
 if [ $? -eq 0 ]; then
   echo "Located firstName in response"
   echo "**SUCCESS**"
+  exit 0
+else
+  echo "Failed to locate firstName in response"
+  exit 1
 fi
-
-exit $?
