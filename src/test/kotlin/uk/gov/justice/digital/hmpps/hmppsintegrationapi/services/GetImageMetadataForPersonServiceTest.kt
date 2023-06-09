@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 
 import io.kotest.core.spec.style.DescribeSpec
+import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory
@@ -14,6 +15,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffende
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ImageMetadata
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Response
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApi
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApiError
 import java.time.LocalDateTime
 
 @ContextConfiguration(
@@ -34,6 +37,7 @@ internal class GetImageMetadataForPersonServiceTest(
     whenever(prisonerOffenderSearchGateway.getPersons(pncId = pncId)).thenReturn(
       Response(data = listOf(Person(firstName = "Joey", lastName = "Tribbiani", prisonerId = prisonerNumber))),
     )
+    whenever(nomisGateway.getImageMetadataForPerson(prisonerNumber)).thenReturn(Response(data = emptyList()))
   }
 
   it("retrieves prisoner ID from Prisoner Offender Search") {
@@ -59,10 +63,30 @@ internal class GetImageMetadataForPersonServiceTest(
         type = "OFF_BKG",
       ),
     )
-    whenever(nomisGateway.getImageMetadataForPerson(prisonerNumber)).thenReturn(imageMetadataFromNomis)
+    whenever(nomisGateway.getImageMetadataForPerson(prisonerNumber)).thenReturn(Response(data = imageMetadataFromNomis))
 
-    val result = getImageMetadataForPersonService.execute(pncId)
+    val response = getImageMetadataForPersonService.execute(pncId)
 
-    result.shouldBe(imageMetadataFromNomis)
+    response.data.shouldBe(imageMetadataFromNomis)
+  }
+
+  it("returns the error from NOMIS when an error occurs") {
+    whenever(nomisGateway.getImageMetadataForPerson(prisonerNumber)).thenReturn(
+      Response(
+        data = emptyList(),
+        errors = listOf(
+          UpstreamApiError(
+            causedBy = UpstreamApi.NOMIS,
+            type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+          ),
+        ),
+      ),
+    )
+
+    val response = getImageMetadataForPersonService.execute(pncId)
+
+    response.errors.shouldHaveSize(1)
+    response.errors.first().causedBy.shouldBe(UpstreamApi.NOMIS)
+    response.errors.first().type.shouldBe(UpstreamApiError.Type.ENTITY_NOT_FOUND)
   }
 },)

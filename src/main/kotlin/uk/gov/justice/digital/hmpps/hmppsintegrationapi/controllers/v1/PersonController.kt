@@ -13,6 +13,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Address
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ImageMetadata
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApi
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApiError.Type.ENTITY_NOT_FOUND
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetAddressesForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetImageMetadataForPersonService
@@ -66,9 +67,13 @@ class PersonController(
   ): PaginatedResponse<ImageMetadata?> {
     val pncId = encodedPncId.decodeUrlCharacters()
 
-    val results = getImageMetadataForPersonService.execute(pncId)
+    val response = getImageMetadataForPersonService.execute(pncId)
 
-    return results.paginateWith(page, perPage)
+    if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
+      throw EntityNotFoundException("Could not find person with id: $pncId")
+    }
+
+    return response.data.paginateWith(page, perPage)
   }
 
   @GetMapping("{encodedPncId}/addresses")
