@@ -178,6 +178,8 @@ workflows:
           context:
             - hmpps-common-vars
             - hmpps-integration-api-heartbeat-dev
+          requires:
+            - deploy-to-dev
 
       - create-and-push-image-to-ecr:
           <<: *slack-fail-post-step
@@ -186,7 +188,6 @@ workflows:
             - hmpps-common-vars
             - hmpps-integration-api-preprod
           requires:
-            - deploy-to-dev
             - heartbeat-dev
           filters:
             branches:
@@ -215,6 +216,8 @@ workflows:
 #          context:
 #            - hmpps-common-vars
 #            - hmpps-integration-api-heartbeat-preprod
+#          requires:
+#            - deploy-to-preprod
 
       - create-and-push-image-to-ecr:
           <<: *slack-fail-post-step
@@ -252,6 +255,8 @@ workflows:
 #          context:
 #            - hmpps-common-vars
 #            - hmpps-integration-api-heartbeat-prod
+#          requires:
+#            - deploy-to-prod
   security:
     triggers:
       - schedule:
