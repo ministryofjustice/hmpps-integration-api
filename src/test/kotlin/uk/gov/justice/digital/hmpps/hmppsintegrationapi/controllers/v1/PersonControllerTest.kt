@@ -333,7 +333,16 @@ internal class PersonControllerTest(
               "startDate": "10 May 2021",
               "street": "Omeara",
               "town": "London Town",
-              "type": "Type?"
+              "types": [
+                {
+                  "code": "A99",
+                  "description": "Chocolate Factory"
+                },
+                {
+                  "code": "B99",
+                  "description": "Glass Elevator"
+                }
+              ]
             }
           ]
         }

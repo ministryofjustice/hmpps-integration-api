@@ -137,7 +137,16 @@ class PersonSmokeTest : DescribeSpec(
             "startDate": "2005-05-12",
             "street": "Slinn Street",
             "town": "Liverpool",
-            "type": "BUS"
+            "types": [
+              {
+                "code": "BUS",
+                "description": "Business Address"
+              },
+              {
+                "code": "HDC",
+                "description": "HDC Address",
+              }
+            ]
           },
           {
             "country": "England",
@@ -150,7 +159,12 @@ class PersonSmokeTest : DescribeSpec(
             "startDate": "2019-08-24",
             "street": "string",
             "town": "string",
-            "type": "Type?"
+            "types": [
+              {
+                "code": "string",
+                "description": "string"
+              }
+            ]
           }
         ]
       }
