@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.nomis
 
-import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldHaveSize
@@ -15,7 +14,6 @@ import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NomisGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
@@ -167,31 +165,31 @@ class NomisGatewayTest(@MockBean val hmppsAuthGateway: HmppsAuthGateway, private
       }
 
       it("returns image metadata for the matching person ID") {
-        val imageMetadata = nomisGateway.getImageMetadataForPerson(offenderNo)
+        val response = nomisGateway.getImageMetadataForPerson(offenderNo)
 
-        imageMetadata.first().active.shouldBe(true)
-        imageMetadata.first().captureDateTime.shouldBe(LocalDateTime.parse("2008-08-27T16:35:00"))
-        imageMetadata.first().view.shouldBe("FACE")
-        imageMetadata.first().orientation.shouldBe("FRONT")
-        imageMetadata.first().type.shouldBe("OFF_BKG")
+        response.data.first().active.shouldBe(true)
+        response.data.first().captureDateTime.shouldBe(LocalDateTime.parse("2008-08-27T16:35:00"))
+        response.data.first().view.shouldBe("FACE")
+        response.data.first().orientation.shouldBe("FRONT")
+        response.data.first().type.shouldBe("OFF_BKG")
       }
 
       it("returns a person without image metadata when no images are found") {
         nomisApiMockServer.stubGetOffenderImageDetails(offenderNo, "[]")
 
-        val imageMetadata = nomisGateway.getImageMetadataForPerson(offenderNo)
+        val response = nomisGateway.getImageMetadataForPerson(offenderNo)
 
-        imageMetadata.shouldBeEmpty()
+        response.data.shouldBeEmpty()
       }
 
-      it("throws an exception when 404 Not Found is returned") {
+      it("returns an error when 404 Not Found is returned") {
         nomisApiMockServer.stubGetOffenderImageDetails(offenderNo, "", HttpStatus.NOT_FOUND)
 
-        val exception = shouldThrow<EntityNotFoundException> {
-          nomisGateway.getImageMetadataForPerson(offenderNo)
-        }
+        val response = nomisGateway.getImageMetadataForPerson(offenderNo)
 
-        exception.message.shouldBe("Could not find person with id: $offenderNo")
+        response.errors.shouldHaveSize(1)
+        response.errors.first().causedBy.shouldBe(UpstreamApi.NOMIS)
+        response.errors.first().type.shouldBe(UpstreamApiError.Type.ENTITY_NOT_FOUND)
       }
     }
 

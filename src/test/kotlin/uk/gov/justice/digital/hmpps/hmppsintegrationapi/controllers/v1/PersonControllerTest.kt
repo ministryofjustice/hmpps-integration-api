@@ -234,32 +234,36 @@ internal class PersonControllerTest(
       beforeTest {
         Mockito.reset(getImageMetadataForPersonService)
         whenever(getImageMetadataForPersonService.execute(pncId)).thenReturn(
-          listOf(
-            ImageMetadata(
-              id = 2461788,
-              active = true,
-              captureDateTime = LocalDateTime.parse("2023-03-01T13:20:00"),
-              view = "FACE",
-              orientation = "FRONT",
-              type = "OFF_BKG",
+          Response(
+            data = listOf(
+              ImageMetadata(
+                id = 2461788,
+                active = true,
+                captureDateTime = LocalDateTime.parse("2023-03-01T13:20:00"),
+                view = "FACE",
+                orientation = "FRONT",
+                type = "OFF_BKG",
+              ),
             ),
           ),
         )
       }
 
       it("returns paginated results") {
-        val list = List(20) { _ ->
-          ImageMetadata(
-            id = Random.nextLong(),
-            active = Random.nextBoolean(),
-            captureDateTime = LocalDateTime.now(),
-            view = "OIC",
-            orientation = "NECK",
-            type = "OFF_IDM",
-          )
-        }
-
-        whenever(getImageMetadataForPersonService.execute(pncId)).thenReturn(list)
+        whenever(getImageMetadataForPersonService.execute(pncId)).thenReturn(
+          Response(
+            data = List(20) {
+              ImageMetadata(
+                id = Random.nextLong(),
+                active = Random.nextBoolean(),
+                captureDateTime = LocalDateTime.now(),
+                view = "OIC",
+                orientation = "NECK",
+                type = "OFF_IDM",
+              )
+            },
+          ),
+        )
 
         val result =
           mockMvc.perform(get("$basePath/$encodedPncId/images?page=3&perPage=5"))
@@ -294,6 +298,24 @@ internal class PersonControllerTest(
               "type": "OFF_BKG"
           """.removeWhitespaceAndNewlines(),
         )
+      }
+
+      it("responds with a 404 NOT FOUND status") {
+        whenever(getImageMetadataForPersonService.execute(pncId)).thenReturn(
+          Response(
+            data = emptyList(),
+            errors = listOf(
+              UpstreamApiError(
+                causedBy = UpstreamApi.NOMIS,
+                type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+              ),
+            ),
+          ),
+        )
+
+        val result = mockMvc.perform(get("$basePath/$encodedPncId/images")).andReturn()
+
+        result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
       }
     }
 
