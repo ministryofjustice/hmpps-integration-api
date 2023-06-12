@@ -17,7 +17,7 @@ slack-fail-post-step: &slack-fail-post-step
   post-steps:
     - slack/notify:
         event: fail
-        branch_pattern: main,HIA-325-spike-bash-healthcheck-with-circleci
+        branch_pattern: main
         channel: << pipeline.parameters.alerts-slack-channel >>
         custom: |
           {
@@ -296,7 +296,7 @@ workflows:
           filters:
             branches:
               only:
-                - HIA-325-spike-bash-healthcheck-with-circleci
+                - main
     jobs:
       - heartbeat:
           <<: *slack-fail-post-step
