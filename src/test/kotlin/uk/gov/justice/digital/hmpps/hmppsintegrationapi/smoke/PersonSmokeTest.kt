@@ -139,12 +139,12 @@ class PersonSmokeTest : DescribeSpec(
             "town": "Liverpool",
             "types": [
               {
-                "code": "BUS",
-                "description": "Business Address"
-              },
-              {
                 "code": "HDC",
                 "description": "HDC Address"
+              },
+              {
+                "code": "BUS",
+                "description": "Business Address"
               }
             ]
           },
