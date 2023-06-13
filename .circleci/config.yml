@@ -246,15 +246,14 @@ workflows:
           helm_timeout: 5m
           slack_channel_name: << pipeline.parameters.releases-slack-channel >>
           slack_notification: false
-
-#      - heartbeat:
-#          <<: *slack-fail-post-step
-#          name: heartbeat-prod
-#          context:
-#            - hmpps-common-vars
-#            - hmpps-integration-api-heartbeat-prod
-#          requires:
-#            - deploy-to-prod
+      - heartbeat:
+          <<: *slack-fail-post-step
+          name: heartbeat-prod
+          context:
+            - hmpps-common-vars
+            - hmpps-integration-api-heartbeat-prod
+          requires:
+            - deploy-to-prod
   security:
     triggers:
       - schedule:
@@ -308,9 +307,9 @@ workflows:
           context:
             - hmpps-common-vars
             - hmpps-integration-api-heartbeat-preprod
-#      - heartbeat:
-#          <<: *slack-fail-post-step
-#          name: heartbeat-prod
-#          context:
-#            - hmpps-common-vars
-#            - hmpps-integration-api-heartbeat-prod
+      - heartbeat:
+          <<: *slack-fail-post-step
+          name: heartbeat-prod
+          context:
+            - hmpps-common-vars
+            - hmpps-integration-api-heartbeat-prod
