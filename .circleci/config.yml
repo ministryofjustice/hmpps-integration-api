@@ -209,15 +209,14 @@ workflows:
           helm_timeout: 5m
           slack_channel_name: << pipeline.parameters.releases-slack-channel >>
           slack_notification: false
-
-#      - heartbeat:
-#          <<: *slack-fail-post-step
-#          name: heartbeat-preprod
-#          context:
-#            - hmpps-common-vars
-#            - hmpps-integration-api-heartbeat-preprod
-#          requires:
-#            - deploy-to-preprod
+      - heartbeat:
+          <<: *slack-fail-post-step
+          name: heartbeat-preprod
+          context:
+            - hmpps-common-vars
+            - hmpps-integration-api-heartbeat-preprod
+          requires:
+            - deploy-to-preprod
 
       - create-and-push-image-to-ecr:
           <<: *slack-fail-post-step
@@ -226,8 +225,7 @@ workflows:
             - hmpps-integration-api-prod
             - hmpps-common-vars
           requires:
-            - deploy-to-preprod
-#            - heartbeat-preprod
+            - heartbeat-preprod
           filters:
             branches:
               only:
@@ -304,15 +302,15 @@ workflows:
           context:
             - hmpps-common-vars
             - hmpps-integration-api-heartbeat-dev
+      - heartbeat:
+          <<: *slack-fail-post-step
+          name: heartbeat-preprod
+          context:
+            - hmpps-common-vars
+            - hmpps-integration-api-heartbeat-preprod
 #      - heartbeat:
 #          <<: *slack-fail-post-step
-#          name: Heartbeat Pre-Production
-#          context:
-#            - hmpps-common-vars
-#            - hmpps-integration-api-heartbeat-preprod
-#      - heartbeat:
-#          <<: *slack-fail-post-step
-#          name: Heartbeat Production
+#          name: heartbeat-prod
 #          context:
 #            - hmpps-common-vars
 #            - hmpps-integration-api-heartbeat-prod
