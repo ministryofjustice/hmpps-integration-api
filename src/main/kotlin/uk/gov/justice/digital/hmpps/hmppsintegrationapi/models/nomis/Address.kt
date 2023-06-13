@@ -28,13 +28,28 @@ data class Address(
     street = this.street,
     town = this.town,
     type = this.addressType,
-    types = this.addressUsages.map { it.toAddressType() }.plus(
-      IntegrationAPIAddress.Type(
-        code = this.addressType,
-        description = "Business Address",
-      ),
-    ),
+    types = addressTypes(this.addressUsages, this.addressType)
   )
+
+  private fun addressTypes(addressUsages: List<AddressUsage>, addressType: String?) : List<IntegrationAPIAddress.Type> {
+    val result = addressUsages.map { it.toAddressType() }.plus(
+      IntegrationAPIAddress.Type(
+        code = addressType,
+        description = getAddressDescriptionFromType(addressType),
+      ),
+    )
+
+    return result.filter { it.code != null }
+  }
+
+  private fun getAddressDescriptionFromType(addressType: String?): String? {
+    return when (addressType) {
+      "BUS" -> "Business Address"
+      "HOME" -> "Home Address"
+      "WORK" -> "Work Address"
+      else -> addressType
+    }
+  }
 
   data class AddressUsage(
     val addressUsage: String,
