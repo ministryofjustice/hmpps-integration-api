@@ -27,7 +27,6 @@ data class Address(
     startDate = this.startDate,
     street = this.street,
     town = this.town,
-    type = this.addressType,
     types = addressTypes(this.addressUsages, this.addressType),
   )
 

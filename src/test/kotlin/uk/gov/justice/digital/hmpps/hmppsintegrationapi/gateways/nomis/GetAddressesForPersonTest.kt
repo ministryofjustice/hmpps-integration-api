@@ -94,7 +94,6 @@ class GetAddressesForPersonTest(
 
       response.data.shouldContainAll(
         generateTestAddress(
-          type = "BUS",
           types = listOf(
             Address.Type("A99", "Chocolate Factory"),
             Address.Type("B99", "Glass Elevator"),

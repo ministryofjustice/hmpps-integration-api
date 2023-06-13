@@ -24,6 +24,6 @@ data class Address(
     startDate = this.from,
     street = this.streetName,
     town = this.town,
-    type = "Type?",
+    types = listOf(IntegrationAPIAddress.Type("REPLACEME", null)),
   )
 }

@@ -12,7 +12,6 @@ data class Address(
   val street: String?,
   val town: String?,
   val types: List<Type> = emptyList(),
-  val type: String?,
 ) {
   data class Type(
     val code: String?,
