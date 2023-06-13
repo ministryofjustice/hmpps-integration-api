@@ -13,7 +13,10 @@ fun generateTestAddress(
   number: String = "89",
   street: String = "Omeara",
   town: String = "London Town",
-  type: String = "Type?",
+  types: List<Address.Type> = listOf(
+    Address.Type("A99", "Chocolate Factory"),
+    Address.Type("B99", "Glass Elevator"),
+  ),
 ): Address {
   return Address(
     postcode = postcode,
@@ -26,6 +29,6 @@ fun generateTestAddress(
     number = number,
     street = street,
     town = town,
-    type = type,
+    types = types,
   )
 }

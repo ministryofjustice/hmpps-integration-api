@@ -11,5 +11,10 @@ data class Address(
   val startDate: String?,
   val street: String?,
   val town: String?,
-  val type: String?,
-)
+  val types: List<Type> = emptyList(),
+) {
+  data class Type(
+    val code: String?,
+    val description: String?,
+  )
+}

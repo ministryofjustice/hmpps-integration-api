@@ -18,6 +18,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.generateTestAddr
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ProbationOffenderSearchApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Address as IntegrationAPIAddress
 
 @ActiveProfiles("test")
 @ContextConfiguration(
@@ -86,7 +87,7 @@ class GetAddressesForPersonTest(
   it("returns addresses for a person with the matching ID") {
     val response = probationOffenderSearchGateway.getAddressesForPerson(pncId)
 
-    response.data.shouldContain(generateTestAddress())
+    response.data.shouldContain(generateTestAddress(types = listOf(IntegrationAPIAddress.Type("REPLACEME", null))))
   }
 
   it("returns an empty list when no addresses are found") {

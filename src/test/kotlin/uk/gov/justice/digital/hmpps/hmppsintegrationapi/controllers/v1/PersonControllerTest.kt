@@ -81,7 +81,11 @@ internal class PersonControllerTest(
         val firstNameThatDoesNotExist = "Bob21345"
         val lastNameThatDoesNotExist = "Gun36773"
 
-        whenever(getPersonsService.execute(firstNameThatDoesNotExist, lastNameThatDoesNotExist)).thenReturn(Response(data = emptyList()))
+        whenever(getPersonsService.execute(firstNameThatDoesNotExist, lastNameThatDoesNotExist)).thenReturn(
+          Response(
+            data = emptyList(),
+          ),
+        )
 
         val result =
           mockMvc.perform(get("$basePath?first_name=$firstNameThatDoesNotExist&last_name=$lastNameThatDoesNotExist"))
@@ -355,7 +359,16 @@ internal class PersonControllerTest(
               "startDate": "10 May 2021",
               "street": "Omeara",
               "town": "London Town",
-              "type": "Type?"
+              "types": [
+                {
+                  "code": "A99",
+                  "description": "Chocolate Factory"
+                },
+                {
+                  "code": "B99",
+                  "description": "Glass Elevator"
+                }
+              ]
             }
           ]
         }
