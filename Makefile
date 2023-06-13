@@ -23,6 +23,9 @@ unit-test:
 smoke-test: serve
 	./gradlew smokeTest
 
+heartbeat:
+	./scripts/heartbeat.sh
+
 test: unit-test smoke-test
 
 lint:

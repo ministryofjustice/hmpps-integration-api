@@ -3,6 +3,7 @@ version: 2.1
 orbs:
   hmpps: ministryofjustice/hmpps@6
   slack: circleci/slack@4.12.1
+  shellcheck: circleci/shellcheck@3
 
 parameters:
   alerts-slack-channel:
@@ -107,6 +108,14 @@ jobs:
           name: Push application Docker image
           command: |
             make publish
+  heartbeat:
+    machine:
+      image: ubuntu-2204:2022.10.2
+    steps:
+      - checkout
+      - run:
+          name: Run heartbeat
+          command: make heartbeat
 
 workflows:
   version: 2
@@ -130,6 +139,7 @@ workflows:
           <<: *slack-fail-post-step
           name: lint-helm-charts
           env: dev
+
       - create-and-push-image-to-ecr:
           <<: *slack-fail-post-step
           name: create-and-push-image-to-dev-ecr
@@ -162,6 +172,15 @@ workflows:
           slack_channel_name: << pipeline.parameters.releases-slack-channel >>
           slack_notification: false
 
+      - heartbeat:
+          <<: *slack-fail-post-step
+          name: heartbeat-dev
+          context:
+            - hmpps-common-vars
+            - hmpps-integration-api-heartbeat-dev
+          requires:
+            - deploy-to-dev
+
       - create-and-push-image-to-ecr:
           <<: *slack-fail-post-step
           name: create-and-push-image-to-preprod-ecr
@@ -169,7 +188,7 @@ workflows:
             - hmpps-common-vars
             - hmpps-integration-api-preprod
           requires:
-            - deploy-to-dev
+            - heartbeat-dev
           filters:
             branches:
               only:
@@ -191,6 +210,15 @@ workflows:
           slack_channel_name: << pipeline.parameters.releases-slack-channel >>
           slack_notification: false
 
+#      - heartbeat:
+#          <<: *slack-fail-post-step
+#          name: heartbeat-preprod
+#          context:
+#            - hmpps-common-vars
+#            - hmpps-integration-api-heartbeat-preprod
+#          requires:
+#            - deploy-to-preprod
+
       - create-and-push-image-to-ecr:
           <<: *slack-fail-post-step
           name: create-and-push-image-to-prod-ecr
@@ -199,6 +227,7 @@ workflows:
             - hmpps-common-vars
           requires:
             - deploy-to-preprod
+#            - heartbeat-preprod
           filters:
             branches:
               only:
@@ -219,6 +248,15 @@ workflows:
           helm_timeout: 5m
           slack_channel_name: << pipeline.parameters.releases-slack-channel >>
           slack_notification: false
+
+#      - heartbeat:
+#          <<: *slack-fail-post-step
+#          name: heartbeat-prod
+#          context:
+#            - hmpps-common-vars
+#            - hmpps-integration-api-heartbeat-prod
+#          requires:
+#            - deploy-to-prod
   security:
     triggers:
       - schedule:
@@ -251,3 +289,30 @@ workflows:
           context:
             - veracode-credentials
             - hmpps-common-vars
+  heartbeat-interval:
+    triggers:
+      - schedule:
+          cron: "0,15,30,45 * * * *"
+          filters:
+            branches:
+              only:
+                - main
+    jobs:
+      - heartbeat:
+          <<: *slack-fail-post-step
+          name: heartbeat-development
+          context:
+            - hmpps-common-vars
+            - hmpps-integration-api-heartbeat-dev
+#      - heartbeat:
+#          <<: *slack-fail-post-step
+#          name: Heartbeat Pre-Production
+#          context:
+#            - hmpps-common-vars
+#            - hmpps-integration-api-heartbeat-preprod
+#      - heartbeat:
+#          <<: *slack-fail-post-step
+#          name: Heartbeat Production
+#          context:
+#            - hmpps-common-vars
+#            - hmpps-integration-api-heartbeat-prod
