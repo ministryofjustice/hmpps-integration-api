@@ -45,7 +45,7 @@ class AddressTest : DescribeSpec(
         val expectedCode = "abc123"
         val expectedDescription = "some description"
         val addressUsages = listOf(
-          Address.AddressUsage(expectedCode, expectedDescription)
+          Address.AddressUsage(expectedCode, expectedDescription),
         )
 
         val address = Address(
@@ -88,12 +88,38 @@ class AddressTest : DescribeSpec(
         address.toAddress().types.shouldBeEmpty()
       }
 
+      it("addressUsage description is not present") {
+        val addressUsage = Address.AddressUsage("usage1", null)
+
+        val address = Address(
+          addressType = null,
+          country = "country",
+          county = "county",
+          endDate = "endDate",
+          flat = "flat",
+          locality = "locality",
+          postalCode = "postalCode",
+          premise = "premise",
+          startDate = "startDate",
+          street = "street",
+          town = "town",
+          addressUsages = listOf(addressUsage),
+        )
+
+        address.toAddress().types.shouldContain(
+          IntegrationAPIType(
+            "usage1",
+            "usage1",
+          ),
+        )
+      }
+
       describe("when addressType is present") {
         it("maps addressUsages and addressType combined when both are present") {
           val addressType = "someAddressType"
           val addressUsages = listOf(
             Address.AddressUsage("usage1", "usage description 1"),
-            Address.AddressUsage("usage2", "usage description 2")
+            Address.AddressUsage("usage2", "usage description 2"),
           )
 
           val address = Address(
@@ -115,8 +141,8 @@ class AddressTest : DescribeSpec(
             listOf(
               IntegrationAPIType("someAddressType", "someAddressType"),
               IntegrationAPIType("usage1", "usage description 1"),
-              IntegrationAPIType("usage2", "usage description 2")
-            )
+              IntegrationAPIType("usage2", "usage description 2"),
+            ),
           )
         }
 
@@ -144,7 +170,7 @@ class AddressTest : DescribeSpec(
           address.toAddress().types.shouldBe(listOf(IntegrationAPIType(expectedCode, expectedDescription)))
         }
 
-        it("maps BUS descriptions") {
+        it("maps descriptions") {
           val codeAndDescription = mapOf(
             "BUS" to "Business Address",
             "HOME" to "Home Address",

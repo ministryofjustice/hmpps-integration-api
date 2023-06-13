@@ -28,10 +28,10 @@ data class Address(
     street = this.street,
     town = this.town,
     type = this.addressType,
-    types = addressTypes(this.addressUsages, this.addressType)
+    types = addressTypes(this.addressUsages, this.addressType),
   )
 
-  private fun addressTypes(addressUsages: List<AddressUsage>, addressType: String?) : List<IntegrationAPIAddress.Type> {
+  private fun addressTypes(addressUsages: List<AddressUsage>, addressType: String?): List<IntegrationAPIAddress.Type> {
     val result = addressUsages.map { it.toAddressType() }.plus(
       IntegrationAPIAddress.Type(
         code = addressType,
@@ -53,11 +53,11 @@ data class Address(
 
   data class AddressUsage(
     val addressUsage: String,
-    val addressUsageDescription: String,
+    val addressUsageDescription: String?,
   ) {
     fun toAddressType() = IntegrationAPIAddress.Type(
       code = this.addressUsage,
-      description = this.addressUsageDescription,
+      description = this.addressUsageDescription ?: this.addressUsage,
     )
   }
 }

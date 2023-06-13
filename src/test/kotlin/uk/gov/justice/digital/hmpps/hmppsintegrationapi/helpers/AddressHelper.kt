@@ -16,7 +16,7 @@ fun generateTestAddress(
   type: String = "someType",
   types: List<Address.Type> = listOf(
     Address.Type("A99", "Chocolate Factory"),
-    Address.Type("B99", "Glass Elevator")
+    Address.Type("B99", "Glass Elevator"),
   ),
 ): Address {
   return Address(
