@@ -300,7 +300,7 @@ workflows:
     jobs:
       - heartbeat:
           <<: *slack-fail-post-step
-          name: Heartbeat Development
+          name: heartbeat-development
           context:
             - hmpps-common-vars
             - hmpps-integration-api-heartbeat-dev
