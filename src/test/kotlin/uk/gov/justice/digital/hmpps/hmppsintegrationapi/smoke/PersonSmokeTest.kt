@@ -144,7 +144,7 @@ class PersonSmokeTest : DescribeSpec(
               },
               {
                 "code": "HDC",
-                "description": "HDC Address",
+                "description": "HDC Address"
               }
             ]
           },
