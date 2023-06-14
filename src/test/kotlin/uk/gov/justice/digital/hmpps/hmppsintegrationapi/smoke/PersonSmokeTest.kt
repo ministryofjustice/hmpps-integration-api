@@ -149,7 +149,7 @@ class PersonSmokeTest : DescribeSpec(
             ]
           },
           {
-            "country": "England",
+            "country": null,
             "county": "string",
             "endDate": "2019-08-24",
             "locality": "string",

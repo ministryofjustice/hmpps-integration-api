@@ -4,7 +4,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Address
 
 fun generateTestAddress(
   postcode: String = "SE1 1TZ",
-  country: String = "England",
+  country: String? = "England",
   county: String = "Greater London",
   endDate: String = "20 May 2023",
   startDate: String = "10 May 2021",
