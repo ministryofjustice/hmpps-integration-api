@@ -67,8 +67,12 @@ class ProbationOffenderSearchGateway(@Value("\${services.probation-offender-sear
       )
     }
 
-    return if (offender.first().contactDetails.addresses.isNotEmpty()) {
-      Response(data = offender.first().contactDetails.addresses.map { it.toAddress() })
+    return if (offender.first().contactDetails == null) {
+      Response(data = emptyList())
+    } else if (offender.first().contactDetails!!.addresses == null) {
+      Response(data = emptyList())
+    } else if (offender.first().contactDetails!!.addresses!!.isNotEmpty()) {
+      Response(data = offender.first().contactDetails!!.addresses!!.map { it.toAddress() })
     } else {
       Response(data = emptyList())
     }

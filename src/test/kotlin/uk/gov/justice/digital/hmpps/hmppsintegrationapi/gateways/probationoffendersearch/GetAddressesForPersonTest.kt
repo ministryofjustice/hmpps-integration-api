@@ -126,4 +126,62 @@ class GetAddressesForPersonTest(
 
     response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND).shouldBeTrue()
   }
+
+  it("returns an empty list when there is no contactDetails field") {
+    probationOffenderSearchApiMockServer.stubPostOffenderSearch(
+      "{\"pncNumber\": \"$pncId\", \"valid\": true}",
+      """
+        [
+          {
+            "firstName": "English",
+            "surname": "Breakfast"
+          }
+        ]
+        """,
+    )
+
+    val response = probationOffenderSearchGateway.getAddressesForPerson(pncId)
+
+    response.data.shouldBeEmpty()
+  }
+
+  it("returns an empty list when contactDetails field is null") {
+    probationOffenderSearchApiMockServer.stubPostOffenderSearch(
+      "{\"pncNumber\": \"$pncId\", \"valid\": true}",
+      """
+        [
+          {
+            "firstName": "English",
+            "surname": "Breakfast",
+            "contactDetails": null
+          }
+        ]
+        """,
+    )
+
+    val response = probationOffenderSearchGateway.getAddressesForPerson(pncId)
+
+    response.data.shouldBeEmpty()
+  }
+
+  it("returns an empty list when contactDetails.addresses field is null") {
+    probationOffenderSearchApiMockServer.stubPostOffenderSearch(
+      "{\"pncNumber\": \"$pncId\", \"valid\": true}",
+      """
+        [
+          {
+            "firstName": "English",
+            "surname": "Breakfast",
+            "contactDetails": {
+              "addresses": null
+            }
+          }
+        ]
+        """,
+    )
+
+    val response = probationOffenderSearchGateway.getAddressesForPerson(pncId)
+
+    response.data.shouldBeEmpty()
+  }
 },)
