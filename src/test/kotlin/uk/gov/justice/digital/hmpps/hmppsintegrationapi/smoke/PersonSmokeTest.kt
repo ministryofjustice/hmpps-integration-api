@@ -161,8 +161,8 @@ class PersonSmokeTest : DescribeSpec(
             "town": "string",
             "types": [
               {
-                "code": "REPLACEME",
-                "description": null
+                "code": "string",
+                "description": "string"
               }
             ]
           }

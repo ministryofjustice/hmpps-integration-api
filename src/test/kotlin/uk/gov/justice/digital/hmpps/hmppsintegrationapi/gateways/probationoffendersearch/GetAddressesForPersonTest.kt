@@ -87,7 +87,7 @@ class GetAddressesForPersonTest(
   it("returns addresses for a person with the matching ID") {
     val response = probationOffenderSearchGateway.getAddressesForPerson(pncId)
 
-    response.data.shouldContain(generateTestAddress(types = listOf(IntegrationAPIAddress.Type("REPLACEME", null))))
+    response.data.shouldContain(generateTestAddress(types = listOf(IntegrationAPIAddress.Type("P", "Previous"))))
   }
 
   it("returns an empty list when no addresses are found") {

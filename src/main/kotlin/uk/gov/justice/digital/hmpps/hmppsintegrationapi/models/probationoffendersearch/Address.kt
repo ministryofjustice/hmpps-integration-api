@@ -10,6 +10,7 @@ data class Address(
   val from: String?,
   val postcode: String?,
   val streetName: String?,
+  val status: Status,
   val to: String?,
   val town: String?,
 ) {
@@ -24,6 +25,16 @@ data class Address(
     startDate = this.from,
     street = this.streetName,
     town = this.town,
-    types = listOf(IntegrationAPIAddress.Type("REPLACEME", null)),
+    types = listOf(Status(status.code, status.description).toAddressType()),
   )
+
+  data class Status(
+    val code: String,
+    val description: String?,
+  ) {
+    fun toAddressType() = IntegrationAPIAddress.Type(
+      code = this.code,
+      description = this.description ?: this.code,
+    )
+  }
 }
