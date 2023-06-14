@@ -27,6 +27,9 @@ dependencies {
 java {
   toolchain.languageVersion.set(JavaLanguageVersion.of(18))
 }
+repositories {
+  mavenCentral()
+}
 
 tasks {
   register<Test>("unitTest") {
