@@ -17,6 +17,7 @@ fun generateTestAddress(
     Address.Type("A99", "Chocolate Factory"),
     Address.Type("B99", "Glass Elevator"),
   ),
+  noFixedAddress: Boolean = false,
 ): Address {
   return Address(
     postcode = postcode,
@@ -30,5 +31,6 @@ fun generateTestAddress(
     street = street,
     town = town,
     types = types,
+    noFixedAddress = noFixedAddress,
   )
 }

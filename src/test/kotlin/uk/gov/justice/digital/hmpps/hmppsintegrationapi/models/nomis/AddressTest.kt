@@ -18,6 +18,7 @@ class AddressTest : DescribeSpec(
           endDate = "endDate",
           flat = "flat",
           locality = "locality",
+          noFixedAddress = false,
           postalCode = "postalCode",
           premise = "premise",
           startDate = "startDate",
@@ -32,6 +33,7 @@ class AddressTest : DescribeSpec(
         integrationApiAddress.endDate.shouldBe(address.endDate)
         integrationApiAddress.number.shouldBe(address.flat)
         integrationApiAddress.locality.shouldBe(address.locality)
+        integrationApiAddress.noFixedAddress.shouldBe(address.noFixedAddress)
         integrationApiAddress.postcode.shouldBe(address.postalCode)
         integrationApiAddress.name.shouldBe(address.premise)
         integrationApiAddress.startDate.shouldBe(address.startDate)
@@ -55,6 +57,7 @@ class AddressTest : DescribeSpec(
           endDate = "endDate",
           flat = "flat",
           locality = "locality",
+          noFixedAddress = false,
           postalCode = "postalCode",
           premise = "premise",
           startDate = "startDate",
@@ -77,6 +80,7 @@ class AddressTest : DescribeSpec(
           endDate = "endDate",
           flat = "flat",
           locality = "locality",
+          noFixedAddress = false,
           postalCode = "postalCode",
           premise = "premise",
           startDate = "startDate",
@@ -98,6 +102,7 @@ class AddressTest : DescribeSpec(
           endDate = "endDate",
           flat = "flat",
           locality = "locality",
+          noFixedAddress = false,
           postalCode = "postalCode",
           premise = "premise",
           startDate = "startDate",
@@ -129,6 +134,7 @@ class AddressTest : DescribeSpec(
             endDate = "endDate",
             flat = "flat",
             locality = "locality",
+            noFixedAddress = false,
             postalCode = "postalCode",
             premise = "premise",
             startDate = "startDate",
@@ -159,6 +165,7 @@ class AddressTest : DescribeSpec(
             endDate = "endDate",
             flat = "flat",
             locality = "locality",
+            noFixedAddress = false,
             postalCode = "postalCode",
             premise = "premise",
             startDate = "startDate",
@@ -185,6 +192,7 @@ class AddressTest : DescribeSpec(
               endDate = "endDate",
               flat = "flat",
               locality = "locality",
+              noFixedAddress = false,
               postalCode = "postalCode",
               premise = "premise",
               startDate = "startDate",
