@@ -23,6 +23,7 @@ class AddressTest : DescribeSpec(
           status = Address.Status(someCode, someDescription),
           to = "to",
           town = "town",
+          noFixedAbode = true,
         )
 
         val integrationApiAddress = address.toAddress()
@@ -38,6 +39,7 @@ class AddressTest : DescribeSpec(
         integrationApiAddress.types.shouldBe(listOf(IntegrationAPIAddressType(someCode, someDescription)))
         integrationApiAddress.street.shouldBe(address.streetName)
         integrationApiAddress.town.shouldBe(address.town)
+        integrationApiAddress.noFixedAddress.shouldBe(address.noFixedAbode)
       }
 
       it("uses the code as the description if the description is not present") {
@@ -52,6 +54,7 @@ class AddressTest : DescribeSpec(
           status = Address.Status(someCode, null),
           to = "premise",
           town = "town",
+          noFixedAbode = true,
         )
 
         address.toAddress().types.shouldBe(listOf(IntegrationAPIAddressType(someCode, someCode)))

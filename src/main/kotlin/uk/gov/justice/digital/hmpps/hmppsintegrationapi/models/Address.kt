@@ -6,6 +6,7 @@ data class Address(
   val endDate: String?,
   val locality: String?,
   val name: String?,
+  val noFixedAddress: Boolean,
   val number: String?,
   val postcode: String?,
   val startDate: String?,

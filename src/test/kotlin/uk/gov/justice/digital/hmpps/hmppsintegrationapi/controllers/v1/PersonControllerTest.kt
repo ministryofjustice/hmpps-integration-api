@@ -354,6 +354,7 @@ internal class PersonControllerTest(
               "endDate": "20 May 2023",
               "locality": "London Bridge",
               "name": "The chocolate factory",
+              "noFixedAddress": false,
               "number": "89",
               "postcode": "SE1 1TZ",
               "startDate": "10 May 2021",
