@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.probationoffendersearch
 
 import io.kotest.core.spec.style.DescribeSpec
+import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Address.Type as IntegrationAPIAddressType
 
@@ -26,7 +27,7 @@ class AddressTest : DescribeSpec(
 
         val integrationApiAddress = address.toAddress()
 
-        integrationApiAddress.country.shouldBe("England")
+        integrationApiAddress.country.shouldBeNull()
         integrationApiAddress.county.shouldBe(address.county)
         integrationApiAddress.endDate.shouldBe(address.to)
         integrationApiAddress.number.shouldBe(address.addressNumber)
