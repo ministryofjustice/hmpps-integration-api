@@ -24,6 +24,7 @@ class AddressTest : DescribeSpec(
           startDate = "startDate",
           street = "street",
           town = "town",
+          comments = "comments",
         )
 
         val integrationApiAddress = address.toAddress()
@@ -39,6 +40,7 @@ class AddressTest : DescribeSpec(
         integrationApiAddress.startDate.shouldBe(address.startDate)
         integrationApiAddress.street.shouldBe(address.street)
         integrationApiAddress.town.shouldBe(address.town)
+        integrationApiAddress.notes.shouldBe(address.comments)
       }
     }
     describe("#types") {
@@ -64,6 +66,7 @@ class AddressTest : DescribeSpec(
           street = "street",
           town = "town",
           addressUsages = addressUsages,
+          comments = "comments",
         )
 
         address.toAddress().types.shouldBe(listOf(IntegrationAPIType(expectedCode, expectedDescription)))
@@ -87,6 +90,7 @@ class AddressTest : DescribeSpec(
           street = "street",
           town = "town",
           addressUsages = addressUsages,
+          comments = "comments",
         )
 
         address.toAddress().types.shouldBeEmpty()
@@ -109,6 +113,7 @@ class AddressTest : DescribeSpec(
           street = "street",
           town = "town",
           addressUsages = listOf(addressUsage),
+          comments = "comments",
         )
 
         address.toAddress().types.shouldContain(
@@ -141,6 +146,7 @@ class AddressTest : DescribeSpec(
             street = "street",
             town = "town",
             addressUsages = addressUsages,
+            comments = "comments",
           )
 
           address.toAddress().types.shouldContainAll(
@@ -172,6 +178,7 @@ class AddressTest : DescribeSpec(
             street = "street",
             town = "town",
             addressUsages = addressUsages,
+            comments = "comments",
           )
 
           address.toAddress().types.shouldBe(listOf(IntegrationAPIType(expectedCode, expectedDescription)))
@@ -199,6 +206,7 @@ class AddressTest : DescribeSpec(
               street = "street",
               town = "town",
               addressUsages = emptyList(),
+              comments = "comments",
             )
 
             address.toAddress().types.shouldContain(IntegrationAPIType(it.key, it.value))

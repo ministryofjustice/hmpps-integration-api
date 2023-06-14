@@ -369,7 +369,8 @@ internal class PersonControllerTest(
                   "code": "B99",
                   "description": "Glass Elevator"
                 }
-              ]
+              ],
+              "notes": "some interesting note"
             }
           ]
         }

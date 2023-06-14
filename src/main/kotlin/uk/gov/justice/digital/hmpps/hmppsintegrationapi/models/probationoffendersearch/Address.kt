@@ -14,6 +14,7 @@ data class Address(
   val to: String?,
   val town: String?,
   val noFixedAbode: Boolean,
+  val notes: String?,
 ) {
   fun toAddress() = IntegrationAPIAddress(
     country = null,
@@ -28,6 +29,7 @@ data class Address(
     street = this.streetName,
     town = this.town,
     types = listOf(Status(status.code, status.description).toAddressType()),
+    notes = this.notes,
   )
 
   data class Status(

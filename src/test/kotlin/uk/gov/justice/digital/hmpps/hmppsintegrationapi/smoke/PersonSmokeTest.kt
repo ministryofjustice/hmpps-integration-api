@@ -147,7 +147,8 @@ class PersonSmokeTest : DescribeSpec(
                 "code": "BUS",
                 "description": "Business Address"
               }
-            ]
+            ],
+            "notes": null
           },
           {
             "country": null,
@@ -166,7 +167,8 @@ class PersonSmokeTest : DescribeSpec(
                 "code": "string",
                 "description": "string"
               }
-            ]
+            ],
+            "notes": "string"
           }
         ]
       }
