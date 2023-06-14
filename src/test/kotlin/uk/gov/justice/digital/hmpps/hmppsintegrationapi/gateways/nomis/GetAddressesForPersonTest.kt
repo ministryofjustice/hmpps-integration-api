@@ -49,7 +49,7 @@ class GetAddressesForPersonTest(
               "town": "London Town",
               "county": "Greater London",
               "country": "England",
-              "comments": "this is a comment text",
+              "comment": "this is a comment text",
               "primary": false,
               "noFixedAddress": false,
               "startDate": "10 May 2021",

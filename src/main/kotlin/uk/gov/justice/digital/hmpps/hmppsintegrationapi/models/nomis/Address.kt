@@ -16,7 +16,7 @@ data class Address(
   val street: String?,
   val town: String?,
   val addressUsages: List<AddressUsage> = emptyList(),
-  val comments: String?,
+  val comment: String?,
 ) {
   fun toAddress() = IntegrationAPIAddress(
     country = this.country,
@@ -31,7 +31,7 @@ data class Address(
     street = this.street,
     town = this.town,
     types = addressTypes(this.addressUsages, this.addressType),
-    notes = this.comments,
+    notes = this.comment,
   )
 
   private fun addressTypes(addressUsages: List<AddressUsage>, addressType: String?): List<IntegrationAPIAddress.Type> {
