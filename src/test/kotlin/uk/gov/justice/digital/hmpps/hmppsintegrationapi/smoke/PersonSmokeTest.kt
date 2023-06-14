@@ -148,7 +148,7 @@ class PersonSmokeTest : DescribeSpec(
                 "description": "Business Address"
               }
             ],
-            "notes": "comments"
+            "notes": null
           },
           {
             "country": null,
@@ -168,7 +168,7 @@ class PersonSmokeTest : DescribeSpec(
                 "description": "string"
               }
             ],
-            "notes": "notes"
+            "notes": "string"
           }
         ]
       }
