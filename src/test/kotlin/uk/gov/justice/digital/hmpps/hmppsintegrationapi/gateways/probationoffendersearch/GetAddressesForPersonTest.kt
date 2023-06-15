@@ -47,8 +47,8 @@ class GetAddressesForPersonTest(
                 {
                   "id": 123456,
                   "county": "Greater London",
-                  "from": "10 May 2021",
-                  "to": "20 May 2023",
+                  "from": "2021-10-10",
+                  "to": "2022-01-01",
                   "noFixedAbode": false,
                   "notes": "some interesting note",
                   "addressNumber": "89",
@@ -95,6 +95,8 @@ class GetAddressesForPersonTest(
       response.data.shouldContain(
         generateTestAddress(
           country = null,
+          endDate = "2022-01-01",
+          startDate = "2021-10-10",
           types = listOf(IntegrationAPIAddress.Type("A07", "Friends/Family")),
         ),
       )

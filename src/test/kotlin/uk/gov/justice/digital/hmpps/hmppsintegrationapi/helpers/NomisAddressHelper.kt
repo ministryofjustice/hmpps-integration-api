@@ -1,18 +1,19 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers
 
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.Address
+import java.time.LocalDate
 
 fun generateNomisTestAddress(
   addressType: String? = "test_addresstype",
   country: String? = "test_country",
   county: String? = "test_county",
-  endDate: String? = "test_enddate",
+  endDate: String? = "2022-05-01",
   flat: String? = "test_flat",
   locality: String? = "test_locality",
   noFixedAddress: Boolean = false,
   postalCode: String? = "test_postcode",
   premise: String? = "test_premise",
-  startDate: String? = "test_startdate",
+  startDate: String? = "2021-05-01",
   street: String? = "test_street",
   town: String? = "test_town",
   comment: String? = "test_comment",
@@ -30,13 +31,13 @@ fun generateNomisTestAddress(
   addressType = addressType,
   country = country,
   county = county,
-  endDate = endDate,
+  endDate = LocalDate.parse(endDate),
   flat = flat,
   locality = locality,
   noFixedAddress = noFixedAddress,
   postalCode = postalCode,
   premise = premise,
-  startDate = startDate,
+  startDate = LocalDate.parse(startDate),
   street = street,
   town = town,
   comment = comment,

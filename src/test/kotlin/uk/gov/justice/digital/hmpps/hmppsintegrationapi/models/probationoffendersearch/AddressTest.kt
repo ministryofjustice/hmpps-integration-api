@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.probationoffende
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
+import java.time.LocalDate
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Address.Type as IntegrationAPIAddressType
 
 class AddressTest : DescribeSpec(
@@ -17,11 +18,11 @@ class AddressTest : DescribeSpec(
           buildingName = "buildingName",
           district = "district",
           county = "county",
-          from = "from",
+          from = LocalDate.parse("2020-11-11"),
           postcode = "postcode",
           streetName = "streetName",
           type = Address.Type(code = someCode, description = someDescription),
-          to = "to",
+          to = LocalDate.parse("2021-01-01"),
           town = "town",
           noFixedAbode = true,
           notes = "notes",
@@ -52,11 +53,11 @@ class AddressTest : DescribeSpec(
           buildingName = "buildingName",
           district = "country",
           county = "county",
-          from = "endDate",
+          from = LocalDate.parse("2020-01-01"),
           postcode = "flat",
           streetName = "locality",
           type = Address.Type(someCode, null),
-          to = "premise",
+          to = LocalDate.parse("2021-01-01"),
           town = "town",
           noFixedAbode = true,
           notes = "notes",

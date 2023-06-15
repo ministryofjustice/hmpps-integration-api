@@ -52,8 +52,8 @@ class GetAddressesForPersonTest(
               "comment": "this is a comment text",
               "primary": false,
               "noFixedAddress": false,
-              "startDate": "10 May 2021",
-              "endDate": "20 May 2023",
+              "startDate": "2021-05-01",
+              "endDate": "2023-05-20",
               "phones": [],
               "addressUsages": [
                 {

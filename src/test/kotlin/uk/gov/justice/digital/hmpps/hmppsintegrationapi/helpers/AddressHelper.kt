@@ -1,13 +1,14 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers
 
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Address
+import java.time.LocalDate
 
 fun generateTestAddress(
   postcode: String = "SE1 1TZ",
   country: String? = "England",
   county: String = "Greater London",
-  endDate: String = "20 May 2023",
-  startDate: String = "10 May 2021",
+  endDate: String = "2023-05-20",
+  startDate: String = "2021-05-10",
   locality: String = "London Bridge",
   name: String = "The chocolate factory",
   number: String = "89",
@@ -23,8 +24,8 @@ fun generateTestAddress(
   postcode = postcode,
   country = country,
   county = county,
-  endDate = endDate,
-  startDate = startDate,
+  endDate = LocalDate.parse(endDate),
+  startDate = LocalDate.parse(startDate),
   locality = locality,
   name = name,
   number = number,

@@ -1,18 +1,19 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis
 
+import java.time.LocalDate
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Address as IntegrationAPIAddress
 
 data class Address(
   val addressType: String?,
   val country: String?,
   val county: String?,
-  val endDate: String?,
+  val endDate: LocalDate?,
   val flat: String?,
   val locality: String?,
   val noFixedAddress: Boolean,
   val postalCode: String?,
   val premise: String?,
-  val startDate: String?,
+  val startDate: LocalDate?,
   val street: String?,
   val town: String?,
   val addressUsages: List<AddressUsage> = emptyList(),
