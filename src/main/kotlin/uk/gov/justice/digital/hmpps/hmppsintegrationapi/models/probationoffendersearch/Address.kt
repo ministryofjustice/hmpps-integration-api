@@ -28,12 +28,12 @@ data class Address(
     startDate = this.from,
     street = this.streetName,
     town = this.town,
-    types = listOf(Type(type.code, type.description).toAddressType()),
+    types = if (this.type == null || this.type.code == null) emptyList() else listOf(Type(type.code, type.description).toAddressType()),
     notes = this.notes,
   )
 
   data class Type(
-    val code: String,
+    val code: String?,
     val description: String?,
   ) {
     fun toAddressType() = IntegrationAPIAddress.Type(
