@@ -8,10 +8,10 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Address.Type as I
 class AddressTest : DescribeSpec(
   {
     describe("#toAddress") {
-      val someDescription = "some description"
-      val someCode = "some code"
-
       it("maps one-to-one attributes to integration API attributes") {
+        val someCode = "some description"
+        val someDescription = "some Description"
+
         val address = Address(
           addressNumber = "addressNumber",
           buildingName = "buildingName",
@@ -20,7 +20,7 @@ class AddressTest : DescribeSpec(
           from = "from",
           postcode = "postcode",
           streetName = "streetName",
-          status = Address.Status(someCode, someDescription),
+          status = Address.Status(code = someCode, description = someDescription),
           to = "to",
           town = "town",
           noFixedAbode = true,
@@ -45,6 +45,8 @@ class AddressTest : DescribeSpec(
       }
 
       it("uses the code as the description if the description is not present") {
+        val someCode = "some description"
+
         val address = Address(
           addressNumber = "addressType",
           buildingName = "buildingName",
