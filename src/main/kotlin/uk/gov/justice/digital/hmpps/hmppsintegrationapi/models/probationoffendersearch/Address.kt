@@ -10,7 +10,7 @@ data class Address(
   val from: String?,
   val postcode: String?,
   val streetName: String?,
-  val status: Status,
+  val type: Type,
   val to: String?,
   val town: String?,
   val noFixedAbode: Boolean,
@@ -28,11 +28,11 @@ data class Address(
     startDate = this.from,
     street = this.streetName,
     town = this.town,
-    types = listOf(Status(status.code, status.description).toAddressType()),
+    types = listOf(Type(type.code, type.description).toAddressType()),
     notes = this.notes,
   )
 
-  data class Status(
+  data class Type(
     val code: String,
     val description: String?,
   ) {
