@@ -56,6 +56,10 @@ class GetAddressesForPersonTest(
                   "town": "London Town",
                   "buildingName": "The chocolate factory",
                   "postcode": "SE1 1TZ",
+                  "type": {
+                    "code": "A07",
+                    "description": "Friends/Family"
+                  },
                   "status": {
                     "code": "P",
                     "description": "Previous"
@@ -90,7 +94,7 @@ class GetAddressesForPersonTest(
     response.data.shouldContain(
       generateTestAddress(
         country = null,
-        types = listOf(IntegrationAPIAddress.Type("P", "Previous")),
+        types = listOf(IntegrationAPIAddress.Type("A07", "Friends/Family")),
       ),
     )
   }
