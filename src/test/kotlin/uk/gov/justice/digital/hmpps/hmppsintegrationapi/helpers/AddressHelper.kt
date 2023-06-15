@@ -19,20 +19,18 @@ fun generateTestAddress(
   ),
   noFixedAddress: Boolean = false,
   notes: String = "some interesting note",
-): Address {
-  return Address(
-    postcode = postcode,
-    country = country,
-    county = county,
-    endDate = endDate,
-    startDate = startDate,
-    locality = locality,
-    name = name,
-    number = number,
-    street = street,
-    town = town,
-    types = types,
-    noFixedAddress = noFixedAddress,
-    notes = notes,
-  )
-}
+): Address = Address(
+  postcode = postcode,
+  country = country,
+  county = county,
+  endDate = endDate,
+  startDate = startDate,
+  locality = locality,
+  name = name,
+  number = number,
+  street = street,
+  town = town,
+  types = types,
+  noFixedAddress = noFixedAddress,
+  notes = notes,
+)
