@@ -351,13 +351,13 @@ internal class PersonControllerTest(
             {
               "country": "England",
               "county": "Greater London",
-              "endDate": "20 May 2023",
+              "endDate": "2023-05-20",
               "locality": "London Bridge",
               "name": "The chocolate factory",
               "noFixedAddress": false,
               "number": "89",
               "postcode": "SE1 1TZ",
-              "startDate": "10 May 2021",
+              "startDate": "2021-05-10",
               "street": "Omeara",
               "town": "London Town",
               "types": [
