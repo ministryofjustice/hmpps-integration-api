@@ -11,7 +11,7 @@ for str in "${requiredVars[@]}"; do
   fi
 done
 
-if [ $fail = 1 ]; then
+if [[ $fail == 1 ]]; then
   echo "**FAIL** Missing CircleCI context variable(s)"
   exit 1
 fi
