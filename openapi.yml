@@ -357,11 +357,11 @@ components:
           example: London Bridge
         name:
           type: string
-          description: Name of building of residence.
+          description: Name of the building of residence
         noFixedAddress:
           type: boolean
           example: true
-          description: Indicates whether the person has a permanent place of residence.
+          description: Indicates whether the person has a permanent place of residence
         number:
           type: string
           example: 1
@@ -383,21 +383,21 @@ components:
           minItems: 0
           items:
             $ref: "#/components/schemas/AddressType"
-          description: Type or usage of address.
+          description: Type or usage of address
         notes:
           type: string
-          example: This is a comment.
+          example: This is their partner's address.
     AddressType:
       type: object
       properties:
         code:
           type: string
           example: BUS
-          description: Address type code.
+          description: Address type code
         description:
           type: string
           example: Business Address
-          description: Description of address type.
+          description: Description of address type
     Alias:
       type: object
       properties:
