@@ -32,20 +32,29 @@ echo -e "[Setup] Certificates retrieved\n";
 for (( attempts=1;attempts<=retry_attempts;attempts++ ))
 do
   echo "[Attempt ${attempts}] 🧑‍⚕️ Checking for a heartbeat..."
-  curl --silent "${SERVICE_URL}" -H "x-api-key: ${API_KEY}" --cert /tmp/client.pem --key /tmp/client.key | grep firstName > /dev/null
 
-  if [[ $? == 0 ]]; then
-    echo "[Attempt ${attempts}] ✅ Success! Located firstName in response"
-    exit 0
+  http_status_code=$(curl -s -o response.txt -w "%{http_code}" "${SERVICE_URL}" -H "x-api-key: ${API_KEY}" --cert /tmp/client.pem --key /tmp/client.key)
+
+  if [[ $http_status_code != "200" ]]; then
+    echo -e "[Attempt ${attempts}] 💔️ Failed at $(date)!"
+    echo -e "[Attempt ${attempts}] 📋 $http_status_code - $(jq '.userMessage' response.txt)"
   else
-    echo -e "[Attempt ${attempts}] 💔️ Failed! Unable to locate firstName in response"
+    grep firstName response.txt > /dev/null
 
-    if [[ $attempts != "$retry_attempts" ]]; then
-      sleep $retry_after_seconds
-      echo -e "[Attempt ${attempts}] 🔁 Retrying..."
+    if [[ $? == 0 ]]; then
+      echo -e "[Attempt ${attempts}] ✅ Success! $http_status_code - Located firstName in response\n"
+      exit 0
+    else
+      echo -e "[Attempt ${attempts}] 💔️ Failed at $(date)!"
+      echo -e "[Attempt ${attempts}] 📋 Unable to locate firstName in response"
     fi
-    echo
   fi
+
+  if [[ $attempts != "$retry_attempts" ]]; then
+    echo -e "[Attempt ${attempts}] 🔁 Retrying in $retry_after_seconds seconds..."
+    sleep $retry_after_seconds
+  fi
+  echo
 done
 
 exit 1
