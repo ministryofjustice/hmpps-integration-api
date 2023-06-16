@@ -1,7 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 
 import io.kotest.core.spec.style.DescribeSpec
-import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory
@@ -33,6 +32,9 @@ internal class GetPersonServiceTest(
     whenever(prisonerOffenderSearchGateway.getPersons(pncId = pncId)).thenReturn(
       Response(data = listOf(Person(firstName = "Qui-gon", lastName = "Jin", prisonerId = "A1234AA"))),
     )
+    whenever(probationOffenderSearchGateway.getPerson(pncId = pncId)).thenReturn(
+      Response(data = Person(firstName = "Qui-gon", lastName = "Jin", prisonerId = "A1234AA")),
+    )
   }
 
   it("retrieves a person from Prisoner Offender Search") {
@@ -51,8 +53,12 @@ internal class GetPersonServiceTest(
     val personFromPrisonerOffenderSearch = Person("Sally", "Sob")
     val personFromProbationOffenderSearch = Person("Molly", "Mob")
 
-    whenever(prisonerOffenderSearchGateway.getPersons(pncId = pncId)).thenReturn(Response(data = listOf(personFromPrisonerOffenderSearch)))
-    whenever(probationOffenderSearchGateway.getPerson(pncId)).thenReturn(personFromProbationOffenderSearch)
+    whenever(prisonerOffenderSearchGateway.getPersons(pncId = pncId)).thenReturn(
+      Response(data = listOf(personFromPrisonerOffenderSearch)),
+    )
+    whenever(probationOffenderSearchGateway.getPerson(pncId)).thenReturn(
+      Response(personFromProbationOffenderSearch),
+    )
 
     val result = getPersonService.execute(pncId)
 
@@ -61,23 +67,27 @@ internal class GetPersonServiceTest(
       "probationOffenderSearch" to Person("Molly", "Mob"),
     )
 
-    result.shouldBe(expectedResult)
+    result.data.shouldBe(expectedResult)
   }
 
   it("returns null when a person isn't found in any APIs") {
     whenever(prisonerOffenderSearchGateway.getPersons(pncId = pncId)).thenReturn(Response(data = emptyList()))
-    whenever(probationOffenderSearchGateway.getPerson(pncId)).thenReturn(null)
+    whenever(probationOffenderSearchGateway.getPerson(pncId = pncId)).thenReturn(Response(data = null))
 
     val result = getPersonService.execute(pncId)
+    val expectedResult = mapOf(
+      "prisonerOffenderSearch" to null,
+      "probationOffenderSearch" to null,
+    )
 
-    result.shouldBeNull()
+    result.data.shouldBe(expectedResult)
   }
 
   it("returns no results from prisoner offender search, but one from probation offender search") {
     val personFromProbationOffenderSearch = Person("Molly", "Mob")
 
     whenever(prisonerOffenderSearchGateway.getPersons(pncId = pncId)).thenReturn(Response(data = emptyList()))
-    whenever(probationOffenderSearchGateway.getPerson(pncId)).thenReturn(personFromProbationOffenderSearch)
+    whenever(probationOffenderSearchGateway.getPerson(pncId)).thenReturn(Response(personFromProbationOffenderSearch))
 
     val expectedResult = mapOf(
       "prisonerOffenderSearch" to null,
@@ -86,6 +96,6 @@ internal class GetPersonServiceTest(
 
     val result = getPersonService.execute(pncId)
 
-    result.shouldBe(expectedResult)
+    result.data.shouldBe(expectedResult)
   }
 },)
