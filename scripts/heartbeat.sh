@@ -6,8 +6,8 @@ retry_attempts=5
 retry_after_seconds=10
 requiredVars=("MTLS_KEY" "MTLS_CERT" "SERVICE_URL" "API_KEY")
 
-echo "Heartbeat Checker"
-echo -e "=================\n"
+echo "Heartbeat"
+echo -e "=========\n"
 
 echo "[Config] Maximum retry attempts: $retry_attempts"
 echo "[Config] Retry after: $retry_after_seconds seconds"
