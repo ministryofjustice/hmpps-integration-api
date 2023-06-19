@@ -195,7 +195,10 @@ internal class PersonControllerTest(
         it("responds with a 404 when a person cannot be found in both upstream APIs") {
           whenever(getPersonService.execute(idThatDoesNotExist)).thenReturn(
             Response(
-              mapOf("prisonerOffenderSearch" to null),
+              mapOf(
+                "prisonerOffenderSearch" to null,
+                "probationOffenderSearch" to null
+              ),
               errors = listOf(
                 UpstreamApiError(
                   causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH,
@@ -218,7 +221,10 @@ internal class PersonControllerTest(
         it("does not respond with a 404 when a person was found in one upstream API") {
           whenever(getPersonService.execute(idThatDoesNotExist)).thenReturn(
             Response(
-              mapOf("prisonerOffenderSearch" to null),
+              mapOf(
+                "probationOffenderSearch" to Person("someFirstName", "someLastName"),
+                "prisonerOffenderSearch" to null
+              ),
               errors = listOf(
                 UpstreamApiError(
                   causedBy = UpstreamApi.NOMIS,

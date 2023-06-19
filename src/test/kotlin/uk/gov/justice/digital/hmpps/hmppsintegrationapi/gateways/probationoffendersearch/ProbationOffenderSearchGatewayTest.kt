@@ -165,14 +165,14 @@ class ProbationOffenderSearchGatewayTest(
     it("returns a person with the matching ID") {
       val response = probationOffenderSearchGateway.getPerson(pncId)
 
-      response.data?.firstName.shouldBe("Jonathan")
-      response.data?.middleName.shouldBe("Echo Fred")
-      response.data?.lastName.shouldBe("Bravo")
-      response.data?.dateOfBirth.shouldBe(LocalDate.parse("1970-02-07"))
-      response.data?.aliases?.first()?.firstName.shouldBe("John")
-      response.data?.aliases?.first()?.middleName.shouldBe("Tom")
-      response.data?.aliases?.first()?.lastName.shouldBe("Wick")
-      response.data?.aliases?.first()?.dateOfBirth.shouldBe(LocalDate.parse("2000-02-07"))
+      response?.data?.firstName.shouldBe("Jonathan")
+      response?.data?.middleName.shouldBe("Echo Fred")
+      response?.data?.lastName.shouldBe("Bravo")
+      response?.data?.dateOfBirth.shouldBe(LocalDate.parse("1970-02-07"))
+      response?.data?.aliases?.first()?.firstName.shouldBe("John")
+      response?.data?.aliases?.first()?.middleName.shouldBe("Tom")
+      response?.data?.aliases?.first()?.lastName.shouldBe("Wick")
+      response?.data?.aliases?.first()?.dateOfBirth.shouldBe(LocalDate.parse("2000-02-07"))
     }
 
     it("returns a person without aliases when no aliases are found") {
@@ -192,7 +192,7 @@ class ProbationOffenderSearchGatewayTest(
 
       val response = probationOffenderSearchGateway.getPerson(pncId)
 
-      response.data?.aliases.shouldBeEmpty()
+      response?.data?.aliases.shouldBeEmpty()
     }
 
     it("returns null when 400 Bad Request is returned") {
@@ -207,7 +207,7 @@ class ProbationOffenderSearchGatewayTest(
       )
 
       val response = probationOffenderSearchGateway.getPerson(pncId)
-      response.data.shouldBeNull()
+      response?.data.shouldBeNull()
     }
 
     it("returns null when no offenders are returned") {
@@ -218,7 +218,7 @@ class ProbationOffenderSearchGatewayTest(
 
       val response = probationOffenderSearchGateway.getPerson(pncId)
 
-      response.data.shouldBeNull()
+      response?.data.shouldBeNull()
     }
   }
 },)

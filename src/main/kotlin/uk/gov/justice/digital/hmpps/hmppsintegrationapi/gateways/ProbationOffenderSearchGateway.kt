@@ -24,8 +24,8 @@ class ProbationOffenderSearchGateway(@Value("\${services.probation-offender-sear
   @Autowired
   lateinit var hmppsAuthGateway: HmppsAuthGateway
 
-  fun getPerson(pncId: String): Response<Person?> {
-    try {
+  fun getPerson(pncId: String): Response<Person?>? {
+    return try {
       val offenders = webClient.requestList<Offender>(
         HttpMethod.POST,
         "/search",
@@ -33,7 +33,7 @@ class ProbationOffenderSearchGateway(@Value("\${services.probation-offender-sear
         mapOf("pncNumber" to pncId, "valid" to true),
       )
 
-      return if (offenders.isEmpty()) {
+      if (offenders.isEmpty()) {
         Response(
           data = null,
           errors = listOf(
@@ -48,15 +48,7 @@ class ProbationOffenderSearchGateway(@Value("\${services.probation-offender-sear
       }
     } catch (exception: WebClientResponseException.BadRequest) {
       log.error("${exception.message} - ${Json.parseToJsonElement(exception.responseBodyAsString).jsonObject["developerMessage"]}")
-      return Response(
-        data = null,
-        errors = listOf(
-          UpstreamApiError(
-            causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH,
-            type = UpstreamApiError.Type.BAD_REQUEST,
-          ),
-        ),
-      )
+      null
     }
   }
 

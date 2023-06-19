@@ -19,7 +19,7 @@ class GetPersonService(
     return Response(
       data = mapOf(
         "prisonerOffenderSearch" to responseFromPrisonerOffenderSearch.data.firstOrNull(),
-        "probationOffenderSearch" to personFromProbationOffenderSearch.data,
+        "probationOffenderSearch" to personFromProbationOffenderSearch?.data,
       ),
     )
   }
