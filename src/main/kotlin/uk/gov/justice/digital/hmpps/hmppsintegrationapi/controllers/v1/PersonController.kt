@@ -50,13 +50,16 @@ class PersonController(
   @GetMapping("{encodedPncId}")
   fun getPerson(@PathVariable encodedPncId: String): Map<String, Person?> {
     val pncId = encodedPncId.decodeUrlCharacters()
-    val result = getPersonService.execute(pncId)
+    val response = getPersonService.execute(pncId)
 
-    if (result.isNullOrEmpty()) {
+    if (
+      response.hasErrorCausedBy(ENTITY_NOT_FOUND, causedBy = UpstreamApi.NOMIS) &&
+      response.hasErrorCausedBy(ENTITY_NOT_FOUND, causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH)
+    ) {
       throw EntityNotFoundException("Could not find person with id: $pncId")
     }
 
-    return result
+    return response.data
   }
 
   @GetMapping("{encodedPncId}/images")

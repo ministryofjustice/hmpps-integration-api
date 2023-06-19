@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.controllers.v1
 import io.kotest.assertions.json.shouldContainJsonKeyValue
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.shouldNotBe
 import io.kotest.matchers.string.shouldContain
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory.times
@@ -179,7 +180,7 @@ internal class PersonControllerTest(
 
       beforeTest {
         Mockito.reset(getPersonService)
-        whenever(getPersonService.execute(pncId)).thenReturn(person)
+        whenever(getPersonService.execute(pncId)).thenReturn(Response(data = person))
       }
 
       it("responds with a 200 OK status") {
@@ -188,14 +189,56 @@ internal class PersonControllerTest(
         result.response.status.shouldBe(HttpStatus.OK.value())
       }
 
-      it("responds with a 404 NOT FOUND status") {
+      describe("404 Not found") {
         val idThatDoesNotExist = "9999/11111Z"
-        whenever(getPersonService.execute(idThatDoesNotExist)).thenReturn(null)
 
-        val encodedIdThatDoesNotExist = URLEncoder.encode(idThatDoesNotExist, StandardCharsets.UTF_8)
-        val result = mockMvc.perform(get("$basePath/$encodedIdThatDoesNotExist")).andReturn()
+        it("responds with a 404 when a person cannot be found in both upstream APIs") {
+          whenever(getPersonService.execute(idThatDoesNotExist)).thenReturn(
+            Response(
+              mapOf(
+                "prisonerOffenderSearch" to null,
+                "probationOffenderSearch" to null,
+              ),
+              errors = listOf(
+                UpstreamApiError(
+                  causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH,
+                  type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+                ),
+                UpstreamApiError(
+                  causedBy = UpstreamApi.NOMIS,
+                  type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+                ),
+              ),
+            ),
+          )
 
-        result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
+          val encodedIdThatDoesNotExist = URLEncoder.encode(idThatDoesNotExist, StandardCharsets.UTF_8)
+          val result = mockMvc.perform(get("$basePath/$encodedIdThatDoesNotExist")).andReturn()
+
+          result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
+        }
+
+        it("does not respond with a 404 when a person was found in one upstream API") {
+          whenever(getPersonService.execute(idThatDoesNotExist)).thenReturn(
+            Response(
+              mapOf(
+                "probationOffenderSearch" to Person("someFirstName", "someLastName"),
+                "prisonerOffenderSearch" to null,
+              ),
+              errors = listOf(
+                UpstreamApiError(
+                  causedBy = UpstreamApi.NOMIS,
+                  type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+                ),
+              ),
+            ),
+          )
+
+          val encodedIdThatDoesNotExist = URLEncoder.encode(idThatDoesNotExist, StandardCharsets.UTF_8)
+          val result = mockMvc.perform(get("$basePath/$encodedIdThatDoesNotExist")).andReturn()
+
+          result.response.status.shouldNotBe(HttpStatus.NOT_FOUND.value())
+        }
       }
 
       it("retrieves a person with the matching ID") {

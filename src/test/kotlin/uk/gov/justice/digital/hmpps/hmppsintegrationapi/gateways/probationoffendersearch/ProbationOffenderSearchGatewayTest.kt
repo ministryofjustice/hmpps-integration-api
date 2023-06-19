@@ -18,6 +18,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGatewa
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ProbationOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ProbationOffenderSearchApiMockServer
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApi
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApiError
 import java.io.File
 import java.time.LocalDate
 
@@ -163,16 +165,16 @@ class ProbationOffenderSearchGatewayTest(
     }
 
     it("returns a person with the matching ID") {
-      val person = probationOffenderSearchGateway.getPerson(pncId)
+      val response = probationOffenderSearchGateway.getPerson(pncId)
 
-      person?.firstName.shouldBe("Jonathan")
-      person?.middleName.shouldBe("Echo Fred")
-      person?.lastName.shouldBe("Bravo")
-      person?.dateOfBirth.shouldBe(LocalDate.parse("1970-02-07"))
-      person?.aliases?.first()?.firstName.shouldBe("John")
-      person?.aliases?.first()?.middleName.shouldBe("Tom")
-      person?.aliases?.first()?.lastName.shouldBe("Wick")
-      person?.aliases?.first()?.dateOfBirth.shouldBe(LocalDate.parse("2000-02-07"))
+      response.data?.firstName.shouldBe("Jonathan")
+      response.data?.middleName.shouldBe("Echo Fred")
+      response.data?.lastName.shouldBe("Bravo")
+      response.data?.dateOfBirth.shouldBe(LocalDate.parse("1970-02-07"))
+      response.data?.aliases?.first()?.firstName.shouldBe("John")
+      response.data?.aliases?.first()?.middleName.shouldBe("Tom")
+      response.data?.aliases?.first()?.lastName.shouldBe("Wick")
+      response.data?.aliases?.first()?.dateOfBirth.shouldBe(LocalDate.parse("2000-02-07"))
     }
 
     it("returns a person without aliases when no aliases are found") {
@@ -190,9 +192,9 @@ class ProbationOffenderSearchGatewayTest(
         """,
       )
 
-      val person = probationOffenderSearchGateway.getPerson(pncId)
+      val response = probationOffenderSearchGateway.getPerson(pncId)
 
-      person?.aliases.shouldBeEmpty()
+      response.data?.aliases.shouldBeEmpty()
     }
 
     it("returns null when 400 Bad Request is returned") {
@@ -206,9 +208,16 @@ class ProbationOffenderSearchGatewayTest(
         HttpStatus.BAD_REQUEST,
       )
 
-      val person = probationOffenderSearchGateway.getPerson(pncId)
-
-      person?.shouldBeNull()
+      val response = probationOffenderSearchGateway.getPerson(pncId)
+      response.data.shouldBeNull()
+      response.errors.shouldBe(
+        listOf(
+          UpstreamApiError(
+            causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH,
+            type = UpstreamApiError.Type.BAD_REQUEST,
+          ),
+        ),
+      )
     }
 
     it("returns null when no offenders are returned") {
@@ -217,9 +226,9 @@ class ProbationOffenderSearchGatewayTest(
         "[]",
       )
 
-      val person = probationOffenderSearchGateway.getPerson(pncId)
+      val response = probationOffenderSearchGateway.getPerson(pncId)
 
-      person?.shouldBeNull()
+      response.data.shouldBeNull()
     }
   }
 },)
