@@ -21,21 +21,38 @@ slack-fail-post-step: &slack-fail-post-step
         channel: << pipeline.parameters.alerts-slack-channel >>
         custom: |
           {
-            "text": "",
             "blocks": [
               {
-                "type": "section",
+                "type": "header",
                 "text": {
-                  "type": "mrkdwn",
-                  "text": "❌ *Failure* `${CIRCLE_PROJECT_REPONAME}` - `${CIRCLE_JOB}` (Build: #${CIRCLE_BUILD_NUM}) on `${CIRCLE_BRANCH}`"
+                  "type": "plain_text",
+                  "text": ":this-is-fine-fire: ${CIRCLE_JOB} job has failed",
+                  "emoji": true
                 }
+              },
+              {
+                "type": "context",
+                "elements": [
+                  {
+                    "type": "mrkdwn",
+                    "text": "Project: *${CIRCLE_PROJECT_REPONAME}*"
+                  },
+                  {
+                    "type": "mrkdwn",
+                    "text": "Branch: *${CIRCLE_BRANCH}*"
+                  },
+                  {
+                    "type": "mrkdwn",
+                    "text": "Build: *#${CIRCLE_BUILD_NUM}*"
+                  }
+                ]
               },
               {
                 "type": "actions",
                 "elements": [
                   {
                     "type": "button",
-                    "text": { "type": "plain_text", "text": "View Job" },
+                    "text": { "type": "plain_text", "text": "View job" },
                     "url": "${CIRCLE_BUILD_URL}"
                   }
                 ]
