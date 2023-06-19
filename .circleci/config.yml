@@ -191,7 +191,7 @@ workflows:
 
       - heartbeat:
           <<: *slack-fail-post-step
-          name: post-deploy-check-heartbeat-for-dev
+          name: post-deploy-heartbeat-for-dev
           context:
             - hmpps-common-vars
             - hmpps-integration-api-heartbeat-dev
@@ -205,7 +205,7 @@ workflows:
             - hmpps-common-vars
             - hmpps-integration-api-preprod
           requires:
-            - post-deploy-check-heartbeat-for-dev
+            - post-deploy-heartbeat-for-dev
           filters:
             branches:
               only:
@@ -228,7 +228,7 @@ workflows:
           slack_notification: false
       - heartbeat:
           <<: *slack-fail-post-step
-          name: post-deploy-check-heartbeat-for-preprod
+          name: post-deploy-heartbeat-for-preprod
           context:
             - hmpps-common-vars
             - hmpps-integration-api-heartbeat-preprod
@@ -242,7 +242,7 @@ workflows:
             - hmpps-integration-api-prod
             - hmpps-common-vars
           requires:
-            - post-deploy-check-heartbeat-for-preprod
+            - post-deploy-heartbeat-for-preprod
           filters:
             branches:
               only:
@@ -265,7 +265,7 @@ workflows:
           slack_notification: false
       - heartbeat:
           <<: *slack-fail-post-step
-          name: post-deploy-check-heartbeat-for-prod
+          name: post-deploy-heartbeat-for-prod
           context:
             - hmpps-common-vars
             - hmpps-integration-api-heartbeat-prod
@@ -314,19 +314,19 @@ workflows:
     jobs:
       - heartbeat:
           <<: *slack-fail-post-step
-          name: check-heartbeat-for-dev
+          name: heartbeat-for-dev
           context:
             - hmpps-common-vars
             - hmpps-integration-api-heartbeat-dev
       - heartbeat:
           <<: *slack-fail-post-step
-          name: check-heartbeat-for-preprod
+          name: heartbeat-for-preprod
           context:
             - hmpps-common-vars
             - hmpps-integration-api-heartbeat-preprod
       - heartbeat:
           <<: *slack-fail-post-step
-          name: check-heartbeat-for-prod
+          name: heartbeat-for-prod
           context:
             - hmpps-common-vars
             - hmpps-integration-api-heartbeat-prod
