@@ -1,7 +1,5 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways
 
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.jsonObject
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
@@ -24,7 +22,7 @@ class ProbationOffenderSearchGateway(@Value("\${services.probation-offender-sear
   @Autowired
   lateinit var hmppsAuthGateway: HmppsAuthGateway
 
-  fun getPerson(pncId: String): Response<Person?>? {
+  fun getPerson(pncId: String): Response<Person?> {
     return try {
       val offenders = webClient.requestList<Offender>(
         HttpMethod.POST,
@@ -47,8 +45,15 @@ class ProbationOffenderSearchGateway(@Value("\${services.probation-offender-sear
         Response(data = offenders.first().toPerson())
       }
     } catch (exception: WebClientResponseException.BadRequest) {
-      log.error("${exception.message} - ${Json.parseToJsonElement(exception.responseBodyAsString).jsonObject["developerMessage"]}")
-      null
+      Response(
+        data = null,
+        errors = listOf(
+          UpstreamApiError(
+            causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH,
+            type = UpstreamApiError.Type.BAD_REQUEST,
+          ),
+        ),
+      )
     }
   }
 

@@ -197,7 +197,7 @@ internal class PersonControllerTest(
             Response(
               mapOf(
                 "prisonerOffenderSearch" to null,
-                "probationOffenderSearch" to null
+                "probationOffenderSearch" to null,
               ),
               errors = listOf(
                 UpstreamApiError(
@@ -223,7 +223,7 @@ internal class PersonControllerTest(
             Response(
               mapOf(
                 "probationOffenderSearch" to Person("someFirstName", "someLastName"),
-                "prisonerOffenderSearch" to null
+                "prisonerOffenderSearch" to null,
               ),
               errors = listOf(
                 UpstreamApiError(
