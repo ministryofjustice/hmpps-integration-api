@@ -378,7 +378,7 @@ components:
         town:
           type: string
           example: London
-        type:
+        types:
           type: array
           minItems: 0
           items:
