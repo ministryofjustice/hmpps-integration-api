@@ -13,6 +13,7 @@ class OffenderTest : DescribeSpec(
           surname = "Surname",
           middleNames = listOf("Middle Name"),
           dateOfBirth = LocalDate.parse("2023-03-01"),
+          gender = "Gender",
           offenderAliases = listOf(
             OffenderAlias(
               firstName = "Alias First Name",
@@ -30,6 +31,7 @@ class OffenderTest : DescribeSpec(
         person.lastName.shouldBe(prisoner.surname)
         person.middleName.shouldBe("Middle Name")
         person.dateOfBirth.shouldBe(prisoner.dateOfBirth)
+        person.gender.shouldBe(prisoner.gender)
         person.aliases.first().firstName.shouldBe("Alias First Name")
         person.aliases.first().lastName.shouldBe("Alias Surname")
         person.aliases.first().middleName.shouldBe("Alias Middle Name")

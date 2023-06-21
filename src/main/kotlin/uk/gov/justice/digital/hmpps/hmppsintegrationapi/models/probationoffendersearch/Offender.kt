@@ -9,6 +9,7 @@ data class Offender(
   val surname: String,
   val middleNames: List<String> = listOf(),
   val dateOfBirth: LocalDate? = null,
+  val gender: String? = null,
   val offenderAliases: List<OffenderAlias> = listOf(),
   val contactDetails: ContactDetails? = ContactDetails(),
   val otherIds: OtherIds = OtherIds(),
@@ -18,6 +19,7 @@ data class Offender(
     lastName = this.surname,
     middleName = this.middleNames.joinToString(" "),
     dateOfBirth = this.dateOfBirth,
+    gender = this.gender,
     aliases = this.offenderAliases.map {
       Alias(
         it.firstName,
