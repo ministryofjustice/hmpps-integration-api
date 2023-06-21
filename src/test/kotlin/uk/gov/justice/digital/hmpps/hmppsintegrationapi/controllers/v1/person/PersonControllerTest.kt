@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.hmppsintegrationapi.controllers.v1
+package uk.gov.justice.digital.hmpps.hmppsintegrationapi.controllers.v1.person
 
 import io.kotest.assertions.json.shouldContainJsonKeyValue
 import io.kotest.core.spec.style.DescribeSpec
