@@ -63,6 +63,8 @@ class PersonSmokeTest : DescribeSpec(
               "lastName": "Larsen",
               "middleName": "John James",
               "dateOfBirth": "1975-04-02",
+              "gender": "Female",
+              "ethnicity": "White: Eng./Welsh/Scot./N.Irish/British",
               "aliases": [
                 {
                   "firstName": "Robert",
@@ -79,6 +81,8 @@ class PersonSmokeTest : DescribeSpec(
               "lastName": "string",
               "middleName": "string",
               "dateOfBirth": "2019-08-24",
+              "gender": "string",
+              "ethnicity": "string",
               "aliases": [
                 {
                   "firstName": "string",
