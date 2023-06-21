@@ -112,18 +112,22 @@ internal class PersonControllerTest(
               "lastName":"Allen",
               "middleName":"Jonas",
               "dateOfBirth":"2023-03-01",
+              "gender": null,
+              "ethnicity": null,
               "aliases":[],
               "prisonerId": null,
               "pncId": null
             },
             {
-               "firstName":"Barry",
-               "lastName":"Allen",
-               "middleName":"Rock",
-               "dateOfBirth":"2022-07-22",
-               "aliases":[],
-               "prisonerId": null,
-               "pncId": null
+              "firstName":"Barry",
+              "lastName":"Allen",
+              "middleName":"Rock",
+              "dateOfBirth":"2022-07-22",
+              "gender": null,
+              "ethnicity": null,
+              "aliases":[],
+              "prisonerId": null,
+              "pncId": null
             }
           ]
           """.removeWhitespaceAndNewlines(),
@@ -258,6 +262,8 @@ internal class PersonControllerTest(
             "lastName": "Sob",
             "middleName": null,
             "dateOfBirth": null,
+            "gender": null,
+            "ethnicity": null,
             "aliases": [],
             "prisonerId": null,
             "pncId": null
@@ -267,6 +273,8 @@ internal class PersonControllerTest(
             "lastName": "Sobbers",
             "middleName": null,
             "dateOfBirth": null,
+            "gender": null,
+            "ethnicity": null,
             "aliases": [],
             "prisonerId": null,
             "pncId": null
@@ -442,24 +450,24 @@ internal class PersonControllerTest(
 
         result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
       }
-    }
 
-    it("responds with a 200 OK status when person is found in one upstream API but not another") {
-      whenever(getAddressesForPersonService.execute(pncId)).thenReturn(
-        Response(
-          data = emptyList(),
-          errors = listOf(
-            UpstreamApiError(
-              causedBy = UpstreamApi.NOMIS,
-              type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+      it("responds with a 200 OK status when person is found in one upstream API but not another") {
+        whenever(getAddressesForPersonService.execute(pncId)).thenReturn(
+          Response(
+            data = emptyList(),
+            errors = listOf(
+              UpstreamApiError(
+                causedBy = UpstreamApi.NOMIS,
+                type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+              ),
             ),
           ),
-        ),
-      )
+        )
 
-      val result = mockMvc.perform(get("$basePath/$encodedPncId/addresses")).andReturn()
+        val result = mockMvc.perform(get("$basePath/$encodedPncId/addresses")).andReturn()
 
-      result.response.status.shouldBe(HttpStatus.OK.value())
+        result.response.status.shouldBe(HttpStatus.OK.value())
+      }
     }
   },
 )
