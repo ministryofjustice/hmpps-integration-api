@@ -9,6 +9,8 @@ data class Prisoner(
   val lastName: String,
   val middleNames: String? = null,
   val dateOfBirth: LocalDate? = null,
+  val gender: String? = null,
+  val ethnicity: String? = null,
   val aliases: List<PrisonerAlias> = listOf(),
   val prisonerNumber: String? = null,
   val pncNumber: String? = null,
@@ -18,6 +20,8 @@ data class Prisoner(
     lastName = this.lastName,
     middleName = this.middleNames,
     dateOfBirth = this.dateOfBirth,
+    gender = this.gender,
+    ethnicity = this.ethnicity,
     aliases = this.aliases.map {
       Alias(
         it.firstName,
