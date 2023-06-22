@@ -13,6 +13,8 @@ class PrisonerAliasTest : DescribeSpec(
           lastName = "Alias Last Name",
           middleNames = "Alias Middle Names",
           dateOfBirth = LocalDate.parse("2023-01-01"),
+          gender = "Gender",
+          ethnicity = "Ethnicity",
         )
 
         val alias = prisonerAlias.toAlias()
@@ -21,6 +23,8 @@ class PrisonerAliasTest : DescribeSpec(
         alias.lastName.shouldBe(prisonerAlias.lastName)
         alias.middleName.shouldBe(prisonerAlias.middleNames)
         alias.dateOfBirth.shouldBe(prisonerAlias.dateOfBirth)
+        alias.gender.shouldBe(prisonerAlias.gender)
+        alias.ethnicity.shouldBe(prisonerAlias.ethnicity)
       }
     }
   },
