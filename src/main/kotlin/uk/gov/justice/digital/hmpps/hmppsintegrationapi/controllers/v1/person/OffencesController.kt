@@ -1,7 +1,11 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.controllers.v1.person
 
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.decodeUrlCharacters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Offence
@@ -26,12 +30,10 @@ class OffencesController(
     val pncId = encodedPncId.decodeUrlCharacters()
     val response = getOffencesForPersonService.execute(pncId)
 
-    if (
-      response!!.hasErrorCausedBy(UpstreamApiError.Type.ENTITY_NOT_FOUND, causedBy = UpstreamApi.NOMIS)
-    ) { // REMOVE !! above
+    if (response.hasErrorCausedBy(UpstreamApiError.Type.ENTITY_NOT_FOUND, causedBy = UpstreamApi.NOMIS)) {
       throw EntityNotFoundException("Could not find person with id: $pncId")
     }
 
-    return response!!.data.paginateWith(page, perPage) // remove the !!
+    return response.data.paginateWith(page, perPage)
   }
 }

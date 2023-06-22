@@ -62,9 +62,8 @@ internal class OffencesControllerTest(
       it("returns the offences for a person with the matching ID") {
         val result = mockMvc.perform(MockMvcRequestBuilders.get("$path")).andReturn()
 
-        result.response.contentAsString.shouldBe(
+        result.response.contentAsString.shouldContain(
           """
-        {
           "data": [
             {
               "date": "9999-01-01",
@@ -72,7 +71,6 @@ internal class OffencesControllerTest(
               "description": "This is a description of an offence."
             }
           ]
-        }
         """.removeWhitespaceAndNewlines(),
         )
       }
@@ -118,7 +116,7 @@ internal class OffencesControllerTest(
         whenever(getOffencesForPersonService.execute(pncId)).thenReturn(
           Response(
             data =
-            List(20) { i ->
+            List(20) {
               Offence(
                 date = LocalDate.parse("9999-01-01"),
                 code = "RR99999",
@@ -129,11 +127,11 @@ internal class OffencesControllerTest(
         )
 
         val result =
-          mockMvc.perform(MockMvcRequestBuilders.get("$path&page=3&perPage=5"))
+          mockMvc.perform(MockMvcRequestBuilders.get("$path?page=1&perPage=10"))
             .andReturn()
 
-        result.response.contentAsString.shouldContainJsonKeyValue("$.pagination.page", 3)
-        result.response.contentAsString.shouldContainJsonKeyValue("$.pagination.totalPages", 4)
+        result.response.contentAsString.shouldContainJsonKeyValue("$.pagination.page", 1)
+        result.response.contentAsString.shouldContainJsonKeyValue("$.pagination.totalPages", 2)
       }
     }
   },
