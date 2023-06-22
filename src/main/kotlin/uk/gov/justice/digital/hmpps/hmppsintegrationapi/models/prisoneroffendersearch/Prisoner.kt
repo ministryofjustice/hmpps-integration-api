@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch
 
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Alias
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Person
 import java.time.LocalDate
 
@@ -22,14 +21,7 @@ data class Prisoner(
     dateOfBirth = this.dateOfBirth,
     gender = this.gender,
     ethnicity = this.ethnicity,
-    aliases = this.aliases.map {
-      Alias(
-        it.firstName,
-        it.lastName,
-        it.middleNames,
-        it.dateOfBirth,
-      )
-    },
+    aliases = this.aliases.map { it.toAlias() },
     prisonerId = this.prisonerNumber,
     pncId = this.pncNumber,
   )

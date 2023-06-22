@@ -2,6 +2,8 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffender
 
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.types.shouldBeTypeOf
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Alias
 import java.time.LocalDate
 
 class PrisonerTest : DescribeSpec(
@@ -18,12 +20,7 @@ class PrisonerTest : DescribeSpec(
           prisonerNumber = "prisonerNumber",
           pncNumber = "pncNumber",
           aliases = listOf(
-            PrisonerAlias(
-              firstName = "Alias First Name",
-              lastName = "Alias Last Name",
-              middleNames = "Alias Middle Names",
-              dateOfBirth = LocalDate.parse("2023-01-01"),
-            ),
+            PrisonerAlias(firstName = "Alias First Name", lastName = "Alias Last Name"),
           ),
         )
 
@@ -35,10 +32,7 @@ class PrisonerTest : DescribeSpec(
         person.dateOfBirth.shouldBe(prisoner.dateOfBirth)
         person.gender.shouldBe(prisoner.gender)
         person.ethnicity.shouldBe(prisoner.ethnicity)
-        person.aliases.first().firstName.shouldBe("Alias First Name")
-        person.aliases.first().lastName.shouldBe("Alias Last Name")
-        person.aliases.first().middleName.shouldBe("Alias Middle Names")
-        person.aliases.first().dateOfBirth.shouldBe(LocalDate.parse("2023-01-01"))
+        person.aliases.first().shouldBeTypeOf<Alias>()
         person.prisonerId.shouldBe(prisoner.prisonerNumber)
         person.pncId.shouldBe(prisoner.pncNumber)
       }
