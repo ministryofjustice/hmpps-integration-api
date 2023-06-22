@@ -419,6 +419,14 @@ components:
           format: date
           example: 1965-12-01
           description: date of birth
+        gender:
+          type: string
+          example: Male
+          description: gender
+        ethnicity:
+          type: string
+          example: Prefer not to say
+          description: ethnicity
     Error:
       type: object
       properties:
