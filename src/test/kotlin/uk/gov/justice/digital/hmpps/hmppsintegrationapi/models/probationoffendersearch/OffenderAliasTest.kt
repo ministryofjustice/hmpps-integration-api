@@ -1,0 +1,27 @@
+package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.probationoffendersearch
+
+import io.kotest.core.spec.style.DescribeSpec
+import io.kotest.matchers.shouldBe
+import java.time.LocalDate
+
+class OffenderAliasTest : DescribeSpec(
+  {
+    describe("#toAlias") {
+      it("maps one-to-one attributes to alias attributes") {
+        val offenderAlias = OffenderAlias(
+          firstName = "Alias First Name",
+          surname = "Alias Last Name",
+          middleNames = listOf("Alias", "Middle", "Names"),
+          dateOfBirth = LocalDate.parse("2023-01-01"),
+        )
+
+        val alias = offenderAlias.toAlias()
+
+        alias.firstName.shouldBe(offenderAlias.firstName)
+        alias.lastName.shouldBe(offenderAlias.surname)
+        alias.middleName.shouldBe("Alias Middle Names")
+        alias.dateOfBirth.shouldBe(offenderAlias.dateOfBirth)
+      }
+    }
+  },
+)
