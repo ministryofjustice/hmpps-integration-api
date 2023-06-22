@@ -49,7 +49,7 @@ class PersonSmokeTest : DescribeSpec(
       )
     }
 
-    it("returns a person from NOMIS, Prisoner Offender Search and Probation Offender Search") {
+    it("returns a person from Prisoner Offender Search and Probation Offender Search") {
       val response = httpClient.send(
         httpRequest.uri(URI.create("$baseUrl/$basePath/$encodedPncId")).build(),
         HttpResponse.BodyHandlers.ofString(),
@@ -63,12 +63,16 @@ class PersonSmokeTest : DescribeSpec(
               "lastName": "Larsen",
               "middleName": "John James",
               "dateOfBirth": "1975-04-02",
+              "gender": "Female",
+              "ethnicity": "White: Eng./Welsh/Scot./N.Irish/British",
               "aliases": [
                 {
                   "firstName": "Robert",
                   "lastName": "Lorsen",
                   "middleName": "Trevor",
-                  "dateOfBirth": "1975-04-02"
+                  "dateOfBirth": "1975-04-02",
+                  "gender": "Male",
+                  "ethnicity": "White : Irish"
                 }
               ],
               "prisonerId": "A1234AA",
@@ -79,12 +83,16 @@ class PersonSmokeTest : DescribeSpec(
               "lastName": "string",
               "middleName": "string",
               "dateOfBirth": "2019-08-24",
+              "gender": "string",
+              "ethnicity": "string",
               "aliases": [
                 {
                   "firstName": "string",
                   "lastName": "string",
                   "middleName": "string",
-                  "dateOfBirth": "2019-08-24"
+                  "dateOfBirth": "2019-08-24",
+                  "gender": "string",
+                  "ethnicity": null
                 }
               ],
               "prisonerId": null,

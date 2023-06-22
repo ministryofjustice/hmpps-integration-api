@@ -10,6 +10,8 @@ data class Person(
   @JsonAlias("middleNames")
   val middleName: String? = null,
   val dateOfBirth: LocalDate? = null,
+  val gender: String? = null,
+  val ethnicity: String? = null,
   @JsonAlias("offenderAliases")
   val aliases: List<Alias> = listOf(),
   val prisonerId: String? = null,

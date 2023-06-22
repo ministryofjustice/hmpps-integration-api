@@ -11,4 +11,6 @@ data class Alias(
   val middleName: String? = null,
   @JsonAlias("dob")
   var dateOfBirth: LocalDate? = null,
+  val gender: String? = null,
+  val ethnicity: String? = null,
 )

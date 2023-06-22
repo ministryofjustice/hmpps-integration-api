@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch
 
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Alias
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Person
 import java.time.LocalDate
 
@@ -9,6 +8,8 @@ data class Prisoner(
   val lastName: String,
   val middleNames: String? = null,
   val dateOfBirth: LocalDate? = null,
+  val gender: String? = null,
+  val ethnicity: String? = null,
   val aliases: List<PrisonerAlias> = listOf(),
   val prisonerNumber: String? = null,
   val pncNumber: String? = null,
@@ -18,14 +19,9 @@ data class Prisoner(
     lastName = this.lastName,
     middleName = this.middleNames,
     dateOfBirth = this.dateOfBirth,
-    aliases = this.aliases.map {
-      Alias(
-        it.firstName,
-        it.lastName,
-        it.middleNames,
-        it.dateOfBirth,
-      )
-    },
+    gender = this.gender,
+    ethnicity = this.ethnicity,
+    aliases = this.aliases.map { it.toAlias() },
     prisonerId = this.prisonerNumber,
     pncId = this.pncNumber,
   )
