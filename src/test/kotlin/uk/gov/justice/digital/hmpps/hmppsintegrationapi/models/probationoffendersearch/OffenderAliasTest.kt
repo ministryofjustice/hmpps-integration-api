@@ -13,6 +13,7 @@ class OffenderAliasTest : DescribeSpec(
           surname = "Alias Last Name",
           middleNames = listOf("Alias", "Middle", "Names"),
           dateOfBirth = LocalDate.parse("2023-01-01"),
+          gender = "Gender",
         )
 
         val alias = offenderAlias.toAlias()
@@ -21,6 +22,7 @@ class OffenderAliasTest : DescribeSpec(
         alias.lastName.shouldBe(offenderAlias.surname)
         alias.middleName.shouldBe("Alias Middle Names")
         alias.dateOfBirth.shouldBe(offenderAlias.dateOfBirth)
+        alias.gender.shouldBe(offenderAlias.gender)
       }
     }
   },
