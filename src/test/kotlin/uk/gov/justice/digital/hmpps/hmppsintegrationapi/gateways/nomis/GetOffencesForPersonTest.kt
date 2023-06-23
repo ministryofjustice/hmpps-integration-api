@@ -21,7 +21,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMoc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.NomisApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApiError
-import java.io.File
 
 @ActiveProfiles("test")
 @ContextConfiguration(
@@ -32,15 +31,16 @@ class GetOffencesForPersonTest(
   @MockBean val hmppsAuthGateway: HmppsAuthGateway,
   val nomisGateway: NomisGateway,
 ) :
-  DescribeSpec({
-    val nomisApiMockServer = NomisApiMockServer()
-    val offenderNo = "zyx987"
+  DescribeSpec(
+    {
+      val nomisApiMockServer = NomisApiMockServer()
+      val offenderNo = "zyx987"
 
-    beforeEach {
-      nomisApiMockServer.start()
-      nomisApiMockServer.stubGetOffencesForPerson(
-        offenderNo,
-        """
+      beforeEach {
+        nomisApiMockServer.start()
+        nomisApiMockServer.stubGetOffencesForPerson(
+          offenderNo,
+          """
           [
             {
               "bookingId": 9887889,
@@ -61,77 +61,46 @@ class GetOffencesForPersonTest(
             }
           ]
         """.removeWhitespaceAndNewlines(),
-      )
+        )
 
-      Mockito.reset(hmppsAuthGateway)
-      whenever(hmppsAuthGateway.getClientToken("NOMIS")).thenReturn(HmppsAuthMockServer.TOKEN)
-    }
-
-    afterTest {
-      nomisApiMockServer.stop()
-    }
-
-    describe("#getOffences") {
-      it("authenticates using HMPPS Auth with credentials") {
-        nomisGateway.getOffencesForPerson(offenderNo)
-
-        verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("NOMIS")
+        Mockito.reset(hmppsAuthGateway)
+        whenever(hmppsAuthGateway.getClientToken("NOMIS")).thenReturn(HmppsAuthMockServer.TOKEN)
       }
 
-      it("returns offence history for the matching person ID") {
-        val response = nomisGateway.getOffencesForPerson(offenderNo)
-
-        response.data.count().shouldBeGreaterThan(0)
+      afterTest {
+        nomisApiMockServer.stop()
       }
 
-      it("returns a person without image metadata when no images are found") {
-        nomisApiMockServer.stubGetOffenderImageDetails(offenderNo, "[]")
+      describe("#getOffences") {
+        it("authenticates using HMPPS Auth with credentials") {
+          nomisGateway.getOffencesForPerson(offenderNo)
 
-        val response = nomisGateway.getImageMetadataForPerson(offenderNo)
+          verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("NOMIS")
+        }
 
-        response.data.shouldBeEmpty()
+        it("returns offence history for the matching person ID") {
+          val response = nomisGateway.getOffencesForPerson(offenderNo)
+
+          response.data.count().shouldBeGreaterThan(0)
+        }
+
+        it("returns a person with an empty list of offences when no offences are found") {
+          nomisApiMockServer.stubGetOffencesForPerson(offenderNo, "[]")
+
+          val response = nomisGateway.getOffencesForPerson(offenderNo)
+
+          response.data.shouldBeEmpty()
+        }
+
+        it("returns an error when 404 Not Found is returned because no person is found") {
+          nomisApiMockServer.stubGetOffencesForPerson(offenderNo, "", HttpStatus.NOT_FOUND)
+
+          val response = nomisGateway.getOffencesForPerson(offenderNo)
+
+          response.errors.shouldHaveSize(1)
+          response.errors.first().causedBy.shouldBe(UpstreamApi.NOMIS)
+          response.errors.first().type.shouldBe(UpstreamApiError.Type.ENTITY_NOT_FOUND)
+        }
       }
-
-      it("returns an error when 404 Not Found is returned") {
-        nomisApiMockServer.stubGetOffenderImageDetails(offenderNo, "", HttpStatus.NOT_FOUND)
-
-        val response = nomisGateway.getImageMetadataForPerson(offenderNo)
-
-        response.errors.shouldHaveSize(1)
-        response.errors.first().causedBy.shouldBe(UpstreamApi.NOMIS)
-        response.errors.first().type.shouldBe(UpstreamApiError.Type.ENTITY_NOT_FOUND)
-      }
-    }
-
-    describe("#getImageData") {
-      val imageId = 5678
-
-      beforeTest {
-        nomisApiMockServer.stubGetImageData(imageId)
-      }
-
-      it("authenticates using HMPPS Auth with credentials") {
-        nomisGateway.getImageData(imageId)
-
-        verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("NOMIS")
-      }
-
-      it("returns an image with the matching ID") {
-        val expectedImage = File("src/test/resources/__files/example.jpg").readBytes()
-
-        val response = nomisGateway.getImageData(imageId)
-
-        response.data.shouldBe(expectedImage)
-      }
-
-      it("returns an error when 404 Not Found is returned") {
-        nomisApiMockServer.stubGetImageData(imageId, HttpStatus.NOT_FOUND)
-
-        val response = nomisGateway.getImageData(imageId)
-
-        response.errors.shouldHaveSize(1)
-        response.errors.first().causedBy.shouldBe(UpstreamApi.NOMIS)
-        response.errors.first().type.shouldBe(UpstreamApiError.Type.ENTITY_NOT_FOUND)
-      }
-    }
-  },)
+    },
+  )

@@ -17,6 +17,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.ImageDetail
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.OffenceHistoryDetail
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.Offender
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.Address as AddressFromNomis
 
@@ -97,7 +98,25 @@ class NomisGateway(@Value("\${services.prison-api.base-url}") baseUrl: String) {
   }
 
   fun getOffencesForPerson(id: String): Response<List<Offence>> {
-    return Response(data = emptyList())
+    return try {
+      Response(
+        data = webClient.requestList<OffenceHistoryDetail>(
+          HttpMethod.GET,
+          "/api/bookings/offenderNo/$id/offenceHistory",
+          authenticationHeader(),
+        ).map { it.toOffence() },
+      )
+    } catch (exception: WebClientResponseException.NotFound) {
+      Response(
+        data = emptyList(),
+        errors = listOf(
+          UpstreamApiError(
+            causedBy = UpstreamApi.NOMIS,
+            type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+          ),
+        ),
+      )
+    }
   }
 
   private fun authenticationHeader(): Map<String, String> {

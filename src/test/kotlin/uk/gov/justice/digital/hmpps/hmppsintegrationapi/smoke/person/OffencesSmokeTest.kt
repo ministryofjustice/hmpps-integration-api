@@ -32,16 +32,24 @@ class OffencesSmokeTest : DescribeSpec(
       response.statusCode().shouldBe(HttpStatus.OK.value())
       response.body().shouldEqualJson(
         """
-      {
-        "data": [
-          {
-            "date": "2018-02-10",
-            "code": "RR84070",
-            "description": "Commit an act / series of acts with intent to pervert the course of public justice",
+        {
+          "data": [
+            {
+              "date": "2018-02-10",
+              "code": "RR84070",
+              "description": "Commit an act / series of acts with intent to pervert the course of public justice"
+            }
+          ],
+          "pagination": {
+            "isLastPage": true,
+            "count": 1,
+            "page": 1,
+            "perPage": 10,
+            "totalCount": 1,
+            "totalPages": 1
           }
-        ]
-      }
-      """.removeWhitespaceAndNewlines(),
+        }
+        """.removeWhitespaceAndNewlines(),
       )
     }
   },
