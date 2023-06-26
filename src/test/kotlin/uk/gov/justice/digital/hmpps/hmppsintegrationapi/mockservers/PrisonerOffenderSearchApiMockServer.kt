@@ -28,7 +28,7 @@ class PrisonerOffenderSearchApiMockServer : WireMockServer(WIREMOCK_PORT) {
 
   fun stubPostPrisonerSearch(requestBody: String, responseBody: String, status: HttpStatus = HttpStatus.OK) {
     stubFor(
-      post("/global-search")
+      post("/global-search?size=9999")
         .withHeader("Authorization", matching("Bearer ${HmppsAuthMockServer.TOKEN}"))
         .withRequestBody(WireMock.equalToJson(requestBody))
         .willReturn(
