@@ -71,36 +71,34 @@ class GetOffencesForPersonTest(
         nomisApiMockServer.stop()
       }
 
-      describe("#getOffences") {
-        it("authenticates using HMPPS Auth with credentials") {
-          nomisGateway.getOffencesForPerson(offenderNo)
+      it("authenticates using HMPPS Auth with credentials") {
+        nomisGateway.getOffencesForPerson(offenderNo)
 
-          verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("NOMIS")
-        }
+        verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("NOMIS")
+      }
 
-        it("returns offence history for the matching person ID") {
-          val response = nomisGateway.getOffencesForPerson(offenderNo)
+      it("returns offence history for the matching person ID") {
+        val response = nomisGateway.getOffencesForPerson(offenderNo)
 
-          response.data.count().shouldBeGreaterThan(0)
-        }
+        response.data.count().shouldBeGreaterThan(0)
+      }
 
-        it("returns a person with an empty list of offences when no offences are found") {
-          nomisApiMockServer.stubGetOffencesForPerson(offenderNo, "[]")
+      it("returns a person with an empty list of offences when no offences are found") {
+        nomisApiMockServer.stubGetOffencesForPerson(offenderNo, "[]")
 
-          val response = nomisGateway.getOffencesForPerson(offenderNo)
+        val response = nomisGateway.getOffencesForPerson(offenderNo)
 
-          response.data.shouldBeEmpty()
-        }
+        response.data.shouldBeEmpty()
+      }
 
-        it("returns an error when 404 Not Found is returned because no person is found") {
-          nomisApiMockServer.stubGetOffencesForPerson(offenderNo, "", HttpStatus.NOT_FOUND)
+      it("returns an error when 404 Not Found is returned because no person is found") {
+        nomisApiMockServer.stubGetOffencesForPerson(offenderNo, "", HttpStatus.NOT_FOUND)
 
-          val response = nomisGateway.getOffencesForPerson(offenderNo)
+        val response = nomisGateway.getOffencesForPerson(offenderNo)
 
-          response.errors.shouldHaveSize(1)
-          response.errors.first().causedBy.shouldBe(UpstreamApi.NOMIS)
-          response.errors.first().type.shouldBe(UpstreamApiError.Type.ENTITY_NOT_FOUND)
-        }
+        response.errors.shouldHaveSize(1)
+        response.errors.first().causedBy.shouldBe(UpstreamApi.NOMIS)
+        response.errors.first().type.shouldBe(UpstreamApiError.Type.ENTITY_NOT_FOUND)
       }
     },
   )

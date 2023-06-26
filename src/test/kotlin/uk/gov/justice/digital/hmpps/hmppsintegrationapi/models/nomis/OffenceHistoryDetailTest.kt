@@ -4,7 +4,7 @@ import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import java.time.LocalDate
 
-class OffenceTest : DescribeSpec(
+class OffenceHistoryDetailTest : DescribeSpec(
   {
     describe("#toOffence") {
       it("maps one-to-one attributes to integration API attributes") {
