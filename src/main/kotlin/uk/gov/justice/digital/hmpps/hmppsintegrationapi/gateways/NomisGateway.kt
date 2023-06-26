@@ -11,11 +11,13 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Address
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ImageMetadata
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Offence
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.ImageDetail
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.OffenceHistoryDetail
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.Offender
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.Address as AddressFromNomis
 
@@ -81,6 +83,28 @@ class NomisGateway(@Value("\${services.prison-api.base-url}") baseUrl: String) {
           "/api/offenders/$id/addresses",
           authenticationHeader(),
         ).map { it.toAddress() },
+      )
+    } catch (exception: WebClientResponseException.NotFound) {
+      Response(
+        data = emptyList(),
+        errors = listOf(
+          UpstreamApiError(
+            causedBy = UpstreamApi.NOMIS,
+            type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+          ),
+        ),
+      )
+    }
+  }
+
+  fun getOffencesForPerson(id: String): Response<List<Offence>> {
+    return try {
+      Response(
+        data = webClient.requestList<OffenceHistoryDetail>(
+          HttpMethod.GET,
+          "/api/bookings/offenderNo/$id/offenceHistory",
+          authenticationHeader(),
+        ).map { it.toOffence() },
       )
     } catch (exception: WebClientResponseException.NotFound) {
       Response(

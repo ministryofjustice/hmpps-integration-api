@@ -144,36 +144,6 @@ paths:
                 PersonNotFoundError:
                   $ref: "#/components/examples/PersonNotFoundError"
 
-  /v1/persons/{encodedPncId}/addresses:
-    get:
-      tags:
-        - persons
-      summary: Returns addresses associated with a person.
-      parameters:
-        - $ref: "#/components/parameters/EncodedPncId"
-      responses:
-        "200":
-          description: Successfully found a person with the provided PNC ID.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: array
-                    minItems: 0
-                    items:
-                      $ref: "#/components/schemas/Address"
-        "404":
-          description: Failed to find a person with the provided PNC ID.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-              examples:
-                PersonNotFoundError:
-                  $ref: "#/components/examples/PersonNotFoundError"
-
   /v1/images/{id}:
     get:
       tags:
@@ -202,6 +172,102 @@ paths:
               examples:
                 ImageNotFoundError:
                   $ref: "#/components/examples/ImageNotFoundError"
+
+  /v1/persons/{encodedPncId}/addresses:
+    get:
+      tags:
+        - persons
+      summary: Returns addresses associated with a person.
+      parameters:
+        - $ref: "#/components/parameters/EncodedPncId"
+        - in: query
+          name: page
+          schema:
+            type: number
+            minimum: 0
+            default: 1
+          required: false
+          description: The page number (starting from 1)
+        - in: query
+          name: per_page
+          schema:
+            type: number
+            minimum: 1
+            default: 10
+          required: false
+          description: The maximum number of results for a page
+      responses:
+        "200":
+          description: Successfully found a person with the provided PNC ID.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    minItems: 0
+                    items:
+                      $ref: "#/components/schemas/Address"
+                  pagination:
+                    $ref: "#/components/schemas/Pagination"
+        "404":
+          description: Failed to find a person with the provided PNC ID.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                PersonNotFoundError:
+                  $ref: "#/components/examples/PersonNotFoundError"
+
+  /v1/persons/{encodedPncId}/offences:
+    get:
+      tags:
+        - persons
+      summary: Returns offences associated with a person.
+      parameters:
+        - $ref: "#/components/parameters/EncodedPncId"
+        - in: query
+          name: page
+          schema:
+            type: number
+            minimum: 0
+            default: 1
+          required: false
+          description: The page number (starting from 1)
+        - in: query
+          name: per_page
+          schema:
+            type: number
+            minimum: 1
+            default: 10
+          required: false
+          description: The maximum number of results for a page
+      responses:
+        "200":
+          description: Successfully found a person with the provided PNC ID.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    minItems: 0
+                    items:
+                      $ref: "#/components/schemas/Offence"
+                  pagination:
+                    $ref: "#/components/schemas/Pagination"
+        "404":
+          description: Failed to find a person with the provided PNC ID.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                PersonNotFoundError:
+                  $ref: "#/components/examples/PersonNotFoundError"
 
   /{TBC}/v1/persons/{Id}/accommodations:
     get:
@@ -242,15 +308,6 @@ paths:
   /{TBC}/v1/persons/{Id}/licenses:
     get:
       summary: FUTURE ENDPOINT - Returns license conditions associated with a person.
-      parameters:
-        - $ref: "#/components/parameters/Id"
-      responses:
-        "200":
-          description: Success.
-
-  /{TBC}/v1/persons/{Id}/offences:
-    get:
-      summary: FUTURE ENDPOINT -  Returns offences associated with a person.
       parameters:
         - $ref: "#/components/parameters/Id"
       responses:
@@ -475,6 +532,22 @@ components:
           type: string
           example: OFF_BKG
           description: The type describes the contextual foci, context or scenario within which the image was taken. It could be for a particular purpose or capturing the results of a particular type of incident.
+    Offence:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+          example: 1965-12-01
+          description: Date the offence took place or start date if the offence occurred over a period of time
+        code:
+          type: string
+          example: RR84070
+          description: CJS offence code
+        description:
+          type: string
+          example: Commit an act / series of acts with intent to pervert the course of public justice
+          description: Description associated with the CJS offence code
     Pagination:
       type: object
       properties:

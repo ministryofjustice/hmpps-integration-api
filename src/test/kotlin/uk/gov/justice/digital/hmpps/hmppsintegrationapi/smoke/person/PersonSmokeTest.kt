@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.hmppsintegrationapi.smoke
+package uk.gov.justice.digital.hmpps.hmppsintegrationapi.smoke.person
 
 import io.kotest.assertions.json.shouldEqualJson
 import io.kotest.core.spec.style.DescribeSpec
