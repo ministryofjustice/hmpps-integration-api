@@ -71,7 +71,7 @@ class NomisApiMockServer : WireMockServer(WIREMOCK_PORT) {
     )
   }
 
-  fun stubGetOffencesForPerson(offenderNo: String, body: String, status: HttpStatus = HttpStatus.OK) {
+  fun stubGetConvictionsForPerson(offenderNo: String, body: String, status: HttpStatus = HttpStatus.OK) {
     stubFor(
       get("/api/bookings/offenderNo/$offenderNo/offenceHistory")
         .withHeader(

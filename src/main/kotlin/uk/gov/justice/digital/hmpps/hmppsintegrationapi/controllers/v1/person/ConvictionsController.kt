@@ -8,27 +8,27 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.decodeUrlCharacters
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Offence
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Conviction
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetOffencesForPersonService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetConvictionsForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.PaginatedResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.paginateWith
 
 @RestController
 @RequestMapping("/v1/persons")
-class OffencesController(
-  @Autowired val getOffencesForPersonService: GetOffencesForPersonService,
+class ConvictionsController(
+  @Autowired val getConvictionsForPersonService: GetConvictionsForPersonService,
 ) {
 
-  @GetMapping("{encodedPncId}/offences")
-  fun getPersonOffences(
+  @GetMapping("{encodedPncId}/convictions")
+  fun getPersonConvictions(
     @PathVariable encodedPncId: String,
     @RequestParam(required = false, defaultValue = "1", name = "page") page: Int,
     @RequestParam(required = false, defaultValue = "10", name = "perPage") perPage: Int,
-  ): PaginatedResponse<Offence> {
+  ): PaginatedResponse<Conviction> {
     val pncId = encodedPncId.decodeUrlCharacters()
-    val response = getOffencesForPersonService.execute(pncId)
+    val response = getConvictionsForPersonService.execute(pncId)
 
     if (response.hasErrorCausedBy(UpstreamApiError.Type.ENTITY_NOT_FOUND, causedBy = UpstreamApi.NOMIS)) {
       throw EntityNotFoundException("Could not find person with id: $pncId")

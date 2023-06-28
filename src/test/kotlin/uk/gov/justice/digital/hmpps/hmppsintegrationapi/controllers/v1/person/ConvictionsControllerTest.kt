@@ -15,19 +15,19 @@ import org.springframework.http.HttpStatus
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Offence
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Conviction
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetOffencesForPersonService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetConvictionsForPersonService
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 import java.time.LocalDate
 
-@WebMvcTest(controllers = [OffencesController::class])
-internal class OffencesControllerTest(
-  @Autowired val mockMvc: MockMvc,
-  @MockBean val getOffencesForPersonService: GetOffencesForPersonService,
+@WebMvcTest(controllers = [ConvictionsController::class])
+internal class ConvictionsControllerTest(
+    @Autowired val mockMvc: MockMvc,
+    @MockBean val getConvictionsForPersonService: GetConvictionsForPersonService,
 ) : DescribeSpec(
   {
     val pncId = "9999/11111A"
@@ -36,11 +36,11 @@ internal class OffencesControllerTest(
 
     describe("GET $path") {
       beforeTest {
-        Mockito.reset(getOffencesForPersonService)
-        whenever(getOffencesForPersonService.execute(pncId)).thenReturn(
+        Mockito.reset(getConvictionsForPersonService)
+        whenever(getConvictionsForPersonService.execute(pncId)).thenReturn(
           Response(
             data = listOf(
-              Offence(
+              Conviction(
                 date = LocalDate.parse("9999-01-01"),
                 code = "RR99999",
                 description = "This is a description of an offence.",
@@ -59,7 +59,7 @@ internal class OffencesControllerTest(
       it("retrieves the offences for a person with the matching ID") {
         mockMvc.perform(MockMvcRequestBuilders.get("$path")).andReturn()
 
-        verify(getOffencesForPersonService, VerificationModeFactory.times(1)).execute(pncId)
+        verify(getConvictionsForPersonService, VerificationModeFactory.times(1)).execute(pncId)
       }
 
       it("returns the offences for a person with the matching ID") {
@@ -84,7 +84,7 @@ internal class OffencesControllerTest(
           URLEncoder.encode(pncIdForPersonWithNoOffences, StandardCharsets.UTF_8)
         val path = "/v1/persons/$encodedPncIdForPersonWithNoOffences/offences"
 
-        whenever(getOffencesForPersonService.execute(pncIdForPersonWithNoOffences)).thenReturn(
+        whenever(getConvictionsForPersonService.execute(pncIdForPersonWithNoOffences)).thenReturn(
           Response(
             data = emptyList(),
           ),
@@ -98,7 +98,7 @@ internal class OffencesControllerTest(
       }
 
       it("responds with a 404 NOT FOUND status when person isn't found in the upstream API") {
-        whenever(getOffencesForPersonService.execute(pncId)).thenReturn(
+        whenever(getConvictionsForPersonService.execute(pncId)).thenReturn(
           Response(
             data = emptyList(),
             errors = listOf(
@@ -116,11 +116,11 @@ internal class OffencesControllerTest(
       }
 
       it("returns paginated results") {
-        whenever(getOffencesForPersonService.execute(pncId)).thenReturn(
+        whenever(getConvictionsForPersonService.execute(pncId)).thenReturn(
           Response(
             data =
             List(20) {
-              Offence(
+              Conviction(
                 date = LocalDate.parse("9999-01-01"),
                 code = "RR99999",
                 description = "This is a description of an offence.",

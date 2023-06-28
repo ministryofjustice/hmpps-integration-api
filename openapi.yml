@@ -221,11 +221,11 @@ paths:
                 PersonNotFoundError:
                   $ref: "#/components/examples/PersonNotFoundError"
 
-  /v1/persons/{encodedPncId}/offences:
+  /v1/persons/{encodedPncId}/convictions:
     get:
       tags:
         - persons
-      summary: Returns offences associated with a person.
+      summary: Returns convictions associated with a person.
       parameters:
         - $ref: "#/components/parameters/EncodedPncId"
         - in: query
@@ -256,7 +256,7 @@ paths:
                     type: array
                     minItems: 0
                     items:
-                      $ref: "#/components/schemas/Offence"
+                      $ref: "#/components/schemas/Conviction"
                   pagination:
                     $ref: "#/components/schemas/Pagination"
         "404":
@@ -532,14 +532,14 @@ components:
           type: string
           example: OFF_BKG
           description: The type describes the contextual foci, context or scenario within which the image was taken. It could be for a particular purpose or capturing the results of a particular type of incident.
-    Offence:
+    Conviction:
       type: object
       properties:
         date:
           type: string
           format: date
           example: 1965-12-01
-          description: Date the offence took place or start date if the offence occurred over a period of time
+          description: Date the conviction took place or start date if the conviction occurred over a period of time
         code:
           type: string
           example: RR84070

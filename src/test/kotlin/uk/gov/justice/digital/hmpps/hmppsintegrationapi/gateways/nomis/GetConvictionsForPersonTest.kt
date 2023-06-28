@@ -27,7 +27,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApiError
   initializers = [ConfigDataApplicationContextInitializer::class],
   classes = [NomisGateway::class],
 )
-class GetOffencesForPersonTest(
+class GetConvictionsForPersonTest(
   @MockBean val hmppsAuthGateway: HmppsAuthGateway,
   val nomisGateway: NomisGateway,
 ) :
@@ -38,7 +38,7 @@ class GetOffencesForPersonTest(
 
       beforeEach {
         nomisApiMockServer.start()
-        nomisApiMockServer.stubGetOffencesForPerson(
+        nomisApiMockServer.stubGetConvictionsForPerson(
           offenderNo,
           """
           [
@@ -84,7 +84,7 @@ class GetOffencesForPersonTest(
       }
 
       it("returns a person with an empty list of offences when no offences are found") {
-        nomisApiMockServer.stubGetOffencesForPerson(offenderNo, "[]")
+        nomisApiMockServer.stubGetConvictionsForPerson(offenderNo, "[]")
 
         val response = nomisGateway.getOffencesForPerson(offenderNo)
 
@@ -92,7 +92,7 @@ class GetOffencesForPersonTest(
       }
 
       it("returns an error when 404 Not Found is returned because no person is found") {
-        nomisApiMockServer.stubGetOffencesForPerson(offenderNo, "", HttpStatus.NOT_FOUND)
+        nomisApiMockServer.stubGetConvictionsForPerson(offenderNo, "", HttpStatus.NOT_FOUND)
 
         val response = nomisGateway.getOffencesForPerson(offenderNo)
 

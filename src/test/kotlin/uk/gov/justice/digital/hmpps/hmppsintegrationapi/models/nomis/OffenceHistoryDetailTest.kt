@@ -14,7 +14,7 @@ class OffenceHistoryDetailTest : DescribeSpec(
           offenceDescription = "A test offence description for model testing",
         )
 
-        val integrationApiOffence = offenceHistoryDetail.toOffence()
+        val integrationApiOffence = offenceHistoryDetail.toConviction()
 
         integrationApiOffence.date.shouldBe(offenceHistoryDetail.offenceDate)
         integrationApiOffence.code.shouldBe(offenceHistoryDetail.offenceCode)

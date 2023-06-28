@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.probationoffendersearch
+package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.probationconvictionsearch
 
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.booleans.shouldBeTrue

@@ -12,7 +12,7 @@ import java.net.http.HttpRequest
 import java.net.http.HttpResponse
 import java.nio.charset.StandardCharsets
 
-class OffencesSmokeTest : DescribeSpec(
+class ConvictionsSmokeTest : DescribeSpec(
   {
     val pncId = "2004/13116M"
     val encodedPncId = URLEncoder.encode(pncId, StandardCharsets.UTF_8)

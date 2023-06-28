@@ -11,7 +11,7 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Address
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ImageMetadata
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Offence
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Conviction
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApi
@@ -97,14 +97,14 @@ class NomisGateway(@Value("\${services.prison-api.base-url}") baseUrl: String) {
     }
   }
 
-  fun getOffencesForPerson(id: String): Response<List<Offence>> {
+  fun getConvictionsForPerson(id: String): Response<List<Conviction>> {
     return try {
       Response(
         data = webClient.requestList<OffenceHistoryDetail>(
           HttpMethod.GET,
           "/api/bookings/offenderNo/$id/offenceHistory",
           authenticationHeader(),
-        ).map { it.toOffence() },
+        ).map { it.toConviction() },
       )
     } catch (exception: WebClientResponseException.NotFound) {
       Response(

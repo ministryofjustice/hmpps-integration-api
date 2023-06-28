@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.probationoffendersearch
+package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.probationconvictionsearch
 
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.collections.shouldBeEmpty
@@ -28,7 +28,7 @@ import java.time.LocalDate
   initializers = [ConfigDataApplicationContextInitializer::class],
   classes = [ProbationOffenderSearchGateway::class],
 )
-class ProbationOffenderSearchGatewayTest(
+class ProbationConvictionSearchGatewayTest(
   @MockBean val hmppsAuthGateway: HmppsAuthGateway,
   private val probationOffenderSearchGateway: ProbationOffenderSearchGateway,
 ) : DescribeSpec({

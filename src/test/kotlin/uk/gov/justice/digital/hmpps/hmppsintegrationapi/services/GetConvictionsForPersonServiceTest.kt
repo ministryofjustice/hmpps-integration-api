@@ -11,21 +11,17 @@ import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.context.ContextConfiguration
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NomisGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffenderSearchGateway
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Offence
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Person
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Response
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApi
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.*
 import java.time.LocalDate
 
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
-  classes = [GetOffencesForPersonService::class],
+  classes = [GetConvictionsForPersonService::class],
 )
-internal class GetOffencesForPersonServiceTest(
+internal class GetConvictionsForPersonServiceTest(
   @MockBean val nomisGateway: NomisGateway,
   @MockBean val prisonerOffenderSearchGateway: PrisonerOffenderSearchGateway,
-  private val getOffencesForPersonService: GetOffencesForPersonService,
+  private val getOffencesForPersonService: GetConvictionsForPersonService,
 ) : DescribeSpec(
   {
     val pncId = "1234/56789B"
@@ -38,12 +34,12 @@ internal class GetOffencesForPersonServiceTest(
         Response(data = listOf(Person(firstName = "Chandler", lastName = "Bing", prisonerId = prisonerNumber))),
       )
 
-      whenever(nomisGateway.getOffencesForPerson(prisonerNumber)).thenReturn(
+      whenever(nomisGateway.getConvictionsForPerson(prisonerNumber)).thenReturn(
         Response(
           data = listOf(
-            Offence(code = "RR12345", description = "First Offence", date = LocalDate.parse("2020-02-03")),
-            Offence(code = "RR54321", description = "Second Offence", date = LocalDate.parse("2021-03-04")),
-            Offence(code = "RR24680", description = "Third Offence", date = LocalDate.parse("2022-04-05")),
+            Conviction(code = "RR12345", description = "First Offence", date = LocalDate.parse("2020-02-03")),
+            Conviction(code = "RR54321", description = "Second Offence", date = LocalDate.parse("2021-03-04")),
+            Conviction(code = "RR24680", description = "Third Offence", date = LocalDate.parse("2022-04-05")),
           ),
         ),
       )
@@ -58,7 +54,7 @@ internal class GetOffencesForPersonServiceTest(
     it("retrieves offences for a person from NOMIS using prisoner number") {
       getOffencesForPersonService.execute(pncId)
 
-      verify(nomisGateway, VerificationModeFactory.times(1)).getOffencesForPerson(prisonerNumber)
+      verify(nomisGateway, VerificationModeFactory.times(1)).getConvictionsForPerson(prisonerNumber)
     }
 
     it("returns all offences for a person") {
@@ -68,7 +64,7 @@ internal class GetOffencesForPersonServiceTest(
     }
 
     it("returns an error when person cannot be found in NOMIS") {
-      whenever(nomisGateway.getOffencesForPerson(prisonerNumber)).thenReturn(
+      whenever(nomisGateway.getConvictionsForPerson(prisonerNumber)).thenReturn(
         Response(
           data = emptyList(),
           errors = listOf(

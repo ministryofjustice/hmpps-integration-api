@@ -1,6 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis
 
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Offence
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Conviction
 import java.time.LocalDate
 
 data class OffenceHistoryDetail(
@@ -8,7 +8,7 @@ data class OffenceHistoryDetail(
   val offenceCode: String,
   val offenceDescription: String,
 ) {
-  fun toOffence(): Offence = Offence(
+  fun toConviction(): Conviction = Conviction(
     date = offenceDate,
     code = offenceCode,
     description = offenceDescription,

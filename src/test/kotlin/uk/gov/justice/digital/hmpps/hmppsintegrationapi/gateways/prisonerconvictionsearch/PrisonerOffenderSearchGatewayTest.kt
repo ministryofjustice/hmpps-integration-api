@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.prisoneroffendersearch
+package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.prisonerconvictionsearch
 
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.collections.shouldBeEmpty
