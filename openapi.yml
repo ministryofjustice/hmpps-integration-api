@@ -535,7 +535,7 @@ components:
     Offence:
       type: object
       properties:
-        CJSCode:
+        cjsCode:
           type: string
           example: RR84070
           description: Criminal Justice System offence code
@@ -552,7 +552,7 @@ components:
           type: string
           format: date
           example: 2018-03-10
-          description: End date of range the offence was believed to have taken place
+          description: End date of range over which the offence was believed to have taken place
         startDate:
           type: string
           format: date

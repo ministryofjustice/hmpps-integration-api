@@ -34,12 +34,15 @@ class OffencesSmokeTest : DescribeSpec(
         """
         {
           "data": [
-            {
-              "date": "2018-02-10",
-              "code": "RR84070",
-              "description": "Commit an act / series of acts with intent to pervert the course of public justice"
-            }
-          ],
+          {
+            "cjsCode": "RR84070",
+            "courtDate": "2018-02-10",
+            "description": "Commit an act / series of acts with intent to pervert the course of public justice",
+            "endDate": "2018-03-10",
+            "startDate": "2018-02-10",
+            "statuteCode": "RR84"
+          }
+        ],
           "pagination": {
             "isLastPage": true,
             "count": 1,

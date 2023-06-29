@@ -44,7 +44,7 @@ internal class OffencesControllerTest(
                 cjsCode = "RR99999",
                 courtDate = LocalDate.parse("2023-03-03"),
                 description = "This is a description of an offence.",
-                endDate = LocalDate.parse("2023-02-01") ,
+                endDate = LocalDate.parse("2023-02-01"),
                 startDate = LocalDate.parse("2023-01-01"),
                 statuteCode = "RR99",
               ),
@@ -130,7 +130,7 @@ internal class OffencesControllerTest(
                 cjsCode = "RR99999",
                 courtDate = LocalDate.parse("2023-03-03"),
                 description = "This is a description of an offence.",
-                endDate = LocalDate.parse("2023-02-01") ,
+                endDate = LocalDate.parse("2023-02-01"),
                 startDate = LocalDate.parse("2023-01-01"),
                 statuteCode = "RR99",
               )

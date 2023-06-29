@@ -12,11 +12,11 @@ data class OffenceHistoryDetail(
   val statuteCode: String,
 ) {
   fun toOffence(): Offence = Offence(
-    cjsCode = offenceCode,
-    courtDate = courtDate,
-    description = offenceDescription,
-    endDate = offenceRangeDate,
-    startDate = offenceDate,
-    statuteCode = statuteCode,
+    cjsCode = this.offenceCode,
+    courtDate = this.courtDate,
+    description = this.offenceDescription,
+    endDate = this.offenceRangeDate,
+    startDate = this.offenceDate,
+    statuteCode = this.statuteCode,
   )
 }
