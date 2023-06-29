@@ -539,7 +539,7 @@ components:
           type: string
           format: date
           example: 1965-12-01
-          description: Date the conviction took place or start date if the conviction occurred over a period of time
+          description: Date the offence took place or start date if the offence occurred over a period of time
         code:
           type: string
           example: RR84070
