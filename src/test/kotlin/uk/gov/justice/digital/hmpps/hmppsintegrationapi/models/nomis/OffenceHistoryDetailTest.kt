@@ -9,16 +9,22 @@ class OffenceHistoryDetailTest : DescribeSpec(
     describe("#toOffence") {
       it("maps one-to-one attributes to integration API attributes") {
         val offenceHistoryDetail = OffenceHistoryDetail(
+          courtDate = LocalDate.parse("1995-06-06"),
           offenceDate = LocalDate.parse("1995-04-06"),
           offenceCode = "RR84555",
           offenceDescription = "A test offence description for model testing",
+          offenceRangeDate = LocalDate.parse("1995-05-06"),
+          statuteCode = "RR84",
         )
 
         val integrationApiOffence = offenceHistoryDetail.toOffence()
 
-        integrationApiOffence.date.shouldBe(offenceHistoryDetail.offenceDate)
-        integrationApiOffence.code.shouldBe(offenceHistoryDetail.offenceCode)
+        integrationApiOffence.cjsCode.shouldBe(offenceHistoryDetail.offenceCode)
+        integrationApiOffence.courtDate.shouldBe(offenceHistoryDetail.courtDate)
         integrationApiOffence.description.shouldBe(offenceHistoryDetail.offenceDescription)
+        integrationApiOffence.endDate.shouldBe(offenceHistoryDetail.offenceRangeDate)
+        integrationApiOffence.startDate.shouldBe(offenceHistoryDetail.offenceDate)
+        integrationApiOffence.statuteCode.shouldBe(offenceHistoryDetail.statuteCode)
       }
     }
   },

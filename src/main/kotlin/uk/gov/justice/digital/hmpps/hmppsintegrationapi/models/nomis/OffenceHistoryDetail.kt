@@ -4,13 +4,19 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Offence
 import java.time.LocalDate
 
 data class OffenceHistoryDetail(
-  val offenceDate: LocalDate,
+  val courtDate: LocalDate,
   val offenceCode: String,
+  val offenceDate: LocalDate,
   val offenceDescription: String,
+  val offenceRangeDate: LocalDate,
+  val statuteCode: String,
 ) {
   fun toOffence(): Offence = Offence(
-    date = offenceDate,
-    code = offenceCode,
+    cjsCode = offenceCode,
+    courtDate = courtDate,
     description = offenceDescription,
+    endDate = offenceRangeDate,
+    startDate = offenceDate,
+    statuteCode = statuteCode,
   )
 }

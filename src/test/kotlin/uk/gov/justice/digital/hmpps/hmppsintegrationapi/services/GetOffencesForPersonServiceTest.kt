@@ -41,9 +41,9 @@ internal class GetOffencesForPersonServiceTest(
       whenever(nomisGateway.getOffencesForPerson(prisonerNumber)).thenReturn(
         Response(
           data = listOf(
-            Offence(code = "RR12345", description = "First Offence", date = LocalDate.parse("2020-02-03")),
-            Offence(code = "RR54321", description = "Second Offence", date = LocalDate.parse("2021-03-04")),
-            Offence(code = "RR24680", description = "Third Offence", date = LocalDate.parse("2022-04-05")),
+            Offence(cjsCode = "RR12345", description = "First Offence", startDate = LocalDate.parse("2020-02-03"), endDate = LocalDate.parse("2020-03-03"), courtDate = LocalDate.parse("2020-04-03"), statuteCode = "RR12"),
+            Offence(cjsCode = "RR54321", description = "Second Offence", startDate = LocalDate.parse("2021-03-04"), endDate = LocalDate.parse("2021-04-04"), courtDate = LocalDate.parse("2021-05-04"), statuteCode = "RR54"),
+            Offence(cjsCode = "RR24680", description = "Third Offence", startDate = LocalDate.parse("2022-04-05"), endDate = LocalDate.parse("2022-05-05"), courtDate = LocalDate.parse("2022-06-05"), statuteCode = "RR24"),
           ),
         ),
       )

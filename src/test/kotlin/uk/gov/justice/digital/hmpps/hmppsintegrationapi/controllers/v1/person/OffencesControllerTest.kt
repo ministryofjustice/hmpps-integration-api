@@ -41,9 +41,12 @@ internal class OffencesControllerTest(
           Response(
             data = listOf(
               Offence(
-                date = LocalDate.parse("9999-01-01"),
-                code = "RR99999",
+                cjsCode = "RR99999",
+                courtDate = LocalDate.parse("2023-03-03"),
                 description = "This is a description of an offence.",
+                endDate = LocalDate.parse("2023-02-01") ,
+                startDate = LocalDate.parse("2023-01-01"),
+                statuteCode = "RR99",
               ),
             ),
           ),
@@ -69,9 +72,12 @@ internal class OffencesControllerTest(
           """
           "data": [
             {
-              "date": "9999-01-01",
-              "code": "RR99999",
-              "description": "This is a description of an offence."
+              "cjsCode": "RR99999",
+              "courtDate":"2023-03-03",
+              "description": "This is a description of an offence.",
+              "endDate":"2023-02-01",
+              "startDate": "2023-01-01",
+              "statuteCode":"RR99"
             }
           ]
         """.removeWhitespaceAndNewlines(),
@@ -121,9 +127,12 @@ internal class OffencesControllerTest(
             data =
             List(20) {
               Offence(
-                date = LocalDate.parse("9999-01-01"),
-                code = "RR99999",
+                cjsCode = "RR99999",
+                courtDate = LocalDate.parse("2023-03-03"),
                 description = "This is a description of an offence.",
+                endDate = LocalDate.parse("2023-02-01") ,
+                startDate = LocalDate.parse("2023-01-01"),
+                statuteCode = "RR99",
               )
             },
           ),
