@@ -7,6 +7,6 @@ data class Offence(
   val courtDate: LocalDate?,
   val description: String,
   val endDate: LocalDate?,
-  val startDate: LocalDate,
+  val startDate: LocalDate?,
   val statuteCode: String,
 )

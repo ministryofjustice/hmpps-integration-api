@@ -6,7 +6,7 @@ import java.time.LocalDate
 data class OffenceHistoryDetail(
   val courtDate: LocalDate?,
   val offenceCode: String,
-  val offenceDate: LocalDate,
+  val offenceDate: LocalDate?,
   val offenceDescription: String,
   val offenceRangeDate: LocalDate?,
   val statuteCode: String,
