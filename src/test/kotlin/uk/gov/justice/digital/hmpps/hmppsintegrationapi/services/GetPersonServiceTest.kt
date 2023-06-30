@@ -11,6 +11,7 @@ import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.context.ContextConfiguration
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ProbationOffenderSearchGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Identifiers
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Response
 
@@ -30,10 +31,10 @@ internal class GetPersonServiceTest(
     Mockito.reset(probationOffenderSearchGateway)
 
     whenever(prisonerOffenderSearchGateway.getPersons(pncId = pncId)).thenReturn(
-      Response(data = listOf(Person(firstName = "Qui-gon", lastName = "Jin", nomisNumber = "A1234AA"))),
+      Response(data = listOf(Person(firstName = "Qui-gon", lastName = "Jin", identifiers = Identifiers(nomisNumber = "A1234AA")))),
     )
     whenever(probationOffenderSearchGateway.getPerson(pncId = pncId)).thenReturn(
-      Response(data = Person(firstName = "Qui-gon", lastName = "Jin", nomisNumber = "A1234AA")),
+      Response(data = Person(firstName = "Qui-gon", lastName = "Jin", identifiers = Identifiers(nomisNumber = "A1234AA"))),
     )
   }
 

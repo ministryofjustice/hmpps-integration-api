@@ -502,6 +502,21 @@ components:
           type: string
           nullable: true
           example: null
+    Identifiers:
+      type: object
+      properties:
+        nomisNumber:
+          type: string
+          example: A1234AA
+          description: A prisoner identifier from NOMIS.
+        croNumber:
+          type: string
+          example: SF80/655108T
+          description: A Criminal Records Office identifier from National Identification Service (NIS) or National Automated Fingerprint Identification System (NAFIS).
+        deliusCrn:
+          type: string
+          example: X00001
+          description: A Case Reference Number from Delius.
     Image:
       type: object
       properties:
@@ -624,10 +639,10 @@ components:
           items:
             $ref: "#/components/schemas/Alias"
           description: list of aliases
-        nomisNumber:
-          type: string
-          example: A1234AA
-          description: A prisoner identifier from Prison API (NOMIS)
+        identifiers:
+          type: object
+          $ref: "#/components/schemas/Identifiers"
+          description: other unique identifiers for a person
         pncId:
           type: string
           example: 2008/0545166T

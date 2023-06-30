@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch
 
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Identifiers
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Person
 import java.time.LocalDate
 
@@ -13,6 +14,7 @@ data class Prisoner(
   val aliases: List<PrisonerAlias> = listOf(),
   val prisonerNumber: String? = null,
   val pncNumber: String? = null,
+  val croNumber: String? = null,
 ) {
   fun toPerson(): Person = Person(
     firstName = this.firstName,
@@ -22,7 +24,10 @@ data class Prisoner(
     gender = this.gender,
     ethnicity = this.ethnicity,
     aliases = this.aliases.map { it.toAlias() },
-    nomisNumber = this.prisonerNumber,
+    identifiers = Identifiers(
+      nomisNumber = this.prisonerNumber,
+      croNumber = this.croNumber,
+    ),
     pncId = this.pncNumber,
   )
 }

@@ -76,10 +76,10 @@ class PrisonerOffenderSearchGatewayTest(
         it.firstName.shouldBe(firstName)
         it.lastName.shouldBe(lastName)
       }
-      response.data[0].nomisNumber.shouldBe("A7796DY")
-      response.data[1].nomisNumber.shouldBe("G9347GV")
-      response.data[2].nomisNumber.shouldBe("A5043DY")
-      response.data[3].nomisNumber.shouldBe("A5083DY")
+      response.data[0].identifiers.nomisNumber.shouldBe("A7796DY")
+      response.data[1].identifiers.nomisNumber.shouldBe("G9347GV")
+      response.data[2].identifiers.nomisNumber.shouldBe("A5043DY")
+      response.data[3].identifiers.nomisNumber.shouldBe("A5083DY")
 
       response.data[0].pncId.shouldBeNull()
       response.data[1].pncId.shouldBe("95/289622B")
@@ -140,7 +140,7 @@ class PrisonerOffenderSearchGatewayTest(
       response.data.count().shouldBe(1)
       response.data.first().firstName.shouldBe("Obi-Wan")
       response.data.first().lastName.shouldBe("Kenobi")
-      response.data.first().nomisNumber.shouldBe("A1234AA")
+      response.data.first().identifiers.nomisNumber.shouldBe("A1234AA")
     }
 
     it("returns person(s) when searching on last name only") {

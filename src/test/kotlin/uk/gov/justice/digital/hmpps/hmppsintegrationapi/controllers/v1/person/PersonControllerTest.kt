@@ -115,7 +115,11 @@ internal class PersonControllerTest(
               "gender": null,
               "ethnicity": null,
               "aliases":[],
-              "nomisNumber": null,
+              "identifiers": {
+                  "nomisNumber": null,
+                  "croNumber": null,
+                  "deliusCrn": null
+              },
               "pncId": null
             },
             {
@@ -126,7 +130,11 @@ internal class PersonControllerTest(
               "gender": null,
               "ethnicity": null,
               "aliases":[],
-              "nomisNumber": null,
+              "identifiers": {
+                  "nomisNumber": null,
+                  "croNumber": null,
+                  "deliusCrn": null
+              },
               "pncId": null
             }
           ]
@@ -265,7 +273,11 @@ internal class PersonControllerTest(
             "gender": null,
             "ethnicity": null,
             "aliases": [],
-            "nomisNumber": null,
+            "identifiers": {
+                  "nomisNumber": null,
+                  "croNumber": null,
+                  "deliusCrn": null
+            },              
             "pncId": null
           },
           "probationOffenderSearch": {
@@ -276,7 +288,11 @@ internal class PersonControllerTest(
             "gender": null,
             "ethnicity": null,
             "aliases": [],
-            "nomisNumber": null,
+            "identifiers": {
+                "nomisNumber": null,
+                "croNumber": null,
+                "deliusCrn": null
+            },
             "pncId": null
           }
         }
