@@ -24,7 +24,7 @@ class OffenderTest : DescribeSpec(
             pncNumber = "pncNumber",
             nomsNumber = "nomsNumber",
             croNumber = "croNumber",
-            crn = "crn"
+            crn = "crn",
           ),
         )
 

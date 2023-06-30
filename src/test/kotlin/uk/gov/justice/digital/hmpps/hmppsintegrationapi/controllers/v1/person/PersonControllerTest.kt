@@ -32,7 +32,6 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import kotlin.random.Random
 
-
 @WebMvcTest(controllers = [PersonController::class])
 internal class PersonControllerTest(
   @Autowired val mockMvc: MockMvc,

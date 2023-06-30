@@ -26,7 +26,7 @@ data class Prisoner(
     aliases = this.aliases.map { it.toAlias() },
     identifiers = Identifiers(
       nomisNumber = this.prisonerNumber,
-      croNumber = this.croNumber
+      croNumber = this.croNumber,
     ),
     pncId = this.pncNumber,
   )
