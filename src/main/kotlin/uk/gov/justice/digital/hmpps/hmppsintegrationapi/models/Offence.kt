@@ -4,9 +4,9 @@ import java.time.LocalDate
 
 data class Offence(
   val cjsCode: String,
-  val courtDate: LocalDate,
+  val courtDate: LocalDate?,
   val description: String,
-  val endDate: LocalDate,
+  val endDate: LocalDate?,
   val startDate: LocalDate,
   val statuteCode: String,
 )
