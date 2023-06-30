@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch
 
 import io.kotest.core.spec.style.DescribeSpec
+import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeTypeOf
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Alias
@@ -19,6 +20,7 @@ class PrisonerTest : DescribeSpec(
           ethnicity = "Ethnicity",
           prisonerNumber = "prisonerNumber",
           pncNumber = "pncNumber",
+          croNumber = "croNumber",
           aliases = listOf(
             PrisonerAlias(firstName = "Alias First Name", lastName = "Alias Last Name"),
           ),
@@ -33,7 +35,9 @@ class PrisonerTest : DescribeSpec(
         person.gender.shouldBe(prisoner.gender)
         person.ethnicity.shouldBe(prisoner.ethnicity)
         person.aliases.first().shouldBeTypeOf<Alias>()
-        person.nomisNumber.shouldBe(prisoner.prisonerNumber)
+        person.identifiers.nomisNumber.shouldBe(prisoner.prisonerNumber)
+        person.identifiers.croNumber.shouldBe(prisoner.croNumber)
+        person.identifiers.deliusCrn.shouldBeNull()
         person.pncId.shouldBe(prisoner.pncNumber)
       }
     }

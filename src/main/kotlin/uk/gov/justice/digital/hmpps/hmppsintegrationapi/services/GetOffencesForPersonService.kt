@@ -15,6 +15,6 @@ class GetOffencesForPersonService(
   fun execute(pncId: String): Response<List<Offence>> {
     val responseFromPrisonerOffenderSearch = prisonerOffenderSearchGateway.getPersons(pncId = pncId)
 
-    return nomisGateway.getOffencesForPerson(responseFromPrisonerOffenderSearch.data.first().nomisNumber!!)
+    return nomisGateway.getOffencesForPerson(responseFromPrisonerOffenderSearch.data.first().identifiers.nomisNumber!!)
   }
 }

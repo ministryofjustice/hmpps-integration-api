@@ -75,7 +75,11 @@ class PersonSmokeTest : DescribeSpec(
                   "ethnicity": "White : Irish"
                 }
               ],
-              "nomisNumber": "A1234AA",
+              "identifiers": {
+                  "nomisNumber": "A1234AA",
+                  "croNumber": "29906/12J",
+                  "deliusCrn": null,
+              },
               "pncId": "12/394773H"
             },
             "probationOffenderSearch": {
@@ -95,7 +99,11 @@ class PersonSmokeTest : DescribeSpec(
                   "ethnicity": null
                 }
               ],
-              "nomisNumber": null,
+              "identifiers": {
+                  "nomisNumber": "string",
+                  "croNumber": "string",
+                  "deliusCrn": "string"
+              },
               "pncId": "string"
             }
           }

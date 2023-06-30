@@ -20,7 +20,12 @@ class OffenderTest : DescribeSpec(
           offenderAliases = listOf(
             OffenderAlias(firstName = "Alias First Name", surname = "Alias Surname"),
           ),
-          otherIds = OtherIds(pncNumber = "pncNumber"),
+          otherIds = OtherIds(
+            pncNumber = "pncNumber",
+            nomsNumber = "nomsNumber",
+            croNumber = "croNumber",
+            crn = "crn"
+          ),
         )
 
         val person = prisoner.toPerson()
@@ -32,6 +37,9 @@ class OffenderTest : DescribeSpec(
         person.gender.shouldBe(prisoner.gender)
         person.ethnicity.shouldBe(prisoner.offenderProfile.ethnicity)
         person.aliases.first().shouldBeTypeOf<Alias>()
+        person.identifiers.nomisNumber.shouldBe(prisoner.otherIds.nomsNumber)
+        person.identifiers.croNumber.shouldBe(prisoner.otherIds.croNumber)
+        person.identifiers.deliusCrn.shouldBe(prisoner.otherIds.crn)
         person.pncId.shouldBe(prisoner.otherIds.pncNumber)
       }
     }

@@ -17,7 +17,7 @@ class GetAddressesForPersonService(
   fun execute(pncId: String): Response<List<Address>> {
     val responseFromPrisonerOffenderSearch = prisonerOffenderSearchGateway.getPersons(pncId = pncId)
 
-    val responseFromNomis = nomisGateway.getAddressesForPerson(responseFromPrisonerOffenderSearch.data.first().nomisNumber!!)
+    val responseFromNomis = nomisGateway.getAddressesForPerson(responseFromPrisonerOffenderSearch.data.first().identifiers.nomisNumber!!)
     val responseFromProbationOffenderSearch = probationOffenderSearchGateway.getAddressesForPerson(pncId)
 
     return Response.merge(listOf(responseFromNomis, responseFromProbationOffenderSearch))
