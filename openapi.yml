@@ -504,6 +504,7 @@ components:
           example: null
     Identifiers:
       type: object
+      description: Other unique identifiers for a person.
       properties:
         nomisNumber:
           type: string
@@ -640,9 +641,7 @@ components:
             $ref: "#/components/schemas/Alias"
           description: list of aliases
         identifiers:
-          type: object
           $ref: "#/components/schemas/Identifiers"
-          description: other unique identifiers for a person
         pncId:
           type: string
           example: 2008/0545166T
