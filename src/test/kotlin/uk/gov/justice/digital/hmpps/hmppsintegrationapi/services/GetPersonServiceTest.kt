@@ -30,10 +30,10 @@ internal class GetPersonServiceTest(
     Mockito.reset(probationOffenderSearchGateway)
 
     whenever(prisonerOffenderSearchGateway.getPersons(pncId = pncId)).thenReturn(
-      Response(data = listOf(Person(firstName = "Qui-gon", lastName = "Jin", prisonerId = "A1234AA"))),
+      Response(data = listOf(Person(firstName = "Qui-gon", lastName = "Jin", nomisNumber = "A1234AA"))),
     )
     whenever(probationOffenderSearchGateway.getPerson(pncId = pncId)).thenReturn(
-      Response(data = Person(firstName = "Qui-gon", lastName = "Jin", prisonerId = "A1234AA")),
+      Response(data = Person(firstName = "Qui-gon", lastName = "Jin", nomisNumber = "A1234AA")),
     )
   }
 

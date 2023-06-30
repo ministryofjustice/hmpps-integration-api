@@ -75,7 +75,7 @@ class PersonSmokeTest : DescribeSpec(
                   "ethnicity": "White : Irish"
                 }
               ],
-              "prisonerId": "A1234AA",
+              "nomisNumber": "A1234AA",
               "pncId": "12/394773H"
             },
             "probationOffenderSearch": {
@@ -95,7 +95,7 @@ class PersonSmokeTest : DescribeSpec(
                   "ethnicity": null
                 }
               ],
-              "prisonerId": null,
+              "nomisNumber": null,
               "pncId": "string"
             }
           }

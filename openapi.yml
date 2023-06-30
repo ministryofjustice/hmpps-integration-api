@@ -624,7 +624,7 @@ components:
           items:
             $ref: "#/components/schemas/Alias"
           description: list of aliases
-        prisonerId:
+        nomisNumber:
           type: string
           example: A1234AA
           description: A prisoner identifier from Prison API (NOMIS)

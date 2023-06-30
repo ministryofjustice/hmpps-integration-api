@@ -115,7 +115,7 @@ internal class PersonControllerTest(
               "gender": null,
               "ethnicity": null,
               "aliases":[],
-              "prisonerId": null,
+              "nomisNumber": null,
               "pncId": null
             },
             {
@@ -126,7 +126,7 @@ internal class PersonControllerTest(
               "gender": null,
               "ethnicity": null,
               "aliases":[],
-              "prisonerId": null,
+              "nomisNumber": null,
               "pncId": null
             }
           ]
@@ -265,7 +265,7 @@ internal class PersonControllerTest(
             "gender": null,
             "ethnicity": null,
             "aliases": [],
-            "prisonerId": null,
+            "nomisNumber": null,
             "pncId": null
           },
           "probationOffenderSearch": {
@@ -276,7 +276,7 @@ internal class PersonControllerTest(
             "gender": null,
             "ethnicity": null,
             "aliases": [],
-            "prisonerId": null,
+            "nomisNumber": null,
             "pncId": null
           }
         }

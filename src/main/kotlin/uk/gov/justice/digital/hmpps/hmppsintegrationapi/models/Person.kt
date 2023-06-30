@@ -14,6 +14,6 @@ data class Person(
   val ethnicity: String? = null,
   @JsonAlias("offenderAliases")
   val aliases: List<Alias> = listOf(),
-  val prisonerId: String? = null,
+  val nomisNumber: String? = null,
   val pncId: String? = null,
 )

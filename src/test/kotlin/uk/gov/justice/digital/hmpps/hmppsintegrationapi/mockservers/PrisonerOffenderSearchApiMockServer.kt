@@ -13,9 +13,9 @@ class PrisonerOffenderSearchApiMockServer : WireMockServer(WIREMOCK_PORT) {
     private const val WIREMOCK_PORT = 4001
   }
 
-  fun stubGetPrisoner(prisonerId: String, responseBody: String, status: HttpStatus = HttpStatus.OK) {
+  fun stubGetPrisoner(nomisNumber: String, responseBody: String, status: HttpStatus = HttpStatus.OK) {
     stubFor(
-      get("/prisoner/$prisonerId")
+      get("/prisoner/$nomisNumber")
         .withHeader("Authorization", matching("Bearer ${HmppsAuthMockServer.TOKEN}"))
         .willReturn(
           aResponse()
