@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis
 
 import io.kotest.core.spec.style.DescribeSpec
+import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
 import java.time.LocalDate
 
@@ -24,6 +25,23 @@ class OffenceHistoryDetailTest : DescribeSpec(
         integrationApiOffence.description.shouldBe(offenceHistoryDetail.offenceDescription)
         integrationApiOffence.endDate.shouldBe(offenceHistoryDetail.offenceRangeDate)
         integrationApiOffence.startDate.shouldBe(offenceHistoryDetail.offenceDate)
+        integrationApiOffence.statuteCode.shouldBe(offenceHistoryDetail.statuteCode)
+      }
+
+      it("deals with NULL values") {
+        val offenceHistoryDetail = OffenceHistoryDetail(
+          offenceCode = "RR84555",
+          offenceDescription = "A test offence description for model testing",
+          statuteCode = "RR84",
+        )
+
+        val integrationApiOffence = offenceHistoryDetail.toOffence()
+
+        integrationApiOffence.cjsCode.shouldBe(offenceHistoryDetail.offenceCode)
+        integrationApiOffence.courtDate.shouldBeNull()
+        integrationApiOffence.description.shouldBe(offenceHistoryDetail.offenceDescription)
+        integrationApiOffence.endDate.shouldBeNull()
+        integrationApiOffence.startDate.shouldBeNull()
         integrationApiOffence.statuteCode.shouldBe(offenceHistoryDetail.statuteCode)
       }
     }
