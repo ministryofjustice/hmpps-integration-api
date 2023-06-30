@@ -35,7 +35,7 @@ internal class GetImageMetadataForPersonServiceTest(
     Mockito.reset(nomisGateway)
 
     whenever(prisonerOffenderSearchGateway.getPersons(pncId = pncId)).thenReturn(
-      Response(data = listOf(Person(firstName = "Joey", lastName = "Tribbiani", prisonerId = prisonerNumber))),
+      Response(data = listOf(Person(firstName = "Joey", lastName = "Tribbiani", nomisNumber = prisonerNumber))),
     )
     whenever(nomisGateway.getImageMetadataForPerson(prisonerNumber)).thenReturn(Response(data = emptyList()))
   }

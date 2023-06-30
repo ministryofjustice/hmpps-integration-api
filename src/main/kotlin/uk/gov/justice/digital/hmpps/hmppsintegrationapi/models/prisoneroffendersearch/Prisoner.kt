@@ -22,7 +22,7 @@ data class Prisoner(
     gender = this.gender,
     ethnicity = this.ethnicity,
     aliases = this.aliases.map { it.toAlias() },
-    prisonerId = this.prisonerNumber,
+    nomisNumber = this.prisonerNumber,
     pncId = this.pncNumber,
   )
 }

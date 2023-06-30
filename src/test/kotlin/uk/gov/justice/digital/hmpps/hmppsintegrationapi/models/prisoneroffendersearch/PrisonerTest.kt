@@ -33,7 +33,7 @@ class PrisonerTest : DescribeSpec(
         person.gender.shouldBe(prisoner.gender)
         person.ethnicity.shouldBe(prisoner.ethnicity)
         person.aliases.first().shouldBeTypeOf<Alias>()
-        person.prisonerId.shouldBe(prisoner.prisonerNumber)
+        person.nomisNumber.shouldBe(prisoner.prisonerNumber)
         person.pncId.shouldBe(prisoner.pncNumber)
       }
     }

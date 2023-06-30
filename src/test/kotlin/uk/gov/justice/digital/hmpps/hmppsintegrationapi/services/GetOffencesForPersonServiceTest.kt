@@ -35,7 +35,7 @@ internal class GetOffencesForPersonServiceTest(
       Mockito.reset(nomisGateway)
 
       whenever(prisonerOffenderSearchGateway.getPersons(pncId = pncId)).thenReturn(
-        Response(data = listOf(Person(firstName = "Chandler", lastName = "Bing", prisonerId = prisonerNumber))),
+        Response(data = listOf(Person(firstName = "Chandler", lastName = "Bing", nomisNumber = prisonerNumber))),
       )
 
       whenever(nomisGateway.getOffencesForPerson(prisonerNumber)).thenReturn(
