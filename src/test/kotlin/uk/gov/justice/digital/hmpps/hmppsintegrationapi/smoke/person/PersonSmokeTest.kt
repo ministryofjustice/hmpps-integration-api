@@ -78,7 +78,7 @@ class PersonSmokeTest : DescribeSpec(
               "identifiers": {
                   "nomisNumber": "A1234AA",
                   "croNumber": "29906/12J",
-                  "deliusCrn": null,
+                  "deliusCrn": null
               },
               "pncId": "12/394773H"
             },
