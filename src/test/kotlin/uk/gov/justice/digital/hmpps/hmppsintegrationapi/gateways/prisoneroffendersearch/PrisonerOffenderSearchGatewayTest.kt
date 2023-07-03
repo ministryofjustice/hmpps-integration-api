@@ -52,10 +52,10 @@ class PrisonerOffenderSearchGatewayTest(
       prisonerOffenderSearchApiMockServer.stubPostPrisonerSearch(
         """
             {
-              "firstName":"$firstName",
-              "lastName":"$lastName",
+              "firstName": "$firstName",
+              "lastName": "$lastName",
               "prisonerIdentifier": "$pncId",
-              "includeAliases":true
+              "includeAliases": false
             }
           """.removeWhitespaceAndNewlines(),
         File("src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/prisoneroffendersearch/fixtures/GetPrisonersResponse.json").readText(),
@@ -91,8 +91,8 @@ class PrisonerOffenderSearchGatewayTest(
       prisonerOffenderSearchApiMockServer.stubPostPrisonerSearch(
         """
         {
-          "firstName":"Obi-Wan",
-          "includeAliases":true
+          "firstName": "Obi-Wan",
+          "includeAliases": false
         }
         """.removeWhitespaceAndNewlines(),
         """
@@ -118,8 +118,8 @@ class PrisonerOffenderSearchGatewayTest(
       prisonerOffenderSearchApiMockServer.stubPostPrisonerSearch(
         """
         {
-          "prisonerIdentifier":"$pncId",
-          "includeAliases":true
+          "prisonerIdentifier": "$pncId",
+          "includeAliases": false
         }
         """.removeWhitespaceAndNewlines(),
         """
@@ -147,8 +147,8 @@ class PrisonerOffenderSearchGatewayTest(
       prisonerOffenderSearchApiMockServer.stubPostPrisonerSearch(
         """
         {
-          "lastName":"Binks",
-          "includeAliases":true
+          "lastName": "Binks",
+          "includeAliases": false
         }
         """.removeWhitespaceAndNewlines(),
         """
@@ -170,6 +170,39 @@ class PrisonerOffenderSearchGatewayTest(
       response.data.first().lastName.shouldBe("Binks")
     }
 
+    it("returns person(s) when searching within aliases") {
+      prisonerOffenderSearchApiMockServer.stubPostPrisonerSearch(
+        """
+        {
+          "firstName": "Geralt",
+          "includeAliases": true
+        }
+        """.removeWhitespaceAndNewlines(),
+        """
+        {
+          "content": [
+            {
+              "firstName": "Rich",
+              "lastName": "Roger",
+              "aliases": [
+                {
+                  "firstName": "Geralt",
+                  "lastName": "Eric du Haute-Bellegarde"
+                }
+              ]
+            }
+          ]
+        }
+        """.trimIndent(),
+      )
+
+      val response = prisonerOffenderSearchGateway.getPersons("Geralt", null, searchWithinAliases = true)
+
+      response.data.count().shouldBe(1)
+      response.data.first().aliases.first().firstName.shouldBe("Geralt")
+      response.data.first().aliases.first().lastName.shouldBe("Eric du Haute-Bellegarde")
+    }
+
     it("returns an empty list of Person if no matching person") {
       val firstNameThatDoesNotExist = "ZYX321"
       val lastNameThatDoesNotExist = "GHJ345"
@@ -177,9 +210,9 @@ class PrisonerOffenderSearchGatewayTest(
       prisonerOffenderSearchApiMockServer.stubPostPrisonerSearch(
         """
             {
-              "firstName":"$firstNameThatDoesNotExist",
-              "lastName":"$lastNameThatDoesNotExist",
-              "includeAliases":true
+              "firstName": "$firstNameThatDoesNotExist",
+              "lastName": "$lastNameThatDoesNotExist",
+              "includeAliases": false
             }
           """.removeWhitespaceAndNewlines(),
         """

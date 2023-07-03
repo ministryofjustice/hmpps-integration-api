@@ -53,9 +53,10 @@ class ProbationOffenderSearchGatewayTest(
       probationOffenderSearchApiMockServer.stubPostOffenderSearch(
         """
             {
-              "firstName":"$firstName",
-              "surname":"$surname",
-              "valid":true
+              "firstName": "$firstName",
+              "surname": "$surname",
+              "includeAliases": false,
+              "valid": true
             }
           """.removeWhitespaceAndNewlines(),
         File("src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/probationoffendersearch/fixtures/GetOffendersResponse.json").readText(),
@@ -80,8 +81,9 @@ class ProbationOffenderSearchGatewayTest(
       probationOffenderSearchApiMockServer.stubPostOffenderSearch(
         """
         {
-          "firstName":"Ahsoka",
-          "valid":true
+          "firstName": "Ahsoka",
+          "includeAliases": false,
+          "valid": true
         }
         """.removeWhitespaceAndNewlines(),
         """
@@ -105,7 +107,8 @@ class ProbationOffenderSearchGatewayTest(
       probationOffenderSearchApiMockServer.stubPostOffenderSearch(
         """
         {
-          "surname":"Tano",
+          "surname": "Tano",
+          "includeAliases": false,
           "valid":true
         }
         """.removeWhitespaceAndNewlines(),
@@ -123,6 +126,38 @@ class ProbationOffenderSearchGatewayTest(
       response.data.count().shouldBe(1)
       response.data.first().firstName.shouldBe("Ahsoka")
       response.data.first().lastName.shouldBe("Tano")
+    }
+
+    it("returns person(s) when searching within aliases") {
+      probationOffenderSearchApiMockServer.stubPostOffenderSearch(
+        """
+        {
+          "firstName": "Fulcrum",
+          "includeAliases": true,
+          "valid": true
+        }
+        """.removeWhitespaceAndNewlines(),
+        """
+        [
+          {
+            "firstName": "Ahsoka",
+            "surname": "Tano",
+            "offenderAliases": [
+              {
+                "firstName": "Fulcrum",
+                "surname": "Tano"
+              }
+            ]
+          }
+        ]
+        """.trimIndent(),
+      )
+
+      val response = probationOffenderSearchGateway.getPersons("Fulcrum", null, searchWithinAliases = true)
+
+      response.data.count().shouldBe(1)
+      response.data.first().aliases.first().firstName.shouldBe("Fulcrum")
+      response.data.first().aliases.first().lastName.shouldBe("Tano")
     }
   }
 

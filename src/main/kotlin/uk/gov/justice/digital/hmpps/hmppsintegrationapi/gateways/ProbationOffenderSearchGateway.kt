@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways
 
-import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpMethod
@@ -17,7 +16,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.probationoffender
 @Component
 class ProbationOffenderSearchGateway(@Value("\${services.probation-offender-search.base-url}") baseUrl: String) {
   private val webClient = WebClientWrapper(baseUrl)
-  private val log = LoggerFactory.getLogger(this::class.java)
 
   @Autowired
   lateinit var hmppsAuthGateway: HmppsAuthGateway
@@ -57,8 +55,8 @@ class ProbationOffenderSearchGateway(@Value("\${services.probation-offender-sear
     }
   }
 
-  fun getPersons(firstName: String?, surname: String?): Response<List<Person>> {
-    val requestBody = mapOf("firstName" to firstName, "surname" to surname, "valid" to true)
+  fun getPersons(firstName: String?, surname: String?, searchWithinAliases: Boolean = false): Response<List<Person>> {
+    val requestBody = mapOf("firstName" to firstName, "surname" to surname, "includeAliases" to searchWithinAliases, "valid" to true)
       .filterValues { it != null }
 
     return Response(
