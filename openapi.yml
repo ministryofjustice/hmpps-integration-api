@@ -21,6 +21,13 @@ paths:
           required: false
           description: The first name of the person
         - in: query
+          name: search_within_aliases
+          schema:
+            type: boolean
+            default: false
+          required: false
+          description: Whether to return results that match the search criteria within the aliases of a person
+        - in: query
           name: last_name
           schema:
             type: string

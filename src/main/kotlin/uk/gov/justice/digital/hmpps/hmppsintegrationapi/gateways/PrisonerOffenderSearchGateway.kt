@@ -33,9 +33,9 @@ class PrisonerOffenderSearchGateway(@Value("\${services.prisoner-offender-search
     }
   }
 
-  fun getPersons(firstName: String? = null, lastName: String? = null, pncId: String? = null): Response<List<Person>> {
+  fun getPersons(firstName: String? = null, lastName: String? = null, pncId: String? = null, searchWithinAliases: Boolean = false): Response<List<Person>> {
     val requestBody =
-      mapOf("firstName" to firstName, "lastName" to lastName, "includeAliases" to true, "prisonerIdentifier" to pncId)
+      mapOf("firstName" to firstName, "lastName" to lastName, "includeAliases" to searchWithinAliases, "prisonerIdentifier" to pncId)
         .filterValues { it != null }
 
     return Response(

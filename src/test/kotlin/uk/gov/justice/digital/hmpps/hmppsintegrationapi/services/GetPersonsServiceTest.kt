@@ -3,7 +3,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
-import org.mockito.internal.verification.VerificationModeFactory
+import org.mockito.internal.verification.VerificationModeFactory.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
@@ -34,16 +34,33 @@ internal class GetPersonsServiceTest(
     whenever(probationOffenderSearchGateway.getPersons(firstName, lastName)).thenReturn(Response(data = emptyList()))
   }
 
-  it("returns person(s) from Prisoner Offender Search") {
+  it("retrieves person(s) from Prisoner Offender Search") {
     getPersonsService.execute(firstName, lastName)
 
-    verify(prisonerOffenderSearchGateway, VerificationModeFactory.times(1)).getPersons(firstName, lastName)
+    verify(prisonerOffenderSearchGateway, times(1)).getPersons(firstName, lastName)
   }
 
-  it("returns person(s) from Probation Offender Search") {
+  it("retrieves person(s) from Probation Offender Search") {
     getPersonsService.execute(firstName, lastName)
 
-    verify(probationOffenderSearchGateway, VerificationModeFactory.times(1)).getPersons(firstName, lastName)
+    verify(probationOffenderSearchGateway, times(1)).getPersons(firstName, lastName)
+  }
+
+  it("defaults to not searching within aliases") {
+    getPersonsService.execute(firstName, lastName)
+
+    verify(prisonerOffenderSearchGateway, times(1)).getPersons(firstName, lastName, searchWithinAliases = false)
+    verify(probationOffenderSearchGateway, times(1)).getPersons(firstName, lastName, searchWithinAliases = false)
+  }
+
+  it("allows searching within aliases") {
+    whenever(prisonerOffenderSearchGateway.getPersons(firstName, lastName, searchWithinAliases = true)).thenReturn(Response(data = emptyList()))
+    whenever(probationOffenderSearchGateway.getPersons(firstName, lastName, searchWithinAliases = true)).thenReturn(Response(data = emptyList()))
+
+    getPersonsService.execute(firstName, lastName, searchWithinAliases = true)
+
+    verify(prisonerOffenderSearchGateway, times(1)).getPersons(firstName, lastName, searchWithinAliases = true)
+    verify(probationOffenderSearchGateway, times(1)).getPersons(firstName, lastName, searchWithinAliases = true)
   }
 
   it("returns person(s)") {

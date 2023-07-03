@@ -72,33 +72,34 @@ internal class PersonControllerTest(
         )
       }
 
-      it("responds with a 200 OK status") {
-        val result = mockMvc.perform(get("$basePath?first_name=$firstName&last_name=$lastName")).andReturn()
-
-        result.response.status.shouldBe(HttpStatus.OK.value())
-      }
-
-      it("returns an empty list embedded in a JSON object when no matching people") {
-        val firstNameThatDoesNotExist = "Bob21345"
-        val lastNameThatDoesNotExist = "Gun36773"
-
-        whenever(getPersonsService.execute(firstNameThatDoesNotExist, lastNameThatDoesNotExist)).thenReturn(
-          Response(
-            data = emptyList(),
-          ),
-        )
-
-        val result =
-          mockMvc.perform(get("$basePath?first_name=$firstNameThatDoesNotExist&last_name=$lastNameThatDoesNotExist"))
-            .andReturn()
-
-        result.response.contentAsString.shouldContain("\"data\":[]".removeWhitespaceAndNewlines())
-      }
-
       it("retrieves a person with matching search criteria") {
         mockMvc.perform(get("$basePath?first_name=$firstName&last_name=$lastName")).andReturn()
 
         verify(getPersonsService, times(1)).execute(firstName, lastName)
+      }
+
+      it("retrieves a person with matching first name") {
+        mockMvc.perform(get("$basePath?first_name=$firstName")).andReturn()
+
+        verify(getPersonsService, times(1)).execute(firstName, null)
+      }
+
+      it("retrieves a person with matching last name") {
+        mockMvc.perform(get("$basePath?last_name=$lastName")).andReturn()
+
+        verify(getPersonsService, times(1)).execute(null, lastName)
+      }
+
+      it("retrieves a person with matching alias") {
+        mockMvc.perform(get("$basePath?first_name=$firstName&search_within_aliases=true")).andReturn()
+
+        verify(getPersonsService, times(1)).execute(firstName, null, searchWithinAliases = true)
+      }
+
+      it("defaults to not searching within aliases") {
+        mockMvc.perform(get("$basePath?first_name=$firstName")).andReturn()
+
+        verify(getPersonsService, times(1)).execute(firstName, null, searchWithinAliases = false)
       }
 
       it("returns a person with matching first and last name") {
@@ -164,16 +165,27 @@ internal class PersonControllerTest(
         result.response.contentAsString.shouldContainJsonKeyValue("$.pagination.totalPages", 4)
       }
 
-      it("retrieves a person with matching first name") {
-        mockMvc.perform(get("$basePath?first_name=$firstName")).andReturn()
+      it("returns an empty list embedded in a JSON object when no matching people") {
+        val firstNameThatDoesNotExist = "Bob21345"
+        val lastNameThatDoesNotExist = "Gun36773"
 
-        verify(getPersonsService, times(1)).execute(firstName, null)
+        whenever(getPersonsService.execute(firstNameThatDoesNotExist, lastNameThatDoesNotExist)).thenReturn(
+          Response(
+            data = emptyList(),
+          ),
+        )
+
+        val result =
+          mockMvc.perform(get("$basePath?first_name=$firstNameThatDoesNotExist&last_name=$lastNameThatDoesNotExist"))
+            .andReturn()
+
+        result.response.contentAsString.shouldContain("\"data\":[]".removeWhitespaceAndNewlines())
       }
 
-      it("retrieves a person with matching last name") {
-        mockMvc.perform(get("$basePath?last_name=$lastName")).andReturn()
+      it("responds with a 200 OK status") {
+        val result = mockMvc.perform(get("$basePath?first_name=$firstName&last_name=$lastName")).andReturn()
 
-        verify(getPersonsService, times(1)).execute(null, lastName)
+        result.response.status.shouldBe(HttpStatus.OK.value())
       }
 
       it("responds with a 400 BAD REQUEST status when no search criteria provided") {
