@@ -4,6 +4,7 @@ import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.collections.shouldContainAll
+import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.generateNomisTestAddress
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Address.Type as IntegrationAPIType
@@ -27,6 +28,39 @@ class AddressTest : DescribeSpec(
         integrationApiAddress.street.shouldBe(address.street)
         integrationApiAddress.town.shouldBe(address.town)
         integrationApiAddress.notes.shouldBe(address.comment)
+      }
+
+      it("can deal with missing fields") {
+        val address = Address(
+          addressType = null,
+          country = null,
+          county = null,
+          endDate = null,
+          flat = null,
+          locality = null,
+          noFixedAddress = false,
+          postalCode = null,
+          premise = null,
+          startDate = null,
+          street = null,
+          town = null,
+          comment = null,
+        )
+
+        val integrationApiAddress = address.toAddress()
+
+        integrationApiAddress.country.shouldBeNull()
+        integrationApiAddress.county.shouldBeNull()
+        integrationApiAddress.endDate.shouldBeNull()
+        integrationApiAddress.number.shouldBeNull()
+        integrationApiAddress.locality.shouldBeNull()
+        integrationApiAddress.noFixedAddress.shouldBe(address.noFixedAddress)
+        integrationApiAddress.postcode.shouldBeNull()
+        integrationApiAddress.name.shouldBeNull()
+        integrationApiAddress.startDate.shouldBeNull()
+        integrationApiAddress.street.shouldBeNull()
+        integrationApiAddress.town.shouldBeNull()
+        integrationApiAddress.notes.shouldBeNull()
       }
     }
     describe("#types") {
