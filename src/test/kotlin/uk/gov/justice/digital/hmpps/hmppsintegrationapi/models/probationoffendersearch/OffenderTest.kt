@@ -1,6 +1,8 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.probationoffendersearch
 
 import io.kotest.core.spec.style.DescribeSpec
+import io.kotest.matchers.collections.shouldBeEmpty
+import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeTypeOf
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Alias
@@ -41,6 +43,27 @@ class OffenderTest : DescribeSpec(
         person.identifiers.croNumber.shouldBe(prisoner.otherIds.croNumber)
         person.identifiers.deliusCrn.shouldBe(prisoner.otherIds.crn)
         person.pncId.shouldBe(prisoner.otherIds.pncNumber)
+      }
+
+      it("can deal with missing fields") {
+        val offender = Offender(
+          firstName = "First Name",
+          surname = "Surname",
+        )
+
+        val person = offender.toPerson()
+
+        person.firstName.shouldBe(offender.firstName)
+        person.lastName.shouldBe(offender.surname)
+        person.middleName.shouldBe("")
+        person.dateOfBirth.shouldBeNull()
+        person.gender.shouldBeNull()
+        person.ethnicity.shouldBeNull()
+        person.aliases.shouldBeEmpty()
+        person.identifiers.nomisNumber.shouldBeNull()
+        person.identifiers.croNumber.shouldBeNull()
+        person.identifiers.deliusCrn.shouldBeNull()
+        person.pncId.shouldBeNull()
       }
     }
   },
