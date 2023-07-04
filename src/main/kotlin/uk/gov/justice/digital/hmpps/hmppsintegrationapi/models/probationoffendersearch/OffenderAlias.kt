@@ -13,7 +13,7 @@ data class OffenderAlias(
   fun toAlias(): Alias = Alias(
     firstName = this.firstName,
     lastName = this.surname,
-    middleName = this.middleNames.joinToString(" "),
+    middleName = this.middleNames.joinToString(" ").ifEmpty { null },
     dateOfBirth = this.dateOfBirth,
     gender = this.gender,
   )
