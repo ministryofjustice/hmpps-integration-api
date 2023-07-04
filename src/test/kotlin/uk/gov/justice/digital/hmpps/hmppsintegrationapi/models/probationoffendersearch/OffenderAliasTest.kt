@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.probationoffendersearch
 
 import io.kotest.core.spec.style.DescribeSpec
+import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
 import java.time.LocalDate
 
@@ -23,6 +24,18 @@ class OffenderAliasTest : DescribeSpec(
         alias.middleName.shouldBe("Alias Middle Names")
         alias.dateOfBirth.shouldBe(offenderAlias.dateOfBirth)
         alias.gender.shouldBe(offenderAlias.gender)
+      }
+
+      it("returns null when no middle names") {
+        val offenderAlias = OffenderAlias(
+          firstName = "First Name",
+          surname = "Surname",
+          middleNames = listOf(),
+        )
+
+        val alias = offenderAlias.toAlias()
+
+        alias.middleName.shouldBeNull()
       }
     }
   },

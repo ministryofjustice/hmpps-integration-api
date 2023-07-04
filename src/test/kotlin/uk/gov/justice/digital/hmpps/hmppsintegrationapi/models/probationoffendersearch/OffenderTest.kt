@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.probationoffendersearch
 
 import io.kotest.core.spec.style.DescribeSpec
+import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeTypeOf
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Alias
@@ -41,6 +42,18 @@ class OffenderTest : DescribeSpec(
         person.identifiers.croNumber.shouldBe(prisoner.otherIds.croNumber)
         person.identifiers.deliusCrn.shouldBe(prisoner.otherIds.crn)
         person.pncId.shouldBe(prisoner.otherIds.pncNumber)
+      }
+
+      it("returns null when no middle names") {
+        val prisoner = Offender(
+          firstName = "First Name",
+          surname = "Surname",
+          middleNames = listOf(),
+        )
+
+        val person = prisoner.toPerson()
+
+        person.middleName.shouldBeNull()
       }
     }
   },
