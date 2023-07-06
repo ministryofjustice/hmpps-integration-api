@@ -34,12 +34,13 @@ class PrisonerOffenderSearchGateway(@Value("\${services.prisoner-offender-search
   }
 
   fun getPersons(firstName: String? = null, lastName: String? = null, pncId: String? = null, searchWithinAliases: Boolean = false): Response<List<Person>> {
+    val maxNumberOfResults = 9999
     val requestBody =
       mapOf("firstName" to firstName, "lastName" to lastName, "includeAliases" to searchWithinAliases, "prisonerIdentifier" to pncId)
         .filterValues { it != null }
 
     return Response(
-      data = webClient.request<GlobalSearch>(HttpMethod.POST, "/global-search", authenticationHeader(), requestBody)
+      data = webClient.request<GlobalSearch>(HttpMethod.POST, "/global-search?size=$maxNumberOfResults", authenticationHeader(), requestBody)
         .content.map { it.toPerson() },
     )
   }

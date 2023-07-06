@@ -2,9 +2,11 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions
 
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.inspectors.shouldForAll
+import io.kotest.matchers.collections.shouldHaveAtLeastSize
 import io.kotest.matchers.shouldBe
 import org.springframework.http.HttpMethod
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.GenericApiMockServer
+import java.io.File
 
 data class StringModel(val headers: String)
 data class TestModel(val sourceName: String, val sourceLastName: String?) {
@@ -126,5 +128,19 @@ class WebClientWrapperTest : DescribeSpec({
     val result = webClient.requestList<StringModel>(HttpMethod.GET, "/test", headers = headers)
 
     result.first().headers.shouldBe("headers matched")
+  }
+
+  it("receives a very large response") {
+    val id = "A123"
+
+    mockServer.stubGetTest(
+      id = id,
+      body = File("src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/extensions/fixtures/LargeResponse.json").readText(),
+    )
+
+    val webClient = WebClientWrapper(baseUrl = mockServer.baseUrl())
+    val result = webClient.request<SearchModel>(HttpMethod.GET, "/test/$id", headers = headers)
+
+    result.content.shouldHaveAtLeastSize(10)
   }
 },)
