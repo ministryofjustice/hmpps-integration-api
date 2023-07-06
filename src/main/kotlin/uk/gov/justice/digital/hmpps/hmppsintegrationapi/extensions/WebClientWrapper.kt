@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions
 
 import org.springframework.http.HttpMethod
 import org.springframework.web.reactive.function.BodyInserters
+import org.springframework.web.reactive.function.client.ExchangeStrategies
 import org.springframework.web.reactive.function.client.WebClient
 
 class WebClientWrapper(
@@ -10,6 +11,14 @@ class WebClientWrapper(
   val client: WebClient = WebClient
     .builder()
     .baseUrl(baseUrl)
+    .exchangeStrategies(
+      ExchangeStrategies.builder()
+        .codecs { configurer ->
+          configurer.defaultCodecs()
+            .maxInMemorySize(-1)
+        }
+        .build(),
+    )
     .build()
 
   inline fun <reified T> request(method: HttpMethod, uri: String, headers: Map<String, String>, requestBody: Map<String, Any?>? = null): T {

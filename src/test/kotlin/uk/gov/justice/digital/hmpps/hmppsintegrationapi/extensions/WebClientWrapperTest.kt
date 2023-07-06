@@ -1,10 +1,13 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions
 
+import io.kotest.assertions.fail
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.inspectors.shouldForAll
 import io.kotest.matchers.shouldBe
 import org.springframework.http.HttpMethod
+import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.GenericApiMockServer
+import java.io.File
 
 data class StringModel(val headers: String)
 data class TestModel(val sourceName: String, val sourceLastName: String?) {
@@ -126,5 +129,21 @@ class WebClientWrapperTest : DescribeSpec({
     val result = webClient.requestList<StringModel>(HttpMethod.GET, "/test", headers = headers)
 
     result.first().headers.shouldBe("headers matched")
+  }
+
+  it("receives a very large response") {
+    val id = "A123"
+
+    mockServer.stubGetTest(
+      id = id,
+      body = File("src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/extensions/fixtures/LargeResponse.json").readText(),
+    )
+
+    try {
+      val webClient = WebClientWrapper(baseUrl = mockServer.baseUrl())
+      webClient.request<SearchModel>(HttpMethod.GET, "/test/$id", headers = headers)
+    } catch (e: WebClientResponseException) {
+      fail("Exceeded memory buffer")
+    }
   }
 },)
