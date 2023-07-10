@@ -17,7 +17,7 @@ from someone else on the HMPPS Integration API as a template for your own.
     3. prod: `nomisapi-prod`
 4. Select `Logs` within the window
 5. Either select a preset query, or close the window to write your own
-6. Filter the query on the following `| where cloud_RoleName = 'hmpps-integration-api`. This will restrict the query to
+6. Filter the query on the following `| where cloud_RoleName = 'hmpps-integration-api'`. This will restrict the query to
    only display data for the HMPPS Integration API.
 
 ## Example Use Case
