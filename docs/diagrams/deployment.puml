@@ -65,8 +65,6 @@
             Container(prod_build, "Build", "Docker", $TEXT_DOCKERBUILD, $sprite=docker-icon*0.6)
             Container(prod_helm, "Deploy", "Helm", $TEXT_HELMDEPLOY, $sprite=helm*0.6)
 
-            Container(approval, "Manual Approval", "Circle CI")
-
             Boundary(prod_cp, "Cloud Platform Production", "Kubernetes"){
                 Container(prod_ecr, "Container Registry", "Elastic Container Registry (ECR)")
                 Boundary(prod_service, "Service", "Kubernetes"){
@@ -99,9 +97,8 @@
     Rel(preprod_helm, preprod_service, $TEXT_PUSHTO, $tags=subprocess)
     Rel_Right(preprod_build, preprod_helm, $TEXT_SUCCESS)
 
-    Rel(preprod_cp, approval, $TEXT_SUCCESS)
+    Rel(preprod_cp, prod_build, $TEXT_SUCCESS)
 
-    Rel(approval, prod_build, "On approved")
     Rel(prod_build, prod_ecr, $TEXT_PUSHTO, $tags=subprocess)
     Rel(prod_helm, prod_service, $TEXT_PUSHTO, $tags=subprocess)
     Rel_Right(prod_build, prod_helm, $TEXT_SUCCESS)
