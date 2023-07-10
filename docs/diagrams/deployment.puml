@@ -31,6 +31,7 @@
     Boundary(circleci, "CircleCI", "Deployment Pipeline"){
         Boundary(checks, "Code Checks"){
             Container(lint, "Lint", "Gradle", $sprite=gradle*0.6)
+            Container(helm_lint, "Helm Lint", "Helm")
             Container(unittest, "Unit Test", "Gradle", $sprite=gradle*0.6)
             Container(smoketest, "Smoke Test", "Gradle", $sprite=gradle*0.6)
         }
@@ -51,7 +52,7 @@
             Container(dev_heartbeat, "Post-Deploy Heartbeat", "Bash")
         }
 
-        Boundary(preprod_build_and_deploy, "Pre-production"){
+        Boundary(preprod_build_and_deploy, "Pre-Production"){
             Container(preprod_build, "Build", "Docker", $TEXT_DOCKERBUILD, $sprite=docker-icon*0.6)
             Container(preprod_helm, "Deploy", "Helm", $TEXT_HELMDEPLOY, $sprite=helm*0.6)
 
