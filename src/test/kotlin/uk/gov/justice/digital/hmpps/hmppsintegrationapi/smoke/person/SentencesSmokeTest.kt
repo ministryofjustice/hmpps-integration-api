@@ -35,7 +35,7 @@ class SentencesSmokeTest : DescribeSpec(
         {
           "data": [
           {
-            "startDate": "1990-01-01"
+            "startDate": "2010-02-03"
           }
         ],
           "pagination": {

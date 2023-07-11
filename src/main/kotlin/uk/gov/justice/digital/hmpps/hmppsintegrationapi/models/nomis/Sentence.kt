@@ -1,12 +1,16 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis
 
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Sentence
 import java.time.LocalDate
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Sentence as IntegrationApiSentence
 
 data class Sentence(
-  val sentenceStartDate: LocalDate? = null,
+  val sentenceDetail: SentenceDetail,
 ) {
-  fun toSentence(): Sentence = Sentence(
-    startDate = this.sentenceStartDate,
+  fun toSentence(): IntegrationApiSentence = IntegrationApiSentence(
+    startDate = this.sentenceDetail.sentenceStartDate,
+  )
+
+  data class SentenceDetail(
+    val sentenceStartDate: LocalDate?,
   )
 }
