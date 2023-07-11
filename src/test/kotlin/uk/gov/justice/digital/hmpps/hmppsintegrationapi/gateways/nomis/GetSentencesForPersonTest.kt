@@ -43,7 +43,9 @@ class GetSentencesForPersonTest(
           """
           [
             {
-              "sentenceStartDate": "2000-05-06"
+              "sentenceDetail": {
+                 "sentenceStartDate": "2000-05-06"
+              }
             }
           ]
         """.removeWhitespaceAndNewlines(),
