@@ -43,7 +43,7 @@ class GetSentencesForPersonTest(
           """
           [
             {
-              "sentenceStartDate": "2000-05-06",
+              "sentenceStartDate": "2000-05-06"
             }
           ]
         """.removeWhitespaceAndNewlines(),
@@ -58,29 +58,29 @@ class GetSentencesForPersonTest(
       }
 
       it("authenticates using HMPPS Auth with credentials") {
-        nomisGateway.getOffencesForPerson(offenderNo)
+        nomisGateway.getSentencesForPerson(offenderNo)
 
         verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("NOMIS")
       }
 
-      it("returns offence history for the matching person ID") {
-        val response = nomisGateway.getOffencesForPerson(offenderNo)
+      it("returns sentence history for the matching person ID") {
+        val response = nomisGateway.getSentencesForPerson(offenderNo)
 
         response.data.count().shouldBeGreaterThan(0)
       }
 
-      it("returns a person with an empty list of offences when no offences are found") {
-        nomisApiMockServer.stubGetOffencesForPerson(offenderNo, "[]")
+      it("returns a person with an empty list of sentences when no sentences are found") {
+        nomisApiMockServer.stubGetSentencesForPerson(offenderNo, "[]")
 
-        val response = nomisGateway.getOffencesForPerson(offenderNo)
+        val response = nomisGateway.getSentencesForPerson(offenderNo)
 
         response.data.shouldBeEmpty()
       }
 
       it("returns an error when 404 Not Found is returned because no person is found") {
-        nomisApiMockServer.stubGetOffencesForPerson(offenderNo, "", HttpStatus.NOT_FOUND)
+        nomisApiMockServer.stubGetSentencesForPerson(offenderNo, "", HttpStatus.NOT_FOUND)
 
-        val response = nomisGateway.getOffencesForPerson(offenderNo)
+        val response = nomisGateway.getSentencesForPerson(offenderNo)
 
         response.errors.shouldHaveSize(1)
         response.errors.first().causedBy.shouldBe(UpstreamApi.NOMIS)
