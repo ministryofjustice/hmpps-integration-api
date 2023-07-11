@@ -22,13 +22,13 @@ class SentencesController(
 ) {
 
   @GetMapping("{encodedPncId}/sentences")
-  fun getPersonOffences(
+  fun getPersonSentences(
     @PathVariable encodedPncId: String,
     @RequestParam(required = false, defaultValue = "1", name = "page") page: Int,
     @RequestParam(required = false, defaultValue = "10", name = "perPage") perPage: Int,
   ): PaginatedResponse<Sentence> {
     val pncId = encodedPncId.decodeUrlCharacters()
-    val response = getSentencesForPersonService.execute(pncId)!!
+    val response = getSentencesForPersonService.execute(pncId)
 
     if (response.hasErrorCausedBy(UpstreamApiError.Type.ENTITY_NOT_FOUND, causedBy = UpstreamApi.NOMIS)) {
       throw EntityNotFoundException("Could not find person with id: $pncId")

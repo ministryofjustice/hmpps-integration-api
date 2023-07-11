@@ -12,7 +12,7 @@ class GetSentencesForPersonService(
   @Autowired val nomisGateway: NomisGateway,
   @Autowired val prisonerOffenderSearchGateway: PrisonerOffenderSearchGateway,
 ) {
-  fun execute(pncId: String): Response<List<Sentence>>? {
+  fun execute(pncId: String): Response<List<Sentence>> {
     val responseFromPrisonerOffenderSearch = prisonerOffenderSearchGateway.getPersons(pncId = pncId)
 
     return nomisGateway.getSentencesForPerson(responseFromPrisonerOffenderSearch.data.first().identifiers.nomisNumber!!)

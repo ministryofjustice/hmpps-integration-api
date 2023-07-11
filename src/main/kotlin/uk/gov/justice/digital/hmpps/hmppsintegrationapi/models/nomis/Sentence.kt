@@ -4,10 +4,10 @@ import java.time.LocalDate
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Sentence as IntegrationApiSentence
 
 data class Sentence(
-  val sentenceDetail: SentenceDetail,
+  val sentenceDetail: SentenceDetail?,
 ) {
   fun toSentence(): IntegrationApiSentence = IntegrationApiSentence(
-    startDate = this.sentenceDetail.sentenceStartDate,
+    startDate = this.sentenceDetail?.sentenceStartDate,
   )
 
   data class SentenceDetail(
