@@ -3,7 +3,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.nomis
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldHaveSize
-import io.kotest.matchers.ints.shouldBeGreaterThan
+import io.kotest.matchers.collections.shouldNotBeEmpty
 import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory
@@ -35,19 +35,29 @@ class GetSentencesForPersonTest(
     {
       val nomisApiMockServer = NomisApiMockServer()
       val offenderNo = "zyx987"
+      val someBookingId = 1
 
       beforeEach {
         nomisApiMockServer.start()
-        nomisApiMockServer.stubGetSentencesForPerson(
+        nomisApiMockServer.stubGetBookingIdsForNomisNumber(
           offenderNo,
           """
           [
             {
-              "sentenceDetail": {
-                 "sentenceStartDate": "2000-05-06"
-              }
+              "bookingId": 1,
+            }, {
+              "bookingId": 2
             }
           ]
+        """.removeWhitespaceAndNewlines(),
+        )
+
+        nomisApiMockServer.stubGetSentenceForBookingId(
+          someBookingId,
+          """
+          {
+            "startDate": "2001-01-01"
+          }
         """.removeWhitespaceAndNewlines(),
         )
 
@@ -60,30 +70,33 @@ class GetSentencesForPersonTest(
       }
 
       it("authenticates using HMPPS Auth with credentials") {
-        nomisGateway.getSentencesForPerson(offenderNo)
+        nomisGateway.getSentencesForBooking(someBookingId)
 
         verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("NOMIS")
       }
 
-      it("returns sentence history for the matching person ID") {
-        val response = nomisGateway.getSentencesForPerson(offenderNo)
+      it("returns a sentence for a matching bookingId") {
+        val response = nomisGateway.getSentencesForBooking(someBookingId)
 
-        response.data.count().shouldBeGreaterThan(0)
-      }
-
-      it("returns a person with an empty list of sentences when no sentences are found") {
-        nomisApiMockServer.stubGetSentencesForPerson(offenderNo, "[]")
-
-        val response = nomisGateway.getSentencesForPerson(offenderNo)
-
-        response.data.shouldBeEmpty()
+        response.data.shouldNotBeEmpty()
       }
 
       it("returns an error when 404 Not Found is returned because no person is found") {
-        nomisApiMockServer.stubGetSentencesForPerson(offenderNo, "", HttpStatus.NOT_FOUND)
+        nomisApiMockServer.stubGetBookingIdsForNomisNumber(offenderNo, "", HttpStatus.NOT_FOUND)
 
-        val response = nomisGateway.getSentencesForPerson(offenderNo)
+        val response = nomisGateway.getBookingIdsForPerson(offenderNo)
 
+        response.errors.shouldHaveSize(1)
+        response.errors.first().causedBy.shouldBe(UpstreamApi.NOMIS)
+        response.errors.first().type.shouldBe(UpstreamApiError.Type.ENTITY_NOT_FOUND)
+      }
+
+      it("returns an error when no sentence is found") {
+        nomisApiMockServer.stubGetSentenceForBookingId(someBookingId, "", HttpStatus.NOT_FOUND)
+
+        val response = nomisGateway.getSentencesForBooking(someBookingId)
+
+        response.data.shouldBeEmpty()
         response.errors.shouldHaveSize(1)
         response.errors.first().causedBy.shouldBe(UpstreamApi.NOMIS)
         response.errors.first().type.shouldBe(UpstreamApiError.Type.ENTITY_NOT_FOUND)

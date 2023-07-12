@@ -68,7 +68,7 @@ internal class GetOffencesForPersonServiceTest(
       response.data.shouldHaveSize(3)
     }
 
-    it("returns an error when person cannot be found in NOMIS") {
+    it("returns an error when person cannot be found in NOMIS from a PNCID") {
       whenever(nomisGateway.getOffencesForPerson(prisonerNumber)).thenReturn(
         Response(
           data = emptyList(),
