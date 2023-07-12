@@ -235,6 +235,7 @@ Note, this will only specifically enable the `RequestLogger`.
 - [Architecture diagrams](/docs/diagrams)
 - [Audit](/docs/audit.md)
 - [Backups](/docs/backups.md)
+- [Banner](/docs/banner.md)
 - [Environments](/docs/environments.md)
 - [High availability](/docs/high-availability.md)
 - [Monitoring and Alerting](/docs/monitoring-and-alerting/README.md)
