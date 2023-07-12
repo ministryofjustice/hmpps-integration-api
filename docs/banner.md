@@ -5,4 +5,4 @@ the free to download software [Inkscape](https://inkscape.org/). The `.svg` file
 provided alongside banner.txt for anyone who wishes to update it.
 
 From Inkscape, you will need to export an image type such as a `.png`. This will then need to be passed into 
-[Ascii Art](https://asciiart.club/). From here the text representation of the image can be used in banner.txt.
+[ASCII Art](https://asciiart.club/). From here the text representation of the image can be used in banner.txt.
