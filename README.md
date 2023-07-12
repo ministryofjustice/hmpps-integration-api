@@ -239,6 +239,7 @@ Note, this will only specifically enable the `RequestLogger`.
 - [High availability](/docs/high-availability.md)
 - [Monitoring and Alerting](/docs/monitoring-and-alerting/README.md)
 - [Security](/docs/security.md)
+- [Banner](/docs/banner.md)
 
 ## Developer guides
 
