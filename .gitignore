@@ -6,7 +6,9 @@
 .idea/
 .gradle/
 .vscode/
+.venv/
 build/
+
 
 # CMake
 cmake-build-debug/
@@ -71,6 +73,10 @@ sonar-project.properties
 
 # Helm
 **/Chart.lock
+
+# Python and Data outputs
+__pycache__/
+*.csv
 
 # Certificates
 *.key
