@@ -42,6 +42,12 @@ internal class SentencesControllerTest(
             data = listOf(
               Sentence(
                 startDate = LocalDate.parse("1990-01-01"),
+                days = 9,
+                weeks = 10,
+                months = 3,
+                years = 10,
+                fineAmount = 99.99,
+                isLifeSentence = true,
               ),
             ),
           ),
@@ -65,12 +71,18 @@ internal class SentencesControllerTest(
 
         result.response.contentAsString.shouldContain(
           """
-          "data": [
+          [
             {
-              "startDate": "1990-01-01"
+              "startDate": "1990-01-01",
+              "days": 9,
+              "weeks": 10,
+              "months": 3,
+              "years": 10,
+              "fineAmount": 99.99,
+              "isLifeSentence": true
             }
           ]
-        """.removeWhitespaceAndNewlines(),
+          """.removeWhitespaceAndNewlines(),
         )
       }
 
@@ -118,6 +130,7 @@ internal class SentencesControllerTest(
             List(20) {
               Sentence(
                 startDate = LocalDate.parse("2023-01-01"),
+                isLifeSentence = true,
               )
             },
           ),

@@ -23,7 +23,7 @@ class SentencesSmokeTest : DescribeSpec(
     val httpClient = HttpClient.newBuilder().build()
     val httpRequest = HttpRequest.newBuilder()
 
-    xit("returns sentences for a person") {
+    it("returns sentences for a person") {
       val response = httpClient.send(
         httpRequest.uri(URI.create("$baseUrl/$basePath")).build(),
         HttpResponse.BodyHandlers.ofString(),
