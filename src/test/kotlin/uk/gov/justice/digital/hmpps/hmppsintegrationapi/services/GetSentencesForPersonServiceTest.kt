@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.collections.shouldHaveSize
+import io.kotest.matchers.equals.shouldBeEqual
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory
 import org.mockito.kotlin.verify
@@ -17,6 +18,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Sentence
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.Booking
 import java.time.LocalDate
 
 @ContextConfiguration(
@@ -31,9 +33,12 @@ internal class GetSentencesForPersonServiceTest(
   {
     val pncId = "1234/56789B"
     val prisonerNumber = "Z99999ZZ"
+    val firstBookingId = 1
+    val secondBookingId = 2
 
     beforeEach {
       Mockito.reset(nomisGateway)
+      Mockito.reset(prisonerOffenderSearchGateway)
 
       whenever(prisonerOffenderSearchGateway.getPersons(pncId = pncId)).thenReturn(
         Response(
@@ -47,40 +52,68 @@ internal class GetSentencesForPersonServiceTest(
         ),
       )
 
-      whenever(nomisGateway.getSentencesForPerson(prisonerNumber)).thenReturn(
+      whenever(nomisGateway.getBookingIdsForPerson(prisonerNumber)).thenReturn(
         Response(
           data = listOf(
-            Sentence(
-              startDate = LocalDate.parse("2020-03-03"),
+            Booking(
+              bookingId = firstBookingId,
             ),
-            Sentence(
-              startDate = LocalDate.parse("2016-01-01"),
+            Booking(
+              bookingId = secondBookingId,
             ),
+          ),
+        ),
+      )
+
+      whenever(nomisGateway.getSentencesForBooking(firstBookingId)).thenReturn(
+        Response(
+          data = listOf(
+            Sentence(startDate = LocalDate.parse("2001-01-01")),
+          ),
+        ),
+      )
+
+      whenever(nomisGateway.getSentencesForBooking(secondBookingId)).thenReturn(
+        Response(
+          data = listOf(
+            Sentence(startDate = LocalDate.parse("2002-01-01")),
           ),
         ),
       )
     }
 
-    it("retrieves prisoner ID from Prisoner Offender Search using a PNC ID") {
+    it("calls #getPersons on Prisoner Offender Search with a PNC Id") {
       getSentencesForPersonService.execute(pncId)
 
       verify(prisonerOffenderSearchGateway, VerificationModeFactory.times(1)).getPersons(pncId = pncId)
     }
 
-    it("retrieves sentences for a person from NOMIS using prisoner number") {
-      getSentencesForPersonService.execute(pncId)
+    it("records an error when it fails to retrieve a Nomis number from Prisoner Offender Search using a PNC ID") {
+      whenever(prisonerOffenderSearchGateway.getPersons(pncId = pncId)).thenReturn(
+        Response(
+          data = emptyList(),
+          errors = listOf(
+            UpstreamApiError(
+              causedBy = UpstreamApi.PRISONER_OFFENDER_SEARCH,
+              type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+            ),
+          ),
+        ),
+      )
 
-      verify(nomisGateway, VerificationModeFactory.times(1)).getSentencesForPerson(prisonerNumber)
-    }
-
-    it("returns all sentences for a person") {
       val response = getSentencesForPersonService.execute(pncId)!!
 
-      response.data.shouldHaveSize(2)
+      response.errors.shouldHaveSize(1)
     }
 
-    it("returns an error when person cannot be found in NOMIS") {
-      whenever(nomisGateway.getSentencesForPerson(prisonerNumber)).thenReturn(
+    it("calls #getBookingIdsForPerson on Nomis with a Nomis number") {
+      getSentencesForPersonService.execute(pncId)
+
+      verify(nomisGateway, VerificationModeFactory.times(1)).getBookingIdsForPerson(id = prisonerNumber)
+    }
+
+    it("records errors when no booking Ids are found for a Nomis number") {
+      whenever(nomisGateway.getBookingIdsForPerson(prisonerNumber)).thenReturn(
         Response(
           data = emptyList(),
           errors = listOf(
@@ -93,6 +126,38 @@ internal class GetSentencesForPersonServiceTest(
       )
 
       val response = getSentencesForPersonService.execute(pncId)!!
+
+      response.errors.shouldHaveSize(1)
+    }
+
+    it("it calls #getSentenceForBookingId and returns all sentences from Nomis for a PNC Id") {
+      val response = getSentencesForPersonService.execute(pncId)
+
+      verify(nomisGateway, VerificationModeFactory.times(1)).getSentencesForBooking(firstBookingId)
+      verify(nomisGateway, VerificationModeFactory.times(1)).getSentencesForBooking(secondBookingId)
+
+      response.data.shouldBeEqual(
+        listOf(
+          Sentence(startDate = LocalDate.parse("2001-01-01")),
+          Sentence(startDate = LocalDate.parse("2002-01-01")),
+        ),
+      )
+    }
+
+    it("records an error when no sentence was found for a Booking Id") {
+      whenever(nomisGateway.getBookingIdsForPerson(prisonerNumber)).thenReturn(
+        Response(
+          data = emptyList(),
+          errors = listOf(
+            UpstreamApiError(
+              causedBy = UpstreamApi.NOMIS,
+              type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+            ),
+          ),
+        ),
+      )
+
+      val response = getSentencesForPersonService.execute(pncId)
 
       response.errors.shouldHaveSize(1)
     }
