@@ -4,10 +4,7 @@ import java.time.LocalDate
 
 data class Sentence(
   val startDate: LocalDate? = null,
-  val days: Int? = null,
-  val weeks: Int? = null,
-  val months: Int? = null,
-  val years: Int? = null,
+  val length: SentenceLength = SentenceLength(),
   val fineAmount: Double? = null,
   val isLifeSentence: Boolean?,
 )

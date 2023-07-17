@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis
 
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.SentenceLength
 import java.time.LocalDate
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Sentence as IntegrationApiSentence
 
@@ -14,10 +15,12 @@ data class Sentence(
 ) {
   fun toSentence() = IntegrationApiSentence(
     startDate = this.startDate,
-    days = this.days,
-    weeks = this.weeks,
-    months = this.months,
-    years = this.years,
+    length = SentenceLength(
+      days = this.days,
+      weeks = this.weeks,
+      months = this.months,
+      years = this.years,
+    ),
     fineAmount = this.fineAmount,
     isLifeSentence = this.lifeSentence,
   )

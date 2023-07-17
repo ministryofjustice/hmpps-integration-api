@@ -23,10 +23,10 @@ class PersonSentencesTest : DescribeSpec(
 
         val integrationApiSentence = nomisSentence.toSentence()
 
-        integrationApiSentence.days.shouldBe(nomisSentence.days)
-        integrationApiSentence.weeks.shouldBe(nomisSentence.weeks)
-        integrationApiSentence.months.shouldBe(nomisSentence.months)
-        integrationApiSentence.years.shouldBe(nomisSentence.years)
+        integrationApiSentence.length.days.shouldBe(nomisSentence.days)
+        integrationApiSentence.length.weeks.shouldBe(nomisSentence.weeks)
+        integrationApiSentence.length.months.shouldBe(nomisSentence.months)
+        integrationApiSentence.length.years.shouldBe(nomisSentence.years)
         integrationApiSentence.fineAmount.shouldBe(nomisSentence.fineAmount)
         integrationApiSentence.isLifeSentence.shouldBe(nomisSentence.lifeSentence)
       }
@@ -35,10 +35,10 @@ class PersonSentencesTest : DescribeSpec(
         val integrationApiSentence = Sentence(isLifeSentence = true)
 
         integrationApiSentence.startDate.shouldBeNull()
-        integrationApiSentence.days.shouldBeNull()
-        integrationApiSentence.weeks.shouldBeNull()
-        integrationApiSentence.months.shouldBeNull()
-        integrationApiSentence.years.shouldBeNull()
+        integrationApiSentence.length.days.shouldBeNull()
+        integrationApiSentence.length.weeks.shouldBeNull()
+        integrationApiSentence.length.months.shouldBeNull()
+        integrationApiSentence.length.years.shouldBeNull()
         integrationApiSentence.fineAmount.shouldBeNull()
         integrationApiSentence.isLifeSentence.shouldBe(true)
       }

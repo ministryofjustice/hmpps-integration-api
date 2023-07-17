@@ -17,6 +17,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Sentence
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.SentenceLength
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetSentencesForPersonService
@@ -42,10 +43,12 @@ internal class SentencesControllerTest(
             data = listOf(
               Sentence(
                 startDate = LocalDate.parse("1990-01-01"),
-                days = 9,
-                weeks = 10,
-                months = 3,
-                years = 10,
+                length = SentenceLength(
+                  days = 9,
+                  weeks = 10,
+                  months = 3,
+                  years = 10,
+                ),
                 fineAmount = 99.99,
                 isLifeSentence = true,
               ),
@@ -74,10 +77,12 @@ internal class SentencesControllerTest(
           [
             {
               "startDate": "1990-01-01",
-              "days": 9,
-              "weeks": 10,
-              "months": 3,
-              "years": 10,
+              "length": {
+                "days": 9,
+                "weeks": 10,
+                "months": 3,
+                "years": 10
+              },
               "fineAmount": 99.99,
               "isLifeSentence": true
             }
