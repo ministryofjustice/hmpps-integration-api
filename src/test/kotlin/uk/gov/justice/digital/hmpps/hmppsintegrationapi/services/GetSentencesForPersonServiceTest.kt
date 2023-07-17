@@ -68,7 +68,10 @@ internal class GetSentencesForPersonServiceTest(
       whenever(nomisGateway.getSentencesForBooking(firstBookingId)).thenReturn(
         Response(
           data = listOf(
-            Sentence(startDate = LocalDate.parse("2001-01-01")),
+            Sentence(
+              startDate = LocalDate.parse("2001-01-01"),
+              isLifeSentence = true,
+            ),
           ),
         ),
       )
@@ -76,7 +79,10 @@ internal class GetSentencesForPersonServiceTest(
       whenever(nomisGateway.getSentencesForBooking(secondBookingId)).thenReturn(
         Response(
           data = listOf(
-            Sentence(startDate = LocalDate.parse("2002-01-01")),
+            Sentence(
+              startDate = LocalDate.parse("2002-01-01"),
+              isLifeSentence = false,
+            ),
           ),
         ),
       )
@@ -138,8 +144,14 @@ internal class GetSentencesForPersonServiceTest(
 
       response.data.shouldBeEqual(
         listOf(
-          Sentence(startDate = LocalDate.parse("2001-01-01")),
-          Sentence(startDate = LocalDate.parse("2002-01-01")),
+          Sentence(
+            startDate = LocalDate.parse("2001-01-01"),
+            isLifeSentence = true,
+          ),
+          Sentence(
+            startDate = LocalDate.parse("2002-01-01"),
+            isLifeSentence = false,
+          ),
         ),
       )
     }
