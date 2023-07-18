@@ -3,8 +3,12 @@ from constants import common
 import pandas as pd
 import requests
 import yaml
+import os
 
 OUTPUT_FILE = "outputs/Schema_Field.csv"
+
+if os.path.exists("outputs/") == False:
+    os.mkdir("outputs/")
 
 json_extract = common.extract_data(common.URL)
 
