@@ -8,6 +8,7 @@
 
 - [About this project](#about-this-project)
   - [External dependencies](#external-dependencies)
+  - [Data Analysis Tooling](#data-analysis-tooling)
 - [Get started](#get-started)
   - [Using IntelliJ IDEA](#using-intellij-idea)
 - [Usage](#usage)
@@ -54,6 +55,11 @@ This solution is dependent on:
 These things depend upon this solution:
 
 - Consumer Applications (MAPPS)
+
+### Data Analysis Tooling
+
+Included within this repository is Python-based functionality used by the team to enhance data researching and analysis.
+> You can find information on how to use this in the [data_analysis](scripts/data_analysis/README.md) section of our scripts.
 
 ## Get started
 
