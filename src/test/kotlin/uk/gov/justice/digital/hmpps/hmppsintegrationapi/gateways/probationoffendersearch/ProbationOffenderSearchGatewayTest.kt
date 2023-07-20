@@ -56,7 +56,7 @@ class ProbationOffenderSearchGatewayTest(
               "firstName": "$firstName",
               "surname": "$surname",
               "includeAliases": false,
-              "valid": true
+              "isValid": true
             }
           """.removeWhitespaceAndNewlines(),
         File("src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/probationoffendersearch/fixtures/GetOffendersResponse.json").readText(),
@@ -83,7 +83,7 @@ class ProbationOffenderSearchGatewayTest(
         {
           "firstName": "Ahsoka",
           "includeAliases": false,
-          "valid": true
+          "isValid": true
         }
         """.removeWhitespaceAndNewlines(),
         """
@@ -109,7 +109,7 @@ class ProbationOffenderSearchGatewayTest(
         {
           "surname": "Tano",
           "includeAliases": false,
-          "valid":true
+          "isValid": true
         }
         """.removeWhitespaceAndNewlines(),
         """
@@ -134,7 +134,7 @@ class ProbationOffenderSearchGatewayTest(
         {
           "firstName": "Fulcrum",
           "includeAliases": true,
-          "valid": true
+          "isValid": true
         }
         """.removeWhitespaceAndNewlines(),
         """
@@ -166,7 +166,7 @@ class ProbationOffenderSearchGatewayTest(
 
     beforeEach {
       probationOffenderSearchApiMockServer.stubPostOffenderSearch(
-        "{\"pncNumber\": \"$pncId\", \"valid\": true}",
+        "{\"pncNumber\": \"$pncId\", \"isValid\": true}",
         """
         [
            {
@@ -214,7 +214,7 @@ class ProbationOffenderSearchGatewayTest(
 
     it("returns a person without aliases when no aliases are found") {
       probationOffenderSearchApiMockServer.stubPostOffenderSearch(
-        "{\"pncNumber\": \"$pncId\", \"valid\": true}",
+        "{\"pncNumber\": \"$pncId\", \"isValid\": true}",
         """
           [
            {
@@ -234,7 +234,7 @@ class ProbationOffenderSearchGatewayTest(
 
     it("returns null when 400 Bad Request is returned") {
       probationOffenderSearchApiMockServer.stubPostOffenderSearch(
-        "{\"pncNumber\": \"$pncId\", \"valid\": true}",
+        "{\"pncNumber\": \"$pncId\", \"isValid\": true}",
         """
           {
             "developerMessage": "reason for bad request"
@@ -257,7 +257,7 @@ class ProbationOffenderSearchGatewayTest(
 
     it("returns null when no offenders are returned") {
       probationOffenderSearchApiMockServer.stubPostOffenderSearch(
-        "{\"pncNumber\": \"$pncId\", \"valid\": true}",
+        "{\"pncNumber\": \"$pncId\", \"isValid\": true}",
         "[]",
       )
 
