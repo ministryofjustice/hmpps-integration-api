@@ -7,6 +7,7 @@ URL = 'https://api-dev.prison.service.justice.gov.uk/v3/api-docs'
 SCHEMA_FIELD_FILE = "outputs/schema_field.csv"
 SCHEMA_PARENT_CHILD_FILE = "outputs/schema_parent_child.csv"
 SCHEMA_DIAGRAM = "outputs/schema_hierachy.dot"
+ENDPOINTS_FILE = "outputs/endpoint_analysis.csv"
 
 def prepare_directory(filename=""):
   if os.path.exists("outputs/") == False:
@@ -79,3 +80,39 @@ def findParentSchema(response_dict, child_schema):
         data_frame = pd.concat(data_frames, axis=0)
         data_frame = data_frame.reset_index(drop=True)
         return data_frame
+    
+def get_nested_dictionary_or_value(my_dict, keys):
+    """
+    A Really powerful iterative function to explore very deeply nested dictionaries. 
+    It takes in a dictionary, and a list of key values, to return nested dictionary objects 
+    however many levels deep you require WITHOUT lines and lines of code.
+    
+        Parameters:
+
+        Returns:
+            my_dict (dict/string) 
+            Which is the nested dictionary or value that you require, 
+            unless one cannot be found in which case 0 is returned.
+
+        Example:
+            Suppose you have a dictionary like so:
+            `my_dict = {"a": {"b": {"c": {"d": 1}}}}`
+            To get to the `1`, instead of having to write:
+            `my_dict["a"]["b"]["c"]["d"]` (which you can imagine could be painful for long key names)
+            You can use this function by passing in those keys as a list, like so:
+            get_value(my_dict, ["a", "b", "c", "d"])
+
+        Usage:
+            Where this becomes more powerful is this method handles when one of those keys 
+            might be missing rather than just exiting with a TypeError/KeyError, allowing you to
+            to iterate over nested objects that might not always exist.
+    
+    """
+    if not keys:
+        return my_dict
+    key = keys[0]
+    try:
+        newdict = my_dict[key]
+    except (TypeError, KeyError):
+        return 0
+    return get_nested_dictionary_or_value(newdict, keys[1:])
