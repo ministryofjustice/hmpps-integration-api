@@ -550,12 +550,12 @@ components:
           description: >
             View is the subject focus; describing the inner focus or subject of the image, normally referring to a marking, tattoo or deeper level focus of the orientation. In practise this is the interior foci of what is captured in the 'orientation' field.
               Options include: 
-              * `FACE` - Facing, 
-              * `TAT` - Tattoo, 
-              * `OTH` - Other, 
-              * `SCAR` - Scar, 
-              * `MARK` - Mark, 
-              * `OIC` - Offence in Custody
+              `FACE` - Facing, 
+              `TAT` - Tattoo, 
+              `OTH` - Other, 
+              `SCAR` - Scar, 
+              `MARK` - Mark, 
+              `OIC` - Offence in Custody
         orientation:
           type: string
           example: FRONT
@@ -563,29 +563,29 @@ components:
           description: >
             Orientation is the scope focus; describing the scope or outer focus of the image, normally referring to the highest level object of interest within the bounds of the photo itself. This is normally a body part or an angle of photography, such as a photo of someone’s facial view (`FRONT`) or arm (`ARM`).
               Options include:
-              * `ANKLE` - Ankle,
-              * `ARM` - Arm,
-              * `DAMAGE` - Damage,
-              * `EAR` - Ear,
-              * `ELBOW` - Elbow,
-              * `FACE` - Face,
-              * `FIGHT` - Fight,
-              * `FINGER` - Finger,
-              * `FOOT` - Foot,
-              * `FRONT` - Front Facial View,
-              * `HAND` - Hand,
-              * `HEAD` - Head,
-              * `INCIDENT` - Incident,
-              * `INJURY` - Injury,
-              * `KNEE` - Knee,
-              * `LEG` - Leg,
-              * `LIP` - Lip,
-              * `NECK` - Neck,
-              * `NOSE` - Nose,
-              * `SHOULDER` - Shoulder,
-              * `THIGH` - Thigh,
-              * `TOE` - Toe,
-              * `TORSO` - Torso
+              `ANKLE` - Ankle,
+              `ARM` - Arm,
+              `DAMAGE` - Damage,
+              `EAR` - Ear,
+              `ELBOW` - Elbow,
+              `FACE` - Face,
+              `FIGHT` - Fight,
+              `FINGER` - Finger,
+              `FOOT` - Foot,
+              `FRONT` - Front Facial View,
+              `HAND` - Hand,
+              `HEAD` - Head,
+              `INCIDENT` - Incident,
+              `INJURY` - Injury,
+              `KNEE` - Knee,
+              `LEG` - Leg,
+              `LIP` - Lip,
+              `NECK` - Neck,
+              `NOSE` - Nose,
+              `SHOULDER` - Shoulder,
+              `THIGH` - Thigh,
+              `TOE` - Toe,
+              `TORSO` - Torso
         type:
           type: string
           example: OFF_BKG
@@ -593,10 +593,10 @@ components:
           description: >
             Type is the contextual focus; describing the context or scenario the image was taken within. It could be for a particular purpose or capturing the results of a particular type of incident.
               Options include:
-              * `OFF_BKG` - Offender Booking,
-              * `OFF_IDM` - Offender Identification Marks,
-              * `OIC` - Offence In Custody,
-              * `PPTY` - Property Image
+              `OFF_BKG` - Offender Booking,
+              `OFF_IDM` - Offender Identification Marks,
+              `OIC` - Offence In Custody,
+              `PPTY` - Property Image
     Offence:
       type: object
       properties:
