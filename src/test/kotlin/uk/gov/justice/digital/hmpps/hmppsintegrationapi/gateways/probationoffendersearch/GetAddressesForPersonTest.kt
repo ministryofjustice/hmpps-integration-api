@@ -36,7 +36,7 @@ class GetAddressesForPersonTest(
     beforeEach {
       probationOffenderSearchApiMockServer.start()
       probationOffenderSearchApiMockServer.stubPostOffenderSearch(
-        "{\"pncNumber\": \"$pncId\", \"valid\": true}",
+        "{\"pncNumber\": \"$pncId\"}",
         """
         [
           {
@@ -104,7 +104,7 @@ class GetAddressesForPersonTest(
 
     it("returns an empty list when no addresses are found") {
       probationOffenderSearchApiMockServer.stubPostOffenderSearch(
-        "{\"pncNumber\": \"$pncId\", \"valid\": true}",
+        "{\"pncNumber\": \"$pncId\"}",
         """
         [
           {
@@ -125,7 +125,7 @@ class GetAddressesForPersonTest(
 
     it("returns an error when no results are returned") {
       probationOffenderSearchApiMockServer.stubPostOffenderSearch(
-        "{\"pncNumber\": \"$pncId\", \"valid\": true}",
+        "{\"pncNumber\": \"$pncId\"}",
         "[]",
       )
 
@@ -136,7 +136,7 @@ class GetAddressesForPersonTest(
 
     it("returns an empty list when there is no contactDetails field") {
       probationOffenderSearchApiMockServer.stubPostOffenderSearch(
-        "{\"pncNumber\": \"$pncId\", \"valid\": true}",
+        "{\"pncNumber\": \"$pncId\"}",
         """
         [
           {
@@ -154,7 +154,7 @@ class GetAddressesForPersonTest(
 
     it("returns an empty list when contactDetails field is null") {
       probationOffenderSearchApiMockServer.stubPostOffenderSearch(
-        "{\"pncNumber\": \"$pncId\", \"valid\": true}",
+        "{\"pncNumber\": \"$pncId\"}",
         """
         [
           {
@@ -173,7 +173,7 @@ class GetAddressesForPersonTest(
 
     it("returns an empty list when contactDetails.addresses field is null") {
       probationOffenderSearchApiMockServer.stubPostOffenderSearch(
-        "{\"pncNumber\": \"$pncId\", \"valid\": true}",
+        "{\"pncNumber\": \"$pncId\"}",
         """
         [
           {
@@ -194,7 +194,7 @@ class GetAddressesForPersonTest(
 
     it("returns an empty list when the type is an empty object") {
       probationOffenderSearchApiMockServer.stubPostOffenderSearch(
-        "{\"pncNumber\": \"$pncId\", \"valid\": true}",
+        "{\"pncNumber\": \"$pncId\"}",
         """
         [
           {

@@ -5,13 +5,11 @@ import requests
 import yaml
 import os
 
-OUTPUT_FILE = "outputs/Schema_Field.csv"
-
-if os.path.exists("outputs/") == False:
-    os.mkdir("outputs/")
+OUTPUT_FILE = common.SCHEMA_FIELD_FILE
 
 json_extract = common.extract_data(common.URL)
 
+common.prepare_directory()
 schema_field_df = pd.DataFrame(columns=["Schema", "Field"])
 for schema in json_extract["components"]["schemas"]:
     for field in json_extract["components"]["schemas"][schema]["properties"]:
