@@ -17,7 +17,7 @@ This repository contains Python scripts and modules for various tooling purposes
 
 Before running the scripts in this repository, make sure you have the following:
 
-- Python 3.7 or above
+- Python 3.11 or above
 - Virtual environment - included in Installation instructions below
 
 ## Installation
