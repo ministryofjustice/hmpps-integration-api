@@ -5,6 +5,8 @@ This repository contains Python scripts and modules for various tooling purposes
 
 - [Requirements](#requirements)
 - [Installation](#installation)
+  - [Method 1 - to a local, project specific python virtual environment](#method-1---to-a-local-project-specific-python-virtual-environment)
+  - [Method 2 - directly to your base python distribution](#method-2---directly-to-your-base-python-distribution)
 - [Scripts](#scripts)
   - [Retrieve Schemas and their fields from Prison API](#retrieve-schemas-and-their-fields-from-prison-api)
   - [Generate a Schema space diagram, output child-parent relations](#generate-a-schema-space-diagram-output-child-parent-relations)
@@ -21,12 +23,28 @@ Before running the scripts in this repository, make sure you have the following:
 - Virtual environment - included in Installation instructions below
 
 ## Installation
+### Method 1 - to a local, project specific python virtual environment
+I recommend using `venv` and the instructions for this are as follows:
+* Set up venv, preferably running this command in your data_analysis directory:
+```shell
+python3 -m venv .venv
+```
+* Activate your environment:
+```shell
+source .venv/bin/activate
+```
+* Install the requirements via `requirements.txt` to this project specific virtual environment:
+```shell
+python3 -m pip install -r requirements.txt
+```
 
-To set up the virtual environment, you can create your own preference, or you can use the provided `requirements.txt` file:
-
+### Method 2 - directly to your base python distribution
+To set up the virtual environment, you can either:
+* Use the provided `requirements.txt` file and install directly to your base python environment:
 ```shell
 pip3 install -r requirements.txt
 ```
+
 
 ## Scripts
 ### Retrieve Schemas and their fields from Prison API
