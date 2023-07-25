@@ -1,7 +1,9 @@
-import pandas as pd
+"""A module containing static variables and common methods all in one place"""
+import os
 import requests
 import yaml
-import os
+
+import pandas as pd
 
 URL = 'https://api-dev.prison.service.justice.gov.uk/v3/api-docs'
 SCHEMA_FIELD_FILE = "outputs/schema_field.csv"
@@ -10,32 +12,42 @@ SCHEMA_DIAGRAM = "outputs/schema_hierachy.dot"
 ENDPOINTS_FILE = "outputs/endpoint_analysis.csv"
 
 def prepare_directory(filename=""):
-  if os.path.exists("outputs/") == False:
-      os.mkdir("outputs/")
-  if os.path.exists(f"outputs/{filename}") and str(filename) != "":
-      os.remove(f"filename")
+    """
+    A function to prepare the current directory for outputs of any script
+    You can provide an optional filename parameter to delete that file if it exists.
+    This is to get a clean output file.
+
+        Parameters:
+            (optional) filename (str): The name of the output file to be removed
+
+    """
+    if not os.path.exists("outputs/"):
+        os.mkdir("outputs/")
+    if os.path.exists(filename) and str(filename) != "":
+        os.remove(filename)
 
 def extract_data(url=URL):
     """
-    TODO Need to add logic to handle a timeout on a URL, or otherwise long response time
-    Description
+    Makes a get request against a provided url, 
+    returning the response as a dictionary object if possible
 
         Parameters:
-            url (string): a url string to a raw json or yaml source for an API documentation. Default: Constant URL parameter
+            url (string): a url string to a raw json or yaml source for an API documentation. 
+                Default: Constant URL parameter
 
         Returns:
-            data (dict): A dictionary object representing the response yaml/json, or an empty dictionary if its an unsuccessful request
+            data (dict): A dictionary object representing the response yaml/json, 
+                Unsuccesful request: An empty dictionary
     """
-    response = requests.get(url)
-    if response.status_code == 200:
-        if url.endswith('yaml'):
-            data = yaml.safe_load(response.text)
-        else:
-            data = response.json()
-        return data
+    response = requests.get(url, timeout=10)
+    if response.status_code == 200 and url.endswith('yaml'):
+        data = yaml.safe_load(response.text)
+    elif response.status_code == 200 and not url.endswith('yaml'):
+        data = response.json()
     else:
-        print(url, " responded with ", response.status_code)
-        return '{}'
+        print(url, " responded with ", response.status_code, " returning empty dictionary")
+        data = '{}'
+    return data
 
 def findParentSchema(response_dict, child_schema):
     """
