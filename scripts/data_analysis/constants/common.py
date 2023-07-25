@@ -75,14 +75,14 @@ def find_parent_schema(response_dict, child_schema):
         for field in response_dict["components"]["schemas"][schema]["properties"]:
             try:
                 ref_to_test = response_dict["components"]["schemas"][schema]["properties"][field]["$ref"]
-                if isinstance(ref_to_test) is str:
+                if isinstance(ref_to_test, str):
                     nested_ref = ref_to_test
             except KeyError:
                 nested_ref = ""
 
             try:
                 item_ref_to_test = response_dict["components"]["schemas"][schema]["properties"][field]["items"]["$ref"]
-                if isinstance(item_ref_to_test) is str:
+                if isinstance(item_ref_to_test, str):
                     nested_item_ref = item_ref_to_test
             except KeyError:
                 nested_item_ref = ""
