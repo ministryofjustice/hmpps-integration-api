@@ -23,7 +23,7 @@ def create_aggregate_data_frame(dict_object):
             aggregate_data_frame (pd.DataFrame): Data frame of all the parent-child schema relations
     """
     for schema in dict_object:
-        data_frame = common.findParentSchema(response_dict, schema)
+        data_frame = common.find_parent_schema(response_dict, schema)
         if not data_frame.empty:
             aggregate_data_frame = pd.concat([aggregate_data_frame, data_frame], axis=0)
             aggregate_data_frame.reset_index(drop=True)
@@ -54,7 +54,7 @@ def main():
         for index, row_data in aggregate_data_frame.iterrows():
             if row_data[3] is False:
                 aggregate_data_frame.at[index,'Searched_bool'] = True
-                data_frame = common.findParentSchema(response_dict, row_data[0])
+                data_frame = common.find_parent_schema(response_dict, row_data[0])
                 if not data_frame.empty:
                     data_frame["Searched_bool"] = False
                     aggregate_data_frame = pd.concat([aggregate_data_frame, data_frame], axis=0)
