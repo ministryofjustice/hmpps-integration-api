@@ -12,6 +12,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Format code
-        uses: ministryofjustice/github-actions/code-formatter@v12
+        uses: ministryofjustice/github-actions/code-formatter@v14
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
