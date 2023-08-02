@@ -5,5 +5,7 @@ services:
     base-url: http://localhost:4010
   prison-api:
     base-url: http://localhost:4030
+  ndelius:
+    base-url: https://localhost:4040
   hmpps-auth:
     base-url: http://localhost:9090

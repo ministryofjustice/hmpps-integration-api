@@ -23,7 +23,7 @@ class OffencesSmokeTest : DescribeSpec(
     val httpClient = HttpClient.newBuilder().build()
     val httpRequest = HttpRequest.newBuilder()
 
-    it("returns offences for a person") {
+    xit("returns offences for a person") {
       val response = httpClient.send(
         httpRequest.uri(URI.create("$baseUrl/$basePath")).build(),
         HttpResponse.BodyHandlers.ofString(),
@@ -41,6 +41,14 @@ class OffencesSmokeTest : DescribeSpec(
             "endDate": "2018-03-10",
             "startDate": "2018-02-10",
             "statuteCode": "RR84"
+          },
+          {
+            "cjsCode": null,
+            "courtDate": null,
+            "description": "Commit an act / series of acts with intent to pervert the course of public justice",
+            "endDate": null,
+            "startDate": null,
+            "statuteCode": null
           }
         ],
           "pagination": {

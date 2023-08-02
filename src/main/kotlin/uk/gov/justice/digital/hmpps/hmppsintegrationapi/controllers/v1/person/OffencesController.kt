@@ -31,7 +31,11 @@ class OffencesController(
     val response = getOffencesForPersonService.execute(pncId)
 
     if (response.hasErrorCausedBy(UpstreamApiError.Type.ENTITY_NOT_FOUND, causedBy = UpstreamApi.NOMIS)) {
-      throw EntityNotFoundException("Could not find person with id: $pncId")
+      throw EntityNotFoundException("Could not find person with id: $pncId in NOMIS")
+    }
+
+    if (response.hasErrorCausedBy(UpstreamApiError.Type.ENTITY_NOT_FOUND, causedBy = UpstreamApi.NDELIUS)) {
+      throw EntityNotFoundException("Could not find person with id: $pncId in nDelius")
     }
 
     return response.data.paginateWith(page, perPage)

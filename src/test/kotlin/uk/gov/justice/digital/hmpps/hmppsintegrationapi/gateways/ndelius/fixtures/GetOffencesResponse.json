@@ -1,0 +1,126 @@
+{
+  "supervisions": [
+    {
+      "number": 1,
+      "active": false,
+      "sentence": {
+        "description": "CJA - Community Order",
+        "date": "2009-07-07",
+        "length": 12,
+        "lengthUnits": "Months"
+      },
+      "mainOffence": {
+        "date": "2009-03-31",
+        "count": 1,
+        "code": "10501",
+        "description": "Common assault and battery - 10501",
+        "mainCategory": {
+          "code": "105",
+          "description": "Common and other types of assault"
+        },
+        "subCategory": {
+          "code": "01",
+          "description": "Common assault and battery"
+        }
+      },
+      "additionalOffences": [
+        {
+          "date": "2009-03-31",
+          "count": 1,
+          "code": "05800",
+          "description": "Other Criminal Damage (including causing explosion)  - 05800",
+          "mainCategory": {
+            "code": "058",
+            "description": "Other Criminal damage"
+          },
+          "subCategory": {
+            "code": "00",
+            "description": "Other Criminal damage"
+          }
+        }
+      ],
+      "courtAppearances": [
+        {
+          "type": "Trial/Adjournment",
+          "date": "2009-07-07T00:00:00+01:00",
+          "court": "Llandudno Magistrates Court",
+          "plea": "Guilty"
+        },
+        {
+          "type": "Sentence",
+          "date": "2009-07-07T00:00:00+01:00",
+          "court": "Llandudno Magistrates Court",
+          "plea": "Guilty"
+        }
+      ]
+    },
+    {
+      "number": 2,
+      "active": false,
+      "sentence": {
+        "description": "CJA - Suspended Sentence Order",
+        "date": "2009-09-01",
+        "length": 12,
+        "lengthUnits": "Months"
+      },
+      "mainOffence": {
+        "date": "2009-07-31",
+        "count": 1,
+        "code": "12511",
+        "description": "Threatening behaviour, fear or provocation of violence (Public Order Act 1986) - 12511",
+        "mainCategory": {
+          "code": "125",
+          "description": "Offences against Public Order (Summary)"
+        },
+        "subCategory": {
+          "code": "11",
+          "description": "Threatening behaviour, fear or provocation of violence (Public Order Act 1986)"
+        }
+      },
+      "additionalOffences": [
+        {
+          "date": "2009-08-14",
+          "count": 1,
+          "code": "03900",
+          "description": "Stealing from the person of another - 03900",
+          "mainCategory": {
+            "code": "039",
+            "description": "Stealing from the person of another"
+          },
+          "subCategory": {
+            "code": "00",
+            "description": "Stealing from the person of another"
+          }
+        },
+        {
+          "date": "1900-01-01",
+          "count": 1,
+          "code": "99902",
+          "description": "Migrated Breach Offences",
+          "mainCategory": {
+            "code": "MIG",
+            "description": "Other offence (non-indictable)"
+          },
+          "subCategory": {
+            "code": "01",
+            "description": "Other offence (non-indictable)"
+          }
+        }
+      ],
+      "courtAppearances": [
+        {
+          "type": "Sentence",
+          "date": "2009-09-01T00:00:00+01:00",
+          "court": "Rhuddlan Magistrates Court",
+          "plea": "Guilty"
+        },
+        {
+          "type": "Trial/Adjournment",
+          "date": "2009-08-11T00:00:00+01:00",
+          "court": "Rhuddlan Magistrates Court",
+          "plea": "Guilty"
+        }
+      ]
+    }
+  ]
+}
