@@ -20,6 +20,14 @@ class GetOffencesForPersonService(
     val responseFromPrisonerOffenderSearch = prisonerOffenderSearchGateway.getPersons(pncId = pncId)
     val responseFromProbationOffenderSearch = probationOffenderSearchGateway.getPerson(pncId = pncId)
 
+    if (responseFromPrisonerOffenderSearch.errors.isNotEmpty()) {
+      return Response(emptyList(), responseFromPrisonerOffenderSearch.errors)
+    }
+
+    if (responseFromProbationOffenderSearch.errors.isNotEmpty()) {
+      return Response(emptyList(), responseFromProbationOffenderSearch.errors)
+    }
+
     val nomisOffences = nomisGateway.getOffencesForPerson(responseFromPrisonerOffenderSearch.data.first().identifiers.nomisNumber!!)
     val nDeliusOffences = nDeliusGateway.getOffencesForPerson(responseFromProbationOffenderSearch.data?.identifiers?.deliusCrn!!)
 

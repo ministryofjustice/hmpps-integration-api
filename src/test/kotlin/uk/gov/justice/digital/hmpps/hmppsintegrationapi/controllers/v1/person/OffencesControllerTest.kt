@@ -43,18 +43,10 @@ internal class OffencesControllerTest(
               Offence(
                 cjsCode = "RR99999",
                 courtDate = LocalDate.parse("2023-03-03"),
-                description = "Some Prison offence",
+                description = "This is a description of an offence.",
                 endDate = LocalDate.parse("2023-02-01"),
                 startDate = LocalDate.parse("2023-01-01"),
                 statuteCode = "RR99",
-              ),
-              Offence(
-                cjsCode = null,
-                courtDate = null,
-                description = "Some Probation offence",
-                endDate = null,
-                startDate = null,
-                statuteCode = null,
               ),
             ),
           ),
@@ -82,18 +74,10 @@ internal class OffencesControllerTest(
             {
               "cjsCode": "RR99999",
               "courtDate":"2023-03-03",
-              "description": "Some Prison offence",
+              "description": "This is a description of an offence.",
               "endDate":"2023-02-01",
               "startDate": "2023-01-01",
               "statuteCode":"RR99"
-            },
-            {
-              "cjsCode": null,
-              "courtDate": null,
-              "description": "Some Probation offence",
-              "endDate": null,
-              "startDate": null,
-              "statuteCode": null
             }
           ]
         """.removeWhitespaceAndNewlines(),
@@ -119,31 +103,13 @@ internal class OffencesControllerTest(
         result.response.contentAsString.shouldContain("\"data\":[]".removeWhitespaceAndNewlines())
       }
 
-      it("responds with a 404 NOT FOUND status when person isn't found in NOMIS") {
+      it("responds with a 404 NOT FOUND status when person isn't found in the upstream API") {
         whenever(getOffencesForPersonService.execute(pncId)).thenReturn(
           Response(
             data = emptyList(),
             errors = listOf(
               UpstreamApiError(
                 causedBy = UpstreamApi.NOMIS,
-                type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-              ),
-            ),
-          ),
-        )
-
-        val result = mockMvc.perform(MockMvcRequestBuilders.get("$path")).andReturn()
-
-        result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
-      }
-
-      it("responds with a 404 NOT FOUND status when person isn't found in nDelius") {
-        whenever(getOffencesForPersonService.execute(pncId)).thenReturn(
-          Response(
-            data = emptyList(),
-            errors = listOf(
-              UpstreamApiError(
-                causedBy = UpstreamApi.NDELIUS,
                 type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
               ),
             ),

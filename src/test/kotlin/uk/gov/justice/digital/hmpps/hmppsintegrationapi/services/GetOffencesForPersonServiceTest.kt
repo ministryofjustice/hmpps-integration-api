@@ -14,13 +14,12 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NomisGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ProbationOffenderSearchGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.generateTestOffence
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Identifiers
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Offence
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApiError
-import java.time.LocalDate
 
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
@@ -37,12 +36,12 @@ internal class GetOffencesForPersonServiceTest(
     val pncId = "1234/56789B"
     val prisonerNumber = "Z99999ZZ"
     val nDeliusCRN = "X123456"
-    val prisonOffence1 = Offence(cjsCode = "RR12345", description = "Prision Offence 1", startDate = LocalDate.parse("2020-02-03"), endDate = LocalDate.parse("2020-03-03"), courtDate = LocalDate.parse("2020-04-03"), statuteCode = "RR12")
-    val prisonOffence2 = Offence(cjsCode = "RR54321", description = "Prision Offence 2", startDate = LocalDate.parse("2021-03-04"), endDate = LocalDate.parse("2021-04-04"), courtDate = LocalDate.parse("2021-05-04"), statuteCode = "RR54")
-    val prisonOffence3 = Offence(cjsCode = "RR24680", description = "Prision Offence 3", startDate = LocalDate.parse("2022-04-05"), endDate = LocalDate.parse("2022-05-05"), courtDate = LocalDate.parse("2022-06-05"), statuteCode = "RR24")
-    val probationOffence1 = Offence(cjsCode = null, description = "Probation Offence 1", startDate = null, endDate = null, courtDate = null, statuteCode = null)
-    val probationOffence2 = Offence(cjsCode = null, description = "Probation Offence 2", startDate = null, endDate = null, courtDate = null, statuteCode = null)
-    val probationOffence3 = Offence(cjsCode = null, description = "Probation Offence 3", startDate = null, endDate = null, courtDate = null, statuteCode = null)
+    val prisonOffence1 = generateTestOffence(description = "Prison offence 1")
+    val prisonOffence2 = generateTestOffence(description = "Prison offence 2")
+    val prisonOffence3 = generateTestOffence(description = "Prison offence 3")
+    val probationOffence1 = generateTestOffence(description = "Probation offence 1", cjsCode = null, statuteCode = null)
+    val probationOffence2 = generateTestOffence(description = "Probation offence 2", cjsCode = null, statuteCode = null)
+    val probationOffence3 = generateTestOffence(description = "Probation offence 3", cjsCode = null, statuteCode = null)
 
     beforeEach {
       Mockito.reset(nomisGateway)
@@ -118,40 +117,24 @@ internal class GetOffencesForPersonServiceTest(
       )
     }
 
-    it("records errors when offences cannot be found in NOMIS") {
-      whenever(nomisGateway.getOffencesForPerson(prisonerNumber)).thenReturn(
-        Response(
-          data = emptyList(),
-          errors = listOf(
-            UpstreamApiError(
-              causedBy = UpstreamApi.NOMIS,
-              type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+    it("returns errors when person offences cannot be found by PNC ID") {
+      listOf(UpstreamApi.PRISONER_OFFENDER_SEARCH, UpstreamApi.PROBATION_OFFENDER_SEARCH, UpstreamApi.NDELIUS, UpstreamApi.NOMIS).forEach {
+        whenever(prisonerOffenderSearchGateway.getPersons(pncId = pncId)).thenReturn(
+          Response(
+            data = emptyList(),
+            errors = listOf(
+              UpstreamApiError(
+                causedBy = it,
+                type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+              ),
             ),
           ),
-        ),
-      )
+        )
 
-      val response = getOffencesForPersonService.execute(pncId)
+        val response = getOffencesForPersonService.execute(pncId)
 
-      response.errors.shouldHaveSize(1)
-    }
-
-    it("returns errors when offences cannot be found in nDelius") {
-      whenever(nDeliusGateway.getOffencesForPerson(nDeliusCRN)).thenReturn(
-        Response(
-          data = emptyList(),
-          errors = listOf(
-            UpstreamApiError(
-              causedBy = UpstreamApi.NOMIS,
-              type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-            ),
-          ),
-        ),
-      )
-
-      val response = getOffencesForPersonService.execute(pncId)
-
-      response.errors.shouldHaveSize(1)
+        response.errors.shouldHaveSize(1)
+      }
     }
   },
 )
