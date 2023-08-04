@@ -5,6 +5,8 @@ services:
     base-url: https://prisoner-offender-search-dev.prison.service.justice.gov.uk
   probation-offender-search:
     base-url: https://probation-offender-search-dev.hmpps.service.justice.gov.uk
+  ndelius:
+    base-url: https://external-api-and-delius-dev.hmpps.service.justice.gov.uk
   hmpps-auth:
     base-url: https://sign-in-dev.hmpps.service.justice.gov.uk
     username: ${CLIENT_ID}

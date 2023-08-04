@@ -55,6 +55,8 @@ services:
     base-url: "TestURL"
   prisoner-offender-search:
     base-url: "TestURL"
+  ndelius:
+    base-url: "TestURL"
   hmpps-auth:
     base-url: "OtherTestURL"
     username: hmpps-integration-api-client

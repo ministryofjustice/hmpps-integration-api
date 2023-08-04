@@ -5,5 +5,7 @@ services:
     base-url: http://prisoner-offender-search:4010
   prison-api:
     base-url: http://prison-api:4010
+  ndelius:
+    base-url: https://ndelius:4010
   hmpps-auth:
     base-url: http://hmpps-auth:8080
