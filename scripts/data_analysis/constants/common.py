@@ -105,31 +105,37 @@ def find_parent_schema(response_dict, child_schema):
     data_frame = data_frame.reset_index(drop=True)
     return data_frame
 
-def get_nested_dictionary_or_value(my_dict, keys):
+def get_nested_dictionary_or_value(my_dict, keys, return_value=0):
     """
-    A Really powerful iterative function to explore very deeply nested dictionaries. 
+    A Really powerful iterative function to explore very deeply nested dictionaries.
+    This also works when one of the keys might be missing, exiting without error.
     It takes in a dictionary, and a list of key values, to return nested dictionary objects 
     however many levels deep you require WITHOUT lines and lines of code.
 
         Parameters:
+            my_dict (dict): Dictionary object, can use this function recursively.
+            keys (list): A list of keys representing each nested level.
 
         Returns:
             my_dict (dict/string) 
-            Which is the nested dictionary or value that you require, 
-            unless one cannot be found in which case 0 is returned.
+                Which is the nested dictionary or value that you require..
+            return_value 
+                ..Unless one cannot be found in which case what you specify is returned.
+                default: 0
 
         Example:
             Suppose you have a dictionary like so:
             `my_dict = {"a": {"b": {"c": {"d": 1}}}}`
             To get to the `1`, instead of having to write:
-            `my_dict["a"]["b"]["c"]["d"]` (which you can imagine could be painful for long key names)
+            `my_dict["a"]["b"]["c"]["d"]`
             You can use this function by passing in those keys as a list, like so:
             get_value(my_dict, ["a", "b", "c", "d"])
 
         Usage:
             Where this becomes more powerful is this method handles when one of those keys 
             might be missing rather than just exiting with a TypeError/KeyError, allowing you to
-            to iterate over nested objects that might not always exist.
+            to iterate over nested objects that might not always exist, and use the return_value
+            to check for this existence in your own logic.
 
     """
     if not keys:
@@ -138,5 +144,5 @@ def get_nested_dictionary_or_value(my_dict, keys):
     try:
         newdict = my_dict[key]
     except (TypeError, KeyError):
-        return 0
+        return return_value
     return get_nested_dictionary_or_value(newdict, keys[1:])
