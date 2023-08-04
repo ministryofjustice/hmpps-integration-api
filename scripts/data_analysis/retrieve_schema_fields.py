@@ -1,9 +1,7 @@
-from constants import common
-
+"""Module to extract all schemas and their fields into a csv file"""
 import pandas as pd
-import requests
-import yaml
-import os
+
+from constants import common
 
 OUTPUT_FILE = common.SCHEMA_FIELD_FILE
 
