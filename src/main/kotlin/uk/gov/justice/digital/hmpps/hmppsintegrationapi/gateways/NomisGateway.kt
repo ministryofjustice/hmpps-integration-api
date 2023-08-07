@@ -127,7 +127,7 @@ class NomisGateway(@Value("\${services.prison-api.base-url}") baseUrl: String) {
       Response(
         data = webClient.requestList<SentenceFromNomis>(
           HttpMethod.GET,
-          "/api/offender-sentences/booking/$id/sentenceTerms",
+          "/api/offender-sentences/booking/$id/sentences-and-offences",
           authenticationHeader(),
         ).map { it.toSentence() },
       )

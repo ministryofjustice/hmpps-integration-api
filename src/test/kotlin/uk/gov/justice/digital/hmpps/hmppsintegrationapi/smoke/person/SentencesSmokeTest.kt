@@ -35,16 +35,8 @@ class SentencesSmokeTest : DescribeSpec(
         {
           "data": [
             {
-              "startDate": "2018-12-31",
-              "length": {
-                "days": 4,
-                "weeks": 3,
-                "months": 2,
-                "years": 1
-              },
-              "fineAmount": -1.7976931348623157E308,
-              "isLifeSentence": true
-            }
+            "dateOfSentencing":"2019-08-24"
+             }
           ],
           "pagination": {
             "isLastPage": true,

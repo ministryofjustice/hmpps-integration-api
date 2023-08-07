@@ -17,7 +17,6 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Sentence
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.SentenceLength
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetSentencesForPersonService
@@ -42,15 +41,7 @@ internal class SentencesControllerTest(
           Response(
             data = listOf(
               Sentence(
-                startDate = LocalDate.parse("1990-01-01"),
-                length = SentenceLength(
-                  days = 9,
-                  weeks = 10,
-                  months = 3,
-                  years = 10,
-                ),
-                fineAmount = 99.99,
-                isLifeSentence = true,
+                dateOfSentencing = LocalDate.parse("1990-01-01")
               ),
             ),
           ),
@@ -76,15 +67,7 @@ internal class SentencesControllerTest(
           """
           [
             {
-              "startDate": "1990-01-01",
-              "length": {
-                "days": 9,
-                "weeks": 10,
-                "months": 3,
-                "years": 10
-              },
-              "fineAmount": 99.99,
-              "isLifeSentence": true
+              "dateOfSentencing": "1990-01-01"
             }
           ]
           """.removeWhitespaceAndNewlines(),
@@ -134,8 +117,7 @@ internal class SentencesControllerTest(
             data =
             List(20) {
               Sentence(
-                startDate = LocalDate.parse("2023-01-01"),
-                isLifeSentence = true,
+                dateOfSentencing = LocalDate.parse("2023-01-01"),
               )
             },
           ),

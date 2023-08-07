@@ -69,8 +69,7 @@ internal class GetSentencesForPersonServiceTest(
         Response(
           data = listOf(
             Sentence(
-              startDate = LocalDate.parse("2001-01-01"),
-              isLifeSentence = true,
+              dateOfSentencing = LocalDate.parse("2001-01-01"),
             ),
           ),
         ),
@@ -80,8 +79,7 @@ internal class GetSentencesForPersonServiceTest(
         Response(
           data = listOf(
             Sentence(
-              startDate = LocalDate.parse("2002-01-01"),
-              isLifeSentence = false,
+              dateOfSentencing = LocalDate.parse("2002-01-01"),
             ),
           ),
         ),
@@ -145,12 +143,10 @@ internal class GetSentencesForPersonServiceTest(
       response.data.shouldBeEqual(
         listOf(
           Sentence(
-            startDate = LocalDate.parse("2001-01-01"),
-            isLifeSentence = true,
+            dateOfSentencing = LocalDate.parse("2001-01-01")
           ),
           Sentence(
-            startDate = LocalDate.parse("2002-01-01"),
-            isLifeSentence = false,
+            dateOfSentencing = LocalDate.parse("2002-01-01"),
           ),
         ),
       )
