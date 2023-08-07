@@ -42,7 +42,7 @@ internal class OffencesControllerTest(
             data = listOf(
               Offence(
                 cjsCode = "RR99999",
-                courtDate = LocalDate.parse("2023-03-03"),
+                courtDates = listOf(LocalDate.parse("2023-03-03")),
                 description = "This is a description of an offence.",
                 endDate = LocalDate.parse("2023-02-01"),
                 startDate = LocalDate.parse("2023-01-01"),
@@ -73,7 +73,7 @@ internal class OffencesControllerTest(
           "data": [
             {
               "cjsCode": "RR99999",
-              "courtDate":"2023-03-03",
+              "courtDates": ["2023-03-03"],
               "description": "This is a description of an offence.",
               "endDate":"2023-02-01",
               "startDate": "2023-01-01",
@@ -128,7 +128,7 @@ internal class OffencesControllerTest(
             List(20) {
               Offence(
                 cjsCode = "RR99999",
-                courtDate = LocalDate.parse("2023-03-03"),
+                courtDates = listOf(LocalDate.parse("2023-03-03")),
                 description = "This is a description of an offence.",
                 endDate = LocalDate.parse("2023-02-01"),
                 startDate = LocalDate.parse("2023-01-01"),

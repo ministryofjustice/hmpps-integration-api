@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis
 
 import io.kotest.core.spec.style.DescribeSpec
+import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
 import java.time.LocalDate
@@ -21,7 +22,7 @@ class OffenceHistoryDetailTest : DescribeSpec(
         val integrationApiOffence = offenceHistoryDetail.toOffence()
 
         integrationApiOffence.cjsCode.shouldBe(offenceHistoryDetail.offenceCode)
-        integrationApiOffence.courtDate.shouldBe(offenceHistoryDetail.courtDate)
+        integrationApiOffence.courtDates.shouldBe(listOf(offenceHistoryDetail.courtDate))
         integrationApiOffence.description.shouldBe(offenceHistoryDetail.offenceDescription)
         integrationApiOffence.endDate.shouldBe(offenceHistoryDetail.offenceRangeDate)
         integrationApiOffence.startDate.shouldBe(offenceHistoryDetail.offenceDate)
@@ -38,7 +39,7 @@ class OffenceHistoryDetailTest : DescribeSpec(
         val integrationApiOffence = offenceHistoryDetail.toOffence()
 
         integrationApiOffence.cjsCode.shouldBe(offenceHistoryDetail.offenceCode)
-        integrationApiOffence.courtDate.shouldBeNull()
+        integrationApiOffence.courtDates.shouldBeEmpty()
         integrationApiOffence.description.shouldBe(offenceHistoryDetail.offenceDescription)
         integrationApiOffence.endDate.shouldBeNull()
         integrationApiOffence.startDate.shouldBeNull()

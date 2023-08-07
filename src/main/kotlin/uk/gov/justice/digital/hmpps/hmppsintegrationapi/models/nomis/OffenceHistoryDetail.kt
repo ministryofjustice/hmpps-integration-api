@@ -13,7 +13,7 @@ data class OffenceHistoryDetail(
 ) {
   fun toOffence(): Offence = Offence(
     cjsCode = this.offenceCode,
-    courtDate = this.courtDate,
+    courtDates = listOf(this.courtDate).filterNotNull(),
     description = this.offenceDescription,
     endDate = this.offenceRangeDate,
     startDate = this.offenceDate,
