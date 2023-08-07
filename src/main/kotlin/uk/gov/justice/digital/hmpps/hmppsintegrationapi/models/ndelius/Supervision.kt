@@ -10,6 +10,7 @@ data class Supervision(
 ) {
   fun toOffence(): Offence = Offence(
     cjsCode = null,
+    hoCode = this.mainOffence?.code,
     courtDates = this.courtAppearances.map { LocalDate.parse(it.date, DateTimeFormatter.ISO_OFFSET_DATE_TIME) }.filterNotNull(),
     endDate = null,
     startDate = null,

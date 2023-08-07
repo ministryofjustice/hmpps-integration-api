@@ -12,13 +12,21 @@ class SupervisionsTest : DescribeSpec(
         val supervisions = Supervisions(
           supervisions = listOf(
             Supervision(
-              mainOffence = MainOffence(description = "foobar"),
+              mainOffence = MainOffence(
+                description = "foobar",
+                code = "05800",
+              ),
               courtAppearances = listOf(
-                CourtAppearance(date = "2009-07-07T00:00:00+01:00"),
+                CourtAppearance(
+                  date = "2009-07-07T00:00:00+01:00",
+                ),
               ),
             ),
             Supervision(
-              mainOffence = MainOffence(description = "barbaz"),
+              mainOffence = MainOffence(
+                description = "barbaz",
+                code = "05800",
+              ),
               courtAppearances = listOf(
                 CourtAppearance(date = "2010-07-07T00:00:00+01:00"),
               ),
@@ -32,10 +40,12 @@ class SupervisionsTest : DescribeSpec(
           listOf(
             Offence(
               description = "foobar",
+              hoCode = "05800",
               courtDates = listOf(LocalDate.parse("2009-07-07")),
             ),
             Offence(
               description = "barbaz",
+              hoCode = "05800",
               courtDates = listOf(LocalDate.parse("2010-07-07")),
             ),
           ),

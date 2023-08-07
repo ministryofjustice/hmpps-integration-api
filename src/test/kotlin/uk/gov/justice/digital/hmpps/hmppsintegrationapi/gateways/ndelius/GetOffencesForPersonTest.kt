@@ -15,11 +15,13 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.generateTestOffence
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.NDeliusApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApiError
 import java.io.File
+import java.time.LocalDate
 
 @ActiveProfiles("test")
 @ContextConfiguration(
@@ -59,8 +61,34 @@ class GetOffencesForPersonTest(
       it("returns offences for the matching CRN") {
         val response = nDeliusGateway.getOffencesForPerson(crn)
 
-        response.data[0].description.shouldBe("Common assault and battery - 10501")
-        response.data[1].description.shouldBe("Threatening behaviour, fear or provocation of violence (Public Order Act 1986) - 12511")
+        response.data.shouldBe(
+          listOf(
+            generateTestOffence(
+              cjsCode = null,
+              hoCode = "10501",
+              courtDates = listOf(
+                LocalDate.parse("2009-07-07"),
+                LocalDate.parse("2009-07-07"),
+              ),
+              description = "Common assault and battery - 10501",
+              endDate = null,
+              startDate = null,
+              statuteCode = null,
+            ),
+            generateTestOffence(
+              cjsCode = null,
+              hoCode = "12511",
+              courtDates = listOf(
+                LocalDate.parse("2009-09-01"),
+                LocalDate.parse("2009-08-11"),
+              ),
+              description = "Threatening behaviour, fear or provocation of violence (Public Order Act 1986) - 12511",
+              endDate = null,
+              startDate = null,
+              statuteCode = null,
+            ),
+          ),
+        )
       }
 
       it("returns an empty list if no offences are found") {
