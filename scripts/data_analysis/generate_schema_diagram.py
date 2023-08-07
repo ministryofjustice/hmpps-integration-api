@@ -1,9 +1,7 @@
-import json
-import requests
-import yaml
-import pandas as pd
-import os
+"""Module to generate a schema parent-child relationship diagram, with corresponding outputs"""
 import sys
+
+import pandas as pd
 
 from graphviz import Digraph
 from constants import common
@@ -11,57 +9,78 @@ from constants import common
 OUTPUT_FILE = common.SCHEMA_PARENT_CHILD_FILE
 DIAGRAM_FILE = common.SCHEMA_DIAGRAM
 
-response_dict = common.extract_data(common.URL)
+def create_aggregate_data_frame(dict_object, schemas):
+    """
+    Search through the keys of a dataframe, or a list of schema names, 
+    and aggregate the data into a single dataframe.
+
+        Parameters:
+            dict_object (dictionary): Dictionary where keys are schema names
+            schemas (list): A list or iterable of the schemas
+
+        Returns:
+            aggregate_data_frame (pd.DataFrame): Data frame of all the parent-child schema relations
+    """
+    aggregate_data_frame = pd.DataFrame()
+    for schema in schemas:
+        data_frame = common.find_parent_schema(dict_object, schema)
+        if not data_frame.empty:
+            aggregate_data_frame = pd.concat([aggregate_data_frame, data_frame], axis=0)
+            aggregate_data_frame.reset_index(drop=True)
+    return aggregate_data_frame
 
 def main():
+    """The main method, used to call the script. Command line arguments used as search terms"""
+    response_dict = common.extract_data(common.URL)
     common.prepare_directory(DIAGRAM_FILE)
+
     aggregate_data_frame = pd.DataFrame()
     is_full_schema_diagram = len(sys.argv) == 1
     if is_full_schema_diagram:
-        for schema in response_dict["components"]["schemas"]:
-            data_frame = common.findParentSchema(response_dict, schema)
-            if not data_frame.empty:
-                aggregate_data_frame = pd.concat([aggregate_data_frame, data_frame], axis=0).reset_index(drop=True)
+        aggregate_data_frame = create_aggregate_data_frame(response_dict,
+                                                           response_dict["components"]["schemas"])
     else:
-        for schema in sys.argv[1:]: #1 or more arguments passed in, schema search
-            data_frame = common.findParentSchema(response_dict, schema)
-            if not data_frame.empty:
-                aggregate_data_frame = pd.concat([aggregate_data_frame, data_frame], axis=0).reset_index(drop=True)
+        aggregate_data_frame = create_aggregate_data_frame(response_dict, list(sys.argv[1:]))
 
     #To ensure we don't break future logic we can remove all rows without a child
     for index, row_data in aggregate_data_frame.iterrows():
         if row_data[2] == "":
             aggregate_data_frame.drop(index, inplace=True)
-
-    print(aggregate_data_frame.groupby("Parent_Schema").count())
+    try:
+        print(aggregate_data_frame.groupby("Parent_Schema").count())
+    except KeyError as k_e:
+        print(f"{type(k_e)}", "- Which means no parent data was found in the search")
+        sys.exit()
 
     #Parents of parents
     aggregate_data_frame["Searched_bool"] = False
     counter = 0
-    while(counter < 8): #Up to 8 steps away parents can be found
-        #TODO could do with improving this, as without the counter its an infinite loop as the data_frame keeps growing due to the same searches occuring over and over. 
-        #Maybe some kind of additional column to mark a field as being used and thus not searching on it again would significantly speed up processing
+    while counter < 8: #Up to 8 steps away parents can be found
         counter +=1
         for index, row_data in aggregate_data_frame.iterrows():
-            if row_data[3] == False:
+            if row_data[3] is False:
                 aggregate_data_frame.at[index,'Searched_bool'] = True
-                data_frame = common.findParentSchema(response_dict, row_data[0])
+                data_frame = common.find_parent_schema(response_dict, row_data[0])
                 if not data_frame.empty:
                     data_frame["Searched_bool"] = False
-                    aggregate_data_frame = pd.concat([aggregate_data_frame, data_frame], axis=0).reset_index(drop=True)
-            elif row_data[3] == True:
+                    aggregate_data_frame = pd.concat([aggregate_data_frame, data_frame], axis=0)
+                    aggregate_data_frame.reset_index(drop=True)
+            elif row_data[3] is True:
                 continue
 
     aggregate_data_frame.drop_duplicates(inplace=True)
     aggregate_data_frame.dropna(inplace=True)
 
-    g = Digraph('g', filename=DIAGRAM_FILE, node_attr={'shape': 'record', 'height': '.1'}, graph_attr={'rankdir': 'LR'})
+    schema_graph = Digraph('schema_graph',
+                           filename=DIAGRAM_FILE,
+                           node_attr={'shape': 'record', 'height': '.1'},
+                           graph_attr={'rankdir': 'LR'})
 
     for index, row_data in aggregate_data_frame.dropna().iterrows():
-        g.node(row_data[0])
-        g.edge(row_data[0], row_data[2])
+        schema_graph.node(row_data[0])
+        schema_graph.edge(row_data[0], row_data[2])
 
-    g.save(filename=DIAGRAM_FILE)
+    schema_graph.save(filename=DIAGRAM_FILE)
     print(f"Visual saved to {DIAGRAM_FILE=}")
     aggregate_data_frame.to_csv(OUTPUT_FILE)
     print(f"Child-parent data saved to {OUTPUT_FILE=}")
