@@ -8,14 +8,6 @@ data class Supervision(
   val courtAppearances: List<CourtAppearance> = listOf(CourtAppearance()),
 ) {
   fun toOffences(): List<Offence> {
-    return listOf(
-      this.mainOffence.toOffence(
-        this.courtAppearances
-      )
-    ) + this.additionalOffences.map {
-      it.toOffence(
-        this.courtAppearances
-      )
-    }
+    return listOf(this.mainOffence.toOffence(this.courtAppearances)) + this.additionalOffences.map { it.toOffence(this.courtAppearances) }
   }
 }
