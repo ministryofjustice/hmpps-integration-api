@@ -1,6 +1,8 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius
 
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Offence
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 data class Supervision(
   val mainOffence: MainOffence = MainOffence(),
@@ -8,6 +10,7 @@ data class Supervision(
   val courtAppearances: List<CourtAppearance> = listOf(CourtAppearance()),
 ) {
   fun toOffences(): List<Offence> {
-    return listOf(this.mainOffence.toOffence(this.courtAppearances)) + this.additionalOffences.map { it.toOffence(this.courtAppearances) }
+    val courtDates = courtAppearances.mapNotNull { LocalDate.parse(it.date, DateTimeFormatter.ISO_OFFSET_DATE_TIME) }
+    return listOf(this.mainOffence.toOffence(courtDates)) + this.additionalOffences.map { it.toOffence(courtDates) }
   }
 }
