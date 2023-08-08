@@ -5,6 +5,7 @@ import java.time.LocalDate
 
 fun generateTestOffence(
   cjsCode: String? = "RR12345",
+  hoCode: String? = "05800",
   description: String? = "Some description",
   startDate: LocalDate? = LocalDate.parse("2020-02-03"),
   endDate: LocalDate? = LocalDate.parse("2020-03-03"),
@@ -12,6 +13,7 @@ fun generateTestOffence(
   statuteCode: String? = "RR12",
 ): Offence = Offence(
   cjsCode = cjsCode,
+  hoCode = hoCode,
   description = description,
   startDate = startDate,
   endDate = endDate,
