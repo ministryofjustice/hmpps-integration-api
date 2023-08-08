@@ -26,7 +26,7 @@ class NDeliusGateway(@Value("\${services.ndelius.base-url}") baseUrl: String) {
           HttpMethod.GET,
           "/case/$id/supervisions",
           authenticationHeader(),
-        ).supervisions.map { it.toOffence() },
+        ).supervisions.flatMap { it.toOffences() },
       )
     } catch (exception: WebClientResponseException.NotFound) {
       Response(
