@@ -10,7 +10,7 @@ data class Supervision(
   val courtAppearances: List<CourtAppearance> = listOf(CourtAppearance()),
 ) {
   fun toOffences(): List<Offence> {
-    val courtDates = courtAppearances.mapNotNull { LocalDate.parse(it.date, DateTimeFormatter.ISO_OFFSET_DATE_TIME) }
+    val courtDates = this.courtAppearances.mapNotNull { LocalDate.parse(it.date, DateTimeFormatter.ISO_OFFSET_DATE_TIME) }
     return listOf(this.mainOffence.toOffence(courtDates)) + this.additionalOffences.map { it.toOffence(courtDates) }
   }
 }

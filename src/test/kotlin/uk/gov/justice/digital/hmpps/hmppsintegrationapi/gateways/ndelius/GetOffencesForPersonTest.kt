@@ -72,7 +72,7 @@ class GetOffencesForPersonTest(
               ),
               description = "Common assault and battery - 10501",
               endDate = null,
-              startDate = null,
+              startDate = LocalDate.parse("2009-03-31"),
               statuteCode = null,
             ),
             generateTestOffence(
@@ -84,7 +84,7 @@ class GetOffencesForPersonTest(
               ),
               description = "Other Criminal Damage (including causing explosion)  - 05800",
               endDate = null,
-              startDate = null,
+              startDate = LocalDate.parse("2009-03-31"),
               statuteCode = null,
             ),
             generateTestOffence(
@@ -96,7 +96,7 @@ class GetOffencesForPersonTest(
               ),
               description = "Threatening behaviour, fear or provocation of violence (Public Order Act 1986) - 12511",
               endDate = null,
-              startDate = null,
+              startDate = LocalDate.parse("2009-07-31"),
               statuteCode = null,
             ),
             generateTestOffence(
@@ -108,7 +108,7 @@ class GetOffencesForPersonTest(
               ),
               description = "Stealing from the person of another - 03900",
               endDate = null,
-              startDate = null,
+              startDate = LocalDate.parse("2009-08-14"),
               statuteCode = null,
             ),
             generateTestOffence(
@@ -120,7 +120,7 @@ class GetOffencesForPersonTest(
               ),
               description = "Migrated Breach Offences",
               endDate = null,
-              startDate = null,
+              startDate = LocalDate.parse("1900-01-01"),
               statuteCode = null,
             ),
           ),
