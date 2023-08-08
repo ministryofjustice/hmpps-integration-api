@@ -41,7 +41,7 @@ internal class SentencesControllerTest(
           Response(
             data = listOf(
               Sentence(
-                dateOfSentencing = LocalDate.parse("1990-01-01")
+                dateOfSentencing = LocalDate.parse("1990-01-01"),
               ),
             ),
           ),

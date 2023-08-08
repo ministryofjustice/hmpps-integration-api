@@ -8,6 +8,7 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Offence
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Response
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Sentence
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.Supervisions
@@ -39,6 +40,16 @@ class NDeliusGateway(@Value("\${services.ndelius.base-url}") baseUrl: String) {
         ),
       )
     }
+  }
+
+  fun getSentencesForPerson(id: String): Response<List<Sentence>> {
+    return Response(
+      data = webClient.request<Supervisions>(
+        HttpMethod.GET,
+        "/case/$id/supervisions",
+        authenticationHeader(),
+      ).supervisions.map { it.sentence.toSentence() },
+    )
   }
 
   private fun authenticationHeader(): Map<String, String> {

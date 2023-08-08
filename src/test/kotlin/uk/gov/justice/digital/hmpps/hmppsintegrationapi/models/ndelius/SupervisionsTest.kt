@@ -3,7 +3,9 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Offence
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Sentence
 import java.time.LocalDate
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.Sentence as NDeliusSentence
 
 class SupervisionsTest : DescribeSpec(
   {
@@ -64,6 +66,26 @@ class SupervisionsTest : DescribeSpec(
             ),
           )
         }
+      }
+    }
+
+    describe("#toSentence") {
+      it("maps one-to-one attributes to integration API sentence attributes") {
+        val supervisions = Supervisions(
+          supervisions = listOf(
+            Supervision(sentence = NDeliusSentence(date = "01-01-1900")),
+            Supervision(sentence = NDeliusSentence(date = "01-01-2000")),
+          ),
+        )
+
+        val integrationApiSentence = supervisions.supervisions.map { it.sentence.toSentence() }
+
+        integrationApiSentence.shouldBe(
+          listOf(
+            Sentence(dateOfSentencing = LocalDate.parse("01-01-1900")),
+            Sentence(dateOfSentencing = LocalDate.parse("01-01-2000")),
+          ),
+        )
       }
     }
   },
