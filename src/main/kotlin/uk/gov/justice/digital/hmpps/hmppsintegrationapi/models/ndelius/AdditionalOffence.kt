@@ -4,7 +4,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Offence
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-data class MainOffence(
+data class AdditionalOffence(
   val description: String? = null,
   val code: String? = null,
 ) {

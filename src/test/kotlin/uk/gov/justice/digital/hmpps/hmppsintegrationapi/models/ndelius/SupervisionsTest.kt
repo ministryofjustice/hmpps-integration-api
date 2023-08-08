@@ -7,7 +7,7 @@ import java.time.LocalDate
 
 class SupervisionsTest : DescribeSpec(
   {
-    describe("#toOffence") {
+    describe("#toOffences") {
       it("maps one-to-one attributes to integration API attributes") {
         val supervisions = Supervisions(
           supervisions = listOf(
@@ -34,7 +34,7 @@ class SupervisionsTest : DescribeSpec(
           ),
         )
 
-        val integrationApiOffences = supervisions.supervisions.map { it.toOffence() }
+        val integrationApiOffences = supervisions.supervisions.map { it.toOffences() }
 
         integrationApiOffences.shouldBe(
           listOf(
