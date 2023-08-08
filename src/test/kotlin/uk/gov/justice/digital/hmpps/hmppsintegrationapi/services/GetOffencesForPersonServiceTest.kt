@@ -39,9 +39,9 @@ internal class GetOffencesForPersonServiceTest(
     val prisonOffence1 = generateTestOffence(description = "Prison offence 1")
     val prisonOffence2 = generateTestOffence(description = "Prison offence 2")
     val prisonOffence3 = generateTestOffence(description = "Prison offence 3")
-    val probationOffence1 = generateTestOffence(description = "Probation offence 1", cjsCode = null, statuteCode = null)
-    val probationOffence2 = generateTestOffence(description = "Probation offence 2", cjsCode = null, statuteCode = null)
-    val probationOffence3 = generateTestOffence(description = "Probation offence 3", cjsCode = null, statuteCode = null)
+    val probationOffence1 = generateTestOffence(description = "Probation offence 1", hoCode = "05800", statuteCode = null)
+    val probationOffence2 = generateTestOffence(description = "Probation offence 2", hoCode = "05801", statuteCode = null)
+    val probationOffence3 = generateTestOffence(description = "Probation offence 3", hoCode = "05802", statuteCode = null)
 
     beforeEach {
       Mockito.reset(nomisGateway)
