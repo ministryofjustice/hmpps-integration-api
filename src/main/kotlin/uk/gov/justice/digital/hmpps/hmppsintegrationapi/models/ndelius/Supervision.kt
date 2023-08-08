@@ -6,15 +6,11 @@ import java.time.format.DateTimeFormatter
 
 data class Supervision(
   val mainOffence: MainOffence = MainOffence(),
+  val additionalOffences: List<AdditionalOffence> = listOf(AdditionalOffence()),
   val courtAppearances: List<CourtAppearance> = listOf(CourtAppearance()),
 ) {
-  fun toOffence(): Offence = Offence(
-    cjsCode = null,
-    hoCode = this.mainOffence?.code,
-    courtDates = this.courtAppearances.map { LocalDate.parse(it.date, DateTimeFormatter.ISO_OFFSET_DATE_TIME) }.filterNotNull(),
-    endDate = null,
-    startDate = null,
-    statuteCode = null,
-    description = this.mainOffence?.description,
-  )
+  fun toOffences(): List<Offence> {
+    val courtDates = courtAppearances.mapNotNull { LocalDate.parse(it.date, DateTimeFormatter.ISO_OFFSET_DATE_TIME) }
+    return listOf(this.mainOffence.toOffence(courtDates)) + this.additionalOffences.map { it.toOffence(courtDates) }
+  }
 }
