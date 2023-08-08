@@ -603,12 +603,12 @@ components:
         cjsCode:
           type: string
           example: RR84070
-          description: Criminal Justice System offence code
-        courtDate:
-          type: string
+          description: Criminal Justice System offence code, only present for Offences retrieved from Prison API
+        courtDates:
+          type: array
           format: date
-          example: 2018-02-10
-          description: Latest court date associated with the offence
+          example: [2018-02-10, 2019-02-10]
+          description: Court dates associated with offences. Offences from Prison API will always be a list of 1 item. Offences from nDelius will have more than 1 court date.
         description:
           type: string
           example: Commit an act / series of acts with intent to pervert the course of public justice
@@ -617,7 +617,11 @@ components:
           type: string
           format: date
           example: 2018-03-10
-          description: End date of range over which the offence was believed to have taken place
+          description: End date of range over which the offence was believed to have taken place, only present for Offences retrieved from Prison API
+        hoCode:
+          type: string
+          example: 06601
+          description: Home Office code, only present for Offences retrieved from nDelius
         startDate:
           type: string
           format: date
@@ -626,7 +630,7 @@ components:
         statuteCode:
           type: string
           example: RR84
-          description: Statute code
+          description: Statute code, only present for Offences retrieved from Prison API
     Pagination:
       type: object
       properties:
