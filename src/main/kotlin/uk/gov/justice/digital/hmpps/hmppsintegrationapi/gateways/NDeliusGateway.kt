@@ -51,7 +51,7 @@ class NDeliusGateway(@Value("\${services.ndelius.base-url}") baseUrl: String) {
           authenticationHeader(),
         ).supervisions.map { it.sentence.toSentence() },
       )
-    } catch(exception: WebClientResponseException.NotFound) {
+    } catch (exception: WebClientResponseException.NotFound) {
       Response(
         data = emptyList(),
         errors = listOf(
@@ -62,10 +62,6 @@ class NDeliusGateway(@Value("\${services.ndelius.base-url}") baseUrl: String) {
         ),
       )
     }
-
-
-
-
   }
 
   private fun authenticationHeader(): Map<String, String> {

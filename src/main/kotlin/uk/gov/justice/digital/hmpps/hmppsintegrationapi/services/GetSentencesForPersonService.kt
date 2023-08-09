@@ -8,8 +8,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffende
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ProbationOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Sentence
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApiError
-import kotlin.math.log
 
 @Service
 class GetSentencesForPersonService(
@@ -51,5 +49,4 @@ class GetSentencesForPersonService(
 
     return Response(data = nomisSentences.map { it.data }.flatten() + nDeliusSentences.data)
   }
-
 }

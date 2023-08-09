@@ -47,7 +47,6 @@ internal class GetSentencesForPersonServiceTest(
       Mockito.reset(prisonerOffenderSearchGateway)
       Mockito.reset(probationOffenderSearchGateway)
 
-
       whenever(prisonerOffenderSearchGateway.getPersons(pncId = pncId)).thenReturn(
         Response(data = listOf(Person(firstName = "Chandler", lastName = "Bing", identifiers = Identifiers(nomisNumber = prisonerNumber)))),
       )
@@ -103,7 +102,7 @@ internal class GetSentencesForPersonServiceTest(
       )
     }
 
-    describe("probation and prisoner offender search"){
+    describe("probation and prisoner offender search") {
       it("retrieves prisoner ID from Prisoner Offender Search using a PNC ID") {
         getSentencesForPersonService.execute(pncId)
 
@@ -116,46 +115,44 @@ internal class GetSentencesForPersonServiceTest(
         verify(probationOffenderSearchGateway, VerificationModeFactory.times(1)).getPerson(pncId = pncId)
       }
 
-      it("returns errors when a person cannot be found by PNC ID prisoner offender search") {
-          whenever(prisonerOffenderSearchGateway.getPersons(pncId = pncId)).thenReturn(
-            Response(
-              data = emptyList(),
-              errors = listOf(
-                UpstreamApiError(
-                  causedBy = UpstreamApi.NOMIS,
-                  type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-                ),
+      it("returns errors when a person cannot be found by PNC ID in prisoner offender search") {
+        whenever(prisonerOffenderSearchGateway.getPersons(pncId = pncId)).thenReturn(
+          Response(
+            data = emptyList(),
+            errors = listOf(
+              UpstreamApiError(
+                causedBy = UpstreamApi.NOMIS,
+                type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
               ),
             ),
-          )
+          ),
+        )
 
-          val response = getSentencesForPersonService.execute(pncId)
+        val response = getSentencesForPersonService.execute(pncId)
 
-          response.errors.shouldHaveSize(1)
-
+        response.errors.shouldHaveSize(1)
       }
 
       it("returns errors when a person cannot be found by a PNC ID in probation offender search") {
-          whenever(probationOffenderSearchGateway.getPerson(pncId = pncId)).thenReturn(
-            Response(
-              data = null,
-              errors = listOf(
-                UpstreamApiError(
-                  causedBy = UpstreamApi.NDELIUS,
-                  type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-                ),
+        whenever(probationOffenderSearchGateway.getPerson(pncId = pncId)).thenReturn(
+          Response(
+            data = null,
+            errors = listOf(
+              UpstreamApiError(
+                causedBy = UpstreamApi.NDELIUS,
+                type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
               ),
-            )
-          )
+            ),
+          ),
+        )
 
-          val response = getSentencesForPersonService.execute(pncId)
+        val response = getSentencesForPersonService.execute(pncId)
 
-          response.errors.shouldHaveSize(1)
-
+        response.errors.shouldHaveSize(1)
       }
     }
 
-    describe("Nomis sentence search"){
+    describe("Nomis sentence search") {
       it("retrieves bookind Ids for a person from Nomis using a Nomis number") {
         getSentencesForPersonService.execute(pncId)
 
@@ -206,7 +203,7 @@ internal class GetSentencesForPersonServiceTest(
       }
     }
 
-    describe("NDelius sentence search"){
+    describe("NDelius sentence search") {
       it("retrieves sentences from nDelius using a CRN") {
         getSentencesForPersonService.execute(pncId)
 
@@ -232,20 +229,20 @@ internal class GetSentencesForPersonServiceTest(
       }
     }
 
-    it("combines and returns sentences from Nomis and nDelius"){
+    it("combines and returns sentences from Nomis and nDelius") {
       val response = getSentencesForPersonService.execute(pncId)
 
       response.data.shouldBe(
         listOf(
-          Sentence(dateOfSentencing=LocalDate.parse("2001-01-01")),
-          Sentence(dateOfSentencing=LocalDate.parse("2002-01-01")),
-          Sentence(dateOfSentencing=LocalDate.parse("2003-01-01")),
-          Sentence(dateOfSentencing=LocalDate.parse("2004-01-01")),
+          Sentence(dateOfSentencing = LocalDate.parse("2001-01-01")),
+          Sentence(dateOfSentencing = LocalDate.parse("2002-01-01")),
+          Sentence(dateOfSentencing = LocalDate.parse("2003-01-01")),
+          Sentence(dateOfSentencing = LocalDate.parse("2004-01-01")),
         ),
       )
     }
 
-    it("returns an empty list when no setences were found in Nomis and nDelius"){
+    it("returns an empty list when no sentences were found in Nomis and nDelius") {
       whenever(nDeliusGateway.getSentencesForPerson(nDeliusCRN)).thenReturn(
         Response(
           data = emptyList(),

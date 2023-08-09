@@ -78,7 +78,7 @@ class SupervisionsTest : DescribeSpec(
           ),
         )
 
-        val integrationApiSentences = supervisions.supervisions.map { it.sentence.toSentence()}
+        val integrationApiSentences = supervisions.supervisions.map { it.sentence.toSentence() }
 
         integrationApiSentences.shouldBe(
           listOf(
