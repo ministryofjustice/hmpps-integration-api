@@ -606,7 +606,7 @@ components:
           description: Criminal Justice System offence code
         courtDates:
           type: array
-          example: [2018-02-10, 2019-02-10]
+          example: ["2018-02-10", "2019-02-10"]
           description: Court dates associated with offences
           items:
             type: string
