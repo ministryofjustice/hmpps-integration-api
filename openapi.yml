@@ -267,7 +267,7 @@ paths:
                   pagination:
                     $ref: "#/components/schemas/Pagination"
         "404":
-          description: Failed to find sentences a person with the provided PNC ID.
+          description: Failed to find offences a person with the provided PNC ID.
           content:
             application/json:
               schema:
@@ -603,11 +603,11 @@ components:
         cjsCode:
           type: string
           example: RR84070
-          description: Criminal Justice System offence code, only present for Offences retrieved from Prison API
+          description: Criminal Justice System offence code
         courtDates:
           type: array
           example: [2018-02-10, 2019-02-10]
-          description: Court dates associated with offences. Offences from Prison API will always be a list of 1 item. Offences from nDelius will have more than 1 court date.
+          description: Court dates associated with offences
           items:
             type: string
             format: date
@@ -619,11 +619,11 @@ components:
           type: string
           format: date
           example: 2018-03-10
-          description: End date of range over which the offence was believed to have taken place, only present for Offences retrieved from Prison API
+          description: End date of range over which the offence was believed to have taken place
         hoCode:
           type: string
           example: 06601
-          description: Home Office code, only present for Offences retrieved from nDelius
+          description: Home Office code (HO Code)
         startDate:
           type: string
           format: date
@@ -632,7 +632,7 @@ components:
         statuteCode:
           type: string
           example: RR84
-          description: Statute code, only present for Offences retrieved from Prison API
+          description: Statute code
     Pagination:
       type: object
       properties:
