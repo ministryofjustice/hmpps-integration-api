@@ -43,6 +43,9 @@ internal class SentencesControllerTest(
               Sentence(
                 dateOfSentencing = LocalDate.parse("1990-01-01"),
               ),
+              Sentence(
+                dateOfSentencing = LocalDate.parse("1991-01-01"),
+              ),
             ),
           ),
         )
@@ -68,6 +71,9 @@ internal class SentencesControllerTest(
           [
             {
               "dateOfSentencing": "1990-01-01"
+            },
+              {
+              "dateOfSentencing": "1991-01-01"
             }
           ]
           """.removeWhitespaceAndNewlines(),

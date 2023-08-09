@@ -43,13 +43,29 @@ class NDeliusGateway(@Value("\${services.ndelius.base-url}") baseUrl: String) {
   }
 
   fun getSentencesForPerson(id: String): Response<List<Sentence>> {
-    return Response(
-      data = webClient.request<Supervisions>(
-        HttpMethod.GET,
-        "/case/$id/supervisions",
-        authenticationHeader(),
-      ).supervisions.map { it.sentence.toSentence() },
-    )
+    return try {
+      Response(
+        data = webClient.request<Supervisions>(
+          HttpMethod.GET,
+          "/case/$id/supervisions",
+          authenticationHeader(),
+        ).supervisions.map { it.sentence.toSentence() },
+      )
+    } catch(exception: WebClientResponseException.NotFound) {
+      Response(
+        data = emptyList(),
+        errors = listOf(
+          UpstreamApiError(
+            causedBy = UpstreamApi.NDELIUS,
+            type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+          ),
+        ),
+      )
+    }
+
+
+
+
   }
 
   private fun authenticationHeader(): Map<String, String> {

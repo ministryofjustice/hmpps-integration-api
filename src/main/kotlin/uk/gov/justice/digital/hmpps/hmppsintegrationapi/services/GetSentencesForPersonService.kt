@@ -8,6 +8,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffende
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ProbationOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Sentence
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApiError
+import kotlin.math.log
 
 @Service
 class GetSentencesForPersonService(
@@ -24,22 +26,30 @@ class GetSentencesForPersonService(
       return Response(emptyList(), responseFromPrisonerOffenderSearch.errors)
     }
 
+    if (responseFromProbationOffenderSearch.errors.isNotEmpty()) {
+      return Response(emptyList(), responseFromProbationOffenderSearch.errors)
+    }
+
     val bookingIdsResponse = nomisGateway.getBookingIdsForPerson(responseFromPrisonerOffenderSearch.data.first().identifiers.nomisNumber!!)
 
     if (bookingIdsResponse.errors.isNotEmpty()) {
       return Response(emptyList(), bookingIdsResponse.errors)
     }
 
+    val nomisSentences = bookingIdsResponse.data.map { nomisGateway.getSentencesForBooking(it.bookingId) }
     val nDeliusSentences = nDeliusGateway.getSentencesForPerson(responseFromProbationOffenderSearch.data?.identifiers?.deliusCrn!!)
 
-    val sentencesResponses = bookingIdsResponse.data.map { nomisGateway.getSentencesForBooking(it.bookingId) }
-    val sentencesData = sentencesResponses.map { it.data }.flatten()
-    val sentencesErrors = sentencesResponses.map { it.errors }.flatten()
+    val nomisSentencesErrors = nomisSentences.map { it.errors }.flatten()
 
-    if (sentencesErrors.isNotEmpty()) {
-      return Response(emptyList(), sentencesErrors)
+    if (nDeliusSentences.errors.isNotEmpty()) {
+      return Response(emptyList(), nDeliusSentences.errors)
     }
 
-    return Response(sentencesData)
+    if (nomisSentencesErrors.isNotEmpty()) {
+      return Response(emptyList(), nomisSentencesErrors)
+    }
+
+    return Response(data = nomisSentences.map { it.data }.flatten() + nDeliusSentences.data)
   }
+
 }
