@@ -253,7 +253,7 @@ paths:
           description: The maximum number of results for a page
       responses:
         "200":
-          description: Successfully found a person with the provided PNC ID.
+          description: Successfully found offences for a person with the provided PNC ID.
           content:
             application/json:
               schema:
@@ -267,7 +267,7 @@ paths:
                   pagination:
                     $ref: "#/components/schemas/Pagination"
         "404":
-          description: Failed to find a person with the provided PNC ID.
+          description: Failed to find sentences a person with the provided PNC ID.
           content:
             application/json:
               schema:
@@ -606,9 +606,11 @@ components:
           description: Criminal Justice System offence code, only present for Offences retrieved from Prison API
         courtDates:
           type: array
-          format: date
           example: [2018-02-10, 2019-02-10]
           description: Court dates associated with offences. Offences from Prison API will always be a list of 1 item. Offences from nDelius will have more than 1 court date.
+          items:
+            type: string
+            format: date
         description:
           type: string
           example: Commit an act / series of acts with intent to pervert the course of public justice
