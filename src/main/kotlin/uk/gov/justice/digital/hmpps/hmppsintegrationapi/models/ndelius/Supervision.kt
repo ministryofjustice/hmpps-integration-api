@@ -12,7 +12,7 @@ data class Supervision(
   val sentence: NDeliusSentence = NDeliusSentence(),
 ) {
   fun toOffences(): List<Offence> {
-    val courtDates = courtAppearances.mapNotNull { LocalDate.parse(it.date, DateTimeFormatter.ISO_OFFSET_DATE_TIME) }
+    val courtDates = this.courtAppearances.mapNotNull { LocalDate.parse(it.date, DateTimeFormatter.ISO_OFFSET_DATE_TIME) }
     return listOf(this.mainOffence.toOffence(courtDates)) + this.additionalOffences.map { it.toOffence(courtDates) }
   }
 }
