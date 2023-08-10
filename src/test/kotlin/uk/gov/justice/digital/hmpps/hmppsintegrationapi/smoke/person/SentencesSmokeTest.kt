@@ -23,7 +23,7 @@ class SentencesSmokeTest : DescribeSpec(
     val httpClient = HttpClient.newBuilder().build()
     val httpRequest = HttpRequest.newBuilder()
 
-    xit("returns sentences for a person") {
+    it("returns sentences for a person") {
       val response = httpClient.send(
         httpRequest.uri(URI.create("$baseUrl/$basePath")).build(),
         HttpResponse.BodyHandlers.ofString(),
@@ -35,15 +35,18 @@ class SentencesSmokeTest : DescribeSpec(
         {
           "data": [
             {
-            "dateOfSentencing":"2019-08-24"
-             }
+              "dateOfSentencing": "2019-08-24"
+            },
+            {
+              "dateOfSentencing": "2019-08-24"
+            }
           ],
           "pagination": {
             "isLastPage": true,
-            "count": 1,
+            "count": 2,
             "page": 1,
             "perPage": 10,
-            "totalCount": 1,
+            "totalCount": 2,
             "totalPages": 1
           }
         }
