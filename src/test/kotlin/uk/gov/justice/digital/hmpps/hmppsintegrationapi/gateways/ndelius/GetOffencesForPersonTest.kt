@@ -89,18 +89,6 @@ class GetOffencesForPersonTest(
             ),
             generateTestOffence(
               cjsCode = null,
-              hoCode = "05800",
-              courtDates = listOf(
-                LocalDate.parse("2009-07-07"),
-                LocalDate.parse("2009-07-07"),
-              ),
-              description = "Other Criminal Damage (including causing explosion)  - 05800",
-              endDate = null,
-              startDate = null,
-              statuteCode = null,
-            ),
-            generateTestOffence(
-              cjsCode = null,
               hoCode = "12511",
               courtDates = listOf(
                 LocalDate.parse("2009-09-01"),
@@ -133,30 +121,6 @@ class GetOffencesForPersonTest(
               description = "Migrated Breach Offences",
               endDate = null,
               startDate = LocalDate.parse("1900-01-01"),
-              statuteCode = null,
-            ),
-            generateTestOffence(
-              cjsCode = null,
-              hoCode = "03900",
-              courtDates = listOf(
-                LocalDate.parse("2009-09-01"),
-                LocalDate.parse("2009-08-11"),
-              ),
-              description = "Stealing from the person of another - 03900",
-              endDate = null,
-              startDate = null,
-              statuteCode = null,
-            ),
-            generateTestOffence(
-              cjsCode = null,
-              hoCode = "99902",
-              courtDates = listOf(
-                LocalDate.parse("2009-09-01"),
-                LocalDate.parse("2009-08-11"),
-              ),
-              description = "Migrated Breach Offences",
-              endDate = null,
-              startDate = null,
               statuteCode = null,
             ),
           ),
