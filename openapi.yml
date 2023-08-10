@@ -602,7 +602,7 @@ components:
       properties:
         cjsCode:
           type: string
-          example: RR84070
+          example: RR84170
           description: Criminal Justice System offence code
         courtDates:
           type: array
