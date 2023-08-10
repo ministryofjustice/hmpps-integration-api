@@ -11,7 +11,7 @@ class NDeliusApiMockServer : WireMockServer(WIREMOCK_PORT) {
     private const val WIREMOCK_PORT = 4003
   }
 
-  fun stubGetOffencesForPerson(crn: String, body: String, status: HttpStatus = HttpStatus.OK) {
+  fun stubGetSupervisionsForPerson(crn: String, body: String, status: HttpStatus = HttpStatus.OK) {
     stubFor(
       get("/case/$crn/supervisions")
         .withHeader(

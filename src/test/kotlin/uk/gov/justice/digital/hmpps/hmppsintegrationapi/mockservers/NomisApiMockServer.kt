@@ -88,7 +88,7 @@ class NomisApiMockServer : WireMockServer(WIREMOCK_PORT) {
 
   fun stubGetSentenceForBookingId(bookingId: Int, body: String, status: HttpStatus = HttpStatus.OK) {
     stubFor(
-      get("/api/offender-sentences/booking/$bookingId/sentenceTerms")
+      get("/api/offender-sentences/booking/$bookingId/sentences-and-offences")
         .withHeader(
           "Authorization",
           matching("Bearer ${HmppsAuthMockServer.TOKEN}"),

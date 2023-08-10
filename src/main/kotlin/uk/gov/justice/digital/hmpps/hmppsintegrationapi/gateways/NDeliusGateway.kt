@@ -8,6 +8,7 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Offence
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Response
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Sentence
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.Supervisions
@@ -27,6 +28,28 @@ class NDeliusGateway(@Value("\${services.ndelius.base-url}") baseUrl: String) {
           "/case/$id/supervisions",
           authenticationHeader(),
         ).supervisions.flatMap { it.toOffences() },
+      )
+    } catch (exception: WebClientResponseException.NotFound) {
+      Response(
+        data = emptyList(),
+        errors = listOf(
+          UpstreamApiError(
+            causedBy = UpstreamApi.NDELIUS,
+            type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+          ),
+        ),
+      )
+    }
+  }
+
+  fun getSentencesForPerson(id: String): Response<List<Sentence>> {
+    return try {
+      Response(
+        data = webClient.request<Supervisions>(
+          HttpMethod.GET,
+          "/case/$id/supervisions",
+          authenticationHeader(),
+        ).supervisions.map { it.sentence.toSentence() },
       )
     } catch (exception: WebClientResponseException.NotFound) {
       Response(
