@@ -32,6 +32,16 @@ services:
       - SPRING_PROFILES_ACTIVE=dev
       - LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_WEB=TRACE
 
+  ndelius-api:
+    build:
+      context: .
+      dockerfile: Dockerfile.setup-ndelius-api
+    container_name: ndelius-api
+    healthcheck:
+      test: 'wget --header="Authorization: Bearer abc" http://127.0.0.1:4010/case/abc/supervisions -O /dev/null'
+    ports:
+      - '4040:4010'
+
   prison-api:
     build:
       context: .
