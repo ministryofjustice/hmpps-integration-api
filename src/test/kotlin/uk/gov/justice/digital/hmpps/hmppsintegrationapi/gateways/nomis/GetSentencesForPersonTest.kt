@@ -56,7 +56,8 @@ class GetSentencesForPersonTest(
           someBookingId,
           """
           {
-            "startDate": "2001-01-01"
+            "startDate": "2001-01-01",
+            "sentenceStatus": "A"
           }
         """.removeWhitespaceAndNewlines(),
         )
