@@ -103,8 +103,8 @@ class SupervisionsTest : DescribeSpec(
       it("maps one-to-one attributes to integration API sentence attributes") {
         val supervisions = Supervisions(
           listOf(
-            Supervision(sentence = NDeliusSentence(date = "2009-07-07", active = true)),
-            Supervision(sentence = NDeliusSentence(date = "2010-07-07", active = false)),
+            Supervision(active = true, sentence = NDeliusSentence(date = "2009-07-07")),
+            Supervision(active = false, sentence = NDeliusSentence(date = "2010-07-07")),
           ),
         )
 

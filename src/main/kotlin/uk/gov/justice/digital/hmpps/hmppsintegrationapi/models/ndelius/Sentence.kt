@@ -5,7 +5,4 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Sentence as Integ
 
 data class Sentence(
   val date: String? = null,
-  val active: Boolean? = null,
-) {
-
-}
+)

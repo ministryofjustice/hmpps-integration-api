@@ -11,7 +11,7 @@ data class Supervision(
   val additionalOffences: List<AdditionalOffence> = listOf(AdditionalOffence()),
   val courtAppearances: List<CourtAppearance> = listOf(CourtAppearance()),
   val sentence: NDeliusSentence = NDeliusSentence(),
-  val active:
+  val active: Boolean? = null,
 ) {
   fun toOffences(): List<Offence> {
     val courtDates = this.courtAppearances.mapNotNull { LocalDate.parse(it.date, DateTimeFormatter.ISO_OFFSET_DATE_TIME) }
@@ -20,7 +20,7 @@ data class Supervision(
 
   fun toSentence(): Sentence {
     return Sentence(
-      dateOfSentencing = LocalDate.parse(this.date),
+      dateOfSentencing = LocalDate.parse(this.sentence.date),
       isActive = this.active,
     )
   }
