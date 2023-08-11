@@ -7,7 +7,6 @@ import java.time.LocalDate
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Sentence as IntegrationApiSentence
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.Sentence as NDeliusSentence
 
-
 class SupervisionsTest : DescribeSpec(
   {
     describe("#toOffences") {

@@ -62,9 +62,6 @@ class GetSentencesForPersonTest(
       it("returns sentences for the matching CRN") {
         val response = nDeliusGateway.getSentencesForPerson(crn)
 
-        println("**************************************")
-        println(response.data)
-
         response.data.shouldBe(
           listOf(
             generateTestSentence(

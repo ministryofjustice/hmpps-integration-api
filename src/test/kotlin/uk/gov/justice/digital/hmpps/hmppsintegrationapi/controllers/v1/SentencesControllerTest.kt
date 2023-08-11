@@ -42,11 +42,11 @@ internal class SentencesControllerTest(
             data = listOf(
               Sentence(
                 dateOfSentencing = LocalDate.parse("1990-01-01"),
-                isActive = true
+                isActive = true,
               ),
               Sentence(
                 dateOfSentencing = LocalDate.parse("1991-01-01"),
-                isActive = false
+                isActive = false,
               ),
             ),
           ),
