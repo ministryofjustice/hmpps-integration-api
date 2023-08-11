@@ -73,6 +73,7 @@ internal class GetSentencesForPersonServiceTest(
           data = listOf(
             Sentence(
               dateOfSentencing = LocalDate.parse("2001-01-01"),
+              isActive = true,
             ),
           ),
         ),
@@ -83,6 +84,7 @@ internal class GetSentencesForPersonServiceTest(
           data = listOf(
             Sentence(
               dateOfSentencing = LocalDate.parse("2002-01-01"),
+              isActive = null,
             ),
           ),
         ),
@@ -93,9 +95,11 @@ internal class GetSentencesForPersonServiceTest(
           data = listOf(
             Sentence(
               dateOfSentencing = LocalDate.parse("2003-01-01"),
+              isActive = true,
             ),
             Sentence(
               dateOfSentencing = LocalDate.parse("2004-01-01"),
+              isActive = false,
             ),
           ),
         ),
@@ -234,10 +238,10 @@ internal class GetSentencesForPersonServiceTest(
 
       response.data.shouldBe(
         listOf(
-          Sentence(dateOfSentencing = LocalDate.parse("2001-01-01")),
-          Sentence(dateOfSentencing = LocalDate.parse("2002-01-01")),
-          Sentence(dateOfSentencing = LocalDate.parse("2003-01-01")),
-          Sentence(dateOfSentencing = LocalDate.parse("2004-01-01")),
+          Sentence(dateOfSentencing = LocalDate.parse("2001-01-01"), isActive = true),
+          Sentence(dateOfSentencing = LocalDate.parse("2002-01-01"), isActive = null),
+          Sentence(dateOfSentencing = LocalDate.parse("2003-01-01"), isActive = true),
+          Sentence(dateOfSentencing = LocalDate.parse("2004-01-01"), isActive = false),
         ),
       )
     }

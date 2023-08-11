@@ -3,7 +3,6 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.nomis
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldHaveSize
-import io.kotest.matchers.collections.shouldNotBeEmpty
 import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory
@@ -17,10 +16,12 @@ import org.springframework.test.context.ContextConfiguration
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NomisGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.generateTestSentence
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.NomisApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApiError
+import java.time.LocalDate
 
 @ActiveProfiles("test")
 @ContextConfiguration(
@@ -56,7 +57,7 @@ class GetSentencesForPersonTest(
           someBookingId,
           """
           {
-            "startDate": "2001-01-01",
+            "sentenceDate": "2001-01-01",
             "sentenceStatus": "A"
           }
         """.removeWhitespaceAndNewlines(),
@@ -79,7 +80,14 @@ class GetSentencesForPersonTest(
       it("returns a sentence for a matching bookingId") {
         val response = nomisGateway.getSentencesForBooking(someBookingId)
 
-        response.data.shouldNotBeEmpty()
+        response.data.shouldBe(
+          listOf(
+            generateTestSentence(
+              dateOfSentencing = LocalDate.parse("2001-01-01"),
+              isActive = true,
+            ),
+          ),
+        )
       }
 
       it("returns an error when 404 Not Found is returned because no person is found") {
