@@ -124,6 +124,7 @@ Each service is then accessible at:
 
 - [http://localhost:8080](http://localhost:8080) for this application
 - [http://localhost:4030](http://localhost:4030) for the Prison API
+- [http://localhost:4040](http://localhost:4040) for the Prison API
 - [http://localhost:4020](http://localhost:4020) for the Probation Offender Search
 - [http://localhost:4010](http://localhost:4010) for the Prisoner Offender Search
 - [http://localhost:9090](http://localhost:9090) for the HMPPS Auth service
