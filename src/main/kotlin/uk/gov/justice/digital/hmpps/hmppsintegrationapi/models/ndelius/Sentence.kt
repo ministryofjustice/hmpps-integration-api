@@ -7,10 +7,5 @@ data class Sentence(
   val date: String? = null,
   val active: Boolean? = null,
 ) {
-  fun toSentence(): IntegrationApiSentence {
-    return IntegrationApiSentence(
-      dateOfSentencing = LocalDate.parse(this.date),
-      isActive = this.active,
-    )
-  }
+
 }
