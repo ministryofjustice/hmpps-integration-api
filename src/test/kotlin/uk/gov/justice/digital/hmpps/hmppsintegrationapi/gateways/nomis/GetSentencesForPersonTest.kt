@@ -22,6 +22,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApiError
 import java.time.LocalDate
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Sentence as IntegrationApiSentence
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Term as IntegrationApiTerm
 
 @ActiveProfiles("test")
 @ContextConfiguration(
@@ -46,7 +47,8 @@ class GetSentencesForPersonTest(
           [
             {
               "bookingId": 1,
-            }, {
+            }, 
+            {
               "bookingId": 2
             }
           ]
@@ -58,7 +60,16 @@ class GetSentencesForPersonTest(
           """
           {
             "sentenceDate": "2001-01-01",
-            "sentenceStatus": "A"
+            "sentenceStatus": "A",
+            "sentenceTypeDescription": "ORA CJA03 Standard Determinate Sentence",
+            "terms": [
+                {
+                  "years": 1,
+                  "months": 2,
+                  "weeks": 3,
+                  "days": 4
+                }
+              ]
           }
         """.removeWhitespaceAndNewlines(),
         )
@@ -84,7 +95,16 @@ class GetSentencesForPersonTest(
           listOf(
             IntegrationApiSentence(
               dateOfSentencing = LocalDate.parse("2001-01-01"),
+              description = "ORA CJA03 Standard Determinate Sentence",
               isActive = true,
+              terms = listOf(
+                IntegrationApiTerm(
+                  years = 1,
+                  months = 2,
+                  weeks = 3,
+                  days = 4,
+                ),
+              ),
             ),
           ),
         )

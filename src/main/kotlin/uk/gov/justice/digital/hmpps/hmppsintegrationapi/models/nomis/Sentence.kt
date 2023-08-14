@@ -6,10 +6,12 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.Term as Nom
 data class Sentence(
   val sentenceDate: LocalDate? = null,
   val sentenceStatus: String? = null,
+  val sentenceTypeDescription: String? = null,
   val terms: List<NomisTerm> = listOf(NomisTerm()),
 ) {
   fun toSentence(): IntegrationApiSentence = IntegrationApiSentence(
     dateOfSentencing = this.sentenceDate,
+    description = this.sentenceTypeDescription,
     isActive = sentenceStatusToBoolean(this.sentenceStatus),
     terms = this.terms.map { it.toTerm() },
   )

@@ -43,26 +43,22 @@ internal class SentencesControllerTest(
             data = listOf(
               IntegrationApiSentence(
                 dateOfSentencing = LocalDate.parse("1990-01-01"),
+                description = "CJA - Community Order",
                 isActive = true,
-                listOf(
+                terms = listOf(
                   IntegrationApiTerm(
-                    years = 10,
-                    months = 6,
-                    weeks = 5,
-                    days = 5,
                     hours = 2,
                   ),
                   IntegrationApiTerm(
                     years = 25,
-                    weeks = 5,
-                    days = 4,
                   ),
                 ),
               ),
               IntegrationApiSentence(
                 dateOfSentencing = LocalDate.parse("1991-01-01"),
+                description = "ORA CJA03 Standard Determinate Sentence",
                 isActive = false,
-                listOf(
+                terms = listOf(
                   IntegrationApiTerm(
                     years = 15,
                     months = 6,
@@ -77,8 +73,9 @@ internal class SentencesControllerTest(
               ),
               IntegrationApiSentence(
                 dateOfSentencing = LocalDate.parse("1992-01-01"),
+                description = "CJA - Suspended Sentence Order",
                 isActive = null,
-                listOf(
+                terms = listOf(
                   IntegrationApiTerm(
                     years = 15,
                   ),
@@ -112,26 +109,28 @@ internal class SentencesControllerTest(
           [
             {
                 "dateOfSentencing": "1990-01-01",
+                "description": "CJA - Community Order",
                 "isActive": true,
                 "terms": [
                     {
-                        "years": 10,
-                        "months": 6,
-                        "weeks": 5,
-                        "days": 5,
+                        "years": null,
+                        "months": null,
+                        "weeks": null,
+                        "days": null,
                         "hours": 2
                     },
                     {
                         "years": 25,
                         "months": null,
-                        "weeks": 5,
-                        "days": 4,
+                        "weeks": null,
+                        "days": null,
                         "hours": null
                     }
                 ]
             },
             {
                 "dateOfSentencing": "1991-01-01",
+                "description": "ORA CJA03 Standard Determinate Sentence",
                 "isActive": false,
                 "terms": [
                     {
@@ -152,6 +151,7 @@ internal class SentencesControllerTest(
             },
             {
                 "dateOfSentencing": "1992-01-01",
+                "description": "CJA - Suspended Sentence Order",
                 "isActive": null,
                 "terms": [
                     {

@@ -4,6 +4,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Term as Integrati
 
 data class Sentence(
   val date: String? = null,
+  val description: String? = null,
   val length: Int? = null,
   val lengthUnits: String? = null,
 ) {
