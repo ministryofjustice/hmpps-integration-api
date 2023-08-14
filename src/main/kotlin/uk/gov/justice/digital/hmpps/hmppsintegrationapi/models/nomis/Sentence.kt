@@ -10,11 +10,11 @@ data class Sentence(
 ) {
   fun toSentence(): IntegrationApiSentence = IntegrationApiSentence(
     dateOfSentencing = this.sentenceDate,
-    isActive = toIsActive(this.sentenceStatus),
+    isActive = sentenceStatusToBoolean(this.sentenceStatus),
     terms = this.terms.map { it.toTerm() },
   )
 }
-private fun toIsActive(sentenceStatus: String?): Boolean? {
+private fun sentenceStatusToBoolean(sentenceStatus: String?): Boolean? {
   return when (sentenceStatus) {
     "A" -> true
     "I" -> false

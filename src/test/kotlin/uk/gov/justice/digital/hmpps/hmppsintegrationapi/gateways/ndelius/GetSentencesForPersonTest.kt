@@ -70,7 +70,7 @@ class GetSentencesForPersonTest(
             ),
             generateTestSentence(
               dateOfSentencing = LocalDate.parse("2009-09-01"),
-              isActive = false,
+              isActive = true,
             ),
           ),
         )
