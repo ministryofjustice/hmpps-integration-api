@@ -9,8 +9,8 @@ data class Alert(
   val code: String? = null,
   val codeDescription: String? = null,
   val comment: String? = null,
-  val createDate: LocalDate? = null,
-  val expiryDate: LocalDate? = null,
+  val dateCreated: LocalDate? = null,
+  val dateExpired: LocalDate? = null,
   val expired: Boolean? = null,
   val active: Boolean? = null,
 )

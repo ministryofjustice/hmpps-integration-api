@@ -41,8 +41,8 @@ class AlertsSmokeTest : DescribeSpec(
               "code": "XER",
               "codeDescription": "Escape Risk",
               "comment": "Profession lock pick.",
-              "createDate": "2019-08-20",
-              "expiryDate": "2020-08-20",
+              "dateCreated": "2019-08-20",
+              "dateExpired": "2020-08-20",
               "expired": true,
               "active": false
             }

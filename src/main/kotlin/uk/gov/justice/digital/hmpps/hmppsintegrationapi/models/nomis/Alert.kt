@@ -22,8 +22,8 @@ data class Alert(
     code = this.alertCode,
     codeDescription = this.alertCodeDescription,
     comment = this.comment,
-    createDate = this.dateCreated,
-    expiryDate = this.dateExpires,
+    dateCreated = this.dateCreated,
+    dateExpired = this.dateExpires,
     expired = this.expired,
     active = this.active,
   )

@@ -47,8 +47,8 @@ internal class AlertsControllerTest(
                 code = "XNR",
                 codeDescription = "Not For Release",
                 comment = "IS91",
-                createDate = LocalDate.parse("2022-08-01"),
-                expiryDate = LocalDate.parse("2023-08-01"),
+                dateCreated = LocalDate.parse("2022-08-01"),
+                dateExpired = LocalDate.parse("2023-08-01"),
                 expired = false,
                 active = true,
               ),
@@ -82,8 +82,8 @@ internal class AlertsControllerTest(
               "code": "XNR",
               "codeDescription": "Not For Release",
               "comment": "IS91",
-              "createDate": "2022-08-01",
-              "expiryDate": "2023-08-01",
+              "dateCreated": "2022-08-01",
+              "dateExpired": "2023-08-01",
               "expired": false,
               "active": true
             }
@@ -141,8 +141,8 @@ internal class AlertsControllerTest(
                 code = "XNR",
                 codeDescription = "Not For Release",
                 comment = "IS91",
-                createDate = LocalDate.parse("2022-08-01"),
-                expiryDate = LocalDate.parse("2023-08-01"),
+                dateCreated = LocalDate.parse("2022-08-01"),
+                dateExpired = LocalDate.parse("2023-08-01"),
                 expired = false,
                 active = true,
               )
