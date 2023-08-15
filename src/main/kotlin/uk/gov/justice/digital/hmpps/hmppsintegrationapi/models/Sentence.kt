@@ -4,4 +4,5 @@ import java.time.LocalDate
 
 data class Sentence(
   val dateOfSentencing: LocalDate? = null,
+  val isActive: Boolean? = null,
 )

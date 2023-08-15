@@ -3,8 +3,8 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Offence
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Sentence
 import java.time.LocalDate
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Sentence as IntegrationApiSentence
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.Sentence as NDeliusSentence
 
 class SupervisionsTest : DescribeSpec(
@@ -98,22 +98,21 @@ class SupervisionsTest : DescribeSpec(
         }
       }
     }
-
     describe("#toSentence") {
       it("maps one-to-one attributes to integration API sentence attributes") {
         val supervisions = Supervisions(
           listOf(
-            Supervision(sentence = NDeliusSentence(date = "2009-07-07")),
-            Supervision(sentence = NDeliusSentence(date = "2010-07-07")),
+            Supervision(active = true, sentence = NDeliusSentence(date = "2009-07-07")),
+            Supervision(active = false, sentence = NDeliusSentence(date = "2010-07-07")),
           ),
         )
 
-        val integrationApiSentences = supervisions.supervisions.map { it.sentence.toSentence() }
+        val integrationApiSentences = supervisions.supervisions.map { it.toSentence() }
 
         integrationApiSentences.shouldBe(
           listOf(
-            Sentence(dateOfSentencing = LocalDate.parse("2009-07-07")),
-            Sentence(dateOfSentencing = LocalDate.parse("2010-07-07")),
+            IntegrationApiSentence(dateOfSentencing = LocalDate.parse("2009-07-07"), isActive = true),
+            IntegrationApiSentence(dateOfSentencing = LocalDate.parse("2010-07-07"), isActive = false),
           ),
         )
       }

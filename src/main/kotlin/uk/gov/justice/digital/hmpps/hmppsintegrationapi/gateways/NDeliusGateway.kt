@@ -49,7 +49,7 @@ class NDeliusGateway(@Value("\${services.ndelius.base-url}") baseUrl: String) {
           HttpMethod.GET,
           "/case/$id/supervisions",
           authenticationHeader(),
-        ).supervisions.map { it.sentence.toSentence() },
+        ).supervisions.map { it.toSentence() },
       )
     } catch (exception: WebClientResponseException.NotFound) {
       Response(

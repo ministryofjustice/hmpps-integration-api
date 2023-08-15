@@ -4,6 +4,7 @@ import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
+import kotlinx.coroutines.isActive
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory
 import org.mockito.kotlin.verify
@@ -65,9 +66,11 @@ class GetSentencesForPersonTest(
           listOf(
             generateTestSentence(
               dateOfSentencing = LocalDate.parse("2009-07-07"),
+              isActive = false,
             ),
             generateTestSentence(
               dateOfSentencing = LocalDate.parse("2009-09-01"),
+              isActive = true,
             ),
           ),
         )
