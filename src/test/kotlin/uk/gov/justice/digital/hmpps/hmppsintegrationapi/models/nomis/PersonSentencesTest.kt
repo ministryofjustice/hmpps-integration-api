@@ -55,7 +55,7 @@ class PersonSentencesTest : DescribeSpec(
         )
       }
 
-      it("toIsActive correctly maps 'I' to false") {
+      it("sentenceStatusToBoolean correctly maps 'I' to false") {
         val nomisSentence = NomisSentence(
           sentenceDate = null,
           sentenceStatus = "I",
@@ -67,7 +67,7 @@ class PersonSentencesTest : DescribeSpec(
         integrationApiSentence.isActive.shouldBe(false)
       }
 
-      it("toIsActive correctly maps anything other than 'A' or 'I' to null") {
+      it("sentenceStatusToBoolean correctly maps anything other than 'A' or 'I' to null") {
         val nomisSentence = NomisSentence(
           sentenceDate = null,
           sentenceStatus = "X",

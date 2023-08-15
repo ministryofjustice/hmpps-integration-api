@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Address
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Alert
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ImageMetadata
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Offence
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Person
@@ -22,6 +23,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.ImageDetail
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.OffenceHistoryDetail
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.Offender
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.Address as AddressFromNomis
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.Alert as AlertFromNomis
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.Sentence as SentenceFromNomis
 
 @Component
@@ -108,6 +110,28 @@ class NomisGateway(@Value("\${services.prison-api.base-url}") baseUrl: String) {
           "/api/bookings/offenderNo/$id/offenceHistory",
           authenticationHeader(),
         ).map { it.toOffence() },
+      )
+    } catch (exception: WebClientResponseException.NotFound) {
+      Response(
+        data = emptyList(),
+        errors = listOf(
+          UpstreamApiError(
+            causedBy = UpstreamApi.NOMIS,
+            type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+          ),
+        ),
+      )
+    }
+  }
+
+  fun getAlertsForPerson(id: String): Response<List<Alert>> {
+    return try {
+      Response(
+        data = webClient.requestList<AlertFromNomis>(
+          HttpMethod.GET,
+          "/api/offenders/$id/alerts/v2",
+          authenticationHeader(),
+        ).map { it.toAlert() },
       )
     } catch (exception: WebClientResponseException.NotFound) {
       Response(
