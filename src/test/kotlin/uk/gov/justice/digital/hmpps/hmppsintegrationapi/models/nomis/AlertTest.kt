@@ -18,6 +18,37 @@ class AlertTest : DescribeSpec(
           comment = "IS91",
           dateCreated = LocalDate.parse("2022-08-01"),
           dateExpires = LocalDate.parse("2023-08-01"),
+          expired = true,
+          active = false,
+        )
+
+        val integrationApiAlert = alertFromNomis.toAlert()
+
+        integrationApiAlert.shouldBe(
+          Alert(
+            offenderNo = alertFromNomis.offenderNo,
+            type = alertFromNomis.alertType,
+            typeDescription = alertFromNomis.alertTypeDescription,
+            code = alertFromNomis.alertCode,
+            codeDescription = alertFromNomis.alertCodeDescription,
+            comment = alertFromNomis.comment,
+            dateCreated = alertFromNomis.dateCreated,
+            dateExpired = alertFromNomis.dateExpires,
+            expired = alertFromNomis.expired,
+            active = alertFromNomis.active,
+          ),
+        )
+      }
+
+      it("maps case where dateExpires is not populated") {
+        val alertFromNomis = AlertFromNomis(
+          offenderNo = "A7777ZZ",
+          alertType = "X",
+          alertTypeDescription = "Security",
+          alertCode = "XNR",
+          alertCodeDescription = "Not For Release",
+          comment = "IS91",
+          dateCreated = LocalDate.parse("2022-08-01"),
           expired = false,
           active = true,
         )
@@ -33,7 +64,7 @@ class AlertTest : DescribeSpec(
             codeDescription = alertFromNomis.alertCodeDescription,
             comment = alertFromNomis.comment,
             dateCreated = alertFromNomis.dateCreated,
-            dateExpired = alertFromNomis.dateExpires,
+            dateExpired = null,
             expired = alertFromNomis.expired,
             active = alertFromNomis.active,
           ),
