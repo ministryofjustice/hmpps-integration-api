@@ -80,10 +80,8 @@ internal class GetSentencesForPersonServiceTest(
                   years = 15,
                   months = 6,
                   weeks = 2,
-                  days = null,
                 ),
                 IntegrationApiTerm(
-                  years = null,
                   months = 6,
                   weeks = 2,
                   days = 5,
@@ -130,7 +128,7 @@ internal class GetSentencesForPersonServiceTest(
                 IntegrationApiTerm(
                   weeks = 12,
                 ),
-              )
+              ),
             ),
             Sentence(
               dateOfSentencing = LocalDate.parse("2004-01-01"),
@@ -142,7 +140,7 @@ internal class GetSentencesForPersonServiceTest(
                 IntegrationApiTerm(
                   months = 11,
                 ),
-              )
+              ),
             ),
           ),
         ),
@@ -324,23 +322,35 @@ internal class GetSentencesForPersonServiceTest(
             terms = listOf(
               IntegrationApiTerm(
                 years = 4,
+                months = null,
+                weeks = null,
+                days = null,
               ),
               IntegrationApiTerm(
+                years = null,
+                months = null,
                 weeks = 12,
+                days = null,
               ),
-            )
+            ),
           ),
           Sentence(
             dateOfSentencing = LocalDate.parse("2004-01-01"),
             isActive = false,
             terms = listOf(
               IntegrationApiTerm(
+                years = null,
+                months = null,
                 weeks = 18,
+                days = null,
               ),
               IntegrationApiTerm(
+                years = null,
                 months = 11,
+                weeks = null,
+                days = null,
               ),
-            )
+            ),
           ),
         ),
       )

@@ -20,8 +20,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMoc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.NomisApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Sentence as IntegrationApiSentence
 import java.time.LocalDate
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Sentence as IntegrationApiSentence
 
 @ActiveProfiles("test")
 @ContextConfiguration(

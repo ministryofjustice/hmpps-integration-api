@@ -16,14 +16,14 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Response
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Sentence
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Term
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetSentencesForPersonService
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 import java.time.LocalDate
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Sentence as IntegrationApiSentence
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Term as IntegrationApiTerm
 
 @WebMvcTest(controllers = [SentencesController::class])
 internal class SentencesControllerTest(
@@ -41,45 +41,49 @@ internal class SentencesControllerTest(
         whenever(getSentencesForPersonService.execute(pncId)).thenReturn(
           Response(
             data = listOf(
-              Sentence(
+              IntegrationApiSentence(
                 dateOfSentencing = LocalDate.parse("1990-01-01"),
                 isActive = true,
                 listOf(
-                  Term(
+                  IntegrationApiTerm(
                     years = 10,
-                    months = 0,
                     weeks = 5,
                     days = 5,
                   ),
-                  Term(
+                  IntegrationApiTerm(
                     years = 25,
-                    months = 0,
                     weeks = 5,
                     days = 4,
                   ),
                 ),
               ),
-              Sentence(
+              IntegrationApiSentence(
                 dateOfSentencing = LocalDate.parse("1991-01-01"),
                 isActive = false,
                 listOf(
-                  Term(
+                  IntegrationApiTerm(
                     years = 15,
                     months = 6,
                     weeks = 2,
-                    days = 0,
                   ),
-                  Term(
-                    years = 0,
+                  IntegrationApiTerm(
                     months = 6,
                     weeks = 2,
                     days = 5,
                   ),
                 ),
               ),
-              Sentence(
+              IntegrationApiSentence(
                 dateOfSentencing = LocalDate.parse("1992-01-01"),
                 isActive = null,
+                listOf(
+                  IntegrationApiTerm(
+                    years = 15,
+                  ),
+                  IntegrationApiTerm(
+                    weeks = 2,
+                  ),
+                ),
               ),
             ),
           ),
@@ -108,22 +112,25 @@ internal class SentencesControllerTest(
               "dateOfSentencing": "1990-01-01",
               "isActive": true,
               "terms": [
-                { "years": 10, "months": 0, "weeks": 5, "days": 5 },
-                { "years": 25, "months": 0, "weeks": 5, "days": 4 }
+                { "years": 10, "months": null, "weeks": 5, "days": 5 },
+                { "years": 25, "months": null, "weeks": 5, "days": 4 }
               ]
             },
             {
               "dateOfSentencing": "1991-01-01",
               "isActive": false,
               "terms": [
-                { "years": 15, "months": 6, "weeks": 2, "days": 0 },
-                { "years": 0, "months": 6, "weeks": 2, "days": 5 }
+                { "years": 15, "months": 6, "weeks": 2, "days": null },
+                { "years": null, "months": 6, "weeks": 2, "days": 5 }
               ]
             },
             {
               "dateOfSentencing": "1992-01-01",
               "isActive": null,
-              "terms": [{ "years": null, "months": null, "weeks": null, "days": null }]
+              "terms": [
+                { "years": 15, "months": null, "weeks": null, "days": null },
+                { "years": null, "months": null, "weeks": 2, "days": null }
+              ]
             }
           ]
           """.removeWhitespaceAndNewlines(),
@@ -172,7 +179,7 @@ internal class SentencesControllerTest(
           Response(
             data =
             List(20) {
-              Sentence(
+              IntegrationApiSentence(
                 dateOfSentencing = LocalDate.parse("2023-01-01"),
               )
             },
