@@ -16,13 +16,15 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.generateTestSentence
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.NDeliusApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApiError
 import java.io.File
 import java.time.LocalDate
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Sentence as IntegrationApiSentence
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Term as IntegrationApiTerm
+
 
 @ActiveProfiles("test")
 @ContextConfiguration(
@@ -64,13 +66,15 @@ class GetSentencesForPersonTest(
 
         response.data.shouldBe(
           listOf(
-            generateTestSentence(
+            IntegrationApiSentence(
               dateOfSentencing = LocalDate.parse("2009-07-07"),
               isActive = false,
+              terms = listOf(IntegrationApiTerm(months = 12)),
             ),
-            generateTestSentence(
+            IntegrationApiSentence(
               dateOfSentencing = LocalDate.parse("2009-09-01"),
               isActive = true,
+              terms = listOf(IntegrationApiTerm(years = 12)),
             ),
           ),
         )

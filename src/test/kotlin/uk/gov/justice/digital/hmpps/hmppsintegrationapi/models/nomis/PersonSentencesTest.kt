@@ -42,14 +42,14 @@ class PersonSentencesTest : DescribeSpec(
             IntegrationApiTerm(
               years = 3,
               months = 4,
-              weeks = 0,
+              weeks = null,
               days = 2,
             ),
             IntegrationApiTerm(
               years = 7,
               months = 3,
               weeks = 4,
-              days = 0,
+              days = null,
             ),
           ),
         )

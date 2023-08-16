@@ -5,10 +5,10 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Term as Integrati
 data class Sentence(
   val date: String? = null,
   val length: Int? = null,
-  val lengthUnits: String? = null
+  val lengthUnits: String? = null,
 ) {
-  fun toTerm(): List<IntegrationApiTerm>{
-    return when (this.lengthUnits) {
+  fun toTerm(): List<IntegrationApiTerm> {
+    return when (this.lengthUnits?.lowercase()) {
       "years" -> listOf(IntegrationApiTerm(years = this.length))
       "months" -> listOf(IntegrationApiTerm(months = this.length))
       "weeks" -> listOf(IntegrationApiTerm(weeks = this.length))

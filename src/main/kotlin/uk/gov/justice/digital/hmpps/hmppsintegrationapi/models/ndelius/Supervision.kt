@@ -1,9 +1,9 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius
 
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Offence
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Sentence as IntegrationApiSentence
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Sentence as IntegrationApiSentence
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.Sentence as NDeliusSentence
 
 data class Supervision(
@@ -20,9 +20,9 @@ data class Supervision(
 
   fun toSentence(): IntegrationApiSentence {
     return IntegrationApiSentence(
-      dateOfSentencing = LocalDate.parse(this.sentence.date),
+      dateOfSentencing = if (!this.sentence.date.isNullOrEmpty()) LocalDate.parse(this.sentence.date) else null,
       isActive = this.active,
-      terms = this.sentence.toTerm()
+      terms = this.sentence.toTerm(),
     )
   }
 }
