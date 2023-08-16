@@ -36,11 +36,27 @@ class SentencesSmokeTest : DescribeSpec(
           "data": [
             {
               "dateOfSentencing": "2019-08-24",
-              "isActive": null
+              "isActive": null,
+              "terms": [
+                {
+                  "years": 1,
+                  "months": 2,
+                  "weeks": 3,
+                  "days": 4
+                }
+              ]
             },
             {
               "dateOfSentencing": "2019-08-24",
-              "isActive": true
+              "isActive": true,
+              "terms": [
+                {
+                  "years": null,
+                  "months": null,
+                  "weeks": null,
+                  "days": null
+                }
+              ]
             }
           ],
           "pagination": {

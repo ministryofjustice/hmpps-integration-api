@@ -17,6 +17,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Sentence
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Term
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetSentencesForPersonService
@@ -43,10 +44,38 @@ internal class SentencesControllerTest(
               Sentence(
                 dateOfSentencing = LocalDate.parse("1990-01-01"),
                 isActive = true,
+                listOf(
+                  Term(
+                    years = 10,
+                    months = 0,
+                    weeks = 5,
+                    days = 5,
+                  ),
+                  Term(
+                    years = 25,
+                    months = 0,
+                    weeks = 5,
+                    days = 4,
+                  ),
+                ),
               ),
               Sentence(
                 dateOfSentencing = LocalDate.parse("1991-01-01"),
                 isActive = false,
+                listOf(
+                  Term(
+                    years = 15,
+                    months = 6,
+                    weeks = 2,
+                    days = 0,
+                  ),
+                  Term(
+                    years = 0,
+                    months = 6,
+                    weeks = 2,
+                    days = 5,
+                  ),
+                ),
               ),
               Sentence(
                 dateOfSentencing = LocalDate.parse("1992-01-01"),
@@ -77,15 +106,24 @@ internal class SentencesControllerTest(
           [
             {
               "dateOfSentencing": "1990-01-01",
-              "isActive": true
+              "isActive": true,
+              "terms": [
+                { "years": 10, "months": 0, "weeks": 5, "days": 5 },
+                { "years": 25, "months": 0, "weeks": 5, "days": 4 }
+              ]
             },
             {
               "dateOfSentencing": "1991-01-01",
-              "isActive": false
+              "isActive": false,
+              "terms": [
+                { "years": 15, "months": 6, "weeks": 2, "days": 0 },
+                { "years": 0, "months": 6, "weeks": 2, "days": 5 }
+              ]
             },
             {
               "dateOfSentencing": "1992-01-01",
-              "isActive": null
+              "isActive": null,
+              "terms": [{ "years": null, "months": null, "weeks": null, "days": null }]
             }
           ]
           """.removeWhitespaceAndNewlines(),

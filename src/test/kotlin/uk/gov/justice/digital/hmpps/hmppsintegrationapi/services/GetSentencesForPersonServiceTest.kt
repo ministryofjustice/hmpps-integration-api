@@ -22,6 +22,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.Booking
 import java.time.LocalDate
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Term as IntegrationApiTerm
 
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
@@ -74,6 +75,20 @@ internal class GetSentencesForPersonServiceTest(
             Sentence(
               dateOfSentencing = LocalDate.parse("2001-01-01"),
               isActive = true,
+              terms = listOf(
+                IntegrationApiTerm(
+                  years = 15,
+                  months = 6,
+                  weeks = 2,
+                  days = 0,
+                ),
+                IntegrationApiTerm(
+                  years = 0,
+                  months = 6,
+                  weeks = 2,
+                  days = 5,
+                ),
+              ),
             ),
           ),
         ),
@@ -85,6 +100,20 @@ internal class GetSentencesForPersonServiceTest(
             Sentence(
               dateOfSentencing = LocalDate.parse("2002-01-01"),
               isActive = null,
+              terms = listOf(
+                IntegrationApiTerm(
+                  years = 10,
+                  months = 0,
+                  weeks = 5,
+                  days = 5,
+                ),
+                IntegrationApiTerm(
+                  years = 25,
+                  months = 0,
+                  weeks = 5,
+                  days = 4,
+                ),
+              ),
             ),
           ),
         ),
@@ -238,8 +267,42 @@ internal class GetSentencesForPersonServiceTest(
 
       response.data.shouldBe(
         listOf(
-          Sentence(dateOfSentencing = LocalDate.parse("2001-01-01"), isActive = true),
-          Sentence(dateOfSentencing = LocalDate.parse("2002-01-01"), isActive = null),
+          Sentence(
+            dateOfSentencing = LocalDate.parse("2001-01-01"),
+            isActive = true,
+            listOf(
+              IntegrationApiTerm(
+                years = 15,
+                months = 6,
+                weeks = 2,
+                days = 0,
+              ),
+              IntegrationApiTerm(
+                years = 0,
+                months = 6,
+                weeks = 2,
+                days = 5,
+              ),
+            ),
+          ),
+          Sentence(
+            dateOfSentencing = LocalDate.parse("2002-01-01"),
+            isActive = null,
+            listOf(
+              IntegrationApiTerm(
+                years = 10,
+                months = 0,
+                weeks = 5,
+                days = 5,
+              ),
+              IntegrationApiTerm(
+                years = 25,
+                months = 0,
+                weeks = 5,
+                days = 4,
+              ),
+            ),
+          ),
           Sentence(dateOfSentencing = LocalDate.parse("2003-01-01"), isActive = true),
           Sentence(dateOfSentencing = LocalDate.parse("2004-01-01"), isActive = false),
         ),
