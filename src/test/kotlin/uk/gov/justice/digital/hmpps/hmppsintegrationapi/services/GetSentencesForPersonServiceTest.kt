@@ -17,11 +17,11 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ProbationOffend
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Identifiers
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Response
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Sentence
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.Booking
 import java.time.LocalDate
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Sentence as IntegrationApiSentence
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Term as IntegrationApiTerm
 
 @ContextConfiguration(
@@ -72,7 +72,7 @@ internal class GetSentencesForPersonServiceTest(
       whenever(nomisGateway.getSentencesForBooking(firstBookingId)).thenReturn(
         Response(
           data = listOf(
-            Sentence(
+            IntegrationApiSentence(
               dateOfSentencing = LocalDate.parse("2001-01-01"),
               isActive = true,
               terms = listOf(
@@ -95,7 +95,7 @@ internal class GetSentencesForPersonServiceTest(
       whenever(nomisGateway.getSentencesForBooking(secondBookingId)).thenReturn(
         Response(
           data = listOf(
-            Sentence(
+            IntegrationApiSentence(
               dateOfSentencing = LocalDate.parse("2002-01-01"),
               isActive = null,
               terms = listOf(
@@ -118,7 +118,7 @@ internal class GetSentencesForPersonServiceTest(
       whenever(nDeliusGateway.getSentencesForPerson(nDeliusCRN)).thenReturn(
         Response(
           data = listOf(
-            Sentence(
+            IntegrationApiSentence(
               dateOfSentencing = LocalDate.parse("2003-01-01"),
               isActive = true,
               terms = listOf(
@@ -130,7 +130,7 @@ internal class GetSentencesForPersonServiceTest(
                 ),
               ),
             ),
-            Sentence(
+            IntegrationApiSentence(
               dateOfSentencing = LocalDate.parse("2004-01-01"),
               isActive = false,
               terms = listOf(
@@ -279,7 +279,7 @@ internal class GetSentencesForPersonServiceTest(
 
       response.data.shouldBe(
         listOf(
-          Sentence(
+          IntegrationApiSentence(
             dateOfSentencing = LocalDate.parse("2001-01-01"),
             isActive = true,
             listOf(
@@ -297,7 +297,7 @@ internal class GetSentencesForPersonServiceTest(
               ),
             ),
           ),
-          Sentence(
+          IntegrationApiSentence(
             dateOfSentencing = LocalDate.parse("2002-01-01"),
             isActive = null,
             listOf(
@@ -316,7 +316,7 @@ internal class GetSentencesForPersonServiceTest(
             ),
           ),
 
-          Sentence(
+          IntegrationApiSentence(
             dateOfSentencing = LocalDate.parse("2003-01-01"),
             isActive = true,
             terms = listOf(
@@ -334,7 +334,7 @@ internal class GetSentencesForPersonServiceTest(
               ),
             ),
           ),
-          Sentence(
+          IntegrationApiSentence(
             dateOfSentencing = LocalDate.parse("2004-01-01"),
             isActive = false,
             terms = listOf(

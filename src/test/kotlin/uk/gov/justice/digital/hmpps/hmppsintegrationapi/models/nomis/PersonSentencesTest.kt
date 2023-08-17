@@ -16,6 +16,16 @@ class PersonSentencesTest : DescribeSpec(
         val nomisSentence = NomisSentence(
           sentenceDate = LocalDate.parse("2022-02-02"),
           sentenceStatus = "A",
+        )
+
+        val integrationApiSentence = nomisSentence.toSentence()
+
+        integrationApiSentence.dateOfSentencing.shouldBe(nomisSentence.sentenceDate)
+        integrationApiSentence.isActive.shouldBe(true)
+      }
+
+      it("maps Nomis terms to Integration API terms") {
+        val nomisSentence = NomisSentence(
           terms = listOf(
             NomisTerm(
               years = 3,
@@ -30,13 +40,10 @@ class PersonSentencesTest : DescribeSpec(
               days = 0,
             ),
           ),
-
         )
 
         val integrationApiSentence = nomisSentence.toSentence()
 
-        integrationApiSentence.dateOfSentencing.shouldBe(nomisSentence.sentenceDate)
-        integrationApiSentence.isActive.shouldBe(true)
         integrationApiSentence.terms.shouldBe(
           listOf(
             IntegrationApiTerm(
