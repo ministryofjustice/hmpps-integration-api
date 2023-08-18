@@ -5,4 +5,5 @@ data class Term(
   val months: Int? = null,
   val weeks: Int? = null,
   val days: Int? = null,
+  val hours: Int? = null,
 )

@@ -47,8 +47,10 @@ internal class SentencesControllerTest(
                 listOf(
                   IntegrationApiTerm(
                     years = 10,
+                    months = 6,
                     weeks = 5,
                     days = 5,
+                    hours = 2,
                   ),
                   IntegrationApiTerm(
                     years = 25,
@@ -109,30 +111,66 @@ internal class SentencesControllerTest(
           """
           [
             {
-              "dateOfSentencing": "1990-01-01",
-              "isActive": true,
-              "terms": [
-                { "years": 10, "months": null, "weeks": 5, "days": 5 },
-                { "years": 25, "months": null, "weeks": 5, "days": 4 }
-              ]
+                "dateOfSentencing": "1990-01-01",
+                "isActive": true,
+                "terms": [
+                    {
+                        "years": 10,
+                        "months": 6,
+                        "weeks": 5,
+                        "days": 5,
+                        "hours": 2
+                    },
+                    {
+                        "years": 25,
+                        "months": null,
+                        "weeks": 5,
+                        "days": 4,
+                        "hours": null
+                    }
+                ]
             },
             {
-              "dateOfSentencing": "1991-01-01",
-              "isActive": false,
-              "terms": [
-                { "years": 15, "months": 6, "weeks": 2, "days": null },
-                { "years": null, "months": 6, "weeks": 2, "days": 5 }
-              ]
+                "dateOfSentencing": "1991-01-01",
+                "isActive": false,
+                "terms": [
+                    {
+                        "years": 15,
+                        "months": 6,
+                        "weeks": 2,
+                        "days": null,
+                        "hours": null
+                    },
+                    {
+                        "years": null,
+                        "months": 6,
+                        "weeks": 2,
+                        "days": 5,
+                        "hours": null
+                    }
+                ]
             },
             {
-              "dateOfSentencing": "1992-01-01",
-              "isActive": null,
-              "terms": [
-                { "years": 15, "months": null, "weeks": null, "days": null },
-                { "years": null, "months": null, "weeks": 2, "days": null }
-              ]
+                "dateOfSentencing": "1992-01-01",
+                "isActive": null,
+                "terms": [
+                    {
+                        "years": 15,
+                        "months": null,
+                        "weeks": null,
+                        "days": null,
+                        "hours": null
+                    },
+                    {
+                        "years": null,
+                        "months": null,
+                        "weeks": 2,
+                        "days": null,
+                        "hours": null
+                    }
+                ]
             }
-          ]
+        ]
           """.removeWhitespaceAndNewlines(),
         )
       }

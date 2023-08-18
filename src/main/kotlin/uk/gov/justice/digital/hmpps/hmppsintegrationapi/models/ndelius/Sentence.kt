@@ -13,6 +13,7 @@ data class Sentence(
       "months" -> listOf(IntegrationApiTerm(months = this.length))
       "weeks" -> listOf(IntegrationApiTerm(weeks = this.length))
       "days" -> listOf(IntegrationApiTerm(days = this.length))
+      "hours" -> listOf(IntegrationApiTerm(hours = this.length))
       else -> listOf(IntegrationApiTerm())
     }
   }
