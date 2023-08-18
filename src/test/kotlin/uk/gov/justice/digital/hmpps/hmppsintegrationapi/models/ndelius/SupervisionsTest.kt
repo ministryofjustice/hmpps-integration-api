@@ -1,8 +1,10 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius
 
 import io.kotest.core.spec.style.DescribeSpec
+import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Offence
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Term
 import java.time.LocalDate
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Sentence as IntegrationApiSentence
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.Sentence as NDeliusSentence
@@ -115,6 +117,65 @@ class SupervisionsTest : DescribeSpec(
             IntegrationApiSentence(dateOfSentencing = LocalDate.parse("2010-07-07"), isActive = false),
           ),
         )
+      }
+
+      it("maps nDelius sentence length to Integration API terms") {
+        val supervisions = Supervisions(
+          listOf(
+            Supervision(sentence = NDeliusSentence(date = "2009-07-07", length = 11, lengthUnits = "Months")),
+            Supervision(sentence = NDeliusSentence(date = "2010-07-07", length = 2, lengthUnits = "Years")),
+          ),
+        )
+
+        val integrationApiSentences = supervisions.supervisions.map { it.toSentence() }
+
+        integrationApiSentences.shouldBe(
+          listOf(
+            IntegrationApiSentence(
+              dateOfSentencing = LocalDate.parse("2009-07-07"),
+              isActive = null,
+              terms = listOf(
+                Term(
+                  years = null,
+                  months = 11,
+                  weeks = null,
+                  days = null,
+                  hours = null,
+                ),
+              ),
+            ),
+            IntegrationApiSentence(
+              dateOfSentencing = LocalDate.parse("2010-07-07"),
+              isActive = null,
+              terms = listOf(
+                Term(
+                  years = 2,
+                  months = null,
+                  weeks = null,
+                  days = null,
+                  hours = null,
+                ),
+              ),
+            ),
+          ),
+        )
+      }
+
+      it("deals with NULL values") {
+        val supervisions = Supervisions(
+          listOf(
+            Supervision(),
+            Supervision(),
+          ),
+        )
+
+        val integrationApiSentences = supervisions.supervisions.map { it.toSentence() }
+
+        for (integrationApiSentence in integrationApiSentences) {
+          integrationApiSentence.dateOfSentencing.shouldBeNull()
+          integrationApiSentence.isActive.shouldBeNull()
+          integrationApiSentence.terms.shouldBe(listOf(Term()))
+        }
       }
     }
   },

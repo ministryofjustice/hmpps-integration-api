@@ -29,6 +29,10 @@ class SentencesSmokeTest : DescribeSpec(
         HttpResponse.BodyHandlers.ofString(),
       )
 
+      /*No example data for an hour is provided in the OpenAPI specification for the supervisions endpoint
+      Prism by default returns the minimum value of a Java/Kotlin Int ~ AP/18/08/2023*/
+      val hourMinIntValue = -2147483648
+
       response.statusCode().shouldBe(HttpStatus.OK.value())
       response.body().shouldEqualJson(
         """
@@ -36,11 +40,29 @@ class SentencesSmokeTest : DescribeSpec(
           "data": [
             {
               "dateOfSentencing": "2019-08-24",
-              "isActive": null
+              "isActive": null,
+              "terms": [
+                {
+                  "years": 1,
+                  "months": 2,
+                  "weeks": 3,
+                  "days": 4,
+                  "hours": null
+                }
+              ]
             },
             {
               "dateOfSentencing": "2019-08-24",
-              "isActive": true
+              "isActive": true,
+              "terms": [
+                {
+                  "years": null,
+                  "months": null,
+                  "weeks": null,
+                  "days": null,
+                  "hours": $hourMinIntValue
+                }
+              ]
             }
           ],
           "pagination": {

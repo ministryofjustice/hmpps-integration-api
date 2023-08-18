@@ -61,7 +61,7 @@
         "description": "CJA - Suspended Sentence Order",
         "date": "2009-09-01",
         "length": 12,
-        "lengthUnits": "Months"
+        "lengthUnits": "Years"
       },
       "mainOffence": {
         "date": "2009-07-31",

@@ -17,11 +17,12 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ProbationOffend
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Identifiers
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Response
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Sentence
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.Booking
 import java.time.LocalDate
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Sentence as IntegrationApiSentence
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Term as IntegrationApiTerm
 
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
@@ -71,9 +72,21 @@ internal class GetSentencesForPersonServiceTest(
       whenever(nomisGateway.getSentencesForBooking(firstBookingId)).thenReturn(
         Response(
           data = listOf(
-            Sentence(
+            IntegrationApiSentence(
               dateOfSentencing = LocalDate.parse("2001-01-01"),
               isActive = true,
+              terms = listOf(
+                IntegrationApiTerm(
+                  years = 15,
+                  months = 6,
+                  weeks = 2,
+                ),
+                IntegrationApiTerm(
+                  months = 6,
+                  weeks = 2,
+                  days = 5,
+                ),
+              ),
             ),
           ),
         ),
@@ -82,9 +95,21 @@ internal class GetSentencesForPersonServiceTest(
       whenever(nomisGateway.getSentencesForBooking(secondBookingId)).thenReturn(
         Response(
           data = listOf(
-            Sentence(
+            IntegrationApiSentence(
               dateOfSentencing = LocalDate.parse("2002-01-01"),
               isActive = null,
+              terms = listOf(
+                IntegrationApiTerm(
+                  years = 10,
+                  weeks = 5,
+                  days = 5,
+                ),
+                IntegrationApiTerm(
+                  years = 25,
+                  weeks = 5,
+                  days = 4,
+                ),
+              ),
             ),
           ),
         ),
@@ -93,13 +118,29 @@ internal class GetSentencesForPersonServiceTest(
       whenever(nDeliusGateway.getSentencesForPerson(nDeliusCRN)).thenReturn(
         Response(
           data = listOf(
-            Sentence(
+            IntegrationApiSentence(
               dateOfSentencing = LocalDate.parse("2003-01-01"),
               isActive = true,
+              terms = listOf(
+                IntegrationApiTerm(
+                  years = 4,
+                ),
+                IntegrationApiTerm(
+                  weeks = 12,
+                ),
+              ),
             ),
-            Sentence(
+            IntegrationApiSentence(
               dateOfSentencing = LocalDate.parse("2004-01-01"),
               isActive = false,
+              terms = listOf(
+                IntegrationApiTerm(
+                  weeks = 18,
+                ),
+                IntegrationApiTerm(
+                  hours = 24,
+                ),
+              ),
             ),
           ),
         ),
@@ -238,10 +279,87 @@ internal class GetSentencesForPersonServiceTest(
 
       response.data.shouldBe(
         listOf(
-          Sentence(dateOfSentencing = LocalDate.parse("2001-01-01"), isActive = true),
-          Sentence(dateOfSentencing = LocalDate.parse("2002-01-01"), isActive = null),
-          Sentence(dateOfSentencing = LocalDate.parse("2003-01-01"), isActive = true),
-          Sentence(dateOfSentencing = LocalDate.parse("2004-01-01"), isActive = false),
+          IntegrationApiSentence(
+            dateOfSentencing = LocalDate.parse("2001-01-01"),
+            isActive = true,
+            listOf(
+              IntegrationApiTerm(
+                years = 15,
+                months = 6,
+                weeks = 2,
+                days = null,
+                hours = null,
+              ),
+              IntegrationApiTerm(
+                years = null,
+                months = 6,
+                weeks = 2,
+                days = 5,
+                hours = null,
+              ),
+            ),
+          ),
+          IntegrationApiSentence(
+            dateOfSentencing = LocalDate.parse("2002-01-01"),
+            isActive = null,
+            listOf(
+              IntegrationApiTerm(
+                years = 10,
+                months = null,
+                weeks = 5,
+                days = 5,
+                hours = null,
+              ),
+              IntegrationApiTerm(
+                years = 25,
+                months = null,
+                weeks = 5,
+                days = 4,
+                hours = null,
+              ),
+            ),
+          ),
+
+          IntegrationApiSentence(
+            dateOfSentencing = LocalDate.parse("2003-01-01"),
+            isActive = true,
+            terms = listOf(
+              IntegrationApiTerm(
+                years = 4,
+                months = null,
+                weeks = null,
+                days = null,
+                hours = null,
+              ),
+              IntegrationApiTerm(
+                years = null,
+                months = null,
+                weeks = 12,
+                days = null,
+                hours = null,
+              ),
+            ),
+          ),
+          IntegrationApiSentence(
+            dateOfSentencing = LocalDate.parse("2004-01-01"),
+            isActive = false,
+            terms = listOf(
+              IntegrationApiTerm(
+                years = null,
+                months = null,
+                weeks = 18,
+                days = null,
+                hours = null,
+              ),
+              IntegrationApiTerm(
+                years = null,
+                months = null,
+                weeks = null,
+                days = null,
+                hours = 24,
+              ),
+            ),
+          ),
         ),
       )
     }
