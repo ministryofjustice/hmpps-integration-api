@@ -78,6 +78,32 @@ internal class GetOffencesForPersonServiceTest(
       )
     }
 
+    it("Returns probation offences only when Prison Offender Search couldn't find the person by PNC ID") {
+      whenever(prisonerOffenderSearchGateway.getPersons(pncId = pncId)).thenReturn(
+        Response(
+          data = emptyList(),
+          errors = emptyList(),
+        ),
+      )
+
+      val result = getOffencesForPersonService.execute(pncId)
+
+      result.shouldBe(Response(data = listOf(probationOffence1, probationOffence2, probationOffence3)))
+    }
+
+    it("Returns prison offences only when Probation Offender Search couldn't find the person by PNC ID") {
+      whenever(probationOffenderSearchGateway.getPerson(pncId = pncId)).thenReturn(
+        Response(
+          data = null,
+          errors = emptyList(),
+        ),
+      )
+
+      val result = getOffencesForPersonService.execute(pncId)
+
+      result.shouldBe(Response(data = listOf(prisonOffence1, prisonOffence2, prisonOffence3)))
+    }
+
     it("retrieves prisoner ID from Prisoner Offender Search using a PNC ID") {
       getOffencesForPersonService.execute(pncId)
 
@@ -117,24 +143,76 @@ internal class GetOffencesForPersonServiceTest(
       )
     }
 
-    it("returns errors when person offences cannot be found by PNC ID") {
-      listOf(UpstreamApi.PRISONER_OFFENDER_SEARCH, UpstreamApi.PROBATION_OFFENDER_SEARCH, UpstreamApi.NDELIUS, UpstreamApi.NOMIS).forEach {
+    describe("when an upstream API returns an error when looking up a person from a PNC ID") {
+      beforeEach {
         whenever(prisonerOffenderSearchGateway.getPersons(pncId = pncId)).thenReturn(
           Response(
             data = emptyList(),
             errors = listOf(
               UpstreamApiError(
-                causedBy = it,
+                causedBy = UpstreamApi.PRISONER_OFFENDER_SEARCH,
                 type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
               ),
             ),
           ),
         )
 
-        val response = getOffencesForPersonService.execute(pncId)
-
-        response.errors.shouldHaveSize(1)
+        whenever(probationOffenderSearchGateway.getPerson(pncId = pncId)).thenReturn(
+          Response(
+            data = null,
+            errors = listOf(
+              UpstreamApiError(
+                causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH,
+                type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+              ),
+            ),
+          ),
+        )
       }
+
+      it("records upstream API errors") {
+        val response = getOffencesForPersonService.execute(pncId)
+        response.errors.shouldHaveSize(2)
+      }
+
+      it("does not get offences from Nomis") {
+        getOffencesForPersonService.execute(pncId)
+        verify(nomisGateway, VerificationModeFactory.times(0)).getOffencesForPerson(id = prisonerNumber)
+      }
+
+      it("does not get offences from nDelius") {
+        getOffencesForPersonService.execute(pncId)
+        verify(nDeliusGateway, VerificationModeFactory.times(0)).getOffencesForPerson(id = nDeliusCRN)
+      }
+    }
+
+    it("records errors when it cannot find offences for a person") {
+      whenever(nDeliusGateway.getOffencesForPerson(id = nDeliusCRN)).thenReturn(
+        Response(
+          data = emptyList(),
+          errors = listOf(
+            UpstreamApiError(
+              causedBy = UpstreamApi.NDELIUS,
+              type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+            ),
+          ),
+        ),
+      )
+
+      whenever(nomisGateway.getOffencesForPerson(id = prisonerNumber)).thenReturn(
+        Response(
+          data = emptyList(),
+          errors = listOf(
+            UpstreamApiError(
+              causedBy = UpstreamApi.NOMIS,
+              type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+            ),
+          ),
+        ),
+      )
+
+      val response = getOffencesForPersonService.execute(pncId)
+      response.errors.shouldHaveSize(2)
     }
   },
 )
