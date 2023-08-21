@@ -33,7 +33,7 @@ class GetOffencesForPersonService(
 
     var nomisOffences: Response<List<Offence>> = Response(data = emptyList())
 
-    if(nomisNumber != null) {
+    if (nomisNumber != null) {
       nomisOffences = nomisGateway.getOffencesForPerson(nomisNumber)
 
       if (nomisOffences.errors.isNotEmpty()) {
@@ -43,7 +43,7 @@ class GetOffencesForPersonService(
 
     var nDeliusOffences: Response<List<Offence>> = Response(data = emptyList())
 
-    if(deliusCrn != null) {
+    if (deliusCrn != null) {
       nDeliusOffences = nDeliusGateway.getOffencesForPerson(deliusCrn)
 
       if (nDeliusOffences.errors.isNotEmpty()) {

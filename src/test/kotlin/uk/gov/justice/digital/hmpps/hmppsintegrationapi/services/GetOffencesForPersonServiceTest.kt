@@ -78,10 +78,11 @@ internal class GetOffencesForPersonServiceTest(
       )
     }
 
-    it("returns an empty list of offences when Prisoner Offender Search couldn't find any people by PNC ID") {
+    it("Doesn't return prison offences when Prison Offender Search couldn't find the person by PNC ID") {
       whenever(prisonerOffenderSearchGateway.getPersons(pncId = pncId)).thenReturn(
         Response(
           data = emptyList(),
+          errors = emptyList(),
         ),
       )
 
@@ -90,10 +91,11 @@ internal class GetOffencesForPersonServiceTest(
       result.shouldBe(Response(data = listOf(probationOffence1, probationOffence2, probationOffence3)))
     }
 
-    it("returns an empty list of offences when Probation Offender Search couldn't find the person by PNC ID") {
+    it("Doesn't return probation offences when Probation Offender Search couldn't find the person by PNC ID") {
       whenever(probationOffenderSearchGateway.getPerson(pncId = pncId)).thenReturn(
         Response(
           data = null,
+          errors = emptyList(),
         ),
       )
 
