@@ -154,7 +154,7 @@ internal class GetOffencesForPersonServiceTest(
                 type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
               ),
             ),
-          )
+          ),
         )
 
         whenever(probationOffenderSearchGateway.getPerson(pncId = pncId)).thenReturn(
@@ -166,7 +166,7 @@ internal class GetOffencesForPersonServiceTest(
                 type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
               ),
             ),
-          )
+          ),
         )
       }
 
@@ -196,7 +196,7 @@ internal class GetOffencesForPersonServiceTest(
               type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
             ),
           ),
-        )
+        ),
       )
 
       whenever(nomisGateway.getOffencesForPerson(id = prisonerNumber)).thenReturn(
@@ -208,7 +208,7 @@ internal class GetOffencesForPersonServiceTest(
               type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
             ),
           ),
-        )
+        ),
       )
 
       val response = getOffencesForPersonService.execute(pncId)
