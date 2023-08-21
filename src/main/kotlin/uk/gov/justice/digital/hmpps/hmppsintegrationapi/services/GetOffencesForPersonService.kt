@@ -19,38 +19,26 @@ class GetOffencesForPersonService(
   fun execute(pncId: String): Response<List<Offence>> {
     val responseFromPrisonerOffenderSearch = prisonerOffenderSearchGateway.getPersons(pncId = pncId)
     val responseFromProbationOffenderSearch = probationOffenderSearchGateway.getPerson(pncId = pncId)
-
-    if (responseFromPrisonerOffenderSearch.errors.isNotEmpty()) {
-      return Response(emptyList(), responseFromPrisonerOffenderSearch.errors)
-    }
-
-    if (responseFromProbationOffenderSearch.errors.isNotEmpty()) {
-      return Response(emptyList(), responseFromProbationOffenderSearch.errors)
-    }
-
     val nomisNumber = responseFromPrisonerOffenderSearch.data.firstOrNull()?.identifiers?.nomisNumber
     val deliusCrn = responseFromProbationOffenderSearch.data?.identifiers?.deliusCrn
-
     var nomisOffences: Response<List<Offence>> = Response(data = emptyList())
+    var nDeliusOffences: Response<List<Offence>> = Response(data = emptyList())
 
     if (nomisNumber != null) {
       nomisOffences = nomisGateway.getOffencesForPerson(nomisNumber)
-
-      if (nomisOffences.errors.isNotEmpty()) {
-        return Response(emptyList(), nomisOffences.errors)
-      }
     }
-
-    var nDeliusOffences: Response<List<Offence>> = Response(data = emptyList())
 
     if (deliusCrn != null) {
       nDeliusOffences = nDeliusGateway.getOffencesForPerson(deliusCrn)
-
-      if (nDeliusOffences.errors.isNotEmpty()) {
-        return Response(emptyList(), nDeliusOffences.errors)
-      }
     }
 
-    return Response(data = nomisOffences.data + nDeliusOffences.data)
+    return Response(
+      data = nomisOffences.data +
+             nDeliusOffences.data,
+      errors = responseFromPrisonerOffenderSearch.errors +
+               responseFromProbationOffenderSearch.errors +
+               nomisOffences.errors +
+               nDeliusOffences.errors
+    )
   }
 }
