@@ -34,11 +34,11 @@ class GetOffencesForPersonService(
 
     return Response(
       data = nomisOffences.data +
-             nDeliusOffences.data,
+        nDeliusOffences.data,
       errors = responseFromPrisonerOffenderSearch.errors +
-               responseFromProbationOffenderSearch.errors +
-               nomisOffences.errors +
-               nDeliusOffences.errors
+        responseFromProbationOffenderSearch.errors +
+        nomisOffences.errors +
+        nDeliusOffences.errors,
     )
   }
 }
