@@ -28,15 +28,27 @@ class GetOffencesForPersonService(
       return Response(emptyList(), responseFromProbationOffenderSearch.errors)
     }
 
-    val nomisOffences = nomisGateway.getOffencesForPerson(responseFromPrisonerOffenderSearch.data.first().identifiers.nomisNumber!!)
-    val nDeliusOffences = nDeliusGateway.getOffencesForPerson(responseFromProbationOffenderSearch.data?.identifiers?.deliusCrn!!)
+    val nomisNumber = responseFromPrisonerOffenderSearch.data.firstOrNull()?.identifiers?.nomisNumber
+    val deliusCrn = responseFromProbationOffenderSearch.data?.identifiers?.deliusCrn
 
-    if (nomisOffences.errors.isNotEmpty()) {
-      return Response(emptyList(), nomisOffences.errors)
+    var nomisOffences: Response<List<Offence>> = Response(data = emptyList())
+
+    if(nomisNumber != null) {
+      nomisOffences = nomisGateway.getOffencesForPerson(nomisNumber)
+
+      if (nomisOffences.errors.isNotEmpty()) {
+        return Response(emptyList(), nomisOffences.errors)
+      }
     }
 
-    if (nDeliusOffences.errors.isNotEmpty()) {
-      return Response(emptyList(), nDeliusOffences.errors)
+    var nDeliusOffences: Response<List<Offence>> = Response(data = emptyList())
+
+    if(deliusCrn != null) {
+      nDeliusOffences = nDeliusGateway.getOffencesForPerson(deliusCrn)
+
+      if (nDeliusOffences.errors.isNotEmpty()) {
+        return Response(emptyList(), nDeliusOffences.errors)
+      }
     }
 
     return Response(data = nomisOffences.data + nDeliusOffences.data)

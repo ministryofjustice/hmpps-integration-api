@@ -78,6 +78,30 @@ internal class GetOffencesForPersonServiceTest(
       )
     }
 
+    it("returns an empty list of offences when Prisoner Offender Search couldn't find any people by PNC ID") {
+      whenever(prisonerOffenderSearchGateway.getPersons(pncId = pncId)).thenReturn(
+        Response(
+          data = emptyList(),
+        ),
+      )
+
+      val result = getOffencesForPersonService.execute(pncId)
+
+      result.shouldBe(Response(data = listOf(probationOffence1, probationOffence2, probationOffence3)))
+    }
+
+    it("returns an empty list of offences when Probation Offender Search couldn't find the person by PNC ID") {
+      whenever(probationOffenderSearchGateway.getPerson(pncId = pncId)).thenReturn(
+        Response(
+          data = null,
+        ),
+      )
+
+      val result = getOffencesForPersonService.execute(pncId)
+
+      result.shouldBe(Response(data = listOf(prisonOffence1, prisonOffence2, prisonOffence3)))
+    }
+
     it("retrieves prisoner ID from Prisoner Offender Search using a PNC ID") {
       getOffencesForPersonService.execute(pncId)
 
