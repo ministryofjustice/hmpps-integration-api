@@ -33,22 +33,8 @@ paths:
             default: false
           required: false
           description: Whether to return results that match the search criteria within the aliases of a person
-        - in: query
-          name: page
-          schema:
-            type: number
-            minimum: 1
-            default: 1
-          required: false
-          description: The page number (starting from 1)
-        - in: query
-          name: per_page
-          schema:
-            type: number
-            minimum: 1
-            default: 10
-          required: false
-          description: The maximum number of results for a page
+        - $ref: "#/components/parameters/Page"
+        - $ref: "#/components/parameters/PerPage"
       responses:
         "200":
           description: Successfully performed the query on upstream APIs. An empty list is returned when no results are found.
@@ -110,22 +96,8 @@ paths:
       summary: Returns metadata of images associated with a person.
       parameters:
         - $ref: "#/components/parameters/EncodedPncId"
-        - in: query
-          name: page
-          schema:
-            type: number
-            minimum: 0
-            default: 1
-          required: false
-          description: The page number (starting from 1)
-        - in: query
-          name: per_page
-          schema:
-            type: number
-            minimum: 1
-            default: 10
-          required: false
-          description: The maximum number of results for a page
+        - $ref: "#/components/parameters/Page"
+        - $ref: "#/components/parameters/PerPage"
       responses:
         "200":
           description: Successfully found a person with the provided PNC ID.
@@ -187,22 +159,8 @@ paths:
       summary: Returns addresses associated with a person.
       parameters:
         - $ref: "#/components/parameters/EncodedPncId"
-        - in: query
-          name: page
-          schema:
-            type: number
-            minimum: 0
-            default: 1
-          required: false
-          description: The page number (starting from 1)
-        - in: query
-          name: per_page
-          schema:
-            type: number
-            minimum: 1
-            default: 10
-          required: false
-          description: The maximum number of results for a page
+        - $ref: "#/components/parameters/Page"
+        - $ref: "#/components/parameters/PerPage"
       responses:
         "200":
           description: Successfully found a person with the provided PNC ID.
@@ -235,22 +193,8 @@ paths:
       summary: Returns offences associated with a person.
       parameters:
         - $ref: "#/components/parameters/EncodedPncId"
-        - in: query
-          name: page
-          schema:
-            type: number
-            minimum: 0
-            default: 1
-          required: false
-          description: The page number (starting from 1)
-        - in: query
-          name: per_page
-          schema:
-            type: number
-            minimum: 1
-            default: 10
-          required: false
-          description: The maximum number of results for a page
+        - $ref: "#/components/parameters/Page"
+        - $ref: "#/components/parameters/PerPage"
       responses:
         "200":
           description: Successfully found offences for a person with the provided PNC ID.
@@ -284,22 +228,8 @@ paths:
       summary: Returns alerts associated with a person.
       parameters:
         - $ref: "#/components/parameters/EncodedPncId"
-        - in: query
-          name: page
-          schema:
-            type: number
-            minimum: 0
-            default: 1
-          required: false
-          description: The page number (starting from 1)
-        - in: query
-          name: per_page
-          schema:
-            type: number
-            minimum: 1
-            default: 10
-          required: false
-          description: The maximum number of results for a page
+        - $ref: "#/components/parameters/Page"
+        - $ref: "#/components/parameters/PerPage"
       responses:
         "200":
           description: Successfully found alerts for a person with the provided PNC ID.
@@ -324,6 +254,7 @@ paths:
               examples:
                 PersonNotFoundError:
                   $ref: "#/components/examples/PersonNotFoundError"
+
   /{TBC}/v1/persons/{Id}/accommodations:
     get:
       summary: FUTURE ENDPOINT - Returns accommodation and referral information associated with a person.
@@ -450,6 +381,24 @@ components:
       required: true
       schema:
         type: string
+    Page:
+      name: page
+      in: query
+      schema:
+        type: number
+        minimum: 0
+        default: 1
+      required: false
+      description: The page number (starting from 1)
+    PerPage:
+      name: per_page
+      in: query
+      schema:
+        type: number
+        minimum: 1
+        default: 10
+      required: false
+      description: The maximum number of results for a page
   schemas:
     Address:
       type: object
