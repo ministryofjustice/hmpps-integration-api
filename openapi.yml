@@ -33,22 +33,8 @@ paths:
             default: false
           required: false
           description: Whether to return results that match the search criteria within the aliases of a person
-        - in: query
-          name: page
-          schema:
-            type: number
-            minimum: 1
-            default: 1
-          required: false
-          description: The page number (starting from 1)
-        - in: query
-          name: per_page
-          schema:
-            type: number
-            minimum: 1
-            default: 10
-          required: false
-          description: The maximum number of results for a page
+        - $ref: "#/components/parameters/Page"
+        - $ref: "#/components/parameters/PerPage"
       responses:
         "200":
           description: Successfully performed the query on upstream APIs. An empty list is returned when no results are found.
@@ -110,22 +96,8 @@ paths:
       summary: Returns metadata of images associated with a person.
       parameters:
         - $ref: "#/components/parameters/EncodedPncId"
-        - in: query
-          name: page
-          schema:
-            type: number
-            minimum: 0
-            default: 1
-          required: false
-          description: The page number (starting from 1)
-        - in: query
-          name: per_page
-          schema:
-            type: number
-            minimum: 1
-            default: 10
-          required: false
-          description: The maximum number of results for a page
+        - $ref: "#/components/parameters/Page"
+        - $ref: "#/components/parameters/PerPage"
       responses:
         "200":
           description: Successfully found a person with the provided PNC ID.
@@ -187,22 +159,8 @@ paths:
       summary: Returns addresses associated with a person.
       parameters:
         - $ref: "#/components/parameters/EncodedPncId"
-        - in: query
-          name: page
-          schema:
-            type: number
-            minimum: 0
-            default: 1
-          required: false
-          description: The page number (starting from 1)
-        - in: query
-          name: per_page
-          schema:
-            type: number
-            minimum: 1
-            default: 10
-          required: false
-          description: The maximum number of results for a page
+        - $ref: "#/components/parameters/Page"
+        - $ref: "#/components/parameters/PerPage"
       responses:
         "200":
           description: Successfully found a person with the provided PNC ID.
@@ -235,22 +193,8 @@ paths:
       summary: Returns offences associated with a person.
       parameters:
         - $ref: "#/components/parameters/EncodedPncId"
-        - in: query
-          name: page
-          schema:
-            type: number
-            minimum: 0
-            default: 1
-          required: false
-          description: The page number (starting from 1)
-        - in: query
-          name: per_page
-          schema:
-            type: number
-            minimum: 1
-            default: 10
-          required: false
-          description: The maximum number of results for a page
+        - $ref: "#/components/parameters/Page"
+        - $ref: "#/components/parameters/PerPage"
       responses:
         "200":
           description: Successfully found offences for a person with the provided PNC ID.
@@ -268,6 +212,41 @@ paths:
                     $ref: "#/components/schemas/Pagination"
         "404":
           description: Failed to find offences a person with the provided PNC ID.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                PersonNotFoundError:
+                  $ref: "#/components/examples/PersonNotFoundError"
+
+  /v1/persons/{encodedPncId}/alerts:
+    get:
+      tags:
+        - persons
+        - alerts
+      summary: Returns alerts associated with a person.
+      parameters:
+        - $ref: "#/components/parameters/EncodedPncId"
+        - $ref: "#/components/parameters/Page"
+        - $ref: "#/components/parameters/PerPage"
+      responses:
+        "200":
+          description: Successfully found alerts for a person with the provided PNC ID.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    minItems: 0
+                    items:
+                      $ref: "#/components/schemas/Alert"
+                  pagination:
+                    $ref: "#/components/schemas/Pagination"
+        "404":
+          description: Failed to find alerts a person with the provided PNC ID.
           content:
             application/json:
               schema:
@@ -402,6 +381,24 @@ components:
       required: true
       schema:
         type: string
+    Page:
+      name: page
+      in: query
+      schema:
+        type: number
+        minimum: 0
+        default: 1
+      required: false
+      description: The page number (starting from 1)
+    PerPage:
+      name: per_page
+      in: query
+      schema:
+        type: number
+        minimum: 1
+        default: 10
+      required: false
+      description: The maximum number of results for a page
   schemas:
     Address:
       type: object
@@ -462,6 +459,51 @@ components:
           type: string
           example: Business Address
           description: Description of address type
+    Alert:
+      type: object
+      properties:
+        offenderNo:
+          type: string
+          example: Z1234ZZ
+          description: Offender unique reference
+        type:
+          type: string
+          example: X
+          description: Alert type
+        typeDescription:
+          type: string
+          example: Security
+          description: Alert type description
+        code:
+          type: string
+          example: PO
+          description: Alert code
+        codeDescription:
+          type: string
+          example: MAPPA Nominal
+          description: Alert code description
+        comment:
+          type: string
+          example: Professional lock pick
+          description: Alert comment
+        dateCreated:
+          type: string
+          format: date
+          example: 2014-09-23
+          description: Date of the alert, which might differ from the date it was created
+        dateExpired:
+          type: string
+          format: date
+          example: 2015-09-23
+          description: Date that the alert expires
+        expired:
+          type: boolean
+          example: true
+          description: Whether the alert has expired
+        active:
+          type: boolean
+          example: false
+          description: Whether the alert is active
     Alias:
       type: object
       properties:
@@ -549,12 +591,12 @@ components:
           enum: [FACE, TAT, OTH, SCAR, MARK, OIC]
           description: >
             View is the subject focus; describing the inner focus or subject of the image, normally referring to a marking, tattoo or deeper level focus of the orientation. In practise this is the interior foci of what is captured in the 'orientation' field.
-              Options include: 
-              `FACE` - Facing, 
-              `TAT` - Tattoo, 
-              `OTH` - Other, 
-              `SCAR` - Scar, 
-              `MARK` - Mark, 
+              Options include:
+              `FACE` - Facing,
+              `TAT` - Tattoo,
+              `OTH` - Other,
+              `SCAR` - Scar,
+              `MARK` - Mark,
               `OIC` - Offence in Custody
         orientation:
           type: string
