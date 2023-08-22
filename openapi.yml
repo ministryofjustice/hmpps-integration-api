@@ -276,6 +276,54 @@ paths:
                 PersonNotFoundError:
                   $ref: "#/components/examples/PersonNotFoundError"
 
+  /v1/persons/{encodedPncId}/alerts:
+    get:
+      tags:
+        - persons
+        - alerts
+      summary: Returns alerts associated with a person.
+      parameters:
+        - $ref: "#/components/parameters/EncodedPncId"
+        - in: query
+          name: page
+          schema:
+            type: number
+            minimum: 0
+            default: 1
+          required: false
+          description: The page number (starting from 1)
+        - in: query
+          name: per_page
+          schema:
+            type: number
+            minimum: 1
+            default: 10
+          required: false
+          description: The maximum number of results for a page
+      responses:
+        "200":
+          description: Successfully found alerts for a person with the provided PNC ID.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    minItems: 0
+                    items:
+                      $ref: "#/components/schemas/Alert"
+                  pagination:
+                    $ref: "#/components/schemas/Pagination"
+        "404":
+          description: Failed to find alerts a person with the provided PNC ID.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                PersonNotFoundError:
+                  $ref: "#/components/examples/PersonNotFoundError"
   /{TBC}/v1/persons/{Id}/accommodations:
     get:
       summary: FUTURE ENDPOINT - Returns accommodation and referral information associated with a person.
@@ -462,6 +510,51 @@ components:
           type: string
           example: Business Address
           description: Description of address type
+    Alert:
+      type: object
+      properties:
+        offenderNo:
+          type: string
+          example: Z1234ZZ
+          description: Offender unique reference
+        type:
+          type: string
+          example: X
+          description: Alert type
+        typeDescription:
+          type: string
+          example: Security
+          description: Alert type description
+        code:
+          type: string
+          example: PO
+          description: Alert code
+        codeDescription:
+          type: string
+          example: MAPPA Nominal
+          description: Alert code description
+        comment:
+          type: string
+          example: Professional lock pick
+          description: Alert comment
+        dateCreated:
+          type: string
+          format: date
+          example: 2014-09-23
+          description: Date of the alert, which might differ from the date it was created
+        dateExpired:
+          type: string
+          format: date
+          example: 2015-09-23
+          description: Date that the alert expires
+        expired:
+          type: boolean
+          example: true
+          description: Whether the alert has expired
+        active:
+          type: boolean
+          example: false
+          description: Whether the alert is active
     Alias:
       type: object
       properties:
@@ -549,12 +642,12 @@ components:
           enum: [FACE, TAT, OTH, SCAR, MARK, OIC]
           description: >
             View is the subject focus; describing the inner focus or subject of the image, normally referring to a marking, tattoo or deeper level focus of the orientation. In practise this is the interior foci of what is captured in the 'orientation' field.
-              Options include: 
-              `FACE` - Facing, 
-              `TAT` - Tattoo, 
-              `OTH` - Other, 
-              `SCAR` - Scar, 
-              `MARK` - Mark, 
+              Options include:
+              `FACE` - Facing,
+              `TAT` - Tattoo,
+              `OTH` - Other,
+              `SCAR` - Scar,
+              `MARK` - Mark,
               `OIC` - Offence in Custody
         orientation:
           type: string
