@@ -12,8 +12,6 @@ import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.context.ContextConfiguration
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NomisGateway
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffenderSearchGateway
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ProbationOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.generateTestOffence
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Identifiers
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Person
@@ -27,8 +25,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApiError
 )
 internal class GetOffencesForPersonServiceTest(
   @MockBean val nomisGateway: NomisGateway,
-  @MockBean val prisonerOffenderSearchGateway: PrisonerOffenderSearchGateway,
-  @MockBean val probationOffenderSearchGateway: ProbationOffenderSearchGateway,
+  @MockBean val getPersonService: GetPersonService,
   @MockBean val nDeliusGateway: NDeliusGateway,
   private val getOffencesForPersonService: GetOffencesForPersonService,
 ) : DescribeSpec(
@@ -42,19 +39,21 @@ internal class GetOffencesForPersonServiceTest(
     val probationOffence1 = generateTestOffence(description = "Probation offence 1", hoCode = "05800", statuteCode = null)
     val probationOffence2 = generateTestOffence(description = "Probation offence 2", hoCode = "05801", statuteCode = null)
     val probationOffence3 = generateTestOffence(description = "Probation offence 3", hoCode = "05802", statuteCode = null)
+    val personFromPrisonOffenderSearch = Person(firstName = "Chandler", lastName = "Bing", identifiers = Identifiers(nomisNumber = prisonerNumber))
+    val personFromProbationOffenderSearch = Person(firstName = "Chandler", lastName = "ProbationBing", identifiers = Identifiers(deliusCrn = nDeliusCRN))
 
     beforeEach {
+      Mockito.reset(getPersonService)
       Mockito.reset(nomisGateway)
       Mockito.reset(nDeliusGateway)
-      Mockito.reset(probationOffenderSearchGateway)
-      Mockito.reset(prisonerOffenderSearchGateway)
 
-      whenever(prisonerOffenderSearchGateway.getPersons(pncId = pncId)).thenReturn(
-        Response(data = listOf(Person(firstName = "Chandler", lastName = "Bing", identifiers = Identifiers(nomisNumber = prisonerNumber)))),
-      )
-
-      whenever(probationOffenderSearchGateway.getPerson(pncId = pncId)).thenReturn(
-        Response(data = Person(firstName = "Chandler", lastName = "ProbationBing", identifiers = Identifiers(deliusCrn = nDeliusCRN))),
+      whenever(getPersonService.execute(pncId = pncId)).thenReturn(
+        Response(
+          data = mapOf(
+            "prisonerOffenderSearch" to personFromPrisonOffenderSearch,
+            "probationOffenderSearch" to personFromProbationOffenderSearch,
+          ),
+        ),
       )
 
       whenever(nomisGateway.getOffencesForPerson(prisonerNumber)).thenReturn(
@@ -79,10 +78,12 @@ internal class GetOffencesForPersonServiceTest(
     }
 
     it("Returns probation offences only when Prison Offender Search couldn't find the person by PNC ID") {
-      whenever(prisonerOffenderSearchGateway.getPersons(pncId = pncId)).thenReturn(
+      whenever(getPersonService.execute(pncId = pncId)).thenReturn(
         Response(
-          data = emptyList(),
-          errors = emptyList(),
+          data = mapOf(
+            "prisonerOffenderSearch" to null,
+            "probationOffenderSearch" to personFromProbationOffenderSearch,
+          ),
         ),
       )
 
@@ -92,10 +93,12 @@ internal class GetOffencesForPersonServiceTest(
     }
 
     it("Returns prison offences only when Probation Offender Search couldn't find the person by PNC ID") {
-      whenever(probationOffenderSearchGateway.getPerson(pncId = pncId)).thenReturn(
+      whenever(getPersonService.execute(pncId = pncId)).thenReturn(
         Response(
-          data = null,
-          errors = emptyList(),
+          data = mapOf(
+            "prisonerOffenderSearch" to personFromPrisonOffenderSearch,
+            "probationOffenderSearch" to null,
+          ),
         ),
       )
 
@@ -104,16 +107,10 @@ internal class GetOffencesForPersonServiceTest(
       result.shouldBe(Response(data = listOf(prisonOffence1, prisonOffence2, prisonOffence3)))
     }
 
-    it("retrieves prisoner ID from Prisoner Offender Search using a PNC ID") {
+    it("retrieves a person using a PNC ID") {
       getOffencesForPersonService.execute(pncId)
 
-      verify(prisonerOffenderSearchGateway, VerificationModeFactory.times(1)).getPersons(pncId = pncId)
-    }
-
-    it("retrieves nDelius CRN from Probation Offender Search using a PNC ID") {
-      getOffencesForPersonService.execute(pncId)
-
-      verify(probationOffenderSearchGateway, VerificationModeFactory.times(1)).getPerson(pncId = pncId)
+      verify(getPersonService, VerificationModeFactory.times(1)).execute(pncId = pncId)
     }
 
     it("retrieves offences from NOMIS using a prisoner number") {
@@ -145,22 +142,17 @@ internal class GetOffencesForPersonServiceTest(
 
     describe("when an upstream API returns an error when looking up a person from a PNC ID") {
       beforeEach {
-        whenever(prisonerOffenderSearchGateway.getPersons(pncId = pncId)).thenReturn(
+        whenever(getPersonService.execute(pncId = pncId)).thenReturn(
           Response(
-            data = emptyList(),
+            data = mapOf(
+              "prisonerOffenderSearch" to null,
+              "probationOffenderSearch" to null,
+            ),
             errors = listOf(
               UpstreamApiError(
                 causedBy = UpstreamApi.PRISONER_OFFENDER_SEARCH,
                 type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
               ),
-            ),
-          ),
-        )
-
-        whenever(probationOffenderSearchGateway.getPerson(pncId = pncId)).thenReturn(
-          Response(
-            data = null,
-            errors = listOf(
               UpstreamApiError(
                 causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH,
                 type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
