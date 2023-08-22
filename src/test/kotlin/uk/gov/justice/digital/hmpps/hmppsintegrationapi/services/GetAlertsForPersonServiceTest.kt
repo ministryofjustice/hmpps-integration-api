@@ -61,24 +61,47 @@ internal class GetAlertsForPersonServiceTest(
       verify(nomisGateway, VerificationModeFactory.times(1)).getAlertsForPerson(prisonerNumber)
     }
 
-    it("returns errors when person alerts cannot be found by PNC ID") {
-      listOf(UpstreamApi.PRISONER_OFFENDER_SEARCH, UpstreamApi.NOMIS).forEach {
+    describe("when an upstream API returns an error when looking up a person by a PNC ID") {
+      beforeEach {
         whenever(prisonerOffenderSearchGateway.getPersons(pncId = pncId)).thenReturn(
           Response(
             data = emptyList(),
             errors = listOf(
               UpstreamApiError(
-                causedBy = it,
+                causedBy = UpstreamApi.PRISONER_OFFENDER_SEARCH,
                 type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
               ),
             ),
           ),
         )
+      }
 
+      it("records upstream API errors") {
         val response = getAlertsForPersonService.execute(pncId)
-
         response.errors.shouldHaveSize(1)
       }
+
+      it("does not get alerts from Nomis") {
+        getAlertsForPersonService.execute(pncId)
+        verify(nomisGateway, VerificationModeFactory.times(0)).getAlertsForPerson(id = prisonerNumber)
+      }
+    }
+
+    it("records errors when it cannot find alerts for a person") {
+      whenever(nomisGateway.getAlertsForPerson(id = prisonerNumber)).thenReturn(
+        Response(
+          data = emptyList(),
+          errors = listOf(
+            UpstreamApiError(
+              causedBy = UpstreamApi.NOMIS,
+              type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+            ),
+          ),
+        ),
+      )
+
+      val response = getAlertsForPersonService.execute(pncId)
+      response.errors.shouldHaveSize(1)
     }
   },
 )

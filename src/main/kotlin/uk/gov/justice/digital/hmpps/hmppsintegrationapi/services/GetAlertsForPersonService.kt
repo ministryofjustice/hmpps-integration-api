@@ -14,17 +14,16 @@ class GetAlertsForPersonService(
 ) {
   fun execute(pncId: String): Response<List<Alert>> {
     val responseFromPrisonerOffenderSearch = prisonerOffenderSearchGateway.getPersons(pncId = pncId)
+    val nomisNumber = responseFromPrisonerOffenderSearch.data.firstOrNull()?.identifiers?.nomisNumber
+    var nomisAlerts: Response<List<Alert>> = Response(data = emptyList())
 
-    if (responseFromPrisonerOffenderSearch.errors.isNotEmpty()) {
-      return Response(emptyList(), responseFromPrisonerOffenderSearch.errors)
+    if (nomisNumber != null) {
+      nomisAlerts = nomisGateway.getAlertsForPerson(nomisNumber)
     }
 
-    val nomisAlerts = nomisGateway.getAlertsForPerson(responseFromPrisonerOffenderSearch.data.first().identifiers.nomisNumber!!)
-
-    if (nomisAlerts.errors.isNotEmpty()) {
-      return Response(emptyList(), nomisAlerts.errors)
-    }
-
-    return Response(data = nomisAlerts.data)
+    return Response(
+      data = nomisAlerts.data,
+      errors = nomisAlerts.errors + responseFromPrisonerOffenderSearch.errors,
+    )
   }
 }
