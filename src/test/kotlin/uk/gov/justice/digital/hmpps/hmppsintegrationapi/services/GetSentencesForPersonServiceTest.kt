@@ -30,8 +30,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Term as Integrati
 )
 internal class GetSentencesForPersonServiceTest(
   @MockBean val nomisGateway: NomisGateway,
-  @MockBean val prisonerOffenderSearchGateway: PrisonerOffenderSearchGateway,
-  @MockBean val probationOffenderSearchGateway: ProbationOffenderSearchGateway,
+  @MockBean val getPersonService: GetPersonService,
   @MockBean val nDeliusGateway: NDeliusGateway,
   private val getSentencesForPersonService: GetSentencesForPersonService,
 ) : DescribeSpec(
@@ -45,15 +44,23 @@ internal class GetSentencesForPersonServiceTest(
     beforeEach {
       Mockito.reset(nomisGateway)
       Mockito.reset(nDeliusGateway)
-      Mockito.reset(prisonerOffenderSearchGateway)
-      Mockito.reset(probationOffenderSearchGateway)
+      Mockito.reset(getPersonService)
 
-      whenever(prisonerOffenderSearchGateway.getPersons(pncId = pncId)).thenReturn(
-        Response(data = listOf(Person(firstName = "Chandler", lastName = "Bing", identifiers = Identifiers(nomisNumber = prisonerNumber)))),
-      )
-
-      whenever(probationOffenderSearchGateway.getPerson(pncId = pncId)).thenReturn(
-        Response(data = Person(firstName = "Chandler", lastName = "ProbationBing", identifiers = Identifiers(deliusCrn = nDeliusCRN))),
+      whenever(getPersonService.execute(pncId = pncId)).thenReturn(
+        Response(
+          data = mapOf(
+            "prisonerOffenderSearch" to Person(
+              firstName = "Chandler",
+              lastName = "Bing",
+              identifiers = Identifiers(nomisNumber = prisonerNumber)
+            ),
+            "probationOffenderSearch" to Person(
+              firstName = "Chandler",
+              lastName = "ProbationBing",
+              identifiers = Identifiers(deliusCrn = nDeliusCRN)
+            ),
+          )
+        )
       )
 
       whenever(nomisGateway.getBookingIdsForPerson(prisonerNumber)).thenReturn(
@@ -148,20 +155,29 @@ internal class GetSentencesForPersonServiceTest(
     }
 
     describe("probation and prisoner offender search") {
-      it("retrieves prisoner ID from Prisoner Offender Search using a PNC ID") {
+      it("retrieves the GetPerson service with a PNC ID") {
         getSentencesForPersonService.execute(pncId)
 
-        verify(prisonerOffenderSearchGateway, VerificationModeFactory.times(1)).getPersons(pncId = pncId)
+        verify(getPersonService, VerificationModeFactory.times(1)).execute(pncId = pncId)
       }
 
-      it("retrieves nDelius CRN from Probation Offender Search using a PNC ID") {
-        getSentencesForPersonService.execute(pncId)
+      it("records errors from upstream APIs") {
+        whenever(getPersonService.execute(pncId = pncId)).thenReturn(
+          Response(
+            data = mapOf(
+              "prisonerOffenderSearch" to null,
+              "probationOffenderSearch" to null,
+            ),
+            errors = listOf(
+              UpstreamApiError(
+                causedBy = UpstreamApi.PRISONER_OFFENDER_SEARCH,
+                type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+              ),
+            ),
+          ),
+        )
 
-        verify(probationOffenderSearchGateway, VerificationModeFactory.times(1)).getPerson(pncId = pncId)
-      }
-
-      it("returns errors when a person cannot be found by PNC ID in prisoner offender search") {
-        whenever(prisonerOffenderSearchGateway.getPersons(pncId = pncId)).thenReturn(
+        whenever(nomisGateway.getSentencesForBooking(id = firstBookingId)).thenReturn(
           Response(
             data = emptyList(),
             errors = listOf(
@@ -173,89 +189,162 @@ internal class GetSentencesForPersonServiceTest(
           ),
         )
 
+
         val response = getSentencesForPersonService.execute(pncId)
 
-        response.errors.shouldHaveSize(1)
+        response.errors.shouldHaveSize(3)
       }
 
-      it("returns errors when a person cannot be found by a PNC ID in probation offender search") {
-        whenever(probationOffenderSearchGateway.getPerson(pncId = pncId)).thenReturn(
-          Response(
-            data = null,
-            errors = listOf(
-              UpstreamApiError(
-                causedBy = UpstreamApi.NDELIUS,
-                type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+      describe("Nomis sentence search") {
+        it("retrieves bookind Ids for a person from Nomis using a Nomis number") {
+          getSentencesForPersonService.execute(pncId)
+
+          verify(nomisGateway, VerificationModeFactory.times(1)).getBookingIdsForPerson(id = prisonerNumber)
+        }
+
+        it("retrieves all sentences from Nomis for a PNC Id") {
+          getSentencesForPersonService.execute(pncId)
+
+          verify(nomisGateway, VerificationModeFactory.times(1)).getSentencesForBooking(firstBookingId)
+          verify(nomisGateway, VerificationModeFactory.times(1)).getSentencesForBooking(secondBookingId)
+        }
+
+        it("records an error when no sentence was found in Nomis for a Booking Id") {
+          whenever(nomisGateway.getBookingIdsForPerson(prisonerNumber)).thenReturn(
+            Response(
+              data = emptyList(),
+              errors = listOf(
+                UpstreamApiError(
+                  causedBy = UpstreamApi.NOMIS,
+                  type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+                ),
+              ),
+            ),
+          )
+
+          val response = getSentencesForPersonService.execute(pncId)
+
+          response.errors.shouldHaveSize(1)
+        }
+      }
+
+      describe("NDelius sentence search") {
+        it("retrieves sentences from nDelius using a CRN") {
+          getSentencesForPersonService.execute(pncId)
+
+          verify(nDeliusGateway, VerificationModeFactory.times(1)).getSentencesForPerson(nDeliusCRN)
+        }
+
+        it("records an error when no sentence was found for a nDeliusCRN") {
+          whenever(nDeliusGateway.getSentencesForPerson(nDeliusCRN)).thenReturn(
+            Response(
+              data = emptyList(),
+              errors = listOf(
+                UpstreamApiError(
+                  causedBy = UpstreamApi.NDELIUS,
+                  type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+                ),
+              ),
+            ),
+          )
+
+          val response = getSentencesForPersonService.execute(pncId)
+
+          response.errors.shouldHaveSize(1)
+        }
+      }
+
+      it("combines and returns sentences from Nomis and nDelius") {
+        val response = getSentencesForPersonService.execute(pncId)
+
+        response.data.shouldBe(
+          listOf(
+            IntegrationApiSentence(
+              dateOfSentencing = LocalDate.parse("2001-01-01"),
+              isActive = true,
+              listOf(
+                IntegrationApiTerm(
+                  years = 15,
+                  months = 6,
+                  weeks = 2,
+                  days = null,
+                  hours = null,
+                ),
+                IntegrationApiTerm(
+                  years = null,
+                  months = 6,
+                  weeks = 2,
+                  days = 5,
+                  hours = null,
+                ),
+              ),
+            ),
+            IntegrationApiSentence(
+              dateOfSentencing = LocalDate.parse("2002-01-01"),
+              isActive = null,
+              listOf(
+                IntegrationApiTerm(
+                  years = 10,
+                  months = null,
+                  weeks = 5,
+                  days = 5,
+                  hours = null,
+                ),
+                IntegrationApiTerm(
+                  years = 25,
+                  months = null,
+                  weeks = 5,
+                  days = 4,
+                  hours = null,
+                ),
+              ),
+            ),
+
+            IntegrationApiSentence(
+              dateOfSentencing = LocalDate.parse("2003-01-01"),
+              isActive = true,
+              terms = listOf(
+                IntegrationApiTerm(
+                  years = 4,
+                  months = null,
+                  weeks = null,
+                  days = null,
+                  hours = null,
+                ),
+                IntegrationApiTerm(
+                  years = null,
+                  months = null,
+                  weeks = 12,
+                  days = null,
+                  hours = null,
+                ),
+              ),
+            ),
+            IntegrationApiSentence(
+              dateOfSentencing = LocalDate.parse("2004-01-01"),
+              isActive = false,
+              terms = listOf(
+                IntegrationApiTerm(
+                  years = null,
+                  months = null,
+                  weeks = 18,
+                  days = null,
+                  hours = null,
+                ),
+                IntegrationApiTerm(
+                  years = null,
+                  months = null,
+                  weeks = null,
+                  days = null,
+                  hours = 24,
+                ),
               ),
             ),
           ),
         )
-
-        val response = getSentencesForPersonService.execute(pncId)
-
-        response.errors.shouldHaveSize(1)
-      }
-    }
-
-    describe("Nomis sentence search") {
-      it("retrieves bookind Ids for a person from Nomis using a Nomis number") {
-        getSentencesForPersonService.execute(pncId)
-
-        verify(nomisGateway, VerificationModeFactory.times(1)).getBookingIdsForPerson(id = prisonerNumber)
       }
 
-      it("records errors when no booking Ids are found for a Nomis number") {
-        whenever(nomisGateway.getBookingIdsForPerson(prisonerNumber)).thenReturn(
-          Response(
-            data = emptyList(),
-            errors = listOf(
-              UpstreamApiError(
-                causedBy = UpstreamApi.NOMIS,
-                type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-              ),
-            ),
-          ),
-        )
-
-        val response = getSentencesForPersonService.execute(pncId)!!
-
-        response.errors.shouldHaveSize(1)
-      }
-
-      it("retrieves all sentences from Nomis for a PNC Id") {
-        getSentencesForPersonService.execute(pncId)
-
-        verify(nomisGateway, VerificationModeFactory.times(1)).getSentencesForBooking(firstBookingId)
-        verify(nomisGateway, VerificationModeFactory.times(1)).getSentencesForBooking(secondBookingId)
-      }
-
-      it("records an error when no sentence was found in Nomis for a Booking Id") {
-        whenever(nomisGateway.getBookingIdsForPerson(prisonerNumber)).thenReturn(
-          Response(
-            data = emptyList(),
-            errors = listOf(
-              UpstreamApiError(
-                causedBy = UpstreamApi.NOMIS,
-                type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-              ),
-            ),
-          ),
-        )
-
-        val response = getSentencesForPersonService.execute(pncId)
-
-        response.errors.shouldHaveSize(1)
-      }
-    }
-
-    describe("NDelius sentence search") {
-      it("retrieves sentences from nDelius using a CRN") {
-        getSentencesForPersonService.execute(pncId)
-
-        verify(nDeliusGateway, VerificationModeFactory.times(1)).getSentencesForPerson(nDeliusCRN)
-      }
-
-      it("records an error when no sentence was found for a nDeliusCRN") {
+      it("returns an empty list when no sentences were found in Nomis and nDelius") {
         whenever(nDeliusGateway.getSentencesForPerson(nDeliusCRN)).thenReturn(
           Response(
             data = emptyList(),
@@ -268,130 +357,22 @@ internal class GetSentencesForPersonServiceTest(
           ),
         )
 
+        whenever(nomisGateway.getBookingIdsForPerson(prisonerNumber)).thenReturn(
+          Response(
+            data = emptyList(),
+            errors = listOf(
+              UpstreamApiError(
+                causedBy = UpstreamApi.NOMIS,
+                type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+              ),
+            ),
+          ),
+        )
+
         val response = getSentencesForPersonService.execute(pncId)
 
-        response.errors.shouldHaveSize(1)
+        response.data.shouldBe(emptyList())
       }
     }
-
-    it("combines and returns sentences from Nomis and nDelius") {
-      val response = getSentencesForPersonService.execute(pncId)
-
-      response.data.shouldBe(
-        listOf(
-          IntegrationApiSentence(
-            dateOfSentencing = LocalDate.parse("2001-01-01"),
-            isActive = true,
-            listOf(
-              IntegrationApiTerm(
-                years = 15,
-                months = 6,
-                weeks = 2,
-                days = null,
-                hours = null,
-              ),
-              IntegrationApiTerm(
-                years = null,
-                months = 6,
-                weeks = 2,
-                days = 5,
-                hours = null,
-              ),
-            ),
-          ),
-          IntegrationApiSentence(
-            dateOfSentencing = LocalDate.parse("2002-01-01"),
-            isActive = null,
-            listOf(
-              IntegrationApiTerm(
-                years = 10,
-                months = null,
-                weeks = 5,
-                days = 5,
-                hours = null,
-              ),
-              IntegrationApiTerm(
-                years = 25,
-                months = null,
-                weeks = 5,
-                days = 4,
-                hours = null,
-              ),
-            ),
-          ),
-
-          IntegrationApiSentence(
-            dateOfSentencing = LocalDate.parse("2003-01-01"),
-            isActive = true,
-            terms = listOf(
-              IntegrationApiTerm(
-                years = 4,
-                months = null,
-                weeks = null,
-                days = null,
-                hours = null,
-              ),
-              IntegrationApiTerm(
-                years = null,
-                months = null,
-                weeks = 12,
-                days = null,
-                hours = null,
-              ),
-            ),
-          ),
-          IntegrationApiSentence(
-            dateOfSentencing = LocalDate.parse("2004-01-01"),
-            isActive = false,
-            terms = listOf(
-              IntegrationApiTerm(
-                years = null,
-                months = null,
-                weeks = 18,
-                days = null,
-                hours = null,
-              ),
-              IntegrationApiTerm(
-                years = null,
-                months = null,
-                weeks = null,
-                days = null,
-                hours = 24,
-              ),
-            ),
-          ),
-        ),
-      )
-    }
-
-    it("returns an empty list when no sentences were found in Nomis and nDelius") {
-      whenever(nDeliusGateway.getSentencesForPerson(nDeliusCRN)).thenReturn(
-        Response(
-          data = emptyList(),
-          errors = listOf(
-            UpstreamApiError(
-              causedBy = UpstreamApi.NDELIUS,
-              type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-            ),
-          ),
-        ),
-      )
-
-      whenever(nomisGateway.getBookingIdsForPerson(prisonerNumber)).thenReturn(
-        Response(
-          data = emptyList(),
-          errors = listOf(
-            UpstreamApiError(
-              causedBy = UpstreamApi.NOMIS,
-              type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-            ),
-          ),
-        ),
-      )
-
-      val response = getSentencesForPersonService.execute(pncId)
-
-      response.data.shouldBe(emptyList())
-    }
-  },
+  }
 )
