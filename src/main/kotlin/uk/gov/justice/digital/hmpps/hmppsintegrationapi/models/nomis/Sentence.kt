@@ -13,6 +13,7 @@ data class Sentence(
     dateOfSentencing = this.sentenceDate,
     description = this.sentenceTypeDescription,
     isActive = sentenceStatusToBoolean(this.sentenceStatus),
+    isCustodial = true,
     terms = this.terms.map { it.toTerm() },
   )
 }

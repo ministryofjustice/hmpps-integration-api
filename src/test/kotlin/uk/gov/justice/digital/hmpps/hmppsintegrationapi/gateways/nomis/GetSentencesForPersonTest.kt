@@ -47,7 +47,7 @@ class GetSentencesForPersonTest(
           [
             {
               "bookingId": 1,
-            }, 
+            },
             {
               "bookingId": 2
             }
@@ -97,6 +97,7 @@ class GetSentencesForPersonTest(
               dateOfSentencing = LocalDate.parse("2001-01-01"),
               description = "ORA CJA03 Standard Determinate Sentence",
               isActive = true,
+              isCustodial = true,
               terms = listOf(
                 IntegrationApiTerm(
                   years = 1,
