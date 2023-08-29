@@ -4,7 +4,6 @@ import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
-import kotlinx.coroutines.isActive
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory
 import org.mockito.kotlin.verify
@@ -67,11 +66,13 @@ class GetSentencesForPersonTest(
           listOf(
             IntegrationApiSentence(
               dateOfSentencing = LocalDate.parse("2009-07-07"),
+              description = "CJA - Community Order",
               isActive = false,
               terms = listOf(IntegrationApiTerm(months = 12)),
             ),
             IntegrationApiSentence(
               dateOfSentencing = LocalDate.parse("2009-09-01"),
+              description = "CJA - Suspended Sentence Order",
               isActive = true,
               terms = listOf(IntegrationApiTerm(years = 12)),
             ),

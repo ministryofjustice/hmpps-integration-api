@@ -104,8 +104,8 @@ class SupervisionsTest : DescribeSpec(
       it("maps one-to-one attributes to integration API sentence attributes") {
         val supervisions = Supervisions(
           listOf(
-            Supervision(active = true, sentence = NDeliusSentence(date = "2009-07-07")),
-            Supervision(active = false, sentence = NDeliusSentence(date = "2010-07-07")),
+            Supervision(active = true, sentence = NDeliusSentence(date = "2009-07-07", description = "CJA - Community Order")),
+            Supervision(active = false, sentence = NDeliusSentence(date = "2010-07-07", description = "CJA - Suspended Sentence Order")),
           ),
         )
 
@@ -113,8 +113,8 @@ class SupervisionsTest : DescribeSpec(
 
         integrationApiSentences.shouldBe(
           listOf(
-            IntegrationApiSentence(dateOfSentencing = LocalDate.parse("2009-07-07"), isActive = true),
-            IntegrationApiSentence(dateOfSentencing = LocalDate.parse("2010-07-07"), isActive = false),
+            IntegrationApiSentence(dateOfSentencing = LocalDate.parse("2009-07-07"), isActive = true, description = "CJA - Community Order"),
+            IntegrationApiSentence(dateOfSentencing = LocalDate.parse("2010-07-07"), isActive = false, description = "CJA - Suspended Sentence Order"),
           ),
         )
       }
@@ -174,6 +174,7 @@ class SupervisionsTest : DescribeSpec(
         for (integrationApiSentence in integrationApiSentences) {
           integrationApiSentence.dateOfSentencing.shouldBeNull()
           integrationApiSentence.isActive.shouldBeNull()
+          integrationApiSentence.description.shouldBeNull()
           integrationApiSentence.terms.shouldBe(listOf(Term()))
         }
       }

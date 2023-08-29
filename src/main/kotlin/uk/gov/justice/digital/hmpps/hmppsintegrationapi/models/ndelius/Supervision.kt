@@ -7,11 +7,11 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Sentence as Integ
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.Sentence as NDeliusSentence
 
 data class Supervision(
-  val mainOffence: MainOffence = MainOffence(),
+  val active: Boolean? = null,
   val additionalOffences: List<AdditionalOffence> = listOf(AdditionalOffence()),
   val courtAppearances: List<CourtAppearance> = listOf(CourtAppearance()),
+  val mainOffence: MainOffence = MainOffence(),
   val sentence: NDeliusSentence = NDeliusSentence(),
-  val active: Boolean? = null,
 ) {
   fun toOffences(): List<Offence> {
     val courtDates = this.courtAppearances.mapNotNull { LocalDate.parse(it.date, DateTimeFormatter.ISO_OFFSET_DATE_TIME) }
@@ -21,6 +21,7 @@ data class Supervision(
   fun toSentence(): IntegrationApiSentence {
     return IntegrationApiSentence(
       dateOfSentencing = if (!this.sentence.date.isNullOrEmpty()) LocalDate.parse(this.sentence.date) else null,
+      description = this.sentence.description,
       isActive = this.active,
       terms = this.sentence.toTerm(),
     )
