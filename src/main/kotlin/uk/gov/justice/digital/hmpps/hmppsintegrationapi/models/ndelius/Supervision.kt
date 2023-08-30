@@ -8,7 +8,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.Sentence 
 
 data class Supervision(
   val active: Boolean? = null,
-  val custodial: Boolean? = null,
+  val custodial: Boolean,
   val additionalOffences: List<AdditionalOffence> = listOf(AdditionalOffence()),
   val courtAppearances: List<CourtAppearance> = listOf(CourtAppearance()),
   val mainOffence: MainOffence = MainOffence(),

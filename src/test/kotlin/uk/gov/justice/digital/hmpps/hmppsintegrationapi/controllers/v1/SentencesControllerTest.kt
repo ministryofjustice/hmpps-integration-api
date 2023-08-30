@@ -225,6 +225,7 @@ internal class SentencesControllerTest(
             List(20) {
               IntegrationApiSentence(
                 dateOfSentencing = LocalDate.parse("2023-01-01"),
+                isCustodial = true,
               )
             },
           ),

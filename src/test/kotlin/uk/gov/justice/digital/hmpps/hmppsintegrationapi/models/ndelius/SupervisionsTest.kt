@@ -17,11 +17,13 @@ class SupervisionsTest : DescribeSpec(
           val supervisions = Supervisions(
             supervisions = listOf(
               Supervision(
+                custodial = true,
                 mainOffence = MainOffence(description = "foobar", code = "05800", date = "2000-01-02"),
                 additionalOffences = listOf(AdditionalOffence(description = "additionalFoo", code = "12345", date = "2001-01-01")),
                 courtAppearances = listOf(CourtAppearance(date = "2009-07-07T00:00:00+01:00")),
               ),
               Supervision(
+                custodial = true,
                 mainOffence = MainOffence(description = "barbaz", code = "05800", date = "2003-03-03"),
                 additionalOffences = listOf(AdditionalOffence(description = "additionalFoo2", code = "98765", date = "2001-02-02")),
                 courtAppearances = listOf(CourtAppearance(date = "2010-07-07T00:00:00+01:00")),
@@ -67,11 +69,13 @@ class SupervisionsTest : DescribeSpec(
           val supervisions = Supervisions(
             supervisions = listOf(
               Supervision(
+                custodial = true,
                 mainOffence = MainOffence(description = "foobar", code = "05800", date = "2019-09-09"),
                 additionalOffences = emptyList(),
                 courtAppearances = listOf(CourtAppearance(date = "2009-07-07T00:00:00+01:00")),
               ),
               Supervision(
+                custodial = true,
                 mainOffence = MainOffence(description = "barbaz", code = "05800", date = "2020-02-03"),
                 additionalOffences = emptyList(),
                 courtAppearances = listOf(CourtAppearance(date = "2010-07-07T00:00:00+01:00")),
@@ -104,8 +108,8 @@ class SupervisionsTest : DescribeSpec(
       it("maps one-to-one attributes to integration API sentence attributes") {
         val supervisions = Supervisions(
           listOf(
-            Supervision(active = true, sentence = NDeliusSentence(date = "2009-07-07", description = "CJA - Community Order")),
-            Supervision(active = false, sentence = NDeliusSentence(date = "2010-07-07", description = "CJA - Suspended Sentence Order")),
+            Supervision(active = true, custodial = true, sentence = NDeliusSentence(date = "2009-07-07", description = "CJA - Community Order")),
+            Supervision(active = false, custodial = true, sentence = NDeliusSentence(date = "2010-07-07", description = "CJA - Suspended Sentence Order")),
           ),
         )
 
@@ -113,8 +117,8 @@ class SupervisionsTest : DescribeSpec(
 
         integrationApiSentences.shouldBe(
           listOf(
-            IntegrationApiSentence(dateOfSentencing = LocalDate.parse("2009-07-07"), isActive = true, description = "CJA - Community Order"),
-            IntegrationApiSentence(dateOfSentencing = LocalDate.parse("2010-07-07"), isActive = false, description = "CJA - Suspended Sentence Order"),
+            IntegrationApiSentence(dateOfSentencing = LocalDate.parse("2009-07-07"), isActive = true, isCustodial = true, description = "CJA - Community Order"),
+            IntegrationApiSentence(dateOfSentencing = LocalDate.parse("2010-07-07"), isActive = false, isCustodial = true, description = "CJA - Suspended Sentence Order"),
           ),
         )
       }
@@ -122,8 +126,8 @@ class SupervisionsTest : DescribeSpec(
       it("maps nDelius sentence length to Integration API terms") {
         val supervisions = Supervisions(
           listOf(
-            Supervision(sentence = NDeliusSentence(date = "2009-07-07", length = 11, lengthUnits = "Months")),
-            Supervision(sentence = NDeliusSentence(date = "2010-07-07", length = 2, lengthUnits = "Years")),
+            Supervision(custodial = true, sentence = NDeliusSentence(date = "2009-07-07", length = 11, lengthUnits = "Months")),
+            Supervision(custodial = false, sentence = NDeliusSentence(date = "2010-07-07", length = 2, lengthUnits = "Years")),
           ),
         )
 
@@ -134,6 +138,7 @@ class SupervisionsTest : DescribeSpec(
             IntegrationApiSentence(
               dateOfSentencing = LocalDate.parse("2009-07-07"),
               isActive = null,
+              isCustodial = true,
               terms = listOf(
                 Term(
                   years = null,
@@ -147,6 +152,7 @@ class SupervisionsTest : DescribeSpec(
             IntegrationApiSentence(
               dateOfSentencing = LocalDate.parse("2010-07-07"),
               isActive = null,
+              isCustodial = false,
               terms = listOf(
                 Term(
                   years = 2,
@@ -164,8 +170,8 @@ class SupervisionsTest : DescribeSpec(
       it("deals with NULL values") {
         val supervisions = Supervisions(
           listOf(
-            Supervision(),
-            Supervision(),
+            Supervision(custodial = true),
+            Supervision(custodial = true),
           ),
         )
 
