@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.generateTestSentence
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApiError
@@ -23,7 +24,6 @@ import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 import java.time.LocalDate
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Sentence as IntegrationApiSentence
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Term as IntegrationApiTerm
 
 @WebMvcTest(controllers = [SentencesController::class])
 internal class SentencesControllerTest(
@@ -41,52 +41,8 @@ internal class SentencesControllerTest(
         whenever(getSentencesForPersonService.execute(pncId)).thenReturn(
           Response(
             data = listOf(
-              IntegrationApiSentence(
-                dateOfSentencing = LocalDate.parse("1990-01-01"),
-                description = "CJA - Community Order",
-                isActive = true,
-                isCustodial = true,
-                terms = listOf(
-                  IntegrationApiTerm(
-                    hours = 2,
-                  ),
-                  IntegrationApiTerm(
-                    years = 25,
-                  ),
-                ),
-              ),
-              IntegrationApiSentence(
-                dateOfSentencing = LocalDate.parse("1991-01-01"),
-                description = "ORA CJA03 Standard Determinate Sentence",
-                isActive = false,
-                isCustodial = true,
-                terms = listOf(
-                  IntegrationApiTerm(
-                    years = 15,
-                    months = 6,
-                    weeks = 2,
-                  ),
-                  IntegrationApiTerm(
-                    months = 6,
-                    weeks = 2,
-                    days = 5,
-                  ),
-                ),
-              ),
-              IntegrationApiSentence(
-                dateOfSentencing = LocalDate.parse("1992-01-01"),
-                description = "CJA - Suspended Sentence Order",
-                isActive = null,
-                isCustodial = true,
-                terms = listOf(
-                  IntegrationApiTerm(
-                    years = 15,
-                  ),
-                  IntegrationApiTerm(
-                    weeks = 2,
-                  ),
-                ),
-              ),
+              generateTestSentence(description = "Some description 1"),
+              generateTestSentence(description = "Some description 2"),
             ),
           ),
         )
@@ -109,74 +65,52 @@ internal class SentencesControllerTest(
 
         result.response.contentAsString.shouldContain(
           """
-          [
-            {
-                "dateOfSentencing": "1990-01-01",
-                "description": "CJA - Community Order",
+            [
+              {
+                "dateOfSentencing": null,
+                "description": "Some description 1",
                 "isActive": true,
                 "isCustodial": true,
                 "terms": [
-                    {
-                        "years": null,
-                        "months": null,
-                        "weeks": null,
-                        "days": null,
-                        "hours": 2
-                    },
-                    {
-                        "years": 25,
-                        "months": null,
-                        "weeks": null,
-                        "days": null,
-                        "hours": null
-                    }
+                  {
+                    "years": null,
+                    "months": null,
+                    "weeks": null,
+                    "days": null,
+                    "hours": 2
+                  },
+                  {
+                    "years": 25,
+                    "months": null,
+                    "weeks": null,
+                    "days": null,
+                    "hours": null
+                  }
                 ]
-            },
-            {
-                "dateOfSentencing": "1991-01-01",
-                "description": "ORA CJA03 Standard Determinate Sentence",
-                "isActive": false,
+              },
+              {
+                "dateOfSentencing": null,
+                "description": "Some description 2",
+                "isActive": true,
                 "isCustodial": true,
                 "terms": [
-                    {
-                        "years": 15,
-                        "months": 6,
-                        "weeks": 2,
-                        "days": null,
-                        "hours": null
-                    },
-                    {
-                        "years": null,
-                        "months": 6,
-                        "weeks": 2,
-                        "days": 5,
-                        "hours": null
-                    }
+                  {
+                    "years": null,
+                    "months": null,
+                    "weeks": null,
+                    "days": null,
+                    "hours": 2
+                  },
+                  {
+                    "years": 25,
+                    "months": null,
+                    "weeks": null,
+                    "days": null,
+                    "hours": null
+                  }
                 ]
-            },
-            {
-                "dateOfSentencing": "1992-01-01",
-                "description": "CJA - Suspended Sentence Order",
-                "isActive": null,
-                "isCustodial": true,
-                "terms": [
-                    {
-                        "years": 15,
-                        "months": null,
-                        "weeks": null,
-                        "days": null,
-                        "hours": null
-                    },
-                    {
-                        "years": null,
-                        "months": null,
-                        "weeks": 2,
-                        "days": null,
-                        "hours": null
-                    }
-                ]
-            }
-        ]
+              }
+            ]
           """.removeWhitespaceAndNewlines(),
         )
       }
