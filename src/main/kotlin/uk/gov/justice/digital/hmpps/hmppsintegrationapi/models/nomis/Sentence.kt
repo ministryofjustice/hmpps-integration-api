@@ -4,6 +4,7 @@ import java.time.LocalDate
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Sentence as IntegrationApiSentence
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.Term as NomisTerm
 data class Sentence(
+  val fineAmount: Number? = null,
   val sentenceDate: LocalDate? = null,
   val sentenceStatus: String? = null,
   val sentenceTypeDescription: String? = null,
@@ -12,6 +13,7 @@ data class Sentence(
   fun toSentence(): IntegrationApiSentence = IntegrationApiSentence(
     dateOfSentencing = this.sentenceDate,
     description = this.sentenceTypeDescription,
+    fineAmount = this.fineAmount,
     isActive = sentenceStatusToBoolean(this.sentenceStatus),
     isCustodial = true,
     terms = this.terms.map { it.toTerm() },

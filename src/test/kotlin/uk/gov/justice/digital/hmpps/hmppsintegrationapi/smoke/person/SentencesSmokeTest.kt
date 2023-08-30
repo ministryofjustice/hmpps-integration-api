@@ -32,6 +32,7 @@ class SentencesSmokeTest : DescribeSpec(
       /*No example data for an hour is provided in the OpenAPI specification for the supervisions endpoint
       Prism by default returns the minimum value of a Java/Kotlin Int ~ AP/18/08/2023*/
       val hourMinIntValue = -2147483648
+      val fineAmountMinNumberValue = -1.7976931348623157E308
 
       response.statusCode().shouldBe(HttpStatus.OK.value())
       response.body().shouldEqualJson(
@@ -41,6 +42,7 @@ class SentencesSmokeTest : DescribeSpec(
             {
               "dateOfSentencing": "2019-08-24",
               "description": "string",
+              "fineAmount": $fineAmountMinNumberValue,
               "isActive": null,
               "isCustodial": true,
               "terms": [
@@ -56,6 +58,7 @@ class SentencesSmokeTest : DescribeSpec(
             {
               "dateOfSentencing": "2019-08-24",
               "description": "string",
+              "fineAmount": null,
               "isActive": true,
               "isCustodial": false,
               "terms": [

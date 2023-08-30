@@ -7,5 +7,6 @@ data class Sentence(
   val description: String? = null,
   val isActive: Boolean? = null,
   val isCustodial: Boolean,
+  val fineAmount: Number? = null,
   val terms: List<IntegrationApiTerm> = listOf(IntegrationApiTerm()),
 )
