@@ -59,6 +59,7 @@ class GetSentencesForPersonTest(
           someBookingId,
           """
           {
+            "fineAmount": "40",
             "sentenceDate": "2001-01-01",
             "sentenceStatus": "A",
             "sentenceTypeDescription": "ORA CJA03 Standard Determinate Sentence",
@@ -96,6 +97,7 @@ class GetSentencesForPersonTest(
             generateTestSentence(
               dateOfSentencing = LocalDate.parse("2001-01-01"),
               description = "ORA CJA03 Standard Determinate Sentence",
+              fineAmount = 40,
               isActive = true,
               isCustodial = true,
               terms = listOf(

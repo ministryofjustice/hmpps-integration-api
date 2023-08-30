@@ -71,6 +71,7 @@ internal class SentencesControllerTest(
                 "description": "Some description 1",
                 "isActive": true,
                 "isCustodial": true,
+                "fineAmount": null,
                 "terms": [
                   {
                     "years": null,
@@ -93,6 +94,7 @@ internal class SentencesControllerTest(
                 "description": "Some description 2",
                 "isActive": true,
                 "isCustodial": true,
+                "fineAmount": null,
                 "terms": [
                   {
                     "years": null,

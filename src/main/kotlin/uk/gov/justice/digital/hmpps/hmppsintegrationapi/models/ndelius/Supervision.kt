@@ -23,6 +23,7 @@ data class Supervision(
     return IntegrationApiSentence(
       dateOfSentencing = if (!this.sentence.date.isNullOrEmpty()) LocalDate.parse(this.sentence.date) else null,
       description = this.sentence.description,
+      fineAmount = null,
       isActive = this.active,
       isCustodial = this.custodial,
       terms = this.sentence.toTerm(),
