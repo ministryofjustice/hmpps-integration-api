@@ -40,6 +40,7 @@ class SentencesSmokeTest : DescribeSpec(
         {
           "data": [
             {
+              "dataSource": "NOMIS",
               "dateOfSentencing": "2019-08-24",
               "description": "string",
               "fineAmount": $fineAmountMinNumberValue,
@@ -56,6 +57,7 @@ class SentencesSmokeTest : DescribeSpec(
               ]
             },
             {
+              "dataSource": "NDELIUS",
               "dateOfSentencing": "2019-08-24",
               "description": "string",
               "fineAmount": null,

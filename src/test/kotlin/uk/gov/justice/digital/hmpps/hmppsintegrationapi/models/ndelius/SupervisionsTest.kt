@@ -6,6 +6,7 @@ import io.kotest.matchers.shouldBe
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.generateTestSentence
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Offence
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Term
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApi
 import java.time.LocalDate
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.Sentence as NDeliusSentence
 
@@ -117,8 +118,19 @@ class SupervisionsTest : DescribeSpec(
 
         integrationApiSentences.shouldBe(
           listOf(
-            generateTestSentence(dateOfSentencing = LocalDate.parse("2009-07-07"), description = "CJA - Community Order", terms = listOf(Term())),
-            generateTestSentence(dateOfSentencing = LocalDate.parse("2010-07-07"), isActive = false, description = "CJA - Suspended Sentence Order", terms = listOf(Term())),
+            generateTestSentence(
+              dataSource = UpstreamApi.NDELIUS,
+              dateOfSentencing = LocalDate.parse("2009-07-07"),
+              description = "CJA - Community Order",
+              terms = listOf(Term()),
+            ),
+            generateTestSentence(
+              dataSource = UpstreamApi.NDELIUS,
+              dateOfSentencing = LocalDate.parse("2010-07-07"),
+              isActive = false,
+              description = "CJA - Suspended Sentence Order",
+              terms = listOf(Term()),
+            ),
           ),
         )
       }

@@ -65,6 +65,7 @@ class GetSentencesForPersonTest(
         response.data.shouldBe(
           listOf(
             generateTestSentence(
+              dataSource = UpstreamApi.NDELIUS,
               dateOfSentencing = LocalDate.parse("2009-07-07"),
               description = "CJA - Community Order",
               isActive = false,
@@ -72,6 +73,7 @@ class GetSentencesForPersonTest(
               terms = listOf(IntegrationApiTerm(months = 12)),
             ),
             generateTestSentence(
+              dataSource = UpstreamApi.NDELIUS,
               dateOfSentencing = LocalDate.parse("2009-09-01"),
               description = "CJA - Suspended Sentence Order",
               isActive = true,

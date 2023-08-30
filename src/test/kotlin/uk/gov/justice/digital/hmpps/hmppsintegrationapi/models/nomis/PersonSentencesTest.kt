@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApi
 import java.time.LocalDate
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Sentence as IntegrationApiSentence
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Term as IntegrationApiTerm
@@ -210,7 +211,7 @@ class PersonSentencesTest : DescribeSpec(
       }
 
       it("deals with NULL values") {
-        val integrationApiSentence = IntegrationApiSentence(isCustodial = true)
+        val integrationApiSentence = IntegrationApiSentence(isCustodial = true, dataSource = UpstreamApi.NOMIS)
         integrationApiSentence.dateOfSentencing.shouldBeNull()
         integrationApiSentence.isActive.shouldBeNull()
         integrationApiSentence.fineAmount.shouldBeNull()
