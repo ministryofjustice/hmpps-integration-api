@@ -23,7 +23,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetSentencesFor
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 import java.time.LocalDate
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Sentence as IntegrationApiSentence
 
 @WebMvcTest(controllers = [SentencesController::class])
 internal class SentencesControllerTest(
@@ -67,6 +66,7 @@ internal class SentencesControllerTest(
           """
             [
               {
+                "dataSource": "NOMIS",
                 "dateOfSentencing": null,
                 "description": "Some description 1",
                 "isActive": true,
@@ -90,6 +90,7 @@ internal class SentencesControllerTest(
                 ]
               },
               {
+                "dataSource": "NOMIS",
                 "dateOfSentencing": null,
                 "description": "Some description 2",
                 "isActive": true,
@@ -159,7 +160,7 @@ internal class SentencesControllerTest(
           Response(
             data =
             List(20) {
-              IntegrationApiSentence(
+              generateTestSentence(
                 dateOfSentencing = LocalDate.parse("2023-01-01"),
                 isCustodial = true,
               )
