@@ -6,5 +6,6 @@ data class Sentence(
   val dateOfSentencing: LocalDate? = null,
   val description: String? = null,
   val isActive: Boolean? = null,
+  val isCustodial: Boolean,
   val terms: List<IntegrationApiTerm> = listOf(IntegrationApiTerm()),
 )

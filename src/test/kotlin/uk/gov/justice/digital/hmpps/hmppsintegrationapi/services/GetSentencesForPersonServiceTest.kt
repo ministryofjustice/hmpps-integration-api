@@ -76,6 +76,7 @@ internal class GetSentencesForPersonServiceTest(
               dateOfSentencing = LocalDate.parse("2001-01-01"),
               description = "ORA CJA03 Standard Determinate Sentence",
               isActive = true,
+              isCustodial = true,
               terms = listOf(
                 IntegrationApiTerm(
                   years = 15,
@@ -101,6 +102,7 @@ internal class GetSentencesForPersonServiceTest(
               dateOfSentencing = LocalDate.parse("2002-01-01"),
               description = "ORA CJA04 Stealing hamburgers from the local restaurant",
               isActive = null,
+              isCustodial = true,
               terms = listOf(
                 IntegrationApiTerm(
                   years = 10,
@@ -127,6 +129,7 @@ internal class GetSentencesForPersonServiceTest(
               dateOfSentencing = LocalDate.parse("2003-01-01"),
               description = "CJA - Community Order",
               isActive = true,
+              isCustodial = true,
               terms = listOf(
                 IntegrationApiTerm(
                   years = 4,
@@ -140,6 +143,7 @@ internal class GetSentencesForPersonServiceTest(
               dateOfSentencing = LocalDate.parse("2004-01-01"),
               description = "CJA - Suspended Sentence Order",
               isActive = false,
+              isCustodial = true,
               terms = listOf(
                 IntegrationApiTerm(
                   weeks = 18,
@@ -290,6 +294,7 @@ internal class GetSentencesForPersonServiceTest(
             dateOfSentencing = LocalDate.parse("2001-01-01"),
             description = "ORA CJA03 Standard Determinate Sentence",
             isActive = true,
+            isCustodial = true,
             terms = listOf(
               IntegrationApiTerm(
                 years = 15,
@@ -311,6 +316,7 @@ internal class GetSentencesForPersonServiceTest(
             dateOfSentencing = LocalDate.parse("2002-01-01"),
             description = "ORA CJA04 Stealing hamburgers from the local restaurant",
             isActive = null,
+            isCustodial = true,
             terms = listOf(
               IntegrationApiTerm(
                 years = 10,
@@ -333,6 +339,7 @@ internal class GetSentencesForPersonServiceTest(
             dateOfSentencing = LocalDate.parse("2003-01-01"),
             description = "CJA - Community Order",
             isActive = true,
+            isCustodial = true,
             terms = listOf(
               IntegrationApiTerm(
                 years = 4,
@@ -354,6 +361,7 @@ internal class GetSentencesForPersonServiceTest(
             dateOfSentencing = LocalDate.parse("2004-01-01"),
             description = "CJA - Suspended Sentence Order",
             isActive = false,
+            isCustodial = true,
             terms = listOf(
               IntegrationApiTerm(
                 years = null,

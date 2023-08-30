@@ -42,6 +42,7 @@ class SentencesSmokeTest : DescribeSpec(
               "dateOfSentencing": "2019-08-24",
               "description": "string",
               "isActive": null,
+              "isCustodial": true,
               "terms": [
                 {
                   "years": 1,
@@ -56,6 +57,7 @@ class SentencesSmokeTest : DescribeSpec(
               "dateOfSentencing": "2019-08-24",
               "description": "string",
               "isActive": true,
+              "isCustodial": false,
               "terms": [
                 {
                   "years": null,

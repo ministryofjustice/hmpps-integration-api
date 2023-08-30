@@ -23,6 +23,7 @@ class PersonSentencesTest : DescribeSpec(
 
         integrationApiSentence.dateOfSentencing.shouldBe(nomisSentence.sentenceDate)
         integrationApiSentence.isActive.shouldBe(true)
+        integrationApiSentence.isCustodial.shouldBe(true)
         integrationApiSentence.description.shouldBe(nomisSentence.sentenceTypeDescription)
       }
 
@@ -209,7 +210,7 @@ class PersonSentencesTest : DescribeSpec(
       }
 
       it("deals with NULL values") {
-        val integrationApiSentence = IntegrationApiSentence()
+        val integrationApiSentence = IntegrationApiSentence(isCustodial = true)
         integrationApiSentence.dateOfSentencing.shouldBeNull()
         integrationApiSentence.isActive.shouldBeNull()
         integrationApiSentence.terms.shouldBe(listOf(IntegrationApiTerm()))

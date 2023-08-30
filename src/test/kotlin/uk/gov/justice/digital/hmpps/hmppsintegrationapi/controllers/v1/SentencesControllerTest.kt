@@ -45,6 +45,7 @@ internal class SentencesControllerTest(
                 dateOfSentencing = LocalDate.parse("1990-01-01"),
                 description = "CJA - Community Order",
                 isActive = true,
+                isCustodial = true,
                 terms = listOf(
                   IntegrationApiTerm(
                     hours = 2,
@@ -58,6 +59,7 @@ internal class SentencesControllerTest(
                 dateOfSentencing = LocalDate.parse("1991-01-01"),
                 description = "ORA CJA03 Standard Determinate Sentence",
                 isActive = false,
+                isCustodial = true,
                 terms = listOf(
                   IntegrationApiTerm(
                     years = 15,
@@ -75,6 +77,7 @@ internal class SentencesControllerTest(
                 dateOfSentencing = LocalDate.parse("1992-01-01"),
                 description = "CJA - Suspended Sentence Order",
                 isActive = null,
+                isCustodial = true,
                 terms = listOf(
                   IntegrationApiTerm(
                     years = 15,
@@ -111,6 +114,7 @@ internal class SentencesControllerTest(
                 "dateOfSentencing": "1990-01-01",
                 "description": "CJA - Community Order",
                 "isActive": true,
+                "isCustodial": true,
                 "terms": [
                     {
                         "years": null,
@@ -132,6 +136,7 @@ internal class SentencesControllerTest(
                 "dateOfSentencing": "1991-01-01",
                 "description": "ORA CJA03 Standard Determinate Sentence",
                 "isActive": false,
+                "isCustodial": true,
                 "terms": [
                     {
                         "years": 15,
@@ -153,6 +158,7 @@ internal class SentencesControllerTest(
                 "dateOfSentencing": "1992-01-01",
                 "description": "CJA - Suspended Sentence Order",
                 "isActive": null,
+                "isCustodial": true,
                 "terms": [
                     {
                         "years": 15,
@@ -219,6 +225,7 @@ internal class SentencesControllerTest(
             List(20) {
               IntegrationApiSentence(
                 dateOfSentencing = LocalDate.parse("2023-01-01"),
+                isCustodial = true,
               )
             },
           ),

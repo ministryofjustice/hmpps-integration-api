@@ -8,6 +8,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.Sentence 
 
 data class Supervision(
   val active: Boolean? = null,
+  val custodial: Boolean,
   val additionalOffences: List<AdditionalOffence> = listOf(AdditionalOffence()),
   val courtAppearances: List<CourtAppearance> = listOf(CourtAppearance()),
   val mainOffence: MainOffence = MainOffence(),
@@ -23,6 +24,7 @@ data class Supervision(
       dateOfSentencing = if (!this.sentence.date.isNullOrEmpty()) LocalDate.parse(this.sentence.date) else null,
       description = this.sentence.description,
       isActive = this.active,
+      isCustodial = this.custodial,
       terms = this.sentence.toTerm(),
     )
   }
