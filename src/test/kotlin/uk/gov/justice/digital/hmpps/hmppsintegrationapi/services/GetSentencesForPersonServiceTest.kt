@@ -16,14 +16,14 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffende
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ProbationOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.generateTestSentence
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Identifiers
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.SentenceLength
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Response
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.SentenceLength
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.Booking
 import java.time.LocalDate
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Term as IntegrationApiTerm
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.SentenceTerm as IntegrationApiTerm
 
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],

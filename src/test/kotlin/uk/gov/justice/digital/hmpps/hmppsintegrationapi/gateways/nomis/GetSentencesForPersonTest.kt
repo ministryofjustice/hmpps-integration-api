@@ -23,7 +23,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.SentenceLength
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApiError
 import java.time.LocalDate
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Term as IntegrationApiTerm
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.SentenceTerm as IntegrationApiTerm
 
 @ActiveProfiles("test")
 @ContextConfiguration(

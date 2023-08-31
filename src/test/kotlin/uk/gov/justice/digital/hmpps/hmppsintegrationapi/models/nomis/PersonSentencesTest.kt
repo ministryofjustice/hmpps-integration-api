@@ -6,7 +6,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.SentenceLength
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApi
 import java.time.LocalDate
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Sentence as IntegrationApiSentence
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Term as IntegrationApiTerm
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.SentenceTerm as IntegrationApiTerm
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.Sentence as NomisSentence
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.Term as NomisTerm
 

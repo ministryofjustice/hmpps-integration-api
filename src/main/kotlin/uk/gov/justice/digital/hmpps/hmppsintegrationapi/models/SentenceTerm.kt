@@ -1,6 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models
 
-data class Term(
+data class SentenceTerm(
   val years: Int? = null,
   val months: Int? = null,
   val weeks: Int? = null,
