@@ -112,9 +112,12 @@ jobs:
           name: Run smoke tests
           command: make smoke-test
   create-and-push-image-to-ecr:
-    executor: aws-ecr/default
+    docker:
+      - image: ministryofjustice/cloud-platform-tools
     steps:
       - checkout
+      - setup_remote_docker:
+          docker_layer_caching: true
       - run:
           name: Build application Docker image
           command: make build
