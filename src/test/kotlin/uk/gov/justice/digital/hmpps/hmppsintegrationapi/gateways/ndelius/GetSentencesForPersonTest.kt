@@ -18,11 +18,11 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.generateTestSentence
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.NDeliusApiMockServer
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.SentenceLength
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApiError
 import java.io.File
 import java.time.LocalDate
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Term as IntegrationApiTerm
 
 @ActiveProfiles("test")
 @ContextConfiguration(
@@ -70,7 +70,11 @@ class GetSentencesForPersonTest(
               description = "CJA - Community Order",
               isActive = false,
               isCustodial = false,
-              terms = listOf(IntegrationApiTerm(months = 12)),
+              length = SentenceLength(
+                duration = 12,
+                units = "Months",
+                terms = emptyList(),
+              ),
             ),
             generateTestSentence(
               dataSource = UpstreamApi.NDELIUS,
@@ -78,7 +82,11 @@ class GetSentencesForPersonTest(
               description = "CJA - Suspended Sentence Order",
               isActive = true,
               isCustodial = false,
-              terms = listOf(IntegrationApiTerm(years = 12)),
+              length = SentenceLength(
+                duration = 12,
+                units = "Years",
+                terms = emptyList(),
+              ),
             ),
           ),
         )

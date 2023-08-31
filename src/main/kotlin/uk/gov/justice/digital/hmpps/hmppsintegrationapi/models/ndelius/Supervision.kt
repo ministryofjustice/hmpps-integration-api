@@ -28,7 +28,7 @@ data class Supervision(
       fineAmount = null,
       isActive = this.active,
       isCustodial = this.custodial,
-      terms = this.sentence.toTerm(),
+      length = this.sentence.toLength(),
     )
   }
 }

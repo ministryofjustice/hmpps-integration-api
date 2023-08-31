@@ -1,7 +1,8 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers
 
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Sentence
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Term
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.SentenceLength
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.SentenceTerm
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApi
 import java.time.LocalDate
 
@@ -12,9 +13,13 @@ fun generateTestSentence(
   fineAmount: Number? = null,
   isActive: Boolean? = true,
   isCustodial: Boolean = true,
-  terms: List<Term> = listOf(
-    Term(hours = 2),
-    Term(years = 25),
+  length: SentenceLength = SentenceLength(
+    duration = null,
+    units = null,
+    terms = listOf(
+      SentenceTerm(hours = 2),
+      SentenceTerm(years = 25),
+    ),
   ),
 ): Sentence = Sentence(
   dataSource = dataSource,
@@ -23,5 +28,5 @@ fun generateTestSentence(
   fineAmount = fineAmount,
   isActive = isActive,
   isCustodial = isCustodial,
-  terms = terms,
+  length = length,
 )

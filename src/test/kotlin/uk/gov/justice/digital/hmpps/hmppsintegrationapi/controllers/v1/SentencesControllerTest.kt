@@ -72,24 +72,28 @@ internal class SentencesControllerTest(
                 "isActive": true,
                 "isCustodial": true,
                 "fineAmount": null,
-                "terms": [
-                  {
-                    "years": null,
-                    "months": null,
-                    "weeks": null,
-                    "days": null,
-                    "hours": 2,
-                    "prisonTermCode": null
-                  },
-                  {
-                    "years": 25,
-                    "months": null,
-                    "weeks": null,
-                    "days": null,
-                    "hours": null,
-                    "prisonTermCode": null
-                  }
-                ]
+                "length": {
+                  "duration": null,
+                  "units": null,
+                  "terms": [
+                    {
+                      "years": null,
+                      "months": null,
+                      "weeks": null,
+                      "days": null,
+                      "hours": 2,
+                      "prisonTermCode": null
+                    },
+                    {
+                      "years": 25,
+                      "months": null,
+                      "weeks": null,
+                      "days": null,
+                      "hours": null,
+                      "prisonTermCode": null
+                    }
+                  ]
+                }
               },
               {
                 "dataSource": "NOMIS",
@@ -98,24 +102,28 @@ internal class SentencesControllerTest(
                 "isActive": true,
                 "isCustodial": true,
                 "fineAmount": null,
-                "terms": [
-                  {
-                    "years": null,
-                    "months": null,
-                    "weeks": null,
-                    "days": null,
-                    "hours": 2,
-                    "prisonTermCode": null
-                  },
-                  {
-                    "years": 25,
-                    "months": null,
-                    "weeks": null,
-                    "days": null,
-                    "hours": null,
-                    "prisonTermCode": null
-                  }
-                ]
+                "length": {
+                  "duration": null,
+                  "units": null,
+                  "terms": [
+                    {
+                      "years": null,
+                      "months": null,
+                      "weeks": null,
+                      "days": null,
+                      "hours": 2,
+                      "prisonTermCode": null
+                    },
+                    {
+                      "years": 25,
+                      "months": null,
+                      "weeks": null,
+                      "days": null,
+                      "hours": null,
+                      "prisonTermCode": null
+                    }
+                  ]
+                }
               }
             ]
           """.removeWhitespaceAndNewlines(),

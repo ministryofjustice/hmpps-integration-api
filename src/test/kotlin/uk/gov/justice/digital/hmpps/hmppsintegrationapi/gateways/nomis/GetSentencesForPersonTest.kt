@@ -19,10 +19,11 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NomisGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.generateTestSentence
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.NomisApiMockServer
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.SentenceLength
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApiError
 import java.time.LocalDate
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Term as IntegrationApiTerm
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.SentenceTerm as IntegrationApiTerm
 
 @ActiveProfiles("test")
 @ContextConfiguration(
@@ -100,12 +101,14 @@ class GetSentencesForPersonTest(
               fineAmount = 40,
               isActive = true,
               isCustodial = true,
-              terms = listOf(
-                IntegrationApiTerm(
-                  years = 1,
-                  months = 2,
-                  weeks = 3,
-                  days = 4,
+              length = SentenceLength(
+                terms = listOf(
+                  IntegrationApiTerm(
+                    years = 1,
+                    months = 2,
+                    weeks = 3,
+                    days = 4,
+                  ),
                 ),
               ),
             ),

@@ -1,11 +1,11 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius
 
 import io.kotest.core.spec.style.DescribeSpec
-import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.generateTestSentence
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Offence
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Term
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Sentence
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.SentenceLength
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApi
 import java.time.LocalDate
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.Sentence as NDeliusSentence
@@ -109,8 +109,26 @@ class SupervisionsTest : DescribeSpec(
       it("maps one-to-one attributes to integration API sentence attributes") {
         val supervisions = Supervisions(
           listOf(
-            Supervision(active = true, custodial = true, sentence = NDeliusSentence(date = "2009-07-07", description = "CJA - Community Order")),
-            Supervision(active = false, custodial = true, sentence = NDeliusSentence(date = "2010-07-07", description = "CJA - Suspended Sentence Order")),
+            Supervision(
+              active = true,
+              custodial = true,
+              sentence = NDeliusSentence(
+                date = "2009-07-07",
+                description = "CJA - Community Order",
+                length = 10,
+                lengthUnits = "years",
+              ),
+            ),
+            Supervision(
+              active = false,
+              custodial = true,
+              sentence = NDeliusSentence(
+                date = "2010-07-07",
+                description = "CJA - Suspended Sentence Order",
+                length = 4,
+                lengthUnits = "weeks",
+              ),
+            ),
           ),
         )
 
@@ -122,50 +140,48 @@ class SupervisionsTest : DescribeSpec(
               dataSource = UpstreamApi.NDELIUS,
               dateOfSentencing = LocalDate.parse("2009-07-07"),
               description = "CJA - Community Order",
-              terms = listOf(Term()),
+              length = SentenceLength(
+                duration = 10,
+                units = "years",
+                terms = emptyList(),
+              ),
             ),
             generateTestSentence(
               dataSource = UpstreamApi.NDELIUS,
               dateOfSentencing = LocalDate.parse("2010-07-07"),
               isActive = false,
               description = "CJA - Suspended Sentence Order",
-              terms = listOf(Term()),
+              length = SentenceLength(
+                duration = 4,
+                units = "weeks",
+                terms = emptyList(),
+              ),
             ),
           ),
         )
       }
 
-      xit("maps nDelius sentence length to Integration API terms") {
+      it("can be constructed with NULL values") {
         val supervisions = Supervisions(
           listOf(
-            Supervision(active = true, custodial = true, sentence = NDeliusSentence(date = "2009-07-07", description = "CJA - Community Order")),
-            Supervision(active = false, custodial = true, sentence = NDeliusSentence(date = "2010-07-07", description = "CJA - Suspended Sentence Order")),
-          ),
-        )
-
-        val integrationApiSentences = supervisions.supervisions.map { it.toSentence() }
-
-        integrationApiSentences[0].terms.shouldBe(listOf(Term()))
-        integrationApiSentences[1].terms.shouldBe(listOf(Term()))
-      }
-
-      it("deals with NULL values") {
-        val supervisions = Supervisions(
-          listOf(
-            Supervision(custodial = true),
             Supervision(custodial = true),
           ),
         )
 
-        val integrationApiSentences = supervisions.supervisions.map { it.toSentence() }
-
-        for (integrationApiSentence in integrationApiSentences) {
-          integrationApiSentence.dateOfSentencing.shouldBeNull()
-          integrationApiSentence.isActive.shouldBeNull()
-          integrationApiSentence.description.shouldBeNull()
-          integrationApiSentence.terms.first().prisonTermCode.shouldBeNull()
-          integrationApiSentence.terms.shouldBe(listOf(Term()))
-        }
+        supervisions.supervisions.first().toSentence().shouldBe(
+          Sentence(
+            dataSource = UpstreamApi.NDELIUS,
+            isActive = null,
+            isCustodial = true,
+            description = null,
+            dateOfSentencing = null,
+            length = SentenceLength(
+              duration = null,
+              units = null,
+              terms = emptyList(),
+            ),
+          ),
+        )
       }
     }
   },
