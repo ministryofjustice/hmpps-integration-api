@@ -52,7 +52,8 @@ class SentencesSmokeTest : DescribeSpec(
                   "months": 2,
                   "weeks": 3,
                   "days": 4,
-                  "hours": null
+                  "hours": null,
+                  "prisonTermCode": "string"
                 }
               ]
             },
@@ -69,7 +70,8 @@ class SentencesSmokeTest : DescribeSpec(
                   "months": null,
                   "weeks": null,
                   "days": null,
-                  "hours": $hourMinIntValue
+                  "hours": $hourMinIntValue,
+                  "prisonTermCode": null
                 }
               ]
             }

@@ -163,6 +163,7 @@ class SupervisionsTest : DescribeSpec(
           integrationApiSentence.dateOfSentencing.shouldBeNull()
           integrationApiSentence.isActive.shouldBeNull()
           integrationApiSentence.description.shouldBeNull()
+          integrationApiSentence.terms.first().prisonTermCode.shouldBeNull()
           integrationApiSentence.terms.shouldBe(listOf(Term()))
         }
       }
