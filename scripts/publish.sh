@@ -2,13 +2,11 @@
 
 set -e
 
-AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION} AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} aws ecr get-login-password | docker login --username AWS --password-stdin 754256621582.dkr.ecr.eu-west-2.amazonaws.com
+echo "Logging into ECR."
+aws ecr get-login-password --region ${AWS_DEFAULT_REGION} | docker login --username AWS --password-stdin ${AWS_ECR_REGISTRY_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com
 
-echo "ecr endpoint"
-echo $ECR_ENDPOINT
-
-echo "we are about to tag"
+echo "Tagging Docker image."
 docker tag hmpps-integration-api "${ECR_ENDPOINT}:${APP_VERSION}"
-echo "we are about to push"
-echo "${ECR_ENDPOINT}:${APP_VERSION}"
+
+echo "Pushing Docker image to ECR."
 docker push "${ECR_ENDPOINT}:${APP_VERSION}"

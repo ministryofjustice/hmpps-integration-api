@@ -4,6 +4,8 @@ orbs:
   hmpps: ministryofjustice/hmpps@6
   slack: circleci/slack@4.12.1
   shellcheck: circleci/shellcheck@3
+  aws-cli: circleci/aws-cli@4.0.0
+  aws-ecr: circleci/aws-ecr@8.2.1
 
 parameters:
   alerts-slack-channel:
@@ -118,13 +120,14 @@ jobs:
           docker_layer_caching: true
       - run:
           name: Build application Docker image
-          command: |
-            make build
+          command: make build
       - hmpps/create_app_version
+      - aws-cli/setup:
+          role_arn: $ECR_ROLE_TO_ASSUME
+          region: AWS_DEFAULT_REGION
       - deploy:
           name: Push application Docker image
-          command: |
-            make publish
+          command: make publish
   heartbeat:
     machine:
       image: ubuntu-2204:2022.10.2
