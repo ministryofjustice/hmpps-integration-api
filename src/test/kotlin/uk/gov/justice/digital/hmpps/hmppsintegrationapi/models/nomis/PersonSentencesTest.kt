@@ -2,7 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis
 
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Length
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.SentenceLength
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApi
 import java.time.LocalDate
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Sentence as IntegrationApiSentence
@@ -51,7 +51,7 @@ class PersonSentencesTest : DescribeSpec(
         val integrationApiSentence = nomisSentence.toSentence()
 
         integrationApiSentence.length.shouldBe(
-          Length(
+          SentenceLength(
             duration = null,
             units = null,
             terms = listOf(
@@ -91,7 +91,7 @@ class PersonSentencesTest : DescribeSpec(
         val integrationApiSentence = nomisSentence.toSentence()
 
         integrationApiSentence.length.shouldBe(
-          Length(
+          SentenceLength(
             duration = null,
             units = null,
             terms = listOf(
@@ -129,7 +129,7 @@ class PersonSentencesTest : DescribeSpec(
         val integrationApiSentence = nomisSentence.toSentence()
 
         integrationApiSentence.length.shouldBe(
-          Length(
+          SentenceLength(
             duration = null,
             units = null,
             terms = listOf(
@@ -180,7 +180,7 @@ class PersonSentencesTest : DescribeSpec(
             isActive = null,
             isCustodial = true,
             fineAmount = null,
-            length = Length(
+            length = SentenceLength(
               duration = null,
               units = null,
               terms = listOf(

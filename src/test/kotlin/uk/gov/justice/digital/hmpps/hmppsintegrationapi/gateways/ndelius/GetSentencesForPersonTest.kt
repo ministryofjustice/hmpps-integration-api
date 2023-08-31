@@ -18,7 +18,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.generateTestSentence
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.NDeliusApiMockServer
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Length
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.SentenceLength
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApiError
 import java.io.File
@@ -70,7 +70,7 @@ class GetSentencesForPersonTest(
               description = "CJA - Community Order",
               isActive = false,
               isCustodial = false,
-              length = Length(
+              length = SentenceLength(
                 duration = 12,
                 units = "months",
                 terms = emptyList(),
@@ -82,7 +82,7 @@ class GetSentencesForPersonTest(
               description = "CJA - Suspended Sentence Order",
               isActive = true,
               isCustodial = false,
-              length = Length(
+              length = SentenceLength(
                 duration = 12,
                 units = "years",
                 terms = emptyList(),

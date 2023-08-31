@@ -1,6 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers
 
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Length
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.SentenceLength
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Sentence
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Term
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApi
@@ -13,7 +13,7 @@ fun generateTestSentence(
   fineAmount: Number? = null,
   isActive: Boolean? = true,
   isCustodial: Boolean = true,
-  length: Length = Length(
+  length: SentenceLength = SentenceLength(
     duration = null,
     units = null,
     terms = listOf(

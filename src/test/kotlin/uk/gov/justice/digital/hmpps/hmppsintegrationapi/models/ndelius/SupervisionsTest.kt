@@ -3,7 +3,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.generateTestSentence
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Length
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.SentenceLength
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Offence
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Sentence
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApi
@@ -140,7 +140,7 @@ class SupervisionsTest : DescribeSpec(
               dataSource = UpstreamApi.NDELIUS,
               dateOfSentencing = LocalDate.parse("2009-07-07"),
               description = "CJA - Community Order",
-              length = Length(
+              length = SentenceLength(
                 duration = 10,
                 units = "years",
                 terms = emptyList(),
@@ -151,7 +151,7 @@ class SupervisionsTest : DescribeSpec(
               dateOfSentencing = LocalDate.parse("2010-07-07"),
               isActive = false,
               description = "CJA - Suspended Sentence Order",
-              length = Length(
+              length = SentenceLength(
                 duration = 4,
                 units = "weeks",
                 terms = emptyList(),
@@ -175,7 +175,7 @@ class SupervisionsTest : DescribeSpec(
             isCustodial = true,
             description = null,
             dateOfSentencing = null,
-            length = Length(
+            length = SentenceLength(
               duration = null,
               units = null,
               terms = emptyList(),

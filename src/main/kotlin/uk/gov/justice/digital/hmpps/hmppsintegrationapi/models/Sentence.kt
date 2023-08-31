@@ -1,7 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models
 
 import java.time.LocalDate
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Length as IntegrationApiLength
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.SentenceLength as IntegrationApiLength
 
 data class Sentence(
   val dataSource: UpstreamApi,
