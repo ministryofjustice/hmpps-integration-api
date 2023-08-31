@@ -46,16 +46,20 @@ class SentencesSmokeTest : DescribeSpec(
               "fineAmount": $fineAmountMinNumberValue,
               "isActive": null,
               "isCustodial": true,
-              "terms": [
-                {
-                  "years": 1,
-                  "months": 2,
-                  "weeks": 3,
-                  "days": 4,
-                  "hours": null,
-                  "prisonTermCode": "string"
-                }
-              ]
+              "length": {
+                "duration": null,
+                "units": null,
+                "terms": [
+                  {
+                    "years": 1,
+                    "months": 2,
+                    "weeks": 3,
+                    "days": 4,
+                    "hours": null,
+                    "prisonTermCode": "string"
+                  }
+                ]
+              }
             },
             {
               "dataSource": "NDELIUS",
@@ -64,16 +68,11 @@ class SentencesSmokeTest : DescribeSpec(
               "fineAmount": null,
               "isActive": true,
               "isCustodial": false,
-              "terms": [
-                {
-                  "years": null,
-                  "months": null,
-                  "weeks": null,
-                  "days": null,
-                  "hours": $hourMinIntValue,
-                  "prisonTermCode": null
-                }
-              ]
+              "length": {
+                "duration": $hourMinIntValue,
+                "units": "hours",
+                "terms": []
+              }
             }
           ],
           "pagination": {

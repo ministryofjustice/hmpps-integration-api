@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers
 
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Length
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Sentence
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Term
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApi
@@ -12,9 +13,13 @@ fun generateTestSentence(
   fineAmount: Number? = null,
   isActive: Boolean? = true,
   isCustodial: Boolean = true,
-  terms: List<Term> = listOf(
-    Term(hours = 2),
-    Term(years = 25),
+  length: Length = Length(
+    duration = null,
+    units = null,
+    terms = listOf(
+      Term(hours = 2),
+      Term(years = 25),
+    ),
   ),
 ): Sentence = Sentence(
   dataSource = dataSource,
@@ -23,5 +28,5 @@ fun generateTestSentence(
   fineAmount = fineAmount,
   isActive = isActive,
   isCustodial = isCustodial,
-  terms = terms,
+  length = length,
 )

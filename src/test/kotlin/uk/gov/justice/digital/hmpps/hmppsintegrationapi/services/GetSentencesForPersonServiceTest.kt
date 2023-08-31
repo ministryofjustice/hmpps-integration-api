@@ -16,6 +16,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffende
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ProbationOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.generateTestSentence
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Identifiers
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Length
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApi
@@ -71,9 +72,11 @@ internal class GetSentencesForPersonServiceTest(
             generateTestSentence(
               dateOfSentencing = LocalDate.parse("2001-01-01"),
               description = "ORA CJA03 Standard Determinate Sentence",
-              terms = listOf(
-                IntegrationApiTerm(years = 15, months = 6, weeks = 2),
-                IntegrationApiTerm(months = 6, weeks = 2, days = 5),
+              length = Length(
+                terms = listOf(
+                  IntegrationApiTerm(years = 15, months = 6, weeks = 2),
+                  IntegrationApiTerm(months = 6, weeks = 2, days = 5),
+                ),
               ),
             ),
           ),
@@ -87,9 +90,11 @@ internal class GetSentencesForPersonServiceTest(
               dateOfSentencing = LocalDate.parse("2002-01-01"),
               description = "ORA CJA04 Stealing hamburgers from the local restaurant",
               isActive = null,
-              terms = listOf(
-                IntegrationApiTerm(years = 10, weeks = 5, days = 5),
-                IntegrationApiTerm(years = 25, weeks = 5, days = 4),
+              length = Length(
+                terms = listOf(
+                  IntegrationApiTerm(years = 10, weeks = 5, days = 5),
+                  IntegrationApiTerm(years = 25, weeks = 5, days = 4),
+                ),
               ),
             ),
           ),
@@ -102,18 +107,20 @@ internal class GetSentencesForPersonServiceTest(
             generateTestSentence(
               dateOfSentencing = LocalDate.parse("2003-01-01"),
               description = "CJA - Community Order",
-              terms = listOf(
-                IntegrationApiTerm(years = 4),
-                IntegrationApiTerm(weeks = 12),
+              length = Length(
+                duration = 5,
+                units = "weeks",
+                terms = emptyList(),
               ),
             ),
             generateTestSentence(
               dateOfSentencing = LocalDate.parse("2004-01-01"),
               description = "CJA - Suspended Sentence Order",
               isActive = false,
-              terms = listOf(
-                IntegrationApiTerm(weeks = 18),
-                IntegrationApiTerm(hours = 24),
+              length = Length(
+                duration = 24,
+                units = "hours",
+                terms = emptyList(),
               ),
             ),
           ),
@@ -256,35 +263,41 @@ internal class GetSentencesForPersonServiceTest(
           generateTestSentence(
             dateOfSentencing = LocalDate.parse("2001-01-01"),
             description = "ORA CJA03 Standard Determinate Sentence",
-            terms = listOf(
-              IntegrationApiTerm(years = 15, months = 6, weeks = 2),
-              IntegrationApiTerm(months = 6, weeks = 2, days = 5),
+            length = Length(
+              terms = listOf(
+                IntegrationApiTerm(years = 15, months = 6, weeks = 2),
+                IntegrationApiTerm(months = 6, weeks = 2, days = 5),
+              ),
             ),
           ),
           generateTestSentence(
             dateOfSentencing = LocalDate.parse("2002-01-01"),
             description = "ORA CJA04 Stealing hamburgers from the local restaurant",
             isActive = null,
-            terms = listOf(
-              IntegrationApiTerm(years = 10, weeks = 5, days = 5),
-              IntegrationApiTerm(years = 25, weeks = 5, days = 4),
+            length = Length(
+              terms = listOf(
+                IntegrationApiTerm(years = 10, weeks = 5, days = 5),
+                IntegrationApiTerm(years = 25, weeks = 5, days = 4),
+              ),
             ),
           ),
           generateTestSentence(
             dateOfSentencing = LocalDate.parse("2003-01-01"),
             description = "CJA - Community Order",
-            terms = listOf(
-              IntegrationApiTerm(years = 4),
-              IntegrationApiTerm(weeks = 12),
+            length = Length(
+              duration = 5,
+              units = "weeks",
+              terms = emptyList(),
             ),
           ),
           generateTestSentence(
             dateOfSentencing = LocalDate.parse("2004-01-01"),
             description = "CJA - Suspended Sentence Order",
             isActive = false,
-            terms = listOf(
-              IntegrationApiTerm(weeks = 18),
-              IntegrationApiTerm(hours = 24),
+            length = Length(
+              duration = 24,
+              units = "hours",
+              terms = emptyList(),
             ),
           ),
         ),

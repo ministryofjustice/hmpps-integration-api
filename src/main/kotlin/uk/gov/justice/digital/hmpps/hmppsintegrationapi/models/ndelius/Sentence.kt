@@ -1,6 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius
 
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Term as IntegrationApiTerm
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Length as IntegrationApiLength
 
 data class Sentence(
   val date: String? = null,
@@ -8,14 +8,11 @@ data class Sentence(
   val length: Int? = null,
   val lengthUnits: String? = null,
 ) {
-  fun toTerm(): List<IntegrationApiTerm> {
-    return when (this.lengthUnits?.lowercase()) {
-      "years" -> listOf(IntegrationApiTerm(years = this.length))
-      "months" -> listOf(IntegrationApiTerm(months = this.length))
-      "weeks" -> listOf(IntegrationApiTerm(weeks = this.length))
-      "days" -> listOf(IntegrationApiTerm(days = this.length))
-      "hours" -> listOf(IntegrationApiTerm(hours = this.length))
-      else -> listOf(IntegrationApiTerm())
-    }
+  fun toLength(): IntegrationApiLength {
+    return IntegrationApiLength(
+      duration = this.length,
+      units = this.lengthUnits?.lowercase(),
+      terms = emptyList(),
+    )
   }
 }

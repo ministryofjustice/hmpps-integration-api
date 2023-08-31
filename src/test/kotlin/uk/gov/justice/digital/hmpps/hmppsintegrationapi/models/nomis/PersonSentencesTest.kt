@@ -1,8 +1,8 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis
 
 import io.kotest.core.spec.style.DescribeSpec
-import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Length
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApi
 import java.time.LocalDate
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Sentence as IntegrationApiSentence
@@ -50,23 +50,27 @@ class PersonSentencesTest : DescribeSpec(
 
         val integrationApiSentence = nomisSentence.toSentence()
 
-        integrationApiSentence.terms.shouldBe(
-          listOf(
-            IntegrationApiTerm(
-              years = 3,
-              months = 4,
-              weeks = null,
-              days = 2,
-              hours = null,
-              prisonTermCode = "Z",
-            ),
-            IntegrationApiTerm(
-              years = 7,
-              months = 3,
-              weeks = 4,
-              days = null,
-              hours = null,
-              prisonTermCode = "Y",
+        integrationApiSentence.length.shouldBe(
+          Length(
+            duration = null,
+            units = null,
+            terms = listOf(
+              IntegrationApiTerm(
+                years = 3,
+                months = 4,
+                weeks = null,
+                days = 2,
+                hours = null,
+                prisonTermCode = "Z",
+              ),
+              IntegrationApiTerm(
+                years = 7,
+                months = 3,
+                weeks = 4,
+                days = null,
+                hours = null,
+                prisonTermCode = "Y",
+              ),
             ),
           ),
         )
@@ -86,23 +90,27 @@ class PersonSentencesTest : DescribeSpec(
 
         val integrationApiSentence = nomisSentence.toSentence()
 
-        integrationApiSentence.terms.shouldBe(
-          listOf(
-            IntegrationApiTerm(
-              years = 3,
-              months = null,
-              weeks = null,
-              days = null,
-              hours = null,
-              prisonTermCode = null,
-            ),
-            IntegrationApiTerm(
-              years = null,
-              months = 3,
-              weeks = null,
-              days = null,
-              hours = null,
-              prisonTermCode = null,
+        integrationApiSentence.length.shouldBe(
+          Length(
+            duration = null,
+            units = null,
+            terms = listOf(
+              IntegrationApiTerm(
+                years = 3,
+                months = null,
+                weeks = null,
+                days = null,
+                hours = null,
+                prisonTermCode = null,
+              ),
+              IntegrationApiTerm(
+                years = null,
+                months = 3,
+                weeks = null,
+                days = null,
+                hours = null,
+                prisonTermCode = null,
+              ),
             ),
           ),
         )
@@ -120,15 +128,19 @@ class PersonSentencesTest : DescribeSpec(
 
         val integrationApiSentence = nomisSentence.toSentence()
 
-        integrationApiSentence.terms.shouldBe(
-          listOf(
-            IntegrationApiTerm(
-              years = 3,
-              months = 9,
-              weeks = null,
-              days = null,
-              hours = null,
-              prisonTermCode = null,
+        integrationApiSentence.length.shouldBe(
+          Length(
+            duration = null,
+            units = null,
+            terms = listOf(
+              IntegrationApiTerm(
+                years = 3,
+                months = 9,
+                weeks = null,
+                days = null,
+                hours = null,
+                prisonTermCode = null,
+              ),
             ),
           ),
         )
@@ -160,11 +172,30 @@ class PersonSentencesTest : DescribeSpec(
 
       it("deals with NULL values") {
         val integrationApiSentence = IntegrationApiSentence(isCustodial = true, dataSource = UpstreamApi.NOMIS)
-        integrationApiSentence.dateOfSentencing.shouldBeNull()
-        integrationApiSentence.isActive.shouldBeNull()
-        integrationApiSentence.fineAmount.shouldBeNull()
-        integrationApiSentence.terms.shouldBe(listOf(IntegrationApiTerm()))
-        integrationApiSentence.description.shouldBeNull()
+        integrationApiSentence.shouldBe(
+          IntegrationApiSentence(
+            dataSource = UpstreamApi.NOMIS,
+            dateOfSentencing = null,
+            description = null,
+            isActive = null,
+            isCustodial = true,
+            fineAmount = null,
+            length = Length(
+              duration = null,
+              units = null,
+              terms = listOf(
+                IntegrationApiTerm(
+                  years = null,
+                  months = null,
+                  weeks = null,
+                  days = null,
+                  hours = null,
+                  prisonTermCode = null,
+                ),
+              ),
+            ),
+          ),
+        )
       }
     }
   },

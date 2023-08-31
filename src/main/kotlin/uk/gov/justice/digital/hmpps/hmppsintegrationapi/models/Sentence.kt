@@ -1,7 +1,8 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models
 
 import java.time.LocalDate
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Term as IntegrationApiTerm
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Length as IntegrationApiLength
+
 data class Sentence(
   val dataSource: UpstreamApi,
   val dateOfSentencing: LocalDate? = null,
@@ -9,5 +10,5 @@ data class Sentence(
   val isActive: Boolean? = null,
   val isCustodial: Boolean,
   val fineAmount: Number? = null,
-  val terms: List<IntegrationApiTerm> = listOf(IntegrationApiTerm()),
+  val length: IntegrationApiLength = IntegrationApiLength(),
 )
