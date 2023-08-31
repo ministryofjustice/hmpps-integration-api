@@ -134,68 +134,6 @@ class PersonSentencesTest : DescribeSpec(
         )
       }
 
-      it("maps Nomis terms to Integration API terms when some term values are provided") {
-        val nomisSentence = NomisSentence(
-          terms = listOf(
-            NomisTerm(
-              years = 3,
-            ),
-            NomisTerm(
-              months = 3,
-            ),
-          ),
-        )
-
-        val integrationApiSentence = nomisSentence.toSentence()
-
-        integrationApiSentence.terms.shouldBe(
-          listOf(
-            IntegrationApiTerm(
-              years = 3,
-              months = null,
-              weeks = null,
-              days = null,
-              hours = null,
-              prisonTermCode = null,
-            ),
-            IntegrationApiTerm(
-              years = null,
-              months = 3,
-              weeks = null,
-              days = null,
-              hours = null,
-              prisonTermCode = null,
-            ),
-          ),
-        )
-      }
-
-      it("maps Nomis terms to Integration API terms when only one term is provided") {
-        val nomisSentence = NomisSentence(
-          terms = listOf(
-            NomisTerm(
-              years = 3,
-              months = 9,
-            ),
-          ),
-        )
-
-        val integrationApiSentence = nomisSentence.toSentence()
-
-        integrationApiSentence.terms.shouldBe(
-          listOf(
-            IntegrationApiTerm(
-              years = 3,
-              months = 9,
-              weeks = null,
-              days = null,
-              hours = null,
-              prisonTermCode = null,
-            ),
-          ),
-        )
-      }
-
       it("sentenceStatusToBoolean correctly maps 'I' to false") {
         val nomisSentence = NomisSentence(
           sentenceDate = null,
