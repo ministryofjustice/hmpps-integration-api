@@ -70,7 +70,7 @@ class SentencesSmokeTest : DescribeSpec(
               "isCustodial": false,
               "length": {
                 "duration": $hourMinIntValue,
-                "units": "hours",
+                "units": "Hours",
                 "terms": []
               }
             }

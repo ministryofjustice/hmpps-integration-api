@@ -183,16 +183,7 @@ class PersonSentencesTest : DescribeSpec(
             length = SentenceLength(
               duration = null,
               units = null,
-              terms = listOf(
-                IntegrationApiTerm(
-                  years = null,
-                  months = null,
-                  weeks = null,
-                  days = null,
-                  hours = null,
-                  prisonTermCode = null,
-                ),
-              ),
+              terms = emptyList(),
             ),
           ),
         )

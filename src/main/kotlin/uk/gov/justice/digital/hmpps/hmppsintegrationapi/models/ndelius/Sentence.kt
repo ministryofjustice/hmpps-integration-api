@@ -11,7 +11,7 @@ data class Sentence(
   fun toLength(): IntegrationApiLength {
     return IntegrationApiLength(
       duration = this.length,
-      units = this.lengthUnits?.lowercase(),
+      units = this.lengthUnits,
       terms = emptyList(),
     )
   }

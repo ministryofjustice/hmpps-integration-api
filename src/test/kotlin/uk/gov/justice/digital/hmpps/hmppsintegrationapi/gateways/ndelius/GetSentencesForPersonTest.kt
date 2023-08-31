@@ -72,7 +72,7 @@ class GetSentencesForPersonTest(
               isCustodial = false,
               length = SentenceLength(
                 duration = 12,
-                units = "months",
+                units = "Months",
                 terms = emptyList(),
               ),
             ),
@@ -84,7 +84,7 @@ class GetSentencesForPersonTest(
               isCustodial = false,
               length = SentenceLength(
                 duration = 12,
-                units = "years",
+                units = "Years",
                 terms = emptyList(),
               ),
             ),
