@@ -6,6 +6,7 @@ import yaml
 import pandas as pd
 
 URL = 'https://api-dev.prison.service.justice.gov.uk/v3/api-docs'
+OUTPUTS_DIR = "outputs/"
 SCHEMA_FIELD_FILE = "outputs/schema_field.csv"
 SCHEMA_PARENT_CHILD_FILE = "outputs/schema_parent_child.csv"
 SCHEMA_DIAGRAM = "outputs/schema_hierachy.dot"
@@ -108,6 +109,8 @@ def find_parent_schema(response_dict, child_schema):
 def get_nested_dictionary_or_value(my_dict, keys, return_value=0):
     """
     A Really powerful iterative function to explore very deeply nested dictionaries.
+    You can use this to define generic search functions into nested dict objects,
+    bypassing the need for the dict[][] nomenclature
     This also works when one of the keys might be missing, exiting without error.
     It takes in a dictionary, and a list of key values, to return nested dictionary objects 
     however many levels deep you require WITHOUT lines and lines of code.
@@ -129,7 +132,7 @@ def get_nested_dictionary_or_value(my_dict, keys, return_value=0):
             To get to the `1`, instead of having to write:
             `my_dict["a"]["b"]["c"]["d"]`
             You can use this function by passing in those keys as a list, like so:
-            get_value(my_dict, ["a", "b", "c", "d"])
+            get_nested_dictionary_or_value(my_dict, ["a", "b", "c", "d"])
 
         Usage:
             Where this becomes more powerful is this method handles when one of those keys 
