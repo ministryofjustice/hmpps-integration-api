@@ -78,14 +78,16 @@ internal class SentencesControllerTest(
                     "months": null,
                     "weeks": null,
                     "days": null,
-                    "hours": 2
+                    "hours": 2,
+                    "prisonTermCode": null
                   },
                   {
                     "years": 25,
                     "months": null,
                     "weeks": null,
                     "days": null,
-                    "hours": null
+                    "hours": null,
+                    "prisonTermCode": null
                   }
                 ]
               },
@@ -102,14 +104,16 @@ internal class SentencesControllerTest(
                     "months": null,
                     "weeks": null,
                     "days": null,
-                    "hours": 2
+                    "hours": 2,
+                    "prisonTermCode": null
                   },
                   {
                     "years": 25,
                     "months": null,
                     "weeks": null,
                     "days": null,
-                    "hours": null
+                    "hours": null,
+                    "prisonTermCode": null
                   }
                 ]
               }

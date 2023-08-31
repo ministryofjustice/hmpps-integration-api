@@ -36,12 +36,14 @@ class PersonSentencesTest : DescribeSpec(
               months = 4,
               weeks = 0,
               days = 2,
+              code = "Z",
             ),
             NomisTerm(
               years = 7,
               months = 3,
               weeks = 4,
               days = 0,
+              code = "Y",
             ),
           ),
         )
@@ -56,6 +58,7 @@ class PersonSentencesTest : DescribeSpec(
               weeks = null,
               days = 2,
               hours = null,
+              prisonTermCode = "Z",
             ),
             IntegrationApiTerm(
               years = 7,
@@ -63,6 +66,7 @@ class PersonSentencesTest : DescribeSpec(
               weeks = 4,
               days = null,
               hours = null,
+              prisonTermCode = "Y",
             ),
           ),
         )
@@ -90,6 +94,7 @@ class PersonSentencesTest : DescribeSpec(
               weeks = null,
               days = null,
               hours = null,
+              prisonTermCode = null,
             ),
             IntegrationApiTerm(
               years = null,
@@ -97,6 +102,7 @@ class PersonSentencesTest : DescribeSpec(
               weeks = null,
               days = null,
               hours = null,
+              prisonTermCode = null,
             ),
           ),
         )
@@ -122,6 +128,7 @@ class PersonSentencesTest : DescribeSpec(
               weeks = null,
               days = null,
               hours = null,
+              prisonTermCode = null,
             ),
           ),
         )
@@ -149,6 +156,7 @@ class PersonSentencesTest : DescribeSpec(
               weeks = null,
               days = null,
               hours = null,
+              prisonTermCode = null,
             ),
             IntegrationApiTerm(
               years = null,
@@ -156,6 +164,7 @@ class PersonSentencesTest : DescribeSpec(
               weeks = null,
               days = null,
               hours = null,
+              prisonTermCode = null,
             ),
           ),
         )
@@ -181,6 +190,7 @@ class PersonSentencesTest : DescribeSpec(
               weeks = null,
               days = null,
               hours = null,
+              prisonTermCode = null,
             ),
           ),
         )

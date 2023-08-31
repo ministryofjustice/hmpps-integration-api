@@ -6,4 +6,5 @@ data class Term(
   val weeks: Int? = null,
   val days: Int? = null,
   val hours: Int? = null,
+  val prisonTermCode: String? = null,
 )
