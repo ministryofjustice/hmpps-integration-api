@@ -139,7 +139,7 @@ internal class GetSentencesForPersonServiceTest(
         verify(nomisGateway, VerificationModeFactory.times(1)).getBookingIdsForPerson(id = nomisNumber)
       }
 
-      it("does not return sentences when booking IDs are not present") {
+      it("does not return prison sentences when booking IDs are not present") {
         whenever(nomisGateway.getBookingIdsForPerson(nomisNumber)).thenReturn(Response(data = emptyList()))
 
         val result = getSentencesForPersonService.execute(pncId)
