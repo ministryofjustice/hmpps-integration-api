@@ -778,18 +778,15 @@ components:
           example: NOMIS
           description: Which upstream API the sentence originates from
         dateOfSentencing:
-          tags: nomis, ndelius
           type: string
           format: date
           example: 2009-09-09
           description: Date of sentencing
         description:
-          tags: nomis, ndelius
           type: string
           example: Young Offender Inst - >=12 mths
           description: Description of the sentence
         isActive:
-          tags: nomis, ndelius
           type: boolean
           example: true
           description: Whether the sentence is active
@@ -798,29 +795,24 @@ components:
           example: true
           description: Whether the sentence is a custodial sentence
         fineAmount:
-          tags: nomis
           type: double
           example: 400.00
           description: The amount of fine related to the sentence and offence
         length:
-          tags: nomis, ndelius
           $ref: "#/components/schemas/SentenceLength"
     SentenceLength:
       type: object
       properties:
         duration:
-          tags: ndelius
           type: integer
           example: 10
           description: Duration of the sentence
         units:
-          tags: ndelius
           type: string
           enum: [Hours, Days, Weeks, Months, Years]
           example: Hours
           description: Time unit that is used in combination with the duration field
         terms:
-          tags: nomis
           type: array
           minItems: 0
           items:
@@ -829,27 +821,22 @@ components:
       type: object
       properties:
         years:
-          tags: nomis
           type: integer
           example: 5
           description: Number of years in the term
         months:
-          tags: nomis
           type: integer
           example: 4
           description: Number of months in the term
         weeks:
-          tags: nomis
           type: integer
           example: 3
           description: Number of weeks in the term
         days:
-          tags: nomis
           type: integer
           example: 2
           description: Number of days in the term
         prisonTermCode:
-          tags: nomis
           type: string
           enum: [CUR, DEF, DET, HOURS, IMP, LIC, PSYCH, SCUS, SEC104, SEC105, SEC86, SUP, SUSP]
           example: IMP
