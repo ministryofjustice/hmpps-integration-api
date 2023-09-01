@@ -19,7 +19,7 @@ class GetSentencesForPersonService(
     val nomisNumber = personResponse.data["prisonerOffenderSearch"]?.identifiers?.nomisNumber
     val deliusCrn = personResponse.data["probationOffenderSearch"]?.identifiers?.deliusCrn
     var bookingIdsResponse: Response<List<Booking>> = Response(data = emptyList())
-    var nDeliusSentences: Response<List<Sentence>> = Response(data = emptyList())
+    var nDeliusSentencesResponse: Response<List<Sentence>> = Response(data = emptyList())
 
     if (nomisNumber != null) {
       bookingIdsResponse = nomisGateway.getBookingIdsForPerson(nomisNumber)
@@ -30,11 +30,10 @@ class GetSentencesForPersonService(
     }
 
     val nomisSentenceResponses = bookingIdsResponse.data.map { nomisGateway.getSentencesForBooking(it.bookingId) }
-    val nomisSentencesErrors = nomisSentences.map { it.errors }.flatten()
 
     return Response(
-      data = nomisSentences.map { it.data }.flatten() + nDeliusSentences.data,
-      errors = bookingIdsResponse.errors + nomisSentencesErrors + nDeliusSentences.errors,
+      data = nomisSentenceResponses.map { it.data }.flatten() + nDeliusSentencesResponse.data,
+      errors = bookingIdsResponse.errors + nomisSentenceResponses.map { it.errors }.flatten() + nDeliusSentencesResponse.errors,
     )
   }
 }
