@@ -824,8 +824,8 @@ components:
           type: array
           minItems: 0
           items:
-            $ref: "#/components/schemas/Term"
-    Term:
+            $ref: "#/components/schemas/SentenceTerm"
+    SentenceTerm:
       type: object
       properties:
         years:
