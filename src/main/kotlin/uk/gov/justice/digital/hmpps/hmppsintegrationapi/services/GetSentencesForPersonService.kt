@@ -26,7 +26,7 @@ class GetSentencesForPersonService(
     }
 
     if (deliusCrn != null) {
-      nDeliusSentences = nDeliusGateway.getSentencesForPerson(deliusCrn)
+      nDeliusSentencesResponse = nDeliusGateway.getSentencesForPerson(deliusCrn)
     }
 
     val nomisSentences = bookingIdsResponse.data.map { nomisGateway.getSentencesForBooking(it.bookingId) }
