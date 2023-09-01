@@ -29,7 +29,7 @@ class GetSentencesForPersonService(
       nDeliusSentencesResponse = nDeliusGateway.getSentencesForPerson(deliusCrn)
     }
 
-    val nomisSentences = bookingIdsResponse.data.map { nomisGateway.getSentencesForBooking(it.bookingId) }
+    val nomisSentenceResponses = bookingIdsResponse.data.map { nomisGateway.getSentencesForBooking(it.bookingId) }
     val nomisSentencesErrors = nomisSentences.map { it.errors }.flatten()
 
     return Response(
