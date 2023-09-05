@@ -53,6 +53,9 @@ def extract_data(url=URL):
             print(url, " responded with ", response.status_code,
                   " returning empty dictionary")
             data = '{}'
+    except requests.JSONDecodeError:
+        print(f"{url} is not a valid json source, returning empty dictionary object")
+        data = '{}'
     except requests.exceptions.Timeout:
         print(f"Timeout exception caught for {url}, returning empty dictionary object")
         data = '{}'
