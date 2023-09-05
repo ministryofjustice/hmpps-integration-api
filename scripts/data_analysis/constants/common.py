@@ -42,7 +42,11 @@ def extract_data(url=URL):
             data (dict): A dictionary object representing the response yaml/json, 
                 Unsuccesful request: An empty dictionary
     """
-    response = requests.get(url, timeout=10)
+    try:
+        response = requests.get(url, timeout=20)
+    except requests.Timeout():
+        print(f"Timeout exception caught for {url}, returning empty json array")
+        return '{}'
     if response.status_code == 200 and url.endswith('yaml'):
         data = yaml.safe_load(response.text)
     elif response.status_code == 200 and not url.endswith('yaml'):
