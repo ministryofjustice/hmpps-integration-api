@@ -11,6 +11,7 @@ SCHEMA_FIELD_FILE = "outputs/schema_field.csv"
 SCHEMA_PARENT_CHILD_FILE = "outputs/schema_parent_child.csv"
 SCHEMA_DIAGRAM = "outputs/schema_hierachy.dot"
 ENDPOINTS_FILE = "outputs/endpoint_analysis.csv"
+TIMEOUT = 10
 
 
 def prepare_directory(filename=""):
@@ -43,18 +44,26 @@ def extract_data(url=URL):
                 Unsuccesful request: An empty dictionary
     """
     try:
-        response = requests.get(url, timeout=20)
-    except requests.Timeout():
-        print(f"Timeout exception caught for {url}, returning empty json array")
-        return '{}'
-    if response.status_code == 200 and url.endswith('yaml'):
-        data = yaml.safe_load(response.text)
-    elif response.status_code == 200 and not url.endswith('yaml'):
-        data = response.json()
-    else:
-        print(url, " responded with ", response.status_code,
-              " returning empty dictionary")
+        response = requests.get(url, timeout=TIMEOUT)
+        if response.status_code == 200 and url.endswith('yaml'):
+            data = yaml.safe_load(response.text)
+        elif response.status_code == 200 and not url.endswith('yaml'):
+            data = response.json()
+        else:
+            print(url, " responded with ", response.status_code,
+                  " returning empty dictionary")
+            data = '{}'
+    except requests.exceptions.Timeout:
+        print(f"Timeout exception caught for {url}, returning empty dictionary object")
         data = '{}'
+    except requests.exceptions.TooManyRedirects:
+    # Tell the user their URL was bad and try a different one
+        print(f"TooManyRedirects exception caught for {url}, Returning empty dictionary object")
+        data = '{}'
+    except requests.exceptions.RequestException as r_e:
+    # catastrophic error. bail.
+        raise SystemExit(r_e) from r_e
+
     return data
 
 
