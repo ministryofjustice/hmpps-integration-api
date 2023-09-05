@@ -125,13 +125,58 @@ def retrieve_context(data_frame, column_name, search_phrase, col_sep='|') -> pd.
     #TODO returns a dataframe with a Context column added
     """
     ##Currently not filtering context properly, look into this.
+    #started happening since this was .loc
 
     copy_data_frame = data_frame.copy()
     copy_data_frame["Context"] = ''
     column_index = copy_data_frame.columns.get_loc(column_name)
-    context_series = copy_data_frame.loc[:, column_name].apply(lambda x: find_context(x, search_phrase, col_sep))#started happening since this was .loc
+    context_series = copy_data_frame.loc[:, column_name].apply(lambda x: find_context(x, search_phrase, col_sep))
     copy_data_frame["Context"] = context_series
     for index, row in copy_data_frame.iterrows():
         if str.lower(search_phrase) in str.lower(row[column_index]):
             copy_data_frame.at[index, 'Context'] = str.lower(row[column_index]).replace(search_phrase, f">>>{search_phrase}<<<")
     return copy_data_frame
+
+def main():
+    """The main method, used to call the script. Command line argument used as the search phrase"""
+    common.prepare_directory(common.SCHEMA_SEARCH_REPORT)
+    common.prepare_directory(common.PATH_SEARCH_REPORT)
+    is_no_search_phrase = len(sys.argv) == 1
+    is_one_search_phrase = len(sys.argv) == 2
+    print(sys.argv)
+    if is_no_search_phrase:
+        print("Please provide a phrase to search for")
+        sys.exit()
+    elif is_one_search_phrase:
+
+        ### Need to extract this to a variable possibly
+        empty_schema_report = pd.DataFrame(
+            columns=["Schema", "Field", "Field_metadata", "Context", "Search Phrase", "API"])
+        empty_path_report = pd.DataFrame(
+            columns=["Path", "Http_method", "Path_metadata", "Context", "Search Phrase", "API"])
+        empty_schema_report.to_csv(common.SCHEMA_SEARCH_REPORT, index=False)
+        empty_path_report.to_csv(common.PATH_SEARCH_REPORT, index=False)
+
+        for url in common.URLS:
+            schema_df, path_df = search_api_for_phrase(url, sys.argv[1])
+            #Schema search
+            schema_w_context = retrieve_context(schema_df, "Field_metadata", sys.argv[1])
+            full_schema_w_search = add_column_value(schema_w_context, "Search Phrase", sys.argv[1])
+            full_schema_w_search = add_column_value(schema_w_context, "API", url)
+            full_schema_w_search.to_csv(common.SCHEMA_SEARCH_REPORT,
+                                        mode='a',
+                                        header=False,
+                                        index=False)
+            #Path search
+            path_w_context = retrieve_context(path_df, "Path_metadata", sys.argv[1])
+            full_path_w_search = add_column_value(path_w_context, "Search Phrase", sys.argv[1])
+            full_path_w_search = add_column_value(path_w_context, "API", url)
+            full_path_w_search.to_csv(common.PATH_SEARCH_REPORT,
+                                      mode='a',
+                                      header=False,
+                                      index=False)
+
+    print(f"Reports created: {common.SCHEMA_SEARCH_REPORT} and {common.PATH_SEARCH_REPORT}")
+
+if __name__ == "__main__":
+    main()

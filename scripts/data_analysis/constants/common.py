@@ -38,6 +38,8 @@ URLS = [
 ]
 
 OUTPUTS_DIR = "outputs/"
+SCHEMA_SEARCH_REPORT = OUTPUTS_DIR + "schema_report.csv"
+PATH_SEARCH_REPORT = OUTPUTS_DIR + "path_report.csv"
 SCHEMA_FIELD_FILE = "outputs/schema_field.csv"
 SCHEMA_PARENT_CHILD_FILE = "outputs/schema_parent_child.csv"
 SCHEMA_DIAGRAM = "outputs/schema_hierachy.dot"
