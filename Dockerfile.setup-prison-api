@@ -2,7 +2,7 @@ FROM node:current-alpine3.17
 
 RUN apk update && apk add bash curl
 
-RUN curl https://api-dev.prison.service.justice.gov.uk/v3/api-docs > prison-api.json && \
+RUN curl https://prison-api-dev.prison.service.justice.gov.uk/v3/api-docs > prison-api.json && \
     npm install -g @stoplight/prism-cli
 
 CMD prism mock -p 4010 -h 0.0.0.0 /prison-api.json
