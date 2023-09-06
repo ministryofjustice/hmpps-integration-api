@@ -5,7 +5,7 @@ import yaml
 
 import pandas as pd
 
-URL = 'https://api-dev.prison.service.justice.gov.uk/v3/api-docs'
+URL = 'https://prison-api-dev.prison.service.justice.gov.uk/v3/api-docs'
 SCHEMA_FIELD_FILE = "outputs/schema_field.csv"
 SCHEMA_PARENT_CHILD_FILE = "outputs/schema_parent_child.csv"
 SCHEMA_DIAGRAM = "outputs/schema_hierachy.dot"
