@@ -143,7 +143,6 @@ def main():
     common.prepare_directory(common.PATH_SEARCH_REPORT)
     is_no_search_phrase = len(sys.argv) == 1
     is_one_search_phrase = len(sys.argv) == 2
-    print(sys.argv)
     if is_no_search_phrase:
         print("Please provide a phrase to search for")
         sys.exit()
