@@ -11,7 +11,7 @@ This repository contains Python scripts and modules for various tooling purposes
   - [Retrieve Schemas and their fields from Prison API](#retrieve-schemas-and-their-fields-from-prison-api)
   - [Generate a Schema space diagram, output child-parent relations](#generate-a-schema-space-diagram-output-child-parent-relations)
   - [Retrieve Endpoints for provided list of schemas](#retrieve-endpoints-for-provided-list-of-schemas)
-  - [Retrieve Endpoints for provided list of schemas](#retrieve-endpoints-for-provided-list-of-schemas-1)
+  - [Search all published APIs for search phrase](#search-all-published-apis-for-search-phrase)
 - [Modules](#modules)
   - [Constants](#constants)
 - [Contributing](#contributing)
@@ -101,7 +101,7 @@ python3 discover_schema_endpoints.py "outputs/some_other_file.csv"
 ```
 Noting that the file must contain expected columns
 
-### Retrieve Endpoints for provided list of schemas
+### Search all published APIs for search phrase
 [search_apis_for_phrase.py](search_apis_for_phrase.py)
 This script:
 - Takes a search term or even a phrase and searches every API listed in the published APIs of [Structurizr](https://structurizr.com/share/56937/documentation#published-apis)
