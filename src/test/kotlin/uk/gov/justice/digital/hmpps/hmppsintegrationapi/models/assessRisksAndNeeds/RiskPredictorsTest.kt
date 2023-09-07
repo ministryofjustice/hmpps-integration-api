@@ -15,8 +15,6 @@ class RiskPredictorsTest : DescribeSpec(
 
         val integrationApiRiskPredictors = arnRiskPredictors.toRiskPredictors()
 
-        // TODO Alex note: Think about the difference in sub class testing and parent class testing this doesnt semantically make sense ..?
-
         integrationApiRiskPredictors.generalPredictorScore.totalWeightedScore.shouldBe(
           arnRiskPredictors.generalPredictorScore.ogpTotalWeightedScore,
         )

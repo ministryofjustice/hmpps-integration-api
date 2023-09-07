@@ -7,5 +7,7 @@ services:
     base-url: http://localhost:4030
   ndelius:
     base-url: https://localhost:4040
+  assess-risks-and-needs:
+    base-url: https://localhost:4050
   hmpps-auth:
     base-url: http://localhost:9090
