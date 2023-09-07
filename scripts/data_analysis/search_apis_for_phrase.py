@@ -219,9 +219,6 @@ def retrieve_context(data_frame, column_name, search_phrase, col_sep='|') -> pd.
     context_series = copy_data_frame.loc[:, column_name].apply(
         lambda x: find_context(x, search_phrase, col_sep).replace(search_phrase, f">>>{search_phrase}<<<"))
     copy_data_frame["Context"] = context_series
-    for index, row in copy_data_frame.iterrows():
-        if str.lower(search_phrase) in str.lower(row[column_index]):
-            copy_data_frame.at[index, 'Context'] = str.lower(row[column_index]).replace(search_phrase, f">>>{search_phrase}<<<")
     return copy_data_frame
 
 def main():
