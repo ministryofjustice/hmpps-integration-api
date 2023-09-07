@@ -11,6 +11,7 @@ This repository contains Python scripts and modules for various tooling purposes
   - [Retrieve Schemas and their fields from Prison API](#retrieve-schemas-and-their-fields-from-prison-api)
   - [Generate a Schema space diagram, output child-parent relations](#generate-a-schema-space-diagram-output-child-parent-relations)
   - [Retrieve Endpoints for provided list of schemas](#retrieve-endpoints-for-provided-list-of-schemas)
+  - [Retrieve Endpoints for provided list of schemas](#retrieve-endpoints-for-provided-list-of-schemas-1)
 - [Modules](#modules)
   - [Constants](#constants)
 - [Contributing](#contributing)
@@ -99,6 +100,23 @@ OR you can manually specify a file to load in with:
 python3 discover_schema_endpoints.py "outputs/some_other_file.csv"
 ```
 Noting that the file must contain expected columns
+
+### Retrieve Endpoints for provided list of schemas
+[search_apis_for_phrase.py](search_apis_for_phrase.py)
+This script:
+- Takes a search term or even a phrase and searches every API listed in the published APIs of [Structurizr](https://structurizr.com/share/56937/documentation#published-apis)
+- The search is not case or space delimiter sensitive, and works by scanning only the paths and schemas of the api-docs (which is where the relevant information will be).
+- It generates an in-memory data frame of search results for both the Schema and the Path search, and returns these data frames as csv tables.
+
+```shell
+python3 search_apis_for_phrase.py "search phrase"
+```
+Limitations:
+  - The script will handle timeouts and other common API errors.
+  - If there is a limitation on accessing a URL from a non MoJ device, this script will also be limited in that way
+    - In this regard all of the links only work when running the search on an MoJ device
+  - The URLs are currently hardcoded due to non-obvious ways of retrieving the api-docs dynamically
+    - A potential upgrade could be with a webscraper but I don't know if the computational complexity is worth the effort
 
 ## Modules
 This repository contains the following Python modules:
