@@ -1,4 +1,4 @@
-"""Module to search all APIs on Structurizer, hardcoded on 05/09/2023"""
+"""Module to search all APIs on Structurizer for keyword, hardcoded on 05/09/2023"""
 import sys
 import pandas as pd
 
@@ -168,16 +168,17 @@ def find_context(target_str, search_str, col_sep='|') -> str:
 
 def search_api_for_phrase(url=common.DEFAULT_URL, search_phrase="") -> (pd.DataFrame, pd.DataFrame):
     """
-    Specifically searches the api-docs of a desired API url for a particular search phrase contained anywhere 
+    Specifically searches the api-docs of a desired API url for a search phrase contained anywhere 
     within either the components/schema section or paths section of the json/yaml response.
     Returns a tabulated response for the result from each of these sections
 
     Parameters:
-        url (str): Default is Prison API, but can specify any API url that contains components/schema or paths
+        url (str): Default is Prison API, but can specify any API url 
+            that contains components/schema or paths
         search_phrase (str): The phrase you wish to search for
 
     Returns:
-        tuple(pd.DataFrame, pd.DataFrame): The dataframes for the schema and path search respectively.
+        tuple(pd.DataFrame, pd.DataFrame): Dataframes for the schema and path search respectively.
     """
     json_extract = common.extract_data(url)
     schema_data_frame = get_schema_or_path_data(
@@ -216,7 +217,6 @@ def retrieve_context(data_frame, column_name, search_phrase, col_sep='|') -> pd.
 
     copy_data_frame = data_frame.copy()
     copy_data_frame["Context"] = ''
-    column_index = copy_data_frame.columns.get_loc(column_name)
     context_series = copy_data_frame.loc[:, column_name].apply(
         lambda x: find_context(x, search_phrase, col_sep).replace(search_phrase, f">>>{search_phrase}<<<"))
     copy_data_frame["Context"] = context_series
