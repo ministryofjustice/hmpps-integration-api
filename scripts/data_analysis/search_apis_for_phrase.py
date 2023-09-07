@@ -200,7 +200,7 @@ def search_api_for_phrase(url=common.DEFAULT_URL, search_phrase="") -> (pd.DataF
 
 def retrieve_context(data_frame, column_name, search_phrase, col_sep='|') -> pd.DataFrame:
 
-    """ 
+    """
     Implements the find_context logic on a target data_frame column based on a search phrase.
     For a string contained within each row of that column, that has a divider defined as col_sep,
     it will return the substring between such dividers that the first search result is in.
@@ -210,7 +210,8 @@ def retrieve_context(data_frame, column_name, search_phrase, col_sep='|') -> pd.
         data_frame (pd.DataFrame): The dataframe over which you wish to iteratively search
         column_name (str): The column name of the data frame you wish to search
         search_phrase (str): The phrase you wish to search for within the metadata of the row
-        col_sep (str): The single character divider within the string within which to retrieve context
+        col_sep (str): The single character divider(s) within the string.
+            These define the boundaries from within which to retrieve context.
     """
 
     copy_data_frame = data_frame.copy()
