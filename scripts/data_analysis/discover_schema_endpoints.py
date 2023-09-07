@@ -119,7 +119,7 @@ def main():
         schema_list.append(loaded_data_frame.iloc[i, 2]) #Child_Schema
     unique_schema_list = list(dict.fromkeys(schema_list))
 
-    data_frame = find_nested_schema_reference(common.URL, unique_schema_list)
+    data_frame = find_nested_schema_reference(common.DEFAULT_URL, unique_schema_list)
     data_frame.to_csv(OUTPUT_FILE)
 
     print(f"Operation complete, output saved to {OUTPUT_FILE=}", "\n")
