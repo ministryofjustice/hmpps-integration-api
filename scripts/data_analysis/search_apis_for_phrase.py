@@ -168,7 +168,16 @@ def find_context(target_str, search_str, col_sep='|') -> str:
 
 def search_api_for_phrase(url=common.DEFAULT_URL, search_phrase="") -> (pd.DataFrame, pd.DataFrame):
     """
-    TODO
+    Specifically searches the api-docs of a desired API url for a particular search phrase contained anywhere 
+    within either the components/schema section or paths section of the json/yaml response.
+    Returns a tabulated response for the result from each of these sections
+
+    Parameters:
+        url (str): Default is Prison API, but can specify any API url that contains components/schema or paths
+        search_phrase (str): The phrase you wish to search for
+
+    Returns:
+        tuple(pd.DataFrame, pd.DataFrame): The dataframes for the schema and path search respectively.
     """
     json_extract = common.extract_data(url)
     schema_data_frame = get_schema_or_path_data(
@@ -192,19 +201,24 @@ def search_api_for_phrase(url=common.DEFAULT_URL, search_phrase="") -> (pd.DataF
 def retrieve_context(data_frame, column_name, search_phrase, col_sep='|') -> pd.DataFrame:
 
     """ 
-    #TODO returns a dataframe with a Context column added
+    Implements the find_context logic on a target data_frame column based on a search phrase.
+    For a string contained within each row of that column, that has a divider defined as col_sep,
+    it will return the substring between such dividers that the first search result is in.
+    It returns this on a row by row basis as a new column, "Context".
+
+    Parameters:
+        data_frame (pd.DataFrame): The dataframe over which you wish to iteratively search
+        column_name (str): The column name of the data frame you wish to search
+        search_phrase (str): The phrase you wish to search for within the metadata of the row
+        col_sep (str): The single character divider within the string within which to retrieve context
     """
-    ##Currently not filtering context properly, look into this.
-    #started happening since this was .loc
 
     copy_data_frame = data_frame.copy()
     copy_data_frame["Context"] = ''
     column_index = copy_data_frame.columns.get_loc(column_name)
-    context_series = copy_data_frame.loc[:, column_name].apply(lambda x: find_context(x, search_phrase, col_sep))
+    context_series = copy_data_frame.loc[:, column_name].apply(
+        lambda x: find_context(x, search_phrase, col_sep).replace(search_phrase, f">>>{search_phrase}<<<"))
     copy_data_frame["Context"] = context_series
-    for index, row in copy_data_frame.iterrows():
-        if str.lower(search_phrase) in str.lower(row[column_index]):
-            copy_data_frame.at[index, 'Context'] = str.lower(row[column_index]).replace(search_phrase, f">>>{search_phrase}<<<")
     return copy_data_frame
 
 def main():
