@@ -28,7 +28,7 @@ that make up HMPPS Integration API as well as those that are yet to be implement
 
 The [container diagram](https://c4model.com/#ContainerDiagram) provides a more in-depth view of the different upstreams
 APIs that are used to retrieve data from the HMPPS systems such as
-the [Prison API](https://api-dev.prison.service.justice.gov.uk/swagger-ui/index.html) for NOMIS.
+the [Prison API](https://prison-api-dev.prison.service.justice.gov.uk/swagger-ui/index.html) for NOMIS.
 
 [![Container diagram](./container.svg)](./container.svg)
 
