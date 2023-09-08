@@ -31,14 +31,15 @@ def create_aggregate_data_frame(dict_object, schemas):
 
 def main():
     """The main method, used to call the script. Command line arguments used as search terms"""
-    response_dict = common.extract_data(common.DEFAULT_URL)
+    ##TODO need to change this to load from a file rather than hard code the url - very entangled.
+    response_dict = common.extract_data("https://dev.offender-case-notes.service.justice.gov.uk/v3/api-docs")
     common.prepare_directory(DIAGRAM_FILE)
 
     aggregate_data_frame = pd.DataFrame()
     is_full_schema_diagram = len(sys.argv) == 1
     if is_full_schema_diagram:
         aggregate_data_frame = create_aggregate_data_frame(response_dict,
-                                                           response_dict["components"]["schemas"])
+                                                           response_dict["components"]["schemas"]) # Change would be here, load from file this list?
     else:
         aggregate_data_frame = create_aggregate_data_frame(response_dict, list(sys.argv[1:]))
 
@@ -60,7 +61,7 @@ def main():
         for index, row_data in aggregate_data_frame.iterrows():
             if row_data[3] is False:
                 aggregate_data_frame.at[index,'Searched_bool'] = True
-                data_frame = common.find_parent_schema(response_dict, row_data[0])
+                data_frame = common.find_parent_schema(response_dict, row_data[0]) #change would also be here
                 if not data_frame.empty:
                     data_frame["Searched_bool"] = False
                     aggregate_data_frame = pd.concat([aggregate_data_frame, data_frame], axis=0)
