@@ -5,7 +5,7 @@ from constants import common
 
 OUTPUT_FILE = common.SCHEMA_FIELD_FILE
 
-json_extract = common.extract_data(common.URL)
+json_extract = common.extract_data(common.DEFAULT_URL)
 
 common.prepare_directory()
 schema_field_df = pd.DataFrame(columns=["Schema", "Field"])
