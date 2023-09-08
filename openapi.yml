@@ -100,7 +100,10 @@ paths:
         - $ref: "#/components/parameters/PerPage"
       responses:
         "200":
-          description: Successfully found a person with the provided PNC ID.
+          description:  >
+            Successfully found a person with the provided PNC ID.
+            If a person doesn't have any images, then an empty list (`[]`) is
+            returned in the `data` property.
           content:
             application/json:
               schema:
