@@ -31,7 +31,7 @@ def create_aggregate_data_frame(dict_object, schemas):
 
 def main():
     """The main method, used to call the script. Command line arguments used as search terms"""
-    response_dict = common.extract_data(common.URL)
+    response_dict = common.extract_data(common.DEFAULT_URL)
     common.prepare_directory(DIAGRAM_FILE)
 
     aggregate_data_frame = pd.DataFrame()

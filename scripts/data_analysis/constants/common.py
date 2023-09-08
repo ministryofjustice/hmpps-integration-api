@@ -5,11 +5,46 @@ import yaml
 
 import pandas as pd
 
-DEFAULT_URL = 'https://prison-api-dev.prison.service.justice.gov.uk/v3/api-docs'
+DEFAULT_URL = 'https://api-dev.prison.service.justice.gov.uk/v3/api-docs'
+URLS = [
+#API Docs
+  "https://manage-adjudications-api-dev.hmpps.service.justice.gov.uk/v3/api-docs",
+  "https://assess-risks-and-needs-dev.hmpps.service.justice.gov.uk/v3/api-docs",
+  "https://raw.githubusercontent.com/ministryofjustice/hmpps-complexity-of-need/main/Complexity%20Of%20Need%20API%20Specification.yaml",
+  "https://court-register-dev.hmpps.service.justice.gov.uk/v3/api-docs",
+  "https://raw.githubusercontent.com/ministryofjustice/curious-API/main/curious-api-specification.yaml",
+  "https://sign-in-dev.hmpps.service.justice.gov.uk/auth/v3/api-docs",
+#  "https://keyworker-api-dev.prison.service.justice.gov.uk/v3/api-docs",
+#  "https://allocation-manager-staging.apps.live-1.cloud-platform.service.justice.gov.uk/api-docs/index.html",
+  "https://community-api.test.probation.service.justice.gov.uk/v3/api-docs/Community%20API",
+#  "https://probation-offender-events-dev.hmpps.service.justice.gov.uk/swagger-ui.html",
+  "https://probation-offender-search-dev.hmpps.service.justice.gov.uk/v3/api-docs",
+  "https://api-dev.prison.service.justice.gov.uk/v3/api-docs",
+  "https://offender-events-dev.prison.service.justice.gov.uk/v3/api-docs",
+  "https://prisoner-offender-search-dev.prison.service.justice.gov.uk/v3/api-docs",
+  "https://offender-dev.aks-dev-1.studio-hosting.service.justice.gov.uk/v3/api-docs",
+  "https://prison-register-dev.hmpps.service.justice.gov.uk/v3/api-docs",
+  "https://hmpps-allocations-dev.hmpps.service.justice.gov.uk/v3/api-docs",
+  "https://probation-teams-dev.prison.service.justice.gov.uk/v3/api-docs",
+  "https://hmpps-interventions-service-dev.apps.live-1.cloud-platform.service.justice.gov.uk/v3/api-docs",
+  "https://restricted-patients-api-dev.hmpps.service.justice.gov.uk/v3/api-docs",
+  "https://hmpps-staff-lookup-service-dev.hmpps.service.justice.gov.uk/v3/api-docs",
+  "https://hmpps-tier-dev.hmpps.service.justice.gov.uk/v3/api-docs",
+  "https://token-verification-api-dev.prison.service.justice.gov.uk/v3/api-docs",
+  "https://hmpps-workload-dev.hmpps.service.justice.gov.uk/v3/api-docs",
+
+#Microservices
+  "https://raw.githubusercontent.com/ministryofjustice/hmpps-complexity-of-need/main/Complexity%20Of%20Need%20API%20Specification.yaml"
+]
+
+OUTPUTS_DIR = "outputs/"
+SCHEMA_SEARCH_REPORT = OUTPUTS_DIR + "schema_report.csv"
+PATH_SEARCH_REPORT = OUTPUTS_DIR + "path_report.csv"
 SCHEMA_FIELD_FILE = "outputs/schema_field.csv"
 SCHEMA_PARENT_CHILD_FILE = "outputs/schema_parent_child.csv"
 SCHEMA_DIAGRAM = "outputs/schema_hierachy.dot"
 ENDPOINTS_FILE = "outputs/endpoint_analysis.csv"
+TIMEOUT = 10
 
 
 def prepare_directory(filename=""):
@@ -41,15 +76,30 @@ def extract_data(url=DEFAULT_URL):
             data (dict): A dictionary object representing the response yaml/json, 
                 Unsuccesful request: An empty dictionary
     """
-    response = requests.get(url, timeout=10)
-    if response.status_code == 200 and url.endswith('yaml'):
-        data = yaml.safe_load(response.text)
-    elif response.status_code == 200 and not url.endswith('yaml'):
-        data = response.json()
-    else:
-        print(url, " responded with ", response.status_code,
-              " returning empty dictionary")
+    try:
+        response = requests.get(url, timeout=TIMEOUT)
+        if response.status_code == 200 and url.endswith('yaml'):
+            data = yaml.safe_load(response.text)
+        elif response.status_code == 200 and not url.endswith('yaml'):
+            data = response.json()
+        else:
+            print(url, " responded with ", response.status_code,
+                  " returning empty dictionary")
+            data = '{}'
+    except requests.JSONDecodeError:
+        print(f"{url} is not a valid json source, returning empty dictionary object")
         data = '{}'
+    except requests.exceptions.Timeout:
+        print(f"Timeout exception caught for {url}, returning empty dictionary object")
+        data = '{}'
+    except requests.exceptions.TooManyRedirects:
+    # Tell the user their URL was bad and try a different one
+        print(f"TooManyRedirects exception caught for {url}, Returning empty dictionary object")
+        data = '{}'
+    except requests.exceptions.RequestException as r_e:
+    # catastrophic error. bail.
+        raise SystemExit(r_e) from r_e
+
     return data
 
 
@@ -108,6 +158,8 @@ def find_parent_schema(response_dict, child_schema):
 def get_nested_dictionary_or_value(my_dict, keys, return_value=0):
     """
     A Really powerful iterative function to explore very deeply nested dictionaries.
+    You can use this to define generic search functions into nested dict objects,
+    bypassing the need for the dict[][] nomenclature
     This also works when one of the keys might be missing, exiting without error.
     It takes in a dictionary, and a list of key values, to return nested dictionary objects 
     however many levels deep you require WITHOUT lines and lines of code.
@@ -129,7 +181,7 @@ def get_nested_dictionary_or_value(my_dict, keys, return_value=0):
             To get to the `1`, instead of having to write:
             `my_dict["a"]["b"]["c"]["d"]`
             You can use this function by passing in those keys as a list, like so:
-            get_value(my_dict, ["a", "b", "c", "d"])
+            get_nested_dictionary_or_value(my_dict, ["a", "b", "c", "d"])
 
         Usage:
             Where this becomes more powerful is this method handles when one of those keys 
