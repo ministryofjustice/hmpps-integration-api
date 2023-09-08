@@ -6,13 +6,9 @@ from constants import common
 
 OUTPUT_FILE = common.SCHEMA_FIELD_FILE
 
-<<<<<<< HEAD
 def main():
     is_no_arguments = len(sys.argv) == 1
     is_url_provided = len(sys.argv) == 2
-=======
-json_extract = common.extract_data(common.DEFAULT_URL)
->>>>>>> main
 
     if is_no_arguments:
         json_extract = common.extract_data(common.DEFAULT_URL)
