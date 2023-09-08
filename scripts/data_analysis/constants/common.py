@@ -5,7 +5,7 @@ import yaml
 
 import pandas as pd
 
-URL = 'https://prison-api-dev.prison.service.justice.gov.uk/v3/api-docs'
+DEFAULT_URL = 'https://prison-api-dev.prison.service.justice.gov.uk/v3/api-docs'
 SCHEMA_FIELD_FILE = "outputs/schema_field.csv"
 SCHEMA_PARENT_CHILD_FILE = "outputs/schema_parent_child.csv"
 SCHEMA_DIAGRAM = "outputs/schema_hierachy.dot"
@@ -28,7 +28,7 @@ def prepare_directory(filename=""):
         os.remove(filename)
 
 
-def extract_data(url=URL):
+def extract_data(url=DEFAULT_URL):
     """
     Makes a get request against a provided url, 
     returning the response as a dictionary object if possible
