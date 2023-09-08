@@ -111,6 +111,7 @@ def find_nested_schema_reference(api_url, schema_list):
 
 def main():
     """The main method called by the script"""
+    #TODO This should be where you handle command line arguments, amend
     loaded_data_frame = load_data_from_file(INPUT_FILE)
 
     schema_list = []
@@ -120,6 +121,7 @@ def main():
     unique_schema_list = list(dict.fromkeys(schema_list))
 
     data_frame = find_nested_schema_reference(common.DEFAULT_URL, unique_schema_list)
+    #TODO Fix this hardcoded prison default
     data_frame.to_csv(OUTPUT_FILE)
 
     print(f"Operation complete, output saved to {OUTPUT_FILE=}", "\n")
