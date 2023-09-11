@@ -10,5 +10,3 @@ data class RiskPredictor(
     generalPredictorScore = this.generalPredictorScore.toGeneralPredictorScore(),
   )
 }
-
-
