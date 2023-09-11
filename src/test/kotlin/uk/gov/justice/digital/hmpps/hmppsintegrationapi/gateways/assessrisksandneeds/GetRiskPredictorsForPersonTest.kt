@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.assessrisksandneeds
 
 import io.kotest.core.spec.style.DescribeSpec
+import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory
 import org.mockito.kotlin.verify
@@ -13,7 +14,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.AssessRisksAndN
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.AssessRisksAndNeedsApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
-
 
 @ActiveProfiles("test")
 @ContextConfiguration(
@@ -31,6 +31,7 @@ class GetRiskPredictorsForPersonTest(
 
       beforeEach {
         assessRisksAndNeedsApiMockServer.start()
+        Mockito.reset(hmppsAuthGateway)
         assessRisksAndNeedsApiMockServer.stubGetRiskPredictorsForPerson(
           crn,
           """
@@ -44,8 +45,7 @@ class GetRiskPredictorsForPersonTest(
           """,
         )
 
-        Mockito.reset(hmppsAuthGateway)
-        whenever(hmppsAuthGateway.getClientToken("AssessRisksAndNeeds")).thenReturn(HmppsAuthMockServer.TOKEN)
+        whenever(hmppsAuthGateway.getClientToken("ARN")).thenReturn(HmppsAuthMockServer.TOKEN)
       }
 
       afterTest {
@@ -55,7 +55,23 @@ class GetRiskPredictorsForPersonTest(
       it("authenticates using HMPPS Auth with credentials") {
         assessRisksAndNeedsGateway.getRiskPredictorsForPerson(crn)
 
-        verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("nDelius")
+        verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("ARN")
+      }
+
+      it("returns risk predictors for the matching CRN") {
+        val response = assessRisksAndNeedsGateway.getRiskPredictorsForPerson(crn)
+
+        response.data.shouldBe(
+          """
+            [
+              {
+                "generalPredictorScore": {
+                  "ogpTotalWeightedScore": 0
+                }
+              }
+            ]
+          """,
+        )
       }
     },
   )

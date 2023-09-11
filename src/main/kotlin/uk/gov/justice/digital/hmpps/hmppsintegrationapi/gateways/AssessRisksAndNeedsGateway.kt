@@ -7,28 +7,26 @@ import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Response
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.RiskPredictors as HmppsRiskPredictor
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNeeds.RiskPredictors as ArnRiskPredictor
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApiError
-
-
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.RiskPredictor as IntegrationAPIRiskPredictor
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNeeds.RiskPredictors as ArnRiskPredictors
 
 @Component
-class AssessRisksAndNeedsGateway(@Value("\${services.assess-risks-and-needs.base-url}") baseUrl: String){
+class AssessRisksAndNeedsGateway(@Value("\${services.assess-risks-and-needs.base-url}") baseUrl: String) {
   private val webClient = WebClientWrapper(baseUrl)
 
   @Autowired
   lateinit var hmppsAuthGateway: HmppsAuthGateway
 
-  fun getRiskPredictorsForPerson(id: String): Response<List<HmppsRiskPredictor>> {
+  fun getRiskPredictorsForPerson(id: String): Response<List<IntegrationAPIRiskPredictor>> {
     return try {
       Response(
-        data = webClient.requestList<ArnRiskPredictor>(
+        data = webClient.request<ArnRiskPredictors>(
           HttpMethod.GET,
           "/risks/crn/$id/predictors/all",
           authenticationHeader(),
-        ).map { it.toRiskPredictors() }
+        ).arnRiskPredictors.map { it.toRiskPredictor() },
       )
     } catch (exception: WebClientResponseException.NotFound) {
       Response(
@@ -44,7 +42,7 @@ class AssessRisksAndNeedsGateway(@Value("\${services.assess-risks-and-needs.base
   }
 
   private fun authenticationHeader(): Map<String, String> {
-    //TODO we don't know what the token will be yet
+    // TODO we don't know what the token will be yet
     val token = hmppsAuthGateway.getClientToken("ARN")
 
     return mapOf(

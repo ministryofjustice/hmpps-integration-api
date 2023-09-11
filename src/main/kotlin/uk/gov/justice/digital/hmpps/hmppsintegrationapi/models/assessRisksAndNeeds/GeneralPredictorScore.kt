@@ -5,7 +5,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.GeneralPredictorS
 data class GeneralPredictorScore(
   val ogpTotalWeightedScore: Int? = null,
 ) {
-  fun toGeneralPredictorScore() = IntegrationAPIGeneralPredictorScore(
+  fun toGeneralPredictorScore(): IntegrationAPIGeneralPredictorScore = IntegrationAPIGeneralPredictorScore(
     totalWeightedScore = this.ogpTotalWeightedScore,
   )
 }
