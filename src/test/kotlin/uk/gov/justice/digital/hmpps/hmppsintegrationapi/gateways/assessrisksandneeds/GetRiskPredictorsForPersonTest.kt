@@ -14,6 +14,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.AssessRisksAndN
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.AssessRisksAndNeedsApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.GeneralPredictorScore
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.RiskPredictor as IntegrationAPIRiskPredictor
 
 @ActiveProfiles("test")
 @ContextConfiguration(
@@ -27,7 +29,7 @@ class GetRiskPredictorsForPersonTest(
   DescribeSpec(
     {
       val assessRisksAndNeedsApiMockServer = AssessRisksAndNeedsApiMockServer()
-      val crn = "X000000"
+      val crn = "X777776"
 
       beforeEach {
         assessRisksAndNeedsApiMockServer.start()
@@ -36,15 +38,17 @@ class GetRiskPredictorsForPersonTest(
           crn,
           """
             [
-              {
-                "generalPredictorScore": {
-                  "ogpTotalWeightedScore": 0
+                {
+                    "generalPredictorScore": {
+                        "ogpTotalWeightedScore": 0
+                    }
                 }
-              }
             ]
           """,
         )
 
+
+        Mockito.reset(hmppsAuthGateway)
         whenever(hmppsAuthGateway.getClientToken("ARN")).thenReturn(HmppsAuthMockServer.TOKEN)
       }
 
@@ -60,17 +64,8 @@ class GetRiskPredictorsForPersonTest(
 
       it("returns risk predictors for the matching CRN") {
         val response = assessRisksAndNeedsGateway.getRiskPredictorsForPerson(crn)
-
         response.data.shouldBe(
-          """
-            [
-              {
-                "generalPredictorScore": {
-                  "ogpTotalWeightedScore": 0
-                }
-              }
-            ]
-          """,
+            listOf(IntegrationAPIRiskPredictor(generalPredictorScore = GeneralPredictorScore(totalWeightedScore = 0)))
         )
       }
     },

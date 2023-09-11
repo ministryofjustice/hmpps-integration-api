@@ -10,7 +10,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.RiskPredictor as IntegrationAPIRiskPredictor
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNeeds.RiskPredictors as ArnRiskPredictors
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNeeds.RiskPredictor as ARNRiskPredictor
 
 @Component
 class AssessRisksAndNeedsGateway(@Value("\${services.assess-risks-and-needs.base-url}") baseUrl: String) {
@@ -22,11 +22,11 @@ class AssessRisksAndNeedsGateway(@Value("\${services.assess-risks-and-needs.base
   fun getRiskPredictorsForPerson(id: String): Response<List<IntegrationAPIRiskPredictor>> {
     return try {
       Response(
-        data = webClient.request<ArnRiskPredictors>(
+        data = webClient.requestList<ARNRiskPredictor>(
           HttpMethod.GET,
           "/risks/crn/$id/predictors/all",
           authenticationHeader(),
-        ).arnRiskPredictors.map { it.toRiskPredictor() },
+        ).map { it.toRiskPredictor() },
       )
     } catch (exception: WebClientResponseException.NotFound) {
       Response(
@@ -44,7 +44,6 @@ class AssessRisksAndNeedsGateway(@Value("\${services.assess-risks-and-needs.base
   private fun authenticationHeader(): Map<String, String> {
     // TODO we don't know what the token will be yet
     val token = hmppsAuthGateway.getClientToken("ARN")
-
     return mapOf(
       "Authorization" to "Bearer $token",
     )
