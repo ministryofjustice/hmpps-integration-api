@@ -9,8 +9,21 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.RiskPredictor
 @Service
 class GetRiskPredictorsForPersonService(
   @Autowired val assessRisksAndNeedsGateway: AssessRisksAndNeedsGateway,
+  @Autowired val getPersonService: GetPersonService,
 ) {
-  fun execute(crn: String): Response<List<RiskPredictor>> {
-    return assessRisksAndNeedsGateway.getRiskPredictorsForPerson(id = crn)
+  fun execute(pncId: String): Response<List<RiskPredictor>> {
+    val personResponse = getPersonService.execute(pncId = pncId)
+    val crn = personResponse.data["probationOffenderSearch"]?.identifiers?.deliusCrn
+
+    var personRiskPredictors: Response<List<RiskPredictor>> = Response(data = emptyList())
+
+    if (crn != null) {
+      personRiskPredictors = assessRisksAndNeedsGateway.getRiskPredictorsForPerson(id = crn)
+    }
+
+    return Response(
+      data = personRiskPredictors.data,
+      errors = personResponse.errors + personRiskPredictors.errors,
+    )
   }
 }
