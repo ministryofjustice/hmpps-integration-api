@@ -60,16 +60,16 @@ paths:
                 NoQueryParametersBadRequestError:
                   $ref: "#/components/examples/NoQueryParametersBadRequestError"
 
-  /v1/persons/{encodedPncId}:
+  /v1/persons/{hmppsId}:
     get:
       tags:
         - persons
       summary: Returns a person.
       parameters:
-        - $ref: "#/components/parameters/EncodedPncId"
+        - $ref: "#/components/parameters/HmppsId"
       responses:
         "200":
-          description: Successfully found a person with the provided PNC ID.
+          description: Successfully found a person with the provided HMPPS ID.
           content:
             application/json:
               schema:
@@ -80,7 +80,7 @@ paths:
                   probationOffenderSearch:
                     $ref: "#/components/schemas/Person"
         "404":
-          description: Failed to find a person with the provided PNC ID.
+          description: Failed to find a person with the provided HMPPS ID.
           content:
             application/json:
               schema:
@@ -89,19 +89,19 @@ paths:
                 PersonNotFoundError:
                   $ref: "#/components/examples/PersonNotFoundError"
 
-  /v1/persons/{encodedPncId}/images:
+  /v1/persons/{hmppsId}/images:
     get:
       tags:
         - persons
       summary: Returns metadata of images associated with a person.
       parameters:
-        - $ref: "#/components/parameters/EncodedPncId"
+        - $ref: "#/components/parameters/HmppsId"
         - $ref: "#/components/parameters/Page"
         - $ref: "#/components/parameters/PerPage"
       responses:
         "200":
           description:  >
-            Successfully found a person with the provided PNC ID.
+            Successfully found a person with the provided HMPPS ID.
             If a person doesn't have any images, then an empty list (`[]`) is
             returned in the `data` property.
           content:
@@ -117,7 +117,7 @@ paths:
                   pagination:
                     $ref: "#/components/schemas/Pagination"
         "404":
-          description: Failed to find a person with the provided PNC ID.
+          description: Failed to find a person with the provided HMPPS ID.
           content:
             application/json:
               schema:
@@ -155,18 +155,18 @@ paths:
                 ImageNotFoundError:
                   $ref: "#/components/examples/ImageNotFoundError"
 
-  /v1/persons/{encodedPncId}/addresses:
+  /v1/persons/{hmppsId}/addresses:
     get:
       tags:
         - persons
       summary: Returns addresses associated with a person.
       parameters:
-        - $ref: "#/components/parameters/EncodedPncId"
+        - $ref: "#/components/parameters/HmppsId"
         - $ref: "#/components/parameters/Page"
         - $ref: "#/components/parameters/PerPage"
       responses:
         "200":
-          description: Successfully found a person with the provided PNC ID.
+          description: Successfully found a person with the provided HMPPS ID.
           content:
             application/json:
               schema:
@@ -180,7 +180,7 @@ paths:
                   pagination:
                     $ref: "#/components/schemas/Pagination"
         "404":
-          description: Failed to find a person with the provided PNC ID.
+          description: Failed to find a person with the provided HMPPS ID.
           content:
             application/json:
               schema:
@@ -189,18 +189,18 @@ paths:
                 PersonNotFoundError:
                   $ref: "#/components/examples/PersonNotFoundError"
 
-  /v1/persons/{encodedPncId}/offences:
+  /v1/persons/{hmppsId}/offences:
     get:
       tags:
         - persons
       summary: Returns offences associated with a person.
       parameters:
-        - $ref: "#/components/parameters/EncodedPncId"
+        - $ref: "#/components/parameters/HmppsId"
         - $ref: "#/components/parameters/Page"
         - $ref: "#/components/parameters/PerPage"
       responses:
         "200":
-          description: Successfully found offences for a person with the provided PNC ID.
+          description: Successfully found offences for a person with the provided HMPPS ID.
           content:
             application/json:
               schema:
@@ -214,7 +214,7 @@ paths:
                   pagination:
                     $ref: "#/components/schemas/Pagination"
         "404":
-          description: Failed to find offences a person with the provided PNC ID.
+          description: Failed to find offences a person with the provided HMPPS ID.
           content:
             application/json:
               schema:
@@ -223,19 +223,19 @@ paths:
                 PersonNotFoundError:
                   $ref: "#/components/examples/PersonNotFoundError"
 
-  /v1/persons/{encodedPncId}/alerts:
+  /v1/persons/{hmppsId}/alerts:
     get:
       tags:
         - persons
         - alerts
       summary: Returns alerts associated with a person.
       parameters:
-        - $ref: "#/components/parameters/EncodedPncId"
+        - $ref: "#/components/parameters/HmppsId"
         - $ref: "#/components/parameters/Page"
         - $ref: "#/components/parameters/PerPage"
       responses:
         "200":
-          description: Successfully found alerts for a person with the provided PNC ID.
+          description: Successfully found alerts for a person with the provided HMPPS ID.
           content:
             application/json:
               schema:
@@ -249,7 +249,7 @@ paths:
                   pagination:
                     $ref: "#/components/schemas/Pagination"
         "404":
-          description: Failed to find alerts a person with the provided PNC ID.
+          description: Failed to find alerts a person with the provided HMPPS ID.
           content:
             application/json:
               schema:
@@ -258,18 +258,18 @@ paths:
                 PersonNotFoundError:
                   $ref: "#/components/examples/PersonNotFoundError"
 
-  /v1/persons/{Id}/sentences:
+  /v1/persons/{hmppsId}/sentences:
     get:
       tags:
         - persons
       summary: Returns sentences associated with a person.
       parameters:
-        - $ref: "#/components/parameters/EncodedPncId"
+        - $ref: "#/components/parameters/HmppsId"
         - $ref: "#/components/parameters/Page"
         - $ref: "#/components/parameters/PerPage"
       responses:
         "200":
-          description: Successfully found sentences for a person with the provided PNC ID.
+          description: Successfully found sentences for a person with the provided HMPPS ID.
           content:
             application/json:
               schema:
@@ -283,7 +283,7 @@ paths:
                   pagination:
                     $ref: "#/components/schemas/Pagination"
         "404":
-          description: Failed to find sentences a person with the provided PNC ID.
+          description: Failed to find sentences a person with the provided HMPPS ID.
           content:
             application/json:
               schema:
@@ -394,9 +394,9 @@ paths:
 
 components:
   parameters:
-    EncodedPncId:
-      name: encodedPncId
-      description: A URL-encoded Police National Computer (PNC) identifier.
+    HmppsId:
+      name: hmppsId
+      description: A URL-encoded HMPPS identifier
       example: 2008%2F0545166T
       in: path
       required: true
@@ -866,8 +866,8 @@ components:
       value:
         status: 404
         errorCode: null
-        userMessage: "404 Not found error: Could not find person with PNC id: 2003/0011991D"
-        developerMessage: "Could not find person with PNC id: 2003/0011991D"
+        userMessage: "404 Not found error: Could not find person with HMPPS id: 2003/0011991D"
+        developerMessage: "Could not find person with HMPPS id: 2003/0011991D"
         moreInfo: null
     ImageNotFoundError:
       value:
