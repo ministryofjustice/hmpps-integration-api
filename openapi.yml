@@ -193,7 +193,12 @@ paths:
     get:
       tags:
         - persons
-      summary: Returns offences associated with a person.
+      summary: >
+            Returns offences associated with a person.
+
+            Note: This API does not contain the complete list of offences for a person.
+            Offences are retrieved from Prison and Probation systems exclusively.
+            Prison systems record only custodial sentences, while Probation systems record only the main offence and some additional offences for case management purposes. Other offences recorded by HMCTS and police may not be included.
       parameters:
         - $ref: "#/components/parameters/HmppsId"
         - $ref: "#/components/parameters/Page"
