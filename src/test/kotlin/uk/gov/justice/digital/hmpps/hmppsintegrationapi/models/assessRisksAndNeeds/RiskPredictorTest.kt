@@ -10,13 +10,13 @@ class RiskPredictorTest : DescribeSpec(
     describe("#toRiskPredictor") {
       it("maps ARN Risk Predictor to integration API Risk Predictor") {
         val arnRiskPredictor = ArnRiskPredictor(
-          generalPredictorScore = ArnGeneralPredictorScore(ogpTotalWeightedScore = 80),
+          generalPredictorScore = ArnGeneralPredictorScore(ogpRisk = 80),
         )
 
         val integrationApiRiskPredictor = arnRiskPredictor.toRiskPredictor()
 
-        integrationApiRiskPredictor.generalPredictorScore.totalWeightedScore.shouldBe(
-          arnRiskPredictor.generalPredictorScore.ogpTotalWeightedScore,
+        integrationApiRiskPredictor.generalPredictorScore.ogpRisk.shouldBe(
+          arnRiskPredictor.generalPredictorScore.ogpRisk,
         )
       }
     }

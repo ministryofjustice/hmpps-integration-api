@@ -67,7 +67,7 @@ internal class RiskPredictorsControllerTest(
           """
           "data": [
             {
-              "generalPredictorScore": {"totalWeightedScore":50}
+              "generalPredictorScore": {"ogpRisk":50}
             }
           ]
         """.removeWhitespaceAndNewlines(),
