@@ -8,26 +8,26 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.decodeUrlCharacters
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.RiskPredictor
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.RiskPredictorScore
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetRiskPredictorsForPersonService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetRiskPredictorScoresForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.PaginatedResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.paginateWith
 
 @RestController
 @RequestMapping("/v1/persons")
-class RiskPredictorsController(
-  @Autowired val getRiskPredictorsForPersonService: GetRiskPredictorsForPersonService,
+class RiskPredictorScoresController(
+  @Autowired val getRiskPredictorScoresForPersonService: GetRiskPredictorScoresForPersonService,
 ) {
 
-  @GetMapping("{encodedPncId}/risk-predictors")
-  fun getPersonRiskPredictors(
+  @GetMapping("{encodedPncId}/risk-predictor-scores")
+  fun getPersonRiskPredictorScores(
     @PathVariable encodedPncId: String,
     @RequestParam(required = false, defaultValue = "1", name = "page") page: Int,
     @RequestParam(required = false, defaultValue = "10", name = "perPage") perPage: Int,
-  ): PaginatedResponse<RiskPredictor> {
+  ): PaginatedResponse<RiskPredictorScore> {
     val pncId = encodedPncId.decodeUrlCharacters()
-    val response = getRiskPredictorsForPersonService.execute(pncId)
+    val response = getRiskPredictorScoresForPersonService.execute(pncId)
 
     if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
       throw EntityNotFoundException("Could not find person with id: $pncId")

@@ -18,14 +18,14 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.AssessRisksA
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.GeneralPredictorScore
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.RiskPredictor as IntegrationAPIRiskPredictor
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.RiskPredictorScore as IntegrationAPIRiskPredictorScore
 
 @ActiveProfiles("test")
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
   classes = [AssessRisksAndNeedsGateway::class],
 )
-class GetRiskPredictorsForPersonTest(
+class GetRiskPredictorScoresForPersonTest(
   @MockBean val hmppsAuthGateway: HmppsAuthGateway,
   val assessRisksAndNeedsGateway: AssessRisksAndNeedsGateway,
 ) :
@@ -37,7 +37,7 @@ class GetRiskPredictorsForPersonTest(
       beforeEach {
         assessRisksAndNeedsApiMockServer.start()
         Mockito.reset(hmppsAuthGateway)
-        assessRisksAndNeedsApiMockServer.stubGetRiskPredictorsForPerson(
+        assessRisksAndNeedsApiMockServer.stubGetRiskPredictorScoresForPerson(
           crn,
           """
             [
@@ -59,30 +59,30 @@ class GetRiskPredictorsForPersonTest(
       }
 
       it("authenticates using HMPPS Auth with credentials") {
-        assessRisksAndNeedsGateway.getRiskPredictorsForPerson(crn)
+        assessRisksAndNeedsGateway.getRiskPredictorScoresForPerson(crn)
 
         verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("ARN")
       }
 
-      it("returns risk predictors for the matching CRN") {
-        val response = assessRisksAndNeedsGateway.getRiskPredictorsForPerson(crn)
+      it("returns risk predictor scores for the matching CRN") {
+        val response = assessRisksAndNeedsGateway.getRiskPredictorScoresForPerson(crn)
         response.data.shouldBe(
-          listOf(IntegrationAPIRiskPredictor(generalPredictorScore = GeneralPredictorScore(ogpRisk = 0))),
+          listOf(IntegrationAPIRiskPredictorScore(generalPredictorScore = GeneralPredictorScore(ogpRisk = 0))),
         )
       }
 
-      it("returns an empty list when no risk predictors are found") {
-        assessRisksAndNeedsApiMockServer.stubGetRiskPredictorsForPerson(crn, "[]")
+      it("returns an empty list when no risk predictor scores are found") {
+        assessRisksAndNeedsApiMockServer.stubGetRiskPredictorScoresForPerson(crn, "[]")
 
-        val response = assessRisksAndNeedsGateway.getRiskPredictorsForPerson(crn)
+        val response = assessRisksAndNeedsGateway.getRiskPredictorScoresForPerson(crn)
 
         response.data.shouldBe(emptyList())
       }
 
       it("returns an error when 404 NOT FOUND is returned because no person is found") {
-        assessRisksAndNeedsApiMockServer.stubGetRiskPredictorsForPerson(crn, "", HttpStatus.NOT_FOUND)
+        assessRisksAndNeedsApiMockServer.stubGetRiskPredictorScoresForPerson(crn, "", HttpStatus.NOT_FOUND)
 
-        val response = assessRisksAndNeedsGateway.getRiskPredictorsForPerson(crn)
+        val response = assessRisksAndNeedsGateway.getRiskPredictorScoresForPerson(crn)
 
         response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND).shouldBeTrue()
       }

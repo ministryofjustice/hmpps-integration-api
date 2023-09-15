@@ -9,8 +9,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrap
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.RiskPredictor as IntegrationAPIRiskPredictor
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNeeds.RiskPredictor as ARNRiskPredictor
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.RiskPredictorScore as IntegrationAPIRiskPredictorScore
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNeeds.RiskPredictorScore as ARNRiskPredictorScore
 
 @Component
 class AssessRisksAndNeedsGateway(@Value("\${services.assess-risks-and-needs.base-url}") baseUrl: String) {
@@ -19,14 +19,14 @@ class AssessRisksAndNeedsGateway(@Value("\${services.assess-risks-and-needs.base
   @Autowired
   lateinit var hmppsAuthGateway: HmppsAuthGateway
 
-  fun getRiskPredictorsForPerson(id: String): Response<List<IntegrationAPIRiskPredictor>> {
+  fun getRiskPredictorScoresForPerson(id: String): Response<List<IntegrationAPIRiskPredictorScore>> {
     return try {
       Response(
-        data = webClient.requestList<ARNRiskPredictor>(
+        data = webClient.requestList<ARNRiskPredictorScore>(
           HttpMethod.GET,
           "/risks/crn/$id/predictors/all",
           authenticationHeader(),
-        ).map { it.toRiskPredictor() },
+        ).map { it.toRiskPredictorScore() },
       )
     } catch (exception: WebClientResponseException.NotFound) {
       Response(
@@ -42,7 +42,6 @@ class AssessRisksAndNeedsGateway(@Value("\${services.assess-risks-and-needs.base
   }
 
   private fun authenticationHeader(): Map<String, String> {
-    // TODO we don't know what the token will be yet
     val token = hmppsAuthGateway.getClientToken("ARN")
     return mapOf(
       "Authorization" to "Bearer $token",

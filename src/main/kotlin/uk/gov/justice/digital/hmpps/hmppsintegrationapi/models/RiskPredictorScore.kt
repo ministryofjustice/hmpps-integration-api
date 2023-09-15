@@ -1,5 +1,5 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models
 
-data class RiskPredictor(
+data class RiskPredictorScore(
   val generalPredictorScore: GeneralPredictorScore = GeneralPredictorScore(),
 )

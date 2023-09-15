@@ -4,26 +4,26 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.AssessRisksAndNeedsGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Response
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.RiskPredictor
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.RiskPredictorScore
 
 @Service
-class GetRiskPredictorsForPersonService(
+class GetRiskPredictorScoresForPersonService(
   @Autowired val assessRisksAndNeedsGateway: AssessRisksAndNeedsGateway,
   @Autowired val getPersonService: GetPersonService,
 ) {
-  fun execute(pncId: String): Response<List<RiskPredictor>> {
+  fun execute(pncId: String): Response<List<RiskPredictorScore>> {
     val personResponse = getPersonService.execute(pncId = pncId)
     val crn = personResponse.data["probationOffenderSearch"]?.identifiers?.deliusCrn
 
-    var personRiskPredictors: Response<List<RiskPredictor>> = Response(data = emptyList())
+    var personRiskPredictorScores: Response<List<RiskPredictorScore>> = Response(data = emptyList())
 
     if (crn != null) {
-      personRiskPredictors = assessRisksAndNeedsGateway.getRiskPredictorsForPerson(id = crn)
+      personRiskPredictorScores = assessRisksAndNeedsGateway.getRiskPredictorScoresForPerson(id = crn)
     }
 
     return Response(
-      data = personRiskPredictors.data,
-      errors = personResponse.errors + personRiskPredictors.errors,
+      data = personRiskPredictorScores.data,
+      errors = personResponse.errors + personRiskPredictorScores.errors,
     )
   }
 }

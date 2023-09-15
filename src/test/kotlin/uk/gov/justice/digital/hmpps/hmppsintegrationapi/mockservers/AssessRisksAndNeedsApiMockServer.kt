@@ -11,7 +11,7 @@ class AssessRisksAndNeedsApiMockServer : WireMockServer(WIREMOCK_PORT) {
     private const val WIREMOCK_PORT = 4004
   }
 
-  fun stubGetRiskPredictorsForPerson(crn: String, body: String, status: HttpStatus = HttpStatus.OK) {
+  fun stubGetRiskPredictorScoresForPerson(crn: String, body: String, status: HttpStatus = HttpStatus.OK) {
     stubFor(
       get("/risks/crn/$crn/predictors/all")
         .withHeader(
