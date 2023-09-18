@@ -41,17 +41,17 @@ class GetRiskPredictorScoresForPersonTest(
           crn,
           """
             [
-                {
-                    "generalPredictorScore": {
-                        "ogpRisk": 0
-                    }
-                }
+              {
+                "generalPredictorScore": {
+                      "ogpRisk": 0
+                  }
+              }
             ]
           """,
         )
 
         Mockito.reset(hmppsAuthGateway)
-        whenever(hmppsAuthGateway.getClientToken("ARN")).thenReturn(HmppsAuthMockServer.TOKEN)
+        whenever(hmppsAuthGateway.getClientToken("ASSESS_RISKS_AND_NEEDS")).thenReturn(HmppsAuthMockServer.TOKEN)
       }
 
       afterTest {
@@ -61,7 +61,7 @@ class GetRiskPredictorScoresForPersonTest(
       it("authenticates using HMPPS Auth with credentials") {
         assessRisksAndNeedsGateway.getRiskPredictorScoresForPerson(crn)
 
-        verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("ARN")
+        verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("ASSESS_RISKS_AND_NEEDS")
       }
 
       it("returns risk predictor scores for the matching CRN") {

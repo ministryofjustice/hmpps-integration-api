@@ -99,7 +99,7 @@ internal class RiskPredictorScoresControllerTest(
             data = emptyList(),
             errors = listOf(
               UpstreamApiError(
-                causedBy = UpstreamApi.ARN,
+                causedBy = UpstreamApi.ASSESS_RISKS_AND_NEEDS,
                 type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
               ),
             ),

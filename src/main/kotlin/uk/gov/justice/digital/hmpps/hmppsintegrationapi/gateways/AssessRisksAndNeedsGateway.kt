@@ -33,7 +33,7 @@ class AssessRisksAndNeedsGateway(@Value("\${services.assess-risks-and-needs.base
         data = emptyList(),
         errors = listOf(
           UpstreamApiError(
-            causedBy = UpstreamApi.ARN,
+            causedBy = UpstreamApi.ASSESS_RISKS_AND_NEEDS,
             type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
           ),
         ),
@@ -42,7 +42,7 @@ class AssessRisksAndNeedsGateway(@Value("\${services.assess-risks-and-needs.base
   }
 
   private fun authenticationHeader(): Map<String, String> {
-    val token = hmppsAuthGateway.getClientToken("ARN")
+    val token = hmppsAuthGateway.getClientToken("ASSESS_RISKS_AND_NEEDS")
     return mapOf(
       "Authorization" to "Bearer $token",
     )

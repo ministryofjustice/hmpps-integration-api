@@ -13,12 +13,12 @@ class GetRiskPredictorScoresForPersonService(
 ) {
   fun execute(pncId: String): Response<List<RiskPredictorScore>> {
     val personResponse = getPersonService.execute(pncId = pncId)
-    val crn = personResponse.data["probationOffenderSearch"]?.identifiers?.deliusCrn
+    val deliusCrn = personResponse.data["probationOffenderSearch"]?.identifiers?.deliusCrn
 
     var personRiskPredictorScores: Response<List<RiskPredictorScore>> = Response(data = emptyList())
 
-    if (crn != null) {
-      personRiskPredictorScores = assessRisksAndNeedsGateway.getRiskPredictorScoresForPerson(id = crn)
+    if (deliusCrn != null) {
+      personRiskPredictorScores = assessRisksAndNeedsGateway.getRiskPredictorScoresForPerson(id = deliusCrn)
     }
 
     return Response(
