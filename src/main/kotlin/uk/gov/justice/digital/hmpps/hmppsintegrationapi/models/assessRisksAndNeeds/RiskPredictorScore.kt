@@ -2,11 +2,14 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNe
 
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.RiskPredictorScore as IntegrationAPIRiskPredictorScore
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNeeds.GeneralPredictorScore as ArnGeneralPredictorScore
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNeeds.ViolencePredictorScore as ArnViolencePredictorScore
 
 data class RiskPredictorScore(
   val generalPredictorScore: ArnGeneralPredictorScore = ArnGeneralPredictorScore(),
+  val violencePredictorScore: ArnViolencePredictorScore = ArnViolencePredictorScore(),
 ) {
   fun toRiskPredictorScore(): IntegrationAPIRiskPredictorScore = IntegrationAPIRiskPredictorScore(
     generalPredictorScore = this.generalPredictorScore.toGeneralPredictorScore(),
+    violencePredictorScore = this.violencePredictorScore.toViolencePredictorScore()
   )
 }

@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNe
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNeeds.GeneralPredictorScore as ArnGeneralPredictorScore
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNeeds.ViolencePredictorScore as ArnViolencePredictorScore
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNeeds.RiskPredictorScore as ArnRiskPredictorScore
 
 class RiskPredictorTest : DescribeSpec(
@@ -11,12 +12,17 @@ class RiskPredictorTest : DescribeSpec(
       it("maps ARN Risk Predictor Score to integration API Risk Predictor Score") {
         val arnRiskPredictorScore = ArnRiskPredictorScore(
           generalPredictorScore = ArnGeneralPredictorScore(ogpRisk = "MEDIUM"),
+          violencePredictorScore = ArnViolencePredictorScore(ovpRisk = "LOW"),
         )
 
         val integrationApiRiskPredictorScore = arnRiskPredictorScore.toRiskPredictorScore()
 
         integrationApiRiskPredictorScore.generalPredictorScore.ogpRisk.shouldBe(
           arnRiskPredictorScore.generalPredictorScore.ogpRisk,
+        )
+
+        integrationApiRiskPredictorScore.violencePredictorScore.ovpRisk.shouldBe(
+          arnRiskPredictorScore.violencePredictorScore.ovpRisk,
         )
       }
     }
