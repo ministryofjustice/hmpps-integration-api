@@ -21,7 +21,7 @@ class RiskPredictorScoreTest : DescribeSpec(
           arnRiskPredictorScore.generalPredictorScore.ogpRisk,
         )
 
-        integrationApiRiskPredictorScore.violencePredictorScore.ovpRisk.shouldBe(
+        integrationApiRiskPredictorScore.violencePredictor.scoreLevel.shouldBe(
           arnRiskPredictorScore.violencePredictorScore.ovpRisk,
         )
       }

@@ -32,13 +32,13 @@ class GetRiskPredictorScoresForPersonTest(
   DescribeSpec(
     {
       val assessRisksAndNeedsApiMockServer = AssessRisksAndNeedsApiMockServer()
-      val crn = "X777776"
+      val deliusCrn = "X777776"
 
       beforeEach {
         assessRisksAndNeedsApiMockServer.start()
         Mockito.reset(hmppsAuthGateway)
         assessRisksAndNeedsApiMockServer.stubGetRiskPredictorScoresForPerson(
-          crn,
+          deliusCrn,
           """
             [
               {
@@ -59,30 +59,30 @@ class GetRiskPredictorScoresForPersonTest(
       }
 
       it("authenticates using HMPPS Auth with credentials") {
-        assessRisksAndNeedsGateway.getRiskPredictorScoresForPerson(crn)
+        assessRisksAndNeedsGateway.getRiskPredictorScoresForPerson(deliusCrn)
 
         verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("ASSESS_RISKS_AND_NEEDS")
       }
 
       it("returns risk predictor scores for the matching CRN") {
-        val response = assessRisksAndNeedsGateway.getRiskPredictorScoresForPerson(crn)
+        val response = assessRisksAndNeedsGateway.getRiskPredictorScoresForPerson(deliusCrn)
         response.data.shouldBe(
           listOf(IntegrationAPIRiskPredictorScore(generalPredictor = IntegrationAPIGeneralPredictor(scoreLevel = "LOW"))),
         )
       }
 
       it("returns an empty list when no risk predictor scores are found") {
-        assessRisksAndNeedsApiMockServer.stubGetRiskPredictorScoresForPerson(crn, "[]")
+        assessRisksAndNeedsApiMockServer.stubGetRiskPredictorScoresForPerson(deliusCrn, "[]")
 
-        val response = assessRisksAndNeedsGateway.getRiskPredictorScoresForPerson(crn)
+        val response = assessRisksAndNeedsGateway.getRiskPredictorScoresForPerson(deliusCrn)
 
         response.data.shouldBe(emptyList())
       }
 
       it("returns an error when 404 NOT FOUND is returned because no person is found") {
-        assessRisksAndNeedsApiMockServer.stubGetRiskPredictorScoresForPerson(crn, "", HttpStatus.NOT_FOUND)
+        assessRisksAndNeedsApiMockServer.stubGetRiskPredictorScoresForPerson(deliusCrn, "", HttpStatus.NOT_FOUND)
 
-        val response = assessRisksAndNeedsGateway.getRiskPredictorScoresForPerson(crn)
+        val response = assessRisksAndNeedsGateway.getRiskPredictorScoresForPerson(deliusCrn)
 
         response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND).shouldBeTrue()
       }

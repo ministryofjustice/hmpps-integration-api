@@ -10,6 +10,6 @@ data class RiskPredictorScore(
 ) {
   fun toRiskPredictorScore(): IntegrationAPIRiskPredictorScore = IntegrationAPIRiskPredictorScore(
     generalPredictor = this.generalPredictorScore.toGeneralPredictor(),
-    violencePredictorScore = this.violencePredictorScore.toViolencePredictorScore(),
+    violencePredictor = this.violencePredictorScore.toViolencePredictor(),
   )
 }

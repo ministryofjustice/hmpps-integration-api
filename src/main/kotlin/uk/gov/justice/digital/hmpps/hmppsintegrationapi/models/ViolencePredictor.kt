@@ -1,5 +1,5 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models
 
-data class ViolencePredictorScore(
-  val ovpRisk: String? = null,
+data class ViolencePredictor(
+  val scoreLevel: String? = null,
 )

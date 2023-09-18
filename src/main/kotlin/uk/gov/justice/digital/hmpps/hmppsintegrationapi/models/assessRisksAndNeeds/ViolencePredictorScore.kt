@@ -1,11 +1,11 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNeeds
 
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ViolencePredictorScore as IntegrationAPIViolencePredictorScore
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ViolencePredictor as IntegrationAPIViolencePredictor
 
 data class ViolencePredictorScore(
   val ovpRisk: String? = null,
 ) {
-  fun toViolencePredictorScore(): IntegrationAPIViolencePredictorScore = IntegrationAPIViolencePredictorScore(
-    ovpRisk = this.ovpRisk,
+  fun toViolencePredictor(): IntegrationAPIViolencePredictor = IntegrationAPIViolencePredictor(
+    scoreLevel = this.ovpRisk,
   )
 }
