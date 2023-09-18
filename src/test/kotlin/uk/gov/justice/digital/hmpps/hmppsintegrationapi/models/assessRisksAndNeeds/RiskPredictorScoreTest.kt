@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNe
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNeeds.GeneralPredictorScore as ArnGeneralPredictorScore
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNeeds.GroupReconvictionScore as ArnGroupConvictionScore
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNeeds.RiskPredictorScore as ArnRiskPredictorScore
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNeeds.ViolencePredictorScore as ArnViolencePredictorScore
 
@@ -13,6 +14,7 @@ class RiskPredictorScoreTest : DescribeSpec(
         val arnRiskPredictorScore = ArnRiskPredictorScore(
           generalPredictorScore = ArnGeneralPredictorScore(ogpRisk = "MEDIUM"),
           violencePredictorScore = ArnViolencePredictorScore(ovpRisk = "LOW"),
+          groupReconvictionScore = ArnGroupConvictionScore(scoreLevel = "VERY_HIGH"),
         )
 
         val integrationApiRiskPredictorScore = arnRiskPredictorScore.toRiskPredictorScore()
@@ -23,6 +25,10 @@ class RiskPredictorScoreTest : DescribeSpec(
 
         integrationApiRiskPredictorScore.violencePredictor.scoreLevel.shouldBe(
           arnRiskPredictorScore.violencePredictorScore.ovpRisk,
+        )
+
+        integrationApiRiskPredictorScore.groupReconviction.scoreLevel.shouldBe(
+          arnRiskPredictorScore.groupReconvictionScore.scoreLevel,
         )
       }
     }
