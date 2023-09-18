@@ -69,7 +69,7 @@ internal class GetRiskPredictorScoresForPersonServiceTest(
     it("returns risk predictor scores for a person") {
       val riskPredictors = listOf(
         RiskPredictorScore(
-          generalPredictorScore = GeneralPredictorScore(80),
+          generalPredictorScore = GeneralPredictorScore("LOW"),
         ),
       )
       whenever(assessRisksAndNeedsGateway.getRiskPredictorScoresForPerson(deliusCrn)).thenReturn(

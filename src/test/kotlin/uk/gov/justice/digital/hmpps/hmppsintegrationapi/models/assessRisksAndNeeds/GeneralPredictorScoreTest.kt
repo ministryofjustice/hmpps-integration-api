@@ -9,7 +9,7 @@ class GeneralPredictorScoreTest : DescribeSpec(
       it("maps one-to-one attributes to integration API attributes") {
 
         val arnGeneralPredictorScore = ArnGeneralPredictorScore(
-          ogpRisk = 70,
+          ogpRisk = "HIGH",
         )
 
         val integrationApiGeneralPredictorScore = arnGeneralPredictorScore.toGeneralPredictorScore()

@@ -41,7 +41,7 @@ internal class RiskPredictorScoresControllerTest(
           Response(
             data = listOf(
               RiskPredictorScore(
-                generalPredictorScore = GeneralPredictorScore(50),
+                generalPredictorScore = GeneralPredictorScore("HIGH"),
               ),
             ),
           ),
@@ -67,7 +67,7 @@ internal class RiskPredictorScoresControllerTest(
           """
           "data": [
             {
-              "generalPredictorScore": {"ogpRisk":50}
+              "generalPredictorScore": {"ogpRisk":"HIGH"}
             }
           ]
         """.removeWhitespaceAndNewlines(),
@@ -117,7 +117,7 @@ internal class RiskPredictorScoresControllerTest(
             data =
             List(30) {
               RiskPredictorScore(
-                generalPredictorScore = GeneralPredictorScore(60),
+                generalPredictorScore = GeneralPredictorScore("HIGH"),
               )
             },
           ),

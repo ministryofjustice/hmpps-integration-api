@@ -43,7 +43,7 @@ class GetRiskPredictorScoresForPersonTest(
             [
               {
                 "generalPredictorScore": {
-                      "ogpRisk": 0
+                      "ogpRisk": "LOW"
                   }
               }
             ]
@@ -67,7 +67,7 @@ class GetRiskPredictorScoresForPersonTest(
       it("returns risk predictor scores for the matching CRN") {
         val response = assessRisksAndNeedsGateway.getRiskPredictorScoresForPerson(crn)
         response.data.shouldBe(
-          listOf(IntegrationAPIRiskPredictorScore(generalPredictorScore = GeneralPredictorScore(ogpRisk = 0))),
+          listOf(IntegrationAPIRiskPredictorScore(generalPredictorScore = GeneralPredictorScore(ogpRisk = "LOW"))),
         )
       }
 
