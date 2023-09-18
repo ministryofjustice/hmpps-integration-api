@@ -23,6 +23,7 @@ import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.GeneralPredictor as IntegrationAPIGeneralPredictor
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.RiskPredictorScore as IntegrationAPIRiskPredictorScore
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ViolencePredictor as IntegrationAPIViolencePredictor
 
 @WebMvcTest(controllers = [RiskPredictorScoresController::class])
 internal class RiskPredictorScoresControllerTest(
@@ -42,6 +43,7 @@ internal class RiskPredictorScoresControllerTest(
             data = listOf(
               IntegrationAPIRiskPredictorScore(
                 generalPredictor = IntegrationAPIGeneralPredictor("HIGH"),
+                violencePredictor = IntegrationAPIViolencePredictor("MEDIUM"),
               ),
             ),
           ),
@@ -67,7 +69,8 @@ internal class RiskPredictorScoresControllerTest(
           """
           "data": [
             {
-              "generalPredictor": {"scoreLevel":"HIGH"}
+              "generalPredictor": {"scoreLevel":"HIGH"},
+              "violencePredictor": {"scoreLevel":"MEDIUM"}
             }
           ]
         """.removeWhitespaceAndNewlines(),
@@ -118,6 +121,7 @@ internal class RiskPredictorScoresControllerTest(
             List(30) {
               IntegrationAPIRiskPredictorScore(
                 generalPredictor = IntegrationAPIGeneralPredictor("HIGH"),
+                violencePredictor = IntegrationAPIViolencePredictor("MEDIUM"),
               )
             },
           ),
