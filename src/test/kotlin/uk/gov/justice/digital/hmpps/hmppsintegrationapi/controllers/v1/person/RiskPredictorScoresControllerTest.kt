@@ -15,14 +15,14 @@ import org.springframework.http.HttpStatus
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.GeneralPredictorScore
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Response
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.RiskPredictorScore
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetRiskPredictorScoresForPersonService
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.GeneralPredictor as IntegrationAPIGeneralPredictor
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.RiskPredictorScore as IntegrationAPIRiskPredictorScore
 
 @WebMvcTest(controllers = [RiskPredictorScoresController::class])
 internal class RiskPredictorScoresControllerTest(
@@ -40,8 +40,8 @@ internal class RiskPredictorScoresControllerTest(
         whenever(getRiskPredictorScoresForPersonService.execute(pncId)).thenReturn(
           Response(
             data = listOf(
-              RiskPredictorScore(
-                generalPredictorScore = GeneralPredictorScore("HIGH"),
+              IntegrationAPIRiskPredictorScore(
+                generalPredictor = IntegrationAPIGeneralPredictor("HIGH"),
               ),
             ),
           ),
@@ -67,7 +67,7 @@ internal class RiskPredictorScoresControllerTest(
           """
           "data": [
             {
-              "generalPredictorScore": {"ogpRisk":"HIGH"}
+              "generalPredictor": {"scoreLevel":"HIGH"}
             }
           ]
         """.removeWhitespaceAndNewlines(),
@@ -116,8 +116,8 @@ internal class RiskPredictorScoresControllerTest(
           Response(
             data =
             List(30) {
-              RiskPredictorScore(
-                generalPredictorScore = GeneralPredictorScore("HIGH"),
+              IntegrationAPIRiskPredictorScore(
+                generalPredictor = IntegrationAPIGeneralPredictor("HIGH"),
               )
             },
           ),

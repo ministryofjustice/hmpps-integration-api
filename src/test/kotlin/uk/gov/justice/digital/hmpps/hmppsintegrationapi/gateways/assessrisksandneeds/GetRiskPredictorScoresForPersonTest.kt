@@ -16,8 +16,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.AssessRisksAndN
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.AssessRisksAndNeedsApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.GeneralPredictorScore
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.GeneralPredictor as IntegrationAPIGeneralPredictor
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.RiskPredictorScore as IntegrationAPIRiskPredictorScore
 
 @ActiveProfiles("test")
@@ -67,7 +67,7 @@ class GetRiskPredictorScoresForPersonTest(
       it("returns risk predictor scores for the matching CRN") {
         val response = assessRisksAndNeedsGateway.getRiskPredictorScoresForPerson(crn)
         response.data.shouldBe(
-          listOf(IntegrationAPIRiskPredictorScore(generalPredictorScore = GeneralPredictorScore(ogpRisk = "LOW"))),
+          listOf(IntegrationAPIRiskPredictorScore(generalPredictor = IntegrationAPIGeneralPredictor(scoreLevel = "LOW"))),
         )
       }
 

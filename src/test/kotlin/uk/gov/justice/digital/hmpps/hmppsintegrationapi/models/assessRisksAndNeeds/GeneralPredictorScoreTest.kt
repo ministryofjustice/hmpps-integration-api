@@ -5,16 +5,16 @@ import io.kotest.matchers.shouldBe
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNeeds.GeneralPredictorScore as ArnGeneralPredictorScore
 class GeneralPredictorScoreTest : DescribeSpec(
   {
-    describe("#toGeneralPredictorScore") {
+    describe("#toGeneralPredictor") {
       it("maps one-to-one attributes to integration API attributes") {
 
         val arnGeneralPredictorScore = ArnGeneralPredictorScore(
           ogpRisk = "HIGH",
         )
 
-        val integrationApiGeneralPredictorScore = arnGeneralPredictorScore.toGeneralPredictorScore()
+        val integrationApiGeneralPredictor = arnGeneralPredictorScore.toGeneralPredictor()
 
-        integrationApiGeneralPredictorScore.ogpRisk.shouldBe(arnGeneralPredictorScore.ogpRisk)
+        integrationApiGeneralPredictor.scoreLevel.shouldBe(arnGeneralPredictorScore.ogpRisk)
       }
     }
   },

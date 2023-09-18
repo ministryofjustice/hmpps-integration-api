@@ -9,7 +9,7 @@ data class RiskPredictorScore(
   val violencePredictorScore: ArnViolencePredictorScore = ArnViolencePredictorScore(),
 ) {
   fun toRiskPredictorScore(): IntegrationAPIRiskPredictorScore = IntegrationAPIRiskPredictorScore(
-    generalPredictorScore = this.generalPredictorScore.toGeneralPredictorScore(),
-    violencePredictorScore = this.violencePredictorScore.toViolencePredictorScore()
+    generalPredictor = this.generalPredictorScore.toGeneralPredictor(),
+    violencePredictorScore = this.violencePredictorScore.toViolencePredictorScore(),
   )
 }
