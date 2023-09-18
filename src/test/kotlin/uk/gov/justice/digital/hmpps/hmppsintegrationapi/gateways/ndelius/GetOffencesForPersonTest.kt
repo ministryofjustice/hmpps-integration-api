@@ -35,12 +35,12 @@ class GetOffencesForPersonTest(
   DescribeSpec(
     {
       val nDeliusApiMockServer = NDeliusApiMockServer()
-      val crn = "X777776"
+      val deliusCrn = "X777776"
 
       beforeEach {
         nDeliusApiMockServer.start()
         nDeliusApiMockServer.stubGetSupervisionsForPerson(
-          crn,
+          deliusCrn,
           File("src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/ndelius/fixtures/GetSupervisionsResponse.json").readText(),
         )
 
@@ -53,13 +53,13 @@ class GetOffencesForPersonTest(
       }
 
       it("authenticates using HMPPS Auth with credentials") {
-        nDeliusGateway.getOffencesForPerson(crn)
+        nDeliusGateway.getOffencesForPerson(deliusCrn)
 
         verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("nDelius")
       }
 
       it("returns offences for the matching CRN") {
-        val response = nDeliusGateway.getOffencesForPerson(crn)
+        val response = nDeliusGateway.getOffencesForPerson(deliusCrn)
 
         response.data.shouldBe(
           listOf(
@@ -129,21 +129,21 @@ class GetOffencesForPersonTest(
 
       it("returns an empty list if no offences are found") {
         nDeliusApiMockServer.stubGetSupervisionsForPerson(
-          crn,
+          deliusCrn,
           """
           { "supervisions": [] }
           """,
         )
 
-        val response = nDeliusGateway.getOffencesForPerson(crn)
+        val response = nDeliusGateway.getOffencesForPerson(deliusCrn)
 
         response.data.shouldBeEmpty()
       }
 
       it("returns an error when 404 Not Found is returned because no person is found") {
-        nDeliusApiMockServer.stubGetSupervisionsForPerson(crn, "", HttpStatus.NOT_FOUND)
+        nDeliusApiMockServer.stubGetSupervisionsForPerson(deliusCrn, "", HttpStatus.NOT_FOUND)
 
-        val response = nDeliusGateway.getOffencesForPerson(crn)
+        val response = nDeliusGateway.getOffencesForPerson(deliusCrn)
 
         response.errors.shouldHaveSize(1)
         response.errors.first().causedBy.shouldBe(UpstreamApi.NDELIUS)
