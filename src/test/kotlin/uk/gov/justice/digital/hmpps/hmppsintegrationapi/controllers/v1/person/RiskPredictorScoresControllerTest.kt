@@ -24,9 +24,9 @@ import java.nio.charset.StandardCharsets
 import java.time.LocalDateTime
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.GeneralPredictor as IntegrationAPIGeneralPredictor
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.GroupReconviction as IntegrationAPIGroupReconviction
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.RiskOfSeriousRecidivism as IntegrationAPIRiskOfSeriousRecidivism
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.RiskPredictorScore as IntegrationAPIRiskPredictorScore
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ViolencePredictor as IntegrationAPIViolencePredictor
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.RiskOfSeriousRecidivism as IntegrationAPIRiskOfSeriousRecidivism
 
 @WebMvcTest(controllers = [RiskPredictorScoresController::class])
 internal class RiskPredictorScoresControllerTest(
@@ -50,7 +50,7 @@ internal class RiskPredictorScoresControllerTest(
                 generalPredictor = IntegrationAPIGeneralPredictor("HIGH"),
                 violencePredictor = IntegrationAPIViolencePredictor("MEDIUM"),
                 groupReconviction = IntegrationAPIGroupReconviction("LOW"),
-                riskOfSeriousRecidivism = IntegrationAPIRiskOfSeriousRecidivism(scoreLevel = "VERY_HIGH")
+                riskOfSeriousRecidivism = IntegrationAPIRiskOfSeriousRecidivism(scoreLevel = "VERY_HIGH"),
               ),
             ),
           ),
@@ -136,7 +136,7 @@ internal class RiskPredictorScoresControllerTest(
                 generalPredictor = IntegrationAPIGeneralPredictor("HIGH"),
                 violencePredictor = IntegrationAPIViolencePredictor("MEDIUM"),
                 groupReconviction = IntegrationAPIGroupReconviction("LOW"),
-                riskOfSeriousRecidivism = IntegrationAPIRiskOfSeriousRecidivism(scoreLevel = "VERY_HIGH")
+                riskOfSeriousRecidivism = IntegrationAPIRiskOfSeriousRecidivism(scoreLevel = "VERY_HIGH"),
               )
             },
           ),
