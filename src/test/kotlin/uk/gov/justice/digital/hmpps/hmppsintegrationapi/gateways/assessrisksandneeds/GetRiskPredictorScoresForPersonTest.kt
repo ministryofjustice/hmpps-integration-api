@@ -17,6 +17,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGatewa
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.AssessRisksAndNeedsApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApiError
+import java.time.LocalDateTime
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.GeneralPredictor as IntegrationAPIGeneralPredictor
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.GroupReconviction as IntegrationAPIGroupReconviction
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.RiskPredictorScore as IntegrationAPIRiskPredictorScore
@@ -44,6 +45,8 @@ class GetRiskPredictorScoresForPersonTest(
           """
             [
               {
+                "completedDate": "2023-09-05T10:15:41",
+                "assessmentStatus": "COMPLETE",
                 "groupReconvictionScore": {
                       "scoreLevel": "HIGH"
                   },
@@ -77,6 +80,8 @@ class GetRiskPredictorScoresForPersonTest(
         response.data.shouldBe(
           listOf(
             IntegrationAPIRiskPredictorScore(
+              completedDate = LocalDateTime.parse("2023-09-05T10:15:41"),
+              assessmentStatus = "COMPLETE",
               groupReconviction = IntegrationAPIGroupReconviction(scoreLevel = "HIGH"),
               generalPredictor = IntegrationAPIGeneralPredictor(scoreLevel = "LOW"),
               violencePredictor = IntegrationAPIViolencePredictor(scoreLevel = "MEDIUM"),

@@ -21,6 +21,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetRiskPredictorScoresForPersonService
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
+import java.time.LocalDateTime
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.GeneralPredictor as IntegrationAPIGeneralPredictor
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.GroupReconviction as IntegrationAPIGroupReconviction
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.RiskPredictorScore as IntegrationAPIRiskPredictorScore
@@ -43,6 +44,8 @@ internal class RiskPredictorScoresControllerTest(
           Response(
             data = listOf(
               IntegrationAPIRiskPredictorScore(
+                completedDate = LocalDateTime.parse("2023-09-05T10:15:41"),
+                assessmentStatus = "COMPLETE",
                 generalPredictor = IntegrationAPIGeneralPredictor("HIGH"),
                 violencePredictor = IntegrationAPIViolencePredictor("MEDIUM"),
                 groupReconviction = IntegrationAPIGroupReconviction("LOW"),
@@ -71,6 +74,8 @@ internal class RiskPredictorScoresControllerTest(
           """
           "data": [
             {
+              "completedDate": "2023-09-05T10:15:41",
+              "assessmentStatus": "COMPLETE",
               "generalPredictor": {"scoreLevel":"HIGH"},
               "violencePredictor": {"scoreLevel":"MEDIUM"},
               "groupReconviction": {"scoreLevel":"LOW"}
@@ -124,6 +129,8 @@ internal class RiskPredictorScoresControllerTest(
             data =
             List(30) {
               IntegrationAPIRiskPredictorScore(
+                completedDate = LocalDateTime.parse("2023-09-05T10:15:41"),
+                assessmentStatus = "COMPLETE",
                 generalPredictor = IntegrationAPIGeneralPredictor("HIGH"),
                 violencePredictor = IntegrationAPIViolencePredictor("MEDIUM"),
                 groupReconviction = IntegrationAPIGroupReconviction("LOW"),

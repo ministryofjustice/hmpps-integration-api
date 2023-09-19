@@ -16,6 +16,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApiError
+import java.time.LocalDateTime
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.GeneralPredictor as IntegrationAPIGeneralPredictor
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.GroupReconviction as IntegrationAPIGroupReconviction
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.RiskPredictorScore as IntegrationAPIRiskPredictorScore
@@ -71,6 +72,8 @@ internal class GetRiskPredictorScoresForPersonServiceTest(
     it("returns risk predictor scores for a person") {
       val riskPredictors = listOf(
         IntegrationAPIRiskPredictorScore(
+          completedDate = LocalDateTime.parse("2023-09-05T10:15:41"),
+          assessmentStatus = "COMPLETE",
           generalPredictor = IntegrationAPIGeneralPredictor(scoreLevel = "LOW"),
           violencePredictor = IntegrationAPIViolencePredictor(scoreLevel = "MEDIUM"),
           groupReconviction = IntegrationAPIGroupReconviction(scoreLevel = "HIGH"),
