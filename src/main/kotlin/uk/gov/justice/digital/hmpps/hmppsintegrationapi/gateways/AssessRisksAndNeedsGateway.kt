@@ -9,7 +9,9 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrap
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Risk as IntegrationApiRisk
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.RiskPredictorScore as IntegrationAPIRiskPredictorScore
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNeeds.Risk as ArnRisk
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNeeds.RiskPredictorScore as ARNRiskPredictorScore
 
 @Component
@@ -31,6 +33,28 @@ class AssessRisksAndNeedsGateway(@Value("\${services.assess-risks-and-needs.base
     } catch (exception: WebClientResponseException.NotFound) {
       Response(
         data = emptyList(),
+        errors = listOf(
+          UpstreamApiError(
+            causedBy = UpstreamApi.ASSESS_RISKS_AND_NEEDS,
+            type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+          ),
+        ),
+      )
+    }
+  }
+
+  fun getRisksForPerson(id: String): Response<IntegrationApiRisk?> {
+    return try {
+      Response(
+        data = webClient.request<ArnRisk>(
+          HttpMethod.GET,
+          "/risks/crn/$id",
+          authenticationHeader(),
+        ).toRisk(),
+      )
+    } catch (exception: WebClientResponseException.NotFound) {
+      Response(
+        data = null,
         errors = listOf(
           UpstreamApiError(
             causedBy = UpstreamApi.ASSESS_RISKS_AND_NEEDS,
