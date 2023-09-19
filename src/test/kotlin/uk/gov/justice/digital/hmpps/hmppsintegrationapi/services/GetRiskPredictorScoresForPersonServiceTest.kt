@@ -17,6 +17,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.GeneralPredictor as IntegrationAPIGeneralPredictor
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.GroupReconviction as IntegrationAPIGroupReconviction
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.RiskPredictorScore as IntegrationAPIRiskPredictorScore
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ViolencePredictor as IntegrationAPIViolencePredictor
 
@@ -70,8 +71,9 @@ internal class GetRiskPredictorScoresForPersonServiceTest(
     it("returns risk predictor scores for a person") {
       val riskPredictors = listOf(
         IntegrationAPIRiskPredictorScore(
-          generalPredictor = IntegrationAPIGeneralPredictor("LOW"),
-          violencePredictor = IntegrationAPIViolencePredictor("MEDIUM"),
+          generalPredictor = IntegrationAPIGeneralPredictor(scoreLevel = "LOW"),
+          violencePredictor = IntegrationAPIViolencePredictor(scoreLevel = "MEDIUM"),
+          groupReconviction = IntegrationAPIGroupReconviction(scoreLevel = "HIGH"),
         ),
       )
       whenever(assessRisksAndNeedsGateway.getRiskPredictorScoresForPerson(deliusCrn)).thenReturn(

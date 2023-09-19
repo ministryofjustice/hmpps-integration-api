@@ -22,6 +22,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetRiskPredicto
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.GeneralPredictor as IntegrationAPIGeneralPredictor
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.GroupReconviction as IntegrationAPIGroupReconviction
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.RiskPredictorScore as IntegrationAPIRiskPredictorScore
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ViolencePredictor as IntegrationAPIViolencePredictor
 
@@ -44,6 +45,7 @@ internal class RiskPredictorScoresControllerTest(
               IntegrationAPIRiskPredictorScore(
                 generalPredictor = IntegrationAPIGeneralPredictor("HIGH"),
                 violencePredictor = IntegrationAPIViolencePredictor("MEDIUM"),
+                groupReconviction = IntegrationAPIGroupReconviction("LOW"),
               ),
             ),
           ),
@@ -70,7 +72,9 @@ internal class RiskPredictorScoresControllerTest(
           "data": [
             {
               "generalPredictor": {"scoreLevel":"HIGH"},
-              "violencePredictor": {"scoreLevel":"MEDIUM"}
+              "violencePredictor": {"scoreLevel":"MEDIUM"},
+              "groupReconviction": {"scoreLevel":"LOW"}
+
             }
           ]
         """.removeWhitespaceAndNewlines(),
@@ -122,6 +126,7 @@ internal class RiskPredictorScoresControllerTest(
               IntegrationAPIRiskPredictorScore(
                 generalPredictor = IntegrationAPIGeneralPredictor("HIGH"),
                 violencePredictor = IntegrationAPIViolencePredictor("MEDIUM"),
+                groupReconviction = IntegrationAPIGroupReconviction("LOW"),
               )
             },
           ),
