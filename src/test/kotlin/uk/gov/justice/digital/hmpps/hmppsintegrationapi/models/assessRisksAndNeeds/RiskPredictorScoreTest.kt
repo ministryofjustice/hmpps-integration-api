@@ -7,6 +7,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNee
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNeeds.GroupReconvictionScore as ArnGroupConvictionScore
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNeeds.RiskPredictorScore as ArnRiskPredictorScore
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNeeds.ViolencePredictorScore as ArnViolencePredictorScore
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNeeds.RiskOfSeriousRecidivismScore as ArnRiskOfSeriousRecidivismScore
 
 class RiskPredictorScoreTest : DescribeSpec(
   {
@@ -18,6 +19,7 @@ class RiskPredictorScoreTest : DescribeSpec(
           generalPredictorScore = ArnGeneralPredictorScore(ogpRisk = "MEDIUM"),
           violencePredictorScore = ArnViolencePredictorScore(ovpRisk = "LOW"),
           groupReconvictionScore = ArnGroupConvictionScore(scoreLevel = "VERY_HIGH"),
+          riskOfSeriousRecidivismScore = ArnRiskOfSeriousRecidivismScore(scoreLevel = "HIGH")
         )
 
         val integrationApiRiskPredictorScore = arnRiskPredictorScore.toRiskPredictorScore()
@@ -32,6 +34,9 @@ class RiskPredictorScoreTest : DescribeSpec(
         )
         integrationApiRiskPredictorScore.groupReconviction.scoreLevel.shouldBe(
           arnRiskPredictorScore.groupReconvictionScore.scoreLevel,
+        )
+        integrationApiRiskPredictorScore.riskOfSeriousRecidivism.scoreLevel.shouldBe(
+          arnRiskPredictorScore.riskOfSeriousRecidivismScore.scoreLevel,
         )
       }
     }

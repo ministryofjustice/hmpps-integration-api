@@ -26,6 +26,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.GeneralPredictor 
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.GroupReconviction as IntegrationAPIGroupReconviction
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.RiskPredictorScore as IntegrationAPIRiskPredictorScore
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ViolencePredictor as IntegrationAPIViolencePredictor
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.RiskOfSeriousRecidivism as IntegrationAPIRiskOfSeriousRecidivism
 
 @WebMvcTest(controllers = [RiskPredictorScoresController::class])
 internal class RiskPredictorScoresControllerTest(
@@ -49,6 +50,7 @@ internal class RiskPredictorScoresControllerTest(
                 generalPredictor = IntegrationAPIGeneralPredictor("HIGH"),
                 violencePredictor = IntegrationAPIViolencePredictor("MEDIUM"),
                 groupReconviction = IntegrationAPIGroupReconviction("LOW"),
+                riskOfSeriousRecidivism = IntegrationAPIRiskOfSeriousRecidivism(scoreLevel = "VERY_HIGH")
               ),
             ),
           ),
@@ -78,8 +80,8 @@ internal class RiskPredictorScoresControllerTest(
               "assessmentStatus": "COMPLETE",
               "generalPredictor": {"scoreLevel":"HIGH"},
               "violencePredictor": {"scoreLevel":"MEDIUM"},
-              "groupReconviction": {"scoreLevel":"LOW"}
-
+              "groupReconviction": {"scoreLevel":"LOW"},
+              "riskOfSeriousRecidivism": {"scoreLevel":"VERY_HIGH"}
             }
           ]
         """.removeWhitespaceAndNewlines(),
@@ -134,6 +136,7 @@ internal class RiskPredictorScoresControllerTest(
                 generalPredictor = IntegrationAPIGeneralPredictor("HIGH"),
                 violencePredictor = IntegrationAPIViolencePredictor("MEDIUM"),
                 groupReconviction = IntegrationAPIGroupReconviction("LOW"),
+                riskOfSeriousRecidivism = IntegrationAPIRiskOfSeriousRecidivism(scoreLevel = "VERY_HIGH")
               )
             },
           ),

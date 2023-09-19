@@ -5,6 +5,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.RiskPredictorScor
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNeeds.GeneralPredictorScore as ArnGeneralPredictorScore
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNeeds.GroupReconvictionScore as ArnGroupReconvictionScore
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNeeds.ViolencePredictorScore as ArnViolencePredictorScore
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNeeds.RiskOfSeriousRecidivismScore as ArnRiskOfSeriousRecidivismScore
 
 data class RiskPredictorScore(
   val completedDate: String? = null,
@@ -12,6 +13,7 @@ data class RiskPredictorScore(
   val generalPredictorScore: ArnGeneralPredictorScore = ArnGeneralPredictorScore(),
   val violencePredictorScore: ArnViolencePredictorScore = ArnViolencePredictorScore(),
   val groupReconvictionScore: ArnGroupReconvictionScore = ArnGroupReconvictionScore(),
+  val riskOfSeriousRecidivismScore: ArnRiskOfSeriousRecidivismScore = ArnRiskOfSeriousRecidivismScore()
 ) {
   fun toRiskPredictorScore(): IntegrationAPIRiskPredictorScore = IntegrationAPIRiskPredictorScore(
     completedDate = if (!this.completedDate.isNullOrEmpty()) LocalDateTime.parse(this.completedDate) else null,
@@ -19,5 +21,6 @@ data class RiskPredictorScore(
     generalPredictor = this.generalPredictorScore.toGeneralPredictor(),
     violencePredictor = this.violencePredictorScore.toViolencePredictor(),
     groupReconviction = this.groupReconvictionScore.toGroupReconviction(),
+    riskOfSeriousRecidivism = this.riskOfSeriousRecidivismScore.toRiskOfSeriousRecidivism()
   )
 }

@@ -8,4 +8,5 @@ data class RiskPredictorScore(
   val generalPredictor: GeneralPredictor = GeneralPredictor(),
   val violencePredictor: ViolencePredictor = ViolencePredictor(),
   val groupReconviction: GroupReconviction = GroupReconviction(),
+  val riskOfSeriousRecidivism: RiskOfSeriousRecidivism = RiskOfSeriousRecidivism()
 )
