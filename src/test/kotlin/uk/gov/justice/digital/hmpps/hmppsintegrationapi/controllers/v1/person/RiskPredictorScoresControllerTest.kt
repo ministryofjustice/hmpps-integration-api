@@ -36,7 +36,7 @@ internal class RiskPredictorScoresControllerTest(
   {
     val pncId = "9999/11111A"
     val encodedPncId = URLEncoder.encode(pncId, StandardCharsets.UTF_8)
-    val path = "/v1/persons/$encodedPncId/risk-predictor-scores"
+    val path = "/v1/persons/$encodedPncId/risks/scores"
 
     describe("GET $path") {
       beforeTest {
@@ -92,7 +92,7 @@ internal class RiskPredictorScoresControllerTest(
         val pncIdForPersonWithNoRiskPredictorScores = "0000/11111A"
         val encodedPncIdForPersonWithNoRiskPredictorScores =
           URLEncoder.encode(pncIdForPersonWithNoRiskPredictorScores, StandardCharsets.UTF_8)
-        val path = "/v1/persons/$encodedPncIdForPersonWithNoRiskPredictorScores/risk-predictor-scores"
+        val path = "/v1/persons/$encodedPncIdForPersonWithNoRiskPredictorScores/risks/scores"
 
         whenever(getRiskPredictorScoresForPersonService.execute(pncIdForPersonWithNoRiskPredictorScores)).thenReturn(
           Response(
