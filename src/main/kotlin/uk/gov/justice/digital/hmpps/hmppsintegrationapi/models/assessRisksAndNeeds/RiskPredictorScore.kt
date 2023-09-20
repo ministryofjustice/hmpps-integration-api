@@ -5,6 +5,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.RiskPredictorScor
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNeeds.GeneralPredictorScore as ArnGeneralPredictorScore
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNeeds.GroupReconvictionScore as ArnGroupReconvictionScore
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNeeds.RiskOfSeriousRecidivismScore as ArnRiskOfSeriousRecidivismScore
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNeeds.SexualPredictorScore as ArnSexualPredictorScore
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNeeds.ViolencePredictorScore as ArnViolencePredictorScore
 
 data class RiskPredictorScore(
@@ -14,6 +15,7 @@ data class RiskPredictorScore(
   val violencePredictorScore: ArnViolencePredictorScore = ArnViolencePredictorScore(),
   val groupReconvictionScore: ArnGroupReconvictionScore = ArnGroupReconvictionScore(),
   val riskOfSeriousRecidivismScore: ArnRiskOfSeriousRecidivismScore = ArnRiskOfSeriousRecidivismScore(),
+  val sexualPredictorScore: ArnSexualPredictorScore = ArnSexualPredictorScore(),
 ) {
   fun toRiskPredictorScore(): IntegrationAPIRiskPredictorScore = IntegrationAPIRiskPredictorScore(
     completedDate = if (!this.completedDate.isNullOrEmpty()) LocalDateTime.parse(this.completedDate) else null,
@@ -22,5 +24,6 @@ data class RiskPredictorScore(
     violencePredictor = this.violencePredictorScore.toViolencePredictor(),
     groupReconviction = this.groupReconvictionScore.toGroupReconviction(),
     riskOfSeriousRecidivism = this.riskOfSeriousRecidivismScore.toRiskOfSeriousRecidivism(),
+    sexualPredictor = this.sexualPredictorScore.toSexualPredictor(),
   )
 }

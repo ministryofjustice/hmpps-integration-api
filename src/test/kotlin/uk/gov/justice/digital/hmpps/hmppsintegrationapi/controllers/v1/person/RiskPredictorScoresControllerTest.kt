@@ -26,6 +26,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.GeneralPredictor 
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.GroupReconviction as IntegrationAPIGroupReconviction
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.RiskOfSeriousRecidivism as IntegrationAPIRiskOfSeriousRecidivism
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.RiskPredictorScore as IntegrationAPIRiskPredictorScore
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.SexualPredictor as IntegrationAPISexualPredictor
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ViolencePredictor as IntegrationAPIViolencePredictor
 
 @WebMvcTest(controllers = [RiskPredictorScoresController::class])
@@ -51,6 +52,7 @@ internal class RiskPredictorScoresControllerTest(
                 violencePredictor = IntegrationAPIViolencePredictor("MEDIUM"),
                 groupReconviction = IntegrationAPIGroupReconviction("LOW"),
                 riskOfSeriousRecidivism = IntegrationAPIRiskOfSeriousRecidivism(scoreLevel = "VERY_HIGH"),
+                sexualPredictor = IntegrationAPISexualPredictor(indecentScoreLevel = "HIGH", contactScoreLevel = "VERY_HIGH"),
               ),
             ),
           ),
@@ -81,7 +83,11 @@ internal class RiskPredictorScoresControllerTest(
               "generalPredictor": {"scoreLevel":"HIGH"},
               "violencePredictor": {"scoreLevel":"MEDIUM"},
               "groupReconviction": {"scoreLevel":"LOW"},
-              "riskOfSeriousRecidivism": {"scoreLevel":"VERY_HIGH"}
+              "riskOfSeriousRecidivism": {"scoreLevel":"VERY_HIGH"},
+              "sexualPredictor": {
+                "indecentScoreLevel":"HIGH",
+                "contactScoreLevel":"VERY_HIGH"
+              }
             }
           ]
         """.removeWhitespaceAndNewlines(),
@@ -137,6 +143,7 @@ internal class RiskPredictorScoresControllerTest(
                 violencePredictor = IntegrationAPIViolencePredictor("MEDIUM"),
                 groupReconviction = IntegrationAPIGroupReconviction("LOW"),
                 riskOfSeriousRecidivism = IntegrationAPIRiskOfSeriousRecidivism(scoreLevel = "VERY_HIGH"),
+                sexualPredictor = IntegrationAPISexualPredictor(indecentScoreLevel = "HIGH", contactScoreLevel = "VERY_HIGH"),
               )
             },
           ),

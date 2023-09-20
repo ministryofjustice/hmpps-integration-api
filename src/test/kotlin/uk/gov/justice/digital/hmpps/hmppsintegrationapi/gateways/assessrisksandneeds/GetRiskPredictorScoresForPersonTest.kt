@@ -22,6 +22,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.GeneralPredictor 
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.GroupReconviction as IntegrationAPIGroupReconviction
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.RiskOfSeriousRecidivism as IntegrationAPIRiskOfSeriousRecidivism
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.RiskPredictorScore as IntegrationAPIRiskPredictorScore
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.SexualPredictor as IntegrationAPISexualPredictor
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ViolencePredictor as IntegrationAPIViolencePredictor
 
 @ActiveProfiles("test")
@@ -59,6 +60,10 @@ class GetRiskPredictorScoresForPersonTest(
                   },
                 "riskOfSeriousRecidivismScore": {
                       "scoreLevel": "VERY_HIGH"
+                  },
+                "sexualPredictorScore": {
+                      "ospIndecentScoreLevel": "HIGH",
+                      "ospContactScoreLevel": "VERY_HIGH"
                   }
               }
             ]
@@ -90,6 +95,7 @@ class GetRiskPredictorScoresForPersonTest(
               generalPredictor = IntegrationAPIGeneralPredictor(scoreLevel = "LOW"),
               violencePredictor = IntegrationAPIViolencePredictor(scoreLevel = "MEDIUM"),
               riskOfSeriousRecidivism = IntegrationAPIRiskOfSeriousRecidivism(scoreLevel = "VERY_HIGH"),
+              sexualPredictor = IntegrationAPISexualPredictor(indecentScoreLevel = "HIGH", contactScoreLevel = "VERY_HIGH"),
             ),
           ),
         )

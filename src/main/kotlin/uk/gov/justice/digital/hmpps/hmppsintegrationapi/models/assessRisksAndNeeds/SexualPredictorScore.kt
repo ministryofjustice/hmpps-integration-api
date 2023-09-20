@@ -8,6 +8,6 @@ data class SexualPredictorScore(
 ) {
   fun toSexualPredictor(): IntegrationAPISexualPredictor = IntegrationAPISexualPredictor(
     indecentScoreLevel = this.ospIndecentScoreLevel,
-    contactScoreLevel = this.ospContactScoreLevel
+    contactScoreLevel = this.ospContactScoreLevel,
   )
 }
