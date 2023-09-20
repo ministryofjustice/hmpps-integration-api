@@ -18,7 +18,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.AssessRisksA
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApiError
 import java.time.LocalDateTime
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Risk as IntegrationApiRisk
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Risks as IntegrationApiRisks
 
 @ActiveProfiles("test")
 @ContextConfiguration(
@@ -64,7 +64,7 @@ class GetRisksForPersonTest(
         val response = assessRisksAndNeedsGateway.getRisksForPerson(crn)
 
         response.data.shouldBe(
-          IntegrationApiRisk(LocalDateTime.of(2023, 9, 19, 12, 51, 38)),
+          IntegrationApiRisks(LocalDateTime.of(2023, 9, 19, 12, 51, 38)),
         )
       }
 

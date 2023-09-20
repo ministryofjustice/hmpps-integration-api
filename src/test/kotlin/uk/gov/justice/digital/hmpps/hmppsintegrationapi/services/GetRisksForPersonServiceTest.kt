@@ -17,7 +17,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApiError
 import java.time.LocalDateTime
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Risk as IntegrationApiRisk
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Risks as IntegrationApiRisk
 
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
