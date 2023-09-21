@@ -53,19 +53,19 @@ internal class RisksControllerTest(
       }
 
       it("responds with a 200 OK status") {
-        val result = mockMvc.perform(MockMvcRequestBuilders.get("$path")).andReturn()
+        val result = mockMvc.perform(MockMvcRequestBuilders.get(path)).andReturn()
 
         result.response.status.shouldBe(HttpStatus.OK.value())
       }
 
       it("retrieves the risks for a person with the matching ID") {
-        mockMvc.perform(MockMvcRequestBuilders.get("$path")).andReturn()
+        mockMvc.perform(MockMvcRequestBuilders.get(path)).andReturn()
 
         verify(getRisksForPersonService, VerificationModeFactory.times(1)).execute(pncId)
       }
 
       it("returns the risks for a person with the matching ID") {
-        val result = mockMvc.perform(MockMvcRequestBuilders.get("$path")).andReturn()
+        val result = mockMvc.perform(MockMvcRequestBuilders.get(path)).andReturn()
 
         result.response.contentAsString.shouldContain(
           """
@@ -85,7 +85,7 @@ internal class RisksControllerTest(
         whenever(getRisksForPersonService.execute(pncIdForPersonWithNoRisks)).thenReturn(Response(data = null))
 
         val result =
-          mockMvc.perform(MockMvcRequestBuilders.get("$path"))
+          mockMvc.perform(MockMvcRequestBuilders.get(path))
             .andReturn()
 
         result.response.contentAsString.shouldContain("\"data\":null")
@@ -104,7 +104,7 @@ internal class RisksControllerTest(
           ),
         )
 
-        val result = mockMvc.perform(MockMvcRequestBuilders.get("$path")).andReturn()
+        val result = mockMvc.perform(MockMvcRequestBuilders.get(path)).andReturn()
 
         result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
       }
