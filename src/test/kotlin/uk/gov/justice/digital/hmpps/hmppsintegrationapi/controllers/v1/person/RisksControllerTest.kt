@@ -15,6 +15,8 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Response
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Risk
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.RiskToSelf
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Risks
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApiError
@@ -47,6 +49,13 @@ internal class RisksControllerTest(
                 51,
                 38,
               ),
+              riskToSelf = RiskToSelf(
+                suicide = Risk(risk = "No"),
+                selfHarm = Risk(risk = "No"),
+                custody = Risk(risk = "No"),
+                hostelSetting = Risk(risk = "No"),
+                vulnerability = Risk(risk = "No"),
+              ),
             ),
           ),
         )
@@ -70,7 +79,43 @@ internal class RisksControllerTest(
         result.response.contentAsString.shouldContain(
           """
           "data": {
-               "assessedOn": "2023-09-19T12:51:38"
+            "assessedOn": "2023-09-19T12:51:38",
+            "riskToSelf": {
+              "suicide": {
+                 "risk": "No",
+                 "previous": null,
+                 "previousConcernsText": null,
+                 "current": null,
+                 "currentConcernsText": null
+              },
+              "selfHarm": {
+                 "risk": "No",
+                 "previous": null,
+                 "previousConcernsText": null,
+                 "current": null,
+                 "currentConcernsText": null
+              },
+              "custody": {
+                 "risk": "No",
+                 "previous": null,
+                 "previousConcernsText": null,
+                 "current": null,
+                 "currentConcernsText": null
+              },
+              "hostelSetting": {
+                 "risk": "No",
+                 "previous": null,
+                 "previousConcernsText": null,
+                 "current": null,
+                 "currentConcernsText": null
+              },
+              "vulnerability": {
+                 "risk": "No",
+                 "previous": null,
+                 "previousConcernsText": null,
+                 "current": null,
+                 "currentConcernsText": null
+              }
             }
           """.removeWhitespaceAndNewlines(),
         )
