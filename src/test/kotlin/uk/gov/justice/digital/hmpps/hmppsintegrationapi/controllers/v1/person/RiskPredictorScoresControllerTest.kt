@@ -15,14 +15,19 @@ import org.springframework.http.HttpStatus
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.GeneralPredictorScore
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Response
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.RiskPredictorScore
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetRiskPredictorScoresForPersonService
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
+import java.time.LocalDateTime
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.GeneralPredictor as IntegrationAPIGeneralPredictor
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.GroupReconviction as IntegrationAPIGroupReconviction
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.RiskOfSeriousRecidivism as IntegrationAPIRiskOfSeriousRecidivism
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.RiskPredictorScore as IntegrationAPIRiskPredictorScore
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.SexualPredictor as IntegrationAPISexualPredictor
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ViolencePredictor as IntegrationAPIViolencePredictor
 
 @WebMvcTest(controllers = [RiskPredictorScoresController::class])
 internal class RiskPredictorScoresControllerTest(
@@ -32,7 +37,7 @@ internal class RiskPredictorScoresControllerTest(
   {
     val pncId = "9999/11111A"
     val encodedPncId = URLEncoder.encode(pncId, StandardCharsets.UTF_8)
-    val path = "/v1/persons/$encodedPncId/risk-predictor-scores"
+    val path = "/v1/persons/$encodedPncId/risks/scores"
 
     describe("GET $path") {
       beforeTest {
@@ -40,8 +45,14 @@ internal class RiskPredictorScoresControllerTest(
         whenever(getRiskPredictorScoresForPersonService.execute(pncId)).thenReturn(
           Response(
             data = listOf(
-              RiskPredictorScore(
-                generalPredictorScore = GeneralPredictorScore(50),
+              IntegrationAPIRiskPredictorScore(
+                completedDate = LocalDateTime.parse("2023-09-05T10:15:41"),
+                assessmentStatus = "COMPLETE",
+                generalPredictor = IntegrationAPIGeneralPredictor("HIGH"),
+                violencePredictor = IntegrationAPIViolencePredictor("MEDIUM"),
+                groupReconviction = IntegrationAPIGroupReconviction("LOW"),
+                riskOfSeriousRecidivism = IntegrationAPIRiskOfSeriousRecidivism(scoreLevel = "VERY_HIGH"),
+                sexualPredictor = IntegrationAPISexualPredictor(indecentScoreLevel = "HIGH", contactScoreLevel = "VERY_HIGH"),
               ),
             ),
           ),
@@ -67,7 +78,16 @@ internal class RiskPredictorScoresControllerTest(
           """
           "data": [
             {
-              "generalPredictorScore": {"ogpRisk":50}
+              "completedDate": "2023-09-05T10:15:41",
+              "assessmentStatus": "COMPLETE",
+              "generalPredictor": {"scoreLevel":"HIGH"},
+              "violencePredictor": {"scoreLevel":"MEDIUM"},
+              "groupReconviction": {"scoreLevel":"LOW"},
+              "riskOfSeriousRecidivism": {"scoreLevel":"VERY_HIGH"},
+              "sexualPredictor": {
+                "indecentScoreLevel":"HIGH",
+                "contactScoreLevel":"VERY_HIGH"
+              }
             }
           ]
         """.removeWhitespaceAndNewlines(),
@@ -78,7 +98,7 @@ internal class RiskPredictorScoresControllerTest(
         val pncIdForPersonWithNoRiskPredictorScores = "0000/11111A"
         val encodedPncIdForPersonWithNoRiskPredictorScores =
           URLEncoder.encode(pncIdForPersonWithNoRiskPredictorScores, StandardCharsets.UTF_8)
-        val path = "/v1/persons/$encodedPncIdForPersonWithNoRiskPredictorScores/risk-predictor-scores"
+        val path = "/v1/persons/$encodedPncIdForPersonWithNoRiskPredictorScores/risks/scores"
 
         whenever(getRiskPredictorScoresForPersonService.execute(pncIdForPersonWithNoRiskPredictorScores)).thenReturn(
           Response(
@@ -116,8 +136,14 @@ internal class RiskPredictorScoresControllerTest(
           Response(
             data =
             List(30) {
-              RiskPredictorScore(
-                generalPredictorScore = GeneralPredictorScore(60),
+              IntegrationAPIRiskPredictorScore(
+                completedDate = LocalDateTime.parse("2023-09-05T10:15:41"),
+                assessmentStatus = "COMPLETE",
+                generalPredictor = IntegrationAPIGeneralPredictor("HIGH"),
+                violencePredictor = IntegrationAPIViolencePredictor("MEDIUM"),
+                groupReconviction = IntegrationAPIGroupReconviction("LOW"),
+                riskOfSeriousRecidivism = IntegrationAPIRiskOfSeriousRecidivism(scoreLevel = "VERY_HIGH"),
+                sexualPredictor = IntegrationAPISexualPredictor(indecentScoreLevel = "HIGH", contactScoreLevel = "VERY_HIGH"),
               )
             },
           ),

@@ -20,7 +20,7 @@ class RiskPredictorScoresController(
   @Autowired val getRiskPredictorScoresForPersonService: GetRiskPredictorScoresForPersonService,
 ) {
 
-  @GetMapping("{encodedPncId}/risk-predictor-scores")
+  @GetMapping("{encodedPncId}/risks/scores")
   fun getPersonRiskPredictorScores(
     @PathVariable encodedPncId: String,
     @RequestParam(required = false, defaultValue = "1", name = "page") page: Int,

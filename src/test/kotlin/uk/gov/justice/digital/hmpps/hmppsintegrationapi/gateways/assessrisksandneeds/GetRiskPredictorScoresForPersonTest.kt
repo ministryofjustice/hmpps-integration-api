@@ -16,9 +16,14 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.AssessRisksAndN
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.AssessRisksAndNeedsApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.GeneralPredictorScore
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApiError
+import java.time.LocalDateTime
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.GeneralPredictor as IntegrationAPIGeneralPredictor
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.GroupReconviction as IntegrationAPIGroupReconviction
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.RiskOfSeriousRecidivism as IntegrationAPIRiskOfSeriousRecidivism
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.RiskPredictorScore as IntegrationAPIRiskPredictorScore
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.SexualPredictor as IntegrationAPISexualPredictor
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ViolencePredictor as IntegrationAPIViolencePredictor
 
 @ActiveProfiles("test")
 @ContextConfiguration(
@@ -32,18 +37,33 @@ class GetRiskPredictorScoresForPersonTest(
   DescribeSpec(
     {
       val assessRisksAndNeedsApiMockServer = AssessRisksAndNeedsApiMockServer()
-      val crn = "X777776"
+      val deliusCrn = "X777776"
 
       beforeEach {
         assessRisksAndNeedsApiMockServer.start()
         Mockito.reset(hmppsAuthGateway)
         assessRisksAndNeedsApiMockServer.stubGetRiskPredictorScoresForPerson(
-          crn,
+          deliusCrn,
           """
             [
               {
+                "completedDate": "2023-09-05T10:15:41",
+                "assessmentStatus": "COMPLETE",
+                "groupReconvictionScore": {
+                      "scoreLevel": "HIGH"
+                  },
                 "generalPredictorScore": {
-                      "ogpRisk": 0
+                      "ogpRisk": "LOW"
+                  },
+                "violencePredictorScore": {
+                      "ovpRisk": "MEDIUM"
+                  },
+                "riskOfSeriousRecidivismScore": {
+                      "scoreLevel": "VERY_HIGH"
+                  },
+                "sexualPredictorScore": {
+                      "ospIndecentScoreLevel": "HIGH",
+                      "ospContactScoreLevel": "VERY_HIGH"
                   }
               }
             ]
@@ -59,30 +79,40 @@ class GetRiskPredictorScoresForPersonTest(
       }
 
       it("authenticates using HMPPS Auth with credentials") {
-        assessRisksAndNeedsGateway.getRiskPredictorScoresForPerson(crn)
+        assessRisksAndNeedsGateway.getRiskPredictorScoresForPerson(deliusCrn)
 
         verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("ASSESS_RISKS_AND_NEEDS")
       }
 
       it("returns risk predictor scores for the matching CRN") {
-        val response = assessRisksAndNeedsGateway.getRiskPredictorScoresForPerson(crn)
+        val response = assessRisksAndNeedsGateway.getRiskPredictorScoresForPerson(deliusCrn)
         response.data.shouldBe(
-          listOf(IntegrationAPIRiskPredictorScore(generalPredictorScore = GeneralPredictorScore(ogpRisk = 0))),
+          listOf(
+            IntegrationAPIRiskPredictorScore(
+              completedDate = LocalDateTime.parse("2023-09-05T10:15:41"),
+              assessmentStatus = "COMPLETE",
+              groupReconviction = IntegrationAPIGroupReconviction(scoreLevel = "HIGH"),
+              generalPredictor = IntegrationAPIGeneralPredictor(scoreLevel = "LOW"),
+              violencePredictor = IntegrationAPIViolencePredictor(scoreLevel = "MEDIUM"),
+              riskOfSeriousRecidivism = IntegrationAPIRiskOfSeriousRecidivism(scoreLevel = "VERY_HIGH"),
+              sexualPredictor = IntegrationAPISexualPredictor(indecentScoreLevel = "HIGH", contactScoreLevel = "VERY_HIGH"),
+            ),
+          ),
         )
       }
 
       it("returns an empty list when no risk predictor scores are found") {
-        assessRisksAndNeedsApiMockServer.stubGetRiskPredictorScoresForPerson(crn, "[]")
+        assessRisksAndNeedsApiMockServer.stubGetRiskPredictorScoresForPerson(deliusCrn, "[]")
 
-        val response = assessRisksAndNeedsGateway.getRiskPredictorScoresForPerson(crn)
+        val response = assessRisksAndNeedsGateway.getRiskPredictorScoresForPerson(deliusCrn)
 
         response.data.shouldBe(emptyList())
       }
 
       it("returns an error when 404 NOT FOUND is returned because no person is found") {
-        assessRisksAndNeedsApiMockServer.stubGetRiskPredictorScoresForPerson(crn, "", HttpStatus.NOT_FOUND)
+        assessRisksAndNeedsApiMockServer.stubGetRiskPredictorScoresForPerson(deliusCrn, "", HttpStatus.NOT_FOUND)
 
-        val response = assessRisksAndNeedsGateway.getRiskPredictorScoresForPerson(crn)
+        val response = assessRisksAndNeedsGateway.getRiskPredictorScoresForPerson(deliusCrn)
 
         response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND).shouldBeTrue()
       }
