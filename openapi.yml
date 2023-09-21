@@ -301,7 +301,7 @@ paths:
     get:
       tags:
         - risks
-      summary: Returns risk scores associated with a person.
+      summary: Returns risk scores from the last year associated with a person.
       parameters:
         - $ref: "#/components/parameters/HmppsId"
         - $ref: "#/components/parameters/Page"
@@ -932,7 +932,13 @@ components:
           type: string
           enum: [ LOW, MEDIUM, HIGH, VERY_HIGH, NOT_APPLICABLE ]
           example: LOW
-          description: Indicator for risk of group reconviction
+          description: >
+            Indicator for risk of group reconviction. Options include:
+            `LOW`,
+            `MEDIUM`,
+            `HIGH`,
+            `VERY_HIGH`,
+            `NOT_APPLICABLE`
 
     ViolencePredictor:
       type: object
@@ -941,7 +947,13 @@ components:
           type: string
           enum: [ LOW, MEDIUM, HIGH, VERY_HIGH, NOT_APPLICABLE ]
           example: MEDIUM
-          description: Indicator for risk of violence
+          description: >
+            Indicator for risk of violence. Options include:
+            `LOW`,
+            `MEDIUM`,
+            `HIGH`,
+            `VERY_HIGH`,
+            `NOT_APPLICABLE`
 
     GeneralPredictor:
       type: object
@@ -950,7 +962,13 @@ components:
           type: string
           enum: [ LOW, MEDIUM, HIGH, VERY_HIGH, NOT_APPLICABLE ]
           example: VERY_HIGH
-          description: Indicator for General prediction
+          description: >
+            Indicator for general prediction. Options include:
+            `LOW`,
+            `MEDIUM`,
+            `HIGH`,
+            `VERY_HIGH`,
+            `NOT_APPLICABLE`
 
     RiskOfSeriousRecidivism:
       type: object
@@ -959,7 +977,13 @@ components:
           type: string
           enum: [ LOW, MEDIUM, HIGH, VERY_HIGH, NOT_APPLICABLE ]
           example: MEDIUM
-          description: Indicator for risk of serious recidivism
+          description: > 
+            Indicator for risk of serious recidivism. Options include:
+            `LOW`,
+            `MEDIUM`,
+            `HIGH`,
+            `VERY_HIGH`,
+            `NOT_APPLICABLE`
 
     SexualPredictor:
       type: object
@@ -968,12 +992,24 @@ components:
           type: string
           enum: [ LOW, MEDIUM, HIGH, VERY_HIGH, NOT_APPLICABLE ]
           example: HIGH
-          description: Indicator for risk of sexual indecency
+          description: >
+            Indicator for risk of sexual indecency. Options include:
+            `LOW`,
+            `MEDIUM`,
+            `HIGH`,
+            `VERY_HIGH`,
+            `NOT_APPLICABLE`,
         contactScoreLevel:
           type: string
           enum: [ LOW, MEDIUM, HIGH, VERY_HIGH, NOT_APPLICABLE ]
           example: MEDIUM
-          description: Indicator for risk of sexual contact
+          description: > 
+            Indicator for risk of sexual contact. Options include:
+            `LOW`,
+            `MEDIUM`,
+            `HIGH`,
+            `VERY_HIGH`,
+            `NOT_APPLICABLE`,
 
   examples:
     PersonNotFoundError:
