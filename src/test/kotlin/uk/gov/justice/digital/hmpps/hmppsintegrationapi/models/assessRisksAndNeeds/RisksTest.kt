@@ -11,13 +11,23 @@ class RisksTest : DescribeSpec(
       it("maps one-to-one attributes to Integration API attributes") {
         val arnRisks = ArnRisks(
           assessedOn = LocalDateTime.now(),
+          riskToSelf = RiskToSelf(
+            suicide = Risk(risk = "risk"),
+            selfHarm = Risk(risk = "risk"),
+            custody = Risk(risk = "risk"),
+            hostelSetting = Risk(risk = "risk"),
+            vulnerability = Risk(risk = "risk"),
+          ),
         )
 
         val integrationApiRisks = arnRisks.toRisks()
 
-        integrationApiRisks.assessedOn.shouldBe(
-          arnRisks.assessedOn,
-        )
+        integrationApiRisks.assessedOn.shouldBe(arnRisks.assessedOn)
+        integrationApiRisks.riskToSelf.suicide.risk.shouldBe(arnRisks.riskToSelf.suicide.risk)
+        integrationApiRisks.riskToSelf.selfHarm.risk.shouldBe(arnRisks.riskToSelf.selfHarm.risk)
+        integrationApiRisks.riskToSelf.custody.risk.shouldBe(arnRisks.riskToSelf.custody.risk)
+        integrationApiRisks.riskToSelf.hostelSetting.risk.shouldBe(arnRisks.riskToSelf.hostelSetting.risk)
+        integrationApiRisks.riskToSelf.vulnerability.risk.shouldBe(arnRisks.riskToSelf.vulnerability.risk)
       }
     }
   },

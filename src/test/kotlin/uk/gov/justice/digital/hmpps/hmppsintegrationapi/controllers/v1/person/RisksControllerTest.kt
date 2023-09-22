@@ -15,6 +15,8 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Response
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Risk
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.RiskToSelf
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Risks
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApiError
@@ -47,30 +49,73 @@ internal class RisksControllerTest(
                 51,
                 38,
               ),
+              riskToSelf = RiskToSelf(
+                suicide = Risk(risk = "No"),
+                selfHarm = Risk(risk = "No"),
+                custody = Risk(risk = "No"),
+                hostelSetting = Risk(risk = "No"),
+                vulnerability = Risk(risk = "No"),
+              ),
             ),
           ),
         )
       }
 
       it("responds with a 200 OK status") {
-        val result = mockMvc.perform(MockMvcRequestBuilders.get("$path")).andReturn()
+        val result = mockMvc.perform(MockMvcRequestBuilders.get(path)).andReturn()
 
         result.response.status.shouldBe(HttpStatus.OK.value())
       }
 
       it("retrieves the risks for a person with the matching ID") {
-        mockMvc.perform(MockMvcRequestBuilders.get("$path")).andReturn()
+        mockMvc.perform(MockMvcRequestBuilders.get(path)).andReturn()
 
         verify(getRisksForPersonService, VerificationModeFactory.times(1)).execute(pncId)
       }
 
       it("returns the risks for a person with the matching ID") {
-        val result = mockMvc.perform(MockMvcRequestBuilders.get("$path")).andReturn()
+        val result = mockMvc.perform(MockMvcRequestBuilders.get(path)).andReturn()
 
         result.response.contentAsString.shouldContain(
           """
           "data": {
-               "assessedOn": "2023-09-19T12:51:38"
+            "assessedOn": "2023-09-19T12:51:38",
+            "riskToSelf": {
+              "suicide": {
+                 "risk": "No",
+                 "previous": null,
+                 "previousConcernsText": null,
+                 "current": null,
+                 "currentConcernsText": null
+              },
+              "selfHarm": {
+                 "risk": "No",
+                 "previous": null,
+                 "previousConcernsText": null,
+                 "current": null,
+                 "currentConcernsText": null
+              },
+              "custody": {
+                 "risk": "No",
+                 "previous": null,
+                 "previousConcernsText": null,
+                 "current": null,
+                 "currentConcernsText": null
+              },
+              "hostelSetting": {
+                 "risk": "No",
+                 "previous": null,
+                 "previousConcernsText": null,
+                 "current": null,
+                 "currentConcernsText": null
+              },
+              "vulnerability": {
+                 "risk": "No",
+                 "previous": null,
+                 "previousConcernsText": null,
+                 "current": null,
+                 "currentConcernsText": null
+              }
             }
           """.removeWhitespaceAndNewlines(),
         )
@@ -78,15 +123,12 @@ internal class RisksControllerTest(
 
       it("returns null embedded in a JSON object when no risks are found") {
         val pncIdForPersonWithNoRisks = "0000/11111A"
-        val encodedPncIdForPersonWithNoRisks =
-          URLEncoder.encode(pncIdForPersonWithNoRisks, StandardCharsets.UTF_8)
-        val path = "/v1/persons/$encodedPncIdForPersonWithNoRisks/risks"
+        val encodedPncIdForPersonWithNoRisks = URLEncoder.encode(pncIdForPersonWithNoRisks, StandardCharsets.UTF_8)
+        val pathForPersonWithNoRisks = "/v1/persons/$encodedPncIdForPersonWithNoRisks/risks"
 
         whenever(getRisksForPersonService.execute(pncIdForPersonWithNoRisks)).thenReturn(Response(data = null))
 
-        val result =
-          mockMvc.perform(MockMvcRequestBuilders.get("$path"))
-            .andReturn()
+        val result = mockMvc.perform(MockMvcRequestBuilders.get(pathForPersonWithNoRisks)).andReturn()
 
         result.response.contentAsString.shouldContain("\"data\":null")
       }
@@ -104,7 +146,7 @@ internal class RisksControllerTest(
           ),
         )
 
-        val result = mockMvc.perform(MockMvcRequestBuilders.get("$path")).andReturn()
+        val result = mockMvc.perform(MockMvcRequestBuilders.get(path)).andReturn()
 
         result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
       }
