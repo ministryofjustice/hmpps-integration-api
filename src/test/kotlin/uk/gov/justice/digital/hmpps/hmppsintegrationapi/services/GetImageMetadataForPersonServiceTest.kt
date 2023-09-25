@@ -71,6 +71,16 @@ internal class GetImageMetadataForPersonServiceTest(
     response.data.shouldBe(imageMetadataFromNomis)
   }
 
+  it("returns a not found error when person cannot be found in Prisoner Offender Search") {
+    whenever(prisonerOffenderSearchGateway.getPersons(pncId = pncId)).thenReturn(Response(data = emptyList()))
+
+    val response = getImageMetadataForPersonService.execute(pncId)
+
+    response.errors.shouldHaveSize(1)
+    response.errors.first().causedBy.shouldBe(UpstreamApi.PRISONER_OFFENDER_SEARCH)
+    response.errors.first().type.shouldBe(UpstreamApiError.Type.ENTITY_NOT_FOUND)
+  }
+
   it("returns the error from NOMIS when an error occurs") {
     whenever(nomisGateway.getImageMetadataForPerson(prisonerNumber)).thenReturn(
       Response(
