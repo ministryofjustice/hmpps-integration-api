@@ -459,7 +459,7 @@ components:
       required: false
       description: The page number (starting from 1)
     PerPage:
-      name: per_page
+      name: perPage
       in: query
       schema:
         type: number
