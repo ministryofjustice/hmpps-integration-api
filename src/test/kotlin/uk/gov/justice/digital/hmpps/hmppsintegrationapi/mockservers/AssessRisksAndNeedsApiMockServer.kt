@@ -40,4 +40,19 @@ class AssessRisksAndNeedsApiMockServer : WireMockServer(WIREMOCK_PORT) {
         ),
     )
   }
+
+  fun stubGetNeedsForPerson(crn: String, body: String, status: HttpStatus = HttpStatus.OK) {
+    stubFor(
+      get("/needs/crn/$crn")
+        .withHeader(
+          "Authorization",
+          matching("Bearer ${HmppsAuthMockServer.TOKEN}"),
+        ).willReturn(
+          aResponse()
+            .withHeader("Content-Type", "application/json")
+            .withStatus(status.value())
+            .withBody(body.trimIndent()),
+        ),
+    )
+  }
 }
