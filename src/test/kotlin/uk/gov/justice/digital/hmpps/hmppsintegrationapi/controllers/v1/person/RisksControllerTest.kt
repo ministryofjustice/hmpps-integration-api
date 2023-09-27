@@ -17,6 +17,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitesp
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.OtherRisks
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Risk
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.RiskSummary
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.RiskToSelf
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Risks
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApi
@@ -58,6 +59,9 @@ internal class RisksControllerTest(
                 vulnerability = Risk(risk = "NO"),
               ),
               otherRisks = OtherRisks(breachOfTrust = "NO"),
+              summary = RiskSummary(
+                overallRiskLevel = "LOW",
+              ),
             ),
           ),
         )
@@ -124,6 +128,14 @@ internal class RisksControllerTest(
               "controlIssuesDisruptiveBehaviour": null,
               "breachOfTrust": "NO",
               "riskToOtherPrisoners": null
+            },
+            "summary": {
+              "whoIsAtRisk": null,
+              "natureOfRisk":null,
+              "riskImminence":null,
+              "riskIncreaseFactors":null,
+              "riskMitigationFactors":null,
+              "overallRiskLevel": "LOW"
             }
           }
           """.removeWhitespaceAndNewlines(),

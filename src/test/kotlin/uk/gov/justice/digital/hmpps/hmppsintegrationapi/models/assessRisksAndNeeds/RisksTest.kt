@@ -19,6 +19,9 @@ class RisksTest : DescribeSpec(
             vulnerability = Risk(risk = "NO"),
           ),
           otherRisks = OtherRisks(breachOfTrust = "YES"),
+          summary = RiskSummary(
+            whoIsAtRisk = "X, Y and Z are at risk",
+          ),
         )
 
         val integrationApiRisks = arnRisks.toRisks()
@@ -30,6 +33,7 @@ class RisksTest : DescribeSpec(
         integrationApiRisks.riskToSelf.hostelSetting.risk.shouldBe(arnRisks.riskToSelf.hostelSetting.risk)
         integrationApiRisks.riskToSelf.vulnerability.risk.shouldBe(arnRisks.riskToSelf.vulnerability.risk)
         integrationApiRisks.otherRisks.breachOfTrust.shouldBe(arnRisks.otherRisks.breachOfTrust)
+        integrationApiRisks.summary.whoIsAtRisk.shouldBe(arnRisks.summary.whoIsAtRisk)
       }
     }
   },
