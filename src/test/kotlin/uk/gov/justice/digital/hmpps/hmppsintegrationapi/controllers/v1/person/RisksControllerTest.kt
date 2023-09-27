@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.OtherRisks
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Risk
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.RiskToSelf
@@ -50,12 +51,13 @@ internal class RisksControllerTest(
                 38,
               ),
               riskToSelf = RiskToSelf(
-                suicide = Risk(risk = "No"),
-                selfHarm = Risk(risk = "No"),
-                custody = Risk(risk = "No"),
-                hostelSetting = Risk(risk = "No"),
-                vulnerability = Risk(risk = "No"),
+                suicide = Risk(risk = "NO"),
+                selfHarm = Risk(risk = "NO"),
+                custody = Risk(risk = "NO"),
+                hostelSetting = Risk(risk = "NO"),
+                vulnerability = Risk(risk = "NO"),
               ),
+              otherRisks = OtherRisks(breachOfTrust = "NO"),
             ),
           ),
         )
@@ -82,41 +84,48 @@ internal class RisksControllerTest(
             "assessedOn": "2023-09-19T12:51:38",
             "riskToSelf": {
               "suicide": {
-                 "risk": "No",
+                 "risk": "NO",
                  "previous": null,
                  "previousConcernsText": null,
                  "current": null,
                  "currentConcernsText": null
               },
               "selfHarm": {
-                 "risk": "No",
+                 "risk": "NO",
                  "previous": null,
                  "previousConcernsText": null,
                  "current": null,
                  "currentConcernsText": null
               },
               "custody": {
-                 "risk": "No",
+                 "risk": "NO",
                  "previous": null,
                  "previousConcernsText": null,
                  "current": null,
                  "currentConcernsText": null
               },
               "hostelSetting": {
-                 "risk": "No",
+                 "risk": "NO",
                  "previous": null,
                  "previousConcernsText": null,
                  "current": null,
                  "currentConcernsText": null
               },
               "vulnerability": {
-                 "risk": "No",
+                 "risk": "NO",
                  "previous": null,
                  "previousConcernsText": null,
                  "current": null,
                  "currentConcernsText": null
               }
+            },
+            "otherRisks": {
+              "escapeOrAbscond": null,
+              "controlIssuesDisruptiveBehaviour": null,
+              "breachOfTrust": "NO",
+              "riskToOtherPrisoners": null
             }
+          }
           """.removeWhitespaceAndNewlines(),
         )
       }

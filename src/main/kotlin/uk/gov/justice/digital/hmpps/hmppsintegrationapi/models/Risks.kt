@@ -5,4 +5,5 @@ import java.time.LocalDateTime
 data class Risks(
   val assessedOn: LocalDateTime? = null,
   val riskToSelf: RiskToSelf = RiskToSelf(),
+  val otherRisks: OtherRisks = OtherRisks(),
 )

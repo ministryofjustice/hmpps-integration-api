@@ -12,12 +12,13 @@ class RisksTest : DescribeSpec(
         val arnRisks = ArnRisks(
           assessedOn = LocalDateTime.now(),
           riskToSelf = RiskToSelf(
-            suicide = Risk(risk = "risk"),
-            selfHarm = Risk(risk = "risk"),
-            custody = Risk(risk = "risk"),
-            hostelSetting = Risk(risk = "risk"),
-            vulnerability = Risk(risk = "risk"),
+            suicide = Risk(risk = "NO"),
+            selfHarm = Risk(risk = "NO"),
+            custody = Risk(risk = "NO"),
+            hostelSetting = Risk(risk = "NO"),
+            vulnerability = Risk(risk = "NO"),
           ),
+          otherRisks = OtherRisks(breachOfTrust = "YES"),
         )
 
         val integrationApiRisks = arnRisks.toRisks()
@@ -28,6 +29,7 @@ class RisksTest : DescribeSpec(
         integrationApiRisks.riskToSelf.custody.risk.shouldBe(arnRisks.riskToSelf.custody.risk)
         integrationApiRisks.riskToSelf.hostelSetting.risk.shouldBe(arnRisks.riskToSelf.hostelSetting.risk)
         integrationApiRisks.riskToSelf.vulnerability.risk.shouldBe(arnRisks.riskToSelf.vulnerability.risk)
+        integrationApiRisks.otherRisks.breachOfTrust.shouldBe(arnRisks.otherRisks.breachOfTrust)
       }
     }
   },
