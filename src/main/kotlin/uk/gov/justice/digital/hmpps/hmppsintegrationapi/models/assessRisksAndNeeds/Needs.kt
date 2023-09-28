@@ -5,8 +5,10 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Needs as Integrat
 
 data class Needs(
   val assessedOn: LocalDateTime? = null,
+  val unansweredNeeds: UnansweredNeeds = UnansweredNeeds(),
 ) {
   fun toNeeds(): IntegrationApiNeeds = IntegrationApiNeeds(
     assessedOn = this.assessedOn,
+    unansweredNeeds = this.unansweredNeeds.toUnansweredNeeds(),
   )
 }

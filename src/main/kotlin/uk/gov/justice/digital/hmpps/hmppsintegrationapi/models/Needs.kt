@@ -4,4 +4,5 @@ import java.time.LocalDateTime
 
 data class Needs(
   val assessedOn: LocalDateTime? = null,
+  val unansweredNeeds: UnansweredNeeds = UnansweredNeeds(),
 )
