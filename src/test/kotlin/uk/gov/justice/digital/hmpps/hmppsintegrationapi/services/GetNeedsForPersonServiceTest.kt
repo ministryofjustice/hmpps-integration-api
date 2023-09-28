@@ -18,6 +18,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApiError
 import java.time.LocalDateTime
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Needs as IntegrationApiNeeds
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UnansweredNeeds as IntegrationApiUnansweredNeeds
 
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
@@ -67,7 +68,10 @@ internal class GetNeedsForPersonServiceTest(
     }
 
     it("returns needs for a person") {
-      val needs = IntegrationApiNeeds(assessedOn = LocalDateTime.now())
+      val needs = IntegrationApiNeeds(
+        assessedOn = LocalDateTime.now(),
+        unansweredNeeds = IntegrationApiUnansweredNeeds(type = "RELATIONSHIPS"),
+      )
 
       whenever(assessRisksAndNeedsGateway.getNeedsForPerson(deliusCrn)).thenReturn(Response(data = needs))
 

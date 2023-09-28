@@ -19,6 +19,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMoc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApiError
 import java.time.LocalDateTime
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Needs as IntegrationApiNeeds
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UnansweredNeeds as IntegrationApiUnansweredNeeds
 
 @ActiveProfiles("test")
 @ContextConfiguration(
@@ -41,7 +42,10 @@ class GetNeedsForPersonTest(
           crn,
           """
               {
-                "assessedOn": "2023-02-13T12:43:38"
+                "assessedOn": "2023-02-13T12:43:38",
+                "unansweredNeeds": {
+                      "section": "FINANCIAL_MANAGEMENT_AND_INCOME"
+                  }
               }
           """,
         )
@@ -64,7 +68,10 @@ class GetNeedsForPersonTest(
         val response = assessRisksAndNeedsGateway.getNeedsForPerson(crn)
 
         response.data.shouldBe(
-          IntegrationApiNeeds(LocalDateTime.of(2023, 2, 13, 12, 43, 38)),
+          IntegrationApiNeeds(
+            assessedOn = LocalDateTime.of(2023, 2, 13, 12, 43, 38),
+            unansweredNeeds = IntegrationApiUnansweredNeeds(type = "FINANCIAL_MANAGEMENT_AND_INCOME"),
+          ),
         )
       }
 

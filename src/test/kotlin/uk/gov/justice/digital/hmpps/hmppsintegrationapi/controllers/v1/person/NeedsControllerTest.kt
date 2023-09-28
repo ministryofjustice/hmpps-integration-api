@@ -22,6 +22,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetNeedsForPers
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 import java.time.LocalDateTime
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UnansweredNeeds as IntegrationApiUnansweredNeeds
 
 @WebMvcTest(controllers = [NeedsController::class])
 internal class NeedsControllerTest(
@@ -47,6 +48,7 @@ internal class NeedsControllerTest(
                 21,
                 33,
               ),
+              unansweredNeeds = IntegrationApiUnansweredNeeds(type = "LIFESTYLE_AND_ASSOCIATES"),
             ),
           ),
         )
@@ -70,7 +72,10 @@ internal class NeedsControllerTest(
         result.response.contentAsString.shouldContain(
           """
           "data": {
-               "assessedOn": "2021-05-29T11:21:33"
+               "assessedOn": "2021-05-29T11:21:33",
+               "unansweredNeeds": {
+                  "type": "LIFESTYLE_AND_ASSOCIATES"
+               }
             }
           """.removeWhitespaceAndNewlines(),
         )
