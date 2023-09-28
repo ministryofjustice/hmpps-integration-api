@@ -331,6 +331,37 @@ paths:
                 PersonNotFoundError:
                   $ref: "#/components/examples/PersonNotFoundError"
 
+  /v1/persons/{hmppsId}/needs:
+    get:
+      tags:
+        - needs
+      summary: Returns criminogenic needs associated with a person.
+      parameters:
+        - $ref: "#/components/parameters/HmppsId"
+        - $ref: "#/components/parameters/Page"
+        - $ref: "#/components/parameters/PerPage"
+      responses:
+        "200":
+          description: Successfully found criminogenic needs for a person with the provided HMPPS ID.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Needs"
+                  pagination:
+                    $ref: "#/components/schemas/Pagination"
+        "404":
+          description: Failed to find criminogenic needs for a person with the provided HMPPS ID.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                PersonNotFoundError:
+                  $ref: "#/components/examples/PersonNotFoundError"
+
   /{TBC}/v1/persons/{Id}/accommodations:
     get:
       summary: FUTURE ENDPOINT - Returns accommodation and referral information associated with a person.
@@ -459,7 +490,7 @@ components:
       required: false
       description: The page number (starting from 1)
     PerPage:
-      name: per_page
+      name: perPage
       in: query
       schema:
         type: number
@@ -1010,6 +1041,16 @@ components:
             `HIGH`,
             `VERY_HIGH`,
             `NOT_APPLICABLE`,
+
+    Needs:
+      type: object
+      properties:
+        assessedOn:
+          type: string
+          format: date
+          example: 2023-09-05T10:15:41
+          description: Needs assessment completion date
+
 
   examples:
     PersonNotFoundError:
