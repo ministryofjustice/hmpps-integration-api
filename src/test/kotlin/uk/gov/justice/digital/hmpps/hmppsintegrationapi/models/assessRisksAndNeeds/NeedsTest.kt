@@ -8,7 +8,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNee
 class NeedsTest : DescribeSpec(
   {
     describe("#toNeeds") {
-      it("maps ARN Needs to integration API Needs") {
+      it("maps one-to-one attributes to Integration API attributes") {
         val arnNeeds = ArnNeeds(
           assessedOn = LocalDateTime.parse("2000-11-27T10:15:41"),
         )
