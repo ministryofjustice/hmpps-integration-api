@@ -19,6 +19,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMoc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApiError
 import java.time.LocalDateTime
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Needs as IntegrationApiNeeds
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.NotIdentifiedNeeds as IntegrationApiNotIdentifiedNeeds
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UnansweredNeeds as IntegrationApiUnansweredNeeds
 
 @ActiveProfiles("test")
@@ -45,6 +46,9 @@ class GetNeedsForPersonTest(
                 "assessedOn": "2023-02-13T12:43:38",
                 "unansweredNeeds": {
                       "section": "FINANCIAL_MANAGEMENT_AND_INCOME"
+                  },
+                "notIdentifiedNeeds": {
+                      "section": "THINKING_AND_BEHAVIOUR"
                   }
               }
           """,
@@ -71,6 +75,7 @@ class GetNeedsForPersonTest(
           IntegrationApiNeeds(
             assessedOn = LocalDateTime.of(2023, 2, 13, 12, 43, 38),
             unansweredNeeds = IntegrationApiUnansweredNeeds(type = "FINANCIAL_MANAGEMENT_AND_INCOME"),
+            notIdentifiedNeeds = IntegrationApiNotIdentifiedNeeds(type = "THINKING_AND_BEHAVIOUR"),
           ),
         )
       }
