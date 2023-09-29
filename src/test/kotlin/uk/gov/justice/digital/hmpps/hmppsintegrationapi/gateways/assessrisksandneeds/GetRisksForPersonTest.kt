@@ -117,6 +117,20 @@ class GetRisksForPersonTest(
               riskIncreaseFactors = "If offender in situation X the risk can be higher",
               riskMitigationFactors = "Giving offender therapy in X will reduce the risk",
               overallRiskLevel = "HIGH",
+              riskInCommunity = mapOf(
+                "children" to "HIGH",
+                "public" to "HIGH",
+                "knownAdult" to "HIGH",
+                "staff" to "MEDIUM",
+                "prisoners" to "LOW",
+              ),
+              riskInCustody = mapOf(
+                "children" to "LOW",
+                "public" to "LOW",
+                "knownAdult" to "HIGH",
+                "staff" to "VERY_HIGH",
+                "prisoners" to "VERY_HIGH",
+              ),
             ),
           ),
         )

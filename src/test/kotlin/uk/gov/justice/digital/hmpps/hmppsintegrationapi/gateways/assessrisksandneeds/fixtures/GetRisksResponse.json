@@ -49,10 +49,10 @@
     "riskIncreaseFactors": "If offender in situation X the risk can be higher",
     "riskMitigationFactors": "Giving offender therapy in X will reduce the risk",
     "riskInCommunity": {
-      "HIGH ": [
+      "HIGH": [
         "Children",
         "Public",
-        "Know adult"
+        "Known adult"
       ],
       "MEDIUM": [
         "Staff"
@@ -62,8 +62,8 @@
       ]
     },
     "riskInCustody": {
-      "HIGH ": [
-        "Know adult"
+      "HIGH": [
+        "Known adult"
       ],
       "VERY_HIGH": [
         "Staff",

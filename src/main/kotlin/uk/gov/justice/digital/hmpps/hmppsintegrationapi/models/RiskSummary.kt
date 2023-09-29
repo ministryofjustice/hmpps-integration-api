@@ -7,4 +7,6 @@ data class RiskSummary(
   val riskIncreaseFactors: String? = null,
   val riskMitigationFactors: String? = null,
   val overallRiskLevel: String? = null,
+  val riskInCommunity: Map<String, String>? = null,
+  val riskInCustody: Map<String, String>? = null,
 )

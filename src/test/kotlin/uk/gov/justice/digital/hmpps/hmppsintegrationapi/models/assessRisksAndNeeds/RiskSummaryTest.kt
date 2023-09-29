@@ -27,5 +27,50 @@ class RiskSummaryTest : DescribeSpec(
         integrationApiRiskSummary.overallRiskLevel.shouldBe(arnRiskSummary.overallRiskLevel)
       }
     }
+
+    it("maps ARN Risk in Community to Integration API Risk in Community") {
+      val arnRiskSummary = ArnRiskSummary(
+        riskInCommunity = mapOf(
+          "HIGH" to listOf("Children", "Public", "Known adult"),
+          "MEDIUM" to listOf("Staff"),
+          "LOW" to listOf("Prisoners"),
+        ),
+      )
+
+      val integrationApiRiskSummary = arnRiskSummary.toRiskSummary()
+
+      integrationApiRiskSummary.riskInCommunity.shouldBe(
+        mapOf(
+          "children" to "HIGH",
+          "public" to "HIGH",
+          "knownAdult" to "HIGH",
+          "staff" to "MEDIUM",
+          "prisoners" to "LOW",
+        ),
+      )
+    }
+
+    it("maps ARN Risk in Custody to Integration API Risk in Custody") {
+      val arnRiskSummary = ArnRiskSummary(
+        riskInCustody = mapOf(
+          "VERY_HIGH" to listOf("Known adult"),
+          "HIGH" to listOf("Children"),
+          "MEDIUM" to listOf("Staff", "Public"),
+          "LOW" to listOf("Prisoners"),
+        ),
+      )
+
+      val integrationApiRiskSummary = arnRiskSummary.toRiskSummary()
+
+      integrationApiRiskSummary.riskInCustody.shouldBe(
+        mapOf(
+          "children" to "HIGH",
+          "public" to "MEDIUM",
+          "knownAdult" to "VERY_HIGH",
+          "staff" to "MEDIUM",
+          "prisoners" to "LOW",
+        ),
+      )
+    }
   },
 )
