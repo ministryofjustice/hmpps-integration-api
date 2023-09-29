@@ -21,7 +21,7 @@ URLS = [
   "https://probation-offender-search-dev.hmpps.service.justice.gov.uk/v3/api-docs",
   "https://api-dev.prison.service.justice.gov.uk/v3/api-docs",
   "https://offender-events-dev.prison.service.justice.gov.uk/v3/api-docs",
-  "https://prisoner-offender-search-dev.prison.service.justice.gov.uk/v3/api-docs",
+  "https://prisoner-search-dev.prison.service.justice.gov.uk/v3/api-docs",
   "https://offender-dev.aks-dev-1.studio-hosting.service.justice.gov.uk/v3/api-docs",
   "https://prison-register-dev.hmpps.service.justice.gov.uk/v3/api-docs",
   "https://hmpps-allocations-dev.hmpps.service.justice.gov.uk/v3/api-docs",
