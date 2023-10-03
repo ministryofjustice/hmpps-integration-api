@@ -4,7 +4,7 @@ import java.time.LocalDateTime
 
 data class Needs(
   val assessedOn: LocalDateTime? = null,
-  val identifiedNeeds: List<Need> = listOf(Need()),
-  val notIdentifiedNeeds: List<Need> = listOf(Need()),
-  val unansweredNeeds: List<Need> = listOf(Need()),
+  val identifiedNeeds: List<Need> = emptyList(),
+  val notIdentifiedNeeds: List<Need> = emptyList(),
+  val unansweredNeeds: List<Need> = emptyList(),
 )

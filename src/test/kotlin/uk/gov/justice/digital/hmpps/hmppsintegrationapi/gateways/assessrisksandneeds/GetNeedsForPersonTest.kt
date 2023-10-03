@@ -33,13 +33,13 @@ class GetNeedsForPersonTest(
   DescribeSpec(
     {
       val assessRisksAndNeedsApiMockServer = AssessRisksAndNeedsApiMockServer()
-      val crn = "X777776"
+      val deliusCrn = "X777776"
 
       beforeEach {
         assessRisksAndNeedsApiMockServer.start()
         Mockito.reset(hmppsAuthGateway)
         assessRisksAndNeedsApiMockServer.stubGetNeedsForPerson(
-          crn,
+          deliusCrn,
           """
               {
                 "assessedOn": "2023-02-13T12:43:38",
@@ -80,13 +80,13 @@ class GetNeedsForPersonTest(
       }
 
       it("authenticates using HMPPS Auth with credentials") {
-        assessRisksAndNeedsGateway.getNeedsForPerson(crn)
+        assessRisksAndNeedsGateway.getNeedsForPerson(deliusCrn)
 
         verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("ASSESS_RISKS_AND_NEEDS")
       }
 
       it("returns needs for the person with the matching CRN") {
-        val response = assessRisksAndNeedsGateway.getNeedsForPerson(crn)
+        val response = assessRisksAndNeedsGateway.getNeedsForPerson(deliusCrn)
 
         response.data.shouldBe(
           IntegrationApiNeeds(
@@ -107,10 +107,45 @@ class GetNeedsForPersonTest(
         )
       }
 
-      it("returns an error when 404 NOT FOUND is returned because no person is found") {
-        assessRisksAndNeedsApiMockServer.stubGetNeedsForPerson(crn, "", HttpStatus.NOT_FOUND)
+      it("returns an empty list when a needs section has no data") {
+        assessRisksAndNeedsApiMockServer.stubGetNeedsForPerson(
+          deliusCrn,
+          """
+           {
+              "assessedOn": "2023-02-13T12:43:38",
+              "identifiedNeeds": [
+                {
+                  "section": "EDUCATION_TRAINING_AND_EMPLOYABILITY"
+                },
+                {
+                  "section": "FINANCIAL_MANAGEMENT_AND_INCOME"
+                }
+              ],
+              "notIdentifiedNeeds": [],
+              "unansweredNeeds": []
+           }
+          """,
+        )
 
-        val response = assessRisksAndNeedsGateway.getNeedsForPerson(crn)
+        val response = assessRisksAndNeedsGateway.getNeedsForPerson(deliusCrn)
+
+        response.data.shouldBe(
+          IntegrationApiNeeds(
+            assessedOn = LocalDateTime.of(2023, 2, 13, 12, 43, 38),
+            identifiedNeeds = listOf(
+              IntegrationApiNeed(type = "EDUCATION_TRAINING_AND_EMPLOYABILITY"),
+              IntegrationApiNeed(type = "FINANCIAL_MANAGEMENT_AND_INCOME"),
+            ),
+            notIdentifiedNeeds = emptyList(),
+            unansweredNeeds = emptyList(),
+          ),
+        )
+      }
+
+      it("returns an error when 404 NOT FOUND is returned because no person is found") {
+        assessRisksAndNeedsApiMockServer.stubGetNeedsForPerson(deliusCrn, "", HttpStatus.NOT_FOUND)
+
+        val response = assessRisksAndNeedsGateway.getNeedsForPerson(deliusCrn)
 
         response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND).shouldBeTrue()
       }

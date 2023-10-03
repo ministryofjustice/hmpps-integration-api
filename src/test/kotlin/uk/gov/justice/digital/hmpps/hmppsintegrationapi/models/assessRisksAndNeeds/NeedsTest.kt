@@ -4,6 +4,7 @@ import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import java.time.LocalDateTime
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Need as IntegrationApiNeed
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Needs as IntegrationApiNeeds
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNeeds.Need as ArnNeed
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNeeds.Needs as ArnNeeds
 
@@ -37,6 +38,21 @@ class NeedsTest : DescribeSpec(
             IntegrationApiNeed(type = "LIFESTYLE_AND_ASSOCIATES"),
             IntegrationApiNeed(type = "DRUG_MISUSE"),
             IntegrationApiNeed(type = "ALCOHOL_MISUSE"),
+          ),
+        )
+      }
+
+      it("can be constructed with NULL values") {
+        val arnNeeds = ArnNeeds()
+
+        val integrationApiNeeds = arnNeeds.toNeeds()
+
+        integrationApiNeeds.shouldBe(
+          IntegrationApiNeeds(
+            assessedOn = null,
+            identifiedNeeds = emptyList(),
+            notIdentifiedNeeds = emptyList(),
+            unansweredNeeds = emptyList(),
           ),
         )
       }
