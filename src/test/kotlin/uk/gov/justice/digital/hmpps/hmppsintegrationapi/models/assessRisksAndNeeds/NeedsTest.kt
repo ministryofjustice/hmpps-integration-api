@@ -14,6 +14,8 @@ class NeedsTest : DescribeSpec(
         val arnNeeds = ArnNeeds(
           assessedOn = LocalDateTime.parse("2000-11-27T10:15:41"),
           identifiedNeeds = listOf(ArnNeed(section = "EDUCATION_TRAINING_AND_EMPLOYABILITY"), ArnNeed(section = "FINANCIAL_MANAGEMENT_AND_INCOME")),
+          notIdentifiedNeeds = listOf(ArnNeed(section = "RELATIONSHIPS")),
+          unansweredNeeds = listOf(ArnNeed(section = "LIFESTYLE_AND_ASSOCIATES"), ArnNeed(section = "DRUG_MISUSE"), ArnNeed(section = "ALCOHOL_MISUSE")),
         )
 
         val integrationApiNeeds = arnNeeds.toNeeds()
@@ -23,6 +25,18 @@ class NeedsTest : DescribeSpec(
           listOf(
             IntegrationApiNeed(type = "EDUCATION_TRAINING_AND_EMPLOYABILITY"),
             IntegrationApiNeed(type = "FINANCIAL_MANAGEMENT_AND_INCOME"),
+          ),
+        )
+        integrationApiNeeds.notIdentifiedNeeds.shouldBe(
+          listOf(
+            IntegrationApiNeed(type = "RELATIONSHIPS"),
+          ),
+        )
+        integrationApiNeeds.unansweredNeeds.shouldBe(
+          listOf(
+            IntegrationApiNeed(type = "LIFESTYLE_AND_ASSOCIATES"),
+            IntegrationApiNeed(type = "DRUG_MISUSE"),
+            IntegrationApiNeed(type = "ALCOHOL_MISUSE"),
           ),
         )
       }
