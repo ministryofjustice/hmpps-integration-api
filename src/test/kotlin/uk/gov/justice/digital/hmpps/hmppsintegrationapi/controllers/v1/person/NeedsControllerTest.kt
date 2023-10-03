@@ -52,6 +52,14 @@ internal class NeedsControllerTest(
                 Need(type = "EDUCATION_TRAINING_AND_EMPLOYABILITY"),
                 Need(type = "FINANCIAL_MANAGEMENT_AND_INCOME"),
               ),
+              notIdentifiedNeeds = listOf(
+                Need(type = "RELATIONSHIPS"),
+              ),
+              unansweredNeeds = listOf(
+                Need(type = "LIFESTYLE_AND_ASSOCIATES"),
+                Need(type = "DRUG_MISUSE"),
+                Need(type = "ALCOHOL_MISUSE"),
+              ),
             ),
           ),
         )
@@ -83,7 +91,23 @@ internal class NeedsControllerTest(
                   {
                     "type": "FINANCIAL_MANAGEMENT_AND_INCOME"
                   }
-                ] 
+                ],
+                "notIdentifiedNeeds": [
+                  {
+                    "type": "RELATIONSHIPS"
+                  }
+                ],
+                "unansweredNeeds": [
+                  {
+                    "type": "LIFESTYLE_AND_ASSOCIATES"
+                  },
+                  {
+                    "type": "DRUG_MISUSE"
+                  },
+                  {
+                    "type": "ALCOHOL_MISUSE"
+                  }
+                ]
             }
           """.removeWhitespaceAndNewlines(),
         )

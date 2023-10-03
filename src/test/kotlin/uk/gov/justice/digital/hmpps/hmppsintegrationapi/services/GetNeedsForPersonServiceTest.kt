@@ -74,6 +74,14 @@ internal class GetNeedsForPersonServiceTest(
           IntegrationApiNeed(type = "EDUCATION_TRAINING_AND_EMPLOYABILITY"),
           IntegrationApiNeed(type = "FINANCIAL_MANAGEMENT_AND_INCOME"),
         ),
+        notIdentifiedNeeds = listOf(
+          IntegrationApiNeed(type = "RELATIONSHIPS"),
+        ),
+        unansweredNeeds = listOf(
+          IntegrationApiNeed(type = "LIFESTYLE_AND_ASSOCIATES"),
+          IntegrationApiNeed(type = "DRUG_MISUSE"),
+          IntegrationApiNeed(type = "ALCOHOL_MISUSE"),
+        ),
       )
 
       whenever(assessRisksAndNeedsGateway.getNeedsForPerson(deliusCrn)).thenReturn(Response(data = needs))
