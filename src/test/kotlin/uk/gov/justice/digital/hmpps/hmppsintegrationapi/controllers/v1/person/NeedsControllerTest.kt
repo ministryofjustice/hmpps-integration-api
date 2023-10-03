@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Need
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Needs
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApi
@@ -47,6 +48,10 @@ internal class NeedsControllerTest(
                 21,
                 33,
               ),
+              identifiedNeeds = listOf(
+                Need(type = "EDUCATION_TRAINING_AND_EMPLOYABILITY"),
+                Need(type = "FINANCIAL_MANAGEMENT_AND_INCOME"),
+              ),
             ),
           ),
         )
@@ -70,7 +75,15 @@ internal class NeedsControllerTest(
         result.response.contentAsString.shouldContain(
           """
           "data": {
-               "assessedOn": "2021-05-29T11:21:33"
+               "assessedOn": "2021-05-29T11:21:33",
+               "identifiedNeeds": [
+                  {
+                    "type": "EDUCATION_TRAINING_AND_EMPLOYABILITY"
+                  },
+                  {
+                    "type": "FINANCIAL_MANAGEMENT_AND_INCOME"
+                  }
+                ] 
             }
           """.removeWhitespaceAndNewlines(),
         )

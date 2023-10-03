@@ -18,6 +18,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.AssessRisksA
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApiError
 import java.time.LocalDateTime
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Need as IntegrationApiNeed
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Needs as IntegrationApiNeeds
 
 @ActiveProfiles("test")
@@ -41,7 +42,15 @@ class GetNeedsForPersonTest(
           crn,
           """
               {
-                "assessedOn": "2023-02-13T12:43:38"              
+                "assessedOn": "2023-02-13T12:43:38",
+                "identifiedNeeds": [
+                  {
+                    "section": "EDUCATION_TRAINING_AND_EMPLOYABILITY"
+                  },
+                  {
+                    "section": "FINANCIAL_MANAGEMENT_AND_INCOME"
+                  }
+                ]                              
               }
           """,
         )
@@ -66,6 +75,10 @@ class GetNeedsForPersonTest(
         response.data.shouldBe(
           IntegrationApiNeeds(
             assessedOn = LocalDateTime.of(2023, 2, 13, 12, 43, 38),
+            identifiedNeeds = listOf(
+              IntegrationApiNeed(type = "EDUCATION_TRAINING_AND_EMPLOYABILITY"),
+              IntegrationApiNeed(type = "FINANCIAL_MANAGEMENT_AND_INCOME"),
+            ),
           ),
         )
       }
