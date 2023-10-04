@@ -362,6 +362,33 @@ paths:
                 PersonNotFoundError:
                   $ref: "#/components/examples/PersonNotFoundError"
 
+  /v1/persons/{hmppsId}/risks:
+    get:
+      tags:
+        - risks
+      summary: Returns Risk of Serious Harm (ROSH) risks associated with a person. Returns only assessments completed in the last year.
+      parameters:
+        - $ref: "#/components/parameters/HmppsId"
+      responses:
+        "200":
+          description: Successfully found risks for a person with the provided HMPPS ID.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/risks"
+        "404":
+          description: Failed to find risks for a person with the provided HMPPS ID.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                PersonNotFoundError:
+                  $ref: "#/components/examples/PersonNotFoundError"
+
   /{TBC}/v1/persons/{Id}/accommodations:
     get:
       summary: FUTURE ENDPOINT - Returns accommodation and referral information associated with a person.
@@ -1041,6 +1068,44 @@ components:
             `HIGH`,
             `VERY_HIGH`,
             `NOT_APPLICABLE`,
+
+    Risks:
+      type: object
+      properties:
+        assessedOn:
+          type: string
+          format: date
+          example: 2023-09-05T10:15:41
+          description: Date of risk assessment
+        riskToSelf:
+          $ref: "#/components/schemas/RiskToSelf"
+        otherRisks:
+          $ref: "#/components/schemas/OtherRisks"
+        summary:
+          $ref: "#/components/schemas/Summary"
+
+    RiskToSelf:
+      type: object
+      properties:
+        suicide:
+          $ref: "#/components/schemas/Risk"
+        selfHarm:
+          $ref: "#/components/schemas/Risk"
+        custody:
+          $ref: "#/components/schemas/Risk"
+        hostelSetting:
+          $ref: "#/components/schemas/Risk"
+        vulnerability:
+          $ref: "#/components/schemas/Risk"
+
+    Risk:
+      type: object
+      properties:
+        risk:
+          type: string
+          example: "Yes"
+          enum: [ YES, NO, DK, NA ]
+          description: Presence of risk
 
     Needs:
       type: object
