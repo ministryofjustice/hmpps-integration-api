@@ -72,5 +72,15 @@ services:
     ports:
       - '4020:4010'
 
+  assess-risks-and-needs-api:
+    build:
+      context: .
+      dockerfile: Dockerfile.setup-assess-risks-and-needs-api
+    container_name: assess-risks-and-needs-api
+    healthcheck:
+      test: 'wget --header="Authorization: Bearer abc" http://127.0.0.1:4050/risks/crn/abc/predictors/all -O /dev/null'
+    ports:
+      - '4050:4050'
+
 networks:
   hmpps:
