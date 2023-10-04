@@ -68,7 +68,7 @@ services:
       dockerfile: Dockerfile.setup-probation-offender-search
     container_name: probation-offender-search
     healthcheck:
-      test: 'wget http://0.0.0.0:4010/synthetic-monitor -O /dev/null'
+      test: 'wget --header="Authorization: Bearer abc" http://0.0.0.0:4010/synthetic-monitor -O /dev/null'
     ports:
       - '4020:4010'
 
