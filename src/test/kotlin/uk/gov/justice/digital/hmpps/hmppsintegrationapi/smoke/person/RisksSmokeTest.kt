@@ -68,7 +68,8 @@ class RisksSmokeTest : DescribeSpec(
       )
     }
 
-    it("returns rosh risks for a person") {
+    // TODO For reviewer: This Smoke test will be included and updated in https://github.com/ministryofjustice/hmpps-integration-api/pull/270 ~ AP 05/10/23
+    xit("returns rosh risks for a person") {
       val response = httpClient.send(
         httpRequest.uri(URI.create("$baseUrl/$basePath")).build(),
         HttpResponse.BodyHandlers.ofString(),

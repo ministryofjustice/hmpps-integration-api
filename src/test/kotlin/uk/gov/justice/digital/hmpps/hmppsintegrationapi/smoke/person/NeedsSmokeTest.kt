@@ -34,7 +34,22 @@ class NeedsSmokeTest : DescribeSpec(
         """
         {
           "data": {
-            "assessedOn": "2023-10-04T07:06:43"
+            "assessedOn": "2023-10-04T07:06:43",
+            "identifiedNeeds": [
+              {
+                "type": "DRUG_MISUSE"
+              }
+            ],
+            "notIdentifiedNeeds": [
+              {
+                "type": "DRUG_MISUSE"
+              }
+            ],
+            "unansweredNeeds": [
+              {
+                "type": "DRUG_MISUSE"
+              }
+            ]
           }
         }
         """.removeWhitespaceAndNewlines(),
