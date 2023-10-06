@@ -2,7 +2,16 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNe
 
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.OtherRisks
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Risk
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.RiskSummary
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.RiskToSelf
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Risks
 import java.time.LocalDateTime
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNeeds.OtherRisks as ArnOtherRisks
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNeeds.Risk as ArnRisk
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNeeds.RiskSummary as ArnRiskSummary
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNeeds.RiskToSelf as ArnRiskToSelf
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNeeds.Risks as ArnRisks
 
 class RisksTest : DescribeSpec(
@@ -11,14 +20,17 @@ class RisksTest : DescribeSpec(
       it("maps one-to-one attributes to Integration API attributes") {
         val arnRisks = ArnRisks(
           assessedOn = LocalDateTime.now(),
-          riskToSelf = RiskToSelf(
-            suicide = Risk(risk = "NO"),
-            selfHarm = Risk(risk = "NO"),
-            custody = Risk(risk = "NO"),
-            hostelSetting = Risk(risk = "NO"),
-            vulnerability = Risk(risk = "NO"),
+          riskToSelf = ArnRiskToSelf(
+            suicide = ArnRisk(risk = "NO"),
+            selfHarm = ArnRisk(risk = "NO"),
+            custody = ArnRisk(risk = "NO"),
+            hostelSetting = ArnRisk(risk = "NO"),
+            vulnerability = ArnRisk(risk = "NO"),
           ),
-          otherRisks = OtherRisks(breachOfTrust = "YES"),
+          otherRisks = ArnOtherRisks(breachOfTrust = "YES"),
+          summary = ArnRiskSummary(
+            whoIsAtRisk = "X, Y and Z are at risk",
+          ),
         )
 
         val integrationApiRisks = arnRisks.toRisks()
@@ -30,6 +42,68 @@ class RisksTest : DescribeSpec(
         integrationApiRisks.riskToSelf.hostelSetting.risk.shouldBe(arnRisks.riskToSelf.hostelSetting.risk)
         integrationApiRisks.riskToSelf.vulnerability.risk.shouldBe(arnRisks.riskToSelf.vulnerability.risk)
         integrationApiRisks.otherRisks.breachOfTrust.shouldBe(arnRisks.otherRisks.breachOfTrust)
+        integrationApiRisks.summary.whoIsAtRisk.shouldBe(arnRisks.summary.whoIsAtRisk)
+      }
+
+      it("maps Risk in Community and Risk in Custody to Integration API attributes") {
+        val arnRisks = ArnRisks(
+          summary = ArnRiskSummary(
+            riskInCommunity = mapOf(
+              "HIGH" to listOf("Children", "Public", "Known adult"),
+              "MEDIUM" to listOf("Staff"),
+              "LOW" to listOf("Prisoners"),
+            ),
+            riskInCustody = mapOf(
+              "VERY_HIGH" to listOf("Known adult"),
+              "HIGH" to listOf("Children"),
+              "MEDIUM" to listOf("Staff", "Public"),
+              "LOW" to listOf("Prisoners"),
+            ),
+          ),
+        )
+
+        val integrationApiRisks = arnRisks.toRisks()
+
+        integrationApiRisks.summary.riskInCommunity.shouldBe(
+          mapOf(
+            "children" to "HIGH",
+            "public" to "HIGH",
+            "knownAdult" to "HIGH",
+            "staff" to "MEDIUM",
+            "prisoners" to "LOW",
+          ),
+        )
+
+        integrationApiRisks.summary.riskInCustody.shouldBe(
+          mapOf(
+            "children" to "HIGH",
+            "public" to "MEDIUM",
+            "knownAdult" to "VERY_HIGH",
+            "staff" to "MEDIUM",
+            "prisoners" to "LOW",
+          ),
+        )
+      }
+
+      it("handles null values") {
+        val arnRisks = ArnRisks()
+
+        val integrationApiRisks = arnRisks.toRisks()
+
+        integrationApiRisks.shouldBe(
+          Risks(
+            assessedOn = null,
+            riskToSelf = RiskToSelf(
+              suicide = Risk(),
+              selfHarm = Risk(),
+              custody = Risk(),
+              hostelSetting = Risk(),
+              vulnerability = Risk(),
+            ),
+            otherRisks = OtherRisks(),
+            summary = RiskSummary(),
+          ),
+        )
       }
     }
   },

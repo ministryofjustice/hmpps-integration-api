@@ -17,6 +17,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitesp
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.OtherRisks
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Risk
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.RiskSummary
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.RiskToSelf
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Risks
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApi
@@ -58,6 +59,28 @@ internal class RisksControllerTest(
                 vulnerability = Risk(risk = "NO"),
               ),
               otherRisks = OtherRisks(breachOfTrust = "NO"),
+              summary = RiskSummary(
+                overallRiskLevel = "LOW",
+                whoIsAtRisk = "X, Y and Z are at risk",
+                natureOfRisk = "The nature of the risk is X",
+                riskImminence = "the risk is imminent and more probably in X situation",
+                riskIncreaseFactors = "If offender in situation X the risk can be higher",
+                riskMitigationFactors = "Giving offender therapy in X will reduce the risk",
+                riskInCommunity = mapOf(
+                  "children" to "HIGH",
+                  "public" to "HIGH",
+                  "knownAdult" to "HIGH",
+                  "staff" to "MEDIUM",
+                  "prisoners" to "LOW",
+                ),
+                riskInCustody = mapOf(
+                  "children" to "LOW",
+                  "public" to "LOW",
+                  "knownAdult" to "HIGH",
+                  "staff" to "VERY_HIGH",
+                  "prisoners" to "VERY_HIGH",
+                ),
+              ),
             ),
           ),
         )
@@ -124,6 +147,28 @@ internal class RisksControllerTest(
               "controlIssuesDisruptiveBehaviour": null,
               "breachOfTrust": "NO",
               "riskToOtherPrisoners": null
+            },
+            "summary": {
+              "whoIsAtRisk": "X, Y and Z are at risk",
+              "natureOfRisk": "The nature of the risk is X",
+              "riskImminence": "the risk is imminent and more probably in X situation",
+              "riskIncreaseFactors": "If offender in situation X the risk can be higher",
+              "riskMitigationFactors": "Giving offender therapy in X will reduce the risk",
+              "overallRiskLevel": "LOW",
+              "riskInCommunity": {
+                "children":"HIGH",
+                "public":"HIGH",
+                "knownAdult":"HIGH",
+                "staff":"MEDIUM",
+                "prisoners":"LOW"
+               },
+               "riskInCustody": {
+                "children":"LOW",
+                "public":"LOW",
+                "knownAdult":"HIGH",
+                "staff":"VERY_HIGH",
+                "prisoners":"VERY_HIGH"
+               }
             }
           }
           """.removeWhitespaceAndNewlines(),
