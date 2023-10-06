@@ -335,11 +335,13 @@ paths:
     get:
       tags:
         - needs
-      summary: Returns criminogenic needs associated with a person.
+      summary: >
+        Returns criminogenic needs associated with a person.
+        
+        Note: Criminogenic needs are dynamic factors that are directly linked to criminal behaviour. Eight criminogenic needs are measured in OASys: Accommodation, Employability, Relationships, Lifestyle and Associates, Drug Misuse, Alcohol Misuse, Thinking & Behaviour and Attitudes. These are scored according to whether there is “no need”, “some need” or “severe need”, and a need is identified in a specific section based on calculations around these scores.
+              However, the process by which needs are assessed is changing as early as next year (2024), specifically moving to a strength-based model that seeks to identify and develop the strengths of people with convictions. As a consequence of this, the information provided by this endpoint will also change.
       parameters:
         - $ref: "#/components/parameters/HmppsId"
-        - $ref: "#/components/parameters/Page"
-        - $ref: "#/components/parameters/PerPage"
       responses:
         "200":
           description: Successfully found criminogenic needs for a person with the provided HMPPS ID.
@@ -350,8 +352,6 @@ paths:
                 properties:
                   data:
                     $ref: "#/components/schemas/Needs"
-                  pagination:
-                    $ref: "#/components/schemas/Pagination"
         "404":
           description: Failed to find criminogenic needs for a person with the provided HMPPS ID.
           content:
@@ -1115,6 +1115,29 @@ components:
           format: date
           example: 2023-09-05T10:15:41
           description: Needs assessment completion date
+        identifiedNeeds:
+          type: array
+          minItems: 0
+          items:
+            $ref: "#/components/schemas/Need"
+        notIdentifiedNeeds:
+          type: array
+          minItems: 0
+          items:
+            $ref: "#/components/schemas/Need"
+        unansweredNeeds:
+          type: array
+          minItems: 0
+          items:
+            $ref: "#/components/schemas/Need"
+
+    Need:
+      type: object
+      properties:
+        type:
+          type: string
+          example: DRUG_MISUSE
+          description: The type of need
 
 
   examples:
