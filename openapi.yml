@@ -378,7 +378,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: "#/components/schemas/risks"
+                    $ref: "#/components/schemas/Risks"
         "404":
           description: Failed to find risks for a person with the provided HMPPS ID.
           content:
@@ -1103,9 +1103,130 @@ components:
       properties:
         risk:
           type: string
-          example: "Yes"
+          example: "YES"
           enum: [ YES, NO, DK, NA ]
           description: Presence of risk
+        previous:
+          type: string
+          example: "NO"
+          enum: [ YES, NO, DK, NA ]
+          description: Previous concerns
+        previousConcernsText:
+          type: string
+          example: "Risk of self harm concerns due to ..."
+          description: Supporting comments for any previous concerns
+        current:
+          type: string
+          example: "YES"
+          enum: [ YES, NO, DK, NA ]
+          description: Current concerns
+        currentConcernsText:
+          type: string
+          example: "Risk of self harm concerns due to ..."
+          description: Supporting comments for any current concerns
+
+    OtherRisks:
+      type: object
+      properties:
+        escapeOrAbscond:
+          type: string
+          example: "YES"
+          enum: [ YES, NO, DK, NA ]
+          description: Risk of escape/abscond
+        controlIssuesDisruptiveBehaviour:
+          type: string
+          example: "DK"
+          enum: [ YES, NO, DK, NA ]
+          description: Risk control issues/disruptive behaviour
+        breachOfTrust:
+          type: string
+          example: "NO"
+          enum: [ YES, NO, DK, NA ]
+          description: Risk of breach of trust
+        riskToOtherPrisoners:
+          type: string
+          example: "YES"
+          enum: [ YES, NO, DK, NA ]
+          description: Risk to other prisoners
+
+    Summary:
+        type: object
+        properties:
+          whoIsAtRisk:
+            type: string
+            example: "X, Y and Z are at risk"
+            description: Who is at risk
+          natureOfRisk:
+            type: string
+            example: "The nature of the risk is X"
+            description: What is the nature of the risk
+          riskImminence:
+            type: string
+            example: The risk is imminent and more probable in X situation
+            description: When is the risk likely to be greatest. Consider the timescale and indicate whether risk is immediate or not. Consider the risks in custody as well as on release.
+          riskIncreaseFactors:
+            type: string
+            example: If offender is in situation X the risk can be higher
+            description: What circumstances are likely to increase risk. Describe factors, actions, events which might increase level of risk, now and in the future.
+          riskMitigationFactors:
+            type: string
+            example: Giving offender therapy in X will reduce the risk
+            description: What factors are likely to reduce the risk. Describe factors, actions, and events which may reduce or contain the level of risk. What has previously stopped them?
+          overallRiskLevel:
+            type: string
+            example: HIGH
+            enum: [ VERY_HIGH, HIGH, MEDIUM, LOW ]
+            description: The overall risk level
+          riskInCommunity:
+            type: object
+            description: >
+                Assess the risk of serious harm the offender poses on the basis that they could be released imminently back into the community. This field is a map which can return all or some of the properties given.
+            properties:
+              children:
+                type: string
+                example: HIGH
+                enum: [ VERY_HIGH, HIGH, MEDIUM, LOW ]
+              public:
+                type: string
+                example: Medium
+                enum: [ VERY_HIGH, HIGH, MEDIUM, LOW ]
+              knownAdult:
+                type: string
+                example: VERY_HIGH
+                enum: [ VERY_HIGH, HIGH, MEDIUM, LOW ]
+              staff:
+                type: string
+                example: HIGH
+                enum: [ VERY_HIGH, HIGH, MEDIUM, LOW ]
+              prisoners:
+                type: string
+                example: LOW
+                enum: [ VERY_HIGH, HIGH, MEDIUM, LOW ]
+          riskInCustody:
+            type: object
+            description: >
+                Assess both the risk of serious harm the offender presents now, in custody, and the risk they could present to others whilst in a custodial setting. This field is a map which can return all or some of the properties given.
+            properties:
+              children:
+                type: string
+                example: HIGH
+                enum: [ VERY_HIGH, HIGH, MEDIUM, LOW ]
+              public:
+                type: string
+                example: Medium
+                enum: [ VERY_HIGH, HIGH, MEDIUM, LOW ]
+              knownAdult:
+                type: string
+                example: VERY_HIGH
+                enum: [ VERY_HIGH, HIGH, MEDIUM, LOW ]
+              staff:
+                type: string
+                example: HIGH
+                enum: [ VERY_HIGH, HIGH, MEDIUM, LOW ]
+              prisoners:
+                type: string
+                example: LOW
+                enum: [ VERY_HIGH, HIGH, MEDIUM, LOW ]
 
     Needs:
       type: object
