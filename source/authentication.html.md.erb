@@ -2,8 +2,8 @@
 title: Authentication
 weight: 3
 owner_slack: "#hmpps-integration-api-alerts"
-last_reviewed_on: 2023-07-03
-review_in: 3 months
+last_reviewed_on: 2023-10-11
+review_in: 2 months
 ---
 
 # Authentication
@@ -22,4 +22,6 @@ any data. This means a certificate must be presented as part of making a request
 ## Send an API key
 
 To provide an API key, add an HTTP header called `x-api-key` with the value of the API key to the API request, ensuring
-it's not encoded in Base 64. Without an API key, a `403 Forbidden` HTTP response is returned.
+it's not encoded in Base64.
+
+Without an API key, a `403 Forbidden` HTTP response is returned.
