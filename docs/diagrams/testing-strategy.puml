@@ -54,7 +54,7 @@ Rel(consumer, controller, "Makes API calls to", "JSON/HTTPS")
 Rel_Down(controller, service, "Uses")
 Rel_Down(service, gateway, "Uses")
 Rel_Down(gateway, upstream, "Makes API calls to", "JSON/HTTPS")
-Rel_Left(gateway, model,)
+Rel_Left(gateway, model, "")
 
 Rel_Down(smoke_tests, spring_boot_api, "Tests")
 Rel_Down(smoke_tests, simulators, "Uses")
