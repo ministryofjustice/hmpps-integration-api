@@ -26,12 +26,14 @@ Boundary(spring_boot_api, "HMPPS Integration REST API", "Spring Boot Kotlin API"
   Container(controller, "Controller", "Spring Boot API Controller", "")
   Container(service, "Service", "Spring Boot Service Bean", "")
   Container(gateway, "Gateway", "Spring Boot Component Bean", "")
+  Container(model, "Model", "Kotlin Data Class", "")
 }
 
 Boundary(unit_test_boundary, "Unit Tests", "Kotlin"){
   Container(controller_tests, "Controller Tests", "WebMvcTest, Kotest, Mockito", "Tests the web layer of the application with stubbed services.",$tags="unit_tests")
   Container(service_tests, "Service Tests", "Kotest, Mockito", "Tests the business logic of the application with stubbed gateways.", $tags="unit_tests")
-  Container(gateway_tests, "Gateway Tests", "Kotest, Mockito", "Tests mapping to our data models and integration with upstream APIs using mocked servers.",$tags="unit_tests")
+  Container(gateway_tests, "Gateway Tests", "Kotest, Mockito", "Tests integration with upstream APIs using mocked servers.",$tags="unit_tests")
+  Container(model_tests, "Model Tests", "Kotest, Mockito", "Tests mapping between from upstream api models and our hmpps models",$tags="unit_tests")
   Container(mock_servers, "Mock Servers", "WireMock", "Provides canned responses mocking upstream API endpoints.", $tags="mock_servers")
 }
 
@@ -44,6 +46,7 @@ System_Ext(upstream, "Upstream Systems", "Integrated systems where data is retri
 
 Lay_D(controller_tests, service_tests)
 Lay_D(service_tests, gateway_tests)
+Lay_D(service_tests, model_tests)
 Lay_D(consumer, controller)
 Lay_Distance(smoke_tests, simulators, 3)
 
@@ -51,6 +54,7 @@ Rel(consumer, controller, "Makes API calls to", "JSON/HTTPS")
 Rel_Down(controller, service, "Uses")
 Rel_Down(service, gateway, "Uses")
 Rel_Down(gateway, upstream, "Makes API calls to", "JSON/HTTPS")
+Rel_Left(gateway, model, "")
 
 Rel_Down(smoke_tests, spring_boot_api, "Tests")
 Rel_Down(smoke_tests, simulators, "Uses")
@@ -61,6 +65,7 @@ Rel_Left(controller_tests, controller, "Tests")
 Rel_Left(service_tests, service, "Tests")
 Rel_Left(gateway_tests, gateway, "Tests")
 Rel_Down(gateway_tests, mock_servers, "Uses")
+Rel_Left(model_tests, model, "Tests")
 Rel_Left(mock_servers, upstream, "Mocks", $tags="mocks")
 
 SHOW_DYNAMIC_LEGEND()
