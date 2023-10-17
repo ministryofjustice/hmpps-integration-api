@@ -157,7 +157,7 @@ class ProbationOffenderSearchGatewayTest(
     }
   }
 
-  describe("#getPerson") {
+  describe("#getPerson with pnc") {
     val pncId = "2002/1121M"
 
     beforeEach {
@@ -262,4 +262,111 @@ class ProbationOffenderSearchGatewayTest(
       response.data.shouldBeNull()
     }
   }
+
+  describe("#getPerson with hmpps") {
+    val hmppsId = "X777776"
+
+    beforeEach {
+      probationOffenderSearchApiMockServer.stubPostOffenderSearch(
+        "{\"crn\": \"$hmppsId\"}",
+        """
+        [
+           {
+            "firstName": "Jonathan",
+            "middleNames": [
+              "Echo",
+              "Fred"
+            ],
+            "surname": "Bravo",
+            "dateOfBirth": "1970-02-07",
+            "offenderAliases": [
+              {
+                "dateOfBirth": "2000-02-07",
+                "firstName": "John",
+                "middleNames": [
+                  "Tom"
+                ],
+                "surname": "Wick"
+              }
+            ]
+          }
+        ]
+      """,
+      )
+    }
+
+    it("authenticates using HMPPS Auth with credentials") {
+      probationOffenderSearchGateway.getPerson(hmppsId = hmppsId)
+
+      verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("Probation Offender Search")
+    }
+
+    it("returns a person with the matching ID") {
+      val response = probationOffenderSearchGateway.getPerson(hmppsId = hmppsId)
+
+      response.data?.firstName.shouldBe("Jonathan")
+      response.data?.middleName.shouldBe("Echo Fred")
+      response.data?.lastName.shouldBe("Bravo")
+      response.data?.dateOfBirth.shouldBe(LocalDate.parse("1970-02-07"))
+      response.data?.aliases?.first()?.firstName.shouldBe("John")
+      response.data?.aliases?.first()?.middleName.shouldBe("Tom")
+      response.data?.aliases?.first()?.lastName.shouldBe("Wick")
+      response.data?.aliases?.first()?.dateOfBirth.shouldBe(LocalDate.parse("2000-02-07"))
+    }
+
+    it("returns a person without aliases when no aliases are found") {
+      probationOffenderSearchApiMockServer.stubPostOffenderSearch(
+        "{\"crn\": \"$hmppsId\"}",
+        """
+          [
+           {
+            "firstName": "Jonathan",
+            "surname": "Bravo",
+            "dateOfBirth": "1970-02-07",
+            "offenderAliases": []
+          }
+        ]
+        """,
+      )
+
+      val response = probationOffenderSearchGateway.getPerson(hmppsId = hmppsId)
+
+      response.data?.aliases.shouldBeEmpty()
+    }
+
+    it("returns null when 400 Bad Request is returned") {
+      probationOffenderSearchApiMockServer.stubPostOffenderSearch(
+        "{\"crn\": \"$hmppsId\"}",
+        """
+          {
+            "developerMessage": "reason for bad request"
+          }
+          """,
+        HttpStatus.BAD_REQUEST,
+      )
+
+      val response = probationOffenderSearchGateway.getPerson(hmppsId = hmppsId)
+      response.data.shouldBeNull()
+      response.errors.shouldBe(
+        listOf(
+          UpstreamApiError(
+            causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH,
+            type = UpstreamApiError.Type.BAD_REQUEST,
+          ),
+        ),
+      )
+    }
+
+    it("returns null when no offenders are returned") {
+      probationOffenderSearchApiMockServer.stubPostOffenderSearch(
+        "{\"crn\": \"$hmppsId\"}",
+        "[]",
+      )
+
+      val response = probationOffenderSearchGateway.getPerson(hmppsId = hmppsId)
+
+      response.data.shouldBeNull()
+    }
+  }
+
 },)

@@ -20,13 +20,16 @@ class ProbationOffenderSearchGateway(@Value("\${services.probation-offender-sear
   @Autowired
   lateinit var hmppsAuthGateway: HmppsAuthGateway
 
-  fun getPerson(pncId: String): Response<Person?> {
+  fun getPerson(pncId: String?=null, hmppsId: String?=null): Response<Person?> {
     return try {
+      var queryField = if(!pncId.isNullOrEmpty()) "pncNumber" else "crn"
+      var queryValue = if(!pncId.isNullOrEmpty()) pncId else hmppsId
+
       val offenders = webClient.requestList<Offender>(
         HttpMethod.POST,
         "/search",
         authenticationHeader(),
-        mapOf("pncNumber" to pncId),
+        mapOf(queryField to queryValue),
       )
 
       if (offenders.isEmpty()) {
