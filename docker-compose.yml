@@ -11,7 +11,7 @@ services:
     depends_on:
       prison-api:
         condition: service_healthy
-      prisoner-offender-search:
+      prisoner-search:
         condition: service_healthy
       probation-offender-search:
         condition: service_healthy
@@ -52,11 +52,11 @@ services:
     ports:
       - '4030:4010'
 
-  prisoner-offender-search:
+  prisoner-search:
     build:
       context: .
-      dockerfile: Dockerfile.setup-prisoner-offender-search
-    container_name: prisoner-offender-search
+      dockerfile: Dockerfile.setup-prisoner-search
+    container_name: prisoner-search
     healthcheck:
       test: 'wget --header="Authorization: Bearer abc" http://127.0.0.1:4010/prisoner/A1234AL -O /dev/null'
     ports:

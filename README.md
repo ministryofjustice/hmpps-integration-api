@@ -48,7 +48,7 @@ as well as the following technologies for its infrastructure:
 This solution is dependent on:
 
 - [Prison API](https://github.com/ministryofjustice/prison-api)
-- [Prisoner Offender Search](https://github.com/ministryofjustice/prisoner-offender-search)
+- [Prisoner Search](https://github.com/ministryofjustice/hmpps-prisoner-search)
 - [Probation Offender Search](https://github.com/ministryofjustice/probation-offender-search)
 - [HMPPS Auth](https://github.com/ministryofjustice/hmpps-auth)
 
@@ -126,7 +126,7 @@ Each service is then accessible at:
 - [http://localhost:4030](http://localhost:4030) for the Prison API
 - [http://localhost:4040](http://localhost:4040) for the ndelius API
 - [http://localhost:4020](http://localhost:4020) for the Probation Offender Search
-- [http://localhost:4010](http://localhost:4010) for the Prisoner Offender Search
+- [http://localhost:4010](http://localhost:4010) for the Prisoner Search
 - [http://localhost:9090](http://localhost:9090) for the HMPPS Auth service
 
 As part of getting the HMPPS Auth service running

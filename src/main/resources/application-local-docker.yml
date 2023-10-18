@@ -2,7 +2,7 @@ services:
   probation-offender-search:
     base-url: http://probation-offender-search:4010
   prisoner-offender-search:
-    base-url: http://prisoner-offender-search:4010
+    base-url: http://prisoner-search:4010
   prison-api:
     base-url: http://prison-api:4010
   ndelius:
