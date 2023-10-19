@@ -44,8 +44,8 @@ class PrisonerOffenderSearchGatewayTest(
   }
 
   describe("#getPersons") {
-    val firstName = "PETER"
-    val lastName = "PHILLIPS"
+    val firstName = "JAMES"
+    val lastName = "HOWLETT"
     val pncId = "2003/13116A"
 
     beforeEach {

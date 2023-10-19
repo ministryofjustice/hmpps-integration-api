@@ -29,5 +29,6 @@ data class Prisoner(
       croNumber = this.croNumber,
     ),
     pncId = this.pncNumber,
+    hmppsId = this.pncNumber,
   )
 }

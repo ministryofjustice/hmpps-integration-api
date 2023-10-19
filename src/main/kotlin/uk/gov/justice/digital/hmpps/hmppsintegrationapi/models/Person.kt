@@ -16,4 +16,5 @@ data class Person(
   val aliases: List<Alias> = listOf(),
   val identifiers: Identifiers = Identifiers(),
   val pncId: String? = null,
+  val hmppsId: String? = null,
 )

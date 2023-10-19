@@ -29,5 +29,6 @@ data class Offender(
       deliusCrn = otherIds.crn,
     ),
     pncId = otherIds.pncNumber,
+    hmppsId = otherIds.pncNumber,
   )
 }
