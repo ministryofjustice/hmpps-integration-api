@@ -871,6 +871,10 @@ components:
           type: string
           example: 2008/0545166T
           description: An identifier from the Police National Computer (PNC)
+        hmppsId:
+            type: string
+            example: 2008/0545166T
+            description: Currently a hmppsId is a PNC identifier however this will change in the near future to be a CRN identifier
     Sentence:
       type: object
       properties:
