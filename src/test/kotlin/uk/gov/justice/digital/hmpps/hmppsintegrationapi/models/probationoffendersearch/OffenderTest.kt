@@ -11,7 +11,7 @@ class OffenderTest : DescribeSpec(
   {
     describe("#toPerson") {
       it("maps one-to-one attributes to person attributes") {
-        val prisoner = Offender(
+        val offender = Offender(
           firstName = "First Name",
           surname = "Surname",
           middleNames = listOf("Middle Name"),
@@ -29,19 +29,20 @@ class OffenderTest : DescribeSpec(
           ),
         )
 
-        val person = prisoner.toPerson()
+        val person = offender.toPerson()
 
-        person.firstName.shouldBe(prisoner.firstName)
-        person.lastName.shouldBe(prisoner.surname)
+        person.firstName.shouldBe(offender.firstName)
+        person.lastName.shouldBe(offender.surname)
         person.middleName.shouldBe("Middle Name")
-        person.dateOfBirth.shouldBe(prisoner.dateOfBirth)
-        person.gender.shouldBe(prisoner.gender)
-        person.ethnicity.shouldBe(prisoner.offenderProfile.ethnicity)
+        person.dateOfBirth.shouldBe(offender.dateOfBirth)
+        person.gender.shouldBe(offender.gender)
+        person.ethnicity.shouldBe(offender.offenderProfile.ethnicity)
         person.aliases.first().shouldBeTypeOf<Alias>()
-        person.identifiers.nomisNumber.shouldBe(prisoner.otherIds.nomsNumber)
-        person.identifiers.croNumber.shouldBe(prisoner.otherIds.croNumber)
-        person.identifiers.deliusCrn.shouldBe(prisoner.otherIds.crn)
-        person.pncId.shouldBe(prisoner.otherIds.pncNumber)
+        person.identifiers.nomisNumber.shouldBe(offender.otherIds.nomsNumber)
+        person.identifiers.croNumber.shouldBe(offender.otherIds.croNumber)
+        person.identifiers.deliusCrn.shouldBe(offender.otherIds.crn)
+        person.pncId.shouldBe(offender.otherIds.pncNumber)
+        person.hmppsId.shouldBe(offender.otherIds.pncNumber)
       }
 
       it("returns null when no middle names") {

@@ -6,7 +6,6 @@ import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeTypeOf
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Alias
 import java.time.LocalDate
-
 class PrisonerTest : DescribeSpec(
   {
     describe("#toPerson") {
@@ -39,6 +38,7 @@ class PrisonerTest : DescribeSpec(
         person.identifiers.croNumber.shouldBe(prisoner.croNumber)
         person.identifiers.deliusCrn.shouldBeNull()
         person.pncId.shouldBe(prisoner.pncNumber)
+        person.hmppsId.shouldBe(prisoner.pncNumber)
       }
     }
   },
