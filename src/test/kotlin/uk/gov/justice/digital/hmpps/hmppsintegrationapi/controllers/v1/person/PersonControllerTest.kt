@@ -121,7 +121,8 @@ internal class PersonControllerTest(
                   "croNumber": null,
                   "deliusCrn": null
               },
-              "pncId": null
+              "pncId": null,
+              "hmppsId": null
             },
             {
               "firstName":"Barry",
@@ -136,7 +137,8 @@ internal class PersonControllerTest(
                   "croNumber": null,
                   "deliusCrn": null
               },
-              "pncId": null
+              "pncId": null,
+              "hmppsId": null
             }
           ]
           """.removeWhitespaceAndNewlines(),
@@ -290,7 +292,8 @@ internal class PersonControllerTest(
                   "croNumber": null,
                   "deliusCrn": null
             },              
-            "pncId": null
+            "pncId": null,
+            "hmppsId": null
           },
           "probationOffenderSearch": {
             "firstName": "Silly",
@@ -305,7 +308,8 @@ internal class PersonControllerTest(
                 "croNumber": null,
                 "deliusCrn": null
             },
-            "pncId": null
+            "pncId": null,
+            "hmppsId": null
           }
         }
         """.removeWhitespaceAndNewlines(),

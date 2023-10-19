@@ -80,7 +80,8 @@ class PersonSmokeTest : DescribeSpec(
                   "croNumber": "29906/12J",
                   "deliusCrn": null
               },
-              "pncId": "12/394773H"
+              "pncId": "12/394773H",
+              "hmppsId": "12/394773H"
             },
             "probationOffenderSearch": {
               "firstName": "string",
@@ -104,7 +105,8 @@ class PersonSmokeTest : DescribeSpec(
                   "croNumber": "string",
                   "deliusCrn": "string"
               },
-              "pncId": "string"
+              "pncId": "string",
+              "hmppsId": "string"
             }
           }
         """.removeWhitespaceAndNewlines(),
