@@ -13,12 +13,12 @@ class GetImageMetadataForPersonService(
   @Autowired val probationOffenderSearchGateway: ProbationOffenderSearchGateway,
 ) {
   fun execute(hmppsId: String): Response<List<ImageMetadata>> {
-    val responseFromProbationOffenderSearch = probationOffenderSearchGateway.getPerson(hmppsId= hmppsId)
+    val responseFromProbationOffenderSearch = probationOffenderSearchGateway.getPerson(hmppsId)
 
-    if (responseFromProbationOffenderSearch.data==null) {
+    if (responseFromProbationOffenderSearch.data == null) {
       return Response(
         data = emptyList(),
-        errors =responseFromProbationOffenderSearch.errors
+        errors = responseFromProbationOffenderSearch.errors,
       )
     }
 

@@ -35,7 +35,7 @@ internal class GetImageMetadataForPersonServiceTest(
   beforeEach {
     Mockito.reset(nomisGateway)
 
-    whenever(probationOffenderSearchGateway.getPerson(hmppsId = hmppsId)).thenReturn(
+    whenever(probationOffenderSearchGateway.getPerson(id = hmppsId)).thenReturn(
       Response(data = Person(firstName = "Joey", lastName = "Tribbiani", identifiers = Identifiers(nomisNumber = prisonerNumber))),
     )
     whenever(nomisGateway.getImageMetadataForPerson(prisonerNumber)).thenReturn(Response(data = emptyList()))
@@ -44,7 +44,7 @@ internal class GetImageMetadataForPersonServiceTest(
   it("retrieves prisoner ID from Probation Offender Search") {
     getImageMetadataForPersonService.execute(hmppsId)
 
-    verify(probationOffenderSearchGateway, VerificationModeFactory.times(1)).getPerson(hmppsId = hmppsId)
+    verify(probationOffenderSearchGateway, VerificationModeFactory.times(1)).getPerson(id = hmppsId)
   }
 
   it("retrieves images details from NOMIS") {
@@ -72,15 +72,17 @@ internal class GetImageMetadataForPersonServiceTest(
   }
 
   it("returns a not found error when person cannot be found in Probation Offender Search") {
-    whenever(probationOffenderSearchGateway.getPerson(hmppsId = hmppsId)).thenReturn(Response(
-      data = null,
-      errors = listOf(
-        UpstreamApiError(
-          causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH,
-          type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+    whenever(probationOffenderSearchGateway.getPerson(id = hmppsId)).thenReturn(
+      Response(
+        data = null,
+        errors = listOf(
+          UpstreamApiError(
+            causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH,
+            type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+          ),
         ),
       ),
-    ))
+    )
 
     val response = getImageMetadataForPersonService.execute(hmppsId)
 

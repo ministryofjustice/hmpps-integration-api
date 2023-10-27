@@ -66,3 +66,6 @@ services:
 
 sentry:
   traces-sample-rate: "0.05"
+
+feature-flags:
+  use-crn-instead-of-pnc-id: false

@@ -63,13 +63,13 @@ class PersonController(
     return response.data
   }
 
-  @GetMapping("{encodedPncId}/images")
+  @GetMapping("{encodedHmppsId}/images")
   fun getPersonImages(
-    @PathVariable encodedPncId: String,
+    @PathVariable encodedHmppsId: String,
     @RequestParam(required = false, defaultValue = "1", name = "page") page: Int,
     @RequestParam(required = false, defaultValue = "10", name = "perPage") perPage: Int,
   ): PaginatedResponse<ImageMetadata?> {
-    val hmppsId = encodedPncId.decodeUrlCharacters()
+    val hmppsId = encodedHmppsId.decodeUrlCharacters()
 
     val response = getImageMetadataForPersonService.execute(hmppsId)
 
