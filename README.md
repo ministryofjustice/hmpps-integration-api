@@ -252,6 +252,7 @@ Note, this will only specifically enable the `RequestLogger`.
 
 - [Creating an environment](/docs/creating-an-environment.md)
 - [Setting up a CircleCI context for deployment](/docs/setting-up-circleci-context-for-deployment.md)
+- [Setting up a new consumer](/docs/setting-up-a-new-consumer.md)
 - [Updating diagrams](/docs/updating-diagrams.md)
 - [Useful commands](/docs/useful-commands.md)
 
