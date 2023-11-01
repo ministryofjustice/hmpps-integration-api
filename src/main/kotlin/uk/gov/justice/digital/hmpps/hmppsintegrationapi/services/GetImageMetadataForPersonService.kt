@@ -3,32 +3,25 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NomisGateway
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffenderSearchGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ProbationOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ImageMetadata
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Response
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApi
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApiError
 
 @Service
 class GetImageMetadataForPersonService(
   @Autowired val nomisGateway: NomisGateway,
-  @Autowired val prisonerOffenderSearchGateway: PrisonerOffenderSearchGateway,
+  @Autowired val probationOffenderSearchGateway: ProbationOffenderSearchGateway,
 ) {
-  fun execute(pncId: String): Response<List<ImageMetadata>> {
-    val responseFromPrisonerOffenderSearch = prisonerOffenderSearchGateway.getPersons(pncId = pncId)
+  fun execute(hmppsId: String): Response<List<ImageMetadata>> {
+    val responseFromProbationOffenderSearch = probationOffenderSearchGateway.getPerson(hmppsId)
 
-    if (responseFromPrisonerOffenderSearch.data.isEmpty()) {
+    if (responseFromProbationOffenderSearch.data == null) {
       return Response(
         data = emptyList(),
-        errors = listOf(
-          UpstreamApiError(
-            causedBy = UpstreamApi.PRISONER_OFFENDER_SEARCH,
-            type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-          ),
-        ),
+        errors = responseFromProbationOffenderSearch.errors,
       )
     }
 
-    return nomisGateway.getImageMetadataForPerson(responseFromPrisonerOffenderSearch.data.first().identifiers.nomisNumber!!)
+    return nomisGateway.getImageMetadataForPerson(responseFromProbationOffenderSearch.data.identifiers.nomisNumber!!)
   }
 }

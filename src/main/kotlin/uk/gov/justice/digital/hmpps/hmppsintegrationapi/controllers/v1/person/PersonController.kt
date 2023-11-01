@@ -63,18 +63,18 @@ class PersonController(
     return response.data
   }
 
-  @GetMapping("{encodedPncId}/images")
+  @GetMapping("{encodedHmppsId}/images")
   fun getPersonImages(
-    @PathVariable encodedPncId: String,
+    @PathVariable encodedHmppsId: String,
     @RequestParam(required = false, defaultValue = "1", name = "page") page: Int,
     @RequestParam(required = false, defaultValue = "10", name = "perPage") perPage: Int,
   ): PaginatedResponse<ImageMetadata?> {
-    val pncId = encodedPncId.decodeUrlCharacters()
+    val hmppsId = encodedHmppsId.decodeUrlCharacters()
 
-    val response = getImageMetadataForPersonService.execute(pncId)
+    val response = getImageMetadataForPersonService.execute(hmppsId)
 
     if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
-      throw EntityNotFoundException("Could not find person with id: $pncId")
+      throw EntityNotFoundException("Could not find person with id: $hmppsId")
     }
 
     return response.data.paginateWith(page, perPage)

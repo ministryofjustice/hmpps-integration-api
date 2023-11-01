@@ -33,7 +33,7 @@ internal class GetPersonServiceTest(
     whenever(prisonerOffenderSearchGateway.getPersons(pncId = pncId)).thenReturn(
       Response(data = listOf(Person(firstName = "Qui-gon", lastName = "Jin", identifiers = Identifiers(nomisNumber = "A1234AA")))),
     )
-    whenever(probationOffenderSearchGateway.getPerson(pncId = pncId)).thenReturn(
+    whenever(probationOffenderSearchGateway.getPerson(id = pncId)).thenReturn(
       Response(data = Person(firstName = "Qui-gon", lastName = "Jin", identifiers = Identifiers(nomisNumber = "A1234AA"))),
     )
   }
@@ -73,7 +73,7 @@ internal class GetPersonServiceTest(
 
   it("returns null when a person isn't found in any APIs") {
     whenever(prisonerOffenderSearchGateway.getPersons(pncId = pncId)).thenReturn(Response(data = emptyList()))
-    whenever(probationOffenderSearchGateway.getPerson(pncId = pncId)).thenReturn(Response(data = null))
+    whenever(probationOffenderSearchGateway.getPerson(id = pncId)).thenReturn(Response(data = null))
 
     val result = getPersonService.execute(pncId)
     val expectedResult = mapOf(

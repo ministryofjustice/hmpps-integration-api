@@ -14,19 +14,20 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.probationoffendersearch.Offender
 
 @Component
-class ProbationOffenderSearchGateway(@Value("\${services.probation-offender-search.base-url}") baseUrl: String) {
+class ProbationOffenderSearchGateway(@Value("\${services.probation-offender-search.base-url}") baseUrl: String, @Value("\${feature-flags.use-crn-instead-of-pnc-id}") private val useCrnInsteadOfPncId: Boolean) {
   private val webClient = WebClientWrapper(baseUrl)
 
   @Autowired
   lateinit var hmppsAuthGateway: HmppsAuthGateway
-
-  fun getPerson(pncId: String): Response<Person?> {
+  fun getPerson(id: String? = null): Response<Person?> {
     return try {
+      var queryField = if (useCrnInsteadOfPncId) "crn" else "pncNumber"
+
       val offenders = webClient.requestList<Offender>(
         HttpMethod.POST,
         "/search",
         authenticationHeader(),
-        mapOf("pncNumber" to pncId),
+        mapOf(queryField to id),
       )
 
       if (offenders.isEmpty()) {

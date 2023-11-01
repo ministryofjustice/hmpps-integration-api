@@ -11,3 +11,6 @@ services:
     base-url: http://assess-risks-and-needs-api:4010
   hmpps-auth:
     base-url: http://hmpps-auth:8080
+
+feature-flags:
+  use-crn-instead-of-pnc-id: false
