@@ -194,7 +194,7 @@ class NomisGateway(@Value("\${services.prison-api.base-url}") baseUrl: String) {
     }
   }
 
-  fun getSentenceAdjustmentsForPerson(id: String): Response<SentenceAdjustment?> {
+  fun getLatestSentenceAdjustmentsForPerson(id: String): Response<SentenceAdjustment?> {
     return try {
       Response(
         data = webClient.request<SentenceSummary>(

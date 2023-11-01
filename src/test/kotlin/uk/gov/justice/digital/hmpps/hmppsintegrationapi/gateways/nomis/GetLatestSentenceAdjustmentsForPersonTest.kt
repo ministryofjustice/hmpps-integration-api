@@ -23,7 +23,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApiError
   initializers = [ConfigDataApplicationContextInitializer::class],
   classes = [NomisGateway::class],
 )
-class GetSentenceAdjustmentsForPersonTest(
+class GetLatestSentenceAdjustmentsForPersonTest(
   @MockBean val hmppsAuthGateway: HmppsAuthGateway,
   private val nomisGateway: NomisGateway,
 ) : DescribeSpec(
@@ -33,7 +33,7 @@ class GetSentenceAdjustmentsForPersonTest(
 
     beforeEach {
       nomisApiMockServer.start()
-      nomisApiMockServer.stubGetSentenceAdjustmentsForPerson(
+      nomisApiMockServer.stubGetLatestSentenceAdjustmentsForPerson(
         offenderNo,
         """
           {
@@ -56,19 +56,19 @@ class GetSentenceAdjustmentsForPersonTest(
     }
 
     it("authenticates using HMPPS Auth with credentials") {
-      nomisGateway.getSentenceAdjustmentsForPerson(offenderNo)
+      nomisGateway.getLatestSentenceAdjustmentsForPerson(offenderNo)
 
       verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("NOMIS")
     }
 
     it("returns sentence adjustments for a person with the matching ID") {
-      val response = nomisGateway.getSentenceAdjustmentsForPerson(offenderNo)
+      val response = nomisGateway.getLatestSentenceAdjustmentsForPerson(offenderNo)
 
       response.data?.additionalDaysAwarded.shouldBe(12)
     }
 
     it("returns an error when 404 NOT FOUND is returned") {
-      nomisApiMockServer.stubGetSentenceAdjustmentsForPerson(
+      nomisApiMockServer.stubGetLatestSentenceAdjustmentsForPerson(
         offenderNo,
         """
         {
@@ -78,7 +78,7 @@ class GetSentenceAdjustmentsForPersonTest(
         HttpStatus.NOT_FOUND,
       )
 
-      val response = nomisGateway.getSentenceAdjustmentsForPerson(offenderNo)
+      val response = nomisGateway.getLatestSentenceAdjustmentsForPerson(offenderNo)
 
       response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND).shouldBeTrue()
     }

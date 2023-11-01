@@ -131,7 +131,7 @@ class NomisApiMockServer : WireMockServer(WIREMOCK_PORT) {
     )
   }
 
-  fun stubGetSentenceAdjustmentsForPerson(nomisNumber: String, body: String, status: HttpStatus = HttpStatus.OK) {
+  fun stubGetLatestSentenceAdjustmentsForPerson(nomisNumber: String, body: String, status: HttpStatus = HttpStatus.OK) {
     stubFor(
       get("/api/offenders/$nomisNumber/booking/latest/sentence-summary")
         .withHeader(
