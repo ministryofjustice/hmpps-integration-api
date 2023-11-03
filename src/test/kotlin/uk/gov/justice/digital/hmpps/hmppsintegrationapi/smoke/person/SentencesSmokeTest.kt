@@ -87,5 +87,28 @@ class SentencesSmokeTest : DescribeSpec(
         """.removeWhitespaceAndNewlines(),
       )
     }
+
+    it("returns latest sentence key dates and adjustments for a person") {
+      val response = httpClient.send(
+        httpRequest.uri(URI.create("$baseUrl/$basePath/latest-key-dates-and-adjustments")).build(),
+        HttpResponse.BodyHandlers.ofString(),
+      )
+
+      response.statusCode().shouldBe(HttpStatus.OK.value())
+      response.body().shouldEqualJson(
+        """
+        {
+          "data": {
+            "adjustments": {
+              "additionalDaysAwarded": 12
+            },
+            "automaticRelease": {
+              "date": "2020-02-03"
+            }
+          }
+        }
+        """.removeWhitespaceAndNewlines(),
+      )
+    }
   },
 )
