@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.hmppsintegrationapi.controllers.v1
+package uk.gov.justice.digital.hmpps.hmppsintegrationapi.controllers.v1.person
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.GetMapping
