@@ -461,16 +461,6 @@ paths:
         "200":
           description: Success.
 
-  /{TBC}/v1/persons/{Id}/risks:
-    get:
-      summary: FUTURE ENDPOINT - Returns prisoner risks, alerts, personal circumstances, prisoner category, person assessments, risk of re-offending, OASys General Predictor (OGP) scores, OASys Violence Predictor (OVP) scores, likelihood of serious harm to others, concerns, RoSH (Risk of serious harm) summary, registration summary associated with a person.
-      parameters:
-        - $ref: "#/components/parameters/Id"
-      responses:
-        "200":
-          description: Success.
-
-
   /{TBC}/v1/persons/{Id}/security:
     get:
       summary: FUTURE ENDPOINT - Returns security information such as prisoner non-associations and prisoner incidents for a person.
