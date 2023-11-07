@@ -297,6 +297,33 @@ paths:
                 PersonNotFoundError:
                   $ref: "#/components/examples/PersonNotFoundError"
 
+  /v1/persons/{hmppsId}/sentences/latest-key-dates-and-adjustments:
+    get:
+      tags:
+        - persons
+      summary: Returns the key dates and adjustments about a person's release from prison for their latest sentence.
+      parameters:
+        - $ref: "#/components/parameters/HmppsId"
+      responses:
+        "200":
+          description: Successfully found latest sentence key dates and adjustments for a person with the provided HMPPS ID.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/LatestSentenceKeyDatesAndAdjustments"
+        "404":
+          description: Failed to find sentences a person with the provided HMPPS ID.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                PersonNotFoundError:
+                  $ref: "#/components/examples/PersonNotFoundError"
+
   /v1/persons/{hmppsId}/risks/scores:
     get:
       tags:
@@ -451,25 +478,6 @@ paths:
       responses:
         "200":
           description: Success.
-
-  /{TBC}/v1/persons/{Id}/release-information:
-    get:
-      summary: FUTURE ENDPOINT - Returns release dates and information associated with a person.
-      parameters:
-        - $ref: "#/components/parameters/Id"
-      responses:
-        "200":
-          description: Success.
-
-  /{TBC}/v1/persons/{Id}/risks:
-    get:
-      summary: FUTURE ENDPOINT - Returns prisoner risks, alerts, personal circumstances, prisoner category, person assessments, risk of re-offending, OASys General Predictor (OGP) scores, OASys Violence Predictor (OVP) scores, likelihood of serious harm to others, concerns, RoSH (Risk of serious harm) summary, registration summary associated with a person.
-      parameters:
-        - $ref: "#/components/parameters/Id"
-      responses:
-        "200":
-          description: Success.
-
 
   /{TBC}/v1/persons/{Id}/security:
     get:
@@ -765,6 +773,19 @@ components:
               `OFF_IDM` - Offender Identification Marks,
               `OIC` - Offence In Custody,
               `PPTY` - Property Image
+    LatestSentenceKeyDatesAndAdjustments:
+      type: object
+      properties:
+        adjustments:
+          $ref: "#/components/schemas/SentenceAdjustments"
+        automaticRelease:
+          type: object
+          properties:
+            date:
+              type: string
+              format: date
+              description: Calculated automatic (unconditional) release date for a person
+              example: 2023-03-01
     Offence:
       type: object
       properties:
@@ -906,6 +927,13 @@ components:
           description: The amount of fine related to the sentence and offence
         length:
           $ref: "#/components/schemas/SentenceLength"
+    SentenceAdjustments:
+      type: object
+      properties:
+        additionalDaysAwarded:
+          type: integer
+          example: 10
+          description: Number of additional days awarded
     SentenceLength:
       type: object
       properties:
