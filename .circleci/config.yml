@@ -190,6 +190,8 @@ workflows:
           context:
             - hmpps-common-vars
             - hmpps-integration-api-preprod
+          requires:
+            - deploy-to-dev
           filters:
             branches:
               only:
@@ -217,6 +219,8 @@ workflows:
           context:
             - hmpps-integration-api-prod
             - hmpps-common-vars
+          requires:
+            - deploy-to-preprod
           filters:
             branches:
               only:
