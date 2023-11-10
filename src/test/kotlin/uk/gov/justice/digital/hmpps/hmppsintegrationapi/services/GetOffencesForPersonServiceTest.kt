@@ -39,20 +39,20 @@ internal class GetOffencesForPersonServiceTest(
     val probationOffence1 = generateTestOffence(description = "Probation offence 1", hoCode = "05800", statuteCode = null)
     val probationOffence2 = generateTestOffence(description = "Probation offence 2", hoCode = "05801", statuteCode = null)
     val probationOffence3 = generateTestOffence(description = "Probation offence 3", hoCode = "05802", statuteCode = null)
-    val personFromPrisonOffenderSearch = Person(firstName = "Chandler", lastName = "Bing", identifiers = Identifiers(nomisNumber = prisonerNumber))
-    val personFromProbationOffenderSearch = Person(firstName = "Chandler", lastName = "ProbationBing", identifiers = Identifiers(deliusCrn = nDeliusCRN))
+    val personFromProbationOffenderSearch = Person(
+      firstName = "Chandler",
+      lastName = "ProbationBing",
+      identifiers = Identifiers(deliusCrn = nDeliusCRN, nomisNumber = prisonerNumber),
+    )
 
     beforeEach {
       Mockito.reset(getPersonService)
       Mockito.reset(nomisGateway)
       Mockito.reset(nDeliusGateway)
 
-      whenever(getPersonService.execute(pncId = pncId)).thenReturn(
+      whenever(getPersonService.execute(hmppsId = pncId)).thenReturn(
         Response(
-          data = mapOf(
-            "prisonerOffenderSearch" to personFromPrisonOffenderSearch,
-            "probationOffenderSearch" to personFromProbationOffenderSearch,
-          ),
+          data = personFromProbationOffenderSearch,
         ),
       )
 
@@ -77,40 +77,22 @@ internal class GetOffencesForPersonServiceTest(
       )
     }
 
-    it("Returns probation offences only when Prison Offender Search couldn't find the person by PNC ID") {
-      whenever(getPersonService.execute(pncId = pncId)).thenReturn(
+    it("Returns prison and probation offences given a hmppsId") {
+      whenever(getPersonService.execute(hmppsId = pncId)).thenReturn(
         Response(
-          data = mapOf(
-            "prisonerOffenderSearch" to null,
-            "probationOffenderSearch" to personFromProbationOffenderSearch,
-          ),
+          data = personFromProbationOffenderSearch,
         ),
       )
 
       val result = getOffencesForPersonService.execute(pncId)
 
-      result.shouldBe(Response(data = listOf(probationOffence1, probationOffence2, probationOffence3)))
-    }
-
-    it("Returns prison offences only when Probation Offender Search couldn't find the person by PNC ID") {
-      whenever(getPersonService.execute(pncId = pncId)).thenReturn(
-        Response(
-          data = mapOf(
-            "prisonerOffenderSearch" to personFromPrisonOffenderSearch,
-            "probationOffenderSearch" to null,
-          ),
-        ),
-      )
-
-      val result = getOffencesForPersonService.execute(pncId)
-
-      result.shouldBe(Response(data = listOf(prisonOffence1, prisonOffence2, prisonOffence3)))
+      result.shouldBe(Response(data = listOf(prisonOffence1, prisonOffence2, prisonOffence3, probationOffence1, probationOffence2, probationOffence3)))
     }
 
     it("retrieves a person using a PNC ID") {
       getOffencesForPersonService.execute(pncId)
 
-      verify(getPersonService, VerificationModeFactory.times(1)).execute(pncId = pncId)
+      verify(getPersonService, VerificationModeFactory.times(1)).execute(hmppsId = pncId)
     }
 
     it("retrieves offences from NOMIS using a prisoner number") {
@@ -142,12 +124,9 @@ internal class GetOffencesForPersonServiceTest(
 
     describe("when an upstream API returns an error when looking up a person from a PNC ID") {
       beforeEach {
-        whenever(getPersonService.execute(pncId = pncId)).thenReturn(
+        whenever(getPersonService.execute(hmppsId = pncId)).thenReturn(
           Response(
-            data = mapOf(
-              "prisonerOffenderSearch" to null,
-              "probationOffenderSearch" to null,
-            ),
+            data = null,
             errors = listOf(
               UpstreamApiError(
                 causedBy = UpstreamApi.PRISONER_OFFENDER_SEARCH,

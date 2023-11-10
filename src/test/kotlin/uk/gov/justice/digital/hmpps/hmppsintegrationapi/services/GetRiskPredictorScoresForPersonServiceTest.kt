@@ -47,12 +47,9 @@ internal class GetRiskPredictorScoresForPersonServiceTest(
       Mockito.reset(getPersonService)
       Mockito.reset(assessRisksAndNeedsGateway)
 
-      whenever(getPersonService.execute(pncId = pncId)).thenReturn(
+      whenever(getPersonService.execute(hmppsId = pncId)).thenReturn(
         Response(
-          data = mapOf(
-            "prisonerOffenderSearch" to personFromPrisonOffenderSearch,
-            "probationOffenderSearch" to personFromProbationOffenderSearch,
-          ),
+          data = personFromProbationOffenderSearch,
         ),
       )
 
@@ -62,7 +59,7 @@ internal class GetRiskPredictorScoresForPersonServiceTest(
     it("retrieves a person from getPersonService") {
       getRiskPredictorScoresForPersonService.execute(pncId)
 
-      verify(getPersonService, VerificationModeFactory.times(1)).execute(pncId = pncId)
+      verify(getPersonService, VerificationModeFactory.times(1)).execute(hmppsId = pncId)
     }
 
     it("retrieves risk predictor scores for a person from ARN API using CRN") {
@@ -99,10 +96,7 @@ internal class GetRiskPredictorScoresForPersonServiceTest(
         beforeEach {
           whenever(getPersonService.execute(pncId)).thenReturn(
             Response(
-              data = mapOf(
-                "prisonerOffenderSearch" to null,
-                "probationOffenderSearch" to null,
-              ),
+              data = null,
               errors = listOf(
                 UpstreamApiError(
                   causedBy = UpstreamApi.PRISONER_OFFENDER_SEARCH,

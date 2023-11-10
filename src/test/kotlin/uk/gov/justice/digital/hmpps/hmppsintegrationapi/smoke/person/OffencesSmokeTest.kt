@@ -14,8 +14,8 @@ import java.nio.charset.StandardCharsets
 
 class OffencesSmokeTest : DescribeSpec(
   {
-    val pncId = "2004/13116M"
-    val encodedPncId = URLEncoder.encode(pncId, StandardCharsets.UTF_8)
+    val hmppsId = "2004/13116M"
+    val encodedPncId = URLEncoder.encode(hmppsId, StandardCharsets.UTF_8)
 
     val baseUrl = "http://localhost:8080"
     val basePath = "v1/persons/$encodedPncId/offences"

@@ -42,13 +42,8 @@ internal class GetRisksForPersonServiceTest(
       Mockito.reset(getPersonService)
       Mockito.reset(assessRisksAndNeedsGateway)
 
-      whenever(getPersonService.execute(pncId = pncId)).thenReturn(
-        Response(
-          data = mapOf(
-            "prisonerOffenderSearch" to personFromPrisonOffenderSearch,
-            "probationOffenderSearch" to personFromProbationOffenderSearch,
-          ),
-        ),
+      whenever(getPersonService.execute(hmppsId = pncId)).thenReturn(
+        Response(data = personFromProbationOffenderSearch),
       )
 
       whenever(assessRisksAndNeedsGateway.getRisksForPerson(deliusCrn)).thenReturn(Response(data = null))
@@ -57,7 +52,7 @@ internal class GetRisksForPersonServiceTest(
     it("retrieves a person from getPersonService") {
       getRisksForPersonService.execute(pncId)
 
-      verify(getPersonService, VerificationModeFactory.times(1)).execute(pncId = pncId)
+      verify(getPersonService, VerificationModeFactory.times(1)).execute(hmppsId = pncId)
     }
 
     it("retrieves risks for a person from ARN API using a CRN") {
@@ -81,10 +76,7 @@ internal class GetRisksForPersonServiceTest(
         beforeEach {
           whenever(getPersonService.execute(pncId)).thenReturn(
             Response(
-              data = mapOf(
-                "prisonerOffenderSearch" to null,
-                "probationOffenderSearch" to null,
-              ),
+              data = null,
               errors = listOf(
                 UpstreamApiError(
                   causedBy = UpstreamApi.PRISONER_OFFENDER_SEARCH,

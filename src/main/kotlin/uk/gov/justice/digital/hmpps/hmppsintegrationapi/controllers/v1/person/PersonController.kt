@@ -49,7 +49,7 @@ class PersonController(
   }
 
   @GetMapping("{encodedPncId}")
-  fun getPerson(@PathVariable encodedPncId: String): Map<String, Person?> {
+  fun getPerson(@PathVariable encodedPncId: String): Person? {
     val pncId = encodedPncId.decodeUrlCharacters()
     val response = getPersonService.execute(pncId)
 

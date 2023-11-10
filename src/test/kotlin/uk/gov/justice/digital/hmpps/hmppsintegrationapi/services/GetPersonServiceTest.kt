@@ -38,12 +38,6 @@ internal class GetPersonServiceTest(
     )
   }
 
-  it("retrieves a person from Prisoner Offender Search") {
-    getPersonService.execute(pncId)
-
-    verify(prisonerOffenderSearchGateway, VerificationModeFactory.times(1)).getPersons(pncId = pncId)
-  }
-
   it("retrieves a person from Probation Offender Search") {
     getPersonService.execute(pncId)
 
@@ -51,51 +45,24 @@ internal class GetPersonServiceTest(
   }
 
   it("returns a person") {
-    val personFromPrisonerOffenderSearch = Person("Sally", "Sob")
     val personFromProbationOffenderSearch = Person("Molly", "Mob")
 
-    whenever(prisonerOffenderSearchGateway.getPersons(pncId = pncId)).thenReturn(
-      Response(data = listOf(personFromPrisonerOffenderSearch)),
-    )
     whenever(probationOffenderSearchGateway.getPerson(pncId)).thenReturn(
       Response(personFromProbationOffenderSearch),
     )
 
     val result = getPersonService.execute(pncId)
 
-    val expectedResult = mapOf(
-      "prisonerOffenderSearch" to Person("Sally", "Sob"),
-      "probationOffenderSearch" to Person("Molly", "Mob"),
-    )
+    val expectedResult = Person("Molly", "Mob")
 
     result.data.shouldBe(expectedResult)
   }
 
-  it("returns null when a person isn't found in any APIs") {
-    whenever(prisonerOffenderSearchGateway.getPersons(pncId = pncId)).thenReturn(Response(data = emptyList()))
+  it("returns null when a person isn't found in probation offender search") {
     whenever(probationOffenderSearchGateway.getPerson(id = pncId)).thenReturn(Response(data = null))
 
     val result = getPersonService.execute(pncId)
-    val expectedResult = mapOf(
-      "prisonerOffenderSearch" to null,
-      "probationOffenderSearch" to null,
-    )
-
-    result.data.shouldBe(expectedResult)
-  }
-
-  it("returns no results from prisoner offender search, but one from probation offender search") {
-    val personFromProbationOffenderSearch = Person("Molly", "Mob")
-
-    whenever(prisonerOffenderSearchGateway.getPersons(pncId = pncId)).thenReturn(Response(data = emptyList()))
-    whenever(probationOffenderSearchGateway.getPerson(pncId)).thenReturn(Response(personFromProbationOffenderSearch))
-
-    val expectedResult = mapOf(
-      "prisonerOffenderSearch" to null,
-      "probationOffenderSearch" to Person("Molly", "Mob"),
-    )
-
-    val result = getPersonService.execute(pncId)
+    val expectedResult = null
 
     result.data.shouldBe(expectedResult)
   }

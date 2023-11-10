@@ -31,11 +31,8 @@ internal class GetNeedsForPersonServiceTest(
 ) : DescribeSpec(
   {
     val pncId = "1234/56789B"
-    val nomisNumber = "Z99999ZZ"
     val deliusCrn = "X123456"
 
-    val personFromPrisonOffenderSearch =
-      Person(firstName = "Chandler", lastName = "Bing", identifiers = Identifiers(nomisNumber = nomisNumber))
     val personFromProbationOffenderSearch =
       Person(firstName = "Phoebe", lastName = "Buffay", identifiers = Identifiers(deliusCrn = deliusCrn))
 
@@ -43,12 +40,9 @@ internal class GetNeedsForPersonServiceTest(
       Mockito.reset(getPersonService)
       Mockito.reset(assessRisksAndNeedsGateway)
 
-      whenever(getPersonService.execute(pncId = pncId)).thenReturn(
+      whenever(getPersonService.execute(hmppsId = pncId)).thenReturn(
         Response(
-          data = mapOf(
-            "prisonerOffenderSearch" to personFromPrisonOffenderSearch,
-            "probationOffenderSearch" to personFromProbationOffenderSearch,
-          ),
+          data = personFromProbationOffenderSearch,
         ),
       )
 
@@ -58,7 +52,7 @@ internal class GetNeedsForPersonServiceTest(
     it("retrieves a person from getPersonService") {
       getNeedsForPersonService.execute(pncId)
 
-      verify(getPersonService, VerificationModeFactory.times(1)).execute(pncId = pncId)
+      verify(getPersonService, VerificationModeFactory.times(1)).execute(hmppsId = pncId)
     }
 
     it("retrieves needs for a person from ARN API using a CRN") {
@@ -96,10 +90,7 @@ internal class GetNeedsForPersonServiceTest(
         beforeEach {
           whenever(getPersonService.execute(pncId)).thenReturn(
             Response(
-              data = mapOf(
-                "prisonerOffenderSearch" to null,
-                "probationOffenderSearch" to null,
-              ),
+              data = null,
               errors = listOf(
                 UpstreamApiError(
                   causedBy = UpstreamApi.PRISONER_OFFENDER_SEARCH,

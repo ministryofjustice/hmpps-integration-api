@@ -12,8 +12,8 @@ class GetNeedsForPersonService(
   @Autowired val getPersonService: GetPersonService,
 ) {
   fun execute(pncId: String): Response<Needs?> {
-    val personResponse = getPersonService.execute(pncId = pncId)
-    val deliusCrn = personResponse.data["probationOffenderSearch"]?.identifiers?.deliusCrn
+    val personResponse = getPersonService.execute(hmppsId = pncId)
+    val deliusCrn = personResponse.data?.identifiers?.deliusCrn
 
     var personNeeds: Response<Needs?> = Response(data = null)
 
