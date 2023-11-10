@@ -128,6 +128,14 @@ jobs:
       - deploy:
           name: Push application Docker image
           command: make publish
+  heartbeat:
+    machine:
+      image: ubuntu-2204:2022.10.2
+    steps:
+      - checkout
+      - run:
+          name: Run heartbeat
+          command: make heartbeat
 
 workflows:
   version: 2
@@ -184,6 +192,15 @@ workflows:
           slack_channel_name: << pipeline.parameters.releases-slack-channel >>
           slack_notification: false
 
+      - heartbeat:
+          <<: *slack-fail-post-step
+          name: post-deploy-heartbeat-for-dev
+          context:
+            - hmpps-common-vars
+            - hmpps-integration-api-heartbeat-dev
+          requires:
+            - deploy-to-dev
+
       - create-and-push-image-to-ecr:
           <<: *slack-fail-post-step
           name: create-and-push-image-to-preprod-ecr
@@ -191,7 +208,7 @@ workflows:
             - hmpps-common-vars
             - hmpps-integration-api-preprod
           requires:
-            - deploy-to-dev
+            - post-deploy-heartbeat-for-dev
           filters:
             branches:
               only:
@@ -273,3 +290,18 @@ workflows:
           context:
             - veracode-credentials
             - hmpps-common-vars
+  heartbeat-interval:
+    triggers:
+      - schedule:
+          cron: "0,15,30,45 * * * *"
+          filters:
+            branches:
+              only:
+                - main
+    jobs:
+      - heartbeat:
+          <<: *slack-fail-post-step
+          name: heartbeat-for-dev
+          context:
+            - hmpps-common-vars
+            - hmpps-integration-api-heartbeat-dev
