@@ -46,7 +46,7 @@ class PrisonerOffenderSearchGatewayTest(
   describe("#getPersons") {
     val firstName = "JAMES"
     val lastName = "HOWLETT"
-    val pncId = "2003/13116A"
+    val hmppsId = "2003/13116A"
 
     beforeEach {
       prisonerOffenderSearchApiMockServer.stubPostPrisonerSearch(
@@ -54,7 +54,7 @@ class PrisonerOffenderSearchGatewayTest(
             {
               "firstName": "$firstName",
               "lastName": "$lastName",
-              "prisonerIdentifier": "$pncId",
+              "prisonerIdentifier": "$hmppsId",
               "includeAliases": false
             }
           """.removeWhitespaceAndNewlines(),
@@ -63,13 +63,13 @@ class PrisonerOffenderSearchGatewayTest(
     }
 
     it("authenticates using HMPPS Auth with credentials") {
-      prisonerOffenderSearchGateway.getPersons(firstName, lastName, pncId)
+      prisonerOffenderSearchGateway.getPersons(firstName, lastName, hmppsId)
 
       verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("Prisoner Offender Search")
     }
 
     it("returns person(s) when searching on PNC ID, first and last name") {
-      val response = prisonerOffenderSearchGateway.getPersons(firstName, lastName, pncId)
+      val response = prisonerOffenderSearchGateway.getPersons(firstName, lastName, hmppsId)
 
       response.data.count().shouldBe(4)
       response.data.forEach {
@@ -114,11 +114,11 @@ class PrisonerOffenderSearchGatewayTest(
       response.data.first().lastName.shouldBe("Kenobi")
     }
 
-    it("returns person(s) when searching on pncId only") {
+    it("returns person(s) when searching on hmppsId only") {
       prisonerOffenderSearchApiMockServer.stubPostPrisonerSearch(
         """
         {
-          "prisonerIdentifier": "$pncId",
+          "prisonerIdentifier": "$hmppsId",
           "includeAliases": false
         }
         """.removeWhitespaceAndNewlines(),
@@ -135,7 +135,7 @@ class PrisonerOffenderSearchGatewayTest(
         """.trimIndent(),
       )
 
-      val response = prisonerOffenderSearchGateway.getPersons(pncId = pncId)
+      val response = prisonerOffenderSearchGateway.getPersons(pncId = hmppsId)
 
       response.data.count().shouldBe(1)
       response.data.first().firstName.shouldBe("Obi-Wan")

@@ -30,14 +30,14 @@ internal class OffencesControllerTest(
   @MockBean val getOffencesForPersonService: GetOffencesForPersonService,
 ) : DescribeSpec(
   {
-    val pncId = "9999/11111A"
-    val encodedPncId = URLEncoder.encode(pncId, StandardCharsets.UTF_8)
-    val path = "/v1/persons/$encodedPncId/offences"
+    val hmppsId = "9999/11111A"
+    val encodedHmppsId = URLEncoder.encode(hmppsId, StandardCharsets.UTF_8)
+    val path = "/v1/persons/$encodedHmppsId/offences"
 
     describe("GET $path") {
       beforeTest {
         Mockito.reset(getOffencesForPersonService)
-        whenever(getOffencesForPersonService.execute(pncId)).thenReturn(
+        whenever(getOffencesForPersonService.execute(hmppsId)).thenReturn(
           Response(
             data = listOf(
               Offence(
@@ -63,7 +63,7 @@ internal class OffencesControllerTest(
       it("retrieves the offences for a person with the matching ID") {
         mockMvc.perform(MockMvcRequestBuilders.get("$path")).andReturn()
 
-        verify(getOffencesForPersonService, VerificationModeFactory.times(1)).execute(pncId)
+        verify(getOffencesForPersonService, VerificationModeFactory.times(1)).execute(hmppsId)
       }
 
       it("returns the offences for a person with the matching ID") {
@@ -87,12 +87,12 @@ internal class OffencesControllerTest(
       }
 
       it("returns an empty list embedded in a JSON object when no offences are found") {
-        val pncIdForPersonWithNoOffences = "0000/11111A"
-        val encodedPncIdForPersonWithNoOffences =
-          URLEncoder.encode(pncIdForPersonWithNoOffences, StandardCharsets.UTF_8)
-        val path = "/v1/persons/$encodedPncIdForPersonWithNoOffences/offences"
+        val hmppsIdForPersonWithNoOffences = "0000/11111A"
+        val encodedHmppsIdForPersonWithNoOffences =
+          URLEncoder.encode(hmppsIdForPersonWithNoOffences, StandardCharsets.UTF_8)
+        val path = "/v1/persons/$encodedHmppsIdForPersonWithNoOffences/offences"
 
-        whenever(getOffencesForPersonService.execute(pncIdForPersonWithNoOffences)).thenReturn(
+        whenever(getOffencesForPersonService.execute(hmppsIdForPersonWithNoOffences)).thenReturn(
           Response(
             data = emptyList(),
           ),
@@ -106,7 +106,7 @@ internal class OffencesControllerTest(
       }
 
       it("responds with a 404 NOT FOUND status when person isn't found in the upstream API") {
-        whenever(getOffencesForPersonService.execute(pncId)).thenReturn(
+        whenever(getOffencesForPersonService.execute(hmppsId)).thenReturn(
           Response(
             data = emptyList(),
             errors = listOf(
@@ -124,7 +124,7 @@ internal class OffencesControllerTest(
       }
 
       it("returns paginated results") {
-        whenever(getOffencesForPersonService.execute(pncId)).thenReturn(
+        whenever(getOffencesForPersonService.execute(hmppsId)).thenReturn(
           Response(
             data =
             List(20) {
