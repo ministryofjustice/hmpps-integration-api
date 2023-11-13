@@ -58,56 +58,29 @@ class PersonSmokeTest : DescribeSpec(
       response.body().shouldBe(
         """
           {
-            "prisonerOffenderSearch": {
-              "firstName": "Robert",
-              "lastName": "Larsen",
-              "middleName": "John James",
-              "dateOfBirth": "1975-04-02",
-              "gender": "Female",
-              "ethnicity": "White: Eng./Welsh/Scot./N.Irish/British",
-              "aliases": [
-                {
-                  "firstName": "Robert",
-                  "lastName": "Lorsen",
-                  "middleName": "Trevor",
-                  "dateOfBirth": "1975-04-02",
-                  "gender": "Male",
-                  "ethnicity": "White : Irish"
-                }
-              ],
-              "identifiers": {
-                  "nomisNumber": "A1234AA",
-                  "croNumber": "29906/12J",
-                  "deliusCrn": null
-              },
-              "pncId": "12/394773H",
-              "hmppsId": "12/394773H"
+            "firstName": "string",
+            "lastName": "string",
+            "middleName": "string",
+            "dateOfBirth": "2019-08-24",
+            "gender": "string",
+            "ethnicity": "string",
+            "aliases": [
+              {
+                "firstName": "string",
+                "lastName": "string",
+                "middleName": "string",
+                "dateOfBirth": "2019-08-24",
+                "gender": "string",
+                "ethnicity": null
+              }
+            ],
+            "identifiers": {
+                "nomisNumber": "string",
+                "croNumber": "string",
+                "deliusCrn": "string"
             },
-            "probationOffenderSearch": {
-              "firstName": "string",
-              "lastName": "string",
-              "middleName": "string",
-              "dateOfBirth": "2019-08-24",
-              "gender": "string",
-              "ethnicity": "string",
-              "aliases": [
-                {
-                  "firstName": "string",
-                  "lastName": "string",
-                  "middleName": "string",
-                  "dateOfBirth": "2019-08-24",
-                  "gender": "string",
-                  "ethnicity": null
-                }
-              ],
-              "identifiers": {
-                  "nomisNumber": "string",
-                  "croNumber": "string",
-                  "deliusCrn": "string"
-              },
-              "pncId": "string",
-              "hmppsId": "string"
-            }
+            "pncId": "string",
+            "hmppsId": "string"
           }
         """.removeWhitespaceAndNewlines(),
       )

@@ -37,10 +37,8 @@ internal class GetSentencesForPersonServiceTest(
     val nDeliusCRN = "X123456"
     val firstBookingId = 1
     val secondBookingId = 2
-    val personFromPrisonOffenderSearch =
-      Person(firstName = "Chandler", lastName = "Bing", identifiers = Identifiers(nomisNumber = nomisNumber))
     val personFromProbationOffenderSearch =
-      Person(firstName = "Chandler", lastName = "ProbationBing", identifiers = Identifiers(deliusCrn = nDeliusCRN))
+      Person(firstName = "Chandler", lastName = "ProbationBing", identifiers = Identifiers(deliusCrn = nDeliusCRN, nomisNumber = nomisNumber))
     val nomisSentence1 = generateTestSentence()
     val nomisSentence2 = generateTestSentence()
     val nDeliusSentence1 = generateTestSentence()
@@ -51,12 +49,9 @@ internal class GetSentencesForPersonServiceTest(
       Mockito.reset(nDeliusGateway)
       Mockito.reset(getPersonService)
 
-      whenever(getPersonService.execute(pncId = pncId)).thenReturn(
+      whenever(getPersonService.execute(hmppsId = pncId)).thenReturn(
         Response(
-          data = mapOf(
-            "prisonerOffenderSearch" to personFromPrisonOffenderSearch,
-            "probationOffenderSearch" to personFromProbationOffenderSearch,
-          ),
+          data = personFromProbationOffenderSearch,
         ),
       )
 
@@ -79,51 +74,22 @@ internal class GetSentencesForPersonServiceTest(
       )
     }
 
-    describe("Find person by PNC ID") {
+    describe("Find person by hmppsId") {
       it("retrieves a person from getPersonService") {
         getSentencesForPersonService.execute(pncId)
 
-        verify(getPersonService, VerificationModeFactory.times(1)).execute(pncId = pncId)
+        verify(getPersonService, VerificationModeFactory.times(1)).execute(hmppsId = pncId)
       }
 
-      it("returns prison sentences only when the person cannot be found in Probation Offender Search") {
-        whenever(getPersonService.execute(pncId = pncId)).thenReturn(
-          Response(
-            data = mapOf(
-              "prisonerOffenderSearch" to personFromPrisonOffenderSearch,
-              "probationOffenderSearch" to null,
-            ),
-          ),
-        )
-
+      it("returns prison and probation sentences") {
         val result = getSentencesForPersonService.execute(pncId)
 
-        result.shouldBe(Response(data = listOf(nomisSentence1, nomisSentence2)))
-      }
-
-      it("returns probation sentences only when the person cannot be found in Prisoner Offender Search") {
-        whenever(getPersonService.execute(pncId = pncId)).thenReturn(
-          Response(
-            data = mapOf(
-              "prisonerOffenderSearch" to null,
-              "probationOffenderSearch" to personFromProbationOffenderSearch,
-            ),
-          ),
-        )
-
-        val result = getSentencesForPersonService.execute(pncId)
-
-        result.shouldBe(Response(data = listOf(nDeliusSentence1, nDeliusSentence2)))
+        result.shouldBe(Response(data = listOf(nomisSentence1, nomisSentence2, nDeliusSentence1, nDeliusSentence2)))
       }
 
       it("returns no sentences when the person cannot be found in either Prisoner Offender Search or Probation Offender Search") {
-        whenever(getPersonService.execute(pncId = pncId)).thenReturn(
-          Response(
-            data = mapOf(
-              "prisonerOffenderSearch" to null,
-              "probationOffenderSearch" to null,
-            ),
-          ),
+        whenever(getPersonService.execute(hmppsId = pncId)).thenReturn(
+          Response(data = null),
         )
 
         val result = getSentencesForPersonService.execute(pncId)

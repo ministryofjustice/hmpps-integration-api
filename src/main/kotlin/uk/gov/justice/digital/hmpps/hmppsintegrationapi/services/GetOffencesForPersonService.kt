@@ -13,10 +13,10 @@ class GetOffencesForPersonService(
   @Autowired val nDeliusGateway: NDeliusGateway,
   @Autowired val getPersonService: GetPersonService,
 ) {
-  fun execute(pncId: String): Response<List<Offence>> {
-    val personResponse = getPersonService.execute(pncId = pncId)
-    val nomisNumber = personResponse.data["prisonerOffenderSearch"]?.identifiers?.nomisNumber
-    val deliusCrn = personResponse.data["probationOffenderSearch"]?.identifiers?.deliusCrn
+  fun execute(hmppsId: String): Response<List<Offence>> {
+    val personResponse = getPersonService.execute(hmppsId = hmppsId)
+    val deliusCrn = personResponse.data?.identifiers?.deliusCrn
+    val nomisNumber = personResponse.data?.identifiers?.nomisNumber
 
     var nomisOffences: Response<List<Offence>> = Response(data = emptyList())
     var nDeliusOffences: Response<List<Offence>> = Response(data = emptyList())
