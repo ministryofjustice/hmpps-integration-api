@@ -21,7 +21,11 @@ class ProbationOffenderSearchGateway(@Value("\${services.probation-offender-sear
   lateinit var hmppsAuthGateway: HmppsAuthGateway
   fun getPerson(id: String? = null): Response<Person?> {
     return try {
-      var queryField = if (useCrnInsteadOfPncId) "crn" else "pncNumber"
+      val queryField = if (isPncNumber(id)) {
+        "pncNumber"
+      } else {
+        "crn"
+      }
 
       val offenders = webClient.requestList<Offender>(
         HttpMethod.POST,
@@ -100,5 +104,9 @@ class ProbationOffenderSearchGateway(@Value("\${services.probation-offender-sear
     return mapOf(
       "Authorization" to "Bearer $token",
     )
+  }
+
+  private fun isPncNumber(id: String?): Boolean {
+    return id?.matches(Regex("^[0-9]+/[0-9A-Za-z]+$")) == true
   }
 }

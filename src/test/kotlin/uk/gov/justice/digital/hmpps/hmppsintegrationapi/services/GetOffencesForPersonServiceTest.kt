@@ -50,6 +50,10 @@ internal class GetOffencesForPersonServiceTest(
       Mockito.reset(nomisGateway)
       Mockito.reset(nDeliusGateway)
 
+      require(pncId.matches(Regex("^[0-9]+/[0-9A-Za-z]+$"))) {
+        "Invalid PNC Number format: $pncId"
+      }
+
       whenever(getPersonService.execute(hmppsId = pncId)).thenReturn(
         Response(
           data = personFromProbationOffenderSearch,
