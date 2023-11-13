@@ -13,7 +13,6 @@ import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
-import org.springframework.test.util.ReflectionTestUtils
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ProbationOffenderSearchGateway
@@ -159,7 +158,7 @@ class ProbationOffenderSearchGatewayTest(
   }
 
   describe("#getPerson") {
-    describe("when useCrnInsteadOfPncId feature flag is false") {
+    describe("when PNC id is used to make requests") {
       val hmppsId = "2002/1121M"
       beforeEach {
         probationOffenderSearchApiMockServer.stubPostOffenderSearch(
@@ -263,11 +262,10 @@ class ProbationOffenderSearchGatewayTest(
         response.data.shouldBeNull()
       }
     }
-    describe("when useCrnInsteadOfPncId feature flag is true") {
+    describe("when a Delius CRN is used to make requests") {
       val hmppsId = "X777776"
 
       beforeEach {
-        ReflectionTestUtils.setField(probationOffenderSearchGateway, "useCrnInsteadOfPncId", true)
         probationOffenderSearchApiMockServer.stubPostOffenderSearch(
           "{\"crn\": \"$hmppsId\"}",
           """

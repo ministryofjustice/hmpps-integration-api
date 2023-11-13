@@ -14,7 +14,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.probationoffendersearch.Offender
 
 @Component
-class ProbationOffenderSearchGateway(@Value("\${services.probation-offender-search.base-url}") baseUrl: String, @Value("\${feature-flags.use-crn-instead-of-pnc-id}") private val useCrnInsteadOfPncId: Boolean) {
+class ProbationOffenderSearchGateway(@Value("\${services.probation-offender-search.base-url}") baseUrl: String) {
   private val webClient = WebClientWrapper(baseUrl)
 
   @Autowired
