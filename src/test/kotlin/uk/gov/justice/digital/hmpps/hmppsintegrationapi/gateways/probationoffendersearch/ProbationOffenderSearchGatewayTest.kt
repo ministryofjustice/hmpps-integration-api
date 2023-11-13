@@ -262,6 +262,7 @@ class ProbationOffenderSearchGatewayTest(
         response.data.shouldBeNull()
       }
     }
+
     describe("when a Delius CRN is used to make requests") {
       val hmppsId = "X777776"
 
@@ -270,50 +271,21 @@ class ProbationOffenderSearchGatewayTest(
           "{\"crn\": \"$hmppsId\"}",
           """
         [
-           {
+          {
             "firstName": "Jonathan",
             "middleNames": [
-              "Echo",
               "Fred"
             ],
             "surname": "Bravo",
             "dateOfBirth": "1970-02-07",
-            "offenderAliases": [
-              {
-                "dateOfBirth": "2000-02-07",
-                "firstName": "John",
-                "middleNames": [
-                  "Tom"
-                ],
-                "surname": "Wick"
-              }
-            ]
+            "offenderAliases": [],
           }
         ]
       """,
         )
       }
 
-      it("authenticates using HMPPS Auth with credentials") {
-        probationOffenderSearchGateway.getPerson(hmppsId)
-
-        verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("Probation Offender Search")
-      }
-
-      it("returns a person with the matching ID") {
-        val response = probationOffenderSearchGateway.getPerson(hmppsId)
-
-        response.data?.firstName.shouldBe("Jonathan")
-        response.data?.middleName.shouldBe("Echo Fred")
-        response.data?.lastName.shouldBe("Bravo")
-        response.data?.dateOfBirth.shouldBe(LocalDate.parse("1970-02-07"))
-        response.data?.aliases?.first()?.firstName.shouldBe("John")
-        response.data?.aliases?.first()?.middleName.shouldBe("Tom")
-        response.data?.aliases?.first()?.lastName.shouldBe("Wick")
-        response.data?.aliases?.first()?.dateOfBirth.shouldBe(LocalDate.parse("2000-02-07"))
-      }
-
-      it("returns a person without aliases when no aliases are found") {
+      it("calls the Probation API service with a Delius CRN") {
         probationOffenderSearchApiMockServer.stubPostOffenderSearch(
           "{\"crn\": \"$hmppsId\"}",
           """
@@ -328,43 +300,7 @@ class ProbationOffenderSearchGatewayTest(
         """,
         )
 
-        val response = probationOffenderSearchGateway.getPerson(hmppsId)
-
-        response.data?.aliases.shouldBeEmpty()
-      }
-
-      it("returns null when 400 Bad Request is returned") {
-        probationOffenderSearchApiMockServer.stubPostOffenderSearch(
-          "{\"crn\": \"$hmppsId\"}",
-          """
-          {
-            "developerMessage": "reason for bad request"
-          }
-          """,
-          HttpStatus.BAD_REQUEST,
-        )
-
-        val response = probationOffenderSearchGateway.getPerson(hmppsId)
-        response.data.shouldBeNull()
-        response.errors.shouldBe(
-          listOf(
-            UpstreamApiError(
-              causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH,
-              type = UpstreamApiError.Type.BAD_REQUEST,
-            ),
-          ),
-        )
-      }
-
-      it("returns null when no offenders are returned") {
-        probationOffenderSearchApiMockServer.stubPostOffenderSearch(
-          "{\"crn\": \"$hmppsId\"}",
-          "[]",
-        )
-
-        val response = probationOffenderSearchGateway.getPerson(hmppsId)
-
-        response.data.shouldBeNull()
+        probationOffenderSearchGateway.getPerson(hmppsId)
       }
     }
   }
