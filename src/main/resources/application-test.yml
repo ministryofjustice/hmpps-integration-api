@@ -20,6 +20,3 @@ services:
     base-url: http://localhost:4003
   assess-risks-and-needs:
     base-url: http://localhost:4004
-
-feature-flags:
-  use-crn-instead-of-pnc-id: false

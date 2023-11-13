@@ -14,14 +14,18 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.probationoffendersearch.Offender
 
 @Component
-class ProbationOffenderSearchGateway(@Value("\${services.probation-offender-search.base-url}") baseUrl: String, @Value("\${feature-flags.use-crn-instead-of-pnc-id}") private val useCrnInsteadOfPncId: Boolean) {
+class ProbationOffenderSearchGateway(@Value("\${services.probation-offender-search.base-url}") baseUrl: String) {
   private val webClient = WebClientWrapper(baseUrl)
 
   @Autowired
   lateinit var hmppsAuthGateway: HmppsAuthGateway
   fun getPerson(id: String? = null): Response<Person?> {
     return try {
-      var queryField = if (useCrnInsteadOfPncId) "crn" else "pncNumber"
+      val queryField = if (isPncNumber(id)) {
+        "pncNumber"
+      } else {
+        "crn"
+      }
 
       val offenders = webClient.requestList<Offender>(
         HttpMethod.POST,
@@ -100,5 +104,9 @@ class ProbationOffenderSearchGateway(@Value("\${services.probation-offender-sear
     return mapOf(
       "Authorization" to "Bearer $token",
     )
+  }
+
+  private fun isPncNumber(id: String?): Boolean {
+    return id?.matches(Regex("^[0-9]+/[0-9A-Za-z]+$")) == true
   }
 }

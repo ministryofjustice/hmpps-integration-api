@@ -8,7 +8,7 @@
 .vscode/
 .venv/
 build/
-
+.DS_Store
 
 # CMake
 cmake-build-debug/
