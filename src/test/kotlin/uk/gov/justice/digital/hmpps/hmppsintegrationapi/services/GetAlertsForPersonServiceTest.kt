@@ -28,7 +28,7 @@ internal class GetAlertsForPersonServiceTest(
   private val getAlertsForPersonService: GetAlertsForPersonService,
 ) : DescribeSpec(
   {
-    val pncId = "1234/56789B"
+    val hmppsId = "1234/56789B"
     val prisonerNumber = "Z99999ZZ"
     val alert = Alert()
 
@@ -36,7 +36,7 @@ internal class GetAlertsForPersonServiceTest(
       Mockito.reset(nomisGateway)
       Mockito.reset(prisonerOffenderSearchGateway)
 
-      whenever(prisonerOffenderSearchGateway.getPersons(pncId = pncId)).thenReturn(
+      whenever(prisonerOffenderSearchGateway.getPersons(pncId = hmppsId)).thenReturn(
         Response(data = listOf(Person(firstName = "Chandler", lastName = "Bing", identifiers = Identifiers(nomisNumber = prisonerNumber)))),
       )
 
@@ -49,21 +49,21 @@ internal class GetAlertsForPersonServiceTest(
       )
     }
 
-    it("retrieves prisoner ID from Prisoner Offender Search using a PNC ID") {
-      getAlertsForPersonService.execute(pncId)
+    it("retrieves prisoner ID from Prisoner Offender Search using a Hmpps Id") {
+      getAlertsForPersonService.execute(hmppsId)
 
-      verify(prisonerOffenderSearchGateway, VerificationModeFactory.times(1)).getPersons(pncId = pncId)
+      verify(prisonerOffenderSearchGateway, VerificationModeFactory.times(1)).getPersons(pncId = hmppsId)
     }
 
     it("retrieves alerts from NOMIS using a prisoner number") {
-      getAlertsForPersonService.execute(pncId)
+      getAlertsForPersonService.execute(hmppsId)
 
       verify(nomisGateway, VerificationModeFactory.times(1)).getAlertsForPerson(prisonerNumber)
     }
 
-    describe("when an upstream API returns an error when looking up a person by a PNC ID") {
+    describe("when an upstream API returns an error when looking up a person by a Hmmps Id") {
       beforeEach {
-        whenever(prisonerOffenderSearchGateway.getPersons(pncId = pncId)).thenReturn(
+        whenever(prisonerOffenderSearchGateway.getPersons(pncId = hmppsId)).thenReturn(
           Response(
             data = emptyList(),
             errors = listOf(
@@ -77,12 +77,12 @@ internal class GetAlertsForPersonServiceTest(
       }
 
       it("records upstream API errors") {
-        val response = getAlertsForPersonService.execute(pncId)
+        val response = getAlertsForPersonService.execute(hmppsId)
         response.errors.shouldHaveSize(1)
       }
 
       it("does not get alerts from Nomis") {
-        getAlertsForPersonService.execute(pncId)
+        getAlertsForPersonService.execute(hmppsId)
         verify(nomisGateway, VerificationModeFactory.times(0)).getAlertsForPerson(id = prisonerNumber)
       }
     }
@@ -100,7 +100,7 @@ internal class GetAlertsForPersonServiceTest(
         ),
       )
 
-      val response = getAlertsForPersonService.execute(pncId)
+      val response = getAlertsForPersonService.execute(hmppsId)
       response.errors.shouldHaveSize(1)
     }
   },

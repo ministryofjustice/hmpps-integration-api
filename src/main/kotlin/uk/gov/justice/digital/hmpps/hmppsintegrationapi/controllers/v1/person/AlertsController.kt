@@ -20,17 +20,17 @@ class AlertsController(
   @Autowired val getAlertsForPersonService: GetAlertsForPersonService,
 ) {
 
-  @GetMapping("{encodedPncId}/alerts")
+  @GetMapping("{encodedHmppsId}/alerts")
   fun getPersonAlerts(
-    @PathVariable encodedPncId: String,
+    @PathVariable encodedHmppsId: String,
     @RequestParam(required = false, defaultValue = "1", name = "page") page: Int,
     @RequestParam(required = false, defaultValue = "10", name = "perPage") perPage: Int,
   ): PaginatedResponse<Alert> {
-    val pncId = encodedPncId.decodeUrlCharacters()
-    val response = getAlertsForPersonService.execute(pncId)
+    val hmppsId = encodedHmppsId.decodeUrlCharacters()
+    val response = getAlertsForPersonService.execute(hmppsId)
 
     if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
-      throw EntityNotFoundException("Could not find person with id: $pncId")
+      throw EntityNotFoundException("Could not find person with id: $hmppsId")
     }
 
     return response.data.paginateWith(page, perPage)
