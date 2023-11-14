@@ -20,8 +20,8 @@ class PersonSmokeTest : DescribeSpec(
     val httpClient = HttpClient.newBuilder().build()
     val httpRequest = HttpRequest.newBuilder()
 
-    val pncId = "2004/13116M"
-    val encodedPncId = URLEncoder.encode(pncId, StandardCharsets.UTF_8)
+    val hmppsId = "2004/13116M"
+    val encodedHmppsId = URLEncoder.encode(hmppsId, StandardCharsets.UTF_8)
 
     it("returns a list of persons using first name and last name as search parameters") {
       val firstName = "Example_First_Name"
@@ -51,7 +51,7 @@ class PersonSmokeTest : DescribeSpec(
 
     it("returns a person from Prisoner Offender Search and Probation Offender Search") {
       val response = httpClient.send(
-        httpRequest.uri(URI.create("$baseUrl/$basePath/$encodedPncId")).build(),
+        httpRequest.uri(URI.create("$baseUrl/$basePath/$encodedHmppsId")).build(),
         HttpResponse.BodyHandlers.ofString(),
       )
 
@@ -88,7 +88,7 @@ class PersonSmokeTest : DescribeSpec(
 
     it("returns image metadata for a person") {
       val response = httpClient.send(
-        httpRequest.uri(URI.create("$baseUrl/$basePath/$encodedPncId/images")).build(),
+        httpRequest.uri(URI.create("$baseUrl/$basePath/$encodedHmppsId/images")).build(),
         HttpResponse.BodyHandlers.ofString(),
       )
 
@@ -108,7 +108,7 @@ class PersonSmokeTest : DescribeSpec(
 
     it("returns addresses for a person") {
       val response = httpClient.send(
-        httpRequest.uri(URI.create("$baseUrl/$basePath/$encodedPncId/addresses")).build(),
+        httpRequest.uri(URI.create("$baseUrl/$basePath/$encodedHmppsId/addresses")).build(),
         HttpResponse.BodyHandlers.ofString(),
       )
 
