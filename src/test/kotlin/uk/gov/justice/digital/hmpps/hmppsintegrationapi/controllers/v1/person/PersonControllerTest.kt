@@ -41,8 +41,8 @@ internal class PersonControllerTest(
   @MockBean val getAddressesForPersonService: GetAddressesForPersonService,
 ) : DescribeSpec(
   {
-    val pncId = "2003/13116M"
-    val encodedPncId = URLEncoder.encode(pncId, StandardCharsets.UTF_8)
+    val hmppsId = "2003/13116M"
+    val encodedPncId = URLEncoder.encode(hmppsId, StandardCharsets.UTF_8)
     val basePath = "/v1/persons"
     val firstName = "Barry"
     val lastName = "Allen"
@@ -203,7 +203,7 @@ internal class PersonControllerTest(
 
       beforeTest {
         Mockito.reset(getPersonService)
-        whenever(getPersonService.execute(pncId)).thenReturn(Response(data = person))
+        whenever(getPersonService.execute(hmppsId)).thenReturn(Response(data = person))
       }
 
       it("responds with a 200 OK status") {
@@ -261,7 +261,7 @@ internal class PersonControllerTest(
       it("retrieves a person with the matching ID") {
         mockMvc.perform(get("$basePath/$encodedPncId")).andReturn()
 
-        verify(getPersonService, times(1)).execute(pncId)
+        verify(getPersonService, times(1)).execute(hmppsId)
       }
 
       it("returns a person with the matching ID") {
@@ -293,7 +293,7 @@ internal class PersonControllerTest(
     describe("GET $basePath/$encodedPncId/images") {
       beforeTest {
         Mockito.reset(getImageMetadataForPersonService)
-        whenever(getImageMetadataForPersonService.execute(pncId)).thenReturn(
+        whenever(getImageMetadataForPersonService.execute(hmppsId)).thenReturn(
           Response(
             data = listOf(
               ImageMetadata(
@@ -310,7 +310,7 @@ internal class PersonControllerTest(
       }
 
       it("returns paginated results") {
-        whenever(getImageMetadataForPersonService.execute(pncId)).thenReturn(
+        whenever(getImageMetadataForPersonService.execute(hmppsId)).thenReturn(
           Response(
             data = List(20) {
               ImageMetadata(
@@ -342,7 +342,7 @@ internal class PersonControllerTest(
       it("retrieves the metadata of images for a person with the matching ID") {
         mockMvc.perform(get("$basePath/$encodedPncId/images")).andReturn()
 
-        verify(getImageMetadataForPersonService, times(1)).execute(pncId)
+        verify(getImageMetadataForPersonService, times(1)).execute(hmppsId)
       }
 
       it("returns the metadata of images for a person with the matching ID") {
@@ -361,7 +361,7 @@ internal class PersonControllerTest(
       }
 
       it("responds with a 404 NOT FOUND status") {
-        whenever(getImageMetadataForPersonService.execute(pncId)).thenReturn(
+        whenever(getImageMetadataForPersonService.execute(hmppsId)).thenReturn(
           Response(
             data = emptyList(),
             errors = listOf(
@@ -382,7 +382,7 @@ internal class PersonControllerTest(
     describe("GET $basePath/{encodedPncId}/addresses") {
       beforeTest {
         Mockito.reset(getAddressesForPersonService)
-        whenever(getAddressesForPersonService.execute(pncId)).thenReturn(Response(data = listOf(generateTestAddress())))
+        whenever(getAddressesForPersonService.execute(hmppsId)).thenReturn(Response(data = listOf(generateTestAddress())))
       }
 
       it("responds with a 200 OK status") {
@@ -394,7 +394,7 @@ internal class PersonControllerTest(
       it("retrieves the addresses for a person with the matching ID") {
         mockMvc.perform(get("$basePath/$encodedPncId/addresses")).andReturn()
 
-        verify(getAddressesForPersonService, times(1)).execute(pncId)
+        verify(getAddressesForPersonService, times(1)).execute(hmppsId)
       }
 
       it("returns the addresses for a person with the matching ID") {
@@ -435,7 +435,7 @@ internal class PersonControllerTest(
       }
 
       it("responds with a 404 NOT FOUND status when person isn't found in all upstream APIs") {
-        whenever(getAddressesForPersonService.execute(pncId)).thenReturn(
+        whenever(getAddressesForPersonService.execute(hmppsId)).thenReturn(
           Response(
             data = emptyList(),
             errors = listOf(
@@ -457,7 +457,7 @@ internal class PersonControllerTest(
       }
 
       it("responds with a 200 OK status when person is found in one upstream API but not another") {
-        whenever(getAddressesForPersonService.execute(pncId)).thenReturn(
+        whenever(getAddressesForPersonService.execute(hmppsId)).thenReturn(
           Response(
             data = emptyList(),
             errors = listOf(

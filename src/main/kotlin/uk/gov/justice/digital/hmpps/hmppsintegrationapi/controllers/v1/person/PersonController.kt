@@ -48,16 +48,16 @@ class PersonController(
     return response.data.paginateWith(page, perPage)
   }
 
-  @GetMapping("{encodedPncId}")
-  fun getPerson(@PathVariable encodedPncId: String): Person? {
-    val pncId = encodedPncId.decodeUrlCharacters()
-    val response = getPersonService.execute(pncId)
+  @GetMapping("{encodedHmppsId}")
+  fun getPerson(@PathVariable encodedHmppsId: String): Person? {
+    val hmppsId = encodedHmppsId.decodeUrlCharacters()
+    val response = getPersonService.execute(hmppsId)
 
     if (
       response.hasErrorCausedBy(ENTITY_NOT_FOUND, causedBy = UpstreamApi.NOMIS) &&
       response.hasErrorCausedBy(ENTITY_NOT_FOUND, causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH)
     ) {
-      throw EntityNotFoundException("Could not find person with id: $pncId")
+      throw EntityNotFoundException("Could not find person with id: $hmppsId")
     }
 
     return response.data
@@ -80,16 +80,16 @@ class PersonController(
     return response.data.paginateWith(page, perPage)
   }
 
-  @GetMapping("{encodedPncId}/addresses")
-  fun getPersonAddresses(@PathVariable encodedPncId: String): Map<String, List<Address>> {
-    val pncId = encodedPncId.decodeUrlCharacters()
-    val response = getAddressesForPersonService.execute(pncId)
+  @GetMapping("{encodedHmppsId}/addresses")
+  fun getPersonAddresses(@PathVariable encodedHmppsId: String): Map<String, List<Address>> {
+    val hmppsId = encodedHmppsId.decodeUrlCharacters()
+    val response = getAddressesForPersonService.execute(hmppsId)
 
     if (
       response.hasErrorCausedBy(ENTITY_NOT_FOUND, causedBy = UpstreamApi.NOMIS) &&
       response.hasErrorCausedBy(ENTITY_NOT_FOUND, causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH)
     ) {
-      throw EntityNotFoundException("Could not find person with id: $pncId")
+      throw EntityNotFoundException("Could not find person with id: $hmppsId")
     }
 
     return mapOf("data" to response.data)
