@@ -30,7 +30,7 @@ internal class GetOffencesForPersonServiceTest(
   private val getOffencesForPersonService: GetOffencesForPersonService,
 ) : DescribeSpec(
   {
-    val pncId = "1234/56789B"
+    val hmppsId = "1234/56789B"
     val prisonerNumber = "Z99999ZZ"
     val nDeliusCRN = "X123456"
     val prisonOffence1 = generateTestOffence(description = "Prison offence 1")
@@ -50,11 +50,11 @@ internal class GetOffencesForPersonServiceTest(
       Mockito.reset(nomisGateway)
       Mockito.reset(nDeliusGateway)
 
-      require(pncId.matches(Regex("^[0-9]+/[0-9A-Za-z]+$"))) {
-        "Invalid PNC Number format: $pncId"
+      require(hmppsId.matches(Regex("^[0-9]+/[0-9A-Za-z]+$"))) {
+        "Invalid Hmpps Id format: $hmppsId"
       }
 
-      whenever(getPersonService.execute(hmppsId = pncId)).thenReturn(
+      whenever(getPersonService.execute(hmppsId = hmppsId)).thenReturn(
         Response(
           data = personFromProbationOffenderSearch,
         ),
@@ -82,37 +82,37 @@ internal class GetOffencesForPersonServiceTest(
     }
 
     it("Returns prison and probation offences given a hmppsId") {
-      whenever(getPersonService.execute(hmppsId = pncId)).thenReturn(
+      whenever(getPersonService.execute(hmppsId = hmppsId)).thenReturn(
         Response(
           data = personFromProbationOffenderSearch,
         ),
       )
 
-      val result = getOffencesForPersonService.execute(pncId)
+      val result = getOffencesForPersonService.execute(hmppsId)
 
       result.shouldBe(Response(data = listOf(prisonOffence1, prisonOffence2, prisonOffence3, probationOffence1, probationOffence2, probationOffence3)))
     }
 
-    it("retrieves a person using a PNC ID") {
-      getOffencesForPersonService.execute(pncId)
+    it("retrieves a person using a Hmpps ID") {
+      getOffencesForPersonService.execute(hmppsId)
 
-      verify(getPersonService, VerificationModeFactory.times(1)).execute(hmppsId = pncId)
+      verify(getPersonService, VerificationModeFactory.times(1)).execute(hmppsId = hmppsId)
     }
 
     it("retrieves offences from NOMIS using a prisoner number") {
-      getOffencesForPersonService.execute(pncId)
+      getOffencesForPersonService.execute(hmppsId)
 
       verify(nomisGateway, VerificationModeFactory.times(1)).getOffencesForPerson(prisonerNumber)
     }
 
     it("retrieves offences from nDelius using a CRN") {
-      getOffencesForPersonService.execute(pncId)
+      getOffencesForPersonService.execute(hmppsId)
 
       verify(nDeliusGateway, VerificationModeFactory.times(1)).getOffencesForPerson(nDeliusCRN)
     }
 
     it("combines and returns offences from Nomis and nDelius") {
-      val response = getOffencesForPersonService.execute(pncId)
+      val response = getOffencesForPersonService.execute(hmppsId)
 
       response.data.shouldBe(
         listOf(
@@ -126,9 +126,9 @@ internal class GetOffencesForPersonServiceTest(
       )
     }
 
-    describe("when an upstream API returns an error when looking up a person from a PNC ID") {
+    describe("when an upstream API returns an error when looking up a person from a Hmpps ID") {
       beforeEach {
-        whenever(getPersonService.execute(hmppsId = pncId)).thenReturn(
+        whenever(getPersonService.execute(hmppsId = hmppsId)).thenReturn(
           Response(
             data = null,
             errors = listOf(
@@ -146,17 +146,17 @@ internal class GetOffencesForPersonServiceTest(
       }
 
       it("records upstream API errors") {
-        val response = getOffencesForPersonService.execute(pncId)
+        val response = getOffencesForPersonService.execute(hmppsId)
         response.errors.shouldHaveSize(2)
       }
 
       it("does not get offences from Nomis") {
-        getOffencesForPersonService.execute(pncId)
+        getOffencesForPersonService.execute(hmppsId)
         verify(nomisGateway, VerificationModeFactory.times(0)).getOffencesForPerson(id = prisonerNumber)
       }
 
       it("does not get offences from nDelius") {
-        getOffencesForPersonService.execute(pncId)
+        getOffencesForPersonService.execute(hmppsId)
         verify(nDeliusGateway, VerificationModeFactory.times(0)).getOffencesForPerson(id = nDeliusCRN)
       }
     }
@@ -186,7 +186,7 @@ internal class GetOffencesForPersonServiceTest(
         ),
       )
 
-      val response = getOffencesForPersonService.execute(pncId)
+      val response = getOffencesForPersonService.execute(hmppsId)
       response.errors.shouldHaveSize(2)
     }
   },
