@@ -17,13 +17,13 @@ class RisksController(
   @Autowired val getRisksForPersonService: GetRisksForPersonService,
 ) {
 
-  @GetMapping("{encodedPncId}/risks")
-  fun getPersonRisks(@PathVariable encodedPncId: String): Map<String, Risks?> {
-    val pncId = encodedPncId.decodeUrlCharacters()
-    val response = getRisksForPersonService.execute(pncId)
+  @GetMapping("{encodedHmppsId}/risks")
+  fun getPersonRisks(@PathVariable encodedHmppsId: String): Map<String, Risks?> {
+    val hmppsId = encodedHmppsId.decodeUrlCharacters()
+    val response = getRisksForPersonService.execute(hmppsId)
 
     if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
-      throw EntityNotFoundException("Could not find person with id: $pncId")
+      throw EntityNotFoundException("Could not find person with id: $hmppsId")
     }
 
     return mapOf("data" to response.data)

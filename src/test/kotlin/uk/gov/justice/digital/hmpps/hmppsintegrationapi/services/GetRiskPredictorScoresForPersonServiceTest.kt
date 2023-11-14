@@ -34,12 +34,10 @@ internal class GetRiskPredictorScoresForPersonServiceTest(
   private val getRiskPredictorScoresForPersonService: GetRiskPredictorScoresForPersonService,
 ) : DescribeSpec(
   {
-    val pncId = "1234/56789B"
+    val hmppsId = "1234/56789B"
     val nomisNumber = "Z99999ZZ"
     val deliusCrn = "X123456"
 
-    val personFromPrisonOffenderSearch =
-      Person(firstName = "Chandler", lastName = "Bing", identifiers = Identifiers(nomisNumber = nomisNumber))
     val personFromProbationOffenderSearch =
       Person(firstName = "Phoebe", lastName = "Buffay", identifiers = Identifiers(deliusCrn = deliusCrn))
 
@@ -47,7 +45,7 @@ internal class GetRiskPredictorScoresForPersonServiceTest(
       Mockito.reset(getPersonService)
       Mockito.reset(assessRisksAndNeedsGateway)
 
-      whenever(getPersonService.execute(hmppsId = pncId)).thenReturn(
+      whenever(getPersonService.execute(hmppsId = hmppsId)).thenReturn(
         Response(
           data = personFromProbationOffenderSearch,
         ),
@@ -57,13 +55,13 @@ internal class GetRiskPredictorScoresForPersonServiceTest(
     }
 
     it("retrieves a person from getPersonService") {
-      getRiskPredictorScoresForPersonService.execute(pncId)
+      getRiskPredictorScoresForPersonService.execute(hmppsId)
 
-      verify(getPersonService, VerificationModeFactory.times(1)).execute(hmppsId = pncId)
+      verify(getPersonService, VerificationModeFactory.times(1)).execute(hmppsId = hmppsId)
     }
 
     it("retrieves risk predictor scores for a person from ARN API using CRN") {
-      getRiskPredictorScoresForPersonService.execute(pncId)
+      getRiskPredictorScoresForPersonService.execute(hmppsId)
 
       verify(assessRisksAndNeedsGateway, VerificationModeFactory.times(1)).getRiskPredictorScoresForPerson(deliusCrn)
     }
@@ -84,17 +82,17 @@ internal class GetRiskPredictorScoresForPersonServiceTest(
         Response(data = riskPredictors),
       )
 
-      val response = getRiskPredictorScoresForPersonService.execute(pncId)
+      val response = getRiskPredictorScoresForPersonService.execute(hmppsId)
 
       response.data.shouldBe(riskPredictors)
     }
 
     describe("when an upstream API returns an error") {
 
-      xdescribe("when a person cannot be found by pnc ID in probation offender search") {
+      xdescribe("when a person cannot be found by hmpps Id in probation offender search") {
 
         beforeEach {
-          whenever(getPersonService.execute(pncId)).thenReturn(
+          whenever(getPersonService.execute(hmppsId)).thenReturn(
             Response(
               data = null,
               errors = listOf(
@@ -112,13 +110,13 @@ internal class GetRiskPredictorScoresForPersonServiceTest(
         }
 
         it("records upstream API error for probation offender search") {
-          val response = getRiskPredictorScoresForPersonService.execute(pncId)
+          val response = getRiskPredictorScoresForPersonService.execute(hmppsId)
 
           response.hasErrorCausedBy(UpstreamApiError.Type.ENTITY_NOT_FOUND, UpstreamApi.PROBATION_OFFENDER_SEARCH).shouldBe(true)
         }
 
         it("does not get risk predictor scores from ARN") {
-          getRiskPredictorScoresForPersonService.execute(pncId)
+          getRiskPredictorScoresForPersonService.execute(hmppsId)
 
           verify(assessRisksAndNeedsGateway, VerificationModeFactory.times(0)).getRiskPredictorScoresForPerson(id = deliusCrn)
         }
@@ -138,7 +136,7 @@ internal class GetRiskPredictorScoresForPersonServiceTest(
           ),
         )
 
-        val response = getRiskPredictorScoresForPersonService.execute(pncId)
+        val response = getRiskPredictorScoresForPersonService.execute(hmppsId)
 
         response.errors.shouldHaveSize(1)
         response.errors.first().causedBy.shouldBe(UpstreamApi.ASSESS_RISKS_AND_NEEDS)

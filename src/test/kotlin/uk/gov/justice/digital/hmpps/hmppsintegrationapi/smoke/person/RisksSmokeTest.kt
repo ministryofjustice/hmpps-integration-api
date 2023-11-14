@@ -14,11 +14,11 @@ import java.nio.charset.StandardCharsets
 
 class RisksSmokeTest : DescribeSpec(
   {
-    val pncId = "2004/13116M"
-    val encodedPncId = URLEncoder.encode(pncId, StandardCharsets.UTF_8)
+    val hmppsId = "2004/13116M"
+    val encodedHmppsId = URLEncoder.encode(hmppsId, StandardCharsets.UTF_8)
 
     val baseUrl = "http://localhost:8080"
-    val basePath = "v1/persons/$encodedPncId/risks"
+    val basePath = "v1/persons/$encodedHmppsId/risks"
 
     val httpClient = HttpClient.newBuilder().build()
     val httpRequest = HttpRequest.newBuilder()

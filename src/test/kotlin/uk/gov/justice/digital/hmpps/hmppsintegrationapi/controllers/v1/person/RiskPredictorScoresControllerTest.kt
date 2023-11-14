@@ -35,14 +35,14 @@ internal class RiskPredictorScoresControllerTest(
   @MockBean val getRiskPredictorScoresForPersonService: GetRiskPredictorScoresForPersonService,
 ) : DescribeSpec(
   {
-    val pncId = "9999/11111A"
-    val encodedPncId = URLEncoder.encode(pncId, StandardCharsets.UTF_8)
-    val path = "/v1/persons/$encodedPncId/risks/scores"
+    val hmppsId = "9999/11111A"
+    val encodedHmppsId = URLEncoder.encode(hmppsId, StandardCharsets.UTF_8)
+    val path = "/v1/persons/$encodedHmppsId/risks/scores"
 
     describe("GET $path") {
       beforeTest {
         Mockito.reset(getRiskPredictorScoresForPersonService)
-        whenever(getRiskPredictorScoresForPersonService.execute(pncId)).thenReturn(
+        whenever(getRiskPredictorScoresForPersonService.execute(hmppsId)).thenReturn(
           Response(
             data = listOf(
               IntegrationAPIRiskPredictorScore(
@@ -68,7 +68,7 @@ internal class RiskPredictorScoresControllerTest(
       it("retrieves the risk predictor scores for a person with the matching ID") {
         mockMvc.perform(MockMvcRequestBuilders.get("$path")).andReturn()
 
-        verify(getRiskPredictorScoresForPersonService, VerificationModeFactory.times(1)).execute(pncId)
+        verify(getRiskPredictorScoresForPersonService, VerificationModeFactory.times(1)).execute(hmppsId)
       }
 
       it("returns the risk predictor scores for a person with the matching ID") {
@@ -95,12 +95,12 @@ internal class RiskPredictorScoresControllerTest(
       }
 
       it("returns an empty list embedded in a JSON object when no risk predictor scores are found") {
-        val pncIdForPersonWithNoRiskPredictorScores = "0000/11111A"
-        val encodedPncIdForPersonWithNoRiskPredictorScores =
-          URLEncoder.encode(pncIdForPersonWithNoRiskPredictorScores, StandardCharsets.UTF_8)
-        val path = "/v1/persons/$encodedPncIdForPersonWithNoRiskPredictorScores/risks/scores"
+        val hmppsIdForPersonWithNoRiskPredictorScores = "0000/11111A"
+        val encodedHmppsIdForPersonWithNoRiskPredictorScores =
+          URLEncoder.encode(hmppsIdForPersonWithNoRiskPredictorScores, StandardCharsets.UTF_8)
+        val path = "/v1/persons/$encodedHmppsIdForPersonWithNoRiskPredictorScores/risks/scores"
 
-        whenever(getRiskPredictorScoresForPersonService.execute(pncIdForPersonWithNoRiskPredictorScores)).thenReturn(
+        whenever(getRiskPredictorScoresForPersonService.execute(hmppsIdForPersonWithNoRiskPredictorScores)).thenReturn(
           Response(
             data = emptyList(),
           ),
@@ -114,7 +114,7 @@ internal class RiskPredictorScoresControllerTest(
       }
 
       it("responds with a 404 NOT FOUND status when person isn't found in the upstream API") {
-        whenever(getRiskPredictorScoresForPersonService.execute(pncId)).thenReturn(
+        whenever(getRiskPredictorScoresForPersonService.execute(hmppsId)).thenReturn(
           Response(
             data = emptyList(),
             errors = listOf(
@@ -132,7 +132,7 @@ internal class RiskPredictorScoresControllerTest(
       }
 
       it("returns paginated results") {
-        whenever(getRiskPredictorScoresForPersonService.execute(pncId)).thenReturn(
+        whenever(getRiskPredictorScoresForPersonService.execute(hmppsId)).thenReturn(
           Response(
             data =
             List(30) {
