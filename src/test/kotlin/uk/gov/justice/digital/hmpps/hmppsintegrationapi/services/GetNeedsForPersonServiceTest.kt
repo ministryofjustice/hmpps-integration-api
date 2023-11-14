@@ -30,7 +30,7 @@ internal class GetNeedsForPersonServiceTest(
   private val getNeedsForPersonService: GetNeedsForPersonService,
 ) : DescribeSpec(
   {
-    val pncId = "1234/56789B"
+    val hmppsId = "1234/56789B"
     val deliusCrn = "X123456"
 
     val personFromProbationOffenderSearch =
@@ -40,7 +40,7 @@ internal class GetNeedsForPersonServiceTest(
       Mockito.reset(getPersonService)
       Mockito.reset(assessRisksAndNeedsGateway)
 
-      whenever(getPersonService.execute(hmppsId = pncId)).thenReturn(
+      whenever(getPersonService.execute(hmppsId = hmppsId)).thenReturn(
         Response(
           data = personFromProbationOffenderSearch,
         ),
@@ -50,13 +50,13 @@ internal class GetNeedsForPersonServiceTest(
     }
 
     it("retrieves a person from getPersonService") {
-      getNeedsForPersonService.execute(pncId)
+      getNeedsForPersonService.execute(hmppsId)
 
-      verify(getPersonService, VerificationModeFactory.times(1)).execute(hmppsId = pncId)
+      verify(getPersonService, VerificationModeFactory.times(1)).execute(hmppsId = hmppsId)
     }
 
     it("retrieves needs for a person from ARN API using a CRN") {
-      getNeedsForPersonService.execute(pncId)
+      getNeedsForPersonService.execute(hmppsId)
 
       verify(assessRisksAndNeedsGateway, VerificationModeFactory.times(1)).getNeedsForPerson(deliusCrn)
     }
@@ -80,15 +80,15 @@ internal class GetNeedsForPersonServiceTest(
 
       whenever(assessRisksAndNeedsGateway.getNeedsForPerson(deliusCrn)).thenReturn(Response(data = needs))
 
-      val response = getNeedsForPersonService.execute(pncId)
+      val response = getNeedsForPersonService.execute(hmppsId)
 
       response.data.shouldBe(needs)
     }
 
     describe("when an upstream API returns an error") {
-      xdescribe("when a person cannot be found by pnc ID in probation offender search") {
+      xdescribe("when a person cannot be found by hmpps ID in probation offender search") {
         beforeEach {
-          whenever(getPersonService.execute(pncId)).thenReturn(
+          whenever(getPersonService.execute(hmppsId)).thenReturn(
             Response(
               data = null,
               errors = listOf(
@@ -106,13 +106,13 @@ internal class GetNeedsForPersonServiceTest(
         }
 
         it("records upstream API error for probation offender search") {
-          val response = getNeedsForPersonService.execute(pncId)
+          val response = getNeedsForPersonService.execute(hmppsId)
 
           response.hasErrorCausedBy(UpstreamApiError.Type.ENTITY_NOT_FOUND, UpstreamApi.PROBATION_OFFENDER_SEARCH).shouldBe(true)
         }
 
         it("does not get needs from ARN") {
-          getNeedsForPersonService.execute(pncId)
+          getNeedsForPersonService.execute(hmppsId)
 
           verify(assessRisksAndNeedsGateway, VerificationModeFactory.times(0)).getNeedsForPerson(id = deliusCrn)
         }
@@ -131,7 +131,7 @@ internal class GetNeedsForPersonServiceTest(
           ),
         )
 
-        val response = getNeedsForPersonService.execute(pncId)
+        val response = getNeedsForPersonService.execute(hmppsId)
 
         response.errors.shouldHaveSize(1)
         response.errors.first().causedBy.shouldBe(UpstreamApi.ASSESS_RISKS_AND_NEEDS)

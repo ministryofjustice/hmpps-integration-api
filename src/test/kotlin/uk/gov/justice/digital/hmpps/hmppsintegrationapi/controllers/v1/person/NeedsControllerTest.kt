@@ -30,14 +30,14 @@ internal class NeedsControllerTest(
   @MockBean val getNeedsForPersonService: GetNeedsForPersonService,
 ) : DescribeSpec(
   {
-    val pncId = "9999/11111A"
-    val encodedPncId = URLEncoder.encode(pncId, StandardCharsets.UTF_8)
-    val path = "/v1/persons/$encodedPncId/needs"
+    val hmppsId = "9999/11111A"
+    val encodedHmppsId = URLEncoder.encode(hmppsId, StandardCharsets.UTF_8)
+    val path = "/v1/persons/$encodedHmppsId/needs"
 
     describe("GET $path") {
       beforeTest {
         Mockito.reset(getNeedsForPersonService)
-        whenever(getNeedsForPersonService.execute(pncId)).thenReturn(
+        whenever(getNeedsForPersonService.execute(hmppsId)).thenReturn(
           Response(
             data = Needs(
               assessedOn = LocalDateTime.of(
@@ -74,7 +74,7 @@ internal class NeedsControllerTest(
       it("retrieves the needs for a person with the matching ID") {
         mockMvc.perform(MockMvcRequestBuilders.get("$path")).andReturn()
 
-        verify(getNeedsForPersonService, VerificationModeFactory.times(1)).execute(pncId)
+        verify(getNeedsForPersonService, VerificationModeFactory.times(1)).execute(hmppsId)
       }
 
       it("returns the needs for a person with the matching ID") {
@@ -114,12 +114,12 @@ internal class NeedsControllerTest(
       }
 
       it("returns null embedded in a JSON object when no needs are found") {
-        val pncIdForPersonWithNoNeeds = "0000/11111A"
-        val encodedPncIdForPersonWithNoNeeds =
-          URLEncoder.encode(pncIdForPersonWithNoNeeds, StandardCharsets.UTF_8)
-        val path = "/v1/persons/$encodedPncIdForPersonWithNoNeeds/needs"
+        val hmppsIdForPersonWithNoNeeds = "0000/11111A"
+        val encodedHmppsIdForPersonWithNoNeeds =
+          URLEncoder.encode(hmppsIdForPersonWithNoNeeds, StandardCharsets.UTF_8)
+        val path = "/v1/persons/$encodedHmppsIdForPersonWithNoNeeds/needs"
 
-        whenever(getNeedsForPersonService.execute(pncIdForPersonWithNoNeeds)).thenReturn(Response(data = null))
+        whenever(getNeedsForPersonService.execute(hmppsIdForPersonWithNoNeeds)).thenReturn(Response(data = null))
 
         val result =
           mockMvc.perform(MockMvcRequestBuilders.get("$path"))
@@ -129,7 +129,7 @@ internal class NeedsControllerTest(
       }
 
       it("responds with a 404 NOT FOUND status when person isn't found in the upstream API") {
-        whenever(getNeedsForPersonService.execute(pncId)).thenReturn(
+        whenever(getNeedsForPersonService.execute(hmppsId)).thenReturn(
           Response(
             data = null,
             errors = listOf(
