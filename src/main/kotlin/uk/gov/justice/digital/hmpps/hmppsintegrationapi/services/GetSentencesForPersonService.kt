@@ -14,8 +14,8 @@ class GetSentencesForPersonService(
   @Autowired val getPersonService: GetPersonService,
   @Autowired val nDeliusGateway: NDeliusGateway,
 ) {
-  fun execute(pncId: String): Response<List<Sentence>> {
-    val personResponse = getPersonService.execute(hmppsId = pncId)
+  fun execute(hmppsId: String): Response<List<Sentence>> {
+    val personResponse = getPersonService.execute(hmppsId = hmppsId)
     val nomisNumber = personResponse.data?.identifiers?.nomisNumber
     val deliusCrn = personResponse.data?.identifiers?.deliusCrn
     var bookingIdsResponse: Response<List<Booking>> = Response(data = emptyList())
