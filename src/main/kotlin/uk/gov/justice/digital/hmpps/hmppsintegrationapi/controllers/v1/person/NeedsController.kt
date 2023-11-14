@@ -16,13 +16,13 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetNeedsForPers
 class NeedsController(
   @Autowired val getNeedsForPersonService: GetNeedsForPersonService,
 ) {
-  @GetMapping("{encodedPncId}/needs")
-  fun getPersonNeeds(@PathVariable encodedPncId: String): Map<String, Needs?> {
-    val pncId = encodedPncId.decodeUrlCharacters()
-    val response = getNeedsForPersonService.execute(pncId)
+  @GetMapping("{encodedHmppsId}/needs")
+  fun getPersonNeeds(@PathVariable encodedHmppsId: String): Map<String, Needs?> {
+    val hmppsId = encodedHmppsId.decodeUrlCharacters()
+    val response = getNeedsForPersonService.execute(hmppsId)
 
     if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
-      throw EntityNotFoundException("Could not find person with id: $pncId")
+      throw EntityNotFoundException("Could not find person with id: $hmppsId")
     }
 
     return mapOf("data" to response.data)
