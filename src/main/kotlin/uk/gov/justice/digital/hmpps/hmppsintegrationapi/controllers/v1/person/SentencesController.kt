@@ -24,17 +24,17 @@ class SentencesController(
   @Autowired val getLatestSentenceKeyDatesAndAdjustmentsForPersonService: GetLatestSentenceKeyDatesAndAdjustmentsForPersonService,
 ) {
 
-  @GetMapping("{encodedPncId}/sentences")
+  @GetMapping("{encodedHmppsId}/sentences")
   fun getPersonSentences(
-    @PathVariable encodedPncId: String,
+    @PathVariable encodedHmppsId: String,
     @RequestParam(required = false, defaultValue = "1", name = "page") page: Int,
     @RequestParam(required = false, defaultValue = "10", name = "perPage") perPage: Int,
   ): PaginatedResponse<Sentence> {
-    val pncId = encodedPncId.decodeUrlCharacters()
-    val response = getSentencesForPersonService.execute(pncId)
+    val hmppsId = encodedHmppsId.decodeUrlCharacters()
+    val response = getSentencesForPersonService.execute(hmppsId)
 
     if (response.hasErrorCausedBy(UpstreamApiError.Type.ENTITY_NOT_FOUND, causedBy = UpstreamApi.NOMIS)) {
-      throw EntityNotFoundException("Could not find person with id: $pncId")
+      throw EntityNotFoundException("Could not find person with id: $hmppsId")
     }
 
     return response.data.paginateWith(page, perPage)

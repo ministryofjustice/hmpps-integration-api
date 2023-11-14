@@ -32,7 +32,7 @@ internal class GetSentencesForPersonServiceTest(
   private val getSentencesForPersonService: GetSentencesForPersonService,
 ) : DescribeSpec(
   {
-    val pncId = "1234/56789B"
+    val hmppsId = "1234/56789B"
     val nomisNumber = "Z99999ZZ"
     val nDeliusCRN = "X123456"
     val firstBookingId = 1
@@ -49,7 +49,7 @@ internal class GetSentencesForPersonServiceTest(
       Mockito.reset(nDeliusGateway)
       Mockito.reset(getPersonService)
 
-      whenever(getPersonService.execute(hmppsId = pncId)).thenReturn(
+      whenever(getPersonService.execute(hmppsId = hmppsId)).thenReturn(
         Response(
           data = personFromProbationOffenderSearch,
         ),
@@ -76,23 +76,23 @@ internal class GetSentencesForPersonServiceTest(
 
     describe("Find person by hmppsId") {
       it("retrieves a person from getPersonService") {
-        getSentencesForPersonService.execute(pncId)
+        getSentencesForPersonService.execute(hmppsId)
 
-        verify(getPersonService, VerificationModeFactory.times(1)).execute(hmppsId = pncId)
+        verify(getPersonService, VerificationModeFactory.times(1)).execute(hmppsId = hmppsId)
       }
 
       it("returns prison and probation sentences") {
-        val result = getSentencesForPersonService.execute(pncId)
+        val result = getSentencesForPersonService.execute(hmppsId)
 
         result.shouldBe(Response(data = listOf(nomisSentence1, nomisSentence2, nDeliusSentence1, nDeliusSentence2)))
       }
 
       it("returns no sentences when the person cannot be found in either Prisoner Offender Search or Probation Offender Search") {
-        whenever(getPersonService.execute(hmppsId = pncId)).thenReturn(
+        whenever(getPersonService.execute(hmppsId = hmppsId)).thenReturn(
           Response(data = null),
         )
 
-        val result = getSentencesForPersonService.execute(pncId)
+        val result = getSentencesForPersonService.execute(hmppsId)
 
         result.shouldBe(Response(data = emptyList()))
       }
@@ -100,7 +100,7 @@ internal class GetSentencesForPersonServiceTest(
 
     describe("Nomis sentences") {
       it("retrieves bookind Ids for a person from Nomis using a Nomis number") {
-        getSentencesForPersonService.execute(pncId)
+        getSentencesForPersonService.execute(hmppsId)
 
         verify(nomisGateway, VerificationModeFactory.times(1)).getBookingIdsForPerson(id = nomisNumber)
       }
@@ -108,12 +108,12 @@ internal class GetSentencesForPersonServiceTest(
       it("does not return prison sentences when booking IDs are not present") {
         whenever(nomisGateway.getBookingIdsForPerson(nomisNumber)).thenReturn(Response(data = emptyList()))
 
-        val result = getSentencesForPersonService.execute(pncId)
+        val result = getSentencesForPersonService.execute(hmppsId)
         result.data.shouldNotContain(listOf(nomisSentence1, nomisSentence2))
       }
 
       it("retrieves all sentences from Nomis with booking IDs") {
-        getSentencesForPersonService.execute(pncId)
+        getSentencesForPersonService.execute(hmppsId)
 
         verify(nomisGateway, VerificationModeFactory.times(1)).getSentencesForBooking(firstBookingId)
         verify(nomisGateway, VerificationModeFactory.times(1)).getSentencesForBooking(secondBookingId)
@@ -122,14 +122,14 @@ internal class GetSentencesForPersonServiceTest(
 
     describe("NDelius sentence") {
       it("retrieves all sentences from nDelius using a CRN") {
-        getSentencesForPersonService.execute(pncId)
+        getSentencesForPersonService.execute(hmppsId)
 
         verify(nDeliusGateway, VerificationModeFactory.times(1)).getSentencesForPerson(nDeliusCRN)
       }
     }
 
     it("combines and returns sentences from Nomis and nDelius") {
-      val response = getSentencesForPersonService.execute(pncId)
+      val response = getSentencesForPersonService.execute(hmppsId)
 
       response.data.shouldBe(
         listOf(
@@ -145,7 +145,7 @@ internal class GetSentencesForPersonServiceTest(
       whenever(nDeliusGateway.getSentencesForPerson(nDeliusCRN)).thenReturn(Response(data = emptyList()))
       whenever(nomisGateway.getBookingIdsForPerson(nomisNumber)).thenReturn(Response(data = emptyList()))
 
-      val response = getSentencesForPersonService.execute(pncId)
+      val response = getSentencesForPersonService.execute(hmppsId)
 
       response.data.shouldBe(emptyList())
     }
@@ -164,7 +164,7 @@ internal class GetSentencesForPersonServiceTest(
           ),
         )
 
-        val response = getSentencesForPersonService.execute(pncId)
+        val response = getSentencesForPersonService.execute(hmppsId)
         response.errors.shouldHaveSize(1)
       }
 
@@ -181,7 +181,7 @@ internal class GetSentencesForPersonServiceTest(
           ),
         )
 
-        val response = getSentencesForPersonService.execute(pncId)
+        val response = getSentencesForPersonService.execute(hmppsId)
         response.errors.shouldHaveSize(1)
       }
 
@@ -198,7 +198,7 @@ internal class GetSentencesForPersonServiceTest(
           ),
         )
 
-        val response = getSentencesForPersonService.execute(pncId)
+        val response = getSentencesForPersonService.execute(hmppsId)
         response.errors.shouldHaveSize(1)
       }
     }

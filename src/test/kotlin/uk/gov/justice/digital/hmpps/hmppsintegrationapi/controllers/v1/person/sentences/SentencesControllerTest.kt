@@ -33,13 +33,13 @@ internal class SentencesControllerTest(
   @MockBean val getLatestSentenceKeyDatesAndAdjustmentsForPersonService: GetLatestSentenceKeyDatesAndAdjustmentsForPersonService,
 ) : DescribeSpec(
   {
-    val pncId = "9999/11111A"
-    val encodedPncId = URLEncoder.encode(pncId, StandardCharsets.UTF_8)
-    val path = "/v1/persons/$encodedPncId/sentences"
+    val hmppsId = "9999/11111A"
+    val encodedHmppsId = URLEncoder.encode(hmppsId, StandardCharsets.UTF_8)
+    val path = "/v1/persons/$encodedHmppsId/sentences"
 
     beforeTest {
       Mockito.reset(getSentencesForPersonService)
-      whenever(getSentencesForPersonService.execute(pncId)).thenReturn(
+      whenever(getSentencesForPersonService.execute(hmppsId)).thenReturn(
         Response(
           data = listOf(
             generateTestSentence(description = "Some description 1"),
@@ -58,7 +58,7 @@ internal class SentencesControllerTest(
     it("retrieves the sentences for a person with the matching ID") {
       mockMvc.perform(MockMvcRequestBuilders.get(path)).andReturn()
 
-      verify(getSentencesForPersonService, VerificationModeFactory.times(1)).execute(pncId)
+      verify(getSentencesForPersonService, VerificationModeFactory.times(1)).execute(hmppsId)
     }
 
     it("returns the sentences for a person with the matching ID") {
@@ -133,12 +133,12 @@ internal class SentencesControllerTest(
     }
 
     it("returns an empty list embedded in a JSON object when no sentences are found") {
-      val pncIdForPersonWithNoSentences = "0000/11111A"
-      val encodedPncIdForPersonWithNoSentences =
-        URLEncoder.encode(pncIdForPersonWithNoSentences, StandardCharsets.UTF_8)
-      val path = "/v1/persons/$encodedPncIdForPersonWithNoSentences/sentences"
+      val hmppsIdForPersonWithNoSentences = "0000/11111A"
+      val encodedHmppsIdForPersonWithNoSentences =
+        URLEncoder.encode(hmppsIdForPersonWithNoSentences, StandardCharsets.UTF_8)
+      val path = "/v1/persons/$encodedHmppsIdForPersonWithNoSentences/sentences"
 
-      whenever(getSentencesForPersonService.execute(pncIdForPersonWithNoSentences)).thenReturn(
+      whenever(getSentencesForPersonService.execute(hmppsIdForPersonWithNoSentences)).thenReturn(
         Response(
           data = emptyList(),
         ),
@@ -150,7 +150,7 @@ internal class SentencesControllerTest(
     }
 
     it("responds with a 404 NOT FOUND status when person isn't found in the upstream API") {
-      whenever(getSentencesForPersonService.execute(pncId)).thenReturn(
+      whenever(getSentencesForPersonService.execute(hmppsId)).thenReturn(
         Response(
           data = emptyList(),
           errors = listOf(
@@ -168,7 +168,7 @@ internal class SentencesControllerTest(
     }
 
     it("returns paginated results") {
-      whenever(getSentencesForPersonService.execute(pncId)).thenReturn(
+      whenever(getSentencesForPersonService.execute(hmppsId)).thenReturn(
         Response(
           data =
           List(20) {
