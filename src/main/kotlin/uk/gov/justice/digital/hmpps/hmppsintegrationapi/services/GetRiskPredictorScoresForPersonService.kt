@@ -11,8 +11,8 @@ class GetRiskPredictorScoresForPersonService(
   @Autowired val assessRisksAndNeedsGateway: AssessRisksAndNeedsGateway,
   @Autowired val getPersonService: GetPersonService,
 ) {
-  fun execute(pncId: String): Response<List<RiskPredictorScore>> {
-    val personResponse = getPersonService.execute(hmppsId = pncId)
+  fun execute(hmppsId: String): Response<List<RiskPredictorScore>> {
+    val personResponse = getPersonService.execute(hmppsId = hmppsId)
     val deliusCrn = personResponse.data?.identifiers?.deliusCrn
 
     var personRiskPredictorScores: Response<List<RiskPredictorScore>> = Response(data = emptyList())

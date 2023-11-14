@@ -11,8 +11,8 @@ class GetRisksForPersonService(
   @Autowired val assessRisksAndNeedsGateway: AssessRisksAndNeedsGateway,
   @Autowired val getPersonService: GetPersonService,
 ) {
-  fun execute(pncId: String): Response<Risks?> {
-    val personResponse = getPersonService.execute(hmppsId = pncId)
+  fun execute(hmppsId: String): Response<Risks?> {
+    val personResponse = getPersonService.execute(hmppsId = hmppsId)
     val deliusCrn = personResponse.data?.identifiers?.deliusCrn
 
     var personRisks: Response<Risks?> = Response(data = null)
