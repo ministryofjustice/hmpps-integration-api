@@ -30,14 +30,14 @@ internal class AlertsControllerTest(
   @MockBean val getAlertsForPersonService: GetAlertsForPersonService,
 ) : DescribeSpec(
   {
-    val pncId = "9999/11111A"
-    val encodedPncId = URLEncoder.encode(pncId, StandardCharsets.UTF_8)
-    val path = "/v1/persons/$encodedPncId/alerts"
+    val hmppsId = "9999/11111A"
+    val encodedHmppsId = URLEncoder.encode(hmppsId, StandardCharsets.UTF_8)
+    val path = "/v1/persons/$encodedHmppsId/alerts"
 
     describe("GET $path") {
       beforeTest {
         Mockito.reset(getAlertsForPersonService)
-        whenever(getAlertsForPersonService.execute(pncId)).thenReturn(
+        whenever(getAlertsForPersonService.execute(hmppsId)).thenReturn(
           Response(
             data = listOf(
               Alert(
@@ -66,7 +66,7 @@ internal class AlertsControllerTest(
       it("retrieves the alerts for a person with the matching ID") {
         mockMvc.perform(MockMvcRequestBuilders.get("$path")).andReturn()
 
-        verify(getAlertsForPersonService, VerificationModeFactory.times(1)).execute(pncId)
+        verify(getAlertsForPersonService, VerificationModeFactory.times(1)).execute(hmppsId)
       }
 
       it("returns the alerts for a person with the matching ID") {
@@ -93,12 +93,12 @@ internal class AlertsControllerTest(
       }
 
       it("returns an empty list embedded in a JSON object when no alerts are found") {
-        val pncIdForPersonWithNoAlerts = "0000/11111A"
-        val encodedPncIdForPersonWithNoAlerts =
-          URLEncoder.encode(pncIdForPersonWithNoAlerts, StandardCharsets.UTF_8)
-        val path = "/v1/persons/$encodedPncIdForPersonWithNoAlerts/alerts"
+        val hmppsIdForPersonWithNoAlerts = "0000/11111A"
+        val encodedHmppsIdForPersonWithNoAlerts =
+          URLEncoder.encode(hmppsIdForPersonWithNoAlerts, StandardCharsets.UTF_8)
+        val path = "/v1/persons/$encodedHmppsIdForPersonWithNoAlerts/alerts"
 
-        whenever(getAlertsForPersonService.execute(pncIdForPersonWithNoAlerts)).thenReturn(
+        whenever(getAlertsForPersonService.execute(hmppsIdForPersonWithNoAlerts)).thenReturn(
           Response(
             data = emptyList(),
           ),
@@ -112,7 +112,7 @@ internal class AlertsControllerTest(
       }
 
       it("responds with a 404 NOT FOUND status when person isn't found in the upstream API") {
-        whenever(getAlertsForPersonService.execute(pncId)).thenReturn(
+        whenever(getAlertsForPersonService.execute(hmppsId)).thenReturn(
           Response(
             data = emptyList(),
             errors = listOf(
@@ -130,7 +130,7 @@ internal class AlertsControllerTest(
       }
 
       it("returns paginated results") {
-        whenever(getAlertsForPersonService.execute(pncId)).thenReturn(
+        whenever(getAlertsForPersonService.execute(hmppsId)).thenReturn(
           Response(
             data =
             List(20) {

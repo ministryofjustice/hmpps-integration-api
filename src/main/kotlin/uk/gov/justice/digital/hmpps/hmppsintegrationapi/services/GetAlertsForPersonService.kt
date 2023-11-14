@@ -12,8 +12,8 @@ class GetAlertsForPersonService(
   @Autowired val nomisGateway: NomisGateway,
   @Autowired val prisonerOffenderSearchGateway: PrisonerOffenderSearchGateway,
 ) {
-  fun execute(pncId: String): Response<List<Alert>> {
-    val responseFromPrisonerOffenderSearch = prisonerOffenderSearchGateway.getPersons(pncId = pncId)
+  fun execute(hmppsId: String): Response<List<Alert>> {
+    val responseFromPrisonerOffenderSearch = prisonerOffenderSearchGateway.getPersons(pncId = hmppsId)
     val nomisNumber = responseFromPrisonerOffenderSearch.data.firstOrNull()?.identifiers?.nomisNumber
     var nomisAlerts: Response<List<Alert>> = Response(data = emptyList())
 
