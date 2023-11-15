@@ -11,7 +11,6 @@ import org.springframework.boot.test.context.ConfigDataApplicationContextInitial
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.context.ContextConfiguration
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NomisGateway
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ProbationOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.generateTestAddress
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Identifiers
@@ -35,30 +34,16 @@ internal class GetAddressesForPersonServiceTest(
     val prisonerNumber = "A5553AA"
     val deliusCrn = "X777776"
 
+    val person = Person(firstName = "Qui-gon", lastName = "Jin", identifiers = Identifiers(nomisNumber = prisonerNumber, deliusCrn = deliusCrn))
+
     beforeEach {
       Mockito.reset(probationOffenderSearchGateway)
       Mockito.reset(nomisGateway)
       Mockito.reset(personService)
 
-      whenever(personService.execute(hmppsId = deliusCrn)).thenReturn(
-        Response(data = Person(firstName = "Qui-gon", lastName = "Jin",
-          identifiers = Identifiers(
-            nomisNumber = prisonerNumber,
-            deliusCrn = deliusCrn,
-          )
-        )
-        ),
-      )
+      whenever(personService.execute(hmppsId = deliusCrn)).thenReturn(Response(person))
+      whenever(personService.execute(hmppsId = pncId)).thenReturn(Response(person))
 
-      whenever(personService.execute(hmppsId = pncId)).thenReturn(
-        Response(data = Person(firstName = "Qui-gon", lastName = "Jin",
-            identifiers = Identifiers(
-              nomisNumber = prisonerNumber,
-              deliusCrn = deliusCrn,
-            )
-          )
-        ),
-      )
       whenever(probationOffenderSearchGateway.getAddressesForPerson(pncId)).thenReturn(Response(data = emptyList()))
       whenever(nomisGateway.getAddressesForPerson(prisonerNumber)).thenReturn(Response(data = emptyList()))
     }
@@ -70,13 +55,13 @@ internal class GetAddressesForPersonServiceTest(
     }
 
     it("retrieves addresses for a person from Probation Offender Search using a PNC ID") {
-      getAddressesForPersonService.execute(pncId = pncId)
+      getAddressesForPersonService.execute(hmppsId = pncId)
 
       verify(probationOffenderSearchGateway, VerificationModeFactory.times(1)).getAddressesForPerson(pncId)
     }
 
     it("retrieves addresses for a person from Probation Offender Search using a Delius CRN") {
-      getAddressesForPersonService.execute(pncId = deliusCrn)
+      getAddressesForPersonService.execute(hmppsId = deliusCrn)
 
       verify(probationOffenderSearchGateway, VerificationModeFactory.times(1)).getAddressesForPerson(deliusCrn)
     }

@@ -70,14 +70,14 @@ class ProbationOffenderSearchGateway(@Value("\${services.probation-offender-sear
     )
   }
 
-  fun getAddressesForPerson(pncId: String): Response<List<Address>> {
-    val queryField = if (isPncNumber(pncId)) {
+  fun getAddressesForPerson(hmppsId: String): Response<List<Address>> {
+    val queryField = if (isPncNumber(hmppsId)) {
       "pncNumber"
     } else {
       "crn"
     }
 
-    val offender = webClient.requestList<Offender>(HttpMethod.POST, "/search", authenticationHeader(), mapOf(queryField to pncId),)
+    val offender = webClient.requestList<Offender>(HttpMethod.POST, "/search", authenticationHeader(), mapOf(queryField to hmppsId))
 
     if (offender.isEmpty()) {
       return Response(

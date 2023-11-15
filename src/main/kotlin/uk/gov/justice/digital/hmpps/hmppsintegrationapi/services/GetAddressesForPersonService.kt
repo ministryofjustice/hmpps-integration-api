@@ -13,21 +13,17 @@ class GetAddressesForPersonService(
   @Autowired val getPersonService: GetPersonService,
   @Autowired val probationOffenderSearchGateway: ProbationOffenderSearchGateway,
 ) {
-  fun execute(pncId: String): Response<List<Address>> {
-    val personResponse = getPersonService.execute(hmppsId = pncId)
+  fun execute(hmppsId: String): Response<List<Address>> {
+    val personResponse = getPersonService.execute(hmppsId = hmppsId)
     val nomisNumber = personResponse.data?.identifiers?.nomisNumber
-    val deliusCrn = personResponse.data?.identifiers?.deliusCrn
+
     var addressesFromNomis: Response<List<Address>> = Response(data = emptyList())
-    var addressesFromDelius: Response<List<Address>> = Response(data = emptyList())
+    val addressesFromDelius = probationOffenderSearchGateway.getAddressesForPerson(hmppsId = hmppsId)
 
     if (nomisNumber != null) {
       addressesFromNomis = nomisGateway.getAddressesForPerson(id = nomisNumber)
     }
 
-    if (deliusCrn != null) {
-      addressesFromDelius = probationOffenderSearchGateway.getAddressesForPerson(pncId)
-    }
-
-    return Response.merge(listOf(addressesFromNomis, addressesFromDelius))
+    return Response.merge(listOfNotNull(addressesFromNomis, addressesFromDelius))
   }
 }
