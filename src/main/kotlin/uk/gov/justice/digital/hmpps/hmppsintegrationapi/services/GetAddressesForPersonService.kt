@@ -3,23 +3,27 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NomisGateway
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ProbationOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Address
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Response
 
 @Service
 class GetAddressesForPersonService(
-  @Autowired val probationOffenderSearchGateway: ProbationOffenderSearchGateway,
-  @Autowired val prisonerOffenderSearchGateway: PrisonerOffenderSearchGateway,
   @Autowired val nomisGateway: NomisGateway,
+  @Autowired val getPersonService: GetPersonService,
+  @Autowired val probationOffenderSearchGateway: ProbationOffenderSearchGateway,
 ) {
-  fun execute(pncId: String): Response<List<Address>> {
-    val responseFromPrisonerOffenderSearch = prisonerOffenderSearchGateway.getPersons(pncId = pncId)
+  fun execute(hmppsId: String): Response<List<Address>> {
+    val personResponse = getPersonService.execute(hmppsId = hmppsId)
+    val nomisNumber = personResponse.data?.identifiers?.nomisNumber
 
-    val responseFromNomis = nomisGateway.getAddressesForPerson(responseFromPrisonerOffenderSearch.data.first().identifiers.nomisNumber!!)
-    val responseFromProbationOffenderSearch = probationOffenderSearchGateway.getAddressesForPerson(pncId)
+    var addressesFromNomis: Response<List<Address>> = Response(data = emptyList())
+    val addressesFromDelius = probationOffenderSearchGateway.getAddressesForPerson(hmppsId = hmppsId)
 
-    return Response.merge(listOf(responseFromNomis, responseFromProbationOffenderSearch))
+    if (nomisNumber != null) {
+      addressesFromNomis = nomisGateway.getAddressesForPerson(id = nomisNumber)
+    }
+
+    return Response.merge(listOfNotNull(addressesFromNomis, addressesFromDelius))
   }
 }
