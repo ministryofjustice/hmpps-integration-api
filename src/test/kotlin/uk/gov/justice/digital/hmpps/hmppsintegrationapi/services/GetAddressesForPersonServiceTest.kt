@@ -12,6 +12,7 @@ import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.context.ContextConfiguration
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NomisGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffenderSearchGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ProbationOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.generateTestAddress
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Identifiers
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Person
@@ -24,44 +25,60 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApiError
   classes = [GetAddressesForPersonService::class],
 )
 internal class GetAddressesForPersonServiceTest(
-  @MockBean val prisonerOffenderSearchGateway: PrisonerOffenderSearchGateway,
+  @MockBean val probationOffenderSearchGateway: ProbationOffenderSearchGateway,
   @MockBean val nomisGateway: NomisGateway,
-  @MockBean val getPersonService: GetPersonService,
+  @MockBean val personService: GetPersonService,
   private val getAddressesForPersonService: GetAddressesForPersonService,
 ) : DescribeSpec(
   {
     val pncId = "2003/13116M"
     val prisonerNumber = "A5553AA"
-    val addressesFromProbationOffenderSearch = listOf(generateTestAddress())
+    val deliusCrn = "X777776"
 
     beforeEach {
-      Mockito.reset(prisonerOffenderSearchGateway)
+      Mockito.reset(probationOffenderSearchGateway)
       Mockito.reset(nomisGateway)
-      Mockito.reset(getPersonService)
+      Mockito.reset(personService)
 
-      whenever(prisonerOffenderSearchGateway.getPersons(pncId = pncId)).thenReturn(
-        Response(data = listOf(Person(firstName = "Qui-gon", lastName = "Jin", identifiers = Identifiers(nomisNumber = prisonerNumber)))),
-      )
-
-      whenever(nomisGateway.getAddressesForPerson(prisonerNumber)).thenReturn(Response(data = emptyList()))
-
-      whenever(getPersonService.getAddressesForPerson(hmppsId = pncId)).thenReturn(
-        Response(
-          data = addressesFromProbationOffenderSearch,
+      whenever(personService.execute(hmppsId = deliusCrn)).thenReturn(
+        Response(data = Person(firstName = "Qui-gon", lastName = "Jin",
+          identifiers = Identifiers(
+            nomisNumber = prisonerNumber,
+            deliusCrn = deliusCrn,
+          )
+        )
         ),
       )
+
+      whenever(personService.execute(hmppsId = pncId)).thenReturn(
+        Response(data = Person(firstName = "Qui-gon", lastName = "Jin",
+            identifiers = Identifiers(
+              nomisNumber = prisonerNumber,
+              deliusCrn = deliusCrn,
+            )
+          )
+        ),
+      )
+      whenever(probationOffenderSearchGateway.getAddressesForPerson(pncId)).thenReturn(Response(data = emptyList()))
+      whenever(nomisGateway.getAddressesForPerson(prisonerNumber)).thenReturn(Response(data = emptyList()))
     }
 
-    it("retrieves prisoner ID from Prisoner Offender Search") {
+    it("retrieves a person from getPersonService") {
       getAddressesForPersonService.execute(pncId)
 
-      verify(prisonerOffenderSearchGateway, VerificationModeFactory.times(1)).getPersons(pncId = pncId)
+      verify(personService, VerificationModeFactory.times(1)).execute(hmppsId = pncId)
     }
 
-    it("retrieves addresses for a person from Person Service using PND ID") {
-      getAddressesForPersonService.execute(pncId)
+    it("retrieves addresses for a person from Probation Offender Search using a PNC ID") {
+      getAddressesForPersonService.execute(pncId = pncId)
 
-      verify(getPersonService, VerificationModeFactory.times(1)).getAddressesForPerson(pncId)
+      verify(probationOffenderSearchGateway, VerificationModeFactory.times(1)).getAddressesForPerson(pncId)
+    }
+
+    it("retrieves addresses for a person from Probation Offender Search using a Delius CRN") {
+      getAddressesForPersonService.execute(pncId = deliusCrn)
+
+      verify(probationOffenderSearchGateway, VerificationModeFactory.times(1)).getAddressesForPerson(deliusCrn)
     }
 
     it("retrieves addresses for a person from NOMIS using prisoner number") {
@@ -74,7 +91,7 @@ internal class GetAddressesForPersonServiceTest(
       val addressesFromProbationOffenderSearch = generateTestAddress(name = "Probation Address")
       val addressesFromNomis = generateTestAddress(name = "NOMIS Address")
 
-      whenever(getPersonService.getAddressesForPerson(pncId)).thenReturn(
+      whenever(probationOffenderSearchGateway.getAddressesForPerson(pncId)).thenReturn(
         Response(data = listOf(addressesFromProbationOffenderSearch)),
       )
       whenever(nomisGateway.getAddressesForPerson(prisonerNumber)).thenReturn(
@@ -88,7 +105,7 @@ internal class GetAddressesForPersonServiceTest(
     }
 
     it("returns all errors when person cannot be found in all upstream APIs") {
-      whenever(getPersonService.getAddressesForPerson(pncId)).thenReturn(
+      whenever(probationOffenderSearchGateway.getAddressesForPerson(pncId)).thenReturn(
         Response(
           data = emptyList(),
           errors = listOf(

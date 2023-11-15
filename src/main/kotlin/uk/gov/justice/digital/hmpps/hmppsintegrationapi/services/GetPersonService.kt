@@ -16,10 +16,4 @@ class GetPersonService(
 
     return Response(data = personFromProbationOffenderSearch.data)
   }
-
-  fun getAddressesForPerson(hmppsId: String): Response<List<Address>> {
-    val addressesFromProbationOffenderSearch = probationOffenderSearchGateway.getAddressesForPerson(pncId = hmppsId)
-
-    return Response(data = addressesFromProbationOffenderSearch.data)
-  }
 }
