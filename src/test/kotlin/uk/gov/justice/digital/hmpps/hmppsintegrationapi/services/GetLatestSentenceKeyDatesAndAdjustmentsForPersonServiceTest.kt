@@ -57,7 +57,18 @@ internal class GetLatestSentenceKeyDatesAndAdjustmentsForPersonServiceTest(
       )
       whenever(nomisGateway.getLatestSentenceAdjustmentsForPerson(nomisNumber)).thenReturn(
         Response(
-          data = SentenceAdjustment(additionalDaysAwarded = 10),
+          data = SentenceAdjustment(
+            additionalDaysAwarded = 10,
+            unlawfullyAtLarge = 10,
+            lawfullyAtLarge = 2,
+            restoredAdditionalDaysAwarded = 0,
+            specialRemission = 11,
+            recallSentenceRemand = 1,
+            recallSentenceTaggedBail = 3,
+            remand = 6,
+            taggedBail = 3,
+            unusedRemand = 6,
+          ),
         ),
       )
     }
@@ -84,6 +95,16 @@ internal class GetLatestSentenceKeyDatesAndAdjustmentsForPersonServiceTest(
       val response = getLatestSentenceKeyDatesAndAdjustmentsForPersonService.execute(hmppsId)
 
       response.data?.adjustments?.additionalDaysAwarded.shouldBe(10)
+      response.data?.adjustments?.unlawfullyAtLarge.shouldBe(10)
+      response.data?.adjustments?.lawfullyAtLarge.shouldBe(2)
+      response.data?.adjustments?.restoredAdditionalDaysAwarded.shouldBe(0)
+      response.data?.adjustments?.specialRemission.shouldBe(11)
+      response.data?.adjustments?.recallSentenceRemand.shouldBe(1)
+      response.data?.adjustments?.recallSentenceTaggedBail.shouldBe(3)
+      response.data?.adjustments?.remand.shouldBe(6)
+      response.data?.adjustments?.taggedBail.shouldBe(3)
+      response.data?.adjustments?.unusedRemand.shouldBe(6)
+
       response.data?.automaticRelease?.date.shouldBe(LocalDate.parse("2023-11-02"))
     }
 

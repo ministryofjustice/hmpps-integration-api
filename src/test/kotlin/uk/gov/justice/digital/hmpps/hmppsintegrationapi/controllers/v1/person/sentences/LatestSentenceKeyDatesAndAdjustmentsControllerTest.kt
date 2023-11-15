@@ -43,7 +43,18 @@ internal class LatestSentenceKeyDatesAndAdjustmentsControllerTest(
       whenever(getLatestSentenceKeyDatesAndAdjustmentsForPersonService.execute(hmppsId)).thenReturn(
         Response(
           data = LatestSentenceKeyDatesAndAdjustments(
-            adjustments = SentenceAdjustment(additionalDaysAwarded = 7),
+            adjustments = SentenceAdjustment(
+              additionalDaysAwarded = 7,
+              unlawfullyAtLarge = 10,
+              lawfullyAtLarge = 2,
+              restoredAdditionalDaysAwarded = 0,
+              specialRemission = 11,
+              recallSentenceRemand = 1,
+              recallSentenceTaggedBail = 3,
+              remand = 6,
+              taggedBail = 3,
+              unusedRemand = 6,
+            ),
             automaticRelease = SentenceKeyDate(date = LocalDate.parse("2023-04-01")),
           ),
         ),
@@ -69,7 +80,16 @@ internal class LatestSentenceKeyDatesAndAdjustmentsControllerTest(
         """
           "data": {
             "adjustments": {
-              "additionalDaysAwarded": 7
+              "additionalDaysAwarded": 7,
+              "unlawfullyAtLarge": 10,
+              "lawfullyAtLarge": 2,
+              "restoredAdditionalDaysAwarded": 0,
+              "specialRemission": 11,
+              "recallSentenceRemand": 1,
+              "recallSentenceTaggedBail": 3,
+              "remand": 6,
+              "taggedBail": 3,
+              "unusedRemand": 6
             },
             "automaticRelease": {
               "date": "2023-04-01"

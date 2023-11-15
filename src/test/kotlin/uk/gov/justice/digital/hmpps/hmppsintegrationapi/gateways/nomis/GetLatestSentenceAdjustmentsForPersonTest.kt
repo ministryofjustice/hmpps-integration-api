@@ -40,7 +40,16 @@ class GetLatestSentenceAdjustmentsForPersonTest(
             "prisonerNumber": "A1234AA",
             "latestPrisonTerm": {
               "sentenceAdjustments": {
-                "additionalDaysAwarded": 12
+                "additionalDaysAwarded": 12,
+                "unlawfullyAtLarge": 10,
+                "lawfullyAtLarge": 2,
+                "restoredAdditionalDaysAwarded": 0,
+                "specialRemission": 11,
+                "recallSentenceRemand": 1,
+                "recallSentenceTaggedBail": 3,
+                "remand": 6,
+                "taggedBail": 3,
+                "unusedRemand": 6
               }
             }
           }
@@ -65,6 +74,15 @@ class GetLatestSentenceAdjustmentsForPersonTest(
       val response = nomisGateway.getLatestSentenceAdjustmentsForPerson(offenderNo)
 
       response.data?.additionalDaysAwarded.shouldBe(12)
+      response.data?.unlawfullyAtLarge.shouldBe(10)
+      response.data?.lawfullyAtLarge.shouldBe(2)
+      response.data?.restoredAdditionalDaysAwarded.shouldBe(0)
+      response.data?.specialRemission.shouldBe(11)
+      response.data?.recallSentenceRemand.shouldBe(1)
+      response.data?.recallSentenceTaggedBail.shouldBe(3)
+      response.data?.remand.shouldBe(6)
+      response.data?.taggedBail.shouldBe(3)
+      response.data?.unusedRemand.shouldBe(6)
     }
 
     it("returns an error when 404 NOT FOUND is returned") {
