@@ -42,7 +42,7 @@ internal class PersonControllerTest(
 ) : DescribeSpec(
   {
     val hmppsId = "2003/13116M"
-    val encodedPncId = URLEncoder.encode(hmppsId, StandardCharsets.UTF_8)
+    val encodedHmppsId = URLEncoder.encode(hmppsId, StandardCharsets.UTF_8)
     val basePath = "/v1/persons"
     val firstName = "Barry"
     val lastName = "Allen"
@@ -207,7 +207,7 @@ internal class PersonControllerTest(
       }
 
       it("responds with a 200 OK status") {
-        val result = mockMvc.perform(get("$basePath/$encodedPncId")).andReturn()
+        val result = mockMvc.perform(get("$basePath/$encodedHmppsId")).andReturn()
 
         result.response.status.shouldBe(HttpStatus.OK.value())
       }
@@ -259,13 +259,13 @@ internal class PersonControllerTest(
       }
 
       it("retrieves a person with the matching ID") {
-        mockMvc.perform(get("$basePath/$encodedPncId")).andReturn()
+        mockMvc.perform(get("$basePath/$encodedHmppsId")).andReturn()
 
         verify(getPersonService, times(1)).execute(hmppsId)
       }
 
       it("returns a person with the matching ID") {
-        val result = mockMvc.perform(get("$basePath/$encodedPncId")).andReturn()
+        val result = mockMvc.perform(get("$basePath/$encodedHmppsId")).andReturn()
 
         result.response.contentAsString.shouldBe(
           """
@@ -290,7 +290,7 @@ internal class PersonControllerTest(
       }
     }
 
-    describe("GET $basePath/$encodedPncId/images") {
+    describe("GET $basePath/$encodedHmppsId/images") {
       beforeTest {
         Mockito.reset(getImageMetadataForPersonService)
         whenever(getImageMetadataForPersonService.execute(hmppsId)).thenReturn(
@@ -326,7 +326,7 @@ internal class PersonControllerTest(
         )
 
         val result =
-          mockMvc.perform(get("$basePath/$encodedPncId/images?page=3&perPage=5"))
+          mockMvc.perform(get("$basePath/$encodedHmppsId/images?page=3&perPage=5"))
             .andReturn()
 
         result.response.contentAsString.shouldContainJsonKeyValue("$.pagination.page", 3)
@@ -334,19 +334,19 @@ internal class PersonControllerTest(
       }
 
       it("responds with a 200 OK status") {
-        val result = mockMvc.perform(get("$basePath/$encodedPncId/images")).andReturn()
+        val result = mockMvc.perform(get("$basePath/$encodedHmppsId/images")).andReturn()
 
         result.response.status.shouldBe(HttpStatus.OK.value())
       }
 
       it("retrieves the metadata of images for a person with the matching ID") {
-        mockMvc.perform(get("$basePath/$encodedPncId/images")).andReturn()
+        mockMvc.perform(get("$basePath/$encodedHmppsId/images")).andReturn()
 
         verify(getImageMetadataForPersonService, times(1)).execute(hmppsId)
       }
 
       it("returns the metadata of images for a person with the matching ID") {
-        val result = mockMvc.perform(get("$basePath/$encodedPncId/images")).andReturn()
+        val result = mockMvc.perform(get("$basePath/$encodedHmppsId/images")).andReturn()
         result.response.contentAsString.shouldContain("\"data\":[")
         result.response.contentAsString.shouldContain(
           """
@@ -373,32 +373,32 @@ internal class PersonControllerTest(
           ),
         )
 
-        val result = mockMvc.perform(get("$basePath/$encodedPncId/images")).andReturn()
+        val result = mockMvc.perform(get("$basePath/$encodedHmppsId/images")).andReturn()
 
         result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
       }
     }
 
-    describe("GET $basePath/{encodedPncId}/addresses") {
+    describe("GET $basePath/{encodedHmppsId}/addresses") {
       beforeTest {
         Mockito.reset(getAddressesForPersonService)
         whenever(getAddressesForPersonService.execute(hmppsId)).thenReturn(Response(data = listOf(generateTestAddress())))
       }
 
       it("responds with a 200 OK status") {
-        val result = mockMvc.perform(get("$basePath/$encodedPncId/addresses")).andReturn()
+        val result = mockMvc.perform(get("$basePath/$encodedHmppsId/addresses")).andReturn()
 
         result.response.status.shouldBe(HttpStatus.OK.value())
       }
 
       it("retrieves the addresses for a person with the matching ID") {
-        mockMvc.perform(get("$basePath/$encodedPncId/addresses")).andReturn()
+        mockMvc.perform(get("$basePath/$encodedHmppsId/addresses")).andReturn()
 
         verify(getAddressesForPersonService, times(1)).execute(hmppsId)
       }
 
       it("returns the addresses for a person with the matching ID") {
-        val result = mockMvc.perform(get("$basePath/$encodedPncId/addresses")).andReturn()
+        val result = mockMvc.perform(get("$basePath/$encodedHmppsId/addresses")).andReturn()
 
         result.response.contentAsString.shouldBe(
           """
@@ -451,7 +451,7 @@ internal class PersonControllerTest(
           ),
         )
 
-        val result = mockMvc.perform(get("$basePath/$encodedPncId/addresses")).andReturn()
+        val result = mockMvc.perform(get("$basePath/$encodedHmppsId/addresses")).andReturn()
 
         result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
       }
@@ -469,7 +469,7 @@ internal class PersonControllerTest(
           ),
         )
 
-        val result = mockMvc.perform(get("$basePath/$encodedPncId/addresses")).andReturn()
+        val result = mockMvc.perform(get("$basePath/$encodedHmppsId/addresses")).andReturn()
 
         result.response.status.shouldBe(HttpStatus.OK.value())
       }
