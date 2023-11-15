@@ -68,7 +68,7 @@ class PrisonerOffenderSearchGatewayTest(
       verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("Prisoner Offender Search")
     }
 
-    it("returns person(s) when searching on PNC ID, first and last name") {
+    it("returns person(s) when searching on Hmpps ID, first and last name") {
       val response = prisonerOffenderSearchGateway.getPersons(firstName, lastName, hmppsId)
 
       response.data.count().shouldBe(4)
@@ -135,7 +135,7 @@ class PrisonerOffenderSearchGatewayTest(
         """.trimIndent(),
       )
 
-      val response = prisonerOffenderSearchGateway.getPersons(pncId = hmppsId)
+      val response = prisonerOffenderSearchGateway.getPersons(hmppsId = hmppsId)
 
       response.data.count().shouldBe(1)
       response.data.first().firstName.shouldBe("Obi-Wan")

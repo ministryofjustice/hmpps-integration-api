@@ -30,7 +30,7 @@ internal class GetAddressesForPersonServiceTest(
   private val getAddressesForPersonService: GetAddressesForPersonService,
 ) : DescribeSpec(
   {
-    val pncId = "2003/13116M"
+    val hmppsId = "2003/13116M"
     val prisonerNumber = "A5553AA"
     val deliusCrn = "X777776"
 
@@ -42,22 +42,22 @@ internal class GetAddressesForPersonServiceTest(
       Mockito.reset(personService)
 
       whenever(personService.execute(hmppsId = deliusCrn)).thenReturn(Response(person))
-      whenever(personService.execute(hmppsId = pncId)).thenReturn(Response(person))
+      whenever(personService.execute(hmppsId = hmppsId)).thenReturn(Response(person))
 
-      whenever(probationOffenderSearchGateway.getAddressesForPerson(pncId)).thenReturn(Response(data = emptyList()))
+      whenever(probationOffenderSearchGateway.getAddressesForPerson(hmppsId)).thenReturn(Response(data = emptyList()))
       whenever(nomisGateway.getAddressesForPerson(prisonerNumber)).thenReturn(Response(data = emptyList()))
     }
 
     it("retrieves a person from getPersonService") {
-      getAddressesForPersonService.execute(pncId)
+      getAddressesForPersonService.execute(hmppsId)
 
-      verify(personService, VerificationModeFactory.times(1)).execute(hmppsId = pncId)
+      verify(personService, VerificationModeFactory.times(1)).execute(hmppsId = hmppsId)
     }
 
-    it("retrieves addresses for a person from Probation Offender Search using a PNC ID") {
-      getAddressesForPersonService.execute(hmppsId = pncId)
+    it("retrieves addresses for a person from Probation Offender Search using a Hmpps Id") {
+      getAddressesForPersonService.execute(hmppsId = hmppsId)
 
-      verify(probationOffenderSearchGateway, VerificationModeFactory.times(1)).getAddressesForPerson(pncId)
+      verify(probationOffenderSearchGateway, VerificationModeFactory.times(1)).getAddressesForPerson(hmppsId)
     }
 
     it("retrieves addresses for a person from Probation Offender Search using a Delius CRN") {
@@ -67,7 +67,7 @@ internal class GetAddressesForPersonServiceTest(
     }
 
     it("retrieves addresses for a person from NOMIS using prisoner number") {
-      getAddressesForPersonService.execute(pncId)
+      getAddressesForPersonService.execute(hmppsId)
 
       verify(nomisGateway, VerificationModeFactory.times(1)).getAddressesForPerson(prisonerNumber)
     }
@@ -76,21 +76,21 @@ internal class GetAddressesForPersonServiceTest(
       val addressesFromProbationOffenderSearch = generateTestAddress(name = "Probation Address")
       val addressesFromNomis = generateTestAddress(name = "NOMIS Address")
 
-      whenever(probationOffenderSearchGateway.getAddressesForPerson(pncId)).thenReturn(
+      whenever(probationOffenderSearchGateway.getAddressesForPerson(hmppsId)).thenReturn(
         Response(data = listOf(addressesFromProbationOffenderSearch)),
       )
       whenever(nomisGateway.getAddressesForPerson(prisonerNumber)).thenReturn(
         Response(data = listOf(addressesFromNomis)),
       )
 
-      val response = getAddressesForPersonService.execute(pncId)
+      val response = getAddressesForPersonService.execute(hmppsId)
 
       response.data.shouldContain(addressesFromProbationOffenderSearch)
       response.data.shouldContain(addressesFromNomis)
     }
 
     it("returns all errors when person cannot be found in all upstream APIs") {
-      whenever(probationOffenderSearchGateway.getAddressesForPerson(pncId)).thenReturn(
+      whenever(probationOffenderSearchGateway.getAddressesForPerson(hmppsId)).thenReturn(
         Response(
           data = emptyList(),
           errors = listOf(
@@ -113,7 +113,7 @@ internal class GetAddressesForPersonServiceTest(
         ),
       )
 
-      val response = getAddressesForPersonService.execute(pncId)
+      val response = getAddressesForPersonService.execute(hmppsId)
 
       response.errors.shouldHaveSize(2)
     }

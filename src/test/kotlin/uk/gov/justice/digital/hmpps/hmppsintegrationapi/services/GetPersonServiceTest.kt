@@ -24,34 +24,34 @@ internal class GetPersonServiceTest(
   @MockBean val probationOffenderSearchGateway: ProbationOffenderSearchGateway,
   private val getPersonService: GetPersonService,
 ) : DescribeSpec({
-  val pncId = "2003/13116M"
+  val hmppsId = "2003/13116M"
 
   beforeEach {
     Mockito.reset(prisonerOffenderSearchGateway)
     Mockito.reset(probationOffenderSearchGateway)
 
-    whenever(prisonerOffenderSearchGateway.getPersons(pncId = pncId)).thenReturn(
+    whenever(prisonerOffenderSearchGateway.getPersons(hmppsId = hmppsId)).thenReturn(
       Response(data = listOf(Person(firstName = "Qui-gon", lastName = "Jin", identifiers = Identifiers(nomisNumber = "A1234AA")))),
     )
-    whenever(probationOffenderSearchGateway.getPerson(id = pncId)).thenReturn(
+    whenever(probationOffenderSearchGateway.getPerson(id = hmppsId)).thenReturn(
       Response(data = Person(firstName = "Qui-gon", lastName = "Jin", identifiers = Identifiers(nomisNumber = "A1234AA"))),
     )
   }
 
   it("retrieves a person from Probation Offender Search") {
-    getPersonService.execute(pncId)
+    getPersonService.execute(hmppsId)
 
-    verify(probationOffenderSearchGateway, VerificationModeFactory.times(1)).getPerson(pncId)
+    verify(probationOffenderSearchGateway, VerificationModeFactory.times(1)).getPerson(hmppsId)
   }
 
   it("returns a person") {
     val personFromProbationOffenderSearch = Person("Molly", "Mob")
 
-    whenever(probationOffenderSearchGateway.getPerson(pncId)).thenReturn(
+    whenever(probationOffenderSearchGateway.getPerson(hmppsId)).thenReturn(
       Response(personFromProbationOffenderSearch),
     )
 
-    val result = getPersonService.execute(pncId)
+    val result = getPersonService.execute(hmppsId)
 
     val expectedResult = Person("Molly", "Mob")
 
@@ -59,9 +59,9 @@ internal class GetPersonServiceTest(
   }
 
   it("returns null when a person isn't found in probation offender search") {
-    whenever(probationOffenderSearchGateway.getPerson(id = pncId)).thenReturn(Response(data = null))
+    whenever(probationOffenderSearchGateway.getPerson(id = hmppsId)).thenReturn(Response(data = null))
 
-    val result = getPersonService.execute(pncId)
+    val result = getPersonService.execute(hmppsId)
     val expectedResult = null
 
     result.data.shouldBe(expectedResult)

@@ -31,12 +31,12 @@ class GetAddressesForPersonTest(
 ) : DescribeSpec(
   {
     val probationOffenderSearchApiMockServer = ProbationOffenderSearchApiMockServer()
-    val pncId = "2002/1121M"
+    val hmppsId = "2002/1121M"
 
     beforeEach {
       probationOffenderSearchApiMockServer.start()
       probationOffenderSearchApiMockServer.stubPostOffenderSearch(
-        "{\"pncNumber\": \"$pncId\"}",
+        "{\"pncNumber\": \"$hmppsId\"}",
         """
         [
           {
@@ -84,13 +84,13 @@ class GetAddressesForPersonTest(
     }
 
     it("authenticates using HMPPS Auth with credentials") {
-      probationOffenderSearchGateway.getAddressesForPerson(pncId)
+      probationOffenderSearchGateway.getAddressesForPerson(hmppsId)
 
       verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("Probation Offender Search")
     }
 
     it("returns addresses for a person with the matching ID") {
-      val response = probationOffenderSearchGateway.getAddressesForPerson(pncId)
+      val response = probationOffenderSearchGateway.getAddressesForPerson(hmppsId)
 
       response.data.shouldContain(
         generateTestAddress(
@@ -104,7 +104,7 @@ class GetAddressesForPersonTest(
 
     it("returns an empty list when no addresses are found") {
       probationOffenderSearchApiMockServer.stubPostOffenderSearch(
-        "{\"pncNumber\": \"$pncId\"}",
+        "{\"pncNumber\": \"$hmppsId\"}",
         """
         [
           {
@@ -118,25 +118,25 @@ class GetAddressesForPersonTest(
         """,
       )
 
-      val response = probationOffenderSearchGateway.getAddressesForPerson(pncId)
+      val response = probationOffenderSearchGateway.getAddressesForPerson(hmppsId)
 
       response.data.shouldBeEmpty()
     }
 
     it("returns an error when no results are returned") {
       probationOffenderSearchApiMockServer.stubPostOffenderSearch(
-        "{\"pncNumber\": \"$pncId\"}",
+        "{\"pncNumber\": \"$hmppsId\"}",
         "[]",
       )
 
-      val response = probationOffenderSearchGateway.getAddressesForPerson(pncId)
+      val response = probationOffenderSearchGateway.getAddressesForPerson(hmppsId)
 
       response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND).shouldBeTrue()
     }
 
     it("returns an empty list when there is no contactDetails field") {
       probationOffenderSearchApiMockServer.stubPostOffenderSearch(
-        "{\"pncNumber\": \"$pncId\"}",
+        "{\"pncNumber\": \"$hmppsId\"}",
         """
         [
           {
@@ -147,14 +147,14 @@ class GetAddressesForPersonTest(
         """,
       )
 
-      val response = probationOffenderSearchGateway.getAddressesForPerson(pncId)
+      val response = probationOffenderSearchGateway.getAddressesForPerson(hmppsId)
 
       response.data.shouldBeEmpty()
     }
 
     it("returns an empty list when contactDetails field is null") {
       probationOffenderSearchApiMockServer.stubPostOffenderSearch(
-        "{\"pncNumber\": \"$pncId\"}",
+        "{\"pncNumber\": \"$hmppsId\"}",
         """
         [
           {
@@ -166,14 +166,14 @@ class GetAddressesForPersonTest(
         """,
       )
 
-      val response = probationOffenderSearchGateway.getAddressesForPerson(pncId)
+      val response = probationOffenderSearchGateway.getAddressesForPerson(hmppsId)
 
       response.data.shouldBeEmpty()
     }
 
     it("returns an empty list when contactDetails.addresses field is null") {
       probationOffenderSearchApiMockServer.stubPostOffenderSearch(
-        "{\"pncNumber\": \"$pncId\"}",
+        "{\"pncNumber\": \"$hmppsId\"}",
         """
         [
           {
@@ -187,14 +187,14 @@ class GetAddressesForPersonTest(
         """,
       )
 
-      val response = probationOffenderSearchGateway.getAddressesForPerson(pncId)
+      val response = probationOffenderSearchGateway.getAddressesForPerson(hmppsId)
 
       response.data.shouldBeEmpty()
     }
 
     it("returns an empty list when the type is an empty object") {
       probationOffenderSearchApiMockServer.stubPostOffenderSearch(
-        "{\"pncNumber\": \"$pncId\"}",
+        "{\"pncNumber\": \"$hmppsId\"}",
         """
         [
           {
@@ -212,7 +212,7 @@ class GetAddressesForPersonTest(
         """,
       )
 
-      val response = probationOffenderSearchGateway.getAddressesForPerson(pncId)
+      val response = probationOffenderSearchGateway.getAddressesForPerson(hmppsId)
 
       response.data.first().types.shouldBeEmpty()
     }

@@ -36,7 +36,7 @@ internal class GetAlertsForPersonServiceTest(
       Mockito.reset(nomisGateway)
       Mockito.reset(prisonerOffenderSearchGateway)
 
-      whenever(prisonerOffenderSearchGateway.getPersons(pncId = hmppsId)).thenReturn(
+      whenever(prisonerOffenderSearchGateway.getPersons(hmppsId = hmppsId)).thenReturn(
         Response(data = listOf(Person(firstName = "Chandler", lastName = "Bing", identifiers = Identifiers(nomisNumber = prisonerNumber)))),
       )
 
@@ -52,7 +52,7 @@ internal class GetAlertsForPersonServiceTest(
     it("retrieves prisoner ID from Prisoner Offender Search using a Hmpps Id") {
       getAlertsForPersonService.execute(hmppsId)
 
-      verify(prisonerOffenderSearchGateway, VerificationModeFactory.times(1)).getPersons(pncId = hmppsId)
+      verify(prisonerOffenderSearchGateway, VerificationModeFactory.times(1)).getPersons(hmppsId = hmppsId)
     }
 
     it("retrieves alerts from NOMIS using a prisoner number") {
@@ -63,7 +63,7 @@ internal class GetAlertsForPersonServiceTest(
 
     describe("when an upstream API returns an error when looking up a person by a Hmmps Id") {
       beforeEach {
-        whenever(prisonerOffenderSearchGateway.getPersons(pncId = hmppsId)).thenReturn(
+        whenever(prisonerOffenderSearchGateway.getPersons(hmppsId = hmppsId)).thenReturn(
           Response(
             data = emptyList(),
             errors = listOf(
