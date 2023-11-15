@@ -13,6 +13,6 @@ class GetPersonService(
   fun execute(hmppsId: String): Response<Person?> {
     val personFromProbationOffenderSearch = probationOffenderSearchGateway.getPerson(id = hmppsId)
 
-    return Response(data = personFromProbationOffenderSearch.data)
+    return Response(data = personFromProbationOffenderSearch.data, errors = personFromProbationOffenderSearch.errors)
   }
 }
