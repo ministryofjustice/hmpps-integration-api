@@ -78,24 +78,26 @@ internal class LatestSentenceKeyDatesAndAdjustmentsControllerTest(
 
       result.response.contentAsString.shouldContain(
         """
+        {
           "data": {
             "adjustments": {
-              "additionalDaysAwarded": 7,
-              "unlawfullyAtLarge": 10,
-              "lawfullyAtLarge": 2,
-              "restoredAdditionalDaysAwarded": 0,
-              "specialRemission": 11,
-              "recallSentenceRemand": 1,
-              "recallSentenceTaggedBail": 3,
-              "remand": 6,
-              "taggedBail": 3,
-              "unusedRemand": 6
+                "additionalDaysAwarded": 7,
+                "unlawfullyAtLarge": 10,
+                "lawfullyAtLarge": 2,
+                "restoredAdditionalDaysAwarded": 0,
+                "specialRemission": 11,
+                "recallSentenceRemand": 1,
+                "recallSentenceTaggedBail": 3,
+                "remand": 6,
+                "taggedBail": 3,
+                "unusedRemand": 6
             },
             "automaticRelease": {
-              "date": "2023-04-01"
+                "date": "2023-04-01"
             }
           }
-          """.removeWhitespaceAndNewlines(),
+        }
+        """.removeWhitespaceAndNewlines(),
       )
     }
 

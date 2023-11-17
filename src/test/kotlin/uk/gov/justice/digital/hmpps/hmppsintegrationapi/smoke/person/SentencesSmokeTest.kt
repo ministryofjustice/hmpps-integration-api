@@ -100,7 +100,16 @@ class SentencesSmokeTest : DescribeSpec(
         {
           "data": {
             "adjustments": {
-              "additionalDaysAwarded": 12
+              "additionalDaysAwarded": 12,
+              "unlawfullyAtLarge": 12,
+              "lawfullyAtLarge": 12,
+              "restoredAdditionalDaysAwarded": 12,
+              "specialRemission": 12,
+              "recallSentenceRemand": 12,
+              "recallSentenceTaggedBail": 12,
+              "remand": 12,
+              "taggedBail": 12,
+              "unusedRemand": 12
             },
             "automaticRelease": {
               "date": "2020-02-03"

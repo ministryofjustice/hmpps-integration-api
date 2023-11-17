@@ -39,7 +39,9 @@ class GetLatestSentenceKeyDatesForPersonTest(
         """
           {
             "sentenceDetail": {
-              "automaticReleaseDate": "2023-03-01"
+              "automaticReleaseDate": {
+                "date": "2023-03-01"
+              }
             }
           }
         """,
