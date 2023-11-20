@@ -55,7 +55,7 @@ internal class LatestSentenceKeyDatesAndAdjustmentsControllerTest(
               taggedBail = 3,
               unusedRemand = 6,
             ),
-            automaticRelease = SentenceKeyDate(date = LocalDate.parse("2023-04-01")),
+            automaticRelease = SentenceKeyDate(date = LocalDate.parse("2023-04-01"), overrideDate = LocalDate.parse("2023-04-01")),
           ),
         ),
       )
@@ -93,7 +93,9 @@ internal class LatestSentenceKeyDatesAndAdjustmentsControllerTest(
                 "unusedRemand": 6
             },
             "automaticRelease": {
-                "date": "2023-04-01"
+                "date": "2023-04-01",
+                "overrideDate": "2023-04-01",
+                "calculatedDate": null
             }
           }
         }

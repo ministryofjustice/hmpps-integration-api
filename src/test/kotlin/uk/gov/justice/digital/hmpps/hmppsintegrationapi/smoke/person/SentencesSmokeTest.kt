@@ -112,7 +112,9 @@ class SentencesSmokeTest : DescribeSpec(
               "unusedRemand": 12
             },
             "automaticRelease": {
-              "date": "2020-02-03"
+              "date": "2020-02-03",
+              "overrideDate: "2020-02-03",
+              "calculatedDate": null
             }
           }
         }

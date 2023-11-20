@@ -40,7 +40,9 @@ class GetLatestSentenceKeyDatesForPersonTest(
           {
             "sentenceDetail": {
               "automaticReleaseDate": {
-                "date": "2023-03-01"
+                "date": "2023-03-01",
+                "overrideDate": "2023-03-01",
+                "calculatedDate": null
               }
             }
           }
@@ -65,6 +67,8 @@ class GetLatestSentenceKeyDatesForPersonTest(
       val response = nomisGateway.getLatestSentenceKeyDatesForPerson(offenderNo)
 
       response.data?.automaticRelease?.date.shouldBe(LocalDate.parse("2023-03-01"))
+      response.data?.automaticRelease?.overrideDate.shouldBe(LocalDate.parse("2023-03-01"))
+      response.data?.automaticRelease?.calculatedDate.shouldBe(null)
     }
 
     it("returns an error when 404 NOT FOUND is returned") {

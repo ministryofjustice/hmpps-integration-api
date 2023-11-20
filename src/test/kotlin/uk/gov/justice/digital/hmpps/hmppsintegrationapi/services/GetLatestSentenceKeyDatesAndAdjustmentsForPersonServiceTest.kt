@@ -51,7 +51,7 @@ internal class GetLatestSentenceKeyDatesAndAdjustmentsForPersonServiceTest(
       whenever(nomisGateway.getLatestSentenceKeyDatesForPerson(nomisNumber)).thenReturn(
         Response(
           data = SentenceKeyDates(
-            automaticRelease = SentenceKeyDate(date = LocalDate.parse("2023-11-02")),
+            automaticRelease = SentenceKeyDate(date = LocalDate.parse("2023-11-02"), overrideDate = LocalDate.parse("2023-11-02")),
           ),
         ),
       )
@@ -106,6 +106,8 @@ internal class GetLatestSentenceKeyDatesAndAdjustmentsForPersonServiceTest(
       response.data?.adjustments?.unusedRemand.shouldBe(6)
 
       response.data?.automaticRelease?.date.shouldBe(LocalDate.parse("2023-11-02"))
+      response.data?.automaticRelease?.overrideDate.shouldBe(LocalDate.parse("2023-11-02"))
+      response.data?.automaticRelease?.calculatedDate.shouldBe(null)
     }
 
     it("returns an error when person cannot be found in probation") {
