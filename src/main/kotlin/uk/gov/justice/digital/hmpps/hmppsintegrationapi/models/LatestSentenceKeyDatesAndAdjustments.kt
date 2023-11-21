@@ -4,4 +4,5 @@ data class LatestSentenceKeyDatesAndAdjustments(
   val adjustments: SentenceAdjustment? = null,
   val automaticRelease: SentenceKeyDate? = null,
   val conditionalRelease: SentenceKeyDate? = null,
+  val dtoPostRecallRelease: SentenceKeyDate? = null,
 )

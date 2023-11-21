@@ -57,6 +57,7 @@ internal class LatestSentenceKeyDatesAndAdjustmentsControllerTest(
             ),
             automaticRelease = SentenceKeyDate(date = LocalDate.parse("2023-04-01"), overrideDate = LocalDate.parse("2023-04-01")),
             conditionalRelease = SentenceKeyDate(date = LocalDate.parse("2023-05-01"), overrideDate = LocalDate.parse("2023-05-01")),
+            dtoPostRecallRelease = SentenceKeyDate(date = LocalDate.parse("2024-01-02"), overrideDate = LocalDate.parse("2024-01-02")),
           ),
         ),
       )
@@ -101,6 +102,11 @@ internal class LatestSentenceKeyDatesAndAdjustmentsControllerTest(
             "conditionalRelease": {
                 "date": "2023-05-01",
                 "overrideDate": "2023-05-01",
+                "calculatedDate": null
+            },
+            "dtoPostRecallRelease": {
+                "date": "2024-01-02",
+                "overrideDate": "2024-01-02",
                 "calculatedDate": null
             }
           }
