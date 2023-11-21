@@ -19,6 +19,9 @@ data class SentenceKeyDates(
   val homeDetentionCurfewEligibilityCalculatedDate: LocalDate? = null,
   val homeDetentionCurfewEligibilityOverrideDate: LocalDate? = null,
   val homeDetentionCurfewEndDate: LocalDate? = null,
+  val lateTermDate: LocalDate? = null,
+  val ltdOverrideDate: LocalDate? = null,
+  val ltdCalculatedDate: LocalDate? = null,
 ) {
   fun toSentenceKeyDates(): SentenceKeyDates = SentenceKeyDates(
     automaticRelease = HmppsSentenceKeyDate(date = this.automaticReleaseDate, overrideDate = this.automaticReleaseOverrideDate),
@@ -32,5 +35,6 @@ data class SentenceKeyDates(
       eligibilityOverrideDate = this.homeDetentionCurfewEligibilityOverrideDate,
       endDate = this.homeDetentionCurfewEndDate,
     ),
+    lateTerm = HmppsSentenceKeyDate(date = this.lateTermDate, overrideDate = this.ltdOverrideDate, calculatedDate = this.ltdCalculatedDate),
   )
 }

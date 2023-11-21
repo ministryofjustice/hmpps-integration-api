@@ -63,6 +63,7 @@ internal class GetLatestSentenceKeyDatesAndAdjustmentsForPersonServiceTest(
               eligibilityOverrideDate = LocalDate.parse("2022-04-01"),
               endDate = LocalDate.parse("2022-04-01"),
             ),
+            lateTerm = SentenceKeyDate(date = LocalDate.parse("2022-01-01"), overrideDate = LocalDate.parse("2022-01-01"), calculatedDate = LocalDate.parse("2022-01-01")),
           ),
         ),
       )
@@ -137,6 +138,10 @@ internal class GetLatestSentenceKeyDatesAndAdjustmentsForPersonServiceTest(
       response.data?.homeDetentionCurfew?.eligibilityDate.shouldBe(LocalDate.parse("2022-04-01"))
       response.data?.homeDetentionCurfew?.eligibilityOverrideDate.shouldBe(LocalDate.parse("2022-04-01"))
       response.data?.homeDetentionCurfew?.endDate.shouldBe(LocalDate.parse("2022-04-01"))
+
+      response.data?.lateTerm?.date.shouldBe(LocalDate.parse("2022-01-01"))
+      response.data?.lateTerm?.overrideDate.shouldBe(LocalDate.parse("2022-01-01"))
+      response.data?.lateTerm?.calculatedDate.shouldBe(LocalDate.parse("2022-01-01"))
     }
 
     it("returns an error when person cannot be found in probation") {

@@ -67,6 +67,7 @@ internal class LatestSentenceKeyDatesAndAdjustmentsControllerTest(
               eligibilityOverrideDate = LocalDate.parse("2022-04-01"),
               endDate = LocalDate.parse("2022-04-01"),
             ),
+            lateTerm = SentenceKeyDate(date = LocalDate.parse("2022-01-01"), overrideDate = LocalDate.parse("2022-01-01"), calculatedDate = LocalDate.parse("2022-01-01")),
           ),
         ),
       )
@@ -129,6 +130,11 @@ internal class LatestSentenceKeyDatesAndAdjustmentsControllerTest(
                 "eligibilityDate": "2022-04-01",
                 "eligibilityOverrideDate": "2022-04-01",
                 "endDate": "2022-04-01"
+            },
+            "lateTerm": {
+                "date": "2022-01-01",
+                "overrideDate": "2022-01-01",
+                "calculatedDate": "2022-01-01"
             }
           }
         }

@@ -7,4 +7,5 @@ data class LatestSentenceKeyDatesAndAdjustments(
   val dtoPostRecallRelease: SentenceKeyDate? = null,
   val earlyTerm: SentenceKeyDate? = null,
   val homeDetentionCurfew: HomeDetentionCurfewDate? = null,
+  val lateTerm: SentenceKeyDate? = null,
 )

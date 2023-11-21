@@ -137,7 +137,12 @@ class SentencesSmokeTest : DescribeSpec(
                 "eligibilityDate": "2020-02-03",
                 "eligibilityOverrideDate": "2020-02-03",
                 "endDate": "2020-02-03"
-            }
+            },
+            "lateTerm": {
+              "date": "2020-02-03",
+              "overrideDate: "2020-02-03",
+              "calculatedDate": null
+            },
           }
         }
         """.removeWhitespaceAndNewlines(),
