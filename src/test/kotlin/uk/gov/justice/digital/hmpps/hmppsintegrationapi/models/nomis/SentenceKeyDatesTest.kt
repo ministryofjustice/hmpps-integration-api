@@ -11,12 +11,17 @@ class SentenceKeyDatesTest : DescribeSpec(
         val sentenceKeyDatesFromNomis = SentenceKeyDatesFromNomis(
           automaticReleaseDate = LocalDate.parse("2022-03-01"),
           automaticReleaseOverrideDate = LocalDate.parse("2022-03-01"),
+          conditionalReleaseDate = LocalDate.parse("2022-04-01"),
+          conditionalReleaseOverrideDate = LocalDate.parse("2022-04-01"),
         )
 
         val sentenceKeyDates = sentenceKeyDatesFromNomis.toSentenceKeyDates()
 
         sentenceKeyDates.automaticRelease.date.shouldBe(sentenceKeyDatesFromNomis.automaticReleaseDate)
         sentenceKeyDates.automaticRelease.overrideDate.shouldBe(sentenceKeyDatesFromNomis.automaticReleaseOverrideDate)
+
+        sentenceKeyDates.conditionalRelease.date.shouldBe(sentenceKeyDatesFromNomis.conditionalReleaseDate)
+        sentenceKeyDates.conditionalRelease.overrideDate.shouldBe(sentenceKeyDatesFromNomis.conditionalReleaseOverrideDate)
       }
     }
   },

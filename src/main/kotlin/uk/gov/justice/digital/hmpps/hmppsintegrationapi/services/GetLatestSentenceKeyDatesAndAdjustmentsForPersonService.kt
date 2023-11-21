@@ -36,6 +36,7 @@ class GetLatestSentenceKeyDatesAndAdjustmentsForPersonService(
       data = LatestSentenceKeyDatesAndAdjustments(
         adjustments = latestSentenceAdjustments,
         automaticRelease = latestSentenceKeyDates?.automaticRelease,
+        conditionalRelease = latestSentenceKeyDates?.conditionalRelease,
       ),
     )
   }

@@ -40,7 +40,9 @@ class GetLatestSentenceKeyDatesForPersonTest(
           {
             "sentenceDetail": {
               "automaticReleaseDate": "2023-03-01",
-              "automaticReleaseOverrideDate": "2023-03-01"
+              "automaticReleaseOverrideDate": "2023-03-01",
+              "conditionalReleaseDate": "2023-04-01",
+              "conditionalReleaseOverrideDate": "2023-04-01"
             }
           }
         """,
@@ -66,6 +68,10 @@ class GetLatestSentenceKeyDatesForPersonTest(
       response.data?.automaticRelease?.date.shouldBe(LocalDate.parse("2023-03-01"))
       response.data?.automaticRelease?.overrideDate.shouldBe(LocalDate.parse("2023-03-01"))
       response.data?.automaticRelease?.calculatedDate.shouldBe(null)
+
+      response.data?.conditionalRelease?.date.shouldBe(LocalDate.parse("2023-04-01"))
+      response.data?.conditionalRelease?.overrideDate.shouldBe(LocalDate.parse("2023-04-01"))
+      response.data?.conditionalRelease?.calculatedDate.shouldBe(null)
     }
 
     it("returns an error when 404 NOT FOUND is returned") {

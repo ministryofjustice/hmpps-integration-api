@@ -6,9 +6,12 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.SentenceKeyDate a
 
 data class SentenceKeyDates(
   val automaticReleaseDate: LocalDate? = null,
-  val automaticReleaseOverrideDate: LocalDate? = null
+  val automaticReleaseOverrideDate: LocalDate? = null,
+  val conditionalReleaseDate: LocalDate? = null,
+  val conditionalReleaseOverrideDate: LocalDate? = null,
 ) {
   fun toSentenceKeyDates(): SentenceKeyDates = SentenceKeyDates(
     automaticRelease = HmppsSentenceKeyDate(date = this.automaticReleaseDate, overrideDate = this.automaticReleaseOverrideDate),
+    conditionalRelease = HmppsSentenceKeyDate(date = this.conditionalReleaseDate, overrideDate = this.conditionalReleaseOverrideDate)
   )
 }
