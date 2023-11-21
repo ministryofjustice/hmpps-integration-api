@@ -55,7 +55,10 @@ class GetLatestSentenceKeyDatesForPersonTest(
               "homeDetentionCurfewEndDate": "2022-05-01",
               "lateTermDate": "2022-02-01",
               "ltdOverrideDate": "2022-02-01",
-              "ltdCalculatedDate": "2022-02-01"
+              "ltdCalculatedDate": "2022-02-01",
+              "licenceExpiryDate": "2025-02-01",
+              "licenceExpiryCalculatedDate": "2025-02-01",
+              "licenceExpiryOverrideDate": "2025-02-01"
             }
           }
         """,
@@ -103,6 +106,10 @@ class GetLatestSentenceKeyDatesForPersonTest(
       response.data?.lateTerm?.date.shouldBe(LocalDate.parse("2022-02-01"))
       response.data?.lateTerm?.overrideDate.shouldBe(LocalDate.parse("2022-02-01"))
       response.data?.lateTerm?.calculatedDate.shouldBe(LocalDate.parse("2022-02-01"))
+
+      response.data?.licenceExpiry?.date.shouldBe(LocalDate.parse("2025-02-01"))
+      response.data?.licenceExpiry?.overrideDate.shouldBe(LocalDate.parse("2025-02-01"))
+      response.data?.licenceExpiry?.calculatedDate.shouldBe(LocalDate.parse("2025-02-01"))
     }
 
     it("returns an error when 404 NOT FOUND is returned") {

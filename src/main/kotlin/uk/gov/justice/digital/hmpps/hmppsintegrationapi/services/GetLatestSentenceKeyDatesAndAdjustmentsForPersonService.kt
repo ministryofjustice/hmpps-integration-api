@@ -41,6 +41,7 @@ class GetLatestSentenceKeyDatesAndAdjustmentsForPersonService(
         earlyTerm = latestSentenceKeyDates?.earlyTerm,
         homeDetentionCurfew = latestSentenceKeyDates?.homeDetentionCurfew,
         lateTerm = latestSentenceKeyDates?.lateTerm,
+        licenceExpiry = latestSentenceKeyDates?.licenceExpiry,
       ),
     )
   }

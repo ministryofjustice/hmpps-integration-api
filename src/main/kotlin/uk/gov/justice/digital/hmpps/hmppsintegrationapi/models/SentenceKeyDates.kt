@@ -7,4 +7,5 @@ data class SentenceKeyDates(
   val earlyTerm: SentenceKeyDate = SentenceKeyDate(),
   val homeDetentionCurfew: HomeDetentionCurfewDate = HomeDetentionCurfewDate(),
   val lateTerm: SentenceKeyDate = SentenceKeyDate(),
+  val licenceExpiry: SentenceKeyDate = SentenceKeyDate(),
 )

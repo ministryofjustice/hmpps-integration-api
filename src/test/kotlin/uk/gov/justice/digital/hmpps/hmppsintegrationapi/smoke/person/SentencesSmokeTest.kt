@@ -143,6 +143,11 @@ class SentencesSmokeTest : DescribeSpec(
               "overrideDate: "2020-02-03",
               "calculatedDate": null
             },
+            "licenceExpiry": {
+              "date": "2020-02-03",
+              "overrideDate: "2020-02-03",
+              "calculatedDate": null
+            }
           }
         }
         """.removeWhitespaceAndNewlines(),
