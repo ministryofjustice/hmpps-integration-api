@@ -38,7 +38,7 @@ class GetLatestSentenceKeyDatesAndAdjustmentsForPersonService(
         automaticRelease = latestSentenceKeyDates?.automaticRelease,
         conditionalRelease = latestSentenceKeyDates?.conditionalRelease,
         dtoPostRecallRelease = latestSentenceKeyDates?.dtoPostRecallRelease,
-        earlyTerm = latestSentenceKeyDates?.earlyTerm
+        earlyTerm = latestSentenceKeyDates?.earlyTerm,
       ),
     )
   }
