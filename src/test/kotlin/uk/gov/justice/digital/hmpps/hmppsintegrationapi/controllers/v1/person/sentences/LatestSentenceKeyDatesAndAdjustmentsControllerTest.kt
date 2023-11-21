@@ -72,6 +72,7 @@ internal class LatestSentenceKeyDatesAndAdjustmentsControllerTest(
             licenceExpiry = SentenceKeyDate(date = LocalDate.parse("2025-02-01"), overrideDate = LocalDate.parse("2025-02-01"), calculatedDate = LocalDate.parse("2025-02-01")),
             midTerm = SentenceKeyDate(date = LocalDate.parse("2024-02-01"), overrideDate = LocalDate.parse("2024-02-01"), calculatedDate = LocalDate.parse("2024-02-01")),
             nonDto = NonDtoDate(date = LocalDate.parse("2024-02-01"), releaseDateType = "CRD"),
+            nonParole = SentenceKeyDate(date = LocalDate.parse("2026-11-02"), overrideDate = LocalDate.parse("2026-11-02")),
           ),
         ),
       )
@@ -153,6 +154,11 @@ internal class LatestSentenceKeyDatesAndAdjustmentsControllerTest(
             "nonDto": {
                 "date": "2024-02-01",
                 "releaseDateType": "CRD"
+            },
+            "nonParole": {
+                "date": "2026-11-02",
+                "overrideDate": "2026-11-02",
+                "calculatedDate": null
             }
           }
         }

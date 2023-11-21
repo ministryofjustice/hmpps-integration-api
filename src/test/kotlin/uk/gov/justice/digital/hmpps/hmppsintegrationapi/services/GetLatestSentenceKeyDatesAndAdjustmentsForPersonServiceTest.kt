@@ -68,6 +68,7 @@ internal class GetLatestSentenceKeyDatesAndAdjustmentsForPersonServiceTest(
             licenceExpiry = SentenceKeyDate(date = LocalDate.parse("2025-02-01"), overrideDate = LocalDate.parse("2025-02-01"), calculatedDate = LocalDate.parse("2025-02-01")),
             midTerm = SentenceKeyDate(date = LocalDate.parse("2024-02-01"), overrideDate = LocalDate.parse("2024-02-01"), calculatedDate = LocalDate.parse("2024-02-01")),
             nonDto = NonDtoDate(date = LocalDate.parse("2024-02-01"), releaseDateType = "CRD"),
+            nonParole = SentenceKeyDate(date = LocalDate.parse("2026-11-02"), overrideDate = LocalDate.parse("2026-11-02")),
           ),
         ),
       )
@@ -157,6 +158,10 @@ internal class GetLatestSentenceKeyDatesAndAdjustmentsForPersonServiceTest(
 
       response.data?.nonDto?.date.shouldBe(LocalDate.parse("2024-02-01"))
       response.data?.nonDto?.releaseDateType.shouldBe("CRD")
+
+      response.data?.nonParole?.date.shouldBe(LocalDate.parse("2026-11-02"))
+      response.data?.nonParole?.overrideDate.shouldBe(LocalDate.parse("2026-11-02"))
+      response.data?.nonParole?.calculatedDate.shouldBe(null)
     }
 
     it("returns an error when person cannot be found in probation") {

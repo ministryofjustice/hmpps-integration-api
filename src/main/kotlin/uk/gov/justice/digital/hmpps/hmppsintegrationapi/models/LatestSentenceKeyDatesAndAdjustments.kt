@@ -11,4 +11,5 @@ data class LatestSentenceKeyDatesAndAdjustments(
   val licenceExpiry: SentenceKeyDate? = null,
   val midTerm: SentenceKeyDate? = null,
   val nonDto: NonDtoDate? = null,
+  val nonParole: SentenceKeyDate? = null,
 )

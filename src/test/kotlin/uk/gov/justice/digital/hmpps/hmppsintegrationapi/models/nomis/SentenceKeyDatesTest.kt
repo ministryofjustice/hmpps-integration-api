@@ -34,6 +34,8 @@ class SentenceKeyDatesTest : DescribeSpec(
           mtdOverrideDate = LocalDate.parse("2024-04-01"),
           nonDtoReleaseDate = LocalDate.parse("2024-04-01"),
           nonDtoReleaseDateType = "CRD",
+          nonParoleDate = LocalDate.parse("2026-04-01"),
+          nonParoleOverrideDate = LocalDate.parse("2026-04-01"),
         )
 
         val sentenceKeyDates = sentenceKeyDatesFromNomis.toSentenceKeyDates()
@@ -71,6 +73,9 @@ class SentenceKeyDatesTest : DescribeSpec(
 
         sentenceKeyDates.nonDto.date.shouldBe(sentenceKeyDatesFromNomis.nonDtoReleaseDate)
         sentenceKeyDates.nonDto.releaseDateType.shouldBe(sentenceKeyDatesFromNomis.nonDtoReleaseDateType)
+
+        sentenceKeyDates.nonParole.date.shouldBe(sentenceKeyDatesFromNomis.nonParoleDate)
+        sentenceKeyDates.nonParole.overrideDate.shouldBe(sentenceKeyDatesFromNomis.nonParoleOverrideDate)
       }
     }
   },
