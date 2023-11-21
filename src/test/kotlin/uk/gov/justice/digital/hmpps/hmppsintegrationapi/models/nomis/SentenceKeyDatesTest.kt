@@ -32,6 +32,8 @@ class SentenceKeyDatesTest : DescribeSpec(
           midTermDate = LocalDate.parse("2024-04-01"),
           mtdCalculatedDate = LocalDate.parse("2024-04-01"),
           mtdOverrideDate = LocalDate.parse("2024-04-01"),
+          nonDtoReleaseDate = LocalDate.parse("2024-04-01"),
+          nonDtoReleaseDateType = "CRD",
         )
 
         val sentenceKeyDates = sentenceKeyDatesFromNomis.toSentenceKeyDates()
@@ -66,6 +68,9 @@ class SentenceKeyDatesTest : DescribeSpec(
         sentenceKeyDates.midTerm.date.shouldBe(sentenceKeyDatesFromNomis.midTermDate)
         sentenceKeyDates.midTerm.overrideDate.shouldBe(sentenceKeyDatesFromNomis.mtdOverrideDate)
         sentenceKeyDates.midTerm.calculatedDate.shouldBe(sentenceKeyDatesFromNomis.mtdCalculatedDate)
+
+        sentenceKeyDates.nonDto.date.shouldBe(sentenceKeyDatesFromNomis.nonDtoReleaseDate)
+        sentenceKeyDates.nonDto.releaseDateType.shouldBe(sentenceKeyDatesFromNomis.nonDtoReleaseDateType)
       }
     }
   },

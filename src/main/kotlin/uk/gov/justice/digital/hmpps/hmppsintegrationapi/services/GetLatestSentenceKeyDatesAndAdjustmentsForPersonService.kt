@@ -43,6 +43,7 @@ class GetLatestSentenceKeyDatesAndAdjustmentsForPersonService(
         lateTerm = latestSentenceKeyDates?.lateTerm,
         licenceExpiry = latestSentenceKeyDates?.licenceExpiry,
         midTerm = latestSentenceKeyDates?.midTerm,
+        nonDto = latestSentenceKeyDates?.nonDto,
       ),
     )
   }

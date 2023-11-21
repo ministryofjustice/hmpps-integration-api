@@ -9,4 +9,5 @@ data class SentenceKeyDates(
   val lateTerm: SentenceKeyDate = SentenceKeyDate(),
   val licenceExpiry: SentenceKeyDate = SentenceKeyDate(),
   val midTerm: SentenceKeyDate = SentenceKeyDate(),
+  val nonDto: NonDtoDate = NonDtoDate(),
 )

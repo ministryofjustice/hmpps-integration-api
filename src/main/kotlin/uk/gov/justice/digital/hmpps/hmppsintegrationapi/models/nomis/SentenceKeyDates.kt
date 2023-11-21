@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.SentenceKeyDates
 import java.time.LocalDate
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.HomeDetentionCurfewDate as HmppsHomeDetentionCurfewDate
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.NonDtoDate as HmppsNonDtoDate
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.SentenceKeyDate as HmppsSentenceKeyDate
 data class SentenceKeyDates(
   val automaticReleaseDate: LocalDate? = null,
@@ -28,6 +29,8 @@ data class SentenceKeyDates(
   val midTermDate: LocalDate? = null,
   val mtdCalculatedDate: LocalDate? = null,
   val mtdOverrideDate: LocalDate? = null,
+  val nonDtoReleaseDate: LocalDate? = null,
+  val nonDtoReleaseDateType: String? = null,
 ) {
   fun toSentenceKeyDates(): SentenceKeyDates = SentenceKeyDates(
     automaticRelease = HmppsSentenceKeyDate(date = this.automaticReleaseDate, overrideDate = this.automaticReleaseOverrideDate),
@@ -44,5 +47,6 @@ data class SentenceKeyDates(
     lateTerm = HmppsSentenceKeyDate(date = this.lateTermDate, overrideDate = this.ltdOverrideDate, calculatedDate = this.ltdCalculatedDate),
     licenceExpiry = HmppsSentenceKeyDate(date = this.licenceExpiryDate, overrideDate = this.licenceExpiryOverrideDate, calculatedDate = this.licenceExpiryCalculatedDate),
     midTerm = HmppsSentenceKeyDate(date = this.midTermDate, overrideDate = this.mtdOverrideDate, calculatedDate = this.mtdCalculatedDate),
+    nonDto = HmppsNonDtoDate(date = this.nonDtoReleaseDate, releaseDateType = this.nonDtoReleaseDateType),
   )
 }

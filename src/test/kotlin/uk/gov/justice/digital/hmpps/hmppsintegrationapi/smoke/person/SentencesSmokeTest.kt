@@ -152,6 +152,10 @@ class SentencesSmokeTest : DescribeSpec(
               "date": "2020-02-03",
               "overrideDate: "2020-02-03",
               "calculatedDate": null
+            },
+            "nonDto": {
+                "date": "2024-02-01",
+                "releaseDateType": "CRD"
             }
           }
         }

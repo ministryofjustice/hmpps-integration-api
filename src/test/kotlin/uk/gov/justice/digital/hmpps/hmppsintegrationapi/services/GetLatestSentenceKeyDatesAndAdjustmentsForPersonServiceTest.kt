@@ -15,6 +15,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NomisGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ProbationOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.HomeDetentionCurfewDate
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Identifiers
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.NonDtoDate
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.SentenceAdjustment
@@ -66,6 +67,7 @@ internal class GetLatestSentenceKeyDatesAndAdjustmentsForPersonServiceTest(
             lateTerm = SentenceKeyDate(date = LocalDate.parse("2022-01-01"), overrideDate = LocalDate.parse("2022-01-01"), calculatedDate = LocalDate.parse("2022-01-01")),
             licenceExpiry = SentenceKeyDate(date = LocalDate.parse("2025-02-01"), overrideDate = LocalDate.parse("2025-02-01"), calculatedDate = LocalDate.parse("2025-02-01")),
             midTerm = SentenceKeyDate(date = LocalDate.parse("2024-02-01"), overrideDate = LocalDate.parse("2024-02-01"), calculatedDate = LocalDate.parse("2024-02-01")),
+            nonDto = NonDtoDate(date = LocalDate.parse("2024-02-01"), releaseDateType = "CRD"),
           ),
         ),
       )
@@ -152,6 +154,9 @@ internal class GetLatestSentenceKeyDatesAndAdjustmentsForPersonServiceTest(
       response.data?.midTerm?.date.shouldBe(LocalDate.parse("2024-02-01"))
       response.data?.midTerm?.overrideDate.shouldBe(LocalDate.parse("2024-02-01"))
       response.data?.midTerm?.calculatedDate.shouldBe(LocalDate.parse("2024-02-01"))
+
+      response.data?.nonDto?.date.shouldBe(LocalDate.parse("2024-02-01"))
+      response.data?.nonDto?.releaseDateType.shouldBe("CRD")
     }
 
     it("returns an error when person cannot be found in probation") {

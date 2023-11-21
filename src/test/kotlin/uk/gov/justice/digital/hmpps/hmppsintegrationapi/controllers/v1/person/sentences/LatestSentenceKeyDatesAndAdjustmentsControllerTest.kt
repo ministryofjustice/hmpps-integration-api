@@ -17,6 +17,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.controllers.v1.person.Se
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.HomeDetentionCurfewDate
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.LatestSentenceKeyDatesAndAdjustments
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.NonDtoDate
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.SentenceAdjustment
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.SentenceKeyDate
@@ -70,6 +71,7 @@ internal class LatestSentenceKeyDatesAndAdjustmentsControllerTest(
             lateTerm = SentenceKeyDate(date = LocalDate.parse("2022-01-01"), overrideDate = LocalDate.parse("2022-01-01"), calculatedDate = LocalDate.parse("2022-01-01")),
             licenceExpiry = SentenceKeyDate(date = LocalDate.parse("2025-02-01"), overrideDate = LocalDate.parse("2025-02-01"), calculatedDate = LocalDate.parse("2025-02-01")),
             midTerm = SentenceKeyDate(date = LocalDate.parse("2024-02-01"), overrideDate = LocalDate.parse("2024-02-01"), calculatedDate = LocalDate.parse("2024-02-01")),
+            nonDto = NonDtoDate(date = LocalDate.parse("2024-02-01"), releaseDateType = "CRD"),
           ),
         ),
       )
@@ -147,6 +149,10 @@ internal class LatestSentenceKeyDatesAndAdjustmentsControllerTest(
                 "date": "2024-02-01",
                 "overrideDate": "2024-02-01",
                 "calculatedDate": "2024-02-01"
+            },
+            "nonDto": {
+                "date": "2024-02-01",
+                "releaseDateType": "CRD"
             }
           }
         }
