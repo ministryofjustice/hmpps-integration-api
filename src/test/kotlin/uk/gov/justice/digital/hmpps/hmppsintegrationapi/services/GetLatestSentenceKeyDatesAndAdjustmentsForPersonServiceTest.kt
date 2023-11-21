@@ -13,6 +13,7 @@ import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.context.ContextConfiguration
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NomisGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ProbationOffenderSearchGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.HomeDetentionCurfewDate
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Identifiers
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Response
@@ -55,6 +56,13 @@ internal class GetLatestSentenceKeyDatesAndAdjustmentsForPersonServiceTest(
             conditionalRelease = SentenceKeyDate(date = LocalDate.parse("2023-12-02"), overrideDate = LocalDate.parse("2023-12-02")),
             dtoPostRecallRelease = SentenceKeyDate(date = LocalDate.parse("2024-01-02"), overrideDate = LocalDate.parse("2024-01-02")),
             earlyTerm = SentenceKeyDate(date = LocalDate.parse("2021-11-02"), overrideDate = LocalDate.parse("2021-11-02"), calculatedDate = LocalDate.parse("2021-11-02")),
+            homeDetentionCurfew = HomeDetentionCurfewDate(
+              actualDate = LocalDate.parse("2022-04-01"),
+              eligibilityDate = LocalDate.parse("2022-04-01"),
+              eligibilityCalculatedDate = LocalDate.parse("2022-04-01"),
+              eligibilityOverrideDate = LocalDate.parse("2022-04-01"),
+              endDate = LocalDate.parse("2022-04-01"),
+            ),
           ),
         ),
       )
@@ -123,6 +131,12 @@ internal class GetLatestSentenceKeyDatesAndAdjustmentsForPersonServiceTest(
       response.data?.earlyTerm?.date.shouldBe(LocalDate.parse("2021-11-02"))
       response.data?.earlyTerm?.overrideDate.shouldBe(LocalDate.parse("2021-11-02"))
       response.data?.earlyTerm?.calculatedDate.shouldBe(LocalDate.parse("2021-11-02"))
+
+      response.data?.homeDetentionCurfew?.actualDate.shouldBe(LocalDate.parse("2022-04-01"))
+      response.data?.homeDetentionCurfew?.eligibilityCalculatedDate.shouldBe(LocalDate.parse("2022-04-01"))
+      response.data?.homeDetentionCurfew?.eligibilityDate.shouldBe(LocalDate.parse("2022-04-01"))
+      response.data?.homeDetentionCurfew?.eligibilityOverrideDate.shouldBe(LocalDate.parse("2022-04-01"))
+      response.data?.homeDetentionCurfew?.endDate.shouldBe(LocalDate.parse("2022-04-01"))
     }
 
     it("returns an error when person cannot be found in probation") {

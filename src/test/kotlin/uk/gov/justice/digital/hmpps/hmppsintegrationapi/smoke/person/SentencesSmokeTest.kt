@@ -130,6 +130,13 @@ class SentencesSmokeTest : DescribeSpec(
               "date": "2020-02-03",
               "overrideDate: "2020-02-03",
               "calculatedDate": null
+            },
+            "homeDetentionCurfew": {
+                "actualDate": "2020-02-03",
+                "eligibilityCalculatedDate": "2020-02-03",
+                "eligibilityDate": "2020-02-03",
+                "eligibilityOverrideDate": "2020-02-03",
+                "endDate": "2020-02-03"
             }
           }
         }

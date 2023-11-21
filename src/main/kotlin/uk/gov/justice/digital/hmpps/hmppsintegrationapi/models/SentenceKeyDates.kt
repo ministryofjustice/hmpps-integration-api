@@ -5,4 +5,5 @@ data class SentenceKeyDates(
   val conditionalRelease: SentenceKeyDate = SentenceKeyDate(),
   val dtoPostRecallRelease: SentenceKeyDate = SentenceKeyDate(),
   val earlyTerm: SentenceKeyDate = SentenceKeyDate(),
+  val homeDetentionCurfew: HomeDetentionCurfewDate = HomeDetentionCurfewDate(),
 )

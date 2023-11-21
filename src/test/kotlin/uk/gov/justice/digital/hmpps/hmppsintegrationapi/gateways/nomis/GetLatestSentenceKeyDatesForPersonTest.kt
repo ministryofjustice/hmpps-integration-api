@@ -47,7 +47,12 @@ class GetLatestSentenceKeyDatesForPersonTest(
               "dtoPostRecallReleaseDateOverride": "2023-05-01",
               "earlyTermDate": "2021-04-01",
               "etdOverrideDate": "2021-04-01",
-              "etdCalculatedDate": "2021-04-01"
+              "etdCalculatedDate": "2021-04-01",
+              "homeDetentionCurfewActualDate": "2022-05-01",
+              "homeDetentionCurfewEligibilityDate": "2022-05-01",
+              "homeDetentionCurfewEligibilityCalculatedDate": "2022-05-01",
+              "homeDetentionCurfewEligibilityOverrideDate": "2022-05-01",
+              "homeDetentionCurfewEndDate": "2022-05-01"
             }
           }
         """,
@@ -85,6 +90,12 @@ class GetLatestSentenceKeyDatesForPersonTest(
       response.data?.earlyTerm?.date.shouldBe(LocalDate.parse("2021-04-01"))
       response.data?.earlyTerm?.overrideDate.shouldBe(LocalDate.parse("2021-04-01"))
       response.data?.earlyTerm?.calculatedDate.shouldBe(LocalDate.parse("2021-04-01"))
+
+      response.data?.homeDetentionCurfew?.actualDate.shouldBe(LocalDate.parse("2022-05-01"))
+      response.data?.homeDetentionCurfew?.eligibilityCalculatedDate.shouldBe(LocalDate.parse("2022-05-01"))
+      response.data?.homeDetentionCurfew?.eligibilityDate.shouldBe(LocalDate.parse("2022-05-01"))
+      response.data?.homeDetentionCurfew?.eligibilityOverrideDate.shouldBe(LocalDate.parse("2022-05-01"))
+      response.data?.homeDetentionCurfew?.endDate.shouldBe(LocalDate.parse("2022-05-01"))
     }
 
     it("returns an error when 404 NOT FOUND is returned") {

@@ -18,6 +18,11 @@ class SentenceKeyDatesTest : DescribeSpec(
           earlyTermDate = LocalDate.parse("2021-04-01"),
           etdOverrideDate = LocalDate.parse("2021-04-01"),
           etdCalculatedDate = LocalDate.parse("2021-04-01"),
+          homeDetentionCurfewActualDate = LocalDate.parse("2022-04-01"),
+          homeDetentionCurfewEligibilityDate = LocalDate.parse("2022-04-01"),
+          homeDetentionCurfewEligibilityCalculatedDate = LocalDate.parse("2022-04-01"),
+          homeDetentionCurfewEligibilityOverrideDate = LocalDate.parse("2022-04-01"),
+          homeDetentionCurfewEndDate = LocalDate.parse("2022-04-01"),
         )
 
         val sentenceKeyDates = sentenceKeyDatesFromNomis.toSentenceKeyDates()
@@ -34,6 +39,12 @@ class SentenceKeyDatesTest : DescribeSpec(
         sentenceKeyDates.earlyTerm.date.shouldBe(sentenceKeyDatesFromNomis.earlyTermDate)
         sentenceKeyDates.earlyTerm.overrideDate.shouldBe(sentenceKeyDatesFromNomis.etdOverrideDate)
         sentenceKeyDates.earlyTerm.calculatedDate.shouldBe(sentenceKeyDatesFromNomis.etdCalculatedDate)
+
+        sentenceKeyDates.homeDetentionCurfew.actualDate.shouldBe(sentenceKeyDatesFromNomis.homeDetentionCurfewActualDate)
+        sentenceKeyDates.homeDetentionCurfew.eligibilityCalculatedDate.shouldBe(sentenceKeyDatesFromNomis.homeDetentionCurfewEligibilityCalculatedDate)
+        sentenceKeyDates.homeDetentionCurfew.eligibilityDate.shouldBe(sentenceKeyDatesFromNomis.homeDetentionCurfewEligibilityDate)
+        sentenceKeyDates.homeDetentionCurfew.eligibilityOverrideDate.shouldBe(sentenceKeyDatesFromNomis.homeDetentionCurfewEligibilityOverrideDate)
+        sentenceKeyDates.homeDetentionCurfew.endDate.shouldBe(sentenceKeyDatesFromNomis.homeDetentionCurfewEndDate)
       }
     }
   },
