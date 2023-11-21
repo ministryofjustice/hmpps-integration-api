@@ -41,6 +41,8 @@ class SentenceKeyDatesTest : DescribeSpec(
           paroleEligibilityOverrideDate = LocalDate.parse("2027-04-01"),
           postRecallReleaseDate = LocalDate.parse("2028-04-01"),
           postRecallReleaseOverrideDate = LocalDate.parse("2028-04-01"),
+          releaseDate = LocalDate.parse("2030-04-01"),
+          confirmedReleaseDate = LocalDate.parse("2030-04-01"),
         )
 
         val sentenceKeyDates = sentenceKeyDatesFromNomis.toSentenceKeyDates()
@@ -88,6 +90,9 @@ class SentenceKeyDatesTest : DescribeSpec(
 
         sentenceKeyDates.postRecallRelease.date.shouldBe(sentenceKeyDatesFromNomis.postRecallReleaseDate)
         sentenceKeyDates.postRecallRelease.overrideDate.shouldBe(sentenceKeyDatesFromNomis.postRecallReleaseOverrideDate)
+
+        sentenceKeyDates.release.date.shouldBe(sentenceKeyDatesFromNomis.releaseDate)
+        sentenceKeyDates.release.confirmedDate.shouldBe(sentenceKeyDatesFromNomis.confirmedReleaseDate)
       }
     }
   },

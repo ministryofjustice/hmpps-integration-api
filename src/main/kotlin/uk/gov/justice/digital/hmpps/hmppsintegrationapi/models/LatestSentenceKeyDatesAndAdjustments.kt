@@ -14,4 +14,5 @@ data class LatestSentenceKeyDatesAndAdjustments(
   val nonParole: SentenceKeyDate? = null,
   val paroleEligibility: SentenceKeyDate? = null,
   val postRecallRelease: SentenceKeyDate? = null,
+  val release: ReleaseDate? = null,
 )

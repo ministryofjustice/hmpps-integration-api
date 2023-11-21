@@ -17,6 +17,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.HomeDetentionCurf
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Identifiers
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.NonDtoDate
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Person
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ReleaseDate
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.SentenceAdjustment
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.SentenceKeyDate
@@ -71,6 +72,7 @@ internal class GetLatestSentenceKeyDatesAndAdjustmentsForPersonServiceTest(
             nonParole = SentenceKeyDate(date = LocalDate.parse("2026-11-02"), overrideDate = LocalDate.parse("2026-11-02")),
             paroleEligibility = SentenceKeyDate(date = LocalDate.parse("2027-02-01"), overrideDate = LocalDate.parse("2027-02-01"), calculatedDate = LocalDate.parse("2027-02-01")),
             postRecallRelease = SentenceKeyDate(date = LocalDate.parse("2028-02-01"), overrideDate = LocalDate.parse("2028-02-01")),
+            release = ReleaseDate(date = LocalDate.parse("2030-02-01"), confirmedDate = LocalDate.parse("2030-02-01")),
           ),
         ),
       )
@@ -172,6 +174,9 @@ internal class GetLatestSentenceKeyDatesAndAdjustmentsForPersonServiceTest(
       response.data?.postRecallRelease?.date.shouldBe(LocalDate.parse("2028-02-01"))
       response.data?.postRecallRelease?.overrideDate.shouldBe(LocalDate.parse("2028-02-01"))
       response.data?.postRecallRelease?.calculatedDate.shouldBe(null)
+
+      response.data?.release?.date.shouldBe(LocalDate.parse("2030-02-01"))
+      response.data?.release?.confirmedDate.shouldBe(LocalDate.parse("2030-02-01"))
     }
 
     it("returns an error when person cannot be found in probation") {

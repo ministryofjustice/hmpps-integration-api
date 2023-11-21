@@ -47,6 +47,7 @@ class GetLatestSentenceKeyDatesAndAdjustmentsForPersonService(
         nonParole = latestSentenceKeyDates?.nonParole,
         paroleEligibility = latestSentenceKeyDates?.paroleEligibility,
         postRecallRelease = latestSentenceKeyDates?.postRecallRelease,
+        release = latestSentenceKeyDates?.release,
       ),
     )
   }

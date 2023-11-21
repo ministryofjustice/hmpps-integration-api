@@ -70,7 +70,9 @@ class GetLatestSentenceKeyDatesForPersonTest(
               "paroleEligibilityCalculatedDate": "2027-02-01",
               "paroleEligibilityOverrideDate": "2027-02-01",
               "postRecallReleaseDate": "2028-02-01",
-              "postRecallReleaseOverrideDate": "2028-02-01"
+              "postRecallReleaseOverrideDate": "2028-02-01",
+              "releaseDate": "2030-02-01",
+              "confirmedReleaseDate": "2030-02-01"
             }
           }
         """,
@@ -141,6 +143,9 @@ class GetLatestSentenceKeyDatesForPersonTest(
       response.data?.postRecallRelease?.date.shouldBe(LocalDate.parse("2028-02-01"))
       response.data?.postRecallRelease?.overrideDate.shouldBe(LocalDate.parse("2028-02-01"))
       response.data?.postRecallRelease?.calculatedDate.shouldBe(null)
+
+      response.data?.release?.date.shouldBe(LocalDate.parse("2030-02-01"))
+      response.data?.release?.confirmedDate.shouldBe(LocalDate.parse("2030-02-01"))
     }
 
     it("returns an error when 404 NOT FOUND is returned") {

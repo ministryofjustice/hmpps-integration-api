@@ -13,4 +13,5 @@ data class SentenceKeyDates(
   val nonParole: SentenceKeyDate = SentenceKeyDate(),
   val paroleEligibility: SentenceKeyDate = SentenceKeyDate(),
   val postRecallRelease: SentenceKeyDate = SentenceKeyDate(),
+  val release: ReleaseDate = ReleaseDate(),
 )

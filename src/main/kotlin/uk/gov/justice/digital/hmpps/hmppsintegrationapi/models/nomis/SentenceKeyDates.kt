@@ -4,6 +4,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.SentenceKeyDates
 import java.time.LocalDate
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.HomeDetentionCurfewDate as HmppsHomeDetentionCurfewDate
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.NonDtoDate as HmppsNonDtoDate
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ReleaseDate as HmppsReleaseDate
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.SentenceKeyDate as HmppsSentenceKeyDate
 data class SentenceKeyDates(
   val automaticReleaseDate: LocalDate? = null,
@@ -38,6 +39,8 @@ data class SentenceKeyDates(
   val paroleEligibilityOverrideDate: LocalDate? = null,
   val postRecallReleaseDate: LocalDate? = null,
   val postRecallReleaseOverrideDate: LocalDate? = null,
+  val releaseDate: LocalDate? = null,
+  val confirmedReleaseDate: LocalDate? = null,
 ) {
   fun toSentenceKeyDates(): SentenceKeyDates = SentenceKeyDates(
     automaticRelease = HmppsSentenceKeyDate(date = this.automaticReleaseDate, overrideDate = this.automaticReleaseOverrideDate),
@@ -58,5 +61,6 @@ data class SentenceKeyDates(
     nonParole = HmppsSentenceKeyDate(date = this.nonParoleDate, overrideDate = this.nonParoleOverrideDate),
     paroleEligibility = HmppsSentenceKeyDate(date = this.paroleEligibilityDate, overrideDate = this.paroleEligibilityOverrideDate, calculatedDate = this.paroleEligibilityCalculatedDate),
     postRecallRelease = HmppsSentenceKeyDate(date = this.postRecallReleaseDate, overrideDate = this.postRecallReleaseOverrideDate),
+    release = HmppsReleaseDate(date = this.releaseDate, confirmedDate = this.confirmedReleaseDate),
   )
 }

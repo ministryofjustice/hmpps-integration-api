@@ -18,6 +18,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitesp
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.HomeDetentionCurfewDate
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.LatestSentenceKeyDatesAndAdjustments
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.NonDtoDate
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ReleaseDate
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.SentenceAdjustment
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.SentenceKeyDate
@@ -75,6 +76,7 @@ internal class LatestSentenceKeyDatesAndAdjustmentsControllerTest(
             nonParole = SentenceKeyDate(date = LocalDate.parse("2026-11-02"), overrideDate = LocalDate.parse("2026-11-02")),
             paroleEligibility = SentenceKeyDate(date = LocalDate.parse("2027-02-01"), overrideDate = LocalDate.parse("2027-02-01"), calculatedDate = LocalDate.parse("2027-02-01")),
             postRecallRelease = SentenceKeyDate(date = LocalDate.parse("2028-02-01"), overrideDate = LocalDate.parse("2028-02-01")),
+            release = ReleaseDate(date = LocalDate.parse("2030-02-01"), confirmedDate = LocalDate.parse("2030-02-01")),
           ),
         ),
       )
@@ -171,6 +173,10 @@ internal class LatestSentenceKeyDatesAndAdjustmentsControllerTest(
                 "date": "2028-02-01",
                 "overrideDate": "2028-02-01",
                 "calculatedDate": null
+            },
+            "release": {
+                "date": "2030-02-01",
+                "confirmedDate": "2030-02-01"
             }
           }
         }
