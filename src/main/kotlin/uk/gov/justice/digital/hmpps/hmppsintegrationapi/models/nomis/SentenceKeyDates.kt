@@ -33,6 +33,9 @@ data class SentenceKeyDates(
   val nonDtoReleaseDateType: String? = null,
   val nonParoleDate: LocalDate? = null,
   val nonParoleOverrideDate: LocalDate? = null,
+  val paroleEligibilityDate: LocalDate? = null,
+  val paroleEligibilityCalculatedDate: LocalDate? = null,
+  val paroleEligibilityOverrideDate: LocalDate? = null,
 ) {
   fun toSentenceKeyDates(): SentenceKeyDates = SentenceKeyDates(
     automaticRelease = HmppsSentenceKeyDate(date = this.automaticReleaseDate, overrideDate = this.automaticReleaseOverrideDate),
@@ -51,5 +54,6 @@ data class SentenceKeyDates(
     midTerm = HmppsSentenceKeyDate(date = this.midTermDate, overrideDate = this.mtdOverrideDate, calculatedDate = this.mtdCalculatedDate),
     nonDto = HmppsNonDtoDate(date = this.nonDtoReleaseDate, releaseDateType = this.nonDtoReleaseDateType),
     nonParole = HmppsSentenceKeyDate(date = this.nonParoleDate, overrideDate = this.nonParoleOverrideDate),
+    paroleEligibility = HmppsSentenceKeyDate(date = this.paroleEligibilityDate, overrideDate = this.paroleEligibilityOverrideDate, calculatedDate = this.paroleEligibilityCalculatedDate),
   )
 }

@@ -11,4 +11,5 @@ data class SentenceKeyDates(
   val midTerm: SentenceKeyDate = SentenceKeyDate(),
   val nonDto: NonDtoDate = NonDtoDate(),
   val nonParole: SentenceKeyDate = SentenceKeyDate(),
+  val paroleEligibility: SentenceKeyDate = SentenceKeyDate(),
 )

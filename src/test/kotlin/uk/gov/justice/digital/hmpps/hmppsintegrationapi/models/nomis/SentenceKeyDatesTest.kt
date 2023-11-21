@@ -36,6 +36,9 @@ class SentenceKeyDatesTest : DescribeSpec(
           nonDtoReleaseDateType = "CRD",
           nonParoleDate = LocalDate.parse("2026-04-01"),
           nonParoleOverrideDate = LocalDate.parse("2026-04-01"),
+          paroleEligibilityDate = LocalDate.parse("2027-04-01"),
+          paroleEligibilityCalculatedDate = LocalDate.parse("2027-04-01"),
+          paroleEligibilityOverrideDate = LocalDate.parse("2027-04-01"),
         )
 
         val sentenceKeyDates = sentenceKeyDatesFromNomis.toSentenceKeyDates()
@@ -64,8 +67,8 @@ class SentenceKeyDatesTest : DescribeSpec(
         sentenceKeyDates.lateTerm.calculatedDate.shouldBe(sentenceKeyDatesFromNomis.ltdCalculatedDate)
 
         sentenceKeyDates.licenceExpiry.date.shouldBe(sentenceKeyDatesFromNomis.licenceExpiryDate)
-        sentenceKeyDates.licenceExpiry.overrideDate.shouldBe(sentenceKeyDatesFromNomis.licenceExpiryCalculatedDate)
-        sentenceKeyDates.licenceExpiry.calculatedDate.shouldBe(sentenceKeyDatesFromNomis.licenceExpiryOverrideDate)
+        sentenceKeyDates.licenceExpiry.overrideDate.shouldBe(sentenceKeyDatesFromNomis.licenceExpiryOverrideDate)
+        sentenceKeyDates.licenceExpiry.calculatedDate.shouldBe(sentenceKeyDatesFromNomis.licenceExpiryCalculatedDate)
 
         sentenceKeyDates.midTerm.date.shouldBe(sentenceKeyDatesFromNomis.midTermDate)
         sentenceKeyDates.midTerm.overrideDate.shouldBe(sentenceKeyDatesFromNomis.mtdOverrideDate)
@@ -76,6 +79,10 @@ class SentenceKeyDatesTest : DescribeSpec(
 
         sentenceKeyDates.nonParole.date.shouldBe(sentenceKeyDatesFromNomis.nonParoleDate)
         sentenceKeyDates.nonParole.overrideDate.shouldBe(sentenceKeyDatesFromNomis.nonParoleOverrideDate)
+
+        sentenceKeyDates.paroleEligibility.date.shouldBe(sentenceKeyDatesFromNomis.paroleEligibilityDate)
+        sentenceKeyDates.paroleEligibility.overrideDate.shouldBe(sentenceKeyDatesFromNomis.paroleEligibilityOverrideDate)
+        sentenceKeyDates.paroleEligibility.calculatedDate.shouldBe(sentenceKeyDatesFromNomis.paroleEligibilityCalculatedDate)
       }
     }
   },

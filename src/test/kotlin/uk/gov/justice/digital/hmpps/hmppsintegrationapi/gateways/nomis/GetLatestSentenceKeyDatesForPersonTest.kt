@@ -65,7 +65,10 @@ class GetLatestSentenceKeyDatesForPersonTest(
               "nonDtoReleaseDate": "2023-02-01",
               "nonDtoReleaseDateType": "CRD",
               "nonParoleDate": "2026-02-01",
-              "nonParoleOverrideDate": "2026-02-01"
+              "nonParoleOverrideDate": "2026-02-01",
+              "paroleEligibilityDate": "2027-02-01",
+              "paroleEligibilityCalculatedDate": "2027-02-01",
+              "paroleEligibilityOverrideDate": "2027-02-01"
             }
           }
         """,
@@ -128,6 +131,10 @@ class GetLatestSentenceKeyDatesForPersonTest(
       response.data?.nonParole?.date.shouldBe(LocalDate.parse("2026-02-01"))
       response.data?.nonParole?.overrideDate.shouldBe(LocalDate.parse("2026-02-01"))
       response.data?.nonParole?.calculatedDate.shouldBe(null)
+
+      response.data?.paroleEligibility?.date.shouldBe(LocalDate.parse("2027-02-01"))
+      response.data?.paroleEligibility?.overrideDate.shouldBe(LocalDate.parse("2027-02-01"))
+      response.data?.paroleEligibility?.calculatedDate.shouldBe(LocalDate.parse("2027-02-01"))
     }
 
     it("returns an error when 404 NOT FOUND is returned") {
