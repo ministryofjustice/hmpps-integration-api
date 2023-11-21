@@ -15,6 +15,9 @@ class SentenceKeyDatesTest : DescribeSpec(
           conditionalReleaseOverrideDate = LocalDate.parse("2022-04-01"),
           dtoPostRecallReleaseDate = LocalDate.parse("2022-05-01"),
           dtoPostRecallReleaseDateOverride = LocalDate.parse("2022-05-01"),
+          earlyTermDate = LocalDate.parse("2021-04-01"),
+          etdOverrideDate = LocalDate.parse("2021-04-01"),
+          etdCalculatedDate = LocalDate.parse("2021-04-01"),
         )
 
         val sentenceKeyDates = sentenceKeyDatesFromNomis.toSentenceKeyDates()
@@ -27,6 +30,10 @@ class SentenceKeyDatesTest : DescribeSpec(
 
         sentenceKeyDates.dtoPostRecallRelease.date.shouldBe(sentenceKeyDatesFromNomis.dtoPostRecallReleaseDate)
         sentenceKeyDates.dtoPostRecallRelease.overrideDate.shouldBe(sentenceKeyDatesFromNomis.dtoPostRecallReleaseDateOverride)
+
+        sentenceKeyDates.earlyTerm.date.shouldBe(sentenceKeyDatesFromNomis.earlyTermDate)
+        sentenceKeyDates.earlyTerm.overrideDate.shouldBe(sentenceKeyDatesFromNomis.etdOverrideDate)
+        sentenceKeyDates.earlyTerm.calculatedDate.shouldBe(sentenceKeyDatesFromNomis.etdCalculatedDate)
       }
     }
   },

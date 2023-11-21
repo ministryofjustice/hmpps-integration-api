@@ -44,7 +44,10 @@ class GetLatestSentenceKeyDatesForPersonTest(
               "conditionalReleaseDate": "2023-04-01",
               "conditionalReleaseOverrideDate": "2023-04-01",
               "dtoPostRecallReleaseDate": "2023-05-01",
-              "dtoPostRecallReleaseDateOverride": "2023-05-01"
+              "dtoPostRecallReleaseDateOverride": "2023-05-01",
+              "earlyTermDate": "2021-04-01",
+              "etdOverrideDate": "2021-04-01",
+              "etdCalculatedDate": "2021-04-01"
             }
           }
         """,
@@ -78,6 +81,10 @@ class GetLatestSentenceKeyDatesForPersonTest(
       response.data?.dtoPostRecallRelease?.date.shouldBe(LocalDate.parse("2023-05-01"))
       response.data?.dtoPostRecallRelease?.overrideDate.shouldBe(LocalDate.parse("2023-05-01"))
       response.data?.dtoPostRecallRelease?.calculatedDate.shouldBe(null)
+
+      response.data?.earlyTerm?.date.shouldBe(LocalDate.parse("2021-04-01"))
+      response.data?.earlyTerm?.overrideDate.shouldBe(LocalDate.parse("2021-04-01"))
+      response.data?.earlyTerm?.calculatedDate.shouldBe(LocalDate.parse("2021-04-01"))
     }
 
     it("returns an error when 404 NOT FOUND is returned") {

@@ -11,10 +11,14 @@ data class SentenceKeyDates(
   val conditionalReleaseOverrideDate: LocalDate? = null,
   val dtoPostRecallReleaseDate: LocalDate? = null,
   val dtoPostRecallReleaseDateOverride: LocalDate? = null,
+  val earlyTermDate: LocalDate? = null,
+  val etdOverrideDate: LocalDate? = null,
+  val etdCalculatedDate: LocalDate? = null,
 ) {
   fun toSentenceKeyDates(): SentenceKeyDates = SentenceKeyDates(
     automaticRelease = HmppsSentenceKeyDate(date = this.automaticReleaseDate, overrideDate = this.automaticReleaseOverrideDate),
     conditionalRelease = HmppsSentenceKeyDate(date = this.conditionalReleaseDate, overrideDate = this.conditionalReleaseOverrideDate),
-    dtoPostRecallRelease = HmppsSentenceKeyDate(date = this.dtoPostRecallReleaseDate, overrideDate = this.dtoPostRecallReleaseDateOverride)
+    dtoPostRecallRelease = HmppsSentenceKeyDate(date = this.dtoPostRecallReleaseDate, overrideDate = this.dtoPostRecallReleaseDateOverride),
+    earlyTerm = HmppsSentenceKeyDate(date = this.earlyTermDate, overrideDate = this.etdOverrideDate, calculatedDate = this.etdCalculatedDate),
   )
 }
