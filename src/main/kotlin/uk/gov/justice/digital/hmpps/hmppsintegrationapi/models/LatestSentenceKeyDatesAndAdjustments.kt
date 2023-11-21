@@ -9,4 +9,5 @@ data class LatestSentenceKeyDatesAndAdjustments(
   val homeDetentionCurfew: HomeDetentionCurfewDate? = null,
   val lateTerm: SentenceKeyDate? = null,
   val licenceExpiry: SentenceKeyDate? = null,
+  val midTerm: SentenceKeyDate? = null,
 )

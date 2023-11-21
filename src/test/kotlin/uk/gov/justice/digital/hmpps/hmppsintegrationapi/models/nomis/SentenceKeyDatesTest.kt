@@ -29,6 +29,9 @@ class SentenceKeyDatesTest : DescribeSpec(
           licenceExpiryDate = LocalDate.parse("2025-04-01"),
           licenceExpiryCalculatedDate = LocalDate.parse("2025-04-01"),
           licenceExpiryOverrideDate = LocalDate.parse("2025-04-01"),
+          midTermDate = LocalDate.parse("2024-04-01"),
+          mtdCalculatedDate = LocalDate.parse("2024-04-01"),
+          mtdOverrideDate = LocalDate.parse("2024-04-01"),
         )
 
         val sentenceKeyDates = sentenceKeyDatesFromNomis.toSentenceKeyDates()
@@ -59,6 +62,10 @@ class SentenceKeyDatesTest : DescribeSpec(
         sentenceKeyDates.licenceExpiry.date.shouldBe(sentenceKeyDatesFromNomis.licenceExpiryDate)
         sentenceKeyDates.licenceExpiry.overrideDate.shouldBe(sentenceKeyDatesFromNomis.licenceExpiryCalculatedDate)
         sentenceKeyDates.licenceExpiry.calculatedDate.shouldBe(sentenceKeyDatesFromNomis.licenceExpiryOverrideDate)
+
+        sentenceKeyDates.midTerm.date.shouldBe(sentenceKeyDatesFromNomis.midTermDate)
+        sentenceKeyDates.midTerm.overrideDate.shouldBe(sentenceKeyDatesFromNomis.mtdOverrideDate)
+        sentenceKeyDates.midTerm.calculatedDate.shouldBe(sentenceKeyDatesFromNomis.mtdCalculatedDate)
       }
     }
   },

@@ -58,7 +58,10 @@ class GetLatestSentenceKeyDatesForPersonTest(
               "ltdCalculatedDate": "2022-02-01",
               "licenceExpiryDate": "2025-02-01",
               "licenceExpiryCalculatedDate": "2025-02-01",
-              "licenceExpiryOverrideDate": "2025-02-01"
+              "licenceExpiryOverrideDate": "2025-02-01",
+              "midTermDate": "2023-02-01",
+              "mtdCalculatedDate": "2023-02-01",
+              "mtdOverrideDate": "2023-02-01"
             }
           }
         """,
@@ -110,6 +113,10 @@ class GetLatestSentenceKeyDatesForPersonTest(
       response.data?.licenceExpiry?.date.shouldBe(LocalDate.parse("2025-02-01"))
       response.data?.licenceExpiry?.overrideDate.shouldBe(LocalDate.parse("2025-02-01"))
       response.data?.licenceExpiry?.calculatedDate.shouldBe(LocalDate.parse("2025-02-01"))
+
+      response.data?.midTerm?.date.shouldBe(LocalDate.parse("2023-02-01"))
+      response.data?.midTerm?.overrideDate.shouldBe(LocalDate.parse("2023-02-01"))
+      response.data?.midTerm?.calculatedDate.shouldBe(LocalDate.parse("2023-02-01"))
     }
 
     it("returns an error when 404 NOT FOUND is returned") {

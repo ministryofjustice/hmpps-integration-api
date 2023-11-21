@@ -69,6 +69,7 @@ internal class LatestSentenceKeyDatesAndAdjustmentsControllerTest(
             ),
             lateTerm = SentenceKeyDate(date = LocalDate.parse("2022-01-01"), overrideDate = LocalDate.parse("2022-01-01"), calculatedDate = LocalDate.parse("2022-01-01")),
             licenceExpiry = SentenceKeyDate(date = LocalDate.parse("2025-02-01"), overrideDate = LocalDate.parse("2025-02-01"), calculatedDate = LocalDate.parse("2025-02-01")),
+            midTerm = SentenceKeyDate(date = LocalDate.parse("2024-02-01"), overrideDate = LocalDate.parse("2024-02-01"), calculatedDate = LocalDate.parse("2024-02-01")),
           ),
         ),
       )
@@ -141,6 +142,11 @@ internal class LatestSentenceKeyDatesAndAdjustmentsControllerTest(
                 "date": "2025-02-01",
                 "overrideDate": "2025-02-01",
                 "calculatedDate": "2025-02-01"
+            },
+            "midTerm": {
+                "date": "2024-02-01",
+                "overrideDate": "2024-02-01",
+                "calculatedDate": "2024-02-01"
             }
           }
         }
