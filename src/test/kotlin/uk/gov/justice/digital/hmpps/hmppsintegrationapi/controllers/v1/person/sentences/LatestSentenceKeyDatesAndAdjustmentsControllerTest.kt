@@ -74,6 +74,7 @@ internal class LatestSentenceKeyDatesAndAdjustmentsControllerTest(
             nonDto = NonDtoDate(date = LocalDate.parse("2024-02-01"), releaseDateType = "CRD"),
             nonParole = SentenceKeyDate(date = LocalDate.parse("2026-11-02"), overrideDate = LocalDate.parse("2026-11-02")),
             paroleEligibility = SentenceKeyDate(date = LocalDate.parse("2027-02-01"), overrideDate = LocalDate.parse("2027-02-01"), calculatedDate = LocalDate.parse("2027-02-01")),
+            postRecallRelease = SentenceKeyDate(date = LocalDate.parse("2028-02-01"), overrideDate = LocalDate.parse("2028-02-01")),
           ),
         ),
       )
@@ -165,6 +166,11 @@ internal class LatestSentenceKeyDatesAndAdjustmentsControllerTest(
                 "date": "2027-02-01",
                 "overrideDate": "2027-02-01",
                 "calculatedDate": "2027-02-01"
+            },
+            "postRecallRelease": {
+                "date": "2028-02-01",
+                "overrideDate": "2028-02-01",
+                "calculatedDate": null
             }
           }
         }

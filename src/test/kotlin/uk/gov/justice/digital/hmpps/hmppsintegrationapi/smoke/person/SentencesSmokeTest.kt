@@ -166,6 +166,11 @@ class SentencesSmokeTest : DescribeSpec(
               "date": "2020-02-03",
               "overrideDate: "2020-02-03",
               "calculatedDate": null
+            },
+           "postRecallRelease": {
+                "date": "2020-02-03",
+                "overrideDate": "2020-02-03",
+                "calculatedDate": null
             }
           }
         }
