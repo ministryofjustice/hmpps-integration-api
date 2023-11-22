@@ -48,6 +48,11 @@ class GetLatestSentenceKeyDatesAndAdjustmentsForPersonService(
         paroleEligibility = latestSentenceKeyDates?.paroleEligibility,
         postRecallRelease = latestSentenceKeyDates?.postRecallRelease,
         release = latestSentenceKeyDates?.release,
+        actualParoleDate = latestSentenceKeyDates?.actualParoleDate,
+        earlyRemovalSchemeEligibilityDate = latestSentenceKeyDates?.earlyRemovalSchemeEligibilityDate,
+        releaseOnTemporaryLicenceDate = latestSentenceKeyDates?.releaseOnTemporaryLicenceDate,
+        tariffDate = latestSentenceKeyDates?.tariffDate,
+        tariffEarlyRemovalSchemeEligibilityDate = latestSentenceKeyDates?.tariffEarlyRemovalSchemeEligibilityDate,
       ),
     )
   }

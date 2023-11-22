@@ -72,7 +72,12 @@ class GetLatestSentenceKeyDatesForPersonTest(
               "postRecallReleaseDate": "2028-02-01",
               "postRecallReleaseOverrideDate": "2028-02-01",
               "releaseDate": "2030-02-01",
-              "confirmedReleaseDate": "2030-02-01"
+              "confirmedReleaseDate": "2030-02-01",
+              "actualParoleDate": "2031-02-01",
+              "earlyRemovalSchemeEligibilityDate": "2031-02-01",
+              "releaseOnTemporaryLicenceDate": "2031-02-01",
+              "tariffDate": "2031-02-01",
+              "tariffEarlyRemovalSchemeEligibilityDate": "2031-02-01"
             }
           }
         """,
@@ -146,6 +151,12 @@ class GetLatestSentenceKeyDatesForPersonTest(
 
       response.data?.release?.date.shouldBe(LocalDate.parse("2030-02-01"))
       response.data?.release?.confirmedDate.shouldBe(LocalDate.parse("2030-02-01"))
+
+      response.data?.actualParoleDate?.shouldBe(LocalDate.parse("2031-02-01"))
+      response.data?.earlyRemovalSchemeEligibilityDate?.shouldBe(LocalDate.parse("2031-02-01"))
+      response.data?.releaseOnTemporaryLicenceDate?.shouldBe(LocalDate.parse("2031-02-01"))
+      response.data?.tariffDate?.shouldBe(LocalDate.parse("2031-02-01"))
+      response.data?.tariffEarlyRemovalSchemeEligibilityDate?.shouldBe(LocalDate.parse("2031-02-01"))
     }
 
     it("returns an error when 404 NOT FOUND is returned") {

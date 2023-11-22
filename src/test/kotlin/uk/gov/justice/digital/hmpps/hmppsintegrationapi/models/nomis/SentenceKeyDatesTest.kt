@@ -43,6 +43,11 @@ class SentenceKeyDatesTest : DescribeSpec(
           postRecallReleaseOverrideDate = LocalDate.parse("2028-04-01"),
           releaseDate = LocalDate.parse("2030-04-01"),
           confirmedReleaseDate = LocalDate.parse("2030-04-01"),
+          actualParoleDate = LocalDate.parse("2030-04-01"),
+          earlyRemovalSchemeEligibilityDate = LocalDate.parse("2030-04-01"),
+          releaseOnTemporaryLicenceDate = LocalDate.parse("2030-04-01"),
+          tariffDate = LocalDate.parse("2030-04-01"),
+          tariffEarlyRemovalSchemeEligibilityDate = LocalDate.parse("2030-04-01"),
         )
 
         val sentenceKeyDates = sentenceKeyDatesFromNomis.toSentenceKeyDates()
@@ -93,6 +98,12 @@ class SentenceKeyDatesTest : DescribeSpec(
 
         sentenceKeyDates.release.date.shouldBe(sentenceKeyDatesFromNomis.releaseDate)
         sentenceKeyDates.release.confirmedDate.shouldBe(sentenceKeyDatesFromNomis.confirmedReleaseDate)
+
+        sentenceKeyDates.actualParoleDate.shouldBe(sentenceKeyDatesFromNomis.actualParoleDate)
+        sentenceKeyDates.earlyRemovalSchemeEligibilityDate.shouldBe(sentenceKeyDatesFromNomis.earlyRemovalSchemeEligibilityDate)
+        sentenceKeyDates.releaseOnTemporaryLicenceDate.shouldBe(sentenceKeyDatesFromNomis.releaseOnTemporaryLicenceDate)
+        sentenceKeyDates.tariffDate.shouldBe(sentenceKeyDatesFromNomis.tariffDate)
+        sentenceKeyDates.tariffEarlyRemovalSchemeEligibilityDate.shouldBe(sentenceKeyDatesFromNomis.tariffEarlyRemovalSchemeEligibilityDate)
       }
     }
   },

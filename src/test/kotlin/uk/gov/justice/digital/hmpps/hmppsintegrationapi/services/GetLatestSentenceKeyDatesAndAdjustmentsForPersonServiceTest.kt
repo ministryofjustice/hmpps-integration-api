@@ -73,6 +73,11 @@ internal class GetLatestSentenceKeyDatesAndAdjustmentsForPersonServiceTest(
             paroleEligibility = SentenceKeyDate(date = LocalDate.parse("2027-02-01"), overrideDate = LocalDate.parse("2027-02-01"), calculatedDate = LocalDate.parse("2027-02-01")),
             postRecallRelease = SentenceKeyDate(date = LocalDate.parse("2028-02-01"), overrideDate = LocalDate.parse("2028-02-01")),
             release = ReleaseDate(date = LocalDate.parse("2030-02-01"), confirmedDate = LocalDate.parse("2030-02-01")),
+            actualParoleDate = LocalDate.parse("2031-02-01"),
+            earlyRemovalSchemeEligibilityDate = LocalDate.parse("2031-02-01"),
+            releaseOnTemporaryLicenceDate = LocalDate.parse("2031-02-01"),
+            tariffDate = LocalDate.parse("2031-02-01"),
+            tariffEarlyRemovalSchemeEligibilityDate = LocalDate.parse("2031-02-01"),
           ),
         ),
       )
@@ -177,6 +182,12 @@ internal class GetLatestSentenceKeyDatesAndAdjustmentsForPersonServiceTest(
 
       response.data?.release?.date.shouldBe(LocalDate.parse("2030-02-01"))
       response.data?.release?.confirmedDate.shouldBe(LocalDate.parse("2030-02-01"))
+
+      response.data?.actualParoleDate?.shouldBe(LocalDate.parse("2031-02-01"))
+      response.data?.earlyRemovalSchemeEligibilityDate?.shouldBe(LocalDate.parse("2031-02-01"))
+      response.data?.releaseOnTemporaryLicenceDate?.shouldBe(LocalDate.parse("2031-02-01"))
+      response.data?.tariffDate?.shouldBe(LocalDate.parse("2031-02-01"))
+      response.data?.tariffEarlyRemovalSchemeEligibilityDate?.shouldBe(LocalDate.parse("2031-02-01"))
     }
 
     it("returns an error when person cannot be found in probation") {

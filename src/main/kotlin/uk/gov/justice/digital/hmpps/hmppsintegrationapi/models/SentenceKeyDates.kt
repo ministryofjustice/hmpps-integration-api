@@ -1,5 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models
 
+import java.time.LocalDate
+
 data class SentenceKeyDates(
   val automaticRelease: SentenceKeyDate = SentenceKeyDate(),
   val conditionalRelease: SentenceKeyDate = SentenceKeyDate(),
@@ -14,4 +16,9 @@ data class SentenceKeyDates(
   val paroleEligibility: SentenceKeyDate = SentenceKeyDate(),
   val postRecallRelease: SentenceKeyDate = SentenceKeyDate(),
   val release: ReleaseDate = ReleaseDate(),
+  val actualParoleDate: LocalDate? = null,
+  val earlyRemovalSchemeEligibilityDate: LocalDate? = null,
+  val releaseOnTemporaryLicenceDate: LocalDate? = null,
+  val tariffDate: LocalDate? = null,
+  val tariffEarlyRemovalSchemeEligibilityDate: LocalDate? = null,
 )

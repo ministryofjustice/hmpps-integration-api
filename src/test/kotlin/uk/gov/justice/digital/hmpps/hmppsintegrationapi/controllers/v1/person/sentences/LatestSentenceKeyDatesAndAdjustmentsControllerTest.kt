@@ -77,6 +77,11 @@ internal class LatestSentenceKeyDatesAndAdjustmentsControllerTest(
             paroleEligibility = SentenceKeyDate(date = LocalDate.parse("2027-02-01"), overrideDate = LocalDate.parse("2027-02-01"), calculatedDate = LocalDate.parse("2027-02-01")),
             postRecallRelease = SentenceKeyDate(date = LocalDate.parse("2028-02-01"), overrideDate = LocalDate.parse("2028-02-01")),
             release = ReleaseDate(date = LocalDate.parse("2030-02-01"), confirmedDate = LocalDate.parse("2030-02-01")),
+            actualParoleDate = LocalDate.parse("2031-02-01"),
+            earlyRemovalSchemeEligibilityDate = LocalDate.parse("2031-02-01"),
+            releaseOnTemporaryLicenceDate = LocalDate.parse("2031-02-01"),
+            tariffDate = LocalDate.parse("2031-02-01"),
+            tariffEarlyRemovalSchemeEligibilityDate = LocalDate.parse("2031-02-01"),
           ),
         ),
       )
@@ -177,7 +182,12 @@ internal class LatestSentenceKeyDatesAndAdjustmentsControllerTest(
             "release": {
                 "date": "2030-02-01",
                 "confirmedDate": "2030-02-01"
-            }
+            },
+            "actualParoleDate": "2031-02-01",
+            "earlyRemovalSchemeEligibilityDate": "2031-02-01",
+            "releaseOnTemporaryLicenceDate": "2031-02-01",
+            "tariffDate": "2031-02-01",
+            "tariffEarlyRemovalSchemeEligibilityDate": "2031-02-01"
           }
         }
         """.removeWhitespaceAndNewlines(),

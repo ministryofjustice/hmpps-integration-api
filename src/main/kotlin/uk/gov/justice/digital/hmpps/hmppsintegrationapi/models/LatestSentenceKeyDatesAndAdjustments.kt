@@ -1,5 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models
 
+import java.time.LocalDate
+
 data class LatestSentenceKeyDatesAndAdjustments(
   val adjustments: SentenceAdjustment? = null,
   val automaticRelease: SentenceKeyDate? = null,
@@ -15,4 +17,9 @@ data class LatestSentenceKeyDatesAndAdjustments(
   val paroleEligibility: SentenceKeyDate? = null,
   val postRecallRelease: SentenceKeyDate? = null,
   val release: ReleaseDate? = null,
+  val actualParoleDate: LocalDate? = null,
+  val earlyRemovalSchemeEligibilityDate: LocalDate? = null,
+  val releaseOnTemporaryLicenceDate: LocalDate? = null,
+  val tariffDate: LocalDate? = null,
+  val tariffEarlyRemovalSchemeEligibilityDate: LocalDate? = null,
 )

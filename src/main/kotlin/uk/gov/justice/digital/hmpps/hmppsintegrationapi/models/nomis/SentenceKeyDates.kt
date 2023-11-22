@@ -41,6 +41,11 @@ data class SentenceKeyDates(
   val postRecallReleaseOverrideDate: LocalDate? = null,
   val releaseDate: LocalDate? = null,
   val confirmedReleaseDate: LocalDate? = null,
+  val actualParoleDate: LocalDate? = null,
+  val earlyRemovalSchemeEligibilityDate: LocalDate? = null,
+  val releaseOnTemporaryLicenceDate: LocalDate? = null,
+  val tariffDate: LocalDate? = null,
+  val tariffEarlyRemovalSchemeEligibilityDate: LocalDate? = null,
 ) {
   fun toSentenceKeyDates(): SentenceKeyDates = SentenceKeyDates(
     automaticRelease = HmppsSentenceKeyDate(date = this.automaticReleaseDate, overrideDate = this.automaticReleaseOverrideDate),
@@ -62,5 +67,10 @@ data class SentenceKeyDates(
     paroleEligibility = HmppsSentenceKeyDate(date = this.paroleEligibilityDate, overrideDate = this.paroleEligibilityOverrideDate, calculatedDate = this.paroleEligibilityCalculatedDate),
     postRecallRelease = HmppsSentenceKeyDate(date = this.postRecallReleaseDate, overrideDate = this.postRecallReleaseOverrideDate),
     release = HmppsReleaseDate(date = this.releaseDate, confirmedDate = this.confirmedReleaseDate),
+    actualParoleDate = this.actualParoleDate,
+    earlyRemovalSchemeEligibilityDate = this.earlyRemovalSchemeEligibilityDate,
+    releaseOnTemporaryLicenceDate = this.releaseOnTemporaryLicenceDate,
+    tariffDate = this.tariffDate,
+    tariffEarlyRemovalSchemeEligibilityDate = this.tariffEarlyRemovalSchemeEligibilityDate,
   )
 }
