@@ -73,6 +73,11 @@ class GetLatestSentenceKeyDatesForPersonTest(
               "postRecallReleaseOverrideDate": "2028-02-01",
               "releaseDate": "2030-02-01",
               "confirmedReleaseDate": "2030-02-01",
+              "effectiveSentenceEndDate": "2025-02-01",
+              "sentenceExpiryCalculatedDate": "2025-02-01",
+              "sentenceExpiryDate": "2025-02-01",
+              "sentenceExpiryOverrideDate": "2025-02-01",
+              "sentenceStartDate": "2025-02-01",
               "actualParoleDate": "2031-02-01",
               "earlyRemovalSchemeEligibilityDate": "2031-02-01",
               "releaseOnTemporaryLicenceDate": "2031-02-01",
@@ -151,6 +156,12 @@ class GetLatestSentenceKeyDatesForPersonTest(
 
       response.data?.release?.date.shouldBe(LocalDate.parse("2030-02-01"))
       response.data?.release?.confirmedDate.shouldBe(LocalDate.parse("2030-02-01"))
+
+      response.data?.sentence?.effectiveEndDate.shouldBe(LocalDate.parse("2025-02-01"))
+      response.data?.sentence?.expiryCalculatedDate.shouldBe(LocalDate.parse("2025-02-01"))
+      response.data?.sentence?.expiryDate.shouldBe(LocalDate.parse("2025-02-01"))
+      response.data?.sentence?.expiryOverrideDate.shouldBe(LocalDate.parse("2025-02-01"))
+      response.data?.sentence?.startDate.shouldBe(LocalDate.parse("2025-02-01"))
 
       response.data?.actualParoleDate?.shouldBe(LocalDate.parse("2031-02-01"))
       response.data?.earlyRemovalSchemeEligibilityDate?.shouldBe(LocalDate.parse("2031-02-01"))

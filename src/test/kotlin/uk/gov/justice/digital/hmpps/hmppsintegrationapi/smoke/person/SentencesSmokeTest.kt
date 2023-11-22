@@ -176,6 +176,13 @@ class SentencesSmokeTest : DescribeSpec(
                 "date": "2020-02-03",
                 "confirmedDate": "2020-02-03",
             },
+            "sentence": {
+              "effectiveEndDate": "2020-02-03",
+              "expiryCalculatedDate": "2020-02-03",
+              "expiryDate": "2020-02-03",
+              "expiryOverrideDate": "2020-02-03",
+              "startDate": "2020-02-03"
+            },
             "actualParoleDate": "2020-02-03",
             "earlyRemovalSchemeEligibilityDate": "2020-02-03",
             "releaseOnTemporaryLicenceDate": "2020-02-03",

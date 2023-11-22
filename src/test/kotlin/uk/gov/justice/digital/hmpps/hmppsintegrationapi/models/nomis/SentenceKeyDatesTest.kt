@@ -43,6 +43,11 @@ class SentenceKeyDatesTest : DescribeSpec(
           postRecallReleaseOverrideDate = LocalDate.parse("2028-04-01"),
           releaseDate = LocalDate.parse("2030-04-01"),
           confirmedReleaseDate = LocalDate.parse("2030-04-01"),
+          effectiveSentenceEndDate = LocalDate.parse("2030-04-01"),
+          sentenceExpiryCalculatedDate = LocalDate.parse("2030-04-01"),
+          sentenceExpiryDate = LocalDate.parse("2030-04-01"),
+          sentenceExpiryOverrideDate = LocalDate.parse("2030-04-01"),
+          sentenceStartDate = LocalDate.parse("2030-04-01"),
           actualParoleDate = LocalDate.parse("2030-04-01"),
           earlyRemovalSchemeEligibilityDate = LocalDate.parse("2030-04-01"),
           releaseOnTemporaryLicenceDate = LocalDate.parse("2030-04-01"),
@@ -98,6 +103,12 @@ class SentenceKeyDatesTest : DescribeSpec(
 
         sentenceKeyDates.release.date.shouldBe(sentenceKeyDatesFromNomis.releaseDate)
         sentenceKeyDates.release.confirmedDate.shouldBe(sentenceKeyDatesFromNomis.confirmedReleaseDate)
+
+        sentenceKeyDates.sentence.effectiveEndDate.shouldBe(sentenceKeyDatesFromNomis.effectiveSentenceEndDate)
+        sentenceKeyDates.sentence.expiryCalculatedDate.shouldBe(sentenceKeyDatesFromNomis.sentenceExpiryCalculatedDate)
+        sentenceKeyDates.sentence.expiryDate.shouldBe(sentenceKeyDatesFromNomis.sentenceExpiryDate)
+        sentenceKeyDates.sentence.expiryOverrideDate.shouldBe(sentenceKeyDatesFromNomis.sentenceExpiryOverrideDate)
+        sentenceKeyDates.sentence.startDate.shouldBe(sentenceKeyDatesFromNomis.sentenceStartDate)
 
         sentenceKeyDates.actualParoleDate.shouldBe(sentenceKeyDatesFromNomis.actualParoleDate)
         sentenceKeyDates.earlyRemovalSchemeEligibilityDate.shouldBe(sentenceKeyDatesFromNomis.earlyRemovalSchemeEligibilityDate)

@@ -5,6 +5,7 @@ import java.time.LocalDate
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.HomeDetentionCurfewDate as HmppsHomeDetentionCurfewDate
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.NonDtoDate as HmppsNonDtoDate
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ReleaseDate as HmppsReleaseDate
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.SentenceDate as HmppsSentenceDate
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.SentenceKeyDate as HmppsSentenceKeyDate
 data class SentenceKeyDates(
   val automaticReleaseDate: LocalDate? = null,
@@ -41,6 +42,11 @@ data class SentenceKeyDates(
   val postRecallReleaseOverrideDate: LocalDate? = null,
   val releaseDate: LocalDate? = null,
   val confirmedReleaseDate: LocalDate? = null,
+  val effectiveSentenceEndDate: LocalDate? = null,
+  val sentenceExpiryCalculatedDate: LocalDate? = null,
+  val sentenceExpiryDate: LocalDate? = null,
+  val sentenceExpiryOverrideDate: LocalDate? = null,
+  val sentenceStartDate: LocalDate? = null,
   val actualParoleDate: LocalDate? = null,
   val earlyRemovalSchemeEligibilityDate: LocalDate? = null,
   val releaseOnTemporaryLicenceDate: LocalDate? = null,
@@ -67,6 +73,13 @@ data class SentenceKeyDates(
     paroleEligibility = HmppsSentenceKeyDate(date = this.paroleEligibilityDate, overrideDate = this.paroleEligibilityOverrideDate, calculatedDate = this.paroleEligibilityCalculatedDate),
     postRecallRelease = HmppsSentenceKeyDate(date = this.postRecallReleaseDate, overrideDate = this.postRecallReleaseOverrideDate),
     release = HmppsReleaseDate(date = this.releaseDate, confirmedDate = this.confirmedReleaseDate),
+    sentence = HmppsSentenceDate(
+      effectiveEndDate = this.effectiveSentenceEndDate,
+      expiryCalculatedDate = this.sentenceExpiryCalculatedDate,
+      expiryDate = this.sentenceExpiryDate,
+      expiryOverrideDate = this.sentenceExpiryOverrideDate,
+      startDate = this.sentenceStartDate,
+    ),
     actualParoleDate = this.actualParoleDate,
     earlyRemovalSchemeEligibilityDate = this.earlyRemovalSchemeEligibilityDate,
     releaseOnTemporaryLicenceDate = this.releaseOnTemporaryLicenceDate,

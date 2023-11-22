@@ -16,6 +16,7 @@ data class SentenceKeyDates(
   val paroleEligibility: SentenceKeyDate = SentenceKeyDate(),
   val postRecallRelease: SentenceKeyDate = SentenceKeyDate(),
   val release: ReleaseDate = ReleaseDate(),
+  val sentence: SentenceDate = SentenceDate(),
   val actualParoleDate: LocalDate? = null,
   val earlyRemovalSchemeEligibilityDate: LocalDate? = null,
   val releaseOnTemporaryLicenceDate: LocalDate? = null,

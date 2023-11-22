@@ -20,6 +20,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ReleaseDate
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.SentenceAdjustment
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.SentenceDate
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.SentenceKeyDate
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.SentenceKeyDates
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApi
@@ -73,6 +74,13 @@ internal class GetLatestSentenceKeyDatesAndAdjustmentsForPersonServiceTest(
             paroleEligibility = SentenceKeyDate(date = LocalDate.parse("2027-02-01"), overrideDate = LocalDate.parse("2027-02-01"), calculatedDate = LocalDate.parse("2027-02-01")),
             postRecallRelease = SentenceKeyDate(date = LocalDate.parse("2028-02-01"), overrideDate = LocalDate.parse("2028-02-01")),
             release = ReleaseDate(date = LocalDate.parse("2030-02-01"), confirmedDate = LocalDate.parse("2030-02-01")),
+            sentence = SentenceDate(
+              effectiveEndDate = LocalDate.parse("2025-02-01"),
+              expiryCalculatedDate = LocalDate.parse("2025-02-01"),
+              expiryDate = LocalDate.parse("2025-02-01"),
+              expiryOverrideDate = LocalDate.parse("2025-02-01"),
+              startDate = LocalDate.parse("2025-02-01"),
+            ),
             actualParoleDate = LocalDate.parse("2031-02-01"),
             earlyRemovalSchemeEligibilityDate = LocalDate.parse("2031-02-01"),
             releaseOnTemporaryLicenceDate = LocalDate.parse("2031-02-01"),
@@ -182,6 +190,12 @@ internal class GetLatestSentenceKeyDatesAndAdjustmentsForPersonServiceTest(
 
       response.data?.release?.date.shouldBe(LocalDate.parse("2030-02-01"))
       response.data?.release?.confirmedDate.shouldBe(LocalDate.parse("2030-02-01"))
+
+      response.data?.sentence?.effectiveEndDate.shouldBe(LocalDate.parse("2025-02-01"))
+      response.data?.sentence?.expiryCalculatedDate.shouldBe(LocalDate.parse("2025-02-01"))
+      response.data?.sentence?.expiryDate.shouldBe(LocalDate.parse("2025-02-01"))
+      response.data?.sentence?.expiryOverrideDate.shouldBe(LocalDate.parse("2025-02-01"))
+      response.data?.sentence?.startDate.shouldBe(LocalDate.parse("2025-02-01"))
 
       response.data?.actualParoleDate?.shouldBe(LocalDate.parse("2031-02-01"))
       response.data?.earlyRemovalSchemeEligibilityDate?.shouldBe(LocalDate.parse("2031-02-01"))
