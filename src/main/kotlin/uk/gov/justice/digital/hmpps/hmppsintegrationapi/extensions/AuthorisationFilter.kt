@@ -26,4 +26,3 @@ class AuthorisationFilter : Filter {
     chain.doFilter(request, response)
   }
 }
-
