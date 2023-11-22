@@ -57,7 +57,17 @@ internal class AlertsControllerTest(
         )
       }
 
-      it("responds with a 200 OK status") {
+        it("responds with a 200 OK status") {
+          withEnvironment("FooKey", "BarValue") {
+            val result = mockMvc.perform(MockMvcRequestBuilders.get("$path")).andReturn()
+
+            result.response.status.shouldBe(HttpStatus.OK.value())
+          }
+        }
+      }
+
+      it("responds with a 401 when using the wrong API key id") {
+
         val result = mockMvc.perform(MockMvcRequestBuilders.get("$path")).andReturn()
 
         result.response.status.shouldBe(HttpStatus.OK.value())

@@ -24,6 +24,9 @@ generic-service:
     other-services:
       APPINSIGHTS_INSTRUMENTATIONKEY: "azure-app-insights"
       SENTRY_DSN: "sentry"
+    consumer-api-keys:
+      MAPPS_API_KEY_ID: "mapps"
+      EMILE_API_KEY_ID: "emile"
 
 # CloudPlatform AlertManager receiver to route prometheus alerts to slack
 # See https://user-guide.cloud-platform.service.justice.gov.uk/documentation/monitoring-an-app/how-to-create-alarms.html#creating-your-own-custom-alerts
