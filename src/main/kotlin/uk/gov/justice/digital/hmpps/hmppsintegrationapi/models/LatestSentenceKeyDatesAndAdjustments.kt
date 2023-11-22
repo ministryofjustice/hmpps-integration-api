@@ -18,6 +18,7 @@ data class LatestSentenceKeyDatesAndAdjustments(
   val postRecallRelease: SentenceKeyDate? = null,
   val release: ReleaseDate? = null,
   val sentence: SentenceDate? = null,
+  val topupSupervision: TopupSupervision? = null,
   val actualParoleDate: LocalDate? = null,
   val earlyRemovalSchemeEligibilityDate: LocalDate? = null,
   val releaseOnTemporaryLicenceDate: LocalDate? = null,

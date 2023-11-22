@@ -23,6 +23,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.SentenceAdjustmen
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.SentenceDate
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.SentenceKeyDate
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.SentenceKeyDates
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.TopupSupervision
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApiError
 import java.time.LocalDate
@@ -80,6 +81,12 @@ internal class GetLatestSentenceKeyDatesAndAdjustmentsForPersonServiceTest(
               expiryDate = LocalDate.parse("2025-02-01"),
               expiryOverrideDate = LocalDate.parse("2025-02-01"),
               startDate = LocalDate.parse("2025-02-01"),
+            ),
+            topupSupervision = TopupSupervision(
+              expiryCalculatedDate = LocalDate.parse("2022-04-01"),
+              expiryDate = LocalDate.parse("2022-04-01"),
+              expiryOverrideDate = LocalDate.parse("2022-04-01"),
+              startDate = LocalDate.parse("2022-04-01"),
             ),
             actualParoleDate = LocalDate.parse("2031-02-01"),
             earlyRemovalSchemeEligibilityDate = LocalDate.parse("2031-02-01"),
@@ -196,6 +203,11 @@ internal class GetLatestSentenceKeyDatesAndAdjustmentsForPersonServiceTest(
       response.data?.sentence?.expiryDate.shouldBe(LocalDate.parse("2025-02-01"))
       response.data?.sentence?.expiryOverrideDate.shouldBe(LocalDate.parse("2025-02-01"))
       response.data?.sentence?.startDate.shouldBe(LocalDate.parse("2025-02-01"))
+
+      response.data?.topupSupervision?.expiryCalculatedDate.shouldBe(LocalDate.parse("2022-04-01"))
+      response.data?.topupSupervision?.expiryDate.shouldBe(LocalDate.parse("2022-04-01"))
+      response.data?.topupSupervision?.expiryOverrideDate.shouldBe(LocalDate.parse("2022-04-01"))
+      response.data?.topupSupervision?.startDate.shouldBe(LocalDate.parse("2022-04-01"))
 
       response.data?.actualParoleDate?.shouldBe(LocalDate.parse("2031-02-01"))
       response.data?.earlyRemovalSchemeEligibilityDate?.shouldBe(LocalDate.parse("2031-02-01"))

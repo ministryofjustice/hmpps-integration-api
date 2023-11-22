@@ -48,6 +48,10 @@ class SentenceKeyDatesTest : DescribeSpec(
           sentenceExpiryDate = LocalDate.parse("2030-04-01"),
           sentenceExpiryOverrideDate = LocalDate.parse("2030-04-01"),
           sentenceStartDate = LocalDate.parse("2030-04-01"),
+          topupSupervisionExpiryCalculatedDate = LocalDate.parse("2022-04-01"),
+          topupSupervisionExpiryDate = LocalDate.parse("2022-04-01"),
+          topupSupervisionExpiryOverrideDate = LocalDate.parse("2022-04-01"),
+          topupSupervisionStartDate = LocalDate.parse("2022-04-01"),
           actualParoleDate = LocalDate.parse("2030-04-01"),
           earlyRemovalSchemeEligibilityDate = LocalDate.parse("2030-04-01"),
           releaseOnTemporaryLicenceDate = LocalDate.parse("2030-04-01"),
@@ -109,6 +113,11 @@ class SentenceKeyDatesTest : DescribeSpec(
         sentenceKeyDates.sentence.expiryDate.shouldBe(sentenceKeyDatesFromNomis.sentenceExpiryDate)
         sentenceKeyDates.sentence.expiryOverrideDate.shouldBe(sentenceKeyDatesFromNomis.sentenceExpiryOverrideDate)
         sentenceKeyDates.sentence.startDate.shouldBe(sentenceKeyDatesFromNomis.sentenceStartDate)
+
+        sentenceKeyDates.topupSupervision.expiryCalculatedDate.shouldBe(sentenceKeyDatesFromNomis.topupSupervisionExpiryCalculatedDate)
+        sentenceKeyDates.topupSupervision.expiryDate.shouldBe(sentenceKeyDatesFromNomis.topupSupervisionExpiryDate)
+        sentenceKeyDates.topupSupervision.expiryOverrideDate.shouldBe(sentenceKeyDatesFromNomis.topupSupervisionExpiryOverrideDate)
+        sentenceKeyDates.topupSupervision.startDate.shouldBe(sentenceKeyDatesFromNomis.topupSupervisionStartDate)
 
         sentenceKeyDates.actualParoleDate.shouldBe(sentenceKeyDatesFromNomis.actualParoleDate)
         sentenceKeyDates.earlyRemovalSchemeEligibilityDate.shouldBe(sentenceKeyDatesFromNomis.earlyRemovalSchemeEligibilityDate)

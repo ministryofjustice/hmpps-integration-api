@@ -23,6 +23,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.SentenceAdjustment
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.SentenceDate
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.SentenceKeyDate
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.TopupSupervision
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetLatestSentenceKeyDatesAndAdjustmentsForPersonService
@@ -84,6 +85,12 @@ internal class LatestSentenceKeyDatesAndAdjustmentsControllerTest(
               expiryDate = LocalDate.parse("2025-02-01"),
               expiryOverrideDate = LocalDate.parse("2025-02-01"),
               startDate = LocalDate.parse("2025-02-01"),
+            ),
+            topupSupervision = TopupSupervision(
+              expiryCalculatedDate = LocalDate.parse("2022-04-01"),
+              expiryDate = LocalDate.parse("2022-04-01"),
+              expiryOverrideDate = LocalDate.parse("2022-04-01"),
+              startDate = LocalDate.parse("2022-04-01"),
             ),
             actualParoleDate = LocalDate.parse("2031-02-01"),
             earlyRemovalSchemeEligibilityDate = LocalDate.parse("2031-02-01"),
@@ -197,6 +204,12 @@ internal class LatestSentenceKeyDatesAndAdjustmentsControllerTest(
               "expiryDate": "2025-02-01",
               "expiryOverrideDate": "2025-02-01",
               "startDate": "2025-02-01"
+            },
+            "topupSupervision": {
+              "expiryCalculatedDate": "2022-04-01",
+              "expiryDate": "2022-04-01",
+              "expiryOverrideDate": "2022-04-01",
+              "startDate": "2022-04-01"
             },
             "actualParoleDate": "2031-02-01",
             "earlyRemovalSchemeEligibilityDate": "2031-02-01",

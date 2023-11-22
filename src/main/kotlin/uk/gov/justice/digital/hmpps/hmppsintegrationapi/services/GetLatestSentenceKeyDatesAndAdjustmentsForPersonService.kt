@@ -49,6 +49,7 @@ class GetLatestSentenceKeyDatesAndAdjustmentsForPersonService(
         postRecallRelease = latestSentenceKeyDates?.postRecallRelease,
         release = latestSentenceKeyDates?.release,
         sentence = latestSentenceKeyDates?.sentence,
+        topupSupervision = latestSentenceKeyDates?.topupSupervision,
         actualParoleDate = latestSentenceKeyDates?.actualParoleDate,
         earlyRemovalSchemeEligibilityDate = latestSentenceKeyDates?.earlyRemovalSchemeEligibilityDate,
         releaseOnTemporaryLicenceDate = latestSentenceKeyDates?.releaseOnTemporaryLicenceDate,

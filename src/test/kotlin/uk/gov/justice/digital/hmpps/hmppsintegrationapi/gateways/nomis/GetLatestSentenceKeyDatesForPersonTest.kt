@@ -78,6 +78,10 @@ class GetLatestSentenceKeyDatesForPersonTest(
               "sentenceExpiryDate": "2025-02-01",
               "sentenceExpiryOverrideDate": "2025-02-01",
               "sentenceStartDate": "2025-02-01",
+              "topupSupervisionExpiryCalculatedDate": "2022-04-01",
+              "topupSupervisionExpiryDate": "2022-04-01",
+              "topupSupervisionExpiryOverrideDate": "2022-04-01",
+              "topupSupervisionStartDate": "2022-04-01",
               "actualParoleDate": "2031-02-01",
               "earlyRemovalSchemeEligibilityDate": "2031-02-01",
               "releaseOnTemporaryLicenceDate": "2031-02-01",
@@ -162,6 +166,11 @@ class GetLatestSentenceKeyDatesForPersonTest(
       response.data?.sentence?.expiryDate.shouldBe(LocalDate.parse("2025-02-01"))
       response.data?.sentence?.expiryOverrideDate.shouldBe(LocalDate.parse("2025-02-01"))
       response.data?.sentence?.startDate.shouldBe(LocalDate.parse("2025-02-01"))
+
+      response.data?.topupSupervision?.expiryCalculatedDate.shouldBe(LocalDate.parse("2022-04-01"))
+      response.data?.topupSupervision?.expiryDate.shouldBe(LocalDate.parse("2022-04-01"))
+      response.data?.topupSupervision?.expiryOverrideDate.shouldBe(LocalDate.parse("2022-04-01"))
+      response.data?.topupSupervision?.startDate.shouldBe(LocalDate.parse("2022-04-01"))
 
       response.data?.actualParoleDate?.shouldBe(LocalDate.parse("2031-02-01"))
       response.data?.earlyRemovalSchemeEligibilityDate?.shouldBe(LocalDate.parse("2031-02-01"))

@@ -183,6 +183,12 @@ class SentencesSmokeTest : DescribeSpec(
               "expiryOverrideDate": "2020-02-03",
               "startDate": "2020-02-03"
             },
+            "topupSupervision": {
+              "expiryCalculatedDate": "2022-04-01",
+              "expiryDate": "2022-04-01",
+              "expiryOverrideDate": "2022-04-01",
+              "startDate": "2022-04-01"
+            },
             "actualParoleDate": "2020-02-03",
             "earlyRemovalSchemeEligibilityDate": "2020-02-03",
             "releaseOnTemporaryLicenceDate": "2020-02-03",

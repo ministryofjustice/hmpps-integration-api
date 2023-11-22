@@ -7,6 +7,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.NonDtoDate as Hmp
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ReleaseDate as HmppsReleaseDate
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.SentenceDate as HmppsSentenceDate
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.SentenceKeyDate as HmppsSentenceKeyDate
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.TopupSupervision as HmppsTopupSupervision
 data class SentenceKeyDates(
   val automaticReleaseDate: LocalDate? = null,
   val automaticReleaseOverrideDate: LocalDate? = null,
@@ -47,6 +48,10 @@ data class SentenceKeyDates(
   val sentenceExpiryDate: LocalDate? = null,
   val sentenceExpiryOverrideDate: LocalDate? = null,
   val sentenceStartDate: LocalDate? = null,
+  val topupSupervisionExpiryCalculatedDate: LocalDate? = null,
+  val topupSupervisionExpiryDate: LocalDate? = null,
+  val topupSupervisionExpiryOverrideDate: LocalDate? = null,
+  val topupSupervisionStartDate: LocalDate? = null,
   val actualParoleDate: LocalDate? = null,
   val earlyRemovalSchemeEligibilityDate: LocalDate? = null,
   val releaseOnTemporaryLicenceDate: LocalDate? = null,
@@ -79,6 +84,12 @@ data class SentenceKeyDates(
       expiryDate = this.sentenceExpiryDate,
       expiryOverrideDate = this.sentenceExpiryOverrideDate,
       startDate = this.sentenceStartDate,
+    ),
+    topupSupervision = HmppsTopupSupervision(
+      expiryCalculatedDate = this.topupSupervisionExpiryCalculatedDate,
+      expiryDate = this.topupSupervisionExpiryDate,
+      expiryOverrideDate = this.topupSupervisionExpiryOverrideDate,
+      startDate = this.topupSupervisionStartDate,
     ),
     actualParoleDate = this.actualParoleDate,
     earlyRemovalSchemeEligibilityDate = this.earlyRemovalSchemeEligibilityDate,
