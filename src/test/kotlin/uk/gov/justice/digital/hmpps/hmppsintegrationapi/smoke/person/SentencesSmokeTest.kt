@@ -128,20 +128,20 @@ class SentencesSmokeTest : DescribeSpec(
             },
             "earlyTerm": {
               "date": "2020-02-03",
-              "overrideDate: "2020-02-03",
-              "calculatedDate": null
+              "overrideDate: "2019-04-02",
+              "calculatedDate": "2019-04-02"
             },
             "homeDetentionCurfew": {
                 "actualDate": "2020-02-03",
                 "eligibilityCalculatedDate": "2020-02-03",
                 "eligibilityDate": "2020-02-03",
                 "eligibilityOverrideDate": "2020-02-03",
-                "endDate": "2020-02-03"
+                "endDate": "2019-04-01"
             },
             "lateTerm": {
               "date": "2020-02-03",
-              "overrideDate: "2020-02-03",
-              "calculatedDate": null
+              "overrideDate: "2019-04-02",
+              "calculatedDate": "2019-04-02"
             },
             "licenceExpiry": {
               "date": "2020-02-03",
@@ -150,11 +150,11 @@ class SentencesSmokeTest : DescribeSpec(
             },
             "midTerm": {
               "date": "2020-02-03",
-              "overrideDate: "2020-02-03",
-              "calculatedDate": null
+              "overrideDate: "2019-04-02",
+              "calculatedDate": "2019-04-02"
             },
             "nonDto": {
-                "date": "2020-02-03",
+                "date": "2020-04-01",
                 "releaseDateType": "CRD"
             },
             "nonParole": {
@@ -164,30 +164,30 @@ class SentencesSmokeTest : DescribeSpec(
             },
             "dtoPostRecallRelease": {
               "date": "2020-02-03",
-              "overrideDate: "2020-02-03",
+              "overrideDate: "2020-04-01",
               "calculatedDate": null
             },
            "postRecallRelease": {
                 "date": "2020-02-03",
-                "overrideDate": "2020-02-03",
+                "overrideDate": "2020-04-01",
                 "calculatedDate": null
             },
             "release": {
-                "date": "2020-02-03",
-                "confirmedDate": "2020-02-03",
+                "date": "2020-04-01",
+                "confirmedDate": "2020-04-20",
             },
             "sentence": {
               "effectiveEndDate": "2020-02-03",
               "expiryCalculatedDate": "2020-02-03",
               "expiryDate": "2020-02-03",
               "expiryOverrideDate": "2020-02-03",
-              "startDate": "2020-02-03"
+              "startDate": "2010-02-03"
             },
             "topupSupervision": {
               "expiryCalculatedDate": "2022-04-01",
               "expiryDate": "2022-04-01",
               "expiryOverrideDate": "2022-04-01",
-              "startDate": "2022-04-01"
+              "startDate": "2019-04-01"
             },
             "actualParoleDate": "2020-02-03",
             "earlyRemovalSchemeEligibilityDate": "2020-02-03",
