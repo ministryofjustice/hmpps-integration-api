@@ -5,11 +5,8 @@ import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import org.springframework.http.HttpStatus
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
-import java.net.URI
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIHttpClient
 import java.net.URLEncoder
-import java.net.http.HttpClient
-import java.net.http.HttpRequest
-import java.net.http.HttpResponse
 import java.nio.charset.StandardCharsets
 
 class RisksSmokeTest : DescribeSpec(
@@ -17,17 +14,11 @@ class RisksSmokeTest : DescribeSpec(
     val hmppsId = "2004/13116M"
     val encodedHmppsId = URLEncoder.encode(hmppsId, StandardCharsets.UTF_8)
 
-    val baseUrl = "http://localhost:8080"
     val basePath = "v1/persons/$encodedHmppsId/risks"
-
-    val httpClient = HttpClient.newBuilder().build()
-    val httpRequest = HttpRequest.newBuilder()
+    val httpClient = IntegrationAPIHttpClient()
 
     it("returns risk scores for a person") {
-      val response = httpClient.send(
-        httpRequest.uri(URI.create("$baseUrl/$basePath/scores")).build(),
-        HttpResponse.BodyHandlers.ofString(),
-      )
+      val response = httpClient.performAuthorised("$basePath/scores")
 
       response.statusCode().shouldBe(HttpStatus.OK.value())
       response.body().shouldEqualJson(
@@ -69,10 +60,7 @@ class RisksSmokeTest : DescribeSpec(
     }
 
     it("returns rosh risks for a person") {
-      val response = httpClient.send(
-        httpRequest.uri(URI.create("$baseUrl/$basePath")).build(),
-        HttpResponse.BodyHandlers.ofString(),
-      )
+      val response = httpClient.performAuthorised(basePath)
 
       response.statusCode().shouldBe(HttpStatus.OK.value())
       response.body().shouldEqualJson(

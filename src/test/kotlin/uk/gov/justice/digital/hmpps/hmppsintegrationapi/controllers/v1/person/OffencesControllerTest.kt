@@ -13,8 +13,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.HttpStatus
 import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Offence
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApi
@@ -26,13 +26,14 @@ import java.time.LocalDate
 
 @WebMvcTest(controllers = [OffencesController::class])
 internal class OffencesControllerTest(
-  @Autowired val mockMvc: MockMvc,
+  @Autowired var springMockMvc: MockMvc,
   @MockBean val getOffencesForPersonService: GetOffencesForPersonService,
 ) : DescribeSpec(
   {
     val hmppsId = "9999/11111A"
     val encodedHmppsId = URLEncoder.encode(hmppsId, StandardCharsets.UTF_8)
     val path = "/v1/persons/$encodedHmppsId/offences"
+    val mockMvc = IntegrationAPIMockMvc(springMockMvc)
 
     describe("GET $path") {
       beforeTest {
@@ -55,19 +56,19 @@ internal class OffencesControllerTest(
       }
 
       it("responds with a 200 OK status") {
-        val result = mockMvc.perform(MockMvcRequestBuilders.get("$path")).andReturn()
+        val result = mockMvc.performAuthorised(path)
 
         result.response.status.shouldBe(HttpStatus.OK.value())
       }
 
       it("retrieves the offences for a person with the matching ID") {
-        mockMvc.perform(MockMvcRequestBuilders.get("$path")).andReturn()
+        mockMvc.performAuthorised(path)
 
         verify(getOffencesForPersonService, VerificationModeFactory.times(1)).execute(hmppsId)
       }
 
       it("returns the offences for a person with the matching ID") {
-        val result = mockMvc.perform(MockMvcRequestBuilders.get("$path")).andReturn()
+        val result = mockMvc.performAuthorised(path)
 
         result.response.contentAsString.shouldContain(
           """
@@ -98,9 +99,7 @@ internal class OffencesControllerTest(
           ),
         )
 
-        val result =
-          mockMvc.perform(MockMvcRequestBuilders.get("$path"))
-            .andReturn()
+        val result = mockMvc.performAuthorised(path)
 
         result.response.contentAsString.shouldContain("\"data\":[]".removeWhitespaceAndNewlines())
       }
@@ -118,7 +117,7 @@ internal class OffencesControllerTest(
           ),
         )
 
-        val result = mockMvc.perform(MockMvcRequestBuilders.get("$path")).andReturn()
+        val result = mockMvc.performAuthorised(path)
 
         result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
       }
@@ -140,9 +139,7 @@ internal class OffencesControllerTest(
           ),
         )
 
-        val result =
-          mockMvc.perform(MockMvcRequestBuilders.get("$path?page=1&perPage=10"))
-            .andReturn()
+        val result = mockMvc.performAuthorised("$path?page=1&perPage=10")
 
         result.response.contentAsString.shouldContainJsonKeyValue("$.pagination.page", 1)
         result.response.contentAsString.shouldContainJsonKeyValue("$.pagination.totalPages", 2)

@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.generateTestAddress
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ImageMetadata
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Person
@@ -34,7 +35,7 @@ import kotlin.random.Random
 
 @WebMvcTest(controllers = [PersonController::class])
 internal class PersonControllerTest(
-  @Autowired val mockMvc: MockMvc,
+  @Autowired var springMockMvc: MockMvc,
   @MockBean val getPersonService: GetPersonService,
   @MockBean val getPersonsService: GetPersonsService,
   @MockBean val getImageMetadataForPersonService: GetImageMetadataForPersonService,
@@ -46,6 +47,7 @@ internal class PersonControllerTest(
     val basePath = "/v1/persons"
     val firstName = "Barry"
     val lastName = "Allen"
+    val mockMvc = IntegrationAPIMockMvc(springMockMvc)
 
     describe("GET $basePath") {
       beforeTest {
@@ -73,37 +75,37 @@ internal class PersonControllerTest(
       }
 
       it("retrieves a person with matching search criteria") {
-        mockMvc.perform(get("$basePath?first_name=$firstName&last_name=$lastName")).andReturn()
+        mockMvc.performAuthorised("$basePath?first_name=$firstName&last_name=$lastName")
 
         verify(getPersonsService, times(1)).execute(firstName, lastName)
       }
 
       it("retrieves a person with matching first name") {
-        mockMvc.perform(get("$basePath?first_name=$firstName")).andReturn()
+        mockMvc.performAuthorised("$basePath?first_name=$firstName")
 
         verify(getPersonsService, times(1)).execute(firstName, null)
       }
 
       it("retrieves a person with matching last name") {
-        mockMvc.perform(get("$basePath?last_name=$lastName")).andReturn()
+        mockMvc.performAuthorised("$basePath?last_name=$lastName")
 
         verify(getPersonsService, times(1)).execute(null, lastName)
       }
 
       it("retrieves a person with matching alias") {
-        mockMvc.perform(get("$basePath?first_name=$firstName&search_within_aliases=true")).andReturn()
+        mockMvc.performAuthorised("$basePath?first_name=$firstName&search_within_aliases=true")
 
         verify(getPersonsService, times(1)).execute(firstName, null, searchWithinAliases = true)
       }
 
       it("defaults to not searching within aliases") {
-        mockMvc.perform(get("$basePath?first_name=$firstName")).andReturn()
+        mockMvc.performAuthorised("$basePath?first_name=$firstName")
 
         verify(getPersonsService, times(1)).execute(firstName, null, searchWithinAliases = false)
       }
 
       it("returns a person with matching first and last name") {
-        val result = mockMvc.perform(get("$basePath?first_name=$firstName&last_name=$lastName")).andReturn()
+        val result = mockMvc.performAuthorised("$basePath?first_name=$firstName&last_name=$lastName")
 
         result.response.contentAsString.shouldContain(
           """
@@ -159,9 +161,7 @@ internal class PersonControllerTest(
           ),
         )
 
-        val result =
-          mockMvc.perform(get("$basePath?first_name=$firstName&last_name=$lastName&page=3&perPage=5"))
-            .andReturn()
+        val result = mockMvc.performAuthorised("$basePath?first_name=$firstName&last_name=$lastName&page=3&perPage=5")
 
         result.response.contentAsString.shouldContainJsonKeyValue("$.pagination.page", 3)
         result.response.contentAsString.shouldContainJsonKeyValue("$.pagination.totalPages", 4)
@@ -177,21 +177,19 @@ internal class PersonControllerTest(
           ),
         )
 
-        val result =
-          mockMvc.perform(get("$basePath?first_name=$firstNameThatDoesNotExist&last_name=$lastNameThatDoesNotExist"))
-            .andReturn()
+        val result = mockMvc.performAuthorised("$basePath?first_name=$firstNameThatDoesNotExist&last_name=$lastNameThatDoesNotExist")
 
         result.response.contentAsString.shouldContain("\"data\":[]".removeWhitespaceAndNewlines())
       }
 
       it("responds with a 200 OK status") {
-        val result = mockMvc.perform(get("$basePath?first_name=$firstName&last_name=$lastName")).andReturn()
+        val result = mockMvc.performAuthorised("$basePath?first_name=$firstName&last_name=$lastName")
 
         result.response.status.shouldBe(HttpStatus.OK.value())
       }
 
       it("responds with a 400 BAD REQUEST status when no search criteria provided") {
-        val result = mockMvc.perform(get(basePath)).andReturn()
+        val result = mockMvc.performAuthorised(basePath)
 
         result.response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
         result.response.contentAsString.shouldContain("No query parameters specified.")
@@ -207,7 +205,7 @@ internal class PersonControllerTest(
       }
 
       it("responds with a 200 OK status") {
-        val result = mockMvc.perform(get("$basePath/$encodedHmppsId")).andReturn()
+        val result = mockMvc.performAuthorised("$basePath/$encodedHmppsId")
 
         result.response.status.shouldBe(HttpStatus.OK.value())
       }
@@ -229,7 +227,7 @@ internal class PersonControllerTest(
           )
 
           val encodedIdThatDoesNotExist = URLEncoder.encode(idThatDoesNotExist, StandardCharsets.UTF_8)
-          val result = mockMvc.perform(get("$basePath/$encodedIdThatDoesNotExist")).andReturn()
+          val result = mockMvc.performAuthorised("$basePath/$encodedIdThatDoesNotExist")
 
           result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
         }
@@ -248,20 +246,20 @@ internal class PersonControllerTest(
           )
 
           val encodedIdThatDoesNotExist = URLEncoder.encode(idThatDoesNotExist, StandardCharsets.UTF_8)
-          val result = mockMvc.perform(get("$basePath/$encodedIdThatDoesNotExist")).andReturn()
+          val result = mockMvc.performAuthorised("$basePath/$encodedIdThatDoesNotExist")
 
           result.response.status.shouldNotBe(HttpStatus.NOT_FOUND.value())
         }
       }
 
       it("retrieves a person with the matching ID") {
-        mockMvc.perform(get("$basePath/$encodedHmppsId")).andReturn()
+        mockMvc.performAuthorised("$basePath/$encodedHmppsId")
 
         verify(getPersonService, times(1)).execute(hmppsId)
       }
 
       it("returns a person with the matching ID") {
-        val result = mockMvc.perform(get("$basePath/$encodedHmppsId")).andReturn()
+        val result = mockMvc.performAuthorised("$basePath/$encodedHmppsId")
 
         result.response.contentAsString.shouldBe(
           """
@@ -321,28 +319,26 @@ internal class PersonControllerTest(
           ),
         )
 
-        val result =
-          mockMvc.perform(get("$basePath/$encodedHmppsId/images?page=3&perPage=5"))
-            .andReturn()
+        val result = mockMvc.performAuthorised("$basePath/$encodedHmppsId/images?page=3&perPage=5")
 
         result.response.contentAsString.shouldContainJsonKeyValue("$.pagination.page", 3)
         result.response.contentAsString.shouldContainJsonKeyValue("$.pagination.totalPages", 4)
       }
 
       it("responds with a 200 OK status") {
-        val result = mockMvc.perform(get("$basePath/$encodedHmppsId/images")).andReturn()
+        val result = mockMvc.performAuthorised("$basePath/$encodedHmppsId/images")
 
         result.response.status.shouldBe(HttpStatus.OK.value())
       }
 
       it("retrieves the metadata of images for a person with the matching ID") {
-        mockMvc.perform(get("$basePath/$encodedHmppsId/images")).andReturn()
+        mockMvc.performAuthorised("$basePath/$encodedHmppsId/images")
 
         verify(getImageMetadataForPersonService, times(1)).execute(hmppsId)
       }
 
       it("returns the metadata of images for a person with the matching ID") {
-        val result = mockMvc.perform(get("$basePath/$encodedHmppsId/images")).andReturn()
+        val result = mockMvc.performAuthorised("$basePath/$encodedHmppsId/images")
         result.response.contentAsString.shouldContain("\"data\":[")
         result.response.contentAsString.shouldContain(
           """
@@ -369,7 +365,7 @@ internal class PersonControllerTest(
           ),
         )
 
-        val result = mockMvc.perform(get("$basePath/$encodedHmppsId/images")).andReturn()
+        val result = mockMvc.performAuthorised("$basePath/$encodedHmppsId/images")
 
         result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
       }
@@ -382,19 +378,19 @@ internal class PersonControllerTest(
       }
 
       it("responds with a 200 OK status") {
-        val result = mockMvc.perform(get("$basePath/$encodedHmppsId/addresses")).andReturn()
+        val result = mockMvc.performAuthorised("$basePath/$encodedHmppsId/addresses")
 
         result.response.status.shouldBe(HttpStatus.OK.value())
       }
 
       it("retrieves the addresses for a person with the matching ID") {
-        mockMvc.perform(get("$basePath/$encodedHmppsId/addresses")).andReturn()
+        mockMvc.performAuthorised("$basePath/$encodedHmppsId/addresses")
 
         verify(getAddressesForPersonService, times(1)).execute(hmppsId)
       }
 
       it("returns the addresses for a person with the matching ID") {
-        val result = mockMvc.perform(get("$basePath/$encodedHmppsId/addresses")).andReturn()
+        val result = mockMvc.performAuthorised("$basePath/$encodedHmppsId/addresses")
 
         result.response.contentAsString.shouldBe(
           """
@@ -447,7 +443,7 @@ internal class PersonControllerTest(
           ),
         )
 
-        val result = mockMvc.perform(get("$basePath/$encodedHmppsId/addresses")).andReturn()
+        val result = mockMvc.performAuthorised("$basePath/$encodedHmppsId/addresses")
 
         result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
       }
@@ -465,7 +461,7 @@ internal class PersonControllerTest(
           ),
         )
 
-        val result = mockMvc.perform(get("$basePath/$encodedHmppsId/addresses")).andReturn()
+        val result = mockMvc.performAuthorised("$basePath/$encodedHmppsId/addresses")
 
         result.response.status.shouldBe(HttpStatus.OK.value())
       }

@@ -14,6 +14,7 @@ class ExtractConsumerFromSubjectDistinguishedNameService {
       throw AuthorisationFailedException("Could not identify consumer")
     }
 
+    println(match.groupValues[0])
     return match.groupValues[1]
   }
 }
