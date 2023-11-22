@@ -1,6 +1,6 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "5.7.0"
-  kotlin("plugin.spring") version "1.9.10"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "5.9.0"
+  kotlin("plugin.spring") version "1.9.20"
 }
 
 configurations {
@@ -25,7 +25,7 @@ dependencies {
 }
 
 java {
-  toolchain.languageVersion.set(JavaLanguageVersion.of(18))
+  toolchain.languageVersion.set(JavaLanguageVersion.of(21))
 }
 repositories {
   mavenCentral()
@@ -46,7 +46,7 @@ tasks {
 
   withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
     kotlinOptions {
-      jvmTarget = "18"
+      jvmTarget = "21"
     }
   }
 }

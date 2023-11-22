@@ -21,7 +21,7 @@ unit-test:
 	./gradlew unitTest
 
 smoke-test: serve
-	./gradlew smokeTest
+	./gradlew smokeTest --warning-mode all
 
 heartbeat:
 	./scripts/heartbeat.sh
