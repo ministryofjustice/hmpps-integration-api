@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NomisGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ProbationOffenderSearchGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.KeyDatesAndAdjustmentsDTO
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.LatestSentenceKeyDatesAndAdjustments
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Response
 
@@ -33,10 +34,10 @@ class GetLatestSentenceKeyDatesAndAdjustmentsForPersonService(
     }
 
     return Response(
-      data = LatestSentenceKeyDatesAndAdjustments(
+      data = KeyDatesAndAdjustmentsDTO(
         adjustments = latestSentenceAdjustments,
-        automaticRelease = latestSentenceKeyDates?.automaticRelease,
-      ),
+        keyDates = latestSentenceKeyDates,
+      ).toLatestSentenceKeyDatesAndAdjustments(),
     )
   }
 }

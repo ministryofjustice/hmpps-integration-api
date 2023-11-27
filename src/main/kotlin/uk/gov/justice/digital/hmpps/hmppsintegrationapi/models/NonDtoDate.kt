@@ -2,8 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models
 
 import java.time.LocalDate
 
-data class SentenceKeyDate(
+data class NonDtoDate(
   val date: LocalDate? = null,
-  val overrideDate: LocalDate? = null,
-  val calculatedDate: LocalDate? = null,
+  val releaseDateType: String? = null,
 )
