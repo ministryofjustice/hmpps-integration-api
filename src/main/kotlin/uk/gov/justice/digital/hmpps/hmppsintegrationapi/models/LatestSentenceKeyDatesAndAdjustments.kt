@@ -25,3 +25,33 @@ data class LatestSentenceKeyDatesAndAdjustments(
   val tariffDate: LocalDate? = null,
   val tariffEarlyRemovalSchemeEligibilityDate: LocalDate? = null,
 )
+data class KeyDatesAndAdjustmentsDTO(
+  val adjustments: SentenceAdjustment? = null,
+  val keyDates: SentenceKeyDates? = null,
+) {
+  fun toLatestSentenceKeyDatesAndAdjustments(): LatestSentenceKeyDatesAndAdjustments {
+    return LatestSentenceKeyDatesAndAdjustments(
+      adjustments = this.adjustments,
+      automaticRelease = this.keyDates?.automaticRelease,
+      conditionalRelease = this.keyDates?.conditionalRelease,
+      dtoPostRecallRelease = this.keyDates?.dtoPostRecallRelease,
+      earlyTerm = this.keyDates?.earlyTerm,
+      homeDetentionCurfew = this.keyDates?.homeDetentionCurfew,
+      lateTerm = this.keyDates?.lateTerm,
+      licenceExpiry = this.keyDates?.licenceExpiry,
+      midTerm = this.keyDates?.midTerm,
+      nonDto = this.keyDates?.nonDto,
+      nonParole = this.keyDates?.nonParole,
+      paroleEligibility = this.keyDates?.paroleEligibility,
+      postRecallRelease = this.keyDates?.postRecallRelease,
+      release = this.keyDates?.release,
+      sentence = this.keyDates?.sentence,
+      topupSupervision = this.keyDates?.topupSupervision,
+      actualParoleDate = this.keyDates?.actualParoleDate,
+      earlyRemovalSchemeEligibilityDate = this.keyDates?.earlyRemovalSchemeEligibilityDate,
+      releaseOnTemporaryLicenceDate = this.keyDates?.releaseOnTemporaryLicenceDate,
+      tariffDate = this.keyDates?.tariffDate,
+      tariffEarlyRemovalSchemeEligibilityDate = this.keyDates?.tariffEarlyRemovalSchemeEligibilityDate,
+    )
+  }
+}
