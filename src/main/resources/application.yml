@@ -61,6 +61,8 @@ services:
     base-url: "OtherTestURL"
     username: hmpps-integration-api-client
     password: clientsecret
+  assess-risks-and-needs:
+    base-url: https://localhost:4050
   probation-offender-search:
     base-url: http://localhost:4002
 
