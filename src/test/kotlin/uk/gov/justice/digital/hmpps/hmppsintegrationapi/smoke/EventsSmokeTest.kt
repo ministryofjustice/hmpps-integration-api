@@ -6,19 +6,16 @@ import io.kotest.matchers.shouldBe
 import org.springframework.http.HttpStatus
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import java.net.URI
-import java.net.URLEncoder
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse
-import java.nio.charset.StandardCharsets
 
 class EventsSmokeTest : DescribeSpec(
   {
     val deliusCrn = "X00001"
-    val encodedDeliusCrn = URLEncoder.encode(deliusCrn, StandardCharsets.UTF_8)
 
     val baseUrl = "http://localhost:8080"
-    val basePath = "v1/case/$encodedDeliusCrn/supervisions"
+    val basePath = "v1/case/$deliusCrn/supervisions"
 
     val httpClient = HttpClient.newBuilder().build()
     val httpRequest = HttpRequest.newBuilder()
