@@ -13,7 +13,7 @@ generic-service:
       nginx.ingress.kubernetes.io/auth-tls-secret: "hmpps-integration-api-dev/client-certificate-auth"
 
   poddisruptionbudget:
-    enabled: false
+    enabled: enabled
 
   env:
     SPRING_PROFILES_ACTIVE: dev
