@@ -1,5 +1,5 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "5.9.0"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "5.10.0"
   kotlin("plugin.spring") version "1.9.20"
 }
 
@@ -9,17 +9,17 @@ configurations {
 
 dependencies {
   implementation("org.springframework.boot:spring-boot-starter-webflux")
-  implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
-  implementation("io.sentry:sentry-spring-boot-starter-jakarta:6.32.0")
-  implementation("io.sentry:sentry-logback:6.32.0")
-  implementation("org.springframework.data:spring-data-commons:3.1.5")
+  implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.1")
+  implementation("io.sentry:sentry-spring-boot-starter-jakarta:6.34.0")
+  implementation("io.sentry:sentry-logback:6.34.0")
+  implementation("org.springframework.data:spring-data-commons:3.2.0")
 
-  testImplementation("io.kotest:kotest-assertions-json-jvm:5.7.2")
-  testImplementation("io.kotest:kotest-runner-junit5-jvm:5.7.2")
-  testImplementation("io.kotest:kotest-assertions-core-jvm:5.7.2")
-  testImplementation("org.wiremock:wiremock:3.2.0")
+  testImplementation("io.kotest:kotest-assertions-json-jvm:5.8.0")
+  testImplementation("io.kotest:kotest-runner-junit5-jvm:5.8.0")
+  testImplementation("io.kotest:kotest-assertions-core-jvm:5.8.0")
+  testImplementation("org.wiremock:wiremock-standalone:3.0.1")
   testImplementation("io.kotest.extensions:kotest-extensions-spring:1.1.3")
-  testImplementation("org.mockito:mockito-core:5.6.0")
+  testImplementation("org.mockito:mockito-core:5.7.0")
 
   annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 }
