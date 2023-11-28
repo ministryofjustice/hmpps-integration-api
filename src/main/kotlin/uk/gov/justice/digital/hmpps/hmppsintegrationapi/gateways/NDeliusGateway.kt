@@ -11,7 +11,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Sentence
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.Supervision
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.CaseDetail
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.Supervisions
 
 @Component
@@ -65,14 +65,18 @@ class NDeliusGateway(@Value("\${services.ndelius.base-url}") baseUrl: String) {
     }
   }
 
-  fun getSupervisionsForPerson(id: String): Response<List<Supervision>> {
+  fun getCaseDetailForPerson(id: String, eventNumber: Int): Response<CaseDetail?> {
     return try {
       Response(
-        data = emptyList(),
+        data = webClient.request<CaseDetail>(
+          HttpMethod.GET,
+          "/case-details/$id/$eventNumber",
+          authenticationHeader(),
+        ).toCaseDetail(),
       )
     } catch (exception: WebClientResponseException.NotFound) {
       Response(
-        data = emptyList(),
+        data = null,
         errors = listOf(
           UpstreamApiError(
             causedBy = UpstreamApi.NDELIUS,
