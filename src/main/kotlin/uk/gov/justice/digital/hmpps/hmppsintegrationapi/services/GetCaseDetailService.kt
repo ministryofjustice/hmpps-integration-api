@@ -3,11 +3,11 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.CaseDetail
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Response
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.CaseDetail
 
 @Service
-class GetCaseDetailForCtrlOService(
+class GetCaseDetailService(
   @Autowired val nDeliusGateway: NDeliusGateway,
 ) {
   fun execute(hmppsId: String, eventNumber: Int): Response<CaseDetail?> {

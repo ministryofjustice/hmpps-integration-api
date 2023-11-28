@@ -8,16 +8,16 @@ import org.springframework.boot.test.context.ConfigDataApplicationContextInitial
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.context.ContextConfiguration
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.CaseDetail
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Response
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.CaseDetail
 
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
-  classes = [GetCaseDetailForCtrlOService::class],
+  classes = [GetCaseDetailService::class],
 )
 internal class GetCaseDetailServiceTest(
   @MockBean val nDeliusGateway: NDeliusGateway,
-  private val getCaseDetailForCtrlOService: GetCaseDetailForCtrlOService,
+  private val getCaseDetailService: GetCaseDetailService,
 ) : DescribeSpec(
   {
     val hmppsId = "X123456"
@@ -35,7 +35,7 @@ internal class GetCaseDetailServiceTest(
     }
 
     it("Returns a list of supervisions for a probationer according to the provided Delius CRN") {
-      val result = getCaseDetailForCtrlOService.execute(hmppsId, eventNumber)
+      val result = getCaseDetailService.execute(hmppsId, eventNumber)
 
       result.shouldBe(Response(data = caseDetail))
     }
