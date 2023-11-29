@@ -15,18 +15,15 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.CaseDetail
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetCaseDetailService
-import java.net.URLEncoder
-import java.nio.charset.StandardCharsets
 
 @WebMvcTest(controllers = [CaseDetailController::class])
 internal class CaseDetailControllerTest(
   @Autowired val mockMvc: MockMvc,
   @MockBean val getCaseDetailService: GetCaseDetailService,
 ) : DescribeSpec({
-  val hmppsId = "9999/11111A"
+  val hmppsId = "X12345"
   val eventNumber = 1234
-  val encodedHmppsId = URLEncoder.encode(hmppsId, StandardCharsets.UTF_8)
-  val path = "/v1/case-details/$encodedHmppsId/$eventNumber"
+  val path = "/v1/case-details/$hmppsId/$eventNumber"
 
   describe("GET $path") {
     beforeTest {
