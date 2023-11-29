@@ -65,6 +65,8 @@ services:
     base-url: https://localhost:4050
   probation-offender-search:
     base-url: http://localhost:4002
+  case-details:
+    base-url: https://localhost:4060
 
 sentry:
   traces-sample-rate: "0.05"

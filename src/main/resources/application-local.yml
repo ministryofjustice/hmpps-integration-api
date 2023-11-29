@@ -9,5 +9,7 @@ services:
     base-url: https://localhost:4040
   assess-risks-and-needs:
     base-url: https://localhost:4050
+  case-details:
+    base-url: https://localhost:4060
   hmpps-auth:
     base-url: http://localhost:9090
