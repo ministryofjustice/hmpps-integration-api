@@ -9,5 +9,7 @@ services:
     base-url: http://ndelius-api:4010
   assess-risks-and-needs:
     base-url: http://assess-risks-and-needs-api:4010
+  case-details-api:
+    base-url: http://case-details-api:4010
   hmpps-auth:
     base-url: http://hmpps-auth:8080
