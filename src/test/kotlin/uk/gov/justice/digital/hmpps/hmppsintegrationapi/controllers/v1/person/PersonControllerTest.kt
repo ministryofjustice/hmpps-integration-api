@@ -224,10 +224,6 @@ internal class PersonControllerTest(
                   causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH,
                   type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
                 ),
-                UpstreamApiError(
-                  causedBy = UpstreamApi.NOMIS,
-                  type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-                ),
               ),
             ),
           )

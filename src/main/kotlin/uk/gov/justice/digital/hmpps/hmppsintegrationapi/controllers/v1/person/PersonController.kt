@@ -53,10 +53,7 @@ class PersonController(
     val hmppsId = encodedHmppsId.decodeUrlCharacters()
     val response = getPersonService.execute(hmppsId)
 
-    if (
-      response.hasErrorCausedBy(ENTITY_NOT_FOUND, causedBy = UpstreamApi.NOMIS) &&
-      response.hasErrorCausedBy(ENTITY_NOT_FOUND, causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH)
-    ) {
+    if (response.hasErrorCausedBy(ENTITY_NOT_FOUND, causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH)) {
       throw EntityNotFoundException("Could not find person with id: $hmppsId")
     }
 
