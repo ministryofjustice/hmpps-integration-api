@@ -15,7 +15,7 @@ services:
         condition: service_healthy
       probation-offender-search:
         condition: service_healthy
-      case-details-api:
+      effective-proposal-framework-and-delius-api:
         condition: service_healthy
     environment:
       - SERVER_PORT=8080
