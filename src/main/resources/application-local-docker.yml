@@ -10,6 +10,6 @@ services:
   assess-risks-and-needs:
     base-url: http://assess-risks-and-needs-api:4010
   effective-proposal-framework-and-delius:
-    base-url: http://effective-proposal-framework-and-delius-api:4060
+    base-url: http://effective-proposal-framework-and-delius-api:4010
   hmpps-auth:
     base-url: http://hmpps-auth:8080

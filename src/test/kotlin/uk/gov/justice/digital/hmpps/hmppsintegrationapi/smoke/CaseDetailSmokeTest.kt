@@ -30,28 +30,10 @@ class CaseDetailSmokeTest : DescribeSpec(
       response.body().shouldEqualJson(
         """
       {
-        "nomsId": "string",
-        "name": {
-          "forename": "string",
-          "middleName": "string",
-          "surname": "string"
+        "data": {
+          "nomsId": "string"
         },
-        "dateOfBirth": "string",
-        "gender": "string",
-        "sentence": {
-          "date": "string",
-          "sentencingCourt": {
-            "name": "string"
-          },
-          "releaseDate": "string"
-        },
-        "responsibleProvider": {
-          "code": "string",
-          "name": "string"
-        },
-        "ogrsScore": "integer",
-        "age": "integer",
-        "ageAtRelease": "integer"
+        "errors": []
       }
       """.removeWhitespaceAndNewlines(),
       )
