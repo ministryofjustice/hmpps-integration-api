@@ -19,7 +19,7 @@ class AuthorisationFilter : Filter {
   ) {
     val req = request as HttpServletRequest
     println("****************** Header *******")
-    println(req.getHeader("api-key-id"))
+    println(req.getHeader("subject-distinguished-name"))
 
     println("****************** context Path *******")
     println(req.servletPath)
