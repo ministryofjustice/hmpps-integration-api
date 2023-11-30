@@ -84,11 +84,11 @@ services:
     ports:
       - '4050:4010'
 
-  case-details-api:
+  effective-proposal-framework-and-delius-api:
     build:
       context: .
-      dockerfile: Dockerfile.setup-case-details-api
-    container_name: case-details-api
+      dockerfile: Dockerfile.setup-effective-proposal-framework-and-delius-api
+    container_name: effective-proposal-framework-and-delius-api
     healthcheck:
       test: 'wget --header="Authorization: Bearer abc" http://0.0.0.0:4010/case-details/crn/1234 -O /dev/null'
     ports:

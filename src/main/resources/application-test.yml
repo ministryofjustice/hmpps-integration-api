@@ -20,3 +20,5 @@ services:
     base-url: http://localhost:4003
   assess-risks-and-needs:
     base-url: http://localhost:4004
+  effective-proposal-framework-and-delius:
+    base-url: http://localhost:4005

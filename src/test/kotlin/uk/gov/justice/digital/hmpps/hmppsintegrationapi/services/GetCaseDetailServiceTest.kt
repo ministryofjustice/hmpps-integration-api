@@ -7,7 +7,7 @@ import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.context.ContextConfiguration
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.EffectiveProposalFrameworkAndDeliusGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.CaseDetail
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Response
 
@@ -16,7 +16,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Response
   classes = [GetCaseDetailService::class],
 )
 internal class GetCaseDetailServiceTest(
-  @MockBean val nDeliusGateway: NDeliusGateway,
+  @MockBean val effectiveProposalFrameworkAndDeliusGateway: EffectiveProposalFrameworkAndDeliusGateway,
   private val getCaseDetailService: GetCaseDetailService,
 ) : DescribeSpec(
   {
@@ -25,9 +25,9 @@ internal class GetCaseDetailServiceTest(
     val caseDetail = CaseDetail(nomsId = "ABC123")
 
     beforeEach {
-      Mockito.reset(nDeliusGateway)
+      Mockito.reset(effectiveProposalFrameworkAndDeliusGateway)
 
-      whenever(nDeliusGateway.getCaseDetailForPerson(hmppsId, eventNumber)).thenReturn(
+      whenever(effectiveProposalFrameworkAndDeliusGateway.getCaseDetailForPerson(hmppsId, eventNumber)).thenReturn(
         Response(
           data = caseDetail,
         ),

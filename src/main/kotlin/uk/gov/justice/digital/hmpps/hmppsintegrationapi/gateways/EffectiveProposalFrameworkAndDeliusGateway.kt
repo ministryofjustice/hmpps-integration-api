@@ -6,54 +6,31 @@ import org.springframework.http.HttpMethod
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Offence
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Response
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Sentence
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.Supervisions
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.CaseDetail
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.CaseDetail as IntegrationAPICaseDetail
 
 @Component
-class NDeliusGateway(@Value("\${services.ndelius.base-url}") baseUrl: String) {
+class EffectiveProposalFrameworkAndDeliusGateway(@Value("\${services.effective-proposal-framework-and-delius.base-url}") baseUrl: String) {
   private val webClient = WebClientWrapper(baseUrl)
 
   @Autowired
   lateinit var hmppsAuthGateway: HmppsAuthGateway
 
-  fun getOffencesForPerson(id: String): Response<List<Offence>> {
+  fun getCaseDetailForPerson(id: String, eventNumber: Int): Response<IntegrationAPICaseDetail?> {
     return try {
       Response(
-        data = webClient.request<Supervisions>(
+        data = webClient.request<CaseDetail?>(
           HttpMethod.GET,
-          "/case/$id/supervisions",
+          "/case-details/$id/$eventNumber",
           authenticationHeader(),
-        ).supervisions.flatMap { it.toOffences() },
+        )?.toCaseDetail(),
       )
     } catch (exception: WebClientResponseException.NotFound) {
       Response(
-        data = emptyList(),
-        errors = listOf(
-          UpstreamApiError(
-            causedBy = UpstreamApi.NDELIUS,
-            type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-          ),
-        ),
-      )
-    }
-  }
-
-  fun getSentencesForPerson(id: String): Response<List<Sentence>> {
-    return try {
-      Response(
-        data = webClient.request<Supervisions>(
-          HttpMethod.GET,
-          "/case/$id/supervisions",
-          authenticationHeader(),
-        ).supervisions.map { it.toSentence() },
-      )
-    } catch (exception: WebClientResponseException.NotFound) {
-      Response(
-        data = emptyList(),
+        data = null,
         errors = listOf(
           UpstreamApiError(
             causedBy = UpstreamApi.NDELIUS,
