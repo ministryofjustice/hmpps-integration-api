@@ -7,6 +7,7 @@ import jakarta.servlet.ServletRequest
 import jakarta.servlet.ServletResponse
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.stereotype.Component
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.ExtractConsumerFromSubjectDistinguishedNameService
 import java.io.IOException
 
 @Component
@@ -18,8 +19,8 @@ class AuthorisationFilter : Filter {
     chain: FilterChain,
   ) {
     val req = request as HttpServletRequest
-    println("****************** Header *******")
-    println(req.getHeader("subject-distinguished-name"))
+    println("****************** Consumer Common Name *******")
+    println(ExtractConsumerFromSubjectDistinguishedNameService().execute(req.getHeader("subject-distinguished-name")))
 
     println("****************** context Path *******")
     println(req.servletPath)
