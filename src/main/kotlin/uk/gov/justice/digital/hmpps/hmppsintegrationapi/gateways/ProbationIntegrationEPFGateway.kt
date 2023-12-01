@@ -13,7 +13,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.CaseDetai
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.CaseDetail as IntegrationAPICaseDetail
 
 @Component
-class EffectiveProposalFrameworkAndDeliusGateway(@Value("\${services.effective-proposal-framework-and-delius.base-url}") baseUrl: String) {
+class ProbationIntegrationEPFGateway(@Value("\${services.probation-integration-epf.base-url}") baseUrl: String) {
   private val webClient = WebClientWrapper(baseUrl)
 
   @Autowired

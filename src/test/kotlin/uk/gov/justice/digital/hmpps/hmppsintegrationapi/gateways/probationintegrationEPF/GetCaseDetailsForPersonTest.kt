@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.effectiveproposalframeworkanddelius
+package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.probationintegrationEPF
 
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
@@ -10,8 +10,8 @@ import org.springframework.boot.test.context.ConfigDataApplicationContextInitial
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.EffectiveProposalFrameworkAndDeliusGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ProbationIntegrationEPFGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.generateCaseDetail
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.EffectiveProposalFrameworkAndDeliusMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
@@ -20,11 +20,11 @@ import java.io.File
 @ActiveProfiles("test")
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
-  classes = [EffectiveProposalFrameworkAndDeliusGateway::class],
+  classes = [ProbationIntegrationEPFGateway::class],
 )
 class GetCaseDetailsForPersonTest(
   @MockBean val hmppsAuthGateway: HmppsAuthGateway,
-  val effectiveProposalFrameworkAndDeliusGateway: EffectiveProposalFrameworkAndDeliusGateway,
+  val probationIntegrationEPFGateway: ProbationIntegrationEPFGateway,
 ) :
   DescribeSpec(
     {
@@ -37,7 +37,7 @@ class GetCaseDetailsForPersonTest(
         effectiveProposalFrameworkAndDeliusMockServer.stubGetCaseDetailForPerson(
           hmppsId,
           1234,
-          File("src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/effectiveproposalframeworkanddelius/fixtures/GetCaseDetailsResponse.json").readText(),
+          File("src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/probationintegrationEPF/fixtures/GetCaseDetailsResponse.json").readText(),
         )
 
         Mockito.reset(hmppsAuthGateway)
@@ -49,13 +49,13 @@ class GetCaseDetailsForPersonTest(
       }
 
       it("authenticates using HMPPS Auth with credentials") {
-        effectiveProposalFrameworkAndDeliusGateway.getCaseDetailForPerson(hmppsId, eventNumber)
+        probationIntegrationEPFGateway.getCaseDetailForPerson(hmppsId, eventNumber)
 
         verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("nDelius")
       }
 
       it("returns case detail for the matching CRN") {
-        val response = effectiveProposalFrameworkAndDeliusGateway.getCaseDetailForPerson(hmppsId, eventNumber)
+        val response = probationIntegrationEPFGateway.getCaseDetailForPerson(hmppsId, eventNumber)
 
         response.data.shouldBe(
           generateCaseDetail(nomsId = "ABC123"),

@@ -9,7 +9,7 @@ services:
     base-url: https://external-api-and-delius-preprod.hmpps.service.justice.gov.uk
   assess-risks-and-needs:
     base-url: https://assess-risks-and-needs-preprod.hmpps.service.justice.gov.uk
-  effective-proposal-framework-and-delius:
+  probation-integration-epf:
     base-url: https://effective-proposal-framework-and-delius-preprod.hmpps.service.justice.gov.uk
   hmpps-auth:
     base-url: https://sign-in-preprod.hmpps.service.justice.gov.uk
