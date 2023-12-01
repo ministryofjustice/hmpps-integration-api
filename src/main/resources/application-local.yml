@@ -6,8 +6,10 @@ services:
   prison-api:
     base-url: http://localhost:4030
   ndelius:
-    base-url: https://localhost:4040
+    base-url: http://localhost:4040
   assess-risks-and-needs:
-    base-url: https://localhost:4050
+    base-url: http://localhost:4050
+  probation-integration-epf:
+    base-url: http://localhost:4060
   hmpps-auth:
     base-url: http://localhost:9090
