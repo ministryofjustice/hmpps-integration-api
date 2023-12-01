@@ -31,7 +31,28 @@ class CaseDetailSmokeTest : DescribeSpec(
         """
       {
         "data": {
-          "nomsId": "string"
+          "nomsId": "ABC123",
+          "name": {
+            "forename": "Paul",
+            "middleName": "John",
+            "surname": "Smith"
+          },
+          "dateOfBirth":"2000-03-01",
+          "gender": null,
+          "sentence": {
+            "date": "2021-03-03",
+            "sentencingCourt": {
+              "name": "Fakecourt"
+            },
+            "releaseDate": "2021-10-10"
+          },
+          "responsibleProvider": {
+            "code": "999000ABC",
+            "name": "Fakeprovider"
+          },
+          "ogrsScore": 123,
+          "age": 23,
+          "ageAtRelease": 24
         },
         "errors": []
       }
