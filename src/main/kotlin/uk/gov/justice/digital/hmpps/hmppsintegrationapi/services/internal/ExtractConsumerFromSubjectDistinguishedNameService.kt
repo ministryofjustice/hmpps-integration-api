@@ -1,5 +1,8 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal
 
+import org.springframework.stereotype.Component
+
+@Component
 class ExtractConsumerFromSubjectDistinguishedNameService {
   fun execute(subjectDistinguishedName: String?): String? {
     if (subjectDistinguishedName.isNullOrEmpty()) {
