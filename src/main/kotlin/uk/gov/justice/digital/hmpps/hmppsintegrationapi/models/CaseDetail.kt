@@ -7,9 +7,9 @@ data class CaseDetail(
   val gender: String? = null,
   val sentence: CaseSentence? = null,
   val responsibleProvider: ResponsibleProvider? = null,
-  val ogrsScore: Int? = null,
-  val age: Int? = null,
-  val ageAtRelease: Int? = null,
+  val ogrsScore: Long? = null,
+  val age: Long? = null,
+  val ageAtRelease: Long? = null,
 )
 
 data class Name(
