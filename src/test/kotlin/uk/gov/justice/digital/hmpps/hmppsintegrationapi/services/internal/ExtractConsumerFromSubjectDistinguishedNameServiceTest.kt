@@ -1,11 +1,10 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal
 
-import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.DescribeSpec
+import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
 import org.springframework.test.context.ContextConfiguration
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.AuthorisationFailedException
 
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
@@ -31,28 +30,25 @@ internal class ExtractConsumerFromSubjectDistinguishedNameServiceTest(
     }
 
     describe("When an invalid Subject Distinguished Name was supplied") {
-      it("Throws an exception when it is empty") {
+      it("returns null when it is empty") {
         val subjectDistinguishedName = ""
 
-        shouldThrow<AuthorisationFailedException> {
-          extractConsumerFromSubjectDistinguishedNameService.execute(subjectDistinguishedName)
-        }
+        val result = extractConsumerFromSubjectDistinguishedNameService.execute(subjectDistinguishedName)
+        result.shouldBeNull()
       }
 
-      it("Throws an exception when it is null") {
+      it("returns null when it is null") {
         val subjectDistinguishedName = null
 
-        shouldThrow<AuthorisationFailedException> {
-          extractConsumerFromSubjectDistinguishedNameService.execute(subjectDistinguishedName)
-        }
+        val result = extractConsumerFromSubjectDistinguishedNameService.execute(subjectDistinguishedName)
+        result.shouldBeNull()
       }
 
-      it("Throws an exception when there is no Common Name (CN)") {
+      it("returns null when there is no Common Name (CN)") {
         val subjectDistinguishedName = "C=GB,ST=London,L=London,O=Home Office"
 
-        shouldThrow<AuthorisationFailedException> {
-          extractConsumerFromSubjectDistinguishedNameService.execute(subjectDistinguishedName)
-        }
+        val result = extractConsumerFromSubjectDistinguishedNameService.execute(subjectDistinguishedName)
+        result.shouldBeNull()
       }
     }
   },
