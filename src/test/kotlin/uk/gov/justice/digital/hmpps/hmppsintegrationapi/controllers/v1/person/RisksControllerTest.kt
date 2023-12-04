@@ -12,8 +12,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.HttpStatus
 import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.OtherRisks
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Risk
@@ -29,13 +29,14 @@ import java.time.LocalDateTime
 
 @WebMvcTest(controllers = [RisksController::class])
 internal class RisksControllerTest(
-  @Autowired val mockMvc: MockMvc,
+  @Autowired var springMockMvc: MockMvc,
   @MockBean val getRisksForPersonService: GetRisksForPersonService,
 ) : DescribeSpec(
   {
     val hmppsId = "9999/11111A"
     val encodedHmppsId = URLEncoder.encode(hmppsId, StandardCharsets.UTF_8)
     val path = "/v1/persons/$encodedHmppsId/risks"
+    val mockMvc = IntegrationAPIMockMvc(springMockMvc)
 
     describe("GET $path") {
       beforeTest {
@@ -87,19 +88,19 @@ internal class RisksControllerTest(
       }
 
       it("responds with a 200 OK status") {
-        val result = mockMvc.perform(MockMvcRequestBuilders.get(path)).andReturn()
+        val result = mockMvc.performAuthorised(path)
 
         result.response.status.shouldBe(HttpStatus.OK.value())
       }
 
       it("retrieves the risks for a person with the matching ID") {
-        mockMvc.perform(MockMvcRequestBuilders.get(path)).andReturn()
+        mockMvc.performAuthorised(path)
 
         verify(getRisksForPersonService, VerificationModeFactory.times(1)).execute(hmppsId)
       }
 
       it("returns the risks for a person with the matching ID") {
-        val result = mockMvc.perform(MockMvcRequestBuilders.get(path)).andReturn()
+        val result = mockMvc.performAuthorised(path)
 
         result.response.contentAsString.shouldContain(
           """
@@ -182,7 +183,7 @@ internal class RisksControllerTest(
 
         whenever(getRisksForPersonService.execute(hmppsIdForPersonWithNoRisks)).thenReturn(Response(data = null))
 
-        val result = mockMvc.perform(MockMvcRequestBuilders.get(pathForPersonWithNoRisks)).andReturn()
+        val result = mockMvc.performAuthorised(pathForPersonWithNoRisks)
 
         result.response.contentAsString.shouldContain("\"data\":null")
       }
@@ -200,7 +201,7 @@ internal class RisksControllerTest(
           ),
         )
 
-        val result = mockMvc.perform(MockMvcRequestBuilders.get(path)).andReturn()
+        val result = mockMvc.performAuthorised(path)
 
         result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
       }

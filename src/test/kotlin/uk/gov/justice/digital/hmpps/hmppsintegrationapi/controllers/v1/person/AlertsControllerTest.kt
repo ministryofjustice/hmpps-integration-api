@@ -13,8 +13,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.HttpStatus
 import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Alert
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApi
@@ -26,13 +26,14 @@ import java.time.LocalDate
 
 @WebMvcTest(controllers = [AlertsController::class])
 internal class AlertsControllerTest(
-  @Autowired val mockMvc: MockMvc,
+  @Autowired var springMockMvc: MockMvc,
   @MockBean val getAlertsForPersonService: GetAlertsForPersonService,
 ) : DescribeSpec(
   {
     val hmppsId = "9999/11111A"
     val encodedHmppsId = URLEncoder.encode(hmppsId, StandardCharsets.UTF_8)
     val path = "/v1/persons/$encodedHmppsId/alerts"
+    val mockMvc = IntegrationAPIMockMvc(springMockMvc)
 
     describe("GET $path") {
       beforeTest {
@@ -58,19 +59,19 @@ internal class AlertsControllerTest(
       }
 
       it("responds with a 200 OK status") {
-        val result = mockMvc.perform(MockMvcRequestBuilders.get("$path")).andReturn()
+        val result = mockMvc.performAuthorised(path)
 
         result.response.status.shouldBe(HttpStatus.OK.value())
       }
 
       it("retrieves the alerts for a person with the matching ID") {
-        mockMvc.perform(MockMvcRequestBuilders.get("$path")).andReturn()
+        mockMvc.performAuthorised(path)
 
         verify(getAlertsForPersonService, VerificationModeFactory.times(1)).execute(hmppsId)
       }
 
       it("returns the alerts for a person with the matching ID") {
-        val result = mockMvc.perform(MockMvcRequestBuilders.get("$path")).andReturn()
+        val result = mockMvc.performAuthorised(path)
 
         result.response.contentAsString.shouldContain(
           """
@@ -104,9 +105,7 @@ internal class AlertsControllerTest(
           ),
         )
 
-        val result =
-          mockMvc.perform(MockMvcRequestBuilders.get("$path"))
-            .andReturn()
+        val result = mockMvc.performAuthorised(path)
 
         result.response.contentAsString.shouldContain("\"data\":[]".removeWhitespaceAndNewlines())
       }
@@ -124,7 +123,7 @@ internal class AlertsControllerTest(
           ),
         )
 
-        val result = mockMvc.perform(MockMvcRequestBuilders.get("$path")).andReturn()
+        val result = mockMvc.performAuthorised(path)
 
         result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
       }
@@ -150,9 +149,7 @@ internal class AlertsControllerTest(
           ),
         )
 
-        val result =
-          mockMvc.perform(MockMvcRequestBuilders.get("$path?page=1&perPage=10"))
-            .andReturn()
+        val result = mockMvc.performAuthorised("$path?page=1&perPage=10")
 
         result.response.contentAsString.shouldContainJsonKeyValue("$.pagination.page", 1)
         result.response.contentAsString.shouldContainJsonKeyValue("$.pagination.totalPages", 2)

@@ -12,6 +12,7 @@ import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.HttpStatus
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApiError
@@ -19,13 +20,14 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetImageService
 
 @WebMvcTest(controllers = [ImageController::class])
 internal class ImageControllerTest(
-  @Autowired val mockMvc: MockMvc,
+  @Autowired var springMockMvc: MockMvc,
   @MockBean val getImageService: GetImageService,
 ) : DescribeSpec(
   {
     val id = 2461788
     val image = byteArrayOf(0x48, 101, 108, 108, 111)
     val basePath = "/v1/images"
+    val mockMvc = IntegrationAPIMockMvc(springMockMvc)
 
     describe("GET $basePath/{id}") {
       beforeTest {
@@ -34,19 +36,19 @@ internal class ImageControllerTest(
       }
 
       it("responds with a 200 OK status") {
-        val result = mockMvc.perform(get("$basePath/$id")).andReturn()
+        val result = mockMvc.performAuthorised("$basePath/$id")
 
         result.response.status.shouldBe(HttpStatus.OK.value())
       }
 
       it("retrieves a image with the matching ID") {
-        mockMvc.perform(get("$basePath/$id")).andReturn()
+        mockMvc.performAuthorised("$basePath/$id")
 
         verify(getImageService, VerificationModeFactory.times(1)).execute(id)
       }
 
       it("returns an image with the matching ID") {
-        val result = mockMvc.perform(get("$basePath/$id")).andReturn()
+        val result = mockMvc.performAuthorised("$basePath/$id")
 
         result.response.contentAsByteArray.shouldBe(image)
       }
@@ -64,7 +66,7 @@ internal class ImageControllerTest(
           ),
         )
 
-        val result = mockMvc.perform(get("$basePath/$id")).andReturn()
+        val result = mockMvc.performAuthorised("$basePath/$id")
 
         result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
       }

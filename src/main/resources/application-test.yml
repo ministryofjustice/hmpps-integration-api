@@ -22,3 +22,18 @@ services:
     base-url: http://localhost:4004
   probation-integration-epf:
     base-url: http://localhost:4005
+
+authorisation:
+  consumers:
+    automated-test-client:
+      - "/v1/persons/.*"
+      - "/v1/persons/.*/images"
+      - "/v1/images/.*"
+      - "/v1/persons/.*/addresses"
+      - "/v1/persons/.*/offences"
+      - "/v1/persons/.*/alerts"
+      - "/v1/persons/.*/sentences"
+      - "/v1/persons/.*/sentences/latest-key-dates-and-adjustments"
+      - "/v1/persons/.*/risks/scores"
+      - "/v1/persons/.*/needs"
+      - "/v1/persons/.*/risks"

@@ -12,9 +12,9 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.HttpStatus
 import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.controllers.v1.person.SentencesController
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.HomeDetentionCurfewDate
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.LatestSentenceKeyDatesAndAdjustments
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.NonDtoDate
@@ -34,7 +34,7 @@ import java.time.LocalDate
 
 @WebMvcTest(controllers = [SentencesController::class])
 internal class LatestSentenceKeyDatesAndAdjustmentsControllerTest(
-  @Autowired val mockMvc: MockMvc,
+  @Autowired var springMockMvc: MockMvc,
   @MockBean val getSentencesForPersonService: GetSentencesForPersonService,
   @MockBean val getLatestSentenceKeyDatesAndAdjustmentsForPersonService: GetLatestSentenceKeyDatesAndAdjustmentsForPersonService,
 ) : DescribeSpec(
@@ -42,6 +42,7 @@ internal class LatestSentenceKeyDatesAndAdjustmentsControllerTest(
     val hmppsId = "9999/11111A"
     val encodedHmppsId = URLEncoder.encode(hmppsId, StandardCharsets.UTF_8)
     val path = "/v1/persons/$encodedHmppsId/sentences/latest-key-dates-and-adjustments"
+    val mockMvc = IntegrationAPIMockMvc(springMockMvc)
 
     beforeTest {
       Mockito.reset(getLatestSentenceKeyDatesAndAdjustmentsForPersonService)
@@ -103,19 +104,19 @@ internal class LatestSentenceKeyDatesAndAdjustmentsControllerTest(
     }
 
     it("responds with a 200 OK status") {
-      val result = mockMvc.perform(MockMvcRequestBuilders.get(path)).andReturn()
+      val result = mockMvc.performAuthorised(path)
 
       result.response.status.shouldBe(HttpStatus.OK.value())
     }
 
     it("retrieves the latest sentence key dates and adjustments for a person with the matching ID") {
-      mockMvc.perform(MockMvcRequestBuilders.get(path)).andReturn()
+      mockMvc.performAuthorised(path)
 
       verify(getLatestSentenceKeyDatesAndAdjustmentsForPersonService, VerificationModeFactory.times(1)).execute(hmppsId)
     }
 
     it("returns the latest sentence key dates and adjustments for a person with the matching ID") {
-      val result = mockMvc.perform(MockMvcRequestBuilders.get(path)).andReturn()
+      val result = mockMvc.performAuthorised(path)
 
       result.response.contentAsString.shouldContain(
         """
@@ -235,7 +236,7 @@ internal class LatestSentenceKeyDatesAndAdjustmentsControllerTest(
         ),
       )
 
-      val result = mockMvc.perform(MockMvcRequestBuilders.get(path)).andReturn()
+      val result = mockMvc.performAuthorised(path)
 
       result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
     }

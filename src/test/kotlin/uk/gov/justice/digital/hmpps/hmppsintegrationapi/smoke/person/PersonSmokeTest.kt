@@ -6,19 +6,14 @@ import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
 import org.springframework.http.HttpStatus
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
-import java.net.URI
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIHttpClient
 import java.net.URLEncoder
-import java.net.http.HttpClient
-import java.net.http.HttpRequest
-import java.net.http.HttpResponse
 import java.nio.charset.StandardCharsets
 
 class PersonSmokeTest : DescribeSpec(
   {
-    val baseUrl = "http://localhost:8080"
     val basePath = "v1/persons"
-    val httpClient = HttpClient.newBuilder().build()
-    val httpRequest = HttpRequest.newBuilder()
+    val httpClient = IntegrationAPIHttpClient()
 
     val hmppsId = "2004/13116M"
     val encodedHmppsId = URLEncoder.encode(hmppsId, StandardCharsets.UTF_8)
@@ -28,10 +23,7 @@ class PersonSmokeTest : DescribeSpec(
       val lastName = "Example_Last_Name"
       val queryParams = "first_name=$firstName&last_name=$lastName"
 
-      val response = httpClient.send(
-        httpRequest.uri(URI.create("$baseUrl/$basePath?$queryParams")).build(),
-        HttpResponse.BodyHandlers.ofString(),
-      )
+      val response = httpClient.performAuthorised("$basePath?$queryParams")
 
       response.statusCode().shouldBe(HttpStatus.OK.value())
       response.body().shouldContain("\"data\":[")
@@ -50,10 +42,7 @@ class PersonSmokeTest : DescribeSpec(
     }
 
     it("returns a person from Prisoner Offender Search and Probation Offender Search") {
-      val response = httpClient.send(
-        httpRequest.uri(URI.create("$baseUrl/$basePath/$encodedHmppsId")).build(),
-        HttpResponse.BodyHandlers.ofString(),
-      )
+      val response = httpClient.performAuthorised("$basePath/$encodedHmppsId")
 
       response.body().shouldBe(
         """
@@ -87,10 +76,7 @@ class PersonSmokeTest : DescribeSpec(
     }
 
     it("returns image metadata for a person") {
-      val response = httpClient.send(
-        httpRequest.uri(URI.create("$baseUrl/$basePath/$encodedHmppsId/images")).build(),
-        HttpResponse.BodyHandlers.ofString(),
-      )
+      val response = httpClient.performAuthorised("$basePath/$encodedHmppsId/images")
 
       response.statusCode().shouldBe(HttpStatus.OK.value())
       response.body().shouldContain("\"data\":[")
@@ -107,10 +93,7 @@ class PersonSmokeTest : DescribeSpec(
     }
 
     it("returns addresses for a person") {
-      val response = httpClient.send(
-        httpRequest.uri(URI.create("$baseUrl/$basePath/$encodedHmppsId/addresses")).build(),
-        HttpResponse.BodyHandlers.ofString(),
-      )
+      val response = httpClient.performAuthorised("$basePath/$encodedHmppsId/addresses")
 
       response.statusCode().shouldBe(HttpStatus.OK.value())
       response.body().shouldEqualJson(

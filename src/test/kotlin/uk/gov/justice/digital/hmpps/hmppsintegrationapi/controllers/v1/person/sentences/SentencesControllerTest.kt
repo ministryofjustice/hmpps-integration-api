@@ -13,9 +13,9 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.HttpStatus
 import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.controllers.v1.person.SentencesController
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.generateTestSentence
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApi
@@ -28,7 +28,7 @@ import java.time.LocalDate
 
 @WebMvcTest(controllers = [SentencesController::class])
 internal class SentencesControllerTest(
-  @Autowired val mockMvc: MockMvc,
+  @Autowired var springMockMvc: MockMvc,
   @MockBean val getSentencesForPersonService: GetSentencesForPersonService,
   @MockBean val getLatestSentenceKeyDatesAndAdjustmentsForPersonService: GetLatestSentenceKeyDatesAndAdjustmentsForPersonService,
 ) : DescribeSpec(
@@ -36,6 +36,7 @@ internal class SentencesControllerTest(
     val hmppsId = "9999/11111A"
     val encodedHmppsId = URLEncoder.encode(hmppsId, StandardCharsets.UTF_8)
     val path = "/v1/persons/$encodedHmppsId/sentences"
+    val mockMvc = IntegrationAPIMockMvc(springMockMvc)
 
     beforeTest {
       Mockito.reset(getSentencesForPersonService)
@@ -50,19 +51,19 @@ internal class SentencesControllerTest(
     }
 
     it("responds with a 200 OK status") {
-      val result = mockMvc.perform(MockMvcRequestBuilders.get(path)).andReturn()
+      val result = mockMvc.performAuthorised(path)
 
       result.response.status.shouldBe(HttpStatus.OK.value())
     }
 
     it("retrieves the sentences for a person with the matching ID") {
-      mockMvc.perform(MockMvcRequestBuilders.get(path)).andReturn()
+      mockMvc.performAuthorised(path)
 
       verify(getSentencesForPersonService, VerificationModeFactory.times(1)).execute(hmppsId)
     }
 
     it("returns the sentences for a person with the matching ID") {
-      val result = mockMvc.perform(MockMvcRequestBuilders.get(path)).andReturn()
+      val result = mockMvc.performAuthorised(path)
 
       result.response.contentAsString.shouldContain(
         """
@@ -144,7 +145,7 @@ internal class SentencesControllerTest(
         ),
       )
 
-      val result = mockMvc.perform(MockMvcRequestBuilders.get(path)).andReturn()
+      val result = mockMvc.performAuthorised(path)
 
       result.response.contentAsString.shouldContain("\"data\":[]".removeWhitespaceAndNewlines())
     }
@@ -162,7 +163,7 @@ internal class SentencesControllerTest(
         ),
       )
 
-      val result = mockMvc.perform(MockMvcRequestBuilders.get(path)).andReturn()
+      val result = mockMvc.performAuthorised(path)
 
       result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
     }
@@ -180,7 +181,7 @@ internal class SentencesControllerTest(
         ),
       )
 
-      val result = mockMvc.perform(MockMvcRequestBuilders.get("$path?page=1&perPage=10")).andReturn()
+      val result = mockMvc.performAuthorised("$path?page=1&perPage=10")
 
       result.response.contentAsString.shouldContainJsonKeyValue("$.pagination.page", 1)
       result.response.contentAsString.shouldContainJsonKeyValue("$.pagination.totalPages", 2)
