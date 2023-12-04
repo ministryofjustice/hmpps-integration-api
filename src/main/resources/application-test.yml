@@ -26,6 +26,7 @@ services:
 authorisation:
   consumers:
     automated-test-client:
+      - "/v1/persons"
       - "/v1/persons/.*"
       - "/v1/persons/.*/images"
       - "/v1/images/.*"
@@ -37,3 +38,9 @@ authorisation:
       - "/v1/persons/.*/risks/scores"
       - "/v1/persons/.*/needs"
       - "/v1/persons/.*/risks"
+      - "/v1/case-details/.*/.*"
+      - "/health"
+      - "/health/ping"
+      - "/health/readiness"
+      - "/health/liveness"
+      - "/info"

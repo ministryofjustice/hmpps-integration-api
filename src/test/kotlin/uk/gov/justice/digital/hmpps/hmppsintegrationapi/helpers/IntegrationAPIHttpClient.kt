@@ -22,7 +22,7 @@ class IntegrationAPIHttpClient(
     )
   }
 
-  fun performUnAuthorised(path: String): HttpResponse<String> {
+  fun performUnauthorised(path: String): HttpResponse<String> {
     val httpRequest = HttpRequest.newBuilder()
     return httpClient.send(
       httpRequest.uri(URI.create("$baseUrl/$path")).build(),

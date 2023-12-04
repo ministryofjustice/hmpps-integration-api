@@ -13,8 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.HttpStatus
+import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.generateTestAddress
@@ -34,6 +34,7 @@ import java.time.LocalDateTime
 import kotlin.random.Random
 
 @WebMvcTest(controllers = [PersonController::class])
+@ActiveProfiles("test")
 internal class PersonControllerTest(
   @Autowired var springMockMvc: MockMvc,
   @MockBean val getPersonService: GetPersonService,

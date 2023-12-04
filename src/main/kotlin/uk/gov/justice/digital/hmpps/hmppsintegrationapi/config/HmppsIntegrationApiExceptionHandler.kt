@@ -5,6 +5,7 @@ import jakarta.validation.ValidationException
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.HttpStatus.BAD_REQUEST
+import org.springframework.http.HttpStatus.FORBIDDEN
 import org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR
 import org.springframework.http.HttpStatus.NOT_FOUND
 import org.springframework.http.ResponseEntity
@@ -47,10 +48,10 @@ class HmppsIntegrationApiExceptionHandler {
   fun handleAuthenticationFailedException(e: AuthenticationFailedException): ResponseEntity<ErrorResponse?>? {
     log_and_capture("Authentication error: {}", e)
     return ResponseEntity
-      .status(INTERNAL_SERVER_ERROR)
+      .status(FORBIDDEN)
       .body(
         ErrorResponse(
-          status = INTERNAL_SERVER_ERROR,
+          status = FORBIDDEN,
           userMessage = "Authentication error: ${e.message}",
           developerMessage = e.message,
         ),

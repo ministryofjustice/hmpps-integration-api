@@ -1,9 +1,8 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal
 
-import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.DescribeSpec
+import io.kotest.matchers.booleans.shouldBeFalse
 import io.kotest.matchers.booleans.shouldBeTrue
-import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory
 import org.mockito.kotlin.verify
@@ -11,7 +10,6 @@ import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.context.ContextConfiguration
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.AuthenticationFailedException
 
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
@@ -59,29 +57,17 @@ internal class AuthoriseConsumerServiceTest(
       it("when the extracted consumer is null") {
         whenever(extractConsumerFromSubjectDistinguishedNameService.execute(subjectDistinguishedName)).thenReturn(null)
 
-        val exception = shouldThrow<AuthenticationFailedException> {
-          authoriseConsumerService.execute(
-            subjectDistinguishedName,
-            consumerPathConfig,
-            requestedPath,
-          )
-        }
+        val result = authoriseConsumerService.execute(subjectDistinguishedName, consumerPathConfig, requestedPath)
 
-        exception.message.shouldBe("Unable to identify consumer from subject-distinguished-name header")
+        result.shouldBeFalse()
       }
 
       it("when the path isn't listed as allowed on the consumer") {
         requestedPath = "/some-other-path/123"
 
-        val exception = shouldThrow<AuthenticationFailedException> {
-          authoriseConsumerService.execute(
-            subjectDistinguishedName,
-            consumerPathConfig,
-            requestedPath,
-          )
-        }
+        val result = authoriseConsumerService.execute(subjectDistinguishedName, consumerPathConfig, requestedPath)
 
-        exception.message.shouldBe("Requested path /some-other-path/123 not authorised for automated-test-client")
+        result.shouldBeFalse()
       }
     }
   },
