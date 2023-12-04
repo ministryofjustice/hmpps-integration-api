@@ -9,7 +9,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrap
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.CaseDetail
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.probationintegrationepf.CaseDetail
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.CaseDetail as IntegrationAPICaseDetail
 
 @Component

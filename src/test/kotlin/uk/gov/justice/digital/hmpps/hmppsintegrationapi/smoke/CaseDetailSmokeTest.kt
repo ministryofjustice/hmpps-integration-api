@@ -31,7 +31,28 @@ class CaseDetailSmokeTest : DescribeSpec(
         """
       {
         "data": {
-          "nomsId": "string"
+          "nomsId": "string",
+          "name": {
+            "forename": "string",
+            "middleName": "string",
+            "surname": "string"
+          },
+          "dateOfBirth":"2019-08-24",
+          "gender": "string",
+          "sentence": {
+            "date": "2019-08-24",
+            "sentencingCourt": {
+              "name": "string"
+            },
+            "releaseDate":"2019-08-24"
+          },
+          "responsibleProvider": {
+            "code": "string",
+            "name": "string"
+          },
+          "ogrsScore": -9007199254740991,
+          "age": -9007199254740991,
+          "ageAtRelease": -9007199254740991
         },
         "errors": []
       }

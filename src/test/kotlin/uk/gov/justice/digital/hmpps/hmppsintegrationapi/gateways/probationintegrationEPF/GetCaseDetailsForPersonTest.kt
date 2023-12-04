@@ -58,7 +58,7 @@ class GetCaseDetailsForPersonTest(
         val response = probationIntegrationEPFGateway.getCaseDetailForPerson(hmppsId, eventNumber)
 
         response.data.shouldBe(
-          generateCaseDetail(nomsId = "ABC123"),
+          generateCaseDetail(),
         )
       }
     },
