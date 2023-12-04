@@ -21,7 +21,8 @@ class AuthoriseConsumerService(
     if (consumerAllowedPaths.isNullOrEmpty()) {
       throw AuthenticationFailedException("Unable to find allowed paths for consumer $consumer")
     }
-    consumerPathConfig[consumer]?.forEach {
+
+    consumerAllowedPaths.forEach {
       if (Regex(it).matches(requestedPath)) {
         return true
       }

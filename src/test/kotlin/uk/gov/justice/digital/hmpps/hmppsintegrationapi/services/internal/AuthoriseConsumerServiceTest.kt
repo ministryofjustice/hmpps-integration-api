@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.booleans.shouldBeTrue
+import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory
 import org.mockito.kotlin.verify
@@ -28,7 +29,7 @@ internal class AuthoriseConsumerServiceTest(
       whenever(extractConsumerFromSubjectDistinguishedNameService.execute(subjectDistinguishedName)).thenReturn("automated-test-client")
     }
 
-    val consumerPathConfig = mapOf(
+    var consumerPathConfig = mapOf(
       "automated-test-client" to listOf("/persons/.*"),
     )
 
@@ -55,28 +56,32 @@ internal class AuthoriseConsumerServiceTest(
     }
 
     describe("Access is denied") {
-      it("when the path isn't listed as allowed on the consumer") {
-        requestedPath = "/some-other-path/123"
-
-        shouldThrow<AuthenticationFailedException> {
-          authoriseConsumerService.execute(
-            subjectDistinguishedName,
-            consumerPathConfig,
-            requestedPath,
-          )
-        }
-      }
-
       it("when the extracted consumer is null") {
         whenever(extractConsumerFromSubjectDistinguishedNameService.execute(subjectDistinguishedName)).thenReturn(null)
 
-        shouldThrow<AuthenticationFailedException> {
+        val exception = shouldThrow<AuthenticationFailedException> {
           authoriseConsumerService.execute(
             subjectDistinguishedName,
             consumerPathConfig,
             requestedPath,
           )
         }
+
+        exception.message.shouldBe("Unable to identify consumer from subject-distinguished-name header")
+      }
+
+      it("when the path isn't listed as allowed on the consumer") {
+        requestedPath = "/some-other-path/123"
+
+        val exception = shouldThrow<AuthenticationFailedException> {
+          authoriseConsumerService.execute(
+            subjectDistinguishedName,
+            consumerPathConfig,
+            requestedPath,
+          )
+        }
+
+        exception.message.shouldBe("Requested path /some-other-path/123 not authorised for automated-test-client")
       }
     }
   },
