@@ -1,20 +1,17 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal
 
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.AuthorisationFailedException
-
 class ExtractConsumerFromSubjectDistinguishedNameService {
-  fun execute(subjectDistinguishedName: String?): String {
+  fun execute(subjectDistinguishedName: String?): String? {
     if (subjectDistinguishedName.isNullOrEmpty()) {
-      throw AuthorisationFailedException("Missing Subject Distinguished Name")
+      return null
     }
 
-    val match = Regex("^.*,CN=(.*)$")?.find(subjectDistinguishedName)
+    val match = Regex("^.*,CN=(.*)$").find(subjectDistinguishedName)
 
     if (match?.groupValues == null) {
-      throw AuthorisationFailedException("Could not identify consumer")
+      return null
     }
 
-    println(match.groupValues[0])
     return match.groupValues[1]
   }
 }
