@@ -194,11 +194,11 @@ paths:
       tags:
         - persons
       summary: >
-            Returns offences associated with a person.
-
-            Note: This API does not contain the complete list of offences for a person.
-            Offences are retrieved from Prison and Probation systems exclusively.
-            Prison systems record only custodial sentences, while Probation systems record only the main offence and some additional offences for case management purposes. Other offences recorded by HMCTS and police may not be included.
+        Returns offences associated with a person.
+        
+        Note: This API does not contain the complete list of offences for a person.
+        Offences are retrieved from Prison and Probation systems exclusively.
+        Prison systems record only custodial sentences, while Probation systems record only the main offence and some additional offences for case management purposes. Other offences recorded by HMCTS and police may not be included.
       parameters:
         - $ref: "#/components/parameters/HmppsId"
         - $ref: "#/components/parameters/Page"
@@ -415,6 +415,43 @@ paths:
               examples:
                 PersonNotFoundError:
                   $ref: "#/components/examples/PersonNotFoundError"
+
+  /v1/case-details/{hmppsId}/{eventNumber}:
+    get:
+      summary: Probation case information for the Effective Proposals Framework service
+      description: "<p>Accepts a Hmpps Id (hmppsId) and Delius Event number\n\
+          \            and returns a data structure giving background information on\
+          \ the probation case\n            for use in the Effective Proposals Framework\
+          \ system. The information is used to\n            reduce the need for the\
+          \ EPF user to re-key information already held in Delius.</p> "
+      parameters:
+        - name: hmppsId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: eventNumber
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int32
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CaseDetails'
+        "404":
+          description: "A case with the provided HmppsId does not exist in Delius.\n \
+              \                   Note: this could be the result of a merge or a deletion.\n\
+              \            "
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CaseDetails'
+
 
   /{TBC}/v1/persons/{Id}/accommodations:
     get:
@@ -667,6 +704,57 @@ components:
           type: string
           example: Prefer not to say
           description: ethnicity
+    CaseDetails:
+      required:
+        - age
+        - dateOfBirth
+        - gender
+        - name
+      type: object
+      properties:
+        nomsId:
+          type: string
+        name:
+          $ref: '#/components/schemas/Name'
+        dateOfBirth:
+          type: string
+          format: date
+        gender:
+          type: string
+        sentence:
+          $ref: '#/components/schemas/CaseSentence'
+        responsibleProvider:
+          $ref: '#/components/schemas/ResponsibleProvider'
+        ogrsScore:
+          type: integer
+          format: int64
+        age:
+          type: integer
+          format: int64
+        ageAtRelease:
+          type: integer
+          format: int64
+    CaseSentence:
+      required:
+        - date
+        - sentencingCourt
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+        sentencingCourt:
+          $ref: '#/components/schemas/Court'
+        releaseDate:
+          type: string
+          format: date
+    Court:
+      required:
+        - name
+      type: object
+      properties:
+        name:
+          type: string
     Error:
       type: object
       properties:
@@ -786,6 +874,18 @@ components:
               format: date
               description: Calculated automatic (unconditional) release date for a person
               example: 2023-03-01
+    Name:
+      required:
+        - forename
+        - surname
+      type: object
+      properties:
+        forename:
+          type: string
+        middleName:
+          type: string
+        surname:
+          type: string
     Offence:
       type: object
       properties:
@@ -893,9 +993,19 @@ components:
           example: 2008/0545166T
           description: An identifier from the Police National Computer (PNC)
         hmppsId:
-            type: string
-            example: 2008/0545166T
-            description: Currently a hmppsId is a PNC identifier however this will change in the near future to be a CRN identifier
+          type: string
+          example: 2008/0545166T
+          description: Currently a hmppsId is a PNC identifier however this will change in the near future to be a CRN identifier
+    ResponsibleProvider:
+      required:
+        - code
+        - name
+      type: object
+      properties:
+        code:
+          type: string
+        name:
+          type: string
     Sentence:
       type: object
       properties:
@@ -1067,7 +1177,7 @@ components:
           type: string
           enum: [ LOW, MEDIUM, HIGH, VERY_HIGH, NOT_APPLICABLE ]
           example: MEDIUM
-          description: > 
+          description: >
             Indicator for risk of serious recidivism. Options include:
             `LOW`,
             `MEDIUM`,
@@ -1093,7 +1203,7 @@ components:
           type: string
           enum: [ LOW, MEDIUM, HIGH, VERY_HIGH, NOT_APPLICABLE ]
           example: MEDIUM
-          description: > 
+          description: >
             Indicator for risk of sexual contact. Options include:
             `LOW`,
             `MEDIUM`,
@@ -1182,83 +1292,83 @@ components:
           description: Risk to other prisoners
 
     Summary:
-        type: object
-        properties:
-          whoIsAtRisk:
-            type: string
-            example: "X, Y and Z are at risk"
-            description: Who is at risk
-          natureOfRisk:
-            type: string
-            example: "The nature of the risk is X"
-            description: What is the nature of the risk
-          riskImminence:
-            type: string
-            example: The risk is imminent and more probable in X situation
-            description: When is the risk likely to be greatest. Consider the timescale and indicate whether risk is immediate or not. Consider the risks in custody as well as on release.
-          riskIncreaseFactors:
-            type: string
-            example: If offender is in situation X the risk can be higher
-            description: What circumstances are likely to increase risk. Describe factors, actions, events which might increase level of risk, now and in the future.
-          riskMitigationFactors:
-            type: string
-            example: Giving offender therapy in X will reduce the risk
-            description: What factors are likely to reduce the risk. Describe factors, actions, and events which may reduce or contain the level of risk. What has previously stopped them?
-          overallRiskLevel:
-            type: string
-            example: HIGH
-            enum: [ VERY_HIGH, HIGH, MEDIUM, LOW ]
-            description: The overall risk level
-          riskInCommunity:
-            type: object
-            description: >
-                Assess the risk of serious harm the offender poses on the basis that they could be released imminently back into the community. This field is a map which can return all or some of the properties given.
-            properties:
-              children:
-                type: string
-                example: HIGH
-                enum: [ VERY_HIGH, HIGH, MEDIUM, LOW ]
-              public:
-                type: string
-                example: Medium
-                enum: [ VERY_HIGH, HIGH, MEDIUM, LOW ]
-              knownAdult:
-                type: string
-                example: VERY_HIGH
-                enum: [ VERY_HIGH, HIGH, MEDIUM, LOW ]
-              staff:
-                type: string
-                example: HIGH
-                enum: [ VERY_HIGH, HIGH, MEDIUM, LOW ]
-              prisoners:
-                type: string
-                example: LOW
-                enum: [ VERY_HIGH, HIGH, MEDIUM, LOW ]
-          riskInCustody:
-            type: object
-            description: >
-                Assess both the risk of serious harm the offender presents now, in custody, and the risk they could present to others whilst in a custodial setting. This field is a map which can return all or some of the properties given.
-            properties:
-              children:
-                type: string
-                example: HIGH
-                enum: [ VERY_HIGH, HIGH, MEDIUM, LOW ]
-              public:
-                type: string
-                example: Medium
-                enum: [ VERY_HIGH, HIGH, MEDIUM, LOW ]
-              knownAdult:
-                type: string
-                example: VERY_HIGH
-                enum: [ VERY_HIGH, HIGH, MEDIUM, LOW ]
-              staff:
-                type: string
-                example: HIGH
-                enum: [ VERY_HIGH, HIGH, MEDIUM, LOW ]
-              prisoners:
-                type: string
-                example: LOW
-                enum: [ VERY_HIGH, HIGH, MEDIUM, LOW ]
+      type: object
+      properties:
+        whoIsAtRisk:
+          type: string
+          example: "X, Y and Z are at risk"
+          description: Who is at risk
+        natureOfRisk:
+          type: string
+          example: "The nature of the risk is X"
+          description: What is the nature of the risk
+        riskImminence:
+          type: string
+          example: The risk is imminent and more probable in X situation
+          description: When is the risk likely to be greatest. Consider the timescale and indicate whether risk is immediate or not. Consider the risks in custody as well as on release.
+        riskIncreaseFactors:
+          type: string
+          example: If offender is in situation X the risk can be higher
+          description: What circumstances are likely to increase risk. Describe factors, actions, events which might increase level of risk, now and in the future.
+        riskMitigationFactors:
+          type: string
+          example: Giving offender therapy in X will reduce the risk
+          description: What factors are likely to reduce the risk. Describe factors, actions, and events which may reduce or contain the level of risk. What has previously stopped them?
+        overallRiskLevel:
+          type: string
+          example: HIGH
+          enum: [ VERY_HIGH, HIGH, MEDIUM, LOW ]
+          description: The overall risk level
+        riskInCommunity:
+          type: object
+          description: >
+            Assess the risk of serious harm the offender poses on the basis that they could be released imminently back into the community. This field is a map which can return all or some of the properties given.
+          properties:
+            children:
+              type: string
+              example: HIGH
+              enum: [ VERY_HIGH, HIGH, MEDIUM, LOW ]
+            public:
+              type: string
+              example: Medium
+              enum: [ VERY_HIGH, HIGH, MEDIUM, LOW ]
+            knownAdult:
+              type: string
+              example: VERY_HIGH
+              enum: [ VERY_HIGH, HIGH, MEDIUM, LOW ]
+            staff:
+              type: string
+              example: HIGH
+              enum: [ VERY_HIGH, HIGH, MEDIUM, LOW ]
+            prisoners:
+              type: string
+              example: LOW
+              enum: [ VERY_HIGH, HIGH, MEDIUM, LOW ]
+        riskInCustody:
+          type: object
+          description: >
+            Assess both the risk of serious harm the offender presents now, in custody, and the risk they could present to others whilst in a custodial setting. This field is a map which can return all or some of the properties given.
+          properties:
+            children:
+              type: string
+              example: HIGH
+              enum: [ VERY_HIGH, HIGH, MEDIUM, LOW ]
+            public:
+              type: string
+              example: Medium
+              enum: [ VERY_HIGH, HIGH, MEDIUM, LOW ]
+            knownAdult:
+              type: string
+              example: VERY_HIGH
+              enum: [ VERY_HIGH, HIGH, MEDIUM, LOW ]
+            staff:
+              type: string
+              example: HIGH
+              enum: [ VERY_HIGH, HIGH, MEDIUM, LOW ]
+            prisoners:
+              type: string
+              example: LOW
+              enum: [ VERY_HIGH, HIGH, MEDIUM, LOW ]
 
     Needs:
       type: object
