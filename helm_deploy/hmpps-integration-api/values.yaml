@@ -16,12 +16,12 @@ generic-service:
         - name: subject-distinguished-name
           value: "O=K8s,CN=kubernetes-health-check-client"
 
-    readinessProbe:
-      httpGet:
-        path: /health/readiness
-        httpHeaders:
-          - name: subject-distinguished-name
-            value: "O=K8s,CN=kubernetes-health-check-client"
+  readinessProbe:
+    httpGet:
+      path: /health/readiness
+      httpHeaders:
+        - name: subject-distinguished-name
+          value: "O=K8s,CN=kubernetes-health-check-client"
 
   ingress:
     enabled: true
