@@ -36,3 +36,5 @@ authorisation:
     kubernetes-health-check-client:
       - "/health/liveness"
       - "/health/readiness"
+    heartbeat:
+      - "/v1/persons/.*"
