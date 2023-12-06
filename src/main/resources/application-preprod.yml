@@ -15,3 +15,9 @@ services:
     base-url: https://sign-in-preprod.hmpps.service.justice.gov.uk
     username: ${CLIENT_ID}
     password: ${CLIENT_SECRET}
+
+authorisation:
+  consumers:
+    kubernetes-health-check-client:
+      - "/health/liveness"
+      - "/health/readiness"

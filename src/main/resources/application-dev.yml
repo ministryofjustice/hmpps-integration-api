@@ -33,3 +33,6 @@ authorisation:
       - "/v1/persons/.*/risks"
     ctrlo:
       - "/v1/case-details/.*/.*"
+    kubernetes-health-check-client:
+      - "/health/liveness"
+      - "/health/readiness"
