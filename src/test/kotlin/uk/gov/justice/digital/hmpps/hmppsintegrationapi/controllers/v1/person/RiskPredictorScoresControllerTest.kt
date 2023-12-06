@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.HttpStatus
+import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
@@ -30,6 +31,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.SexualPredictor a
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ViolencePredictor as IntegrationAPIViolencePredictor
 
 @WebMvcTest(controllers = [RiskPredictorScoresController::class])
+@ActiveProfiles("test")
 internal class RiskPredictorScoresControllerTest(
   @Autowired var springMockMvc: MockMvc,
   @MockBean val getRiskPredictorScoresForPersonService: GetRiskPredictorScoresForPersonService,
