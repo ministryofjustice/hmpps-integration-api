@@ -10,7 +10,6 @@ import jakarta.servlet.http.HttpServletResponse
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuthoriseConsumerService
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.ExtractConsumerFromSubjectDistinguishedNameService
 import java.io.IOException
 
 @Component
@@ -22,7 +21,7 @@ class AuthorisationFilter : Filter {
   override fun doFilter(request: ServletRequest, response: ServletResponse?, chain: FilterChain) {
     val req = request as HttpServletRequest
     val res = response as HttpServletResponse
-    val authoriseConsumerService = AuthoriseConsumerService(ExtractConsumerFromSubjectDistinguishedNameService())
+    val authoriseConsumerService = AuthoriseConsumerService()
     val subjectDistinguishedName = req.getHeader("subject-distinguished-name")
     val requestedPath = req.requestURI
 
