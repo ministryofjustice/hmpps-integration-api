@@ -1,11 +1,8 @@
 # Setting up a new consumer
 
-> ⚠️ The current process that's documented in this guide
-> is ***not*** production-ready and is expected to change soon.
-
 To enable a consumer to access our API, they need:
 
-- a client certificate for mutual TLS
+- a client certificate for mutual TLS with a Subject Distinguished Name(SDN) and Common Name (CN) that matches the authorisation allow list configuration in the application
 - an API key
 
 per environment.
@@ -31,9 +28,9 @@ This will output three files in the current directory:
 - a certificate signing request (CSR) e.g. `dev-mappps-client.csr`
 - a client certificate (public key) e.g. `dev-mappps-client.pem`
 
-## Create an API key
+The private key and public key can be shared with the consumer.
 
-> ⚠️ Cloud Platform requires that you create a pull request per namespace/environment.
+## Create an API key
 
 Within the [Cloud Platform Environments GitHub repository](https://github.com/ministryofjustice/cloud-platform-environments/tree/main) and the namespace of the environment:
 
@@ -58,6 +55,8 @@ After some initial CI checks, a comment will be added to the pull request with a
 to the Concourse run that will be performing Terraform apply to the namespace. (You'll receive an email when it's been added.)
 
 8. Follow the Concourse build link and check that the Terraform apply succeeds.
+
+The API key will be automatically generated and saved as a Kubernetes secret for future reference.
 
 ## Send the credentials to the consumer
 
