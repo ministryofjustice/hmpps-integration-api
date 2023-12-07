@@ -63,6 +63,69 @@ class SupervisionsTest : DescribeSpec(
             ),
           )
         }
+        it("does not local date parse additional offence date if no date is provided") {
+          val supervisions = Supervisions(
+            supervisions = listOf(
+              Supervision(
+                custodial = true,
+                mainOffence = MainOffence(description = "foobar", code = "05800", date = "2000-01-02"),
+                additionalOffences = listOf(AdditionalOffence(description = "additionalFoo", code = "12345")),
+                courtAppearances = listOf(CourtAppearance(date = "2009-07-07T00:00:00+01:00")),
+              ),
+            ),
+          )
+
+          val integrationApiOffences = supervisions.supervisions.flatMap { it.toOffences() }
+
+          integrationApiOffences.shouldBe(
+            listOf(
+              Offence(
+                description = "foobar",
+                hoCode = "05800",
+                courtDates = listOf(LocalDate.parse("2009-07-07")),
+                startDate = LocalDate.parse("2000-01-02"),
+              ),
+              Offence(
+                description = "additionalFoo",
+                hoCode = "12345",
+                courtDates = listOf(LocalDate.parse("2009-07-07")),
+                startDate = null,
+              ),
+            ),
+          )
+        }
+
+        it("does local date parse additional offence date if a date is provided") {
+          val supervisions = Supervisions(
+            supervisions = listOf(
+              Supervision(
+                custodial = true,
+                mainOffence = MainOffence(description = "foobar", code = "05800", date = "2000-01-02"),
+                additionalOffences = listOf(AdditionalOffence(description = "additionalFoo", code = "12345", date = "2001-01-01")),
+                courtAppearances = listOf(CourtAppearance(date = "2009-07-07T00:00:00+01:00")),
+              ),
+            ),
+          )
+
+          val integrationApiOffences = supervisions.supervisions.flatMap { it.toOffences() }
+
+          integrationApiOffences.shouldBe(
+            listOf(
+              Offence(
+                description = "foobar",
+                hoCode = "05800",
+                courtDates = listOf(LocalDate.parse("2009-07-07")),
+                startDate = LocalDate.parse("2000-01-02"),
+              ),
+              Offence(
+                description = "additionalFoo",
+                hoCode = "12345",
+                courtDates = listOf(LocalDate.parse("2009-07-07")),
+                startDate = LocalDate.parse("2001-01-01"),
+              ),
+            ),
+          )
+        }
       }
 
       describe("When there are no additional offences") {

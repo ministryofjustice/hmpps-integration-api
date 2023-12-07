@@ -13,7 +13,7 @@ data class AdditionalOffence(
     hoCode = this.code,
     courtDates = courtDates,
     endDate = null,
-    startDate = LocalDate.parse(this.date),
+    startDate = if (!this.date.isNullOrEmpty()) LocalDate.parse(this.date) else null,
     statuteCode = null,
     description = this.description,
   )
