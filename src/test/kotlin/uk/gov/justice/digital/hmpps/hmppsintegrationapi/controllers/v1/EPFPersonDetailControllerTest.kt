@@ -15,23 +15,23 @@ import org.springframework.test.web.servlet.MockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.CaseDetail
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Response
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetCaseDetailService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetEPFPersonDetailService
 
-@WebMvcTest(controllers = [CaseDetailController::class])
+@WebMvcTest(controllers = [EPFPersonDetailController::class])
 @ActiveProfiles("test")
-internal class CaseDetailControllerTest(
+internal class EPFPersonDetailControllerTest(
   @Autowired var springMockMvc: MockMvc,
-  @MockBean val getCaseDetailService: GetCaseDetailService,
+  @MockBean val getEPFPersonDetailService: GetEPFPersonDetailService,
 ) : DescribeSpec({
   val hmppsId = "X12345"
   val eventNumber = 1234
-  val path = "/v1/case-details/$hmppsId/$eventNumber"
+  val path = "/v1/epf/person-details/$hmppsId/$eventNumber"
   val mockMvc = IntegrationAPIMockMvc(springMockMvc)
 
   describe("GET $path") {
     beforeTest {
-      Mockito.reset(getCaseDetailService)
-      whenever(getCaseDetailService.execute(hmppsId, eventNumber)).thenReturn(
+      Mockito.reset(getEPFPersonDetailService)
+      whenever(getEPFPersonDetailService.execute(hmppsId, eventNumber)).thenReturn(
         Response(
           data = CaseDetail(nomsId = "ABC123"),
         ),
@@ -44,10 +44,10 @@ internal class CaseDetailControllerTest(
       result.response.status.shouldBe(HttpStatus.OK.value())
     }
 
-    it("retrieves the case detail for a person with the matching ID") {
+    it("retrieves the person detail for a person with the matching ID") {
       mockMvc.performAuthorised(path)
 
-      verify(getCaseDetailService, VerificationModeFactory.times(1)).execute(hmppsId, eventNumber)
+      verify(getEPFPersonDetailService, VerificationModeFactory.times(1)).execute(hmppsId, eventNumber)
     }
   }
 },)

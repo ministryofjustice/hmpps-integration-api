@@ -7,15 +7,15 @@ import org.springframework.http.HttpStatus
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIHttpClient
 
-class CaseDetailSmokeTest : DescribeSpec(
+class EPFPersonDetailSmokeTest : DescribeSpec(
   {
     val hmppsId = "X123456"
     val eventNumber = 1234
-    val basePath = "v1/case-details/$hmppsId/$eventNumber"
+    val basePath = "v1/epf/person-details/$hmppsId/$eventNumber"
 
     val httpClient = IntegrationAPIHttpClient()
 
-    it("returns a case detail for a probation case, by HmppsID") {
+    it("returns a person detail for a probation case, by HmppsID") {
       val response = httpClient.performAuthorised(basePath)
 
       response.statusCode().shouldBe(HttpStatus.OK.value())

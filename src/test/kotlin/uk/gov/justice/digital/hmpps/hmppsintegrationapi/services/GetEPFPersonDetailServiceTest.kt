@@ -13,11 +13,11 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Response
 
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
-  classes = [GetCaseDetailService::class],
+  classes = [GetEPFPersonDetailService::class],
 )
-internal class GetCaseDetailServiceTest(
+internal class GetEPFPersonDetailServiceTest(
   @MockBean val probationIntegrationEPFGateway: ProbationIntegrationEPFGateway,
-  private val getCaseDetailService: GetCaseDetailService,
+  private val getEPFPersonDetailService: GetEPFPersonDetailService,
 ) : DescribeSpec(
   {
     val hmppsId = "X123456"
@@ -35,7 +35,7 @@ internal class GetCaseDetailServiceTest(
     }
 
     it("Returns a list of supervisions for a probationer according to the provided Delius CRN") {
-      val result = getCaseDetailService.execute(hmppsId, eventNumber)
+      val result = getEPFPersonDetailService.execute(hmppsId, eventNumber)
 
       result.shouldBe(Response(data = caseDetail))
     }

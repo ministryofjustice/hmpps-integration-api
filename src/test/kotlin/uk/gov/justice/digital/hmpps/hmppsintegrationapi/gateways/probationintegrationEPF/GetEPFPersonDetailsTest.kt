@@ -22,7 +22,7 @@ import java.io.File
   initializers = [ConfigDataApplicationContextInitializer::class],
   classes = [ProbationIntegrationEPFGateway::class],
 )
-class GetCaseDetailsForPersonTest(
+class GetEPFPersonDetailsTest(
   @MockBean val hmppsAuthGateway: HmppsAuthGateway,
   val probationIntegrationEPFGateway: ProbationIntegrationEPFGateway,
 ) :
@@ -37,7 +37,7 @@ class GetCaseDetailsForPersonTest(
         effectiveProposalFrameworkAndDeliusMockServer.stubGetCaseDetailForPerson(
           hmppsId,
           1234,
-          File("src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/probationintegrationEPF/fixtures/GetCaseDetailsResponse.json").readText(),
+          File("src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/probationintegrationEPF/fixtures/GetEPFPersonDetailsResponse.json").readText(),
         )
 
         Mockito.reset(hmppsAuthGateway)

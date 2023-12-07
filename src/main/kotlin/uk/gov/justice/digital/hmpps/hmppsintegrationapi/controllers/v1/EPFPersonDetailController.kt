@@ -9,12 +9,12 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFound
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.CaseDetail
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetCaseDetailService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetEPFPersonDetailService
 
 @RestController
-@RequestMapping("/v1/case-details")
-class CaseDetailController(
-  @Autowired val getCaseDetailService: GetCaseDetailService,
+@RequestMapping("/v1/epf/person-details")
+class EPFPersonDetailController(
+  @Autowired val getEPFPersonDetailService: GetEPFPersonDetailService,
 ) {
 
   @GetMapping("{hmppsId}/{eventNumber}")
@@ -22,10 +22,10 @@ class CaseDetailController(
     @PathVariable hmppsId: String,
     @PathVariable eventNumber: Int,
   ): Response<CaseDetail?> {
-    val response = getCaseDetailService.execute(hmppsId, eventNumber)
+    val response = getEPFPersonDetailService.execute(hmppsId, eventNumber)
 
     if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
-      throw EntityNotFoundException("Could not retrieve case details for person with id: $hmppsId")
+      throw EntityNotFoundException("Could not retrieve person details for person with id: $hmppsId")
     }
 
     return Response(
