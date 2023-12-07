@@ -416,7 +416,7 @@ paths:
                 PersonNotFoundError:
                   $ref: "#/components/examples/PersonNotFoundError"
 
-  /v1/case-details/{hmppsId}/{eventNumber}:
+  /v1/epf/person-details/{hmppsId}/{eventNumber}:
     get:
       summary: Probation case information for the Effective Proposals Framework service
       description: "<p>Accepts a Hmpps Id (hmppsId) and Delius Event number\n\

@@ -55,7 +55,7 @@
         <mxCell id="hKpINkVLFpIHJDrPOkMn-11" value="&lt;font color=&quot;#994c00&quot;&gt;&lt;b&gt;/v1/sentences&lt;br&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;b style=&quot;background-color: initial;&quot;&gt;/v1/offences&lt;br&gt;...&lt;/b&gt;&lt;/div&gt;&lt;/b&gt;&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
           <mxGeometry x="730" y="290" width="100" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="hKpINkVLFpIHJDrPOkMn-12" value="&lt;b&gt;&lt;font color=&quot;#006600&quot;&gt;/v1/case-details&lt;/font&gt;&lt;/b&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+        <mxCell id="hKpINkVLFpIHJDrPOkMn-12" value="&lt;b&gt;&lt;font color=&quot;#006600&quot;&gt;/v1/epf/person-details&lt;/font&gt;&lt;/b&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
           <mxGeometry x="725" y="407.5" width="110" height="30" as="geometry" />
         </mxCell>
         <mxCell id="hKpINkVLFpIHJDrPOkMn-15" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=-0.009;entryY=0.583;entryDx=0;entryDy=0;entryPerimeter=0;fillColor=#d5e8d4;strokeColor=#82b366;" edge="1" parent="1" source="hKpINkVLFpIHJDrPOkMn-9" target="hKpINkVLFpIHJDrPOkMn-12">

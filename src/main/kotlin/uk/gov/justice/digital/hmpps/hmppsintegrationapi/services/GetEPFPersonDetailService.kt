@@ -7,7 +7,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.CaseDetail
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Response
 
 @Service
-class GetCaseDetailService(
+class GetEPFPersonDetailService(
   @Autowired val probationIntegrationEPFGateway: ProbationIntegrationEPFGateway,
 ) {
   fun execute(hmppsId: String, eventNumber: Int): Response<CaseDetail?> {
