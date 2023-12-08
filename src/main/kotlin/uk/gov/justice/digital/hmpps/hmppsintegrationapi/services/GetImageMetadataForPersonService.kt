@@ -16,7 +16,6 @@ class GetImageMetadataForPersonService(
     val responseFromProbationOffenderSearch = probationOffenderSearchGateway.getPerson(hmppsId)
     val nomisNumber = responseFromProbationOffenderSearch.data?.identifiers?.nomisNumber
 
-
     if (nomisNumber == null) {
       return Response(
         data = emptyList(),

@@ -7,15 +7,9 @@
 # To stop the dps-gradle-spring-boot project from overwriting any project specific customisations here, remove the
 # warning at the top of this file.
 #
-# Suppression for jackson databind 2.13.4 as no release for it yet
-#   Can be suppressed as UNWRAP_SINGLE_VALUE_ARRAYS is not enabled
-CVE-2022-42003
-# Suppression for jackson databind 2.13.3 as bundled with application insights
-#   Can be suppressed as don't parse untrusted json in application insights
-CVE-2022-42004
-# Suppression for apache common-text 1.9 as bundled with application insights
-#   can be suppressed for the time being as it will be fixed in next version of application insights
-CVE-2022-42889
 # Suppression for h2 2.1.214 password on command line vulnerability
 #   can be suppressed as we only run h2 locally and not on build environments
 CVE-2022-45868
+# Suppression for logback-classic and logback-core as we don't let third parties control our appenders.
+# See https://logback.qos.ch/news.html#1.3.12 for further information.
+CVE-2023-6378
