@@ -29,6 +29,17 @@ class WebClientWrapper(
     data class Success<T>(val data: T) : WebClientWrapperResponse<T>()
     data class Error(val errors: List<UpstreamApiError>) : WebClientWrapperResponse<Nothing>()
   }
+  inline fun <reified T> requestWithErrorHandling(method: HttpMethod, uri: String, headers: Map<String, String>, upstreamApi: UpstreamApi, requestBody: Map<String, Any?>? = null): WebClientWrapperResponse<T> {
+    return try {
+      val responseData = getResponseBodySpec(method, uri, headers, requestBody).retrieve()
+        .bodyToMono(T::class.java)
+        .block()!!
+
+      WebClientWrapperResponse.Success(responseData)
+    } catch (exception: WebClientResponseException) {
+      getErrorType(exception, upstreamApi)
+    }
+  }
 
   inline fun <reified T> request(method: HttpMethod, uri: String, headers: Map<String, String>, requestBody: Map<String, Any?>? = null): T {
     val responseBodySpec = client.method(method)
@@ -44,39 +55,18 @@ class WebClientWrapper(
       .block()!!
   }
 
-  inline fun <reified T> requestWithErrorHandling(method: HttpMethod, uri: String, headers: Map<String, String>, upstreamApi: UpstreamApi, requestBody: Map<String, Any?>? = null): WebClientWrapperResponse<T> {
-    try {
-      val responseBodySpec = client.method(method)
-        .uri(uri)
-        .headers { header -> headers.forEach { requestHeader -> header.set(requestHeader.key, requestHeader.value) } }
+  inline fun <reified T> requestListWithErrorHandling(method: HttpMethod, uri: String, headers: Map<String, String>, upstreamApi: UpstreamApi, requestBody: Map<String, Any?>? = null): WebClientWrapperResponse<List<T>> {
+    return try {
+      val responseData = getResponseBodySpec(method, uri, headers, requestBody).retrieve()
+        .bodyToFlux(T::class.java)
+        .collectList()
+        .block() as List<T>
 
-      if (method == HttpMethod.POST && requestBody != null) {
-        responseBodySpec.body(BodyInserters.fromValue(requestBody))
-      }
-
-      val responseData = responseBodySpec.retrieve()
-        .bodyToMono(T::class.java)
-        .block()!!
-
-      return WebClientWrapperResponse.Success(responseData)
+      WebClientWrapperResponse.Success(responseData)
     } catch (exception: WebClientResponseException) {
-      val errorType = when (exception.statusCode) {
-        HttpStatus.NOT_FOUND -> UpstreamApiError.Type.ENTITY_NOT_FOUND
-        HttpStatus.FORBIDDEN -> UpstreamApiError.Type.FORBIDDEN
-        HttpStatus.BAD_REQUEST -> UpstreamApiError.Type.BAD_REQUEST
-        else -> UpstreamApiError.Type.INTERNAL_SERVER_ERROR
-      }
-      return WebClientWrapperResponse.Error(
-        listOf(
-          UpstreamApiError(
-            causedBy = upstreamApi,
-            type = errorType,
-          ),
-        ),
-      )
+      getErrorType(exception, upstreamApi)
     }
   }
-
   inline fun <reified T> requestList(method: HttpMethod, uri: String, headers: Map<String, String>, requestBody: Map<String, Any?>? = null): List<T> {
     val responseBodySpec = client.method(method)
       .uri(uri)
@@ -90,5 +80,33 @@ class WebClientWrapper(
       .bodyToFlux(T::class.java)
       .collectList()
       .block() as List<T>
+  }
+
+  fun getResponseBodySpec(method: HttpMethod, uri: String, headers: Map<String, String>, requestBody: Map<String, Any?>? = null): WebClient.RequestBodySpec {
+    val responseBodySpec = client.method(method)
+      .uri(uri)
+      .headers { header -> headers.forEach { requestHeader -> header.set(requestHeader.key, requestHeader.value) } }
+
+    if (method == HttpMethod.POST && requestBody != null) {
+      responseBodySpec.body(BodyInserters.fromValue(requestBody))
+    }
+
+    return responseBodySpec
+  }
+  fun getErrorType(exception: WebClientResponseException, upstreamApi: UpstreamApi): WebClientWrapperResponse.Error {
+    val errorType = when (exception.statusCode) {
+      HttpStatus.NOT_FOUND -> UpstreamApiError.Type.ENTITY_NOT_FOUND
+      HttpStatus.FORBIDDEN -> UpstreamApiError.Type.FORBIDDEN
+      HttpStatus.BAD_REQUEST -> UpstreamApiError.Type.BAD_REQUEST
+      else -> UpstreamApiError.Type.INTERNAL_SERVER_ERROR
+    }
+    return WebClientWrapperResponse.Error(
+      listOf(
+        UpstreamApiError(
+          causedBy = upstreamApi,
+          type = errorType,
+        ),
+      ),
+    )
   }
 }
