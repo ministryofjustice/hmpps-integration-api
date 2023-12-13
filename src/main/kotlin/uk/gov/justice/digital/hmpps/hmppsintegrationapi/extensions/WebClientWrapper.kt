@@ -29,6 +29,7 @@ class WebClientWrapper(
     data class Success<T>(val data: T) : WebClientWrapperResponse<T>()
     data class Error(val errors: List<UpstreamApiError>) : WebClientWrapperResponse<Nothing>()
   }
+
   inline fun <reified T> requestWithErrorHandling(method: HttpMethod, uri: String, headers: Map<String, String>, upstreamApi: UpstreamApi, requestBody: Map<String, Any?>? = null): WebClientWrapperResponse<T> {
     return try {
       val responseData = getResponseBodySpec(method, uri, headers, requestBody).retrieve()
