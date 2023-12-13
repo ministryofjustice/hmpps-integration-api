@@ -6,6 +6,7 @@ import org.springframework.http.HttpMethod
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper.WebClientWrapperResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApiError
@@ -46,46 +47,46 @@ class AssessRisksAndNeedsGateway(@Value("\${services.assess-risks-and-needs.base
   }
 
   fun getRisksForPerson(id: String): Response<IntegrationApiRisk?> {
-    return try {
-      Response(
-        data = webClient.request<ArnRisk>(
-          HttpMethod.GET,
-          "/risks/crn/$id",
-          authenticationHeader(),
-        ).toRisks(),
-      )
-    } catch (exception: WebClientResponseException.NotFound) {
-      Response(
-        data = null,
-        errors = listOf(
-          UpstreamApiError(
-            causedBy = UpstreamApi.ASSESS_RISKS_AND_NEEDS,
-            type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-          ),
-        ),
-      )
+    val result = webClient.requestWithErrorHandling<ArnRisk>(
+      HttpMethod.GET,
+      "/risks/crn/$id",
+      authenticationHeader(),
+      UpstreamApi.ASSESS_RISKS_AND_NEEDS,
+    )
+
+    return when (result) {
+      is WebClientWrapperResponse.Success -> {
+        Response(data = result.data.toRisks())
+      }
+
+      is WebClientWrapperResponse.Error -> {
+        Response(
+          data = null,
+          errors = result.errors,
+        )
+      }
     }
   }
 
   fun getNeedsForPerson(id: String): Response<IntegrationApiNeeds?> {
-    return try {
-      Response(
-        data = webClient.request<ArnNeeds>(
-          HttpMethod.GET,
-          "/needs/crn/$id",
-          authenticationHeader(),
-        ).toNeeds(),
-      )
-    } catch (exception: WebClientResponseException.NotFound) {
-      Response(
-        data = null,
-        errors = listOf(
-          UpstreamApiError(
-            causedBy = UpstreamApi.ASSESS_RISKS_AND_NEEDS,
-            type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-          ),
-        ),
-      )
+    val result = webClient.requestWithErrorHandling<ArnNeeds>(
+      HttpMethod.GET,
+      "/needs/crn/$id",
+      authenticationHeader(),
+      UpstreamApi.ASSESS_RISKS_AND_NEEDS,
+    )
+
+    return when (result) {
+      is WebClientWrapperResponse.Success -> {
+        Response(data = result.data.toNeeds())
+      }
+
+      is WebClientWrapperResponse.Error -> {
+        Response(
+          data = null,
+          errors = result.errors,
+        )
+      }
     }
   }
 

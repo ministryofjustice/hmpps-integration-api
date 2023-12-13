@@ -9,6 +9,7 @@ import org.springframework.http.HttpMethod
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper.WebClientWrapperResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Address
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Alert
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ImageMetadata
@@ -69,18 +70,19 @@ class NomisGateway(@Value("\${services.prison-api.base-url}") baseUrl: String) {
   }
 
   fun getImageData(id: Int): Response<ByteArray> {
-    return try {
-      Response(data = webClient.request(HttpMethod.GET, "/api/images/$id/data", authenticationHeader()))
-    } catch (exception: WebClientResponseException.NotFound) {
-      Response(
-        data = byteArrayOf(),
-        errors = listOf(
-          UpstreamApiError(
-            causedBy = UpstreamApi.NOMIS,
-            type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-          ),
-        ),
-      )
+    val result = webClient.requestWithErrorHandling<ByteArray>(HttpMethod.GET, "/api/images/$id/data", authenticationHeader(), UpstreamApi.NOMIS)
+
+    return when (result) {
+      is WebClientWrapperResponse.Success -> {
+        Response(data = result.data)
+      }
+
+      is WebClientWrapperResponse.Error -> {
+        Response(
+          data = byteArrayOf(),
+          errors = result.errors,
+        )
+      }
     }
   }
 
@@ -195,46 +197,46 @@ class NomisGateway(@Value("\${services.prison-api.base-url}") baseUrl: String) {
   }
 
   fun getLatestSentenceAdjustmentsForPerson(id: String): Response<SentenceAdjustment?> {
-    return try {
-      Response(
-        data = webClient.request<SentenceSummary>(
-          HttpMethod.GET,
-          "/api/offenders/$id/booking/latest/sentence-summary",
-          authenticationHeader(),
-        ).latestPrisonTerm.sentenceAdjustments.toSentenceAdjustment(),
-      )
-    } catch (exception: WebClientResponseException.NotFound) {
-      Response(
-        data = null,
-        errors = listOf(
-          UpstreamApiError(
-            causedBy = UpstreamApi.NOMIS,
-            type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-          ),
-        ),
-      )
+    val result = webClient.requestWithErrorHandling<SentenceSummary>(
+      HttpMethod.GET,
+      "/api/offenders/$id/booking/latest/sentence-summary",
+      authenticationHeader(),
+      UpstreamApi.NOMIS,
+    )
+
+    return when (result) {
+      is WebClientWrapperResponse.Success -> {
+        Response(data = result.data.latestPrisonTerm.sentenceAdjustments.toSentenceAdjustment())
+      }
+
+      is WebClientWrapperResponse.Error -> {
+        Response(
+          data = null,
+          errors = result.errors,
+        )
+      }
     }
   }
 
   fun getLatestSentenceKeyDatesForPerson(id: String): Response<SentenceKeyDates?> {
-    return try {
-      Response(
-        data = webClient.request<OffenderSentence>(
-          HttpMethod.GET,
-          "/api/offenders/$id/sentences",
-          authenticationHeader(),
-        ).sentenceDetail.toSentenceKeyDates(),
-      )
-    } catch (exception: WebClientResponseException.NotFound) {
-      Response(
-        data = null,
-        errors = listOf(
-          UpstreamApiError(
-            causedBy = UpstreamApi.NOMIS,
-            type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-          ),
-        ),
-      )
+    val result = webClient.requestWithErrorHandling<OffenderSentence>(
+      HttpMethod.GET,
+      "/api/offenders/$id/sentences",
+      authenticationHeader(),
+      UpstreamApi.NOMIS,
+    )
+
+    return when (result) {
+      is WebClientWrapperResponse.Success -> {
+        Response(data = result.data.sentenceDetail.toSentenceKeyDates())
+      }
+
+      is WebClientWrapperResponse.Error -> {
+        Response(
+          data = null,
+          errors = result.errors,
+        )
+      }
     }
   }
 
