@@ -26,7 +26,7 @@ class ProbationOffenderSearchGateway(@Value("\${services.probation-offender-sear
       "crn"
     }
 
-    val offenders = webClient.requestListWithErrorHandling<Offender>(
+    val result = webClient.requestListWithErrorHandling<Offender>(
       HttpMethod.POST,
       "/search",
       authenticationHeader(),
@@ -34,9 +34,9 @@ class ProbationOffenderSearchGateway(@Value("\${services.probation-offender-sear
       mapOf(queryField to id),
     )
 
-    return when (offenders) {
+    return when (result) {
       is WebClientWrapperResponse.Success -> {
-        if (offenders.data.isEmpty()) {
+        if (result.data.isEmpty()) {
           Response(
             data = null,
             errors = listOf(
@@ -47,14 +47,14 @@ class ProbationOffenderSearchGateway(@Value("\${services.probation-offender-sear
             ),
           )
         } else {
-          Response(data = offenders.data.first().toPerson())
+          Response(data = result.data.first().toPerson())
         }
       }
 
       is WebClientWrapperResponse.Error -> {
         Response(
           data = null,
-          errors = offenders.errors,
+          errors = result.errors,
         )
       }
     }
