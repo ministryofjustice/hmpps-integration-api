@@ -4,8 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpMethod
 import org.springframework.stereotype.Component
-import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper.WebClientWrapperResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Address
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Response
@@ -20,43 +20,43 @@ class ProbationOffenderSearchGateway(@Value("\${services.probation-offender-sear
   @Autowired
   lateinit var hmppsAuthGateway: HmppsAuthGateway
   fun getPerson(id: String? = null): Response<Person?> {
-    return try {
-      val queryField = if (isPncNumber(id)) {
-        "pncNumber"
-      } else {
-        "crn"
+    val queryField = if (isPncNumber(id)) {
+      "pncNumber"
+    } else {
+      "crn"
+    }
+
+    val offenders = webClient.requestListWithErrorHandling<Offender>(
+      HttpMethod.POST,
+      "/search",
+      authenticationHeader(),
+      UpstreamApi.PROBATION_OFFENDER_SEARCH,
+      mapOf(queryField to id),
+    )
+
+    return when (offenders) {
+      is WebClientWrapperResponse.Success -> {
+        if (offenders.data.isEmpty()) {
+          Response(
+            data = null,
+            errors = listOf(
+              UpstreamApiError(
+                causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH,
+                type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+              ),
+            ),
+          )
+        } else {
+          Response(data = offenders.data.first().toPerson())
+        }
       }
 
-      val offenders = webClient.requestList<Offender>(
-        HttpMethod.POST,
-        "/search",
-        authenticationHeader(),
-        mapOf(queryField to id),
-      )
-
-      if (offenders.isEmpty()) {
+      is WebClientWrapperResponse.Error -> {
         Response(
           data = null,
-          errors = listOf(
-            UpstreamApiError(
-              causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH,
-              type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-            ),
-          ),
+          errors = offenders.errors,
         )
-      } else {
-        Response(data = offenders.first().toPerson())
       }
-    } catch (exception: WebClientResponseException.BadRequest) {
-      Response(
-        data = null,
-        errors = listOf(
-          UpstreamApiError(
-            causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH,
-            type = UpstreamApiError.Type.BAD_REQUEST,
-          ),
-        ),
-      )
     }
   }
 
