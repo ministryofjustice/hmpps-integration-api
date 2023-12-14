@@ -11,7 +11,7 @@ import org.springframework.test.context.ContextConfiguration
   classes = [AuthoriseConsumerService::class],
 )
 internal class AuthoriseConsumerServiceTest(
-  private val subjectDistinguishedName: String = "C=GB,ST=London,L=London,O=Home Office,CN=automated-test-client",
+  private val subjectDistinguishedName: String = "automated-test-client",
   private val authoriseConsumerService: AuthoriseConsumerService,
 ) : DescribeSpec(
   {

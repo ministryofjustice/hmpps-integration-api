@@ -59,6 +59,7 @@ class PersonController(
     if (response.hasErrorCausedBy(ENTITY_NOT_FOUND, causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH)) {
       throw EntityNotFoundException("Could not find person with id: $hmppsId")
     }
+
     auditService.createEvent("GET_PERSON_DETAILS", "Person details with hmpps id: $hmppsId has been retrieved")
     return response.data
   }
@@ -92,7 +93,6 @@ class PersonController(
     ) {
       throw EntityNotFoundException("Could not find person with id: $hmppsId")
     }
-
     auditService.createEvent("GET_PERSON_ADDRESS", "Person address details with hmpps id: $hmppsId has been retrieved")
     return mapOf("data" to response.data)
   }

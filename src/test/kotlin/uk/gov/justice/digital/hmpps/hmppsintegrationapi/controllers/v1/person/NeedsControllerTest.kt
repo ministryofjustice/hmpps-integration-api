@@ -42,6 +42,7 @@ internal class NeedsControllerTest(
     describe("GET $path") {
       beforeTest {
         Mockito.reset(getNeedsForPersonService)
+        Mockito.reset(auditService)
         whenever(getNeedsForPersonService.execute(hmppsId)).thenReturn(
           Response(
             data = Needs(
@@ -80,6 +81,12 @@ internal class NeedsControllerTest(
         mockMvc.performAuthorised(path)
 
         verify(getNeedsForPersonService, VerificationModeFactory.times(1)).execute(hmppsId)
+      }
+
+      it("logs audit") {
+        mockMvc.performAuthorised(path)
+
+        verify(auditService, VerificationModeFactory.times(1)).createEvent("GET_PERSON_NEED", "Person need details with hmpps id: $hmppsId has been retrieved")
       }
 
       it("returns the needs for a person with the matching ID") {

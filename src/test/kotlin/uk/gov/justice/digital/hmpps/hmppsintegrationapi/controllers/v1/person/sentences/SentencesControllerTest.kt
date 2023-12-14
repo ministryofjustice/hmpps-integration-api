@@ -52,6 +52,7 @@ internal class SentencesControllerTest(
           ),
         ),
       )
+      Mockito.reset(auditService)
     }
 
     it("responds with a 200 OK status") {
@@ -186,9 +187,24 @@ internal class SentencesControllerTest(
       )
 
       val result = mockMvc.performAuthorised("$path?page=1&perPage=10")
-
       result.response.contentAsString.shouldContainJsonKeyValue("$.pagination.page", 1)
       result.response.contentAsString.shouldContainJsonKeyValue("$.pagination.totalPages", 2)
+    }
+    it("logs audit") {
+      whenever(getSentencesForPersonService.execute(hmppsId)).thenReturn(
+        Response(
+          data =
+          List(20) {
+            generateTestSentence(
+              dateOfSentencing = LocalDate.parse("2023-01-01"),
+              isCustodial = true,
+            )
+          },
+        ),
+      )
+      mockMvc.performAuthorised("$path?page=1&perPage=10")
+
+      verify(auditService, VerificationModeFactory.times(1)).createEvent("GET_PERSON_SENTENCES", "Person sentence details with hmpps id: $hmppsId has been retrieved")
     }
   },
 )

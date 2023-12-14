@@ -42,6 +42,7 @@ internal class AlertsControllerTest(
     describe("GET $path") {
       beforeTest {
         Mockito.reset(getAlertsForPersonService)
+        Mockito.reset(auditService)
         whenever(getAlertsForPersonService.execute(hmppsId)).thenReturn(
           Response(
             data = listOf(
@@ -66,6 +67,12 @@ internal class AlertsControllerTest(
         val result = mockMvc.performAuthorised(path)
 
         result.response.status.shouldBe(HttpStatus.OK.value())
+      }
+
+      it("logs audit") {
+        val result = mockMvc.performAuthorised(path)
+
+        verify(auditService, VerificationModeFactory.times(1)).createEvent("GET_PERSON_ALERTS", "Person alerts with hmpps id: $hmppsId has been retrieved")
       }
 
       it("retrieves the alerts for a person with the matching ID") {

@@ -89,6 +89,7 @@ internal class RisksControllerTest(
             ),
           ),
         )
+        Mockito.reset(auditService)
       }
 
       it("responds with a 200 OK status") {
@@ -178,6 +179,12 @@ internal class RisksControllerTest(
           }
           """.removeWhitespaceAndNewlines(),
         )
+      }
+
+      it("logs audit") {
+        mockMvc.performAuthorised(path)
+
+        verify(auditService, VerificationModeFactory.times(1)).createEvent("GET_PERSON_RISK", "Person risk details with hmpps id: $hmppsId has been retrieved")
       }
 
       it("returns null embedded in a JSON object when no risks are found") {

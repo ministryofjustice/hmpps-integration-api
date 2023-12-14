@@ -55,7 +55,7 @@ internal class PersonControllerTest(
     describe("GET $basePath") {
       beforeTest {
         Mockito.reset(getPersonsService)
-
+        Mockito.reset(auditService)
         whenever(getPersonsService.execute(firstName, lastName)).thenReturn(
           Response(
             data =
@@ -109,7 +109,6 @@ internal class PersonControllerTest(
 
       it("returns a person with matching first and last name") {
         val result = mockMvc.performAuthorised("$basePath?first_name=$firstName&last_name=$lastName")
-
         result.response.contentAsString.shouldContain(
           """
           "data": [
@@ -148,6 +147,11 @@ internal class PersonControllerTest(
           ]
           """.removeWhitespaceAndNewlines(),
         )
+      }
+
+      it("logs audit") {
+        mockMvc.performAuthorised("$basePath?first_name=$firstName&last_name=$lastName")
+        verify(auditService, times(1)).createEvent("SEARCH_PERSON", "Person searched with first name: $firstName, last name: $lastName and search within aliases: false")
       }
 
       it("returns paginated results") {
@@ -204,6 +208,7 @@ internal class PersonControllerTest(
 
       beforeTest {
         Mockito.reset(getPersonService)
+        Mockito.reset(auditService)
         whenever(getPersonService.execute(hmppsId)).thenReturn(Response(data = person))
       }
 
@@ -213,7 +218,15 @@ internal class PersonControllerTest(
         result.response.status.shouldBe(HttpStatus.OK.value())
       }
 
+      it("logs audit") {
+        mockMvc.performAuthorised("$basePath/$encodedHmppsId")
+        verify(auditService, times(1)).createEvent("GET_PERSON_DETAILS", "Person details with hmpps id: $hmppsId has been retrieved")
+      }
+
       describe("404 Not found") {
+        beforeTest {
+          Mockito.reset(auditService)
+        }
         val idThatDoesNotExist = "9999/11111Z"
 
         it("responds with a 404 when a person cannot be found in both upstream APIs") {
@@ -289,6 +302,7 @@ internal class PersonControllerTest(
 
     describe("GET $basePath/$encodedHmppsId/images") {
       beforeTest {
+        Mockito.reset(auditService)
         Mockito.reset(getImageMetadataForPersonService)
         whenever(getImageMetadataForPersonService.execute(hmppsId)).thenReturn(
           Response(
@@ -323,15 +337,18 @@ internal class PersonControllerTest(
         )
 
         val result = mockMvc.performAuthorised("$basePath/$encodedHmppsId/images?page=3&perPage=5")
-
         result.response.contentAsString.shouldContainJsonKeyValue("$.pagination.page", 3)
         result.response.contentAsString.shouldContainJsonKeyValue("$.pagination.totalPages", 4)
       }
 
       it("responds with a 200 OK status") {
         val result = mockMvc.performAuthorised("$basePath/$encodedHmppsId/images")
-
         result.response.status.shouldBe(HttpStatus.OK.value())
+      }
+
+      it("logs audit") {
+        mockMvc.performAuthorised("$basePath/$encodedHmppsId/images")
+        verify(auditService, times(1)).createEvent("GET_PERSON_IMAGE", "Image with id: $hmppsId has been retrieved")
       }
 
       it("retrieves the metadata of images for a person with the matching ID") {
@@ -377,6 +394,7 @@ internal class PersonControllerTest(
     describe("GET $basePath/{encodedHmppsId}/addresses") {
       beforeTest {
         Mockito.reset(getAddressesForPersonService)
+        Mockito.reset(auditService)
         whenever(getAddressesForPersonService.execute(hmppsId)).thenReturn(Response(data = listOf(generateTestAddress())))
       }
 
@@ -394,7 +412,6 @@ internal class PersonControllerTest(
 
       it("returns the addresses for a person with the matching ID") {
         val result = mockMvc.performAuthorised("$basePath/$encodedHmppsId/addresses")
-
         result.response.contentAsString.shouldBe(
           """
         {
@@ -427,6 +444,11 @@ internal class PersonControllerTest(
         }
         """.removeWhitespaceAndNewlines(),
         )
+      }
+
+      it("logs audit") {
+        mockMvc.performAuthorised("$basePath/$encodedHmppsId/addresses")
+        verify(auditService, times(1)).createEvent("GET_PERSON_ADDRESS", "Person address details with hmpps id: $hmppsId has been retrieved")
       }
 
       it("responds with a 404 NOT FOUND status when person isn't found in all upstream APIs") {

@@ -62,6 +62,7 @@ internal class RiskPredictorScoresControllerTest(
             ),
           ),
         )
+        Mockito.reset(auditService)
       }
 
       it("responds with a 200 OK status") {
@@ -72,8 +73,13 @@ internal class RiskPredictorScoresControllerTest(
 
       it("retrieves the risk predictor scores for a person with the matching ID") {
         mockMvc.performAuthorised(path)
-
         verify(getRiskPredictorScoresForPersonService, VerificationModeFactory.times(1)).execute(hmppsId)
+      }
+
+      it("logs audit") {
+        mockMvc.performAuthorised(path)
+
+        verify(auditService, VerificationModeFactory.times(1)).createEvent("GET_PERSON_RISK_SCORES", "Person risk predictor scores with hmpps id: $hmppsId has been retrieved")
       }
 
       it("returns the risk predictor scores for a person with the matching ID") {

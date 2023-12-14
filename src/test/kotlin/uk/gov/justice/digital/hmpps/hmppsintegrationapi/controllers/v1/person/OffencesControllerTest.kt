@@ -42,6 +42,7 @@ internal class OffencesControllerTest(
     describe("GET $path") {
       beforeTest {
         Mockito.reset(getOffencesForPersonService)
+        Mockito.reset(auditService)
         whenever(getOffencesForPersonService.execute(hmppsId)).thenReturn(
           Response(
             data = listOf(
@@ -89,6 +90,11 @@ internal class OffencesControllerTest(
           ]
         """.removeWhitespaceAndNewlines(),
         )
+      }
+      it("logs audit") {
+        mockMvc.performAuthorised(path)
+
+        verify(auditService, VerificationModeFactory.times(1)).createEvent("GET_PERSON_OFFENCES", "Person offences details with hmpps id: $hmppsId has been retrieved")
       }
 
       it("returns an empty list embedded in a JSON object when no offences are found") {
