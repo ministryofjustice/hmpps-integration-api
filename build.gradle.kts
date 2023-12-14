@@ -13,7 +13,7 @@ dependencies {
   implementation("io.sentry:sentry-spring-boot-starter-jakarta:6.34.0")
   implementation("io.sentry:sentry-logback:6.34.0")
   implementation("org.springframework.data:spring-data-commons:3.2.0")
-
+  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:2.1.0")
   testImplementation("io.kotest:kotest-assertions-json-jvm:5.8.0")
   testImplementation("io.kotest:kotest-runner-junit5-jvm:5.8.0")
   testImplementation("io.kotest:kotest-assertions-core-jvm:5.8.0")

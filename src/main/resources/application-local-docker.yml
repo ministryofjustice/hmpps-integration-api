@@ -12,7 +12,7 @@ services:
   probation-integration-epf:
     base-url: http://probation-integration-epf-api:4010
   hmpps-auth:
-    base-url: http://hmpps-auth:8080
+    base-url: http://hmpps-auth:9090
 
 authorisation:
   consumers:
@@ -35,3 +35,9 @@ authorisation:
       - "/health/readiness"
       - "/health/liveness"
       - "/info"
+
+hmpps.sqs:
+  provider: localstack
+  queues:
+    audit:
+      queueName: "audit"
