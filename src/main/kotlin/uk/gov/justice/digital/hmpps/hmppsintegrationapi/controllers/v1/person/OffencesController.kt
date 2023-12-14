@@ -11,12 +11,14 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.decodeUrlChar
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Offence
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetOffencesForPersonService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.PaginatedResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.paginateWith
 
 @RestController
 @RequestMapping("/v1/persons")
 class OffencesController(
+  @Autowired val auditService: AuditService,
   @Autowired val getOffencesForPersonService: GetOffencesForPersonService,
 ) {
 
@@ -32,7 +34,7 @@ class OffencesController(
     if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
       throw EntityNotFoundException("Could not find person with id: $hmppsId")
     }
-
+    auditService.createEvent("GET_PERSON_OFFENCES", "Person offences details with hmpps id: $hmppsId has been retrieved")
     return response.data.paginateWith(page, perPage)
   }
 }

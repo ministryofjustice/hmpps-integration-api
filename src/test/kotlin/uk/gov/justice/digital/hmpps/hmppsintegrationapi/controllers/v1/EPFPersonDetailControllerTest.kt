@@ -16,12 +16,14 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMo
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.CaseDetail
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetEPFPersonDetailService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 
 @WebMvcTest(controllers = [EPFPersonDetailController::class])
 @ActiveProfiles("test")
 internal class EPFPersonDetailControllerTest(
   @Autowired var springMockMvc: MockMvc,
   @MockBean val getEPFPersonDetailService: GetEPFPersonDetailService,
+  @MockBean val auditService: AuditService,
 ) : DescribeSpec({
   val hmppsId = "X12345"
   val eventNumber = 1234

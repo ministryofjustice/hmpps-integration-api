@@ -10,11 +10,13 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.CaseDetail
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetEPFPersonDetailService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 
 @RestController
 @RequestMapping("/v1/epf/person-details")
 class EPFPersonDetailController(
   @Autowired val getEPFPersonDetailService: GetEPFPersonDetailService,
+  @Autowired val auditService: AuditService,
 ) {
 
   @GetMapping("{hmppsId}/{eventNumber}")
@@ -28,6 +30,7 @@ class EPFPersonDetailController(
       throw EntityNotFoundException("Could not retrieve person details for person with id: $hmppsId")
     }
 
+    auditService.createEvent("GET_EPF_PROBATION_CASE_INFORMATION", "Probation case information with hmpps Id: $hmppsId and delius event number: $eventNumber has been retrieved")
     return Response(
       data = response.data,
       errors = response.errors,

@@ -12,22 +12,24 @@ import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetImageService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 
 @WebMvcTest(controllers = [ImageController::class])
 @ActiveProfiles("test")
 internal class ImageControllerTest(
   @Autowired var springMockMvc: MockMvc,
   @MockBean val getImageService: GetImageService,
+  @MockBean val auditService: AuditService,
 ) : DescribeSpec(
   {
     val id = 2461788
     val image = byteArrayOf(0x48, 101, 108, 108, 111)
+
     val basePath = "/v1/images"
     val mockMvc = IntegrationAPIMockMvc(springMockMvc)
 

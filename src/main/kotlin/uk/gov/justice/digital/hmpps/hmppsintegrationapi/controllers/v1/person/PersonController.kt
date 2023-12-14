@@ -19,6 +19,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetAddressesFor
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetImageMetadataForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonsService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.PaginatedResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.paginateWith
 
@@ -29,6 +30,7 @@ class PersonController(
   @Autowired val getPersonsService: GetPersonsService,
   @Autowired val getImageMetadataForPersonService: GetImageMetadataForPersonService,
   @Autowired val getAddressesForPersonService: GetAddressesForPersonService,
+  @Autowired val auditService: AuditService,
 ) {
 
   @GetMapping
@@ -45,6 +47,7 @@ class PersonController(
 
     val response = getPersonsService.execute(firstName, lastName, searchWithinAliases)
 
+    auditService.createEvent("SEARCH_PERSON", "Person searched with first name: $firstName, last name: $lastName and search within aliases: $searchWithinAliases")
     return response.data.paginateWith(page, perPage)
   }
 
@@ -56,7 +59,7 @@ class PersonController(
     if (response.hasErrorCausedBy(ENTITY_NOT_FOUND, causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH)) {
       throw EntityNotFoundException("Could not find person with id: $hmppsId")
     }
-
+    auditService.createEvent("GET_PERSON_DETAILS", "Person details with hmpps id: $hmppsId has been retrieved")
     return response.data
   }
 
@@ -74,6 +77,7 @@ class PersonController(
       throw EntityNotFoundException("Could not find person with id: $hmppsId")
     }
 
+    auditService.createEvent("GET_PERSON_IMAGE", "Image with id: $hmppsId has been retrieved")
     return response.data.paginateWith(page, perPage)
   }
 
@@ -89,6 +93,7 @@ class PersonController(
       throw EntityNotFoundException("Could not find person with id: $hmppsId")
     }
 
+    auditService.createEvent("GET_PERSON_ADDRESS", "Person address details with hmpps id: $hmppsId has been retrieved")
     return mapOf("data" to response.data)
   }
 }

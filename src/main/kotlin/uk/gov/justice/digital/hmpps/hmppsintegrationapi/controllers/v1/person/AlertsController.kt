@@ -11,6 +11,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.decodeUrlChar
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Alert
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetAlertsForPersonService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.PaginatedResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.paginateWith
 
@@ -18,6 +19,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.paginateWith
 @RequestMapping("/v1/persons")
 class AlertsController(
   @Autowired val getAlertsForPersonService: GetAlertsForPersonService,
+  @Autowired val auditService: AuditService,
 ) {
 
   @GetMapping("{encodedHmppsId}/alerts")
@@ -32,7 +34,7 @@ class AlertsController(
     if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
       throw EntityNotFoundException("Could not find person with id: $hmppsId")
     }
-
+    auditService.createEvent("GET_PERSON_ALERTS", "Person alerts with hmpps id: $hmppsId has been retrieved")
     return response.data.paginateWith(page, perPage)
   }
 }

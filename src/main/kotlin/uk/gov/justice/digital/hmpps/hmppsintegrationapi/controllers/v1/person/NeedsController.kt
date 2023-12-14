@@ -10,11 +10,13 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.decodeUrlChar
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Needs
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetNeedsForPersonService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 
 @RestController
 @RequestMapping("/v1/persons")
 class NeedsController(
   @Autowired val getNeedsForPersonService: GetNeedsForPersonService,
+  @Autowired val auditService: AuditService,
 ) {
   @GetMapping("{encodedHmppsId}/needs")
   fun getPersonNeeds(@PathVariable encodedHmppsId: String): Map<String, Needs?> {
@@ -24,7 +26,7 @@ class NeedsController(
     if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
       throw EntityNotFoundException("Could not find person with id: $hmppsId")
     }
-
+    auditService.createEvent("GET_PERSON_NEED", "Person need details with hmpps id: $hmppsId has been retrieved")
     return mapOf("data" to response.data)
   }
 }
