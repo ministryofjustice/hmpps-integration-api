@@ -19,7 +19,7 @@ class ConsumerNameExtractionFilter : Filter {
     val req = request as HttpServletRequest
     val res = response as HttpServletResponse
     val subjectDistinguishedName = req.getHeader("subject-distinguished-name")
-    val extractedConsumerName = extractConsumerName(subjectDistinguishedName)!!
+    val extractedConsumerName = extractConsumerName(subjectDistinguishedName)
     req.setAttribute("clientName", extractedConsumerName)
     chain.doFilter(request, response)
   }
