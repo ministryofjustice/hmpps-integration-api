@@ -39,19 +39,19 @@ class ProbationOffenderSearchGateway(@Value("\${services.probation-offender-sear
         val persons = result.data
         val person = persons.firstOrNull()?.toPerson()
 
-        if (person != null) {
-          Response(data = person)
-        } else {
-          Response(
-            data = null,
-            errors = listOf(
+        Response(
+          data = person,
+          errors = if (person == null) {
+            listOf(
               UpstreamApiError(
                 causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH,
                 type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
               ),
-            ),
-          )
-        }
+            )
+          } else {
+            emptyList()
+          },
+        )
       }
 
       is WebClientWrapperResponse.Error -> {
@@ -81,7 +81,7 @@ class ProbationOffenderSearchGateway(@Value("\${services.probation-offender-sear
     }
 
     val offender = webClient.requestList<Offender>(HttpMethod.POST, "/search", authenticationHeader(), mapOf(queryField to hmppsId))
-    val addresses = offender.firstOrNull()?.contactDetails?.addresses
+    val addresses = offender.firstOrNull()?.contactDetails?.addresses.orEmpty()
 
     return if (addresses.isNullOrEmpty()) {
       Response(data = emptyList())

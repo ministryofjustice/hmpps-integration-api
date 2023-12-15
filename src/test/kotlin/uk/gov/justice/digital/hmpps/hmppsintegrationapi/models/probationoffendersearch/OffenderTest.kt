@@ -1,8 +1,8 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.probationoffendersearch
 
 import io.kotest.core.spec.style.DescribeSpec
-import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.string.shouldBeEmpty
 import io.kotest.matchers.types.shouldBeTypeOf
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Alias
 import java.time.LocalDate
@@ -54,7 +54,7 @@ class OffenderTest : DescribeSpec(
 
         val person = prisoner.toPerson()
 
-        person.middleName.shouldBeNull()
+        person.middleName.shouldBeEmpty()
       }
     }
   },
