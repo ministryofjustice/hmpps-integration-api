@@ -46,13 +46,13 @@ internal class GetRisksForPersonServiceTest(
       whenever(assessRisksAndNeedsGateway.getRisksForPerson(deliusCrn)).thenReturn(Response(data = null))
     }
 
-    it("retrieves a person from getPersonService") {
+    it("gets a person from getPersonService") {
       getRisksForPersonService.execute(hmppsId)
 
       verify(getPersonService, VerificationModeFactory.times(1)).execute(hmppsId = hmppsId)
     }
 
-    it("retrieves risks for a person from ARN API using a CRN") {
+    it("gets risks for a person from ARN API using a CRN") {
       getRisksForPersonService.execute(hmppsId)
 
       verify(assessRisksAndNeedsGateway, VerificationModeFactory.times(1)).getRisksForPerson(deliusCrn)

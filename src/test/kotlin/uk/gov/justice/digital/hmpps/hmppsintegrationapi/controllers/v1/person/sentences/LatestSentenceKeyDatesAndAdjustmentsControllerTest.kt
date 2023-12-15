@@ -108,13 +108,13 @@ internal class LatestSentenceKeyDatesAndAdjustmentsControllerTest(
       Mockito.reset(auditService)
     }
 
-    it("responds with a 200 OK status") {
+    it("returns a 200 OK status code") {
       val result = mockMvc.performAuthorised(path)
 
       result.response.status.shouldBe(HttpStatus.OK.value())
     }
 
-    it("retrieves the latest sentence key dates and adjustments for a person with the matching ID") {
+    it("gets the latest sentence key dates and adjustments for a person with the matching ID") {
       mockMvc.performAuthorised(path)
 
       verify(getLatestSentenceKeyDatesAndAdjustmentsForPersonService, VerificationModeFactory.times(1)).execute(hmppsId)
@@ -234,7 +234,7 @@ internal class LatestSentenceKeyDatesAndAdjustmentsControllerTest(
       verify(auditService, VerificationModeFactory.times(1)).createEvent("GET_PERSON_SENTENCES_LATEST_KEY_DATES_AND_ADJUSTMENTS", "The key dates and adjustments about a person’s release from prison for their latest sentence for persion with hmpps id: $hmppsId has been retrieved")
     }
 
-    it("responds with a 404 NOT FOUND status when person isn't found in the upstream API") {
+    it("returns a 404 NOT FOUND status code when person isn't found in the upstream API") {
       whenever(getLatestSentenceKeyDatesAndAdjustmentsForPersonService.execute(hmppsId)).thenReturn(
         Response(
           data = null,

@@ -60,13 +60,13 @@ internal class OffencesControllerTest(
         )
       }
 
-      it("responds with a 200 OK status") {
+      it("returns a 200 OK status code") {
         val result = mockMvc.performAuthorised(path)
 
         result.response.status.shouldBe(HttpStatus.OK.value())
       }
 
-      it("retrieves the offences for a person with the matching ID") {
+      it("gets the offences for a person with the matching ID") {
         mockMvc.performAuthorised(path)
 
         verify(getOffencesForPersonService, VerificationModeFactory.times(1)).execute(hmppsId)
@@ -114,7 +114,7 @@ internal class OffencesControllerTest(
         result.response.contentAsString.shouldContain("\"data\":[]".removeWhitespaceAndNewlines())
       }
 
-      it("responds with a 404 NOT FOUND status when person isn't found in the upstream API") {
+      it("returns a 404 NOT FOUND status code when person isn't found in the upstream API") {
         whenever(getOffencesForPersonService.execute(hmppsId)).thenReturn(
           Response(
             data = emptyList(),

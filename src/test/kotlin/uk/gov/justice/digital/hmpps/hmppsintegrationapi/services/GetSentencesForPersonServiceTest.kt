@@ -75,7 +75,7 @@ internal class GetSentencesForPersonServiceTest(
     }
 
     describe("Find person by hmppsId") {
-      it("retrieves a person from getPersonService") {
+      it("gets a person from getPersonService") {
         getSentencesForPersonService.execute(hmppsId)
 
         verify(getPersonService, VerificationModeFactory.times(1)).execute(hmppsId = hmppsId)
@@ -99,7 +99,7 @@ internal class GetSentencesForPersonServiceTest(
     }
 
     describe("Nomis sentences") {
-      it("retrieves bookind Ids for a person from Nomis using a Nomis number") {
+      it("gets bookind Ids for a person from Nomis using a Nomis number") {
         getSentencesForPersonService.execute(hmppsId)
 
         verify(nomisGateway, VerificationModeFactory.times(1)).getBookingIdsForPerson(id = nomisNumber)
@@ -112,7 +112,7 @@ internal class GetSentencesForPersonServiceTest(
         result.data.shouldNotContain(listOf(nomisSentence1, nomisSentence2))
       }
 
-      it("retrieves all sentences from Nomis with booking IDs") {
+      it("gets all sentences from Nomis with booking IDs") {
         getSentencesForPersonService.execute(hmppsId)
 
         verify(nomisGateway, VerificationModeFactory.times(1)).getSentencesForBooking(firstBookingId)
@@ -121,7 +121,7 @@ internal class GetSentencesForPersonServiceTest(
     }
 
     describe("NDelius sentence") {
-      it("retrieves all sentences from nDelius using a CRN") {
+      it("gets all sentences from nDelius using a CRN") {
         getSentencesForPersonService.execute(hmppsId)
 
         verify(nDeliusGateway, VerificationModeFactory.times(1)).getSentencesForPerson(nDeliusCRN)

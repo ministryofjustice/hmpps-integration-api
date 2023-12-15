@@ -30,7 +30,7 @@ internal class GetImageServiceTest(
       Mockito.reset(nomisGateway)
     }
 
-    it("retrieves an image from NOMIS") {
+    it("gets an image from NOMIS") {
       getImageService.execute(id)
 
       verify(nomisGateway, VerificationModeFactory.times(1)).getImageData(id)

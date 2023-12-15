@@ -114,19 +114,19 @@ internal class GetLatestSentenceKeyDatesAndAdjustmentsForPersonServiceTest(
       )
     }
 
-    it("retrieves NOMIS number from Probation Offender Search") {
+    it("gets NOMIS number from Probation Offender Search") {
       getLatestSentenceKeyDatesAndAdjustmentsForPersonService.execute(hmppsId)
 
       verify(probationOffenderSearchGateway, VerificationModeFactory.times(1)).getPerson(id = hmppsId)
     }
 
-    it("retrieves latest sentence key dates from NOMIS") {
+    it("gets latest sentence key dates from NOMIS") {
       getLatestSentenceKeyDatesAndAdjustmentsForPersonService.execute(hmppsId)
 
       verify(nomisGateway, VerificationModeFactory.times(1)).getLatestSentenceKeyDatesForPerson(id = nomisNumber)
     }
 
-    it("retrieves latest sentence adjustments from NOMIS") {
+    it("gets latest sentence adjustments from NOMIS") {
       getLatestSentenceKeyDatesAndAdjustmentsForPersonService.execute(hmppsId)
 
       verify(nomisGateway, VerificationModeFactory.times(1)).getLatestSentenceAdjustmentsForPerson(id = nomisNumber)

@@ -50,13 +50,13 @@ internal class GetAlertsForPersonServiceTest(
       )
     }
 
-    it("retrieves a person from getPersonService") {
+    it("gets a person from getPersonService") {
       getAlertsForPersonService.execute(hmppsId)
 
       verify(personService, VerificationModeFactory.times(1)).execute(hmppsId = hmppsId)
     }
 
-    it("retrieves alerts from NOMIS using a prisoner number") {
+    it("gets alerts from NOMIS using a prisoner number") {
       getAlertsForPersonService.execute(hmppsId)
 
       verify(nomisGateway, VerificationModeFactory.times(1)).getAlertsForPerson(prisonerNumber)

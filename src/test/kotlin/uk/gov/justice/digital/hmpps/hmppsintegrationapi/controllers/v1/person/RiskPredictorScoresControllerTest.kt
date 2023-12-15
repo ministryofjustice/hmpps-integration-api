@@ -65,13 +65,13 @@ internal class RiskPredictorScoresControllerTest(
         Mockito.reset(auditService)
       }
 
-      it("responds with a 200 OK status") {
+      it("returns a 200 OK status code") {
         val result = mockMvc.performAuthorised(path)
 
         result.response.status.shouldBe(HttpStatus.OK.value())
       }
 
-      it("retrieves the risk predictor scores for a person with the matching ID") {
+      it("gets the risk predictor scores for a person with the matching ID") {
         mockMvc.performAuthorised(path)
         verify(getRiskPredictorScoresForPersonService, VerificationModeFactory.times(1)).execute(hmppsId)
       }
@@ -122,7 +122,7 @@ internal class RiskPredictorScoresControllerTest(
         result.response.contentAsString.shouldContain("\"data\":[]")
       }
 
-      it("responds with a 404 NOT FOUND status when person isn't found in the upstream API") {
+      it("returns a 404 NOT FOUND status code when person isn't found in the upstream API") {
         whenever(getRiskPredictorScoresForPersonService.execute(hmppsId)).thenReturn(
           Response(
             data = emptyList(),

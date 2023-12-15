@@ -41,13 +41,13 @@ internal class GetImageMetadataForPersonServiceTest(
     whenever(nomisGateway.getImageMetadataForPerson(prisonerNumber)).thenReturn(Response(data = emptyList()))
   }
 
-  it("retrieves prisoner ID from Probation Offender Search") {
+  it("gets prisoner ID from Probation Offender Search") {
     getImageMetadataForPersonService.execute(hmppsId)
 
     verify(probationOffenderSearchGateway, VerificationModeFactory.times(1)).getPerson(id = hmppsId)
   }
 
-  it("retrieves images details from NOMIS") {
+  it("gets images details from NOMIS") {
     getImageMetadataForPersonService.execute(hmppsId)
 
     verify(nomisGateway, VerificationModeFactory.times(1)).getImageMetadataForPerson(prisonerNumber)

@@ -77,25 +77,25 @@ internal class PersonControllerTest(
         )
       }
 
-      it("retrieves a person with matching search criteria") {
+      it("gets a person with matching search criteria") {
         mockMvc.performAuthorised("$basePath?first_name=$firstName&last_name=$lastName")
 
         verify(getPersonsService, times(1)).execute(firstName, lastName)
       }
 
-      it("retrieves a person with matching first name") {
+      it("gets a person with matching first name") {
         mockMvc.performAuthorised("$basePath?first_name=$firstName")
 
         verify(getPersonsService, times(1)).execute(firstName, null)
       }
 
-      it("retrieves a person with matching last name") {
+      it("gets a person with matching last name") {
         mockMvc.performAuthorised("$basePath?last_name=$lastName")
 
         verify(getPersonsService, times(1)).execute(null, lastName)
       }
 
-      it("retrieves a person with matching alias") {
+      it("gets a person with matching alias") {
         mockMvc.performAuthorised("$basePath?first_name=$firstName&search_within_aliases=true")
 
         verify(getPersonsService, times(1)).execute(firstName, null, searchWithinAliases = true)
@@ -189,13 +189,13 @@ internal class PersonControllerTest(
         result.response.contentAsString.shouldContain("\"data\":[]".removeWhitespaceAndNewlines())
       }
 
-      it("responds with a 200 OK status") {
+      it("returns a 200 OK status code") {
         val result = mockMvc.performAuthorised("$basePath?first_name=$firstName&last_name=$lastName")
 
         result.response.status.shouldBe(HttpStatus.OK.value())
       }
 
-      it("responds with a 400 BAD REQUEST status when no search criteria provided") {
+      it("returns a 400 BAD REQUEST status code when no search criteria provided") {
         val result = mockMvc.performAuthorised(basePath)
 
         result.response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
@@ -212,7 +212,7 @@ internal class PersonControllerTest(
         whenever(getPersonService.execute(hmppsId)).thenReturn(Response(data = person))
       }
 
-      it("responds with a 200 OK status") {
+      it("returns a 200 OK status code") {
         val result = mockMvc.performAuthorised("$basePath/$encodedHmppsId")
 
         result.response.status.shouldBe(HttpStatus.OK.value())
@@ -229,7 +229,7 @@ internal class PersonControllerTest(
         }
         val idThatDoesNotExist = "9999/11111Z"
 
-        it("responds with a 404 when a person cannot be found in both upstream APIs") {
+        it("returns a 404 status code when a person cannot be found in both upstream APIs") {
           whenever(getPersonService.execute(idThatDoesNotExist)).thenReturn(
             Response(
               data = null,
@@ -248,7 +248,7 @@ internal class PersonControllerTest(
           result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
         }
 
-        it("does not respond with a 404 when a person was found in one upstream API") {
+        it("does not return a 404 status code when a person was found in one upstream API") {
           whenever(getPersonService.execute(idThatDoesNotExist)).thenReturn(
             Response(
               data = Person("someFirstName", "someLastName"),
@@ -268,7 +268,7 @@ internal class PersonControllerTest(
         }
       }
 
-      it("retrieves a person with the matching ID") {
+      it("gets a person with the matching ID") {
         mockMvc.performAuthorised("$basePath/$encodedHmppsId")
 
         verify(getPersonService, times(1)).execute(hmppsId)
@@ -341,7 +341,7 @@ internal class PersonControllerTest(
         result.response.contentAsString.shouldContainJsonKeyValue("$.pagination.totalPages", 4)
       }
 
-      it("responds with a 200 OK status") {
+      it("returns a 200 OK status code") {
         val result = mockMvc.performAuthorised("$basePath/$encodedHmppsId/images")
         result.response.status.shouldBe(HttpStatus.OK.value())
       }
@@ -351,7 +351,7 @@ internal class PersonControllerTest(
         verify(auditService, times(1)).createEvent("GET_PERSON_IMAGE", "Image with id: $hmppsId has been retrieved")
       }
 
-      it("retrieves the metadata of images for a person with the matching ID") {
+      it("gets the metadata of images for a person with the matching ID") {
         mockMvc.performAuthorised("$basePath/$encodedHmppsId/images")
 
         verify(getImageMetadataForPersonService, times(1)).execute(hmppsId)
@@ -372,7 +372,7 @@ internal class PersonControllerTest(
         )
       }
 
-      it("responds with a 404 NOT FOUND status") {
+      it("returns a 404 NOT FOUND status code") {
         whenever(getImageMetadataForPersonService.execute(hmppsId)).thenReturn(
           Response(
             data = emptyList(),
@@ -398,13 +398,13 @@ internal class PersonControllerTest(
         whenever(getAddressesForPersonService.execute(hmppsId)).thenReturn(Response(data = listOf(generateTestAddress())))
       }
 
-      it("responds with a 200 OK status") {
+      it("returns a 200 OK status code") {
         val result = mockMvc.performAuthorised("$basePath/$encodedHmppsId/addresses")
 
         result.response.status.shouldBe(HttpStatus.OK.value())
       }
 
-      it("retrieves the addresses for a person with the matching ID") {
+      it("gets the addresses for a person with the matching ID") {
         mockMvc.performAuthorised("$basePath/$encodedHmppsId/addresses")
 
         verify(getAddressesForPersonService, times(1)).execute(hmppsId)
@@ -451,7 +451,7 @@ internal class PersonControllerTest(
         verify(auditService, times(1)).createEvent("GET_PERSON_ADDRESS", "Person address details with hmpps id: $hmppsId has been retrieved")
       }
 
-      it("responds with a 404 NOT FOUND status when person isn't found in all upstream APIs") {
+      it("returns a 404 NOT FOUND status code when person isn't found in all upstream APIs") {
         whenever(getAddressesForPersonService.execute(hmppsId)).thenReturn(
           Response(
             data = emptyList(),
@@ -473,7 +473,7 @@ internal class PersonControllerTest(
         result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
       }
 
-      it("responds with a 200 OK status when person is found in one upstream API but not another") {
+      it("returns a 200 OK status code when person is found in one upstream API but not another") {
         whenever(getAddressesForPersonService.execute(hmppsId)).thenReturn(
           Response(
             data = emptyList(),

@@ -71,13 +71,13 @@ internal class NeedsControllerTest(
         )
       }
 
-      it("responds with a 200 OK status") {
+      it("returns a 200 OK status code") {
         val result = mockMvc.performAuthorised(path)
 
         result.response.status.shouldBe(HttpStatus.OK.value())
       }
 
-      it("retrieves the needs for a person with the matching ID") {
+      it("gets the needs for a person with the matching ID") {
         mockMvc.performAuthorised(path)
 
         verify(getNeedsForPersonService, VerificationModeFactory.times(1)).execute(hmppsId)
@@ -138,7 +138,7 @@ internal class NeedsControllerTest(
         result.response.contentAsString.shouldContain("\"data\":null")
       }
 
-      it("responds with a 404 NOT FOUND status when person isn't found in the upstream API") {
+      it("returns a 404 NOT FOUND status code when person isn't found in the upstream API") {
         whenever(getNeedsForPersonService.execute(hmppsId)).thenReturn(
           Response(
             data = null,

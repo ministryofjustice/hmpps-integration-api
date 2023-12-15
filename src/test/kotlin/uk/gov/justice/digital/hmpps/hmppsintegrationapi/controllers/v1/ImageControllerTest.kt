@@ -40,13 +40,13 @@ internal class ImageControllerTest(
         Mockito.reset(auditService)
       }
 
-      it("responds with a 200 OK status") {
+      it("returns a 200 OK status code") {
         val result = mockMvc.performAuthorised("$basePath/$id")
 
         result.response.status.shouldBe(HttpStatus.OK.value())
       }
 
-      it("retrieves a image with the matching ID") {
+      it("gets a image with the matching ID") {
         mockMvc.performAuthorised("$basePath/$id")
 
         verify(getImageService, VerificationModeFactory.times(1)).execute(id)
@@ -64,7 +64,7 @@ internal class ImageControllerTest(
         verify(auditService, VerificationModeFactory.times(1)).createEvent("GET_PERSON_IMAGE", "Image with id: $id has been retrieved")
       }
 
-      it("responds with a 404 NOT FOUND status") {
+      it("returns a 404 NOT FOUND status code") {
         whenever(getImageService.execute(id)).thenReturn(
           Response(
             data = byteArrayOf(),
