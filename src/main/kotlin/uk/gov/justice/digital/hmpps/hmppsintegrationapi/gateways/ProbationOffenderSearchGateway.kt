@@ -36,19 +36,22 @@ class ProbationOffenderSearchGateway(@Value("\${services.probation-offender-sear
 
     return when (result) {
       is WebClientWrapperResponse.Success -> {
-        if (result.data.isEmpty()) {
-          Response(
-            data = null,
-            errors = listOf(
+        val persons = result.data
+        val person = persons.firstOrNull()?.toPerson()
+
+        Response(
+          data = person,
+          errors = if (person == null) {
+            listOf(
               UpstreamApiError(
                 causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH,
                 type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
               ),
-            ),
-          )
-        } else {
-          Response(data = result.data.first().toPerson())
-        }
+            )
+          } else {
+            emptyList()
+          },
+        )
       }
 
       is WebClientWrapperResponse.Error -> {
@@ -78,27 +81,12 @@ class ProbationOffenderSearchGateway(@Value("\${services.probation-offender-sear
     }
 
     val offender = webClient.requestList<Offender>(HttpMethod.POST, "/search", authenticationHeader(), mapOf(queryField to hmppsId))
+    val addresses = offender.firstOrNull()?.contactDetails?.addresses.orEmpty()
 
-    if (offender.isEmpty()) {
-      return Response(
-        data = emptyList(),
-        errors = listOf(
-          UpstreamApiError(
-            causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH,
-            type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-          ),
-        ),
-      )
-    }
-
-    return if (offender.first().contactDetails == null) {
+    return if (addresses.isNullOrEmpty()) {
       Response(data = emptyList())
-    } else if (offender.first().contactDetails!!.addresses == null) {
-      Response(data = emptyList())
-    } else if (offender.first().contactDetails!!.addresses!!.isNotEmpty()) {
-      Response(data = offender.first().contactDetails!!.addresses!!.map { it.toAddress() })
     } else {
-      Response(data = emptyList())
+      Response(data = addresses.map { it.toAddress() })
     }
   }
 

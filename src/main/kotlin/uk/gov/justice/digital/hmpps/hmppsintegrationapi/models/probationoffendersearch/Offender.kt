@@ -18,7 +18,7 @@ data class Offender(
   fun toPerson(): Person = Person(
     firstName = this.firstName,
     lastName = this.surname,
-    middleName = this.middleNames.joinToString(" ").ifEmpty { null },
+    middleName = this.middleNames.joinToString(" ").ifEmpty { "" },
     dateOfBirth = this.dateOfBirth,
     gender = this.gender,
     ethnicity = this.offenderProfile.ethnicity,
