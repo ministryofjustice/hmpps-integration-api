@@ -20,7 +20,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Sentence
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.SentenceAdjustment
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.SentenceKeyDates
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApi
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.Booking
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.ImageDetail
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.OffenceHistoryDetail
@@ -51,21 +50,19 @@ class NomisGateway(@Value("\${services.prison-api.base-url}") baseUrl: String) {
   }
 
   fun getImageMetadataForPerson(id: String): Response<List<ImageMetadata>> {
-    return try {
-      Response(
-        data = webClient.requestList<ImageDetail>(HttpMethod.GET, "api/images/offenders/$id", authenticationHeader())
-          .map { it.toImageMetadata() },
-      )
-    } catch (exception: WebClientResponseException.NotFound) {
-      Response(
-        data = emptyList(),
-        errors = listOf(
-          UpstreamApiError(
-            causedBy = UpstreamApi.NOMIS,
-            type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-          ),
-        ),
-      )
+    val result = webClient.requestListWithErrorHandling<ImageDetail>(HttpMethod.GET, "api/images/offenders/$id", authenticationHeader(), UpstreamApi.NOMIS)
+
+    return when (result) {
+      is WebClientWrapperResponse.Success -> {
+        Response(data = result.data.map { it.toImageMetadata() })
+      }
+
+      is WebClientWrapperResponse.Error -> {
+        Response(
+          data = emptyList(),
+          errors = result.errors,
+        )
+      }
     }
   }
 
@@ -87,112 +84,108 @@ class NomisGateway(@Value("\${services.prison-api.base-url}") baseUrl: String) {
   }
 
   fun getAddressesForPerson(id: String): Response<List<Address>> {
-    return try {
-      Response(
-        data = webClient.requestList<AddressFromNomis>(
-          HttpMethod.GET,
-          "/api/offenders/$id/addresses",
-          authenticationHeader(),
-        ).map { it.toAddress() },
-      )
-    } catch (exception: WebClientResponseException.NotFound) {
-      Response(
-        data = emptyList(),
-        errors = listOf(
-          UpstreamApiError(
-            causedBy = UpstreamApi.NOMIS,
-            type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-          ),
-        ),
-      )
+    val result = webClient.requestListWithErrorHandling<AddressFromNomis>(
+      HttpMethod.GET,
+      "/api/offenders/$id/addresses",
+      authenticationHeader(),
+      UpstreamApi.NOMIS,
+    )
+
+    return when (result) {
+      is WebClientWrapperResponse.Success -> {
+        Response(data = result.data.map { it.toAddress() })
+      }
+
+      is WebClientWrapperResponse.Error -> {
+        Response(
+          data = emptyList(),
+          errors = result.errors,
+        )
+      }
     }
   }
 
   fun getOffencesForPerson(id: String): Response<List<Offence>> {
-    return try {
-      Response(
-        data = webClient.requestList<OffenceHistoryDetail>(
-          HttpMethod.GET,
-          "/api/bookings/offenderNo/$id/offenceHistory",
-          authenticationHeader(),
-        ).map { it.toOffence() },
-      )
-    } catch (exception: WebClientResponseException.NotFound) {
-      Response(
-        data = emptyList(),
-        errors = listOf(
-          UpstreamApiError(
-            causedBy = UpstreamApi.NOMIS,
-            type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-          ),
-        ),
-      )
+    val result = webClient.requestListWithErrorHandling<OffenceHistoryDetail>(
+      HttpMethod.GET,
+      "/api/bookings/offenderNo/$id/offenceHistory",
+      authenticationHeader(),
+      UpstreamApi.NOMIS,
+    )
+    return when (result) {
+      is WebClientWrapperResponse.Success -> {
+        Response(data = result.data.map { it.toOffence() })
+      }
+
+      is WebClientWrapperResponse.Error -> {
+        Response(
+          data = emptyList(),
+          errors = result.errors,
+        )
+      }
     }
   }
 
   fun getAlertsForPerson(id: String): Response<List<Alert>> {
-    return try {
-      Response(
-        data = webClient.requestList<AlertFromNomis>(
-          HttpMethod.GET,
-          "/api/offenders/$id/alerts/v2",
-          authenticationHeader(),
-        ).map { it.toAlert() },
-      )
-    } catch (exception: WebClientResponseException.NotFound) {
-      Response(
-        data = emptyList(),
-        errors = listOf(
-          UpstreamApiError(
-            causedBy = UpstreamApi.NOMIS,
-            type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-          ),
-        ),
-      )
+    val result = webClient.requestListWithErrorHandling<AlertFromNomis>(
+      HttpMethod.GET,
+      "/api/offenders/$id/alerts/v2",
+      authenticationHeader(),
+      UpstreamApi.NOMIS,
+    )
+    return when (result) {
+      is WebClientWrapperResponse.Success -> {
+        Response(data = result.data.map { it.toAlert() })
+      }
+
+      is WebClientWrapperResponse.Error -> {
+        Response(
+          data = emptyList(),
+          errors = result.errors,
+        )
+      }
     }
   }
 
   fun getSentencesForBooking(id: Int): Response<List<Sentence>> {
-    return try {
-      Response(
-        data = webClient.requestList<SentenceFromNomis>(
-          HttpMethod.GET,
-          "/api/offender-sentences/booking/$id/sentences-and-offences",
-          authenticationHeader(),
-        ).map { it.toSentence() },
-      )
-    } catch (exception: WebClientResponseException.NotFound) {
-      Response(
-        data = emptyList(),
-        errors = listOf(
-          UpstreamApiError(
-            causedBy = UpstreamApi.NOMIS,
-            type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-          ),
-        ),
-      )
+    val result = webClient.requestListWithErrorHandling<SentenceFromNomis>(
+      HttpMethod.GET,
+      "/api/offender-sentences/booking/$id/sentences-and-offences",
+      authenticationHeader(),
+      UpstreamApi.NOMIS,
+    )
+    return when (result) {
+      is WebClientWrapperResponse.Success -> {
+        Response(data = result.data.map { it.toSentence() })
+      }
+
+      is WebClientWrapperResponse.Error -> {
+        Response(
+          data = emptyList(),
+          errors = result.errors,
+        )
+      }
     }
   }
 
   fun getBookingIdsForPerson(id: String): Response<List<Booking>> {
-    return try {
-      Response(
-        data = webClient.requestList<Booking>(
-          HttpMethod.GET,
-          "/api/offender-sentences?offenderNo=$id",
-          authenticationHeader(),
-        ),
-      )
-    } catch (exception: WebClientResponseException.NotFound) {
-      Response(
-        data = emptyList(),
-        errors = listOf(
-          UpstreamApiError(
-            causedBy = UpstreamApi.NOMIS,
-            type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-          ),
-        ),
-      )
+    val result = webClient.requestListWithErrorHandling<Booking>(
+      HttpMethod.GET,
+      "/api/offender-sentences?offenderNo=$id",
+      authenticationHeader(),
+      UpstreamApi.NOMIS,
+    )
+    return when (result) {
+      is WebClientWrapperResponse.Success -> {
+        Response(data = result.data)
+      }
+
+      is WebClientWrapperResponse.Error -> {
+        Response(
+          data = emptyList(),
+          errors = result.errors,
+        )
+      }
     }
   }
 
