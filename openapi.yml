@@ -444,13 +444,14 @@ paths:
               schema:
                 $ref: '#/components/schemas/CaseDetails'
         "404":
-          description: "A case with the provided HmppsId does not exist in Delius.\n \
-              \                   Note: this could be the result of a merge or a deletion.\n\
-              \            "
+          description: "A person detail with the provided HmppsId and event number does not exist in Delius."
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CaseDetails'
+                $ref: "#/components/schemas/Error"
+              examples:
+                PersonNotFoundError:
+                  $ref: "#/components/examples/PersonNotFoundError"
 
 
   /{TBC}/v1/persons/{Id}/accommodations:
