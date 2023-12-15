@@ -17,7 +17,7 @@ class ConsumerNameExtractionFilter : Filter {
   @Throws(IOException::class, ServletException::class)
   override fun doFilter(request: ServletRequest, response: ServletResponse?, chain: FilterChain) {
     val req = request as HttpServletRequest
-    val res = response as HttpServletResponse
+    response as HttpServletResponse
     val subjectDistinguishedName = req.getHeader("subject-distinguished-name")
     val extractedConsumerName = extractConsumerName(subjectDistinguishedName)
     req.setAttribute("clientName", extractedConsumerName)
