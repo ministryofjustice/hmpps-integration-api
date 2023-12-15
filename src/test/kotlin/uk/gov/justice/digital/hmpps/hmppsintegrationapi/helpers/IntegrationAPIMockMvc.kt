@@ -10,6 +10,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 class IntegrationAPIMockMvc(
   @Autowired var mockMvc: MockMvc,
 ) {
+
   fun performAuthorised(path: String): MvcResult {
     val subjectDistinguishedName = "C=GB,ST=London,L=London,O=Home Office,CN=automated-test-client"
     return mockMvc.perform(MockMvcRequestBuilders.get("$path").header("subject-distinguished-name", subjectDistinguishedName)).andReturn()

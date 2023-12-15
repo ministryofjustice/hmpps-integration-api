@@ -24,6 +24,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Risks
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetRisksForPersonService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 import java.time.LocalDateTime
@@ -33,6 +34,7 @@ import java.time.LocalDateTime
 internal class RisksControllerTest(
   @Autowired var springMockMvc: MockMvc,
   @MockBean val getRisksForPersonService: GetRisksForPersonService,
+  @MockBean val auditService: AuditService,
 ) : DescribeSpec(
   {
     val hmppsId = "9999/11111A"
@@ -87,6 +89,7 @@ internal class RisksControllerTest(
             ),
           ),
         )
+        Mockito.reset(auditService)
       }
 
       it("responds with a 200 OK status") {
@@ -176,6 +179,12 @@ internal class RisksControllerTest(
           }
           """.removeWhitespaceAndNewlines(),
         )
+      }
+
+      it("logs audit") {
+        mockMvc.performAuthorised(path)
+
+        verify(auditService, VerificationModeFactory.times(1)).createEvent("GET_PERSON_RISK", "Person risk details with hmpps id: $hmppsId has been retrieved")
       }
 
       it("returns null embedded in a JSON object when no risks are found") {

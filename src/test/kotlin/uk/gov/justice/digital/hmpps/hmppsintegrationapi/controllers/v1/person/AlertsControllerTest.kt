@@ -21,6 +21,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetAlertsForPersonService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 import java.time.LocalDate
@@ -30,6 +31,7 @@ import java.time.LocalDate
 internal class AlertsControllerTest(
   @Autowired var springMockMvc: MockMvc,
   @MockBean val getAlertsForPersonService: GetAlertsForPersonService,
+  @MockBean val auditService: AuditService,
 ) : DescribeSpec(
   {
     val hmppsId = "9999/11111A"
@@ -40,6 +42,7 @@ internal class AlertsControllerTest(
     describe("GET $path") {
       beforeTest {
         Mockito.reset(getAlertsForPersonService)
+        Mockito.reset(auditService)
         whenever(getAlertsForPersonService.execute(hmppsId)).thenReturn(
           Response(
             data = listOf(
@@ -64,6 +67,12 @@ internal class AlertsControllerTest(
         val result = mockMvc.performAuthorised(path)
 
         result.response.status.shouldBe(HttpStatus.OK.value())
+      }
+
+      it("logs audit") {
+        val result = mockMvc.performAuthorised(path)
+
+        verify(auditService, VerificationModeFactory.times(1)).createEvent("GET_PERSON_ALERTS", "Person alerts with hmpps id: $hmppsId has been retrieved")
       }
 
       it("retrieves the alerts for a person with the matching ID") {

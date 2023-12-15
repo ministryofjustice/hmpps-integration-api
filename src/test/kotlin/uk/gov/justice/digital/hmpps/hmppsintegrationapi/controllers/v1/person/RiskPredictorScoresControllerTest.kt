@@ -20,6 +20,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetRiskPredictorScoresForPersonService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 import java.time.LocalDateTime
@@ -35,6 +36,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ViolencePredictor
 internal class RiskPredictorScoresControllerTest(
   @Autowired var springMockMvc: MockMvc,
   @MockBean val getRiskPredictorScoresForPersonService: GetRiskPredictorScoresForPersonService,
+  @MockBean val auditService: AuditService,
 ) : DescribeSpec(
   {
     val hmppsId = "9999/11111A"
@@ -60,6 +62,7 @@ internal class RiskPredictorScoresControllerTest(
             ),
           ),
         )
+        Mockito.reset(auditService)
       }
 
       it("responds with a 200 OK status") {
@@ -70,8 +73,13 @@ internal class RiskPredictorScoresControllerTest(
 
       it("retrieves the risk predictor scores for a person with the matching ID") {
         mockMvc.performAuthorised(path)
-
         verify(getRiskPredictorScoresForPersonService, VerificationModeFactory.times(1)).execute(hmppsId)
+      }
+
+      it("logs audit") {
+        mockMvc.performAuthorised(path)
+
+        verify(auditService, VerificationModeFactory.times(1)).createEvent("GET_PERSON_RISK_SCORES", "Person risk predictor scores with hmpps id: $hmppsId has been retrieved")
       }
 
       it("returns the risk predictor scores for a person with the matching ID") {

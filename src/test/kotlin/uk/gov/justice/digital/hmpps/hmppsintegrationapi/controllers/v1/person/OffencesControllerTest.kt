@@ -21,6 +21,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetOffencesForPersonService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 import java.time.LocalDate
@@ -30,6 +31,7 @@ import java.time.LocalDate
 internal class OffencesControllerTest(
   @Autowired var springMockMvc: MockMvc,
   @MockBean val getOffencesForPersonService: GetOffencesForPersonService,
+  @MockBean val auditService: AuditService,
 ) : DescribeSpec(
   {
     val hmppsId = "9999/11111A"
@@ -40,6 +42,7 @@ internal class OffencesControllerTest(
     describe("GET $path") {
       beforeTest {
         Mockito.reset(getOffencesForPersonService)
+        Mockito.reset(auditService)
         whenever(getOffencesForPersonService.execute(hmppsId)).thenReturn(
           Response(
             data = listOf(
@@ -87,6 +90,11 @@ internal class OffencesControllerTest(
           ]
         """.removeWhitespaceAndNewlines(),
         )
+      }
+      it("logs audit") {
+        mockMvc.performAuthorised(path)
+
+        verify(auditService, VerificationModeFactory.times(1)).createEvent("GET_PERSON_OFFENCES", "Person offences details with hmpps id: $hmppsId has been retrieved")
       }
 
       it("returns an empty list embedded in a JSON object when no offences are found") {

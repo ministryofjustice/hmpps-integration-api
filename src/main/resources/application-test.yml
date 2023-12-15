@@ -23,6 +23,12 @@ services:
   probation-integration-epf:
     base-url: http://localhost:4005
 
+hmpps.sqs:
+  provider: localstack
+  queues:
+    audit:
+      queueName: "audit"
+
 authorisation:
   consumers:
     automated-test-client:
@@ -44,3 +50,4 @@ authorisation:
       - "/health/readiness"
       - "/health/liveness"
       - "/info"
+      -

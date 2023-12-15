@@ -16,12 +16,14 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMo
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.CaseDetail
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetEPFPersonDetailService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 
 @WebMvcTest(controllers = [EPFPersonDetailController::class])
 @ActiveProfiles("test")
 internal class EPFPersonDetailControllerTest(
   @Autowired var springMockMvc: MockMvc,
   @MockBean val getEPFPersonDetailService: GetEPFPersonDetailService,
+  @MockBean val auditService: AuditService,
 ) : DescribeSpec({
   val hmppsId = "X12345"
   val eventNumber = 1234
@@ -36,6 +38,7 @@ internal class EPFPersonDetailControllerTest(
           data = CaseDetail(nomsId = "ABC123"),
         ),
       )
+      Mockito.reset(auditService)
     }
 
     it("responds with a 200 OK status") {
@@ -48,6 +51,11 @@ internal class EPFPersonDetailControllerTest(
       mockMvc.performAuthorised(path)
 
       verify(getEPFPersonDetailService, VerificationModeFactory.times(1)).execute(hmppsId, eventNumber)
+    }
+
+    it("logs audit") {
+      mockMvc.performAuthorised(path)
+      verify(auditService, VerificationModeFactory.times(1)).createEvent("GET_EPF_PROBATION_CASE_INFORMATION", "Probation case information with hmpps Id: $hmppsId and delius event number: $eventNumber has been retrieved")
     }
   }
 },)

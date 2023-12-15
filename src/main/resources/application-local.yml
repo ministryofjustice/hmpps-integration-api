@@ -13,3 +13,31 @@ services:
     base-url: http://localhost:4060
   hmpps-auth:
     base-url: http://localhost:9090
+
+hmpps.sqs:
+  provider: localstack
+  queues:
+    audit:
+      queueName: "audit"
+
+authorisation:
+  consumers:
+    automated-test-client:
+      - "/v1/persons"
+      - "/v1/persons/.*"
+      - "/v1/persons/.*/images"
+      - "/v1/images/.*"
+      - "/v1/persons/.*/addresses"
+      - "/v1/persons/.*/offences"
+      - "/v1/persons/.*/alerts"
+      - "/v1/persons/.*/sentences"
+      - "/v1/persons/.*/sentences/latest-key-dates-and-adjustments"
+      - "/v1/persons/.*/risks/scores"
+      - "/v1/persons/.*/needs"
+      - "/v1/persons/.*/risks"
+      - "/v1/epf/person-details/.*/.*"
+      - "/health"
+      - "/health/ping"
+      - "/health/readiness"
+      - "/health/liveness"
+      - "/info"

@@ -10,11 +10,13 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.decodeUrlChar
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Risks
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetRisksForPersonService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 
 @RestController
 @RequestMapping("/v1/persons")
 class RisksController(
   @Autowired val getRisksForPersonService: GetRisksForPersonService,
+  @Autowired val auditService: AuditService,
 ) {
 
   @GetMapping("{encodedHmppsId}/risks")
@@ -25,7 +27,7 @@ class RisksController(
     if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
       throw EntityNotFoundException("Could not find person with id: $hmppsId")
     }
-
+    auditService.createEvent("GET_PERSON_RISK", "Person risk details with hmpps id: $hmppsId has been retrieved")
     return mapOf("data" to response.data)
   }
 }

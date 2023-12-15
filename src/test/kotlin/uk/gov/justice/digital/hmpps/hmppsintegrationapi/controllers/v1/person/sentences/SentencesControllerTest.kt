@@ -23,6 +23,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetLatestSentenceKeyDatesAndAdjustmentsForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetSentencesForPersonService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 import java.time.LocalDate
@@ -33,6 +34,7 @@ internal class SentencesControllerTest(
   @Autowired var springMockMvc: MockMvc,
   @MockBean val getSentencesForPersonService: GetSentencesForPersonService,
   @MockBean val getLatestSentenceKeyDatesAndAdjustmentsForPersonService: GetLatestSentenceKeyDatesAndAdjustmentsForPersonService,
+  @MockBean val auditService: AuditService,
 ) : DescribeSpec(
   {
     val hmppsId = "9999/11111A"
@@ -50,6 +52,7 @@ internal class SentencesControllerTest(
           ),
         ),
       )
+      Mockito.reset(auditService)
     }
 
     it("responds with a 200 OK status") {
@@ -184,9 +187,24 @@ internal class SentencesControllerTest(
       )
 
       val result = mockMvc.performAuthorised("$path?page=1&perPage=10")
-
       result.response.contentAsString.shouldContainJsonKeyValue("$.pagination.page", 1)
       result.response.contentAsString.shouldContainJsonKeyValue("$.pagination.totalPages", 2)
+    }
+    it("logs audit") {
+      whenever(getSentencesForPersonService.execute(hmppsId)).thenReturn(
+        Response(
+          data =
+          List(20) {
+            generateTestSentence(
+              dateOfSentencing = LocalDate.parse("2023-01-01"),
+              isCustodial = true,
+            )
+          },
+        ),
+      )
+      mockMvc.performAuthorised("$path?page=1&perPage=10")
+
+      verify(auditService, VerificationModeFactory.times(1)).createEvent("GET_PERSON_SENTENCES", "Person sentence details with hmpps id: $hmppsId has been retrieved")
     }
   },
 )

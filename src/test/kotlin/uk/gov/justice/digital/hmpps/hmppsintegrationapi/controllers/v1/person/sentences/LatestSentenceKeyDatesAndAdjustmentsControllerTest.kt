@@ -29,6 +29,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetLatestSentenceKeyDatesAndAdjustmentsForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetSentencesForPersonService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 import java.time.LocalDate
@@ -39,6 +40,7 @@ internal class LatestSentenceKeyDatesAndAdjustmentsControllerTest(
   @Autowired var springMockMvc: MockMvc,
   @MockBean val getSentencesForPersonService: GetSentencesForPersonService,
   @MockBean val getLatestSentenceKeyDatesAndAdjustmentsForPersonService: GetLatestSentenceKeyDatesAndAdjustmentsForPersonService,
+  @MockBean val auditService: AuditService,
 ) : DescribeSpec(
   {
     val hmppsId = "9999/11111A"
@@ -103,6 +105,7 @@ internal class LatestSentenceKeyDatesAndAdjustmentsControllerTest(
           ),
         ),
       )
+      Mockito.reset(auditService)
     }
 
     it("responds with a 200 OK status") {
@@ -223,6 +226,12 @@ internal class LatestSentenceKeyDatesAndAdjustmentsControllerTest(
         }
         """.removeWhitespaceAndNewlines(),
       )
+    }
+
+    it("logs audit") {
+      mockMvc.performAuthorised(path)
+
+      verify(auditService, VerificationModeFactory.times(1)).createEvent("GET_PERSON_SENTENCES_LATEST_KEY_DATES_AND_ADJUSTMENTS", "The key dates and adjustments about a person’s release from prison for their latest sentence for persion with hmpps id: $hmppsId has been retrieved")
     }
 
     it("responds with a 404 NOT FOUND status when person isn't found in the upstream API") {

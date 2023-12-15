@@ -11,7 +11,7 @@ import org.springframework.test.context.ContextConfiguration
   classes = [AuthoriseConsumerService::class],
 )
 internal class AuthoriseConsumerServiceTest(
-  private val subjectDistinguishedName: String = "C=GB,ST=London,L=London,O=Home Office,CN=automated-test-client",
+  private val clientName: String = "automated-test-client",
   private val authoriseConsumerService: AuthoriseConsumerService,
 ) : DescribeSpec(
   {
@@ -25,7 +25,7 @@ internal class AuthoriseConsumerServiceTest(
     describe("Access is allowed") {
       it("when the path is listed under that consumer") {
         val authResult = authoriseConsumerService.execute(
-          subjectDistinguishedName,
+          clientName,
           consumerPathConfig,
           requestedPath,
         )
@@ -43,7 +43,7 @@ internal class AuthoriseConsumerServiceTest(
       it("when the path isn't listed as allowed on the consumer") {
         requestedPath = "/some-other-path/123"
 
-        val result = authoriseConsumerService.execute(subjectDistinguishedName, consumerPathConfig, requestedPath)
+        val result = authoriseConsumerService.execute(clientName, consumerPathConfig, requestedPath)
 
         result.shouldBeFalse()
       }

@@ -6,9 +6,7 @@ import org.springframework.stereotype.Service
 @Component
 @Service
 class AuthoriseConsumerService {
-  fun execute(subjectDistinguishedName: String, consumerPathConfig: Map<String, List<String>>, requestedPath: String): Boolean {
-    val consumer = extractConsumerFromSubjectDistinguishedNameService(subjectDistinguishedName)
-
+  fun execute(consumer: String, consumerPathConfig: Map<String, List<String>>, requestedPath: String): Boolean {
     println("consumer: $consumer")
     println("requestedPath: $requestedPath")
 
@@ -17,21 +15,6 @@ class AuthoriseConsumerService {
         return true
       }
     }
-
     return false
-  }
-
-  fun extractConsumerFromSubjectDistinguishedNameService(subjectDistinguishedName: String?): String? {
-    if (subjectDistinguishedName.isNullOrEmpty()) {
-      return null
-    }
-
-    val match = Regex("^.*,CN=(.*)$").find(subjectDistinguishedName)
-
-    if (match?.groupValues == null) {
-      return null
-    }
-
-    return match.groupValues[1]
   }
 }

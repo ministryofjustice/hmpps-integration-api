@@ -12,22 +12,24 @@ import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetImageService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 
 @WebMvcTest(controllers = [ImageController::class])
 @ActiveProfiles("test")
 internal class ImageControllerTest(
   @Autowired var springMockMvc: MockMvc,
   @MockBean val getImageService: GetImageService,
+  @MockBean val auditService: AuditService,
 ) : DescribeSpec(
   {
     val id = 2461788
     val image = byteArrayOf(0x48, 101, 108, 108, 111)
+
     val basePath = "/v1/images"
     val mockMvc = IntegrationAPIMockMvc(springMockMvc)
 
@@ -35,6 +37,7 @@ internal class ImageControllerTest(
       beforeTest {
         Mockito.reset(getImageService)
         whenever(getImageService.execute(id)).thenReturn(Response(data = image))
+        Mockito.reset(auditService)
       }
 
       it("responds with a 200 OK status") {
@@ -55,6 +58,12 @@ internal class ImageControllerTest(
         result.response.contentAsByteArray.shouldBe(image)
       }
 
+      it("logs audit") {
+        mockMvc.performAuthorised("$basePath/$id")
+
+        verify(auditService, VerificationModeFactory.times(1)).createEvent("GET_PERSON_IMAGE", "Image with id: $id has been retrieved")
+      }
+
       it("responds with a 404 NOT FOUND status") {
         whenever(getImageService.execute(id)).thenReturn(
           Response(
@@ -69,7 +78,6 @@ internal class ImageControllerTest(
         )
 
         val result = mockMvc.performAuthorised("$basePath/$id")
-
         result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
       }
     }

@@ -35,3 +35,10 @@ authorisation:
       - "/health/readiness"
       - "/health/liveness"
       - "/info"
+
+hmpps.sqs:
+  provider: localstack
+  localstackUrl: http://local-stack-aws:4566
+  queues:
+    audit:
+      queueName: "audit"
