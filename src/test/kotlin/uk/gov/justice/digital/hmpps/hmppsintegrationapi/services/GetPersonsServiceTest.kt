@@ -34,13 +34,13 @@ internal class GetPersonsServiceTest(
     whenever(probationOffenderSearchGateway.getPersons(firstName, lastName)).thenReturn(Response(data = emptyList()))
   }
 
-  it("retrieves person(s) from Prisoner Offender Search") {
+  it("gets person(s) from Prisoner Offender Search") {
     getPersonsService.execute(firstName, lastName)
 
     verify(prisonerOffenderSearchGateway, times(1)).getPersons(firstName, lastName)
   }
 
-  it("retrieves person(s) from Probation Offender Search") {
+  it("gets person(s) from Probation Offender Search") {
     getPersonsService.execute(firstName, lastName)
 
     verify(probationOffenderSearchGateway, times(1)).getPersons(firstName, lastName)

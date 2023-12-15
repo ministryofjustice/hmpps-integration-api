@@ -48,25 +48,25 @@ internal class GetAddressesForPersonServiceTest(
       whenever(nomisGateway.getAddressesForPerson(prisonerNumber)).thenReturn(Response(data = emptyList()))
     }
 
-    it("retrieves a person from getPersonService") {
+    it("gets a person from getPersonService") {
       getAddressesForPersonService.execute(hmppsId)
 
       verify(personService, VerificationModeFactory.times(1)).execute(hmppsId = hmppsId)
     }
 
-    it("retrieves addresses for a person from Probation Offender Search using a Hmpps Id") {
+    it("gets addresses for a person from Probation Offender Search using a Hmpps Id") {
       getAddressesForPersonService.execute(hmppsId = hmppsId)
 
       verify(probationOffenderSearchGateway, VerificationModeFactory.times(1)).getAddressesForPerson(hmppsId)
     }
 
-    it("retrieves addresses for a person from Probation Offender Search using a Delius CRN") {
+    it("gets addresses for a person from Probation Offender Search using a Delius CRN") {
       getAddressesForPersonService.execute(hmppsId = deliusCrn)
 
       verify(probationOffenderSearchGateway, VerificationModeFactory.times(1)).getAddressesForPerson(deliusCrn)
     }
 
-    it("retrieves addresses for a person from NOMIS using prisoner number") {
+    it("gets addresses for a person from NOMIS using prisoner number") {
       getAddressesForPersonService.execute(hmppsId)
 
       verify(nomisGateway, VerificationModeFactory.times(1)).getAddressesForPerson(prisonerNumber)

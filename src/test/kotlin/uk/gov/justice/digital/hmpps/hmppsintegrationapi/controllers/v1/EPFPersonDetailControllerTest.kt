@@ -41,13 +41,13 @@ internal class EPFPersonDetailControllerTest(
       Mockito.reset(auditService)
     }
 
-    it("responds with a 200 OK status") {
+    it("returns a 200 OK status code") {
       val result = mockMvc.performAuthorised(path)
 
       result.response.status.shouldBe(HttpStatus.OK.value())
     }
 
-    it("retrieves the person detail for a person with the matching ID") {
+    it("gets the person detail for a person with the matching ID") {
       mockMvc.performAuthorised(path)
 
       verify(getEPFPersonDetailService, VerificationModeFactory.times(1)).execute(hmppsId, eventNumber)

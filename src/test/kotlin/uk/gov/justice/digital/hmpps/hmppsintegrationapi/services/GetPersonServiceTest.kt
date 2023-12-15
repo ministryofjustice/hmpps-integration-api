@@ -38,7 +38,7 @@ internal class GetPersonServiceTest(
     )
   }
 
-  it("retrieves a person from Probation Offender Search") {
+  it("gets a person from Probation Offender Search") {
     getPersonService.execute(hmppsId)
 
     verify(probationOffenderSearchGateway, VerificationModeFactory.times(1)).getPerson(hmppsId)

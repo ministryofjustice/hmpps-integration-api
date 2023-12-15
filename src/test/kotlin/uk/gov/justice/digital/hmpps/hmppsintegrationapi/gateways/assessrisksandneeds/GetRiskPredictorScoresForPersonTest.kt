@@ -109,7 +109,7 @@ class GetRiskPredictorScoresForPersonTest(
         response.data.shouldBe(emptyList())
       }
 
-      it("returns an error when 404 NOT FOUND is returned because no person is found") {
+      it("returns a 404 NOT FOUND status code when no person is found") {
         assessRisksAndNeedsApiMockServer.stubGetRiskPredictorScoresForPerson(deliusCrn, "", HttpStatus.NOT_FOUND)
 
         val response = assessRisksAndNeedsGateway.getRiskPredictorScoresForPerson(deliusCrn)

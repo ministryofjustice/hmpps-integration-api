@@ -93,19 +93,19 @@ internal class GetOffencesForPersonServiceTest(
       result.shouldBe(Response(data = listOf(prisonOffence1, prisonOffence2, prisonOffence3, probationOffence1, probationOffence2, probationOffence3)))
     }
 
-    it("retrieves a person using a Hmpps ID") {
+    it("gets a person using a Hmpps ID") {
       getOffencesForPersonService.execute(hmppsId)
 
       verify(getPersonService, VerificationModeFactory.times(1)).execute(hmppsId = hmppsId)
     }
 
-    it("retrieves offences from NOMIS using a prisoner number") {
+    it("gets offences from NOMIS using a prisoner number") {
       getOffencesForPersonService.execute(hmppsId)
 
       verify(nomisGateway, VerificationModeFactory.times(1)).getOffencesForPerson(prisonerNumber)
     }
 
-    it("retrieves offences from nDelius using a CRN") {
+    it("gets offences from nDelius using a CRN") {
       getOffencesForPersonService.execute(hmppsId)
 
       verify(nDeliusGateway, VerificationModeFactory.times(1)).getOffencesForPerson(nDeliusCRN)
