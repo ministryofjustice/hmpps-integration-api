@@ -14,21 +14,20 @@ per environment.
 
 ## Create a client certificate
 
-1. Run the [generate-client-certificate.sh](/scripts/generate-client-certificate.sh) script with the name of the environment and client.
+1. Run the [generate-client-certificate.sh](/scripts/client_certificates/generate.sh) script with the name of the environment and client.
 
 ```bash
-cd scripts
-./generate-client-certificate.sh <environment> <client>
-# E.g. ./generate-client-certificate.sh dev mapps
+make generate-client-certificate
 ```
 
-This will output three files in the current directory:
+This will output three files in the ./scripts/client_certificates directory:
 
-- a private key e.g. `dev-mappps-client.key`
-- a certificate signing request (CSR) e.g. `dev-mappps-client.csr`
-- a client certificate (public key) e.g. `dev-mappps-client.pem`
+- a private key e.g. `dev-nhs-client.key`
+- a certificate signing request (CSR) e.g. `dev-nhs-client.csr`
+- a client certificate (public key) e.g. `dev-nhs-client.pem`
 
 The private key and public key can be shared with the consumer.
+The private key must be kept secret and the public key can be shared freely.
 
 ## Create an API key
 
@@ -57,6 +56,24 @@ to the Concourse run that will be performing Terraform apply to the namespace. (
 8. Follow the Concourse build link and check that the Terraform apply succeeds.
 
 The API key will be automatically generated and saved as a Kubernetes secret for future reference.
+
+You can retrieve this API key with the following command:
+
+```bash
+kubectl -n hmpps-integration-api-[environment] get secrets consumer-api-keys -o json | jq -r '.data.[client]'
+# E.g. kubectl -n hmpps-integration-api-dev get secrets consumer-api-keys -o json | jq -r '.data.bob'
+```
+
+## Configure allowed endpoints for the consumer
+
+Add your client common name to the ./src/main/resources/application-[environment].yaml, listing the paths that the new client is allowed to consume.
+It is important that the name of the client matches the common name exactly.
+
+To view the common name of the client certificate that was just generated, run:
+
+```bash
+openssl x509 -in ./scripts/client_certificates/[environment]-[consumer]-client.pem -text |grep Subject |grep CN
+```
 
 ## Send the credentials to the consumer
 

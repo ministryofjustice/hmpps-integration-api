@@ -16,7 +16,7 @@ openssl genrsa -out [environment]-truststore.key 4096
 # E.g. openssl genrsa -out dev-truststore.key 4096
 ```
 
-6. Create a certificate for our CA.
+6. Create a certificate for our CA. Certificate authorities may have a valid lifespan of 10 years maximum.
 
 ```bash
 openssl req -new -x509 -days 3650 -key [environment]-truststore.key -out [environment]-truststore.pem
@@ -117,19 +117,6 @@ Within [our API repository](https://github.com/ministryofjustice/hmpps-integrati
 # E.g. ./scripts/report_kubernetes.sh dev
 ```
 
-31. Generate a client certificate for yourself.
+31. Set up a new consumer of the API by following the steps outlined [here](./setting-up-a-new-consumer.md)
 
-```bash
-cd scripts
-./generate-client-certificate.sh [environment] [client]
-# E.g. ./generate-client-certificate.sh dev bob
-```
-
-32. Get your API key for the new environment.
-
-```bash
-kubectl -n hmpps-integration-api-[environment] get secrets consumer-api-keys -o json | jq -r '.data.[client]'
-# E.g. kubectl -n hmpps-integration-api-dev get secrets consumer-api-keys -o json | jq -r '.data.bob'
-```
-
-33. Using your client certificate and API key, test the new environment is working by calling an API endpoint such as `/health` to check it's running and `/persons?first_name=John` to check connection to upstream APIs are working.
+32. Using your client certificate and API key, test the new environment is working by calling an API endpoint such as `/health` to check it's running and `/persons?first_name=John` to check connection to upstream APIs are working.
