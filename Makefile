@@ -37,4 +37,7 @@ format:
 check:
 	./gradlew check
 
+generate-client-certificate:
+	cd ./scripts/client_certificates && ./generate.sh
+
 .PHONY: authenticate-docker build-dev test serve publish unit-test smoke-test build lint
