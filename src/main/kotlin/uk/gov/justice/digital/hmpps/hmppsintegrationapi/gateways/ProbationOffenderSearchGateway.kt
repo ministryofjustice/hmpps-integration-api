@@ -67,10 +67,21 @@ class ProbationOffenderSearchGateway(@Value("\${services.probation-offender-sear
     val requestBody = mapOf("firstName" to firstName, "surname" to surname, "includeAliases" to searchWithinAliases)
       .filterValues { it != null }
 
-    return Response(
-      data = webClient.requestList<Offender>(HttpMethod.POST, "/search", authenticationHeader(), requestBody)
-        .map { it.toPerson() },
-    )
+    val result = webClient.requestListWithErrorHandling<Offender>(HttpMethod.POST, "/search", authenticationHeader(), UpstreamApi.PROBATION_OFFENDER_SEARCH, requestBody)
+
+    return when (result) {
+      is WebClientWrapperResponse.Success -> {
+        Response(
+          data = result.data.map { it.toPerson() },
+        )
+      }
+      is WebClientWrapperResponse.Error -> {
+        Response(
+          data = emptyList(),
+          errors = result.errors,
+        )
+      }
+    }
   }
 
   fun getAddressesForPerson(hmppsId: String): Response<List<Address>> {
@@ -80,13 +91,22 @@ class ProbationOffenderSearchGateway(@Value("\${services.probation-offender-sear
       "crn"
     }
 
-    val offender = webClient.requestList<Offender>(HttpMethod.POST, "/search", authenticationHeader(), mapOf(queryField to hmppsId))
-    val addresses = offender.firstOrNull()?.contactDetails?.addresses.orEmpty()
-
-    return if (addresses.isNullOrEmpty()) {
-      Response(data = emptyList())
-    } else {
-      Response(data = addresses.map { it.toAddress() })
+    val result = webClient.requestListWithErrorHandling<Offender>(HttpMethod.POST, "/search", authenticationHeader(), UpstreamApi.PROBATION_OFFENDER_SEARCH, mapOf(queryField to hmppsId))
+    return when (result) {
+      is WebClientWrapperResponse.Success -> {
+        val addresses = result.data.firstOrNull()?.contactDetails?.addresses.orEmpty()
+        return if (addresses.isEmpty()) {
+          Response(data = emptyList())
+        } else {
+          Response(data = addresses.map { it.toAddress() })
+        }
+      }
+      is WebClientWrapperResponse.Error -> {
+        Response(
+          data = emptyList(),
+          errors = result.errors,
+        )
+      }
     }
   }
 
