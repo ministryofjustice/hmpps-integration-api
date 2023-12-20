@@ -10,7 +10,6 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
 import org.springframework.boot.test.mock.mockito.MockBean
-import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
@@ -19,7 +18,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffende
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.PrisonerOffenderSearchApiMockServer
 import java.io.File
-import java.time.LocalDate
 
 @ActiveProfiles("test")
 @ContextConfiguration(
@@ -227,5 +225,4 @@ class PrisonerOffenderSearchGatewayTest(
       response.data.shouldBeEmpty()
     }
   }
-
 },)
