@@ -22,17 +22,6 @@ class PrisonerOffenderSearchGateway(@Value("\${services.prisoner-offender-search
   @Autowired
   lateinit var hmppsAuthGateway: HmppsAuthGateway
 
-  fun getPerson(id: String): Person? {
-    return try {
-      webClient.request<Prisoner>(HttpMethod.GET, "/prisoner/$id", authenticationHeader()).toPerson()
-    } catch (exception: WebClientResponseException.BadRequest) {
-      log.error("${exception.message} - ${Json.parseToJsonElement(exception.responseBodyAsString).jsonObject["developerMessage"]}")
-      null
-    } catch (exception: WebClientResponseException.NotFound) {
-      null
-    }
-  }
-
   fun getPersons(firstName: String? = null, lastName: String? = null, hmppsId: String? = null, searchWithinAliases: Boolean = false): Response<List<Person>> {
     val maxNumberOfResults = 9999
     val requestBody =
