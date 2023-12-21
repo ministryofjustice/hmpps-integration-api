@@ -24,8 +24,8 @@ class HmppsIntegrationApiExceptionHandler {
       .body(
         ErrorResponse(
           status = BAD_REQUEST,
-          userMessage = "Validation failure: ${e.message}",
-          developerMessage = e.message,
+          developerMessage = "Validation failure: ${e.message}",
+          userMessage = e.message,
         ),
       )
   }
@@ -38,8 +38,8 @@ class HmppsIntegrationApiExceptionHandler {
       .body(
         ErrorResponse(
           status = NOT_FOUND,
-          userMessage = "404 Not found error: ${e.message}",
-          developerMessage = e.message,
+          developerMessage = "404 Not found error: ${e.message}",
+          userMessage = e.message,
         ),
       )
   }
@@ -52,8 +52,8 @@ class HmppsIntegrationApiExceptionHandler {
       .body(
         ErrorResponse(
           status = FORBIDDEN,
-          userMessage = "Authentication error: ${e.message}",
-          developerMessage = e.message,
+          developerMessage = "Authentication error: ${e.message}",
+          userMessage = e.message,
         ),
       )
   }
@@ -66,8 +66,8 @@ class HmppsIntegrationApiExceptionHandler {
       .body(
         ErrorResponse(
           status = INTERNAL_SERVER_ERROR,
-          userMessage = "Unexpected error: ${e.message}",
-          developerMessage = e.message,
+          developerMessage = "Unexpected error: ${e.message}",
+          userMessage = e.message,
         ),
       )
   }
