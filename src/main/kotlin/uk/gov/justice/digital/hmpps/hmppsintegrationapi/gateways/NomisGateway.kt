@@ -1,20 +1,15 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways
 
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.jsonObject
-import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpMethod
 import org.springframework.stereotype.Component
-import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper.WebClientWrapperResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Address
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Alert
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ImageMetadata
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Offence
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Sentence
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.SentenceAdjustment
@@ -23,7 +18,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.Booking
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.ImageDetail
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.OffenceHistoryDetail
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.Offender
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.OffenderSentence
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.SentenceSummary
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.Address as AddressFromNomis
@@ -33,21 +27,9 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.Sentence as
 @Component
 class NomisGateway(@Value("\${services.prison-api.base-url}") baseUrl: String) {
   private val webClient = WebClientWrapper(baseUrl)
-  private val log = LoggerFactory.getLogger(this::class.java)
 
   @Autowired
   lateinit var hmppsAuthGateway: HmppsAuthGateway
-
-  fun getPerson(id: String): Person? {
-    return try {
-      webClient.request<Offender>(HttpMethod.GET, "/api/offenders/$id", authenticationHeader()).toPerson()
-    } catch (exception: WebClientResponseException.BadRequest) {
-      log.error("${exception.message} - ${Json.parseToJsonElement(exception.responseBodyAsString).jsonObject["developerMessage"]}")
-      null
-    } catch (exception: WebClientResponseException.NotFound) {
-      null
-    }
-  }
 
   fun getImageMetadataForPerson(id: String): Response<List<ImageMetadata>> {
     val result = webClient.requestListWithErrorHandling<ImageDetail>(HttpMethod.GET, "api/images/offenders/$id", authenticationHeader(), UpstreamApi.NOMIS)
