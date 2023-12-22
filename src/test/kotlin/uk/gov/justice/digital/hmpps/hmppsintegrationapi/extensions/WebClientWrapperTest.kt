@@ -5,10 +5,12 @@ import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.inspectors.shouldForAll
 import io.kotest.matchers.shouldBe
 import org.springframework.http.HttpMethod
+import org.springframework.http.HttpStatus
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper.WebClientWrapperResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.GenericApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApi
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApiError
 import java.io.File
 
 data class StringModel(val headers: String)
@@ -35,7 +37,7 @@ class WebClientWrapperTest : DescribeSpec({
 
   describe("when webClientWrapperResponse is Success") {
     describe("when request") {
-      it("performs a request where the result is a json object") {
+      it("performs a GET request where the result is a json object") {
         mockServer.stubGetTest(
           id,
           """
@@ -46,10 +48,10 @@ class WebClientWrapperTest : DescribeSpec({
         )
 
         val webClient = WebClientWrapper(baseUrl = mockServer.baseUrl())
-        val testModelResponse = webClient.request<TestModel>(HttpMethod.GET, "/test/$id", headers, UpstreamApi.TEST)
+        val result = webClient.request<TestModel>(HttpMethod.GET, "/test/$id", headers, UpstreamApi.TEST)
 
-        if (testModelResponse is WebClientWrapperResponse.Success) {
-          val testDomainModel = testModelResponse.data.toDomain()
+        if (result is WebClientWrapperResponse.Success) {
+          val testDomainModel = result.data.toDomain()
           testDomainModel.firstName.shouldBe("Harold")
         }
       }
@@ -74,10 +76,10 @@ class WebClientWrapperTest : DescribeSpec({
         )
 
         val webClient = WebClientWrapper(baseUrl = mockServer.baseUrl())
-        val searchModelResponse = webClient.request<SearchModel>(HttpMethod.POST, "/testPost", headers, UpstreamApi.TEST, mapOf("sourceName" to "Paul"))
+        val result = webClient.request<SearchModel>(HttpMethod.POST, "/testPost", headers, UpstreamApi.TEST, mapOf("sourceName" to "Paul"))
 
-        if (searchModelResponse is WebClientWrapperResponse.Success) {
-          val testDomainModels = searchModelResponse.data.content.map { it.toDomain() }
+        if (result is WebClientWrapperResponse.Success) {
+          val testDomainModels = result.data.content.map { it.toDomain() }
 
           testDomainModels.shouldForAll { it.firstName.shouldBe("Paul") }
           testDomainModels.first().lastName.shouldBe("Paper")
@@ -100,25 +102,37 @@ class WebClientWrapperTest : DescribeSpec({
           result.data.headers.shouldBe("headers matched")
         }
       }
-
-      it("receives a very large response") {
-        val id = "A123"
-
-        mockServer.stubGetTest(
-          id = id,
-          body = File("src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/extensions/fixtures/LargeResponse.json").readText(),
-        )
-
-        try {
-          val webClient = WebClientWrapper(baseUrl = mockServer.baseUrl())
-          webClient.request<SearchModel>(HttpMethod.GET, "/test/$id", headers = headers, UpstreamApi.TEST)
-        } catch (e: WebClientResponseException) {
-          fail("Exceeded memory buffer")
-        }
-      }
     }
 
     describe("when requestList") {
+      it("performs a GET request where the response is an array") {
+        mockServer.stubPostTest(
+          """
+        [
+          {
+            "sourceName": "Paul"
+          },
+          {     
+            "sourceName": "Paul"
+          }
+        ]
+      """.removeWhitespaceAndNewlines(),
+        )
+
+        val webClient = WebClientWrapper(baseUrl = mockServer.baseUrl())
+        val result = webClient.requestList<TestModel>(
+          HttpMethod.GET,
+          "/testPost",
+          headers,
+          UpstreamApi.TEST,
+        )
+
+        if (result is WebClientWrapperResponse.Success) {
+          val testDomainModels = result.data.map { it.toDomain() }
+          testDomainModels.shouldForAll { it.firstName.shouldBe("Paul") }
+        }
+      }
+
       it("performs a post request where the response is an array") {
         mockServer.stubPostTest(
           """
@@ -134,7 +148,7 @@ class WebClientWrapperTest : DescribeSpec({
         )
 
         val webClient = WebClientWrapper(baseUrl = mockServer.baseUrl())
-        val testModelResponse = webClient.requestList<TestModel>(
+        val result = webClient.requestList<TestModel>(
           HttpMethod.POST,
           "/testPost",
           headers,
@@ -142,13 +156,11 @@ class WebClientWrapperTest : DescribeSpec({
           mapOf("sourceName" to "Paul"),
         )
 
-        if (testModelResponse is WebClientWrapperResponse.Success) {
-          val testDomainModels = testModelResponse.data.map { it.toDomain() }
+        if (result is WebClientWrapperResponse.Success) {
+          val testDomainModels = result.data.map { it.toDomain() }
           testDomainModels.shouldForAll { it.firstName.shouldBe("Paul") }
         }
       }
-
-
 
       it("performs a request with multiple headers for .requestList()") {
         mockServer.stubGetWithHeadersTest()
@@ -165,6 +177,92 @@ class WebClientWrapperTest : DescribeSpec({
           result.data.first().headers.shouldBe("headers matched")
         }
       }
+    }
+  }
+
+  describe("when webClientWrapperResponse is Error") {
+    it("returns an entity not found UpstreamApiError when the request 404's") {
+      mockServer.stubPostTest("", HttpStatus.NOT_FOUND)
+      val webClient = WebClientWrapper(baseUrl = mockServer.baseUrl())
+      val result = webClient.request<TestModel>(HttpMethod.GET, "/test/$id", headers, UpstreamApi.TEST)
+
+      if (result is WebClientWrapperResponse.Error) {
+        result.errors.shouldBe(
+          listOf(
+            UpstreamApiError(
+              type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+              causedBy = UpstreamApi.TEST,
+            ),
+          ),
+        )
+      }
+    }
+
+    it("returns a forbidden UpstreamApiError when the request 403's") {
+      mockServer.stubPostTest("", HttpStatus.FORBIDDEN)
+      val webClient = WebClientWrapper(baseUrl = mockServer.baseUrl())
+      val result = webClient.request<TestModel>(HttpMethod.GET, "/test/$id", headers, UpstreamApi.TEST)
+
+      if (result is WebClientWrapperResponse.Error) {
+        result.errors.shouldBe(
+          listOf(
+            UpstreamApiError(
+              type = UpstreamApiError.Type.FORBIDDEN,
+              causedBy = UpstreamApi.TEST,
+            ),
+          ),
+        )
+      }
+    }
+
+    it("returns a bad request UpstreamApiError when the request 400's") {
+      mockServer.stubPostTest("", HttpStatus.BAD_REQUEST)
+      val webClient = WebClientWrapper(baseUrl = mockServer.baseUrl())
+      val result = webClient.request<TestModel>(HttpMethod.GET, "/test/$id", headers, UpstreamApi.TEST)
+
+      if (result is WebClientWrapperResponse.Error) {
+        result.errors.shouldBe(
+          listOf(
+            UpstreamApiError(
+              type = UpstreamApiError.Type.BAD_REQUEST,
+              causedBy = UpstreamApi.TEST,
+            ),
+          ),
+        )
+      }
+    }
+
+    it("returns a internal server error UpstreamApiError when the request 500's") {
+      mockServer.stubPostTest("", HttpStatus.INTERNAL_SERVER_ERROR)
+      val webClient = WebClientWrapper(baseUrl = mockServer.baseUrl())
+      val result = webClient.request<TestModel>(HttpMethod.GET, "/test/$id", headers, UpstreamApi.TEST)
+
+      if (result is WebClientWrapperResponse.Error) {
+        result.errors.shouldBe(
+          listOf(
+            UpstreamApiError(
+              type = UpstreamApiError.Type.INTERNAL_SERVER_ERROR,
+              causedBy = UpstreamApi.TEST,
+            ),
+          ),
+        )
+      }
+    }
+  }
+
+  it("receives a very large response") {
+    val id = "A123"
+
+    mockServer.stubGetTest(
+      id = id,
+      body = File("src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/extensions/fixtures/LargeResponse.json").readText(),
+    )
+
+    try {
+      val webClient = WebClientWrapper(baseUrl = mockServer.baseUrl())
+      webClient.request<SearchModel>(HttpMethod.GET, "/test/$id", headers = headers, UpstreamApi.TEST)
+    } catch (e: WebClientResponseException) {
+      fail("Exceeded memory buffer")
     }
   }
 },)
