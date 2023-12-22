@@ -92,6 +92,7 @@ class ProbationOffenderSearchGateway(@Value("\${services.probation-offender-sear
     }
 
     val result = webClient.requestList<Offender>(HttpMethod.POST, "/search", authenticationHeader(), UpstreamApi.PROBATION_OFFENDER_SEARCH, mapOf(queryField to hmppsId))
+
     return when (result) {
       is WebClientWrapperResponse.Success -> {
         val addresses = result.data.firstOrNull()?.contactDetails?.addresses.orEmpty()
