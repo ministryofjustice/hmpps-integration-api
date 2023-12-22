@@ -24,7 +24,7 @@ class PrisonerOffenderSearchGateway(@Value("\${services.prisoner-offender-search
       mapOf("firstName" to firstName, "lastName" to lastName, "includeAliases" to searchWithinAliases, "prisonerIdentifier" to hmppsId)
         .filterValues { it != null }
 
-    val result = webClient.requestWithErrorHandling<GlobalSearch>(HttpMethod.POST, "/global-search?size=$maxNumberOfResults", authenticationHeader(), UpstreamApi.PRISONER_OFFENDER_SEARCH, requestBody)
+    val result = webClient.request<GlobalSearch>(HttpMethod.POST, "/global-search?size=$maxNumberOfResults", authenticationHeader(), UpstreamApi.PRISONER_OFFENDER_SEARCH, requestBody)
 
     return when (result) {
       is WebClientWrapperResponse.Success -> {

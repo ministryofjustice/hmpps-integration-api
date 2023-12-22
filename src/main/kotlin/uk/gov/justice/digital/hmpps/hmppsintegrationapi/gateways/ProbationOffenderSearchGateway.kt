@@ -26,7 +26,7 @@ class ProbationOffenderSearchGateway(@Value("\${services.probation-offender-sear
       "crn"
     }
 
-    val result = webClient.requestListWithErrorHandling<Offender>(
+    val result = webClient.requestList<Offender>(
       HttpMethod.POST,
       "/search",
       authenticationHeader(),
@@ -67,7 +67,7 @@ class ProbationOffenderSearchGateway(@Value("\${services.probation-offender-sear
     val requestBody = mapOf("firstName" to firstName, "surname" to surname, "includeAliases" to searchWithinAliases)
       .filterValues { it != null }
 
-    val result = webClient.requestListWithErrorHandling<Offender>(HttpMethod.POST, "/search", authenticationHeader(), UpstreamApi.PROBATION_OFFENDER_SEARCH, requestBody)
+    val result = webClient.requestList<Offender>(HttpMethod.POST, "/search", authenticationHeader(), UpstreamApi.PROBATION_OFFENDER_SEARCH, requestBody)
 
     return when (result) {
       is WebClientWrapperResponse.Success -> {
@@ -91,7 +91,7 @@ class ProbationOffenderSearchGateway(@Value("\${services.probation-offender-sear
       "crn"
     }
 
-    val result = webClient.requestListWithErrorHandling<Offender>(HttpMethod.POST, "/search", authenticationHeader(), UpstreamApi.PROBATION_OFFENDER_SEARCH, mapOf(queryField to hmppsId))
+    val result = webClient.requestList<Offender>(HttpMethod.POST, "/search", authenticationHeader(), UpstreamApi.PROBATION_OFFENDER_SEARCH, mapOf(queryField to hmppsId))
     return when (result) {
       is WebClientWrapperResponse.Success -> {
         val addresses = result.data.firstOrNull()?.contactDetails?.addresses.orEmpty()

@@ -19,7 +19,7 @@ class ProbationIntegrationEPFGateway(@Value("\${services.probation-integration-e
   lateinit var hmppsAuthGateway: HmppsAuthGateway
 
   fun getCaseDetailForPerson(id: String, eventNumber: Int): Response<IntegrationAPICaseDetail?> {
-    val result = webClient.requestWithErrorHandling<CaseDetail?>(
+    val result = webClient.request<CaseDetail?>(
       HttpMethod.GET,
       "/case-details/$id/$eventNumber",
       authenticationHeader(),

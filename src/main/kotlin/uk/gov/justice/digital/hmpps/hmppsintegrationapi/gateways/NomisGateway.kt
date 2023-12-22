@@ -32,7 +32,7 @@ class NomisGateway(@Value("\${services.prison-api.base-url}") baseUrl: String) {
   lateinit var hmppsAuthGateway: HmppsAuthGateway
 
   fun getImageMetadataForPerson(id: String): Response<List<ImageMetadata>> {
-    val result = webClient.requestListWithErrorHandling<ImageDetail>(HttpMethod.GET, "api/images/offenders/$id", authenticationHeader(), UpstreamApi.NOMIS)
+    val result = webClient.requestList<ImageDetail>(HttpMethod.GET, "api/images/offenders/$id", authenticationHeader(), UpstreamApi.NOMIS)
 
     return when (result) {
       is WebClientWrapperResponse.Success -> {
@@ -49,7 +49,7 @@ class NomisGateway(@Value("\${services.prison-api.base-url}") baseUrl: String) {
   }
 
   fun getImageData(id: Int): Response<ByteArray> {
-    val result = webClient.requestWithErrorHandling<ByteArray>(HttpMethod.GET, "/api/images/$id/data", authenticationHeader(), UpstreamApi.NOMIS)
+    val result = webClient.request<ByteArray>(HttpMethod.GET, "/api/images/$id/data", authenticationHeader(), UpstreamApi.NOMIS)
 
     return when (result) {
       is WebClientWrapperResponse.Success -> {
@@ -66,7 +66,7 @@ class NomisGateway(@Value("\${services.prison-api.base-url}") baseUrl: String) {
   }
 
   fun getAddressesForPerson(id: String): Response<List<Address>> {
-    val result = webClient.requestListWithErrorHandling<AddressFromNomis>(
+    val result = webClient.requestList<AddressFromNomis>(
       HttpMethod.GET,
       "/api/offenders/$id/addresses",
       authenticationHeader(),
@@ -88,7 +88,7 @@ class NomisGateway(@Value("\${services.prison-api.base-url}") baseUrl: String) {
   }
 
   fun getOffencesForPerson(id: String): Response<List<Offence>> {
-    val result = webClient.requestListWithErrorHandling<OffenceHistoryDetail>(
+    val result = webClient.requestList<OffenceHistoryDetail>(
       HttpMethod.GET,
       "/api/bookings/offenderNo/$id/offenceHistory",
       authenticationHeader(),
@@ -109,7 +109,7 @@ class NomisGateway(@Value("\${services.prison-api.base-url}") baseUrl: String) {
   }
 
   fun getAlertsForPerson(id: String): Response<List<Alert>> {
-    val result = webClient.requestListWithErrorHandling<AlertFromNomis>(
+    val result = webClient.requestList<AlertFromNomis>(
       HttpMethod.GET,
       "/api/offenders/$id/alerts/v2",
       authenticationHeader(),
@@ -130,7 +130,7 @@ class NomisGateway(@Value("\${services.prison-api.base-url}") baseUrl: String) {
   }
 
   fun getSentencesForBooking(id: Int): Response<List<Sentence>> {
-    val result = webClient.requestListWithErrorHandling<SentenceFromNomis>(
+    val result = webClient.requestList<SentenceFromNomis>(
       HttpMethod.GET,
       "/api/offender-sentences/booking/$id/sentences-and-offences",
       authenticationHeader(),
@@ -151,7 +151,7 @@ class NomisGateway(@Value("\${services.prison-api.base-url}") baseUrl: String) {
   }
 
   fun getBookingIdsForPerson(id: String): Response<List<Booking>> {
-    val result = webClient.requestListWithErrorHandling<Booking>(
+    val result = webClient.requestList<Booking>(
       HttpMethod.GET,
       "/api/offender-sentences?offenderNo=$id",
       authenticationHeader(),
@@ -172,7 +172,7 @@ class NomisGateway(@Value("\${services.prison-api.base-url}") baseUrl: String) {
   }
 
   fun getLatestSentenceAdjustmentsForPerson(id: String): Response<SentenceAdjustment?> {
-    val result = webClient.requestWithErrorHandling<SentenceSummary>(
+    val result = webClient.request<SentenceSummary>(
       HttpMethod.GET,
       "/api/offenders/$id/booking/latest/sentence-summary",
       authenticationHeader(),
@@ -194,7 +194,7 @@ class NomisGateway(@Value("\${services.prison-api.base-url}") baseUrl: String) {
   }
 
   fun getLatestSentenceKeyDatesForPerson(id: String): Response<SentenceKeyDates?> {
-    val result = webClient.requestWithErrorHandling<OffenderSentence>(
+    val result = webClient.request<OffenderSentence>(
       HttpMethod.GET,
       "/api/offenders/$id/sentences",
       authenticationHeader(),

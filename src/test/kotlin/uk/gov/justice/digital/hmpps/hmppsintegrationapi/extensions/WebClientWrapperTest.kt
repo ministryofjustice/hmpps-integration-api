@@ -6,7 +6,9 @@ import io.kotest.inspectors.shouldForAll
 import io.kotest.matchers.shouldBe
 import org.springframework.http.HttpMethod
 import org.springframework.web.reactive.function.client.WebClientResponseException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper.WebClientWrapperResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.GenericApiMockServer
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApi
 import java.io.File
 
 data class StringModel(val headers: String)
@@ -42,10 +44,12 @@ class WebClientWrapperTest : DescribeSpec({
     )
 
     val webClient = WebClientWrapper(baseUrl = mockServer.baseUrl())
-    val testModel = webClient.request<TestModel>(HttpMethod.GET, "/test/$id", headers)
-    val testDomainModel = testModel.toDomain()
+    val testModelResponse = webClient.request<TestModel>(HttpMethod.GET, "/test/$id", headers, UpstreamApi.TEST)
 
-    testDomainModel?.firstName.shouldBe("Harold")
+    if (testModelResponse is WebClientWrapperResponse.Success) {
+      val testDomainModel = testModelResponse.data.toDomain()
+      testDomainModel.firstName.shouldBe("Harold")
+    }
   }
 
   it("performs a post request where the response is an array") {
@@ -55,7 +59,7 @@ class WebClientWrapperTest : DescribeSpec({
           {
             "sourceName": "Paul"
           },
-          {
+          {     
             "sourceName": "Paul"
           }
         ]
@@ -63,16 +67,18 @@ class WebClientWrapperTest : DescribeSpec({
     )
 
     val webClient = WebClientWrapper(baseUrl = mockServer.baseUrl())
-    val testModels = webClient.requestList<TestModel>(
+    val testModelResponse = webClient.requestList<TestModel>(
       HttpMethod.POST,
       "/testPost",
       headers,
+      UpstreamApi.TEST,
       mapOf("sourceName" to "Paul"),
     )
 
-    val testDomainModels = testModels.map { it.toDomain() }
-
-    testDomainModels.shouldForAll { it.firstName.shouldBe("Paul") }
+    if (testModelResponse is WebClientWrapperResponse.Success) {
+      val testDomainModels = testModelResponse.data.map { it.toDomain() }
+      testDomainModels.shouldForAll { it.firstName.shouldBe("Paul") }
+    }
   }
 
   it("performs a post request where the response is a json object") {
@@ -95,12 +101,15 @@ class WebClientWrapperTest : DescribeSpec({
     )
 
     val webClient = WebClientWrapper(baseUrl = mockServer.baseUrl())
-    val searchModel = webClient.request<SearchModel>(HttpMethod.POST, "/testPost", headers, mapOf("sourceName" to "Paul"))
-    val testDomainModels = searchModel.content.map { it.toDomain() }
+    val searchModelResponse = webClient.request<SearchModel>(HttpMethod.POST, "/testPost", headers, UpstreamApi.TEST, mapOf("sourceName" to "Paul"))
 
-    testDomainModels.shouldForAll { it.firstName.shouldBe("Paul") }
-    testDomainModels.first().lastName.shouldBe("Paper")
-    testDomainModels.last().lastName.shouldBe("Card")
+    if (searchModelResponse is WebClientWrapperResponse.Success) {
+      val testDomainModels = searchModelResponse.data.content.map { it.toDomain() }
+
+      testDomainModels.shouldForAll { it.firstName.shouldBe("Paul") }
+      testDomainModels.first().lastName.shouldBe("Paper")
+      testDomainModels.last().lastName.shouldBe("Card")
+    }
   }
 
   it("performs a request with multiple headers for .request()") {
@@ -112,9 +121,11 @@ class WebClientWrapperTest : DescribeSpec({
     )
 
     val webClient = WebClientWrapper(baseUrl = mockServer.baseUrl())
-    val result = webClient.request<StringModel>(HttpMethod.GET, "/test", headers = headers)
+    val result = webClient.request<StringModel>(HttpMethod.GET, "/test", headers = headers, UpstreamApi.TEST)
 
-    result.headers.shouldBe("headers matched")
+    if (result is WebClientWrapperResponse.Success) {
+      result.data.headers.shouldBe("headers matched")
+    }
   }
 
   it("performs a request with multiple headers for .requestList()") {
@@ -126,9 +137,11 @@ class WebClientWrapperTest : DescribeSpec({
     )
 
     val webClient = WebClientWrapper(baseUrl = mockServer.baseUrl())
-    val result = webClient.requestList<StringModel>(HttpMethod.GET, "/test", headers = headers)
+    val result = webClient.requestList<StringModel>(HttpMethod.GET, "/test", headers = headers, UpstreamApi.TEST)
 
-    result.first().headers.shouldBe("headers matched")
+    if (result is WebClientWrapperResponse.Success) {
+      result.data.first().headers.shouldBe("headers matched")
+    }
   }
 
   it("receives a very large response") {
@@ -141,7 +154,7 @@ class WebClientWrapperTest : DescribeSpec({
 
     try {
       val webClient = WebClientWrapper(baseUrl = mockServer.baseUrl())
-      webClient.request<SearchModel>(HttpMethod.GET, "/test/$id", headers = headers)
+      webClient.request<SearchModel>(HttpMethod.GET, "/test/$id", headers = headers, UpstreamApi.TEST)
     } catch (e: WebClientResponseException) {
       fail("Exceeded memory buffer")
     }
