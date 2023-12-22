@@ -20,7 +20,7 @@ class NDeliusGateway(@Value("\${services.ndelius.base-url}") baseUrl: String) {
   lateinit var hmppsAuthGateway: HmppsAuthGateway
 
   fun getOffencesForPerson(id: String): Response<List<Offence>> {
-    val result = webClient.requestWithErrorHandling<Supervisions>(
+    val result = webClient.request<Supervisions>(
       HttpMethod.GET,
       "/case/$id/supervisions",
       authenticationHeader(),
@@ -42,7 +42,7 @@ class NDeliusGateway(@Value("\${services.ndelius.base-url}") baseUrl: String) {
   }
 
   fun getSentencesForPerson(id: String): Response<List<Sentence>> {
-    val result = webClient.requestWithErrorHandling<Supervisions>(
+    val result = webClient.request<Supervisions>(
       HttpMethod.GET,
       "/case/$id/supervisions",
       authenticationHeader(),

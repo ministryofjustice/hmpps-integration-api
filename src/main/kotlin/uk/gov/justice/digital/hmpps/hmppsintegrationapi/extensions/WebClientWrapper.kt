@@ -30,7 +30,7 @@ class WebClientWrapper(
     data class Error(val errors: List<UpstreamApiError>) : WebClientWrapperResponse<Nothing>()
   }
 
-  inline fun <reified T> requestWithErrorHandling(method: HttpMethod, uri: String, headers: Map<String, String>, upstreamApi: UpstreamApi, requestBody: Map<String, Any?>? = null): WebClientWrapperResponse<T> {
+  inline fun <reified T> request(method: HttpMethod, uri: String, headers: Map<String, String>, upstreamApi: UpstreamApi, requestBody: Map<String, Any?>? = null): WebClientWrapperResponse<T> {
     return try {
       val responseData = getResponseBodySpec(method, uri, headers, requestBody).retrieve()
         .bodyToMono(T::class.java)
@@ -42,21 +42,7 @@ class WebClientWrapper(
     }
   }
 
-  inline fun <reified T> request(method: HttpMethod, uri: String, headers: Map<String, String>, requestBody: Map<String, Any?>? = null): T {
-    val responseBodySpec = client.method(method)
-      .uri(uri)
-      .headers { header -> headers.forEach { requestHeader -> header.set(requestHeader.key, requestHeader.value) } }
-
-    if (method == HttpMethod.POST && requestBody != null) {
-      responseBodySpec.body(BodyInserters.fromValue(requestBody))
-    }
-
-    return responseBodySpec.retrieve()
-      .bodyToMono(T::class.java)
-      .block()!!
-  }
-
-  inline fun <reified T> requestListWithErrorHandling(method: HttpMethod, uri: String, headers: Map<String, String>, upstreamApi: UpstreamApi, requestBody: Map<String, Any?>? = null): WebClientWrapperResponse<List<T>> {
+  inline fun <reified T> requestList(method: HttpMethod, uri: String, headers: Map<String, String>, upstreamApi: UpstreamApi, requestBody: Map<String, Any?>? = null): WebClientWrapperResponse<List<T>> {
     return try {
       val responseData = getResponseBodySpec(method, uri, headers, requestBody).retrieve()
         .bodyToFlux(T::class.java)
@@ -68,21 +54,6 @@ class WebClientWrapper(
       getErrorType(exception, upstreamApi)
     }
   }
-  inline fun <reified T> requestList(method: HttpMethod, uri: String, headers: Map<String, String>, requestBody: Map<String, Any?>? = null): List<T> {
-    val responseBodySpec = client.method(method)
-      .uri(uri)
-      .headers { header -> headers.forEach { requestHeader -> header.set(requestHeader.key, requestHeader.value) } }
-
-    if (method == HttpMethod.POST && requestBody != null) {
-      responseBodySpec.body(BodyInserters.fromValue(requestBody))
-    }
-
-    return responseBodySpec.retrieve()
-      .bodyToFlux(T::class.java)
-      .collectList()
-      .block() as List<T>
-  }
-
   fun getResponseBodySpec(method: HttpMethod, uri: String, headers: Map<String, String>, requestBody: Map<String, Any?>? = null): WebClient.RequestBodySpec {
     val responseBodySpec = client.method(method)
       .uri(uri)

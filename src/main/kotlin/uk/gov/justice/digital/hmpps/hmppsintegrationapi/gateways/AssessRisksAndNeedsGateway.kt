@@ -23,7 +23,7 @@ class AssessRisksAndNeedsGateway(@Value("\${services.assess-risks-and-needs.base
   lateinit var hmppsAuthGateway: HmppsAuthGateway
 
   fun getRiskPredictorScoresForPerson(id: String): Response<List<IntegrationAPIRiskPredictorScore>> {
-    val result = webClient.requestListWithErrorHandling<ARNRiskPredictorScore>(
+    val result = webClient.requestList<ARNRiskPredictorScore>(
       HttpMethod.GET,
       "/risks/crn/$id/predictors/all",
       authenticationHeader(),
@@ -45,7 +45,7 @@ class AssessRisksAndNeedsGateway(@Value("\${services.assess-risks-and-needs.base
   }
 
   fun getRisksForPerson(id: String): Response<IntegrationApiRisk?> {
-    val result = webClient.requestWithErrorHandling<ArnRisk>(
+    val result = webClient.request<ArnRisk>(
       HttpMethod.GET,
       "/risks/crn/$id",
       authenticationHeader(),
@@ -67,7 +67,7 @@ class AssessRisksAndNeedsGateway(@Value("\${services.assess-risks-and-needs.base
   }
 
   fun getNeedsForPerson(id: String): Response<IntegrationApiNeeds?> {
-    val result = webClient.requestWithErrorHandling<ArnNeeds>(
+    val result = webClient.request<ArnNeeds>(
       HttpMethod.GET,
       "/needs/crn/$id",
       authenticationHeader(),
