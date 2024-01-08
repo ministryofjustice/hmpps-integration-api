@@ -32,10 +32,10 @@ fi
 # Call our API #
 ################
 #
-APIKEY="x-api-key: <insert your api key here>"
+APIKEY="x-api-key: <insert your api key here>" #NEVER Commit your api key to the repo
 FIRST_NAME=ANNA #Change this is using persons endpoint
 SURNAME=FRANEY #Change this is using persons endpoint
-IMAGE_ID=""
+IMAGE_ID="" #Change this if using imageData endpoint
 
 if [ -z $suppliedId ]
 then
