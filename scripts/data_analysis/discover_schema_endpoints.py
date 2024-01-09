@@ -71,11 +71,12 @@ def find_nested_schema_reference(api_url, schema_list):
     """
     data_frames = []
     successful_response_list = ["200","201","202","203","204","205","206","207","208","226"]
+    http_method_options = ["get", "post"]
 
     dict_extract = common.extract_data(api_url)
     for path in dict_extract["paths"]:
         for http_method in dict_extract["paths"][path]:
-            if http_method in ["get", "post"]:
+            if http_method in http_method_options:
                 for response in common.get_nested_dictionary_or_value(dict_extract, ["paths", path, http_method, "responses"]):
                     if response in successful_response_list:
                         value_to_test = 0
