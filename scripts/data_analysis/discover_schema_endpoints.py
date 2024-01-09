@@ -70,8 +70,8 @@ def find_nested_schema_reference(api_url, schema_list):
             `find_nested_schema_reference(common.URL, ["AddressDto","SentenceCalcDates"])`
     """
     data_frames = []
-    successful_response_list = ["200","201","202","203","204","205","206","207","208","226"]
-    http_method_options = ["get", "post"]
+    successful_response_list = ["200","201","202","203","204","205","206","207","208","226"] #Only successful response options searched
+    http_method_options = ["get", "post"] #Only relevant options for us to search are these, helps avoid anomalies.
 
     dict_extract = common.extract_data(api_url)
     for path in dict_extract["paths"]:
