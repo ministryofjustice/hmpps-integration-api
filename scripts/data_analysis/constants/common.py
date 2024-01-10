@@ -5,13 +5,13 @@ import yaml
 
 import pandas as pd
 
-DEFAULT_URL = 'https://api-dev.prison.service.justice.gov.uk/v3/api-docs'
+DEFAULT_URL = "https://prison-api-dev.prison.service.justice.gov.uk/v3/api-docs"
 URLS = [
 #API Docs
   "https://manage-adjudications-api-dev.hmpps.service.justice.gov.uk/v3/api-docs",
   "https://assess-risks-and-needs-dev.hmpps.service.justice.gov.uk/v3/api-docs",
   "https://raw.githubusercontent.com/ministryofjustice/hmpps-complexity-of-need/main/Complexity%20Of%20Need%20API%20Specification.yaml",
-  "https://court-register-dev.hmpps.service.justice.gov.uk/v3/api-docs",
+#  "https://court-register-dev.hmpps.service.justice.gov.uk/v3/api-docs",
   "https://raw.githubusercontent.com/ministryofjustice/curious-API/main/curious-api-specification.yaml",
   "https://sign-in-dev.hmpps.service.justice.gov.uk/auth/v3/api-docs",
 #  "https://keyworker-api-dev.prison.service.justice.gov.uk/v3/api-docs",
@@ -19,7 +19,7 @@ URLS = [
   "https://community-api.test.probation.service.justice.gov.uk/v3/api-docs/Community%20API",
 #  "https://probation-offender-events-dev.hmpps.service.justice.gov.uk/swagger-ui.html",
   "https://probation-offender-search-dev.hmpps.service.justice.gov.uk/v3/api-docs",
-  "https://api-dev.prison.service.justice.gov.uk/v3/api-docs",
+  "https://prison-api-dev.prison.service.justice.gov.uk/v3/api-docs", #"https://api-dev.prison.service.justice.gov.uk/v3/api-docs" doesn't work anymore
   "https://offender-events-dev.prison.service.justice.gov.uk/v3/api-docs",
   "https://prisoner-search-dev.prison.service.justice.gov.uk/v3/api-docs",
   "https://offender-dev.aks-dev-1.studio-hosting.service.justice.gov.uk/v3/api-docs",
