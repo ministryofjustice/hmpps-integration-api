@@ -1,13 +1,13 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis
 
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HomeDetentionCurfewDate
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NonDtoDate
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ReleaseDate
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SentenceDate
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SentenceKeyDate
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SentenceKeyDates
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.TopupSupervision
 import java.time.LocalDate
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HomeDetentionCurfewDate as HmppsHomeDetentionCurfewDate
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NonDtoDate as HmppsNonDtoDate
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ReleaseDate as HmppsReleaseDate
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SentenceDate as HmppsSentenceDate
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SentenceKeyDate as HmppsSentenceKeyDate
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.TopupSupervision as HmppsTopupSupervision
 data class NomisSentenceKeyDates(
   val automaticReleaseDate: LocalDate? = null,
   val automaticReleaseOverrideDate: LocalDate? = null,
@@ -59,33 +59,33 @@ data class NomisSentenceKeyDates(
   val tariffEarlyRemovalSchemeEligibilityDate: LocalDate? = null,
 ) {
   fun toSentenceKeyDates(): SentenceKeyDates = SentenceKeyDates(
-    automaticRelease = HmppsSentenceKeyDate(date = this.automaticReleaseDate, overrideDate = this.automaticReleaseOverrideDate),
-    conditionalRelease = HmppsSentenceKeyDate(date = this.conditionalReleaseDate, overrideDate = this.conditionalReleaseOverrideDate),
-    dtoPostRecallRelease = HmppsSentenceKeyDate(date = this.dtoPostRecallReleaseDate, overrideDate = this.dtoPostRecallReleaseDateOverride),
-    earlyTerm = HmppsSentenceKeyDate(date = this.earlyTermDate, overrideDate = this.etdOverrideDate, calculatedDate = this.etdCalculatedDate),
-    homeDetentionCurfew = HmppsHomeDetentionCurfewDate(
+    automaticRelease = SentenceKeyDate(date = this.automaticReleaseDate, overrideDate = this.automaticReleaseOverrideDate),
+    conditionalRelease = SentenceKeyDate(date = this.conditionalReleaseDate, overrideDate = this.conditionalReleaseOverrideDate),
+    dtoPostRecallRelease = SentenceKeyDate(date = this.dtoPostRecallReleaseDate, overrideDate = this.dtoPostRecallReleaseDateOverride),
+    earlyTerm = SentenceKeyDate(date = this.earlyTermDate, overrideDate = this.etdOverrideDate, calculatedDate = this.etdCalculatedDate),
+    homeDetentionCurfew = HomeDetentionCurfewDate(
       actualDate = this.homeDetentionCurfewActualDate,
       eligibilityCalculatedDate = this.homeDetentionCurfewEligibilityCalculatedDate,
       eligibilityDate = this.homeDetentionCurfewEligibilityDate,
       eligibilityOverrideDate = this.homeDetentionCurfewEligibilityOverrideDate,
       endDate = this.homeDetentionCurfewEndDate,
     ),
-    lateTerm = HmppsSentenceKeyDate(date = this.lateTermDate, overrideDate = this.ltdOverrideDate, calculatedDate = this.ltdCalculatedDate),
-    licenceExpiry = HmppsSentenceKeyDate(date = this.licenceExpiryDate, overrideDate = this.licenceExpiryOverrideDate, calculatedDate = this.licenceExpiryCalculatedDate),
-    midTerm = HmppsSentenceKeyDate(date = this.midTermDate, overrideDate = this.mtdOverrideDate, calculatedDate = this.mtdCalculatedDate),
-    nonDto = HmppsNonDtoDate(date = this.nonDtoReleaseDate, releaseDateType = this.nonDtoReleaseDateType),
-    nonParole = HmppsSentenceKeyDate(date = this.nonParoleDate, overrideDate = this.nonParoleOverrideDate),
-    paroleEligibility = HmppsSentenceKeyDate(date = this.paroleEligibilityDate, overrideDate = this.paroleEligibilityOverrideDate, calculatedDate = this.paroleEligibilityCalculatedDate),
-    postRecallRelease = HmppsSentenceKeyDate(date = this.postRecallReleaseDate, overrideDate = this.postRecallReleaseOverrideDate),
-    release = HmppsReleaseDate(date = this.releaseDate, confirmedDate = this.confirmedReleaseDate),
-    sentence = HmppsSentenceDate(
+    lateTerm = SentenceKeyDate(date = this.lateTermDate, overrideDate = this.ltdOverrideDate, calculatedDate = this.ltdCalculatedDate),
+    licenceExpiry = SentenceKeyDate(date = this.licenceExpiryDate, overrideDate = this.licenceExpiryOverrideDate, calculatedDate = this.licenceExpiryCalculatedDate),
+    midTerm = SentenceKeyDate(date = this.midTermDate, overrideDate = this.mtdOverrideDate, calculatedDate = this.mtdCalculatedDate),
+    nonDto = NonDtoDate(date = this.nonDtoReleaseDate, releaseDateType = this.nonDtoReleaseDateType),
+    nonParole = SentenceKeyDate(date = this.nonParoleDate, overrideDate = this.nonParoleOverrideDate),
+    paroleEligibility = SentenceKeyDate(date = this.paroleEligibilityDate, overrideDate = this.paroleEligibilityOverrideDate, calculatedDate = this.paroleEligibilityCalculatedDate),
+    postRecallRelease = SentenceKeyDate(date = this.postRecallReleaseDate, overrideDate = this.postRecallReleaseOverrideDate),
+    release = ReleaseDate(date = this.releaseDate, confirmedDate = this.confirmedReleaseDate),
+    sentence = SentenceDate(
       effectiveEndDate = this.effectiveSentenceEndDate,
       expiryCalculatedDate = this.sentenceExpiryCalculatedDate,
       expiryDate = this.sentenceExpiryDate,
       expiryOverrideDate = this.sentenceExpiryOverrideDate,
       startDate = this.sentenceStartDate,
     ),
-    topupSupervision = HmppsTopupSupervision(
+    topupSupervision = TopupSupervision(
       expiryCalculatedDate = this.topupSupervisionExpiryCalculatedDate,
       expiryDate = this.topupSupervisionExpiryDate,
       expiryOverrideDate = this.topupSupervisionExpiryOverrideDate,

@@ -9,7 +9,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrap
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.GlobalSearch
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSGlobalSearch
 
 @Component
 class PrisonerOffenderSearchGateway(@Value("\${services.prisoner-offender-search.base-url}") baseUrl: String) {
@@ -24,7 +24,7 @@ class PrisonerOffenderSearchGateway(@Value("\${services.prisoner-offender-search
       mapOf("firstName" to firstName, "lastName" to lastName, "includeAliases" to searchWithinAliases, "prisonerIdentifier" to hmppsId)
         .filterValues { it != null }
 
-    val result = webClient.request<GlobalSearch>(HttpMethod.POST, "/global-search?size=$maxNumberOfResults", authenticationHeader(), UpstreamApi.PRISONER_OFFENDER_SEARCH, requestBody)
+    val result = webClient.request<POSGlobalSearch>(HttpMethod.POST, "/global-search?size=$maxNumberOfResults", authenticationHeader(), UpstreamApi.PRISONER_OFFENDER_SEARCH, requestBody)
 
     return when (result) {
       is WebClientWrapperResponse.Success -> {

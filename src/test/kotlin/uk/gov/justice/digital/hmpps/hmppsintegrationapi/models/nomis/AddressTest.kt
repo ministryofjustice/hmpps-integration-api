@@ -6,7 +6,7 @@ import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.collections.shouldContainAll
 import io.kotest.matchers.shouldBe
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.generateNomisTestAddress
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Address.Type as HmppsType
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Address.Type
 
 class AddressTest : DescribeSpec(
   {
@@ -39,7 +39,7 @@ class AddressTest : DescribeSpec(
 
         val address = generateNomisTestAddress(addressType = null, addressUsages = addressUsages)
 
-        address.toAddress().types.shouldBe(listOf(HmppsType(expectedCode, expectedDescription)))
+        address.toAddress().types.shouldBe(listOf(Type(expectedCode, expectedDescription)))
       }
 
       it("returns an empty list when neither addressType or addressUsages are present") {
@@ -54,7 +54,7 @@ class AddressTest : DescribeSpec(
         val address = generateNomisTestAddress(addressUsages = addressUsages)
 
         address.toAddress().types.shouldContain(
-          HmppsType(
+          Type(
             "usage1",
             "usage1",
           ),
@@ -73,9 +73,9 @@ class AddressTest : DescribeSpec(
 
           address.toAddress().types.shouldContainAll(
             listOf(
-              HmppsType("someAddressType", "someAddressType"),
-              HmppsType("usage1", "usage description 1"),
-              HmppsType("usage2", "usage description 2"),
+              Type("someAddressType", "someAddressType"),
+              Type("usage1", "usage description 1"),
+              Type("usage2", "usage description 2"),
             ),
           )
         }
@@ -89,7 +89,7 @@ class AddressTest : DescribeSpec(
             addressUsages = emptyList(),
           )
 
-          address.toAddress().types.shouldBe(listOf(HmppsType(expectedCode, expectedDescription)))
+          address.toAddress().types.shouldBe(listOf(Type(expectedCode, expectedDescription)))
         }
 
         it("maps descriptions") {
@@ -101,7 +101,7 @@ class AddressTest : DescribeSpec(
 
           codeAndDescription.forEach { it ->
             val address = generateNomisTestAddress(addressType = it.key)
-            address.toAddress().types.shouldContain(HmppsType(it.key, it.value))
+            address.toAddress().types.shouldContain(Type(it.key, it.value))
           }
         }
       }

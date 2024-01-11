@@ -4,14 +4,14 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Identifiers
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
 import java.time.LocalDate
 
-data class Prisoner(
+data class POSPrisoner(
   val firstName: String,
   val lastName: String,
   val middleNames: String? = null,
   val dateOfBirth: LocalDate? = null,
   val gender: String? = null,
   val ethnicity: String? = null,
-  val aliases: List<PrisonerAlias> = listOf(),
+  val aliases: List<POSPrisonerAlias> = listOf(),
   val prisonerNumber: String? = null,
   val pncNumber: String? = null,
   val croNumber: String? = null,

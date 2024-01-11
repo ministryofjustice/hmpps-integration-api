@@ -9,11 +9,11 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrap
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNeeds.ArnNeeds
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNeeds.ArnRiskPredictorScore
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNeeds.ArnRisks
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Needs
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.RiskPredictorScore
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Risks
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Needs as IntegrationApiNeeds
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.RiskPredictorScore as HmppsRiskPredictorScore
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Risks as IntegrationApiRisk
 
 @Component
 class AssessRisksAndNeedsGateway(@Value("\${services.assess-risks-and-needs.base-url}") baseUrl: String) {
@@ -22,7 +22,7 @@ class AssessRisksAndNeedsGateway(@Value("\${services.assess-risks-and-needs.base
   @Autowired
   lateinit var hmppsAuthGateway: HmppsAuthGateway
 
-  fun getRiskPredictorScoresForPerson(id: String): Response<List<HmppsRiskPredictorScore>> {
+  fun getRiskPredictorScoresForPerson(id: String): Response<List<RiskPredictorScore>> {
     val result = webClient.requestList<ArnRiskPredictorScore>(
       HttpMethod.GET,
       "/risks/crn/$id/predictors/all",
@@ -44,7 +44,7 @@ class AssessRisksAndNeedsGateway(@Value("\${services.assess-risks-and-needs.base
     }
   }
 
-  fun getRisksForPerson(id: String): Response<IntegrationApiRisk?> {
+  fun getRisksForPerson(id: String): Response<Risks?> {
     val result = webClient.request<ArnRisks>(
       HttpMethod.GET,
       "/risks/crn/$id",
@@ -66,7 +66,7 @@ class AssessRisksAndNeedsGateway(@Value("\${services.assess-risks-and-needs.base
     }
   }
 
-  fun getNeedsForPerson(id: String): Response<IntegrationApiNeeds?> {
+  fun getNeedsForPerson(id: String): Response<Needs?> {
     val result = webClient.request<ArnNeeds>(
       HttpMethod.GET,
       "/needs/crn/$id",

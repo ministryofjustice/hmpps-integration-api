@@ -8,7 +8,7 @@ class PrisonerAliasTest : DescribeSpec(
   {
     describe("#toAlias") {
       it("maps one-to-one attributes to alias attributes") {
-        val prisonerAlias = PrisonerAlias(
+        val prisonerAlias = POSPrisonerAlias(
           firstName = "Alias First Name",
           lastName = "Alias Last Name",
           middleNames = "Alias Middle Names",

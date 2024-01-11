@@ -2,9 +2,9 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNe
 
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Need
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Needs
 import java.time.LocalDateTime
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Need as HmppsNeed
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Needs as HmppsNeeds
 
 class NeedsTest : DescribeSpec(
   {
@@ -22,20 +22,20 @@ class NeedsTest : DescribeSpec(
         integrationApiNeeds.assessedOn.shouldBe(arnNeeds.assessedOn)
         integrationApiNeeds.identifiedNeeds.shouldBe(
           listOf(
-            HmppsNeed(type = "EDUCATION_TRAINING_AND_EMPLOYABILITY"),
-            HmppsNeed(type = "FINANCIAL_MANAGEMENT_AND_INCOME"),
+            Need(type = "EDUCATION_TRAINING_AND_EMPLOYABILITY"),
+            Need(type = "FINANCIAL_MANAGEMENT_AND_INCOME"),
           ),
         )
         integrationApiNeeds.notIdentifiedNeeds.shouldBe(
           listOf(
-            HmppsNeed(type = "RELATIONSHIPS"),
+            Need(type = "RELATIONSHIPS"),
           ),
         )
         integrationApiNeeds.unansweredNeeds.shouldBe(
           listOf(
-            HmppsNeed(type = "LIFESTYLE_AND_ASSOCIATES"),
-            HmppsNeed(type = "DRUG_MISUSE"),
-            HmppsNeed(type = "ALCOHOL_MISUSE"),
+            Need(type = "LIFESTYLE_AND_ASSOCIATES"),
+            Need(type = "DRUG_MISUSE"),
+            Need(type = "ALCOHOL_MISUSE"),
           ),
         )
       }
@@ -46,7 +46,7 @@ class NeedsTest : DescribeSpec(
         val integrationApiNeeds = arnNeeds.toNeeds()
 
         integrationApiNeeds.shouldBe(
-          HmppsNeeds(
+          Needs(
             assessedOn = null,
             identifiedNeeds = emptyList(),
             notIdentifiedNeeds = emptyList(),

@@ -1,7 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNeeds
 
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.RiskPredictorScore
 import java.time.LocalDateTime
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.RiskPredictorScore as HmppsiskPredictorScore
 
 data class ArnRiskPredictorScore(
   val completedDate: String? = null,
@@ -12,7 +12,7 @@ data class ArnRiskPredictorScore(
   val riskOfSeriousRecidivismScore: ArnRiskOfSeriousRecidivismScore = ArnRiskOfSeriousRecidivismScore(),
   val sexualPredictorScore: ArnSexualPredictorScore = ArnSexualPredictorScore(),
 ) {
-  fun toRiskPredictorScore(): HmppsiskPredictorScore = HmppsiskPredictorScore(
+  fun toRiskPredictorScore(): RiskPredictorScore = RiskPredictorScore(
     completedDate = if (!this.completedDate.isNullOrEmpty()) LocalDateTime.parse(this.completedDate) else null,
     assessmentStatus = this.assessmentStatus,
     generalPredictor = this.generalPredictorScore.toGeneralPredictor(),

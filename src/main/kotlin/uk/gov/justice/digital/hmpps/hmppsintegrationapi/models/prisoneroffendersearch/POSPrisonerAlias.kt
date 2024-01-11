@@ -3,7 +3,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffender
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Alias
 import java.time.LocalDate
 
-data class PrisonerAlias(
+data class POSPrisonerAlias(
   val firstName: String,
   val lastName: String,
   val middleNames: String? = null,

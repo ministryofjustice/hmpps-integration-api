@@ -1,10 +1,10 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.probationintegrationepf
 
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CaseDetail as HmppsCaseDetail
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CaseSentence as HmppsCaseSentence
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Name as HmppsName
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ResponsibleProvider as HmppsResponsibleProvider
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SentencingCourt as HmppsSentencingCourt
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CaseDetail
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CaseSentence
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Name
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ResponsibleProvider
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SentencingCourt
 
 data class CaseDetail(
   val nomsId: String? = null,
@@ -17,13 +17,13 @@ data class CaseDetail(
   val age: Long? = null,
   val ageAtRelease: Long? = null,
 ) {
-  fun toCaseDetail(): HmppsCaseDetail = HmppsCaseDetail(
+  fun toCaseDetail(): CaseDetail = CaseDetail(
     nomsId = this.nomsId,
-    name = HmppsName(forename = this.name?.forename, middleName = this.name?.middleName, surname = this.name?.surname),
+    name = Name(forename = this.name?.forename, middleName = this.name?.middleName, surname = this.name?.surname),
     dateOfBirth = this.dateOfBirth,
     gender = this.gender,
-    sentence = HmppsCaseSentence(date = this.sentence?.date, sentencingCourt = HmppsSentencingCourt(this.sentence?.sentencingCourt?.name), releaseDate = this.sentence?.releaseDate),
-    responsibleProvider = HmppsResponsibleProvider(code = this.responsibleProvider?.code, name = this.responsibleProvider?.name),
+    sentence = CaseSentence(date = this.sentence?.date, sentencingCourt = SentencingCourt(this.sentence?.sentencingCourt?.name), releaseDate = this.sentence?.releaseDate),
+    responsibleProvider = ResponsibleProvider(code = this.responsibleProvider?.code, name = this.responsibleProvider?.name),
     ogrsScore = this.ogrsScore,
     age = this.age,
     ageAtRelease = this.ageAtRelease,

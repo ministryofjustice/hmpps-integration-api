@@ -10,7 +10,7 @@ class PrisonerTest : DescribeSpec(
   {
     describe("#toPerson") {
       it("maps one-to-one attributes to person attributes") {
-        val prisoner = Prisoner(
+        val prisoner = POSPrisoner(
           firstName = "First Name",
           lastName = "Last Name",
           middleNames = "Middle Name",
@@ -21,7 +21,7 @@ class PrisonerTest : DescribeSpec(
           pncNumber = "pncNumber",
           croNumber = "croNumber",
           aliases = listOf(
-            PrisonerAlias(firstName = "Alias First Name", lastName = "Alias Last Name"),
+            POSPrisonerAlias(firstName = "Alias First Name", lastName = "Alias Last Name"),
           ),
         )
 

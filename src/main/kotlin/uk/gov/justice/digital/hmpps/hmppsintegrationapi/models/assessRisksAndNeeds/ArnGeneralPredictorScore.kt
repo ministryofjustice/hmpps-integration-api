@@ -1,11 +1,11 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNeeds
 
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.GeneralPredictor as HmppsGeneralPredictor
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.GeneralPredictor
 
 data class ArnGeneralPredictorScore(
   val ogpRisk: String? = null,
 ) {
-  fun toGeneralPredictor(): HmppsGeneralPredictor = HmppsGeneralPredictor(
+  fun toGeneralPredictor(): GeneralPredictor = GeneralPredictor(
     scoreLevel = this.ogpRisk,
   )
 }
