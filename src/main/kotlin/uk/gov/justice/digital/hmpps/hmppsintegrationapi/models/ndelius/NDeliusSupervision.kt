@@ -5,14 +5,13 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Sentence as IntegrationApiSentence
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.Sentence as NDeliusSentence
 
-data class Supervision(
+data class NDeliusSupervision(
   val active: Boolean? = null,
   val custodial: Boolean,
-  val additionalOffences: List<AdditionalOffence> = listOf(AdditionalOffence()),
-  val courtAppearances: List<CourtAppearance> = listOf(CourtAppearance()),
-  val mainOffence: MainOffence = MainOffence(),
+  val additionalOffences: List<NDeliusAdditionalOffence> = listOf(NDeliusAdditionalOffence()),
+  val courtAppearances: List<NDeliusCourtAppearance> = listOf(NDeliusCourtAppearance()),
+  val mainOffence: NDeliusMainOffence = NDeliusMainOffence(),
   val sentence: NDeliusSentence = NDeliusSentence(),
 ) {
   fun toOffences(): List<Offence> {

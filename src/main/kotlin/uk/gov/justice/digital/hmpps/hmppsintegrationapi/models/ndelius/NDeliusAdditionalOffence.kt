@@ -3,7 +3,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Offence
 import java.time.LocalDate
 
-data class AdditionalOffence(
+data class NDeliusAdditionalOffence(
   val description: String? = null,
   val code: String? = null,
   val date: String? = null,
