@@ -3,14 +3,14 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Alert
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisAlert
 import java.time.LocalDate
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisAlert as AlertFromNomis
 
 class AlertTest : DescribeSpec(
   {
     describe("#toAlert") {
       it("maps one-to-one attributes to integration API attributes") {
-        val alertFromNomis = AlertFromNomis(
+        val alertFromNomis = NomisAlert(
           offenderNo = "A7777ZZ",
           alertType = "X",
           alertTypeDescription = "Security",
@@ -42,7 +42,7 @@ class AlertTest : DescribeSpec(
       }
 
       it("maps case where dateExpires is not populated") {
-        val alertFromNomis = AlertFromNomis(
+        val alertFromNomis = NomisAlert(
           offenderNo = "A7777ZZ",
           alertType = "X",
           alertTypeDescription = "Security",
@@ -73,7 +73,7 @@ class AlertTest : DescribeSpec(
       }
 
       it("deals with NULL values") {
-        val integrationApiAlert = AlertFromNomis().toAlert()
+        val integrationApiAlert = NomisAlert().toAlert()
 
         integrationApiAlert.shouldBe(
           Alert(
