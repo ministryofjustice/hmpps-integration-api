@@ -3,10 +3,10 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNe
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import java.time.LocalDateTime
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Need as IntegrationApiNeed
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Needs as IntegrationApiNeeds
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNeeds.Need as ArnNeed
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNeeds.Needs as ArnNeeds
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Need as HmppsNeed
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Needs as HmppsNeeds
 
 class NeedsTest : DescribeSpec(
   {
@@ -24,20 +24,20 @@ class NeedsTest : DescribeSpec(
         integrationApiNeeds.assessedOn.shouldBe(arnNeeds.assessedOn)
         integrationApiNeeds.identifiedNeeds.shouldBe(
           listOf(
-            IntegrationApiNeed(type = "EDUCATION_TRAINING_AND_EMPLOYABILITY"),
-            IntegrationApiNeed(type = "FINANCIAL_MANAGEMENT_AND_INCOME"),
+            HmppsNeed(type = "EDUCATION_TRAINING_AND_EMPLOYABILITY"),
+            HmppsNeed(type = "FINANCIAL_MANAGEMENT_AND_INCOME"),
           ),
         )
         integrationApiNeeds.notIdentifiedNeeds.shouldBe(
           listOf(
-            IntegrationApiNeed(type = "RELATIONSHIPS"),
+            HmppsNeed(type = "RELATIONSHIPS"),
           ),
         )
         integrationApiNeeds.unansweredNeeds.shouldBe(
           listOf(
-            IntegrationApiNeed(type = "LIFESTYLE_AND_ASSOCIATES"),
-            IntegrationApiNeed(type = "DRUG_MISUSE"),
-            IntegrationApiNeed(type = "ALCOHOL_MISUSE"),
+            HmppsNeed(type = "LIFESTYLE_AND_ASSOCIATES"),
+            HmppsNeed(type = "DRUG_MISUSE"),
+            HmppsNeed(type = "ALCOHOL_MISUSE"),
           ),
         )
       }
@@ -48,7 +48,7 @@ class NeedsTest : DescribeSpec(
         val integrationApiNeeds = arnNeeds.toNeeds()
 
         integrationApiNeeds.shouldBe(
-          IntegrationApiNeeds(
+          HmppsNeeds(
             assessedOn = null,
             identifiedNeeds = emptyList(),
             notIdentifiedNeeds = emptyList(),

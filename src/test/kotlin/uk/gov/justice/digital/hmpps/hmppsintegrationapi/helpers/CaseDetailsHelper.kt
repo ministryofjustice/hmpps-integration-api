@@ -1,10 +1,10 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers
 
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.CaseDetail
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.CaseSentence
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Name
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ResponsibleProvider
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.SentencingCourt
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CaseDetail
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CaseSentence
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Name
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ResponsibleProvider
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SentencingCourt
 
 fun generateCaseDetail(): CaseDetail {
   return CaseDetail(

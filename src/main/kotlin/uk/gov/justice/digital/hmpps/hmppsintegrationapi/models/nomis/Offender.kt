@@ -1,7 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis
 
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Alias
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Person
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Alias
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
 import java.time.LocalDate
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.Alias as nomisAlias
 

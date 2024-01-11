@@ -1,7 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis
 
 import java.time.LocalDate
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Address as IntegrationAPIAddress
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Address as HmppsAddress
 
 data class Address(
   val addressType: String?,
@@ -19,7 +19,7 @@ data class Address(
   val addressUsages: List<AddressUsage> = emptyList(),
   val comment: String?,
 ) {
-  fun toAddress() = IntegrationAPIAddress(
+  fun toAddress() = HmppsAddress(
     country = this.country,
     county = this.county,
     endDate = this.endDate,
@@ -35,9 +35,9 @@ data class Address(
     notes = this.comment,
   )
 
-  private fun addressTypes(addressUsages: List<AddressUsage>, addressType: String?): List<IntegrationAPIAddress.Type> {
+  private fun addressTypes(addressUsages: List<AddressUsage>, addressType: String?): List<HmppsAddress.Type> {
     val result = addressUsages.map { it.toAddressType() }.plus(
-      IntegrationAPIAddress.Type(
+      HmppsAddress.Type(
         code = addressType,
         description = getAddressDescriptionFromType(addressType),
       ),
@@ -59,7 +59,7 @@ data class Address(
     val addressUsage: String,
     val addressUsageDescription: String?,
   ) {
-    fun toAddressType() = IntegrationAPIAddress.Type(
+    fun toAddressType() = HmppsAddress.Type(
       code = this.addressUsage,
       description = this.addressUsageDescription ?: this.addressUsage,
     )

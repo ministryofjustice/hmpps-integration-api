@@ -1,12 +1,12 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNeeds
 
 import java.time.LocalDateTime
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.RiskPredictorScore as IntegrationAPIRiskPredictorScore
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNeeds.GeneralPredictorScore as ArnGeneralPredictorScore
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNeeds.GroupReconvictionScore as ArnGroupReconvictionScore
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNeeds.RiskOfSeriousRecidivismScore as ArnRiskOfSeriousRecidivismScore
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNeeds.SexualPredictorScore as ArnSexualPredictorScore
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNeeds.ViolencePredictorScore as ArnViolencePredictorScore
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.RiskPredictorScore as HmppsiskPredictorScore
 
 data class RiskPredictorScore(
   val completedDate: String? = null,
@@ -17,7 +17,7 @@ data class RiskPredictorScore(
   val riskOfSeriousRecidivismScore: ArnRiskOfSeriousRecidivismScore = ArnRiskOfSeriousRecidivismScore(),
   val sexualPredictorScore: ArnSexualPredictorScore = ArnSexualPredictorScore(),
 ) {
-  fun toRiskPredictorScore(): IntegrationAPIRiskPredictorScore = IntegrationAPIRiskPredictorScore(
+  fun toRiskPredictorScore(): HmppsiskPredictorScore = HmppsiskPredictorScore(
     completedDate = if (!this.completedDate.isNullOrEmpty()) LocalDateTime.parse(this.completedDate) else null,
     assessmentStatus = this.assessmentStatus,
     generalPredictor = this.generalPredictorScore.toGeneralPredictor(),

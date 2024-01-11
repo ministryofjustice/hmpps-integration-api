@@ -3,10 +3,10 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.generateTestSentence
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Offence
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Sentence
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.SentenceLength
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApi
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Offence
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Sentence
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SentenceLength
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import java.time.LocalDate
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.Sentence as NDeliusSentence
 

@@ -6,10 +6,10 @@ import org.springframework.http.HttpMethod
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper.WebClientWrapperResponse
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Response
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApi
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.probationintegrationepf.CaseDetail
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.CaseDetail as IntegrationAPICaseDetail
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CaseDetail as HmppsCaseDetail
 
 @Component
 class ProbationIntegrationEPFGateway(@Value("\${services.probation-integration-epf.base-url}") baseUrl: String) {
@@ -18,7 +18,7 @@ class ProbationIntegrationEPFGateway(@Value("\${services.probation-integration-e
   @Autowired
   lateinit var hmppsAuthGateway: HmppsAuthGateway
 
-  fun getCaseDetailForPerson(id: String, eventNumber: Int): Response<IntegrationAPICaseDetail?> {
+  fun getCaseDetailForPerson(id: String, eventNumber: Int): Response<HmppsCaseDetail?> {
     val result = webClient.request<CaseDetail?>(
       HttpMethod.GET,
       "/case-details/$id/$eventNumber",

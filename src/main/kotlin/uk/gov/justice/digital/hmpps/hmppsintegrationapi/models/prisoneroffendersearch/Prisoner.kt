@@ -1,7 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch
 
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Identifiers
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Person
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Identifiers
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
 import java.time.LocalDate
 
 data class Prisoner(

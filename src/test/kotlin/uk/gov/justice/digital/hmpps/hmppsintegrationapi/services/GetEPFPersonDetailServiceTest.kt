@@ -8,8 +8,8 @@ import org.springframework.boot.test.context.ConfigDataApplicationContextInitial
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.context.ContextConfiguration
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ProbationIntegrationEPFGateway
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.CaseDetail
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Response
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CaseDetail
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],

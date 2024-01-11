@@ -1,6 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis
 
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ImageMetadata
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ImageMetadata
 import java.time.LocalDateTime
 
 class ImageDetail(

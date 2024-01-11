@@ -1,11 +1,11 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNeeds
 
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.GroupReconviction as IntegrationAPIGroupReconviction
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.GroupReconviction as HmppsGroupReconviction
 
 data class GroupReconvictionScore(
   val scoreLevel: String? = null,
 ) {
-  fun toGroupReconviction(): IntegrationAPIGroupReconviction = IntegrationAPIGroupReconviction(
+  fun toGroupReconviction(): HmppsGroupReconviction = HmppsGroupReconviction(
     scoreLevel = this.scoreLevel,
   )
 }

@@ -1,6 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis
 
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Alert
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Alert
 import java.time.LocalDate
 
 data class Alert(

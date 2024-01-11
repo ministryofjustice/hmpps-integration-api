@@ -11,18 +11,18 @@ import org.springframework.boot.test.context.ConfigDataApplicationContextInitial
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.context.ContextConfiguration
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.AssessRisksAndNeedsGateway
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Identifiers
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Person
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Response
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApi
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Identifiers
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import java.time.LocalDateTime
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.GeneralPredictor as IntegrationAPIGeneralPredictor
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.GroupReconviction as IntegrationAPIGroupReconviction
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.RiskOfSeriousRecidivism as IntegrationAPIRiskOfSeriousRecidivism
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.RiskPredictorScore as IntegrationAPIRiskPredictorScore
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.SexualPredictor as IntegrationAPISexualPredictor
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ViolencePredictor as IntegrationAPIViolencePredictor
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.GeneralPredictor as HmppsGeneralPredictor
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.GroupReconviction as HmppsGroupReconviction
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.RiskOfSeriousRecidivism as HmppsRiskOfSeriousRecidivism
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.RiskPredictorScore as HmppsRiskPredictorScore
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SexualPredictor as HmppsSexualPredictor
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ViolencePredictor as HmppsViolencePredictor
 
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
@@ -68,14 +68,14 @@ internal class GetRiskPredictorScoresForPersonServiceTest(
 
     it("returns risk predictor scores for a person") {
       val riskPredictors = listOf(
-        IntegrationAPIRiskPredictorScore(
+        HmppsRiskPredictorScore(
           completedDate = LocalDateTime.parse("2023-09-05T10:15:41"),
           assessmentStatus = "COMPLETE",
-          generalPredictor = IntegrationAPIGeneralPredictor(scoreLevel = "LOW"),
-          violencePredictor = IntegrationAPIViolencePredictor(scoreLevel = "MEDIUM"),
-          groupReconviction = IntegrationAPIGroupReconviction(scoreLevel = "HIGH"),
-          riskOfSeriousRecidivism = IntegrationAPIRiskOfSeriousRecidivism(scoreLevel = "VERY_HIGH"),
-          sexualPredictor = IntegrationAPISexualPredictor(indecentScoreLevel = "HIGH", contactScoreLevel = "VERY_HIGH"),
+          generalPredictor = HmppsGeneralPredictor(scoreLevel = "LOW"),
+          violencePredictor = HmppsViolencePredictor(scoreLevel = "MEDIUM"),
+          groupReconviction = HmppsGroupReconviction(scoreLevel = "HIGH"),
+          riskOfSeriousRecidivism = HmppsRiskOfSeriousRecidivism(scoreLevel = "VERY_HIGH"),
+          sexualPredictor = HmppsSexualPredictor(indecentScoreLevel = "HIGH", contactScoreLevel = "VERY_HIGH"),
         ),
       )
       whenever(assessRisksAndNeedsGateway.getRiskPredictorScoresForPerson(deliusCrn)).thenReturn(

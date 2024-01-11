@@ -7,7 +7,7 @@ import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.WebClientRequestException
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.AuthenticationFailedException
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Credentials
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Credentials
 
 @Component
 class HmppsAuthGateway(@Value("\${services.hmpps-auth.base-url}") hmppsAuthUrl: String) : IAuthGateway {

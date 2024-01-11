@@ -1,9 +1,9 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis
 
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApi
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import java.time.LocalDate
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Sentence as IntegrationApiSentence
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.SentenceLength as IntegrationApiSentenceLength
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Sentence as IntegrationApiSentence
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SentenceLength as IntegrationApiSentenceLength
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.Term as NomisTerm
 data class Sentence(
   val fineAmount: Number? = null,

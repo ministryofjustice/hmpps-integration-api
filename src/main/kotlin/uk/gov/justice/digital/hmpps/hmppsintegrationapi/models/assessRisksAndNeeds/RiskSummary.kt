@@ -1,6 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNeeds
 
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.RiskSummary as IntegrationApiRiskSummary
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.RiskSummary as IntegrationApiRiskSummary
 
 data class RiskSummary(
   val whoIsAtRisk: String? = null,

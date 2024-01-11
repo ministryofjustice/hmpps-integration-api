@@ -16,10 +16,10 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.AssessRisksAndN
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.AssessRisksAndNeedsApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import java.time.LocalDateTime
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Need as IntegrationApiNeed
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Needs as IntegrationApiNeeds
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Need as IntegrationApiNeed
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Needs as IntegrationApiNeeds
 
 @ActiveProfiles("test")
 @ContextConfiguration(

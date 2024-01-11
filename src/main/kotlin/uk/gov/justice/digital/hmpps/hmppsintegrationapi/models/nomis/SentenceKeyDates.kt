@@ -1,13 +1,13 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis
 
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.SentenceKeyDates
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SentenceKeyDates
 import java.time.LocalDate
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.HomeDetentionCurfewDate as HmppsHomeDetentionCurfewDate
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.NonDtoDate as HmppsNonDtoDate
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ReleaseDate as HmppsReleaseDate
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.SentenceDate as HmppsSentenceDate
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.SentenceKeyDate as HmppsSentenceKeyDate
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.TopupSupervision as HmppsTopupSupervision
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HomeDetentionCurfewDate as HmppsHomeDetentionCurfewDate
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NonDtoDate as HmppsNonDtoDate
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ReleaseDate as HmppsReleaseDate
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SentenceDate as HmppsSentenceDate
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SentenceKeyDate as HmppsSentenceKeyDate
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.TopupSupervision as HmppsTopupSupervision
 data class SentenceKeyDates(
   val automaticReleaseDate: LocalDate? = null,
   val automaticReleaseOverrideDate: LocalDate? = null,

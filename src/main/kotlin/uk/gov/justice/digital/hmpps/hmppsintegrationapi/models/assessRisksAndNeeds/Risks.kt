@@ -1,7 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNeeds
 
 import java.time.LocalDateTime
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Risks as IntegrationApiRisks
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Risks as IntegrationApiRisks
 
 data class Risks(
   val assessedOn: LocalDateTime? = null,

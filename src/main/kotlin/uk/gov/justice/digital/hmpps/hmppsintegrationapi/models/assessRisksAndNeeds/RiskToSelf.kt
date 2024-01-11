@@ -1,6 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNeeds
 
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.RiskToSelf as IntegrationApiRiskToSelf
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.RiskToSelf as IntegrationApiRiskToSelf
 
 data class RiskToSelf(
   val suicide: Risk = Risk(),
