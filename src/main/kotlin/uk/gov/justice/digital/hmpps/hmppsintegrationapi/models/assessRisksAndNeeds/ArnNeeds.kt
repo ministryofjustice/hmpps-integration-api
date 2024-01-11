@@ -3,11 +3,11 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNe
 import java.time.LocalDateTime
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Needs as IntegrationApiNeeds
 
-data class Needs(
+data class ArnNeeds(
   val assessedOn: LocalDateTime? = null,
-  val identifiedNeeds: List<Need> = emptyList(),
-  val notIdentifiedNeeds: List<Need> = emptyList(),
-  val unansweredNeeds: List<Need> = emptyList(),
+  val identifiedNeeds: List<ArnNeed> = emptyList(),
+  val notIdentifiedNeeds: List<ArnNeed> = emptyList(),
+  val unansweredNeeds: List<ArnNeed> = emptyList(),
 ) {
   fun toNeeds(): IntegrationApiNeeds = IntegrationApiNeeds(
     assessedOn = this.assessedOn,

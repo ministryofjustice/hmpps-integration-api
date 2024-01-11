@@ -2,7 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNe
 
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.RiskOfSeriousRecidivism as HmppsRiskOfSeriousRecidivism
 
-data class RiskOfSeriousRecidivismScore(
+data class ArnRiskOfSeriousRecidivismScore(
   val scoreLevel: String? = null,
 ) {
   fun toRiskOfSeriousRecidivism(): HmppsRiskOfSeriousRecidivism = HmppsRiskOfSeriousRecidivism(

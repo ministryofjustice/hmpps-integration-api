@@ -2,7 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNe
 
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.GroupReconviction as HmppsGroupReconviction
 
-data class GroupReconvictionScore(
+data class ArnGroupReconvictionScore(
   val scoreLevel: String? = null,
 ) {
   fun toGroupReconviction(): HmppsGroupReconviction = HmppsGroupReconviction(

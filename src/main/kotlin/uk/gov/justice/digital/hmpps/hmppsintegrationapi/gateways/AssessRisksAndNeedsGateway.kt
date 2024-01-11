@@ -6,11 +6,11 @@ import org.springframework.http.HttpMethod
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper.WebClientWrapperResponse
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNeeds.ArnNeeds
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNeeds.ArnRiskPredictorScore
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNeeds.ArnRisks
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNeeds.Needs as ArnNeeds
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNeeds.RiskPredictorScore as ARNRiskPredictorScore
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNeeds.Risks as ArnRisk
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Needs as IntegrationApiNeeds
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.RiskPredictorScore as HmppsRiskPredictorScore
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Risks as IntegrationApiRisk
@@ -23,7 +23,7 @@ class AssessRisksAndNeedsGateway(@Value("\${services.assess-risks-and-needs.base
   lateinit var hmppsAuthGateway: HmppsAuthGateway
 
   fun getRiskPredictorScoresForPerson(id: String): Response<List<HmppsRiskPredictorScore>> {
-    val result = webClient.requestList<ARNRiskPredictorScore>(
+    val result = webClient.requestList<ArnRiskPredictorScore>(
       HttpMethod.GET,
       "/risks/crn/$id/predictors/all",
       authenticationHeader(),
@@ -45,7 +45,7 @@ class AssessRisksAndNeedsGateway(@Value("\${services.assess-risks-and-needs.base
   }
 
   fun getRisksForPerson(id: String): Response<IntegrationApiRisk?> {
-    val result = webClient.request<ArnRisk>(
+    val result = webClient.request<ArnRisks>(
       HttpMethod.GET,
       "/risks/crn/$id",
       authenticationHeader(),

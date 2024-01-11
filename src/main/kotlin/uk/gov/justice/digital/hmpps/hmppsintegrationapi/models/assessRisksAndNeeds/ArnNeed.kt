@@ -2,7 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNe
 
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Need as IntegrationApiNeed
 
-data class Need(
+data class ArnNeed(
   val section: String? = null,
 ) {
   fun toNeed(): IntegrationApiNeed = IntegrationApiNeed(

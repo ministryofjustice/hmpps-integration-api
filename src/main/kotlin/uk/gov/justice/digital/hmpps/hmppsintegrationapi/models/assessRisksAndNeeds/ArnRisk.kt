@@ -2,7 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNe
 
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Risk
 
-data class Risk(
+data class ArnRisk(
   val risk: String? = null,
   val previous: String? = null,
   val previousConcernsText: String? = null,

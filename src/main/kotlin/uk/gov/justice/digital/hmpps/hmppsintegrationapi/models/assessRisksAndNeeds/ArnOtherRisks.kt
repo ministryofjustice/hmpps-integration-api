@@ -2,7 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNe
 
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.OtherRisks as IntegrationApiOtherRisks
 
-data class OtherRisks(
+data class ArnOtherRisks(
   val escapeOrAbscond: String? = null,
   val controlIssuesDisruptiveBehaviour: String? = null,
   val breachOfTrust: String? = null,

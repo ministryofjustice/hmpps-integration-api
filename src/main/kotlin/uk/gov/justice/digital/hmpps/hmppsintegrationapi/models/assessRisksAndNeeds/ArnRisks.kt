@@ -3,11 +3,11 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNe
 import java.time.LocalDateTime
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Risks as IntegrationApiRisks
 
-data class Risks(
+data class ArnRisks(
   val assessedOn: LocalDateTime? = null,
-  val riskToSelf: RiskToSelf = RiskToSelf(),
-  val otherRisks: OtherRisks = OtherRisks(),
-  val summary: RiskSummary = RiskSummary(),
+  val riskToSelf: ArnRiskToSelf = ArnRiskToSelf(),
+  val otherRisks: ArnOtherRisks = ArnOtherRisks(),
+  val summary: ArnRiskSummary = ArnRiskSummary(),
 ) {
   fun toRisks(): IntegrationApiRisks = IntegrationApiRisks(
     assessedOn = this.assessedOn,

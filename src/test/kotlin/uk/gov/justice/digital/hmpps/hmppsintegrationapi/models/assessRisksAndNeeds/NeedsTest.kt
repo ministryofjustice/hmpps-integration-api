@@ -3,8 +3,6 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNe
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import java.time.LocalDateTime
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNeeds.Need as ArnNeed
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNeeds.Needs as ArnNeeds
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Need as HmppsNeed
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Needs as HmppsNeeds
 

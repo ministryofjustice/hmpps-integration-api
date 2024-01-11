@@ -2,7 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNe
 
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SexualPredictor as HmppsSexualPredictor
 
-data class SexualPredictorScore(
+data class ArnSexualPredictorScore(
   val ospIndecentScoreLevel: String? = null,
   val ospContactScoreLevel: String? = null,
 ) {

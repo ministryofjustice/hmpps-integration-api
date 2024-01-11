@@ -2,18 +2,17 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNe
 
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNeeds.RiskToSelf as ArnRiskToSelf
 
 class RiskToSelfTest : DescribeSpec(
   {
     describe("#toRiskToSelf") {
       it("maps one-to-one attributes to Integration API attributes") {
         val arnRisk = ArnRiskToSelf(
-          suicide = Risk(risk = "risk"),
-          selfHarm = Risk(risk = "risk"),
-          custody = Risk(risk = "risk"),
-          hostelSetting = Risk(risk = "risk"),
-          vulnerability = Risk(risk = "risk"),
+          suicide = ArnRisk(risk = "risk"),
+          selfHarm = ArnRisk(risk = "risk"),
+          custody = ArnRisk(risk = "risk"),
+          hostelSetting = ArnRisk(risk = "risk"),
+          vulnerability = ArnRisk(risk = "risk"),
         )
 
         val integrationApiRisk = arnRisk.toRiskToSelf()

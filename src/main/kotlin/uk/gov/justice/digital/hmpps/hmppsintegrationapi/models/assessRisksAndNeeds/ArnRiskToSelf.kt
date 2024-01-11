@@ -2,12 +2,12 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNe
 
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.RiskToSelf as IntegrationApiRiskToSelf
 
-data class RiskToSelf(
-  val suicide: Risk = Risk(),
-  val selfHarm: Risk = Risk(),
-  val custody: Risk = Risk(),
-  val hostelSetting: Risk = Risk(),
-  val vulnerability: Risk = Risk(),
+data class ArnRiskToSelf(
+  val suicide: ArnRisk = ArnRisk(),
+  val selfHarm: ArnRisk = ArnRisk(),
+  val custody: ArnRisk = ArnRisk(),
+  val hostelSetting: ArnRisk = ArnRisk(),
+  val vulnerability: ArnRisk = ArnRisk(),
 ) {
   fun toRiskToSelf(): IntegrationApiRiskToSelf = IntegrationApiRiskToSelf(
     suicide = this.suicide.toRisk(),
