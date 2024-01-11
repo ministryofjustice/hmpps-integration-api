@@ -20,10 +20,10 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.OtherRisks
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Risk
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.RiskSummary
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.RiskToSelf
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Risks
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import java.io.File
 import java.time.LocalDateTime
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Risks as IntegrationApiRisks
 
 @ActiveProfiles("test")
 @ContextConfiguration(
@@ -65,7 +65,7 @@ class GetRisksForPersonTest(
         val response = assessRisksAndNeedsGateway.getRisksForPerson(deliusCrn)
 
         response.data.shouldBe(
-          IntegrationApiRisks(
+          Risks(
             assessedOn = LocalDateTime.of(2023, 9, 27, 11, 46, 36),
             riskToSelf = RiskToSelf(
               suicide = Risk(

@@ -1,6 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNeeds
 
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.OtherRisks as IntegrationApiOtherRisks
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.OtherRisks
 
 data class ArnOtherRisks(
   val escapeOrAbscond: String? = null,
@@ -8,7 +8,7 @@ data class ArnOtherRisks(
   val breachOfTrust: String? = null,
   val riskToOtherPrisoners: String? = null,
 ) {
-  fun toOtherRisks(): IntegrationApiOtherRisks = IntegrationApiOtherRisks(
+  fun toOtherRisks(): OtherRisks = OtherRisks(
     escapeOrAbscond = this.escapeOrAbscond,
     controlIssuesDisruptiveBehaviour = this.controlIssuesDisruptiveBehaviour,
     breachOfTrust = this.breachOfTrust,

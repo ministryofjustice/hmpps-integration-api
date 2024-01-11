@@ -2,11 +2,11 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis
 
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Sentence
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SentenceLength
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SentenceTerm
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import java.time.LocalDate
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Sentence as IntegrationApiSentence
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SentenceTerm as IntegrationApiTerm
 
 class PersonSentencesTest : DescribeSpec(
   {
@@ -53,7 +53,7 @@ class PersonSentencesTest : DescribeSpec(
             duration = null,
             units = null,
             terms = listOf(
-              IntegrationApiTerm(
+              SentenceTerm(
                 years = 3,
                 months = 4,
                 weeks = null,
@@ -61,7 +61,7 @@ class PersonSentencesTest : DescribeSpec(
                 hours = null,
                 prisonTermCode = "Z",
               ),
-              IntegrationApiTerm(
+              SentenceTerm(
                 years = 7,
                 months = 3,
                 weeks = 4,
@@ -93,7 +93,7 @@ class PersonSentencesTest : DescribeSpec(
             duration = null,
             units = null,
             terms = listOf(
-              IntegrationApiTerm(
+              SentenceTerm(
                 years = 3,
                 months = null,
                 weeks = null,
@@ -101,7 +101,7 @@ class PersonSentencesTest : DescribeSpec(
                 hours = null,
                 prisonTermCode = null,
               ),
-              IntegrationApiTerm(
+              SentenceTerm(
                 years = null,
                 months = 3,
                 weeks = null,
@@ -131,7 +131,7 @@ class PersonSentencesTest : DescribeSpec(
             duration = null,
             units = null,
             terms = listOf(
-              IntegrationApiTerm(
+              SentenceTerm(
                 years = 3,
                 months = 9,
                 weeks = null,
@@ -169,9 +169,9 @@ class PersonSentencesTest : DescribeSpec(
       }
 
       it("deals with NULL values") {
-        val integrationApiSentence = IntegrationApiSentence(isCustodial = true, dataSource = UpstreamApi.NOMIS)
+        val integrationApiSentence = Sentence(isCustodial = true, dataSource = UpstreamApi.NOMIS)
         integrationApiSentence.shouldBe(
-          IntegrationApiSentence(
+          Sentence(
             dataSource = UpstreamApi.NOMIS,
             dateOfSentencing = null,
             description = null,

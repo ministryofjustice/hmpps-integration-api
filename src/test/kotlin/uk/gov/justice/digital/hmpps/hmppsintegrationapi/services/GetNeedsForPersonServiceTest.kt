@@ -12,13 +12,13 @@ import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.context.ContextConfiguration
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.AssessRisksAndNeedsGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Identifiers
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Need
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Needs
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import java.time.LocalDateTime
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Need as IntegrationApiNeed
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Needs as IntegrationApiNeeds
 
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
@@ -62,19 +62,19 @@ internal class GetNeedsForPersonServiceTest(
     }
 
     it("returns needs for a person") {
-      val needs = IntegrationApiNeeds(
+      val needs = Needs(
         assessedOn = LocalDateTime.now(),
         identifiedNeeds = listOf(
-          IntegrationApiNeed(type = "EDUCATION_TRAINING_AND_EMPLOYABILITY"),
-          IntegrationApiNeed(type = "FINANCIAL_MANAGEMENT_AND_INCOME"),
+          Need(type = "EDUCATION_TRAINING_AND_EMPLOYABILITY"),
+          Need(type = "FINANCIAL_MANAGEMENT_AND_INCOME"),
         ),
         notIdentifiedNeeds = listOf(
-          IntegrationApiNeed(type = "RELATIONSHIPS"),
+          Need(type = "RELATIONSHIPS"),
         ),
         unansweredNeeds = listOf(
-          IntegrationApiNeed(type = "LIFESTYLE_AND_ASSOCIATES"),
-          IntegrationApiNeed(type = "DRUG_MISUSE"),
-          IntegrationApiNeed(type = "ALCOHOL_MISUSE"),
+          Need(type = "LIFESTYLE_AND_ASSOCIATES"),
+          Need(type = "DRUG_MISUSE"),
+          Need(type = "ALCOHOL_MISUSE"),
         ),
       )
 

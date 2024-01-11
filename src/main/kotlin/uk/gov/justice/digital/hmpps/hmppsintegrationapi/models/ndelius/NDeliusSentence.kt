@@ -1,6 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius
 
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SentenceLength as IntegrationApiLength
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SentenceLength
 
 data class NDeliusSentence(
   val date: String? = null,
@@ -8,8 +8,8 @@ data class NDeliusSentence(
   val length: Int? = null,
   val lengthUnits: String? = null,
 ) {
-  fun toLength(): IntegrationApiLength {
-    return IntegrationApiLength(
+  fun toLength(): SentenceLength {
+    return SentenceLength(
       duration = this.length,
       units = this.lengthUnits,
       terms = emptyList(),

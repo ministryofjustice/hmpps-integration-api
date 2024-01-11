@@ -1,10 +1,10 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius
 
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Offence
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Sentence
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Sentence as IntegrationApiSentence
 
 data class NDeliusSupervision(
   val active: Boolean? = null,
@@ -19,8 +19,8 @@ data class NDeliusSupervision(
     return listOf(this.mainOffence.toOffence(courtDates)) + this.additionalOffences.map { it.toOffence(courtDates) }
   }
 
-  fun toSentence(): IntegrationApiSentence {
-    return IntegrationApiSentence(
+  fun toSentence(): Sentence {
+    return Sentence(
       dataSource = UpstreamApi.NDELIUS,
       dateOfSentencing = if (!this.sentence.date.isNullOrEmpty()) LocalDate.parse(this.sentence.date) else null,
       description = this.sentence.description,

@@ -1,6 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis
 
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SentenceTerm as IntegrationApiTerm
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SentenceTerm
 
 data class NomisTerm(
   val years: Int? = null,
@@ -9,7 +9,7 @@ data class NomisTerm(
   val days: Int? = null,
   val code: String? = null,
 ) {
-  fun toTerm(): IntegrationApiTerm = IntegrationApiTerm(
+  fun toTerm(): SentenceTerm = SentenceTerm(
     years = if (this.years != 0) this.years else null,
     months = if (this.months != 0) this.months else null,
     weeks = if (this.weeks != 0) this.weeks else null,

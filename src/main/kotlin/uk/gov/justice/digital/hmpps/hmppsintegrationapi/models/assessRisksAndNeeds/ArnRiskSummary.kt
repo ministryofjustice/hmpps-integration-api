@@ -1,6 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNeeds
 
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.RiskSummary as IntegrationApiRiskSummary
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.RiskSummary
 
 data class ArnRiskSummary(
   val whoIsAtRisk: String? = null,
@@ -12,7 +12,7 @@ data class ArnRiskSummary(
   val riskInCommunity: Map<String, List<String>>? = null,
   val riskInCustody: Map<String, List<String>>? = null,
 ) {
-  fun toRiskSummary(): IntegrationApiRiskSummary = IntegrationApiRiskSummary(
+  fun toRiskSummary(): RiskSummary = RiskSummary(
     whoIsAtRisk = this.whoIsAtRisk,
     natureOfRisk = this.natureOfRisk,
     riskImminence = this.riskImminence,

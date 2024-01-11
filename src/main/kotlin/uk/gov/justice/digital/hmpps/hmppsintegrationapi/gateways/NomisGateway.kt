@@ -15,14 +15,14 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Sentence
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SentenceAdjustment
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SentenceKeyDates
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisAddress
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisAlert
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisBooking
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisImageDetail
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisOffenceHistoryDetail
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisOffenderSentence
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisSentence
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisSentenceSummary
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisAddress as AddressFromNomis
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisAlert as AlertFromNomis
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisSentence as SentenceFromNomis
 
 @Component
 class NomisGateway(@Value("\${services.prison-api.base-url}") baseUrl: String) {
@@ -66,7 +66,7 @@ class NomisGateway(@Value("\${services.prison-api.base-url}") baseUrl: String) {
   }
 
   fun getAddressesForPerson(id: String): Response<List<Address>> {
-    val result = webClient.requestList<AddressFromNomis>(
+    val result = webClient.requestList<NomisAddress>(
       HttpMethod.GET,
       "/api/offenders/$id/addresses",
       authenticationHeader(),
@@ -109,7 +109,7 @@ class NomisGateway(@Value("\${services.prison-api.base-url}") baseUrl: String) {
   }
 
   fun getAlertsForPerson(id: String): Response<List<Alert>> {
-    val result = webClient.requestList<AlertFromNomis>(
+    val result = webClient.requestList<NomisAlert>(
       HttpMethod.GET,
       "/api/offenders/$id/alerts/v2",
       authenticationHeader(),
@@ -130,7 +130,7 @@ class NomisGateway(@Value("\${services.prison-api.base-url}") baseUrl: String) {
   }
 
   fun getSentencesForBooking(id: Int): Response<List<Sentence>> {
-    val result = webClient.requestList<SentenceFromNomis>(
+    val result = webClient.requestList<NomisSentence>(
       HttpMethod.GET,
       "/api/offender-sentences/booking/$id/sentences-and-offences",
       authenticationHeader(),
