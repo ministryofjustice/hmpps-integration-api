@@ -70,36 +70,41 @@ def find_nested_schema_reference(api_url, schema_list):
             `find_nested_schema_reference(common.URL, ["AddressDto","SentenceCalcDates"])`
     """
     data_frames = []
-    successful_response_list = ["200","201","202","203","204","205","206","207","208","226"]
+    successful_response_list = ["200","201","202","203","204","205","206","207","208","226"] #Only successful response options searched
+    http_method_options = ["get", "post"] #Only relevant options for us to search are these, helps avoid anomalies.
 
     dict_extract = common.extract_data(api_url)
     for path in dict_extract["paths"]:
         for http_method in dict_extract["paths"][path]:
-            for response in common.get_nested_dictionary_or_value(dict_extract, ["paths", path, http_method, "responses"]):
-                if response in successful_response_list:
-                    value_to_test = 0
-                    try:
-                        if isinstance(common.get_nested_dictionary_or_value(dict_extract, ["paths", path, http_method, "responses", response, "content", "application/json", "schema", "$ref"]), int) is False:
-                            value_to_test = common.get_nested_dictionary_or_value(dict_extract, ["paths", path, http_method, "responses", response, "content", "application/json", "schema", "$ref"])
-
-                        elif isinstance(common.get_nested_dictionary_or_value(dict_extract, ["paths", path, http_method, "responses", response, "content", "application/json", "schema", "items", "$ref"]), int) is False:
-                            value_to_test = common.get_nested_dictionary_or_value(dict_extract, ["paths", path, http_method, "responses", response, "content", "application/json", "schema", "items","$ref"])
-
-                        else:
-                            continue
-                    except KeyError:
+            if http_method in http_method_options:
+                for response in common.get_nested_dictionary_or_value(dict_extract, ["paths", path, http_method, "responses"]):
+                    if response in successful_response_list:
                         value_to_test = 0
-                        continue
+                        try:
+                            if isinstance(common.get_nested_dictionary_or_value(dict_extract, ["paths", path, http_method, "responses", response, "content", "application/json", "schema", "$ref"]), int) is False:
+                                value_to_test = common.get_nested_dictionary_or_value(dict_extract, ["paths", path, http_method, "responses", response, "content", "application/json", "schema", "$ref"])
 
-                    try:
-                        for schema in schema_list:
-                            if "/" in value_to_test and schema in value_to_test: #Look for non-zero values of the required nested reference format   
-                                data_dict = {"Path": [path], "HTTP_method": [http_method], "HTTP_response": [response], "Schema": [schema]}
-                                data_frames.append(pd.DataFrame(data=data_dict))
-                    except TypeError as t_e:
-                        print(f"Unexpected {t_e=}, {type(t_e)=}")
-                        print(f"Printing useful metadata, {schema=}, {path=}, {http_method=}, {response=}, {value_to_test=}")
-                        continue
+                            elif isinstance(common.get_nested_dictionary_or_value(dict_extract, ["paths", path, http_method, "responses", response, "content", "application/json", "schema", "items", "$ref"]), int) is False:
+                                value_to_test = common.get_nested_dictionary_or_value(dict_extract, ["paths", path, http_method, "responses", response, "content", "application/json", "schema", "items","$ref"])
+
+                            elif isinstance(common.get_nested_dictionary_or_value(dict_extract, ["paths", path, http_method, "responses", response, "content", "*/*", "schema", "$ref"]), int) is False:
+                                value_to_test = common.get_nested_dictionary_or_value(dict_extract, ["paths", path, http_method, "responses", response, "content", "*/*", "schema", "$ref"])
+
+                            else:
+                                continue
+                        except KeyError:
+                            value_to_test = 0
+                            continue
+
+                        try:
+                            for schema in schema_list:
+                                if "/" in value_to_test and schema in value_to_test: #Look for non-zero values of the required nested reference format
+                                    data_dict = {"Path": [path], "HTTP_method": [http_method], "HTTP_response": [response], "Schema": [schema]}
+                                    data_frames.append(pd.DataFrame(data=data_dict))
+                        except TypeError as t_e:
+                            print(f"Unexpected {t_e=}, {type(t_e)=}")
+                            print(f"Printing useful metadata, {schema=}, {path=}, {http_method=}, {response=}, {value_to_test=}")
+                            continue
 
     if not data_frames:
         data_frame = pd.DataFrame()
