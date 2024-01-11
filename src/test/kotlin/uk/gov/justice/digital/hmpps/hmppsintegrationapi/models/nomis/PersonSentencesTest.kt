@@ -7,8 +7,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import java.time.LocalDate
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Sentence as IntegrationApiSentence
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SentenceTerm as IntegrationApiTerm
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.Sentence as NomisSentence
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.Term as NomisTerm
 
 class PersonSentencesTest : DescribeSpec(
   {

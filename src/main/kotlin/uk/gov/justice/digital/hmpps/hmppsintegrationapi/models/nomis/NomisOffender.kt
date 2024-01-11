@@ -3,9 +3,9 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Alias
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
 import java.time.LocalDate
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.Alias as nomisAlias
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisAlias as nomisAlias
 
-data class Offender(
+data class NomisOffender(
   val firstName: String,
   val lastName: String,
   val middleName: String? = null,

@@ -34,7 +34,7 @@ class AddressTest : DescribeSpec(
         val expectedCode = "abc123"
         val expectedDescription = "some description"
         val addressUsages = listOf(
-          Address.AddressUsage(expectedCode, expectedDescription),
+          NomisAddress.AddressUsage(expectedCode, expectedDescription),
         )
 
         val address = generateNomisTestAddress(addressType = null, addressUsages = addressUsages)
@@ -49,7 +49,7 @@ class AddressTest : DescribeSpec(
       }
 
       it("addressUsage description is not present") {
-        val addressUsages = listOf(Address.AddressUsage("usage1", null))
+        val addressUsages = listOf(NomisAddress.AddressUsage("usage1", null))
 
         val address = generateNomisTestAddress(addressUsages = addressUsages)
 
@@ -65,8 +65,8 @@ class AddressTest : DescribeSpec(
         it("maps addressUsages and addressType combined when both are present") {
           val addressType = "someAddressType"
           val addressUsages = listOf(
-            Address.AddressUsage("usage1", "usage description 1"),
-            Address.AddressUsage("usage2", "usage description 2"),
+            NomisAddress.AddressUsage("usage1", "usage description 1"),
+            NomisAddress.AddressUsage("usage2", "usage description 2"),
           )
 
           val address = generateNomisTestAddress(addressType = addressType, addressUsages = addressUsages)

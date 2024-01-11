@@ -2,7 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis
 
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.SentenceAdjustment as SentenceAdjustmentFromNomis
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisSentenceAdjustment as SentenceAdjustmentFromNomis
 
 class SentenceAdjustmentTest : DescribeSpec(
   {

@@ -2,7 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis
 
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SentenceAdjustment
 
-data class SentenceAdjustment(
+data class NomisSentenceAdjustment(
   val additionalDaysAwarded: Number? = null,
   val unlawfullyAtLarge: Number? = null,
   val lawfullyAtLarge: Number? = null,

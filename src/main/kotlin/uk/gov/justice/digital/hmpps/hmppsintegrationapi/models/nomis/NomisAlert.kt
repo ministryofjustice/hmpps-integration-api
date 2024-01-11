@@ -3,7 +3,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Alert
 import java.time.LocalDate
 
-data class Alert(
+data class NomisAlert(
   val offenderNo: String? = null,
   val alertType: String? = null,
   val alertTypeDescription: String? = null,

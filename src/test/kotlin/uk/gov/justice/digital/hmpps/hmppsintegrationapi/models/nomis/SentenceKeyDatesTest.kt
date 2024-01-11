@@ -3,7 +3,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import java.time.LocalDate
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.SentenceKeyDates as SentenceKeyDatesFromNomis
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisSentenceKeyDates as SentenceKeyDatesFromNomis
 class SentenceKeyDatesTest : DescribeSpec(
   {
     describe("#toSentenceKeyDates") {

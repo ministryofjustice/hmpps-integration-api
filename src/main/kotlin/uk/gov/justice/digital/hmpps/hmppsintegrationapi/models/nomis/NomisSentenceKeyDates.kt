@@ -8,7 +8,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ReleaseDate
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SentenceDate as HmppsSentenceDate
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SentenceKeyDate as HmppsSentenceKeyDate
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.TopupSupervision as HmppsTopupSupervision
-data class SentenceKeyDates(
+data class NomisSentenceKeyDates(
   val automaticReleaseDate: LocalDate? = null,
   val automaticReleaseOverrideDate: LocalDate? = null,
   val conditionalReleaseDate: LocalDate? = null,

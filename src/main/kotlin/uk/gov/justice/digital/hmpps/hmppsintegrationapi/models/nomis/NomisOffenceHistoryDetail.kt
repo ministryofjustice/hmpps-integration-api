@@ -3,7 +3,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Offence
 import java.time.LocalDate
 
-data class OffenceHistoryDetail(
+data class NomisOffenceHistoryDetail(
   val courtDate: LocalDate? = null,
   val offenceCode: String,
   val offenceDate: LocalDate? = null,

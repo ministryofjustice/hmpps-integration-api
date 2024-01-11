@@ -3,7 +3,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis
 import java.time.LocalDate
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Address as HmppsAddress
 
-data class Address(
+data class NomisAddress(
   val addressType: String?,
   val country: String?,
   val county: String?,

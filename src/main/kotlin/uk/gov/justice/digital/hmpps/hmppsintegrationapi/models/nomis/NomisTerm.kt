@@ -2,7 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis
 
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SentenceTerm as IntegrationApiTerm
 
-data class Term(
+data class NomisTerm(
   val years: Int? = null,
   val months: Int? = null,
   val weeks: Int? = null,
