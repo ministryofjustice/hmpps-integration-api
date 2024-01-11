@@ -3,12 +3,11 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import java.time.LocalDate
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisSentenceKeyDates as SentenceKeyDatesFromNomis
 class SentenceKeyDatesTest : DescribeSpec(
   {
     describe("#toSentenceKeyDates") {
       it("maps one-to-one attributes to integration API attributes") {
-        val sentenceKeyDatesFromNomis = SentenceKeyDatesFromNomis(
+        val sentenceKeyDatesFromNomis = NomisSentenceKeyDates(
           automaticReleaseDate = LocalDate.parse("2022-03-01"),
           automaticReleaseOverrideDate = LocalDate.parse("2022-03-01"),
           conditionalReleaseDate = LocalDate.parse("2022-04-01"),
