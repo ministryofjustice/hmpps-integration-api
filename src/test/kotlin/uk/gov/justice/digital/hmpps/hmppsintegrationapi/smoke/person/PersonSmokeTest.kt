@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.smoke.person
 
-import io.kotest.assertions.json.shouldEqualJson
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
@@ -14,7 +13,6 @@ class PersonSmokeTest : DescribeSpec(
   {
     val basePath = "v1/persons"
     val httpClient = IntegrationAPIHttpClient()
-
     val hmppsId = "2004/13116M"
     val encodedHmppsId = URLEncoder.encode(hmppsId, StandardCharsets.UTF_8)
 
@@ -88,64 +86,6 @@ class PersonSmokeTest : DescribeSpec(
             "view":"OIC",
             "orientation":"NECK",
             "type":"OFF_IDM"
-      """.removeWhitespaceAndNewlines(),
-      )
-    }
-
-    it("returns addresses for a person") {
-      val response = httpClient.performAuthorised("$basePath/$encodedHmppsId/addresses")
-
-      response.statusCode().shouldBe(HttpStatus.OK.value())
-      response.body().shouldEqualJson(
-        """
-      {
-        "data": [
-          {
-            "country": "ENG",
-            "county": "HEREFORD",
-            "endDate": "2021-02-12",
-            "locality": "Brincliffe",
-            "name": "Liverpool Prison",
-            "noFixedAddress": false,
-            "number": "3B",
-            "postcode": "LI1 5TH",
-            "startDate": "2005-05-12",
-            "street": "Slinn Street",
-            "town": "Liverpool",
-            "types": [
-              {
-                "code": "HDC",
-                "description": "HDC Address"
-              },
-              {
-                "code": "BUS",
-                "description": "Business Address"
-              }
-            ],
-            "notes": "This is a comment text"
-          },
-          {
-            "country": null,
-            "county": "string",
-            "endDate": "2019-08-24",
-            "locality": "string",
-            "name": "string",
-            "noFixedAddress": true,
-            "number": "string",
-            "postcode": "string",
-            "startDate": "2019-08-24",
-            "street": "string",
-            "town": "string",
-            "types": [
-              {
-                "code": "string",
-                "description": "string"
-              }
-            ],
-            "notes": "string"
-          }
-        ]
-      }
       """.removeWhitespaceAndNewlines(),
       )
     }

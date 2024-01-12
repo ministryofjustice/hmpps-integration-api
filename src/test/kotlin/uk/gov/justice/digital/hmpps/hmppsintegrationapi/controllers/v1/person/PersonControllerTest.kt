@@ -17,13 +17,11 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.generateTestAddress
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ImageMetadata
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetAddressesForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetImageMetadataForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonsService
@@ -41,7 +39,6 @@ internal class PersonControllerTest(
   @MockBean val getPersonService: GetPersonService,
   @MockBean val getPersonsService: GetPersonsService,
   @MockBean val getImageMetadataForPersonService: GetImageMetadataForPersonService,
-  @MockBean val getAddressesForPersonService: GetAddressesForPersonService,
   @MockBean val auditService: AuditService,
 ) : DescribeSpec(
   {
@@ -388,107 +385,6 @@ internal class PersonControllerTest(
         val result = mockMvc.performAuthorised("$basePath/$encodedHmppsId/images")
 
         result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
-      }
-    }
-
-    describe("GET $basePath/{encodedHmppsId}/addresses") {
-      beforeTest {
-        Mockito.reset(getAddressesForPersonService)
-        Mockito.reset(auditService)
-        whenever(getAddressesForPersonService.execute(hmppsId)).thenReturn(Response(data = listOf(generateTestAddress())))
-      }
-
-      it("returns a 200 OK status code") {
-        val result = mockMvc.performAuthorised("$basePath/$encodedHmppsId/addresses")
-
-        result.response.status.shouldBe(HttpStatus.OK.value())
-      }
-
-      it("gets the addresses for a person with the matching ID") {
-        mockMvc.performAuthorised("$basePath/$encodedHmppsId/addresses")
-
-        verify(getAddressesForPersonService, times(1)).execute(hmppsId)
-      }
-
-      it("returns the addresses for a person with the matching ID") {
-        val result = mockMvc.performAuthorised("$basePath/$encodedHmppsId/addresses")
-        result.response.contentAsString.shouldBe(
-          """
-        {
-          "data": [
-            {
-              "country": "England",
-              "county": "Greater London",
-              "endDate": "2023-05-20",
-              "locality": "London Bridge",
-              "name": "The chocolate factory",
-              "noFixedAddress": false,
-              "number": "89",
-              "postcode": "SE1 1TZ",
-              "startDate": "2021-05-10",
-              "street": "Omeara",
-              "town": "London Town",
-              "types": [
-                {
-                  "code": "A99",
-                  "description": "Chocolate Factory"
-                },
-                {
-                  "code": "B99",
-                  "description": "Glass Elevator"
-                }
-              ],
-              "notes": "some interesting note"
-            }
-          ]
-        }
-        """.removeWhitespaceAndNewlines(),
-        )
-      }
-
-      it("logs audit") {
-        mockMvc.performAuthorised("$basePath/$encodedHmppsId/addresses")
-        verify(auditService, times(1)).createEvent("GET_PERSON_ADDRESS", "Person address details with hmpps id: $hmppsId has been retrieved")
-      }
-
-      it("returns a 404 NOT FOUND status code when person isn't found in all upstream APIs") {
-        whenever(getAddressesForPersonService.execute(hmppsId)).thenReturn(
-          Response(
-            data = emptyList(),
-            errors = listOf(
-              UpstreamApiError(
-                causedBy = UpstreamApi.NOMIS,
-                type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-              ),
-              UpstreamApiError(
-                causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH,
-                type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-              ),
-            ),
-          ),
-        )
-
-        val result = mockMvc.performAuthorised("$basePath/$encodedHmppsId/addresses")
-
-        result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
-      }
-
-      it("returns a 200 OK status code when person is found in one upstream API but not another") {
-        whenever(getAddressesForPersonService.execute(hmppsId)).thenReturn(
-          Response(
-            data = emptyList(),
-            errors = listOf(
-              UpstreamApiError(
-                causedBy = UpstreamApi.NOMIS,
-                type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-              ),
-            ),
-          ),
-        )
-
-        val result = mockMvc.performAuthorised("$basePath/$encodedHmppsId/addresses")
-
-        result.response.status.shouldBe(HttpStatus.OK.value())
       }
     }
   },
