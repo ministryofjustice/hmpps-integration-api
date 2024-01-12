@@ -6,7 +6,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Name
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ResponsibleProvider
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SentencingCourt
 
-data class CaseDetail(
+data class EPFCaseDetail(
   val nomsId: String? = null,
   val name: Name? = null,
   val dateOfBirth: String? = null,
