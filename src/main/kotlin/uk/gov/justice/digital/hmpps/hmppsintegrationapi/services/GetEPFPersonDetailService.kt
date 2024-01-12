@@ -3,8 +3,8 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ProbationIntegrationEPFGateway
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.CaseDetail
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Response
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CaseDetail
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 
 @Service
 class GetEPFPersonDetailService(

@@ -16,7 +16,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ProbationOffend
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.generateTestAddress
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ProbationOffenderSearchApiMockServer
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Address as IntegrationAPIAddress
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Address
 
 @ActiveProfiles("test")
 @ContextConfiguration(
@@ -95,7 +95,7 @@ class GetAddressesForPersonTest(
           country = null,
           endDate = "2022-01-01",
           startDate = "2021-10-10",
-          types = listOf(IntegrationAPIAddress.Type("A07", "Friends/Family")),
+          types = listOf(Address.Type("A07", "Friends/Family")),
         ),
       )
     }

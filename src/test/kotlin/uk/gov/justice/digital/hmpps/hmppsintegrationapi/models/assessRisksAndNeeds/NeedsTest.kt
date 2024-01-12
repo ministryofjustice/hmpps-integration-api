@@ -2,11 +2,9 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNe
 
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Need
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Needs
 import java.time.LocalDateTime
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Need as IntegrationApiNeed
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Needs as IntegrationApiNeeds
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNeeds.Need as ArnNeed
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNeeds.Needs as ArnNeeds
 
 class NeedsTest : DescribeSpec(
   {
@@ -24,20 +22,20 @@ class NeedsTest : DescribeSpec(
         integrationApiNeeds.assessedOn.shouldBe(arnNeeds.assessedOn)
         integrationApiNeeds.identifiedNeeds.shouldBe(
           listOf(
-            IntegrationApiNeed(type = "EDUCATION_TRAINING_AND_EMPLOYABILITY"),
-            IntegrationApiNeed(type = "FINANCIAL_MANAGEMENT_AND_INCOME"),
+            Need(type = "EDUCATION_TRAINING_AND_EMPLOYABILITY"),
+            Need(type = "FINANCIAL_MANAGEMENT_AND_INCOME"),
           ),
         )
         integrationApiNeeds.notIdentifiedNeeds.shouldBe(
           listOf(
-            IntegrationApiNeed(type = "RELATIONSHIPS"),
+            Need(type = "RELATIONSHIPS"),
           ),
         )
         integrationApiNeeds.unansweredNeeds.shouldBe(
           listOf(
-            IntegrationApiNeed(type = "LIFESTYLE_AND_ASSOCIATES"),
-            IntegrationApiNeed(type = "DRUG_MISUSE"),
-            IntegrationApiNeed(type = "ALCOHOL_MISUSE"),
+            Need(type = "LIFESTYLE_AND_ASSOCIATES"),
+            Need(type = "DRUG_MISUSE"),
+            Need(type = "ALCOHOL_MISUSE"),
           ),
         )
       }
@@ -48,7 +46,7 @@ class NeedsTest : DescribeSpec(
         val integrationApiNeeds = arnNeeds.toNeeds()
 
         integrationApiNeeds.shouldBe(
-          IntegrationApiNeeds(
+          Needs(
             assessedOn = null,
             identifiedNeeds = emptyList(),
             notIdentifiedNeeds = emptyList(),

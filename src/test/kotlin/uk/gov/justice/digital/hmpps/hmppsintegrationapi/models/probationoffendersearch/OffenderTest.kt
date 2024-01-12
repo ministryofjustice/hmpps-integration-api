@@ -4,7 +4,7 @@ import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldBeEmpty
 import io.kotest.matchers.types.shouldBeTypeOf
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Alias
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Alias
 import java.time.LocalDate
 
 class OffenderTest : DescribeSpec(

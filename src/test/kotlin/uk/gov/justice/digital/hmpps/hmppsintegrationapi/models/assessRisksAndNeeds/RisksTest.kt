@@ -2,17 +2,12 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNe
 
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.OtherRisks
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Risk
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.RiskSummary
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.RiskToSelf
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Risks
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.OtherRisks
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Risk
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.RiskSummary
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.RiskToSelf
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Risks
 import java.time.LocalDateTime
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNeeds.OtherRisks as ArnOtherRisks
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNeeds.Risk as ArnRisk
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNeeds.RiskSummary as ArnRiskSummary
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNeeds.RiskToSelf as ArnRiskToSelf
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNeeds.Risks as ArnRisks
 
 class RisksTest : DescribeSpec(
   {

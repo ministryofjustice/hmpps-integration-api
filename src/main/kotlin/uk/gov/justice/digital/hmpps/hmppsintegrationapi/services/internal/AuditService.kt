@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service
 import org.springframework.web.context.request.RequestAttributes
 import org.springframework.web.context.request.RequestContextHolder
 import software.amazon.awssdk.services.sqs.model.SendMessageRequest
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.HmppsAuditEvent
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HmppsAuditEvent
 import uk.gov.justice.hmpps.sqs.HmppsQueue
 import uk.gov.justice.hmpps.sqs.HmppsQueueService
 @Service

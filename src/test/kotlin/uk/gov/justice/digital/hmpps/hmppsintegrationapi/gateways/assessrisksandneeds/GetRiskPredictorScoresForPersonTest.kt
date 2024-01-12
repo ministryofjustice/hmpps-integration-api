@@ -16,14 +16,14 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.AssessRisksAndN
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.AssessRisksAndNeedsApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.GeneralPredictor
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.GroupReconviction
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.RiskOfSeriousRecidivism
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.RiskPredictorScore
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SexualPredictor
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ViolencePredictor
 import java.time.LocalDateTime
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.GeneralPredictor as IntegrationAPIGeneralPredictor
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.GroupReconviction as IntegrationAPIGroupReconviction
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.RiskOfSeriousRecidivism as IntegrationAPIRiskOfSeriousRecidivism
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.RiskPredictorScore as IntegrationAPIRiskPredictorScore
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.SexualPredictor as IntegrationAPISexualPredictor
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ViolencePredictor as IntegrationAPIViolencePredictor
 
 @ActiveProfiles("test")
 @ContextConfiguration(
@@ -88,14 +88,14 @@ class GetRiskPredictorScoresForPersonTest(
         val response = assessRisksAndNeedsGateway.getRiskPredictorScoresForPerson(deliusCrn)
         response.data.shouldBe(
           listOf(
-            IntegrationAPIRiskPredictorScore(
+            RiskPredictorScore(
               completedDate = LocalDateTime.parse("2023-09-05T10:15:41"),
               assessmentStatus = "COMPLETE",
-              groupReconviction = IntegrationAPIGroupReconviction(scoreLevel = "HIGH"),
-              generalPredictor = IntegrationAPIGeneralPredictor(scoreLevel = "LOW"),
-              violencePredictor = IntegrationAPIViolencePredictor(scoreLevel = "MEDIUM"),
-              riskOfSeriousRecidivism = IntegrationAPIRiskOfSeriousRecidivism(scoreLevel = "VERY_HIGH"),
-              sexualPredictor = IntegrationAPISexualPredictor(indecentScoreLevel = "HIGH", contactScoreLevel = "VERY_HIGH"),
+              groupReconviction = GroupReconviction(scoreLevel = "HIGH"),
+              generalPredictor = GeneralPredictor(scoreLevel = "LOW"),
+              violencePredictor = ViolencePredictor(scoreLevel = "MEDIUM"),
+              riskOfSeriousRecidivism = RiskOfSeriousRecidivism(scoreLevel = "VERY_HIGH"),
+              sexualPredictor = SexualPredictor(indecentScoreLevel = "HIGH", contactScoreLevel = "VERY_HIGH"),
             ),
           ),
         )

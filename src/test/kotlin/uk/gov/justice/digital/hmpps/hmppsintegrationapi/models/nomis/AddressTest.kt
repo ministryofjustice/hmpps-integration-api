@@ -6,7 +6,7 @@ import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.collections.shouldContainAll
 import io.kotest.matchers.shouldBe
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.generateNomisTestAddress
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Address.Type as IntegrationAPIType
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Address.Type
 
 class AddressTest : DescribeSpec(
   {
@@ -34,12 +34,12 @@ class AddressTest : DescribeSpec(
         val expectedCode = "abc123"
         val expectedDescription = "some description"
         val addressUsages = listOf(
-          Address.AddressUsage(expectedCode, expectedDescription),
+          NomisAddress.AddressUsage(expectedCode, expectedDescription),
         )
 
         val address = generateNomisTestAddress(addressType = null, addressUsages = addressUsages)
 
-        address.toAddress().types.shouldBe(listOf(IntegrationAPIType(expectedCode, expectedDescription)))
+        address.toAddress().types.shouldBe(listOf(Type(expectedCode, expectedDescription)))
       }
 
       it("returns an empty list when neither addressType or addressUsages are present") {
@@ -49,12 +49,12 @@ class AddressTest : DescribeSpec(
       }
 
       it("addressUsage description is not present") {
-        val addressUsages = listOf(Address.AddressUsage("usage1", null))
+        val addressUsages = listOf(NomisAddress.AddressUsage("usage1", null))
 
         val address = generateNomisTestAddress(addressUsages = addressUsages)
 
         address.toAddress().types.shouldContain(
-          IntegrationAPIType(
+          Type(
             "usage1",
             "usage1",
           ),
@@ -65,17 +65,17 @@ class AddressTest : DescribeSpec(
         it("maps addressUsages and addressType combined when both are present") {
           val addressType = "someAddressType"
           val addressUsages = listOf(
-            Address.AddressUsage("usage1", "usage description 1"),
-            Address.AddressUsage("usage2", "usage description 2"),
+            NomisAddress.AddressUsage("usage1", "usage description 1"),
+            NomisAddress.AddressUsage("usage2", "usage description 2"),
           )
 
           val address = generateNomisTestAddress(addressType = addressType, addressUsages = addressUsages)
 
           address.toAddress().types.shouldContainAll(
             listOf(
-              IntegrationAPIType("someAddressType", "someAddressType"),
-              IntegrationAPIType("usage1", "usage description 1"),
-              IntegrationAPIType("usage2", "usage description 2"),
+              Type("someAddressType", "someAddressType"),
+              Type("usage1", "usage description 1"),
+              Type("usage2", "usage description 2"),
             ),
           )
         }
@@ -89,7 +89,7 @@ class AddressTest : DescribeSpec(
             addressUsages = emptyList(),
           )
 
-          address.toAddress().types.shouldBe(listOf(IntegrationAPIType(expectedCode, expectedDescription)))
+          address.toAddress().types.shouldBe(listOf(Type(expectedCode, expectedDescription)))
         }
 
         it("maps descriptions") {
@@ -101,7 +101,7 @@ class AddressTest : DescribeSpec(
 
           codeAndDescription.forEach { it ->
             val address = generateNomisTestAddress(addressType = it.key)
-            address.toAddress().types.shouldContain(IntegrationAPIType(it.key, it.value))
+            address.toAddress().types.shouldContain(Type(it.key, it.value))
           }
         }
       }

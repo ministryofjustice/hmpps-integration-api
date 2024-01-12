@@ -4,9 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NomisGateway
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Response
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Sentence
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.Booking
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Sentence
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisBooking
 
 @Service
 class GetSentencesForPersonService(
@@ -18,7 +18,7 @@ class GetSentencesForPersonService(
     val personResponse = getPersonService.execute(hmppsId = hmppsId)
     val nomisNumber = personResponse.data?.identifiers?.nomisNumber
     val deliusCrn = personResponse.data?.identifiers?.deliusCrn
-    var bookingIdsResponse: Response<List<Booking>> = Response(data = emptyList())
+    var bookingIdsResponse: Response<List<NomisBooking>> = Response(data = emptyList())
     var nDeliusSentencesResponse: Response<List<Sentence>> = Response(data = emptyList())
 
     if (nomisNumber != null) {

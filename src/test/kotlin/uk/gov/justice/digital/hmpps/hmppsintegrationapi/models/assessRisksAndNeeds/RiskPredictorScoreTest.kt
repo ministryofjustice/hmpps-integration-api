@@ -3,12 +3,6 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNe
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import java.time.LocalDateTime
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNeeds.GeneralPredictorScore as ArnGeneralPredictorScore
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNeeds.GroupReconvictionScore as ArnGroupConvictionScore
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNeeds.RiskOfSeriousRecidivismScore as ArnRiskOfSeriousRecidivismScore
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNeeds.RiskPredictorScore as ArnRiskPredictorScore
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNeeds.SexualPredictorScore as ArnSexualPredictorScore
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNeeds.ViolencePredictorScore as ArnViolencePredictorScore
 
 class RiskPredictorScoreTest : DescribeSpec(
   {
@@ -19,7 +13,7 @@ class RiskPredictorScoreTest : DescribeSpec(
           assessmentStatus = "COMPLETE",
           generalPredictorScore = ArnGeneralPredictorScore(ogpRisk = "MEDIUM"),
           violencePredictorScore = ArnViolencePredictorScore(ovpRisk = "LOW"),
-          groupReconvictionScore = ArnGroupConvictionScore(scoreLevel = "VERY_HIGH"),
+          groupReconvictionScore = ArnGroupReconvictionScore(scoreLevel = "VERY_HIGH"),
           riskOfSeriousRecidivismScore = ArnRiskOfSeriousRecidivismScore(scoreLevel = "HIGH"),
           sexualPredictorScore = ArnSexualPredictorScore(ospIndecentScoreLevel = "HIGH", ospContactScoreLevel = "VERY_HIGH"),
         )

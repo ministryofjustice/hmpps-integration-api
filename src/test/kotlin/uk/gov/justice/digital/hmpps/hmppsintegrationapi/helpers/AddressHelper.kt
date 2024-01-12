@@ -1,6 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers
 
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Address
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Address
 import java.time.LocalDate
 
 fun generateTestAddress(

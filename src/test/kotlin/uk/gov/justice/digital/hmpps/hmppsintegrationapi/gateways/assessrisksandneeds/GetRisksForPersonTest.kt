@@ -16,14 +16,14 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.AssessRisksAndN
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.AssessRisksAndNeedsApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.OtherRisks
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Risk
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.RiskSummary
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.RiskToSelf
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.OtherRisks
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Risk
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.RiskSummary
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.RiskToSelf
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Risks
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import java.io.File
 import java.time.LocalDateTime
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Risks as IntegrationApiRisks
 
 @ActiveProfiles("test")
 @ContextConfiguration(
@@ -65,7 +65,7 @@ class GetRisksForPersonTest(
         val response = assessRisksAndNeedsGateway.getRisksForPerson(deliusCrn)
 
         response.data.shouldBe(
-          IntegrationApiRisks(
+          Risks(
             assessedOn = LocalDateTime.of(2023, 9, 27, 11, 46, 36),
             riskToSelf = RiskToSelf(
               suicide = Risk(

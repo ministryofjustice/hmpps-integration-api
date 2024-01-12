@@ -1,9 +1,9 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers
 
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Sentence
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.SentenceLength
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.SentenceTerm
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApi
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Sentence
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SentenceLength
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SentenceTerm
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import java.time.LocalDate
 
 fun generateTestSentence(

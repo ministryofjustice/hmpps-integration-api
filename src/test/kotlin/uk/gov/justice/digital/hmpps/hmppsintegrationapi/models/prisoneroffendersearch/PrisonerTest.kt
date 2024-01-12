@@ -4,13 +4,13 @@ import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeTypeOf
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Alias
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Alias
 import java.time.LocalDate
 class PrisonerTest : DescribeSpec(
   {
     describe("#toPerson") {
       it("maps one-to-one attributes to person attributes") {
-        val prisoner = Prisoner(
+        val prisoner = POSPrisoner(
           firstName = "First Name",
           lastName = "Last Name",
           middleNames = "Middle Name",
@@ -21,7 +21,7 @@ class PrisonerTest : DescribeSpec(
           pncNumber = "pncNumber",
           croNumber = "croNumber",
           aliases = listOf(
-            PrisonerAlias(firstName = "Alias First Name", lastName = "Alias Last Name"),
+            POSPrisonerAlias(firstName = "Alias First Name", lastName = "Alias Last Name"),
           ),
         )
 

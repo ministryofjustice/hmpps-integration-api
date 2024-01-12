@@ -3,31 +3,30 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.generateTestSentence
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Offence
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Sentence
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.SentenceLength
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApi
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Offence
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Sentence
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SentenceLength
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import java.time.LocalDate
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.Sentence as NDeliusSentence
 
 class SupervisionsTest : DescribeSpec(
   {
     describe("#toOffences") {
       describe("When there are additional offences") {
         it("maps one-to-one attributes to integration API attributes") {
-          val supervisions = Supervisions(
+          val supervisions = NDeliusSupervisions(
             supervisions = listOf(
-              Supervision(
+              NDeliusSupervision(
                 custodial = true,
-                mainOffence = MainOffence(description = "foobar", code = "05800", date = "2000-01-02"),
-                additionalOffences = listOf(AdditionalOffence(description = "additionalFoo", code = "12345", date = "2001-01-01")),
-                courtAppearances = listOf(CourtAppearance(date = "2009-07-07T00:00:00+01:00")),
+                mainOffence = NDeliusMainOffence(description = "foobar", code = "05800", date = "2000-01-02"),
+                additionalOffences = listOf(NDeliusAdditionalOffence(description = "additionalFoo", code = "12345", date = "2001-01-01")),
+                courtAppearances = listOf(NDeliusCourtAppearance(date = "2009-07-07T00:00:00+01:00")),
               ),
-              Supervision(
+              NDeliusSupervision(
                 custodial = true,
-                mainOffence = MainOffence(description = "barbaz", code = "05800", date = "2003-03-03"),
-                additionalOffences = listOf(AdditionalOffence(description = "additionalFoo2", code = "98765", date = "2001-02-02")),
-                courtAppearances = listOf(CourtAppearance(date = "2010-07-07T00:00:00+01:00")),
+                mainOffence = NDeliusMainOffence(description = "barbaz", code = "05800", date = "2003-03-03"),
+                additionalOffences = listOf(NDeliusAdditionalOffence(description = "additionalFoo2", code = "98765", date = "2001-02-02")),
+                courtAppearances = listOf(NDeliusCourtAppearance(date = "2010-07-07T00:00:00+01:00")),
               ),
             ),
           )
@@ -64,13 +63,13 @@ class SupervisionsTest : DescribeSpec(
           )
         }
         it("does not local date parse additional offence date if no date is provided") {
-          val supervisions = Supervisions(
+          val supervisions = NDeliusSupervisions(
             supervisions = listOf(
-              Supervision(
+              NDeliusSupervision(
                 custodial = true,
-                mainOffence = MainOffence(description = "foobar", code = "05800", date = "2000-01-02"),
-                additionalOffences = listOf(AdditionalOffence(description = "additionalFoo", code = "12345")),
-                courtAppearances = listOf(CourtAppearance(date = "2009-07-07T00:00:00+01:00")),
+                mainOffence = NDeliusMainOffence(description = "foobar", code = "05800", date = "2000-01-02"),
+                additionalOffences = listOf(NDeliusAdditionalOffence(description = "additionalFoo", code = "12345")),
+                courtAppearances = listOf(NDeliusCourtAppearance(date = "2009-07-07T00:00:00+01:00")),
               ),
             ),
           )
@@ -96,13 +95,13 @@ class SupervisionsTest : DescribeSpec(
         }
 
         it("does local date parse additional offence date if a date is provided") {
-          val supervisions = Supervisions(
+          val supervisions = NDeliusSupervisions(
             supervisions = listOf(
-              Supervision(
+              NDeliusSupervision(
                 custodial = true,
-                mainOffence = MainOffence(description = "foobar", code = "05800", date = "2000-01-02"),
-                additionalOffences = listOf(AdditionalOffence(description = "additionalFoo", code = "12345", date = "2001-01-01")),
-                courtAppearances = listOf(CourtAppearance(date = "2009-07-07T00:00:00+01:00")),
+                mainOffence = NDeliusMainOffence(description = "foobar", code = "05800", date = "2000-01-02"),
+                additionalOffences = listOf(NDeliusAdditionalOffence(description = "additionalFoo", code = "12345", date = "2001-01-01")),
+                courtAppearances = listOf(NDeliusCourtAppearance(date = "2009-07-07T00:00:00+01:00")),
               ),
             ),
           )
@@ -130,19 +129,19 @@ class SupervisionsTest : DescribeSpec(
 
       describe("When there are no additional offences") {
         it("maps one-to-one attributes to integration API attributes") {
-          val supervisions = Supervisions(
+          val supervisions = NDeliusSupervisions(
             supervisions = listOf(
-              Supervision(
+              NDeliusSupervision(
                 custodial = true,
-                mainOffence = MainOffence(description = "foobar", code = "05800", date = "2019-09-09"),
+                mainOffence = NDeliusMainOffence(description = "foobar", code = "05800", date = "2019-09-09"),
                 additionalOffences = emptyList(),
-                courtAppearances = listOf(CourtAppearance(date = "2009-07-07T00:00:00+01:00")),
+                courtAppearances = listOf(NDeliusCourtAppearance(date = "2009-07-07T00:00:00+01:00")),
               ),
-              Supervision(
+              NDeliusSupervision(
                 custodial = true,
-                mainOffence = MainOffence(description = "barbaz", code = "05800", date = "2020-02-03"),
+                mainOffence = NDeliusMainOffence(description = "barbaz", code = "05800", date = "2020-02-03"),
                 additionalOffences = emptyList(),
-                courtAppearances = listOf(CourtAppearance(date = "2010-07-07T00:00:00+01:00")),
+                courtAppearances = listOf(NDeliusCourtAppearance(date = "2010-07-07T00:00:00+01:00")),
               ),
             ),
           )
@@ -170,9 +169,9 @@ class SupervisionsTest : DescribeSpec(
     }
     describe("#toSentence") {
       it("maps one-to-one attributes to integration API sentence attributes") {
-        val supervisions = Supervisions(
+        val supervisions = NDeliusSupervisions(
           listOf(
-            Supervision(
+            NDeliusSupervision(
               active = true,
               custodial = true,
               sentence = NDeliusSentence(
@@ -182,7 +181,7 @@ class SupervisionsTest : DescribeSpec(
                 lengthUnits = "years",
               ),
             ),
-            Supervision(
+            NDeliusSupervision(
               active = false,
               custodial = true,
               sentence = NDeliusSentence(
@@ -225,9 +224,9 @@ class SupervisionsTest : DescribeSpec(
       }
 
       it("can be constructed with NULL values") {
-        val supervisions = Supervisions(
+        val supervisions = NDeliusSupervisions(
           listOf(
-            Supervision(custodial = true),
+            NDeliusSupervision(custodial = true),
           ),
         )
 

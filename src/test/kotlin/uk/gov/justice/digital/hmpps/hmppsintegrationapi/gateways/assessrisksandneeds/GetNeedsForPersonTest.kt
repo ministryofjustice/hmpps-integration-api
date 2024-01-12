@@ -16,10 +16,10 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.AssessRisksAndN
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.AssessRisksAndNeedsApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Need
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Needs
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import java.time.LocalDateTime
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Need as IntegrationApiNeed
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Needs as IntegrationApiNeeds
 
 @ActiveProfiles("test")
 @ContextConfiguration(
@@ -89,19 +89,19 @@ class GetNeedsForPersonTest(
         val response = assessRisksAndNeedsGateway.getNeedsForPerson(deliusCrn)
 
         response.data.shouldBe(
-          IntegrationApiNeeds(
+          Needs(
             assessedOn = LocalDateTime.of(2023, 2, 13, 12, 43, 38),
             identifiedNeeds = listOf(
-              IntegrationApiNeed(type = "EDUCATION_TRAINING_AND_EMPLOYABILITY"),
-              IntegrationApiNeed(type = "FINANCIAL_MANAGEMENT_AND_INCOME"),
+              Need(type = "EDUCATION_TRAINING_AND_EMPLOYABILITY"),
+              Need(type = "FINANCIAL_MANAGEMENT_AND_INCOME"),
             ),
             notIdentifiedNeeds = listOf(
-              IntegrationApiNeed(type = "RELATIONSHIPS"),
+              Need(type = "RELATIONSHIPS"),
             ),
             unansweredNeeds = listOf(
-              IntegrationApiNeed(type = "LIFESTYLE_AND_ASSOCIATES"),
-              IntegrationApiNeed(type = "DRUG_MISUSE"),
-              IntegrationApiNeed(type = "ALCOHOL_MISUSE"),
+              Need(type = "LIFESTYLE_AND_ASSOCIATES"),
+              Need(type = "DRUG_MISUSE"),
+              Need(type = "ALCOHOL_MISUSE"),
             ),
           ),
         )
@@ -130,11 +130,11 @@ class GetNeedsForPersonTest(
         val response = assessRisksAndNeedsGateway.getNeedsForPerson(deliusCrn)
 
         response.data.shouldBe(
-          IntegrationApiNeeds(
+          Needs(
             assessedOn = LocalDateTime.of(2023, 2, 13, 12, 43, 38),
             identifiedNeeds = listOf(
-              IntegrationApiNeed(type = "EDUCATION_TRAINING_AND_EMPLOYABILITY"),
-              IntegrationApiNeed(type = "FINANCIAL_MANAGEMENT_AND_INCOME"),
+              Need(type = "EDUCATION_TRAINING_AND_EMPLOYABILITY"),
+              Need(type = "FINANCIAL_MANAGEMENT_AND_INCOME"),
             ),
             notIdentifiedNeeds = emptyList(),
             unansweredNeeds = emptyList(),

@@ -10,7 +10,7 @@ class OffenceHistoryDetailTest : DescribeSpec(
   {
     describe("#toOffence") {
       it("maps one-to-one attributes to integration API attributes") {
-        val offenceHistoryDetail = OffenceHistoryDetail(
+        val offenceHistoryDetail = NomisOffenceHistoryDetail(
           courtDate = LocalDate.parse("1995-06-06"),
           offenceDate = LocalDate.parse("1995-04-06"),
           offenceCode = "RR84555",
@@ -30,7 +30,7 @@ class OffenceHistoryDetailTest : DescribeSpec(
       }
 
       it("deals with NULL values") {
-        val offenceHistoryDetail = OffenceHistoryDetail(
+        val offenceHistoryDetail = NomisOffenceHistoryDetail(
           offenceCode = "RR84555",
           offenceDescription = "A test offence description for model testing",
           statuteCode = "RR84",

@@ -16,20 +16,20 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Response
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApi
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.GeneralPredictor
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.GroupReconviction
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.RiskOfSeriousRecidivism
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.RiskPredictorScore
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SexualPredictor
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ViolencePredictor
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetRiskPredictorScoresForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 import java.time.LocalDateTime
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.GeneralPredictor as IntegrationAPIGeneralPredictor
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.GroupReconviction as IntegrationAPIGroupReconviction
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.RiskOfSeriousRecidivism as IntegrationAPIRiskOfSeriousRecidivism
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.RiskPredictorScore as IntegrationAPIRiskPredictorScore
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.SexualPredictor as IntegrationAPISexualPredictor
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ViolencePredictor as IntegrationAPIViolencePredictor
 
 @WebMvcTest(controllers = [RiskPredictorScoresController::class])
 @ActiveProfiles("test")
@@ -50,14 +50,14 @@ internal class RiskPredictorScoresControllerTest(
         whenever(getRiskPredictorScoresForPersonService.execute(hmppsId)).thenReturn(
           Response(
             data = listOf(
-              IntegrationAPIRiskPredictorScore(
+              RiskPredictorScore(
                 completedDate = LocalDateTime.parse("2023-09-05T10:15:41"),
                 assessmentStatus = "COMPLETE",
-                generalPredictor = IntegrationAPIGeneralPredictor("HIGH"),
-                violencePredictor = IntegrationAPIViolencePredictor("MEDIUM"),
-                groupReconviction = IntegrationAPIGroupReconviction("LOW"),
-                riskOfSeriousRecidivism = IntegrationAPIRiskOfSeriousRecidivism(scoreLevel = "VERY_HIGH"),
-                sexualPredictor = IntegrationAPISexualPredictor(indecentScoreLevel = "HIGH", contactScoreLevel = "VERY_HIGH"),
+                generalPredictor = GeneralPredictor("HIGH"),
+                violencePredictor = ViolencePredictor("MEDIUM"),
+                groupReconviction = GroupReconviction("LOW"),
+                riskOfSeriousRecidivism = RiskOfSeriousRecidivism(scoreLevel = "VERY_HIGH"),
+                sexualPredictor = SexualPredictor(indecentScoreLevel = "HIGH", contactScoreLevel = "VERY_HIGH"),
               ),
             ),
           ),
@@ -145,14 +145,14 @@ internal class RiskPredictorScoresControllerTest(
           Response(
             data =
             List(30) {
-              IntegrationAPIRiskPredictorScore(
+              RiskPredictorScore(
                 completedDate = LocalDateTime.parse("2023-09-05T10:15:41"),
                 assessmentStatus = "COMPLETE",
-                generalPredictor = IntegrationAPIGeneralPredictor("HIGH"),
-                violencePredictor = IntegrationAPIViolencePredictor("MEDIUM"),
-                groupReconviction = IntegrationAPIGroupReconviction("LOW"),
-                riskOfSeriousRecidivism = IntegrationAPIRiskOfSeriousRecidivism(scoreLevel = "VERY_HIGH"),
-                sexualPredictor = IntegrationAPISexualPredictor(indecentScoreLevel = "HIGH", contactScoreLevel = "VERY_HIGH"),
+                generalPredictor = GeneralPredictor("HIGH"),
+                violencePredictor = ViolencePredictor("MEDIUM"),
+                groupReconviction = GroupReconviction("LOW"),
+                riskOfSeriousRecidivism = RiskOfSeriousRecidivism(scoreLevel = "VERY_HIGH"),
+                sexualPredictor = SexualPredictor(indecentScoreLevel = "HIGH", contactScoreLevel = "VERY_HIGH"),
               )
             },
           ),

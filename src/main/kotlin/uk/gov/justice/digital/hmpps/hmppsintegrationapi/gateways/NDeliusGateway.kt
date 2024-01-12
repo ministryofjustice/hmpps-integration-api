@@ -6,11 +6,11 @@ import org.springframework.http.HttpMethod
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper.WebClientWrapperResponse
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Offence
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Response
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Sentence
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.UpstreamApi
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.Supervisions
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Offence
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Sentence
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.NDeliusSupervisions
 
 @Component
 class NDeliusGateway(@Value("\${services.ndelius.base-url}") baseUrl: String) {
@@ -20,7 +20,7 @@ class NDeliusGateway(@Value("\${services.ndelius.base-url}") baseUrl: String) {
   lateinit var hmppsAuthGateway: HmppsAuthGateway
 
   fun getOffencesForPerson(id: String): Response<List<Offence>> {
-    val result = webClient.request<Supervisions>(
+    val result = webClient.request<NDeliusSupervisions>(
       HttpMethod.GET,
       "/case/$id/supervisions",
       authenticationHeader(),
@@ -42,7 +42,7 @@ class NDeliusGateway(@Value("\${services.ndelius.base-url}") baseUrl: String) {
   }
 
   fun getSentencesForPerson(id: String): Response<List<Sentence>> {
-    val result = webClient.request<Supervisions>(
+    val result = webClient.request<NDeliusSupervisions>(
       HttpMethod.GET,
       "/case/$id/supervisions",
       authenticationHeader(),

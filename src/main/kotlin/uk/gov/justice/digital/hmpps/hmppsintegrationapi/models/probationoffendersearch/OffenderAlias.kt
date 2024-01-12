@@ -1,6 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.probationoffendersearch
 
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.Alias
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Alias
 import java.time.LocalDate
 
 data class OffenderAlias(
