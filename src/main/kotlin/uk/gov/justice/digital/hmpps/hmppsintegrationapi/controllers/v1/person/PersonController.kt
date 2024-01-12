@@ -9,13 +9,11 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.decodeUrlCharacters
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Address
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ImageMetadata
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError.Type.ENTITY_NOT_FOUND
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetAddressesForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetImageMetadataForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonsService
@@ -29,7 +27,6 @@ class PersonController(
   @Autowired val getPersonService: GetPersonService,
   @Autowired val getPersonsService: GetPersonsService,
   @Autowired val getImageMetadataForPersonService: GetImageMetadataForPersonService,
-  @Autowired val getAddressesForPersonService: GetAddressesForPersonService,
   @Autowired val auditService: AuditService,
 ) {
 
@@ -80,20 +77,5 @@ class PersonController(
 
     auditService.createEvent("GET_PERSON_IMAGE", "Image with id: $hmppsId has been retrieved")
     return response.data.paginateWith(page, perPage)
-  }
-
-  @GetMapping("{encodedHmppsId}/addresses")
-  fun getPersonAddresses(@PathVariable encodedHmppsId: String): Map<String, List<Address>> {
-    val hmppsId = encodedHmppsId.decodeUrlCharacters()
-    val response = getAddressesForPersonService.execute(hmppsId)
-
-    if (
-      response.hasErrorCausedBy(ENTITY_NOT_FOUND, causedBy = UpstreamApi.NOMIS) &&
-      response.hasErrorCausedBy(ENTITY_NOT_FOUND, causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH)
-    ) {
-      throw EntityNotFoundException("Could not find person with id: $hmppsId")
-    }
-    auditService.createEvent("GET_PERSON_ADDRESS", "Person address details with hmpps id: $hmppsId has been retrieved")
-    return mapOf("data" to response.data)
   }
 }

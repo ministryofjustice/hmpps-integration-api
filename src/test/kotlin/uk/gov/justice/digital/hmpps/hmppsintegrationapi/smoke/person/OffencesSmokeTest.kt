@@ -13,9 +13,7 @@ class OffencesSmokeTest : DescribeSpec(
   {
     val hmppsId = "2004/13116M"
     val encodedHmppsId = URLEncoder.encode(hmppsId, StandardCharsets.UTF_8)
-
     val basePath = "v1/persons/$encodedHmppsId/offences"
-
     val httpClient = IntegrationAPIHttpClient()
 
     it("returns offences for a person") {
