@@ -22,7 +22,7 @@ data class NomisAddress(
   fun toAddress() = Address(
     country = this.country,
     county = this.county,
-    endDate = this.endDate,
+                  endDate = this.endDate,
     locality = this.locality,
     name = this.premise,
     noFixedAddress = this.noFixedAddress,
