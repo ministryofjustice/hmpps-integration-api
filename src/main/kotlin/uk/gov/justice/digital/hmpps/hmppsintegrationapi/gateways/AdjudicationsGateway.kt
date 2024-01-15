@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpMethod
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.adjudications.Adjudications
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Adjudication
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 
 @Component
@@ -16,7 +16,7 @@ class AdjudicationsGateway(@Value("\${services.adjudications.base-url}") baseUrl
   lateinit var hmppsAuthGateway: HmppsAuthGateway
 
   fun getAdjudicationsForPerson(id: String): Int? {
-    val result = webClient.request<Adjudications>(
+    val result = webClient.request<Adjudication>(
       HttpMethod.GET,
       "/reported-adjudications/reports",
       authenticationHeader(),
