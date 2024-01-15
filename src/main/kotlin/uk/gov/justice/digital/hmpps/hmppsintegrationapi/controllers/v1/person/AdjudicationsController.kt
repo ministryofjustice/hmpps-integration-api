@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.decodeUrlCharacters
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Offence
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Adjudication
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetAdjudicationsForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
@@ -27,7 +27,7 @@ class AdjudicationsController(
     @PathVariable encodedHmppsId: String,
     @RequestParam(required = false, defaultValue = "1", name = "page") page: Int,
     @RequestParam(required = false, defaultValue = "10", name = "perPage") perPage: Int,
-  ): PaginatedResponse<Offence> {
+  ): PaginatedResponse<Adjudication> {
     val hmppsId = encodedHmppsId.decodeUrlCharacters()
     val response = getAdjudicationsForPersonService.execute(hmppsId)
 
