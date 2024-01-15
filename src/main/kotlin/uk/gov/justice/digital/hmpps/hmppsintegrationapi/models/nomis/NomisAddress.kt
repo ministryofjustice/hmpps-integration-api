@@ -25,7 +25,7 @@ data class NomisAddress(
     endDate = this.endDate,
     locality = this.locality,
     name = this.premise,
-              noFixedAddress = this.noFixedAddress,
+    noFixedAddress = this.noFixedAddress,
     number = this.flat,
     postcode = this.postalCode,
     startDate = this.startDate,
@@ -56,7 +56,7 @@ data class NomisAddress(
   }
 
   data class AddressUsage(
-    val addressUsage: String,
+            val addressUsage: String,
     val addressUsageDescription: String?,
   ) {
     fun toAddressType() = Address.Type(
