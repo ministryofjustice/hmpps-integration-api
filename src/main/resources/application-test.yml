@@ -22,6 +22,8 @@ services:
     base-url: http://localhost:4004
   probation-integration-epf:
     base-url: http://localhost:4005
+  adjudications:
+    base-url: http://localhost:4006
 
 hmpps.sqs:
   provider: localstack

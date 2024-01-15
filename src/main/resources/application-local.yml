@@ -13,6 +13,8 @@ services:
     base-url: http://localhost:4060
   hmpps-auth:
     base-url: http://localhost:9090
+  adjudications:
+    base-url: http://localhost:4045
 
 hmpps.sqs:
   provider: localstack
