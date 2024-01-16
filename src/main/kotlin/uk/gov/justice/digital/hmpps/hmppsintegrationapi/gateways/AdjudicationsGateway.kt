@@ -40,28 +40,6 @@ class AdjudicationsGateway(@Value("\${services.adjudications.base-url}") baseUrl
     }
   }
 
-//  fun getAdjudicationsForPerson(id: String): Response<List<Adjudication>> {
-//    val result = webClient.request<Adjudications>(
-//      HttpMethod.GET,
-//      "/reported-adjudications/prisoner/$id",
-//      authenticationHeader(),
-//      UpstreamApi.ADJUDICATIONS,
-//    )
-//
-//    return when (result) {
-//      is WebClientWrapperResponse.Success -> {
-//        Response(data = result.data.adjudications.flatMap { it.toAdjudications() })
-//      }
-//
-//      is WebClientWrapperResponse.Error -> {
-//        Response(
-//          data = emptyList(),
-//          errors = result.errors,
-//        )
-//      }
-//    }
-//  }
-
   private fun authenticationHeader(): Map<String, String> {
     val token = hmppsAuthGateway.getClientToken("Adjudications")
 

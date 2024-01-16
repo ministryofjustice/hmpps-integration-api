@@ -53,7 +53,7 @@ class AdjudicationsGatewayTest(
       response.errors[0].type.shouldBe(UpstreamApiError.Type.BAD_REQUEST)
     }
 
-    it("returns AadjudicationResponse") {
+    it("returns adjudicationResponse") {
       adjudicationsApiMockServer.stubGetReportedAdjudicationsForPerson(
         "123",
         "[\n" +

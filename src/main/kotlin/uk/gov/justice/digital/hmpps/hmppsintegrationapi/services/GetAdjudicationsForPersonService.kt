@@ -13,9 +13,21 @@ class GetAdjudicationsForPersonService(
 ) {
   fun execute(hmppsId: String): Response<List<Adjudication>> {
     val personResponse = getPersonService.execute(hmppsId = hmppsId)
+    val nomisNumber = personResponse.data?.identifiers?.nomisNumber
+
+    var adjudications: Response<List<Adjudication>> = Response(data = emptyList())
+
+    if (nomisNumber == null) {
+      return Response(
+        data = emptyList(),
+        errors = personResponse.errors,
+      )
+    } else {
+      adjudications = adjudicationsGateway.getReportedAdjudicationsForPerson(id = nomisNumber)
+    }
 
     return Response(
-      data = emptyList(),
+      data = adjudications.data,
       errors = emptyList(),
     )
   }
