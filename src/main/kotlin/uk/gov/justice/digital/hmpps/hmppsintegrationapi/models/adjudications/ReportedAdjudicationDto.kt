@@ -1,39 +1,12 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.adjudications
 
-data class ReportedAdjudicationDto(
-  val chargeNumber: String,
-  val prisonerNumber: String,
-  val gender: String,
-  val incidentDetails: IncidentDetailsDto,
-  val isYouthOffender: Boolean,
-  val incidentRole: IncidentRoleDto,
-  val offenceDetails: OffenceDto,
-  val incidentStatement: IncidentStatementDto,
-  val createdByUserId: String,
-  val createdDateTime: String,
-  val status: String,
-  val reviewedByUser: String,
-  val statusReason: String,
-  val statusDetails: String,
-  val damages: ReportedDamageDto,
-  val evidence: ReportedEvidenceDto,
-  val witnesses: ReportedWitnessDto,
-  val hearings: HearingDto,
-  val issuingOfficer: String,
-  val dateTimeOfIssue: String,
-  val disIssueHistory: DisIssueHistoryDto,
-  val dateTimeOfFirstHearing: String,
-  val outcomes: OutcomeHistoryDto,
-  val punishments: PunishmentDto,
-  val punishmentComments: PunishmentCommentDto,
-  val outcomeEnteredInNomis: Boolean,
-  val overrideAgencyId: String,
-  val originatingAgencyId: String,
-  val transferableActionsAllowed: Int,
-  val createdOnBehalfOfOfficer: String,
-  val createdOnBehalfOfReason: String,
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Adjudication
 
-)
+data class ReportedAdjudicationDto(
+  val incidentDetails: IncidentDetailsDto,
+) {
+  fun toAdjudication(): Adjudication = Adjudication(incidentDetails = uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.IncidentDetailsDto(dateTimeOfIncident = this.incidentDetails.dateTimeOfIncident))
+}
 
 data class IncidentDetailsDto(
   val locationId: Int? = null,
