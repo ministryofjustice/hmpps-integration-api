@@ -6,6 +6,7 @@ import org.springframework.http.HttpMethod
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Adjudication
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 
 @Component
@@ -15,14 +16,14 @@ class AdjudicationsGateway(@Value("\${services.adjudications.base-url}") baseUrl
   @Autowired
   lateinit var hmppsAuthGateway: HmppsAuthGateway
 
-  fun getAdjudicationsForPerson(id: String): Int? {
+  fun getReportedAdjudicationsForPerson(id: String): Response<List<Adjudication>> {
     val result = webClient.request<Adjudication>(
       HttpMethod.GET,
-      "/reported-adjudications/reports",
+      "/reported-adjudications/prisoner/$id",
       authenticationHeader(),
       UpstreamApi.ADJUDICATIONS,
 
-      return 200,
+      return Response(emptyList()),
     )
   }
 

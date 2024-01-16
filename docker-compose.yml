@@ -100,7 +100,7 @@ services:
       dockerfile: Dockerfile.adjudications-api
     container_name: adjudications-api
     healthcheck:
-      test: 'wget --header="Authorization: Bearer abc" http://0.0.0.0:4010/reported-adjudications/prisoner/1234 -O /dev/null'
+      test: 'wget --header="Authorization: Bearer abc" http://0.0.0.0:4010/reported-adjudications/reports -O /dev/null'
     ports:
       - '4045:4010'
 

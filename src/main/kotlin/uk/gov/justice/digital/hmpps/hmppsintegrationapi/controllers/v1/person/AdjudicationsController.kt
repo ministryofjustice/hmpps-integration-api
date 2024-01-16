@@ -22,7 +22,7 @@ class AdjudicationsController(
   @Autowired val getAdjudicationsForPersonService: GetAdjudicationsForPersonService,
 ) {
 
-  @GetMapping("{encodedHmppsId}/adjudications")
+  @GetMapping("{encodedHmppsId}/reported-adjudications")
   fun getPersonAdjudications(
     @PathVariable encodedHmppsId: String,
     @RequestParam(required = false, defaultValue = "1", name = "page") page: Int,
