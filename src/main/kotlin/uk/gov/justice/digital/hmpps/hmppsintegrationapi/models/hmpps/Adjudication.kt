@@ -37,7 +37,7 @@ data class Adjudication(
 
 data class IncidentDetailsDto(
   val locationId: Int? = null,
-  val dataTimeOfIncident: String? = null,
+  val dateTimeOfIncident: String? = null,
   val dateTimeOfDiscovery: String? = null,
   val handoverDeadline: String? = null,
 )
