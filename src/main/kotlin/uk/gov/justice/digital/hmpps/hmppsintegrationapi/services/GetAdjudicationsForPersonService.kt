@@ -15,7 +15,7 @@ class GetAdjudicationsForPersonService(
     val personResponse = getPersonService.execute(hmppsId = hmppsId)
     val nomisNumber = personResponse.data?.identifiers?.nomisNumber
 
-    var adjudications: Response<List<Adjudication>> = Response(data = emptyList())
+    var adjudications: Response<List<Adjudication>>
 
     if (nomisNumber == null) {
       return Response(

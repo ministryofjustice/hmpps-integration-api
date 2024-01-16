@@ -79,5 +79,11 @@ internal class GetAdjudicationsForPersonServiceTest(
       result.data.shouldBe(emptyList())
       result.errors.first.type.shouldBe(UpstreamApiError.Type.ENTITY_NOT_FOUND)
     }
+
+    it("should return adjudications from gateway") {
+      val result = getAdjudicationsForPersonService.execute(hmppsId = hmppsId)
+      result.data.first.incidentDetails.dateTimeOfIncident.shouldBe("MockDate")
+      result.errors.count().shouldBe(0)
+    }
   },
 )
