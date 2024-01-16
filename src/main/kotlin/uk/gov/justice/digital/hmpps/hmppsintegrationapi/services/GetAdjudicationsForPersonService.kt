@@ -28,7 +28,7 @@ class GetAdjudicationsForPersonService(
 
     return Response(
       data = adjudications.data,
-      errors = emptyList(),
+      errors = adjudications.errors,
     )
   }
 }
