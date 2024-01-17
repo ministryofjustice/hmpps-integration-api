@@ -1,0 +1,165 @@
+{
+    "chargeNumber": "string",
+    "prisonerNumber": "G2996UX",
+    "gender": "MALE",
+    "incidentDetails": {
+      "locationId": 0,
+      "dateTimeOfIncident": "2021-07-05T10:35:17",
+      "dateTimeOfDiscovery": "2021-07-05T10:35:17",
+      "handoverDeadline": "2021-07-05T10:35:17"
+    },
+    "isYouthOffender": true,
+    "incidentRole": {
+      "roleCode": "25a",
+      "offenceRule": {
+        "paragraphNumber": "25(a)",
+        "paragraphDescription": "Committed an assault"
+      },
+      "associatedPrisonersNumber": "G2996UX",
+      "associatedPrisonersName": "G2996UX"
+    },
+    "offenceDetails": {
+      "offenceCode": 3,
+      "offenceRule": {
+        "paragraphNumber": "25(a)",
+        "paragraphDescription": "Committed an assault",
+        "nomisCode": "string",
+        "withOthersNomisCode": "string"
+      },
+      "victimPrisonersNumber": "G2996UX",
+      "victimStaffUsername": "ABC12D",
+      "victimOtherPersonsName": "Bob Hope"
+    },
+    "incidentStatement": {
+      "statement": "string",
+      "completed": true
+    },
+    "createdByUserId": "string",
+    "createdDateTime": "2021-07-05T10:35:17",
+    "status": "ACCEPTED",
+    "reviewedByUserId": "string",
+    "statusReason": "string",
+    "statusDetails": "string",
+    "damages": [
+      {
+        "code": "CLEANING",
+        "details": "the kettle was broken",
+        "reporter": "ABC12D"
+      }
+    ],
+    "evidence": [
+      {
+        "code": "PHOTO",
+        "identifier": "Tag number or Camera number",
+        "details": "ie what does the photo describe",
+        "reporter": "ABC12D"
+      }
+    ],
+    "witnesses": [
+      {
+        "code": "PRISON_OFFICER",
+        "firstName": "Fred",
+        "lastName": "Kruger",
+        "reporter": "ABC12D"
+      }
+    ],
+    "hearings": [
+      {
+        "id": 0,
+        "locationId": 0,
+        "dateTimeOfHearing": "2021-07-05T10:35:17",
+        "oicHearingType": "GOV_ADULT",
+        "outcome": {
+          "id": 0,
+          "adjudicator": "string",
+          "code": "COMPLETE",
+          "reason": "LEGAL_ADVICE",
+          "details": "string",
+          "plea": "UNFIT"
+        },
+        "agencyId": "string"
+      }
+    ],
+    "issuingOfficer": "string",
+    "dateTimeOfIssue": "2021-07-05T10:35:17",
+    "disIssueHistory": [
+      {
+        "issuingOfficer": "string",
+        "dateTimeOfIssue": "2021-07-05T10:35:17"
+      }
+    ],
+    "dateTimeOfFirstHearing": "2021-07-05T10:35:17",
+    "outcomes": [
+      {
+        "hearing": {
+          "id": 0,
+          "locationId": 0,
+          "dateTimeOfHearing": "2021-07-05T10:35:17",
+          "oicHearingType": "GOV_ADULT",
+          "outcome": {
+            "id": 0,
+            "adjudicator": "string",
+            "code": "COMPLETE",
+            "reason": "LEGAL_ADVICE",
+            "details": "string",
+            "plea": "UNFIT"
+          },
+          "agencyId": "string"
+        },
+        "outcome": {
+          "outcome": {
+            "id": 0,
+            "code": "REFER_POLICE",
+            "details": "string",
+            "reason": "ANOTHER_WAY",
+            "quashedReason": "FLAWED_CASE",
+            "canRemove": true
+          },
+          "referralOutcome": {
+            "id": 0,
+            "code": "REFER_POLICE",
+            "details": "string",
+            "reason": "ANOTHER_WAY",
+            "quashedReason": "FLAWED_CASE",
+            "canRemove": true
+          }
+        }
+      }
+    ],
+    "punishments": [
+      {
+        "id": 0,
+        "type": "PRIVILEGE",
+        "privilegeType": "CANTEEN",
+        "otherPrivilege": "string",
+        "stoppagePercentage": 0,
+        "activatedBy": "string",
+        "activatedFrom": "string",
+        "schedule": {
+          "days": 0,
+          "startDate": "2024-01-16",
+          "endDate": "2024-01-16",
+          "suspendedUntil": "2024-01-16"
+        },
+        "consecutiveChargeNumber": "string",
+        "consecutiveReportAvailable": true,
+        "damagesOwedAmount": 0,
+        "canRemove": true
+      }
+    ],
+    "punishmentComments": [
+      {
+        "id": 0,
+        "comment": "string",
+        "reasonForChange": "APPEAL",
+        "createdByUserId": "string",
+        "dateTime": "2021-07-05T10:35:17"
+      }
+    ],
+    "outcomeEnteredInNomis": true,
+    "overrideAgencyId": "string",
+    "originatingAgencyId": "string",
+    "transferableActionsAllowed": true,
+    "createdOnBehalfOfOfficer": "string",
+    "createdOnBehalfOfReason": "string"
+  }

@@ -11,9 +11,9 @@ import java.nio.charset.StandardCharsets
 
 class AdjudicationsSmokeTest : DescribeSpec(
   {
-    val hmppsId = "2004/13116M"
+    val hmppsId = "G2996UX"
     val encodedHmppsId = URLEncoder.encode(hmppsId, StandardCharsets.UTF_8)
-    val basePath = "/v1/persons/$encodedHmppsId/reported-adjudications"
+    val basePath = "v1/persons/$encodedHmppsId/reported-adjudications"
     val httpClient = IntegrationAPIHttpClient()
 
     it("returns adjudications for a person") {
@@ -23,12 +23,13 @@ class AdjudicationsSmokeTest : DescribeSpec(
       response.body().shouldEqualJson(
         """
          {
-          "data": [
-            "incidentDetails": {
-              "dateTimeOfIncident": "2021-01-01T12:00:00"
+          "data": [ {
+              "incidentDetails": {
+                "dateTimeOfIncident": "2021-07-05T10:35:17"
               }
-            ]
-          }
+            }
+          ]
+        }
         """.removeWhitespaceAndNewlines(),
       )
     }
