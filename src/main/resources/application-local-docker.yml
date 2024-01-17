@@ -31,6 +31,7 @@ authorisation:
       - "/v1/persons/.*/risks/scores"
       - "/v1/persons/.*/needs"
       - "/v1/persons/.*/risks"
+      - "/v1/persons/.*/reported-adjudications"
       - "/v1/epf/person-details/.*/.*"
       - "/health"
       - "/health/ping"
