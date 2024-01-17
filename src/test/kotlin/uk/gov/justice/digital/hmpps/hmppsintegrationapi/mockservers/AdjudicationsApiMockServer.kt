@@ -7,7 +7,6 @@ import org.springframework.http.HttpStatus
 class AdjudicationsApiMockServer : WireMockServer(WIREMOCK_PORT) {
   companion object {
     private const val WIREMOCK_PORT = 4006
-    private const val ACTIVE_CASELOAD = "MDI"
   }
 
   fun stubGetReportedAdjudicationsForPerson(id: String, body: String, status: HttpStatus = HttpStatus.OK) {
@@ -16,12 +15,7 @@ class AdjudicationsApiMockServer : WireMockServer(WIREMOCK_PORT) {
         .withHeader(
           "Authorization",
           WireMock.matching("Bearer ${HmppsAuthMockServer.TOKEN}"),
-        )
-        .withHeader(
-          "Active-Caseload",
-          WireMock.equalTo(ACTIVE_CASELOAD),
-        )
-        .willReturn(
+        ).willReturn(
           WireMock.aResponse()
             .withHeader("Content-Type", "application/json")
             .withStatus(status.value())

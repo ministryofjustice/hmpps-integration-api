@@ -45,7 +45,6 @@ class AdjudicationsGateway(@Value("\${services.adjudications.base-url}") baseUrl
 
     return mapOf(
       "Authorization" to "Bearer $token",
-      "Active-Caseload" to "MDI",
     )
   }
 }
