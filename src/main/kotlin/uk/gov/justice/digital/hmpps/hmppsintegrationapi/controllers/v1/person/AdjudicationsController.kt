@@ -26,7 +26,7 @@ class AdjudicationsController(
   fun getPersonAdjudications(
     @PathVariable encodedHmppsId: String,
     @RequestParam(required = false, defaultValue = "1", name = "page") page: Int,
-    @RequestParam(required = false, defaultValue = "10", name = "perPage") perPage: Int,
+    @RequestParam(required = false, defaultValue = "8", name = "perPage") perPage: Int,
   ): PaginatedResponse<Adjudication> {
     val hmppsId = encodedHmppsId.decodeUrlCharacters()
     val response = getAdjudicationsForPersonService.execute(hmppsId)
@@ -34,7 +34,7 @@ class AdjudicationsController(
     if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
       throw EntityNotFoundException("Could not find person with id: $hmppsId")
     }
-//    auditService.createEvent("GET_PERSON_ADJUDICATIONS", "Person adjudications details with hmpps id: $hmppsId has been retrieved")
+    auditService.createEvent("GET_PERSON_ADJUDICATIONS", "Person adjudications details with hmpps id: $hmppsId has been retrieved")
     return response.data.paginateWith(page, perPage)
   }
 }

@@ -1,8 +1,11 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.controllers.v1.person
 
+import io.kotest.assertions.json.shouldContainJsonKeyValue
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
+import org.mockito.internal.verification.VerificationModeFactory
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
@@ -66,6 +69,30 @@ internal class AdjudicationsControllerTest(
         val noFoundPath = "/v1/persons/notfound/reported-adjudications"
         val result = mockMvc.performAuthorised(noFoundPath)
         result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
+      }
+
+      it("logs audit for adjudications") {
+        mockMvc.performAuthorised(path)
+
+        verify(auditService, VerificationModeFactory.times(1)).createEvent("GET_PERSON_ADJUDICATIONS", "Person adjudications details with hmpps id: $hmppsId has been retrieved")
+      }
+
+      it("returns paginated adjudication results") {
+        whenever(getAdjudicationsForPersonService.execute(hmppsId)).thenReturn(
+          Response(
+            data =
+            List(20) {
+              Adjudication(
+                IncidentDetailsDto(dateTimeOfIncident = "2022-05-05T11:00:00"),
+              )
+            },
+          ),
+        )
+
+        val result = mockMvc.performAuthorised("$path?page=1&perPage=15")
+
+        result.response.contentAsString.shouldContainJsonKeyValue("$.pagination.page", 1)
+        result.response.contentAsString.shouldContainJsonKeyValue("$.pagination.totalPages", 2)
       }
     }
   },
