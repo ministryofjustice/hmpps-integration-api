@@ -12,7 +12,7 @@ services:
   probation-integration-epf:
     base-url: http://probation-integration-epf-api:4010
   adjudications:
-    base-url: http://localhost:4010
+    base-url: http://adjudications-api:4010
   hmpps-auth:
     base-url: http://hmpps-auth:8080
 
