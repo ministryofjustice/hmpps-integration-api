@@ -56,18 +56,21 @@ class AdjudicationsGatewayTest(
     it("returns adjudicationResponse") {
       adjudicationsApiMockServer.stubGetReportedAdjudicationsForPerson(
         "123",
-        "[\n" +
-          "  {\n" +
-          "    \"chargeNumber\": \"string\",\n" +
-          "    \"prisonerNumber\": \"G2996UX\",\n" +
-          "    \"gender\": \"MALE\",\n" +
-          "    \"incidentDetails\": {\n" +
-          "      \"locationId\": 0,\n" +
-          "      \"dateTimeOfIncident\": \"2021-07-05T10:35:17\",\n" +
-          "      \"dateTimeOfDiscovery\": \"2021-07-05T10:35:17\",\n" +
-          "      \"handoverDeadline\": \"2021-07-05T10:35:17\"\n" +
-          "    }" +
-          "}]",
+        """
+          [
+            {
+            "chargeNumber": "string",
+            "prisonerNumber": "G2996UX",
+            "gender": "MALE",
+              "incidentDetails": {
+                    "locationId": 0,
+                    "dateTimeOfIncident": "2021-07-05T10:35:17",
+                    "dateTimeOfDiscovery": "2021-07-05T10:35:17",
+                    "handoverDeadline": "2021-07-05T10:35:17"
+                } 
+            }
+          ]
+        """,
         HttpStatus.OK,
       )
       val response = adjudicationsGateway.getReportedAdjudicationsForPerson(id = "123")
