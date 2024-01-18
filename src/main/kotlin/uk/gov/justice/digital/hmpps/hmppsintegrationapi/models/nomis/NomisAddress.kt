@@ -56,7 +56,7 @@ data class NomisAddress(
   }
 
   data class AddressUsage(
-            val addressUsage: String,
+    val addressUsage: String,
     val addressUsageDescription: String?,
   ) {
     fun toAddressType() = Address.Type(
