@@ -38,7 +38,7 @@ handle_lint_failure() {
   # Check the exit status of make format
   if [ $? -eq 0 ]; then
     echo -e "$FORMAT_PASSED_MESSAGE"
-
+    git status
     # Stage files modified by make format
     git add $(git status -s | awk '/^[ M]/ {print $2}')
 
