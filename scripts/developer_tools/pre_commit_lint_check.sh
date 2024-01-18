@@ -38,6 +38,7 @@ handle_lint_failure() {
 
   # Check the exit status of make format
   if [ $? -eq 0 ]; then
+    git add .
     rerun_lint_after_format
   else
     echo -e "$FORMAT_FAILED_MESSAGE"
@@ -53,7 +54,6 @@ rerun_lint_after_format() {
   # Check the exit status of make lint after format
   if [ $? -eq 0 ]; then
     echo -e "$LINT_PASSED_MESSAGE after 'make format'. Proceeding with commit.${NC}"
-    git add .
     exit 0
   else
     echo -e "$RERUN_LINT_FAILED_MESSAGE"
