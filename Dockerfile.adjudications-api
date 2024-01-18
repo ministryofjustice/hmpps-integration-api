@@ -2,7 +2,7 @@ FROM node:current-alpine3.17
 
 RUN apk update && apk add bash curl
 
-RUN curl https://manage-adjudications-api-dev.hmpps.service.justice.gov.uk/v3/api-docs > adjudications.json && \
+RUN curl https://manage-adjudications-api-dev.hmpps.service.justice.gov.uk/v3/api-docs > adjudications_api.json && \
     npm install -g @stoplight/prism-cli
 
-CMD prism mock -p 4010 -h 0.0.0.0 /adjudications.json
+CMD prism mock -p 4010 -h 0.0.0.0 /adjudications_api.json

@@ -5,7 +5,7 @@ data class Adjudication(
 )
 
 data class IncidentDetailsDto(
-  val locationId: Int? = null,
+  val locationId: Number? = null,
   val dateTimeOfIncident: String? = null,
   val dateTimeOfDiscovery: String? = null,
   val handoverDeadline: String? = null,
@@ -24,7 +24,7 @@ data class OffenceRuleDetailsDto(
 )
 
 data class OffenceDto(
-  val offenceCode: Int? = null,
+  val offenceCode: Number? = null,
   val offenceRule: OffenceRuleDto? = null,
   val victimPrisonersNumber: String? = null,
   val victimsStaffUsername: String? = null,
@@ -65,8 +65,8 @@ data class ReportedWitnessDto(
 )
 
 data class HearingDto(
-  val id: Int? = null,
-  val locationId: Int? = null,
+  val id: Number? = null,
+  val locationId: Number? = null,
   val dateTimeOfHearing: String? = null,
   val oicHearingType: String? = null,
   val outcome: HearingOutcomeDto? = null,
@@ -74,7 +74,7 @@ data class HearingDto(
 )
 
 data class HearingOutcomeDto(
-  val id: Int? = null,
+  val id: Number? = null,
   val adjudicator: String? = null,
   val code: String? = null,
   val reason: String? = null,
@@ -98,7 +98,7 @@ data class CombinedOutcomeDto(
 )
 
 data class OutcomeDto(
-  val id: Int? = null,
+  val id: Number? = null,
   val code: String? = null,
   val details: String? = null,
   val reason: String? = null,
@@ -107,29 +107,29 @@ data class OutcomeDto(
 )
 
 data class PunishmentDto(
-  val id: Int? = null,
+  val id: Number? = null,
   val type: String? = null,
   val privilegeType: String? = null,
   val otherPrivilege: String? = null,
-  val stoppagePercentage: Int? = null,
+  val stoppagePercentage: Number? = null,
   val activatedBy: String? = null,
   val activatedFrom: String? = null,
   val schedule: PunishmentScheduleDto? = null,
   val consecutiveChargeNumber: String? = null,
   val consecutiveReportAvailable: Boolean? = null,
-  val damagesOwedAmount: Int? = null,
+  val damagesOwedAmount: Number? = null,
   val canRemove: Boolean? = null,
 )
 
 data class PunishmentScheduleDto(
-  val days: Int? = null,
+  val days: Number? = null,
   val startData: String? = null,
   val endDate: String? = null,
   val suspendedUntil: String? = null,
 )
 
 data class PunishmentCommentDto(
-  val id: Int? = null,
+  val id: Number? = null,
   val comment: String? = null,
   val reasonForChange: String? = null,
   val createdByUserId: String? = null,
