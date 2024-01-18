@@ -13,7 +13,6 @@ LINT_PASSED_MESSAGE="${GREEN}✅ 'make lint' passed. Proceeding with commit.${NC
 LINT_FAILED_MESSAGE="${RED}❌ 'make lint' failed. Running ${NC}'make format'${RED}...${NC}"
 FORMAT_PASSED_MESSAGE="${GREEN}✅ 'make format' passed. Staging changes and committing.${NC}"
 FORMAT_FAILED_MESSAGE="${RED}❌ 'make format' failed. Aborting commit.${NC}"
-RERUN_LINT_FAILED_MESSAGE="${RED}❌ 'make lint' still failed after 'make format'. Aborting commit.${NC}"
 
 echo -e "$PREPARATION_MESSAGE"
 
@@ -39,7 +38,10 @@ handle_lint_failure() {
   # Check the exit status of make format
   if [ $? -eq 0 ]; then
     echo -e "$FORMAT_PASSED_MESSAGE"
-    git add .   # Stage new and modified files
+
+    # Stage files modified by make format
+    git add $(git status -s | awk '/^[ M]/ {print $2}')
+
     exit 0
   else
     echo -e "$FORMAT_FAILED_MESSAGE"
