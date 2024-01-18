@@ -53,9 +53,7 @@ rerun_lint_after_format() {
   # Check the exit status of make lint after format
   if [ $? -eq 0 ]; then
     echo -e "$LINT_PASSED_MESSAGE after 'make format'. Proceeding with commit.${NC}"
-    git add -u   # Stage all changes, including deletions
-    git add .    # Stage new and modified files
-    git commit --amend --no-edit  # Amend the previous commit with the new changes
+    git add .
     exit 0
   else
     echo -e "$RERUN_LINT_FAILED_MESSAGE"
