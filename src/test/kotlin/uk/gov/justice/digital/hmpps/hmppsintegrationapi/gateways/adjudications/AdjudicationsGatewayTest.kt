@@ -62,12 +62,51 @@ class AdjudicationsGatewayTest(
             "chargeNumber": "string",
             "prisonerNumber": "G2996UX",
             "gender": "MALE",
-              "incidentDetails": {
+            "incidentDetails": {
                     "locationId": 0,
                     "dateTimeOfIncident": "2021-07-05T10:35:17",
                     "dateTimeOfDiscovery": "2021-07-05T10:35:17",
                     "handoverDeadline": "2021-07-05T10:35:17"
-                }
+                },
+            "isYouthOffender": true,
+            "incidentRole": {
+                "roleCode": "25a",
+                "offenceRule": {
+                  "paragraphNumber": "25(a)",
+                  "paragraphDescription": "Committed an assault"
+                },
+                "associatedPrisonersNumber": "G2996UX",
+                "associatedPrisonersName": "G2996UX"
+              },
+            "offenceDetails": {
+                "offenceCode": 3,
+                "offenceRule": {
+                  "paragraphNumber": "25(a)",
+                  "paragraphDescription": "Committed an assault",
+                  "nomisCode": "string",
+                  "withOthersNomisCode": "string"
+                },
+                "victimPrisonersNumber": "G2996UX",
+                "victimStaffUsername": "ABC12D",
+                "victimOtherPersonsName": "Bob Hope"
+              },
+            "hearings": [
+              {
+                "id": -9007199254740991,
+                "locationId": -9007199254740991,
+                "dateTimeOfHearing": "2021-07-05T10:35:17",
+                "oicHearingType": "GOV_ADULT",
+                "outcome": {
+                  "id": -9007199254740991,
+                  "adjudicator": "string",
+                  "code": "COMPLETE",
+                  "reason": "LEGAL_ADVICE",
+                  "details": "string",
+                  "plea": "UNFIT"
+                },
+                "agencyId": "string"
+              }
+            ]
             }
           ]
         """,
