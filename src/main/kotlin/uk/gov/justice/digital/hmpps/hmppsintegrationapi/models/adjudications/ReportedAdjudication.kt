@@ -1,26 +1,56 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.adjudications
 
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Adjudication
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.IncidentDetailsDto
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.IncidentRoleDto
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.OffenceDto
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.OffenceRuleDetailsDto
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.OffenceRuleDto
 
-data class ReportedAdjudicationDto(
-  val incidentDetails: IncidentDetailsDto,
+data class ReportedAdjudication(
+  val incidentDetails: List<AdjudicationsIncidentDetails> = listOf(AdjudicationsIncidentDetails()),
+  val isYouthOffender: Boolean,
+  val incidentRole: AdjudicationsIncidentRole = AdjudicationsIncidentRole(),
+  val offenceDetails: List<AdjudicationsOffenceDetails> = listOf(AdjudicationsOffenceDetails()),
 ) {
-  fun toAdjudication(): Adjudication = Adjudication(incidentDetails = uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.IncidentDetailsDto(dateTimeOfIncident = this.incidentDetails.dateTimeOfIncident))
+  fun toAdjudication(): Adjudication =
+    Adjudication(
+      incidentDetails = this.incidentDetails.map {
+        IncidentDetailsDto(
+          locationId = it.locationId,
+          dateTimeOfIncident = it.dateTimeOfIncident,
+          dateTimeOfDiscovery = it.dateTimeOfDiscovery,
+          handoverDeadline = it.handoverDeadline,
+        )
+      },
+      isYouthOffender = this.isYouthOffender,
+      incidentRole = IncidentRoleDto(
+        roleCode = this.incidentRole.roleCode,
+        offenceRule = OffenceRuleDetailsDto(
+          paragraphNumber = this.incidentRole.offenceRule?.paragraphNumber,
+          paragraphDescription = this.incidentRole.offenceRule?.paragraphDescription,
+        ),
+        dateTimeOfDiscovery = this.incidentRole.dateTimeOfDiscovery,
+        handoverDeadline = this.incidentRole.handoverDeadline,
+      ),
+      offenceDetails = this.offenceDetails.map {
+        OffenceDto(
+          offenceCode = it.offenceCode,
+          offenceRule = OffenceRuleDto(
+            paragraphNumber = it.offenceRule?.paragraphNumber,
+            paragraphDescription = it.offenceRule?.paragraphDescription,
+            nomisCode = it.offenceRule?.nomisCode,
+            withOthersNomisCode = it.offenceRule?.withOthersNomisCode,
+
+          ),
+          victimPrisonersNumber = it.victimPrisonersNumber,
+          victimsStaffUsername = it.victimsStaffUsername,
+          victimOtherPersonsName = it.victimOtherPersonsName,
+        )
+      },
+
+    )
 }
-
-data class IncidentDetailsDto(
-  val locationId: Number? = null,
-  val dateTimeOfIncident: String? = null,
-  val dateTimeOfDiscovery: String? = null,
-  val handoverDeadline: String? = null,
-)
-
-data class IncidentRoleDto(
-  val roleCode: String? = null,
-  val offenceRule: OffenceRuleDetailsDto? = null,
-  val dateTimeOfDiscovery: String? = null,
-  val handoverDeadline: String? = null,
-)
 
 data class OffenceRuleDetailsDto(
   val paragraphNumber: String? = null,

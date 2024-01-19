@@ -31,7 +31,7 @@ internal class GetAdjudicationsForPersonServiceTest(
     val hmppsId = "1234/56789B"
     val prisonerNumber = "Z99999ZZ"
     val person = Person(firstName = "Qui-gon", lastName = "Jin", identifiers = Identifiers(nomisNumber = prisonerNumber))
-    val adjudications = listOf(Adjudication(incidentDetails = IncidentDetailsDto(dateTimeOfIncident = "MockDate")))
+    val adjudications = listOf(Adjudication(incidentDetails = listOf(IncidentDetailsDto(dateTimeOfIncident = "MockDate"))))
 
     beforeEach {
       Mockito.reset(getPersonService)
@@ -82,7 +82,7 @@ internal class GetAdjudicationsForPersonServiceTest(
 
     it("should return adjudications from gateway") {
       val result = getAdjudicationsForPersonService.execute(hmppsId = hmppsId)
-      result.data.first.incidentDetails.dateTimeOfIncident.shouldBe("MockDate")
+      result.data.first().incidentDetails?.first()?.dateTimeOfIncident.shouldBe("MockDate")
       result.errors.count().shouldBe(0)
     }
   },

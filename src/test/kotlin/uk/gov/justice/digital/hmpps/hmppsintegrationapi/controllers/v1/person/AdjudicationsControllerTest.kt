@@ -45,8 +45,10 @@ internal class AdjudicationsControllerTest(
           Response(
             data = listOf(
               Adjudication(
-                incidentDetails = IncidentDetailsDto(
-                  dateTimeOfIncident = "2021-04-03T10:00:00",
+                incidentDetails = listOf(
+                  IncidentDetailsDto(
+                    dateTimeOfIncident = "2021-04-03T10:00:00",
+                  ),
                 ),
               ),
             ),
@@ -80,10 +82,13 @@ internal class AdjudicationsControllerTest(
       it("returns paginated adjudication results") {
         whenever(getAdjudicationsForPersonService.execute(hmppsId)).thenReturn(
           Response(
-            data =
-            List(20) {
+            data = List(20) {
               Adjudication(
-                IncidentDetailsDto(dateTimeOfIncident = "2022-05-05T11:00:00"),
+                incidentDetails = listOf(
+                  IncidentDetailsDto(
+                    dateTimeOfIncident = "2022-05-05T11:00:00",
+                  ),
+                ),
               )
             },
           ),

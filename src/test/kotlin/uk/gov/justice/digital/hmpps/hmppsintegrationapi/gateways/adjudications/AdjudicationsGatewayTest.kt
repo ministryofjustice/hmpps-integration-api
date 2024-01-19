@@ -62,12 +62,12 @@ class AdjudicationsGatewayTest(
             "chargeNumber": "string",
             "prisonerNumber": "G2996UX",
             "gender": "MALE",
-              "incidentDetails": {
+              "incidentDetails": [{
                     "locationId": 0,
                     "dateTimeOfIncident": "2021-07-05T10:35:17",
                     "dateTimeOfDiscovery": "2021-07-05T10:35:17",
                     "handoverDeadline": "2021-07-05T10:35:17"
-                } 
+                }]
             }
           ]
         """,
@@ -75,7 +75,7 @@ class AdjudicationsGatewayTest(
       )
       val response = adjudicationsGateway.getReportedAdjudicationsForPerson(id = "123")
       response.data.count().shouldBe(1)
-      response.data.first().incidentDetails.dateTimeOfIncident.shouldBe("2021-07-05T10:35:17")
+      response.data.first().incidentDetails?.first()?.dateTimeOfIncident.shouldBe("2021-07-05T10:35:17")
     }
   },
 )

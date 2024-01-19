@@ -25,13 +25,34 @@ class AdjudicationsSmokeTest : DescribeSpec(
          {
           "data": [
               {
-                "incidentDetails": {
-                  "locationId": null,
-                  "dateTimeOfIncident": "2021-07-05T10:35:17",
-                  "dateTimeOfDiscovery": null,
-                  "handoverDeadline": null
+                "incidentDetails": [
+                  {
+                    "locationId": 123,
+                    "dateTimeOfIncident": "2021-07-05T10:35:17",
+                    "dateTimeOfDiscovery": "2021-07-05T10:35:17",
+                    "handoverDeadline": "2021-07-05T10:35:17"
+                  }
+                ],
+                "isYouthOffender": true,
+                "incidentRole": {
+                  "roleCode": "25a",
+                  "offenceRule": {
+                    "paragraphNumber": "25a",
+                    "paragraphDescription": "Committed an assault",
+                  }
+                },
+                "offenceDetails": {
+                  "offenceCode": "25",
+                  "offenceRule": {
+                      "paragraphNumber": "25a",
+                      "paragraphDescription": "Committed an assault",
+                      "nomisCode": "ABC123",
+                      "withOthersNomisCode": "098LOP",
+                    },
+                  "victimPrisonersNumber": "G2996UX",
+                  "victimStaffUsername": "ABC12D",
+                  "victimOtherPersonsName": "Bob Hope",
                 }
-              }
           ],
           "pagination": {
             "isLastPage": true,
