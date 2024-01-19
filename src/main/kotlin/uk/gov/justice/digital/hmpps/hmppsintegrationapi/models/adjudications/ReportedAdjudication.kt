@@ -11,6 +11,9 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.OffenceRule
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.OffenceRuleDto
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.OutcomeDto
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.OutcomeHistoryDto
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PunishmentCommentDto
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PunishmentDto
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PunishmentScheduleDto
 
 data class ReportedAdjudication(
   val incidentDetails: AdjudicationsIncidentDetails,
@@ -19,6 +22,8 @@ data class ReportedAdjudication(
   val offenceDetails: AdjudicationsOffenceDetails? = null,
   val hearings: List<AdjudicationsHearing?> = emptyList(),
   val outcomes: List<AdjudicationsOutcomeHistory> = emptyList(),
+  val punishments: List<AdjudicationsPunishment> = emptyList(),
+  val punishmentComments: List<AdjudicationsPunishmentComment> = emptyList(),
 ) {
   fun toAdjudication(): Adjudication =
     Adjudication(
@@ -35,8 +40,8 @@ data class ReportedAdjudication(
           paragraphNumber = this.incidentRole?.offenceRule?.paragraphNumber,
           paragraphDescription = this.incidentRole?.offenceRule?.paragraphDescription,
         ),
-        dateTimeOfDiscovery = this.incidentRole?.dateTimeOfDiscovery,
-        handoverDeadline = this.incidentRole?.handoverDeadline,
+        associatedPrisonersNumber = this.incidentRole?.associatedPrisonersNumber,
+        associatedPrisonersName = this.incidentRole?.associatedPrisonersName,
       ),
       offenceDetails = OffenceDto(
         offenceCode = this.offenceDetails?.offenceCode,
@@ -48,7 +53,7 @@ data class ReportedAdjudication(
 
         ),
         victimPrisonersNumber = this.offenceDetails?.victimPrisonersNumber,
-        victimsStaffUsername = this.offenceDetails?.victimsStaffUsername,
+        victimStaffUsername = this.offenceDetails?.victimStaffUsername,
         victimOtherPersonsName = this.offenceDetails?.victimOtherPersonsName,
       ),
       hearings = this.hearings.map {
@@ -105,35 +110,35 @@ data class ReportedAdjudication(
           ),
         )
       },
+      punishments = this.punishments.map {
+        PunishmentDto(
+          id = it.id,
+          type = it.type,
+          privilegeType = it.privilegeType,
+          otherPrivilege = it.otherPrivilege,
+          stoppagePercentage = it.stoppagePercentage,
+          activatedBy = it.activatedBy,
+          activatedFrom = it.activatedFrom,
+          schedule = PunishmentScheduleDto(
+            days = it.schedule?.days,
+            startDate = it.schedule?.startDate,
+            endDate = it.schedule?.endDate,
+            suspendedUntil = it.schedule?.suspendedUntil,
+          ),
+          consecutiveChargeNumber = it.consecutiveChargeNumber,
+          consecutiveReportAvailable = it.consecutiveReportAvailable,
+          damagesOwedAmount = it.damagesOwedAmount,
+          canRemove = it.canRemove,
+        )
+      },
+      punishmentComments = this.punishmentComments.map {
+        PunishmentCommentDto(
+          id = it.id,
+          comment = it.comment,
+          reasonForChange = it.reasonForChange,
+          createdByUserId = it.createdByUserId,
+          dateTime = it.dateTime,
+        )
+      },
     )
 }
-
-data class PunishmentDto(
-  val id: Number? = null,
-  val type: String? = null,
-  val privilegeType: String? = null,
-  val otherPrivilege: String? = null,
-  val stoppagePercentage: Number? = null,
-  val activatedBy: String? = null,
-  val activatedFrom: String? = null,
-  val schedule: PunishmentScheduleDto? = null,
-  val consecutiveChargeNumber: String? = null,
-  val consecutiveReportAvailable: Boolean? = null,
-  val damagesOwedAmount: Number? = null,
-  val canRemove: Boolean? = null,
-)
-
-data class PunishmentScheduleDto(
-  val days: Number? = null,
-  val startData: String? = null,
-  val endDate: String? = null,
-  val suspendedUntil: String? = null,
-)
-
-data class PunishmentCommentDto(
-  val id: Number? = null,
-  val comment: String? = null,
-  val reasonForChange: String? = null,
-  val createdByUserId: String? = null,
-  val dateTime: String? = null,
-)

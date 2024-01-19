@@ -63,7 +63,7 @@ class AdjudicationsGatewayTest(
             "prisonerNumber": "G2996UX",
             "gender": "MALE",
             "incidentDetails": {
-              "locationId": 0,
+              "locationId": -9007199254740991,
               "dateTimeOfIncident": "2021-07-05T10:35:17",
               "dateTimeOfDiscovery": "2021-07-05T10:35:17",
               "handoverDeadline": "2021-07-05T10:35:17"
@@ -113,32 +113,65 @@ class AdjudicationsGatewayTest(
                   "id": 123,
                   "locationId": 123,
                   "dateTimeOfHearing": "2021-07-05T10:35:17",
-                  "oicHearingType": "GOV_ADULT"
+                  "oicHearingType": "GOV_ADULT",
+                  "outcome": {
+                    "id": 123,
+                    "adjudicator": "string",
+                    "code": "COMPLETE",
+                    "reason": "LEGAL_ADVICE",
+                    "details": "string",
+                    "plea": "UNFIT"
+                  },
+                  "agencyId": "string"
                 },
                 "outcome": {
-                  "id": 123,
-                  "adjudicator": "string",
-                  "code": "COMPLETE",
-                  "reason": "LEGAL_ADVICE",
-                  "details": "string",
-                  "plea": "UNFIT"
+                  "outcome": {
+                    "id": -9007199254740991,
+                    "code": "REFER_POLICE",
+                    "details": "string",
+                    "reason": "ANOTHER_WAY",
+                    "quashedReason": "FLAWED_CASE",
+                    "canRemove": true
+                  },
+                  "referralOutcome": {
+                    "id": 991,
+                    "code": "REFER_POLICE",
+                    "details": "string",
+                    "reason": "ANOTHER_WAY",
+                    "quashedReason": "FLAWED_CASE",
+                    "canRemove": true
+                  }
                 }
-              },
+              }
+            ],
+            "punishments": [
               {
-                "hearing": {
-                  "id": 456,
-                  "locationId": 456,
-                  "dateTimeOfHearing": "2021-07-05T10:35:18",
-                  "oicHearingType": "GOV_ADULT"
+                "id": -9007199254740991,
+                "type": "PRIVILEGE",
+                "privilegeType": "CANTEEN",
+                "otherPrivilege": "string",
+                "stoppagePercentage": 648,
+                "activatedBy": "string",
+                "activatedFrom": "string",
+                "schedule": {
+                  "days": 648,
+                  "startDate": "2019-08-24",
+                  "endDate": "2019-08-24",
+                  "suspendedUntil": "2019-08-24"
                 },
-                "outcome": {
-                  "id": 456,
-                  "adjudicator": "string",
-                  "code": "REFER_POLICE",
-                  "reason": "ANOTHER_WAY",
-                  "details": "string",
-                  "plea": "FIT"
-                }
+                "consecutiveChargeNumber": "string",
+                "consecutiveReportAvailable": true,
+                "damagesOwedAmount": 15708,
+                "canRemove": true
+              }
+            ],
+            "punishmentComments": [
+              {
+                "id": 740991,
+                "comment": "string",
+                "reasonForChange": "APPEAL",
+                "createdByUserId": "string",
+                "dateTime": "2021-07-05T10:35:17"
               }
             ]
           }
