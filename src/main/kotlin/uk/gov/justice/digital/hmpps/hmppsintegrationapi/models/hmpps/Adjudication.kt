@@ -6,27 +6,9 @@ data class Adjudication(
   val incidentRole: IncidentRoleDto? = null,
   val offenceDetails: OffenceDto? = null,
   val hearings: List<HearingDto>? = null,
+  val outcomes: List<OutcomeHistoryDto>? = null,
 )
 
-// data class OutcomeHistoryDto(
-//  val hearing: HearingDto? = null,
-//  val outcome: CombinedOutcomeDto? = null,
-// )
-//
-// data class CombinedOutcomeDto(
-//  val outcome: OutcomeDto? = null,
-//  val referralOutcome: OutcomeDto? = null,
-// )
-//
-// data class OutcomeDto(
-//  val id: Number? = null,
-//  val code: String? = null,
-//  val details: String? = null,
-//  val reason: String? = null,
-//  val quashedReason: String? = null,
-//  val canRemove: Boolean? = null,
-// )
-//
 // data class PunishmentDto(
 //  val id: Number? = null,
 //  val type: String? = null,

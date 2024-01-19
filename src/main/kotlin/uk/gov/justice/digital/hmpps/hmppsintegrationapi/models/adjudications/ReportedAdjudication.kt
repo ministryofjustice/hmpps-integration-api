@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.adjudications
 
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Adjudication
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CombinedOutcomeDto
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HearingDto
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HearingOutcomeDto
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.IncidentDetailsDto
@@ -8,6 +9,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.IncidentRol
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.OffenceDto
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.OffenceRuleDetailsDto
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.OffenceRuleDto
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.OutcomeDto
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.OutcomeHistoryDto
 
 data class ReportedAdjudication(
   val incidentDetails: AdjudicationsIncidentDetails,
@@ -15,6 +18,7 @@ data class ReportedAdjudication(
   val incidentRole: AdjudicationsIncidentRole? = null,
   val offenceDetails: AdjudicationsOffenceDetails? = null,
   val hearings: List<AdjudicationsHearing?> = emptyList(),
+  val outcomes: List<AdjudicationsOutcomeHistory> = emptyList(),
 ) {
   fun toAdjudication(): Adjudication =
     Adjudication(
@@ -64,27 +68,45 @@ data class ReportedAdjudication(
           agencyId = it?.agencyId,
         )
       },
+      outcomes = this.outcomes.map {
+        OutcomeHistoryDto(
+          hearing = HearingDto(
+            id = it.hearing?.id,
+            locationId = it.hearing?.locationId,
+            dateTimeOfHearing = it.hearing?.dateTimeOfHearing,
+            oicHearingType = it.hearing?.oicHearingType,
+            outcome = HearingOutcomeDto(
+              id = it.hearing?.outcome?.id,
+              adjudicator = it.hearing?.outcome?.adjudicator,
+              code = it.hearing?.outcome?.code,
+              reason = it.hearing?.outcome?.reason,
+              details = it.hearing?.outcome?.details,
+              plea = it.hearing?.outcome?.plea,
+            ),
+            agencyId = it.hearing?.agencyId,
+          ),
+          outcome = CombinedOutcomeDto(
+            outcome = OutcomeDto(
+              id = it.outcome?.outcome?.id,
+              code = it.outcome?.outcome?.code,
+              details = it.outcome?.outcome?.details,
+              reason = it.outcome?.outcome?.reason,
+              quashedReason = it.outcome?.outcome?.quashedReason,
+              canRemove = it.outcome?.outcome?.canRemove,
+            ),
+            referralOutcome = OutcomeDto(
+              id = it.outcome?.referralOutcome?.id,
+              code = it.outcome?.referralOutcome?.code,
+              details = it.outcome?.referralOutcome?.details,
+              reason = it.outcome?.referralOutcome?.reason,
+              quashedReason = it.outcome?.referralOutcome?.quashedReason,
+              canRemove = it.outcome?.referralOutcome?.canRemove,
+            ),
+          ),
+        )
+      },
     )
 }
-
-data class OutcomeHistoryDto(
-  val hearing: HearingDto? = null,
-  val outcome: CombinedOutcomeDto? = null,
-)
-
-data class CombinedOutcomeDto(
-  val outcome: OutcomeDto? = null,
-  val referralOutcome: OutcomeDto? = null,
-)
-
-data class OutcomeDto(
-  val id: Number? = null,
-  val code: String? = null,
-  val details: String? = null,
-  val reason: String? = null,
-  val quashedReason: String? = null,
-  val canRemove: Boolean? = null,
-)
 
 data class PunishmentDto(
   val id: Number? = null,
