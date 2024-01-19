@@ -1,10 +1,10 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps
 
 data class Adjudication(
-  val incidentDetails: List<IncidentDetailsDto>? = null,
+  val incidentDetails: IncidentDetailsDto? = null,
   val isYouthOffender: Boolean? = null,
   val incidentRole: IncidentRoleDto? = null,
-  val offenceDetails: List<OffenceDto>? = null,
+  val offenceDetails: OffenceDto? = null,
 )
 
 // data class IncidentStatementDto(

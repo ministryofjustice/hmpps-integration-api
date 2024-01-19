@@ -25,35 +25,36 @@ class AdjudicationsSmokeTest : DescribeSpec(
          {
           "data": [
               {
-                "incidentDetails": [
+                "incidentDetails":
                   {
                     "locationId": 123,
                     "dateTimeOfIncident": "2021-07-05T10:35:17",
                     "dateTimeOfDiscovery": "2021-07-05T10:35:17",
                     "handoverDeadline": "2021-07-05T10:35:17"
-                  }
-                ],
+                  },
                 "isYouthOffender": true,
                 "incidentRole": {
-                  "roleCode": "25a",
-                  "offenceRule": {
-                    "paragraphNumber": "25a",
-                    "paragraphDescription": "Committed an assault",
-                  }
-                },
-                "offenceDetails": {
-                  "offenceCode": "25",
-                  "offenceRule": {
-                      "paragraphNumber": "25a",
-                      "paragraphDescription": "Committed an assault",
-                      "nomisCode": "ABC123",
-                      "withOthersNomisCode": "098LOP",
+                    "roleCode": "25a",
+                    "offenceRule": {
+                      "paragraphNumber": "25(a)",
+                      "paragraphDescription": "Committed an assault"
                     },
-                  "victimPrisonersNumber": "G2996UX",
-                  "victimStaffUsername": "ABC12D",
-                  "victimOtherPersonsName": "Bob Hope",
-                }
-          ],
+                    "associatedPrisonersNumber": "G2996UX",
+                    "associatedPrisonersName": "G2996UX"
+                  },
+                  "offenceDetails": {
+                    "offenceCode": 3,
+                    "offenceRule": {
+                      "paragraphNumber": "25(a)",
+                      "paragraphDescription": "Committed an assault",
+                      "nomisCode": "string",
+                      "withOthersNomisCode": "string"
+                    },
+                    "victimPrisonersNumber": "G2996UX",
+                    "victimStaffUsername": "ABC12D",
+                    "victimOtherPersonsName": "Bob Hope"
+                  },
+                ],
           "pagination": {
             "isLastPage": true,
             "count": 1,

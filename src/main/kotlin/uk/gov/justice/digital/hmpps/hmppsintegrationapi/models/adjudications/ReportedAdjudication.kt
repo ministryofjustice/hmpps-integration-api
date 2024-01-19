@@ -8,46 +8,42 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.OffenceRule
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.OffenceRuleDto
 
 data class ReportedAdjudication(
-  val incidentDetails: List<AdjudicationsIncidentDetails> = listOf(AdjudicationsIncidentDetails()),
+  val incidentDetails: AdjudicationsIncidentDetails,
   val isYouthOffender: Boolean,
-  val incidentRole: AdjudicationsIncidentRole = AdjudicationsIncidentRole(),
-  val offenceDetails: List<AdjudicationsOffenceDetails> = listOf(AdjudicationsOffenceDetails()),
+  val incidentRole: AdjudicationsIncidentRole? = null,
+  val offenceDetails: AdjudicationsOffenceDetails? = null,
 ) {
   fun toAdjudication(): Adjudication =
     Adjudication(
-      incidentDetails = this.incidentDetails.map {
-        IncidentDetailsDto(
-          locationId = it.locationId,
-          dateTimeOfIncident = it.dateTimeOfIncident,
-          dateTimeOfDiscovery = it.dateTimeOfDiscovery,
-          handoverDeadline = it.handoverDeadline,
-        )
-      },
+      incidentDetails = IncidentDetailsDto(
+        locationId = this.incidentDetails.locationId,
+        dateTimeOfIncident = this.incidentDetails.dateTimeOfIncident,
+        dateTimeOfDiscovery = this.incidentDetails.dateTimeOfDiscovery,
+        handoverDeadline = this.incidentDetails.handoverDeadline,
+      ),
       isYouthOffender = this.isYouthOffender,
       incidentRole = IncidentRoleDto(
-        roleCode = this.incidentRole.roleCode,
+        roleCode = this.incidentRole?.roleCode,
         offenceRule = OffenceRuleDetailsDto(
-          paragraphNumber = this.incidentRole.offenceRule?.paragraphNumber,
-          paragraphDescription = this.incidentRole.offenceRule?.paragraphDescription,
+          paragraphNumber = this.incidentRole?.offenceRule?.paragraphNumber,
+          paragraphDescription = this.incidentRole?.offenceRule?.paragraphDescription,
         ),
-        dateTimeOfDiscovery = this.incidentRole.dateTimeOfDiscovery,
-        handoverDeadline = this.incidentRole.handoverDeadline,
+        dateTimeOfDiscovery = this.incidentRole?.dateTimeOfDiscovery,
+        handoverDeadline = this.incidentRole?.handoverDeadline,
       ),
-      offenceDetails = this.offenceDetails.map {
-        OffenceDto(
-          offenceCode = it.offenceCode,
-          offenceRule = OffenceRuleDto(
-            paragraphNumber = it.offenceRule?.paragraphNumber,
-            paragraphDescription = it.offenceRule?.paragraphDescription,
-            nomisCode = it.offenceRule?.nomisCode,
-            withOthersNomisCode = it.offenceRule?.withOthersNomisCode,
+      offenceDetails = OffenceDto(
+        offenceCode = this.offenceDetails?.offenceCode,
+        offenceRule = OffenceRuleDto(
+          paragraphNumber = this.offenceDetails?.offenceRule?.paragraphNumber,
+          paragraphDescription = this.offenceDetails?.offenceRule?.paragraphDescription,
+          nomisCode = this.offenceDetails?.offenceRule?.nomisCode,
+          withOthersNomisCode = this.offenceDetails?.offenceRule?.withOthersNomisCode,
 
-          ),
-          victimPrisonersNumber = it.victimPrisonersNumber,
-          victimsStaffUsername = it.victimsStaffUsername,
-          victimOtherPersonsName = it.victimOtherPersonsName,
-        )
-      },
+        ),
+        victimPrisonersNumber = this.offenceDetails?.victimPrisonersNumber,
+        victimsStaffUsername = this.offenceDetails?.victimsStaffUsername,
+        victimOtherPersonsName = this.offenceDetails?.victimOtherPersonsName,
+      ),
 
     )
 }
