@@ -82,7 +82,7 @@ internal class GetAdjudicationsForPersonServiceTest(
 
     it("should return adjudications from gateway") {
       val result = getAdjudicationsForPersonService.execute(hmppsId = hmppsId)
-      result.data.first.incidentDetails.dateTimeOfIncident.shouldBe("MockDate")
+      result.data.first.incidentDetails?.dateTimeOfIncident.shouldBe("MockDate")
       result.errors.count().shouldBe(0)
     }
   },

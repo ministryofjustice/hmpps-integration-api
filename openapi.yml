@@ -195,7 +195,7 @@ paths:
         - persons
       summary: >
         Returns offences associated with a person.
-        
+
         Note: This API does not contain the complete list of offences for a person.
         Offences are retrieved from Prison and Probation systems exclusively.
         Prison systems record only custodial sentences, while Probation systems record only the main offence and some additional offences for case management purposes. Other offences recorded by HMCTS and police may not be included.
@@ -364,7 +364,7 @@ paths:
         - needs
       summary: >
         Returns criminogenic needs associated with a person.
-        
+
         Note: Criminogenic needs are dynamic factors that are directly linked to criminal behaviour. Eight criminogenic needs are measured in OASys: Accommodation, Employability, Relationships, Lifestyle and Associates, Drug Misuse, Alcohol Misuse, Thinking & Behaviour and Attitudes. These are scored according to whether there is “no need”, “some need” or “severe need”, and a need is identified in a specific section based on calculations around these scores.
               However, the process by which needs are assessed is changing as early as next year (2024), specifically moving to a strength-based model that seeks to identify and develop the strengths of people with convictions. As a consequence of this, the information provided by this endpoint will also change.
       parameters:
@@ -463,14 +463,31 @@ paths:
         "200":
           description: Success.
 
-  /{TBC}/v1/persons/{Id}/adjudications:
+  /v1/persons/{Id}/adjudications:
     get:
-      summary: FUTURE ENDPOINT - Returns adjudications associated with a person.
+      summary: Returns adjudications associated with a person.
       parameters:
-        - $ref: "#/components/parameters/Id"
+        - name: hmppsId
+          in: path
+          required: true
+          schema:
+            type: string
       responses:
         "200":
-          description: Success.
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Adjudication'
+        "404":
+          description: "Adjudications for the person with the provided HmppsId does not exist."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                PersonNotFoundError:
+                  $ref: "#/components/examples/PersonNotFoundError"
 
   /{TBC}/v1/persons/{Id}/interventions:
     get:
@@ -631,6 +648,33 @@ components:
           type: string
           example: Business Address
           description: Description of address type
+    Adjudication:
+      type: object
+      properties:
+        incidentDetails:
+          $ref: '#/components/schemas/IncidentDetails'
+        isYouthOffender:
+          type: boolean
+        incidentRole:
+          $ref: '#/components/schemas/IncidentRole'
+        offenceDetails:
+          $ref: '#/components/schemas/OffenceDetail'
+        hearings:
+          type: array
+          items:
+            $ref: '#/components/schemas/Hearing'
+        outcomes:
+          type: array
+          items:
+            $ref: '#/components/schemas/Outcome'
+        punishments:
+          type: array
+          items:
+            $ref: '#/components/schemas/Punishment'
+        punishmentComments:
+          type: array
+          items:
+            $ref: '#/components/schemas/PunishmentComment'
     Alert:
       type: object
       properties:
@@ -774,6 +818,36 @@ components:
           type: string
           nullable: true
           example: null
+    Hearing:
+      type: object
+      properties:
+        dateTimeOfHearing:
+          type: string
+          format: date-time
+          nullable: true
+        oicHearingType:
+          type: string
+          nullable: true
+        outcome:
+          nullable: true
+    HearingOutcome:
+      type: object
+      properties:
+        code:
+          type: string
+          nullable: true
+        details:
+          type: string
+          nullable: true
+        reason:
+          type: string
+          nullable: true
+        quashedReason:
+          type: string
+          nullable: true
+        canRemove:
+          type: boolean
+          nullable: true
     Identifiers:
       type: object
       description: Other unique identifiers for a person.
@@ -862,6 +936,21 @@ components:
               `OFF_IDM` - Offender Identification Marks,
               `OIC` - Offence In Custody,
               `PPTY` - Property Image
+    IncidentDetails:
+      type: object
+      properties:
+        dateTimeOfIncident:
+          type: string
+          format: date-time
+          nullable: true
+    IncidentRole:
+      type: object
+      properties:
+        roleCode:
+          type: string
+          nullable: true
+        offenceRule:
+          nullable: true
     LatestSentenceKeyDatesAndAdjustments:
       type: object
       properties:
@@ -925,6 +1014,41 @@ components:
           type: string
           example: RR84
           description: Statute code
+    OffenceDetail:
+      type: object
+      properties:
+        offenceCode:
+          type: number
+          nullable: true
+        offenceRule:
+          nullable: true
+    OffenceRuleDetails:
+      type: object
+      properties:
+        paragraphNumber:
+          type: string
+          nullable: true
+        paragraphDescription:
+          type: string
+          nullable: true
+    Outcome:
+      type: object
+      properties:
+        code:
+          type: string
+          nullable: true
+        details:
+          type: string
+          nullable: true
+        reason:
+          type: string
+          nullable: true
+        quashedReason:
+          type: string
+          nullable: true
+        canRemove:
+          type: boolean
+          nullable: true
     Pagination:
       type: object
       properties:
@@ -997,6 +1121,51 @@ components:
           type: string
           example: 2008/0545166T
           description: Currently a hmppsId is a PNC identifier however this will change in the near future to be a CRN identifier
+    Punishment:
+      type: object
+      properties:
+        type:
+          type: string
+          nullable: true
+        privilegeType:
+          type: string
+          nullable: true
+        otherPrivilege:
+          type: string
+          nullable: true
+        schedule:
+          nullable: true
+    PunishmentComment:
+      type: object
+      properties:
+        comment:
+          type: string
+          nullable: true
+        reasonForChange:
+          type: string
+          nullable: true
+        dateTime:
+          type: string
+          format: date-time
+          nullable: true
+    PunishmentSchedule:
+      type: object
+      properties:
+        days:
+          type: number
+          nullable: true
+        startDate:
+          type: string
+          format: date
+          nullable: true
+        endDate:
+          type: string
+          format: date
+          nullable: true
+        suspendedUntil:
+          type: string
+          format: date
+          nullable: true
     ResponsibleProvider:
       required:
         - code

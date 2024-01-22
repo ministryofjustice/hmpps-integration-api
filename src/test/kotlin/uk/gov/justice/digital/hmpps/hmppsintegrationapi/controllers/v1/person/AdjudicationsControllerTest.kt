@@ -45,8 +45,10 @@ internal class AdjudicationsControllerTest(
           Response(
             data = listOf(
               Adjudication(
-                incidentDetails = IncidentDetailsDto(
+                incidentDetails =
+                IncidentDetailsDto(
                   dateTimeOfIncident = "2021-04-03T10:00:00",
+
                 ),
               ),
             ),

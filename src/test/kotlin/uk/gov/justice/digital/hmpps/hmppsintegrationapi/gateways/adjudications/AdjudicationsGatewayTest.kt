@@ -57,25 +57,96 @@ class AdjudicationsGatewayTest(
       adjudicationsApiMockServer.stubGetReportedAdjudicationsForPerson(
         "123",
         """
-          [
-            {
-            "chargeNumber": "string",
-            "prisonerNumber": "G2996UX",
-            "gender": "MALE",
-              "incidentDetails": {
-                    "locationId": 0,
-                    "dateTimeOfIncident": "2021-07-05T10:35:17",
-                    "dateTimeOfDiscovery": "2021-07-05T10:35:17",
-                    "handoverDeadline": "2021-07-05T10:35:17"
-                } 
-            }
-          ]
+        [
+          {
+            "incidentDetails": {
+              "dateTimeOfIncident": "2021-07-05T10:35:17"
+            },
+            "isYouthOffender": true,
+            "incidentRole": {
+              "roleCode": "25a",
+              "offenceRule": {
+                "paragraphNumber": "25(a)",
+                "paragraphDescription": "Committed an assault"
+              }
+            },
+            "offenceDetails": {
+              "offenceCode": 3,
+              "offenceRule": {
+                "paragraphNumber": "25(a)",
+                "paragraphDescription": "Committed an assault"
+              }
+            },
+            "hearings": [
+              {
+                "dateTimeOfHearing": "2021-07-05T10:35:17",
+                "oicHearingType": "GOV_ADULT",
+                "outcome": {
+                  "code": "COMPLETE",
+                  "reason": "LEGAL_ADVICE",
+                  "details": "string",
+                  "plea": "UNFIT"
+                }
+              }
+            ],
+            "outcomes": [
+              {
+                "hearing": {
+                  "dateTimeOfHearing": "2021-07-05T10:35:17",
+                  "oicHearingType": "GOV_ADULT",
+                  "outcome": {
+                    "code": "COMPLETE",
+                    "reason": "LEGAL_ADVICE",
+                    "details": "string",
+                    "plea": "UNFIT"
+                  }
+                },
+                "outcome": {
+                  "outcome": {
+                    "code": "REFER_POLICE",
+                    "details": "string",
+                    "reason": "ANOTHER_WAY",
+                    "quashedReason": "FLAWED_CASE",
+                    "canRemove": true
+                  },
+                  "referralOutcome": {
+                    "code": "REFER_POLICE",
+                    "details": "string",
+                    "reason": "ANOTHER_WAY",
+                    "quashedReason": "FLAWED_CASE",
+                    "canRemove": true
+                  }
+                }
+              }
+            ],
+            "punishments": [
+              {
+                "type": "PRIVILEGE",
+                "privilegeType": "CANTEEN",
+                "otherPrivilege": "string",
+                "schedule": {
+                  "days": 648,
+                  "startDate": "2019-08-24",
+                  "endDate": "2019-08-24",
+                  "suspendedUntil": "2019-08-24"
+                }
+              }
+            ],
+            "punishmentComments": [
+              {
+                "comment": "string",
+                "reasonForChange": "APPEAL",
+                "dateTime": "2021-07-05T10:35:17"
+              }
+            ]
+          }
+        ]
         """,
         HttpStatus.OK,
       )
       val response = adjudicationsGateway.getReportedAdjudicationsForPerson(id = "123")
       response.data.count().shouldBe(1)
-      response.data.first().incidentDetails.dateTimeOfIncident.shouldBe("2021-07-05T10:35:17")
+      response.data.first().incidentDetails?.dateTimeOfIncident.shouldBe("2021-07-05T10:35:17")
     }
   },
 )
