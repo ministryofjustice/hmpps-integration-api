@@ -8,7 +8,7 @@ class LicenceTest : DescribeSpec(
       it("maps one-to-one attributes to integration API attributes") {
         val cvlLcense = CvlLicence(
           prisonNumber = "1140484",
-           )
+        )
 
         val integrationApiLicense = cvlLcense.toLicence()
 
