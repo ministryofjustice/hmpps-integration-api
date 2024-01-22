@@ -821,12 +821,6 @@ components:
     Hearing:
       type: object
       properties:
-        id:
-          type: number
-          nullable: true
-        locationId:
-          type: number
-          nullable: true
         dateTimeOfHearing:
           type: string
           format: date-time
@@ -836,15 +830,9 @@ components:
           nullable: true
         outcome:
           nullable: true
-        agencyId:
-          type: string
-          nullable: true
     HearingOutcome:
       type: object
       properties:
-        id:
-          type: number
-          nullable: true
         code:
           type: string
           nullable: true
@@ -951,18 +939,7 @@ components:
     IncidentDetails:
       type: object
       properties:
-        locationId:
-          type: number
-          nullable: true
         dateTimeOfIncident:
-          type: string
-          format: date-time
-          nullable: true
-        dateTimeOfDiscovery:
-          type: string
-          format: date-time
-          nullable: true
-        handoverDeadline:
           type: string
           format: date-time
           nullable: true
@@ -973,12 +950,6 @@ components:
           type: string
           nullable: true
         offenceRule:
-          nullable: true
-        associatedPrisonersNumber:
-          type: string
-          nullable: true
-        associatedPrisonersName:
-          type: string
           nullable: true
     LatestSentenceKeyDatesAndAdjustments:
       type: object
@@ -1051,15 +1022,6 @@ components:
           nullable: true
         offenceRule:
           nullable: true
-        victimPrisonersNumber:
-          type: string
-          nullable: true
-        victimStaffUsername:
-          type: string
-          nullable: true
-        victimOtherPersonsName:
-          type: string
-          nullable: true
     OffenceRuleDetails:
       type: object
       properties:
@@ -1072,9 +1034,6 @@ components:
     Outcome:
       type: object
       properties:
-        id:
-          type: number
-          nullable: true
         code:
           type: string
           nullable: true
@@ -1165,9 +1124,6 @@ components:
     Punishment:
       type: object
       properties:
-        id:
-          type: number
-          nullable: true
         type:
           type: string
           nullable: true
@@ -1177,42 +1133,15 @@ components:
         otherPrivilege:
           type: string
           nullable: true
-        stoppagePercentage:
-          type: number
-          nullable: true
-        activatedBy:
-          type: string
-          nullable: true
-        activatedFrom:
-          type: string
-          nullable: true
         schedule:
-          nullable: true
-        consecutiveChargeNumber:
-          type: string
-          nullable: true
-        consecutiveReportAvailable:
-          type: boolean
-          nullable: true
-        damagesOwedAmount:
-          type: number
-          nullable: true
-        canRemove:
-          type: boolean
           nullable: true
     PunishmentComment:
       type: object
       properties:
-        id:
-          type: number
-          nullable: true
         comment:
           type: string
           nullable: true
         reasonForChange:
-          type: string
-          nullable: true
-        createdByUserId:
           type: string
           nullable: true
         dateTime:
