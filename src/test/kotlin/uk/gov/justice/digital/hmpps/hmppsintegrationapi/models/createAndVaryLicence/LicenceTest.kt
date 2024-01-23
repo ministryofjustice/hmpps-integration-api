@@ -6,14 +6,14 @@ class LicenceTest : DescribeSpec(
   {
     describe("#toAddress") {
       it("maps one-to-one attributes to integration API attributes") {
-        val cvlLcense = CvlLicenceSummary(
+        val cvlLcence = CvlLicenceSummary(
           id = "MockId",
           prisonNumber = "1140484",
         )
 
-        val integrationApiLicense = cvlLcense.toLicence()
+        val integrationApiLicence = cvlLcence.toLicence()
 
-        integrationApiLicense.offenderNumber.shouldBe(cvlLcense.prisonNumber)
+        integrationApiLicence.offenderNumber.shouldBe(cvlLcence.prisonNumber)
       }
     }
   },
