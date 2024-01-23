@@ -20,7 +20,7 @@ class CreateAndVaryLicenceGateway(@Value("\${services.create-and-vary-licence.ba
   @Autowired
   lateinit var hmppsAuthGateway: HmppsAuthGateway
 
-  fun getLicenceSummaries(id: String): Response<List<Licence?>> {
+  fun getLicenceSummaries(id: String): Response<List<Licence>> {
     val result = webClient.requestList<CvlLicenceSummary>(
       HttpMethod.GET,
       "/public/licence-summaries/crn/$id",
@@ -42,7 +42,7 @@ class CreateAndVaryLicenceGateway(@Value("\${services.create-and-vary-licence.ba
     }
   }
 
-  fun getLicenceConditions(id: String): Response<List<LicenceCondition>?> {
+  fun getLicenceConditions(id: String): Response<List<LicenceCondition>> {
     val result = webClient.request<CvlLicence>(
       HttpMethod.GET,
       "/public/licences/id/$id",
@@ -57,7 +57,7 @@ class CreateAndVaryLicenceGateway(@Value("\${services.create-and-vary-licence.ba
 
       is WebClientWrapperResponse.Error -> {
         Response(
-          data = null,
+          data = emptyList(),
           errors = result.errors,
         )
       }
