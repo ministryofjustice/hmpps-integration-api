@@ -23,4 +23,19 @@ class CreateAndVaryLicenceApiMockServer : WireMockServer(WIREMOCK_PORT) {
         ),
     )
   }
+
+  fun stubGetLicenceConditions(id: String, body: String, status: HttpStatus = HttpStatus.OK) {
+    stubFor(
+      WireMock.get("/public/licences/id/$id")
+        .withHeader(
+          "Authorization",
+          WireMock.matching("Bearer ${HmppsAuthMockServer.TOKEN}"),
+        ).willReturn(
+          WireMock.aResponse()
+            .withHeader("Content-Type", "application/json")
+            .withStatus(status.value())
+            .withBody(body.trimIndent()),
+        ),
+    )
+  }
 }

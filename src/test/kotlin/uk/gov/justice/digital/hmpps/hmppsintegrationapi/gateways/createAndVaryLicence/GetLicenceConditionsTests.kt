@@ -23,22 +23,33 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
   initializers = [ConfigDataApplicationContextInitializer::class],
   classes = [CreateAndVaryLicenceGateway::class],
 )
-class GetLicenceSummariesTest(
+class GetLicenceConditionsTests(
   @MockBean val hmppsAuthGateway: HmppsAuthGateway,
   private val createAndVaryLicenceGateway: CreateAndVaryLicenceGateway,
 ) : DescribeSpec(
   {
     val createAndVaryLicenceApiMockServer = CreateAndVaryLicenceApiMockServer()
-    val deliusCrn = "X777776"
+    val conditionId = "X777776"
 
     beforeEach {
       createAndVaryLicenceApiMockServer.start()
-      createAndVaryLicenceApiMockServer.stubGetLicenceSummaries(
-        deliusCrn,
+      createAndVaryLicenceApiMockServer.stubGetLicenceConditions(
+        conditionId,
         """
-          [{
-          "prisonNumber": "1140484"
-          }]
+          {
+          "conditions":
+            {
+              "AP":
+                {
+                  "standard":
+                  [
+                    {
+                      "text": "Not commit any offence"
+                    }
+                  ]
+                }
+            }
+          }
         """,
       )
 
@@ -51,20 +62,20 @@ class GetLicenceSummariesTest(
     }
 
     it("authenticates using HMPPS Auth with credentials") {
-      createAndVaryLicenceGateway.getLicenceSummaries(deliusCrn)
+      createAndVaryLicenceGateway.getLicenceConditions(conditionId)
 
       verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("CVL")
     }
 
-    it("returns licences for a person with the matching ID") {
-      val response = createAndVaryLicenceGateway.getLicenceSummaries(deliusCrn)
+    it("returns licence condition for the matching ID") {
+      val response = createAndVaryLicenceGateway.getLicenceConditions(conditionId)
 
-      response.data.first()?.offenderNumber.shouldBe("1140484")
+      response.data?.first()?.condition.shouldBe("Not commit any offence")
     }
 
     it("returns an error when 404 NOT FOUND is returned") {
-      createAndVaryLicenceApiMockServer.stubGetLicenceSummaries(
-        deliusCrn,
+      createAndVaryLicenceApiMockServer.stubGetLicenceConditions(
+        conditionId,
         """
         [{
           "developerMessage": "cannot find person"
@@ -73,7 +84,7 @@ class GetLicenceSummariesTest(
         HttpStatus.NOT_FOUND,
       )
 
-      val response = createAndVaryLicenceGateway.getLicenceSummaries(deliusCrn)
+      val response = createAndVaryLicenceGateway.getLicenceConditions(conditionId)
 
       response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND).shouldBeTrue()
     }
