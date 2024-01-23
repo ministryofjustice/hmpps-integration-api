@@ -20,12 +20,12 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
-  classes = [GetLicenseConditionService::class],
+  classes = [GetLicenceConditionService::class],
 )
 internal class GetLicenceConditionServiceTest(
   @MockBean val createAndVaryLicenceGateway: CreateAndVaryLicenceGateway,
   @MockBean val getPersonService: GetPersonService,
-  private val getLicenceCondtionService: GetLicenseConditionService,
+  private val getLicenceCondtionService: GetLicenceConditionService,
 ) : DescribeSpec(
   {
     val hmppsId = "1234/56789B"

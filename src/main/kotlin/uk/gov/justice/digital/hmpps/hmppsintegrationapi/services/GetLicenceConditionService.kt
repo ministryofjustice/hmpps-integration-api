@@ -7,7 +7,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Licence
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 
 @Service
-class GetLicenseConditionService(
+class GetLicenceConditionService(
   @Autowired val createAndVaryLicenceGateway: CreateAndVaryLicenceGateway,
   @Autowired val getPersonService: GetPersonService,
 ) {

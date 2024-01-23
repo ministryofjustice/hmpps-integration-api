@@ -19,7 +19,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.LicenceCond
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetLicenseConditionService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetLicenceConditionService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
@@ -28,7 +28,7 @@ import java.nio.charset.StandardCharsets
 @ActiveProfiles("test")
 class LicenceConditionControllerTests(
   @Autowired var springMockMvc: MockMvc,
-  @MockBean val getLicenseConditionService: GetLicenseConditionService,
+  @MockBean val getLicenceConditionService: GetLicenceConditionService,
   @MockBean val auditService: AuditService,
 ) : DescribeSpec(
   {
@@ -39,9 +39,9 @@ class LicenceConditionControllerTests(
 
     describe("GET $path") {
       beforeTest {
-        Mockito.reset(getLicenseConditionService)
+        Mockito.reset(getLicenceConditionService)
         Mockito.reset(auditService)
-        whenever(getLicenseConditionService.execute(hmppsId)).thenReturn(
+        whenever(getLicenceConditionService.execute(hmppsId)).thenReturn(
           Response(
             data = listOf(
               Licence(
@@ -54,7 +54,7 @@ class LicenceConditionControllerTests(
       }
 
       it("throws exception when no person found") {
-        whenever(getLicenseConditionService.execute(hmppsId = "notfound")).thenReturn(
+        whenever(getLicenceConditionService.execute(hmppsId = "notfound")).thenReturn(
           Response(
             data = emptyList(),
             errors = listOf(
@@ -77,7 +77,7 @@ class LicenceConditionControllerTests(
       }
 
       it("returns paginated licence condition results") {
-        whenever(getLicenseConditionService.execute(hmppsId)).thenReturn(
+        whenever(getLicenceConditionService.execute(hmppsId)).thenReturn(
           Response(
             data = List(20) {
               Licence(

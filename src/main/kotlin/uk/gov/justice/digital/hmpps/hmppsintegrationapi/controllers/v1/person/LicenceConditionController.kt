@@ -10,7 +10,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFound
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.decodeUrlCharacters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Licence
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetLicenseConditionService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetLicenceConditionService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.PaginatedResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.paginateWith
@@ -19,7 +19,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.paginateWith
 @RequestMapping("/v1/persons")
 class LicenceConditionController(
   @Autowired val auditService: AuditService,
-  @Autowired val getLicenceConditionService: GetLicenseConditionService,
+  @Autowired val getLicenceConditionService: GetLicenceConditionService,
 ) {
 
   @GetMapping("{encodedHmppsId}/licences/conditions")
