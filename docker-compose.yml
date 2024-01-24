@@ -104,6 +104,16 @@ services:
     ports:
       - '4045:4010'
 
+  create-and-vary-licence-api:
+    build:
+      context: .
+      dockerfile: Dockerfile.setup-create-and-vary-a-licence-api
+    container_name: create-and-vary-licence-api
+    healthcheck:
+      test: 'wget --header="Authorization: Bearer abc" http://0.0.0.0:4010/public/licences/id/abc -O /dev/null'
+    ports:
+      - '4070:4010'
+
   local-stack-aws:
     image: localstack/localstack:0.14.0
     container_name: local-stack-aws

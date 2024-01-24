@@ -13,6 +13,8 @@ services:
     base-url: http://probation-integration-epf-api:4010
   adjudications:
     base-url: http://adjudications-api:4010
+  create-and-vary-licence:
+    base-url: http://create-and-vary-licence-api:4010
   hmpps-auth:
     base-url: http://hmpps-auth:8080
 

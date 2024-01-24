@@ -1,0 +1,9 @@
+FROM node:current-alpine3.17
+
+RUN apk update && apk add bash
+
+COPY src/main/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/prismMocks/create-and-vary-a-licence-api-docs.json /create-and-vary-a-licence-api-docs.json
+
+RUN npm install -g @stoplight/prism-cli
+
+CMD prism mock -p 4010 -h 0.0.0.0 /create-and-vary-a-licence-api-docs.json
