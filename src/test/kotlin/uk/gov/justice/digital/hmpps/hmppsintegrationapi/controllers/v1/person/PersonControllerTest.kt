@@ -277,6 +277,7 @@ internal class PersonControllerTest(
         result.response.contentAsString.shouldBe(
           """
         {
+        "data": {
           "firstName": "Silly",
           "lastName": "Sobbers",
           "middleName": null,
@@ -291,6 +292,7 @@ internal class PersonControllerTest(
           },
           "pncId": null,
           "hmppsId": null
+        }
         }
         """.removeWhitespaceAndNewlines(),
         )
