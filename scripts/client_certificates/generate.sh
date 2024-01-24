@@ -39,8 +39,10 @@ success_message() {
 }
 
 upload_backup() {
-  access_key_id=$(kubectl get secret aws-services -n hmpps-integration-api-dev -o json | jq -r '.data."api-gateway"' | base64 --decode | jq -r '."access-credentials"."access-key-id"')
-  secret_access_key=$(kubectl get secret aws-services -n hmpps-integration-api-dev -o json | jq -r '.data."api-gateway"' | base64 --decode | jq -r '."access-credentials"."secret-access-key"')
+  access_key_id=$(kubectl get secret aws-services -n hmpps-integration-api-$environment -o json | jq -r '.data."api-gateway"' | base64 --decode | jq -r '."access-credentials"."access-key-id"')
+  secret_access_key=$(kubectl get secret aws-services -n hmpps-integration-api-$environment -o json | jq -r '.data."api-gateway"' | base64 --decode | jq -r '."access-credentials"."secret-access-key"')
+  aws configure set aws_access_key_id $access_key_id
+  aws configure set aws_secret_access_key $secret_access_key
   bucket="hmpps-integration-api-$environment-certificates-backup"
   client_folder="$client"
   path="$bucket/$client_folder"
@@ -51,6 +53,9 @@ upload_backup() {
   aws s3 cp ./"$environment"-"$client"-client.pem "s3://$path/client.pem"
   aws s3 cp ./truststore.key "s3://$path/truststore.key"
   aws s3 cp ./truststore.pem "s3://$path/truststore.pem"
+
+  aws configure set aws_access_key_id ""
+  aws configure set aws_secret_access_key ""
 }
 
 main() {
