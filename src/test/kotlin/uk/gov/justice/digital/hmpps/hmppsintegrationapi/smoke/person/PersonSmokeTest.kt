@@ -44,32 +44,34 @@ class PersonSmokeTest : DescribeSpec(
 
       response.body().shouldBe(
         """
-          {
-            "firstName": "string",
-            "lastName": "string",
-            "middleName": "string",
-            "dateOfBirth": "2019-08-24",
-            "gender": "string",
-            "ethnicity": "string",
-            "aliases": [
-              {
-                "firstName": "string",
-                "lastName": "string",
-                "middleName": "string",
-                "dateOfBirth": "2019-08-24",
-                "gender": "string",
-                "ethnicity": null
-              }
-            ],
-            "identifiers": {
-                "nomisNumber": "string",
-                "croNumber": "string",
-                "deliusCrn": "string"
-            },
-            "pncId": "string",
-            "hmppsId": "string"
-          }
-        """.removeWhitespaceAndNewlines(),
+  {
+    "data": {
+      "firstName": "string",
+      "lastName": "string",
+      "middleName": "string",
+      "dateOfBirth": "2019-08-24",
+      "gender": "string",
+      "ethnicity": "string",
+      "aliases": [
+        {
+          "firstName": "string",
+          "lastName": "string",
+          "middleName": "string",
+          "dateOfBirth": "2019-08-24",
+          "gender": "string",
+          "ethnicity": null
+        }
+      ],
+      "identifiers": {
+          "nomisNumber": "string",
+          "croNumber": "string",
+          "deliusCrn": "string"
+      },
+      "pncId": "string",
+      "hmppsId": "string"
+    }
+  }
+    """.removeWhitespaceAndNewlines(),
       )
     }
 
