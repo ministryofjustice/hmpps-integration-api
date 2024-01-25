@@ -24,7 +24,7 @@ jobs:
     name: 🏗 Build application
     runs-on: ubuntu-latest
     container:
-      image: ministryofjustice/tech-docs-github-pages-publisher:v3
+      image: ministryofjustice/tech-docs-github-pages-publisher:v3.0.1
     steps:
       - name: Checkout
         uses: actions/checkout@v4
