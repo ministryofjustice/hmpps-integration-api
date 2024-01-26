@@ -42,3 +42,5 @@ authorisation:
       - "/health/readiness"
     heartbeat:
       - "/v1/persons/.*"
+    cymulate:
+      - "/v1/epf/person-details/.*/.*"
