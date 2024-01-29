@@ -2,5 +2,12 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.createAndVaryLic
 
 class CvlAPCondition(
   val standard: List<CvlCondition>? = null,
+  val bespoke: List<CvlCondition>? = null,
+  val additional: List<CvlCondition>? = null,
 
+)
+
+class CvlPSSCondition(
+  val standard: List<CvlCondition>? = null,
+  val additional: List<CvlCondition>? = null,
 )
