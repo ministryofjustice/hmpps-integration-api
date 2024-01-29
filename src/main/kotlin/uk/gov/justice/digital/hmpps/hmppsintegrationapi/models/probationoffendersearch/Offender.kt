@@ -12,7 +12,7 @@ data class Offender(
   val gender: String? = null,
   val offenderProfile: OffenderProfile = OffenderProfile(),
   val offenderAliases: List<OffenderAlias> = listOf(),
-  val contactDetails: ContactDetails? = ContactDetails(),
+  val contactDetails: ContactDetailsWithEmailAndPhone? = null,
   val otherIds: OtherIds = OtherIds(),
 ) {
   fun toPerson(): Person = Person(
@@ -30,5 +30,6 @@ data class Offender(
     ),
     pncId = otherIds.pncNumber,
     hmppsId = otherIds.pncNumber,
+    contactDetails = this.contactDetails?.toContactdetails()
   )
 }
