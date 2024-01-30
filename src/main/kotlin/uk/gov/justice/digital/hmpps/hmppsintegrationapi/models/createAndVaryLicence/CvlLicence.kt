@@ -5,9 +5,5 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.LicenceCond
 class CvlLicence(
   val conditions: CvlLicenceCondition? = null,
 ) {
-  fun toLicenceConditions(): List<LicenceCondition> {
-    val result = mutableListOf<LicenceCondition>()
-    conditions?.AP?.standard?.forEach { result.add(it.toLicenceCondition()) }
-    return result
-  }
+  fun toLicenceConditions(): List<LicenceCondition> = conditions?.toLicenceConditions() ?: emptyList()
 }
