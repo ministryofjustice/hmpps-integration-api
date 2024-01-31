@@ -18,6 +18,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffende
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.PrisonerOffenderSearchApiMockServer
 import java.io.File
+import java.time.LocalDate
 
 @ActiveProfiles("test")
 @ContextConfiguration(
@@ -45,6 +46,7 @@ class PrisonerOffenderSearchGatewayTest(
     val firstName = "JAMES"
     val lastName = "HOWLETT"
     val hmppsId = "B9731BB"
+    val dateOfBirth = LocalDate.parse("1975-02-28")
 
     beforeEach {
       prisonerOffenderSearchApiMockServer.stubPostPrisonerSearch(
@@ -53,6 +55,7 @@ class PrisonerOffenderSearchGatewayTest(
               "firstName": "$firstName",
               "lastName": "$lastName",
               "prisonerIdentifier": "$hmppsId",
+              "dateOfBirth": "$dateOfBirth",
               "includeAliases": false
             }
           """.removeWhitespaceAndNewlines(),
@@ -61,13 +64,13 @@ class PrisonerOffenderSearchGatewayTest(
     }
 
     it("authenticates using HMPPS Auth with credentials") {
-      prisonerOffenderSearchGateway.getPersons(firstName, lastName, hmppsId)
+      prisonerOffenderSearchGateway.getPersons(firstName, lastName, hmppsId, dateOfBirth)
 
       verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("Prisoner Offender Search")
     }
 
-    it("returns person(s) when searching on Hmpps ID, first and last name") {
-      val response = prisonerOffenderSearchGateway.getPersons(firstName, lastName, hmppsId)
+    it("returns person(s) when searching on first name, last name, Hmpps ID and date of birth") {
+      val response = prisonerOffenderSearchGateway.getPersons(firstName, lastName, hmppsId, dateOfBirth)
 
       response.data.count().shouldBe(4)
       response.data.forEach {
@@ -105,7 +108,7 @@ class PrisonerOffenderSearchGatewayTest(
         """.trimIndent(),
       )
 
-      val response = prisonerOffenderSearchGateway.getPersons("Obi-Wan", null)
+      val response = prisonerOffenderSearchGateway.getPersons("Obi-Wan", null, null, null)
 
       response.data.count().shouldBe(1)
       response.data.first().firstName.shouldBe("Obi-Wan")
@@ -133,7 +136,7 @@ class PrisonerOffenderSearchGatewayTest(
         """.trimIndent(),
       )
 
-      val response = prisonerOffenderSearchGateway.getPersons(hmppsId = hmppsId)
+      val response = prisonerOffenderSearchGateway.getPersons(null, null, hmppsId, null)
 
       response.data.count().shouldBe(1)
       response.data.first().firstName.shouldBe("Obi-Wan")
@@ -161,11 +164,40 @@ class PrisonerOffenderSearchGatewayTest(
         """.trimIndent(),
       )
 
-      val response = prisonerOffenderSearchGateway.getPersons(null, "Binks")
+      val response = prisonerOffenderSearchGateway.getPersons(null, "Binks", null, null)
 
       response.data.count().shouldBe(1)
       response.data.first().firstName.shouldBe("Jar Jar")
       response.data.first().lastName.shouldBe("Binks")
+    }
+
+    it("returns person(s) when searching on date of birth only") {
+      prisonerOffenderSearchApiMockServer.stubPostPrisonerSearch(
+        """
+        {
+          "lastName": "Binks",
+          "includeAliases": false,
+          "dateOfBirth": "1975-02-28"
+        }
+        """.removeWhitespaceAndNewlines(),
+        """
+        {
+          "content": [
+            {
+              "firstName": "Jar Jar",
+              "lastName": "Binks"
+            }
+          ]
+        }
+        """.trimIndent(),
+      )
+
+      val response = prisonerOffenderSearchGateway.getPersons(null, null, null, dateOfBirth)
+
+      response.data.count().shouldBe(1)
+      response.data.first().firstName.shouldBe("Jar Jar")
+      response.data.first().lastName.shouldBe("Binks")
+      response.data.first().dateOfBirth.shouldBe(dateOfBirth)
     }
 
     it("returns person(s) when searching within aliases") {
@@ -194,7 +226,7 @@ class PrisonerOffenderSearchGatewayTest(
         """.trimIndent(),
       )
 
-      val response = prisonerOffenderSearchGateway.getPersons("Geralt", null, searchWithinAliases = true)
+      val response = prisonerOffenderSearchGateway.getPersons("Geralt", null, null, null, true)
 
       response.data.count().shouldBe(1)
       response.data.first().aliases.first().firstName.shouldBe("Geralt")
@@ -220,7 +252,7 @@ class PrisonerOffenderSearchGatewayTest(
         """,
       )
 
-      val response = prisonerOffenderSearchGateway.getPersons(firstNameThatDoesNotExist, lastNameThatDoesNotExist)
+      val response = prisonerOffenderSearchGateway.getPersons(firstNameThatDoesNotExist, lastNameThatDoesNotExist, null, null)
 
       response.data.shouldBeEmpty()
     }

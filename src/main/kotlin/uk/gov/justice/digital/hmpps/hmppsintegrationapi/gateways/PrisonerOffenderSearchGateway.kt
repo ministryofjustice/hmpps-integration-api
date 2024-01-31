@@ -10,6 +10,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSGlobalSearch
+import java.time.LocalDate
 
 @Component
 class PrisonerOffenderSearchGateway(@Value("\${services.prisoner-offender-search.base-url}") baseUrl: String) {
@@ -18,10 +19,10 @@ class PrisonerOffenderSearchGateway(@Value("\${services.prisoner-offender-search
   @Autowired
   lateinit var hmppsAuthGateway: HmppsAuthGateway
 
-  fun getPersons(firstName: String? = null, lastName: String? = null, hmppsId: String? = null, searchWithinAliases: Boolean = false): Response<List<Person>> {
+  fun getPersons(firstName: String?, lastName: String?, hmppsId: String?, dateOfBirth: LocalDate?, searchWithinAliases: Boolean = false): Response<List<Person>> {
     val maxNumberOfResults = 9999
     val requestBody =
-      mapOf("firstName" to firstName, "lastName" to lastName, "includeAliases" to searchWithinAliases, "prisonerIdentifier" to hmppsId)
+      mapOf("firstName" to firstName, "lastName" to lastName, "includeAliases" to searchWithinAliases, "dateOfBirth" to dateOfBirth, "prisonerIdentifier" to hmppsId)
         .filterValues { it != null }
 
     val result = webClient.request<POSGlobalSearch>(HttpMethod.POST, "/global-search?size=$maxNumberOfResults", authenticationHeader(), UpstreamApi.PRISONER_OFFENDER_SEARCH, requestBody)

@@ -20,6 +20,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonsServi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.PaginatedResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.paginateWith
+import java.time.LocalDate
 
 @RestController
 @RequestMapping("/v1/persons")
@@ -32,20 +33,21 @@ class PersonController(
 
   @GetMapping
   fun getPersons(
-    @RequestParam(required = false, name = "pnc_number") pncNumber: String?,
     @RequestParam(required = false, name = "first_name") firstName: String?,
     @RequestParam(required = false, name = "last_name") lastName: String?,
+    @RequestParam(required = false, name = "pnc_number") pncNumber: String?,
+    @RequestParam(required = false, name = "date_of_birth") dateOfBirth: LocalDate?,
     @RequestParam(required = false, defaultValue = "false", name = "search_within_aliases") searchWithinAliases: Boolean,
     @RequestParam(required = false, defaultValue = "1", name = "page") page: Int,
     @RequestParam(required = false, defaultValue = "10", name = "perPage") perPage: Int,
   ): PaginatedResponse<Person?> {
-    if (firstName == null && lastName == null && pncNumber == null) {
+    if (firstName == null && lastName == null && pncNumber == null && dateOfBirth == null) {
       throw ValidationException("No query parameters specified.")
     }
 
-    val response = getPersonsService.execute(firstName, lastName, pncNumber, searchWithinAliases)
+    val response = getPersonsService.execute(firstName, lastName, pncNumber, dateOfBirth, searchWithinAliases)
 
-    auditService.createEvent("SEARCH_PERSON", "Person searched with first name: $firstName, last name: $lastName, search within aliases: $searchWithinAliases, pnc number: $pncNumber")
+    auditService.createEvent("SEARCH_PERSON", "Person searched with first name: $firstName, last name: $lastName, search within aliases: $searchWithinAliases, pnc number: $pncNumber, date of birth: $dateOfBirth")
     return response.data.paginateWith(page, perPage)
   }
 

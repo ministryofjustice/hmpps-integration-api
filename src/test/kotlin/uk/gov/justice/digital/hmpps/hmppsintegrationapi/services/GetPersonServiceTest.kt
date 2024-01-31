@@ -14,6 +14,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ProbationOffend
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Identifiers
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
+import java.time.LocalDate
 
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
@@ -30,7 +31,7 @@ internal class GetPersonServiceTest(
     Mockito.reset(prisonerOffenderSearchGateway)
     Mockito.reset(probationOffenderSearchGateway)
 
-    whenever(prisonerOffenderSearchGateway.getPersons(hmppsId = hmppsId)).thenReturn(
+    whenever(prisonerOffenderSearchGateway.getPersons("Qui-gon", "Jin", hmppsId, LocalDate.parse("1966-10-25"))).thenReturn(
       Response(data = listOf(Person(firstName = "Qui-gon", lastName = "Jin", identifiers = Identifiers(nomisNumber = "A1234AA")))),
     )
     whenever(probationOffenderSearchGateway.getPerson(id = hmppsId)).thenReturn(

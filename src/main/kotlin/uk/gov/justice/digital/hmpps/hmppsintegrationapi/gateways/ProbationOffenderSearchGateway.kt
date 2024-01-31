@@ -12,6 +12,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.probationoffendersearch.Offender
+import java.time.LocalDate
 
 @Component
 class ProbationOffenderSearchGateway(@Value("\${services.probation-offender-search.base-url}") baseUrl: String) {
@@ -63,8 +64,8 @@ class ProbationOffenderSearchGateway(@Value("\${services.probation-offender-sear
     }
   }
 
-  fun getPersons(firstName: String?, surname: String?, pncNumber: String?, searchWithinAliases: Boolean = false): Response<List<Person>> {
-    val requestBody = mapOf("firstName" to firstName, "surname" to surname, "pncNumber" to pncNumber, "includeAliases" to searchWithinAliases)
+  fun getPersons(firstName: String?, surname: String?, pncNumber: String?, dateOfBirth: LocalDate?, searchWithinAliases: Boolean = false): Response<List<Person>> {
+    val requestBody = mapOf("firstName" to firstName, "surname" to surname, "pncNumber" to pncNumber, "dateOfBirth" to dateOfBirth, "includeAliases" to searchWithinAliases)
       .filterValues { it != null }
 
     val result = webClient.requestList<Offender>(HttpMethod.POST, "/search", authenticationHeader(), UpstreamApi.PROBATION_OFFENDER_SEARCH, requestBody)

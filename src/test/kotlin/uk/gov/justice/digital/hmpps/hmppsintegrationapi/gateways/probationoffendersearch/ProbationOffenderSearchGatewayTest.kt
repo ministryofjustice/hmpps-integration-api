@@ -49,6 +49,7 @@ class ProbationOffenderSearchGatewayTest(
     val firstName = "Matt"
     val surname = "Nolan"
     val pncNumber = "2018/0123456X"
+    val dateOfBirth = LocalDate.parse("1966-10-25")
 
     beforeEach {
       probationOffenderSearchApiMockServer.stubPostOffenderSearch(
@@ -57,6 +58,7 @@ class ProbationOffenderSearchGatewayTest(
               "firstName": "$firstName",
               "surname": "$surname",
               "pncNumber": "$pncNumber",
+              "dateOfBirth": "$dateOfBirth",
               "includeAliases": false
             }
           """.removeWhitespaceAndNewlines(),
@@ -65,17 +67,18 @@ class ProbationOffenderSearchGatewayTest(
     }
 
     it("authenticates using HMPPS Auth with credentials") {
-      probationOffenderSearchGateway.getPersons(firstName, surname, pncNumber)
+      probationOffenderSearchGateway.getPersons(firstName, surname, pncNumber, dateOfBirth)
       verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("Probation Offender Search")
     }
 
-    it("returns person(s) when searching on first name, last name and pnc number") {
-      val response = probationOffenderSearchGateway.getPersons(firstName, surname, pncNumber)
-
+    it("returns person(s) when searching on first name, last name, pnc number and date of birth") {
+      val response = probationOffenderSearchGateway.getPersons(firstName, surname, pncNumber, dateOfBirth)
+      println(response)
       response.data.count().shouldBe(1)
       response.data.first().firstName.shouldBe(firstName)
       response.data.first().lastName.shouldBe(surname)
-      response.data.first().pncId.shouldBe("2018/0123456X")
+      response.data.first().pncId.shouldBe(pncNumber)
+      response.data.first().dateOfBirth.shouldBe(dateOfBirth)
     }
 
     it("returns person(s) when searching on first name and last name") {
@@ -97,7 +100,35 @@ class ProbationOffenderSearchGatewayTest(
         """.trimIndent(),
       )
 
-      val response = probationOffenderSearchGateway.getPersons("Ahsoka", "Tano", null)
+      val response = probationOffenderSearchGateway.getPersons("Ahsoka", "Tano", null, null)
+
+      println(response)
+
+      response.data.count().shouldBe(1)
+      response.data.first().firstName.shouldBe("Ahsoka")
+      response.data.first().lastName.shouldBe("Tano")
+    }
+
+    it("returns person(s) when searching on first name and last name") {
+      probationOffenderSearchApiMockServer.stubPostOffenderSearch(
+        """
+        {
+          "firstName": "Ahsoka",
+          "surname": "Tano",
+          "includeAliases": false
+        }
+        """.removeWhitespaceAndNewlines(),
+        """
+        [
+          {
+            "firstName": "Ahsoka",
+            "surname": "Tano"
+          }
+        ]
+        """.trimIndent(),
+      )
+
+      val response = probationOffenderSearchGateway.getPersons("Ahsoka", "Tano", null, null)
 
       println(response)
 
@@ -124,7 +155,7 @@ class ProbationOffenderSearchGatewayTest(
         """.trimIndent(),
       )
 
-      val response = probationOffenderSearchGateway.getPersons("Ahsoka", null, null)
+      val response = probationOffenderSearchGateway.getPersons("Ahsoka", null, null, null)
 
       response.data.count().shouldBe(1)
       response.data.first().firstName.shouldBe("Ahsoka")
@@ -148,7 +179,8 @@ class ProbationOffenderSearchGatewayTest(
         ]
         """.trimIndent(),
       )
-      val response = probationOffenderSearchGateway.getPersons(null, "Tano", null)
+
+      val response = probationOffenderSearchGateway.getPersons(null, "Tano", null, null)
 
       response.data.count().shouldBe(1)
       response.data.first().firstName.shouldBe("Ahsoka")
@@ -173,7 +205,33 @@ class ProbationOffenderSearchGatewayTest(
         """.trimIndent(),
       )
 
-      val response = probationOffenderSearchGateway.getPersons(null, null, pncNumber)
+
+      val response = probationOffenderSearchGateway.getPersons(null, null, pncNumber, null)
+
+      response.data.count().shouldBe(1)
+      response.data.first().firstName.shouldBe("Ahsoka")
+      response.data.first().lastName.shouldBe("Tano")
+    }
+
+    it("returns person(s) when searching on date of birth only") {
+      probationOffenderSearchApiMockServer.stubPostOffenderSearch(
+        """
+        {
+          "dateOfBirth": "1966-10-25",
+          "includeAliases": false
+        }
+        """.removeWhitespaceAndNewlines(),
+        """
+        [
+          {
+            "firstName": "Ahsoka",
+            "surname": "Tano"
+          }
+        ]
+        """.trimIndent(),
+      )
+
+      val response = probationOffenderSearchGateway.getPersons(null, null, null, dateOfBirth)
 
       response.data.count().shouldBe(1)
       response.data.first().firstName.shouldBe("Ahsoka")
@@ -204,7 +262,7 @@ class ProbationOffenderSearchGatewayTest(
         """.trimIndent(),
       )
 
-      val response = probationOffenderSearchGateway.getPersons("Fulcrum", null, null, searchWithinAliases = true)
+      val response = probationOffenderSearchGateway.getPersons("Fulcrum", null, null, null, searchWithinAliases = true)
 
       response.data.count().shouldBe(1)
       response.data.first().aliases.first().firstName.shouldBe("Fulcrum")
