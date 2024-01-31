@@ -55,11 +55,7 @@ internal class PersonControllerTest(
       beforeTest {
         Mockito.reset(getPersonsService)
         Mockito.reset(auditService)
-<<<<<<< HEAD
-        whenever(getPersonsService.execute(firstName, lastName, null)).thenReturn(
-=======
         whenever(getPersonsService.execute(firstName, lastName, null, dateOfBirth)).thenReturn(
->>>>>>> 3b99ffb (Hia 623 person search by pnc (#358))
           Response(
             data =
             listOf(
@@ -81,53 +77,28 @@ internal class PersonControllerTest(
       }
 
       it("gets a person with matching search criteria") {
-<<<<<<< HEAD
-        mockMvc.performAuthorised("$basePath?first_name=$firstName&last_name=$lastName&pnc_number=$pncNumber")
-
-        verify(getPersonsService, times(1)).execute(firstName, lastName, pncNumber)
-=======
         mockMvc.performAuthorised("$basePath?first_name=$firstName&last_name=$lastName&pnc_number=$pncNumber&date_of_birth=$dateOfBirth")
 
         verify(getPersonsService, times(1)).execute(firstName, lastName, pncNumber, dateOfBirth)
->>>>>>> 3b99ffb (Hia 623 person search by pnc (#358))
       }
 
       it("gets a person with matching first name") {
         mockMvc.performAuthorised("$basePath?first_name=$firstName")
-
-<<<<<<< HEAD
-        verify(getPersonsService, times(1)).execute(firstName, null, null)
-=======
         verify(getPersonsService, times(1)).execute(firstName, null, null, null)
->>>>>>> 3b99ffb (Hia 623 person search by pnc (#358))
       }
 
       it("gets a person with matching last name") {
         mockMvc.performAuthorised("$basePath?last_name=$lastName")
-
-<<<<<<< HEAD
-        verify(getPersonsService, times(1)).execute(null, lastName, null)
-=======
         verify(getPersonsService, times(1)).execute(null, lastName, null, null)
->>>>>>> 3b99ffb (Hia 623 person search by pnc (#358))
       }
 
       it("gets a person with matching alias") {
         mockMvc.performAuthorised("$basePath?first_name=$firstName&search_within_aliases=true")
-
-<<<<<<< HEAD
-        verify(getPersonsService, times(1)).execute(firstName, null, null, searchWithinAliases = true)
-=======
         verify(getPersonsService, times(1)).execute(firstName, null, null, null, searchWithinAliases = true)
->>>>>>> 3b99ffb (Hia 623 person search by pnc (#358))
       }
 
       it("gets a person with matching pncNumber") {
         mockMvc.performAuthorised("$basePath?pnc_number=$pncNumber")
-
-<<<<<<< HEAD
-        verify(getPersonsService, times(1)).execute(null, null, pncNumber)
-=======
         verify(getPersonsService, times(1)).execute(null, null, pncNumber, null)
       }
 
@@ -135,17 +106,13 @@ internal class PersonControllerTest(
         mockMvc.performAuthorised("$basePath?date_of_birth=$dateOfBirth")
 
         verify(getPersonsService, times(1)).execute(null, null, null, dateOfBirth)
->>>>>>> 3b99ffb (Hia 623 person search by pnc (#358))
       }
 
       it("defaults to not searching within aliases") {
         mockMvc.performAuthorised("$basePath?first_name=$firstName")
 
-<<<<<<< HEAD
-        verify(getPersonsService, times(1)).execute(firstName, null, null)
-=======
         verify(getPersonsService, times(1)).execute(firstName, null, null, null)
->>>>>>> 3b99ffb (Hia 623 person search by pnc (#358))
+
       }
 
       it("returns a person with matching first and last name") {

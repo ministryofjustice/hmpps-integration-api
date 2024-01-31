@@ -31,7 +31,6 @@ internal class GetPersonsServiceTest(
   val hmppsId = "A1234AA"
   val dateOfBirth = LocalDate.parse("2004-04-19")
 
-
   beforeEach {
     Mockito.reset(prisonerOffenderSearchGateway)
     Mockito.reset(probationOffenderSearchGateway)

@@ -205,7 +205,6 @@ class ProbationOffenderSearchGatewayTest(
         """.trimIndent(),
       )
 
-
       val response = probationOffenderSearchGateway.getPersons(null, null, pncNumber, null)
 
       response.data.count().shouldBe(1)
