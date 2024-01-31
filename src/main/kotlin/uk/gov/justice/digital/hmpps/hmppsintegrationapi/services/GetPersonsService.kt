@@ -13,10 +13,16 @@ class GetPersonsService(
   @Autowired val probationOffenderSearchGateway: ProbationOffenderSearchGateway,
 ) {
 
-  fun execute(firstName: String?, lastName: String?, searchWithinAliases: Boolean = false): Response<List<Person>> {
-    val responseFromPrisonerOffenderSearch = prisonerOffenderSearchGateway.getPersons(firstName, lastName, searchWithinAliases = searchWithinAliases)
-    val personsFromProbationOffenderSearch = probationOffenderSearchGateway.getPersons(firstName, lastName, searchWithinAliases = searchWithinAliases)
+  fun execute(firstName: String?, lastName: String?, pncNumber: String?, searchWithinAliases: Boolean = false): Response<List<Person>> {
+    var hmppsId: String? = null
 
+    val personsFromProbationOffenderSearch = probationOffenderSearchGateway.getPersons(firstName, lastName, pncNumber, searchWithinAliases)
+
+    if (pncNumber != null) {
+      hmppsId = personsFromProbationOffenderSearch.data.firstOrNull()?.identifiers?.deliusCrn
+    }
+
+    val responseFromPrisonerOffenderSearch = prisonerOffenderSearchGateway.getPersons(firstName, lastName, hmppsId, searchWithinAliases)
     return Response(data = responseFromPrisonerOffenderSearch.data + personsFromProbationOffenderSearch.data)
   }
 }
