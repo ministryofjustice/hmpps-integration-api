@@ -48,6 +48,7 @@ class ProbationOffenderSearchGatewayTest(
   describe("#getPersons") {
     val firstName = "Matt"
     val surname = "Nolan"
+    val pncNumber = "2018/0123456X"
 
     beforeEach {
       probationOffenderSearchApiMockServer.stubPostOffenderSearch(
@@ -55,6 +56,7 @@ class ProbationOffenderSearchGatewayTest(
             {
               "firstName": "$firstName",
               "surname": "$surname",
+              "pncNumber": "$pncNumber",
               "includeAliases": false
             }
           """.removeWhitespaceAndNewlines(),
@@ -63,17 +65,45 @@ class ProbationOffenderSearchGatewayTest(
     }
 
     it("authenticates using HMPPS Auth with credentials") {
-      probationOffenderSearchGateway.getPersons(firstName, surname)
+      probationOffenderSearchGateway.getPersons(firstName, surname, pncNumber)
       verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("Probation Offender Search")
     }
 
-    it("returns person(s) when searching on first and last name") {
-      val response = probationOffenderSearchGateway.getPersons(firstName, surname)
+    it("returns person(s) when searching on first name, last name and pnc number") {
+      val response = probationOffenderSearchGateway.getPersons(firstName, surname, pncNumber)
 
       response.data.count().shouldBe(1)
       response.data.first().firstName.shouldBe(firstName)
       response.data.first().lastName.shouldBe(surname)
       response.data.first().pncId.shouldBe("2018/0123456X")
+    }
+
+    it("returns person(s) when searching on first name and last name") {
+      probationOffenderSearchApiMockServer.stubPostOffenderSearch(
+        """
+        {
+          "firstName": "Ahsoka",
+          "surname": "Tano",
+          "includeAliases": false
+        }
+        """.removeWhitespaceAndNewlines(),
+        """
+        [
+          {
+            "firstName": "Ahsoka",
+            "surname": "Tano"
+          }
+        ]
+        """.trimIndent(),
+      )
+
+      val response = probationOffenderSearchGateway.getPersons("Ahsoka", "Tano", null)
+
+      println(response)
+
+      response.data.count().shouldBe(1)
+      response.data.first().firstName.shouldBe("Ahsoka")
+      response.data.first().lastName.shouldBe("Tano")
     }
 
     it("returns person(s) when searching on first name only") {
@@ -94,7 +124,7 @@ class ProbationOffenderSearchGatewayTest(
         """.trimIndent(),
       )
 
-      val response = probationOffenderSearchGateway.getPersons("Ahsoka", null)
+      val response = probationOffenderSearchGateway.getPersons("Ahsoka", null, null)
 
       response.data.count().shouldBe(1)
       response.data.first().firstName.shouldBe("Ahsoka")
@@ -118,7 +148,32 @@ class ProbationOffenderSearchGatewayTest(
         ]
         """.trimIndent(),
       )
-      val response = probationOffenderSearchGateway.getPersons(null, "Tano")
+      val response = probationOffenderSearchGateway.getPersons(null, "Tano", null)
+
+      response.data.count().shouldBe(1)
+      response.data.first().firstName.shouldBe("Ahsoka")
+      response.data.first().lastName.shouldBe("Tano")
+    }
+
+    it("returns person(s) when searching on pnc number only") {
+      probationOffenderSearchApiMockServer.stubPostOffenderSearch(
+        """
+        {
+          "pncNumber": "2018/0123456X",
+          "includeAliases": false
+        }
+        """.removeWhitespaceAndNewlines(),
+        """
+        [
+          {
+            "firstName": "Ahsoka",
+            "surname": "Tano"
+          }
+        ]
+        """.trimIndent(),
+      )
+
+      val response = probationOffenderSearchGateway.getPersons(null, null, pncNumber)
 
       response.data.count().shouldBe(1)
       response.data.first().firstName.shouldBe("Ahsoka")
@@ -149,7 +204,7 @@ class ProbationOffenderSearchGatewayTest(
         """.trimIndent(),
       )
 
-      val response = probationOffenderSearchGateway.getPersons("Fulcrum", null, searchWithinAliases = true)
+      val response = probationOffenderSearchGateway.getPersons("Fulcrum", null, null, searchWithinAliases = true)
 
       response.data.count().shouldBe(1)
       response.data.first().aliases.first().firstName.shouldBe("Fulcrum")
