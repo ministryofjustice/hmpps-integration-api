@@ -44,7 +44,7 @@ class PrisonerOffenderSearchGatewayTest(
   describe("#getPersons") {
     val firstName = "JAMES"
     val lastName = "HOWLETT"
-    val hmppsId = "2003/13116A"
+    val hmppsId = "B9731BB"
 
     beforeEach {
       prisonerOffenderSearchApiMockServer.stubPostPrisonerSearch(

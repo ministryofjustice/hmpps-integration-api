@@ -32,7 +32,7 @@ internal class GetLicenceConditionServiceTest(
     val crn = "Z99999ZZ"
     val person = Person(firstName = "Qui-gon", lastName = "Jin", identifiers = Identifiers(deliusCrn = crn))
     val licences = listOf(Licence(id = "MockLicenceId"))
-    var conditions = listOf(LicenceCondition(condition = "MockCondition"))
+    val conditions = listOf(LicenceCondition(condition = "MockCondition", category = "AP"))
 
     beforeEach {
       Mockito.reset(getPersonService)
@@ -61,7 +61,7 @@ internal class GetLicenceConditionServiceTest(
         ),
       )
       val result = getLicenceCondtionService.execute("notfound")
-      result.data.shouldBe(emptyList())
+      result.data.licences.shouldBe(emptyList())
       result.errors.first().type.shouldBe(UpstreamApiError.Type.ENTITY_NOT_FOUND)
     }
 
@@ -78,13 +78,13 @@ internal class GetLicenceConditionServiceTest(
         ),
       )
       val result = getLicenceCondtionService.execute(hmppsId = hmppsId)
-      result.data.shouldBe(emptyList())
+      result.data.licences.shouldBe(emptyList())
       result.errors.first().type.shouldBe(UpstreamApiError.Type.ENTITY_NOT_FOUND)
     }
 
     it("should return licence condition from gateway") {
       val result = getLicenceCondtionService.execute(hmppsId = hmppsId)
-      result.data.first().conditions.first().condition.shouldBe("MockCondition")
+      result.data.licences.first().conditions.first().condition.shouldBe("MockCondition")
       result.errors.count().shouldBe(0)
     }
   },
