@@ -112,7 +112,6 @@ internal class PersonControllerTest(
         mockMvc.performAuthorised("$basePath?first_name=$firstName")
 
         verify(getPersonsService, times(1)).execute(firstName, null, null, null)
-
       }
 
       it("returns a person with matching first and last name") {
