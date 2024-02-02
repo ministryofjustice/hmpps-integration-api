@@ -39,7 +39,8 @@ internal class PersonControllerTest(
 ) : DescribeSpec(
     {
       val hmppsId = "2003/13116M"
-      val encodedHmppsId = URLEncoder.encode(hmppsId, StandardCharsets.UTF_8)
+      val pncNumber = "2003/13116M"
+    val encodedHmppsId = URLEncoder.encode(hmppsId, StandardCharsets.UTF_8)
       val basePath = "/v1/persons"
       val firstName = "Barry"
       val lastName = "Allen"
@@ -55,7 +56,7 @@ internal class PersonControllerTest(
         beforeTest {
           Mockito.reset(getPersonsService)
           Mockito.reset(auditService)
-          whenever(getPersonsService.execute(firstName, lastName)).thenReturn(
+          whenever(getPersonsService.execute(firstName, lastName, null)).thenReturn(
             Response(
               data =
                 listOf(
@@ -79,33 +80,39 @@ internal class PersonControllerTest(
         }
 
         it("gets a person with matching search criteria") {
-          mockMvc.performAuthorised("$basePath?first_name=$firstName&last_name=$lastName")
+          mockMvc.performAuthorised("$basePath?first_name=$firstName&last_name=$lastName&pnc_number=$pncNumber")
 
-          verify(getPersonsService, times(1)).execute(firstName, lastName)
+          verify(getPersonsService, times(1)).execute(firstName, lastName, pncNumber)
         }
 
         it("gets a person with matching first name") {
           mockMvc.performAuthorised("$basePath?first_name=$firstName")
 
-          verify(getPersonsService, times(1)).execute(firstName, null)
+          verify(getPersonsService, times(1)).execute(firstName, null, null)
         }
 
         it("gets a person with matching last name") {
           mockMvc.performAuthorised("$basePath?last_name=$lastName")
 
-          verify(getPersonsService, times(1)).execute(null, lastName)
+          verify(getPersonsService, times(1)).execute(null, lastName, null)
         }
 
         it("gets a person with matching alias") {
           mockMvc.performAuthorised("$basePath?first_name=$firstName&search_within_aliases=true")
 
-          verify(getPersonsService, times(1)).execute(firstName, null, searchWithinAliases = true)
+          verify(getPersonsService, times(1)).execute(firstName, null, null, searchWithinAliases = true)
         }
+
+      it("gets a person with matching pncNumber") {
+        mockMvc.performAuthorised("$basePath?pnc_number=$pncNumber")
+
+        verify(getPersonsService, times(1)).execute(null, null, pncNumber)
+      }
 
         it("defaults to not searching within aliases") {
           mockMvc.performAuthorised("$basePath?first_name=$firstName")
 
-          verify(getPersonsService, times(1)).execute(firstName, null, searchWithinAliases = false)
+          verify(getPersonsService, times(1)).execute(firstName, null, null)
         }
 
         it("returns a person with matching first and last name") {
@@ -179,18 +186,18 @@ internal class PersonControllerTest(
         }
 
         it("logs audit") {
-          mockMvc.performAuthorised("$basePath?first_name=$firstName&last_name=$lastName")
+          mockMvc.performAuthorised("$basePath?first_name=$firstName&last_name=$lastName&pnc_number=$pncNumber")
           verify(
             auditService,
             times(1),
           ).createEvent(
             "SEARCH_PERSON",
-            "Person searched with first name: $firstName, last name: $lastName and search within aliases: false",
+            "Person searched with first name: $firstName, last name: $lastName, search within aliases: false, pnc number: $pncNumber",
           )
         }
 
         it("returns paginated results") {
-          whenever(getPersonsService.execute(firstName, lastName)).thenReturn(
+          whenever(getPersonsService.execute(firstName, lastName, null)).thenReturn(
             Response(
               data =
                 List(20) { i ->
@@ -213,7 +220,7 @@ internal class PersonControllerTest(
           val firstNameThatDoesNotExist = "Bob21345"
           val lastNameThatDoesNotExist = "Gun36773"
 
-          whenever(getPersonsService.execute(firstNameThatDoesNotExist, lastNameThatDoesNotExist)).thenReturn(
+          whenever(getPersonsService.execute(firstNameThatDoesNotExist, lastNameThatDoesNotExist, null)).thenReturn(
             Response(
               data = emptyList(),
             ),

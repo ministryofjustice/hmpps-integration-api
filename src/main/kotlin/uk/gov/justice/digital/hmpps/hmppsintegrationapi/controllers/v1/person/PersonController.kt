@@ -32,19 +32,20 @@ class PersonController(
 
   @GetMapping
   fun getPersons(
+    @RequestParam(required = false, name = "pnc_number") pncNumber: String?,
     @RequestParam(required = false, name = "first_name") firstName: String?,
     @RequestParam(required = false, name = "last_name") lastName: String?,
     @RequestParam(required = false, defaultValue = "false", name = "search_within_aliases") searchWithinAliases: Boolean,
     @RequestParam(required = false, defaultValue = "1", name = "page") page: Int,
     @RequestParam(required = false, defaultValue = "10", name = "perPage") perPage: Int,
   ): PaginatedResponse<Person?> {
-    if (firstName == null && lastName == null) {
+    if (firstName == null && lastName == null && pncNumber == null) {
       throw ValidationException("No query parameters specified.")
     }
 
-    val response = getPersonsService.execute(firstName, lastName, searchWithinAliases)
+    val response = getPersonsService.execute(firstName, lastName, pncNumber, searchWithinAliases)
 
-    auditService.createEvent("SEARCH_PERSON", "Person searched with first name: $firstName, last name: $lastName and search within aliases: $searchWithinAliases")
+    auditService.createEvent("SEARCH_PERSON", "Person searched with first name: $firstName, last name: $lastName, search within aliases: $searchWithinAliases, pnc number: $pncNumber")
     return response.data.paginateWith(page, perPage)
   }
 

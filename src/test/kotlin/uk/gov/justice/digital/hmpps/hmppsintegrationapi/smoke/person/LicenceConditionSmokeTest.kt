@@ -23,22 +23,50 @@ class LicenceConditionSmokeTest : DescribeSpec(
       response.body().shouldEqualJson(
         """
          {
-          "data": [
+          "data": {
+            "hmppsId": "G2996UX",
+            "offenderNumber": "A1234AA",
+            "licences": [
               {
-                "offenderNumber": "A1234AA",
-                "conditions":
-                [{
-                  "condition": "Not commit any offence."
-                }]
+                "status": "IN_PROGRESS",
+                "typeCode": "AP",
+                "createdDate": "2023-11-20T00:00:00Z",
+                "approvedDate": "2023-11-20T00:00:00Z",
+                "updatedDate": "2023-11-20T00:00:00Z",
+                "conditions": [
+                  {
+                    "type": "Bespoke",
+                    "code": null,
+                    "category": null,
+                    "condition": "You should not visit Y"
+                  },
+                  {
+                    "type": "Standard",
+                    "code": "5a105297-dce1-4d18-b9ea-4195b46b7594",
+                    "category": null,
+                    "condition": "Not commit any offence."
+                  },
+                  {
+                    "type": "STANDARD",
+                    "code": "5a105297-dce1-4d18-b9ea-4195b46b7594",
+                    "category": "Residence at a specific place",
+                    "condition": "You must not enter the location X"
+                  },
+                  {
+                    "type": "STANDARD",
+                    "code": "5a105297-dce1-4d18-b9ea-4195b46b7594",
+                    "category": "Residence at a specific place",
+                    "condition": "You must not enter the location X"
+                  },
+                  {
+                    "type": "Standard",
+                    "code": "5a105297-dce1-4d18-b9ea-4195b46b7594",
+                    "category": null,
+                    "condition": "Not commit any offence."
+                  }
+                ]
               }
-          ],
-          "pagination": {
-            "isLastPage": true,
-            "count": 1,
-            "page": 1,
-            "perPage": 8,
-            "totalCount": 1,
-            "totalPages": 1
+            ]
           }
         }
         """.removeWhitespaceAndNewlines(),
