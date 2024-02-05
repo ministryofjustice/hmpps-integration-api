@@ -68,9 +68,37 @@ class PersonSmokeTest : DescribeSpec(
           "deliusCrn": "string"
       },
       "pncId": "string",
-      "hmppsId": "string"
+      "hmppsId": "string",
+      "contactDetails": {
+        "addresses": [
+          {
+            "addressNumber": "string",
+            "district": "string",
+            "buildingName": "string",
+            "county": "string",
+            "from": "2019-08-24",
+            "postcode": "string",
+            "streetName": "string",
+            "type": {
+              "code": "string",
+              "description": "string"
+            },
+            "to": "2019-08-24",
+            "town": "string",
+            "noFixedAbode": true,
+            "notes": "string"
+          }
+        ],
+        "phoneNumbers": [
+          {
+            "number": "string",
+            "type": "TELEPHONE"
+          }
+        ],
+        "emails":null
+      }
     }
-  }
+  }">
     """.removeWhitespaceAndNewlines(),
       )
     }
