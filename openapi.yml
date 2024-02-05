@@ -27,6 +27,18 @@ paths:
           required: false
           description: The last name of the person
         - in: query
+          name: pnc_number
+          schema:
+            type: string
+          required: false
+          description: A URL-encoded pnc identifier
+        - in: query
+          name: date_of_birth
+          schema:
+            type: string
+          required: false
+          description: The date of birth of the person
+        - in: query
           name: search_within_aliases
           schema:
             type: boolean
