@@ -6,7 +6,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffende
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ProbationOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
-import java.time.LocalDate
 
 @Service
 class GetPersonsService(
@@ -14,12 +13,12 @@ class GetPersonsService(
   @Autowired val probationOffenderSearchGateway: ProbationOffenderSearchGateway,
 ) {
 
-  fun execute(firstName: String?, lastName: String?, pncNumber: String?, dateOfBirth: LocalDate?, searchWithinAliases: Boolean = false): Response<List<Person>> {
+  fun execute(firstName: String?, lastName: String?, pncNumber: String?, dateOfBirth: String?, searchWithinAliases: Boolean = false): Response<List<Person>> {
     var hmppsId: String? = null
 
     val personsFromProbationOffenderSearch = probationOffenderSearchGateway.getPersons(firstName, lastName, pncNumber, dateOfBirth, searchWithinAliases)
 
-    if (pncNumber != null) {
+    if (!pncNumber.isNullOrEmpty()) {
       hmppsId = personsFromProbationOffenderSearch.data.firstOrNull()?.identifiers?.deliusCrn
     }
 

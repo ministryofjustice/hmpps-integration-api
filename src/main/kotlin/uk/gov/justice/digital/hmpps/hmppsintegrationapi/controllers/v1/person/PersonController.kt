@@ -21,6 +21,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditS
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.PaginatedResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.paginateWith
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 @RestController
 @RequestMapping("/v1/persons")
@@ -36,13 +37,17 @@ class PersonController(
     @RequestParam(required = false, name = "first_name") firstName: String?,
     @RequestParam(required = false, name = "last_name") lastName: String?,
     @RequestParam(required = false, name = "pnc_number") pncNumber: String?,
-    @RequestParam(required = false, name = "date_of_birth") dateOfBirth: LocalDate?,
+    @RequestParam(required = false, name = "date_of_birth") dateOfBirth: String?,
     @RequestParam(required = false, defaultValue = "false", name = "search_within_aliases") searchWithinAliases: Boolean,
     @RequestParam(required = false, defaultValue = "1", name = "page") page: Int,
     @RequestParam(required = false, defaultValue = "10", name = "perPage") perPage: Int,
   ): PaginatedResponse<Person?> {
     if (firstName == null && lastName == null && pncNumber == null && dateOfBirth == null) {
       throw ValidationException("No query parameters specified.")
+    }
+
+    if (dateOfBirth != null && !isValidISODateFormat(dateOfBirth)) {
+      throw ValidationException("Invalid date format. Please use yyyy-MM-dd.")
     }
 
     val response = getPersonsService.execute(firstName, lastName, pncNumber, dateOfBirth, searchWithinAliases)
@@ -80,5 +85,14 @@ class PersonController(
 
     auditService.createEvent("GET_PERSON_IMAGE", "Image with id: $hmppsId has been retrieved")
     return response.data.paginateWith(page, perPage)
+  }
+
+  private fun isValidISODateFormat(dateString: String): Boolean {
+    return try {
+      LocalDate.parse(dateString, DateTimeFormatter.ISO_DATE)
+      true
+    } catch (e: Exception) {
+      false
+    }
   }
 }
