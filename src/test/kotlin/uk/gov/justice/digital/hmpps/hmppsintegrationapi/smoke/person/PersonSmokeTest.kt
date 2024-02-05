@@ -98,7 +98,7 @@ class PersonSmokeTest : DescribeSpec(
         "emails":null
       }
     }
-  }">
+  }
     """.removeWhitespaceAndNewlines(),
       )
     }
