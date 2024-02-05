@@ -22,6 +22,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import java.io.File
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 @ActiveProfiles("test")
 @ContextConfiguration(
@@ -49,7 +50,8 @@ class ProbationOffenderSearchGatewayTest(
     val firstName = "Matt"
     val surname = "Nolan"
     val pncNumber = "2018/0123456X"
-    val dateOfBirth = LocalDate.parse("1966-10-25")
+    val dateOfBirth = "1966-10-25"
+    val dateOfBirthString = dateOfBirth.format(DateTimeFormatter.ISO_DATE)
 
     beforeEach {
       probationOffenderSearchApiMockServer.stubPostOffenderSearch(
@@ -58,7 +60,7 @@ class ProbationOffenderSearchGatewayTest(
               "firstName": "$firstName",
               "surname": "$surname",
               "pncNumber": "$pncNumber",
-              "dateOfBirth": "$dateOfBirth",
+              "dateOfBirth": "$dateOfBirthString",
               "includeAliases": false
             }
           """.removeWhitespaceAndNewlines(),
@@ -78,7 +80,7 @@ class ProbationOffenderSearchGatewayTest(
       response.data.first().firstName.shouldBe(firstName)
       response.data.first().lastName.shouldBe(surname)
       response.data.first().pncId.shouldBe(pncNumber)
-      response.data.first().dateOfBirth.shouldBe(dateOfBirth)
+      response.data.first().dateOfBirth.shouldBe(LocalDate.parse(dateOfBirth))
     }
 
     it("returns person(s) when searching on first name and last name") {

@@ -46,7 +46,7 @@ class PrisonerOffenderSearchGatewayTest(
     val firstName = "JAMES"
     val lastName = "HOWLETT"
     val hmppsId = "B9731BB"
-    val dateOfBirth = LocalDate.parse("1975-02-28")
+    val dateOfBirth = "1975-02-28"
 
     beforeEach {
       prisonerOffenderSearchApiMockServer.stubPostPrisonerSearch(
@@ -175,7 +175,6 @@ class PrisonerOffenderSearchGatewayTest(
       prisonerOffenderSearchApiMockServer.stubPostPrisonerSearch(
         """
         {
-          "lastName": "Binks",
           "includeAliases": false,
           "dateOfBirth": "1975-02-28"
         }
@@ -185,7 +184,8 @@ class PrisonerOffenderSearchGatewayTest(
           "content": [
             {
               "firstName": "Jar Jar",
-              "lastName": "Binks"
+              "lastName": "Binks",
+              "dateOfBirth": "1975-02-28"
             }
           ]
         }
@@ -193,11 +193,11 @@ class PrisonerOffenderSearchGatewayTest(
       )
 
       val response = prisonerOffenderSearchGateway.getPersons(null, null, null, dateOfBirth)
-
+      println(response)
       response.data.count().shouldBe(1)
       response.data.first().firstName.shouldBe("Jar Jar")
       response.data.first().lastName.shouldBe("Binks")
-      response.data.first().dateOfBirth.shouldBe(dateOfBirth)
+      response.data.first().dateOfBirth.shouldBe(LocalDate.parse(dateOfBirth))
     }
 
     it("returns person(s) when searching within aliases") {

@@ -14,7 +14,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ProbationOffend
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Identifiers
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
-import java.time.LocalDate
 
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
@@ -29,7 +28,7 @@ internal class GetPersonsServiceTest(
   val lastName = "Wayne"
   val pncNumber = "2003/13116M"
   val hmppsId = "A1234AA"
-  val dateOfBirth = LocalDate.parse("2004-04-19")
+  val dateOfBirth = "2004-04-19"
 
   beforeEach {
     Mockito.reset(prisonerOffenderSearchGateway)

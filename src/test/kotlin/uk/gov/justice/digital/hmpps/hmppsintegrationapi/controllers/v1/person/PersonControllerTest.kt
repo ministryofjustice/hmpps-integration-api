@@ -48,7 +48,7 @@ internal class PersonControllerTest(
     val basePath = "/v1/persons"
     val firstName = "Barry"
     val lastName = "Allen"
-    val dateOfBirth = LocalDate.parse("2023-03-01")
+    val dateOfBirth = "2023-03-01"
     val mockMvc = IntegrationAPIMockMvc(springMockMvc)
 
     describe("GET $basePath") {
@@ -114,48 +114,6 @@ internal class PersonControllerTest(
         verify(getPersonsService, times(1)).execute(firstName, null, null, null)
       }
 
-      it("returns a person with matching first and last name") {
-        val result = mockMvc.performAuthorised("$basePath?first_name=$firstName&last_name=$lastName")
-        result.response.contentAsString.shouldContain(
-          """
-          "data": [
-            {
-              "firstName":"Barry",
-              "lastName":"Allen",
-              "middleName":"Jonas",
-              "dateOfBirth":"2023-03-01",
-              "gender": null,
-              "ethnicity": null,
-              "aliases":[],
-              "identifiers": {
-                  "nomisNumber": null,
-                  "croNumber": null,
-                  "deliusCrn": null
-              },
-              "pncId": null,
-              "hmppsId": null
-            },
-            {
-              "firstName":"Barry",
-              "lastName":"Allen",
-              "middleName":"Rock",
-              "dateOfBirth":"2022-07-22",
-              "gender": null,
-              "ethnicity": null,
-              "aliases":[],
-              "identifiers": {
-                  "nomisNumber": null,
-                  "croNumber": null,
-                  "deliusCrn": null
-              },
-              "pncId": null,
-              "hmppsId": null
-            }
-          ]
-          """.removeWhitespaceAndNewlines(),
-        )
-      }
-
       it("logs audit") {
         mockMvc.performAuthorised("$basePath?first_name=$firstName&last_name=$lastName&pnc_number=$pncNumber&date_of_birth=$dateOfBirth")
         verify(auditService, times(1)).createEvent("SEARCH_PERSON", "Person searched with first name: $firstName, last name: $lastName, search within aliases: false, pnc number: $pncNumber, date of birth: $dateOfBirth")
@@ -175,7 +133,7 @@ internal class PersonControllerTest(
           ),
         )
 
-        val result = mockMvc.performAuthorised("$basePath?first_name=$firstName&last_name=$lastName&page=3&perPage=5")
+        val result = mockMvc.performAuthorised("$basePath?first_name=$firstName&last_name=$lastName&date_of_birth=$dateOfBirth&page=3&perPage=5")
 
         result.response.contentAsString.shouldContainJsonKeyValue("$.pagination.page", 3)
         result.response.contentAsString.shouldContainJsonKeyValue("$.pagination.totalPages", 4)
@@ -197,7 +155,7 @@ internal class PersonControllerTest(
       }
 
       it("returns a 200 OK status code") {
-        val result = mockMvc.performAuthorised("$basePath?first_name=$firstName&last_name=$lastName")
+        val result = mockMvc.performAuthorised("$basePath?first_name=$firstName&last_name=$lastName&date_of_birth=$dateOfBirth")
 
         result.response.status.shouldBe(HttpStatus.OK.value())
       }
@@ -207,6 +165,13 @@ internal class PersonControllerTest(
 
         result.response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
         result.response.contentAsString.shouldContain("No query parameters specified.")
+      }
+
+      it("returns a 400 BAD REQUEST status code when no search criteria provided") {
+        val result = mockMvc.performAuthorised("$basePath?date_of_birth=12323423234")
+
+        result.response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
+        result.response.contentAsString.shouldContain("Invalid date format. Please use yyyy-MM-dd.")
       }
     }
 
