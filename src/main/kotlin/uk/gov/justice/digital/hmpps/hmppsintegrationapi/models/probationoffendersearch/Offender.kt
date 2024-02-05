@@ -30,6 +30,6 @@ data class Offender(
     ),
     pncId = otherIds.pncNumber,
     hmppsId = otherIds.pncNumber,
-    contactDetails = this.contactDetails?.toContactdetails()
+    contactDetails = this.contactDetails?.toContactdetails(),
   )
 }
