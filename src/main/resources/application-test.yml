@@ -50,6 +50,8 @@ authorisation:
       - "/v1/persons/.*/risks"
       - "/v1/persons/.*/reported-adjudications"
       - "/v1/epf/person-details/.*/.*"
+      - "/v1/persons/.*/adjudications"
+      - "/v1/persons/.*/licences/conditions"
       - "/health"
       - "/health/ping"
       - "/health/readiness"
