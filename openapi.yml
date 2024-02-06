@@ -994,6 +994,16 @@ components:
     Offence:
       type: object
       properties:
+        serviceSource:
+          type: string
+          enum: [ NOMIS, NDELIUS ]
+          example: NOMIS
+          description: Which upstream API service the sentence originates from
+        systemSource:
+          type: string
+          enum: [ PRISON_SYSTEMS, PROBATION_SYSTEMS ]
+          example: PROBATION_SYSTEMS
+          description: Which upstream API system the sentence originates from
         cjsCode:
           type: string
           example: RR84170
