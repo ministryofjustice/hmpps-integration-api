@@ -5,8 +5,8 @@ import io.kotest.matchers.shouldBe
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Sentence
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SentenceLength
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SentenceTerm
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SystemSource
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import java.time.LocalDate
 
 class PersonSentencesTest : DescribeSpec(

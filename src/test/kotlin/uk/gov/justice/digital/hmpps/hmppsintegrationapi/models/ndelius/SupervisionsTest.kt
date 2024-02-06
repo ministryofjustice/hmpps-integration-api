@@ -8,7 +8,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Sentence
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SentenceLength
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SystemSource
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
-
 import java.time.LocalDate
 
 class SupervisionsTest : DescribeSpec(
