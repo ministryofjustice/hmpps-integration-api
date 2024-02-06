@@ -17,8 +17,10 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ContactDetailsWithEmailAndPhone
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ImageMetadata
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PhoneNumber
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
@@ -50,6 +52,12 @@ internal class PersonControllerTest(
     val lastName = "Allen"
     val dateOfBirth = "2023-03-01"
     val mockMvc = IntegrationAPIMockMvc(springMockMvc)
+    val phoneNumbers: List<PhoneNumber> =
+      listOf(
+        PhoneNumber("07123456789", "Mobile"),
+        PhoneNumber("01611234567", "Landline"),
+      )
+    val emails: List<String> = listOf("barry.allen@starlabs.gov")
 
     describe("GET $basePath") {
       beforeTest {
@@ -64,12 +72,14 @@ internal class PersonControllerTest(
                 lastName = "Allen",
                 middleName = "Jonas",
                 dateOfBirth = LocalDate.parse("2023-03-01"),
+                contactDetails = ContactDetailsWithEmailAndPhone(emptyList(), phoneNumbers, emails),
               ),
               Person(
                 firstName = "Barry",
                 lastName = "Allen",
                 middleName = "Rock",
                 dateOfBirth = LocalDate.parse("2022-07-22"),
+                contactDetails = ContactDetailsWithEmailAndPhone(emptyList(), phoneNumbers, emails),
               ),
             ),
           ),
@@ -116,7 +126,13 @@ internal class PersonControllerTest(
 
       it("logs audit") {
         mockMvc.performAuthorised("$basePath?first_name=$firstName&last_name=$lastName&pnc_number=$pncNumber&date_of_birth=$dateOfBirth")
-        verify(auditService, times(1)).createEvent("SEARCH_PERSON", "Person searched with first name: $firstName, last name: $lastName, search within aliases: false, pnc number: $pncNumber, date of birth: $dateOfBirth")
+        verify(
+          auditService,
+          times(1),
+        ).createEvent(
+          "SEARCH_PERSON",
+          "Person searched with first name: $firstName, last name: $lastName, search within aliases: false, pnc number: $pncNumber, date of birth: $dateOfBirth",
+        )
       }
 
       it("returns paginated results") {
@@ -133,7 +149,10 @@ internal class PersonControllerTest(
           ),
         )
 
-        val result = mockMvc.performAuthorised("$basePath?first_name=$firstName&last_name=$lastName&date_of_birth=$dateOfBirth&page=3&perPage=5")
+        val result =
+          mockMvc.performAuthorised(
+            "$basePath?first_name=$firstName&last_name=$lastName&date_of_birth=$dateOfBirth&page=3&perPage=5",
+          )
 
         result.response.contentAsString.shouldContainJsonKeyValue("$.pagination.page", 3)
         result.response.contentAsString.shouldContainJsonKeyValue("$.pagination.totalPages", 4)
@@ -205,7 +224,8 @@ internal class PersonControllerTest(
           whenever(getPersonService.execute(idThatDoesNotExist)).thenReturn(
             Response(
               data = null,
-              errors = listOf(
+              errors =
+              listOf(
                 UpstreamApiError(
                   causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH,
                   type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
@@ -224,7 +244,8 @@ internal class PersonControllerTest(
           whenever(getPersonService.execute(idThatDoesNotExist)).thenReturn(
             Response(
               data = Person("someFirstName", "someLastName"),
-              errors = listOf(
+              errors =
+              listOf(
                 UpstreamApiError(
                   causedBy = UpstreamApi.NOMIS,
                   type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
@@ -266,7 +287,8 @@ internal class PersonControllerTest(
               "deliusCrn": null
           },
           "pncId": null,
-          "hmppsId": null
+          "hmppsId": null,
+          "contactDetails": null
         }
         }
         """.removeWhitespaceAndNewlines(),
@@ -280,7 +302,8 @@ internal class PersonControllerTest(
         Mockito.reset(getImageMetadataForPersonService)
         whenever(getImageMetadataForPersonService.execute(hmppsId)).thenReturn(
           Response(
-            data = listOf(
+            data =
+            listOf(
               ImageMetadata(
                 id = 2461788,
                 active = true,
@@ -297,7 +320,8 @@ internal class PersonControllerTest(
       it("returns paginated results") {
         whenever(getImageMetadataForPersonService.execute(hmppsId)).thenReturn(
           Response(
-            data = List(20) {
+            data =
+            List(20) {
               ImageMetadata(
                 id = Random.nextLong(),
                 active = Random.nextBoolean(),
@@ -350,7 +374,8 @@ internal class PersonControllerTest(
         whenever(getImageMetadataForPersonService.execute(hmppsId)).thenReturn(
           Response(
             data = emptyList(),
-            errors = listOf(
+            errors =
+            listOf(
               UpstreamApiError(
                 causedBy = UpstreamApi.NOMIS,
                 type = UpstreamApiError.Type.ENTITY_NOT_FOUND,

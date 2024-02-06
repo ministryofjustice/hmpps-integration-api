@@ -17,4 +17,5 @@ data class Person(
   val identifiers: Identifiers = Identifiers(),
   val pncId: String? = null,
   val hmppsId: String? = null,
+  val contactDetails: ContactDetailsWithEmailAndPhone? = null,
 )
