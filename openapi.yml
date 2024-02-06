@@ -493,10 +493,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  data:
-                    $ref: "#/components/schemas/PersonLicences"
+                $ref: "#/components/schemas/PersonLicencesData"
         "404":
           description: Failed to find licenses for a person with the provided HMPPS ID.
           content:
@@ -1036,7 +1033,7 @@ components:
           description: The category to which the condition belongs
         condition:
           type: string
-          example: Residence at a specific place
+          example: You must not enter the location X
           nullable: true
           description: The condition of a licence, this can be a standard condition, a combination of inputted text and template text including any user input or the input for the bespoke condition
     Name:
@@ -1196,6 +1193,11 @@ components:
           type: string
           example: 2008/0545166T
           description: Currently a hmppsId is a PNC identifier however this will change in the near future to be a CRN identifier
+    PersonLicencesData:
+      type: object
+      properties:
+        data:
+          $ref: "#/components/schemas/PersonLicences"
     PersonLicences:
       type: object
       properties:
