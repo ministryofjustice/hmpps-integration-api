@@ -37,24 +37,32 @@ class SupervisionsTest : DescribeSpec(
           integrationApiOffences.shouldBe(
             listOf(
               Offence(
+                serviceSource = UpstreamApi.NDELIUS,
+                systemSource = SystemSource.PROBATION_SYSTEMS,
                 description = "foobar",
                 hoCode = "05800",
                 courtDates = listOf(LocalDate.parse("2009-07-07")),
                 startDate = LocalDate.parse("2000-01-02"),
               ),
               Offence(
+                serviceSource = UpstreamApi.NDELIUS,
+                systemSource = SystemSource.PROBATION_SYSTEMS,
                 description = "additionalFoo",
                 hoCode = "12345",
                 courtDates = listOf(LocalDate.parse("2009-07-07")),
                 startDate = LocalDate.parse("2001-01-01"),
               ),
               Offence(
+                serviceSource = UpstreamApi.NDELIUS,
+                systemSource = SystemSource.PROBATION_SYSTEMS,
                 description = "barbaz",
                 hoCode = "05800",
                 courtDates = listOf(LocalDate.parse("2010-07-07")),
                 startDate = LocalDate.parse("2003-03-03"),
               ),
               Offence(
+                serviceSource = UpstreamApi.NDELIUS,
+                systemSource = SystemSource.PROBATION_SYSTEMS,
                 description = "additionalFoo2",
                 hoCode = "98765",
                 courtDates = listOf(LocalDate.parse("2010-07-07")),
@@ -80,12 +88,16 @@ class SupervisionsTest : DescribeSpec(
           integrationApiOffences.shouldBe(
             listOf(
               Offence(
+                serviceSource = UpstreamApi.NDELIUS,
+                systemSource = SystemSource.PROBATION_SYSTEMS,
                 description = "foobar",
                 hoCode = "05800",
                 courtDates = listOf(LocalDate.parse("2009-07-07")),
                 startDate = LocalDate.parse("2000-01-02"),
               ),
               Offence(
+                serviceSource = UpstreamApi.NDELIUS,
+                systemSource = SystemSource.PROBATION_SYSTEMS,
                 description = "additionalFoo",
                 hoCode = "12345",
                 courtDates = listOf(LocalDate.parse("2009-07-07")),
@@ -112,12 +124,16 @@ class SupervisionsTest : DescribeSpec(
           integrationApiOffences.shouldBe(
             listOf(
               Offence(
+                serviceSource = UpstreamApi.NDELIUS,
+                systemSource = SystemSource.PROBATION_SYSTEMS,
                 description = "foobar",
                 hoCode = "05800",
                 courtDates = listOf(LocalDate.parse("2009-07-07")),
                 startDate = LocalDate.parse("2000-01-02"),
               ),
               Offence(
+                serviceSource = UpstreamApi.NDELIUS,
+                systemSource = SystemSource.PROBATION_SYSTEMS,
                 description = "additionalFoo",
                 hoCode = "12345",
                 courtDates = listOf(LocalDate.parse("2009-07-07")),
@@ -152,12 +168,16 @@ class SupervisionsTest : DescribeSpec(
           integrationApiOffences.shouldBe(
             listOf(
               Offence(
+                serviceSource = UpstreamApi.NDELIUS,
+                systemSource = SystemSource.PROBATION_SYSTEMS,
                 description = "foobar",
                 hoCode = "05800",
                 courtDates = listOf(LocalDate.parse("2009-07-07")),
                 startDate = LocalDate.parse("2019-09-09"),
               ),
               Offence(
+                serviceSource = UpstreamApi.NDELIUS,
+                systemSource = SystemSource.PROBATION_SYSTEMS,
                 description = "barbaz",
                 hoCode = "05800",
                 courtDates = listOf(LocalDate.parse("2010-07-07")),
