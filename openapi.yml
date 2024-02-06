@@ -820,6 +820,23 @@ components:
         releaseDate:
           type: string
           format: date
+    ContactDetails:
+      properties:
+        addresses:
+          type: array
+          description: A list of known addresses
+          properties:
+            Address:
+              $ref: "#/components/schemas/Address"
+        phoneNumbers:
+          type: array
+          items:
+            $ref: "#/components/schemas/PhoneNumbers"
+          description: A list of phone numbers and type of phone number (mobile, landline etc...)
+        emails:
+          type: array
+          example: "leslie.knope@pawnee.gov"
+          description: A list of email addresses
     Court:
       required:
         - name
@@ -1205,25 +1222,11 @@ components:
           type: string
           example: 2008/0545166T
           description: Currently a hmppsId is a PNC identifier however this will change in the near future to be a CRN identifier
-    contactDetails:
-      type: object,
-      properties:
-        addresses:
-          type: array
-          items:
-            $ref: "#/components/schemas/Address"
-            description: A list of known addresses
-        phoneNumbers:
-          type: array
-          $ref: "#/components/schemas/PhoneNumbers"
-          description: A list of phone numbers and type of phone number (mobile, landline etc...)
-        emails:
-          type: array
-          example: "leslie.knope@pawnee.gov"
-          description: A list of email addresses
+        contactDetails:
+          $ref: "#/components/schemas/ContactDetails"
     PhoneNumbers:
       type: array
-      items:
+      properties:
         number:
           type: string
           example: 079123456789
@@ -1336,8 +1339,8 @@ components:
           example: true
           description: Whether the sentence is a custodial sentence
         fineAmount:
-          type: double
-          example: 400.00
+          type: number
+          example: 480.59
           description: The amount of fine related to the sentence and offence
         length:
           $ref: "#/components/schemas/SentenceLength"
