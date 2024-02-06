@@ -63,8 +63,8 @@ class ProbationOffenderSearchGateway(@Value("\${services.probation-offender-sear
     }
   }
 
-  fun getPersons(firstName: String?, surname: String?, pncNumber: String?, searchWithinAliases: Boolean = false): Response<List<Person>> {
-    val requestBody = mapOf("firstName" to firstName, "surname" to surname, "pncNumber" to pncNumber, "includeAliases" to searchWithinAliases)
+  fun getPersons(firstName: String?, surname: String?, pncNumber: String?, dateOfBirth: String?, searchWithinAliases: Boolean = false): Response<List<Person>> {
+    val requestBody = mapOf("firstName" to firstName, "surname" to surname, "pncNumber" to pncNumber, "dateOfBirth" to dateOfBirth, "includeAliases" to searchWithinAliases)
       .filterValues { it != null }
 
     val result = webClient.requestList<Offender>(HttpMethod.POST, "/search", authenticationHeader(), UpstreamApi.PROBATION_OFFENDER_SEARCH, requestBody)

@@ -27,6 +27,18 @@ paths:
           required: false
           description: The last name of the person
         - in: query
+          name: pnc_number
+          schema:
+            type: string
+          required: false
+          description: A URL-encoded pnc identifier
+        - in: query
+          name: date_of_birth
+          schema:
+            type: string
+          required: false
+          description: The date of birth of the person
+        - in: query
           name: search_within_aliases
           schema:
             type: boolean
@@ -456,16 +468,6 @@ paths:
                 PersonNotFoundError:
                   $ref: "#/components/examples/PersonNotFoundError"
 
-
-  /{TBC}/v1/persons/{Id}/accommodations:
-    get:
-      summary: FUTURE ENDPOINT - Returns accommodation and referral information associated with a person.
-      parameters:
-        - $ref: "#/components/parameters/Id"
-      responses:
-        "200":
-          description: Success.
-
   /v1/persons/{Id}/adjudications:
     get:
       summary: Returns adjudications associated with a person.
@@ -492,6 +494,40 @@ paths:
                 PersonNotFoundError:
                   $ref: "#/components/examples/PersonNotFoundError"
 
+  /v1/persons/{HmppsId}/licences/conditions:
+    get:
+      summary: Returns license conditions associated with a person.
+      parameters:
+        - $ref: "#/components/parameters/HmppsId"
+      responses:
+        "200":
+          description: Successfully found licenses for a person with the provided HMPPS ID.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/PersonLicences"
+        "404":
+          description: Failed to find licenses for a person with the provided HMPPS ID.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                PersonNotFoundError:
+                  $ref: "#/components/examples/PersonNotFoundError"
+
+  /{TBC}/v1/persons/{Id}/accommodations:
+    get:
+      summary: FUTURE ENDPOINT - Returns accommodation and referral information associated with a person.
+      parameters:
+        - $ref: "#/components/parameters/Id"
+      responses:
+        "200":
+          description: Success.
+
   /{TBC}/v1/persons/{Id}/interventions:
     get:
       summary: FUTURE ENDPOINT - Returns activities and Non-Statutory Interventions (NSIs) associated with a person.
@@ -504,15 +540,6 @@ paths:
   /{TBC}/v1/persons/{Id}/key-workers:
     get:
       summary: FUTURE ENDPOINT - Returns responsible officer history, transfer history and consolidated transfer review associated with a person.
-      parameters:
-        - $ref: "#/components/parameters/Id"
-      responses:
-        "200":
-          description: Success.
-
-  /{TBC}/v1/persons/{Id}/licenses:
-    get:
-      summary: FUTURE ENDPOINT - Returns license conditions associated with a person.
       parameters:
         - $ref: "#/components/parameters/Id"
       responses:
@@ -967,6 +994,63 @@ components:
               format: date
               description: Calculated automatic (unconditional) release date for a person
               example: 2023-03-01
+    Licence:
+      type: object
+      properties:
+        status:
+          type: string
+          example: IN_PROGRESS
+          "enum": [ "IN_PROGRESS","SUBMITTED","APPROVED","ACTIVE","VARIATION_IN_PROGRESS","VARIATION_SUBMITTED","VARIATION_APPROVED","VARIATION_REJECTED" ]
+          description: Licence status
+        typeCode:
+          type: string
+          example: AP
+          enum: [ "AP","PSS","AP_PSS" ]
+          description: The type of licence
+        createdDate:
+          type: string
+          format: date
+          example: 2015-09-23
+          description: The date and time when the version/variation of the licence was created at
+        approvedDate:
+          type: string
+          format: date
+          example: 2015-09-24
+          description: The date and time that the prison approved the licence, where licences approved before 01/04/2023 will not have an approved time
+        updatedDate:
+          type: string
+          format: date
+          example: 2015-10-23
+          description: The date and time that the licence was last updated
+        conditions:
+          type: array
+          minItems: 0
+          items:
+            $ref: "#/components/schemas/LicenceCondition"
+          description: list of conditions. The type of conditions on a licence which can be AP (All Purpose) and/or PSS (Post Sentence Supervision)
+    LicenceCondition:
+      type: object
+      properties:
+        type:
+          type: string
+          example: Standard
+          nullable: true
+          description: Condition type
+        code:
+          type: string
+          example: 5a105297-dce1-4d18-b9ea-4195b46b7594
+          nullable: true
+          description: The code shared by all instances of this condition
+        category:
+          type: string
+          example: Residence at a specific place
+          nullable: true
+          description: The category to which the condition belongs
+        condition:
+          type: string
+          example: Residence at a specific place
+          nullable: true
+          description: The condition of a licence, this can be a standard condition, a combination of inputted text and template text including any user input or the input for the bespoke condition
     Name:
       required:
         - forename
@@ -1124,6 +1208,24 @@ components:
           type: string
           example: 2008/0545166T
           description: Currently a hmppsId is a PNC identifier however this will change in the near future to be a CRN identifier
+    PersonLicences:
+      type: object
+      properties:
+        hmppsId:
+          type: string
+          example: 2008/0545166T
+          description: Currently a hmppsId is a PNC identifier however this will change in the near future to be a CRN identifier
+        offenderNumber:
+          type: string
+          example: Z1234ZZ
+          nullable: true
+          description: The prison identifier for the person on the licence. Also known as the NOMIS ID
+        licences:
+          type: array
+          minItems: 0
+          items:
+            $ref: "#/components/schemas/Licence"
+          description: list of licences
     Punishment:
       type: object
       properties:
