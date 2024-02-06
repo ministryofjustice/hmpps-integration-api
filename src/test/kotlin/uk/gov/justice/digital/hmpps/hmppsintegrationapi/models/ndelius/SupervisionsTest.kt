@@ -6,7 +6,9 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.generateTestSent
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Offence
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Sentence
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SentenceLength
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SystemSource
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
+
 import java.time.LocalDate
 
 class SupervisionsTest : DescribeSpec(
@@ -199,7 +201,8 @@ class SupervisionsTest : DescribeSpec(
         integrationApiSentences.shouldBe(
           listOf(
             generateTestSentence(
-              dataSource = UpstreamApi.NDELIUS,
+              serviceSource = UpstreamApi.NDELIUS,
+              systemSource = SystemSource.PROBATION_SYSTEMS,
               dateOfSentencing = LocalDate.parse("2009-07-07"),
               description = "CJA - Community Order",
               length = SentenceLength(
@@ -209,7 +212,8 @@ class SupervisionsTest : DescribeSpec(
               ),
             ),
             generateTestSentence(
-              dataSource = UpstreamApi.NDELIUS,
+              serviceSource = UpstreamApi.NDELIUS,
+              systemSource = SystemSource.PROBATION_SYSTEMS,
               dateOfSentencing = LocalDate.parse("2010-07-07"),
               isActive = false,
               description = "CJA - Suspended Sentence Order",
@@ -232,7 +236,8 @@ class SupervisionsTest : DescribeSpec(
 
         supervisions.supervisions.first().toSentence().shouldBe(
           Sentence(
-            dataSource = UpstreamApi.NDELIUS,
+            serviceSource = UpstreamApi.NDELIUS,
+            systemSource = SystemSource.PROBATION_SYSTEMS,
             isActive = null,
             isCustodial = true,
             description = null,
