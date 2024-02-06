@@ -29,42 +29,44 @@ class SentencesSmokeTest : DescribeSpec(
         """
         {
           "data": [
-            {
-              "dataSource": "NOMIS",
-              "dateOfSentencing": "2019-08-24",
-              "description": "string",
-              "fineAmount": $fineAmountMinNumberValue,
-              "isActive": null,
-              "isCustodial": true,
-              "length": {
-                "duration": null,
-                "units": null,
-                "terms": [
-                  {
-                    "years": 1,
-                    "months": 2,
-                    "weeks": 3,
-                    "days": 4,
-                    "hours": null,
-                    "prisonTermCode": "string"
-                  }
-                ]
+              {
+                "serviceSource": "NOMIS",
+                "systemSource": "PRISON_SYSTEMS",
+                "dateOfSentencing": "2019-08-24",
+                "description": "string",
+                "isActive": null,
+                "isCustodial": true,
+                "fineAmount": -1.7976931348623157E308,
+                "length": {
+                  "duration": null,
+                  "units": null,
+                  "terms": [
+                    {
+                      "years": 1,
+                      "months": 2,
+                      "weeks": 3,
+                      "days": 4,
+                      "hours": null,
+                      "prisonTermCode": "string"
+                    }
+                  ]
+                }
+              },
+              {
+                "serviceSource": "NDELIUS",
+                "systemSource": "PROBATION_SYSTEMS",
+                "dateOfSentencing": "2019-08-24",
+                "description": "string",
+                "isActive": true,
+                "isCustodial": false,
+                "fineAmount": null,
+                "length": {
+                  "duration": -2147483648,
+                  "units": "Hours",
+                  "terms": []
+                }
               }
-            },
-            {
-              "dataSource": "NDELIUS",
-              "dateOfSentencing": "2019-08-24",
-              "description": "string",
-              "fineAmount": null,
-              "isActive": true,
-              "isCustodial": false,
-              "length": {
-                "duration": $hourMinIntValue,
-                "units": "Hours",
-                "terms": []
-              }
-            }
-          ],
+            ],
           "pagination": {
             "isLastPage": true,
             "count": 2,
