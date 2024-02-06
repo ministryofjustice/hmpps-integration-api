@@ -1207,7 +1207,7 @@ components:
           description: Currently a hmppsId is a PNC identifier however this will change in the near future to be a CRN identifier
         PhoneNumbers:
           type: array
-          items: [
+          items:
             number:
               type: string
               example: 079123456789
@@ -1216,7 +1216,7 @@ components:
               type: string
               example: TELEPHONE
               description: the type of number
-          ]
+
 
           description: Currently a hmppsId is a PNC identifier however this will change in the near future to be a CRN identifier
 
