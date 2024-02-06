@@ -482,7 +482,7 @@ paths:
                 PersonNotFoundError:
                   $ref: "#/components/examples/PersonNotFoundError"
 
-  /v1/persons/{HmppsId}/licenses:
+  /v1/persons/{HmppsId}/licences/conditions:
     get:
       summary: Returns license conditions associated with a person.
       parameters:
