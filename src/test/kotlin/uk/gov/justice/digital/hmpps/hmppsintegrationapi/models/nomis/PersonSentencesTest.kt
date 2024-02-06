@@ -5,6 +5,7 @@ import io.kotest.matchers.shouldBe
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Sentence
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SentenceLength
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SentenceTerm
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SystemSource
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import java.time.LocalDate
 
@@ -169,10 +170,11 @@ class PersonSentencesTest : DescribeSpec(
       }
 
       it("deals with NULL values") {
-        val integrationApiSentence = Sentence(isCustodial = true, dataSource = UpstreamApi.NOMIS)
+        val integrationApiSentence = Sentence(isCustodial = true, serviceSource = UpstreamApi.NOMIS, systemSource = SystemSource.PRISON_SYSTEMS)
         integrationApiSentence.shouldBe(
           Sentence(
-            dataSource = UpstreamApi.NOMIS,
+            serviceSource = UpstreamApi.NOMIS,
+            systemSource = SystemSource.PRISON_SYSTEMS,
             dateOfSentencing = null,
             description = null,
             isActive = null,

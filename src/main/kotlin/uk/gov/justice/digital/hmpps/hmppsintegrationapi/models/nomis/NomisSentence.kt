@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis
 
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Sentence
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SentenceLength
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SystemSource
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import java.time.LocalDate
 
@@ -13,7 +14,8 @@ data class NomisSentence(
   val terms: List<NomisTerm> = listOf(NomisTerm()),
 ) {
   fun toSentence(): Sentence = Sentence(
-    dataSource = UpstreamApi.NOMIS,
+    serviceSource = UpstreamApi.NOMIS,
+    systemSource = SystemSource.PRISON_SYSTEMS,
     dateOfSentencing = this.sentenceDate,
     description = this.sentenceTypeDescription,
     fineAmount = this.fineAmount,

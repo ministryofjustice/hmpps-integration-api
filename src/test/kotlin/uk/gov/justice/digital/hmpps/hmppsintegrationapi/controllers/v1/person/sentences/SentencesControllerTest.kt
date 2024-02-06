@@ -72,69 +72,71 @@ internal class SentencesControllerTest(
 
       result.response.contentAsString.shouldContain(
         """
-          [
-            {
-              "dataSource": "NOMIS",
-              "dateOfSentencing": null,
-              "description": "Some description 1",
-              "isActive": true,
-              "isCustodial": true,
-              "fineAmount": null,
-              "length": {
+        [
+          {
+            "serviceSource": "NOMIS",
+            "systemSource": "PRISON_SYSTEMS",
+            "dateOfSentencing": null,
+            "description": "Some description 1",
+            "isActive": true,
+            "isCustodial": true,
+            "fineAmount": null,
+            "length": {
                 "duration": null,
                 "units": null,
                 "terms": [
-                  {
-                    "years": null,
-                    "months": null,
-                    "weeks": null,
-                    "days": null,
-                    "hours": 2,
-                    "prisonTermCode": null
-                  },
-                  {
-                    "years": 25,
-                    "months": null,
-                    "weeks": null,
-                    "days": null,
-                    "hours": null,
-                    "prisonTermCode": null
-                  }
+                    {
+                      "years": null,
+                      "months": null,
+                      "weeks": null,
+                      "days": null,
+                      "hours": 2,
+                      "prisonTermCode": null
+                    },
+                    {
+                      "years": 25,
+                      "months": null,
+                      "weeks": null,
+                      "days": null,
+                      "hours": null,
+                      "prisonTermCode": null
+                    }
                 ]
-              }
-            },
-            {
-              "dataSource": "NOMIS",
-              "dateOfSentencing": null,
-              "description": "Some description 2",
-              "isActive": true,
-              "isCustodial": true,
-              "fineAmount": null,
-              "length": {
-                "duration": null,
-                "units": null,
-                "terms": [
-                  {
-                    "years": null,
-                    "months": null,
-                    "weeks": null,
-                    "days": null,
-                    "hours": 2,
-                    "prisonTermCode": null
-                  },
-                  {
-                    "years": 25,
-                    "months": null,
-                    "weeks": null,
-                    "days": null,
-                    "hours": null,
-                    "prisonTermCode": null
-                  }
-                ]
-              }
             }
-          ]
-          """.removeWhitespaceAndNewlines(),
+          },
+          {
+            "serviceSource": "NOMIS",
+            "systemSource": "PRISON_SYSTEMS",
+            "dateOfSentencing": null,
+            "description": "Some description 2",
+            "isActive": true,
+            "isCustodial": true,
+            "fineAmount": null,
+            "length": {
+                "duration": null,
+                "units": null,
+                "terms": [
+                    {
+                      "years": null,
+                      "months": null,
+                      "weeks": null,
+                      "days": null,
+                      "hours": 2,
+                      "prisonTermCode": null
+                    },
+                    {
+                      "years": 25,
+                      "months": null,
+                      "weeks": null,
+                      "days": null,
+                      "hours": null,
+                      "prisonTermCode": null
+                    }
+                 ]
+             }
+          }
+        ]
+        """.removeWhitespaceAndNewlines(),
       )
     }
 

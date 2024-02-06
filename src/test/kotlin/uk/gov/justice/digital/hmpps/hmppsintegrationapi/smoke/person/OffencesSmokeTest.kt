@@ -24,40 +24,46 @@ class OffencesSmokeTest : DescribeSpec(
         """
         {
           "data": [
-          {
-            "cjsCode": "RR84070",
-            "hoCode": null,
-            "courtDates": [
-              "2018-02-10"
-            ],
-            "description": "Commit an act / series of acts with intent to pervert the course of public justice",
-            "endDate": "2018-03-10",
-            "startDate": "2018-02-10",
-            "statuteCode": "RR84"
-          },
-          {
-            "cjsCode": null,
-            "hoCode": "string",
-            "courtDates": [
-              "2019-08-24"
-            ],
-            "description": "string",
-            "endDate": null,
-            "startDate": "2019-08-24",
-            "statuteCode": null
-          },
-          {
-            "cjsCode": null,
-            "hoCode": "string",
-            "courtDates": [
-              "2019-08-24"
-            ],
-            "description": "string",
-            "endDate": null,
-            "startDate": "2019-08-24",
-            "statuteCode": null
-          }
-        ],
+            {
+              "serviceSource": "NOMIS",
+              "systemSource": "PRISON_SYSTEMS",
+              "cjsCode": "RR84070",
+              "hoCode": null,
+              "courtDates": [
+                "2018-02-10"
+              ],
+              "description": "Commit an act / series of acts with intent to pervert the course of public justice",
+              "endDate": "2018-03-10",
+              "startDate": "2018-02-10",
+              "statuteCode": "RR84"
+            },
+            {
+              "serviceSource": "NDELIUS",
+              "systemSource": "PROBATION_SYSTEMS",
+              "cjsCode": null,
+              "hoCode": "string",
+              "courtDates": [
+                "2019-08-24"
+              ],
+              "description": "string",
+              "endDate": null,
+              "startDate": "2019-08-24",
+              "statuteCode": null
+            },
+            {
+              "serviceSource": "NDELIUS",
+              "systemSource": "PROBATION_SYSTEMS",
+              "cjsCode": null,
+              "hoCode": "string",
+              "courtDates": [
+                "2019-08-24"
+              ],
+              "description": "string",
+              "endDate": null,
+              "startDate": "2019-08-24",
+              "statuteCode": null
+            }
+         ],
         "pagination": {
           "isLastPage": true,
           "count": 3,

@@ -19,6 +19,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.generateTestSent
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.NDeliusApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SentenceLength
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SystemSource
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import java.io.File
@@ -65,7 +66,8 @@ class GetSentencesForPersonTest(
         response.data.shouldBe(
           listOf(
             generateTestSentence(
-              dataSource = UpstreamApi.NDELIUS,
+              serviceSource = UpstreamApi.NDELIUS,
+              systemSource = SystemSource.PROBATION_SYSTEMS,
               dateOfSentencing = LocalDate.parse("2009-07-07"),
               description = "CJA - Community Order",
               isActive = false,
@@ -77,7 +79,8 @@ class GetSentencesForPersonTest(
               ),
             ),
             generateTestSentence(
-              dataSource = UpstreamApi.NDELIUS,
+              serviceSource = UpstreamApi.NDELIUS,
+              systemSource = SystemSource.PROBATION_SYSTEMS,
               dateOfSentencing = LocalDate.parse("2009-09-01"),
               description = "CJA - Suspended Sentence Order",
               isActive = true,
