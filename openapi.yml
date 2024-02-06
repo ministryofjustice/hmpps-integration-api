@@ -1205,21 +1205,6 @@ components:
           type: string
           example: 2008/0545166T
           description: Currently a hmppsId is a PNC identifier however this will change in the near future to be a CRN identifier
-        PhoneNumbers:
-          type: array
-          items:
-            number:
-              type: string
-              example: 079123456789
-              description: a phone number,
-            type:
-              type: string
-              example: TELEPHONE
-              description: the type of number
-
-
-          description: Currently a hmppsId is a PNC identifier however this will change in the near future to be a CRN identifier
-
     contactDetails:
       type: object,
       properties:
@@ -1236,9 +1221,17 @@ components:
           type: array
           example: "leslie.knope@pawnee.gov"
           description: A list of email addresses
-
-
-
+    PhoneNumbers:
+      type: array
+      items:
+        number:
+          type: string
+          example: 079123456789
+          description: a phone number
+        type:
+          type: string
+          example: TELEPHONE
+          description: the type of number
     PersonLicencesData:
       type: object
       properties:
