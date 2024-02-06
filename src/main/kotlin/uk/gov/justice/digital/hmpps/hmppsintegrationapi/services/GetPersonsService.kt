@@ -19,7 +19,7 @@ class GetPersonsService(
     val personsFromProbationOffenderSearch = probationOffenderSearchGateway.getPersons(firstName, lastName, pncNumber, dateOfBirth, searchWithinAliases)
 
     if (!pncNumber.isNullOrEmpty()) {
-      hmppsId = personsFromProbationOffenderSearch.data.firstOrNull()?.identifiers?.deliusCrn
+      hmppsId = personsFromProbationOffenderSearch.data.firstOrNull()?.identifiers?.nomisNumber
     }
 
     val responseFromPrisonerOffenderSearch = prisonerOffenderSearchGateway.getPersons(firstName, lastName, hmppsId, dateOfBirth, searchWithinAliases)
