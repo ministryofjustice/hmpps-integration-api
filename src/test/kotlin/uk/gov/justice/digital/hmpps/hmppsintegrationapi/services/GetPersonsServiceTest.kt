@@ -68,7 +68,7 @@ internal class GetPersonsServiceTest(
   }
 
   it("allows prisonerOffenderSearchGateway to search with a hmppsId if a pncNumber is passed in") {
-    val responseFromProbationOffenderSearch = Response(data = listOf(Person(firstName, lastName, middleName = "John", identifiers = Identifiers(deliusCrn = "A1234AA"))))
+    val responseFromProbationOffenderSearch = Response(data = listOf(Person(firstName, lastName, middleName = "John", identifiers = Identifiers(nomisNumber = "A1234AA"))))
 
     whenever(probationOffenderSearchGateway.getPersons(firstName, lastName, pncNumber, dateOfBirth)).thenReturn(responseFromProbationOffenderSearch)
     whenever(prisonerOffenderSearchGateway.getPersons(firstName, lastName, hmppsId, dateOfBirth)).thenReturn(Response(data = emptyList()))
