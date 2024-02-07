@@ -829,9 +829,7 @@ components:
             Address:
               $ref: "#/components/schemas/Address"
         phoneNumbers:
-          type: array
-          items:
-            $ref: "#/components/schemas/PhoneNumbers"
+          $ref: "#/components/schemas/PhoneNumbers"
           description: A list of phone numbers and type of phone number (mobile, landline etc...)
         emails:
           type: array
