@@ -11,7 +11,6 @@ import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.context.ContextConfiguration
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ProbationOffenderSearchGateway
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Identifiers
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 
@@ -27,7 +26,6 @@ internal class GetPersonsServiceTest(
   val firstName = "Bruce"
   val lastName = "Wayne"
   val pncNumber = "2003/13116M"
-  val hmppsId = "A1234AA"
   val dateOfBirth = "2004-04-19"
 
   beforeEach {
@@ -35,13 +33,13 @@ internal class GetPersonsServiceTest(
     Mockito.reset(probationOffenderSearchGateway)
 
     whenever(probationOffenderSearchGateway.getPersons(firstName, lastName, null, dateOfBirth)).thenReturn(Response(data = emptyList()))
-    whenever(prisonerOffenderSearchGateway.getPersons(firstName, lastName, null, dateOfBirth)).thenReturn(Response(data = emptyList()))
+    whenever(prisonerOffenderSearchGateway.getPersons(firstName, lastName, dateOfBirth)).thenReturn(Response(data = emptyList()))
   }
 
   it("gets person(s) from Prisoner Offender Search") {
     getPersonsService.execute(firstName, lastName, null, dateOfBirth)
 
-    verify(prisonerOffenderSearchGateway, times(1)).getPersons(firstName, lastName, null, dateOfBirth)
+    verify(prisonerOffenderSearchGateway, times(1)).getPersons(firstName, lastName, dateOfBirth)
   }
 
   it("gets person(s) from Probation Offender Search") {
@@ -54,39 +52,17 @@ internal class GetPersonsServiceTest(
     getPersonsService.execute(firstName, lastName, null, dateOfBirth)
 
     verify(probationOffenderSearchGateway, times(1)).getPersons(firstName, lastName, null, dateOfBirth, searchWithinAliases = false)
-    verify(prisonerOffenderSearchGateway, times(1)).getPersons(firstName, lastName, null, dateOfBirth, searchWithinAliases = false)
+    verify(prisonerOffenderSearchGateway, times(1)).getPersons(firstName, lastName, dateOfBirth, searchWithinAliases = false)
   }
 
   it("allows searching within aliases") {
     whenever(probationOffenderSearchGateway.getPersons(firstName, lastName, null, dateOfBirth, searchWithinAliases = true)).thenReturn(Response(data = emptyList()))
-    whenever(prisonerOffenderSearchGateway.getPersons(firstName, lastName, null, dateOfBirth, searchWithinAliases = true)).thenReturn(Response(data = emptyList()))
+    whenever(prisonerOffenderSearchGateway.getPersons(firstName, lastName, dateOfBirth, searchWithinAliases = true)).thenReturn(Response(data = emptyList()))
 
     getPersonsService.execute(firstName, lastName, null, dateOfBirth, true)
 
     verify(probationOffenderSearchGateway, times(1)).getPersons(firstName, lastName, null, dateOfBirth, true)
-    verify(prisonerOffenderSearchGateway, times(1)).getPersons(firstName, lastName, null, dateOfBirth, true)
-  }
-
-  it("allows prisonerOffenderSearchGateway to search with a hmppsId if a pncNumber is passed in") {
-    val responseFromProbationOffenderSearch = Response(data = listOf(Person(firstName, lastName, middleName = "John", identifiers = Identifiers(deliusCrn = "A1234AA"))))
-
-    whenever(probationOffenderSearchGateway.getPersons(firstName, lastName, pncNumber, dateOfBirth)).thenReturn(responseFromProbationOffenderSearch)
-    whenever(prisonerOffenderSearchGateway.getPersons(firstName, lastName, hmppsId, dateOfBirth)).thenReturn(Response(data = emptyList()))
-
-    getPersonsService.execute(firstName, lastName, pncNumber, dateOfBirth)
-
-    verify(probationOffenderSearchGateway, times(1)).getPersons(firstName, lastName, pncNumber, dateOfBirth)
-    verify(prisonerOffenderSearchGateway, times(1)).getPersons(firstName, lastName, hmppsId, dateOfBirth)
-  }
-
-  it("allows prisonerOffenderSearchGateway to not search with a hmppsId if a pncNumber is not passed in") {
-    whenever(probationOffenderSearchGateway.getPersons(firstName, lastName, null, dateOfBirth)).thenReturn(Response(data = emptyList()))
-    whenever(prisonerOffenderSearchGateway.getPersons(firstName, lastName, null, dateOfBirth)).thenReturn(Response(data = emptyList()))
-
-    getPersonsService.execute(firstName, lastName, null, dateOfBirth)
-
-    verify(probationOffenderSearchGateway, times(1)).getPersons(firstName, lastName, null, dateOfBirth)
-    verify(prisonerOffenderSearchGateway, times(1)).getPersons(firstName, lastName, null, dateOfBirth)
+    verify(prisonerOffenderSearchGateway, times(1)).getPersons(firstName, lastName, dateOfBirth, true)
   }
 
   it("returns person(s)") {
@@ -94,16 +70,28 @@ internal class GetPersonsServiceTest(
     val responseFromPrisonerOffenderSearch = Response(data = listOf(Person(firstName, lastName, middleName = "Gary")))
 
     whenever(probationOffenderSearchGateway.getPersons(firstName, lastName, null, dateOfBirth)).thenReturn(responseFromProbationOffenderSearch)
-    whenever(prisonerOffenderSearchGateway.getPersons(firstName, lastName, null, dateOfBirth)).thenReturn(responseFromPrisonerOffenderSearch)
+    whenever(prisonerOffenderSearchGateway.getPersons(firstName, lastName, dateOfBirth)).thenReturn(responseFromPrisonerOffenderSearch)
 
     val response = getPersonsService.execute(firstName, lastName, null, dateOfBirth)
 
     response.data.shouldBe(responseFromPrisonerOffenderSearch.data + responseFromProbationOffenderSearch.data)
   }
 
+  it("returns only probation person(s) if searched with a PNC") {
+    val responseFromProbationOffenderSearch = Response(data = listOf(Person(firstName, lastName, middleName = "John")))
+    val responseFromPrisonerOffenderSearch = Response(data = listOf(Person(firstName, lastName, middleName = "Gary")))
+
+    whenever(probationOffenderSearchGateway.getPersons(firstName, lastName, pncNumber, dateOfBirth)).thenReturn(responseFromProbationOffenderSearch)
+    whenever(prisonerOffenderSearchGateway.getPersons(firstName, lastName, dateOfBirth)).thenReturn(responseFromPrisonerOffenderSearch)
+
+    val response = getPersonsService.execute(firstName, lastName, pncNumber, dateOfBirth)
+
+    response.data.shouldBe(responseFromProbationOffenderSearch.data)
+  }
+
   it("returns an empty list when no person(s) are found") {
     whenever(probationOffenderSearchGateway.getPersons(firstName, lastName, null, dateOfBirth)).thenReturn(Response(emptyList()))
-    whenever(prisonerOffenderSearchGateway.getPersons(firstName, lastName, null, dateOfBirth)).thenReturn(Response(emptyList()))
+    whenever(prisonerOffenderSearchGateway.getPersons(firstName, lastName, dateOfBirth)).thenReturn(Response(emptyList()))
 
     val response = getPersonsService.execute(firstName, lastName, null, dateOfBirth)
     response.data.shouldBe(emptyList())
