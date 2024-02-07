@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius
 
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Offence
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Sentence
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SystemSource
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -21,7 +22,8 @@ data class NDeliusSupervision(
 
   fun toSentence(): Sentence {
     return Sentence(
-      dataSource = UpstreamApi.NDELIUS,
+      serviceSource = UpstreamApi.NDELIUS,
+      systemSource = SystemSource.PROBATION_SYSTEMS,
       dateOfSentencing = if (!this.sentence.date.isNullOrEmpty()) LocalDate.parse(this.sentence.date) else null,
       description = this.sentence.description,
       fineAmount = null,

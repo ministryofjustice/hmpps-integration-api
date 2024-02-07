@@ -18,6 +18,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitesp
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Offence
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SystemSource
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetOffencesForPersonService
@@ -47,6 +48,8 @@ internal class OffencesControllerTest(
           Response(
             data = listOf(
               Offence(
+                serviceSource = UpstreamApi.NDELIUS,
+                systemSource = SystemSource.PROBATION_SYSTEMS,
                 cjsCode = "RR99999",
                 hoCode = "05800",
                 courtDates = listOf(LocalDate.parse("2023-03-03")),
@@ -79,6 +82,8 @@ internal class OffencesControllerTest(
           """
           "data": [
             {
+              "serviceSource": "NDELIUS",
+              "systemSource": "PROBATION_SYSTEMS",
               "cjsCode": "RR99999",
               "hoCode": "05800",
               "courtDates": ["2023-03-03"],
@@ -138,6 +143,8 @@ internal class OffencesControllerTest(
             data =
             List(20) {
               Offence(
+                serviceSource = UpstreamApi.NDELIUS,
+                systemSource = SystemSource.PROBATION_SYSTEMS,
                 cjsCode = "RR99999",
                 courtDates = listOf(LocalDate.parse("2023-03-03")),
                 description = "This is a description of an offence.",

@@ -3,11 +3,13 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Sentence
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SentenceLength
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SentenceTerm
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SystemSource
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import java.time.LocalDate
 
 fun generateTestSentence(
-  dataSource: UpstreamApi = UpstreamApi.NOMIS,
+  serviceSource: UpstreamApi = UpstreamApi.NOMIS,
+  systemSource: SystemSource = SystemSource.PRISON_SYSTEMS,
   dateOfSentencing: LocalDate? = null,
   description: String? = "Some description",
   fineAmount: Number? = null,
@@ -22,7 +24,8 @@ fun generateTestSentence(
     ),
   ),
 ): Sentence = Sentence(
-  dataSource = dataSource,
+  serviceSource = serviceSource,
+  systemSource = systemSource,
   dateOfSentencing = dateOfSentencing,
   description = description,
   fineAmount = fineAmount,

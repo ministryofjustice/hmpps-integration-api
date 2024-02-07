@@ -9,6 +9,7 @@
 .venv/
 build/
 .DS_Store
+.trivyignore
 
 # CMake
 cmake-build-debug/
