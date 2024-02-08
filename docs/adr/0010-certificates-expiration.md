@@ -1,6 +1,6 @@
-# 0009 - Authorisation at application level
+# 0010 - Certificates expiration
 
-2024-02-07
+2024-02-08
 
 ## Status
 
@@ -11,7 +11,11 @@ We need to ensure that clients' certificates are always up-to-date. When we gene
 The decision is about what the best way to check the certificates' expiration date is, and how to get notified when they are about to expire, so to re-generate them.
 There are two main methods we explored:
 1. Using AWS resources, namely the Certificate Manager (ACM) for storing; CloudWatch for monitoring; a Lambda for custom actions; and the AWS System Manager Automation.
-2. Using a Kubernetes CronJob to run a bash script.
+2. Using a Kubernetes CronJob to run a bash script. CronJobs are currently being used across Cloud Platform and there are multiple examples we can take inspiration from, and we have already a suite of bash scripts inside our codebase.
+
+The bash script will be run within the CronJob yml file. The job is set to run once every day.
+The bash script looks into the S3 bucket and retrieves the previously uploaded client certificates. It then checks the expiration date, and if it's less than 90 days away, we get a Slack notification.
+We can then proceed to renew the certificates for the impacted clients.
 
 ## Decision
 
