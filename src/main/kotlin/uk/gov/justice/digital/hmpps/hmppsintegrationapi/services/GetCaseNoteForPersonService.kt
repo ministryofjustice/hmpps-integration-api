@@ -1,10 +1,12 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.CaseNotesGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PageCaseNote
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 
+@Service
 class GetCaseNoteForPersonService(
   @Autowired val caseNotesGateway: CaseNotesGateway,
   @Autowired val getPersonService: GetPersonService,
