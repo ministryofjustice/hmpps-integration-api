@@ -14,15 +14,17 @@ class GetPersonsService(
 ) {
 
   fun execute(firstName: String?, lastName: String?, pncNumber: String?, dateOfBirth: String?, searchWithinAliases: Boolean = false): Response<List<Person>> {
-    var hmppsId: String? = null
+    val responseFromProbationOffenderSearch = probationOffenderSearchGateway.getPersons(firstName, lastName, pncNumber, dateOfBirth, searchWithinAliases)
 
-    val personsFromProbationOffenderSearch = probationOffenderSearchGateway.getPersons(firstName, lastName, pncNumber, dateOfBirth, searchWithinAliases)
-
-    if (!pncNumber.isNullOrEmpty()) {
-      hmppsId = personsFromProbationOffenderSearch.data.firstOrNull()?.identifiers?.nomisNumber
+    if (responseFromProbationOffenderSearch.errors.isNotEmpty()) {
+      return Response(emptyList(), responseFromProbationOffenderSearch.errors)
     }
 
-    val responseFromPrisonerOffenderSearch = prisonerOffenderSearchGateway.getPersons(firstName, lastName, hmppsId, dateOfBirth, searchWithinAliases)
-    return Response(data = responseFromPrisonerOffenderSearch.data + personsFromProbationOffenderSearch.data)
+    if (pncNumber.isNullOrBlank()) {
+      val responseFromPrisonerOffenderSearch = prisonerOffenderSearchGateway.getPersons(firstName, lastName, dateOfBirth, searchWithinAliases)
+      return Response(data = responseFromPrisonerOffenderSearch.data + responseFromProbationOffenderSearch.data)
+    }
+
+    return Response(data = responseFromProbationOffenderSearch.data)
   }
 }
