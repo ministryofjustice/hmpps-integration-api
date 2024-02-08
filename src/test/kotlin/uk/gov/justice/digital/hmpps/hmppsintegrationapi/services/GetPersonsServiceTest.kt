@@ -87,6 +87,7 @@ internal class GetPersonsServiceTest(
     val response = getPersonsService.execute(firstName, lastName, pncNumber, dateOfBirth)
 
     response.data.shouldBe(responseFromProbationOffenderSearch.data)
+    verify(prisonerOffenderSearchGateway, times(0)).getPersons(firstName, lastName, dateOfBirth, true)
   }
 
   it("returns an empty list when no person(s) are found") {
