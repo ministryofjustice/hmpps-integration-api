@@ -11,7 +11,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisPageCaseNote
 
 @Component
-class CaseNotesGateway(@Value("\${case-notes.base-url") baseUrl: String) {
+class CaseNotesGateway(@Value("\${services.case-notes.base-url}") baseUrl: String) {
   private val webClient = WebClientWrapper(baseUrl)
 
   @Autowired
