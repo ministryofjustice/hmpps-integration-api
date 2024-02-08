@@ -11,28 +11,31 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisPageCaseNote
 
 @Component
-class CaseNotesGateway(@Value("\${services.case-notes.base-url}") baseUrl: String) {
+class CaseNotesGateway(
+  @Value("\${services.case-notes.base-url}") baseUrl: String,
+) {
   private val webClient = WebClientWrapper(baseUrl)
 
   @Autowired
   lateinit var hmppsAuthGateway: HmppsAuthGateway
 
-  fun getCaseNotesForPerson(id: String): Response<List<PageCaseNote>> {
-    val result = webClient.requestList<NomisPageCaseNote>(
-      HttpMethod.GET,
-      "/case-notes/$id",
-      authenticationHeader(),
-      UpstreamApi.CASE_NOTES,
-    )
+  fun getCaseNotesForPerson(id: String): Response<PageCaseNote> {
+    val result =
+      webClient.request<NomisPageCaseNote>(
+        HttpMethod.GET,
+        "/case-notes/$id",
+        authenticationHeader(),
+        UpstreamApi.CASE_NOTES,
+      )
 
     return when (result) {
       is WebClientWrapper.WebClientWrapperResponse.Success -> {
-        Response(data = result.data.map { it.toPageCaseNote() })
+        Response(data = result.data.toPageCaseNote())
       }
 
       is WebClientWrapper.WebClientWrapperResponse.Error -> {
         Response(
-          data = emptyList(),
+          data = PageCaseNote(null),
           errors = result.errors,
         )
       }

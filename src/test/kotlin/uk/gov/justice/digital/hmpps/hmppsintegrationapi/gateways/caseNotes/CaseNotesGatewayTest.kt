@@ -13,6 +13,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.CaseNotesGatewa
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.CaseNotesApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PageCaseNote
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 
 @ActiveProfiles("test")
@@ -24,33 +25,33 @@ class CaseNotesGatewayTest(
   @MockBean val hmppsAuthGateway: HmppsAuthGateway,
   val caseNotesGateway: CaseNotesGateway,
 ) : DescribeSpec(
-  {
-    val caseNotesApiMockServer = CaseNotesApiMockServer()
-    beforeEach {
-      caseNotesApiMockServer.start()
+    {
+      val caseNotesApiMockServer = CaseNotesApiMockServer()
+      beforeEach {
+        caseNotesApiMockServer.start()
 
-      Mockito.reset(hmppsAuthGateway)
-      whenever(hmppsAuthGateway.getClientToken("CaseNotes")).thenReturn(
-        HmppsAuthMockServer.TOKEN,
-      )
-    }
+        Mockito.reset(hmppsAuthGateway)
+        whenever(hmppsAuthGateway.getClientToken("CaseNotes")).thenReturn(
+          HmppsAuthMockServer.TOKEN,
+        )
+      }
 
-    afterTest {
-      caseNotesApiMockServer.stop()
-    }
+      afterTest {
+        caseNotesApiMockServer.stop()
+      }
 
-    it("authenticates using HMPPS Auth with credentials") {
-      caseNotesGateway.getCaseNotesForPerson(id = "123")
+      it("authenticates using HMPPS Auth with credentials") {
+        caseNotesGateway.getCaseNotesForPerson(id = "123")
 
-      org.mockito.kotlin.verify(hmppsAuthGateway, org.mockito.internal.verification.VerificationModeFactory.times(1))
-        .getClientToken("CaseNotes")
-    }
+        org.mockito.kotlin.verify(hmppsAuthGateway, org.mockito.internal.verification.VerificationModeFactory.times(1))
+          .getClientToken("CaseNotes")
+      }
 
-    it("upstream API returns an error, return error") {
-      caseNotesApiMockServer.stubGetCaseNotes("123", "", HttpStatus.BAD_REQUEST)
-      val response = caseNotesGateway.getCaseNotesForPerson(id = "123")
-      response.data.shouldBe(emptyList())
-      response.errors[0].type.shouldBe(UpstreamApiError.Type.BAD_REQUEST)
-    }
-  },
-)
+      it("upstream API returns an error, return error") {
+        caseNotesApiMockServer.stubGetCaseNotes("123", "", HttpStatus.BAD_REQUEST)
+        val response = caseNotesGateway.getCaseNotesForPerson(id = "123")
+        response.data.shouldBe(PageCaseNote(null))
+        response.errors[0].type.shouldBe(UpstreamApiError.Type.BAD_REQUEST)
+      }
+    },
+  )
