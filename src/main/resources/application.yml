@@ -71,6 +71,8 @@ services:
     base-url: http://localhost:4045
   create-and-vary-licence:
     base-url: http://localhost:4070
+  case-notes:
+    base-url: http://localhost:4080
 
 sentry:
   traces-sample-rate: "0.05"
