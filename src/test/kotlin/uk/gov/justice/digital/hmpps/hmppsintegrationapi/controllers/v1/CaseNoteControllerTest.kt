@@ -15,7 +15,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PageCaseNot
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetCaseNoteForPersonService
 
-@WebMvcTest(controllers = [EPFPersonDetailController::class])
+@WebMvcTest(controllers = [CaseNoteController::class])
 @ActiveProfiles("test")
 class CaseNoteControllerTest(
   @Autowired var springMockMvc: MockMvc,
