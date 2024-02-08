@@ -9,7 +9,7 @@ class CaseNotesApiMockServer : WireMockServer(WIREMOCK_PORT) {
     private const val WIREMOCK_PORT = 4008
   }
 
-  fun getCaseNotes(id: String, body: String, status: HttpStatus = HttpStatus.OK) {
+  fun stubGetCaseNotes(id: String, body: String, status: HttpStatus = HttpStatus.OK) {
     stubFor(
       WireMock.get("/case-notes/$id")
         .withHeader(
