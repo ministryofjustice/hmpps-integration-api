@@ -11,23 +11,26 @@ class OffenderTest : DescribeSpec(
   {
     describe("#toPerson") {
       it("maps one-to-one attributes to person attributes") {
-        val offender = Offender(
-          firstName = "First Name",
-          surname = "Surname",
-          middleNames = listOf("Middle Name"),
-          dateOfBirth = LocalDate.parse("2023-03-01"),
-          gender = "Gender",
-          offenderProfile = OffenderProfile(ethnicity = "Ethnicity"),
-          offenderAliases = listOf(
-            OffenderAlias(firstName = "Alias First Name", surname = "Alias Surname"),
-          ),
-          otherIds = OtherIds(
-            pncNumber = "pncNumber",
-            nomsNumber = "nomsNumber",
-            croNumber = "croNumber",
-            crn = "crn",
-          ),
-        )
+        val offender =
+          Offender(
+            firstName = "First Name",
+            surname = "Surname",
+            middleNames = listOf("Middle Name"),
+            dateOfBirth = LocalDate.parse("2023-03-01"),
+            gender = "Gender",
+            offenderProfile = OffenderProfile(ethnicity = "Ethnicity"),
+            offenderAliases =
+              listOf(
+                OffenderAlias(firstName = "Alias First Name", surname = "Alias Surname"),
+              ),
+            otherIds =
+              OtherIds(
+                pncNumber = "pncNumber",
+                nomsNumber = "nomsNumber",
+                croNumber = "croNumber",
+                crn = "crn",
+              ),
+          )
 
         val person = offender.toPerson()
 
@@ -42,15 +45,16 @@ class OffenderTest : DescribeSpec(
         person.identifiers.croNumber.shouldBe(offender.otherIds.croNumber)
         person.identifiers.deliusCrn.shouldBe(offender.otherIds.crn)
         person.pncId.shouldBe(offender.otherIds.pncNumber)
-        person.hmppsId.shouldBe(offender.otherIds.pncNumber)
+        person.hmppsId.shouldBe(offender.otherIds.crn)
       }
 
       it("returns null when no middle names") {
-        val prisoner = Offender(
-          firstName = "First Name",
-          surname = "Surname",
-          middleNames = listOf(),
-        )
+        val prisoner =
+          Offender(
+            firstName = "First Name",
+            surname = "Surname",
+            middleNames = listOf(),
+          )
 
         val person = prisoner.toPerson()
 
