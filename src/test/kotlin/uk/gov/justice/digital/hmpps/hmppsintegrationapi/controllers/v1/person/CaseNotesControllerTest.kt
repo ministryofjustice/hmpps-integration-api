@@ -18,16 +18,16 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMo
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CaseNote
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PageCaseNote
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetCaseNoteForPersonService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetCaseNotesForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 
-@WebMvcTest(controllers = [CaseNoteController::class])
+@WebMvcTest(controllers = [CaseNotesController::class])
 @ActiveProfiles("test")
-class CaseNoteControllerTest(
+class CaseNotesControllerTest(
   @Autowired var springMockMvc: MockMvc,
-  @MockBean val getCaseNoteForPersonService: GetCaseNoteForPersonService,
+  @MockBean val getCaseNotesForPersonService: GetCaseNotesForPersonService,
   @MockBean val auditService: AuditService,
 ) : DescribeSpec(
   {
@@ -43,9 +43,9 @@ class CaseNoteControllerTest(
       )
     describe("GET $path") {
       beforeTest {
-        Mockito.reset(getCaseNoteForPersonService)
+        Mockito.reset(getCaseNotesForPersonService)
         Mockito.reset(auditService)
-        whenever(getCaseNoteForPersonService.execute(hmppsId)).thenReturn(
+        whenever(getCaseNotesForPersonService.execute(hmppsId)).thenReturn(
           Response(
             data = pageCaseNote,
             errors = emptyList(),
@@ -62,7 +62,7 @@ class CaseNoteControllerTest(
       it("gets the case notes for a person with the matching ID") {
         mockMvc.performAuthorised(path)
 
-        verify(getCaseNoteForPersonService, VerificationModeFactory.times(1)).execute(hmppsId)
+        verify(getCaseNotesForPersonService, VerificationModeFactory.times(1)).execute(hmppsId)
       }
 
       it("returns the case notes for a person with the matching ID") {

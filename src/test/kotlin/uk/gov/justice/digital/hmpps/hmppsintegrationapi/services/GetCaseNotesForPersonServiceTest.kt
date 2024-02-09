@@ -18,12 +18,12 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
-  classes = [GetCaseNoteForPersonService::class],
+  classes = [GetCaseNotesForPersonService::class],
 )
-class GetCaseNoteForPersonServiceTest(
+class GetCaseNotesForPersonServiceTest(
   @MockBean val caseNotesGateway: CaseNotesGateway,
   @MockBean val getPersonService: GetPersonService,
-  private val getCaseNoteForPersonService: GetCaseNoteForPersonService,
+  private val getCaseNoteForPersonService: GetCaseNotesForPersonService,
 ) : DescribeSpec(
   {
     val hmppsId = "1234/56789B"

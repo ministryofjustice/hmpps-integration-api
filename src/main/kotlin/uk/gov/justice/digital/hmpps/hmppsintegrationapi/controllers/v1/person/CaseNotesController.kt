@@ -10,13 +10,13 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.decodeUrlChar
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PageCaseNote
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetCaseNoteForPersonService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetCaseNotesForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 
 @RestController
 @RequestMapping("/v1/persons")
-class CaseNoteController(
-  @Autowired val getCaseNoteForPersonService: GetCaseNoteForPersonService,
+class CaseNotesController(
+  @Autowired val getCaseNoteForPersonService: GetCaseNotesForPersonService,
   @Autowired val auditService: AuditService,
 ) {
   @GetMapping("{encodedHmppsId}/case-notes")

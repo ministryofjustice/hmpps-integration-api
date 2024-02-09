@@ -7,7 +7,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PageCaseNot
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 
 @Service
-class GetCaseNoteForPersonService(
+class GetCaseNotesForPersonService(
   @Autowired val caseNotesGateway: CaseNotesGateway,
   @Autowired val getPersonService: GetPersonService,
 ) {
