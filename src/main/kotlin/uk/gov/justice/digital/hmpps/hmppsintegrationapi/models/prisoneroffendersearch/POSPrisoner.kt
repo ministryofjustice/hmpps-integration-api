@@ -16,19 +16,20 @@ data class POSPrisoner(
   val pncNumber: String? = null,
   val croNumber: String? = null,
 ) {
-  fun toPerson(): Person = Person(
-    firstName = this.firstName,
-    lastName = this.lastName,
-    middleName = this.middleNames,
-    dateOfBirth = this.dateOfBirth,
-    gender = this.gender,
-    ethnicity = this.ethnicity,
-    aliases = this.aliases.map { it.toAlias() },
-    identifiers = Identifiers(
-      nomisNumber = this.prisonerNumber,
-      croNumber = this.croNumber,
-    ),
-    pncId = this.pncNumber,
-    hmppsId = this.pncNumber,
-  )
+  fun toPerson(): Person =
+    Person(
+      firstName = this.firstName,
+      lastName = this.lastName,
+      middleName = this.middleNames,
+      dateOfBirth = this.dateOfBirth,
+      gender = this.gender,
+      ethnicity = this.ethnicity,
+      aliases = this.aliases.map { it.toAlias() },
+      identifiers =
+        Identifiers(
+          nomisNumber = this.prisonerNumber,
+          croNumber = this.croNumber,
+        ),
+      pncId = this.pncNumber,
+    )
 }

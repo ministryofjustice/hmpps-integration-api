@@ -15,21 +15,23 @@ data class Offender(
   val contactDetails: ContactDetailsWithEmailAndPhone? = null,
   val otherIds: OtherIds = OtherIds(),
 ) {
-  fun toPerson(): Person = Person(
-    firstName = this.firstName,
-    lastName = this.surname,
-    middleName = this.middleNames.joinToString(" ").ifEmpty { "" },
-    dateOfBirth = this.dateOfBirth,
-    gender = this.gender,
-    ethnicity = this.offenderProfile.ethnicity,
-    aliases = this.offenderAliases.map { it.toAlias() },
-    identifiers = Identifiers(
-      nomisNumber = otherIds.nomsNumber,
-      croNumber = otherIds.croNumber,
-      deliusCrn = otherIds.crn,
-    ),
-    pncId = otherIds.pncNumber,
-    hmppsId = otherIds.pncNumber,
-    contactDetails = this.contactDetails?.toContactdetails(),
-  )
+  fun toPerson(): Person =
+    Person(
+      firstName = this.firstName,
+      lastName = this.surname,
+      middleName = this.middleNames.joinToString(" ").ifEmpty { "" },
+      dateOfBirth = this.dateOfBirth,
+      gender = this.gender,
+      ethnicity = this.offenderProfile.ethnicity,
+      aliases = this.offenderAliases.map { it.toAlias() },
+      identifiers =
+        Identifiers(
+          nomisNumber = otherIds.nomsNumber,
+          croNumber = otherIds.croNumber,
+          deliusCrn = otherIds.crn,
+        ),
+      pncId = otherIds.pncNumber,
+      hmppsId = otherIds.crn,
+      contactDetails = this.contactDetails?.toContactdetails(),
+    )
 }
