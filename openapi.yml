@@ -516,6 +516,28 @@ paths:
                 PersonNotFoundError:
                   $ref: "#/components/examples/PersonNotFoundError"
 
+  /v1/persons/{HmppsId}/case-notes:
+    get:
+      summary: Returns case notes associated with a person.
+      parameters:
+        - $ref: "#/components/parameters/HmppsId"
+      responses:
+        "200":
+          description: Successfully found case notes for a person with the provided HMPPS ID.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CaseNotesData"
+        "404":
+          description: Failed to find case notes for a person with the provided HMPPS ID.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                PersonNotFoundError:
+                  $ref: "#/components/examples/PersonNotFoundError"
+
   /{TBC}/v1/persons/{Id}/accommodations:
     get:
       summary: FUTURE ENDPOINT - Returns accommodation and referral information associated with a person.
@@ -806,6 +828,11 @@ components:
         ageAtRelease:
           type: integer
           format: int64
+    CaseNote:
+      type: object
+      properties:
+        caseNoteId:
+          type: string
     CaseSentence:
       required:
         - date
@@ -1158,6 +1185,11 @@ components:
         canRemove:
           type: boolean
           nullable: true
+    PageCaseNote:
+      type: object
+      properties:
+        caseNote:
+          $ref: '#/components/schemas/CaseNote'
     Pagination:
       type: object
       properties:
