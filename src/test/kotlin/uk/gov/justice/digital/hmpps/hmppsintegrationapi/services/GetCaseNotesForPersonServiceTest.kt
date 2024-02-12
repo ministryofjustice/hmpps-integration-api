@@ -12,7 +12,6 @@ import org.springframework.test.context.ContextConfiguration
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.CaseNotesGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CaseNote
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Identifiers
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PageCaseNote
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 
@@ -30,12 +29,9 @@ class GetCaseNotesForPersonServiceTest(
     val nomisNumber = "Z99999ZZ"
     val person = Person(firstName = "Julianna", lastName = "Blake", identifiers = Identifiers(nomisNumber = nomisNumber))
     val caseNotes =
-      PageCaseNote(
-        caseNotes =
-        listOf(
-          CaseNote(
-            caseNoteId = "12345ABC",
-          ),
+      listOf(
+        CaseNote(
+          caseNoteId = "12345ABC",
         ),
       )
 
@@ -54,7 +50,8 @@ class GetCaseNotesForPersonServiceTest(
 
     it("should return case notes from gateway") {
       val result = getCaseNoteForPersonService.execute(hmppsId = hmppsId)
-      result.data.caseNotes?.first()?.caseNoteId.shouldBe("12345ABC")
+      result.data.size.shouldBe(1)
+      result.data.first()?.caseNoteId.shouldBe("12345ABC")
       result.errors.count().shouldBe(0)
     }
   },

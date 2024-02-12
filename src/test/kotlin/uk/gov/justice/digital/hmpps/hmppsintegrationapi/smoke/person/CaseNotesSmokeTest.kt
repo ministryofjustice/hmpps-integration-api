@@ -22,16 +22,20 @@ class CaseNotesSmokeTest : DescribeSpec(
       response.body().shouldEqualJson(
         """
          {
-          "data":
-            {
-              "caseNotes": [
-                {
-                  "caseNoteId": "12311312"
-                }
-              ]
-            }
-         }
-
+          "data": [
+          {
+            "caseNoteId": "12311312"
+          }
+        ],
+        "pagination": {
+          "isLastPage": true,
+          "count": 1,
+          "page": 1,
+          "perPage": 10,
+          "totalCount": 1,
+          "totalPages": 1
+        }
+      }
         """.removeWhitespaceAndNewlines(),
       )
     }

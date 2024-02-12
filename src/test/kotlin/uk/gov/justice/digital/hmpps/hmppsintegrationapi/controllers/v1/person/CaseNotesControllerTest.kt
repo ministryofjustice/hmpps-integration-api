@@ -16,7 +16,6 @@ import org.springframework.test.web.servlet.MockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CaseNote
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PageCaseNote
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetCaseNotesForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
@@ -36,10 +35,10 @@ class CaseNotesControllerTest(
     val path = "/v1/persons/$encodedHmppsId/case-notes"
     val mockMvc = IntegrationAPIMockMvc(springMockMvc)
     val pageCaseNote =
-      PageCaseNote(
-        listOf(
-          CaseNote(caseNoteId = "abcd1234"),
-        ),
+
+      listOf(
+        CaseNote(caseNoteId = "abcd1234"),
+
       )
     describe("GET $path") {
       beforeTest {
@@ -70,15 +69,14 @@ class CaseNotesControllerTest(
 
         result.response.contentAsString.shouldContain(
           """
-          "data":
-            {
-              "caseNotes": [
-                {
-               "caseNoteId": "abcd1234"
-                }
-              ]
-            }
-
+          {
+            "data":[
+              {"caseNoteId":"abcd1234"}
+             ],
+            "pagination":{
+              "isLastPage":true,"count":1,"page":1,"perPage":10,"totalCount":1,"totalPages":1
+             }
+          }
         """.removeWhitespaceAndNewlines(),
         )
       }

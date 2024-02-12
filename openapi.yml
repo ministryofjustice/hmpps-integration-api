@@ -527,7 +527,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/PageCaseNote"
+                $ref: "#/components/schemas/CaseNoteData"
         "404":
           description: Failed to find case notes for a person with the provided HMPPS ID.
           content:
@@ -1185,11 +1185,8 @@ components:
         canRemove:
           type: boolean
           nullable: true
-    PageCaseNote:
-      type: object
-      properties:
-        caseNote:
-          $ref: '#/components/schemas/CaseNote'
+    CaseNoteData:
+      type: string
     Pagination:
       type: object
       properties:

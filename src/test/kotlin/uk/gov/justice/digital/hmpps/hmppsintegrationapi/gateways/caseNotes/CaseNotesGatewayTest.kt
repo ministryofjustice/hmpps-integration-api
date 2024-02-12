@@ -13,7 +13,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.CaseNotesGatewa
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.CaseNotesApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PageCaseNote
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 
 @ActiveProfiles("test")
@@ -50,7 +49,7 @@ class CaseNotesGatewayTest(
     it("upstream API returns an error, return error") {
       caseNotesApiMockServer.stubGetCaseNotes("123", "", HttpStatus.BAD_REQUEST)
       val response = caseNotesGateway.getCaseNotesForPerson(id = "123")
-      response.data.shouldBe(PageCaseNote(null))
+      response.data.shouldBe(emptyList())
       response.errors[0].type.shouldBe(UpstreamApiError.Type.BAD_REQUEST)
     }
   },
