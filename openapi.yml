@@ -828,11 +828,16 @@ components:
         ageAtRelease:
           type: integer
           format: int64
-    CaseNote:
+    CaseNoteData:
       type: object
       properties:
-        caseNoteId:
-          type: string
+        caseNotes:
+          type: array
+          minItems: 0
+          items:
+            $ref: "#/components/schemas/CaseNoteData"
+        pagination:
+          $ref: "#/components/schemas/Pagination"
     CaseSentence:
       required:
         - date
@@ -1185,8 +1190,6 @@ components:
         canRemove:
           type: boolean
           nullable: true
-    CaseNoteData:
-      type: string
     Pagination:
       type: object
       properties:
