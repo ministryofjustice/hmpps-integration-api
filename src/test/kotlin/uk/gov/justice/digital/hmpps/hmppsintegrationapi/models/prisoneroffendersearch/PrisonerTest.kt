@@ -23,9 +23,9 @@ class PrisonerTest : DescribeSpec(
             pncNumber = "pncNumber",
             croNumber = "croNumber",
             aliases =
-            listOf(
-              POSPrisonerAlias(firstName = "Alias First Name", lastName = "Alias Last Name"),
-            ),
+              listOf(
+                POSPrisonerAlias(firstName = "Alias First Name", lastName = "Alias Last Name"),
+              ),
           )
 
         val person = prisoner.toPerson()
@@ -41,7 +41,6 @@ class PrisonerTest : DescribeSpec(
         person.identifiers.croNumber.shouldBe(prisoner.croNumber)
         person.identifiers.deliusCrn.shouldBeNull()
         person.pncId.shouldBe(prisoner.pncNumber)
-//        person.hmppsId.shouldBe(prisoner.pncNumber)
       }
     }
   },
