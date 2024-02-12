@@ -16,7 +16,7 @@ class CaseNotesSmokeTest : DescribeSpec(
     val basePath = "v1/persons/$encodedHmppsId/case-notes"
     val httpClient = IntegrationAPIHttpClient()
 
-    it("returns case notes for a person") {
+    it("returns case notes for a person.") {
       val response = httpClient.performAuthorised(basePath)
       response.statusCode().shouldBe(HttpStatus.OK.value())
       response.body().shouldEqualJson(
