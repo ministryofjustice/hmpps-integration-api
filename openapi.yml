@@ -533,7 +533,7 @@ paths:
                     type: array
                     minItems: 0
                     items:
-                      $ref: "#/components/schemas/CaseNoteData"
+                      $ref: "#/components/schemas/CaseNote"
                   pagination:
                     $ref: "#/components/schemas/Pagination"
         "404":
@@ -836,14 +836,6 @@ components:
         ageAtRelease:
           type: integer
           format: int64
-    CaseNoteData:
-      type: object
-      properties:
-        caseNotes:
-          type: array
-          minItems: 0
-          items:
-            $ref: "#/components/schemas/CaseNote"
     CaseNote:
       type: object
       properties:
