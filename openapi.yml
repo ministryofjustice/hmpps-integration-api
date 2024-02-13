@@ -527,7 +527,15 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/CaseNoteData"
+                type: object
+                properties:
+                  data:
+                    type: array
+                    minItems: 0
+                    items:
+                      $ref: "#/components/schemas/CaseNoteData"
+                  pagination:
+                    $ref: "#/components/schemas/Pagination"
         "404":
           description: Failed to find case notes for a person with the provided HMPPS ID.
           content:
@@ -835,9 +843,13 @@ components:
           type: array
           minItems: 0
           items:
-            $ref: "#/components/schemas/CaseNoteData"
-        pagination:
-          $ref: "#/components/schemas/Pagination"
+            $ref: "#/components/schemas/CaseNote"
+    CaseNote:
+      type: object
+      properties:
+        caseNoteId:
+          type: string
+          example: 1234
     CaseSentence:
       required:
         - date
