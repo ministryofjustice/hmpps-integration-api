@@ -17,6 +17,8 @@ services:
     base-url: http://localhost:4045
   create-and-vary-licence:
     base-url: http://localhost:4070
+  case-notes:
+    base-url: http://localhost:4080
 
 hmpps.sqs:
   provider: localstack
@@ -40,6 +42,7 @@ authorisation:
       - "/v1/persons/.*/needs"
       - "/v1/persons/.*/risks"
       - "/v1/persons/.*/reported-adjudications"
+      - "/v1/persons/.*/case-notes"
       - "/v1/epf/person-details/.*/.*"
       - "/health"
       - "/health/ping"

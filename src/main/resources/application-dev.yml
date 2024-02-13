@@ -15,6 +15,8 @@ services:
     base-url: https://manage-adjudications-api-dev.hmpps.service.justice.gov.uk
   create-and-vary-licence:
     base-url: https://create-and-vary-a-licence-api-dev.hmpps.service.justice.gov.uk
+  case-notes:
+    base-url: https://dev.offender-case-notes.service.justice.gov.uk
   hmpps-auth:
     base-url: https://sign-in-dev.hmpps.service.justice.gov.uk
     username: ${CLIENT_ID}
@@ -37,6 +39,7 @@ authorisation:
       - "/v1/persons/.*/risks"
       - "/v1/persons/.*/adjudications"
       - "/v1/persons/.*/licences/conditions"
+      - "/v1/persons/.*/case-notes"
     ctrlo:
       - "/v1/epf/person-details/.*/.*"
     kubernetes-health-check-client:
