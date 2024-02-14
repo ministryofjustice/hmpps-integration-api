@@ -858,11 +858,6 @@ components:
           format: date
     ContactDetails:
       properties:
-        addresses:
-          type: array
-          description: A list of known addresses
-          items:
-            $ref: "#/components/schemas/Address"
         phoneNumbers:
           $ref: "#/components/schemas/PhoneNumbers"
         emails:
