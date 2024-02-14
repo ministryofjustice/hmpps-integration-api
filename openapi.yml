@@ -861,15 +861,15 @@ components:
         addresses:
           type: array
           description: A list of known addresses
-          properties:
-            Address:
-              $ref: "#/components/schemas/Address"
+          items:
+            $ref: "#/components/schemas/Address"
         phoneNumbers:
           $ref: "#/components/schemas/PhoneNumbers"
-          description: A list of phone numbers and type of phone number (mobile, landline etc...)
         emails:
           type: array
-          example: "leslie.knope@pawnee.gov"
+          items:
+            type: string
+            example: "leslie.knope@pawnee.gov"
           description: A list of email addresses
     Court:
       required:
