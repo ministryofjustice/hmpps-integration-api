@@ -1270,15 +1270,17 @@ components:
           $ref: "#/components/schemas/ContactDetails"
     PhoneNumbers:
       type: array
-      properties:
-        number:
-          type: string
-          example: 079123456789
-          description: a phone number
-        type:
-          type: string
-          example: TELEPHONE
-          description: the type of number
+      items:
+        type: object
+        properties:
+          number:
+            type: string
+            example: "079123456789"
+            description: "A phone number"
+          type:
+            type: string
+            example: "TELEPHONE"
+            description: "The type of number"
     PersonLicencesData:
       type: object
       properties:
