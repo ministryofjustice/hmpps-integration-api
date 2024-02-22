@@ -70,7 +70,7 @@ class GetLicenceConditionsTests(
     it("returns licence condition for the matching ID") {
       val response = createAndVaryLicenceGateway.getLicenceConditions(conditionId)
 
-      response.data?.first()?.condition.shouldBe("Not commit any offence")
+      response.data.first().condition.shouldBe("Not commit any offence")
     }
 
     it("returns an error when 404 NOT FOUND is returned") {

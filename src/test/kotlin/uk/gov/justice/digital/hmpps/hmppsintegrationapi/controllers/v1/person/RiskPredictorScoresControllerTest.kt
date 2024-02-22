@@ -109,7 +109,7 @@ internal class RiskPredictorScoresControllerTest(
         val hmppsIdForPersonWithNoRiskPredictorScores = "0000/11111A"
         val encodedHmppsIdForPersonWithNoRiskPredictorScores =
           URLEncoder.encode(hmppsIdForPersonWithNoRiskPredictorScores, StandardCharsets.UTF_8)
-        val path = "/v1/persons/$encodedHmppsIdForPersonWithNoRiskPredictorScores/risks/scores"
+        val scoresPath = "/v1/persons/$encodedHmppsIdForPersonWithNoRiskPredictorScores/risks/scores"
 
         whenever(getRiskPredictorScoresForPersonService.execute(hmppsIdForPersonWithNoRiskPredictorScores)).thenReturn(
           Response(
@@ -117,7 +117,7 @@ internal class RiskPredictorScoresControllerTest(
           ),
         )
 
-        val result = mockMvc.performAuthorised(path)
+        val result = mockMvc.performAuthorised(scoresPath)
 
         result.response.contentAsString.shouldContain("\"data\":[]")
       }

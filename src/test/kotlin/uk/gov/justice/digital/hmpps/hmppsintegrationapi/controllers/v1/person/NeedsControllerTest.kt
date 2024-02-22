@@ -129,11 +129,11 @@ internal class NeedsControllerTest(
         val hmppsIdForPersonWithNoNeeds = "0000/11111A"
         val encodedHmppsIdForPersonWithNoNeeds =
           URLEncoder.encode(hmppsIdForPersonWithNoNeeds, StandardCharsets.UTF_8)
-        val path = "/v1/persons/$encodedHmppsIdForPersonWithNoNeeds/needs"
+        val needsPath = "/v1/persons/$encodedHmppsIdForPersonWithNoNeeds/needs"
 
         whenever(getNeedsForPersonService.execute(hmppsIdForPersonWithNoNeeds)).thenReturn(Response(data = null))
 
-        val result = mockMvc.performAuthorised(path)
+        val result = mockMvc.performAuthorised(needsPath)
 
         result.response.contentAsString.shouldContain("\"data\":null")
       }

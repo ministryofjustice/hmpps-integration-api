@@ -21,7 +21,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.generateTestSent
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetLatestSentenceKeyDatesAndAdjustmentsForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetSentencesForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 import java.net.URLEncoder
@@ -33,7 +32,6 @@ import java.time.LocalDate
 internal class SentencesControllerTest(
   @Autowired var springMockMvc: MockMvc,
   @MockBean val getSentencesForPersonService: GetSentencesForPersonService,
-  @MockBean val getLatestSentenceKeyDatesAndAdjustmentsForPersonService: GetLatestSentenceKeyDatesAndAdjustmentsForPersonService,
   @MockBean val auditService: AuditService,
 ) : DescribeSpec(
   {
@@ -144,7 +142,7 @@ internal class SentencesControllerTest(
       val hmppsIdForPersonWithNoSentences = "0000/11111A"
       val encodedHmppsIdForPersonWithNoSentences =
         URLEncoder.encode(hmppsIdForPersonWithNoSentences, StandardCharsets.UTF_8)
-      val path = "/v1/persons/$encodedHmppsIdForPersonWithNoSentences/sentences"
+      val sentencesPath = "/v1/persons/$encodedHmppsIdForPersonWithNoSentences/sentences"
 
       whenever(getSentencesForPersonService.execute(hmppsIdForPersonWithNoSentences)).thenReturn(
         Response(
@@ -152,7 +150,7 @@ internal class SentencesControllerTest(
         ),
       )
 
-      val result = mockMvc.performAuthorised(path)
+      val result = mockMvc.performAuthorised(sentencesPath)
 
       result.response.contentAsString.shouldContain("\"data\":[]".removeWhitespaceAndNewlines())
     }

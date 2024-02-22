@@ -5,6 +5,8 @@ import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory
+import org.mockito.kotlin.any
+import org.mockito.kotlin.argThat
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
@@ -15,6 +17,7 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.filters.CaseNoteFilter
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CaseNote
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetCaseNotesForPersonService
@@ -44,7 +47,7 @@ class CaseNotesControllerTest(
       beforeTest {
         Mockito.reset(getCaseNotesForPersonService)
         Mockito.reset(auditService)
-        whenever(getCaseNotesForPersonService.execute(hmppsId)).thenReturn(
+        whenever(getCaseNotesForPersonService.execute(any())).thenReturn(
           Response(
             data = pageCaseNote,
             errors = emptyList(),
@@ -61,7 +64,7 @@ class CaseNotesControllerTest(
       it("gets the case notes for a person with the matching ID") {
         mockMvc.performAuthorised(path)
 
-        verify(getCaseNotesForPersonService, VerificationModeFactory.times(1)).execute(hmppsId)
+        verify(getCaseNotesForPersonService, VerificationModeFactory.times(1)).execute(argThat<CaseNoteFilter> { it -> it.hmppsId == hmppsId })
       }
 
       it("returns the case notes for a person with the matching ID") {
@@ -70,13 +73,31 @@ class CaseNotesControllerTest(
         result.response.contentAsString.shouldContain(
           """
           {
-            "data":[
-              {"caseNoteId":"abcd1234"}
-             ],
-            "pagination":{
-              "isLastPage":true,"count":1,"page":1,"perPage":10,"totalCount":1,"totalPages":1
-             }
+          "data": [
+            {
+              "caseNoteId": "abcd1234",
+              "offenderIdentifier": null,
+              "type": null,
+              "typeDescription": null,
+              "subType": null,
+              "subTypeDescription": null,
+              "creationDateTime": null,
+              "occurrenceDateTime": null,
+              "text": null,
+              "locationId": null,
+              "sensitive": false,
+              "amendments": []
+            }
+          ],
+          "pagination": {
+            "isLastPage": true,
+            "count": 1,
+            "page": 1,
+            "perPage": 10,
+            "totalCount": 1,
+            "totalPages": 1
           }
+        }
         """.removeWhitespaceAndNewlines(),
         )
       }

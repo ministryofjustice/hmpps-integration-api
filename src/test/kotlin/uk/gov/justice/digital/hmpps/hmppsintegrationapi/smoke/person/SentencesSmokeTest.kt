@@ -19,11 +19,6 @@ class SentencesSmokeTest : DescribeSpec(
     it("returns sentences for a person") {
       val response = httpClient.performAuthorised(basePath)
 
-      /*No example data for an hour is provided in the OpenAPI specification for the supervisions endpoint
-      Prism by default returns the minimum value of a Java/Kotlin Int ~ AP/18/08/2023*/
-      val hourMinIntValue = -2147483648
-      val fineAmountMinNumberValue = -1.7976931348623157E308
-
       response.statusCode().shouldBe(HttpStatus.OK.value())
       response.body().shouldEqualJson(
         """

@@ -70,7 +70,7 @@ internal class AlertsControllerTest(
       }
 
       it("logs audit") {
-        val result = mockMvc.performAuthorised(path)
+        mockMvc.performAuthorised(path)
 
         verify(auditService, VerificationModeFactory.times(1)).createEvent("GET_PERSON_ALERTS", "Person alerts with hmpps id: $hmppsId has been retrieved")
       }
@@ -108,7 +108,7 @@ internal class AlertsControllerTest(
         val hmppsIdForPersonWithNoAlerts = "0000/11111A"
         val encodedHmppsIdForPersonWithNoAlerts =
           URLEncoder.encode(hmppsIdForPersonWithNoAlerts, StandardCharsets.UTF_8)
-        val path = "/v1/persons/$encodedHmppsIdForPersonWithNoAlerts/alerts"
+        val alertPath = "/v1/persons/$encodedHmppsIdForPersonWithNoAlerts/alerts"
 
         whenever(getAlertsForPersonService.execute(hmppsIdForPersonWithNoAlerts)).thenReturn(
           Response(
@@ -116,7 +116,7 @@ internal class AlertsControllerTest(
           ),
         )
 
-        val result = mockMvc.performAuthorised(path)
+        val result = mockMvc.performAuthorised(alertPath)
 
         result.response.contentAsString.shouldContain("\"data\":[]".removeWhitespaceAndNewlines())
       }

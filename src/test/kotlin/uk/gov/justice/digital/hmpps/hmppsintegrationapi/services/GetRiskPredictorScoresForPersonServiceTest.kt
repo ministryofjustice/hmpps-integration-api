@@ -35,7 +35,6 @@ internal class GetRiskPredictorScoresForPersonServiceTest(
 ) : DescribeSpec(
   {
     val hmppsId = "1234/56789B"
-    val nomisNumber = "Z99999ZZ"
     val deliusCrn = "X123456"
 
     val personFromProbationOffenderSearch =
