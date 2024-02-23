@@ -106,7 +106,7 @@ internal class OffencesControllerTest(
         val hmppsIdForPersonWithNoOffences = "0000/11111A"
         val encodedHmppsIdForPersonWithNoOffences =
           URLEncoder.encode(hmppsIdForPersonWithNoOffences, StandardCharsets.UTF_8)
-        val path = "/v1/persons/$encodedHmppsIdForPersonWithNoOffences/offences"
+        val offencesPath = "/v1/persons/$encodedHmppsIdForPersonWithNoOffences/offences"
 
         whenever(getOffencesForPersonService.execute(hmppsIdForPersonWithNoOffences)).thenReturn(
           Response(
@@ -114,7 +114,7 @@ internal class OffencesControllerTest(
           ),
         )
 
-        val result = mockMvc.performAuthorised(path)
+        val result = mockMvc.performAuthorised(offencesPath)
 
         result.response.contentAsString.shouldContain("\"data\":[]".removeWhitespaceAndNewlines())
       }

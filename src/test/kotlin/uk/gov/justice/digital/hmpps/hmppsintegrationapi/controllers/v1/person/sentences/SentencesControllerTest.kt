@@ -144,7 +144,7 @@ internal class SentencesControllerTest(
       val hmppsIdForPersonWithNoSentences = "0000/11111A"
       val encodedHmppsIdForPersonWithNoSentences =
         URLEncoder.encode(hmppsIdForPersonWithNoSentences, StandardCharsets.UTF_8)
-      val path = "/v1/persons/$encodedHmppsIdForPersonWithNoSentences/sentences"
+      val sentencesPath = "/v1/persons/$encodedHmppsIdForPersonWithNoSentences/sentences"
 
       whenever(getSentencesForPersonService.execute(hmppsIdForPersonWithNoSentences)).thenReturn(
         Response(
@@ -152,7 +152,7 @@ internal class SentencesControllerTest(
         ),
       )
 
-      val result = mockMvc.performAuthorised(path)
+      val result = mockMvc.performAuthorised(sentencesPath)
 
       result.response.contentAsString.shouldContain("\"data\":[]".removeWhitespaceAndNewlines())
     }

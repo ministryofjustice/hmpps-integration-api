@@ -24,7 +24,24 @@ class CaseNotesSmokeTest : DescribeSpec(
          {
           "data": [
           {
-            "caseNoteId": "12311312"
+             "caseNoteId": "12311312",
+            "offenderIdentifier": "A1234AA",
+            "type": "KA",
+            "typeDescription": "Key Worker",
+            "subType": "KS",
+            "subTypeDescription": "Key Worker Session",
+            "creationDateTime": "2019-08-24T14:15:22",
+            "occurrenceDateTime": "2019-08-24T14:15:22",
+            "text": "This is some text",
+            "locationId": "MDI",
+            "sensitive": true,
+            "amendments": [
+              {
+                "caseNoteAmendmentId": 123232,
+                "creationDateTime": "2019-08-24T14:15:22",
+                "additionalNoteText": "Some Additional Text"
+              }
+            ]
           }
         ],
         "pagination": {

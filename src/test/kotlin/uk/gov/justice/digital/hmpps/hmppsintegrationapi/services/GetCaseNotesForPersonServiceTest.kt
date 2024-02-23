@@ -10,6 +10,7 @@ import org.springframework.boot.test.context.ConfigDataApplicationContextInitial
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.context.ContextConfiguration
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.CaseNotesGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.filters.CaseNoteFilter
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CaseNote
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Identifiers
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
@@ -28,6 +29,7 @@ class GetCaseNotesForPersonServiceTest(
     val hmppsId = "1234/56789B"
     val nomisNumber = "Z99999ZZ"
     val person = Person(firstName = "Julianna", lastName = "Blake", identifiers = Identifiers(nomisNumber = nomisNumber))
+    val filter = CaseNoteFilter(hmppsId = hmppsId)
     val caseNotes =
       listOf(
         CaseNote(
@@ -40,18 +42,18 @@ class GetCaseNotesForPersonServiceTest(
       Mockito.reset(caseNotesGateway)
 
       whenever(getPersonService.execute(hmppsId = hmppsId)).thenReturn(Response(person))
-      whenever(caseNotesGateway.getCaseNotesForPerson(id = nomisNumber)).thenReturn(Response(caseNotes))
+      whenever(caseNotesGateway.getCaseNotesForPerson(id = nomisNumber, filter)).thenReturn(Response(caseNotes))
     }
 
     it("performs a search according to hmpps Id") {
-      getCaseNoteForPersonService.execute(hmppsId)
+      getCaseNoteForPersonService.execute(filter)
       verify(getPersonService, VerificationModeFactory.times(1)).execute(hmppsId = hmppsId)
     }
 
     it("should return case notes from gateway") {
-      val result = getCaseNoteForPersonService.execute(hmppsId = hmppsId)
+      val result = getCaseNoteForPersonService.execute(filter)
       result.data.size.shouldBe(1)
-      result.data.first()?.caseNoteId.shouldBe("12345ABC")
+      result.data.first().caseNoteId.shouldBe("12345ABC")
       result.errors.count().shouldBe(0)
     }
   },
