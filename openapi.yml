@@ -1754,7 +1754,18 @@ components:
           type: string
           example: DRUG_MISUSE
           description: The type of need
-
+        riskOfHarm:
+          type: boolean
+          example: false
+          description: Risk of harm
+        riskOfReoffending:
+          type: boolean
+          example: false
+          description: Risk of reoffending
+        severity:
+          type: string
+          example: "NO_NEED"
+          description: Severity of need
 
   examples:
     PersonNotFoundError:

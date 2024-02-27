@@ -11,8 +11,8 @@ data class ArnNeeds(
 ) {
   fun toNeeds(): Needs = Needs(
     assessedOn = this.assessedOn,
-    identifiedNeeds = this.identifiedNeeds.mapNotNull { it.toNeed() },
-    notIdentifiedNeeds = this.notIdentifiedNeeds.mapNotNull { it.toNeed() },
-    unansweredNeeds = this.unansweredNeeds.mapNotNull { it.toNeed() },
+    identifiedNeeds = this.identifiedNeeds.map { it.toNeed() },
+    notIdentifiedNeeds = this.notIdentifiedNeeds.map { it.toNeed() },
+    unansweredNeeds = this.unansweredNeeds.map { it.toNeed() },
   )
 }

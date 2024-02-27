@@ -98,26 +98,44 @@ internal class NeedsControllerTest(
                "assessedOn": "2021-05-29T11:21:33",
                "identifiedNeeds": [
                   {
-                    "type": "EDUCATION_TRAINING_AND_EMPLOYABILITY"
+                    "type": "EDUCATION_TRAINING_AND_EMPLOYABILITY",
+                     "riskOfHarm": null,
+                     "riskOfReoffending": null,
+                     "severity": null
                   },
                   {
-                    "type": "FINANCIAL_MANAGEMENT_AND_INCOME"
+                    "type": "FINANCIAL_MANAGEMENT_AND_INCOME",
+                     "riskOfHarm": null,
+                     "riskOfReoffending": null,
+                     "severity": null
                   }
                 ],
                 "notIdentifiedNeeds": [
                   {
-                    "type": "RELATIONSHIPS"
+                    "type": "RELATIONSHIPS",
+                     "riskOfHarm": null,
+                     "riskOfReoffending": null,
+                     "severity": null
                   }
                 ],
                 "unansweredNeeds": [
                   {
-                    "type": "LIFESTYLE_AND_ASSOCIATES"
+                    "type": "LIFESTYLE_AND_ASSOCIATES",
+                    "riskOfHarm": null,
+                    "riskOfReoffending": null,
+                    "severity": null
                   },
                   {
-                    "type": "DRUG_MISUSE"
+                    "type": "DRUG_MISUSE",
+                     "riskOfHarm": null,
+                      "riskOfReoffending": null,
+                      "severity": null
                   },
                   {
-                    "type": "ALCOHOL_MISUSE"
+                    "type": "ALCOHOL_MISUSE",
+                     "riskOfHarm": null,
+                     "riskOfReoffending": null,
+                     "severity": null
                   }
                 ]
             }
