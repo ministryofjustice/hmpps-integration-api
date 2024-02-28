@@ -1081,13 +1081,61 @@ components:
         adjustments:
           $ref: "#/components/schemas/SentenceAdjustments"
         automaticRelease:
-          type: object
-          properties:
-            date:
-              type: string
-              format: date
-              description: Calculated automatic (unconditional) release date for a person
-              example: 2023-03-01
+          $ref: "#/components/schemas/SentenceKeyDate"
+        conditionalRelease:
+          $ref: "#/components/schemas/SentenceKeyDate"
+        dtoPostRecallRelease:
+          $ref: "#/components/schemas/SentenceKeyDate"
+        earlyTerm:
+          $ref: "#/components/schemas/SentenceKeyDate"
+        homeDetentionCurfew:
+          $ref: "#/components/schemas/HomeDetentionCurfewDate"
+        lateTerm:
+          $ref: "#/components/schemas/SentenceKeyDate"
+        licenceExpiry:
+          $ref: "#/components/schemas/SentenceKeyDate"
+        midTerm:
+          $ref: "#/components/schemas/SentenceKeyDate"
+        nonDto:
+          $ref: "#/components/schemas/NonDtoDate"
+        nonParole:
+          $ref: "#/components/schemas/SentenceKeyDate"
+        paroleEligibility:
+          $ref: "#/components/schemas/SentenceKeyDate"
+        postRecallRelease:
+          $ref: "#/components/schemas/SentenceKeyDate"
+        release:
+          $ref: "#/components/schemas/ReleaseDate"
+        sentence:
+          $ref: "#/components/schemas/SentenceDate"
+        topupSupervision:
+          $ref: "#/components/schemas/TopupSupervision"
+        actualParoleDate:
+          type: string
+          format: date
+          example: 2023-03-01
+          description: the offender's actual parole date
+        earlyRemovalSchemeEligibilityDate:
+          type: string
+          format: date
+          example: 2023-03-01
+          description: the date on which offender will be eligible for early removal (under the Early Removal Scheme for foreign nationals).
+        releaseOnTemporaryLicenceDate:
+          type: string
+          format: date
+          example: 2023-03-01
+          description: the date on which offender will be released on temporary licence.
+        tariffDate:
+          type: string
+          format: date
+          example: 2023-03-01
+          description: date on which minimum term is reached for parole (indeterminate/life sentences).
+        tariffEarlyRemovalSchemeEligibilityDate:
+          type: string
+          format: date
+          example: 2023-03-01
+          description: tariffEarlyRemovalSchemeEligibilityDate.
+
     Licence:
       type: object
       properties:
@@ -1310,8 +1358,8 @@ components:
           description: An identifier from the Police National Computer (PNC)
         hmppsId:
           type: string
-          example: 2008/0545166T
-          description: Currently a hmppsId is a PNC identifier however this will change in the near future to be a CRN identifier
+          example: X00001
+          description: Currently a hmppsId is a CRN identifier however this will change in the future to be a new unique Hmpps identifier
         contactDetails:
           $ref: "#/components/schemas/ContactDetails"
     PhoneNumbers:
@@ -1448,6 +1496,171 @@ components:
           type: integer
           example: 10
           description: Number of additional days awarded
+        unlawfullyAtLarge:
+          type: integer
+          example: 16
+          description: Number unlawfully at large days
+        lawfullyAtLarge:
+          type: integer
+          example: 11
+          description: Number of lawfully at large days
+        restoredAdditionalDaysAwarded:
+          type: integer
+          example: 20
+          description: Number of restored additional days awarded
+        specialRemission:
+          type: integer
+          example: 14
+          description: Number of special remission days
+        recallSentenceRemand:
+          type: integer
+          example: 7
+          description: Number of recall sentence remand days
+        recallSentenceTaggedBail:
+          type: integer
+          example: 19
+          description: Number of recall sentence tagged bail days
+        remand:
+          type: integer
+          example: 3
+          description: Number of remand days
+        taggedBail:
+          type: integer
+          example: 13
+          description: Number of tagged bail days
+        unusedRemand:
+          type: integer
+          example: 13
+          description: Number of tagged bail days
+    SentenceKeyDate:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+          example: 2023-03-01
+          description: release date for offender
+        overrideDate:
+          type: string
+          format: date
+          example: 2023-03-01
+          description: release override date for offender
+        calculatedDate:
+          type: string
+          format: date
+          example: 2023-03-01
+          description: release calculated date for offender
+    HomeDetentionCurfewDate:
+      type: object
+      properties:
+        actualDate:
+          type: string
+          format: date
+          example: 2023-03-01
+          description: the offender's actual home detention curfew date.
+        eligibilityCalculatedDate:
+          type: string
+          format: date
+          example: 2023-03-01
+          description: date on which offender will be eligible for home detention curfew (calculated).
+        eligibilityDate:
+          type: string
+          format: date
+          example: 2023-03-01
+          description: date on which offender will be eligible for home detention curfew.
+        eligibilityOverrideDate:
+          type: string
+          format: date
+          example: 2023-03-01
+          description: date on which offender will be eligible for home detention curfew (override).
+        endDate:
+          type: string
+          format: date
+          example: 2023-03-01
+          description: Offender's home detention curfew end date - calculated as one day before the releaseDate.
+    NonDtoDate:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+          example: 2023-03-01
+          description: Release date for non-DTO sentence (if applicable). This will be based on one of ARD, CRD, NPD or PRRD.
+        releaseDateType:
+          type: string
+          enum: [ ARD, CRD, NPD, PRRD ]
+          example: ARD
+          description: Indicates which type of non-DTO release date is the effective release date. One of 'ARD', 'CRD', 'NPD' or 'PRRD'.
+    ReleaseDate:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+          example: 2023-03-01
+          description: >
+            Confirmed, actual, approved, provisional or calculated release date for offender, according to offender release date algorithm.
+
+            Algorithm
+            If there is a confirmed release date, the offender release date is the confirmed release date.
+            If there is no confirmed release date for the offender, the offender release date is either the actual parole date or the home detention curfew actual date.
+            If there is no confirmed release date, actual parole date or home detention curfew actual date for the offender, the release date is the later of the nonDtoReleaseDate or midTermDate value (if either or both are present)
+        confirmedDate:
+          type: string
+          format: date
+          example: 2023-03-01
+          description: Confirmed release date for offender.
+    SentenceDate:
+      type: object
+      properties:
+        effectiveEndDate:
+          type: string
+          format: date
+          example: 2023-03-01
+          description: Effective sentence end date.
+        expiryCalculatedDate:
+          type: string
+          format: date
+          example: 2023-03-01
+          description: date on which sentence expired (as calculated by NOMIS).
+        expiryDate:
+          type: string
+          format: date
+          example: 2023-03-01
+          description: date on which sentence expires.
+        expiryOverrideDate:
+          type: string
+          format: date
+          example: 2023-03-01
+          description: date on which sentence expires (override).
+        startDate:
+          type: string
+          format: date
+          example: 2023-03-01
+          description: Sentence start date.
+    TopupSupervision:
+      type: object
+      properties:
+        expiryCalculatedDate:
+          type: string
+          format: date
+          example: 2023-03-01
+          description: (calculated) - top-up supervision expiry date for offender.
+        expiryDate:
+            type: string
+            format: date
+            example: 2023-03-01
+            description: top-up supervision expiry date for offender.
+        expiryOverrideDate:
+          type: string
+          format: date
+          example: 2023-03-01
+          description: (override) - top-up supervision expiry date for offender.
+        startDate:
+          type: string
+          format: date
+          example: 2023-03-01
+          description: Top-up supervision start date for offender - calculated as licence end date + 1 day or releaseDate if licence end date not set.
     SentenceLength:
       type: object
       properties:
