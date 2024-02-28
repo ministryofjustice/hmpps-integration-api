@@ -1756,11 +1756,11 @@ components:
           description: The type of need
         riskOfHarm:
           type: boolean
-          example: false
+          example: true
           description: Risk of harm
         riskOfReoffending:
           type: boolean
-          example: false
+          example: true
           description: Risk of reoffending
         severity:
           type: string
