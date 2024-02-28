@@ -844,7 +844,7 @@ components:
           example: 1234
         offenderIdentifier:
           type: string
-          example: : A1234AA
+          example: A1234AA
         type:
           type: string
           example: KA
