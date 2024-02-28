@@ -520,6 +520,24 @@ paths:
     get:
       summary: Returns case notes associated with a person.
       parameters:
+        - in: query
+          name: startDate
+          schema:
+             type: string
+          required: false
+          description: Filter case notes from this date
+        - in: query
+          name: endDate
+          schema:
+            type: string
+          required: false
+          description: Filter case notes up to this date
+        - in: query
+          name: locationId
+          schema:
+            type: string
+          required: false
+          description: Filter by the location. example MDI
         - $ref: "#/components/parameters/HmppsId"
       responses:
         "200":
