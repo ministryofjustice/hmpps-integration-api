@@ -884,6 +884,7 @@ components:
       properties:
         caseNoteAmendmentId:
           type: integer
+          example: 123232
           format: int64
         creationDateTime:
           type: string
