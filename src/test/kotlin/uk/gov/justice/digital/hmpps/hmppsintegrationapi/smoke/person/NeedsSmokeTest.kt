@@ -29,17 +29,26 @@ class NeedsSmokeTest : DescribeSpec(
             "assessedOn": "2023-10-04T07:06:43",
             "identifiedNeeds": [
               {
-                "type": "DRUG_MISUSE"
+                "type": "DRUG_MISUSE",
+                "riskOfHarm": false,
+                "riskOfReoffending": false,
+                "severity": "NO_NEED"
               }
             ],
             "notIdentifiedNeeds": [
               {
-                "type": "DRUG_MISUSE"
+                "type": "DRUG_MISUSE",
+                "riskOfHarm": false,
+                "riskOfReoffending": false,
+                "severity": "NO_NEED"
               }
             ],
             "unansweredNeeds": [
               {
-                "type": "DRUG_MISUSE"
+                "type": "DRUG_MISUSE",
+                "riskOfHarm": false,
+                "riskOfReoffending": false,
+                "severity": "NO_NEED"
               }
             ]
           }
