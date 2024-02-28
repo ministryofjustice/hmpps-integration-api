@@ -842,6 +842,57 @@ components:
         caseNoteId:
           type: string
           example: 1234
+        offenderIdentifier:
+          type: string
+          example: : A1234AA
+        type:
+          type: string
+          example: KA
+        typeDescription:
+          type: string
+          example: Key Worker
+        subType:
+          type: string
+          example: KS
+        subTypeDescription:
+          type: string
+          example: Key Worker Session
+        CreatDateTime:
+          type: string
+          format: date
+          example: 2023-09-05T10:15:41
+          description: Date and Time of Case Note creation
+        occurrenceDateTime:
+          type: string
+          format: date
+          example: 2023-09-05T10:15:41
+          description: Date and Time of when case note contact with offender was made
+        text:
+          type: string
+          example: This is some text
+        locationId:
+          type: string
+          example: MDI
+        amendments:
+          type: array
+          minItems: 0
+          items:
+            $ref: "#/components/schemas/CaseNoteAmendment"
+          description: List of amendments to the case note
+    CaseNoteAmendment:
+      type: object
+      properties:
+        caseNoteAmendmentId:
+          type: integer
+          format: int64
+        creationDateTime:
+          type: string
+          format: date
+          example: 2023-09-05T10:15:41
+          description: Date and Time of Case Note creation
+        addtionalNoteText:
+          type: string
+          example: Some Additional Text
     CaseSentence:
       required:
         - date
