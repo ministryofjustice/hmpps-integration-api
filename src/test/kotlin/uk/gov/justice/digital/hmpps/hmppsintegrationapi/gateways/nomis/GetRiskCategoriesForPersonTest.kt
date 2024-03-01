@@ -40,8 +40,11 @@ class GetRiskCategoriesForPersonTest(
           offenderNo,
           """
             {
+            "offenderNo": "123",
             "assessments": [
-              "classificationCode": "C"
+                {
+                "classificationCode": "C"
+                }
              ]
             }
           """.removeWhitespaceAndNewlines(),
