@@ -59,6 +59,23 @@ class RisksSmokeTest : DescribeSpec(
       )
     }
 
+    it("returns risk categories for a person") {
+      val response = httpClient.performAuthorised("$basePath/categories")
+
+      response.statusCode().shouldBe(HttpStatus.OK.value())
+      response.body().shouldEqualJson(
+        """
+        {
+          "data": {
+            "offenderNo": null,
+            "assessments": []
+          }
+        }
+
+        """.removeWhitespaceAndNewlines(),
+      )
+    }
+
     it("returns rosh risks for a person") {
       val response = httpClient.performAuthorised(basePath)
 
