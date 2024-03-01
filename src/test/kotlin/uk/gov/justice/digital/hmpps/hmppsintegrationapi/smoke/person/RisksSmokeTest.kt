@@ -72,6 +72,7 @@ class RisksSmokeTest : DescribeSpec(
           }
         }
 
+
         """.removeWhitespaceAndNewlines(),
       )
     }
