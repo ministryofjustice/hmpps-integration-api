@@ -11,11 +11,11 @@ class GetRiskCategoriesForPersonService(
   @Autowired val nomisGateway: NomisGateway,
   @Autowired val getPersonService: GetPersonService,
 ) {
-  fun execute(hmppsId: String): Response<RiskCategory> {
+  fun execute(hmppsId: String): Response<RiskCategory?> {
     val personResponse = getPersonService.execute(hmppsId = hmppsId)
     val deliusCrn = personResponse.data?.identifiers?.deliusCrn
 
-    var personRiskCategories: Response<RiskCategory> = Response(data = RiskCategory())
+    var personRiskCategories: Response<RiskCategory?> = Response(data = RiskCategory())
 
     if (deliusCrn != null) {
       personRiskCategories = nomisGateway.getRiskCategoriesForPerson(id = deliusCrn)

@@ -23,7 +23,7 @@ class RiskCategoriesController(
   fun getPersonRiskCategories(
     @PathVariable encodedHmppsId: String,
 
-  ): Map<String, RiskCategory> {
+  ): Map<String, RiskCategory?> {
     val hmppsId = encodedHmppsId.decodeUrlCharacters()
     val response = getRiskCategoriesForPersonService.execute(hmppsId)
 

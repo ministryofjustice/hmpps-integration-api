@@ -4,10 +4,10 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.RiskCategor
 
 data class NomisInmateDetail(
   val offenderNo: String? = null,
-  val assessments: List<NomisAssessment?> = emptyList(),
+  val assessments: List<NomisAssessment> = emptyList(),
 ) {
   fun toRiskCategory(): RiskCategory = RiskCategory(
     offenderNo = this.offenderNo,
-    assessments = this.assessments.mapNotNull { it?.toRiskAssessment() },
+    assessments = this.assessments.map { it.toRiskAssessment() },
   )
 }

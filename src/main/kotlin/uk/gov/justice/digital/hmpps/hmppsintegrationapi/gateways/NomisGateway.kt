@@ -217,7 +217,7 @@ class NomisGateway(@Value("\${services.prison-api.base-url}") baseUrl: String) {
     }
   }
 
-  fun getRiskCategoriesForPerson(id: String): Response<RiskCategory> {
+  fun getRiskCategoriesForPerson(id: String): Response<RiskCategory?> {
     val result = webClient.request<NomisInmateDetail>(
       HttpMethod.GET,
       "/api/offenders/$id",
