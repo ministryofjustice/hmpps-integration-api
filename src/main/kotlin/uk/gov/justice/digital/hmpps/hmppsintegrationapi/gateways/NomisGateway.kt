@@ -11,6 +11,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Alert
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ImageMetadata
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Offence
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.RiskCategory
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Sentence
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SentenceAdjustment
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SentenceKeyDates
@@ -19,6 +20,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisAddres
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisAlert
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisBooking
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisImageDetail
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisInmateDetail
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisOffenceHistoryDetail
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisOffenderSentence
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisSentence
@@ -209,6 +211,28 @@ class NomisGateway(@Value("\${services.prison-api.base-url}") baseUrl: String) {
       is WebClientWrapperResponse.Error -> {
         Response(
           data = null,
+          errors = result.errors,
+        )
+      }
+    }
+  }
+
+  fun getRiskCategoriesForPerson(id: String): Response<RiskCategory> {
+    val result = webClient.request<NomisInmateDetail>(
+      HttpMethod.GET,
+      "/api/offenders/$id",
+      authenticationHeader(),
+      UpstreamApi.NOMIS,
+    )
+
+    return when (result) {
+      is WebClientWrapperResponse.Success -> {
+        Response(data = result.data.toRiskCategory())
+      }
+
+      is WebClientWrapperResponse.Error -> {
+        Response(
+          data = RiskCategory(),
           errors = result.errors,
         )
       }
