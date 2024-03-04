@@ -32,7 +32,7 @@ class GetRiskCategoriesForPersonTest(
   DescribeSpec(
     {
       val nomisApiMockServer = NomisApiMockServer()
-      val offenderNo = "A1234AA"
+      val offenderNo = "A7796DY"
 
       beforeEach {
         nomisApiMockServer.start()
@@ -40,7 +40,7 @@ class GetRiskCategoriesForPersonTest(
           offenderNo,
           """
             {
-            "offenderNo": "A1234AA",
+            "offenderNo": "A7796DY",
             "assessments": [
                 {
                 "classificationCode": "C"

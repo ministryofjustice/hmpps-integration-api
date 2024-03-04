@@ -30,10 +30,10 @@ internal class GetRiskCategoriesForPersonServiceTest(
 ) : DescribeSpec(
   {
     val hmppsId = "1234/56789B"
-    val deliusCrn = "X123456"
+    val nomisNumber = "A7796DY"
 
     val personFromProbationOffenderSearch =
-      Person(firstName = "Phoebe", lastName = "Buffay", identifiers = Identifiers(deliusCrn = deliusCrn))
+      Person(firstName = "Phoebe", lastName = "Buffay", identifiers = Identifiers(nomisNumber = nomisNumber))
 
     beforeEach {
       Mockito.reset(getPersonService)
@@ -45,7 +45,7 @@ internal class GetRiskCategoriesForPersonServiceTest(
         ),
       )
 
-      whenever(nomisGateway.getRiskCategoriesForPerson(deliusCrn)).thenReturn(Response(data = RiskCategory()))
+      whenever(nomisGateway.getRiskCategoriesForPerson(nomisNumber)).thenReturn(Response(data = RiskCategory()))
     }
 
     it("gets a person from getPersonService") {
@@ -54,16 +54,16 @@ internal class GetRiskCategoriesForPersonServiceTest(
       verify(getPersonService, VerificationModeFactory.times(1)).execute(hmppsId = hmppsId)
     }
 
-    it("gets a risk category for a person from ARN API using CRN") {
+    it("gets a risk category for a person from ARN API using Nomis") {
       getRiskCategoriesForPersonService.execute(hmppsId)
 
-      verify(nomisGateway, VerificationModeFactory.times(1)).getRiskCategoriesForPerson(deliusCrn)
+      verify(nomisGateway, VerificationModeFactory.times(1)).getRiskCategoriesForPerson(nomisNumber)
     }
 
     it("returns a risk category for a person") {
-      val riskCategory = RiskCategory(offenderNo = "A1234AA", assessments = listOf(RiskAssessment(classificationCode = "987")))
+      val riskCategory = RiskCategory(offenderNo = "A7796DY", assessments = listOf(RiskAssessment(classificationCode = "987")))
 
-      whenever(nomisGateway.getRiskCategoriesForPerson(deliusCrn)).thenReturn(
+      whenever(nomisGateway.getRiskCategoriesForPerson(nomisNumber)).thenReturn(
         Response(data = riskCategory),
       )
 
@@ -74,9 +74,9 @@ internal class GetRiskCategoriesForPersonServiceTest(
 
     describe("when an upstream API returns an error") {
 
-      it("returns error from ARN API when person/crn cannot be found in ARN") {
+      it("returns error from ARN API when person cannot be found in ARN") {
 
-        whenever(nomisGateway.getRiskCategoriesForPerson(deliusCrn)).thenReturn(
+        whenever(nomisGateway.getRiskCategoriesForPerson(nomisNumber)).thenReturn(
           Response(
             data = RiskCategory(),
             errors = listOf(
