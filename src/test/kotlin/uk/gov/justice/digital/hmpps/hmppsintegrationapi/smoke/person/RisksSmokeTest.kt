@@ -11,7 +11,7 @@ import java.nio.charset.StandardCharsets
 
 class RisksSmokeTest : DescribeSpec(
   {
-    val hmppsId = "2004/13116M"
+    val hmppsId = "A1234AA"
     val encodedHmppsId = URLEncoder.encode(hmppsId, StandardCharsets.UTF_8)
 
     val basePath = "v1/persons/$encodedHmppsId/risks"

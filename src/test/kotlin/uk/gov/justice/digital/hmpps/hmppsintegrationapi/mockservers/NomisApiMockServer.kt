@@ -11,21 +11,6 @@ class NomisApiMockServer : WireMockServer(WIREMOCK_PORT) {
     private const val WIREMOCK_PORT = 4000
   }
 
-  fun stubGetOffender(offenderNo: String, body: String, status: HttpStatus = HttpStatus.OK) {
-    stubFor(
-      get("/api/offenders/$offenderNo")
-        .withHeader(
-          "Authorization",
-          matching("Bearer ${HmppsAuthMockServer.TOKEN}"),
-        ).willReturn(
-          aResponse()
-            .withHeader("Content-Type", "application/json")
-            .withStatus(status.value())
-            .withBody(body.trimIndent()),
-        ),
-    )
-  }
-
   fun stubGetOffenderImageDetails(offenderNo: String, body: String, status: HttpStatus = HttpStatus.OK) {
     stubFor(
       get("/api/images/offenders/$offenderNo")
@@ -161,10 +146,11 @@ class NomisApiMockServer : WireMockServer(WIREMOCK_PORT) {
     )
   }
 
-  fun stubGetRiskCategoriesForPerson(nomisNumber: String, body: String, status: HttpStatus = HttpStatus.OK) {
+  fun stubGetRiskCategoriesForPerson(offenderNo: String, body: String, status: HttpStatus = HttpStatus.OK) {
     stubFor(
-      get("/api/offenders/$nomisNumber")
+      get("/api/offenders/$offenderNo")
         .withHeader("Authorization", matching("Bearer ${HmppsAuthMockServer.TOKEN}"))
+        .withHeader("version", matching("1.0"))
         .willReturn(
           aResponse()
             .withHeader("Content-Type", "application/json")

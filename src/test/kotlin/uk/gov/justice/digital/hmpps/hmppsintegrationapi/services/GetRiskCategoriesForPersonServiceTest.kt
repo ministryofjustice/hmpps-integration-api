@@ -61,7 +61,7 @@ internal class GetRiskCategoriesForPersonServiceTest(
     }
 
     it("returns a risk category for a person") {
-      val riskCategory = RiskCategory(offenderNo = "123", assessments = listOf(RiskAssessment(classificationCode = "987")))
+      val riskCategory = RiskCategory(offenderNo = "A1234AA", assessments = listOf(RiskAssessment(classificationCode = "987")))
 
       whenever(nomisGateway.getRiskCategoriesForPerson(deliusCrn)).thenReturn(
         Response(data = riskCategory),

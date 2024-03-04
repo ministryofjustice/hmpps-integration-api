@@ -44,7 +44,7 @@ internal class RiskCategoriesControllerTest(
         whenever(getRiskCategoriesForPersonService.execute(hmppsId)).thenReturn(
           Response(
             data = RiskCategory(
-              offenderNo = "123",
+              offenderNo = "A1234AA",
               assessments = listOf(RiskAssessment(classificationCode = "C")),
             ),
           ),
@@ -76,7 +76,7 @@ internal class RiskCategoriesControllerTest(
         result.response.contentAsString.shouldContain(
           """
           "data": {
-            "offenderNo": "123",
+            "offenderNo": "A1234AA",
             "assessments": [
             {
                 "classificationCode": "C"

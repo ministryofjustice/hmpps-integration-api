@@ -221,7 +221,7 @@ class NomisGateway(@Value("\${services.prison-api.base-url}") baseUrl: String) {
     val result = webClient.request<NomisInmateDetail>(
       HttpMethod.GET,
       "/api/offenders/$id",
-      authenticationHeader(),
+      authenticationHeaderForCategories(),
       UpstreamApi.NOMIS,
     )
 
@@ -244,6 +244,16 @@ class NomisGateway(@Value("\${services.prison-api.base-url}") baseUrl: String) {
 
     return mapOf(
       "Authorization" to "Bearer $token",
+    )
+  }
+
+  private fun authenticationHeaderForCategories(): Map<String, String> {
+    val token = hmppsAuthGateway.getClientToken("NOMIS")
+    val version = "1.0"
+
+    return mapOf(
+      "Authorization" to "Bearer $token",
+      "version" to version,
     )
   }
 }
