@@ -67,7 +67,7 @@ class RisksSmokeTest : DescribeSpec(
         """
         {
           "data": {
-            "offenderNo": null,
+            "offenderNo": "A1234AA",
             "assessments": []
           }
         }
