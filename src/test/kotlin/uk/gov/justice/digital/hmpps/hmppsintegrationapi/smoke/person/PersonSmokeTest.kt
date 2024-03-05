@@ -63,12 +63,12 @@ class PersonSmokeTest : DescribeSpec(
         }
       ],
       "identifiers": {
-          "nomisNumber": "string",
-          "croNumber": "string",
-          "deliusCrn": "string"
+          "nomisNumber": "AA1234A",
+          "croNumber": "123456/24A",
+          "deliusCrn": "A123456"
       },
-      "pncId": "string",
-      "hmppsId": "string",
+      "pncId": "2012/0052494Q",
+      "hmppsId": "A123456",
       "contactDetails": {
         "addresses": [
           {
