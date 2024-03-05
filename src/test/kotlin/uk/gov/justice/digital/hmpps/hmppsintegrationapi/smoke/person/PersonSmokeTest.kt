@@ -68,7 +68,7 @@ class PersonSmokeTest : DescribeSpec(
           "deliusCrn": "A123456"
       },
       "pncId": "2012/0052494Q",
-      "hmppsId": "A123456",
+      "hmppsId": "G5555TT",
       "contactDetails": {
         "addresses": [
           {
