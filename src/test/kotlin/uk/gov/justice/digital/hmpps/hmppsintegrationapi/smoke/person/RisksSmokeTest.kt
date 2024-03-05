@@ -66,13 +66,15 @@ class RisksSmokeTest : DescribeSpec(
       response.body().shouldEqualJson(
         """
         {
-          "data": {
-            "offenderNo": "AA1234A",
-            "assessments": []
-          }
+        "data": {
+          "offenderNo": "A1234AA",
+          "assessments": [
+            {
+              "classificationCode": "C"
+            }
+          ]
         }
-
-
+      }
         """.removeWhitespaceAndNewlines(),
       )
     }
