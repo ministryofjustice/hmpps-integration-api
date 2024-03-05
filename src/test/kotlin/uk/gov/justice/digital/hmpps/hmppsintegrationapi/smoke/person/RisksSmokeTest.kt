@@ -11,7 +11,7 @@ import java.nio.charset.StandardCharsets
 
 class RisksSmokeTest : DescribeSpec(
   {
-    val hmppsId = "2004/13116M"
+    val hmppsId = "A1234AA"
     val encodedHmppsId = URLEncoder.encode(hmppsId, StandardCharsets.UTF_8)
 
     val basePath = "v1/persons/$encodedHmppsId/risks"
@@ -55,6 +55,26 @@ class RisksSmokeTest : DescribeSpec(
               "totalPages": 1
           }
         }
+        """.removeWhitespaceAndNewlines(),
+      )
+    }
+
+    it("returns risk categories for a person") {
+      val response = httpClient.performAuthorised("$basePath/categories")
+
+      response.statusCode().shouldBe(HttpStatus.OK.value())
+      response.body().shouldEqualJson(
+        """
+        {
+        "data": {
+          "offenderNo": "A1234AA",
+          "assessments": [
+            {
+              "classificationCode": "C"
+            }
+          ]
+        }
+      }
         """.removeWhitespaceAndNewlines(),
       )
     }
