@@ -78,11 +78,21 @@ internal class RiskCategoriesControllerTest(
           "data": {
             "offenderNo": "A1234AA",
             "assessments": [
-            {
-                "classificationCode": "C"
-            }
-          ]
-        }
+                {
+                  "classificationCode": "C",
+                  "classification": null,
+                  "assessmentCode": null,
+                  "assessmentDescription": null,
+                  "assessmentDate": null,
+                  "nextReviewDate": null,
+                  "assessmentAgencyId": null,
+                  "assessmentStatus": null,
+                  "assessmentComment": null
+                }
+              ],
+            "category": null,
+            "categoryCode": null
+          }
         """.removeWhitespaceAndNewlines(),
         )
       }
