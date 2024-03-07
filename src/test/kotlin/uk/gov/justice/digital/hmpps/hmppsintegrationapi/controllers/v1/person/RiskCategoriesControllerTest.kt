@@ -45,7 +45,22 @@ internal class RiskCategoriesControllerTest(
           Response(
             data = RiskCategory(
               offenderNo = "A1234AA",
-              assessments = listOf(RiskAssessment(classificationCode = "C")),
+              assessments = listOf(
+                RiskAssessment(
+                  classificationCode = "C",
+                  classification = "Cat C",
+                  assessmentCode = "CATEGORY",
+                  assessmentDescription = "Categorisation",
+                  assessmentDate = "2018-02-11",
+                  nextReviewDate = "2018-02-11",
+                  assessmentAgencyId = "MDI",
+                  assessmentStatus = "P",
+                  assessmentComment = "Comment details",
+                ),
+
+              ),
+              category = "string",
+              categoryCode = "string",
             ),
           ),
         )
@@ -78,20 +93,20 @@ internal class RiskCategoriesControllerTest(
           "data": {
             "offenderNo": "A1234AA",
             "assessments": [
-                {
-                  "classificationCode": "C",
-                  "classification": null,
-                  "assessmentCode": null,
-                  "assessmentDescription": null,
-                  "assessmentDate": null,
-                  "nextReviewDate": null,
-                  "assessmentAgencyId": null,
-                  "assessmentStatus": null,
-                  "assessmentComment": null
-                }
-              ],
-            "category": null,
-            "categoryCode": null
+            {
+              "classificationCode": "C",
+              "classification": "Cat C",
+              "assessmentCode": "CATEGORY",
+              "assessmentDescription": "Categorisation",
+              "assessmentDate": "2018-02-11",
+              "nextReviewDate": "2018-02-11",
+              "assessmentAgencyId": "MDI",
+              "assessmentStatus": "P",
+              "assessmentComment": "Comment details"
+            }
+          ],
+            "category": "string",
+            "categoryCode": "string"
           }
         """.removeWhitespaceAndNewlines(),
         )
