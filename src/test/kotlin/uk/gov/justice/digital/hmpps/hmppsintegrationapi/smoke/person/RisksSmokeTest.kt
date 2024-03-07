@@ -70,9 +70,19 @@ class RisksSmokeTest : DescribeSpec(
           "offenderNo": "A1234AA",
           "assessments": [
             {
-              "classificationCode": "C"
+              "classificationCode": "C",
+              "classification": "Cat C",
+              "assessmentCode": "CATEGORY",
+              "assessmentDescription": "Categorisation",
+              "assessmentDate": "2018-02-11",
+              "nextReviewDate": "2018-02-11",
+              "assessmentAgencyId": "MDI",
+              "assessmentStatus": "P",
+              "assessmentComment": "Comment details"
             }
-          ]
+          ],
+          "category": "string",
+          "categoryCode": "string"
         }
       }
         """.removeWhitespaceAndNewlines(),

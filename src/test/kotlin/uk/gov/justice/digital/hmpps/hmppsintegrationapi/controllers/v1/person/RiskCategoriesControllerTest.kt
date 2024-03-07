@@ -45,7 +45,22 @@ internal class RiskCategoriesControllerTest(
           Response(
             data = RiskCategory(
               offenderNo = "A1234AA",
-              assessments = listOf(RiskAssessment(classificationCode = "C")),
+              assessments = listOf(
+                RiskAssessment(
+                  classificationCode = "C",
+                  classification = "Cat C",
+                  assessmentCode = "CATEGORY",
+                  assessmentDescription = "Categorisation",
+                  assessmentDate = "2018-02-11",
+                  nextReviewDate = "2018-02-11",
+                  assessmentAgencyId = "MDI",
+                  assessmentStatus = "P",
+                  assessmentComment = "Comment details",
+                ),
+
+              ),
+              category = "string",
+              categoryCode = "string",
             ),
           ),
         )
@@ -79,10 +94,20 @@ internal class RiskCategoriesControllerTest(
             "offenderNo": "A1234AA",
             "assessments": [
             {
-                "classificationCode": "C"
+              "classificationCode": "C",
+              "classification": "Cat C",
+              "assessmentCode": "CATEGORY",
+              "assessmentDescription": "Categorisation",
+              "assessmentDate": "2018-02-11",
+              "nextReviewDate": "2018-02-11",
+              "assessmentAgencyId": "MDI",
+              "assessmentStatus": "P",
+              "assessmentComment": "Comment details"
             }
-          ]
-        }
+          ],
+            "category": "string",
+            "categoryCode": "string"
+          }
         """.removeWhitespaceAndNewlines(),
         )
       }
