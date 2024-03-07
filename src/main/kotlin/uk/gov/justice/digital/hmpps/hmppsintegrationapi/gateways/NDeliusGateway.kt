@@ -6,6 +6,7 @@ import org.springframework.http.HttpMethod
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper.WebClientWrapperResponse
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.MappaDetail
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Offence
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Sentence
@@ -57,6 +58,28 @@ class NDeliusGateway(@Value("\${services.ndelius.base-url}") baseUrl: String) {
       is WebClientWrapperResponse.Error -> {
         Response(
           data = emptyList(),
+          errors = result.errors,
+        )
+      }
+    }
+  }
+
+  fun getMappaDetailForPerson(id: String): Response<MappaDetail?> {
+    val result = webClient.request<NDeliusSupervisions>(
+      HttpMethod.GET,
+      "/case/$id/supervisions",
+      authenticationHeader(),
+      UpstreamApi.NDELIUS,
+    )
+
+    return when (result) {
+      is WebClientWrapperResponse.Success -> {
+        Response(data = result.data.mappaDetail?.toMappaDetail())
+      }
+
+      is WebClientWrapperResponse.Error -> {
+        Response(
+          data = null,
           errors = result.errors,
         )
       }
