@@ -445,7 +445,7 @@ paths:
                       notes:
                         type: string
         "404":
-          description: Failed to find risk categories a person with the provided HMPPS ID.
+          description: Failed to find risk-related mappa detail a person with the provided HMPPS ID.
           content:
             application/json:
               schema:
