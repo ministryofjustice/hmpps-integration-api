@@ -89,6 +89,27 @@ class RisksSmokeTest : DescribeSpec(
       )
     }
 
+    it("return mappa detail for a person") {
+      val response = httpClient.performAuthorised("$basePath/mappadetail")
+
+      response.statusCode().shouldBe(HttpStatus.OK.value())
+      response.body().shouldEqualJson(
+        """
+        {
+          "data": {
+            "level": -2147483648,
+            "levelDescription": "string",
+            "category": -2147483648,
+            "categoryDescription": "string",
+            "startDate": "2019-08-24",
+            "reviewDate": "2019-08-24",
+            "notes": "string"
+          }
+        }
+        """.removeWhitespaceAndNewlines(),
+      )
+    }
+
     it("returns rosh risks for a person") {
       val response = httpClient.performAuthorised(basePath)
 
