@@ -1,4 +1,13 @@
 {
+  "mappaDetail": {
+    "level": 1,
+    "levelDescription": "string",
+    "category": 1,
+    "categoryDescription": "string",
+    "startDate": "string",
+    "reviewDate": "string",
+    "notes": "string"
+  },
   "supervisions": [
     {
       "number": 1,

@@ -1,7 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ndelius
 
 import io.kotest.core.spec.style.DescribeSpec
-import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
@@ -15,22 +14,19 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.generateTestSentence
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.NDeliusApiMockServer
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SentenceLength
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SystemSource
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.MappaDetail
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import java.io.File
-import java.time.LocalDate
 
 @ActiveProfiles("test")
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
   classes = [NDeliusGateway::class],
 )
-class GetSentencesForPersonTest(
+class GetMappaDetailForPersonTest(
   @MockBean val hmppsAuthGateway: HmppsAuthGateway,
   val nDeliusGateway: NDeliusGateway,
 ) :
@@ -55,65 +51,47 @@ class GetSentencesForPersonTest(
       }
 
       it("authenticates using HMPPS Auth with credentials") {
-        nDeliusGateway.getSentencesForPerson(deliusCrn)
+        nDeliusGateway.getMappaDetailForPerson(deliusCrn)
 
         verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("nDelius")
       }
 
-      it("returns sentences for the matching CRN") {
-        val response = nDeliusGateway.getSentencesForPerson(deliusCrn)
+      it("returns Mappa detail for the matching CRN") {
+        val response = nDeliusGateway.getMappaDetailForPerson(deliusCrn)
 
         response.data.shouldBe(
-          listOf(
-            generateTestSentence(
-              serviceSource = UpstreamApi.NDELIUS,
-              systemSource = SystemSource.PROBATION_SYSTEMS,
-              dateOfSentencing = LocalDate.parse("2009-07-07"),
-              description = "CJA - Community Order",
-              isActive = false,
-              isCustodial = false,
-              length = SentenceLength(
-                duration = 12,
-                units = "Months",
-                terms = emptyList(),
-              ),
-            ),
-            generateTestSentence(
-              serviceSource = UpstreamApi.NDELIUS,
-              systemSource = SystemSource.PROBATION_SYSTEMS,
-              dateOfSentencing = LocalDate.parse("2009-09-01"),
-              description = "CJA - Suspended Sentence Order",
-              isActive = true,
-              isCustodial = false,
-              length = SentenceLength(
-                duration = 12,
-                units = "Years",
-                terms = emptyList(),
-              ),
-            ),
+          MappaDetail(
+            level = 1,
+            levelDescription = "string",
+            category = 1,
+            categoryDescription = "string",
+            startDate = "string",
+            reviewDate = "string",
+            notes = "string",
           ),
         )
       }
 
-      it("returns an empty list if no sentences are found") {
+      it("returns an empty list if no mappa detail is found") {
         nDeliusApiMockServer.stubGetSupervisionsForPerson(
           deliusCrn,
           """
-          {
-           "mappaDetail": {},
-            "supervisions": [] }
+            {
+              "mappaDetail": {},
+              "supervisions": []
+            }
           """,
         )
 
-        val response = nDeliusGateway.getSentencesForPerson(deliusCrn)
+        val response = nDeliusGateway.getMappaDetailForPerson(deliusCrn)
 
-        response.data.shouldBeEmpty()
+        response.data.shouldBe(MappaDetail())
       }
 
       it("returns an error when 404 Not Found is returned because no person is found") {
         nDeliusApiMockServer.stubGetSupervisionsForPerson(deliusCrn, "", HttpStatus.NOT_FOUND)
 
-        val response = nDeliusGateway.getSentencesForPerson(deliusCrn)
+        val response = nDeliusGateway.getMappaDetailForPerson(deliusCrn)
 
         response.errors.shouldHaveSize(1)
         response.errors.first().causedBy.shouldBe(UpstreamApi.NDELIUS)
