@@ -192,6 +192,26 @@ internal class PersonControllerTest(
           result.response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
           result.response.contentAsString.shouldContain("Invalid date format. Please use yyyy-MM-dd.")
         }
+
+        it("fails with the appropriate error when an upstream service is down") {
+          whenever(getPersonsService.execute(firstName, lastName, pncNumber, dateOfBirth, false)).thenReturn(
+            Response(
+              data = emptyList(),
+              errors =
+                listOf(
+                  UpstreamApiError(UpstreamApi.TEST, UpstreamApiError.Type.INTERNAL_SERVER_ERROR, "You must construct additional Pylons."),
+                ),
+            ),
+          )
+
+          val response =
+            mockMvc.performAuthorised(
+              "$basePath?first_name=$firstName&last_name=$lastName&pnc_number=$pncNumber&date_of_birth=$dateOfBirth",
+            )
+
+          assert(response.response.status == 500)
+          assert(response.response.contentAsString.equals("blah"))
+        }
       }
 
       describe("GET $basePath/{id}") {
@@ -387,26 +407,6 @@ internal class PersonControllerTest(
           val result = mockMvc.performAuthorised("$basePath/$encodedHmppsId/images")
 
           result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
-        }
-
-        it("fails with the appropriate error when an upstream service is down") {
-          whenever(getPersonsService.execute(firstName, lastName, pncNumber, dateOfBirth, false)).thenReturn(
-            Response(
-              data = emptyList(),
-              errors =
-                listOf(
-                  UpstreamApiError(UpstreamApi.TEST, UpstreamApiError.Type.INTERNAL_SERVER_ERROR, "You must construct additional Pylons."),
-                ),
-            ),
-          )
-
-          val response =
-            mockMvc.performAuthorised(
-              "$basePath?first_name=$firstName&last_name=$lastName&pnc_number=$pncNumber&date_of_birth=$dateOfBirth",
-            )
-
-          assert(response.response.status == 500)
-          assert(response.response.contentAsString.equals("blah"))
         }
       }
     },
