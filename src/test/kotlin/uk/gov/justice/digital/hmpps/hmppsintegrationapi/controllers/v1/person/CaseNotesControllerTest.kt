@@ -7,6 +7,7 @@ import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory
 import org.mockito.kotlin.any
 import org.mockito.kotlin.argThat
+import org.mockito.kotlin.doThrow
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
@@ -15,6 +16,7 @@ import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
+import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.filters.CaseNoteFilter
@@ -106,6 +108,17 @@ class CaseNotesControllerTest(
         mockMvc.performAuthorised(path)
 
         verify(auditService, VerificationModeFactory.times(1)).createEvent("GET_CASE_NOTES", "Person case notes with hmpps id: $hmppsId has been retrieved")
+      }
+
+      it("fails with the appropriate error when an upstream service is down") {
+        whenever(getCaseNotesForPersonService.execute(any())).doThrow(
+          WebClientResponseException(500, "MockError", null, null, null, null),
+        )
+
+        val response = mockMvc.performAuthorised(path)
+
+        assert(response.response.status == 500)
+        assert(response.response.contentAsString.equals("{\"status\":500,\"errorCode\":null,\"userMessage\":\"500 MockError\",\"developerMessage\":\"Unable to complete request as an upstream service is not responding\",\"moreInfo\":null}"))
       }
     }
   },
