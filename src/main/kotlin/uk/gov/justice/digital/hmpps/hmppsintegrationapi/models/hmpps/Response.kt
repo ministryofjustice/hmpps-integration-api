@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps
 
-
 data class Response<T>(val data: T, override val errors: List<UpstreamApiError> = emptyList()) : BaseResponse(errors) {
 
   companion object {
