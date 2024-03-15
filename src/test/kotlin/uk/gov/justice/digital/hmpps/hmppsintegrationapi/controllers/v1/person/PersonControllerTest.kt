@@ -196,7 +196,7 @@ internal class PersonControllerTest(
       }
     }
 
-    describe("GET $basePath with upstream service down") {
+    describe("GET $basePath return Internal Server Error when Upstream api throw unexpected error") {
       beforeTest {
         Mockito.reset(getPersonsService)
         Mockito.reset(auditService)
