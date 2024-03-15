@@ -196,7 +196,7 @@ internal class PersonControllerTest(
       }
     }
 
-    describe("GET $basePath with interceptors") {
+    describe("GET $basePath with upstream service down") {
       beforeTest {
         Mockito.reset(getPersonsService)
         Mockito.reset(auditService)
