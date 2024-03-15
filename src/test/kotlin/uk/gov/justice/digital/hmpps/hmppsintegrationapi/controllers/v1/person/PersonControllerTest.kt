@@ -11,10 +11,14 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
+import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.ServiceDownInterceptor
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ContactDetailsWithEmailAndPhone
@@ -36,6 +40,7 @@ import kotlin.random.Random
 
 @WebMvcTest(controllers = [PersonController::class])
 @ActiveProfiles("test")
+//@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 internal class PersonControllerTest(
   @Autowired var springMockMvc: MockMvc,
   @MockBean val getPersonService: GetPersonService,
@@ -193,6 +198,23 @@ internal class PersonControllerTest(
           result.response.contentAsString.shouldContain("Invalid date format. Please use yyyy-MM-dd.")
         }
 
+      }
+
+      describe("GET $basePath with interceptors") {
+        beforeTest {
+          Mockito.reset(getPersonsService)
+          Mockito.reset(auditService)
+        }
+
+        @TestConfiguration
+        class TestConfig {
+          inner class TestWebMvcConfigurer(): WebMvcConfigurer {
+              override fun addInterceptors(registry: InterceptorRegistry) {
+                registry.addInterceptor(ServiceDownInterceptor())
+            }
+          }
+        }
+
         it("fails with the appropriate error when an upstream service is down") {
           whenever(getPersonsService.execute(firstName, lastName, pncNumber, dateOfBirth, false)).thenReturn(
             Response(
@@ -204,10 +226,7 @@ internal class PersonControllerTest(
             ),
           )
 
-          val response =
-            mockMvc.performAuthorised(
-              "$basePath?first_name=$firstName&last_name=$lastName&pnc_number=$pncNumber&date_of_birth=$dateOfBirth",
-            )
+          val response = mockMvc.performAuthorised("$basePath?first_name=$firstName&last_name=$lastName&pnc_number=$pncNumber&date_of_birth=$dateOfBirth",)
 
           assert(response.response.status == 500)
           assert(response.response.contentAsString.equals("blah"))

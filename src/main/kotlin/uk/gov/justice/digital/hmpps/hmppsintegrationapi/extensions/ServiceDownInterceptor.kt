@@ -14,6 +14,7 @@ class ServiceDownInterceptor : HandlerInterceptor {
     handler: Any,
     modelAndView: ModelAndView?,
   ) {
+//    val resp = response.
     if (response.status >= 500) {
       response.resetBuffer()
       response.status = HttpServletResponse.SC_INTERNAL_SERVER_ERROR
