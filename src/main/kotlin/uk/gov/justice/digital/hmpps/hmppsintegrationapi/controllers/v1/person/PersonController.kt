@@ -53,7 +53,7 @@ class PersonController(
     val response = getPersonsService.execute(firstName, lastName, pncNumber, dateOfBirth, searchWithinAliases)
 
     auditService.createEvent("SEARCH_PERSON", "Person searched with first name: $firstName, last name: $lastName, search within aliases: $searchWithinAliases, pnc number: $pncNumber, date of birth: $dateOfBirth")
-    return response.data.paginateWith(page, perPage, response.errors)
+    return response.data.paginateWith(page, perPage)
   }
 
   @GetMapping("{encodedHmppsId}")
