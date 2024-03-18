@@ -373,6 +373,87 @@ paths:
                 PersonNotFoundError:
                   $ref: "#/components/examples/PersonNotFoundError"
 
+  /v1/persons/{hmppsId}/risks/categories:
+    get:
+      tags:
+        - persons
+      summary: Returns the categories related to an offender.
+      parameters:
+        - $ref: "#/components/parameters/HmppsId"
+      responses:
+        "200":
+          description: Successfully found risk categories for a person with the provided HMPPS ID.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      offenderNo:
+                        type: string
+                      assessments:
+                        type: array
+                        minItems: 0
+                        items:
+                          $ref: "#/components/schemas/RiskAssessment"
+                      category:
+                        type: string
+                      categoryCode:
+                          type: string
+        "404":
+          description: Failed to find risk categories a person with the provided HMPPS ID.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                PersonNotFoundError:
+                  $ref: "#/components/examples/PersonNotFoundError"
+
+  /v1/persons/{hmppsId}/risks/mappadetail:
+    get:
+      tags:
+        - persons
+      summary: Returns the mappa detail related to a person.
+      parameters:
+        - $ref: "#/components/parameters/HmppsId"
+      responses:
+        "200":
+          description: Successfully found mappa detail for a person with the provided HMPPS ID.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      level:
+                        type: string
+                      levelDescription:
+                        type: string
+                      category:
+                        type: string
+                      categoryDescription:
+                        type: string
+                      startDate:
+                        type: string
+                      reviewDate:
+                        type: string
+                      notes:
+                        type: string
+        "404":
+          description: Failed to find risk-related mappa detail a person with the provided HMPPS ID.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                PersonNotFoundError:
+                  $ref: "#/components/examples/PersonNotFoundError"
+
   /v1/persons/{hmppsId}/needs:
     get:
       tags:
@@ -1736,6 +1817,45 @@ components:
               `SEC86` - Section 86 of 2000 Act,
               `SUP` - Sentence Length,
               `SUSP` - Suspension Period
+    RiskAssessment:
+      type: object
+      properties:
+        classificationCode:
+          type: string
+          example: C
+          description: The classification code of the risk
+        classification:
+          type: string
+          example: Cat C
+          description: The classification of the code
+        assessmentCode:
+          type: string
+          example: CATEGORY
+          description: The assessment code
+        assessmentDescription:
+          type: string
+          example: Categorisation
+          description: The description of the assessment
+        assessmentDate:
+          type: string
+          example: 2018-02-11
+          description: The date of the assessment
+        nextReviewDate:
+          type: string
+          example: 2018-02-11
+          description: Next review date
+        assessmentAgencyId:
+          type: string
+          example: MDI
+          description: Agency ID of the assessment
+        assessmentStatus:
+          type: string
+          example: P
+          description: The status of the assessment
+        assessmentComment:
+          type: string
+          example: Comment details
+          description: Comments regarding the assessment
     RiskScore:
       type: object
       properties:

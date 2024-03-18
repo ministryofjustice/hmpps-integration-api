@@ -11,7 +11,7 @@ import java.nio.charset.StandardCharsets
 
 class RisksSmokeTest : DescribeSpec(
   {
-    val hmppsId = "2004/13116M"
+    val hmppsId = "A1234AA"
     val encodedHmppsId = URLEncoder.encode(hmppsId, StandardCharsets.UTF_8)
 
     val basePath = "v1/persons/$encodedHmppsId/risks"
@@ -53,6 +53,57 @@ class RisksSmokeTest : DescribeSpec(
               "perPage": 10,
               "totalCount": 1,
               "totalPages": 1
+          }
+        }
+        """.removeWhitespaceAndNewlines(),
+      )
+    }
+
+    it("returns risk categories for a person") {
+      val response = httpClient.performAuthorised("$basePath/categories")
+
+      response.statusCode().shouldBe(HttpStatus.OK.value())
+      response.body().shouldEqualJson(
+        """
+        {
+        "data": {
+          "offenderNo": "A1234AA",
+          "assessments": [
+            {
+              "classificationCode": "C",
+              "classification": "Cat C",
+              "assessmentCode": "CATEGORY",
+              "assessmentDescription": "Categorisation",
+              "assessmentDate": "2018-02-11",
+              "nextReviewDate": "2018-02-11",
+              "assessmentAgencyId": "MDI",
+              "assessmentStatus": "P",
+              "assessmentComment": "Comment details"
+            }
+          ],
+          "category": "string",
+          "categoryCode": "string"
+        }
+      }
+        """.removeWhitespaceAndNewlines(),
+      )
+    }
+
+    it("return mappa detail for a person") {
+      val response = httpClient.performAuthorised("$basePath/mappadetail")
+
+      response.statusCode().shouldBe(HttpStatus.OK.value())
+      response.body().shouldEqualJson(
+        """
+        {
+          "data": {
+            "level": -2147483648,
+            "levelDescription": "string",
+            "category": -2147483648,
+            "categoryDescription": "string",
+            "startDate": "2019-08-24",
+            "reviewDate": "2019-08-24",
+            "notes": "string"
           }
         }
         """.removeWhitespaceAndNewlines(),

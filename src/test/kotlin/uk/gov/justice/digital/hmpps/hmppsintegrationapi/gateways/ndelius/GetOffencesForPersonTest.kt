@@ -131,7 +131,9 @@ class GetOffencesForPersonTest(
         nDeliusApiMockServer.stubGetSupervisionsForPerson(
           deliusCrn,
           """
-          { "supervisions": [] }
+          {
+          "mappaDetail": null,
+          "supervisions": [] }
           """,
         )
 
