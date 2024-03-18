@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.caseNotes
 
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.collections.shouldExist
 import io.kotest.matchers.shouldBe
@@ -12,12 +13,12 @@ import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
+import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.CaseNotesGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.CaseNotesApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.filters.CaseNoteFilter
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import java.time.LocalDateTime
 
 @ActiveProfiles("test")
@@ -52,11 +53,12 @@ class CaseNotesGatewayTest(
         .getClientToken("CaseNotes")
     }
 
-    it("upstream API returns an error, return error") {
+    it("upstream API returns an error, throw exception") {
       caseNotesApiMockServer.stubGetCaseNotes("123", "", "", HttpStatus.BAD_REQUEST)
-      val response = caseNotesGateway.getCaseNotesForPerson(id = "123", CaseNoteFilter(hmppsId = ""))
-      response.data.shouldBe(emptyList())
-      response.errors[0].type.shouldBe(UpstreamApiError.Type.BAD_REQUEST)
+      val response = shouldThrow<WebClientResponseException> {
+        caseNotesGateway.getCaseNotesForPerson(id = "123", CaseNoteFilter(hmppsId = ""))
+      }
+      response.statusCode.shouldBe(HttpStatus.BAD_REQUEST)
     }
 
     it("returns caseNote") {

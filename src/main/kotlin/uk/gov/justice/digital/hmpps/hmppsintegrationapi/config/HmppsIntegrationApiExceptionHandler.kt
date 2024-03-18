@@ -75,7 +75,7 @@ class HmppsIntegrationApiExceptionHandler {
 
   @ExceptionHandler(WebClientResponseException::class)
   fun handleWebClientResponseException(e: WebClientResponseException): ResponseEntity<ErrorResponse?>? {
-    log_and_capture("Authentication error: {}", e)
+    log_and_capture("Upstream service down: {}", e)
     return ResponseEntity
       .status(INTERNAL_SERVER_ERROR)
       .body(
