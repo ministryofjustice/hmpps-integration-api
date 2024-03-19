@@ -431,11 +431,11 @@ paths:
                     type: object
                     properties:
                       level:
-                        type: integer
+                        type: number
                       levelDescription:
                         type: string
                       category:
-                        type: integer
+                        type: number
                       categoryDescription:
                         type: string
                       startDate:
