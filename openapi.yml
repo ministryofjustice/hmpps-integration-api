@@ -432,18 +432,27 @@ paths:
                     properties:
                       level:
                         type: number
+                        example: 1
                       levelDescription:
                         type: string
+                        example: Description of M1
                       category:
                         type: number
+                        example: 2
                       categoryDescription:
                         type: string
+                        example: Description of M2
                       startDate:
                         type: string
+                        format: date
+                        example: 2024-02-07
                       reviewDate:
                         type: string
+                        format: date
+                        example: 2024-02-07
                       notes:
                         type: string
+                        example: "Mappa Detail for X00001"
         "404":
           description: Failed to find risk-related mappa detail a person with the provided HMPPS ID.
           content:
