@@ -3,9 +3,9 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.MappaDetail
 
 data class NDeliusMappaDetail(
-  val level: Int? = null,
+  val level: Number? = null,
   val levelDescription: String? = null,
-  val category: Int? = null,
+  val category: Number? = null,
   val categoryDescription: String? = null,
   val startDate: String? = null,
   val reviewDate: String? = null,
