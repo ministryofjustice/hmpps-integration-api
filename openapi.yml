@@ -71,7 +71,15 @@ paths:
               examples:
                 NoQueryParametersBadRequestError:
                   $ref: "#/components/examples/NoQueryParametersBadRequestError"
-
+        "500":
+          description: An upstream service was not responding, so we cannot verify the accuracy of any data we did get.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                NoQueryParametersBadRequestError:
+                  $ref: "#/components/examples/InternalServerError"
   /v1/persons/{hmppsId}:
     get:
       tags:
@@ -103,6 +111,15 @@ paths:
               examples:
                 PersonNotFoundError:
                   $ref: "#/components/examples/PersonNotFoundError"
+        "500":
+          description: An upstream service was not responding, so we cannot verify the accuracy of any data we did get.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                NoQueryParametersBadRequestError:
+                  $ref: "#/components/examples/InternalServerError"
 
   /v1/persons/{hmppsId}/images:
     get:
@@ -140,6 +157,15 @@ paths:
               examples:
                 PersonNotFoundError:
                   $ref: "#/components/examples/PersonNotFoundError"
+        "500":
+          description: An upstream service was not responding, so we cannot verify the accuracy of any data we did get.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                NoQueryParametersBadRequestError:
+                  $ref: "#/components/examples/InternalServerError"
 
   /v1/images/{id}:
     get:
@@ -169,6 +195,15 @@ paths:
               examples:
                 ImageNotFoundError:
                   $ref: "#/components/examples/ImageNotFoundError"
+        "500":
+          description: An upstream service was not responding, so we cannot verify the accuracy of any data we did get.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                NoQueryParametersBadRequestError:
+                  $ref: "#/components/examples/InternalServerError"
 
   /v1/persons/{hmppsId}/addresses:
     get:
@@ -203,6 +238,15 @@ paths:
               examples:
                 PersonNotFoundError:
                   $ref: "#/components/examples/PersonNotFoundError"
+        "500":
+          description: An upstream service was not responding, so we cannot verify the accuracy of any data we did get.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                NoQueryParametersBadRequestError:
+                  $ref: "#/components/examples/InternalServerError"
 
   /v1/persons/{hmppsId}/offences:
     get:
@@ -242,6 +286,15 @@ paths:
               examples:
                 PersonNotFoundError:
                   $ref: "#/components/examples/PersonNotFoundError"
+        "500":
+          description: An upstream service was not responding, so we cannot verify the accuracy of any data we did get.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                NoQueryParametersBadRequestError:
+                  $ref: "#/components/examples/InternalServerError"
 
   /v1/persons/{hmppsId}/alerts:
     get:
@@ -277,6 +330,15 @@ paths:
               examples:
                 PersonNotFoundError:
                   $ref: "#/components/examples/PersonNotFoundError"
+        "500":
+          description: An upstream service was not responding, so we cannot verify the accuracy of any data we did get.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                NoQueryParametersBadRequestError:
+                  $ref: "#/components/examples/InternalServerError"
 
   /v1/persons/{hmppsId}/sentences:
     get:
@@ -311,6 +373,15 @@ paths:
               examples:
                 PersonNotFoundError:
                   $ref: "#/components/examples/PersonNotFoundError"
+        "500":
+          description: An upstream service was not responding, so we cannot verify the accuracy of any data we did get.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                NoQueryParametersBadRequestError:
+                  $ref: "#/components/examples/InternalServerError"
 
   /v1/persons/{hmppsId}/sentences/latest-key-dates-and-adjustments:
     get:
@@ -338,6 +409,15 @@ paths:
               examples:
                 PersonNotFoundError:
                   $ref: "#/components/examples/PersonNotFoundError"
+        "500":
+          description: An upstream service was not responding, so we cannot verify the accuracy of any data we did get.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                NoQueryParametersBadRequestError:
+                  $ref: "#/components/examples/InternalServerError"
 
   /v1/persons/{hmppsId}/risks/scores:
     get:
@@ -372,6 +452,15 @@ paths:
               examples:
                 PersonNotFoundError:
                   $ref: "#/components/examples/PersonNotFoundError"
+        "500":
+          description: An upstream service was not responding, so we cannot verify the accuracy of any data we did get.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                NoQueryParametersBadRequestError:
+                  $ref: "#/components/examples/InternalServerError"
 
   /v1/persons/{hmppsId}/risks/categories:
     get:
@@ -411,6 +500,15 @@ paths:
               examples:
                 PersonNotFoundError:
                   $ref: "#/components/examples/PersonNotFoundError"
+        "500":
+          description: An upstream service was not responding, so we cannot verify the accuracy of any data we did get.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                NoQueryParametersBadRequestError:
+                  $ref: "#/components/examples/InternalServerError"
 
   /v1/persons/{hmppsId}/risks/mappadetail:
     get:
@@ -462,6 +560,15 @@ paths:
               examples:
                 PersonNotFoundError:
                   $ref: "#/components/examples/PersonNotFoundError"
+        "500":
+          description: An upstream service was not responding, so we cannot verify the accuracy of any data we did get.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                NoQueryParametersBadRequestError:
+                  $ref: "#/components/examples/InternalServerError"
 
   /v1/persons/{hmppsId}/needs:
     get:
@@ -493,6 +600,15 @@ paths:
               examples:
                 PersonNotFoundError:
                   $ref: "#/components/examples/PersonNotFoundError"
+        "500":
+          description: An upstream service was not responding, so we cannot verify the accuracy of any data we did get.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                NoQueryParametersBadRequestError:
+                  $ref: "#/components/examples/InternalServerError"
 
   /v1/persons/{hmppsId}/risks:
     get:
@@ -520,6 +636,15 @@ paths:
               examples:
                 PersonNotFoundError:
                   $ref: "#/components/examples/PersonNotFoundError"
+        "500":
+          description: An upstream service was not responding, so we cannot verify the accuracy of any data we did get.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                NoQueryParametersBadRequestError:
+                  $ref: "#/components/examples/InternalServerError"
 
   /v1/epf/person-details/{hmppsId}/{eventNumber}:
     get:
@@ -557,6 +682,15 @@ paths:
               examples:
                 PersonNotFoundError:
                   $ref: "#/components/examples/PersonNotFoundError"
+        "500":
+          description: An upstream service was not responding, so we cannot verify the accuracy of any data we did get.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                NoQueryParametersBadRequestError:
+                  $ref: "#/components/examples/InternalServerError"
 
   /v1/persons/{Id}/adjudications:
     get:
@@ -583,6 +717,15 @@ paths:
               examples:
                 PersonNotFoundError:
                   $ref: "#/components/examples/PersonNotFoundError"
+        "500":
+          description: An upstream service was not responding, so we cannot verify the accuracy of any data we did get.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                NoQueryParametersBadRequestError:
+                  $ref: "#/components/examples/InternalServerError"
 
   /v1/persons/{HmppsId}/licences/conditions:
     get:
@@ -605,6 +748,15 @@ paths:
               examples:
                 PersonNotFoundError:
                   $ref: "#/components/examples/PersonNotFoundError"
+        "500":
+          description: An upstream service was not responding, so we cannot verify the accuracy of any data we did get.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                NoQueryParametersBadRequestError:
+                  $ref: "#/components/examples/InternalServerError"
 
   /v1/persons/{HmppsId}/case-notes:
     get:
@@ -653,6 +805,15 @@ paths:
               examples:
                 PersonNotFoundError:
                   $ref: "#/components/examples/PersonNotFoundError"
+        "500":
+          description: An upstream service was not responding, so we cannot verify the accuracy of any data we did get.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                NoQueryParametersBadRequestError:
+                  $ref: "#/components/examples/InternalServerError"
 
   /{TBC}/v1/persons/{Id}/accommodations:
     get:
@@ -662,6 +823,15 @@ paths:
       responses:
         "200":
           description: Success.
+        "500":
+          description: An upstream service was not responding, so we cannot verify the accuracy of any data we did get.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                NoQueryParametersBadRequestError:
+                  $ref: "#/components/examples/InternalServerError"
 
   /{TBC}/v1/persons/{Id}/interventions:
     get:
@@ -671,6 +841,15 @@ paths:
       responses:
         "200":
           description: Success.
+        "500":
+          description: An upstream service was not responding, so we cannot verify the accuracy of any data we did get.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                NoQueryParametersBadRequestError:
+                  $ref: "#/components/examples/InternalServerError"
 
   /{TBC}/v1/persons/{Id}/key-workers:
     get:
@@ -680,6 +859,15 @@ paths:
       responses:
         "200":
           description: Success.
+        "500":
+          description: An upstream service was not responding, so we cannot verify the accuracy of any data we did get.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                NoQueryParametersBadRequestError:
+                  $ref: "#/components/examples/InternalServerError"
 
   /{TBC}/v1/persons/{Id}/prisoner-visits:
     get:
@@ -689,6 +877,15 @@ paths:
       responses:
         "200":
           description: Success.
+        "500":
+          description: An upstream service was not responding, so we cannot verify the accuracy of any data we did get.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                NoQueryParametersBadRequestError:
+                  $ref: "#/components/examples/InternalServerError"
 
   /{TBC}/v1/persons/{Id}/probation-contact-events:
     get:
@@ -698,6 +895,15 @@ paths:
       responses:
         "200":
           description: Success.
+        "500":
+          description: An upstream service was not responding, so we cannot verify the accuracy of any data we did get.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                NoQueryParametersBadRequestError:
+                  $ref: "#/components/examples/InternalServerError"
 
   /{TBC}/v1/persons/{Id}/security:
     get:
@@ -707,6 +913,15 @@ paths:
       responses:
         "200":
           description: Success.
+        "500":
+          description: An upstream service was not responding, so we cannot verify the accuracy of any data we did get.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                NoQueryParametersBadRequestError:
+                  $ref: "#/components/examples/InternalServerError"
 
   /{TBC}/v1/persons/{Id}/special-needs:
     get:
@@ -716,6 +931,15 @@ paths:
       responses:
         "200":
           description: Success.
+        "500":
+          description: An upstream service was not responding, so we cannot verify the accuracy of any data we did get.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                NoQueryParametersBadRequestError:
+                  $ref: "#/components/examples/InternalServerError"
 
 components:
   parameters:
@@ -2200,4 +2424,11 @@ components:
         errorCode: null,
         userMessage: "Validation failure: No query parameters specified."
         developerMessage: "No query parameters specified."
+        moreInfo: null
+    InternalServerError:
+      value:
+        status: 500
+        errorCode: null,
+        userMessage: "Internal Server Error"
+        developerMessage: "Unable to complete request as an upstream service is not responding."
         moreInfo: null

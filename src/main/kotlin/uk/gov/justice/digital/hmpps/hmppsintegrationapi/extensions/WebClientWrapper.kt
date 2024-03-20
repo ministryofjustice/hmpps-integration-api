@@ -68,9 +68,7 @@ class WebClientWrapper(
   fun getErrorType(exception: WebClientResponseException, upstreamApi: UpstreamApi): WebClientWrapperResponse.Error {
     val errorType = when (exception.statusCode) {
       HttpStatus.NOT_FOUND -> UpstreamApiError.Type.ENTITY_NOT_FOUND
-      HttpStatus.FORBIDDEN -> UpstreamApiError.Type.FORBIDDEN
-      HttpStatus.BAD_REQUEST -> UpstreamApiError.Type.BAD_REQUEST
-      else -> UpstreamApiError.Type.INTERNAL_SERVER_ERROR
+      else -> throw exception
     }
     return WebClientWrapperResponse.Error(
       listOf(

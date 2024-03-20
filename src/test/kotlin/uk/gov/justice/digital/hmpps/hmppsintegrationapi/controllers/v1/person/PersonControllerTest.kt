@@ -7,6 +7,7 @@ import io.kotest.matchers.shouldNotBe
 import io.kotest.matchers.string.shouldContain
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory.times
+import org.mockito.kotlin.doThrow
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
@@ -15,6 +16,7 @@ import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
+import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ContactDetailsWithEmailAndPhone
@@ -191,6 +193,24 @@ internal class PersonControllerTest(
 
         result.response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
         result.response.contentAsString.shouldContain("Invalid date format. Please use yyyy-MM-dd.")
+      }
+    }
+
+    describe("GET $basePath return Internal Server Error when Upstream api throw unexpected error") {
+      beforeTest {
+        Mockito.reset(getPersonsService)
+        Mockito.reset(auditService)
+      }
+
+      it("fails with the appropriate error when an upstream service is down") {
+        whenever(getPersonsService.execute(firstName, lastName, pncNumber, dateOfBirth, false)).doThrow(
+          WebClientResponseException(500, "MockError", null, null, null, null),
+        )
+
+        val response = mockMvc.performAuthorised("$basePath?first_name=$firstName&last_name=$lastName&pnc_number=$pncNumber&date_of_birth=$dateOfBirth")
+
+        assert(response.response.status == 500)
+        assert(response.response.contentAsString.equals("{\"status\":500,\"errorCode\":null,\"userMessage\":\"500 MockError\",\"developerMessage\":\"Unable to complete request as an upstream service is not responding\",\"moreInfo\":null}"))
       }
     }
 

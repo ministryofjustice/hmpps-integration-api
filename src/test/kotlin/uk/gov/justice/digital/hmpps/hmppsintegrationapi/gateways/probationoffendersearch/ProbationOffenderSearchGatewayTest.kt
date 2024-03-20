@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.probationoffendersearch
 
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.nulls.shouldBeNull
@@ -13,13 +14,12 @@ import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
+import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ProbationOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ProbationOffenderSearchApiMockServer
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import java.io.File
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -352,17 +352,10 @@ class ProbationOffenderSearchGatewayTest(
           """,
           HttpStatus.BAD_REQUEST,
         )
-
-        val response = probationOffenderSearchGateway.getPerson(hmppsId)
-        response.data.shouldBeNull()
-        response.errors.shouldBe(
-          listOf(
-            UpstreamApiError(
-              causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH,
-              type = UpstreamApiError.Type.BAD_REQUEST,
-            ),
-          ),
-        )
+        val response = shouldThrow<WebClientResponseException> {
+          probationOffenderSearchGateway.getPerson(hmppsId)
+        }
+        response.statusCode.shouldBe(HttpStatus.BAD_REQUEST)
       }
 
       it("returns null when no offenders are returned") {

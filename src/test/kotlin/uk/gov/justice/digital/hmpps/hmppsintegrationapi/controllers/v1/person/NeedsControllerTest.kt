@@ -5,6 +5,7 @@ import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory
+import org.mockito.kotlin.doThrow
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
@@ -13,6 +14,7 @@ import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
+import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Need
@@ -172,6 +174,17 @@ internal class NeedsControllerTest(
         val result = mockMvc.performAuthorised(path)
 
         result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
+      }
+
+      it("fails with the appropriate error when an upstream service is down") {
+        whenever(getNeedsForPersonService.execute(hmppsId)).doThrow(
+          WebClientResponseException(500, "MockError", null, null, null, null),
+        )
+
+        val response = mockMvc.performAuthorised(path)
+
+        assert(response.response.status == 500)
+        assert(response.response.contentAsString.equals("{\"status\":500,\"errorCode\":null,\"userMessage\":\"500 MockError\",\"developerMessage\":\"Unable to complete request as an upstream service is not responding\",\"moreInfo\":null}"))
       }
     }
   },

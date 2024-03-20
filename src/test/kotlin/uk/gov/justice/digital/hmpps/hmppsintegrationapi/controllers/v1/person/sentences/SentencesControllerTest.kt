@@ -6,6 +6,7 @@ import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory
+import org.mockito.kotlin.doThrow
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
@@ -14,6 +15,7 @@ import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
+import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.controllers.v1.person.SentencesController
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
@@ -207,6 +209,17 @@ internal class SentencesControllerTest(
       mockMvc.performAuthorised("$path?page=1&perPage=10")
 
       verify(auditService, VerificationModeFactory.times(1)).createEvent("GET_PERSON_SENTENCES", "Person sentence details with hmpps id: $hmppsId has been retrieved")
+    }
+
+    it("returns a 500 INTERNAL SERVER ERROR status code when upstream api return expected error") {
+
+      whenever(getSentencesForPersonService.execute(hmppsId)).doThrow(
+        WebClientResponseException(500, "MockError", null, null, null, null),
+      )
+
+      val result = mockMvc.performAuthorised(path)
+      assert(result.response.status == 500)
+      assert(result.response.contentAsString.equals("{\"status\":500,\"errorCode\":null,\"userMessage\":\"500 MockError\",\"developerMessage\":\"Unable to complete request as an upstream service is not responding\",\"moreInfo\":null}"))
     }
   },
 )
