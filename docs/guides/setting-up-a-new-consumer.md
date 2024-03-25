@@ -109,8 +109,8 @@ kubectl -n hmpps-integration-api-[environment] get secrets [your queue secret na
 ### Using AWS secret for filter Policy
 1. Login to the [AWS Console](https://user-guide.cloud-platform.service.justice.gov.uk/documentation/getting-started/accessing-the-cloud-console.html), navigate to Secrets Manager and navigate to the secret created in the previous step by search using the secret description. e.g. MAPPS event filter list Pre-prod
 2. Click on the secret and then click on Retrieve secret value. If this is your first time accessing the new secret, you will see an error Failed to get the secret value.
-3. Click on Set secret Value, and set the Plaintext value as: {"eventType":["default"]}
+3. Click on Set secret Value, and set the Plaintext value as: {"eventType":["default"]}. Setting filter to default will block subscriber receiving any messages. Event notifier will update the subscriber and AWS secret with actual filter list later.
 4. Save the change 
 5. Create new [Cloud Platform Environments GitHub repository](https://github.com/ministryofjustice/cloud-platform-environments/tree/main) branch 
-6. Load secret value from AWS and update filter_policy value. Follow [Example](https://github.com/ministryofjustice/cloud-platform-environments/pull/22111/files). Note: you will need get secret name from AWS console. 
+6. Update terraform to load the secret value from AWS and update filter_policy value. Follow [Example](https://github.com/ministryofjustice/cloud-platform-environments/pull/22111/files). Note: The name of aws_secretsmanager_secret module has to be same as the secret name created from step 4/5 above. 
 7. Follow steps 3-8 in [Create an API key](#create-an-api-key) to merge branch to main. 
