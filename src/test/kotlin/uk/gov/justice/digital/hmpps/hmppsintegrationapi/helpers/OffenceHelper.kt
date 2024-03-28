@@ -15,14 +15,15 @@ fun generateTestOffence(
   endDate: LocalDate? = LocalDate.parse("2020-03-03"),
   courtDates: List<LocalDate?> = listOf(LocalDate.parse("2020-04-03")),
   statuteCode: String? = "RR12",
-): Offence = Offence(
-  serviceSource = serviceSource,
-  systemSource = systemSource,
-  cjsCode = cjsCode,
-  hoCode = hoCode,
-  description = description,
-  startDate = startDate,
-  endDate = endDate,
-  courtDates = courtDates,
-  statuteCode = statuteCode,
-)
+): Offence =
+  Offence(
+    serviceSource = serviceSource,
+    systemSource = systemSource,
+    cjsCode = cjsCode,
+    hoCode = hoCode,
+    description = description,
+    startDate = startDate,
+    endDate = endDate,
+    courtDates = courtDates,
+    statuteCode = statuteCode,
+  )

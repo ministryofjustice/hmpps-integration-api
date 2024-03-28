@@ -33,89 +33,97 @@ internal class AdjudicationsControllerTest(
   @MockBean val getAdjudicationsForPersonService: GetAdjudicationsForPersonService,
   @MockBean val auditService: AuditService,
 ) : DescribeSpec(
-  {
-    val hmppsId = "9999/11111A"
-    val encodedHmppsId = URLEncoder.encode(hmppsId, StandardCharsets.UTF_8)
-    val path = "/v1/persons/$encodedHmppsId/reported-adjudications"
-    val mockMvc = IntegrationAPIMockMvc(springMockMvc)
+    {
+      val hmppsId = "9999/11111A"
+      val encodedHmppsId = URLEncoder.encode(hmppsId, StandardCharsets.UTF_8)
+      val path = "/v1/persons/$encodedHmppsId/reported-adjudications"
+      val mockMvc = IntegrationAPIMockMvc(springMockMvc)
 
-    describe("GET $path") {
-      beforeTest {
-        Mockito.reset(getAdjudicationsForPersonService)
-        Mockito.reset(auditService)
-        whenever(getAdjudicationsForPersonService.execute(hmppsId)).thenReturn(
-          Response(
-            data = listOf(
-              Adjudication(
-                incidentDetails =
-                IncidentDetailsDto(
-                  dateTimeOfIncident = "2021-04-03T10:00:00",
-
+      describe("GET $path") {
+        beforeTest {
+          Mockito.reset(getAdjudicationsForPersonService)
+          Mockito.reset(auditService)
+          whenever(getAdjudicationsForPersonService.execute(hmppsId)).thenReturn(
+            Response(
+              data =
+                listOf(
+                  Adjudication(
+                    incidentDetails =
+                      IncidentDetailsDto(
+                        dateTimeOfIncident = "2021-04-03T10:00:00",
+                      ),
+                  ),
                 ),
-              ),
             ),
-          ),
-        )
-      }
+          )
+        }
 
-      it("throws exception when no person found") {
-        whenever(getAdjudicationsForPersonService.execute(hmppsId = "notfound")).thenReturn(
-          Response(
-            data = emptyList(),
-            errors = listOf(
-              UpstreamApiError(
-                type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-                causedBy = UpstreamApi.ADJUDICATIONS,
-              ),
+        it("throws exception when no person found") {
+          whenever(getAdjudicationsForPersonService.execute(hmppsId = "notfound")).thenReturn(
+            Response(
+              data = emptyList(),
+              errors =
+                listOf(
+                  UpstreamApiError(
+                    type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+                    causedBy = UpstreamApi.ADJUDICATIONS,
+                  ),
+                ),
             ),
-          ),
-        )
-        val noFoundPath = "/v1/persons/notfound/reported-adjudications"
-        val result = mockMvc.performAuthorised(noFoundPath)
-        result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
+          )
+          val noFoundPath = "/v1/persons/notfound/reported-adjudications"
+          val result = mockMvc.performAuthorised(noFoundPath)
+          result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
+        }
+
+        it("logs audit for adjudications") {
+          mockMvc.performAuthorised(path)
+
+          verify(
+            auditService,
+            VerificationModeFactory.times(1),
+          ).createEvent("GET_PERSON_ADJUDICATIONS", "Person adjudications details with hmpps id: $hmppsId has been retrieved")
+        }
+
+        it("returns paginated adjudication results") {
+          whenever(getAdjudicationsForPersonService.execute(hmppsId)).thenReturn(
+            Response(
+              data =
+                List(20) {
+                  Adjudication(
+                    IncidentDetailsDto(dateTimeOfIncident = "2022-05-05T11:00:00"),
+                  )
+                },
+            ),
+          )
+
+          val result = mockMvc.performAuthorised("$path?page=1&perPage=15")
+
+          result.response.contentAsString.shouldContainJsonKeyValue("$.pagination.page", 1)
+          result.response.contentAsString.shouldContainJsonKeyValue("$.pagination.totalPages", 2)
+        }
       }
 
-      it("logs audit for adjudications") {
-        mockMvc.performAuthorised(path)
+      describe("GET $path with upstream service down") {
+        beforeTest {
+          Mockito.reset(getAdjudicationsForPersonService)
+          Mockito.reset(auditService)
+        }
 
-        verify(auditService, VerificationModeFactory.times(1)).createEvent("GET_PERSON_ADJUDICATIONS", "Person adjudications details with hmpps id: $hmppsId has been retrieved")
+        it("fails with the appropriate error when an upstream service is down") {
+          whenever(getAdjudicationsForPersonService.execute(hmppsId)).doThrow(
+            WebClientResponseException(500, "MockError", null, null, null, null),
+          )
+
+          val response = mockMvc.performAuthorised("$path?page=1&perPage=15")
+
+          assert(response.response.status == 500)
+          assert(
+            response.response.contentAsString.equals(
+              "{\"status\":500,\"errorCode\":null,\"userMessage\":\"500 MockError\",\"developerMessage\":\"Unable to complete request as an upstream service is not responding\",\"moreInfo\":null}",
+            ),
+          )
+        }
       }
-
-      it("returns paginated adjudication results") {
-        whenever(getAdjudicationsForPersonService.execute(hmppsId)).thenReturn(
-          Response(
-            data =
-            List(20) {
-              Adjudication(
-                IncidentDetailsDto(dateTimeOfIncident = "2022-05-05T11:00:00"),
-              )
-            },
-          ),
-        )
-
-        val result = mockMvc.performAuthorised("$path?page=1&perPage=15")
-
-        result.response.contentAsString.shouldContainJsonKeyValue("$.pagination.page", 1)
-        result.response.contentAsString.shouldContainJsonKeyValue("$.pagination.totalPages", 2)
-      }
-    }
-
-    describe("GET $path with upstream service down") {
-      beforeTest {
-        Mockito.reset(getAdjudicationsForPersonService)
-        Mockito.reset(auditService)
-      }
-
-      it("fails with the appropriate error when an upstream service is down") {
-        whenever(getAdjudicationsForPersonService.execute(hmppsId)).doThrow(
-          WebClientResponseException(500, "MockError", null, null, null, null),
-        )
-
-        val response = mockMvc.performAuthorised("$path?page=1&perPage=15")
-
-        assert(response.response.status == 500)
-        assert(response.response.contentAsString.equals("{\"status\":500,\"errorCode\":null,\"userMessage\":\"500 MockError\",\"developerMessage\":\"Unable to complete request as an upstream service is not responding\",\"moreInfo\":null}"))
-      }
-    }
-  },
-)
+    },
+  )

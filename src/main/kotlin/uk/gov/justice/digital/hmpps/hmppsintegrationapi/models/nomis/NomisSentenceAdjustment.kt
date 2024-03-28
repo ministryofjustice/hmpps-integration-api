@@ -14,16 +14,17 @@ data class NomisSentenceAdjustment(
   val taggedBail: Number? = null,
   val unusedRemand: Number? = null,
 ) {
-  fun toSentenceAdjustment(): SentenceAdjustment = SentenceAdjustment(
-    additionalDaysAwarded = this.additionalDaysAwarded,
-    unlawfullyAtLarge = this.unlawfullyAtLarge,
-    lawfullyAtLarge = this.lawfullyAtLarge,
-    restoredAdditionalDaysAwarded = this.restoredAdditionalDaysAwarded,
-    specialRemission = this.specialRemission,
-    recallSentenceRemand = this.recallSentenceRemand,
-    recallSentenceTaggedBail = this.recallSentenceTaggedBail,
-    remand = this.remand,
-    taggedBail = this.taggedBail,
-    unusedRemand = this.unusedRemand,
-  )
+  fun toSentenceAdjustment(): SentenceAdjustment =
+    SentenceAdjustment(
+      additionalDaysAwarded = this.additionalDaysAwarded,
+      unlawfullyAtLarge = this.unlawfullyAtLarge,
+      lawfullyAtLarge = this.lawfullyAtLarge,
+      restoredAdditionalDaysAwarded = this.restoredAdditionalDaysAwarded,
+      specialRemission = this.specialRemission,
+      recallSentenceRemand = this.recallSentenceRemand,
+      recallSentenceTaggedBail = this.recallSentenceTaggedBail,
+      remand = this.remand,
+      taggedBail = this.taggedBail,
+      unusedRemand = this.unusedRemand,
+    )
 }

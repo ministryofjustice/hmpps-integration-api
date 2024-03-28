@@ -7,13 +7,14 @@ class RiskTest : DescribeSpec(
   {
     describe("#toRisk") {
       it("maps one-to-one attributes to Integration API attributes") {
-        val arnRisk = ArnRisk(
-          risk = "risk",
-          previous = "previous",
-          previousConcernsText = "previousConcernsText",
-          current = "current",
-          currentConcernsText = "currentConcernsText",
-        )
+        val arnRisk =
+          ArnRisk(
+            risk = "risk",
+            previous = "previous",
+            previousConcernsText = "previousConcernsText",
+            current = "current",
+            currentConcernsText = "currentConcernsText",
+          )
 
         val integrationApiRisk = arnRisk.toRisk()
 

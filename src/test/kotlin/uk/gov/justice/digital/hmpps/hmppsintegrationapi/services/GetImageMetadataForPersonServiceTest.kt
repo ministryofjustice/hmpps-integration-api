@@ -29,85 +29,88 @@ internal class GetImageMetadataForPersonServiceTest(
   @MockBean val probationOffenderSearchGateway: ProbationOffenderSearchGateway,
   private val getImageMetadataForPersonService: GetImageMetadataForPersonService,
 ) : DescribeSpec({
-  val hmppsId = "2003/13116M"
-  val prisonerNumber = "abc123"
+    val hmppsId = "2003/13116M"
+    val prisonerNumber = "abc123"
 
-  beforeEach {
-    Mockito.reset(nomisGateway)
+    beforeEach {
+      Mockito.reset(nomisGateway)
 
-    whenever(probationOffenderSearchGateway.getPerson(id = hmppsId)).thenReturn(
-      Response(data = Person(firstName = "Joey", lastName = "Tribbiani", identifiers = Identifiers(nomisNumber = prisonerNumber))),
-    )
-    whenever(nomisGateway.getImageMetadataForPerson(prisonerNumber)).thenReturn(Response(data = emptyList()))
-  }
+      whenever(probationOffenderSearchGateway.getPerson(id = hmppsId)).thenReturn(
+        Response(data = Person(firstName = "Joey", lastName = "Tribbiani", identifiers = Identifiers(nomisNumber = prisonerNumber))),
+      )
+      whenever(nomisGateway.getImageMetadataForPerson(prisonerNumber)).thenReturn(Response(data = emptyList()))
+    }
 
-  it("gets prisoner ID from Probation Offender Search") {
-    getImageMetadataForPersonService.execute(hmppsId)
+    it("gets prisoner ID from Probation Offender Search") {
+      getImageMetadataForPersonService.execute(hmppsId)
 
-    verify(probationOffenderSearchGateway, VerificationModeFactory.times(1)).getPerson(id = hmppsId)
-  }
+      verify(probationOffenderSearchGateway, VerificationModeFactory.times(1)).getPerson(id = hmppsId)
+    }
 
-  it("gets images details from NOMIS") {
-    getImageMetadataForPersonService.execute(hmppsId)
+    it("gets images details from NOMIS") {
+      getImageMetadataForPersonService.execute(hmppsId)
 
-    verify(nomisGateway, VerificationModeFactory.times(1)).getImageMetadataForPerson(prisonerNumber)
-  }
+      verify(nomisGateway, VerificationModeFactory.times(1)).getImageMetadataForPerson(prisonerNumber)
+    }
 
-  it("returns metadata for a persons images") {
-    val imageMetadataFromNomis = listOf(
-      ImageMetadata(
-        id = 2461788,
-        active = false,
-        captureDateTime = LocalDateTime.parse("2023-03-01T08:30:45"),
-        view = "FACE",
-        orientation = "FRONT",
-        type = "OFF_BKG",
-      ),
-    )
-    whenever(nomisGateway.getImageMetadataForPerson(prisonerNumber)).thenReturn(Response(data = imageMetadataFromNomis))
-
-    val response = getImageMetadataForPersonService.execute(hmppsId)
-
-    response.data.shouldBe(imageMetadataFromNomis)
-  }
-
-  it("returns a not found error when person cannot be found in Probation Offender Search") {
-    whenever(probationOffenderSearchGateway.getPerson(id = hmppsId)).thenReturn(
-      Response(
-        data = null,
-        errors = listOf(
-          UpstreamApiError(
-            causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH,
-            type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+    it("returns metadata for a persons images") {
+      val imageMetadataFromNomis =
+        listOf(
+          ImageMetadata(
+            id = 2461788,
+            active = false,
+            captureDateTime = LocalDateTime.parse("2023-03-01T08:30:45"),
+            view = "FACE",
+            orientation = "FRONT",
+            type = "OFF_BKG",
           ),
+        )
+      whenever(nomisGateway.getImageMetadataForPerson(prisonerNumber)).thenReturn(Response(data = imageMetadataFromNomis))
+
+      val response = getImageMetadataForPersonService.execute(hmppsId)
+
+      response.data.shouldBe(imageMetadataFromNomis)
+    }
+
+    it("returns a not found error when person cannot be found in Probation Offender Search") {
+      whenever(probationOffenderSearchGateway.getPerson(id = hmppsId)).thenReturn(
+        Response(
+          data = null,
+          errors =
+            listOf(
+              UpstreamApiError(
+                causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH,
+                type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+              ),
+            ),
         ),
-      ),
-    )
+      )
 
-    val response = getImageMetadataForPersonService.execute(hmppsId)
+      val response = getImageMetadataForPersonService.execute(hmppsId)
 
-    response.errors.shouldHaveSize(1)
-    response.errors.first().causedBy.shouldBe(UpstreamApi.PROBATION_OFFENDER_SEARCH)
-    response.errors.first().type.shouldBe(UpstreamApiError.Type.ENTITY_NOT_FOUND)
-  }
+      response.errors.shouldHaveSize(1)
+      response.errors.first().causedBy.shouldBe(UpstreamApi.PROBATION_OFFENDER_SEARCH)
+      response.errors.first().type.shouldBe(UpstreamApiError.Type.ENTITY_NOT_FOUND)
+    }
 
-  it("returns the error from NOMIS when an error occurs") {
-    whenever(nomisGateway.getImageMetadataForPerson(prisonerNumber)).thenReturn(
-      Response(
-        data = emptyList(),
-        errors = listOf(
-          UpstreamApiError(
-            causedBy = UpstreamApi.NOMIS,
-            type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-          ),
+    it("returns the error from NOMIS when an error occurs") {
+      whenever(nomisGateway.getImageMetadataForPerson(prisonerNumber)).thenReturn(
+        Response(
+          data = emptyList(),
+          errors =
+            listOf(
+              UpstreamApiError(
+                causedBy = UpstreamApi.NOMIS,
+                type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+              ),
+            ),
         ),
-      ),
-    )
+      )
 
-    val response = getImageMetadataForPersonService.execute(hmppsId)
+      val response = getImageMetadataForPersonService.execute(hmppsId)
 
-    response.errors.shouldHaveSize(1)
-    response.errors.first().causedBy.shouldBe(UpstreamApi.NOMIS)
-    response.errors.first().type.shouldBe(UpstreamApiError.Type.ENTITY_NOT_FOUND)
-  }
-},)
+      response.errors.shouldHaveSize(1)
+      response.errors.first().causedBy.shouldBe(UpstreamApi.NOMIS)
+      response.errors.first().type.shouldBe(UpstreamApiError.Type.ENTITY_NOT_FOUND)
+    }
+  })

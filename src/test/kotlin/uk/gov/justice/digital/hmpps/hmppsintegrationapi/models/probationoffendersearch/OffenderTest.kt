@@ -20,16 +20,16 @@ class OffenderTest : DescribeSpec(
             gender = "Gender",
             offenderProfile = OffenderProfile(ethnicity = "Ethnicity"),
             offenderAliases =
-            listOf(
-              OffenderAlias(firstName = "Alias First Name", surname = "Alias Surname"),
-            ),
+              listOf(
+                OffenderAlias(firstName = "Alias First Name", surname = "Alias Surname"),
+              ),
             otherIds =
-            OtherIds(
-              pncNumber = "pncNumber",
-              nomsNumber = "nomsNumber",
-              croNumber = "croNumber",
-              crn = "crn",
-            ),
+              OtherIds(
+                pncNumber = "pncNumber",
+                nomsNumber = "nomsNumber",
+                croNumber = "croNumber",
+                crn = "crn",
+              ),
           )
 
         val person = offender.toPerson()

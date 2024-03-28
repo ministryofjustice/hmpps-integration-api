@@ -35,16 +35,16 @@ class GetRiskPredictorScoresForPersonTest(
   val assessRisksAndNeedsGateway: AssessRisksAndNeedsGateway,
 ) :
   DescribeSpec(
-    {
-      val assessRisksAndNeedsApiMockServer = AssessRisksAndNeedsApiMockServer()
-      val deliusCrn = "X777776"
+      {
+        val assessRisksAndNeedsApiMockServer = AssessRisksAndNeedsApiMockServer()
+        val deliusCrn = "X777776"
 
-      beforeEach {
-        assessRisksAndNeedsApiMockServer.start()
-        Mockito.reset(hmppsAuthGateway)
-        assessRisksAndNeedsApiMockServer.stubGetRiskPredictorScoresForPerson(
-          deliusCrn,
-          """
+        beforeEach {
+          assessRisksAndNeedsApiMockServer.start()
+          Mockito.reset(hmppsAuthGateway)
+          assessRisksAndNeedsApiMockServer.stubGetRiskPredictorScoresForPerson(
+            deliusCrn,
+            """
             [
               {
                 "completedDate": "2023-09-05T10:15:41",
@@ -68,53 +68,53 @@ class GetRiskPredictorScoresForPersonTest(
               }
             ]
           """,
-        )
+          )
 
-        Mockito.reset(hmppsAuthGateway)
-        whenever(hmppsAuthGateway.getClientToken("ASSESS_RISKS_AND_NEEDS")).thenReturn(HmppsAuthMockServer.TOKEN)
-      }
+          Mockito.reset(hmppsAuthGateway)
+          whenever(hmppsAuthGateway.getClientToken("ASSESS_RISKS_AND_NEEDS")).thenReturn(HmppsAuthMockServer.TOKEN)
+        }
 
-      afterTest {
-        assessRisksAndNeedsApiMockServer.stop()
-      }
+        afterTest {
+          assessRisksAndNeedsApiMockServer.stop()
+        }
 
-      it("authenticates using HMPPS Auth with credentials") {
-        assessRisksAndNeedsGateway.getRiskPredictorScoresForPerson(deliusCrn)
+        it("authenticates using HMPPS Auth with credentials") {
+          assessRisksAndNeedsGateway.getRiskPredictorScoresForPerson(deliusCrn)
 
-        verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("ASSESS_RISKS_AND_NEEDS")
-      }
+          verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("ASSESS_RISKS_AND_NEEDS")
+        }
 
-      it("returns risk predictor scores for the matching CRN") {
-        val response = assessRisksAndNeedsGateway.getRiskPredictorScoresForPerson(deliusCrn)
-        response.data.shouldBe(
-          listOf(
-            RiskPredictorScore(
-              completedDate = LocalDateTime.parse("2023-09-05T10:15:41"),
-              assessmentStatus = "COMPLETE",
-              groupReconviction = GroupReconviction(scoreLevel = "HIGH"),
-              generalPredictor = GeneralPredictor(scoreLevel = "LOW"),
-              violencePredictor = ViolencePredictor(scoreLevel = "MEDIUM"),
-              riskOfSeriousRecidivism = RiskOfSeriousRecidivism(scoreLevel = "VERY_HIGH"),
-              sexualPredictor = SexualPredictor(indecentScoreLevel = "HIGH", contactScoreLevel = "VERY_HIGH"),
+        it("returns risk predictor scores for the matching CRN") {
+          val response = assessRisksAndNeedsGateway.getRiskPredictorScoresForPerson(deliusCrn)
+          response.data.shouldBe(
+            listOf(
+              RiskPredictorScore(
+                completedDate = LocalDateTime.parse("2023-09-05T10:15:41"),
+                assessmentStatus = "COMPLETE",
+                groupReconviction = GroupReconviction(scoreLevel = "HIGH"),
+                generalPredictor = GeneralPredictor(scoreLevel = "LOW"),
+                violencePredictor = ViolencePredictor(scoreLevel = "MEDIUM"),
+                riskOfSeriousRecidivism = RiskOfSeriousRecidivism(scoreLevel = "VERY_HIGH"),
+                sexualPredictor = SexualPredictor(indecentScoreLevel = "HIGH", contactScoreLevel = "VERY_HIGH"),
+              ),
             ),
-          ),
-        )
-      }
+          )
+        }
 
-      it("returns an empty list when no risk predictor scores are found") {
-        assessRisksAndNeedsApiMockServer.stubGetRiskPredictorScoresForPerson(deliusCrn, "[]")
+        it("returns an empty list when no risk predictor scores are found") {
+          assessRisksAndNeedsApiMockServer.stubGetRiskPredictorScoresForPerson(deliusCrn, "[]")
 
-        val response = assessRisksAndNeedsGateway.getRiskPredictorScoresForPerson(deliusCrn)
+          val response = assessRisksAndNeedsGateway.getRiskPredictorScoresForPerson(deliusCrn)
 
-        response.data.shouldBe(emptyList())
-      }
+          response.data.shouldBe(emptyList())
+        }
 
-      it("returns a 404 NOT FOUND status code when no person is found") {
-        assessRisksAndNeedsApiMockServer.stubGetRiskPredictorScoresForPerson(deliusCrn, "", HttpStatus.NOT_FOUND)
+        it("returns a 404 NOT FOUND status code when no person is found") {
+          assessRisksAndNeedsApiMockServer.stubGetRiskPredictorScoresForPerson(deliusCrn, "", HttpStatus.NOT_FOUND)
 
-        val response = assessRisksAndNeedsGateway.getRiskPredictorScoresForPerson(deliusCrn)
+          val response = assessRisksAndNeedsGateway.getRiskPredictorScoresForPerson(deliusCrn)
 
-        response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND).shouldBeTrue()
-      }
-    },
-  )
+          response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND).shouldBeTrue()
+        }
+      },
+    )

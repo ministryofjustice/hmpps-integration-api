@@ -22,22 +22,25 @@ class GetLatestSentenceKeyDatesAndAdjustmentsForPersonService(
 
     val nomisNumber = person?.identifiers?.nomisNumber ?: return Response(data = null)
 
-    val (latestSentenceKeyDates, latestSentenceKeyDatesErrors) = nomisGateway.getLatestSentenceKeyDatesForPerson(
-      nomisNumber,
-    )
-    val (latestSentenceAdjustments, latestSentenceAdjustmentsErrors) = nomisGateway.getLatestSentenceAdjustmentsForPerson(
-      nomisNumber,
-    )
+    val (latestSentenceKeyDates, latestSentenceKeyDatesErrors) =
+      nomisGateway.getLatestSentenceKeyDatesForPerson(
+        nomisNumber,
+      )
+    val (latestSentenceAdjustments, latestSentenceAdjustmentsErrors) =
+      nomisGateway.getLatestSentenceAdjustmentsForPerson(
+        nomisNumber,
+      )
 
     if (latestSentenceKeyDatesErrors.isNotEmpty() && latestSentenceAdjustmentsErrors.isNotEmpty()) {
       return Response(data = null, latestSentenceKeyDatesErrors + latestSentenceAdjustmentsErrors)
     }
 
     return Response(
-      data = KeyDatesAndAdjustmentsDTO(
-        adjustments = latestSentenceAdjustments,
-        keyDates = latestSentenceKeyDates,
-      ).toLatestSentenceKeyDatesAndAdjustments(),
+      data =
+        KeyDatesAndAdjustmentsDTO(
+          adjustments = latestSentenceAdjustments,
+          keyDates = latestSentenceKeyDates,
+        ).toLatestSentenceKeyDatesAndAdjustments(),
     )
   }
 }

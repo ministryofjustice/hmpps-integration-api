@@ -28,15 +28,15 @@ class GetLatestSentenceKeyDatesForPersonTest(
   @MockBean val hmppsAuthGateway: HmppsAuthGateway,
   private val nomisGateway: NomisGateway,
 ) : DescribeSpec(
-  {
-    val nomisApiMockServer = NomisApiMockServer()
-    val offenderNo = "abc123"
+    {
+      val nomisApiMockServer = NomisApiMockServer()
+      val offenderNo = "abc123"
 
-    beforeEach {
-      nomisApiMockServer.start()
-      nomisApiMockServer.stubGetLatestSentenceKeyDatesForPerson(
-        offenderNo,
-        """
+      beforeEach {
+        nomisApiMockServer.start()
+        nomisApiMockServer.stubGetLatestSentenceKeyDatesForPerson(
+          offenderNo,
+          """
           {
             "sentenceDetail": {
               "automaticReleaseDate": "2023-03-01",
@@ -90,109 +90,109 @@ class GetLatestSentenceKeyDatesForPersonTest(
             }
           }
         """,
-      )
+        )
 
-      Mockito.reset(hmppsAuthGateway)
-      whenever(hmppsAuthGateway.getClientToken("NOMIS")).thenReturn(HmppsAuthMockServer.TOKEN)
-    }
+        Mockito.reset(hmppsAuthGateway)
+        whenever(hmppsAuthGateway.getClientToken("NOMIS")).thenReturn(HmppsAuthMockServer.TOKEN)
+      }
 
-    afterTest {
-      nomisApiMockServer.stop()
-    }
+      afterTest {
+        nomisApiMockServer.stop()
+      }
 
-    it("authenticates using HMPPS Auth with credentials") {
-      nomisGateway.getLatestSentenceKeyDatesForPerson(offenderNo)
+      it("authenticates using HMPPS Auth with credentials") {
+        nomisGateway.getLatestSentenceKeyDatesForPerson(offenderNo)
 
-      verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("NOMIS")
-    }
+        verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("NOMIS")
+      }
 
-    it("returns latest sentence key dates for a person with the matching ID") {
-      val response = nomisGateway.getLatestSentenceKeyDatesForPerson(offenderNo)
+      it("returns latest sentence key dates for a person with the matching ID") {
+        val response = nomisGateway.getLatestSentenceKeyDatesForPerson(offenderNo)
 
-      response.data?.automaticRelease?.date.shouldBe(LocalDate.parse("2023-03-01"))
-      response.data?.automaticRelease?.overrideDate.shouldBe(LocalDate.parse("2023-03-01"))
-      response.data?.automaticRelease?.calculatedDate.shouldBe(null)
+        response.data?.automaticRelease?.date.shouldBe(LocalDate.parse("2023-03-01"))
+        response.data?.automaticRelease?.overrideDate.shouldBe(LocalDate.parse("2023-03-01"))
+        response.data?.automaticRelease?.calculatedDate.shouldBe(null)
 
-      response.data?.conditionalRelease?.date.shouldBe(LocalDate.parse("2023-04-01"))
-      response.data?.conditionalRelease?.overrideDate.shouldBe(LocalDate.parse("2023-04-01"))
-      response.data?.conditionalRelease?.calculatedDate.shouldBe(null)
+        response.data?.conditionalRelease?.date.shouldBe(LocalDate.parse("2023-04-01"))
+        response.data?.conditionalRelease?.overrideDate.shouldBe(LocalDate.parse("2023-04-01"))
+        response.data?.conditionalRelease?.calculatedDate.shouldBe(null)
 
-      response.data?.dtoPostRecallRelease?.date.shouldBe(LocalDate.parse("2023-05-01"))
-      response.data?.dtoPostRecallRelease?.overrideDate.shouldBe(LocalDate.parse("2023-05-01"))
-      response.data?.dtoPostRecallRelease?.calculatedDate.shouldBe(null)
+        response.data?.dtoPostRecallRelease?.date.shouldBe(LocalDate.parse("2023-05-01"))
+        response.data?.dtoPostRecallRelease?.overrideDate.shouldBe(LocalDate.parse("2023-05-01"))
+        response.data?.dtoPostRecallRelease?.calculatedDate.shouldBe(null)
 
-      response.data?.earlyTerm?.date.shouldBe(LocalDate.parse("2021-04-01"))
-      response.data?.earlyTerm?.overrideDate.shouldBe(LocalDate.parse("2021-04-01"))
-      response.data?.earlyTerm?.calculatedDate.shouldBe(LocalDate.parse("2021-04-01"))
+        response.data?.earlyTerm?.date.shouldBe(LocalDate.parse("2021-04-01"))
+        response.data?.earlyTerm?.overrideDate.shouldBe(LocalDate.parse("2021-04-01"))
+        response.data?.earlyTerm?.calculatedDate.shouldBe(LocalDate.parse("2021-04-01"))
 
-      response.data?.homeDetentionCurfew?.actualDate.shouldBe(LocalDate.parse("2022-05-01"))
-      response.data?.homeDetentionCurfew?.eligibilityCalculatedDate.shouldBe(LocalDate.parse("2022-05-01"))
-      response.data?.homeDetentionCurfew?.eligibilityDate.shouldBe(LocalDate.parse("2022-05-01"))
-      response.data?.homeDetentionCurfew?.eligibilityOverrideDate.shouldBe(LocalDate.parse("2022-05-01"))
-      response.data?.homeDetentionCurfew?.endDate.shouldBe(LocalDate.parse("2022-05-01"))
+        response.data?.homeDetentionCurfew?.actualDate.shouldBe(LocalDate.parse("2022-05-01"))
+        response.data?.homeDetentionCurfew?.eligibilityCalculatedDate.shouldBe(LocalDate.parse("2022-05-01"))
+        response.data?.homeDetentionCurfew?.eligibilityDate.shouldBe(LocalDate.parse("2022-05-01"))
+        response.data?.homeDetentionCurfew?.eligibilityOverrideDate.shouldBe(LocalDate.parse("2022-05-01"))
+        response.data?.homeDetentionCurfew?.endDate.shouldBe(LocalDate.parse("2022-05-01"))
 
-      response.data?.lateTerm?.date.shouldBe(LocalDate.parse("2022-02-01"))
-      response.data?.lateTerm?.overrideDate.shouldBe(LocalDate.parse("2022-02-01"))
-      response.data?.lateTerm?.calculatedDate.shouldBe(LocalDate.parse("2022-02-01"))
+        response.data?.lateTerm?.date.shouldBe(LocalDate.parse("2022-02-01"))
+        response.data?.lateTerm?.overrideDate.shouldBe(LocalDate.parse("2022-02-01"))
+        response.data?.lateTerm?.calculatedDate.shouldBe(LocalDate.parse("2022-02-01"))
 
-      response.data?.licenceExpiry?.date.shouldBe(LocalDate.parse("2025-02-01"))
-      response.data?.licenceExpiry?.overrideDate.shouldBe(LocalDate.parse("2025-02-01"))
-      response.data?.licenceExpiry?.calculatedDate.shouldBe(LocalDate.parse("2025-02-01"))
+        response.data?.licenceExpiry?.date.shouldBe(LocalDate.parse("2025-02-01"))
+        response.data?.licenceExpiry?.overrideDate.shouldBe(LocalDate.parse("2025-02-01"))
+        response.data?.licenceExpiry?.calculatedDate.shouldBe(LocalDate.parse("2025-02-01"))
 
-      response.data?.midTerm?.date.shouldBe(LocalDate.parse("2023-02-01"))
-      response.data?.midTerm?.overrideDate.shouldBe(LocalDate.parse("2023-02-01"))
-      response.data?.midTerm?.calculatedDate.shouldBe(LocalDate.parse("2023-02-01"))
+        response.data?.midTerm?.date.shouldBe(LocalDate.parse("2023-02-01"))
+        response.data?.midTerm?.overrideDate.shouldBe(LocalDate.parse("2023-02-01"))
+        response.data?.midTerm?.calculatedDate.shouldBe(LocalDate.parse("2023-02-01"))
 
-      response.data?.nonDto?.date.shouldBe(LocalDate.parse("2023-02-01"))
-      response.data?.nonDto?.releaseDateType.shouldBe("CRD")
+        response.data?.nonDto?.date.shouldBe(LocalDate.parse("2023-02-01"))
+        response.data?.nonDto?.releaseDateType.shouldBe("CRD")
 
-      response.data?.nonParole?.date.shouldBe(LocalDate.parse("2026-02-01"))
-      response.data?.nonParole?.overrideDate.shouldBe(LocalDate.parse("2026-02-01"))
-      response.data?.nonParole?.calculatedDate.shouldBe(null)
+        response.data?.nonParole?.date.shouldBe(LocalDate.parse("2026-02-01"))
+        response.data?.nonParole?.overrideDate.shouldBe(LocalDate.parse("2026-02-01"))
+        response.data?.nonParole?.calculatedDate.shouldBe(null)
 
-      response.data?.paroleEligibility?.date.shouldBe(LocalDate.parse("2027-02-01"))
-      response.data?.paroleEligibility?.overrideDate.shouldBe(LocalDate.parse("2027-02-01"))
-      response.data?.paroleEligibility?.calculatedDate.shouldBe(LocalDate.parse("2027-02-01"))
+        response.data?.paroleEligibility?.date.shouldBe(LocalDate.parse("2027-02-01"))
+        response.data?.paroleEligibility?.overrideDate.shouldBe(LocalDate.parse("2027-02-01"))
+        response.data?.paroleEligibility?.calculatedDate.shouldBe(LocalDate.parse("2027-02-01"))
 
-      response.data?.postRecallRelease?.date.shouldBe(LocalDate.parse("2028-02-01"))
-      response.data?.postRecallRelease?.overrideDate.shouldBe(LocalDate.parse("2028-02-01"))
-      response.data?.postRecallRelease?.calculatedDate.shouldBe(null)
+        response.data?.postRecallRelease?.date.shouldBe(LocalDate.parse("2028-02-01"))
+        response.data?.postRecallRelease?.overrideDate.shouldBe(LocalDate.parse("2028-02-01"))
+        response.data?.postRecallRelease?.calculatedDate.shouldBe(null)
 
-      response.data?.release?.date.shouldBe(LocalDate.parse("2030-02-01"))
-      response.data?.release?.confirmedDate.shouldBe(LocalDate.parse("2030-02-01"))
+        response.data?.release?.date.shouldBe(LocalDate.parse("2030-02-01"))
+        response.data?.release?.confirmedDate.shouldBe(LocalDate.parse("2030-02-01"))
 
-      response.data?.sentence?.effectiveEndDate.shouldBe(LocalDate.parse("2025-02-01"))
-      response.data?.sentence?.expiryCalculatedDate.shouldBe(LocalDate.parse("2025-02-01"))
-      response.data?.sentence?.expiryDate.shouldBe(LocalDate.parse("2025-02-01"))
-      response.data?.sentence?.expiryOverrideDate.shouldBe(LocalDate.parse("2025-02-01"))
-      response.data?.sentence?.startDate.shouldBe(LocalDate.parse("2025-02-01"))
+        response.data?.sentence?.effectiveEndDate.shouldBe(LocalDate.parse("2025-02-01"))
+        response.data?.sentence?.expiryCalculatedDate.shouldBe(LocalDate.parse("2025-02-01"))
+        response.data?.sentence?.expiryDate.shouldBe(LocalDate.parse("2025-02-01"))
+        response.data?.sentence?.expiryOverrideDate.shouldBe(LocalDate.parse("2025-02-01"))
+        response.data?.sentence?.startDate.shouldBe(LocalDate.parse("2025-02-01"))
 
-      response.data?.topupSupervision?.expiryCalculatedDate.shouldBe(LocalDate.parse("2022-04-01"))
-      response.data?.topupSupervision?.expiryDate.shouldBe(LocalDate.parse("2022-04-01"))
-      response.data?.topupSupervision?.expiryOverrideDate.shouldBe(LocalDate.parse("2022-04-01"))
-      response.data?.topupSupervision?.startDate.shouldBe(LocalDate.parse("2022-04-01"))
+        response.data?.topupSupervision?.expiryCalculatedDate.shouldBe(LocalDate.parse("2022-04-01"))
+        response.data?.topupSupervision?.expiryDate.shouldBe(LocalDate.parse("2022-04-01"))
+        response.data?.topupSupervision?.expiryOverrideDate.shouldBe(LocalDate.parse("2022-04-01"))
+        response.data?.topupSupervision?.startDate.shouldBe(LocalDate.parse("2022-04-01"))
 
-      response.data?.actualParoleDate?.shouldBe(LocalDate.parse("2031-02-01"))
-      response.data?.earlyRemovalSchemeEligibilityDate?.shouldBe(LocalDate.parse("2031-02-01"))
-      response.data?.releaseOnTemporaryLicenceDate?.shouldBe(LocalDate.parse("2031-02-01"))
-      response.data?.tariffDate?.shouldBe(LocalDate.parse("2031-02-01"))
-      response.data?.tariffEarlyRemovalSchemeEligibilityDate?.shouldBe(LocalDate.parse("2031-02-01"))
-    }
+        response.data?.actualParoleDate?.shouldBe(LocalDate.parse("2031-02-01"))
+        response.data?.earlyRemovalSchemeEligibilityDate?.shouldBe(LocalDate.parse("2031-02-01"))
+        response.data?.releaseOnTemporaryLicenceDate?.shouldBe(LocalDate.parse("2031-02-01"))
+        response.data?.tariffDate?.shouldBe(LocalDate.parse("2031-02-01"))
+        response.data?.tariffEarlyRemovalSchemeEligibilityDate?.shouldBe(LocalDate.parse("2031-02-01"))
+      }
 
-    it("returns an error when 404 NOT FOUND is returned") {
-      nomisApiMockServer.stubGetLatestSentenceKeyDatesForPerson(
-        offenderNo,
-        """
+      it("returns an error when 404 NOT FOUND is returned") {
+        nomisApiMockServer.stubGetLatestSentenceKeyDatesForPerson(
+          offenderNo,
+          """
         {
           "developerMessage": "cannot find person"
         }
         """,
-        HttpStatus.NOT_FOUND,
-      )
+          HttpStatus.NOT_FOUND,
+        )
 
-      val response = nomisGateway.getLatestSentenceKeyDatesForPerson(offenderNo)
+        val response = nomisGateway.getLatestSentenceKeyDatesForPerson(offenderNo)
 
-      response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND).shouldBeTrue()
-    }
-  },
-)
+        response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND).shouldBeTrue()
+      }
+    },
+  )

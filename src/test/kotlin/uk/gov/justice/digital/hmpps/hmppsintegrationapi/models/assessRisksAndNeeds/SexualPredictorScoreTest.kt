@@ -7,10 +7,11 @@ class SexualPredictorScoreTest : DescribeSpec(
   {
     describe("#toSexualPredictor") {
       it("maps one-to-one attributes to integration API attributes") {
-        val arnSexualPredictorScore = ArnSexualPredictorScore(
-          ospIndecentScoreLevel = "HIGH",
-          ospContactScoreLevel = "VERY_HIGH",
-        )
+        val arnSexualPredictorScore =
+          ArnSexualPredictorScore(
+            ospIndecentScoreLevel = "HIGH",
+            ospContactScoreLevel = "VERY_HIGH",
+          )
 
         val integrationApiSexualPredictor = arnSexualPredictorScore.toSexualPredictor()
 

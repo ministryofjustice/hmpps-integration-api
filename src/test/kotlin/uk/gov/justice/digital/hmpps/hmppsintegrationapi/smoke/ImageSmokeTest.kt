@@ -16,4 +16,4 @@ class ImageSmokeTest : DescribeSpec({
     response.statusCode().shouldBe(HttpStatus.OK.value())
     response.headers().map()["content-type"]?.first().shouldBe("image/jpeg")
   }
-},)
+})

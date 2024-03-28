@@ -18,7 +18,9 @@ class ImageController(
   @Autowired val auditService: AuditService,
 ) {
   @GetMapping("{id}")
-  fun getImage(@PathVariable id: Int): ResponseEntity<ByteArray> {
+  fun getImage(
+    @PathVariable id: Int,
+  ): ResponseEntity<ByteArray> {
     val response = getImageService.execute(id)
 
     if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {

@@ -13,14 +13,15 @@ data class NomisOffenceHistoryDetail(
   val offenceRangeDate: LocalDate? = null,
   val statuteCode: String,
 ) {
-  fun toOffence(): Offence = Offence(
-    serviceSource = UpstreamApi.NOMIS,
-    systemSource = SystemSource.PRISON_SYSTEMS,
-    cjsCode = this.offenceCode,
-    courtDates = listOf(this.courtDate).filterNotNull(),
-    description = this.offenceDescription,
-    endDate = this.offenceRangeDate,
-    startDate = this.offenceDate,
-    statuteCode = this.statuteCode,
-  )
+  fun toOffence(): Offence =
+    Offence(
+      serviceSource = UpstreamApi.NOMIS,
+      systemSource = SystemSource.PRISON_SYSTEMS,
+      cjsCode = this.offenceCode,
+      courtDates = listOf(this.courtDate).filterNotNull(),
+      description = this.offenceDescription,
+      endDate = this.offenceRangeDate,
+      startDate = this.offenceDate,
+      statuteCode = this.statuteCode,
+    )
 }

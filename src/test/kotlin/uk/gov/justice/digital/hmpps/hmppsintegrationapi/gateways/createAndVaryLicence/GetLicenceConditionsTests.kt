@@ -27,15 +27,15 @@ class GetLicenceConditionsTests(
   @MockBean val hmppsAuthGateway: HmppsAuthGateway,
   private val createAndVaryLicenceGateway: CreateAndVaryLicenceGateway,
 ) : DescribeSpec(
-  {
-    val createAndVaryLicenceApiMockServer = CreateAndVaryLicenceApiMockServer()
-    val conditionId = "X777776"
+    {
+      val createAndVaryLicenceApiMockServer = CreateAndVaryLicenceApiMockServer()
+      val conditionId = "X777776"
 
-    beforeEach {
-      createAndVaryLicenceApiMockServer.start()
-      createAndVaryLicenceApiMockServer.stubGetLicenceConditions(
-        conditionId,
-        """
+      beforeEach {
+        createAndVaryLicenceApiMockServer.start()
+        createAndVaryLicenceApiMockServer.stubGetLicenceConditions(
+          conditionId,
+          """
           {
           "conditions":
             {
@@ -51,42 +51,42 @@ class GetLicenceConditionsTests(
             }
           }
         """,
-      )
+        )
 
-      Mockito.reset(hmppsAuthGateway)
-      whenever(hmppsAuthGateway.getClientToken("CVL")).thenReturn(HmppsAuthMockServer.TOKEN)
-    }
+        Mockito.reset(hmppsAuthGateway)
+        whenever(hmppsAuthGateway.getClientToken("CVL")).thenReturn(HmppsAuthMockServer.TOKEN)
+      }
 
-    afterTest {
-      createAndVaryLicenceApiMockServer.stop()
-    }
+      afterTest {
+        createAndVaryLicenceApiMockServer.stop()
+      }
 
-    it("authenticates using HMPPS Auth with credentials") {
-      createAndVaryLicenceGateway.getLicenceConditions(conditionId)
+      it("authenticates using HMPPS Auth with credentials") {
+        createAndVaryLicenceGateway.getLicenceConditions(conditionId)
 
-      verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("CVL")
-    }
+        verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("CVL")
+      }
 
-    it("returns licence condition for the matching ID") {
-      val response = createAndVaryLicenceGateway.getLicenceConditions(conditionId)
+      it("returns licence condition for the matching ID") {
+        val response = createAndVaryLicenceGateway.getLicenceConditions(conditionId)
 
-      response.data.first().condition.shouldBe("Not commit any offence")
-    }
+        response.data.first().condition.shouldBe("Not commit any offence")
+      }
 
-    it("returns an error when 404 NOT FOUND is returned") {
-      createAndVaryLicenceApiMockServer.stubGetLicenceConditions(
-        conditionId,
-        """
+      it("returns an error when 404 NOT FOUND is returned") {
+        createAndVaryLicenceApiMockServer.stubGetLicenceConditions(
+          conditionId,
+          """
         [{
           "developerMessage": "cannot find person"
         }]
         """,
-        HttpStatus.NOT_FOUND,
-      )
+          HttpStatus.NOT_FOUND,
+        )
 
-      val response = createAndVaryLicenceGateway.getLicenceConditions(conditionId)
+        val response = createAndVaryLicenceGateway.getLicenceConditions(conditionId)
 
-      response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND).shouldBeTrue()
-    }
-  },
-)
+        response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND).shouldBeTrue()
+      }
+    },
+  )

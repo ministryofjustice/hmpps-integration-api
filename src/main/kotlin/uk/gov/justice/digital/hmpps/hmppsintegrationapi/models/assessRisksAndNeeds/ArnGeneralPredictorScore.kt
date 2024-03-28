@@ -5,7 +5,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.GeneralPred
 data class ArnGeneralPredictorScore(
   val ogpRisk: String? = null,
 ) {
-  fun toGeneralPredictor(): GeneralPredictor = GeneralPredictor(
-    scoreLevel = this.ogpRisk,
-  )
+  fun toGeneralPredictor(): GeneralPredictor =
+    GeneralPredictor(
+      scoreLevel = this.ogpRisk,
+    )
 }

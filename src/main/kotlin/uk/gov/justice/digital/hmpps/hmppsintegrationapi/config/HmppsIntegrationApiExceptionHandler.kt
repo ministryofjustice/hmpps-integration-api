@@ -19,7 +19,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFound
 class HmppsIntegrationApiExceptionHandler {
   @ExceptionHandler(ValidationException::class)
   fun handleValidationException(e: Exception): ResponseEntity<ErrorResponse> {
-    log_and_capture("Validation exception: {}", e)
+    logAndCapture("Validation exception: {}", e)
     return ResponseEntity
       .status(BAD_REQUEST)
       .body(
@@ -33,7 +33,7 @@ class HmppsIntegrationApiExceptionHandler {
 
   @ExceptionHandler(EntityNotFoundException::class)
   fun handle(e: EntityNotFoundException): ResponseEntity<ErrorResponse> {
-    log_and_capture("Not found (404) returned with message {}", e)
+    logAndCapture("Not found (404) returned with message {}", e)
     return ResponseEntity
       .status(NOT_FOUND)
       .body(
@@ -47,7 +47,7 @@ class HmppsIntegrationApiExceptionHandler {
 
   @ExceptionHandler(AuthenticationFailedException::class)
   fun handleAuthenticationFailedException(e: AuthenticationFailedException): ResponseEntity<ErrorResponse?>? {
-    log_and_capture("Authentication error: {}", e)
+    logAndCapture("Authentication error: {}", e)
     return ResponseEntity
       .status(FORBIDDEN)
       .body(
@@ -61,7 +61,7 @@ class HmppsIntegrationApiExceptionHandler {
 
   @ExceptionHandler(java.lang.Exception::class)
   fun handleException(e: java.lang.Exception): ResponseEntity<ErrorResponse?>? {
-    log_and_capture("Unexpected exception", e)
+    logAndCapture("Unexpected exception", e)
     return ResponseEntity
       .status(INTERNAL_SERVER_ERROR)
       .body(
@@ -75,7 +75,7 @@ class HmppsIntegrationApiExceptionHandler {
 
   @ExceptionHandler(WebClientResponseException::class)
   fun handleWebClientResponseException(e: WebClientResponseException): ResponseEntity<ErrorResponse?>? {
-    log_and_capture("Upstream service down: {}", e)
+    logAndCapture("Upstream service down: {}", e)
     return ResponseEntity
       .status(INTERNAL_SERVER_ERROR)
       .body(
@@ -87,7 +87,10 @@ class HmppsIntegrationApiExceptionHandler {
       )
   }
 
-  private fun log_and_capture(message: String, e: Exception) {
+  private fun logAndCapture(
+    message: String,
+    e: Exception,
+  ) {
     log.error(message, e.message)
     Sentry.captureException(e)
   }

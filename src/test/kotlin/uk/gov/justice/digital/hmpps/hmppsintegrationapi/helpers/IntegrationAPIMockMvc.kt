@@ -10,13 +10,12 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 class IntegrationAPIMockMvc(
   @Autowired var mockMvc: MockMvc,
 ) {
-
   fun performAuthorised(path: String): MvcResult {
     val subjectDistinguishedName = "C=GB,ST=London,L=London,O=Home Office,CN=automated-test-client"
-    return mockMvc.perform(MockMvcRequestBuilders.get("$path").header("subject-distinguished-name", subjectDistinguishedName)).andReturn()
+    return mockMvc.perform(MockMvcRequestBuilders.get(path).header("subject-distinguished-name", subjectDistinguishedName)).andReturn()
   }
 
   fun performUnAuthorised(path: String): MvcResult {
-    return mockMvc.perform(MockMvcRequestBuilders.get("$path")).andReturn()
+    return mockMvc.perform(MockMvcRequestBuilders.get(path)).andReturn()
   }
 }

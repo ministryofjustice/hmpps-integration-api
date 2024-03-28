@@ -14,25 +14,30 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.probationoffendersearch.Offender
 
 @Component
-class ProbationOffenderSearchGateway(@Value("\${services.probation-offender-search.base-url}") baseUrl: String) {
+class ProbationOffenderSearchGateway(
+  @Value("\${services.probation-offender-search.base-url}") baseUrl: String,
+) {
   private val webClient = WebClientWrapper(baseUrl)
 
   @Autowired
   lateinit var hmppsAuthGateway: HmppsAuthGateway
-  fun getPerson(id: String? = null): Response<Person?> {
-    val queryField = if (isPncNumber(id)) {
-      "pncNumber"
-    } else {
-      "crn"
-    }
 
-    val result = webClient.requestList<Offender>(
-      HttpMethod.POST,
-      "/search",
-      authenticationHeader(),
-      UpstreamApi.PROBATION_OFFENDER_SEARCH,
-      mapOf(queryField to id),
-    )
+  fun getPerson(id: String? = null): Response<Person?> {
+    val queryField =
+      if (isPncNumber(id)) {
+        "pncNumber"
+      } else {
+        "crn"
+      }
+
+    val result =
+      webClient.requestList<Offender>(
+        HttpMethod.POST,
+        "/search",
+        authenticationHeader(),
+        UpstreamApi.PROBATION_OFFENDER_SEARCH,
+        mapOf(queryField to id),
+      )
 
     return when (result) {
       is WebClientWrapperResponse.Success -> {
@@ -41,16 +46,17 @@ class ProbationOffenderSearchGateway(@Value("\${services.probation-offender-sear
 
         Response(
           data = person,
-          errors = if (person == null) {
-            listOf(
-              UpstreamApiError(
-                causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH,
-                type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-              ),
-            )
-          } else {
-            emptyList()
-          },
+          errors =
+            if (person == null) {
+              listOf(
+                UpstreamApiError(
+                  causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH,
+                  type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+                ),
+              )
+            } else {
+              emptyList()
+            },
         )
       }
 
@@ -63,11 +69,31 @@ class ProbationOffenderSearchGateway(@Value("\${services.probation-offender-sear
     }
   }
 
-  fun getPersons(firstName: String?, surname: String?, pncNumber: String?, dateOfBirth: String?, searchWithinAliases: Boolean = false): Response<List<Person>> {
-    val requestBody = mapOf("firstName" to firstName, "surname" to surname, "pncNumber" to pncNumber, "dateOfBirth" to dateOfBirth, "includeAliases" to searchWithinAliases)
-      .filterValues { it != null }
+  fun getPersons(
+    firstName: String?,
+    surname: String?,
+    pncNumber: String?,
+    dateOfBirth: String?,
+    searchWithinAliases: Boolean = false,
+  ): Response<List<Person>> {
+    val requestBody =
+      mapOf(
+        "firstName" to firstName,
+        "surname" to surname,
+        "pncNumber" to pncNumber,
+        "dateOfBirth" to dateOfBirth,
+        "includeAliases" to searchWithinAliases,
+      )
+        .filterValues { it != null }
 
-    val result = webClient.requestList<Offender>(HttpMethod.POST, "/search", authenticationHeader(), UpstreamApi.PROBATION_OFFENDER_SEARCH, requestBody)
+    val result =
+      webClient.requestList<Offender>(
+        HttpMethod.POST,
+        "/search",
+        authenticationHeader(),
+        UpstreamApi.PROBATION_OFFENDER_SEARCH,
+        requestBody,
+      )
 
     return when (result) {
       is WebClientWrapperResponse.Success -> {
@@ -85,13 +111,21 @@ class ProbationOffenderSearchGateway(@Value("\${services.probation-offender-sear
   }
 
   fun getAddressesForPerson(hmppsId: String): Response<List<Address>> {
-    val queryField = if (isPncNumber(hmppsId)) {
-      "pncNumber"
-    } else {
-      "crn"
-    }
+    val queryField =
+      if (isPncNumber(hmppsId)) {
+        "pncNumber"
+      } else {
+        "crn"
+      }
 
-    val result = webClient.requestList<Offender>(HttpMethod.POST, "/search", authenticationHeader(), UpstreamApi.PROBATION_OFFENDER_SEARCH, mapOf(queryField to hmppsId))
+    val result =
+      webClient.requestList<Offender>(
+        HttpMethod.POST,
+        "/search",
+        authenticationHeader(),
+        UpstreamApi.PROBATION_OFFENDER_SEARCH,
+        mapOf(queryField to hmppsId),
+      )
 
     return when (result) {
       is WebClientWrapperResponse.Success -> {

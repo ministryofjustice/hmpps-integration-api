@@ -34,46 +34,48 @@ class CaseNotesControllerTest(
   @MockBean val getCaseNotesForPersonService: GetCaseNotesForPersonService,
   @MockBean val auditService: AuditService,
 ) : DescribeSpec(
-  {
-    val hmppsId = "9999/11111A"
-    val encodedHmppsId = URLEncoder.encode(hmppsId, StandardCharsets.UTF_8)
-    val path = "/v1/persons/$encodedHmppsId/case-notes"
-    val mockMvc = IntegrationAPIMockMvc(springMockMvc)
-    val pageCaseNote =
+    {
+      val hmppsId = "9999/11111A"
+      val encodedHmppsId = URLEncoder.encode(hmppsId, StandardCharsets.UTF_8)
+      val path = "/v1/persons/$encodedHmppsId/case-notes"
+      val mockMvc = IntegrationAPIMockMvc(springMockMvc)
+      val pageCaseNote =
 
-      listOf(
-        CaseNote(caseNoteId = "abcd1234"),
-
-      )
-    describe("GET $path") {
-      beforeTest {
-        Mockito.reset(getCaseNotesForPersonService)
-        Mockito.reset(auditService)
-        whenever(getCaseNotesForPersonService.execute(any())).thenReturn(
-          Response(
-            data = pageCaseNote,
-            errors = emptyList(),
-          ),
+        listOf(
+          CaseNote(caseNoteId = "abcd1234"),
         )
-      }
+      describe("GET $path") {
+        beforeTest {
+          Mockito.reset(getCaseNotesForPersonService)
+          Mockito.reset(auditService)
+          whenever(getCaseNotesForPersonService.execute(any())).thenReturn(
+            Response(
+              data = pageCaseNote,
+              errors = emptyList(),
+            ),
+          )
+        }
 
-      it("returns a 200 OK status code") {
-        val result = mockMvc.performAuthorised(path)
+        it("returns a 200 OK status code") {
+          val result = mockMvc.performAuthorised(path)
 
-        result.response.status.shouldBe(HttpStatus.OK.value())
-      }
+          result.response.status.shouldBe(HttpStatus.OK.value())
+        }
 
-      it("gets the case notes for a person with the matching ID") {
-        mockMvc.performAuthorised(path)
+        it("gets the case notes for a person with the matching ID") {
+          mockMvc.performAuthorised(path)
 
-        verify(getCaseNotesForPersonService, VerificationModeFactory.times(1)).execute(argThat<CaseNoteFilter> { it -> it.hmppsId == hmppsId })
-      }
+          verify(
+            getCaseNotesForPersonService,
+            VerificationModeFactory.times(1),
+          ).execute(argThat<CaseNoteFilter> { it -> it.hmppsId == hmppsId })
+        }
 
-      it("returns the case notes for a person with the matching ID") {
-        val result = mockMvc.performAuthorised(path)
+        it("returns the case notes for a person with the matching ID") {
+          val result = mockMvc.performAuthorised(path)
 
-        result.response.contentAsString.shouldContain(
-          """
+          result.response.contentAsString.shouldContain(
+            """
           {
           "data": [
             {
@@ -101,25 +103,32 @@ class CaseNotesControllerTest(
           }
         }
         """.removeWhitespaceAndNewlines(),
-        )
+          )
+        }
+
+        it("logs audit") {
+          mockMvc.performAuthorised(path)
+
+          verify(
+            auditService,
+            VerificationModeFactory.times(1),
+          ).createEvent("GET_CASE_NOTES", "Person case notes with hmpps id: $hmppsId has been retrieved")
+        }
+
+        it("fails with the appropriate error when an upstream service is down") {
+          whenever(getCaseNotesForPersonService.execute(any())).doThrow(
+            WebClientResponseException(500, "MockError", null, null, null, null),
+          )
+
+          val response = mockMvc.performAuthorised(path)
+
+          assert(response.response.status == 500)
+          assert(
+            response.response.contentAsString.equals(
+              "{\"status\":500,\"errorCode\":null,\"userMessage\":\"500 MockError\",\"developerMessage\":\"Unable to complete request as an upstream service is not responding\",\"moreInfo\":null}",
+            ),
+          )
+        }
       }
-
-      it("logs audit") {
-        mockMvc.performAuthorised(path)
-
-        verify(auditService, VerificationModeFactory.times(1)).createEvent("GET_CASE_NOTES", "Person case notes with hmpps id: $hmppsId has been retrieved")
-      }
-
-      it("fails with the appropriate error when an upstream service is down") {
-        whenever(getCaseNotesForPersonService.execute(any())).doThrow(
-          WebClientResponseException(500, "MockError", null, null, null, null),
-        )
-
-        val response = mockMvc.performAuthorised(path)
-
-        assert(response.response.status == 500)
-        assert(response.response.contentAsString.equals("{\"status\":500,\"errorCode\":null,\"userMessage\":\"500 MockError\",\"developerMessage\":\"Unable to complete request as an upstream service is not responding\",\"moreInfo\":null}"))
-      }
-    }
-  },
-)
+    },
+  )

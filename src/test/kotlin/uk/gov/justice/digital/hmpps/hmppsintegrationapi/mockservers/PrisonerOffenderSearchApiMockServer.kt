@@ -13,7 +13,11 @@ class PrisonerOffenderSearchApiMockServer : WireMockServer(WIREMOCK_PORT) {
     private const val WIREMOCK_PORT = 4001
   }
 
-  fun stubGetPrisoner(nomisNumber: String, responseBody: String, status: HttpStatus = HttpStatus.OK) {
+  fun stubGetPrisoner(
+    nomisNumber: String,
+    responseBody: String,
+    status: HttpStatus = HttpStatus.OK,
+  ) {
     stubFor(
       get("/prisoner/$nomisNumber")
         .withHeader("Authorization", matching("Bearer ${HmppsAuthMockServer.TOKEN}"))
@@ -26,7 +30,11 @@ class PrisonerOffenderSearchApiMockServer : WireMockServer(WIREMOCK_PORT) {
     )
   }
 
-  fun stubPostPrisonerSearch(requestBody: String, responseBody: String, status: HttpStatus = HttpStatus.OK) {
+  fun stubPostPrisonerSearch(
+    requestBody: String,
+    responseBody: String,
+    status: HttpStatus = HttpStatus.OK,
+  ) {
     stubFor(
       post("/global-search?size=9999")
         .withHeader("Authorization", matching("Bearer ${HmppsAuthMockServer.TOKEN}"))

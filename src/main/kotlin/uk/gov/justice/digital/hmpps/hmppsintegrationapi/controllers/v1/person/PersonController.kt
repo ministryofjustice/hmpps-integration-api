@@ -31,7 +31,6 @@ class PersonController(
   @Autowired val getImageMetadataForPersonService: GetImageMetadataForPersonService,
   @Autowired val auditService: AuditService,
 ) {
-
   @GetMapping
   fun getPersons(
     @RequestParam(required = false, name = "first_name") firstName: String?,
@@ -52,12 +51,17 @@ class PersonController(
 
     val response = getPersonsService.execute(firstName, lastName, pncNumber, dateOfBirth, searchWithinAliases)
 
-    auditService.createEvent("SEARCH_PERSON", "Person searched with first name: $firstName, last name: $lastName, search within aliases: $searchWithinAliases, pnc number: $pncNumber, date of birth: $dateOfBirth")
+    auditService.createEvent(
+      "SEARCH_PERSON",
+      "Person searched with first name: $firstName, last name: $lastName, search within aliases: $searchWithinAliases, pnc number: $pncNumber, date of birth: $dateOfBirth",
+    )
     return response.data.paginateWith(page, perPage)
   }
 
   @GetMapping("{encodedHmppsId}")
-  fun getPerson(@PathVariable encodedHmppsId: String): Map<String, Person?> {
+  fun getPerson(
+    @PathVariable encodedHmppsId: String,
+  ): Map<String, Person?> {
     val hmppsId = encodedHmppsId.decodeUrlCharacters()
     val response = getPersonService.execute(hmppsId)
 

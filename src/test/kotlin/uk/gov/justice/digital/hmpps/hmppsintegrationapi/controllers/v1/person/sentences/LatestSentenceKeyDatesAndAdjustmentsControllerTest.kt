@@ -44,89 +44,119 @@ internal class LatestSentenceKeyDatesAndAdjustmentsControllerTest(
   @MockBean val getLatestSentenceKeyDatesAndAdjustmentsForPersonService: GetLatestSentenceKeyDatesAndAdjustmentsForPersonService,
   @MockBean val auditService: AuditService,
 ) : DescribeSpec(
-  {
-    val hmppsId = "9999/11111A"
-    val encodedHmppsId = URLEncoder.encode(hmppsId, StandardCharsets.UTF_8)
-    val path = "/v1/persons/$encodedHmppsId/sentences/latest-key-dates-and-adjustments"
-    val mockMvc = IntegrationAPIMockMvc(springMockMvc)
+    {
+      val hmppsId = "9999/11111A"
+      val encodedHmppsId = URLEncoder.encode(hmppsId, StandardCharsets.UTF_8)
+      val path = "/v1/persons/$encodedHmppsId/sentences/latest-key-dates-and-adjustments"
+      val mockMvc = IntegrationAPIMockMvc(springMockMvc)
 
-    beforeTest {
-      Mockito.reset(getLatestSentenceKeyDatesAndAdjustmentsForPersonService)
-      whenever(getLatestSentenceKeyDatesAndAdjustmentsForPersonService.execute(hmppsId)).thenReturn(
-        Response(
-          data = LatestSentenceKeyDatesAndAdjustments(
-            adjustments = SentenceAdjustment(
-              additionalDaysAwarded = 7,
-              unlawfullyAtLarge = 10,
-              lawfullyAtLarge = 2,
-              restoredAdditionalDaysAwarded = 0,
-              specialRemission = 11,
-              recallSentenceRemand = 1,
-              recallSentenceTaggedBail = 3,
-              remand = 6,
-              taggedBail = 3,
-              unusedRemand = 6,
-            ),
-            automaticRelease = SentenceKeyDate(date = LocalDate.parse("2023-04-01"), overrideDate = LocalDate.parse("2023-04-01")),
-            conditionalRelease = SentenceKeyDate(date = LocalDate.parse("2023-05-01"), overrideDate = LocalDate.parse("2023-05-01")),
-            dtoPostRecallRelease = SentenceKeyDate(date = LocalDate.parse("2024-01-02"), overrideDate = LocalDate.parse("2024-01-02")),
-            earlyTerm = SentenceKeyDate(date = LocalDate.parse("2021-11-02"), overrideDate = LocalDate.parse("2021-11-02"), calculatedDate = LocalDate.parse("2021-11-02")),
-            homeDetentionCurfew = HomeDetentionCurfewDate(
-              actualDate = LocalDate.parse("2022-04-01"),
-              eligibilityDate = LocalDate.parse("2022-04-01"),
-              eligibilityCalculatedDate = LocalDate.parse("2022-04-01"),
-              eligibilityOverrideDate = LocalDate.parse("2022-04-01"),
-              endDate = LocalDate.parse("2022-04-01"),
-            ),
-            lateTerm = SentenceKeyDate(date = LocalDate.parse("2022-01-01"), overrideDate = LocalDate.parse("2022-01-01"), calculatedDate = LocalDate.parse("2022-01-01")),
-            licenceExpiry = SentenceKeyDate(date = LocalDate.parse("2025-02-01"), overrideDate = LocalDate.parse("2025-02-01"), calculatedDate = LocalDate.parse("2025-02-01")),
-            midTerm = SentenceKeyDate(date = LocalDate.parse("2024-02-01"), overrideDate = LocalDate.parse("2024-02-01"), calculatedDate = LocalDate.parse("2024-02-01")),
-            nonDto = NonDtoDate(date = LocalDate.parse("2024-02-01"), releaseDateType = "CRD"),
-            nonParole = SentenceKeyDate(date = LocalDate.parse("2026-11-02"), overrideDate = LocalDate.parse("2026-11-02")),
-            paroleEligibility = SentenceKeyDate(date = LocalDate.parse("2027-02-01"), overrideDate = LocalDate.parse("2027-02-01"), calculatedDate = LocalDate.parse("2027-02-01")),
-            postRecallRelease = SentenceKeyDate(date = LocalDate.parse("2028-02-01"), overrideDate = LocalDate.parse("2028-02-01")),
-            release = ReleaseDate(date = LocalDate.parse("2030-02-01"), confirmedDate = LocalDate.parse("2030-02-01")),
-            sentence = SentenceDate(
-              effectiveEndDate = LocalDate.parse("2025-02-01"),
-              expiryCalculatedDate = LocalDate.parse("2025-02-01"),
-              expiryDate = LocalDate.parse("2025-02-01"),
-              expiryOverrideDate = LocalDate.parse("2025-02-01"),
-              startDate = LocalDate.parse("2025-02-01"),
-            ),
-            topupSupervision = TopupSupervision(
-              expiryCalculatedDate = LocalDate.parse("2022-04-01"),
-              expiryDate = LocalDate.parse("2022-04-01"),
-              expiryOverrideDate = LocalDate.parse("2022-04-01"),
-              startDate = LocalDate.parse("2022-04-01"),
-            ),
-            actualParoleDate = LocalDate.parse("2031-02-01"),
-            earlyRemovalSchemeEligibilityDate = LocalDate.parse("2031-02-01"),
-            releaseOnTemporaryLicenceDate = LocalDate.parse("2031-02-01"),
-            tariffDate = LocalDate.parse("2031-02-01"),
-            tariffEarlyRemovalSchemeEligibilityDate = LocalDate.parse("2031-02-01"),
+      beforeTest {
+        Mockito.reset(getLatestSentenceKeyDatesAndAdjustmentsForPersonService)
+        whenever(getLatestSentenceKeyDatesAndAdjustmentsForPersonService.execute(hmppsId)).thenReturn(
+          Response(
+            data =
+              LatestSentenceKeyDatesAndAdjustments(
+                adjustments =
+                  SentenceAdjustment(
+                    additionalDaysAwarded = 7,
+                    unlawfullyAtLarge = 10,
+                    lawfullyAtLarge = 2,
+                    restoredAdditionalDaysAwarded = 0,
+                    specialRemission = 11,
+                    recallSentenceRemand = 1,
+                    recallSentenceTaggedBail = 3,
+                    remand = 6,
+                    taggedBail = 3,
+                    unusedRemand = 6,
+                  ),
+                automaticRelease = SentenceKeyDate(date = LocalDate.parse("2023-04-01"), overrideDate = LocalDate.parse("2023-04-01")),
+                conditionalRelease = SentenceKeyDate(date = LocalDate.parse("2023-05-01"), overrideDate = LocalDate.parse("2023-05-01")),
+                dtoPostRecallRelease = SentenceKeyDate(date = LocalDate.parse("2024-01-02"), overrideDate = LocalDate.parse("2024-01-02")),
+                earlyTerm =
+                  SentenceKeyDate(
+                    date = LocalDate.parse("2021-11-02"),
+                    overrideDate = LocalDate.parse("2021-11-02"),
+                    calculatedDate = LocalDate.parse("2021-11-02"),
+                  ),
+                homeDetentionCurfew =
+                  HomeDetentionCurfewDate(
+                    actualDate = LocalDate.parse("2022-04-01"),
+                    eligibilityDate = LocalDate.parse("2022-04-01"),
+                    eligibilityCalculatedDate = LocalDate.parse("2022-04-01"),
+                    eligibilityOverrideDate = LocalDate.parse("2022-04-01"),
+                    endDate = LocalDate.parse("2022-04-01"),
+                  ),
+                lateTerm =
+                  SentenceKeyDate(
+                    date = LocalDate.parse("2022-01-01"),
+                    overrideDate = LocalDate.parse("2022-01-01"),
+                    calculatedDate = LocalDate.parse("2022-01-01"),
+                  ),
+                licenceExpiry =
+                  SentenceKeyDate(
+                    date = LocalDate.parse("2025-02-01"),
+                    overrideDate = LocalDate.parse("2025-02-01"),
+                    calculatedDate = LocalDate.parse("2025-02-01"),
+                  ),
+                midTerm =
+                  SentenceKeyDate(
+                    date = LocalDate.parse("2024-02-01"),
+                    overrideDate = LocalDate.parse("2024-02-01"),
+                    calculatedDate = LocalDate.parse("2024-02-01"),
+                  ),
+                nonDto = NonDtoDate(date = LocalDate.parse("2024-02-01"), releaseDateType = "CRD"),
+                nonParole = SentenceKeyDate(date = LocalDate.parse("2026-11-02"), overrideDate = LocalDate.parse("2026-11-02")),
+                paroleEligibility =
+                  SentenceKeyDate(
+                    date = LocalDate.parse("2027-02-01"),
+                    overrideDate = LocalDate.parse("2027-02-01"),
+                    calculatedDate = LocalDate.parse("2027-02-01"),
+                  ),
+                postRecallRelease = SentenceKeyDate(date = LocalDate.parse("2028-02-01"), overrideDate = LocalDate.parse("2028-02-01")),
+                release = ReleaseDate(date = LocalDate.parse("2030-02-01"), confirmedDate = LocalDate.parse("2030-02-01")),
+                sentence =
+                  SentenceDate(
+                    effectiveEndDate = LocalDate.parse("2025-02-01"),
+                    expiryCalculatedDate = LocalDate.parse("2025-02-01"),
+                    expiryDate = LocalDate.parse("2025-02-01"),
+                    expiryOverrideDate = LocalDate.parse("2025-02-01"),
+                    startDate = LocalDate.parse("2025-02-01"),
+                  ),
+                topupSupervision =
+                  TopupSupervision(
+                    expiryCalculatedDate = LocalDate.parse("2022-04-01"),
+                    expiryDate = LocalDate.parse("2022-04-01"),
+                    expiryOverrideDate = LocalDate.parse("2022-04-01"),
+                    startDate = LocalDate.parse("2022-04-01"),
+                  ),
+                actualParoleDate = LocalDate.parse("2031-02-01"),
+                earlyRemovalSchemeEligibilityDate = LocalDate.parse("2031-02-01"),
+                releaseOnTemporaryLicenceDate = LocalDate.parse("2031-02-01"),
+                tariffDate = LocalDate.parse("2031-02-01"),
+                tariffEarlyRemovalSchemeEligibilityDate = LocalDate.parse("2031-02-01"),
+              ),
           ),
-        ),
-      )
-      Mockito.reset(auditService)
-    }
+        )
+        Mockito.reset(auditService)
+      }
 
-    it("returns a 200 OK status code") {
-      val result = mockMvc.performAuthorised(path)
+      it("returns a 200 OK status code") {
+        val result = mockMvc.performAuthorised(path)
 
-      result.response.status.shouldBe(HttpStatus.OK.value())
-    }
+        result.response.status.shouldBe(HttpStatus.OK.value())
+      }
 
-    it("gets the latest sentence key dates and adjustments for a person with the matching ID") {
-      mockMvc.performAuthorised(path)
+      it("gets the latest sentence key dates and adjustments for a person with the matching ID") {
+        mockMvc.performAuthorised(path)
 
-      verify(getLatestSentenceKeyDatesAndAdjustmentsForPersonService, VerificationModeFactory.times(1)).execute(hmppsId)
-    }
+        verify(getLatestSentenceKeyDatesAndAdjustmentsForPersonService, VerificationModeFactory.times(1)).execute(hmppsId)
+      }
 
-    it("returns the latest sentence key dates and adjustments for a person with the matching ID") {
-      val result = mockMvc.performAuthorised(path)
+      it("returns the latest sentence key dates and adjustments for a person with the matching ID") {
+        val result = mockMvc.performAuthorised(path)
 
-      result.response.contentAsString.shouldContain(
-        """
+        result.response.contentAsString.shouldContain(
+          """
         {
           "data": {
             "adjustments": {
@@ -227,42 +257,53 @@ internal class LatestSentenceKeyDatesAndAdjustmentsControllerTest(
           }
         }
         """.removeWhitespaceAndNewlines(),
-      )
-    }
+        )
+      }
 
-    it("logs audit") {
-      mockMvc.performAuthorised(path)
+      it("logs audit") {
+        mockMvc.performAuthorised(path)
 
-      verify(auditService, VerificationModeFactory.times(1)).createEvent("GET_PERSON_SENTENCES_LATEST_KEY_DATES_AND_ADJUSTMENTS", "The key dates and adjustments about a person’s release from prison for their latest sentence for persion with hmpps id: $hmppsId has been retrieved")
-    }
+        verify(
+          auditService,
+          VerificationModeFactory.times(1),
+        ).createEvent(
+          "GET_PERSON_SENTENCES_LATEST_KEY_DATES_AND_ADJUSTMENTS",
+          "The key dates and adjustments about a person’s release from prison for their latest sentence for persion with hmpps id: $hmppsId has been retrieved",
+        )
+      }
 
-    it("returns a 404 NOT FOUND status code when person isn't found in the upstream API") {
-      whenever(getLatestSentenceKeyDatesAndAdjustmentsForPersonService.execute(hmppsId)).thenReturn(
-        Response(
-          data = null,
-          errors = listOf(
-            UpstreamApiError(
-              causedBy = UpstreamApi.NOMIS,
-              type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-            ),
+      it("returns a 404 NOT FOUND status code when person isn't found in the upstream API") {
+        whenever(getLatestSentenceKeyDatesAndAdjustmentsForPersonService.execute(hmppsId)).thenReturn(
+          Response(
+            data = null,
+            errors =
+              listOf(
+                UpstreamApiError(
+                  causedBy = UpstreamApi.NOMIS,
+                  type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+                ),
+              ),
           ),
-        ),
-      )
+        )
 
-      val result = mockMvc.performAuthorised(path)
+        val result = mockMvc.performAuthorised(path)
 
-      result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
-    }
+        result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
+      }
 
-    it("returns a 500 INTERNAL SERVER ERROR status code when upstream api return expected error") {
+      it("returns a 500 INTERNAL SERVER ERROR status code when upstream api return expected error") {
 
-      whenever(getLatestSentenceKeyDatesAndAdjustmentsForPersonService.execute(hmppsId)).doThrow(
-        WebClientResponseException(500, "MockError", null, null, null, null),
-      )
+        whenever(getLatestSentenceKeyDatesAndAdjustmentsForPersonService.execute(hmppsId)).doThrow(
+          WebClientResponseException(500, "MockError", null, null, null, null),
+        )
 
-      val result = mockMvc.performAuthorised(path)
-      assert(result.response.status == 500)
-      assert(result.response.contentAsString.equals("{\"status\":500,\"errorCode\":null,\"userMessage\":\"500 MockError\",\"developerMessage\":\"Unable to complete request as an upstream service is not responding\",\"moreInfo\":null}"))
-    }
-  },
-)
+        val result = mockMvc.performAuthorised(path)
+        assert(result.response.status == 500)
+        assert(
+          result.response.contentAsString.equals(
+            "{\"status\":500,\"errorCode\":null,\"userMessage\":\"500 MockError\",\"developerMessage\":\"Unable to complete request as an upstream service is not responding\",\"moreInfo\":null}",
+          ),
+        )
+      }
+    },
+  )

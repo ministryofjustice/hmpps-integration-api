@@ -32,35 +32,35 @@ internal class AddressControllerTest(
   @MockBean val getAddressesForPersonService: GetAddressesForPersonService,
   @MockBean val auditService: AuditService,
 ) : DescribeSpec(
-  {
-    val hmppsId = "2003/13116M"
-    val encodedHmppsId = URLEncoder.encode(hmppsId, StandardCharsets.UTF_8)
-    val basePath = "/v1/persons"
-    val mockMvc = IntegrationAPIMockMvc(springMockMvc)
+    {
+      val hmppsId = "2003/13116M"
+      val encodedHmppsId = URLEncoder.encode(hmppsId, StandardCharsets.UTF_8)
+      val basePath = "/v1/persons"
+      val mockMvc = IntegrationAPIMockMvc(springMockMvc)
 
-    describe("GET $basePath/{encodedHmppsId}/addresses") {
-      beforeTest {
-        Mockito.reset(getAddressesForPersonService)
-        Mockito.reset(auditService)
-        whenever(getAddressesForPersonService.execute(hmppsId)).thenReturn(Response(data = listOf(generateTestAddress())))
-      }
+      describe("GET $basePath/{encodedHmppsId}/addresses") {
+        beforeTest {
+          Mockito.reset(getAddressesForPersonService)
+          Mockito.reset(auditService)
+          whenever(getAddressesForPersonService.execute(hmppsId)).thenReturn(Response(data = listOf(generateTestAddress())))
+        }
 
-      it("returns a 200 OK status code") {
-        val result = mockMvc.performAuthorised("$basePath/$encodedHmppsId/addresses")
+        it("returns a 200 OK status code") {
+          val result = mockMvc.performAuthorised("$basePath/$encodedHmppsId/addresses")
 
-        result.response.status.shouldBe(HttpStatus.OK.value())
-      }
+          result.response.status.shouldBe(HttpStatus.OK.value())
+        }
 
-      it("gets the addresses for a person with the matching ID") {
-        mockMvc.performAuthorised("$basePath/$encodedHmppsId/addresses")
+        it("gets the addresses for a person with the matching ID") {
+          mockMvc.performAuthorised("$basePath/$encodedHmppsId/addresses")
 
-        verify(getAddressesForPersonService, VerificationModeFactory.times(1)).execute(hmppsId)
-      }
+          verify(getAddressesForPersonService, VerificationModeFactory.times(1)).execute(hmppsId)
+        }
 
-      it("returns the addresses for a person with the matching ID") {
-        val result = mockMvc.performAuthorised("$basePath/$encodedHmppsId/addresses")
-        result.response.contentAsString.shouldBe(
-          """
+        it("returns the addresses for a person with the matching ID") {
+          val result = mockMvc.performAuthorised("$basePath/$encodedHmppsId/addresses")
+          result.response.contentAsString.shouldBe(
+            """
         {
           "data": [
             {
@@ -90,64 +90,73 @@ internal class AddressControllerTest(
           ]
         }
         """.removeWhitespaceAndNewlines(),
-        )
-      }
+          )
+        }
 
-      it("logs audit") {
-        mockMvc.performAuthorised("$basePath/$encodedHmppsId/addresses")
-        verify(auditService, VerificationModeFactory.times(1)).createEvent("GET_PERSON_ADDRESS", "Person address details with hmpps id: $hmppsId has been retrieved")
-      }
+        it("logs audit") {
+          mockMvc.performAuthorised("$basePath/$encodedHmppsId/addresses")
+          verify(
+            auditService,
+            VerificationModeFactory.times(1),
+          ).createEvent("GET_PERSON_ADDRESS", "Person address details with hmpps id: $hmppsId has been retrieved")
+        }
 
-      it("returns a 404 NOT FOUND status code when person isn't found in all upstream APIs") {
-        whenever(getAddressesForPersonService.execute(hmppsId)).thenReturn(
-          Response(
-            data = emptyList(),
-            errors = listOf(
-              UpstreamApiError(
-                causedBy = UpstreamApi.NOMIS,
-                type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-              ),
-              UpstreamApiError(
-                causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH,
-                type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-              ),
+        it("returns a 404 NOT FOUND status code when person isn't found in all upstream APIs") {
+          whenever(getAddressesForPersonService.execute(hmppsId)).thenReturn(
+            Response(
+              data = emptyList(),
+              errors =
+                listOf(
+                  UpstreamApiError(
+                    causedBy = UpstreamApi.NOMIS,
+                    type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+                  ),
+                  UpstreamApiError(
+                    causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH,
+                    type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+                  ),
+                ),
             ),
-          ),
-        )
+          )
 
-        val result = mockMvc.performAuthorised("$basePath/$encodedHmppsId/addresses")
+          val result = mockMvc.performAuthorised("$basePath/$encodedHmppsId/addresses")
 
-        result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
-      }
+          result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
+        }
 
-      it("returns a 200 OK status code when person is found in one upstream API but not another") {
-        whenever(getAddressesForPersonService.execute(hmppsId)).thenReturn(
-          Response(
-            data = emptyList(),
-            errors = listOf(
-              UpstreamApiError(
-                causedBy = UpstreamApi.NOMIS,
-                type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-              ),
+        it("returns a 200 OK status code when person is found in one upstream API but not another") {
+          whenever(getAddressesForPersonService.execute(hmppsId)).thenReturn(
+            Response(
+              data = emptyList(),
+              errors =
+                listOf(
+                  UpstreamApiError(
+                    causedBy = UpstreamApi.NOMIS,
+                    type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+                  ),
+                ),
             ),
-          ),
-        )
+          )
 
-        val result = mockMvc.performAuthorised("$basePath/$encodedHmppsId/addresses")
+          val result = mockMvc.performAuthorised("$basePath/$encodedHmppsId/addresses")
 
-        result.response.status.shouldBe(HttpStatus.OK.value())
+          result.response.status.shouldBe(HttpStatus.OK.value())
+        }
+
+        it("returns a 500 INTERNAL SERVER ERROR status code when upstream api return expected error") {
+
+          whenever(getAddressesForPersonService.execute(hmppsId)).doThrow(
+            WebClientResponseException(500, "MockError", null, null, null, null),
+          )
+
+          val result = mockMvc.performAuthorised("$basePath/$encodedHmppsId/addresses")
+          assert(result.response.status == 500)
+          assert(
+            result.response.contentAsString.equals(
+              "{\"status\":500,\"errorCode\":null,\"userMessage\":\"500 MockError\",\"developerMessage\":\"Unable to complete request as an upstream service is not responding\",\"moreInfo\":null}",
+            ),
+          )
+        }
       }
-
-      it("returns a 500 INTERNAL SERVER ERROR status code when upstream api return expected error") {
-
-        whenever(getAddressesForPersonService.execute(hmppsId)).doThrow(
-          WebClientResponseException(500, "MockError", null, null, null, null),
-        )
-
-        val result = mockMvc.performAuthorised("$basePath/$encodedHmppsId/addresses")
-        assert(result.response.status == 500)
-        assert(result.response.contentAsString.equals("{\"status\":500,\"errorCode\":null,\"userMessage\":\"500 MockError\",\"developerMessage\":\"Unable to complete request as an upstream service is not responding\",\"moreInfo\":null}"))
-      }
-    }
-  },
-)
+    },
+  )

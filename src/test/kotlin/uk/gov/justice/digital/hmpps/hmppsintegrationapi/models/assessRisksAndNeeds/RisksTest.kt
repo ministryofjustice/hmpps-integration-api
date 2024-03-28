@@ -13,20 +13,23 @@ class RisksTest : DescribeSpec(
   {
     describe("#toRisks") {
       it("maps one-to-one attributes to Integration API attributes") {
-        val arnRisks = ArnRisks(
-          assessedOn = LocalDateTime.now(),
-          riskToSelf = ArnRiskToSelf(
-            suicide = ArnRisk(risk = "NO"),
-            selfHarm = ArnRisk(risk = "NO"),
-            custody = ArnRisk(risk = "NO"),
-            hostelSetting = ArnRisk(risk = "NO"),
-            vulnerability = ArnRisk(risk = "NO"),
-          ),
-          otherRisks = ArnOtherRisks(breachOfTrust = "YES"),
-          summary = ArnRiskSummary(
-            whoIsAtRisk = "X, Y and Z are at risk",
-          ),
-        )
+        val arnRisks =
+          ArnRisks(
+            assessedOn = LocalDateTime.now(),
+            riskToSelf =
+              ArnRiskToSelf(
+                suicide = ArnRisk(risk = "NO"),
+                selfHarm = ArnRisk(risk = "NO"),
+                custody = ArnRisk(risk = "NO"),
+                hostelSetting = ArnRisk(risk = "NO"),
+                vulnerability = ArnRisk(risk = "NO"),
+              ),
+            otherRisks = ArnOtherRisks(breachOfTrust = "YES"),
+            summary =
+              ArnRiskSummary(
+                whoIsAtRisk = "X, Y and Z are at risk",
+              ),
+          )
 
         val integrationApiRisks = arnRisks.toRisks()
 
@@ -41,21 +44,25 @@ class RisksTest : DescribeSpec(
       }
 
       it("maps Risk in Community and Risk in Custody to Integration API attributes") {
-        val arnRisks = ArnRisks(
-          summary = ArnRiskSummary(
-            riskInCommunity = mapOf(
-              "HIGH" to listOf("Children", "Public", "Known adult"),
-              "MEDIUM" to listOf("Staff"),
-              "LOW" to listOf("Prisoners"),
-            ),
-            riskInCustody = mapOf(
-              "VERY_HIGH" to listOf("Known adult"),
-              "HIGH" to listOf("Children"),
-              "MEDIUM" to listOf("Staff", "Public"),
-              "LOW" to listOf("Prisoners"),
-            ),
-          ),
-        )
+        val arnRisks =
+          ArnRisks(
+            summary =
+              ArnRiskSummary(
+                riskInCommunity =
+                  mapOf(
+                    "HIGH" to listOf("Children", "Public", "Known adult"),
+                    "MEDIUM" to listOf("Staff"),
+                    "LOW" to listOf("Prisoners"),
+                  ),
+                riskInCustody =
+                  mapOf(
+                    "VERY_HIGH" to listOf("Known adult"),
+                    "HIGH" to listOf("Children"),
+                    "MEDIUM" to listOf("Staff", "Public"),
+                    "LOW" to listOf("Prisoners"),
+                  ),
+              ),
+          )
 
         val integrationApiRisks = arnRisks.toRisks()
 
@@ -88,13 +95,14 @@ class RisksTest : DescribeSpec(
         integrationApiRisks.shouldBe(
           Risks(
             assessedOn = null,
-            riskToSelf = RiskToSelf(
-              suicide = Risk(),
-              selfHarm = Risk(),
-              custody = Risk(),
-              hostelSetting = Risk(),
-              vulnerability = Risk(),
-            ),
+            riskToSelf =
+              RiskToSelf(
+                suicide = Risk(),
+                selfHarm = Risk(),
+                custody = Risk(),
+                hostelSetting = Risk(),
+                vulnerability = Risk(),
+              ),
             otherRisks = OtherRisks(),
             summary = RiskSummary(),
           ),

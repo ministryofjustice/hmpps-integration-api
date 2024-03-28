@@ -33,9 +33,10 @@ class AddressTest : DescribeSpec(
       it("maps addressUsages only when addressType is not present") {
         val expectedCode = "abc123"
         val expectedDescription = "some description"
-        val addressUsages = listOf(
-          NomisAddress.AddressUsage(expectedCode, expectedDescription),
-        )
+        val addressUsages =
+          listOf(
+            NomisAddress.AddressUsage(expectedCode, expectedDescription),
+          )
 
         val address = generateNomisTestAddress(addressType = null, addressUsages = addressUsages)
 
@@ -64,10 +65,11 @@ class AddressTest : DescribeSpec(
       describe("when addressType is present") {
         it("maps addressUsages and addressType combined when both are present") {
           val addressType = "someAddressType"
-          val addressUsages = listOf(
-            NomisAddress.AddressUsage("usage1", "usage description 1"),
-            NomisAddress.AddressUsage("usage2", "usage description 2"),
-          )
+          val addressUsages =
+            listOf(
+              NomisAddress.AddressUsage("usage1", "usage description 1"),
+              NomisAddress.AddressUsage("usage2", "usage description 2"),
+            )
 
           val address = generateNomisTestAddress(addressType = addressType, addressUsages = addressUsages)
 
@@ -84,20 +86,22 @@ class AddressTest : DescribeSpec(
           val expectedCode = "someAddressType"
           val expectedDescription = "someAddressType"
 
-          val address = generateNomisTestAddress(
-            addressType = "someAddressType",
-            addressUsages = emptyList(),
-          )
+          val address =
+            generateNomisTestAddress(
+              addressType = "someAddressType",
+              addressUsages = emptyList(),
+            )
 
           address.toAddress().types.shouldBe(listOf(Type(expectedCode, expectedDescription)))
         }
 
         it("maps descriptions") {
-          val codeAndDescription = mapOf(
-            "BUS" to "Business Address",
-            "HOME" to "Home Address",
-            "WORK" to "Work Address",
-          )
+          val codeAndDescription =
+            mapOf(
+              "BUS" to "Business Address",
+              "HOME" to "Home Address",
+              "WORK" to "Work Address",
+            )
 
           codeAndDescription.forEach { it ->
             val address = generateNomisTestAddress(addressType = it.key)

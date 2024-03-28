@@ -33,4 +33,4 @@ class StringExtensionTest : DescribeSpec({
       "never/gonna/give/you/up".decodeUrlCharacters().shouldBe("never/gonna/give/you/up")
     }
   }
-},)
+})

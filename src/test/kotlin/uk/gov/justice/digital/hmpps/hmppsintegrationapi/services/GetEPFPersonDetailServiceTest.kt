@@ -19,25 +19,25 @@ internal class GetEPFPersonDetailServiceTest(
   @MockBean val probationIntegrationEPFGateway: ProbationIntegrationEPFGateway,
   private val getEPFPersonDetailService: GetEPFPersonDetailService,
 ) : DescribeSpec(
-  {
-    val hmppsId = "X123456"
-    val eventNumber = 1234
-    val caseDetail = CaseDetail(nomsId = "ABC123")
+    {
+      val hmppsId = "X123456"
+      val eventNumber = 1234
+      val caseDetail = CaseDetail(nomsId = "ABC123")
 
-    beforeEach {
-      Mockito.reset(probationIntegrationEPFGateway)
+      beforeEach {
+        Mockito.reset(probationIntegrationEPFGateway)
 
-      whenever(probationIntegrationEPFGateway.getCaseDetailForPerson(hmppsId, eventNumber)).thenReturn(
-        Response(
-          data = caseDetail,
-        ),
-      )
-    }
+        whenever(probationIntegrationEPFGateway.getCaseDetailForPerson(hmppsId, eventNumber)).thenReturn(
+          Response(
+            data = caseDetail,
+          ),
+        )
+      }
 
-    it("Returns a list of supervisions for a probationer according to the provided Delius CRN") {
-      val result = getEPFPersonDetailService.execute(hmppsId, eventNumber)
+      it("Returns a list of supervisions for a probationer according to the provided Delius CRN") {
+        val result = getEPFPersonDetailService.execute(hmppsId, eventNumber)
 
-      result.shouldBe(Response(data = caseDetail))
-    }
-  },
-)
+        result.shouldBe(Response(data = caseDetail))
+      }
+    },
+  )

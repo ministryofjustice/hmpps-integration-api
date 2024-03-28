@@ -10,7 +10,10 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 class GetEPFPersonDetailService(
   @Autowired val probationIntegrationEPFGateway: ProbationIntegrationEPFGateway,
 ) {
-  fun execute(hmppsId: String, eventNumber: Int): Response<CaseDetail?> {
+  fun execute(
+    hmppsId: String,
+    eventNumber: Int,
+  ): Response<CaseDetail?> {
     val caseDetail = probationIntegrationEPFGateway.getCaseDetailForPerson(hmppsId, eventNumber)
 
     return Response(

@@ -7,9 +7,10 @@ class NeedTest : DescribeSpec(
   {
     describe("#toNeed") {
       it("maps one-to-one attributes to Integration API attributes") {
-        val arnNeed = ArnNeed(
-          section = "ACCOMMODATION",
-        )
+        val arnNeed =
+          ArnNeed(
+            section = "ACCOMMODATION",
+          )
 
         val integrationApiNeed = arnNeed.toNeed()
 

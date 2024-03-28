@@ -12,9 +12,10 @@ class IntegrationAPIHttpClient(
   fun performAuthorised(path: String): HttpResponse<String> {
     val subjectDistinguishedName = "C=GB,ST=London,L=London,O=Home Office,CN=automated-test-client"
 
-    val httpRequest = HttpRequest
-      .newBuilder()
-      .headers("subject-distinguished-name", subjectDistinguishedName)
+    val httpRequest =
+      HttpRequest
+        .newBuilder()
+        .headers("subject-distinguished-name", subjectDistinguishedName)
 
     return httpClient.send(
       httpRequest.uri(URI.create("$baseUrl/$path")).build(),

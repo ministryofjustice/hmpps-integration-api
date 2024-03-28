@@ -12,7 +12,11 @@ class ProbationOffenderSearchApiMockServer : WireMockServer(WIREMOCK_PORT) {
     private const val WIREMOCK_PORT = 4002
   }
 
-  fun stubPostOffenderSearch(requestBody: String, responseBody: String, status: HttpStatus = HttpStatus.OK) {
+  fun stubPostOffenderSearch(
+    requestBody: String,
+    responseBody: String,
+    status: HttpStatus = HttpStatus.OK,
+  ) {
     stubFor(
       post("/search")
         .withHeader("Authorization", matching("Bearer ${HmppsAuthMockServer.TOKEN}"))

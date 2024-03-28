@@ -16,23 +16,26 @@ open class ExternalHealthIndicator(url: String) : HealthIndicator {
   // Unfortunately returning heathStatus.down causes the overall status to be down whereas we only want to fail
   // that specific component.
   override fun health(): Health {
-    var healthStatus: Health.Builder = Health.up()
-      .withDetail("healthurl", healthUrl)
+    val healthStatus: Health.Builder =
+      Health.up()
+        .withDetail("healthurl", healthUrl)
 
     val client = HttpClient.newBuilder().build()
-    val request = HttpRequest.newBuilder()
-      .uri(URI.create(healthUrl))
-      .build()
-
-    val response = try {
-      client.send(request, HttpResponse.BodyHandlers.ofString())
-    } catch (e: Exception) {
-      log.error("Failed to connect to health endpoint $healthUrl are these services running?")
-      return healthStatus.up()
-        .withDetail("status", "This component is down")
-        .withException(e)
+    val request =
+      HttpRequest.newBuilder()
+        .uri(URI.create(healthUrl))
         .build()
-    }
+
+    val response =
+      try {
+        client.send(request, HttpResponse.BodyHandlers.ofString())
+      } catch (e: Exception) {
+        log.error("Failed to connect to health endpoint $healthUrl are these services running?")
+        return healthStatus.up()
+          .withDetail("status", "This component is down")
+          .withException(e)
+          .build()
+      }
 
     if (response.statusCode() != 200) {
       return healthStatus.up()

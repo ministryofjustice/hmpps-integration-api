@@ -20,7 +20,11 @@ class AuthorisationFilter : Filter {
   var consumers: Map<String, List<String>> = emptyMap()
 
   @Throws(IOException::class, ServletException::class)
-  override fun doFilter(request: ServletRequest, response: ServletResponse?, chain: FilterChain) {
+  override fun doFilter(
+    request: ServletRequest,
+    response: ServletResponse?,
+    chain: FilterChain,
+  ) {
     val req = request as HttpServletRequest
     val res = response as HttpServletResponse
     val authoriseConsumerService = AuthoriseConsumerService()

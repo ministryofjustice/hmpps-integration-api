@@ -27,15 +27,15 @@ class GetLatestSentenceAdjustmentsForPersonTest(
   @MockBean val hmppsAuthGateway: HmppsAuthGateway,
   private val nomisGateway: NomisGateway,
 ) : DescribeSpec(
-  {
-    val nomisApiMockServer = NomisApiMockServer()
-    val offenderNo = "abc123"
+    {
+      val nomisApiMockServer = NomisApiMockServer()
+      val offenderNo = "abc123"
 
-    beforeEach {
-      nomisApiMockServer.start()
-      nomisApiMockServer.stubGetLatestSentenceAdjustmentsForPerson(
-        offenderNo,
-        """
+      beforeEach {
+        nomisApiMockServer.start()
+        nomisApiMockServer.stubGetLatestSentenceAdjustmentsForPerson(
+          offenderNo,
+          """
           {
             "prisonerNumber": "A1234AA",
             "latestPrisonTerm": {
@@ -54,51 +54,51 @@ class GetLatestSentenceAdjustmentsForPersonTest(
             }
           }
         """,
-      )
+        )
 
-      Mockito.reset(hmppsAuthGateway)
-      whenever(hmppsAuthGateway.getClientToken("NOMIS")).thenReturn(HmppsAuthMockServer.TOKEN)
-    }
+        Mockito.reset(hmppsAuthGateway)
+        whenever(hmppsAuthGateway.getClientToken("NOMIS")).thenReturn(HmppsAuthMockServer.TOKEN)
+      }
 
-    afterTest {
-      nomisApiMockServer.stop()
-    }
+      afterTest {
+        nomisApiMockServer.stop()
+      }
 
-    it("authenticates using HMPPS Auth with credentials") {
-      nomisGateway.getLatestSentenceAdjustmentsForPerson(offenderNo)
+      it("authenticates using HMPPS Auth with credentials") {
+        nomisGateway.getLatestSentenceAdjustmentsForPerson(offenderNo)
 
-      verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("NOMIS")
-    }
+        verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("NOMIS")
+      }
 
-    it("returns sentence adjustments for a person with the matching ID") {
-      val response = nomisGateway.getLatestSentenceAdjustmentsForPerson(offenderNo)
+      it("returns sentence adjustments for a person with the matching ID") {
+        val response = nomisGateway.getLatestSentenceAdjustmentsForPerson(offenderNo)
 
-      response.data?.additionalDaysAwarded.shouldBe(12)
-      response.data?.unlawfullyAtLarge.shouldBe(10)
-      response.data?.lawfullyAtLarge.shouldBe(2)
-      response.data?.restoredAdditionalDaysAwarded.shouldBe(0)
-      response.data?.specialRemission.shouldBe(11)
-      response.data?.recallSentenceRemand.shouldBe(1)
-      response.data?.recallSentenceTaggedBail.shouldBe(3)
-      response.data?.remand.shouldBe(6)
-      response.data?.taggedBail.shouldBe(3)
-      response.data?.unusedRemand.shouldBe(6)
-    }
+        response.data?.additionalDaysAwarded.shouldBe(12)
+        response.data?.unlawfullyAtLarge.shouldBe(10)
+        response.data?.lawfullyAtLarge.shouldBe(2)
+        response.data?.restoredAdditionalDaysAwarded.shouldBe(0)
+        response.data?.specialRemission.shouldBe(11)
+        response.data?.recallSentenceRemand.shouldBe(1)
+        response.data?.recallSentenceTaggedBail.shouldBe(3)
+        response.data?.remand.shouldBe(6)
+        response.data?.taggedBail.shouldBe(3)
+        response.data?.unusedRemand.shouldBe(6)
+      }
 
-    it("returns an error when 404 NOT FOUND is returned") {
-      nomisApiMockServer.stubGetLatestSentenceAdjustmentsForPerson(
-        offenderNo,
-        """
+      it("returns an error when 404 NOT FOUND is returned") {
+        nomisApiMockServer.stubGetLatestSentenceAdjustmentsForPerson(
+          offenderNo,
+          """
         {
           "developerMessage": "cannot find person"
         }
         """,
-        HttpStatus.NOT_FOUND,
-      )
+          HttpStatus.NOT_FOUND,
+        )
 
-      val response = nomisGateway.getLatestSentenceAdjustmentsForPerson(offenderNo)
+        val response = nomisGateway.getLatestSentenceAdjustmentsForPerson(offenderNo)
 
-      response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND).shouldBeTrue()
-    }
-  },
-)
+        response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND).shouldBeTrue()
+      }
+    },
+  )

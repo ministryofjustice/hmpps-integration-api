@@ -28,98 +28,100 @@ internal class GetRisksForPersonServiceTest(
   @MockBean val getPersonService: GetPersonService,
   private val getRisksForPersonService: GetRisksForPersonService,
 ) : DescribeSpec(
-  {
-    val hmppsId = "1234/56789B"
-    val deliusCrn = "X123456"
+    {
+      val hmppsId = "1234/56789B"
+      val deliusCrn = "X123456"
 
-    val personFromProbationOffenderSearch =
-      Person(firstName = "Phoebe", lastName = "Buffay", identifiers = Identifiers(deliusCrn = deliusCrn))
+      val personFromProbationOffenderSearch =
+        Person(firstName = "Phoebe", lastName = "Buffay", identifiers = Identifiers(deliusCrn = deliusCrn))
 
-    beforeEach {
-      Mockito.reset(getPersonService)
-      Mockito.reset(assessRisksAndNeedsGateway)
+      beforeEach {
+        Mockito.reset(getPersonService)
+        Mockito.reset(assessRisksAndNeedsGateway)
 
-      whenever(getPersonService.execute(hmppsId = hmppsId)).thenReturn(
-        Response(data = personFromProbationOffenderSearch),
-      )
+        whenever(getPersonService.execute(hmppsId = hmppsId)).thenReturn(
+          Response(data = personFromProbationOffenderSearch),
+        )
 
-      whenever(assessRisksAndNeedsGateway.getRisksForPerson(deliusCrn)).thenReturn(Response(data = null))
-    }
-
-    it("gets a person from getPersonService") {
-      getRisksForPersonService.execute(hmppsId)
-
-      verify(getPersonService, VerificationModeFactory.times(1)).execute(hmppsId = hmppsId)
-    }
-
-    it("gets risks for a person from ARN API using a CRN") {
-      getRisksForPersonService.execute(hmppsId)
-
-      verify(assessRisksAndNeedsGateway, VerificationModeFactory.times(1)).getRisksForPerson(deliusCrn)
-    }
-
-    it("returns risks for a person") {
-      val risks = Risks(assessedOn = LocalDateTime.now())
-
-      whenever(assessRisksAndNeedsGateway.getRisksForPerson(deliusCrn)).thenReturn(Response(data = risks))
-
-      val response = getRisksForPersonService.execute(hmppsId)
-
-      response.data.shouldBe(risks)
-    }
-
-    describe("when an upstream API returns an error") {
-      xdescribe("when a person cannot be found by hmpps Id in probation offender search") {
-        beforeEach {
-          whenever(getPersonService.execute(hmppsId)).thenReturn(
-            Response(
-              data = null,
-              errors = listOf(
-                UpstreamApiError(
-                  causedBy = UpstreamApi.PRISONER_OFFENDER_SEARCH,
-                  type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-                ),
-                UpstreamApiError(
-                  causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH,
-                  type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-                ),
-              ),
-            ),
-          )
-        }
-
-        it("records upstream API error for probation offender search") {
-          val response = getRisksForPersonService.execute(hmppsId)
-
-          response.hasErrorCausedBy(UpstreamApiError.Type.ENTITY_NOT_FOUND, UpstreamApi.PROBATION_OFFENDER_SEARCH).shouldBe(true)
-        }
-
-        it("does not get risks from ARN") {
-          getRisksForPersonService.execute(hmppsId)
-
-          verify(assessRisksAndNeedsGateway, VerificationModeFactory.times(0)).getRisksForPerson(id = deliusCrn)
-        }
+        whenever(assessRisksAndNeedsGateway.getRisksForPerson(deliusCrn)).thenReturn(Response(data = null))
       }
 
-      it("returns error from ARN API when person/crn cannot be found in ARN") {
-        whenever(assessRisksAndNeedsGateway.getRisksForPerson(deliusCrn)).thenReturn(
-          Response(
-            data = null,
-            errors = listOf(
-              UpstreamApiError(
-                causedBy = UpstreamApi.ASSESS_RISKS_AND_NEEDS,
-                type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-              ),
-            ),
-          ),
-        )
+      it("gets a person from getPersonService") {
+        getRisksForPersonService.execute(hmppsId)
+
+        verify(getPersonService, VerificationModeFactory.times(1)).execute(hmppsId = hmppsId)
+      }
+
+      it("gets risks for a person from ARN API using a CRN") {
+        getRisksForPersonService.execute(hmppsId)
+
+        verify(assessRisksAndNeedsGateway, VerificationModeFactory.times(1)).getRisksForPerson(deliusCrn)
+      }
+
+      it("returns risks for a person") {
+        val risks = Risks(assessedOn = LocalDateTime.now())
+
+        whenever(assessRisksAndNeedsGateway.getRisksForPerson(deliusCrn)).thenReturn(Response(data = risks))
 
         val response = getRisksForPersonService.execute(hmppsId)
 
-        response.errors.shouldHaveSize(1)
-        response.errors.first().causedBy.shouldBe(UpstreamApi.ASSESS_RISKS_AND_NEEDS)
-        response.errors.first().type.shouldBe(UpstreamApiError.Type.ENTITY_NOT_FOUND)
+        response.data.shouldBe(risks)
       }
-    }
-  },
-)
+
+      describe("when an upstream API returns an error") {
+        xdescribe("when a person cannot be found by hmpps Id in probation offender search") {
+          beforeEach {
+            whenever(getPersonService.execute(hmppsId)).thenReturn(
+              Response(
+                data = null,
+                errors =
+                  listOf(
+                    UpstreamApiError(
+                      causedBy = UpstreamApi.PRISONER_OFFENDER_SEARCH,
+                      type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+                    ),
+                    UpstreamApiError(
+                      causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH,
+                      type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+                    ),
+                  ),
+              ),
+            )
+          }
+
+          it("records upstream API error for probation offender search") {
+            val response = getRisksForPersonService.execute(hmppsId)
+
+            response.hasErrorCausedBy(UpstreamApiError.Type.ENTITY_NOT_FOUND, UpstreamApi.PROBATION_OFFENDER_SEARCH).shouldBe(true)
+          }
+
+          it("does not get risks from ARN") {
+            getRisksForPersonService.execute(hmppsId)
+
+            verify(assessRisksAndNeedsGateway, VerificationModeFactory.times(0)).getRisksForPerson(id = deliusCrn)
+          }
+        }
+
+        it("returns error from ARN API when person/crn cannot be found in ARN") {
+          whenever(assessRisksAndNeedsGateway.getRisksForPerson(deliusCrn)).thenReturn(
+            Response(
+              data = null,
+              errors =
+                listOf(
+                  UpstreamApiError(
+                    causedBy = UpstreamApi.ASSESS_RISKS_AND_NEEDS,
+                    type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+                  ),
+                ),
+            ),
+          )
+
+          val response = getRisksForPersonService.execute(hmppsId)
+
+          response.errors.shouldHaveSize(1)
+          response.errors.first().causedBy.shouldBe(UpstreamApi.ASSESS_RISKS_AND_NEEDS)
+          response.errors.first().type.shouldBe(UpstreamApiError.Type.ENTITY_NOT_FOUND)
+        }
+      }
+    },
+  )

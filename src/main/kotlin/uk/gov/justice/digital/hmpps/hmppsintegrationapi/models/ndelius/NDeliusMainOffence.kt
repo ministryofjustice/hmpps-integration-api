@@ -10,15 +10,16 @@ data class NDeliusMainOffence(
   val code: String? = null,
   val date: String? = null,
 ) {
-  fun toOffence(courtDates: List<LocalDate>): Offence = Offence(
-    serviceSource = UpstreamApi.NDELIUS,
-    systemSource = SystemSource.PROBATION_SYSTEMS,
-    cjsCode = null,
-    hoCode = this.code,
-    courtDates = courtDates,
-    endDate = null,
-    startDate = LocalDate.parse(this.date),
-    statuteCode = null,
-    description = this.description,
-  )
+  fun toOffence(courtDates: List<LocalDate>): Offence =
+    Offence(
+      serviceSource = UpstreamApi.NDELIUS,
+      systemSource = SystemSource.PROBATION_SYSTEMS,
+      cjsCode = null,
+      hoCode = this.code,
+      courtDates = courtDates,
+      endDate = null,
+      startDate = LocalDate.parse(this.date),
+      statuteCode = null,
+      description = this.description,
+    )
 }

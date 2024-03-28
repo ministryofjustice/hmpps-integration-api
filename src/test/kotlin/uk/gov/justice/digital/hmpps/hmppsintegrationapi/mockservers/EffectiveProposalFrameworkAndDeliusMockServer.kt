@@ -11,7 +11,12 @@ class EffectiveProposalFrameworkAndDeliusMockServer : WireMockServer(WIREMOCK_PO
     private const val WIREMOCK_PORT = 4005
   }
 
-  fun stubGetCaseDetailForPerson(id: String, eventNumber: Int, body: String, status: HttpStatus = HttpStatus.OK) {
+  fun stubGetCaseDetailForPerson(
+    id: String,
+    eventNumber: Int,
+    body: String,
+    status: HttpStatus = HttpStatus.OK,
+  ) {
     stubFor(
       get("/case-details/$id/$eventNumber")
         .withHeader(

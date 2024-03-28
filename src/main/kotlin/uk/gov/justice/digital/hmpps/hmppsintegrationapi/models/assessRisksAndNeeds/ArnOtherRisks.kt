@@ -8,10 +8,11 @@ data class ArnOtherRisks(
   val breachOfTrust: String? = null,
   val riskToOtherPrisoners: String? = null,
 ) {
-  fun toOtherRisks(): OtherRisks = OtherRisks(
-    escapeOrAbscond = this.escapeOrAbscond,
-    controlIssuesDisruptiveBehaviour = this.controlIssuesDisruptiveBehaviour,
-    breachOfTrust = this.breachOfTrust,
-    riskToOtherPrisoners = this.riskToOtherPrisoners,
-  )
+  fun toOtherRisks(): OtherRisks =
+    OtherRisks(
+      escapeOrAbscond = this.escapeOrAbscond,
+      controlIssuesDisruptiveBehaviour = this.controlIssuesDisruptiveBehaviour,
+      breachOfTrust = this.breachOfTrust,
+      riskToOtherPrisoners = this.riskToOtherPrisoners,
+    )
 }

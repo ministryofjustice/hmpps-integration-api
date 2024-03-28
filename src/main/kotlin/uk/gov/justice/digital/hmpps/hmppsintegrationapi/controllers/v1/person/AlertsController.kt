@@ -21,7 +21,6 @@ class AlertsController(
   @Autowired val getAlertsForPersonService: GetAlertsForPersonService,
   @Autowired val auditService: AuditService,
 ) {
-
   @GetMapping("{encodedHmppsId}/alerts")
   fun getPersonAlerts(
     @PathVariable encodedHmppsId: String,

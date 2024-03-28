@@ -9,7 +9,11 @@ class AdjudicationsApiMockServer : WireMockServer(WIREMOCK_PORT) {
     private const val WIREMOCK_PORT = 4006
   }
 
-  fun stubGetReportedAdjudicationsForPerson(id: String, body: String, status: HttpStatus = HttpStatus.OK) {
+  fun stubGetReportedAdjudicationsForPerson(
+    id: String,
+    body: String,
+    status: HttpStatus = HttpStatus.OK,
+  ) {
     stubFor(
       WireMock.get("/reported-adjudications/prisoner/$id")
         .withHeader(

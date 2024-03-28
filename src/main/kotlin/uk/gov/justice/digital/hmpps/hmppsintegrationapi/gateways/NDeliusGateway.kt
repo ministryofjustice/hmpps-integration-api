@@ -14,19 +14,22 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.NDeliusSupervisions
 
 @Component
-class NDeliusGateway(@Value("\${services.ndelius.base-url}") baseUrl: String) {
+class NDeliusGateway(
+  @Value("\${services.ndelius.base-url}") baseUrl: String,
+) {
   private val webClient = WebClientWrapper(baseUrl)
 
   @Autowired
   lateinit var hmppsAuthGateway: HmppsAuthGateway
 
   fun getOffencesForPerson(id: String): Response<List<Offence>> {
-    val result = webClient.request<NDeliusSupervisions>(
-      HttpMethod.GET,
-      "/case/$id/supervisions",
-      authenticationHeader(),
-      UpstreamApi.NDELIUS,
-    )
+    val result =
+      webClient.request<NDeliusSupervisions>(
+        HttpMethod.GET,
+        "/case/$id/supervisions",
+        authenticationHeader(),
+        UpstreamApi.NDELIUS,
+      )
 
     return when (result) {
       is WebClientWrapperResponse.Success -> {
@@ -43,12 +46,13 @@ class NDeliusGateway(@Value("\${services.ndelius.base-url}") baseUrl: String) {
   }
 
   fun getSentencesForPerson(id: String): Response<List<Sentence>> {
-    val result = webClient.request<NDeliusSupervisions>(
-      HttpMethod.GET,
-      "/case/$id/supervisions",
-      authenticationHeader(),
-      UpstreamApi.NDELIUS,
-    )
+    val result =
+      webClient.request<NDeliusSupervisions>(
+        HttpMethod.GET,
+        "/case/$id/supervisions",
+        authenticationHeader(),
+        UpstreamApi.NDELIUS,
+      )
 
     return when (result) {
       is WebClientWrapperResponse.Success -> {
@@ -65,12 +69,13 @@ class NDeliusGateway(@Value("\${services.ndelius.base-url}") baseUrl: String) {
   }
 
   fun getMappaDetailForPerson(id: String): Response<MappaDetail?> {
-    val result = webClient.request<NDeliusSupervisions>(
-      HttpMethod.GET,
-      "/case/$id/supervisions",
-      authenticationHeader(),
-      UpstreamApi.NDELIUS,
-    )
+    val result =
+      webClient.request<NDeliusSupervisions>(
+        HttpMethod.GET,
+        "/case/$id/supervisions",
+        authenticationHeader(),
+        UpstreamApi.NDELIUS,
+      )
 
     return when (result) {
       is WebClientWrapperResponse.Success -> {

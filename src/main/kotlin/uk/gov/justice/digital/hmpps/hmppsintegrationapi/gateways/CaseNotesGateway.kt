@@ -21,7 +21,10 @@ class CaseNotesGateway(
   @Autowired
   lateinit var hmppsAuthGateway: HmppsAuthGateway
 
-  fun getCaseNotesForPerson(id: String, filter: CaseNoteFilter): Response<List<CaseNote>> {
+  fun getCaseNotesForPerson(
+    id: String,
+    filter: CaseNoteFilter,
+  ): Response<List<CaseNote>> {
     val params = getParamFilter(filter)
     val result =
       webClient.request<NomisPageCaseNote>(
@@ -46,11 +49,12 @@ class CaseNotesGateway(
   }
 
   private fun getParamFilter(filter: CaseNoteFilter): String {
-    val paramFilterMap = mutableMapOf<String, String>().apply {
-      filter.locationId?.let { this["locationId"] = filter.locationId }
-      filter.startDate?.let { this["startDate"] = filter.startDate.format(DateTimeFormatter.ISO_DATE) }
-      filter.endDate?.let { this["endDate"] = filter.endDate.format(DateTimeFormatter.ISO_DATE) }
-    }
+    val paramFilterMap =
+      mutableMapOf<String, String>().apply {
+        filter.locationId?.let { this["locationId"] = filter.locationId }
+        filter.startDate?.let { this["startDate"] = filter.startDate.format(DateTimeFormatter.ISO_DATE) }
+        filter.endDate?.let { this["endDate"] = filter.endDate.format(DateTimeFormatter.ISO_DATE) }
+      }
     return paramFilterMap.entries.joinToString(separator = "&") { (key, value) -> "$key=$value" }
   }
 

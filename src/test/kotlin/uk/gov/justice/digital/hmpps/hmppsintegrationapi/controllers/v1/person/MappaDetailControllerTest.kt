@@ -31,54 +31,57 @@ internal class MappaDetailControllerTest(
   @MockBean val getMappaDetailForPersonService: GetMappaDetailForPersonService,
   @MockBean val auditService: AuditService,
 ) : DescribeSpec(
-  {
-    val hmppsId = "9999/11111A"
-    val encodedHmppsId = URLEncoder.encode(hmppsId, StandardCharsets.UTF_8)
-    val path = "/v1/persons/$encodedHmppsId/risks/mappadetail"
-    val mockMvc = IntegrationAPIMockMvc(springMockMvc)
+    {
+      val hmppsId = "9999/11111A"
+      val encodedHmppsId = URLEncoder.encode(hmppsId, StandardCharsets.UTF_8)
+      val path = "/v1/persons/$encodedHmppsId/risks/mappadetail"
+      val mockMvc = IntegrationAPIMockMvc(springMockMvc)
 
-    describe("GET $path") {
-      beforeTest {
-        Mockito.reset(getMappaDetailForPersonService)
-        whenever(getMappaDetailForPersonService.execute(hmppsId)).thenReturn(
-          Response(
-            MappaDetail(
-              level = 2,
-              levelDescription = "A high level of risk",
-              category = 3,
-              categoryDescription = "Behaviour",
-              startDate = "2024-03-08",
-              reviewDate = "2024-10-08",
-              notes = "Review in a week",
+      describe("GET $path") {
+        beforeTest {
+          Mockito.reset(getMappaDetailForPersonService)
+          whenever(getMappaDetailForPersonService.execute(hmppsId)).thenReturn(
+            Response(
+              MappaDetail(
+                level = 2,
+                levelDescription = "A high level of risk",
+                category = 3,
+                categoryDescription = "Behaviour",
+                startDate = "2024-03-08",
+                reviewDate = "2024-10-08",
+                notes = "Review in a week",
+              ),
             ),
-          ),
-        )
+          )
 
-        Mockito.reset(auditService)
-      }
+          Mockito.reset(auditService)
+        }
 
-      it("returns a 200 OK status code") {
-        val result = mockMvc.performAuthorised(path)
+        it("returns a 200 OK status code") {
+          val result = mockMvc.performAuthorised(path)
 
-        result.response.status.shouldBe(HttpStatus.OK.value())
-      }
+          result.response.status.shouldBe(HttpStatus.OK.value())
+        }
 
-      it("gets the mappa detail for a person with the matching ID") {
-        mockMvc.performAuthorised(path)
-        verify(getMappaDetailForPersonService, VerificationModeFactory.times(1)).execute(hmppsId)
-      }
+        it("gets the mappa detail for a person with the matching ID") {
+          mockMvc.performAuthorised(path)
+          verify(getMappaDetailForPersonService, VerificationModeFactory.times(1)).execute(hmppsId)
+        }
 
-      it("logs audit") {
-        mockMvc.performAuthorised(path)
+        it("logs audit") {
+          mockMvc.performAuthorised(path)
 
-        verify(auditService, VerificationModeFactory.times(1)).createEvent("GET_MAPPA_DETAIL", "Mappa detail for person with hmpps id: $hmppsId has been retrieved")
-      }
+          verify(
+            auditService,
+            VerificationModeFactory.times(1),
+          ).createEvent("GET_MAPPA_DETAIL", "Mappa detail for person with hmpps id: $hmppsId has been retrieved")
+        }
 
-      it("returns the risk categories for a person with the matching ID") {
-        val result = mockMvc.performAuthorised(path)
+        it("returns the risk categories for a person with the matching ID") {
+          val result = mockMvc.performAuthorised(path)
 
-        result.response.contentAsString.shouldContain(
-          """
+          result.response.contentAsString.shouldContain(
+            """
           "data": {
               "level": 2,
               "levelDescription": "A high level of risk",
@@ -89,26 +92,27 @@ internal class MappaDetailControllerTest(
               "notes": "Review in a week"
           }
         """.removeWhitespaceAndNewlines(),
-        )
-      }
+          )
+        }
 
-      it("returns a 404 NOT FOUND status code when person isn't found in the upstream API") {
-        whenever(getMappaDetailForPersonService.execute(hmppsId)).thenReturn(
-          Response(
-            data = MappaDetail(),
-            errors = listOf(
-              UpstreamApiError(
-                causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH,
-                type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-              ),
+        it("returns a 404 NOT FOUND status code when person isn't found in the upstream API") {
+          whenever(getMappaDetailForPersonService.execute(hmppsId)).thenReturn(
+            Response(
+              data = MappaDetail(),
+              errors =
+                listOf(
+                  UpstreamApiError(
+                    causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH,
+                    type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+                  ),
+                ),
             ),
-          ),
-        )
+          )
 
-        val result = mockMvc.performAuthorised(path)
+          val result = mockMvc.performAuthorised(path)
 
-        result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
+          result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
+        }
       }
-    }
-  },
-)
+    },
+  )

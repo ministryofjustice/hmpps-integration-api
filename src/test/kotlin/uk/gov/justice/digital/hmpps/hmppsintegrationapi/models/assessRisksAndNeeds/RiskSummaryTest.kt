@@ -7,14 +7,15 @@ class RiskSummaryTest : DescribeSpec(
   {
     describe("#toRiskSummary") {
       it("maps one-to-one attributes to Integration API attributes") {
-        val arnRiskSummary = ArnRiskSummary(
-          whoIsAtRisk = "X, Y and Z are at risk",
-          natureOfRisk = "The nature of the risk is X",
-          riskImminence = "the risk is imminent and more probably in X situation",
-          riskIncreaseFactors = "If offender in situation X the risk can be higher",
-          riskMitigationFactors = "Giving offender therapy in X will reduce the risk",
-          overallRiskLevel = "HIGH",
-        )
+        val arnRiskSummary =
+          ArnRiskSummary(
+            whoIsAtRisk = "X, Y and Z are at risk",
+            natureOfRisk = "The nature of the risk is X",
+            riskImminence = "the risk is imminent and more probably in X situation",
+            riskIncreaseFactors = "If offender in situation X the risk can be higher",
+            riskMitigationFactors = "Giving offender therapy in X will reduce the risk",
+            overallRiskLevel = "HIGH",
+          )
 
         val integrationApiRiskSummary = arnRiskSummary.toRiskSummary()
 
@@ -28,13 +29,15 @@ class RiskSummaryTest : DescribeSpec(
     }
 
     it("maps ARN Risk in Community to Integration API Risk in Community") {
-      val arnRiskSummary = ArnRiskSummary(
-        riskInCommunity = mapOf(
-          "HIGH" to listOf("Children", "Public", "Known adult"),
-          "MEDIUM" to listOf("Staff"),
-          "LOW" to listOf("Prisoners"),
-        ),
-      )
+      val arnRiskSummary =
+        ArnRiskSummary(
+          riskInCommunity =
+            mapOf(
+              "HIGH" to listOf("Children", "Public", "Known adult"),
+              "MEDIUM" to listOf("Staff"),
+              "LOW" to listOf("Prisoners"),
+            ),
+        )
 
       val integrationApiRiskSummary = arnRiskSummary.toRiskSummary()
 
@@ -50,14 +53,16 @@ class RiskSummaryTest : DescribeSpec(
     }
 
     it("maps ARN Risk in Custody to Integration API Risk in Custody") {
-      val arnRiskSummary = ArnRiskSummary(
-        riskInCustody = mapOf(
-          "VERY_HIGH" to listOf("Known adult"),
-          "HIGH" to listOf("Children"),
-          "MEDIUM" to listOf("Staff", "Public"),
-          "LOW" to listOf("Prisoners"),
-        ),
-      )
+      val arnRiskSummary =
+        ArnRiskSummary(
+          riskInCustody =
+            mapOf(
+              "VERY_HIGH" to listOf("Known adult"),
+              "HIGH" to listOf("Children"),
+              "MEDIUM" to listOf("Staff", "Public"),
+              "LOW" to listOf("Prisoners"),
+            ),
+        )
 
       val integrationApiRiskSummary = arnRiskSummary.toRiskSummary()
 

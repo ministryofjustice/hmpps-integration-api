@@ -17,29 +17,31 @@ data class Address(
   val noFixedAbode: Boolean,
   val notes: String?,
 ) {
-  fun toAddress() = Address(
-    country = null,
-    county = this.county,
-    endDate = this.to,
-    locality = this.district,
-    name = this.buildingName,
-    noFixedAddress = this.noFixedAbode,
-    number = this.addressNumber,
-    postcode = this.postcode,
-    startDate = this.from,
-    street = this.streetName,
-    town = this.town,
-    types = if (this.type == null || this.type.code == null) emptyList() else listOf(Type(type.code, type.description).toAddressType()),
-    notes = this.notes,
-  )
+  fun toAddress() =
+    Address(
+      country = null,
+      county = this.county,
+      endDate = this.to,
+      locality = this.district,
+      name = this.buildingName,
+      noFixedAddress = this.noFixedAbode,
+      number = this.addressNumber,
+      postcode = this.postcode,
+      startDate = this.from,
+      street = this.streetName,
+      town = this.town,
+      types = if (this.type.code == null) emptyList() else listOf(Type(type.code, type.description).toAddressType()),
+      notes = this.notes,
+    )
 
   data class Type(
     val code: String?,
     val description: String?,
   ) {
-    fun toAddressType() = Address.Type(
-      code = this.code,
-      description = this.description ?: this.code,
-    )
+    fun toAddressType() =
+      Address.Type(
+        code = this.code,
+        description = this.description ?: this.code,
+      )
   }
 }

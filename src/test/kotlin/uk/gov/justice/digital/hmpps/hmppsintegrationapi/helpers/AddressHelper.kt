@@ -14,24 +14,26 @@ fun generateTestAddress(
   number: String = "89",
   street: String = "Omeara",
   town: String = "London Town",
-  types: List<Address.Type> = listOf(
-    Address.Type("A99", "Chocolate Factory"),
-    Address.Type("B99", "Glass Elevator"),
-  ),
+  types: List<Address.Type> =
+    listOf(
+      Address.Type("A99", "Chocolate Factory"),
+      Address.Type("B99", "Glass Elevator"),
+    ),
   noFixedAddress: Boolean = false,
   notes: String = "some interesting note",
-): Address = Address(
-  postcode = postcode,
-  country = country,
-  county = county,
-  endDate = LocalDate.parse(endDate),
-  startDate = LocalDate.parse(startDate),
-  locality = locality,
-  name = name,
-  number = number,
-  street = street,
-  town = town,
-  types = types,
-  noFixedAddress = noFixedAddress,
-  notes = notes,
-)
+): Address =
+  Address(
+    postcode = postcode,
+    country = country,
+    county = county,
+    endDate = LocalDate.parse(endDate),
+    startDate = LocalDate.parse(startDate),
+    locality = locality,
+    name = name,
+    number = number,
+    street = street,
+    town = town,
+    types = types,
+    noFixedAddress = noFixedAddress,
+    notes = notes,
+  )

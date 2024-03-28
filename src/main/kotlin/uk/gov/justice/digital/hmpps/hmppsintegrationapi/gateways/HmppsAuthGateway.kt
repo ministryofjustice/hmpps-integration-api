@@ -10,7 +10,9 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.Authentication
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Credentials
 
 @Component
-class HmppsAuthGateway(@Value("\${services.hmpps-auth.base-url}") hmppsAuthUrl: String) : IAuthGateway {
+class HmppsAuthGateway(
+  @Value("\${services.hmpps-auth.base-url}") hmppsAuthUrl: String,
+) : IAuthGateway {
   private val webClient: WebClient = WebClient.builder().baseUrl(hmppsAuthUrl).build()
 
   @Value("\${services.hmpps-auth.username}")
@@ -23,13 +25,14 @@ class HmppsAuthGateway(@Value("\${services.hmpps-auth.base-url}") hmppsAuthUrl: 
     val credentials = Credentials(username, password)
 
     return try {
-      val response = webClient
-        .post()
-        .uri("/auth/oauth/token?grant_type=client_credentials")
-        .header("Authorization", credentials.toBasicAuth())
-        .retrieve()
-        .bodyToMono(String::class.java)
-        .block()
+      val response =
+        webClient
+          .post()
+          .uri("/auth/oauth/token?grant_type=client_credentials")
+          .header("Authorization", credentials.toBasicAuth())
+          .retrieve()
+          .bodyToMono(String::class.java)
+          .block()
 
       JSONParser(response).parseObject()["access_token"].toString()
     } catch (exception: WebClientRequestException) {

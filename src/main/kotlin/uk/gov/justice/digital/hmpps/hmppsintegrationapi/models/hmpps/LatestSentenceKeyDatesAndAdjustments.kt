@@ -25,6 +25,7 @@ data class LatestSentenceKeyDatesAndAdjustments(
   val tariffDate: LocalDate? = null,
   val tariffEarlyRemovalSchemeEligibilityDate: LocalDate? = null,
 )
+
 data class KeyDatesAndAdjustmentsDTO(
   val adjustments: SentenceAdjustment? = null,
   val keyDates: SentenceKeyDates? = null,

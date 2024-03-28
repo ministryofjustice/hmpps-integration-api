@@ -17,17 +17,23 @@ data class EPFCaseDetail(
   val age: Long? = null,
   val ageAtRelease: Long? = null,
 ) {
-  fun toCaseDetail(): CaseDetail = CaseDetail(
-    nomsId = this.nomsId,
-    name = Name(forename = this.name?.forename, middleName = this.name?.middleName, surname = this.name?.surname),
-    dateOfBirth = this.dateOfBirth,
-    gender = this.gender,
-    sentence = CaseSentence(date = this.sentence?.date, sentencingCourt = SentencingCourt(this.sentence?.sentencingCourt?.name), releaseDate = this.sentence?.releaseDate),
-    responsibleProvider = ResponsibleProvider(code = this.responsibleProvider?.code, name = this.responsibleProvider?.name),
-    ogrsScore = this.ogrsScore,
-    age = this.age,
-    ageAtRelease = this.ageAtRelease,
-  )
+  fun toCaseDetail(): CaseDetail =
+    CaseDetail(
+      nomsId = this.nomsId,
+      name = Name(forename = this.name?.forename, middleName = this.name?.middleName, surname = this.name?.surname),
+      dateOfBirth = this.dateOfBirth,
+      gender = this.gender,
+      sentence =
+        CaseSentence(
+          date = this.sentence?.date,
+          sentencingCourt = SentencingCourt(this.sentence?.sentencingCourt?.name),
+          releaseDate = this.sentence?.releaseDate,
+        ),
+      responsibleProvider = ResponsibleProvider(code = this.responsibleProvider?.code, name = this.responsibleProvider?.name),
+      ogrsScore = this.ogrsScore,
+      age = this.age,
+      ageAtRelease = this.ageAtRelease,
+    )
 }
 
 data class Name(

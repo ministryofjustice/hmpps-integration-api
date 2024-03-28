@@ -18,11 +18,9 @@ class MappaDetailController(
   @Autowired val getMappaDetailForPersonService: GetMappaDetailForPersonService,
   @Autowired val auditService: AuditService,
 ) {
-
   @GetMapping("{encodedHmppsId}/risks/mappadetail")
   fun getMappaDetail(
     @PathVariable encodedHmppsId: String,
-
   ): Map<String, MappaDetail?> {
     val hmppsId = encodedHmppsId.decodeUrlCharacters()
     val response = getMappaDetailForPersonService.execute(hmppsId)

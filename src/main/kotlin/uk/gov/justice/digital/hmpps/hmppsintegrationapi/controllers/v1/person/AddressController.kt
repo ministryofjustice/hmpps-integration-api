@@ -19,7 +19,6 @@ class AddressController(
   @Autowired val auditService: AuditService,
   @Autowired val getAddressesForPersonService: GetAddressesForPersonService,
 ) {
-
   @GetMapping("{encodedHmppsId}/addresses")
   fun getPersonAddresses(
     @PathVariable encodedHmppsId: String,

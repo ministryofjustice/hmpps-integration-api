@@ -8,9 +8,10 @@ class GroupReconvictionScoreTest : DescribeSpec(
     describe("#toGroupReconviction") {
       it("maps one-to-one attributes to integration API attributes") {
 
-        val arnGroupReconvictionScore = ArnGroupReconvictionScore(
-          scoreLevel = "VERY_HIGH",
-        )
+        val arnGroupReconvictionScore =
+          ArnGroupReconvictionScore(
+            scoreLevel = "VERY_HIGH",
+          )
 
         val integrationApiGroupReconviction = arnGroupReconvictionScore.toGroupReconviction()
 

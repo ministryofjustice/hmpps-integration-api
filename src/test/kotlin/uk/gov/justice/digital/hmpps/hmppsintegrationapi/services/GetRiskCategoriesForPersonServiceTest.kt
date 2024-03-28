@@ -28,72 +28,73 @@ internal class GetRiskCategoriesForPersonServiceTest(
   @MockBean val getPersonService: GetPersonService,
   private val getRiskCategoriesForPersonService: GetRiskCategoriesForPersonService,
 ) : DescribeSpec(
-  {
-    val hmppsId = "1234/56789B"
-    val nomisNumber = "A7796DY"
+    {
+      val hmppsId = "1234/56789B"
+      val nomisNumber = "A7796DY"
 
-    val personFromProbationOffenderSearch =
-      Person(firstName = "Phoebe", lastName = "Buffay", identifiers = Identifiers(nomisNumber = nomisNumber))
+      val personFromProbationOffenderSearch =
+        Person(firstName = "Phoebe", lastName = "Buffay", identifiers = Identifiers(nomisNumber = nomisNumber))
 
-    beforeEach {
-      Mockito.reset(getPersonService)
-      Mockito.reset(nomisGateway)
+      beforeEach {
+        Mockito.reset(getPersonService)
+        Mockito.reset(nomisGateway)
 
-      whenever(getPersonService.execute(hmppsId = hmppsId)).thenReturn(
-        Response(
-          data = personFromProbationOffenderSearch,
-        ),
-      )
+        whenever(getPersonService.execute(hmppsId = hmppsId)).thenReturn(
+          Response(
+            data = personFromProbationOffenderSearch,
+          ),
+        )
 
-      whenever(nomisGateway.getRiskCategoriesForPerson(nomisNumber)).thenReturn(Response(data = RiskCategory()))
-    }
+        whenever(nomisGateway.getRiskCategoriesForPerson(nomisNumber)).thenReturn(Response(data = RiskCategory()))
+      }
 
-    it("gets a person from getPersonService") {
-      getRiskCategoriesForPersonService.execute(hmppsId)
+      it("gets a person from getPersonService") {
+        getRiskCategoriesForPersonService.execute(hmppsId)
 
-      verify(getPersonService, VerificationModeFactory.times(1)).execute(hmppsId = hmppsId)
-    }
+        verify(getPersonService, VerificationModeFactory.times(1)).execute(hmppsId = hmppsId)
+      }
 
-    it("gets a risk category for a person from ARN API using Nomis") {
-      getRiskCategoriesForPersonService.execute(hmppsId)
+      it("gets a risk category for a person from ARN API using Nomis") {
+        getRiskCategoriesForPersonService.execute(hmppsId)
 
-      verify(nomisGateway, VerificationModeFactory.times(1)).getRiskCategoriesForPerson(nomisNumber)
-    }
+        verify(nomisGateway, VerificationModeFactory.times(1)).getRiskCategoriesForPerson(nomisNumber)
+      }
 
-    it("returns a risk category for a person") {
-      val riskCategory = RiskCategory(offenderNo = "A7796DY", assessments = listOf(RiskAssessment(classificationCode = "987")))
-
-      whenever(nomisGateway.getRiskCategoriesForPerson(nomisNumber)).thenReturn(
-        Response(data = riskCategory),
-      )
-
-      val response = getRiskCategoriesForPersonService.execute(hmppsId)
-
-      response.data.shouldBe(riskCategory)
-    }
-
-    describe("when an upstream API returns an error") {
-
-      it("returns error from ARN API when person cannot be found in ARN") {
+      it("returns a risk category for a person") {
+        val riskCategory = RiskCategory(offenderNo = "A7796DY", assessments = listOf(RiskAssessment(classificationCode = "987")))
 
         whenever(nomisGateway.getRiskCategoriesForPerson(nomisNumber)).thenReturn(
-          Response(
-            data = RiskCategory(),
-            errors = listOf(
-              UpstreamApiError(
-                causedBy = UpstreamApi.NOMIS,
-                type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-              ),
-            ),
-          ),
+          Response(data = riskCategory),
         )
 
         val response = getRiskCategoriesForPersonService.execute(hmppsId)
 
-        response.errors.shouldHaveSize(1)
-        response.errors.first().causedBy.shouldBe(UpstreamApi.NOMIS)
-        response.errors.first().type.shouldBe(UpstreamApiError.Type.ENTITY_NOT_FOUND)
+        response.data.shouldBe(riskCategory)
       }
-    }
-  },
-)
+
+      describe("when an upstream API returns an error") {
+
+        it("returns error from ARN API when person cannot be found in ARN") {
+
+          whenever(nomisGateway.getRiskCategoriesForPerson(nomisNumber)).thenReturn(
+            Response(
+              data = RiskCategory(),
+              errors =
+                listOf(
+                  UpstreamApiError(
+                    causedBy = UpstreamApi.NOMIS,
+                    type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+                  ),
+                ),
+            ),
+          )
+
+          val response = getRiskCategoriesForPersonService.execute(hmppsId)
+
+          response.errors.shouldHaveSize(1)
+          response.errors.first().causedBy.shouldBe(UpstreamApi.NOMIS)
+          response.errors.first().type.shouldBe(UpstreamApiError.Type.ENTITY_NOT_FOUND)
+        }
+      }
+    },
+  )
