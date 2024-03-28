@@ -22,6 +22,7 @@ services:
 
 hmpps.sqs:
   provider: localstack
+  useWebToken: false
   queues:
     audit:
       queueName: "audit"
