@@ -47,6 +47,7 @@ authorisation:
 hmpps.sqs:
   provider: localstack
   localstackUrl: http://local-stack-aws:4566
+  useWebToken: false
   queues:
     audit:
       queueName: "audit"

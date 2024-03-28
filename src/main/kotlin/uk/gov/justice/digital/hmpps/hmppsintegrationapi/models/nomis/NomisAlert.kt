@@ -15,16 +15,17 @@ data class NomisAlert(
   val expired: Boolean? = null,
   val active: Boolean? = null,
 ) {
-  fun toAlert(): Alert = Alert(
-    offenderNo = this.offenderNo,
-    type = this.alertType,
-    typeDescription = this.alertTypeDescription,
-    code = this.alertCode,
-    codeDescription = this.alertCodeDescription,
-    comment = this.comment,
-    dateCreated = this.dateCreated,
-    dateExpired = this.dateExpires,
-    expired = this.expired,
-    active = this.active,
-  )
+  fun toAlert(): Alert =
+    Alert(
+      offenderNo = this.offenderNo,
+      type = this.alertType,
+      typeDescription = this.alertTypeDescription,
+      code = this.alertCode,
+      codeDescription = this.alertCodeDescription,
+      comment = this.comment,
+      dateCreated = this.dateCreated,
+      dateExpired = this.dateExpires,
+      expired = this.expired,
+      active = this.active,
+    )
 }

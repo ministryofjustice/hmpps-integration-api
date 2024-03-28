@@ -15,4 +15,4 @@ class InfoPageTest : DescribeSpec({
     response.statusCode().shouldBe(HttpStatus.OK.value())
     response.body().shouldContainJsonKeyValue("build.name", "hmpps-integration-api")
   }
-},)
+})

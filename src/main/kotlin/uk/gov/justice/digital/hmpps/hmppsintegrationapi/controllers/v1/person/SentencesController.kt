@@ -25,7 +25,6 @@ class SentencesController(
   @Autowired val getLatestSentenceKeyDatesAndAdjustmentsForPersonService: GetLatestSentenceKeyDatesAndAdjustmentsForPersonService,
   @Autowired val auditService: AuditService,
 ) {
-
   @GetMapping("{encodedHmppsId}/sentences")
   fun getPersonSentences(
     @PathVariable encodedHmppsId: String,
@@ -52,7 +51,10 @@ class SentencesController(
     if (response.hasErrorCausedBy(UpstreamApiError.Type.ENTITY_NOT_FOUND, causedBy = UpstreamApi.NOMIS)) {
       throw EntityNotFoundException("Could not find person with id: $hmppsId")
     }
-    auditService.createEvent("GET_PERSON_SENTENCES_LATEST_KEY_DATES_AND_ADJUSTMENTS", "The key dates and adjustments about a person’s release from prison for their latest sentence for persion with hmpps id: $hmppsId has been retrieved")
+    auditService.createEvent(
+      "GET_PERSON_SENTENCES_LATEST_KEY_DATES_AND_ADJUSTMENTS",
+      "The key dates and adjustments about a person’s release from prison for their latest sentence for persion with hmpps id: $hmppsId has been retrieved",
+    )
     return mapOf("data" to response.data)
   }
 }

@@ -10,18 +10,19 @@ class AlertTest : DescribeSpec(
   {
     describe("#toAlert") {
       it("maps one-to-one attributes to integration API attributes") {
-        val alertFromNomis = NomisAlert(
-          offenderNo = "A7777ZZ",
-          alertType = "X",
-          alertTypeDescription = "Security",
-          alertCode = "XNR",
-          alertCodeDescription = "Not For Release",
-          comment = "IS91",
-          dateCreated = LocalDate.parse("2022-08-01"),
-          dateExpires = LocalDate.parse("2023-08-01"),
-          expired = true,
-          active = false,
-        )
+        val alertFromNomis =
+          NomisAlert(
+            offenderNo = "A7777ZZ",
+            alertType = "X",
+            alertTypeDescription = "Security",
+            alertCode = "XNR",
+            alertCodeDescription = "Not For Release",
+            comment = "IS91",
+            dateCreated = LocalDate.parse("2022-08-01"),
+            dateExpires = LocalDate.parse("2023-08-01"),
+            expired = true,
+            active = false,
+          )
 
         val integrationApiAlert = alertFromNomis.toAlert()
 
@@ -42,17 +43,18 @@ class AlertTest : DescribeSpec(
       }
 
       it("maps case where dateExpires is not populated") {
-        val alertFromNomis = NomisAlert(
-          offenderNo = "A7777ZZ",
-          alertType = "X",
-          alertTypeDescription = "Security",
-          alertCode = "XNR",
-          alertCodeDescription = "Not For Release",
-          comment = "IS91",
-          dateCreated = LocalDate.parse("2022-08-01"),
-          expired = false,
-          active = true,
-        )
+        val alertFromNomis =
+          NomisAlert(
+            offenderNo = "A7777ZZ",
+            alertType = "X",
+            alertTypeDescription = "Security",
+            alertCode = "XNR",
+            alertCodeDescription = "Not For Release",
+            comment = "IS91",
+            dateCreated = LocalDate.parse("2022-08-01"),
+            expired = false,
+            active = true,
+          )
 
         val integrationApiAlert = alertFromNomis.toAlert()
 

@@ -11,12 +11,13 @@ class NomisImageDetail(
   val imageOrientation: String,
   val imageType: String,
 ) {
-  fun toImageMetadata(): ImageMetadata = ImageMetadata(
-    id = this.imageId,
-    active = this.active,
-    captureDateTime = this.captureDateTime,
-    view = this.imageView,
-    orientation = this.imageOrientation,
-    type = this.imageType,
-  )
+  fun toImageMetadata(): ImageMetadata =
+    ImageMetadata(
+      id = this.imageId,
+      active = this.active,
+      captureDateTime = this.captureDateTime,
+      view = this.imageView,
+      orientation = this.imageOrientation,
+      type = this.imageType,
+    )
 }

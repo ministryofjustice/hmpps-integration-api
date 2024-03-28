@@ -18,9 +18,10 @@ class RisksController(
   @Autowired val getRisksForPersonService: GetRisksForPersonService,
   @Autowired val auditService: AuditService,
 ) {
-
   @GetMapping("{encodedHmppsId}/risks")
-  fun getPersonRisks(@PathVariable encodedHmppsId: String): Map<String, Risks?> {
+  fun getPersonRisks(
+    @PathVariable encodedHmppsId: String,
+  ): Map<String, Risks?> {
     val hmppsId = encodedHmppsId.decodeUrlCharacters()
     val response = getRisksForPersonService.execute(hmppsId)
 

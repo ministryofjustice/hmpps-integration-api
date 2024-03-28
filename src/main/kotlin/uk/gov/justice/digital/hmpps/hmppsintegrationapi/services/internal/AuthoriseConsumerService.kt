@@ -6,7 +6,11 @@ import org.springframework.stereotype.Service
 @Component
 @Service
 class AuthoriseConsumerService {
-  fun execute(consumer: String, consumerPathConfig: Map<String, List<String>>, requestedPath: String): Boolean {
+  fun execute(
+    consumer: String,
+    consumerPathConfig: Map<String, List<String>>,
+    requestedPath: String,
+  ): Boolean {
     println("consumer: $consumer")
     println("requestedPath: $requestedPath")
 

@@ -5,7 +5,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ViolencePre
 data class ArnViolencePredictorScore(
   val ovpRisk: String? = null,
 ) {
-  fun toViolencePredictor(): ViolencePredictor = ViolencePredictor(
-    scoreLevel = this.ovpRisk,
-  )
+  fun toViolencePredictor(): ViolencePredictor =
+    ViolencePredictor(
+      scoreLevel = this.ovpRisk,
+    )
 }

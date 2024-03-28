@@ -18,7 +18,6 @@ class LicenceConditionController(
   @Autowired val auditService: AuditService,
   @Autowired val getLicenceConditionService: GetLicenceConditionService,
 ) {
-
   @GetMapping("{encodedHmppsId}/licences/conditions")
   fun getLicenceConditions(
     @PathVariable encodedHmppsId: String,

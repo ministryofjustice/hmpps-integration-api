@@ -14,6 +14,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import java.io.File
 
 data class StringModel(val headers: String)
+
 data class TestModel(val sourceName: String, val sourceLastName: String?) {
   fun toDomain() = TestDomainModel(sourceName, sourceLastName)
 }
@@ -27,11 +28,11 @@ class WebClientWrapperTest : DescribeSpec({
   val id = "ABC1234"
   val headers = mapOf("foo" to "bar")
 
-  beforeEach() {
+  beforeEach {
     mockServer.start()
   }
 
-  afterTest() {
+  afterTest {
     mockServer.stop()
   }
 
@@ -90,10 +91,11 @@ class WebClientWrapperTest : DescribeSpec({
       it("performs a request with multiple headers for .request()") {
         mockServer.stubGetWithHeadersTest()
 
-        val headers = mapOf(
-          "foo" to "bar",
-          "bar" to "baz",
-        )
+        val headers =
+          mapOf(
+            "foo" to "bar",
+            "bar" to "baz",
+          )
 
         val webClient = WebClientWrapper(baseUrl = mockServer.baseUrl())
         val result = webClient.request<StringModel>(HttpMethod.GET, "/test", headers = headers, UpstreamApi.TEST)
@@ -120,12 +122,13 @@ class WebClientWrapperTest : DescribeSpec({
         )
 
         val webClient = WebClientWrapper(baseUrl = mockServer.baseUrl())
-        val result = webClient.requestList<TestModel>(
-          HttpMethod.GET,
-          "/testPost",
-          headers,
-          UpstreamApi.TEST,
-        )
+        val result =
+          webClient.requestList<TestModel>(
+            HttpMethod.GET,
+            "/testPost",
+            headers,
+            UpstreamApi.TEST,
+          )
 
         if (result is WebClientWrapperResponse.Success) {
           val testDomainModels = result.data.map { it.toDomain() }
@@ -148,13 +151,14 @@ class WebClientWrapperTest : DescribeSpec({
         )
 
         val webClient = WebClientWrapper(baseUrl = mockServer.baseUrl())
-        val result = webClient.requestList<TestModel>(
-          HttpMethod.POST,
-          "/testPost",
-          headers,
-          UpstreamApi.TEST,
-          mapOf("sourceName" to "Paul"),
-        )
+        val result =
+          webClient.requestList<TestModel>(
+            HttpMethod.POST,
+            "/testPost",
+            headers,
+            UpstreamApi.TEST,
+            mapOf("sourceName" to "Paul"),
+          )
 
         if (result is WebClientWrapperResponse.Success) {
           val testDomainModels = result.data.map { it.toDomain() }
@@ -165,10 +169,11 @@ class WebClientWrapperTest : DescribeSpec({
       it("performs a request with multiple headers for .requestList()") {
         mockServer.stubGetWithHeadersTest()
 
-        val headers = mapOf(
-          "foo" to "bar",
-          "bar" to "baz",
-        )
+        val headers =
+          mapOf(
+            "foo" to "bar",
+            "bar" to "baz",
+          )
 
         val webClient = WebClientWrapper(baseUrl = mockServer.baseUrl())
         val result = webClient.requestList<StringModel>(HttpMethod.GET, "/test", headers = headers, UpstreamApi.TEST)
@@ -265,4 +270,4 @@ class WebClientWrapperTest : DescribeSpec({
       fail("Exceeded memory buffer")
     }
   }
-},)
+})

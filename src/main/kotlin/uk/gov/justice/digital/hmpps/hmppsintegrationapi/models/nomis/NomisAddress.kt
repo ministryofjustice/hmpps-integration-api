@@ -19,29 +19,34 @@ data class NomisAddress(
   val addressUsages: List<AddressUsage> = emptyList(),
   val comment: String?,
 ) {
-  fun toAddress() = Address(
-    country = this.country,
-    county = this.county,
-    endDate = this.endDate,
-    locality = this.locality,
-    name = this.premise,
-    noFixedAddress = this.noFixedAddress,
-    number = this.flat,
-    postcode = this.postalCode,
-    startDate = this.startDate,
-    street = this.street,
-    town = this.town,
-    types = addressTypes(this.addressUsages, this.addressType),
-    notes = this.comment,
-  )
-
-  private fun addressTypes(addressUsages: List<AddressUsage>, addressType: String?): List<Address.Type> {
-    val result = addressUsages.map { it.toAddressType() }.plus(
-      Address.Type(
-        code = addressType,
-        description = getAddressDescriptionFromType(addressType),
-      ),
+  fun toAddress() =
+    Address(
+      country = this.country,
+      county = this.county,
+      endDate = this.endDate,
+      locality = this.locality,
+      name = this.premise,
+      noFixedAddress = this.noFixedAddress,
+      number = this.flat,
+      postcode = this.postalCode,
+      startDate = this.startDate,
+      street = this.street,
+      town = this.town,
+      types = addressTypes(this.addressUsages, this.addressType),
+      notes = this.comment,
     )
+
+  private fun addressTypes(
+    addressUsages: List<AddressUsage>,
+    addressType: String?,
+  ): List<Address.Type> {
+    val result =
+      addressUsages.map { it.toAddressType() }.plus(
+        Address.Type(
+          code = addressType,
+          description = getAddressDescriptionFromType(addressType),
+        ),
+      )
 
     return result.filter { it.code != null }
   }
@@ -59,9 +64,10 @@ data class NomisAddress(
     val addressUsage: String,
     val addressUsageDescription: String?,
   ) {
-    fun toAddressType() = Address.Type(
-      code = this.addressUsage,
-      description = this.addressUsageDescription ?: this.addressUsage,
-    )
+    fun toAddressType() =
+      Address.Type(
+        code = this.addressUsage,
+        description = this.addressUsageDescription ?: this.addressUsage,
+      )
   }
 }

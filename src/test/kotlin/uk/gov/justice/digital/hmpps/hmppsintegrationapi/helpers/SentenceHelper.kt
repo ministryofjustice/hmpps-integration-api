@@ -15,21 +15,24 @@ fun generateTestSentence(
   fineAmount: Number? = null,
   isActive: Boolean? = true,
   isCustodial: Boolean = true,
-  length: SentenceLength = SentenceLength(
-    duration = null,
-    units = null,
-    terms = listOf(
-      SentenceTerm(hours = 2),
-      SentenceTerm(years = 25),
+  length: SentenceLength =
+    SentenceLength(
+      duration = null,
+      units = null,
+      terms =
+        listOf(
+          SentenceTerm(hours = 2),
+          SentenceTerm(years = 25),
+        ),
     ),
-  ),
-): Sentence = Sentence(
-  serviceSource = serviceSource,
-  systemSource = systemSource,
-  dateOfSentencing = dateOfSentencing,
-  description = description,
-  fineAmount = fineAmount,
-  isActive = isActive,
-  isCustodial = isCustodial,
-  length = length,
-)
+): Sentence =
+  Sentence(
+    serviceSource = serviceSource,
+    systemSource = systemSource,
+    dateOfSentencing = dateOfSentencing,
+    description = description,
+    fineAmount = fineAmount,
+    isActive = isActive,
+    isCustodial = isCustodial,
+    length = length,
+  )

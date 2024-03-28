@@ -7,12 +7,13 @@ class OtherRisksTest : DescribeSpec(
   {
     describe("#toOtherRisks") {
       it("maps one-to-one attributes to Integration API attributes") {
-        val arnOtherRisks = ArnOtherRisks(
-          escapeOrAbscond = "YES",
-          controlIssuesDisruptiveBehaviour = "YES",
-          breachOfTrust = "YES",
-          riskToOtherPrisoners = "YES",
-        )
+        val arnOtherRisks =
+          ArnOtherRisks(
+            escapeOrAbscond = "YES",
+            controlIssuesDisruptiveBehaviour = "YES",
+            breachOfTrust = "YES",
+            riskToOtherPrisoners = "YES",
+          )
 
         val integrationApiOtherRisks = arnOtherRisks.toOtherRisks()
 

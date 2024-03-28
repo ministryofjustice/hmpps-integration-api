@@ -9,11 +9,12 @@ data class ArnRiskToSelf(
   val hostelSetting: ArnRisk = ArnRisk(),
   val vulnerability: ArnRisk = ArnRisk(),
 ) {
-  fun toRiskToSelf(): RiskToSelf = RiskToSelf(
-    suicide = this.suicide.toRisk(),
-    selfHarm = this.selfHarm.toRisk(),
-    custody = this.custody.toRisk(),
-    hostelSetting = this.hostelSetting.toRisk(),
-    vulnerability = this.vulnerability.toRisk(),
-  )
+  fun toRiskToSelf(): RiskToSelf =
+    RiskToSelf(
+      suicide = this.suicide.toRisk(),
+      selfHarm = this.selfHarm.toRisk(),
+      custody = this.custody.toRisk(),
+      hostelSetting = this.hostelSetting.toRisk(),
+      vulnerability = this.vulnerability.toRisk(),
+    )
 }

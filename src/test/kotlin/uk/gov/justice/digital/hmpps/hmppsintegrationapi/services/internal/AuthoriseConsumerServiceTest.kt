@@ -14,39 +14,41 @@ internal class AuthoriseConsumerServiceTest(
   private val clientName: String = "automated-test-client",
   private val authoriseConsumerService: AuthoriseConsumerService,
 ) : DescribeSpec(
-  {
+    {
 
-    var consumerPathConfig = mapOf(
-      "automated-test-client" to listOf("/persons/.*"),
-    )
-
-    var requestedPath = "/persons/123"
-
-    describe("Access is allowed") {
-      it("when the path is listed under that consumer") {
-        val authResult = authoriseConsumerService.execute(
-          clientName,
-          consumerPathConfig,
-          requestedPath,
+      val consumerPathConfig =
+        mapOf(
+          "automated-test-client" to listOf("/persons/.*"),
         )
-        authResult.shouldBeTrue()
+
+      var requestedPath = "/persons/123"
+
+      describe("Access is allowed") {
+        it("when the path is listed under that consumer") {
+          val authResult =
+            authoriseConsumerService.execute(
+              clientName,
+              consumerPathConfig,
+              requestedPath,
+            )
+          authResult.shouldBeTrue()
+        }
       }
-    }
 
-    describe("Access is denied") {
-      it("when the extracted consumer is null") {
-        val result = authoriseConsumerService.execute("", emptyMap(), "")
+      describe("Access is denied") {
+        it("when the extracted consumer is null") {
+          val result = authoriseConsumerService.execute("", emptyMap(), "")
 
-        result.shouldBeFalse()
+          result.shouldBeFalse()
+        }
+
+        it("when the path isn't listed as allowed on the consumer") {
+          requestedPath = "/some-other-path/123"
+
+          val result = authoriseConsumerService.execute(clientName, consumerPathConfig, requestedPath)
+
+          result.shouldBeFalse()
+        }
       }
-
-      it("when the path isn't listed as allowed on the consumer") {
-        requestedPath = "/some-other-path/123"
-
-        val result = authoriseConsumerService.execute(clientName, consumerPathConfig, requestedPath)
-
-        result.shouldBeFalse()
-      }
-    }
-  },
-)
+    },
+  )

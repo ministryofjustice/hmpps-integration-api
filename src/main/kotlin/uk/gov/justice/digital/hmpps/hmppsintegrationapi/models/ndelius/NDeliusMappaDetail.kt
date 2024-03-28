@@ -11,15 +11,16 @@ data class NDeliusMappaDetail(
   val reviewDate: String? = null,
   val notes: String? = null,
 ) {
-  fun toMappaDetail(): MappaDetail = (
-    MappaDetail(
-      level = this.level,
-      levelDescription = this.levelDescription,
-      category = this.category,
-      categoryDescription = this.categoryDescription,
-      startDate = this.startDate,
-      reviewDate = this.reviewDate,
-      notes = this.notes,
-    )
+  fun toMappaDetail(): MappaDetail =
+    (
+      MappaDetail(
+        level = this.level,
+        levelDescription = this.levelDescription,
+        category = this.category,
+        categoryDescription = this.categoryDescription,
+        startDate = this.startDate,
+        reviewDate = this.reviewDate,
+        notes = this.notes,
+      )
     )
 }

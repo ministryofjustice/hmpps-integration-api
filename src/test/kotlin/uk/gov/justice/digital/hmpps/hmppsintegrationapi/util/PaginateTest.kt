@@ -95,4 +95,4 @@ internal class PaginateTest : DescribeSpec({
     lastPaginatedResponse.pagination.perPage.shouldBe(5)
     lastPaginatedResponse.pagination.totalPages.shouldBe(5)
   }
-},)
+})

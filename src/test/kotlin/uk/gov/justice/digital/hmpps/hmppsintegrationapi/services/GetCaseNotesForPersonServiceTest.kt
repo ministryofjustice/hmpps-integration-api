@@ -25,36 +25,36 @@ class GetCaseNotesForPersonServiceTest(
   @MockBean val getPersonService: GetPersonService,
   private val getCaseNoteForPersonService: GetCaseNotesForPersonService,
 ) : DescribeSpec(
-  {
-    val hmppsId = "1234/56789B"
-    val nomisNumber = "Z99999ZZ"
-    val person = Person(firstName = "Julianna", lastName = "Blake", identifiers = Identifiers(nomisNumber = nomisNumber))
-    val filter = CaseNoteFilter(hmppsId = hmppsId)
-    val caseNotes =
-      listOf(
-        CaseNote(
-          caseNoteId = "12345ABC",
-        ),
-      )
+    {
+      val hmppsId = "1234/56789B"
+      val nomisNumber = "Z99999ZZ"
+      val person = Person(firstName = "Julianna", lastName = "Blake", identifiers = Identifiers(nomisNumber = nomisNumber))
+      val filter = CaseNoteFilter(hmppsId = hmppsId)
+      val caseNotes =
+        listOf(
+          CaseNote(
+            caseNoteId = "12345ABC",
+          ),
+        )
 
-    beforeEach {
-      Mockito.reset(getPersonService)
-      Mockito.reset(caseNotesGateway)
+      beforeEach {
+        Mockito.reset(getPersonService)
+        Mockito.reset(caseNotesGateway)
 
-      whenever(getPersonService.execute(hmppsId = hmppsId)).thenReturn(Response(person))
-      whenever(caseNotesGateway.getCaseNotesForPerson(id = nomisNumber, filter)).thenReturn(Response(caseNotes))
-    }
+        whenever(getPersonService.execute(hmppsId = hmppsId)).thenReturn(Response(person))
+        whenever(caseNotesGateway.getCaseNotesForPerson(id = nomisNumber, filter)).thenReturn(Response(caseNotes))
+      }
 
-    it("performs a search according to hmpps Id") {
-      getCaseNoteForPersonService.execute(filter)
-      verify(getPersonService, VerificationModeFactory.times(1)).execute(hmppsId = hmppsId)
-    }
+      it("performs a search according to hmpps Id") {
+        getCaseNoteForPersonService.execute(filter)
+        verify(getPersonService, VerificationModeFactory.times(1)).execute(hmppsId = hmppsId)
+      }
 
-    it("should return case notes from gateway") {
-      val result = getCaseNoteForPersonService.execute(filter)
-      result.data.size.shouldBe(1)
-      result.data.first().caseNoteId.shouldBe("12345ABC")
-      result.errors.count().shouldBe(0)
-    }
-  },
-)
+      it("should return case notes from gateway") {
+        val result = getCaseNoteForPersonService.execute(filter)
+        result.data.size.shouldBe(1)
+        result.data.first().caseNoteId.shouldBe("12345ABC")
+        result.errors.count().shouldBe(0)
+      }
+    },
+  )

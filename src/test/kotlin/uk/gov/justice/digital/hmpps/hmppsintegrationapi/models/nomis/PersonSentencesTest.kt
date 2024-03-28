@@ -13,11 +13,12 @@ class PersonSentencesTest : DescribeSpec(
   {
     describe("#toSentence") {
       it("maps one-to-one attributes to integration API attributes") {
-        val nomisSentence = NomisSentence(
-          sentenceDate = LocalDate.parse("2022-02-02"),
-          sentenceStatus = "A",
-          sentenceTypeDescription = "ORA CJA03 Standard Determinate Sentence",
-        )
+        val nomisSentence =
+          NomisSentence(
+            sentenceDate = LocalDate.parse("2022-02-02"),
+            sentenceStatus = "A",
+            sentenceTypeDescription = "ORA CJA03 Standard Determinate Sentence",
+          )
 
         val integrationApiSentence = nomisSentence.toSentence()
 
@@ -28,24 +29,26 @@ class PersonSentencesTest : DescribeSpec(
       }
 
       it("maps Nomis terms to Integration API terms when all possible Nomis term values are provided") {
-        val nomisSentence = NomisSentence(
-          terms = listOf(
-            NomisTerm(
-              years = 3,
-              months = 4,
-              weeks = 0,
-              days = 2,
-              code = "Z",
-            ),
-            NomisTerm(
-              years = 7,
-              months = 3,
-              weeks = 4,
-              days = 0,
-              code = "Y",
-            ),
-          ),
-        )
+        val nomisSentence =
+          NomisSentence(
+            terms =
+              listOf(
+                NomisTerm(
+                  years = 3,
+                  months = 4,
+                  weeks = 0,
+                  days = 2,
+                  code = "Z",
+                ),
+                NomisTerm(
+                  years = 7,
+                  months = 3,
+                  weeks = 4,
+                  days = 0,
+                  code = "Y",
+                ),
+              ),
+          )
 
         val integrationApiSentence = nomisSentence.toSentence()
 
@@ -53,39 +56,42 @@ class PersonSentencesTest : DescribeSpec(
           SentenceLength(
             duration = null,
             units = null,
-            terms = listOf(
-              SentenceTerm(
-                years = 3,
-                months = 4,
-                weeks = null,
-                days = 2,
-                hours = null,
-                prisonTermCode = "Z",
+            terms =
+              listOf(
+                SentenceTerm(
+                  years = 3,
+                  months = 4,
+                  weeks = null,
+                  days = 2,
+                  hours = null,
+                  prisonTermCode = "Z",
+                ),
+                SentenceTerm(
+                  years = 7,
+                  months = 3,
+                  weeks = 4,
+                  days = null,
+                  hours = null,
+                  prisonTermCode = "Y",
+                ),
               ),
-              SentenceTerm(
-                years = 7,
-                months = 3,
-                weeks = 4,
-                days = null,
-                hours = null,
-                prisonTermCode = "Y",
-              ),
-            ),
           ),
         )
       }
 
       it("maps Nomis terms to Integration API terms when some term values are provided") {
-        val nomisSentence = NomisSentence(
-          terms = listOf(
-            NomisTerm(
-              years = 3,
-            ),
-            NomisTerm(
-              months = 3,
-            ),
-          ),
-        )
+        val nomisSentence =
+          NomisSentence(
+            terms =
+              listOf(
+                NomisTerm(
+                  years = 3,
+                ),
+                NomisTerm(
+                  months = 3,
+                ),
+              ),
+          )
 
         val integrationApiSentence = nomisSentence.toSentence()
 
@@ -93,37 +99,40 @@ class PersonSentencesTest : DescribeSpec(
           SentenceLength(
             duration = null,
             units = null,
-            terms = listOf(
-              SentenceTerm(
-                years = 3,
-                months = null,
-                weeks = null,
-                days = null,
-                hours = null,
-                prisonTermCode = null,
+            terms =
+              listOf(
+                SentenceTerm(
+                  years = 3,
+                  months = null,
+                  weeks = null,
+                  days = null,
+                  hours = null,
+                  prisonTermCode = null,
+                ),
+                SentenceTerm(
+                  years = null,
+                  months = 3,
+                  weeks = null,
+                  days = null,
+                  hours = null,
+                  prisonTermCode = null,
+                ),
               ),
-              SentenceTerm(
-                years = null,
-                months = 3,
-                weeks = null,
-                days = null,
-                hours = null,
-                prisonTermCode = null,
-              ),
-            ),
           ),
         )
       }
 
       it("maps Nomis terms to Integration API terms when only one term is provided") {
-        val nomisSentence = NomisSentence(
-          terms = listOf(
-            NomisTerm(
-              years = 3,
-              months = 9,
-            ),
-          ),
-        )
+        val nomisSentence =
+          NomisSentence(
+            terms =
+              listOf(
+                NomisTerm(
+                  years = 3,
+                  months = 9,
+                ),
+              ),
+          )
 
         val integrationApiSentence = nomisSentence.toSentence()
 
@@ -131,25 +140,27 @@ class PersonSentencesTest : DescribeSpec(
           SentenceLength(
             duration = null,
             units = null,
-            terms = listOf(
-              SentenceTerm(
-                years = 3,
-                months = 9,
-                weeks = null,
-                days = null,
-                hours = null,
-                prisonTermCode = null,
+            terms =
+              listOf(
+                SentenceTerm(
+                  years = 3,
+                  months = 9,
+                  weeks = null,
+                  days = null,
+                  hours = null,
+                  prisonTermCode = null,
+                ),
               ),
-            ),
           ),
         )
       }
 
       it("sentenceStatusToBoolean correctly maps 'I' to false") {
-        val nomisSentence = NomisSentence(
-          sentenceDate = null,
-          sentenceStatus = "I",
-        )
+        val nomisSentence =
+          NomisSentence(
+            sentenceDate = null,
+            sentenceStatus = "I",
+          )
 
         val integrationApiSentence = nomisSentence.toSentence()
 
@@ -158,10 +169,11 @@ class PersonSentencesTest : DescribeSpec(
       }
 
       it("sentenceStatusToBoolean correctly maps anything other than 'A' or 'I' to null") {
-        val nomisSentence = NomisSentence(
-          sentenceDate = null,
-          sentenceStatus = "X",
-        )
+        val nomisSentence =
+          NomisSentence(
+            sentenceDate = null,
+            sentenceStatus = "X",
+          )
 
         val integrationApiSentence = nomisSentence.toSentence()
 
@@ -170,7 +182,8 @@ class PersonSentencesTest : DescribeSpec(
       }
 
       it("deals with NULL values") {
-        val integrationApiSentence = Sentence(isCustodial = true, serviceSource = UpstreamApi.NOMIS, systemSource = SystemSource.PRISON_SYSTEMS)
+        val integrationApiSentence =
+          Sentence(isCustodial = true, serviceSource = UpstreamApi.NOMIS, systemSource = SystemSource.PRISON_SYSTEMS)
         integrationApiSentence.shouldBe(
           Sentence(
             serviceSource = UpstreamApi.NOMIS,
@@ -180,11 +193,12 @@ class PersonSentencesTest : DescribeSpec(
             isActive = null,
             isCustodial = true,
             fineAmount = null,
-            length = SentenceLength(
-              duration = null,
-              units = null,
-              terms = emptyList(),
-            ),
+            length =
+              SentenceLength(
+                duration = null,
+                units = null,
+                terms = emptyList(),
+              ),
           ),
         )
       }

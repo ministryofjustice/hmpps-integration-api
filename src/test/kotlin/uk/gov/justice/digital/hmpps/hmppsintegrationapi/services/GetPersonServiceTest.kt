@@ -24,46 +24,46 @@ internal class GetPersonServiceTest(
   @MockBean val probationOffenderSearchGateway: ProbationOffenderSearchGateway,
   private val getPersonService: GetPersonService,
 ) : DescribeSpec({
-  val hmppsId = "2003/13116M"
+    val hmppsId = "2003/13116M"
 
-  beforeEach {
-    Mockito.reset(prisonerOffenderSearchGateway)
-    Mockito.reset(probationOffenderSearchGateway)
+    beforeEach {
+      Mockito.reset(prisonerOffenderSearchGateway)
+      Mockito.reset(probationOffenderSearchGateway)
 
-    whenever(prisonerOffenderSearchGateway.getPersons("Qui-gon", "Jin", "1966-10-25")).thenReturn(
-      Response(data = listOf(Person(firstName = "Qui-gon", lastName = "Jin", identifiers = Identifiers(nomisNumber = "A1234AA")))),
-    )
-    whenever(probationOffenderSearchGateway.getPerson(id = hmppsId)).thenReturn(
-      Response(data = Person(firstName = "Qui-gon", lastName = "Jin", identifiers = Identifiers(nomisNumber = "A1234AA"))),
-    )
-  }
+      whenever(prisonerOffenderSearchGateway.getPersons("Qui-gon", "Jin", "1966-10-25")).thenReturn(
+        Response(data = listOf(Person(firstName = "Qui-gon", lastName = "Jin", identifiers = Identifiers(nomisNumber = "A1234AA")))),
+      )
+      whenever(probationOffenderSearchGateway.getPerson(id = hmppsId)).thenReturn(
+        Response(data = Person(firstName = "Qui-gon", lastName = "Jin", identifiers = Identifiers(nomisNumber = "A1234AA"))),
+      )
+    }
 
-  it("gets a person from Probation Offender Search") {
-    getPersonService.execute(hmppsId)
+    it("gets a person from Probation Offender Search") {
+      getPersonService.execute(hmppsId)
 
-    verify(probationOffenderSearchGateway, VerificationModeFactory.times(1)).getPerson(hmppsId)
-  }
+      verify(probationOffenderSearchGateway, VerificationModeFactory.times(1)).getPerson(hmppsId)
+    }
 
-  it("returns a person") {
-    val personFromProbationOffenderSearch = Person("Molly", "Mob")
+    it("returns a person") {
+      val personFromProbationOffenderSearch = Person("Molly", "Mob")
 
-    whenever(probationOffenderSearchGateway.getPerson(hmppsId)).thenReturn(
-      Response(personFromProbationOffenderSearch),
-    )
+      whenever(probationOffenderSearchGateway.getPerson(hmppsId)).thenReturn(
+        Response(personFromProbationOffenderSearch),
+      )
 
-    val result = getPersonService.execute(hmppsId)
+      val result = getPersonService.execute(hmppsId)
 
-    val expectedResult = Person("Molly", "Mob")
+      val expectedResult = Person("Molly", "Mob")
 
-    result.data.shouldBe(expectedResult)
-  }
+      result.data.shouldBe(expectedResult)
+    }
 
-  it("returns null when a person isn't found in probation offender search") {
-    whenever(probationOffenderSearchGateway.getPerson(id = hmppsId)).thenReturn(Response(data = null))
+    it("returns null when a person isn't found in probation offender search") {
+      whenever(probationOffenderSearchGateway.getPerson(id = hmppsId)).thenReturn(Response(data = null))
 
-    val result = getPersonService.execute(hmppsId)
-    val expectedResult = null
+      val result = getPersonService.execute(hmppsId)
+      val expectedResult = null
 
-    result.data.shouldBe(expectedResult)
-  }
-},)
+      result.data.shouldBe(expectedResult)
+    }
+  })

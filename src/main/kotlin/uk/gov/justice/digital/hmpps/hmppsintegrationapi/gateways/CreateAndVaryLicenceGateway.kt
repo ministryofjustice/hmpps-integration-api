@@ -14,19 +14,22 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 
 @Component
-class CreateAndVaryLicenceGateway(@Value("\${services.create-and-vary-licence.base-url}") baseUrl: String) {
+class CreateAndVaryLicenceGateway(
+  @Value("\${services.create-and-vary-licence.base-url}") baseUrl: String,
+) {
   private val webClient = WebClientWrapper(baseUrl)
 
   @Autowired
   lateinit var hmppsAuthGateway: HmppsAuthGateway
 
   fun getLicenceSummaries(id: String): Response<List<Licence>> {
-    val result = webClient.requestList<CvlLicenceSummary>(
-      HttpMethod.GET,
-      "/public/licence-summaries/crn/$id",
-      authenticationHeader(),
-      UpstreamApi.CVL,
-    )
+    val result =
+      webClient.requestList<CvlLicenceSummary>(
+        HttpMethod.GET,
+        "/public/licence-summaries/crn/$id",
+        authenticationHeader(),
+        UpstreamApi.CVL,
+      )
 
     return when (result) {
       is WebClientWrapperResponse.Success -> {
@@ -43,12 +46,13 @@ class CreateAndVaryLicenceGateway(@Value("\${services.create-and-vary-licence.ba
   }
 
   fun getLicenceConditions(id: String): Response<List<LicenceCondition>> {
-    val result = webClient.request<CvlLicence>(
-      HttpMethod.GET,
-      "/public/licences/id/$id",
-      authenticationHeader(),
-      UpstreamApi.CVL,
-    )
+    val result =
+      webClient.request<CvlLicence>(
+        HttpMethod.GET,
+        "/public/licences/id/$id",
+        authenticationHeader(),
+        UpstreamApi.CVL,
+      )
 
     return when (result) {
       is WebClientWrapperResponse.Success -> {

@@ -12,10 +12,14 @@ import java.util.stream.Collectors
 class RequestLogger() : HandlerInterceptor {
   private val log: org.slf4j.Logger = LoggerFactory.getLogger(this::class.java)
 
-  override fun preHandle(request: HttpServletRequest, response: HttpServletResponse, handler: Any): Boolean {
+  override fun preHandle(
+    request: HttpServletRequest,
+    response: HttpServletResponse,
+    handler: Any,
+  ): Boolean {
     // log. allows us ot log at different levels
     if (log.isDebugEnabled) {
-      log.debug(RetrieveRequestData(request))
+      log.debug(retrieveRequestData(request))
     }
 
     // Informs the super to continue processing this request
@@ -23,12 +27,12 @@ class RequestLogger() : HandlerInterceptor {
   }
 
   // Returns a loggable string with relevant request data
-  fun RetrieveRequestData(request: HttpServletRequest): String {
+  fun retrieveRequestData(request: HttpServletRequest): String {
     val requestIp: String = "New Request from " + request.remoteAddr
     val method: String = "Method: " + request.method
     val endpoint: String = "Request URI: " + request.requestURI // Could this expose authentication credentials?
     val requestURL: String = "Full Request URL: " + request.requestURL
-    val body: String = "Body: " + request.reader.lines().collect(Collectors.joining()) ?: "NULL"
+    val body: String = ("Body: " + request.reader.lines().collect(Collectors.joining()))
 
     return "$requestIp \n $method \n $endpoint \n $body \n $requestURL"
   }

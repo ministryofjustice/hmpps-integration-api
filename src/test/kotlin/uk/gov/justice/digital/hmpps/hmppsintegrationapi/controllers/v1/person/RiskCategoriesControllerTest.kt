@@ -32,64 +32,68 @@ internal class RiskCategoriesControllerTest(
   @MockBean val getRiskCategoriesForPersonService: GetRiskCategoriesForPersonService,
   @MockBean val auditService: AuditService,
 ) : DescribeSpec(
-  {
-    val hmppsId = "9999/11111A"
-    val encodedHmppsId = URLEncoder.encode(hmppsId, StandardCharsets.UTF_8)
-    val path = "/v1/persons/$encodedHmppsId/risks/categories"
-    val mockMvc = IntegrationAPIMockMvc(springMockMvc)
+    {
+      val hmppsId = "9999/11111A"
+      val encodedHmppsId = URLEncoder.encode(hmppsId, StandardCharsets.UTF_8)
+      val path = "/v1/persons/$encodedHmppsId/risks/categories"
+      val mockMvc = IntegrationAPIMockMvc(springMockMvc)
 
-    describe("GET $path") {
-      beforeTest {
-        Mockito.reset(getRiskCategoriesForPersonService)
-        whenever(getRiskCategoriesForPersonService.execute(hmppsId)).thenReturn(
-          Response(
-            data = RiskCategory(
-              offenderNo = "A1234AA",
-              assessments = listOf(
-                RiskAssessment(
-                  classificationCode = "C",
-                  classification = "Cat C",
-                  assessmentCode = "CATEGORY",
-                  assessmentDescription = "Categorisation",
-                  assessmentDate = "2018-02-11",
-                  nextReviewDate = "2018-02-11",
-                  assessmentAgencyId = "MDI",
-                  assessmentStatus = "P",
-                  assessmentComment = "Comment details",
+      describe("GET $path") {
+        beforeTest {
+          Mockito.reset(getRiskCategoriesForPersonService)
+          whenever(getRiskCategoriesForPersonService.execute(hmppsId)).thenReturn(
+            Response(
+              data =
+                RiskCategory(
+                  offenderNo = "A1234AA",
+                  assessments =
+                    listOf(
+                      RiskAssessment(
+                        classificationCode = "C",
+                        classification = "Cat C",
+                        assessmentCode = "CATEGORY",
+                        assessmentDescription = "Categorisation",
+                        assessmentDate = "2018-02-11",
+                        nextReviewDate = "2018-02-11",
+                        assessmentAgencyId = "MDI",
+                        assessmentStatus = "P",
+                        assessmentComment = "Comment details",
+                      ),
+                    ),
+                  category = "string",
+                  categoryCode = "string",
                 ),
-
-              ),
-              category = "string",
-              categoryCode = "string",
             ),
-          ),
-        )
+          )
 
-        Mockito.reset(auditService)
-      }
+          Mockito.reset(auditService)
+        }
 
-      it("returns a 200 OK status code") {
-        val result = mockMvc.performAuthorised(path)
+        it("returns a 200 OK status code") {
+          val result = mockMvc.performAuthorised(path)
 
-        result.response.status.shouldBe(HttpStatus.OK.value())
-      }
+          result.response.status.shouldBe(HttpStatus.OK.value())
+        }
 
-      it("gets the risk categories for a person with the matching ID") {
-        mockMvc.performAuthorised(path)
-        verify(getRiskCategoriesForPersonService, VerificationModeFactory.times(1)).execute(hmppsId)
-      }
+        it("gets the risk categories for a person with the matching ID") {
+          mockMvc.performAuthorised(path)
+          verify(getRiskCategoriesForPersonService, VerificationModeFactory.times(1)).execute(hmppsId)
+        }
 
-      it("logs audit") {
-        mockMvc.performAuthorised(path)
+        it("logs audit") {
+          mockMvc.performAuthorised(path)
 
-        verify(auditService, VerificationModeFactory.times(1)).createEvent("GET_PERSON_RISK_CATEGORIES", "Person risk categories with hmpps id: $hmppsId has been retrieved")
-      }
+          verify(
+            auditService,
+            VerificationModeFactory.times(1),
+          ).createEvent("GET_PERSON_RISK_CATEGORIES", "Person risk categories with hmpps id: $hmppsId has been retrieved")
+        }
 
-      it("returns the risk categories for a person with the matching ID") {
-        val result = mockMvc.performAuthorised(path)
+        it("returns the risk categories for a person with the matching ID") {
+          val result = mockMvc.performAuthorised(path)
 
-        result.response.contentAsString.shouldContain(
-          """
+          result.response.contentAsString.shouldContain(
+            """
           "data": {
             "offenderNo": "A1234AA",
             "assessments": [
@@ -109,26 +113,27 @@ internal class RiskCategoriesControllerTest(
             "categoryCode": "string"
           }
         """.removeWhitespaceAndNewlines(),
-        )
-      }
+          )
+        }
 
-      it("returns a 404 NOT FOUND status code when person isn't found in the upstream API") {
-        whenever(getRiskCategoriesForPersonService.execute(hmppsId)).thenReturn(
-          Response(
-            data = RiskCategory(),
-            errors = listOf(
-              UpstreamApiError(
-                causedBy = UpstreamApi.NOMIS,
-                type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-              ),
+        it("returns a 404 NOT FOUND status code when person isn't found in the upstream API") {
+          whenever(getRiskCategoriesForPersonService.execute(hmppsId)).thenReturn(
+            Response(
+              data = RiskCategory(),
+              errors =
+                listOf(
+                  UpstreamApiError(
+                    causedBy = UpstreamApi.NOMIS,
+                    type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+                  ),
+                ),
             ),
-          ),
-        )
+          )
 
-        val result = mockMvc.performAuthorised(path)
+          val result = mockMvc.performAuthorised(path)
 
-        result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
+          result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
+        }
       }
-    }
-  },
-)
+    },
+  )

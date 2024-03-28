@@ -125,7 +125,7 @@ services:
       - '4080:4010'
 
   local-stack-aws:
-    image: localstack/localstack:0.14.0
+    image: localstack/localstack:3.0
     container_name: local-stack-aws
     ports:
       - "4566:4566"
@@ -140,7 +140,7 @@ services:
       - AWS_EXECUTION_ENV=True
       - DEFAULT_REGION=eu-west-2
     volumes:
-      - "${TMPDIR:-/tmp/localstack}:/tmp/localstack"
+      - './localstack:/var/lib/localstack'
       - "/var/run/docker.sock:/var/run/docker.sock"
 
 networks:

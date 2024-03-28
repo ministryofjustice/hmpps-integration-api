@@ -8,14 +8,15 @@ class PrisonerAliasTest : DescribeSpec(
   {
     describe("#toAlias") {
       it("maps one-to-one attributes to alias attributes") {
-        val prisonerAlias = POSPrisonerAlias(
-          firstName = "Alias First Name",
-          lastName = "Alias Last Name",
-          middleNames = "Alias Middle Names",
-          dateOfBirth = LocalDate.parse("2023-01-01"),
-          gender = "Gender",
-          ethnicity = "Ethnicity",
-        )
+        val prisonerAlias =
+          POSPrisonerAlias(
+            firstName = "Alias First Name",
+            lastName = "Alias Last Name",
+            middleNames = "Alias Middle Names",
+            dateOfBirth = LocalDate.parse("2023-01-01"),
+            gender = "Gender",
+            ethnicity = "Ethnicity",
+          )
 
         val alias = prisonerAlias.toAlias()
 

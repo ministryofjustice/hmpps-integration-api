@@ -10,7 +10,6 @@ import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 
 class AddressSmokeTest : DescribeSpec(
-
   {
     val hmppsId = "2003/13116M"
     val encodedHmppsId = URLEncoder.encode(hmppsId, StandardCharsets.UTF_8)

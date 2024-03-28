@@ -10,12 +10,22 @@ class NeedsTest : DescribeSpec(
   {
     describe("#toNeeds") {
       it("maps one-to-one attributes to Integration API attributes") {
-        val arnNeeds = ArnNeeds(
-          assessedOn = LocalDateTime.parse("2000-11-27T10:15:41"),
-          identifiedNeeds = listOf(ArnNeed(section = "EDUCATION_TRAINING_AND_EMPLOYABILITY"), ArnNeed(section = "FINANCIAL_MANAGEMENT_AND_INCOME")),
-          notIdentifiedNeeds = listOf(ArnNeed(section = "RELATIONSHIPS")),
-          unansweredNeeds = listOf(ArnNeed(section = "LIFESTYLE_AND_ASSOCIATES"), ArnNeed(section = "DRUG_MISUSE"), ArnNeed(section = "ALCOHOL_MISUSE")),
-        )
+        val arnNeeds =
+          ArnNeeds(
+            assessedOn = LocalDateTime.parse("2000-11-27T10:15:41"),
+            identifiedNeeds =
+              listOf(
+                ArnNeed(section = "EDUCATION_TRAINING_AND_EMPLOYABILITY"),
+                ArnNeed(section = "FINANCIAL_MANAGEMENT_AND_INCOME"),
+              ),
+            notIdentifiedNeeds = listOf(ArnNeed(section = "RELATIONSHIPS")),
+            unansweredNeeds =
+              listOf(
+                ArnNeed(section = "LIFESTYLE_AND_ASSOCIATES"),
+                ArnNeed(section = "DRUG_MISUSE"),
+                ArnNeed(section = "ALCOHOL_MISUSE"),
+              ),
+          )
 
         val integrationApiNeeds = arnNeeds.toNeeds()
 

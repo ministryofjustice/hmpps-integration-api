@@ -9,10 +9,11 @@ data class ArnRisks(
   val otherRisks: ArnOtherRisks = ArnOtherRisks(),
   val summary: ArnRiskSummary = ArnRiskSummary(),
 ) {
-  fun toRisks(): Risks = Risks(
-    assessedOn = this.assessedOn,
-    riskToSelf = this.riskToSelf.toRiskToSelf(),
-    otherRisks = this.otherRisks.toOtherRisks(),
-    summary = this.summary.toRiskSummary(),
-  )
+  fun toRisks(): Risks =
+    Risks(
+      assessedOn = this.assessedOn,
+      riskToSelf = this.riskToSelf.toRiskToSelf(),
+      otherRisks = this.otherRisks.toOtherRisks(),
+      summary = this.summary.toRiskSummary(),
+    )
 }

@@ -4,6 +4,7 @@ import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 
+@Suppress("PropertyName")
 data class HmppsAuditEvent(
   val what: String,
   val details: String,

@@ -10,11 +10,12 @@ data class OffenderAlias(
   var dateOfBirth: LocalDate? = null,
   val gender: String? = null,
 ) {
-  fun toAlias(): Alias = Alias(
-    firstName = this.firstName,
-    lastName = this.surname,
-    middleName = this.middleNames.joinToString(" ").ifEmpty { null },
-    dateOfBirth = this.dateOfBirth,
-    gender = this.gender,
-  )
+  fun toAlias(): Alias =
+    Alias(
+      firstName = this.firstName,
+      lastName = this.surname,
+      middleName = this.middleNames.joinToString(" ").ifEmpty { null },
+      dateOfBirth = this.dateOfBirth,
+      gender = this.gender,
+    )
 }

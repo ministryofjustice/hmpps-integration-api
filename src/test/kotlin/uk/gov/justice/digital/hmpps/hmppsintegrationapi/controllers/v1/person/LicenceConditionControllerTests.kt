@@ -35,59 +35,65 @@ class LicenceConditionControllerTests(
   @MockBean val getLicenceConditionService: GetLicenceConditionService,
   @MockBean val auditService: AuditService,
 ) : DescribeSpec(
-  {
-    val hmppsId = "9999/11111A"
-    val encodedHmppsId = URLEncoder.encode(hmppsId, StandardCharsets.UTF_8)
-    val path = "/v1/persons/$encodedHmppsId/licences/conditions"
-    val mockMvc = IntegrationAPIMockMvc(springMockMvc)
+    {
+      val hmppsId = "9999/11111A"
+      val encodedHmppsId = URLEncoder.encode(hmppsId, StandardCharsets.UTF_8)
+      val path = "/v1/persons/$encodedHmppsId/licences/conditions"
+      val mockMvc = IntegrationAPIMockMvc(springMockMvc)
 
-    describe("GET $path") {
-      beforeTest {
-        Mockito.reset(getLicenceConditionService)
-        Mockito.reset(auditService)
-        whenever(getLicenceConditionService.execute(hmppsId)).thenReturn(
-          Response(
-            data = PersonLicences(
-              hmppsId = hmppsId,
-              licences = listOf(
-                Licence(
-                  id = "MockId",
-                  conditions = listOf(LicenceCondition(condition = "MockCondition")),
+      describe("GET $path") {
+        beforeTest {
+          Mockito.reset(getLicenceConditionService)
+          Mockito.reset(auditService)
+          whenever(getLicenceConditionService.execute(hmppsId)).thenReturn(
+            Response(
+              data =
+                PersonLicences(
+                  hmppsId = hmppsId,
+                  licences =
+                    listOf(
+                      Licence(
+                        id = "MockId",
+                        conditions = listOf(LicenceCondition(condition = "MockCondition")),
+                      ),
+                    ),
                 ),
-              ),
             ),
-          ),
-        )
-      }
+          )
+        }
 
-      it("throws exception when no person found") {
-        whenever(getLicenceConditionService.execute(hmppsId = "notfound")).thenReturn(
-          Response<PersonLicences>(
-            data = PersonLicences(hmppsId = hmppsId, licences = emptyList()),
-            errors = listOf(
-              UpstreamApiError(
-                type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-                causedBy = UpstreamApi.CVL,
-              ),
+        it("throws exception when no person found") {
+          whenever(getLicenceConditionService.execute(hmppsId = "notfound")).thenReturn(
+            Response<PersonLicences>(
+              data = PersonLicences(hmppsId = hmppsId, licences = emptyList()),
+              errors =
+                listOf(
+                  UpstreamApiError(
+                    type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+                    causedBy = UpstreamApi.CVL,
+                  ),
+                ),
             ),
-          ),
-        )
-        val noFoundPath = "/v1/persons/notfound/licences/conditions"
-        val result = mockMvc.performAuthorised(noFoundPath)
-        result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
-      }
+          )
+          val noFoundPath = "/v1/persons/notfound/licences/conditions"
+          val result = mockMvc.performAuthorised(noFoundPath)
+          result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
+        }
 
-      it("logs audit for licence condition") {
-        mockMvc.performAuthorised(path)
+        it("logs audit for licence condition") {
+          mockMvc.performAuthorised(path)
 
-        verify(auditService, VerificationModeFactory.times(1)).createEvent("GET_PERSON_LICENCE_CONDITION", "Person licence condition details with hmpps id: $hmppsId has been retrieved")
-      }
+          verify(
+            auditService,
+            VerificationModeFactory.times(1),
+          ).createEvent("GET_PERSON_LICENCE_CONDITION", "Person licence condition details with hmpps id: $hmppsId has been retrieved")
+        }
 
-      it("returns licence condition results") {
+        it("returns licence condition results") {
 
-        val result = mockMvc.performAuthorised(path)
-        result.response.contentAsString.shouldContain(
-          """
+          val result = mockMvc.performAuthorised(path)
+          result.response.contentAsString.shouldContain(
+            """
            "data":{
                 "hmppsId":"9999/11111A",
                 "offenderNumber":null,
@@ -109,19 +115,23 @@ class LicenceConditionControllerTests(
                    }
                 ]
         """.removeWhitespaceAndNewlines(),
-        )
+          )
+        }
+
+        it("fails with the appropriate error when an upstream service is down") {
+          whenever(getLicenceConditionService.execute(hmppsId)).doThrow(
+            WebClientResponseException(500, "MockError", null, null, null, null),
+          )
+
+          val response = mockMvc.performAuthorised(path)
+
+          assert(response.response.status == 500)
+          assert(
+            response.response.contentAsString.equals(
+              "{\"status\":500,\"errorCode\":null,\"userMessage\":\"500 MockError\",\"developerMessage\":\"Unable to complete request as an upstream service is not responding\",\"moreInfo\":null}",
+            ),
+          )
+        }
       }
-
-      it("fails with the appropriate error when an upstream service is down") {
-        whenever(getLicenceConditionService.execute(hmppsId)).doThrow(
-          WebClientResponseException(500, "MockError", null, null, null, null),
-        )
-
-        val response = mockMvc.performAuthorised(path)
-
-        assert(response.response.status == 500)
-        assert(response.response.contentAsString.equals("{\"status\":500,\"errorCode\":null,\"userMessage\":\"500 MockError\",\"developerMessage\":\"Unable to complete request as an upstream service is not responding\",\"moreInfo\":null}"))
-      }
-    }
-  },
-)
+    },
+  )

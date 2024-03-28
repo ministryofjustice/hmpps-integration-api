@@ -9,6 +9,7 @@ import software.amazon.awssdk.services.sqs.model.SendMessageRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HmppsAuditEvent
 import uk.gov.justice.hmpps.sqs.HmppsQueue
 import uk.gov.justice.hmpps.sqs.HmppsQueueService
+
 @Service
 @Component
 class AuditService(
@@ -16,14 +17,17 @@ class AuditService(
   private val objectMapper: ObjectMapper,
   private val ser: AuthoriseConsumerService,
 ) {
-
   private val auditQueue by lazy { hmppsQueueService.findByQueueId("audit") as HmppsQueue }
   private val auditSqsClient by lazy { auditQueue.sqsClient }
   private val auditQueueUrl by lazy { auditQueue.queueUrl }
 
-  fun createEvent(what: String, detail: String) {
-    var username = RequestContextHolder.currentRequestAttributes()
-      .getAttribute("clientName", RequestAttributes.SCOPE_REQUEST) as String
+  fun createEvent(
+    what: String,
+    detail: String,
+  ) {
+    val username =
+      RequestContextHolder.currentRequestAttributes()
+        .getAttribute("clientName", RequestAttributes.SCOPE_REQUEST) as String
 
     auditSqsClient.sendMessage(
       SendMessageRequest.builder()

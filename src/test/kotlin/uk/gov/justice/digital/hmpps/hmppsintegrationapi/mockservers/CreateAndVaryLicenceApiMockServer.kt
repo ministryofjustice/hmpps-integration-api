@@ -9,7 +9,11 @@ class CreateAndVaryLicenceApiMockServer : WireMockServer(WIREMOCK_PORT) {
     private const val WIREMOCK_PORT = 4007
   }
 
-  fun stubGetLicenceSummaries(id: String, body: String, status: HttpStatus = HttpStatus.OK) {
+  fun stubGetLicenceSummaries(
+    id: String,
+    body: String,
+    status: HttpStatus = HttpStatus.OK,
+  ) {
     stubFor(
       WireMock.get("/public/licence-summaries/crn/$id")
         .withHeader(
@@ -24,7 +28,11 @@ class CreateAndVaryLicenceApiMockServer : WireMockServer(WIREMOCK_PORT) {
     )
   }
 
-  fun stubGetLicenceConditions(id: String, body: String, status: HttpStatus = HttpStatus.OK) {
+  fun stubGetLicenceConditions(
+    id: String,
+    body: String,
+    status: HttpStatus = HttpStatus.OK,
+  ) {
     stubFor(
       WireMock.get("/public/licences/id/$id")
         .withHeader(

@@ -11,7 +11,11 @@ class NomisApiMockServer : WireMockServer(WIREMOCK_PORT) {
     private const val WIREMOCK_PORT = 4000
   }
 
-  fun stubGetOffenderImageDetails(offenderNo: String, body: String, status: HttpStatus = HttpStatus.OK) {
+  fun stubGetOffenderImageDetails(
+    offenderNo: String,
+    body: String,
+    status: HttpStatus = HttpStatus.OK,
+  ) {
     stubFor(
       get("/api/images/offenders/$offenderNo")
         .withHeader(
@@ -26,7 +30,10 @@ class NomisApiMockServer : WireMockServer(WIREMOCK_PORT) {
     )
   }
 
-  fun stubGetImageData(imageId: Int, status: HttpStatus = HttpStatus.OK) {
+  fun stubGetImageData(
+    imageId: Int,
+    status: HttpStatus = HttpStatus.OK,
+  ) {
     stubFor(
       get("/api/images/$imageId/data")
         .withHeader(
@@ -41,7 +48,11 @@ class NomisApiMockServer : WireMockServer(WIREMOCK_PORT) {
     )
   }
 
-  fun stubGetOffenderAddresses(offenderNo: String, body: String, status: HttpStatus = HttpStatus.OK) {
+  fun stubGetOffenderAddresses(
+    offenderNo: String,
+    body: String,
+    status: HttpStatus = HttpStatus.OK,
+  ) {
     stubFor(
       get("/api/offenders/$offenderNo/addresses")
         .withHeader(
@@ -56,7 +67,11 @@ class NomisApiMockServer : WireMockServer(WIREMOCK_PORT) {
     )
   }
 
-  fun stubGetOffencesForPerson(offenderNo: String, body: String, status: HttpStatus = HttpStatus.OK) {
+  fun stubGetOffencesForPerson(
+    offenderNo: String,
+    body: String,
+    status: HttpStatus = HttpStatus.OK,
+  ) {
     stubFor(
       get("/api/bookings/offenderNo/$offenderNo/offenceHistory")
         .withHeader(
@@ -71,7 +86,11 @@ class NomisApiMockServer : WireMockServer(WIREMOCK_PORT) {
     )
   }
 
-  fun stubGetAlertsForPerson(offenderNo: String, body: String, status: HttpStatus = HttpStatus.OK) {
+  fun stubGetAlertsForPerson(
+    offenderNo: String,
+    body: String,
+    status: HttpStatus = HttpStatus.OK,
+  ) {
     stubFor(
       get("/api/offenders/$offenderNo/alerts/v2")
         .withHeader(
@@ -86,7 +105,11 @@ class NomisApiMockServer : WireMockServer(WIREMOCK_PORT) {
     )
   }
 
-  fun stubGetSentenceForBookingId(bookingId: Int, body: String, status: HttpStatus = HttpStatus.OK) {
+  fun stubGetSentenceForBookingId(
+    bookingId: Int,
+    body: String,
+    status: HttpStatus = HttpStatus.OK,
+  ) {
     stubFor(
       get("/api/offender-sentences/booking/$bookingId/sentences-and-offences")
         .withHeader(
@@ -101,7 +124,11 @@ class NomisApiMockServer : WireMockServer(WIREMOCK_PORT) {
     )
   }
 
-  fun stubGetBookingIdsForNomisNumber(nomisNumber: String, body: String, status: HttpStatus = HttpStatus.OK) {
+  fun stubGetBookingIdsForNomisNumber(
+    nomisNumber: String,
+    body: String,
+    status: HttpStatus = HttpStatus.OK,
+  ) {
     stubFor(
       get("/api/offender-sentences?offenderNo=$nomisNumber")
         .withHeader(
@@ -116,7 +143,11 @@ class NomisApiMockServer : WireMockServer(WIREMOCK_PORT) {
     )
   }
 
-  fun stubGetLatestSentenceAdjustmentsForPerson(nomisNumber: String, body: String, status: HttpStatus = HttpStatus.OK) {
+  fun stubGetLatestSentenceAdjustmentsForPerson(
+    nomisNumber: String,
+    body: String,
+    status: HttpStatus = HttpStatus.OK,
+  ) {
     stubFor(
       get("/api/offenders/$nomisNumber/booking/latest/sentence-summary")
         .withHeader(
@@ -131,7 +162,11 @@ class NomisApiMockServer : WireMockServer(WIREMOCK_PORT) {
     )
   }
 
-  fun stubGetLatestSentenceKeyDatesForPerson(nomisNumber: String, body: String, status: HttpStatus = HttpStatus.OK) {
+  fun stubGetLatestSentenceKeyDatesForPerson(
+    nomisNumber: String,
+    body: String,
+    status: HttpStatus = HttpStatus.OK,
+  ) {
     stubFor(
       get("/api/offenders/$nomisNumber/sentences")
         .withHeader(
@@ -146,7 +181,11 @@ class NomisApiMockServer : WireMockServer(WIREMOCK_PORT) {
     )
   }
 
-  fun stubGetRiskCategoriesForPerson(offenderNo: String, body: String, status: HttpStatus = HttpStatus.OK) {
+  fun stubGetRiskCategoriesForPerson(
+    offenderNo: String,
+    body: String,
+    status: HttpStatus = HttpStatus.OK,
+  ) {
     stubFor(
       get("/api/offenders/$offenderNo")
         .withHeader("Authorization", matching("Bearer ${HmppsAuthMockServer.TOKEN}"))

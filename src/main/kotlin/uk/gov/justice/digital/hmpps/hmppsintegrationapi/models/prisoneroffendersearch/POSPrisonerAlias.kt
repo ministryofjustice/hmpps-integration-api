@@ -11,12 +11,13 @@ data class POSPrisonerAlias(
   val gender: String? = null,
   val ethnicity: String? = null,
 ) {
-  fun toAlias(): Alias = Alias(
-    firstName = this.firstName,
-    lastName = this.lastName,
-    middleName = this.middleNames,
-    dateOfBirth = this.dateOfBirth,
-    gender = this.gender,
-    ethnicity = this.ethnicity,
-  )
+  fun toAlias(): Alias =
+    Alias(
+      firstName = this.firstName,
+      lastName = this.lastName,
+      middleName = this.middleNames,
+      dateOfBirth = this.dateOfBirth,
+      gender = this.gender,
+      ethnicity = this.ethnicity,
+    )
 }

@@ -9,11 +9,12 @@ data class ArnRisk(
   val current: String? = null,
   val currentConcernsText: String? = null,
 ) {
-  fun toRisk(): Risk = Risk(
-    risk = this.risk,
-    previous = this.previous,
-    previousConcernsText = this.previousConcernsText,
-    current = this.current,
-    currentConcernsText = this.currentConcernsText,
-  )
+  fun toRisk(): Risk =
+    Risk(
+      risk = this.risk,
+      previous = this.previous,
+      previousConcernsText = this.previousConcernsText,
+      current = this.current,
+      currentConcernsText = this.currentConcernsText,
+    )
 }

@@ -23,47 +23,48 @@ internal class GetImageServiceTest(
   @MockBean val nomisGateway: NomisGateway,
   private val getImageService: GetImageService,
 ) : DescribeSpec(
-  {
-    val id = 12345
+    {
+      val id = 12345
 
-    beforeEach {
-      Mockito.reset(nomisGateway)
-    }
+      beforeEach {
+        Mockito.reset(nomisGateway)
+      }
 
-    it("gets an image from NOMIS") {
-      getImageService.execute(id)
+      it("gets an image from NOMIS") {
+        getImageService.execute(id)
 
-      verify(nomisGateway, VerificationModeFactory.times(1)).getImageData(id)
-    }
+        verify(nomisGateway, VerificationModeFactory.times(1)).getImageData(id)
+      }
 
-    it("returns an image") {
-      val image = byteArrayOf(1, 2, 3, 4)
+      it("returns an image") {
+        val image = byteArrayOf(1, 2, 3, 4)
 
-      whenever(nomisGateway.getImageData(id)).thenReturn(Response(data = image))
+        whenever(nomisGateway.getImageData(id)).thenReturn(Response(data = image))
 
-      val response = getImageService.execute(id)
+        val response = getImageService.execute(id)
 
-      response.data.shouldBe(image)
-    }
+        response.data.shouldBe(image)
+      }
 
-    it("returns the error from NOMIS when an error occurs") {
-      whenever(nomisGateway.getImageData(id)).thenReturn(
-        Response(
-          data = byteArrayOf(),
-          errors = listOf(
-            UpstreamApiError(
-              causedBy = UpstreamApi.NOMIS,
-              type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-            ),
+      it("returns the error from NOMIS when an error occurs") {
+        whenever(nomisGateway.getImageData(id)).thenReturn(
+          Response(
+            data = byteArrayOf(),
+            errors =
+              listOf(
+                UpstreamApiError(
+                  causedBy = UpstreamApi.NOMIS,
+                  type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+                ),
+              ),
           ),
-        ),
-      )
+        )
 
-      val response = getImageService.execute(id)
+        val response = getImageService.execute(id)
 
-      response.errors.shouldHaveSize(1)
-      response.errors.first().causedBy.shouldBe(UpstreamApi.NOMIS)
-      response.errors.first().type.shouldBe(UpstreamApiError.Type.ENTITY_NOT_FOUND)
-    }
-  },
-)
+        response.errors.shouldHaveSize(1)
+        response.errors.first().causedBy.shouldBe(UpstreamApi.NOMIS)
+        response.errors.first().type.shouldBe(UpstreamApiError.Type.ENTITY_NOT_FOUND)
+      }
+    },
+  )

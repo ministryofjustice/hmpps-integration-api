@@ -29,4 +29,4 @@ class AuthorisationTest : DescribeSpec({
       response.statusCode().shouldBe(HttpStatus.FORBIDDEN.value())
     }
   }
-},)
+})

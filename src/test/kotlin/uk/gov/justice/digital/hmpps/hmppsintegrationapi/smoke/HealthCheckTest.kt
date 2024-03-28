@@ -34,4 +34,4 @@ class HealthCheckTest : DescribeSpec({
     response.statusCode().shouldBe(HttpStatus.OK.value())
     response.body().shouldContainJsonKeyValue("status", "UP")
   }
-},)
+})

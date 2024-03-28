@@ -29,27 +29,27 @@ class PrisonerOffenderSearchGatewayTest(
   @MockBean val hmppsAuthGateway: HmppsAuthGateway,
   private val prisonerOffenderSearchGateway: PrisonerOffenderSearchGateway,
 ) : DescribeSpec({
-  val prisonerOffenderSearchApiMockServer = PrisonerOffenderSearchApiMockServer()
-
-  beforeEach {
-    prisonerOffenderSearchApiMockServer.start()
-    Mockito.reset(hmppsAuthGateway)
-
-    whenever(hmppsAuthGateway.getClientToken("Prisoner Offender Search")).thenReturn(HmppsAuthMockServer.TOKEN)
-  }
-
-  afterTest {
-    prisonerOffenderSearchApiMockServer.stop()
-  }
-
-  describe("#getPersons") {
-    val firstName = "JAMES"
-    val lastName = "HOWLETT"
-    val dateOfBirth = "1975-02-28"
+    val prisonerOffenderSearchApiMockServer = PrisonerOffenderSearchApiMockServer()
 
     beforeEach {
-      prisonerOffenderSearchApiMockServer.stubPostPrisonerSearch(
-        """
+      prisonerOffenderSearchApiMockServer.start()
+      Mockito.reset(hmppsAuthGateway)
+
+      whenever(hmppsAuthGateway.getClientToken("Prisoner Offender Search")).thenReturn(HmppsAuthMockServer.TOKEN)
+    }
+
+    afterTest {
+      prisonerOffenderSearchApiMockServer.stop()
+    }
+
+    describe("#getPersons") {
+      val firstName = "JAMES"
+      val lastName = "HOWLETT"
+      val dateOfBirth = "1975-02-28"
+
+      beforeEach {
+        prisonerOffenderSearchApiMockServer.stubPostPrisonerSearch(
+          """
             {
               "firstName": "$firstName",
               "lastName": "$lastName",
@@ -57,173 +57,175 @@ class PrisonerOffenderSearchGatewayTest(
               "includeAliases": false
             }
           """.removeWhitespaceAndNewlines(),
-        File("src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/prisoneroffendersearch/fixtures/GetPrisonersResponse.json").readText(),
-      )
-    }
-
-    it("authenticates using HMPPS Auth with credentials") {
-      prisonerOffenderSearchGateway.getPersons(firstName, lastName, dateOfBirth)
-
-      verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("Prisoner Offender Search")
-    }
-
-    it("returns person(s) when searching on first name, last name and date of birth") {
-      val response = prisonerOffenderSearchGateway.getPersons(firstName, lastName, dateOfBirth)
-
-      response.data.count().shouldBe(4)
-      response.data.forEach {
-        it.firstName.shouldBe(firstName)
-        it.lastName.shouldBe(lastName)
+          File(
+            "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/prisoneroffendersearch/fixtures/GetPrisonersResponse.json",
+          ).readText(),
+        )
       }
-      response.data[0].identifiers.nomisNumber.shouldBe("A7796DY")
-      response.data[1].identifiers.nomisNumber.shouldBe("G9347GV")
-      response.data[2].identifiers.nomisNumber.shouldBe("A5043DY")
-      response.data[3].identifiers.nomisNumber.shouldBe("A5083DY")
 
-      response.data[0].pncId.shouldBeNull()
-      response.data[1].pncId.shouldBe("95/289622B")
-      response.data[2].pncId.shouldBeNull()
-      response.data[3].pncId.shouldBe("03/11985X")
-    }
+      it("authenticates using HMPPS Auth with credentials") {
+        prisonerOffenderSearchGateway.getPersons(firstName, lastName, dateOfBirth)
 
-    it("returns person(s) when searching on first name only") {
-      prisonerOffenderSearchApiMockServer.stubPostPrisonerSearch(
-        """
+        verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("Prisoner Offender Search")
+      }
+
+      it("returns person(s) when searching on first name, last name and date of birth") {
+        val response = prisonerOffenderSearchGateway.getPersons(firstName, lastName, dateOfBirth)
+
+        response.data.count().shouldBe(4)
+        response.data.forEach {
+          it.firstName.shouldBe(firstName)
+          it.lastName.shouldBe(lastName)
+        }
+        response.data[0].identifiers.nomisNumber.shouldBe("A7796DY")
+        response.data[1].identifiers.nomisNumber.shouldBe("G9347GV")
+        response.data[2].identifiers.nomisNumber.shouldBe("A5043DY")
+        response.data[3].identifiers.nomisNumber.shouldBe("A5083DY")
+
+        response.data[0].pncId.shouldBeNull()
+        response.data[1].pncId.shouldBe("95/289622B")
+        response.data[2].pncId.shouldBeNull()
+        response.data[3].pncId.shouldBe("03/11985X")
+      }
+
+      it("returns person(s) when searching on first name only") {
+        prisonerOffenderSearchApiMockServer.stubPostPrisonerSearch(
+          """
         {
           "firstName": "Obi-Wan",
           "includeAliases": false
         }
         """.removeWhitespaceAndNewlines(),
-        """
-        {
-          "content": [
-            {
-              "firstName": "Obi-Wan",
-              "lastName": "Kenobi"
-            }
-          ]
-        }
-        """.trimIndent(),
-      )
+          """
+          {
+            "content": [
+              {
+                "firstName": "Obi-Wan",
+                "lastName": "Kenobi"
+              }
+            ]
+          }
+          """.trimIndent(),
+        )
 
-      val response = prisonerOffenderSearchGateway.getPersons("Obi-Wan", null, null)
+        val response = prisonerOffenderSearchGateway.getPersons("Obi-Wan", null, null)
 
-      response.data.count().shouldBe(1)
-      response.data.first().firstName.shouldBe("Obi-Wan")
-      response.data.first().lastName.shouldBe("Kenobi")
-    }
+        response.data.count().shouldBe(1)
+        response.data.first().firstName.shouldBe("Obi-Wan")
+        response.data.first().lastName.shouldBe("Kenobi")
+      }
 
-    it("returns person(s) when searching on last name only") {
-      prisonerOffenderSearchApiMockServer.stubPostPrisonerSearch(
-        """
+      it("returns person(s) when searching on last name only") {
+        prisonerOffenderSearchApiMockServer.stubPostPrisonerSearch(
+          """
         {
           "lastName": "Binks",
           "includeAliases": false
         }
         """.removeWhitespaceAndNewlines(),
-        """
-        {
-          "content": [
-            {
-              "firstName": "Jar Jar",
-              "lastName": "Binks"
-            }
-          ]
-        }
-        """.trimIndent(),
-      )
+          """
+          {
+            "content": [
+              {
+                "firstName": "Jar Jar",
+                "lastName": "Binks"
+              }
+            ]
+          }
+          """.trimIndent(),
+        )
 
-      val response = prisonerOffenderSearchGateway.getPersons(null, "Binks", null)
+        val response = prisonerOffenderSearchGateway.getPersons(null, "Binks", null)
 
-      response.data.count().shouldBe(1)
-      response.data.first().firstName.shouldBe("Jar Jar")
-      response.data.first().lastName.shouldBe("Binks")
-    }
+        response.data.count().shouldBe(1)
+        response.data.first().firstName.shouldBe("Jar Jar")
+        response.data.first().lastName.shouldBe("Binks")
+      }
 
-    it("returns person(s) when searching on date of birth only") {
-      prisonerOffenderSearchApiMockServer.stubPostPrisonerSearch(
-        """
+      it("returns person(s) when searching on date of birth only") {
+        prisonerOffenderSearchApiMockServer.stubPostPrisonerSearch(
+          """
         {
           "includeAliases": false,
           "dateOfBirth": "1975-02-28"
         }
         """.removeWhitespaceAndNewlines(),
-        """
-        {
-          "content": [
-            {
-              "firstName": "Jar Jar",
-              "lastName": "Binks",
-              "dateOfBirth": "1975-02-28"
-            }
-          ]
-        }
-        """.trimIndent(),
-      )
+          """
+          {
+            "content": [
+              {
+                "firstName": "Jar Jar",
+                "lastName": "Binks",
+                "dateOfBirth": "1975-02-28"
+              }
+            ]
+          }
+          """.trimIndent(),
+        )
 
-      val response = prisonerOffenderSearchGateway.getPersons(null, null, dateOfBirth)
+        val response = prisonerOffenderSearchGateway.getPersons(null, null, dateOfBirth)
 
-      response.data.count().shouldBe(1)
-      response.data.first().firstName.shouldBe("Jar Jar")
-      response.data.first().lastName.shouldBe("Binks")
-      response.data.first().dateOfBirth.shouldBe(LocalDate.parse(dateOfBirth))
-    }
+        response.data.count().shouldBe(1)
+        response.data.first().firstName.shouldBe("Jar Jar")
+        response.data.first().lastName.shouldBe("Binks")
+        response.data.first().dateOfBirth.shouldBe(LocalDate.parse(dateOfBirth))
+      }
 
-    it("returns person(s) when searching within aliases") {
-      prisonerOffenderSearchApiMockServer.stubPostPrisonerSearch(
-        """
+      it("returns person(s) when searching within aliases") {
+        prisonerOffenderSearchApiMockServer.stubPostPrisonerSearch(
+          """
         {
           "firstName": "Geralt",
           "includeAliases": true
         }
         """.removeWhitespaceAndNewlines(),
-        """
-        {
-          "content": [
-            {
-              "firstName": "Rich",
-              "lastName": "Roger",
-              "aliases": [
-                {
-                  "firstName": "Geralt",
-                  "lastName": "Eric du Haute-Bellegarde"
-                }
-              ]
-            }
-          ]
-        }
-        """.trimIndent(),
-      )
+          """
+          {
+            "content": [
+              {
+                "firstName": "Rich",
+                "lastName": "Roger",
+                "aliases": [
+                  {
+                    "firstName": "Geralt",
+                    "lastName": "Eric du Haute-Bellegarde"
+                  }
+                ]
+              }
+            ]
+          }
+          """.trimIndent(),
+        )
 
-      val response = prisonerOffenderSearchGateway.getPersons("Geralt", null, null, true)
+        val response = prisonerOffenderSearchGateway.getPersons("Geralt", null, null, true)
 
-      response.data.count().shouldBe(1)
-      response.data.first().aliases.first().firstName.shouldBe("Geralt")
-      response.data.first().aliases.first().lastName.shouldBe("Eric du Haute-Bellegarde")
-    }
+        response.data.count().shouldBe(1)
+        response.data.first().aliases.first().firstName.shouldBe("Geralt")
+        response.data.first().aliases.first().lastName.shouldBe("Eric du Haute-Bellegarde")
+      }
 
-    it("returns an empty list of Person if no matching person") {
-      val firstNameThatDoesNotExist = "ZYX321"
-      val lastNameThatDoesNotExist = "GHJ345"
+      it("returns an empty list of Person if no matching person") {
+        val firstNameThatDoesNotExist = "ZYX321"
+        val lastNameThatDoesNotExist = "GHJ345"
 
-      prisonerOffenderSearchApiMockServer.stubPostPrisonerSearch(
-        """
+        prisonerOffenderSearchApiMockServer.stubPostPrisonerSearch(
+          """
             {
               "firstName": "$firstNameThatDoesNotExist",
               "lastName": "$lastNameThatDoesNotExist",
               "includeAliases": false
             }
           """.removeWhitespaceAndNewlines(),
-        """
+          """
         {
           "content": []
         }
         """,
-      )
+        )
 
-      val response = prisonerOffenderSearchGateway.getPersons(firstNameThatDoesNotExist, lastNameThatDoesNotExist, null)
+        val response = prisonerOffenderSearchGateway.getPersons(firstNameThatDoesNotExist, lastNameThatDoesNotExist, null)
 
-      response.data.shouldBeEmpty()
+        response.data.shouldBeEmpty()
+      }
     }
-  }
-},)
+  })

@@ -27,38 +27,39 @@ class AdjudicationsGatewayTest(
   @MockBean val hmppsAuthGateway: HmppsAuthGateway,
   val adjudicationsGateway: AdjudicationsGateway,
 ) : DescribeSpec(
-  {
-    val adjudicationsApiMockServer = AdjudicationsApiMockServer()
-    beforeEach {
-      adjudicationsApiMockServer.start()
+    {
+      val adjudicationsApiMockServer = AdjudicationsApiMockServer()
+      beforeEach {
+        adjudicationsApiMockServer.start()
 
-      Mockito.reset(hmppsAuthGateway)
-      whenever(hmppsAuthGateway.getClientToken("Adjudications")).thenReturn(
-        HmppsAuthMockServer.TOKEN,
-      )
-    }
-    afterTest {
-      adjudicationsApiMockServer.stop()
-    }
-
-    it("authenticates using HMPPS Auth with credentials") {
-      adjudicationsGateway.getReportedAdjudicationsForPerson(id = "123")
-
-      verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("Adjudications")
-    }
-
-    it("upstream API returns an error, throw exception") {
-      adjudicationsApiMockServer.stubGetReportedAdjudicationsForPerson("123", "", HttpStatus.BAD_REQUEST)
-      val response = shouldThrow<WebClientResponseException> {
-        adjudicationsGateway.getReportedAdjudicationsForPerson(id = "123")
+        Mockito.reset(hmppsAuthGateway)
+        whenever(hmppsAuthGateway.getClientToken("Adjudications")).thenReturn(
+          HmppsAuthMockServer.TOKEN,
+        )
       }
-      response.statusCode.shouldBe(HttpStatus.BAD_REQUEST)
-    }
+      afterTest {
+        adjudicationsApiMockServer.stop()
+      }
 
-    it("returns adjudicationResponse") {
-      adjudicationsApiMockServer.stubGetReportedAdjudicationsForPerson(
-        "123",
-        """
+      it("authenticates using HMPPS Auth with credentials") {
+        adjudicationsGateway.getReportedAdjudicationsForPerson(id = "123")
+
+        verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("Adjudications")
+      }
+
+      it("upstream API returns an error, throw exception") {
+        adjudicationsApiMockServer.stubGetReportedAdjudicationsForPerson("123", "", HttpStatus.BAD_REQUEST)
+        val response =
+          shouldThrow<WebClientResponseException> {
+            adjudicationsGateway.getReportedAdjudicationsForPerson(id = "123")
+          }
+        response.statusCode.shouldBe(HttpStatus.BAD_REQUEST)
+      }
+
+      it("returns adjudicationResponse") {
+        adjudicationsApiMockServer.stubGetReportedAdjudicationsForPerson(
+          "123",
+          """
         [
           {
             "incidentDetails": {
@@ -144,11 +145,11 @@ class AdjudicationsGatewayTest(
           }
         ]
         """,
-        HttpStatus.OK,
-      )
-      val response = adjudicationsGateway.getReportedAdjudicationsForPerson(id = "123")
-      response.data.count().shouldBe(1)
-      response.data.first().incidentDetails?.dateTimeOfIncident.shouldBe("2021-07-05T10:35:17")
-    }
-  },
-)
+          HttpStatus.OK,
+        )
+        val response = adjudicationsGateway.getReportedAdjudicationsForPerson(id = "123")
+        response.data.count().shouldBe(1)
+        response.data.first().incidentDetails?.dateTimeOfIncident.shouldBe("2021-07-05T10:35:17")
+      }
+    },
+  )

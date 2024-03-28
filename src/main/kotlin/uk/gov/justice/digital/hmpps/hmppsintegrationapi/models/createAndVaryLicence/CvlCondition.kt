@@ -8,10 +8,11 @@ class CvlCondition(
   var category: String? = null,
   val text: String? = null,
 ) {
-  fun toLicenceCondition(parentType: String? = null): LicenceCondition = LicenceCondition(
-    condition = this.text,
-    category = this.category,
-    code = this.code,
-    type = parentType ?: this.type,
-  )
+  fun toLicenceCondition(parentType: String? = null): LicenceCondition =
+    LicenceCondition(
+      condition = this.text,
+      category = this.category,
+      code = this.code,
+      type = parentType ?: this.type,
+    )
 }

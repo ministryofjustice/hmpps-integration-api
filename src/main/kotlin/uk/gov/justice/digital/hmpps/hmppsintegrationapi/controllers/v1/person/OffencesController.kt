@@ -21,7 +21,6 @@ class OffencesController(
   @Autowired val auditService: AuditService,
   @Autowired val getOffencesForPersonService: GetOffencesForPersonService,
 ) {
-
   @GetMapping("{encodedHmppsId}/offences")
   fun getPersonOffences(
     @PathVariable encodedHmppsId: String,

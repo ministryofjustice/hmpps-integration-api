@@ -5,7 +5,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.GroupReconv
 data class ArnGroupReconvictionScore(
   val scoreLevel: String? = null,
 ) {
-  fun toGroupReconviction(): GroupReconviction = GroupReconviction(
-    scoreLevel = this.scoreLevel,
-  )
+  fun toGroupReconviction(): GroupReconviction =
+    GroupReconviction(
+      scoreLevel = this.scoreLevel,
+    )
 }

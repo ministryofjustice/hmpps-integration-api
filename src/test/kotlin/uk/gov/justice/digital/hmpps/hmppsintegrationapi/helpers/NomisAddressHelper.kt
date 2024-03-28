@@ -17,29 +17,31 @@ fun generateNomisTestAddress(
   street: String? = "test_street",
   town: String? = "test_town",
   comment: String? = "test_comment",
-  addressUsages: List<NomisAddress.AddressUsage> = listOf(
-    NomisAddress.AddressUsage(
-      addressUsage = "test_addressusage",
-      addressUsageDescription = "test_addressusagedescription",
+  addressUsages: List<NomisAddress.AddressUsage> =
+    listOf(
+      NomisAddress.AddressUsage(
+        addressUsage = "test_addressusage",
+        addressUsageDescription = "test_addressusagedescription",
+      ),
+      NomisAddress.AddressUsage(
+        addressUsage = "test_addressusage_02",
+        addressUsageDescription = "test_addressusagedescription_02",
+      ),
     ),
-    NomisAddress.AddressUsage(
-      addressUsage = "test_addressusage_02",
-      addressUsageDescription = "test_addressusagedescription_02",
-    ),
-  ),
-): NomisAddress = NomisAddress(
-  addressType = addressType,
-  country = country,
-  county = county,
-  endDate = LocalDate.parse(endDate),
-  flat = flat,
-  locality = locality,
-  noFixedAddress = noFixedAddress,
-  postalCode = postalCode,
-  premise = premise,
-  startDate = LocalDate.parse(startDate),
-  street = street,
-  town = town,
-  comment = comment,
-  addressUsages = addressUsages,
-)
+): NomisAddress =
+  NomisAddress(
+    addressType = addressType,
+    country = country,
+    county = county,
+    endDate = LocalDate.parse(endDate),
+    flat = flat,
+    locality = locality,
+    noFixedAddress = noFixedAddress,
+    postalCode = postalCode,
+    premise = premise,
+    startDate = LocalDate.parse(startDate),
+    street = street,
+    town = town,
+    comment = comment,
+    addressUsages = addressUsages,
+  )

@@ -21,7 +21,6 @@ class RiskPredictorScoresController(
   @Autowired val getRiskPredictorScoresForPersonService: GetRiskPredictorScoresForPersonService,
   @Autowired val auditService: AuditService,
 ) {
-
   @GetMapping("{encodedHmppsId}/risks/scores")
   fun getPersonRiskPredictorScores(
     @PathVariable encodedHmppsId: String,

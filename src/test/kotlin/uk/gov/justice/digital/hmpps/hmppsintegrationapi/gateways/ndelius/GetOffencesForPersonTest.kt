@@ -33,123 +33,130 @@ class GetOffencesForPersonTest(
   val nDeliusGateway: NDeliusGateway,
 ) :
   DescribeSpec(
-    {
-      val nDeliusApiMockServer = NDeliusApiMockServer()
-      val deliusCrn = "X777776"
+      {
+        val nDeliusApiMockServer = NDeliusApiMockServer()
+        val deliusCrn = "X777776"
 
-      beforeEach {
-        nDeliusApiMockServer.start()
-        nDeliusApiMockServer.stubGetSupervisionsForPerson(
-          deliusCrn,
-          File("src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/ndelius/fixtures/GetSupervisionsResponse.json").readText(),
-        )
+        beforeEach {
+          nDeliusApiMockServer.start()
+          nDeliusApiMockServer.stubGetSupervisionsForPerson(
+            deliusCrn,
+            File(
+              "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/ndelius/fixtures/GetSupervisionsResponse.json",
+            ).readText(),
+          )
 
-        Mockito.reset(hmppsAuthGateway)
-        whenever(hmppsAuthGateway.getClientToken("nDelius")).thenReturn(HmppsAuthMockServer.TOKEN)
-      }
+          Mockito.reset(hmppsAuthGateway)
+          whenever(hmppsAuthGateway.getClientToken("nDelius")).thenReturn(HmppsAuthMockServer.TOKEN)
+        }
 
-      afterTest {
-        nDeliusApiMockServer.stop()
-      }
+        afterTest {
+          nDeliusApiMockServer.stop()
+        }
 
-      it("authenticates using HMPPS Auth with credentials") {
-        nDeliusGateway.getOffencesForPerson(deliusCrn)
+        it("authenticates using HMPPS Auth with credentials") {
+          nDeliusGateway.getOffencesForPerson(deliusCrn)
 
-        verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("nDelius")
-      }
+          verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("nDelius")
+        }
 
-      it("returns offences for the matching CRN") {
-        val response = nDeliusGateway.getOffencesForPerson(deliusCrn)
+        it("returns offences for the matching CRN") {
+          val response = nDeliusGateway.getOffencesForPerson(deliusCrn)
 
-        response.data.shouldBe(
-          listOf(
-            generateTestOffence(
-              cjsCode = null,
-              hoCode = "10501",
-              courtDates = listOf(
-                LocalDate.parse("2009-07-07"),
-                LocalDate.parse("2009-07-07"),
+          response.data.shouldBe(
+            listOf(
+              generateTestOffence(
+                cjsCode = null,
+                hoCode = "10501",
+                courtDates =
+                  listOf(
+                    LocalDate.parse("2009-07-07"),
+                    LocalDate.parse("2009-07-07"),
+                  ),
+                description = "Common assault and battery - 10501",
+                endDate = null,
+                startDate = LocalDate.parse("2009-03-31"),
+                statuteCode = null,
               ),
-              description = "Common assault and battery - 10501",
-              endDate = null,
-              startDate = LocalDate.parse("2009-03-31"),
-              statuteCode = null,
-            ),
-            generateTestOffence(
-              cjsCode = null,
-              hoCode = "05800",
-              courtDates = listOf(
-                LocalDate.parse("2009-07-07"),
-                LocalDate.parse("2009-07-07"),
+              generateTestOffence(
+                cjsCode = null,
+                hoCode = "05800",
+                courtDates =
+                  listOf(
+                    LocalDate.parse("2009-07-07"),
+                    LocalDate.parse("2009-07-07"),
+                  ),
+                description = "Other Criminal Damage (including causing explosion)  - 05800",
+                endDate = null,
+                startDate = LocalDate.parse("2009-03-31"),
+                statuteCode = null,
               ),
-              description = "Other Criminal Damage (including causing explosion)  - 05800",
-              endDate = null,
-              startDate = LocalDate.parse("2009-03-31"),
-              statuteCode = null,
-            ),
-            generateTestOffence(
-              cjsCode = null,
-              hoCode = "12511",
-              courtDates = listOf(
-                LocalDate.parse("2009-09-01"),
-                LocalDate.parse("2009-08-11"),
+              generateTestOffence(
+                cjsCode = null,
+                hoCode = "12511",
+                courtDates =
+                  listOf(
+                    LocalDate.parse("2009-09-01"),
+                    LocalDate.parse("2009-08-11"),
+                  ),
+                description = "Threatening behaviour, fear or provocation of violence (Public Order Act 1986) - 12511",
+                endDate = null,
+                startDate = LocalDate.parse("2009-07-31"),
+                statuteCode = null,
               ),
-              description = "Threatening behaviour, fear or provocation of violence (Public Order Act 1986) - 12511",
-              endDate = null,
-              startDate = LocalDate.parse("2009-07-31"),
-              statuteCode = null,
-            ),
-            generateTestOffence(
-              cjsCode = null,
-              hoCode = "03900",
-              courtDates = listOf(
-                LocalDate.parse("2009-09-01"),
-                LocalDate.parse("2009-08-11"),
+              generateTestOffence(
+                cjsCode = null,
+                hoCode = "03900",
+                courtDates =
+                  listOf(
+                    LocalDate.parse("2009-09-01"),
+                    LocalDate.parse("2009-08-11"),
+                  ),
+                description = "Stealing from the person of another - 03900",
+                endDate = null,
+                startDate = LocalDate.parse("2009-08-14"),
+                statuteCode = null,
               ),
-              description = "Stealing from the person of another - 03900",
-              endDate = null,
-              startDate = LocalDate.parse("2009-08-14"),
-              statuteCode = null,
-            ),
-            generateTestOffence(
-              cjsCode = null,
-              hoCode = "99902",
-              courtDates = listOf(
-                LocalDate.parse("2009-09-01"),
-                LocalDate.parse("2009-08-11"),
+              generateTestOffence(
+                cjsCode = null,
+                hoCode = "99902",
+                courtDates =
+                  listOf(
+                    LocalDate.parse("2009-09-01"),
+                    LocalDate.parse("2009-08-11"),
+                  ),
+                description = "Migrated Breach Offences",
+                endDate = null,
+                startDate = LocalDate.parse("1900-01-01"),
+                statuteCode = null,
               ),
-              description = "Migrated Breach Offences",
-              endDate = null,
-              startDate = LocalDate.parse("1900-01-01"),
-              statuteCode = null,
             ),
-          ),
-        )
-      }
+          )
+        }
 
-      it("returns an empty list if no offences are found") {
-        nDeliusApiMockServer.stubGetSupervisionsForPerson(
-          deliusCrn,
-          """
+        it("returns an empty list if no offences are found") {
+          nDeliusApiMockServer.stubGetSupervisionsForPerson(
+            deliusCrn,
+            """
           {
           "mappaDetail": null,
           "supervisions": [] }
           """,
-        )
+          )
 
-        val response = nDeliusGateway.getOffencesForPerson(deliusCrn)
+          val response = nDeliusGateway.getOffencesForPerson(deliusCrn)
 
-        response.data.shouldBeEmpty()
-      }
+          response.data.shouldBeEmpty()
+        }
 
-      it("returns an error when 404 Not Found is returned because no person is found") {
-        nDeliusApiMockServer.stubGetSupervisionsForPerson(deliusCrn, "", HttpStatus.NOT_FOUND)
+        it("returns an error when 404 Not Found is returned because no person is found") {
+          nDeliusApiMockServer.stubGetSupervisionsForPerson(deliusCrn, "", HttpStatus.NOT_FOUND)
 
-        val response = nDeliusGateway.getOffencesForPerson(deliusCrn)
+          val response = nDeliusGateway.getOffencesForPerson(deliusCrn)
 
-        response.errors.shouldHaveSize(1)
-        response.errors.first().causedBy.shouldBe(UpstreamApi.NDELIUS)
-        response.errors.first().type.shouldBe(UpstreamApiError.Type.ENTITY_NOT_FOUND)
-      }
-    },
-  )
+          response.errors.shouldHaveSize(1)
+          response.errors.first().causedBy.shouldBe(UpstreamApi.NDELIUS)
+          response.errors.first().type.shouldBe(UpstreamApiError.Type.ENTITY_NOT_FOUND)
+        }
+      },
+    )

@@ -8,15 +8,16 @@ class RiskPredictorScoreTest : DescribeSpec(
   {
     describe("#toRiskPredictorScore") {
       it("maps ARN Risk Predictor Score to integration API Risk Predictor Score") {
-        val arnRiskPredictorScore = ArnRiskPredictorScore(
-          completedDate = "2023-09-05T10:15:41",
-          assessmentStatus = "COMPLETE",
-          generalPredictorScore = ArnGeneralPredictorScore(ogpRisk = "MEDIUM"),
-          violencePredictorScore = ArnViolencePredictorScore(ovpRisk = "LOW"),
-          groupReconvictionScore = ArnGroupReconvictionScore(scoreLevel = "VERY_HIGH"),
-          riskOfSeriousRecidivismScore = ArnRiskOfSeriousRecidivismScore(scoreLevel = "HIGH"),
-          sexualPredictorScore = ArnSexualPredictorScore(ospIndecentScoreLevel = "HIGH", ospContactScoreLevel = "VERY_HIGH"),
-        )
+        val arnRiskPredictorScore =
+          ArnRiskPredictorScore(
+            completedDate = "2023-09-05T10:15:41",
+            assessmentStatus = "COMPLETE",
+            generalPredictorScore = ArnGeneralPredictorScore(ogpRisk = "MEDIUM"),
+            violencePredictorScore = ArnViolencePredictorScore(ovpRisk = "LOW"),
+            groupReconvictionScore = ArnGroupReconvictionScore(scoreLevel = "VERY_HIGH"),
+            riskOfSeriousRecidivismScore = ArnRiskOfSeriousRecidivismScore(scoreLevel = "HIGH"),
+            sexualPredictorScore = ArnSexualPredictorScore(ospIndecentScoreLevel = "HIGH", ospContactScoreLevel = "VERY_HIGH"),
+          )
 
         val integrationApiRiskPredictorScore = arnRiskPredictorScore.toRiskPredictorScore()
 

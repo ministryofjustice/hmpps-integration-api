@@ -19,7 +19,9 @@ class NeedsController(
   @Autowired val auditService: AuditService,
 ) {
   @GetMapping("{encodedHmppsId}/needs")
-  fun getPersonNeeds(@PathVariable encodedHmppsId: String): Map<String, Needs?> {
+  fun getPersonNeeds(
+    @PathVariable encodedHmppsId: String,
+  ): Map<String, Needs?> {
     val hmppsId = encodedHmppsId.decodeUrlCharacters()
     val response = getNeedsForPersonService.execute(hmppsId)
 

@@ -30,39 +30,40 @@ class CaseNotesGatewayTest(
   @MockBean val hmppsAuthGateway: HmppsAuthGateway,
   val caseNotesGateway: CaseNotesGateway,
 ) : DescribeSpec(
-  {
+    {
 
-    val caseNotesApiMockServer = CaseNotesApiMockServer()
-    beforeEach {
-      caseNotesApiMockServer.start()
+      val caseNotesApiMockServer = CaseNotesApiMockServer()
+      beforeEach {
+        caseNotesApiMockServer.start()
 
-      Mockito.reset(hmppsAuthGateway)
-      whenever(hmppsAuthGateway.getClientToken("CaseNotes")).thenReturn(
-        HmppsAuthMockServer.TOKEN,
-      )
-    }
-
-    afterTest {
-      caseNotesApiMockServer.stop()
-    }
-
-    it("authenticates using HMPPS Auth with credentials") {
-      caseNotesGateway.getCaseNotesForPerson(id = "123", CaseNoteFilter(hmppsId = ""))
-
-      verify(hmppsAuthGateway, times(1))
-        .getClientToken("CaseNotes")
-    }
-
-    it("upstream API returns an error, throw exception") {
-      caseNotesApiMockServer.stubGetCaseNotes("123", "", "", HttpStatus.BAD_REQUEST)
-      val response = shouldThrow<WebClientResponseException> {
-        caseNotesGateway.getCaseNotesForPerson(id = "123", CaseNoteFilter(hmppsId = ""))
+        Mockito.reset(hmppsAuthGateway)
+        whenever(hmppsAuthGateway.getClientToken("CaseNotes")).thenReturn(
+          HmppsAuthMockServer.TOKEN,
+        )
       }
-      response.statusCode.shouldBe(HttpStatus.BAD_REQUEST)
-    }
 
-    it("returns caseNote") {
-      val responseJson = """
+      afterTest {
+        caseNotesApiMockServer.stop()
+      }
+
+      it("authenticates using HMPPS Auth with credentials") {
+        caseNotesGateway.getCaseNotesForPerson(id = "123", CaseNoteFilter(hmppsId = ""))
+
+        verify(hmppsAuthGateway, times(1))
+          .getClientToken("CaseNotes")
+      }
+
+      it("upstream API returns an error, throw exception") {
+        caseNotesApiMockServer.stubGetCaseNotes("123", "", "", HttpStatus.BAD_REQUEST)
+        val response =
+          shouldThrow<WebClientResponseException> {
+            caseNotesGateway.getCaseNotesForPerson(id = "123", CaseNoteFilter(hmppsId = ""))
+          }
+        response.statusCode.shouldBe(HttpStatus.BAD_REQUEST)
+      }
+
+      it("returns caseNote") {
+        val responseJson = """
        {
        "content": [
     {
@@ -126,16 +127,16 @@ class CaseNotesGatewayTest(
   "empty": false
        }
         """
-      caseNotesApiMockServer.stubGetCaseNotes("123", "", responseJson, HttpStatus.OK)
-      val response = caseNotesGateway.getCaseNotesForPerson(id = "123", CaseNoteFilter(hmppsId = ""))
-      response.data.count().shouldBe(2)
-      response.data.shouldExist { it -> it.caseNoteId == "131231" }
-      response.data.shouldExist { it -> it.caseNoteId == "131232" }
-    }
+        caseNotesApiMockServer.stubGetCaseNotes("123", "", responseJson, HttpStatus.OK)
+        val response = caseNotesGateway.getCaseNotesForPerson(id = "123", CaseNoteFilter(hmppsId = ""))
+        response.data.count().shouldBe(2)
+        response.data.shouldExist { it -> it.caseNoteId == "131231" }
+        response.data.shouldExist { it -> it.caseNoteId == "131232" }
+      }
 
-    it("returns generate filter parameters caseNote") {
-      val filter = CaseNoteFilter("hmppsId", LocalDateTime.of(2024, 1, 2, 0, 0), LocalDateTime.of(2024, 1, 3, 0, 0), "mockLocation")
-      val responseJson = """
+      it("returns generate filter parameters caseNote") {
+        val filter = CaseNoteFilter("hmppsId", LocalDateTime.of(2024, 1, 2, 0, 0), LocalDateTime.of(2024, 1, 3, 0, 0), "mockLocation")
+        val responseJson = """
        {
        "content": [
     {
@@ -199,12 +200,12 @@ class CaseNotesGatewayTest(
   "empty": false
        }
         """
-      val params = "?locationId=mockLocation&startDate=2024-01-02&endDate=2024-01-03"
-      caseNotesApiMockServer.stubGetCaseNotes("123", params, responseJson, HttpStatus.OK)
-      val response = caseNotesGateway.getCaseNotesForPerson(id = "123", filter)
-      response.data.count().shouldBe(2)
-      response.data.shouldExist { it -> it.caseNoteId == "131231" }
-      response.data.shouldExist { it -> it.caseNoteId == "131232" }
-    }
-  },
-)
+        val params = "?locationId=mockLocation&startDate=2024-01-02&endDate=2024-01-03"
+        caseNotesApiMockServer.stubGetCaseNotes("123", params, responseJson, HttpStatus.OK)
+        val response = caseNotesGateway.getCaseNotesForPerson(id = "123", filter)
+        response.data.count().shouldBe(2)
+        response.data.shouldExist { it -> it.caseNoteId == "131231" }
+        response.data.shouldExist { it -> it.caseNoteId == "131232" }
+      }
+    },
+  )

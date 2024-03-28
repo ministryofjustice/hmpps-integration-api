@@ -28,15 +28,15 @@ class GetAddressesForPersonTest(
   @MockBean val hmppsAuthGateway: HmppsAuthGateway,
   private val nomisGateway: NomisGateway,
 ) : DescribeSpec(
-  {
-    val nomisApiMockServer = NomisApiMockServer()
-    val offenderNo = "abc123"
+    {
+      val nomisApiMockServer = NomisApiMockServer()
+      val offenderNo = "abc123"
 
-    beforeEach {
-      nomisApiMockServer.start()
-      nomisApiMockServer.stubGetOffenderAddresses(
-        offenderNo,
-        """
+      beforeEach {
+        nomisApiMockServer.start()
+        nomisApiMockServer.stubGetOffenderAddresses(
+          offenderNo,
+          """
           [
             {
               "postalCode": "SE1 1TZ",
@@ -72,50 +72,50 @@ class GetAddressesForPersonTest(
             }
           ]
         """,
-      )
+        )
 
-      Mockito.reset(hmppsAuthGateway)
-      whenever(hmppsAuthGateway.getClientToken("NOMIS")).thenReturn(HmppsAuthMockServer.TOKEN)
-    }
+        Mockito.reset(hmppsAuthGateway)
+        whenever(hmppsAuthGateway.getClientToken("NOMIS")).thenReturn(HmppsAuthMockServer.TOKEN)
+      }
 
-    afterTest {
-      nomisApiMockServer.stop()
-    }
+      afterTest {
+        nomisApiMockServer.stop()
+      }
 
-    it("authenticates using HMPPS Auth with credentials") {
-      nomisGateway.getAddressesForPerson(offenderNo)
+      it("authenticates using HMPPS Auth with credentials") {
+        nomisGateway.getAddressesForPerson(offenderNo)
 
-      verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("NOMIS")
-    }
+        verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("NOMIS")
+      }
 
-    it("returns addresses for a person with the matching ID") {
-      val response = nomisGateway.getAddressesForPerson(offenderNo)
+      it("returns addresses for a person with the matching ID") {
+        val response = nomisGateway.getAddressesForPerson(offenderNo)
 
-      response.data.count().shouldBeGreaterThan(0)
-    }
+        response.data.count().shouldBeGreaterThan(0)
+      }
 
-    it("returns an empty list when no addresses are found") {
-      nomisApiMockServer.stubGetOffenderAddresses(offenderNo, "[]")
+      it("returns an empty list when no addresses are found") {
+        nomisApiMockServer.stubGetOffenderAddresses(offenderNo, "[]")
 
-      val response = nomisGateway.getAddressesForPerson(offenderNo)
+        val response = nomisGateway.getAddressesForPerson(offenderNo)
 
-      response.data.shouldBeEmpty()
-    }
+        response.data.shouldBeEmpty()
+      }
 
-    it("returns an error when 404 NOT FOUND is returned") {
-      nomisApiMockServer.stubGetOffenderAddresses(
-        offenderNo,
-        """
+      it("returns an error when 404 NOT FOUND is returned") {
+        nomisApiMockServer.stubGetOffenderAddresses(
+          offenderNo,
+          """
         {
           "developerMessage": "cannot find person"
         }
         """,
-        HttpStatus.NOT_FOUND,
-      )
+          HttpStatus.NOT_FOUND,
+        )
 
-      val response = nomisGateway.getAddressesForPerson(offenderNo)
+        val response = nomisGateway.getAddressesForPerson(offenderNo)
 
-      response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND).shouldBeTrue()
-    }
-  },
-)
+        response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND).shouldBeTrue()
+      }
+    },
+  )

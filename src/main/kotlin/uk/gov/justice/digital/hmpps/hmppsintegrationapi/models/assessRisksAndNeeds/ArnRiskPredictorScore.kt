@@ -12,13 +12,14 @@ data class ArnRiskPredictorScore(
   val riskOfSeriousRecidivismScore: ArnRiskOfSeriousRecidivismScore = ArnRiskOfSeriousRecidivismScore(),
   val sexualPredictorScore: ArnSexualPredictorScore = ArnSexualPredictorScore(),
 ) {
-  fun toRiskPredictorScore(): RiskPredictorScore = RiskPredictorScore(
-    completedDate = if (!this.completedDate.isNullOrEmpty()) LocalDateTime.parse(this.completedDate) else null,
-    assessmentStatus = this.assessmentStatus,
-    generalPredictor = this.generalPredictorScore.toGeneralPredictor(),
-    violencePredictor = this.violencePredictorScore.toViolencePredictor(),
-    groupReconviction = this.groupReconvictionScore.toGroupReconviction(),
-    riskOfSeriousRecidivism = this.riskOfSeriousRecidivismScore.toRiskOfSeriousRecidivism(),
-    sexualPredictor = this.sexualPredictorScore.toSexualPredictor(),
-  )
+  fun toRiskPredictorScore(): RiskPredictorScore =
+    RiskPredictorScore(
+      completedDate = if (!this.completedDate.isNullOrEmpty()) LocalDateTime.parse(this.completedDate) else null,
+      assessmentStatus = this.assessmentStatus,
+      generalPredictor = this.generalPredictorScore.toGeneralPredictor(),
+      violencePredictor = this.violencePredictorScore.toViolencePredictor(),
+      groupReconviction = this.groupReconvictionScore.toGroupReconviction(),
+      riskOfSeriousRecidivism = this.riskOfSeriousRecidivismScore.toRiskOfSeriousRecidivism(),
+      sexualPredictor = this.sexualPredictorScore.toSexualPredictor(),
+    )
 }

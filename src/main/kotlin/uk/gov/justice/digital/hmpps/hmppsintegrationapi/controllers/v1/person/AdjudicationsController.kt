@@ -21,7 +21,6 @@ class AdjudicationsController(
   @Autowired val auditService: AuditService,
   @Autowired val getAdjudicationsForPersonService: GetAdjudicationsForPersonService,
 ) {
-
   @GetMapping("{encodedHmppsId}/reported-adjudications")
   fun getPersonAdjudications(
     @PathVariable encodedHmppsId: String,

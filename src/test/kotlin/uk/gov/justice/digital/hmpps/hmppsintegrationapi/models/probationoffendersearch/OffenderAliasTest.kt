@@ -9,13 +9,14 @@ class OffenderAliasTest : DescribeSpec(
   {
     describe("#toAlias") {
       it("maps one-to-one attributes to alias attributes") {
-        val offenderAlias = OffenderAlias(
-          firstName = "Alias First Name",
-          surname = "Alias Last Name",
-          middleNames = listOf("Alias", "Middle", "Names"),
-          dateOfBirth = LocalDate.parse("2023-01-01"),
-          gender = "Gender",
-        )
+        val offenderAlias =
+          OffenderAlias(
+            firstName = "Alias First Name",
+            surname = "Alias Last Name",
+            middleNames = listOf("Alias", "Middle", "Names"),
+            dateOfBirth = LocalDate.parse("2023-01-01"),
+            gender = "Gender",
+          )
 
         val alias = offenderAlias.toAlias()
 
@@ -27,11 +28,12 @@ class OffenderAliasTest : DescribeSpec(
       }
 
       it("returns null when no middle names") {
-        val offenderAlias = OffenderAlias(
-          firstName = "First Name",
-          surname = "Surname",
-          middleNames = listOf(),
-        )
+        val offenderAlias =
+          OffenderAlias(
+            firstName = "First Name",
+            surname = "Surname",
+            middleNames = listOf(),
+          )
 
         val alias = offenderAlias.toAlias()
 

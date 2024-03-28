@@ -27,39 +27,41 @@ class GetEPFPersonDetailsTest(
   val probationIntegrationEPFGateway: ProbationIntegrationEPFGateway,
 ) :
   DescribeSpec(
-    {
-      val effectiveProposalFrameworkAndDeliusMockServer = EffectiveProposalFrameworkAndDeliusMockServer()
-      val hmppsId = "X777776"
-      val eventNumber = 1234
+      {
+        val effectiveProposalFrameworkAndDeliusMockServer = EffectiveProposalFrameworkAndDeliusMockServer()
+        val hmppsId = "X777776"
+        val eventNumber = 1234
 
-      beforeEach {
-        effectiveProposalFrameworkAndDeliusMockServer.start()
-        effectiveProposalFrameworkAndDeliusMockServer.stubGetCaseDetailForPerson(
-          hmppsId,
-          1234,
-          File("src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/probationintegrationEPF/fixtures/GetEPFPersonDetailsResponse.json").readText(),
-        )
+        beforeEach {
+          effectiveProposalFrameworkAndDeliusMockServer.start()
+          effectiveProposalFrameworkAndDeliusMockServer.stubGetCaseDetailForPerson(
+            hmppsId,
+            1234,
+            File(
+              "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/probationintegrationEPF/fixtures/GetEPFPersonDetailsResponse.json",
+            ).readText(),
+          )
 
-        Mockito.reset(hmppsAuthGateway)
-        whenever(hmppsAuthGateway.getClientToken("nDelius")).thenReturn(HmppsAuthMockServer.TOKEN)
-      }
+          Mockito.reset(hmppsAuthGateway)
+          whenever(hmppsAuthGateway.getClientToken("nDelius")).thenReturn(HmppsAuthMockServer.TOKEN)
+        }
 
-      afterTest {
-        effectiveProposalFrameworkAndDeliusMockServer.stop()
-      }
+        afterTest {
+          effectiveProposalFrameworkAndDeliusMockServer.stop()
+        }
 
-      it("authenticates using HMPPS Auth with credentials") {
-        probationIntegrationEPFGateway.getCaseDetailForPerson(hmppsId, eventNumber)
+        it("authenticates using HMPPS Auth with credentials") {
+          probationIntegrationEPFGateway.getCaseDetailForPerson(hmppsId, eventNumber)
 
-        verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("nDelius")
-      }
+          verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("nDelius")
+        }
 
-      it("returns case detail for the matching CRN") {
-        val response = probationIntegrationEPFGateway.getCaseDetailForPerson(hmppsId, eventNumber)
+        it("returns case detail for the matching CRN") {
+          val response = probationIntegrationEPFGateway.getCaseDetailForPerson(hmppsId, eventNumber)
 
-        response.data.shouldBe(
-          generateCaseDetail(),
-        )
-      }
-    },
-  )
+          response.data.shouldBe(
+            generateCaseDetail(),
+          )
+        }
+      },
+    )

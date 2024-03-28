@@ -2,7 +2,6 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers
 
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock
-import com.github.tomakehurst.wiremock.client.WireMock.stubFor
 import org.springframework.http.HttpStatus
 
 class GenericApiMockServer : WireMockServer(WIREMOCK_PORT) {
@@ -23,7 +22,11 @@ class GenericApiMockServer : WireMockServer(WIREMOCK_PORT) {
     )
   }
 
-  fun stubGetTest(id: String, body: String, status: HttpStatus = HttpStatus.OK) {
+  fun stubGetTest(
+    id: String,
+    body: String,
+    status: HttpStatus = HttpStatus.OK,
+  ) {
     stubFor(
       WireMock.get("/test/$id")
         .willReturn(
@@ -35,7 +38,10 @@ class GenericApiMockServer : WireMockServer(WIREMOCK_PORT) {
     )
   }
 
-  fun stubPostTest(body: String, status: HttpStatus = HttpStatus.OK) {
+  fun stubPostTest(
+    body: String,
+    status: HttpStatus = HttpStatus.OK,
+  ) {
     stubFor(
       WireMock.post("/testPost").willReturn(
         WireMock.aResponse()

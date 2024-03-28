@@ -6,8 +6,9 @@ data class ArnSexualPredictorScore(
   val ospIndecentScoreLevel: String? = null,
   val ospContactScoreLevel: String? = null,
 ) {
-  fun toSexualPredictor(): SexualPredictor = SexualPredictor(
-    indecentScoreLevel = this.ospIndecentScoreLevel,
-    contactScoreLevel = this.ospContactScoreLevel,
-  )
+  fun toSexualPredictor(): SexualPredictor =
+    SexualPredictor(
+      indecentScoreLevel = this.ospIndecentScoreLevel,
+      contactScoreLevel = this.ospContactScoreLevel,
+    )
 }

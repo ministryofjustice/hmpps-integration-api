@@ -35,16 +35,16 @@ class GetSentencesForPersonTest(
   val nomisGateway: NomisGateway,
 ) :
   DescribeSpec(
-    {
-      val nomisApiMockServer = NomisApiMockServer()
-      val offenderNo = "zyx987"
-      val someBookingId = 1
+      {
+        val nomisApiMockServer = NomisApiMockServer()
+        val offenderNo = "zyx987"
+        val someBookingId = 1
 
-      beforeEach {
-        nomisApiMockServer.start()
-        nomisApiMockServer.stubGetBookingIdsForNomisNumber(
-          offenderNo,
-          """
+        beforeEach {
+          nomisApiMockServer.start()
+          nomisApiMockServer.stubGetBookingIdsForNomisNumber(
+            offenderNo,
+            """
           [
             {
               "bookingId": 1,
@@ -54,11 +54,11 @@ class GetSentencesForPersonTest(
             }
           ]
         """.removeWhitespaceAndNewlines(),
-        )
+          )
 
-        nomisApiMockServer.stubGetSentenceForBookingId(
-          someBookingId,
-          """
+          nomisApiMockServer.stubGetSentenceForBookingId(
+            someBookingId,
+            """
           {
             "fineAmount": "40",
             "sentenceDate": "2001-01-01",
@@ -74,67 +74,69 @@ class GetSentencesForPersonTest(
               ]
           }
         """.removeWhitespaceAndNewlines(),
-        )
+          )
 
-        Mockito.reset(hmppsAuthGateway)
-        whenever(hmppsAuthGateway.getClientToken("NOMIS")).thenReturn(HmppsAuthMockServer.TOKEN)
-      }
+          Mockito.reset(hmppsAuthGateway)
+          whenever(hmppsAuthGateway.getClientToken("NOMIS")).thenReturn(HmppsAuthMockServer.TOKEN)
+        }
 
-      afterTest {
-        nomisApiMockServer.stop()
-      }
+        afterTest {
+          nomisApiMockServer.stop()
+        }
 
-      it("authenticates using HMPPS Auth with credentials") {
-        nomisGateway.getSentencesForBooking(someBookingId)
+        it("authenticates using HMPPS Auth with credentials") {
+          nomisGateway.getSentencesForBooking(someBookingId)
 
-        verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("NOMIS")
-      }
+          verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("NOMIS")
+        }
 
-      it("returns a sentence for a matching bookingId") {
-        val response = nomisGateway.getSentencesForBooking(someBookingId)
+        it("returns a sentence for a matching bookingId") {
+          val response = nomisGateway.getSentencesForBooking(someBookingId)
 
-        response.data.shouldBe(
-          listOf(
-            generateTestSentence(
-              dateOfSentencing = LocalDate.parse("2001-01-01"),
-              description = "ORA CJA03 Standard Determinate Sentence",
-              fineAmount = 40,
-              isActive = true,
-              isCustodial = true,
-              length = SentenceLength(
-                terms = listOf(
-                  SentenceTerm(
-                    years = 1,
-                    months = 2,
-                    weeks = 3,
-                    days = 4,
+          response.data.shouldBe(
+            listOf(
+              generateTestSentence(
+                dateOfSentencing = LocalDate.parse("2001-01-01"),
+                description = "ORA CJA03 Standard Determinate Sentence",
+                fineAmount = 40,
+                isActive = true,
+                isCustodial = true,
+                length =
+                  SentenceLength(
+                    terms =
+                      listOf(
+                        SentenceTerm(
+                          years = 1,
+                          months = 2,
+                          weeks = 3,
+                          days = 4,
+                        ),
+                      ),
                   ),
-                ),
               ),
             ),
-          ),
-        )
-      }
+          )
+        }
 
-      it("returns an error when 404 Not Found is returned because no person is found") {
-        nomisApiMockServer.stubGetBookingIdsForNomisNumber(offenderNo, "", HttpStatus.NOT_FOUND)
+        it("returns an error when 404 Not Found is returned because no person is found") {
+          nomisApiMockServer.stubGetBookingIdsForNomisNumber(offenderNo, "", HttpStatus.NOT_FOUND)
 
-        val response = nomisGateway.getBookingIdsForPerson(offenderNo)
+          val response = nomisGateway.getBookingIdsForPerson(offenderNo)
 
-        response.errors.shouldHaveSize(1)
-        response.errors.first().causedBy.shouldBe(UpstreamApi.NOMIS)
-        response.errors.first().type.shouldBe(UpstreamApiError.Type.ENTITY_NOT_FOUND)
-      }
+          response.errors.shouldHaveSize(1)
+          response.errors.first().causedBy.shouldBe(UpstreamApi.NOMIS)
+          response.errors.first().type.shouldBe(UpstreamApiError.Type.ENTITY_NOT_FOUND)
+        }
 
-      it("returns an error when no sentence is found") {
-        nomisApiMockServer.stubGetSentenceForBookingId(someBookingId, "", HttpStatus.NOT_FOUND)
+        it("returns an error when no sentence is found") {
+          nomisApiMockServer.stubGetSentenceForBookingId(someBookingId, "", HttpStatus.NOT_FOUND)
 
-        val response = nomisGateway.getSentencesForBooking(someBookingId)
+          val response = nomisGateway.getSentencesForBooking(someBookingId)
 
-        response.data.shouldBeEmpty()
-        response.errors.shouldHaveSize(1)
-        response.errors.first().causedBy.shouldBe(UpstreamApi.NOMIS)
-        response.errors.first().type.shouldBe(UpstreamApiError.Type.ENTITY_NOT_FOUND)
-      }
-    },
-  )
+          response.data.shouldBeEmpty()
+          response.errors.shouldHaveSize(1)
+          response.errors.first().causedBy.shouldBe(UpstreamApi.NOMIS)
+          response.errors.first().type.shouldBe(UpstreamApiError.Type.ENTITY_NOT_FOUND)
+        }
+      },
+    )

@@ -14,7 +14,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.PrisonerOffe
 @ActiveProfiles("test")
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 abstract class IntegrationTestBase {
-
   @Suppress("SpringJavaInjectionPointsAutowiringInspection")
   @Autowired
   lateinit var webTestClient: WebTestClient

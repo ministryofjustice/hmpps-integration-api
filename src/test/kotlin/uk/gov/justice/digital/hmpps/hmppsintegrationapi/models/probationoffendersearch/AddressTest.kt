@@ -13,20 +13,21 @@ class AddressTest : DescribeSpec(
         val someCode = "some description"
         val someDescription = "some Description"
 
-        val address = Address(
-          addressNumber = "addressNumber",
-          buildingName = "buildingName",
-          district = "district",
-          county = "county",
-          from = LocalDate.parse("2020-11-11"),
-          postcode = "postcode",
-          streetName = "streetName",
-          type = Address.Type(code = someCode, description = someDescription),
-          to = LocalDate.parse("2021-01-01"),
-          town = "town",
-          noFixedAbode = true,
-          notes = "notes",
-        )
+        val address =
+          Address(
+            addressNumber = "addressNumber",
+            buildingName = "buildingName",
+            district = "district",
+            county = "county",
+            from = LocalDate.parse("2020-11-11"),
+            postcode = "postcode",
+            streetName = "streetName",
+            type = Address.Type(code = someCode, description = someDescription),
+            to = LocalDate.parse("2021-01-01"),
+            town = "town",
+            noFixedAbode = true,
+            notes = "notes",
+          )
 
         val integrationApiAddress = address.toAddress()
 
@@ -48,20 +49,21 @@ class AddressTest : DescribeSpec(
       it("uses the code as the description if the description is not present") {
         val someCode = "some description"
 
-        val address = Address(
-          addressNumber = "addressType",
-          buildingName = "buildingName",
-          district = "country",
-          county = "county",
-          from = LocalDate.parse("2020-01-01"),
-          postcode = "flat",
-          streetName = "locality",
-          type = Address.Type(someCode, null),
-          to = LocalDate.parse("2021-01-01"),
-          town = "town",
-          noFixedAbode = true,
-          notes = "notes",
-        )
+        val address =
+          Address(
+            addressNumber = "addressType",
+            buildingName = "buildingName",
+            district = "country",
+            county = "county",
+            from = LocalDate.parse("2020-01-01"),
+            postcode = "flat",
+            streetName = "locality",
+            type = Address.Type(someCode, null),
+            to = LocalDate.parse("2021-01-01"),
+            town = "town",
+            noFixedAbode = true,
+            notes = "notes",
+          )
 
         address.toAddress().types.shouldBe(listOf(Type(someCode, someCode)))
       }

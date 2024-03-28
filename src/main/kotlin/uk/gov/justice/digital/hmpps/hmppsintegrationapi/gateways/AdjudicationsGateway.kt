@@ -11,20 +11,22 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 
 @Component
-class AdjudicationsGateway(@Value("\${services.adjudications.base-url}") baseUrl: String) {
+class AdjudicationsGateway(
+  @Value("\${services.adjudications.base-url}") baseUrl: String,
+) {
   private val webClient = WebClientWrapper(baseUrl)
 
   @Autowired
   lateinit var hmppsAuthGateway: HmppsAuthGateway
 
   fun getReportedAdjudicationsForPerson(id: String): Response<List<Adjudication>> {
-    val result = webClient.requestList<ReportedAdjudication>(
-      HttpMethod.GET,
-      "/reported-adjudications/prisoner/$id",
-      authenticationHeader(),
-      UpstreamApi.ADJUDICATIONS,
-
-    )
+    val result =
+      webClient.requestList<ReportedAdjudication>(
+        HttpMethod.GET,
+        "/reported-adjudications/prisoner/$id",
+        authenticationHeader(),
+        UpstreamApi.ADJUDICATIONS,
+      )
 
     return when (result) {
       is WebClientWrapper.WebClientWrapperResponse.Success -> {

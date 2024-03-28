@@ -13,17 +13,19 @@ data class NomisSentence(
   val sentenceTypeDescription: String? = null,
   val terms: List<NomisTerm> = listOf(NomisTerm()),
 ) {
-  fun toSentence(): Sentence = Sentence(
-    serviceSource = UpstreamApi.NOMIS,
-    systemSource = SystemSource.PRISON_SYSTEMS,
-    dateOfSentencing = this.sentenceDate,
-    description = this.sentenceTypeDescription,
-    fineAmount = this.fineAmount,
-    isActive = sentenceStatusToBoolean(this.sentenceStatus),
-    isCustodial = true,
-    length = SentenceLength(terms = this.terms.map { it.toTerm() }),
-  )
+  fun toSentence(): Sentence =
+    Sentence(
+      serviceSource = UpstreamApi.NOMIS,
+      systemSource = SystemSource.PRISON_SYSTEMS,
+      dateOfSentencing = this.sentenceDate,
+      description = this.sentenceTypeDescription,
+      fineAmount = this.fineAmount,
+      isActive = sentenceStatusToBoolean(this.sentenceStatus),
+      isCustodial = true,
+      length = SentenceLength(terms = this.terms.map { it.toTerm() }),
+    )
 }
+
 private fun sentenceStatusToBoolean(sentenceStatus: String?): Boolean? {
   return when (sentenceStatus) {
     "A" -> true

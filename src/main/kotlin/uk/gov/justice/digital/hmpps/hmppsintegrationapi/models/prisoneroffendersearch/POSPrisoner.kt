@@ -26,10 +26,10 @@ data class POSPrisoner(
       ethnicity = this.ethnicity,
       aliases = this.aliases.map { it.toAlias() },
       identifiers =
-      Identifiers(
-        nomisNumber = this.prisonerNumber,
-        croNumber = this.croNumber,
-      ),
+        Identifiers(
+          nomisNumber = this.prisonerNumber,
+          croNumber = this.croNumber,
+        ),
       pncId = this.pncNumber,
     )
 }

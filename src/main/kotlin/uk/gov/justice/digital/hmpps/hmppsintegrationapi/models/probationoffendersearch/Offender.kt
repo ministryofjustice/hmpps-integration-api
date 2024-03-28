@@ -25,11 +25,11 @@ data class Offender(
       ethnicity = this.offenderProfile.ethnicity,
       aliases = this.offenderAliases.map { it.toAlias() },
       identifiers =
-      Identifiers(
-        nomisNumber = otherIds.nomsNumber,
-        croNumber = otherIds.croNumber,
-        deliusCrn = otherIds.crn,
-      ),
+        Identifiers(
+          nomisNumber = otherIds.nomsNumber,
+          croNumber = otherIds.croNumber,
+          deliusCrn = otherIds.crn,
+        ),
       pncId = otherIds.pncNumber,
       hmppsId = otherIds.crn,
       contactDetails = this.contactDetails?.toContactdetails(),

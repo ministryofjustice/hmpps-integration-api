@@ -12,19 +12,25 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.probationintegrationepf.EPFCaseDetail
 
 @Component
-class ProbationIntegrationEPFGateway(@Value("\${services.probation-integration-epf.base-url}") baseUrl: String) {
+class ProbationIntegrationEPFGateway(
+  @Value("\${services.probation-integration-epf.base-url}") baseUrl: String,
+) {
   private val webClient = WebClientWrapper(baseUrl)
 
   @Autowired
   lateinit var hmppsAuthGateway: HmppsAuthGateway
 
-  fun getCaseDetailForPerson(id: String, eventNumber: Int): Response<CaseDetail?> {
-    val result = webClient.request<EPFCaseDetail?>(
-      HttpMethod.GET,
-      "/case-details/$id/$eventNumber",
-      authenticationHeader(),
-      UpstreamApi.NDELIUS,
-    )
+  fun getCaseDetailForPerson(
+    id: String,
+    eventNumber: Int,
+  ): Response<CaseDetail?> {
+    val result =
+      webClient.request<EPFCaseDetail?>(
+        HttpMethod.GET,
+        "/case-details/$id/$eventNumber",
+        authenticationHeader(),
+        UpstreamApi.NDELIUS,
+      )
 
     return when (result) {
       is WebClientWrapperResponse.Success -> {

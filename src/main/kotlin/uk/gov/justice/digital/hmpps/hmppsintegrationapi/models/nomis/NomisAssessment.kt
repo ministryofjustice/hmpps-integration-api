@@ -13,15 +13,16 @@ data class NomisAssessment(
   val assessmentStatus: String? = null,
   val assessmentComment: String? = null,
 ) {
-  fun toRiskAssessment() = RiskAssessment(
-    classificationCode = this.classificationCode,
-    classification = this.classification,
-    assessmentCode = this.assessmentCode,
-    assessmentDescription = this.assessmentDescription,
-    assessmentDate = this.assessmentDate,
-    nextReviewDate = this.nextReviewDate,
-    assessmentAgencyId = this.assessmentAgencyId,
-    assessmentStatus = this.assessmentStatus,
-    assessmentComment = this.assessmentComment,
-  )
+  fun toRiskAssessment() =
+    RiskAssessment(
+      classificationCode = this.classificationCode,
+      classification = this.classification,
+      assessmentCode = this.assessmentCode,
+      assessmentDescription = this.assessmentDescription,
+      assessmentDate = this.assessmentDate,
+      nextReviewDate = this.nextReviewDate,
+      assessmentAgencyId = this.assessmentAgencyId,
+      assessmentStatus = this.assessmentStatus,
+      assessmentComment = this.assessmentComment,
+    )
 }
