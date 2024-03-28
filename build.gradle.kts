@@ -1,5 +1,5 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "5.10.1"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "5.15.5"
   kotlin("plugin.spring") version "1.9.20"
 }
 
@@ -8,11 +8,11 @@ configurations {
 }
 
 dependencies {
-  implementation("org.springframework.boot:spring-boot-starter-webflux")
+  implementation("org.springframework.boot:spring-boot-starter-webflux:3.2.4")
   implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.1")
   implementation("io.sentry:sentry-spring-boot-starter-jakarta:6.34.0")
   implementation("io.sentry:sentry-logback:6.34.0")
-  implementation("org.springframework.data:spring-data-commons:3.2.0")
+  implementation("org.springframework.data:spring-data-commons:3.2.4")
   implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:3.1.1") {
     exclude("org.springframework.security", "spring-security-config")
     exclude("org.springframework.security", "spring-security-core")
