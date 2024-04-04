@@ -86,7 +86,7 @@ internal class RiskCategoriesControllerTest(
           verify(
             auditService,
             VerificationModeFactory.times(1),
-          ).createEvent("GET_PERSON_RISK_CATEGORIES", "Person risk categories with hmpps id: $hmppsId has been retrieved")
+          ).createEvent("GET_PERSON_RISK_CATEGORIES", mapOf("hmppsId" to hmppsId))
         }
 
         it("returns the risk categories for a person with the matching ID") {

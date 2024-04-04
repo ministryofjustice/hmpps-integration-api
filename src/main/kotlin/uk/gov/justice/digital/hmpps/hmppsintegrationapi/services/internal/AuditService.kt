@@ -15,7 +15,6 @@ import uk.gov.justice.hmpps.sqs.HmppsQueueService
 class AuditService(
   private val hmppsQueueService: HmppsQueueService,
   private val objectMapper: ObjectMapper,
-  private val ser: AuthoriseConsumerService,
 ) {
   private val auditQueue by lazy { hmppsQueueService.findByQueueId("audit") as HmppsQueue }
   private val auditSqsClient by lazy { auditQueue.sqsClient }
@@ -23,7 +22,7 @@ class AuditService(
 
   fun createEvent(
     what: String,
-    detail: String,
+    detail: Map<String, String?>,
   ) {
     val username =
       RequestContextHolder.currentRequestAttributes()
@@ -36,7 +35,7 @@ class AuditService(
           objectMapper.writeValueAsString(
             HmppsAuditEvent(
               what = what,
-              details = detail,
+              details = objectMapper.writeValueAsString(detail),
               who = username,
             ),
           ),

@@ -195,7 +195,7 @@ internal class RisksControllerTest(
           verify(
             auditService,
             VerificationModeFactory.times(1),
-          ).createEvent("GET_PERSON_RISK", "Person risk details with hmpps id: $hmppsId has been retrieved")
+          ).createEvent("GET_PERSON_RISK", mapOf("hmppsId" to hmppsId))
         }
 
         it("returns null embedded in a JSON object when no risks are found") {

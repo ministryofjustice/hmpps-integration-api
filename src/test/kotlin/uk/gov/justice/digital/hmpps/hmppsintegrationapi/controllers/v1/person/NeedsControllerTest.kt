@@ -96,7 +96,7 @@ internal class NeedsControllerTest(
           verify(
             auditService,
             VerificationModeFactory.times(1),
-          ).createEvent("GET_PERSON_NEED", "Person need details with hmpps id: $hmppsId has been retrieved")
+          ).createEvent("GET_PERSON_NEED", mapOf("hmppsId" to hmppsId))
         }
 
         it("returns the needs for a person with the matching ID") {

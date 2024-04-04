@@ -98,7 +98,7 @@ internal class AddressControllerTest(
           verify(
             auditService,
             VerificationModeFactory.times(1),
-          ).createEvent("GET_PERSON_ADDRESS", "Person address details with hmpps id: $hmppsId has been retrieved")
+          ).createEvent("GET_PERSON_ADDRESS", mapOf("hmppsId" to hmppsId))
         }
 
         it("returns a 404 NOT FOUND status code when person isn't found in all upstream APIs") {
