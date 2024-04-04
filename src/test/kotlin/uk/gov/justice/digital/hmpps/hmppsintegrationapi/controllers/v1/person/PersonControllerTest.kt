@@ -133,7 +133,7 @@ internal class PersonControllerTest(
             times(1),
           ).createEvent(
             "SEARCH_PERSON",
-            "Person searched with first name: $firstName, last name: $lastName, search within aliases: false, pnc number: $pncNumber, date of birth: $dateOfBirth",
+            mapOf("firstName" to firstName, "lastName" to lastName, "aliases" to false.toString(), "pncNumber" to pncNumber, "dateOfBirth" to dateOfBirth),
           )
         }
 
@@ -238,7 +238,7 @@ internal class PersonControllerTest(
 
         it("logs audit") {
           mockMvc.performAuthorised("$basePath/$encodedHmppsId")
-          verify(auditService, times(1)).createEvent("GET_PERSON_DETAILS", "Person details with hmpps id: $hmppsId has been retrieved")
+          verify(auditService, times(1)).createEvent("GET_PERSON_DETAILS", mapOf("hmppsId" to hmppsId))
         }
 
         describe("404 Not found") {
@@ -373,7 +373,7 @@ internal class PersonControllerTest(
 
         it("logs audit") {
           mockMvc.performAuthorised("$basePath/$encodedHmppsId/images")
-          verify(auditService, times(1)).createEvent("GET_PERSON_IMAGE", "Image with id: $hmppsId has been retrieved")
+          verify(auditService, times(1)).createEvent("GET_PERSON_IMAGE", mapOf("hmppsId" to hmppsId))
         }
 
         it("gets the metadata of images for a person with the matching ID") {

@@ -33,7 +33,7 @@ class AdjudicationsController(
     if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
       throw EntityNotFoundException("Could not find person with id: $hmppsId")
     }
-    auditService.createEvent("GET_PERSON_ADJUDICATIONS", "Person adjudications details with hmpps id: $hmppsId has been retrieved")
+    auditService.createEvent("GET_PERSON_ADJUDICATIONS", mapOf("hmppsId" to hmppsId))
     return response.data.paginateWith(page, perPage)
   }
 }

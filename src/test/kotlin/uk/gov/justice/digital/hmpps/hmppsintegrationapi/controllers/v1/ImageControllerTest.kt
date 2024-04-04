@@ -63,7 +63,7 @@ internal class ImageControllerTest(
         it("logs audit") {
           mockMvc.performAuthorised("$basePath/$id")
 
-          verify(auditService, VerificationModeFactory.times(1)).createEvent("GET_PERSON_IMAGE", "Image with id: $id has been retrieved")
+          verify(auditService, VerificationModeFactory.times(1)).createEvent("GET_PERSON_IMAGE", mapOf("imageId" to id.toString()))
         }
 
         it("returns a 404 NOT FOUND status code") {

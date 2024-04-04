@@ -112,7 +112,7 @@ class CaseNotesControllerTest(
           verify(
             auditService,
             VerificationModeFactory.times(1),
-          ).createEvent("GET_CASE_NOTES", "Person case notes with hmpps id: $hmppsId has been retrieved")
+          ).createEvent("GET_CASE_NOTES", mapOf("hmppsId" to hmppsId))
         }
 
         it("fails with the appropriate error when an upstream service is down") {

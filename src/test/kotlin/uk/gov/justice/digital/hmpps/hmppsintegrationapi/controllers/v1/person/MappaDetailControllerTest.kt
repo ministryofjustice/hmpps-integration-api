@@ -74,7 +74,7 @@ internal class MappaDetailControllerTest(
           verify(
             auditService,
             VerificationModeFactory.times(1),
-          ).createEvent("GET_MAPPA_DETAIL", "Mappa detail for person with hmpps id: $hmppsId has been retrieved")
+          ).createEvent("GET_MAPPA_DETAIL", mapOf("hmppsId" to hmppsId))
         }
 
         it("returns the risk categories for a person with the matching ID") {

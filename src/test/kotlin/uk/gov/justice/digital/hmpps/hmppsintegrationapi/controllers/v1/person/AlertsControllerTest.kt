@@ -78,7 +78,7 @@ internal class AlertsControllerTest(
           verify(
             auditService,
             VerificationModeFactory.times(1),
-          ).createEvent("GET_PERSON_ALERTS", "Person alerts with hmpps id: $hmppsId has been retrieved")
+          ).createEvent("GET_PERSON_ALERTS", mapOf("hmppsId" to hmppsId))
         }
 
         it("gets the alerts for a person with the matching ID") {

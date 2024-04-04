@@ -44,7 +44,7 @@ class CaseNotesController(
     if (response.hasErrorCausedBy(UpstreamApiError.Type.ENTITY_NOT_FOUND, causedBy = UpstreamApi.CASE_NOTES)) {
       throw EntityNotFoundException("Could not find person with id: $hmppsId")
     }
-    auditService.createEvent("GET_CASE_NOTES", "Person case notes with hmpps id: $hmppsId has been retrieved")
+    auditService.createEvent("GET_CASE_NOTES", mapOf("hmppsId" to hmppsId))
     return response.data.paginateWith(page, perPage)
   }
 }

@@ -86,7 +86,7 @@ class LicenceConditionControllerTests(
           verify(
             auditService,
             VerificationModeFactory.times(1),
-          ).createEvent("GET_PERSON_LICENCE_CONDITION", "Person licence condition details with hmpps id: $hmppsId has been retrieved")
+          ).createEvent("GET_PERSON_LICENCE_CONDITION", mapOf("hmppsId" to hmppsId))
         }
 
         it("returns licence condition results") {

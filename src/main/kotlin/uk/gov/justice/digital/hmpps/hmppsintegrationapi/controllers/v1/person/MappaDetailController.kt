@@ -28,7 +28,7 @@ class MappaDetailController(
     if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
       throw EntityNotFoundException("Could not find person with id: $hmppsId")
     }
-    auditService.createEvent("GET_MAPPA_DETAIL", "Mappa detail for person with hmpps id: $hmppsId has been retrieved")
+    auditService.createEvent("GET_MAPPA_DETAIL", mapOf("hmppsId" to hmppsId))
     return mapOf("data" to response.data)
   }
 }

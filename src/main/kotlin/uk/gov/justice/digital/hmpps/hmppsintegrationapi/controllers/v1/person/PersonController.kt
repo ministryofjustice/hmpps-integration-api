@@ -53,7 +53,7 @@ class PersonController(
 
     auditService.createEvent(
       "SEARCH_PERSON",
-      "Person searched with first name: $firstName, last name: $lastName, search within aliases: $searchWithinAliases, pnc number: $pncNumber, date of birth: $dateOfBirth",
+      mapOf("firstName" to firstName, "lastName" to lastName, "aliases" to searchWithinAliases.toString(), "pncNumber" to pncNumber, "dateOfBirth" to dateOfBirth),
     )
     return response.data.paginateWith(page, perPage)
   }
@@ -69,7 +69,7 @@ class PersonController(
       throw EntityNotFoundException("Could not find person with id: $hmppsId")
     }
 
-    auditService.createEvent("GET_PERSON_DETAILS", "Person details with hmpps id: $hmppsId has been retrieved")
+    auditService.createEvent("GET_PERSON_DETAILS", mapOf("hmppsId" to hmppsId))
     return mapOf("data" to response.data)
   }
 
@@ -87,7 +87,7 @@ class PersonController(
       throw EntityNotFoundException("Could not find person with id: $hmppsId")
     }
 
-    auditService.createEvent("GET_PERSON_IMAGE", "Image with id: $hmppsId has been retrieved")
+    auditService.createEvent("GET_PERSON_IMAGE", mapOf("hmppsId" to hmppsId))
     return response.data.paginateWith(page, perPage)
   }
 

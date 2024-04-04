@@ -28,7 +28,7 @@ class RisksController(
     if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
       throw EntityNotFoundException("Could not find person with id: $hmppsId")
     }
-    auditService.createEvent("GET_PERSON_RISK", "Person risk details with hmpps id: $hmppsId has been retrieved")
+    auditService.createEvent("GET_PERSON_RISK", mapOf("hmppsId" to hmppsId))
     return mapOf("data" to response.data)
   }
 }

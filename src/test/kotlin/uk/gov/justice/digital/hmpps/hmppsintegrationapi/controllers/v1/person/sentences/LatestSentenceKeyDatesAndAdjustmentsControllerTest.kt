@@ -268,7 +268,7 @@ internal class LatestSentenceKeyDatesAndAdjustmentsControllerTest(
           VerificationModeFactory.times(1),
         ).createEvent(
           "GET_PERSON_SENTENCES_LATEST_KEY_DATES_AND_ADJUSTMENTS",
-          "The key dates and adjustments about a person’s release from prison for their latest sentence for persion with hmpps id: $hmppsId has been retrieved",
+          mapOf("hmppsId" to hmppsId),
         )
       }
 

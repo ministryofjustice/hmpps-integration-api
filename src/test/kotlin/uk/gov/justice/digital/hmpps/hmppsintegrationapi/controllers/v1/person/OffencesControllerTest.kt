@@ -105,7 +105,7 @@ internal class OffencesControllerTest(
           verify(
             auditService,
             VerificationModeFactory.times(1),
-          ).createEvent("GET_PERSON_OFFENCES", "Person offences details with hmpps id: $hmppsId has been retrieved")
+          ).createEvent("GET_PERSON_OFFENCES", mapOf("hmppsId" to hmppsId))
         }
 
         it("returns an empty list embedded in a JSON object when no offences are found") {

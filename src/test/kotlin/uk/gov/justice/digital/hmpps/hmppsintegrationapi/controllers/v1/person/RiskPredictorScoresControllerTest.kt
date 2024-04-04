@@ -85,7 +85,7 @@ internal class RiskPredictorScoresControllerTest(
           verify(
             auditService,
             VerificationModeFactory.times(1),
-          ).createEvent("GET_PERSON_RISK_SCORES", "Person risk predictor scores with hmpps id: $hmppsId has been retrieved")
+          ).createEvent("GET_PERSON_RISK_SCORES", mapOf("hmppsId" to hmppsId))
         }
 
         it("returns the risk predictor scores for a person with the matching ID") {

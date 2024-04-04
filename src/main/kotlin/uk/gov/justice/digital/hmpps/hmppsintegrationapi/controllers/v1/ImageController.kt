@@ -27,7 +27,7 @@ class ImageController(
       throw EntityNotFoundException("Could not find image with id: $id")
     }
 
-    auditService.createEvent("GET_PERSON_IMAGE", "Image with id: $id has been retrieved")
+    auditService.createEvent("GET_PERSON_IMAGE", mapOf("imageId" to id.toString()))
 
     return ResponseEntity.ok()
       .header("content-type", "image/jpeg")

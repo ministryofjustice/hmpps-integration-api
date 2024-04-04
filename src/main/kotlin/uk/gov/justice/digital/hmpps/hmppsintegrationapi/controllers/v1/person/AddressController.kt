@@ -32,7 +32,7 @@ class AddressController(
     ) {
       throw EntityNotFoundException("Could not find person with id: $hmppsId")
     }
-    auditService.createEvent("GET_PERSON_ADDRESS", "Person address details with hmpps id: $hmppsId has been retrieved")
+    auditService.createEvent("GET_PERSON_ADDRESS", mapOf("hmppsId" to hmppsId))
     return mapOf("data" to response.data)
   }
 }

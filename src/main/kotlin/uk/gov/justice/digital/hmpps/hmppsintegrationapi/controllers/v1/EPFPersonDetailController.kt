@@ -31,7 +31,7 @@ class EPFPersonDetailController(
 
     auditService.createEvent(
       "GET_EPF_PROBATION_CASE_INFORMATION",
-      "Probation case information with hmpps Id: $hmppsId and delius event number: $eventNumber has been retrieved",
+      mapOf("hmppsId" to hmppsId, "eventNumber" to eventNumber.toString()),
     )
     return Response(
       data = response.data,

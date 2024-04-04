@@ -213,7 +213,7 @@ internal class SentencesControllerTest(
         verify(
           auditService,
           VerificationModeFactory.times(1),
-        ).createEvent("GET_PERSON_SENTENCES", "Person sentence details with hmpps id: $hmppsId has been retrieved")
+        ).createEvent("GET_PERSON_SENTENCES", mapOf("hmppsId" to hmppsId))
       }
 
       it("returns a 500 INTERNAL SERVER ERROR status code when upstream api return expected error") {
