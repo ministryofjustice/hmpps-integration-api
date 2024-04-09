@@ -180,6 +180,7 @@ workflows:
             - unit-tests
             - smoke-tests
             - lint-helm-charts
+            - build_docker
           filters:
             branches:
               only:
