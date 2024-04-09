@@ -168,10 +168,6 @@ workflows:
           env: dev
       - hmpps/build_multiplatform_docker:
           name: build_docker
-          filters:
-            branches:
-              only:
-                - main
 
       - create-and-push-image-to-ecr:
           <<: *slack-fail-post-step
