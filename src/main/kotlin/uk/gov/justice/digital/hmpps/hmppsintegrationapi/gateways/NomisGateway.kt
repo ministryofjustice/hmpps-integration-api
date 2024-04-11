@@ -10,6 +10,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Address
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Alert
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ImageMetadata
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Offence
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ReasonableAdjustment
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.RiskCategory
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Sentence
@@ -23,6 +24,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisImageD
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisInmateDetail
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisOffenceHistoryDetail
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisOffenderSentence
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisReasonableAdjustments
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisReferenceCode
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisSentence
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisSentenceSummary
 
@@ -249,6 +252,52 @@ class NomisGateway(
       is WebClientWrapperResponse.Error -> {
         Response(
           data = RiskCategory(),
+          errors = result.errors,
+        )
+      }
+    }
+  }
+
+  fun getReasonableAdjustments(booking: String): Response<List<ReasonableAdjustment>> {
+    val treatmentCodes = getReferenceDomains("HEALTH_TREAT").data
+    val params = treatmentCodes.joinToString(separator = "&") { (value) -> "type=$value" }
+    val result =
+      webClient.request<NomisReasonableAdjustments>(
+        HttpMethod.GET,
+        "/api/bookings/$booking/reasonable-adjustments?$params",
+        authenticationHeaderForCategories(),
+        UpstreamApi.NOMIS,
+      )
+
+    return when (result) {
+      is WebClientWrapperResponse.Success -> {
+        Response(data = result.data.reasonableAdjustments.map { it.toReasonableAdjustment() })
+      }
+      is WebClientWrapperResponse.Error -> {
+        Response(
+          data = emptyList(),
+          errors = result.errors,
+        )
+      }
+    }
+  }
+
+  fun getReferenceDomains(domain: String): Response<List<NomisReferenceCode>> {
+    val result =
+      webClient.requestList<NomisReferenceCode>(
+        HttpMethod.GET,
+        "/api/reference-domains/domains/$domain/codes",
+        authenticationHeaderForCategories(),
+        UpstreamApi.NOMIS,
+      )
+
+    return when (result) {
+      is WebClientWrapperResponse.Success -> {
+        Response(data = result.data)
+      }
+      is WebClientWrapperResponse.Error -> {
+        Response(
+          data = emptyList(),
           errors = result.errors,
         )
       }
