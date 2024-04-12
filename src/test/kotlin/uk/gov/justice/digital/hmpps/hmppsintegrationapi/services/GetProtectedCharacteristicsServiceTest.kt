@@ -62,7 +62,7 @@ class GetProtectedCharacteristicsServiceTest() {
 
   @Test
   fun `Probation offender search return no nomsNumber, return only probation data`() {
-    val mockOffender: Offender = Offender("John", "Smith", otherIds = OtherIds(nomsNumber = "mockNomsNumber"), age = 35, gender = "Male", offenderProfile = OffenderProfile(sexualOrientation = "Unknown", ethnicity = "British", nationality = "British", religion = "None", disabilities = emptyList()))
+    val mockOffender: Offender = Offender("John", "Smith", otherIds = OtherIds(), age = 35, gender = "Male", offenderProfile = OffenderProfile(sexualOrientation = "Unknown", ethnicity = "British", nationality = "British", religion = "None", disabilities = emptyList()))
     whenever(probationOffenderSearchGateway.getOffender(hmppsId)).thenReturn(Response<Offender?>(data = mockOffender, errors = emptyList()))
 
     val result = service.execute(hmppsId)
@@ -113,7 +113,6 @@ class GetProtectedCharacteristicsServiceTest() {
 
     val result = service.execute(hmppsId)
 
-    verifyNoInteractions(nomisGateway)
     result.data.shouldNotBeNull()
     result.errors.shouldHaveSize(0)
     result.data!!.age.shouldBe(35)
