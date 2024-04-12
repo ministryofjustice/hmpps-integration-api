@@ -260,11 +260,12 @@ class NomisGateway(
 
   fun getReasonableAdjustments(booking: String): Response<List<ReasonableAdjustment>> {
     val treatmentCodes = getReferenceDomains("HEALTH_TREAT").data
-    val params = treatmentCodes.joinToString(separator = "&") { (value) -> "type=$value" }
+    val codes = treatmentCodes.map { "type=${it.code}" }.toList()
+    val params = codes.joinToString(separator = "&", prefix = "?")
     val result =
       webClient.request<NomisReasonableAdjustments>(
         HttpMethod.GET,
-        "/api/bookings/$booking/reasonable-adjustments?$params",
+        "/api/bookings/$booking/reasonable-adjustments$params",
         authenticationHeaderForCategories(),
         UpstreamApi.NOMIS,
       )

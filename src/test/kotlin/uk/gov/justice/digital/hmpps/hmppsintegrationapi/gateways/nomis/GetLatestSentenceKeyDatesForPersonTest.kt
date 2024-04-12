@@ -31,11 +31,11 @@ class GetLatestSentenceKeyDatesForPersonTest(
     {
       val nomisApiMockServer = NomisApiMockServer()
       val offenderNo = "abc123"
-
+      val sentencePath = "/api/offenders/$offenderNo/sentences"
       beforeEach {
         nomisApiMockServer.start()
-        nomisApiMockServer.stubGetLatestSentenceKeyDatesForPerson(
-          offenderNo,
+        nomisApiMockServer.stubNomisApiResponse(
+          sentencePath,
           """
           {
             "sentenceDetail": {
@@ -180,8 +180,8 @@ class GetLatestSentenceKeyDatesForPersonTest(
       }
 
       it("returns an error when 404 NOT FOUND is returned") {
-        nomisApiMockServer.stubGetLatestSentenceKeyDatesForPerson(
-          offenderNo,
+        nomisApiMockServer.stubNomisApiResponse(
+          sentencePath,
           """
         {
           "developerMessage": "cannot find person"

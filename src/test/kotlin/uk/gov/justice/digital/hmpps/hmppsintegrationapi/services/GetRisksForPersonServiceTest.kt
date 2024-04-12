@@ -23,7 +23,8 @@ import java.time.LocalDateTime
   initializers = [ConfigDataApplicationContextInitializer::class],
   classes = [GetRisksForPersonService::class],
 )
-internal class GetRisksForPersonServiceTest(
+internal class
+GetRisksForPersonServiceTest(
   @MockBean val assessRisksAndNeedsGateway: AssessRisksAndNeedsGateway,
   @MockBean val getPersonService: GetPersonService,
   private val getRisksForPersonService: GetRisksForPersonService,

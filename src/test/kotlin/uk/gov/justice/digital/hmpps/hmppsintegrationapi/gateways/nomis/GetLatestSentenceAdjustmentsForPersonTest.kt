@@ -30,11 +30,11 @@ class GetLatestSentenceAdjustmentsForPersonTest(
     {
       val nomisApiMockServer = NomisApiMockServer()
       val offenderNo = "abc123"
-
+      val sentenceSummaryPath = "/api/offenders/$offenderNo/booking/latest/sentence-summary"
       beforeEach {
         nomisApiMockServer.start()
-        nomisApiMockServer.stubGetLatestSentenceAdjustmentsForPerson(
-          offenderNo,
+        nomisApiMockServer.stubNomisApiResponse(
+          sentenceSummaryPath,
           """
           {
             "prisonerNumber": "A1234AA",
@@ -86,8 +86,8 @@ class GetLatestSentenceAdjustmentsForPersonTest(
       }
 
       it("returns an error when 404 NOT FOUND is returned") {
-        nomisApiMockServer.stubGetLatestSentenceAdjustmentsForPerson(
-          offenderNo,
+        nomisApiMockServer.stubNomisApiResponse(
+          sentenceSummaryPath,
           """
         {
           "developerMessage": "cannot find person"
