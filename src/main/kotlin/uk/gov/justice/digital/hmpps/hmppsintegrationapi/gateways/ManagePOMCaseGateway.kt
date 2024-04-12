@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpMethod
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonOffenderManager
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonOfficerManager
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.managePOMCase.AllocationPrimaryPOM
@@ -19,7 +19,7 @@ class ManagePOMCaseGateway(
   @Autowired
   lateinit var hmppsAuthGateway: HmppsAuthGateway
 
-  fun getPrimaryPOMForNomisNumber(id: String): Response<PrisonOffenderManager> {
+  fun getPrimaryPOMForNomisNumber(id: String): Response<PrisonOfficerManager> {
     val result =
       webClient.request<AllocationPrimaryPOM>(
         HttpMethod.GET,
@@ -30,12 +30,12 @@ class ManagePOMCaseGateway(
 
     return when (result) {
       is WebClientWrapper.WebClientWrapperResponse.Success -> {
-        Response(data = result.data.toPrisonOffenderManager())
+        Response(data = result.data.toPrisonOfficerManager())
       }
 
       is WebClientWrapper.WebClientWrapperResponse.Error -> {
         Response(
-          data = PrisonOffenderManager(),
+          data = PrisonOfficerManager(),
           errors = result.errors,
         )
       }
