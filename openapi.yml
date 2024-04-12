@@ -815,6 +815,40 @@ paths:
                 NoQueryParametersBadRequestError:
                   $ref: "#/components/examples/InternalServerError"
 
+  /v1/persons/{HmppsId}/protected-characteristics:
+    get:
+      summary: Returns protected characteristics of a person.
+      parameters:
+        - $ref: "#/components/parameters/HmppsId"
+      responses:
+        "200":
+          description: Successfully found licenses for a person with the provided HMPPS ID.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/PersonProtectedCharacteristics"
+        "404":
+          description: Failed to find licenses for a person with the provided HMPPS ID.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                PersonNotFoundError:
+                  $ref: "#/components/examples/PersonNotFoundError"
+        "500":
+          description: An upstream service was not responding, so we cannot verify the accuracy of any data we did get.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                NoQueryParametersBadRequestError:
+                  $ref: "#/components/examples/InternalServerError"
+
   /{TBC}/v1/persons/{Id}/accommodations:
     get:
       summary: FUTURE ENDPOINT - Returns accommodation and referral information associated with a person.
@@ -1257,6 +1291,27 @@ components:
       properties:
         name:
           type: string
+    Disability:
+      type: object
+      properties:
+        notes:
+          type: string
+          nullable: true
+          example: Walking issue
+        startDate:
+          type: string
+          format: date-time
+          nullable: true
+          example: 2013-04-11
+        endDate:
+          type: string
+          format: date-time
+          nullable: true
+          example: 2023-04-11
+        disabilityType:
+          $ref: "#/components/schemas/KeyValue"
+        condition:
+          $ref: "#/components/schemas/KeyValue"
     Error:
       type: object
       properties:
@@ -1408,6 +1463,17 @@ components:
           nullable: true
         offenceRule:
           nullable: true
+    KeyValue:
+      type: object
+      properties:
+        code:
+          type: string
+          nullable: true
+          example: Code
+        description:
+          type: string
+          nullable: true
+          example: Description
     LatestSentenceKeyDatesAndAdjustments:
       type: object
       properties:
@@ -1468,7 +1534,6 @@ components:
           format: date
           example: 2023-03-01
           description: tariffEarlyRemovalSchemeEligibilityDate.
-
     Licence:
       type: object
       properties:
@@ -1731,6 +1796,56 @@ components:
           items:
             $ref: "#/components/schemas/Licence"
           description: list of licences
+    PersonProtectedCharacteristics:
+      type: object
+      properties:
+        age:
+          type: number
+          nullable: false
+          example: 35
+          description: Age of the person
+        gender:
+          type: string
+          nullable: true
+          example: Female
+          description: Gender of the person
+        sexualOrientation:
+          type: string
+          nullable: true
+          example: Unknown
+          description: Sexual orientation of the person
+        ethnicity:
+          type: string
+          nullable: true
+          example: "White: Eng./Welsh/Scot./N.Irish/British"
+          description: Ethnicity of the person
+        nationality:
+          type: string
+          nullable: true
+          example: "Egyptian"
+          description: Nationality of the person
+        religion:
+          type: string
+          nullable: true
+          example: "Church of England (Anglican)"
+          description: Religion of the person
+        maritalStatus:
+          type: string
+          nullable: true
+          example: "Widowed"
+          description: Marital status of the person
+        disabilities:
+          type: array
+          minItems: 0
+          items:
+            $ref: "#/components/schemas/Disability"
+        reasonableAdjustments:
+          type: array
+          minItems: 0
+          items:
+            $ref: "#/components/schemas/ReasonableAdjustment"
+
+
     Punishment:
       type: object
       properties:
@@ -1924,6 +2039,34 @@ components:
           enum: [ ARD, CRD, NPD, PRRD ]
           example: ARD
           description: Indicates which type of non-DTO release date is the effective release date. One of 'ARD', 'CRD', 'NPD' or 'PRRD'.
+    ReasonableAdjustment:
+      type: object
+      properties:
+        treatmentCode:
+          type: string
+          nullable: true
+          example: "WHEELCHR_ACC"
+          description: MTreatment Code
+        commentText:
+          type: string
+          nullable: true
+          example: "abcd"
+          description: Comment Text
+        startDate:
+          type: string
+          format: date-time
+          nullable: true
+          example: 2013-04-11
+        endDate:
+          type: string
+          format: date-time
+          nullable: true
+          example: 2023-04-11
+        treatmentDescription:
+          type: string
+          nullable: true
+          example: "Wheelchair accessibility"
+          description: Treatment Description
     ReleaseDate:
       type: object
       properties:
@@ -2112,8 +2255,6 @@ components:
           $ref: "#/components/schemas/RiskOfSeriousRecidivism"
         sexualPredictor:
           $ref: "#/components/schemas/SexualPredictor"
-
-
     GroupReconviction:
       type: object
       properties:
@@ -2214,7 +2355,6 @@ components:
           $ref: "#/components/schemas/OtherRisks"
         summary:
           $ref: "#/components/schemas/Summary"
-
     RiskToSelf:
       type: object
       properties:
@@ -2228,7 +2368,6 @@ components:
           $ref: "#/components/schemas/Risk"
         vulnerability:
           $ref: "#/components/schemas/Risk"
-
     Risk:
       type: object
       properties:
@@ -2255,7 +2394,6 @@ components:
           type: string
           example: "Risk of self harm concerns due to ..."
           description: Supporting comments for any current concerns
-
     OtherRisks:
       type: object
       properties:
@@ -2279,7 +2417,6 @@ components:
           example: "YES"
           enum: [ YES, NO, DK, NA ]
           description: Risk to other prisoners
-
     Summary:
       type: object
       properties:
@@ -2358,7 +2495,6 @@ components:
               type: string
               example: LOW
               enum: [ VERY_HIGH, HIGH, MEDIUM, LOW ]
-
     Needs:
       type: object
       properties:
@@ -2382,7 +2518,6 @@ components:
           minItems: 0
           items:
             $ref: "#/components/schemas/Need"
-
     Need:
       type: object
       properties:
