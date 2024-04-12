@@ -3,26 +3,26 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ManagePOMCaseGateway
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonOfficerManager
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonOffenderManager
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 
 @Service
-class GetPrisonOfficerManagerForPersonService(
+class GetPrisonOffenderManagerForPersonService(
   @Autowired val getPersonService: GetPersonService,
   @Autowired val managePOMCaseGateway: ManagePOMCaseGateway,
 ) {
-  fun execute(hmppsId: String): Response<PrisonOfficerManager> {
+  fun execute(hmppsId: String): Response<PrisonOffenderManager> {
     val personResponse = getPersonService.execute(hmppsId = hmppsId)
     val nomisNumber = personResponse.data?.identifiers?.nomisNumber
-    var prisonOfficeManager: Response<PrisonOfficerManager> = Response(data = PrisonOfficerManager())
+    var prisonOffenderManager: Response<PrisonOffenderManager> = Response(data = PrisonOffenderManager())
 
     if (nomisNumber != null) {
-      prisonOfficeManager = managePOMCaseGateway.getPrimaryPOMForNomisNumber(nomisNumber)
+      prisonOffenderManager = managePOMCaseGateway.getPrimaryPOMForNomisNumber(nomisNumber)
     }
 
     return Response(
-      data = prisonOfficeManager.data,
-      errors = personResponse.errors + prisonOfficeManager.errors,
+      data = prisonOffenderManager.data,
+      errors = personResponse.errors + prisonOffenderManager.errors,
     )
   }
 }

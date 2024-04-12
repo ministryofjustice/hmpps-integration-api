@@ -13,37 +13,37 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ManagePOMCaseGa
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Identifiers
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Prison
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonOfficerManager
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonOffenderManager
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
-  classes = [GetPrisonOfficerManagerForPersonService::class],
+  classes = [GetPrisonOffenderManagerForPersonService::class],
 )
-class GetPrisonOfficerManagerForPersonServiceTest(
+class GetPrisonOffenderManagerForPersonServiceTest(
   @MockBean val managePOMCaseGateway: ManagePOMCaseGateway,
   @MockBean val getPersonService: GetPersonService,
-  private val getPrisonOfficerManagerForPersonService: GetPrisonOfficerManagerForPersonService,
+  private val getPrisonOffenderManagerForPersonService: GetPrisonOffenderManagerForPersonService,
 ) : DescribeSpec(
     {
       val hmppsId = "1234/56789B"
       val nomisNumber = "Z99999ZZ"
       val person = Person(firstName = "Julianna", lastName = "Blake", identifiers = Identifiers(nomisNumber = nomisNumber))
 
-      val prisonOfficerManager = PrisonOfficerManager(forename = "Paul", surname = "Smith", prison = Prison(code = "RED"))
+      val prisonOffenderManager = PrisonOffenderManager(forename = "Paul", surname = "Smith", prison = Prison(code = "RED"))
 
       beforeEach {
         Mockito.reset(getPersonService)
         Mockito.reset(managePOMCaseGateway)
 
         whenever(getPersonService.execute(hmppsId = hmppsId)).thenReturn(Response(person))
-        whenever(managePOMCaseGateway.getPrimaryPOMForNomisNumber(id = nomisNumber)).thenReturn(Response(prisonOfficerManager))
+        whenever(managePOMCaseGateway.getPrimaryPOMForNomisNumber(id = nomisNumber)).thenReturn(Response(prisonOffenderManager))
       }
 
       it("performs a search according to hmpps Id") {
-        getPrisonOfficerManagerForPersonService.execute(hmppsId)
+        getPrisonOffenderManagerForPersonService.execute(hmppsId)
         verify(getPersonService, VerificationModeFactory.times(1)).execute(hmppsId = hmppsId)
       }
 
@@ -53,8 +53,8 @@ class GetPrisonOfficerManagerForPersonServiceTest(
             data = person,
           ),
         )
-        val result = getPrisonOfficerManagerForPersonService.execute(hmppsId)
-        result.shouldBe(Response(data = prisonOfficerManager))
+        val result = getPrisonOffenderManagerForPersonService.execute(hmppsId)
+        result.shouldBe(Response(data = prisonOffenderManager))
       }
 
       it("should return a list of errors if person not found") {
@@ -70,8 +70,8 @@ class GetPrisonOfficerManagerForPersonServiceTest(
               ),
           ),
         )
-        val result = getPrisonOfficerManagerForPersonService.execute("NOT_FOUND")
-        result.data.shouldBe(PrisonOfficerManager())
+        val result = getPrisonOffenderManagerForPersonService.execute("NOT_FOUND")
+        result.data.shouldBe(PrisonOffenderManager())
         result.errors.first().type.shouldBe(UpstreamApiError.Type.ENTITY_NOT_FOUND)
       }
     },
