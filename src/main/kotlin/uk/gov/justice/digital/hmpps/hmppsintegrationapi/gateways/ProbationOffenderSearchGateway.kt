@@ -22,7 +22,7 @@ class ProbationOffenderSearchGateway(
   @Autowired
   lateinit var hmppsAuthGateway: HmppsAuthGateway
 
-  fun getPerson(id: String? = null): Response<Person?> {
+  fun getOffender(id: String? = null): Response<Offender?> {
     val queryField =
       if (isPncNumber(id)) {
         "pncNumber"
@@ -45,7 +45,7 @@ class ProbationOffenderSearchGateway(
         val person = persons.firstOrNull()?.toPerson()
 
         Response(
-          data = person,
+          data = persons.firstOrNull(),
           errors =
             if (person == null) {
               listOf(
@@ -67,6 +67,11 @@ class ProbationOffenderSearchGateway(
         )
       }
     }
+  }
+
+  fun getPerson(id: String? = null): Response<Person?> {
+    val offender = getOffender(id)
+    return Response(data = offender.data?.toPerson(), errors = offender.errors)
   }
 
   fun getPersons(
@@ -111,38 +116,8 @@ class ProbationOffenderSearchGateway(
   }
 
   fun getAddressesForPerson(hmppsId: String): Response<List<Address>> {
-    val queryField =
-      if (isPncNumber(hmppsId)) {
-        "pncNumber"
-      } else {
-        "crn"
-      }
-
-    val result =
-      webClient.requestList<Offender>(
-        HttpMethod.POST,
-        "/search",
-        authenticationHeader(),
-        UpstreamApi.PROBATION_OFFENDER_SEARCH,
-        mapOf(queryField to hmppsId),
-      )
-
-    return when (result) {
-      is WebClientWrapperResponse.Success -> {
-        val addresses = result.data.firstOrNull()?.contactDetails?.addresses.orEmpty()
-        return if (addresses.isEmpty()) {
-          Response(data = emptyList())
-        } else {
-          Response(data = addresses.map { it.toAddress() })
-        }
-      }
-      is WebClientWrapperResponse.Error -> {
-        Response(
-          data = emptyList(),
-          errors = result.errors,
-        )
-      }
-    }
+    val offender = getOffender(hmppsId)
+    return Response(data = offender.data?.contactDetails?.addresses.orEmpty().map { it.toAddress() }, errors = offender.errors)
   }
 
   private fun authenticationHeader(): Map<String, String> {

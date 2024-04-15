@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.prisoneroffendersearch
 
 import io.kotest.core.spec.style.DescribeSpec
+import io.kotest.matchers.booleans.shouldBeTrue
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
@@ -10,6 +11,7 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
 import org.springframework.boot.test.mock.mockito.MockBean
+import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
@@ -17,6 +19,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGatewa
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.PrisonerOffenderSearchApiMockServer
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import java.io.File
 import java.time.LocalDate
 
@@ -226,6 +229,59 @@ class PrisonerOffenderSearchGatewayTest(
         val response = prisonerOffenderSearchGateway.getPersons(firstNameThatDoesNotExist, lastNameThatDoesNotExist, null)
 
         response.data.shouldBeEmpty()
+      }
+    }
+
+    describe("#getPrisonOffender") {
+      val nomsNumber = "mockNomsNumber"
+
+      beforeEach {
+        prisonerOffenderSearchApiMockServer.stubGetPrisoner(
+          nomsNumber,
+          """
+           {
+            "prisonerNumber": "A7796DY",
+            "bookingId": "599877",
+            "firstName": "JAMES",
+            "middleNames": "MARTIN",
+            "lastName": "HOWLETT",
+            "maritalStatus": "Widowed"
+          }
+          """.trimIndent(),
+        )
+      }
+
+      it("authenticates using HMPPS Auth with credentials") {
+        prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber)
+
+        verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("Prisoner Offender Search")
+      }
+
+      it("returns reasonable adjustment for a person with the matching ID") {
+        val response = prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber)
+
+        response.data?.prisonerNumber.shouldBe("A7796DY")
+        response.data?.bookingId.shouldBe("599877")
+        response.data?.firstName.shouldBe("JAMES")
+        response.data?.middleNames.shouldBe("MARTIN")
+        response.data?.lastName.shouldBe("HOWLETT")
+        response.data?.maritalStatus.shouldBe("Widowed")
+      }
+
+      it("returns an error when 404 NOT FOUND is returned") {
+        prisonerOffenderSearchApiMockServer.stubGetPrisoner(
+          nomsNumber,
+          """
+        {
+          "developerMessage": "cannot find person"
+        }
+        """,
+          HttpStatus.NOT_FOUND,
+        )
+
+        val response = prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber)
+
+        response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND).shouldBeTrue()
       }
     }
   })

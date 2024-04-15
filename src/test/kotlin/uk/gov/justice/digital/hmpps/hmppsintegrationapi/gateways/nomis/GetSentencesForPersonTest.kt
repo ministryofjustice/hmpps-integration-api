@@ -39,11 +39,12 @@ class GetSentencesForPersonTest(
         val nomisApiMockServer = NomisApiMockServer()
         val offenderNo = "zyx987"
         val someBookingId = 1
-
+        val sentecesAndOffencesPath = "/api/offender-sentences/booking/$someBookingId/sentences-and-offences"
+        var sentencesPath = "/api/offender-sentences?offenderNo=$offenderNo"
         beforeEach {
           nomisApiMockServer.start()
-          nomisApiMockServer.stubGetBookingIdsForNomisNumber(
-            offenderNo,
+          nomisApiMockServer.stubNomisApiResponse(
+            sentencesPath,
             """
           [
             {
@@ -56,8 +57,8 @@ class GetSentencesForPersonTest(
         """.removeWhitespaceAndNewlines(),
           )
 
-          nomisApiMockServer.stubGetSentenceForBookingId(
-            someBookingId,
+          nomisApiMockServer.stubNomisApiResponse(
+            sentecesAndOffencesPath,
             """
           {
             "fineAmount": "40",
@@ -119,7 +120,7 @@ class GetSentencesForPersonTest(
         }
 
         it("returns an error when 404 Not Found is returned because no person is found") {
-          nomisApiMockServer.stubGetBookingIdsForNomisNumber(offenderNo, "", HttpStatus.NOT_FOUND)
+          nomisApiMockServer.stubNomisApiResponse(sentencesPath, "", HttpStatus.NOT_FOUND)
 
           val response = nomisGateway.getBookingIdsForPerson(offenderNo)
 
@@ -129,7 +130,7 @@ class GetSentencesForPersonTest(
         }
 
         it("returns an error when no sentence is found") {
-          nomisApiMockServer.stubGetSentenceForBookingId(someBookingId, "", HttpStatus.NOT_FOUND)
+          nomisApiMockServer.stubNomisApiResponse(sentecesAndOffencesPath, "", HttpStatus.NOT_FOUND)
 
           val response = nomisGateway.getSentencesForBooking(someBookingId)
 

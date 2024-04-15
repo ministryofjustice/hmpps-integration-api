@@ -42,6 +42,7 @@ authorisation:
       - "/v1/persons/.*/adjudications"
       - "/v1/persons/.*/licences/conditions"
       - "/v1/persons/.*/case-notes"
+      - "/v1/persons/.*/protected-characteristics"
     ctrlo:
       - "/v1/epf/person-details/.*/.*"
     kubernetes-health-check-client:

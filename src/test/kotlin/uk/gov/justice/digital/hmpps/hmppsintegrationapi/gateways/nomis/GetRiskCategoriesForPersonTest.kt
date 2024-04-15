@@ -33,11 +33,11 @@ class GetRiskCategoriesForPersonTest(
       {
         val nomisApiMockServer = NomisApiMockServer()
         val offenderNo = "A7796DY"
-
+        val offenderPath = "/api/offenders/$offenderNo"
         beforeEach {
           nomisApiMockServer.start()
-          nomisApiMockServer.stubGetRiskCategoriesForPerson(
-            offenderNo,
+          nomisApiMockServer.stubNomisApiResponse(
+            offenderPath,
             """
             {
             "offenderNo": "A7796DY",
@@ -65,7 +65,7 @@ class GetRiskCategoriesForPersonTest(
         }
 
         it("returns an error when 404 Not Found is returned because no person is found") {
-          nomisApiMockServer.stubGetRiskCategoriesForPerson(offenderNo, "", HttpStatus.NOT_FOUND)
+          nomisApiMockServer.stubNomisApiResponse(offenderPath, "", HttpStatus.NOT_FOUND)
 
           val response = nomisGateway.getRiskCategoriesForPerson(offenderNo)
 
