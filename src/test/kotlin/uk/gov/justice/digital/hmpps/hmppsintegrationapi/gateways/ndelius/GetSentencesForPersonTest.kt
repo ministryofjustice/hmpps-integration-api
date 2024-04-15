@@ -104,6 +104,7 @@ class GetSentencesForPersonTest(
             deliusCrn,
             """
           {
+          "communityManager": {},
            "mappaDetail": {},
             "supervisions": [] }
           """,

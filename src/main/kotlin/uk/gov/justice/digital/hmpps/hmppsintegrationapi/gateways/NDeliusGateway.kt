@@ -92,7 +92,7 @@ class NDeliusGateway(
     }
   }
 
-  fun getCommunityOffenderManagerForPerson(id: String): Response<CommunityOffenderManager?> {
+  fun getCommunityOffenderManagerForPerson(id: String): Response<CommunityOffenderManager> {
     val result =
       webClient.request<NDeliusSupervisions>(
         HttpMethod.GET,
@@ -102,12 +102,12 @@ class NDeliusGateway(
       )
     return when (result) {
       is WebClientWrapperResponse.Success -> {
-        Response(data = result.data.communityManager?.toCommunityOffenderManager())
+        Response(data = result.data.communityManager.toCommunityOffenderManager())
       }
 
       is WebClientWrapperResponse.Error -> {
         Response(
-          data = null,
+          data = CommunityOffenderManager(),
           errors = result.errors,
         )
       }

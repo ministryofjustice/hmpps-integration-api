@@ -79,6 +79,7 @@ class GetMappaDetailForPersonTest(
             deliusCrn,
             """
             {
+              "communityManager": {},
               "mappaDetail": {},
               "supervisions": []
             }

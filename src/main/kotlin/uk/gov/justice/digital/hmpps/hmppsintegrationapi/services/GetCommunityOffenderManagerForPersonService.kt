@@ -1,19 +1,21 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CommunityOffenderManager
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 
+@Service
 class GetCommunityOffenderManagerForPersonService(
   @Autowired val getPersonService: GetPersonService,
   @Autowired val nDeliusGateway: NDeliusGateway,
 ) {
-  fun execute(hmppsId: String): Response<CommunityOffenderManager?> {
+  fun execute(hmppsId: String): Response<CommunityOffenderManager> {
     val personResponse = getPersonService.execute(hmppsId = hmppsId)
 
     val deliusCrn = personResponse.data?.identifiers?.deliusCrn
-    var nDeliusMappaDetailResponse: Response<CommunityOffenderManager?> = Response(data = CommunityOffenderManager())
+    var nDeliusMappaDetailResponse: Response<CommunityOffenderManager> = Response(data = CommunityOffenderManager())
 
     if (deliusCrn != null) {
       nDeliusMappaDetailResponse = nDeliusGateway.getCommunityOffenderManagerForPerson(id = deliusCrn)
