@@ -213,6 +213,7 @@ class SupervisionsTest : DescribeSpec(
       it("maps one-to-one attributes to integration API sentence attributes") {
         val supervisions =
           NDeliusSupervisions(
+            communityManager = NDeliusCommunityManager(),
             mappaDetail = NDeliusMappaDetail(),
             listOf(
               NDeliusSupervision(
@@ -276,6 +277,7 @@ class SupervisionsTest : DescribeSpec(
       it("can be constructed with NULL values") {
         val supervisions =
           NDeliusSupervisions(
+            communityManager = NDeliusCommunityManager(),
             mappaDetail = NDeliusMappaDetail(),
             listOf(
               NDeliusSupervision(custodial = true),

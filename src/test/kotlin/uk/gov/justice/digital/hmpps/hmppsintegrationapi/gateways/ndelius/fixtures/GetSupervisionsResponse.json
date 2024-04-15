@@ -1,4 +1,21 @@
 {
+  "communityManager": {
+    "code": "Code1",
+    "name": {
+      "forename": "John",
+      "surname": "Smith"
+    },
+    "username": "JohnSmithUsername",
+    "email": "johnsmith@email.com",
+    "telephoneNumber": "077777777",
+    "team": {
+      "code": "Code1",
+      "description": "Description",
+      "email": "team@email.com",
+      "telephoneNumber": "07888888"
+    },
+    "allocated": true
+  },
   "mappaDetail": {
     "level": 1,
     "levelDescription": "string",

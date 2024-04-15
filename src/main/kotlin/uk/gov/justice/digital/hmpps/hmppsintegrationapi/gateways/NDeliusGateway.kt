@@ -6,6 +6,7 @@ import org.springframework.http.HttpMethod
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper.WebClientWrapperResponse
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CommunityOffenderManager
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.MappaDetail
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Offence
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
@@ -80,6 +81,28 @@ class NDeliusGateway(
     return when (result) {
       is WebClientWrapperResponse.Success -> {
         Response(data = result.data.mappaDetail?.toMappaDetail())
+      }
+
+      is WebClientWrapperResponse.Error -> {
+        Response(
+          data = null,
+          errors = result.errors,
+        )
+      }
+    }
+  }
+
+  fun getCommunityOffenderManagerForPerson(id: String): Response<CommunityOffenderManager?> {
+    val result =
+      webClient.request<NDeliusSupervisions>(
+        HttpMethod.GET,
+        "/case/$id/supervisions",
+        authenticationHeader(),
+        UpstreamApi.NDELIUS,
+      )
+    return when (result) {
+      is WebClientWrapperResponse.Success -> {
+        Response(data = result.data.communityManager?.toCommunityOffenderManager())
       }
 
       is WebClientWrapperResponse.Error -> {

@@ -1,6 +1,6 @@
-package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps
+package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius
 
-data class PersonResponsibleOfficerTeam(
+data class NDeliusTeam(
   val code: String? = null,
   val description: String? = null,
   val email: String? = null,
