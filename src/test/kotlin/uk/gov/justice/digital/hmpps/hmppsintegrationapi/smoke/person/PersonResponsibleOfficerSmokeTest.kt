@@ -22,25 +22,26 @@ class PersonResponsibleOfficerSmokeTest : DescribeSpec(
       response.body().shouldEqualJson(
         """
         "data": {
-            "prisonOffenderManager": {
-                "forename": "Paul",
-                "surname": "Reds",
+            "manager": {
+                "code": 0,
+                "forename": "string",
+                "surname": "string",
                 "prison": {
-                    "code": "PrisonCode1"
+                    "code": "string"
                 }
             },
-            "communityOffenderManager": {
+            "communityManager": {
                 "name": {
-                    "forename": "Helen",
-                    "surname": "Miller"
+                    "forename": "string",
+                    "surname": "string"
                 },
-                "email": "helenemail@email.com",
-                "telephoneNumber": "0987654321",
+                "email": "string",
+                "telephoneNumber": "string",
                 "team": {
-                    "code": "PrisonCode2",
-                    "description": "Description",
-                    "email": "email_again@email.com",
-                    "telephoneNumber": "01234567890"
+                    "code": "string",
+                    "description": "string",
+                    "email": "string",
+                    "telephoneNumber": "string"
                 }
             }
         }
