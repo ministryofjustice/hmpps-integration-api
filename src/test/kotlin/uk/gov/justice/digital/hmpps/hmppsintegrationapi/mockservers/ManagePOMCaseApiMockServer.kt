@@ -15,7 +15,7 @@ class ManagePOMCaseApiMockServer : WireMockServer(WIREMOCK_PORT) {
     status: HttpStatus = HttpStatus.OK,
   ) {
     stubFor(
-      WireMock.get("/allocation/$id/primary_pom")
+      WireMock.get("/api/allocation/$id/primary_pom")
         .withHeader(
           "Authorization",
           WireMock.matching("Bearer ${HmppsAuthMockServer.TOKEN}"),

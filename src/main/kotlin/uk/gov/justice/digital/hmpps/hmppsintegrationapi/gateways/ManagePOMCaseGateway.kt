@@ -23,7 +23,7 @@ class ManagePOMCaseGateway(
     val result =
       webClient.request<AllocationPrimaryPOM>(
         HttpMethod.GET,
-        "/allocation/$id/primary_pom",
+        "/api/allocation/$id/primary_pom",
         authenticationHeader(),
         UpstreamApi.MANAGE_POM_CASE,
       )
