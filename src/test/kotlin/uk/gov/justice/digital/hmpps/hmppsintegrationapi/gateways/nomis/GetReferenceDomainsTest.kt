@@ -1,8 +1,8 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.nomis
 
 import io.kotest.core.spec.style.DescribeSpec
+import io.kotest.matchers.booleans.shouldBeTrue
 import io.kotest.matchers.collections.shouldBeEmpty
-import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory
@@ -17,39 +17,32 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGatewa
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NomisGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.NomisApiMockServer
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import java.time.LocalDateTime
 
 @ActiveProfiles("test")
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
   classes = [NomisGateway::class],
 )
-class GetImageMetadataForPersonTest(
+class GetReferenceDomainsTest(
   @MockBean val hmppsAuthGateway: HmppsAuthGateway,
   private val nomisGateway: NomisGateway,
-) :
-  DescribeSpec({
+) : DescribeSpec(
+    {
       val nomisApiMockServer = NomisApiMockServer()
-      val offenderNo = "abc123"
-      val imagePath = "/api/images/offenders/$offenderNo"
+      val testDomain = "abc"
+      val domainPath = "/api/reference-domains/domains/$testDomain/codes"
       beforeEach {
         nomisApiMockServer.start()
         nomisApiMockServer.stubNomisApiResponse(
-          imagePath,
+          domainPath,
           """
-        [
-          {
-            "imageId": 24213,
-            "active": true,
-            "captureDateTime": "2008-08-27T16:35:00",
-            "imageView": "FACE",
-            "imageOrientation": "FRONT",
-            "imageType": "OFF_BKG"
-          }
-        ]
-      """,
+          [
+            {"domain":"abc", "code":"a"},
+            {"domain":"abc", "code":"b"},
+            {"domain":"abc", "code":"c"}
+          ]
+        """,
         )
 
         Mockito.reset(hmppsAuthGateway)
@@ -61,36 +54,42 @@ class GetImageMetadataForPersonTest(
       }
 
       it("authenticates using HMPPS Auth with credentials") {
-        nomisGateway.getImageMetadataForPerson(offenderNo)
+        nomisGateway.getReferenceDomains(testDomain)
 
         verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("NOMIS")
       }
 
-      it("returns image metadata for the matching person ID") {
-        val response = nomisGateway.getImageMetadataForPerson(offenderNo)
+      it("returns reference domains with the matching ID") {
+        val response = nomisGateway.getReferenceDomains(testDomain)
 
-        response.data.first().active.shouldBe(true)
-        response.data.first().captureDateTime.shouldBe(LocalDateTime.parse("2008-08-27T16:35:00"))
-        response.data.first().view.shouldBe("FACE")
-        response.data.first().orientation.shouldBe("FRONT")
-        response.data.first().type.shouldBe("OFF_BKG")
+        response.data.count().shouldBe(3)
+        response.data.count { it.domain == "abc" && it.code == "a" }.shouldBe(1)
+        response.data.count { it.domain == "abc" && it.code == "b" }.shouldBe(1)
+        response.data.count { it.domain == "abc" && it.code == "c" }.shouldBe(1)
       }
 
-      it("returns a person without image metadata when no images are found") {
-        nomisApiMockServer.stubNomisApiResponse(imagePath, "[]")
+      it("returns an empty list when no domains are found") {
+        nomisApiMockServer.stubNomisApiResponse(domainPath, "[]")
 
-        val response = nomisGateway.getImageMetadataForPerson(offenderNo)
+        val response = nomisGateway.getReferenceDomains(testDomain)
 
         response.data.shouldBeEmpty()
       }
 
-      it("returns an error when 404 Not Found is returned") {
-        nomisApiMockServer.stubNomisApiResponse(imagePath, "", HttpStatus.NOT_FOUND)
+      it("returns an error when 404 NOT FOUND is returned") {
+        nomisApiMockServer.stubNomisApiResponse(
+          domainPath,
+          """
+        {
+          "developerMessage": "cannot find person"
+        }
+        """,
+          HttpStatus.NOT_FOUND,
+        )
 
-        val response = nomisGateway.getImageMetadataForPerson(offenderNo)
+        val response = nomisGateway.getReferenceDomains(testDomain)
 
-        response.errors.shouldHaveSize(1)
-        response.errors.first().causedBy.shouldBe(UpstreamApi.NOMIS)
-        response.errors.first().type.shouldBe(UpstreamApiError.Type.ENTITY_NOT_FOUND)
+        response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND).shouldBeTrue()
       }
-    })
+    },
+  )

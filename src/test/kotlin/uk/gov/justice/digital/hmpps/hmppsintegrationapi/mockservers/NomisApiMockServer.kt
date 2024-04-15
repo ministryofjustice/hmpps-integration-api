@@ -11,13 +11,13 @@ class NomisApiMockServer : WireMockServer(WIREMOCK_PORT) {
     private const val WIREMOCK_PORT = 4000
   }
 
-  fun stubGetOffenderImageDetails(
-    offenderNo: String,
+  fun stubNomisApiResponse(
+    path: String,
     body: String,
     status: HttpStatus = HttpStatus.OK,
   ) {
     stubFor(
-      get("/api/images/offenders/$offenderNo")
+      get(path)
         .withHeader(
           "Authorization",
           matching("Bearer ${HmppsAuthMockServer.TOKEN}"),
@@ -44,157 +44,6 @@ class NomisApiMockServer : WireMockServer(WIREMOCK_PORT) {
             .withHeader("Content-Type", "image/jpeg")
             .withStatus(status.value())
             .withBodyFile("example.jpg"),
-        ),
-    )
-  }
-
-  fun stubGetOffenderAddresses(
-    offenderNo: String,
-    body: String,
-    status: HttpStatus = HttpStatus.OK,
-  ) {
-    stubFor(
-      get("/api/offenders/$offenderNo/addresses")
-        .withHeader(
-          "Authorization",
-          matching("Bearer ${HmppsAuthMockServer.TOKEN}"),
-        ).willReturn(
-          aResponse()
-            .withHeader("Content-Type", "application/json")
-            .withStatus(status.value())
-            .withBody(body.trimIndent()),
-        ),
-    )
-  }
-
-  fun stubGetOffencesForPerson(
-    offenderNo: String,
-    body: String,
-    status: HttpStatus = HttpStatus.OK,
-  ) {
-    stubFor(
-      get("/api/bookings/offenderNo/$offenderNo/offenceHistory")
-        .withHeader(
-          "Authorization",
-          matching("Bearer ${HmppsAuthMockServer.TOKEN}"),
-        ).willReturn(
-          aResponse()
-            .withHeader("Content-Type", "application/json")
-            .withStatus(status.value())
-            .withBody(body.trimIndent()),
-        ),
-    )
-  }
-
-  fun stubGetAlertsForPerson(
-    offenderNo: String,
-    body: String,
-    status: HttpStatus = HttpStatus.OK,
-  ) {
-    stubFor(
-      get("/api/offenders/$offenderNo/alerts/v2")
-        .withHeader(
-          "Authorization",
-          matching("Bearer ${HmppsAuthMockServer.TOKEN}"),
-        ).willReturn(
-          aResponse()
-            .withHeader("Content-Type", "application/json")
-            .withStatus(status.value())
-            .withBody(body.trimIndent()),
-        ),
-    )
-  }
-
-  fun stubGetSentenceForBookingId(
-    bookingId: Int,
-    body: String,
-    status: HttpStatus = HttpStatus.OK,
-  ) {
-    stubFor(
-      get("/api/offender-sentences/booking/$bookingId/sentences-and-offences")
-        .withHeader(
-          "Authorization",
-          matching("Bearer ${HmppsAuthMockServer.TOKEN}"),
-        ).willReturn(
-          aResponse()
-            .withHeader("Content-Type", "application/json")
-            .withStatus(status.value())
-            .withBody(body.trimIndent()),
-        ),
-    )
-  }
-
-  fun stubGetBookingIdsForNomisNumber(
-    nomisNumber: String,
-    body: String,
-    status: HttpStatus = HttpStatus.OK,
-  ) {
-    stubFor(
-      get("/api/offender-sentences?offenderNo=$nomisNumber")
-        .withHeader(
-          "Authorization",
-          matching("Bearer ${HmppsAuthMockServer.TOKEN}"),
-        ).willReturn(
-          aResponse()
-            .withHeader("Content-Type", "application/json")
-            .withStatus(status.value())
-            .withBody(body.trimIndent()),
-        ),
-    )
-  }
-
-  fun stubGetLatestSentenceAdjustmentsForPerson(
-    nomisNumber: String,
-    body: String,
-    status: HttpStatus = HttpStatus.OK,
-  ) {
-    stubFor(
-      get("/api/offenders/$nomisNumber/booking/latest/sentence-summary")
-        .withHeader(
-          "Authorization",
-          matching("Bearer ${HmppsAuthMockServer.TOKEN}"),
-        ).willReturn(
-          aResponse()
-            .withHeader("Content-Type", "application/json")
-            .withStatus(status.value())
-            .withBody(body.trimIndent()),
-        ),
-    )
-  }
-
-  fun stubGetLatestSentenceKeyDatesForPerson(
-    nomisNumber: String,
-    body: String,
-    status: HttpStatus = HttpStatus.OK,
-  ) {
-    stubFor(
-      get("/api/offenders/$nomisNumber/sentences")
-        .withHeader(
-          "Authorization",
-          matching("Bearer ${HmppsAuthMockServer.TOKEN}"),
-        ).willReturn(
-          aResponse()
-            .withHeader("Content-Type", "application/json")
-            .withStatus(status.value())
-            .withBody(body.trimIndent()),
-        ),
-    )
-  }
-
-  fun stubGetRiskCategoriesForPerson(
-    offenderNo: String,
-    body: String,
-    status: HttpStatus = HttpStatus.OK,
-  ) {
-    stubFor(
-      get("/api/offenders/$offenderNo")
-        .withHeader("Authorization", matching("Bearer ${HmppsAuthMockServer.TOKEN}"))
-        .withHeader("version", matching("1.0"))
-        .willReturn(
-          aResponse()
-            .withHeader("Content-Type", "application/json")
-            .withStatus(status.value())
-            .withBody(body.trimIndent()),
         ),
     )
   }

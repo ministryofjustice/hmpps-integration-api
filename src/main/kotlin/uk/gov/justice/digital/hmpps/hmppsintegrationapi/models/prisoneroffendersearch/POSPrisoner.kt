@@ -14,6 +14,8 @@ data class POSPrisoner(
   val aliases: List<POSPrisonerAlias> = listOf(),
   val prisonerNumber: String? = null,
   val pncNumber: String? = null,
+  val bookingId: String? = null,
+  val maritalStatus: String? = null,
   val croNumber: String? = null,
 ) {
   fun toPerson(): Person =

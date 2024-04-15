@@ -35,11 +35,11 @@ class GetAlertsForPersonTest(
       {
         val nomisApiMockServer = NomisApiMockServer()
         val offenderNo = "zyx987"
-
+        val alertsPath = "/api/offenders/$offenderNo/alerts/v2"
         beforeEach {
           nomisApiMockServer.start()
-          nomisApiMockServer.stubGetAlertsForPerson(
-            offenderNo,
+          nomisApiMockServer.stubNomisApiResponse(
+            alertsPath,
             """
             [
               {
@@ -82,7 +82,7 @@ class GetAlertsForPersonTest(
         }
 
         it("returns a person with an empty list of alerts when no alerts are found") {
-          nomisApiMockServer.stubGetAlertsForPerson(offenderNo, "[]")
+          nomisApiMockServer.stubNomisApiResponse(alertsPath, "[]")
 
           val response = nomisGateway.getAlertsForPerson(offenderNo)
 
@@ -90,7 +90,7 @@ class GetAlertsForPersonTest(
         }
 
         it("returns an error when 404 Not Found is returned because no person is found") {
-          nomisApiMockServer.stubGetAlertsForPerson(offenderNo, "", HttpStatus.NOT_FOUND)
+          nomisApiMockServer.stubNomisApiResponse(alertsPath, "", HttpStatus.NOT_FOUND)
 
           val response = nomisGateway.getAlertsForPerson(offenderNo)
 

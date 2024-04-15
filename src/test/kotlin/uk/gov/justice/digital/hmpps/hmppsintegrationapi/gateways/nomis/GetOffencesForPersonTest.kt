@@ -35,11 +35,11 @@ class GetOffencesForPersonTest(
       {
         val nomisApiMockServer = NomisApiMockServer()
         val offenderNo = "zyx987"
-
+        val offenceHistoryPath = "/api/bookings/offenderNo/$offenderNo/offenceHistory"
         beforeEach {
           nomisApiMockServer.start()
-          nomisApiMockServer.stubGetOffencesForPerson(
-            offenderNo,
+          nomisApiMockServer.stubNomisApiResponse(
+            offenceHistoryPath,
             """
           [
             {
@@ -84,7 +84,7 @@ class GetOffencesForPersonTest(
         }
 
         it("returns a person with an empty list of offences when no offences are found") {
-          nomisApiMockServer.stubGetOffencesForPerson(offenderNo, "[]")
+          nomisApiMockServer.stubNomisApiResponse(offenceHistoryPath, "[]")
 
           val response = nomisGateway.getOffencesForPerson(offenderNo)
 
@@ -92,7 +92,7 @@ class GetOffencesForPersonTest(
         }
 
         it("returns an error when 404 Not Found is returned because no person is found") {
-          nomisApiMockServer.stubGetOffencesForPerson(offenderNo, "", HttpStatus.NOT_FOUND)
+          nomisApiMockServer.stubNomisApiResponse(offenceHistoryPath, "", HttpStatus.NOT_FOUND)
 
           val response = nomisGateway.getOffencesForPerson(offenderNo)
 
