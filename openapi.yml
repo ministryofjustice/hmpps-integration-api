@@ -722,7 +722,7 @@ paths:
                 NoQueryParametersBadRequestError:
                   $ref: "#/components/examples/InternalServerError"
 
-  /v1/persons/{Id}/person-responsible-officer:
+  /v1/persons/{HmppsId}/person-responsible-officer:
     get:
       summary: Returns the person responsible officer associated with a person.
       parameters:
