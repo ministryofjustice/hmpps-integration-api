@@ -32,7 +32,7 @@ class EPFPersonDetailSmokeTest : DescribeSpec(
           "dateOfBirth":"2019-08-24",
           "gender": "string",
           "sentence": {
-            "date": "2019-08-24",
+            "date": null,
             "sentencingCourt": {
               "name": "string"
             },
