@@ -733,7 +733,10 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/PersonResponsibleOfficer"
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/PersonResponsibleOfficer"
         "404":
           description: Failed to find licenses for a person with the provided HMPPS ID.
           content:
