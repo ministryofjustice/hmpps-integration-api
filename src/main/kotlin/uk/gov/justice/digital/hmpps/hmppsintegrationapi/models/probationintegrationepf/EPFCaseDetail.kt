@@ -25,7 +25,7 @@ data class EPFCaseDetail(
       gender = this.gender,
       sentence =
         CaseSentence(
-          sentenceDate = this.sentence?.sentenceDate,
+          date = this.sentence?.date,
           sentencingCourt = SentencingCourt(this.sentence?.sentencingCourt?.name),
           releaseDate = this.sentence?.releaseDate,
         ),

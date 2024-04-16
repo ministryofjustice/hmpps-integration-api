@@ -19,7 +19,7 @@ data class Name(
 )
 
 data class CaseSentence(
-  val sentenceDate: String? = null,
+  val date: String? = null,
   val sentencingCourt: SentencingCourt? = null,
   val releaseDate: String? = null,
 )
