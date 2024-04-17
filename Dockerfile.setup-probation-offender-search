@@ -1,6 +1,6 @@
 FROM node:current-alpine3.17
 
-RUN apk update && apk add bash curl
+RUN apk update && apk add bash curl --no-cache
 
 RUN curl https://probation-offender-search-dev.hmpps.service.justice.gov.uk/v3/api-docs > probation-offender-search.json && \
     npm install -g @stoplight/prism-cli
