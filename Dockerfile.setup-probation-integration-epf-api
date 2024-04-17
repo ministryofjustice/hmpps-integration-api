@@ -1,8 +1,12 @@
 FROM node:current-alpine3.17
 
-RUN apk update && apk add bash curl
+RUN apk update && apk add bash curl --no-cache
 
 RUN curl https://ministryofjustice.github.io/hmpps-probation-integration-services/tech-docs/projects/effective-proposal-framework-and-delius/api-docs.json > probation-integration-epf-api.json && \
     npm install -g @stoplight/prism-cli
+
+RUN adduser -D user
+
+USER user
 
 CMD prism mock -p 4010 -h 0.0.0.0 /probation-integration-epf-api.json

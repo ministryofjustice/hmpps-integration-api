@@ -1,9 +1,13 @@
 FROM node:current-alpine3.17
 
-RUN apk update && apk add bash curl
+RUN apk update && apk add bash curl --no-cache
 
 RUN curl https://prisoner-search-dev.prison.service.justice.gov.uk/v3/api-docs > prisoner-offender-search.json && \
     sed -i "s+\*/\*+application/json+g" prisoner-offender-search.json && \
     npm install -g @stoplight/prism-cli
+
+RUN adduser -D user
+
+USER user
 
 CMD prism mock -p 4010 -h 0.0.0.0 /prisoner-offender-search.json
