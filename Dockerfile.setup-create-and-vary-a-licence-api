@@ -6,4 +6,8 @@ COPY src/main/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/prismMocks
 
 RUN npm install -g @stoplight/prism-cli
 
+RUN adduser -D user
+
+USER user
+
 CMD prism mock -p 4010 -h 0.0.0.0 /create-and-vary-a-licence-api-docs.json
