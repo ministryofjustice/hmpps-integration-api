@@ -17,6 +17,8 @@ services:
     base-url: http://create-and-vary-licence-api:4010
   case-notes:
     base-url: http://case-notes-api:4010
+  manage-pom-case-api:
+    base-url: http://manage-pom-case-api:4010
   hmpps-auth:
     base-url: http://hmpps-auth:8080
 
@@ -37,6 +39,7 @@ authorisation:
       - "/v1/persons/.*/risks"
       - "/v1/persons/.*/reported-adjudications"
       - "/v1/persons/.*/case-notes"
+      - "/v1/persons/.*/person-responsible-officer"
       - "/v1/epf/person-details/.*/.*"
       - "/health"
       - "/health/ping"

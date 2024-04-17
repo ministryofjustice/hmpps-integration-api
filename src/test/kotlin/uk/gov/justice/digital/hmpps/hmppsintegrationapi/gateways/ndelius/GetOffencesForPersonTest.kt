@@ -139,6 +139,7 @@ class GetOffencesForPersonTest(
             deliusCrn,
             """
           {
+          "communityManager": {},
           "mappaDetail": null,
           "supervisions": [] }
           """,

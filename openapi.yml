@@ -722,6 +722,40 @@ paths:
                 NoQueryParametersBadRequestError:
                   $ref: "#/components/examples/InternalServerError"
 
+  /v1/persons/{HmppsId}/person-responsible-officer:
+    get:
+      summary: Returns the person responsible officer associated with a person.
+      parameters:
+        - $ref: "#/components/parameters/HmppsId"
+      responses:
+        "200":
+          description: Successfully found the person responsible officer for a person with the provided HMPPS ID.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/PersonResponsibleOfficer"
+        "404":
+          description: Failed to find licenses for a person with the provided HMPPS ID.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                PersonNotFoundError:
+                  $ref: "#/components/examples/PersonNotFoundError"
+        "500":
+          description: An upstream service was not responding, so we cannot verify the accuracy of any data we did get.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                NoQueryParametersBadRequestError:
+                  $ref: "#/components/examples/InternalServerError"
+
   /v1/persons/{HmppsId}/licences/conditions:
     get:
       summary: Returns license conditions associated with a person.
@@ -1269,6 +1303,19 @@ components:
         releaseDate:
           type: string
           format: date
+    CommunityOffenderManager:
+      type: object
+      properties:
+          name:
+            $ref: "#/components/schemas/PersonResponsibleOfficerName"
+          email:
+            type: string
+            nullable: true
+          telephoneNumber:
+            type: string
+            nullable: true
+          team:
+            $ref: "#/components/schemas/PersonResponsibleOfficerTeam"
     ContactDetails:
       properties:
         phoneNumbers:
@@ -1755,6 +1802,30 @@ components:
           description: Currently a hmppsId is a CRN identifier however this will change in the future to be a new unique Hmpps identifier
         contactDetails:
           $ref: "#/components/schemas/ContactDetails"
+    PersonResponsibleOfficerName:
+      type: object
+      properties:
+          forename:
+            type: string
+            nullable: true
+          surname:
+            type: string
+            nullable: true
+    PersonResponsibleOfficerTeam:
+      type: object
+      properties:
+        code:
+          type: string
+          nullable: true
+        description:
+          type: string
+          nullable: true
+        email:
+          type: string
+          nullable: true
+        telephoneNumber:
+          type: string
+          nullable: true
     PhoneNumbers:
       type: array
       items:
@@ -1768,6 +1839,13 @@ components:
             type: string
             example: "TELEPHONE"
             description: "The type of number"
+    PersonResponsibleOfficer:
+      type: object
+      properties:
+        prisonOffenderOfficer:
+          $ref: "#/components/schemas/PrisonOffenderOfficer"
+        communityOffenderManager:
+          $ref: "#/components/schemas/CommunityOffenderManager"
     PersonLicencesData:
       type: object
       properties:
@@ -1839,7 +1917,23 @@ components:
           minItems: 0
           items:
             $ref: "#/components/schemas/ReasonableAdjustment"
-
+    Prison:
+      type: object
+      properties:
+        code:
+          type: string
+          nullable: true
+    PrisonOffenderOfficer:
+      type: object
+      properties:
+        forename:
+          type: string
+          nullable: true
+        surname:
+          type: string
+          nullable: true
+        prison:
+          $ref: "#/components/schemas/Prison"
 
     Punishment:
       type: object

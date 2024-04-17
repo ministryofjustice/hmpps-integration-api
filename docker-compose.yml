@@ -17,6 +17,8 @@ services:
         condition: service_healthy
       probation-integration-epf-api:
         condition: service_healthy
+      manage-pom-case-api:
+        condition: service_healthy
     environment:
       - SERVER_PORT=8080
       - SPRING_PROFILES_ACTIVE=local-docker
@@ -123,6 +125,16 @@ services:
       test: 'wget --header="Authorization: Bearer abc" http://0.0.0.0:4010/case-notes/1234 -O /dev/null'
     ports:
       - '4080:4010'
+
+  manage-pom-case-api:
+    build:
+      context: .
+      dockerfile: Dockerfile.setup-manage-pom-case-api
+    container_name: manage-pom-case-api
+    healthcheck:
+      test: 'wget --header="Authorization: Bearer abc" http://127.0.0.1:4010/api/allocation/X1234YZ/primary_pom -O /dev/null'
+    ports:
+      - '4090:4010'
 
   local-stack-aws:
     image: localstack/localstack:3.0

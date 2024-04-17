@@ -17,6 +17,7 @@ class SupervisionsTest : DescribeSpec(
         it("maps one-to-one attributes to integration API attributes") {
           val supervisions =
             NDeliusSupervisions(
+              communityManager = NDeliusCommunityManager(),
               mappaDetail = NDeliusMappaDetail(),
               supervisions =
                 listOf(
@@ -83,6 +84,7 @@ class SupervisionsTest : DescribeSpec(
         it("does not local date parse additional offence date if no date is provided") {
           val supervisions =
             NDeliusSupervisions(
+              communityManager = NDeliusCommunityManager(),
               mappaDetail = NDeliusMappaDetail(),
               supervisions =
                 listOf(
@@ -122,6 +124,7 @@ class SupervisionsTest : DescribeSpec(
         it("does local date parse additional offence date if a date is provided") {
           val supervisions =
             NDeliusSupervisions(
+              communityManager = NDeliusCommunityManager(),
               mappaDetail = NDeliusMappaDetail(),
               supervisions =
                 listOf(
@@ -166,6 +169,7 @@ class SupervisionsTest : DescribeSpec(
         it("maps one-to-one attributes to integration API attributes") {
           val supervisions =
             NDeliusSupervisions(
+              communityManager = NDeliusCommunityManager(),
               mappaDetail = NDeliusMappaDetail(),
               supervisions =
                 listOf(
@@ -213,6 +217,7 @@ class SupervisionsTest : DescribeSpec(
       it("maps one-to-one attributes to integration API sentence attributes") {
         val supervisions =
           NDeliusSupervisions(
+            communityManager = NDeliusCommunityManager(),
             mappaDetail = NDeliusMappaDetail(),
             listOf(
               NDeliusSupervision(
@@ -276,6 +281,7 @@ class SupervisionsTest : DescribeSpec(
       it("can be constructed with NULL values") {
         val supervisions =
           NDeliusSupervisions(
+            communityManager = NDeliusCommunityManager(),
             mappaDetail = NDeliusMappaDetail(),
             listOf(
               NDeliusSupervision(custodial = true),

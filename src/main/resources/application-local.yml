@@ -19,6 +19,8 @@ services:
     base-url: http://localhost:4070
   case-notes:
     base-url: http://localhost:4080
+  manage-pom-case-api:
+    base-url: http://localhost:4090
 
 hmpps.sqs:
   provider: localstack
@@ -44,6 +46,7 @@ authorisation:
       - "/v1/persons/.*/risks"
       - "/v1/persons/.*/reported-adjudications"
       - "/v1/persons/.*/case-notes"
+      - "/v1/persons/.*/person-responsible-officer"
       - "/v1/epf/person-details/.*/.*"
       - "/health"
       - "/health/ping"

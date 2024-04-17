@@ -9,5 +9,6 @@ enum class UpstreamApi {
   ADJUDICATIONS,
   CVL,
   CASE_NOTES,
+  MANAGE_POM_CASE,
   TEST,
 }
