@@ -46,8 +46,8 @@ authorisation:
       - "/health/readiness"
       - "/health/liveness"
       - "/info"
-  config-test:
-    - "/v1/config/authorisation"
+    config-test:
+      - "/v1/config/authorisation"
 
 hmpps.sqs:
   provider: localstack
