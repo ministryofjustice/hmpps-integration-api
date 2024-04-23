@@ -1842,8 +1842,8 @@ components:
     PersonResponsibleOfficer:
       type: object
       properties:
-        prisonOffenderOfficer:
-          $ref: "#/components/schemas/PrisonOffenderOfficer"
+        prisonOffenderManager:
+          $ref: "#/components/schemas/PrisonOffenderManager"
         communityOffenderManager:
           $ref: "#/components/schemas/CommunityOffenderManager"
     PersonLicencesData:
@@ -1923,7 +1923,7 @@ components:
         code:
           type: string
           nullable: true
-    PrisonOffenderOfficer:
+    PrisonOffenderManager:
       type: object
       properties:
         forename:
