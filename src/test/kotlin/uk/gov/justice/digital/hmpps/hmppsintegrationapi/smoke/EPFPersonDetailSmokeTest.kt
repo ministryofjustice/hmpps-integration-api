@@ -22,6 +22,7 @@ class EPFPersonDetailSmokeTest : DescribeSpec(
       response.body().shouldEqualJson(
         """
       {
+        "data": {
           "nomsId": "string",
           "name": {
             "forename": "string",
@@ -44,7 +45,9 @@ class EPFPersonDetailSmokeTest : DescribeSpec(
           "ogrsScore": -9007199254740991,
           "age": -9007199254740991,
           "ageAtRelease": -9007199254740991
-        }
+        },
+        "errors": []
+      }
       """.removeWhitespaceAndNewlines(),
       )
     }
