@@ -63,3 +63,5 @@ authorisation:
       - "/v1/persons/.*/risks"
       - "/v1/persons/.*/licences/conditions"
       - "/v1/persons/.*/person-responsible-officer"
+    event-service:
+      - "/v1/config/authorisation"

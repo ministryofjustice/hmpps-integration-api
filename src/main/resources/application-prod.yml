@@ -31,3 +31,5 @@ authorisation:
     kubernetes-health-check-client:
       - "/health/liveness"
       - "/health/readiness"
+    event-service:
+      - "/v1/config/authorisation"

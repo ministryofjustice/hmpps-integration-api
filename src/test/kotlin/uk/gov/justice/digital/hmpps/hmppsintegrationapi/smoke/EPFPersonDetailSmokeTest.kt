@@ -29,14 +29,14 @@ class EPFPersonDetailSmokeTest : DescribeSpec(
             "middleName": "string",
             "surname": "string"
           },
-          "dateOfBirth":"2019-08-24",
+          "dateOfBirth": "2019-08-24",
           "gender": "string",
           "sentence": {
-            "date": "2019-08-24",
+            "date": null,
             "sentencingCourt": {
-              "name": "string"
+              "name": null
             },
-            "releaseDate":"2019-08-24"
+            "releaseDate": null
           },
           "responsibleProvider": {
             "code": "string",
