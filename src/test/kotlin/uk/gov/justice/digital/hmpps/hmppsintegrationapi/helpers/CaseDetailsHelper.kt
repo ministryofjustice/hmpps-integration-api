@@ -4,7 +4,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CaseDetail
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CaseSentence
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Name
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ResponsibleProvider
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SentencingCourt
 
 fun generateCaseDetail(): CaseDetail {
   return CaseDetail(
@@ -17,7 +16,7 @@ fun generateCaseDetail(): CaseDetail {
       ),
     dateOfBirth = "2000-03-01",
     gender = null,
-    sentence = CaseSentence(date = "2021-03-03", sentencingCourt = SentencingCourt("Fakecourt"), releaseDate = "2021-10-10"),
+    sentence = CaseSentence(expectedReleaseDate = "2021-10-10"),
     responsibleProvider =
       ResponsibleProvider(
         code = "999000ABC",

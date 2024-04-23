@@ -4,7 +4,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CaseDetail
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CaseSentence
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Name
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ResponsibleProvider
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SentencingCourt
 
 data class EPFCaseDetail(
   val nomsId: String? = null,
@@ -25,9 +24,7 @@ data class EPFCaseDetail(
       gender = this.gender,
       sentence =
         CaseSentence(
-          date = this.sentence?.date,
-          sentencingCourt = SentencingCourt(this.sentence?.sentencingCourt?.name),
-          releaseDate = this.sentence?.releaseDate,
+          expectedReleaseDate = sentence?.expectedReleaseDate,
         ),
       responsibleProvider = ResponsibleProvider(code = this.responsibleProvider?.code, name = this.responsibleProvider?.name),
       ogrsScore = this.ogrsScore,
@@ -35,24 +32,3 @@ data class EPFCaseDetail(
       ageAtRelease = this.ageAtRelease,
     )
 }
-
-data class Name(
-  val forename: String? = null,
-  val middleName: String? = null,
-  val surname: String? = null,
-)
-
-data class CaseSentence(
-  val date: String? = null,
-  val sentencingCourt: SentencingCourt? = null,
-  val releaseDate: String? = null,
-)
-
-data class SentencingCourt(
-  val name: String? = null,
-)
-
-data class ResponsibleProvider(
-  val code: String? = null,
-  val name: String? = null,
-)

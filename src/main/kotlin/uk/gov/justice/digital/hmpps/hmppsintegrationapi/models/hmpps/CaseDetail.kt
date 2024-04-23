@@ -19,13 +19,7 @@ data class Name(
 )
 
 data class CaseSentence(
-  val date: String? = null,
-  val sentencingCourt: SentencingCourt? = null,
-  val releaseDate: String? = null,
-)
-
-data class SentencingCourt(
-  val name: String? = null,
+  val expectedReleaseDate: String? = null,
 )
 
 data class ResponsibleProvider(
