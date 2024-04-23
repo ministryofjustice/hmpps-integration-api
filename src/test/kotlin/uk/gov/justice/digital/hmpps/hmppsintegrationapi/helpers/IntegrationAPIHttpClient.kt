@@ -9,8 +9,11 @@ class IntegrationAPIHttpClient(
   val httpClient: HttpClient = HttpClient.newBuilder().build(),
   val baseUrl: String = "http://localhost:8080",
 ) {
-  fun performAuthorised(path: String): HttpResponse<String> {
-    val subjectDistinguishedName = "C=GB,ST=London,L=London,O=Home Office,CN=automated-test-client"
+  fun performAuthorised(
+    path: String,
+    cn: String = "automated-test-client",
+  ): HttpResponse<String> {
+    val subjectDistinguishedName = "C=GB,ST=London,L=London,O=Home Office,CN=$cn"
 
     val httpRequest =
       HttpRequest

@@ -7,17 +7,20 @@ import jakarta.servlet.ServletRequest
 import jakarta.servlet.ServletResponse
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
-import org.springframework.boot.context.properties.ConfigurationProperties
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.core.annotation.Order
 import org.springframework.stereotype.Component
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuthoriseConsumerService
 import java.io.IOException
 
 @Component
 @Order(1)
-@ConfigurationProperties(prefix = "authorisation")
+@EnableConfigurationProperties(AuthorisationConfig::class)
 class AuthorisationFilter : Filter {
-  var consumers: Map<String, List<String>> = emptyMap()
+  @Autowired
+  lateinit var authorisationConfig: AuthorisationConfig
 
   @Throws(IOException::class, ServletException::class)
   override fun doFilter(
@@ -36,7 +39,7 @@ class AuthorisationFilter : Filter {
       return
     }
 
-    val result = authoriseConsumerService.execute(subjectDistinguishedName, consumers, requestedPath)
+    val result = authoriseConsumerService.execute(subjectDistinguishedName, authorisationConfig.consumers, requestedPath)
 
     if (!result) {
       res.sendError(HttpServletResponse.SC_FORBIDDEN, "Unable to authorise $requestedPath for $subjectDistinguishedName")
