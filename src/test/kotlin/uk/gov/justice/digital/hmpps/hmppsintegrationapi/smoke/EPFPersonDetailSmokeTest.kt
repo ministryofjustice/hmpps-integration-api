@@ -22,21 +22,20 @@ class EPFPersonDetailSmokeTest : DescribeSpec(
       response.body().shouldEqualJson(
         """
       {
-        "data": {
           "nomsId": "string",
           "name": {
             "forename": "string",
             "middleName": "string",
             "surname": "string"
           },
-          "dateOfBirth":"2019-08-24",
+          "dateOfBirth": "2019-08-24",
           "gender": "string",
           "sentence": {
-            "date": "2019-08-24",
+            "date": null,
             "sentencingCourt": {
-              "name": "string"
+              "name": null
             },
-            "releaseDate":"2019-08-24"
+            "releaseDate": null
           },
           "responsibleProvider": {
             "code": "string",
@@ -45,9 +44,7 @@ class EPFPersonDetailSmokeTest : DescribeSpec(
           "ogrsScore": -9007199254740991,
           "age": -9007199254740991,
           "ageAtRelease": -9007199254740991
-        },
-        "errors": []
-      }
+        }
       """.removeWhitespaceAndNewlines(),
       )
     }
