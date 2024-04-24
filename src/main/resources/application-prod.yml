@@ -27,7 +27,7 @@ services:
 authorisation:
   consumers:
     ctrlo:
-      - "/v1/epf/person-details/.*/.*"
+      - "/v1/epf/person-details/.*/\\.*+[^/]*$"
     kubernetes-health-check-client:
       - "/health/liveness"
       - "/health/readiness"

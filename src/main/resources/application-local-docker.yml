@@ -26,9 +26,9 @@ authorisation:
   consumers:
     automated-test-client:
       - "/v1/persons"
-      - "/v1/persons/.*"
+      - "/v1/persons/\\.*+[^/]*$"
       - "/v1/persons/.*/images"
-      - "/v1/images/.*"
+      - "/v1/images/\\.*+[^/]*$"
       - "/v1/persons/.*/addresses"
       - "/v1/persons/.*/offences"
       - "/v1/persons/.*/alerts"
@@ -40,7 +40,10 @@ authorisation:
       - "/v1/persons/.*/reported-adjudications"
       - "/v1/persons/.*/case-notes"
       - "/v1/persons/.*/person-responsible-officer"
-      - "/v1/epf/person-details/.*/.*"
+      - "/v1/persons/.*/protected-characteristics"
+      - "/v1/persons/.*/risks/mappadetail"
+      - "/v1/persons/.*/risks/categories"
+      - "/v1/epf/person-details/.*/\\.*+[^/]*$"
       - "/health"
       - "/health/ping"
       - "/health/readiness"
