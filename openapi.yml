@@ -1218,6 +1218,8 @@ components:
           format: date
         gender:
           type: string
+        courtAppearance:
+          $ref: '#/components/schemas/CourtAppearance'
         sentence:
           $ref: '#/components/schemas/CaseSentence'
         responsibleProvider:
@@ -1290,19 +1292,22 @@ components:
           type: string
           example: Some Additional Text
     CaseSentence:
+      type: object
+      properties:
+        expectedReleaseDate:
+          type: string
+          format: date
+    CourtAppearance:
       required:
         - date
-        - sentencingCourt
+        - court
       type: object
       properties:
         date:
           type: string
           format: date
-        sentencingCourt:
-          $ref: '#/components/schemas/Court'
-        releaseDate:
-          type: string
-          format: date
+        court:
+          $ref: "#/components/schemas/CourtDetails"
     CommunityOffenderManager:
       type: object
       properties:
@@ -1326,13 +1331,6 @@ components:
             type: string
             example: "leslie.knope@pawnee.gov"
           description: A list of email addresses
-    Court:
-      required:
-        - name
-      type: object
-      properties:
-        name:
-          type: string
     Disability:
       type: object
       properties:
@@ -1811,6 +1809,13 @@ components:
           surname:
             type: string
             nullable: true
+    CourtDetails:
+      required:
+        - name
+      type: object
+      properties:
+        name:
+          type: string
     PersonResponsibleOfficerTeam:
       type: object
       properties:
