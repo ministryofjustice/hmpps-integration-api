@@ -21,7 +21,7 @@ class EPFPersonDetailSmokeTest : DescribeSpec(
       response.statusCode().shouldBe(HttpStatus.OK.value())
       response.body().shouldEqualJson(
         """
-      {
+        {
         "data": {
           "nomsId": "string",
           "name": {
@@ -31,12 +31,14 @@ class EPFPersonDetailSmokeTest : DescribeSpec(
           },
           "dateOfBirth": "2019-08-24",
           "gender": "string",
+          "courtAppearance": {
+            "date": "2019-08-24",
+            "court": {
+              "name": "string"
+            }
+          },
           "sentence": {
-            "date": null,
-            "sentencingCourt": {
-              "name": null
-            },
-            "releaseDate": null
+            "expectedReleaseDate": "2019-08-24"
           },
           "responsibleProvider": {
             "code": "string",
