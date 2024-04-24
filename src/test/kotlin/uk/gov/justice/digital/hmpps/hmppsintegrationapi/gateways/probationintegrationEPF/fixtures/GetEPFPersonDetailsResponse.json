@@ -7,12 +7,14 @@
   },
   "dateOfBirth":"2000-03-01",
   "gender": null,
+  "courtAppearance": {
+    "date": "2019-10-10",
+    "court": {
+      "name": "Crown"
+    }
+  },
   "sentence": {
-    "date": "2021-03-03",
-    "sentencingCourt": {
-      "name": "Fakecourt"
-    },
-    "releaseDate": "2021-10-10"
+    "expectedReleaseDate": "2021-10-10"
   },
   "responsibleProvider": {
     "code": "999000ABC",
