@@ -5,6 +5,7 @@ data class CaseDetail(
   val name: Name? = null,
   val dateOfBirth: String? = null,
   val gender: String? = null,
+  val courtAppearance: CourtAppearance? = null,
   val sentence: CaseSentence? = null,
   val responsibleProvider: ResponsibleProvider? = null,
   val ogrsScore: Long? = null,
@@ -24,5 +25,14 @@ data class CaseSentence(
 
 data class ResponsibleProvider(
   val code: String? = null,
+  val name: String? = null,
+)
+
+data class CourtAppearance(
+  val date: String? = null,
+  val court: CourtDetails? = null,
+)
+
+data class CourtDetails(
   val name: String? = null,
 )

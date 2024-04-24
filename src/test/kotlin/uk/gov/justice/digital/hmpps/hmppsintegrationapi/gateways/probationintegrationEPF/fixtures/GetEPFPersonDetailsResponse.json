@@ -7,6 +7,12 @@
   },
   "dateOfBirth":"2000-03-01",
   "gender": null,
+  "courtAppearance": {
+    "date": "2019-10-10",
+    "court": {
+      "name": "Crown"
+    }
+  },
   "sentence": {
     "expectedReleaseDate": "2021-10-10"
   },

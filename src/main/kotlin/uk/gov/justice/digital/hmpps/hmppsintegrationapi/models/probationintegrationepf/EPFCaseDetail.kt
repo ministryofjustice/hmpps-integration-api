@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.probationintegra
 
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CaseDetail
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CaseSentence
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CourtAppearance
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Name
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ResponsibleProvider
 
@@ -10,6 +11,7 @@ data class EPFCaseDetail(
   val name: Name? = null,
   val dateOfBirth: String? = null,
   val gender: String? = null,
+  val courtAppearance: CourtAppearance? = null,
   val sentence: CaseSentence? = null,
   val responsibleProvider: ResponsibleProvider? = null,
   val ogrsScore: Long? = null,
@@ -22,6 +24,7 @@ data class EPFCaseDetail(
       name = Name(forename = this.name?.forename, middleName = this.name?.middleName, surname = this.name?.surname),
       dateOfBirth = this.dateOfBirth,
       gender = this.gender,
+      courtAppearance = this.courtAppearance,
       sentence =
         CaseSentence(
           expectedReleaseDate = sentence?.expectedReleaseDate,
