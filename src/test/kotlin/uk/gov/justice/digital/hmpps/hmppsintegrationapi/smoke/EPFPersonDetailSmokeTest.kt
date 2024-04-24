@@ -38,6 +38,9 @@ class EPFPersonDetailSmokeTest : DescribeSpec(
             }
           },
           "sentence": {
+            "date": null,
+            "sentencingCourt": null,
+            "releaseDate": null,
             "expectedReleaseDate": "2019-08-24"
           },
           "responsibleProvider": {

@@ -1294,6 +1294,16 @@ components:
     CaseSentence:
       type: object
       properties:
+        date:
+          type: string
+          format: date
+          description: This field is depreciated and will be removed from the response soon.
+        sentencingCourt:
+          $ref: '#/components/schemas/Court'
+        releaseDate:
+          type: string
+          format: date
+          description: This field is depreciated and will be removed from the response soon.
         expectedReleaseDate:
           type: string
           format: date
@@ -1331,6 +1341,12 @@ components:
             type: string
             example: "leslie.knope@pawnee.gov"
           description: A list of email addresses
+    Court:
+      type: object
+      properties:
+        name:
+          type: string
+          description: This field is depreciated and will be removed from the response soon.
     Disability:
       type: object
       properties:

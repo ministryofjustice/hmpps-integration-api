@@ -20,7 +20,17 @@ data class Name(
 )
 
 data class CaseSentence(
+  @Deprecated("This field is depreciated and will be removed from the endpoint /v1/epf/person-details/{hmppsId}/{eventNumber} response soon.")
+  val date: String? = null,
+  @Deprecated("This field is depreciated and will be removed from the endpoint /v1/epf/person-details/{hmppsId}/{eventNumber} response soon.")
+  val sentencingCourt: SentencingCourt? = null,
+  @Deprecated("This field is depreciated and will be removed from the endpoint /v1/epf/person-details/{hmppsId}/{eventNumber} response soon.")
+  val releaseDate: String? = null,
   val expectedReleaseDate: String? = null,
+)
+
+data class SentencingCourt(
+  val name: String? = null,
 )
 
 data class ResponsibleProvider(
