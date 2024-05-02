@@ -18,7 +18,7 @@ class RisksController(
   @Autowired val getRisksForPersonService: GetRisksForPersonService,
   @Autowired val auditService: AuditService,
 ) {
-  @GetMapping("{encodedHmppsId}/risks")
+  @GetMapping("{encodedHmppsId}/risks/serious-harm")
   fun getPersonRisks(
     @PathVariable encodedHmppsId: String,
   ): Map<String, Risks?> {

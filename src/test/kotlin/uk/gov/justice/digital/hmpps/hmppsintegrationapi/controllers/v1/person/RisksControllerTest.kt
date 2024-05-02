@@ -41,7 +41,7 @@ internal class RisksControllerTest(
     {
       val hmppsId = "9999/11111A"
       val encodedHmppsId = URLEncoder.encode(hmppsId, StandardCharsets.UTF_8)
-      val path = "/v1/persons/$encodedHmppsId/risks"
+      val path = "/v1/persons/$encodedHmppsId/risks/serious-harm"
       val mockMvc = IntegrationAPIMockMvc(springMockMvc)
 
       describe("GET $path") {
@@ -201,7 +201,7 @@ internal class RisksControllerTest(
         it("returns null embedded in a JSON object when no risks are found") {
           val hmppsIdForPersonWithNoRisks = "0000/11111A"
           val encodedHmppsIdForPersonWithNoRisks = URLEncoder.encode(hmppsIdForPersonWithNoRisks, StandardCharsets.UTF_8)
-          val pathForPersonWithNoRisks = "/v1/persons/$encodedHmppsIdForPersonWithNoRisks/risks"
+          val pathForPersonWithNoRisks = "/v1/persons/$encodedHmppsIdForPersonWithNoRisks/risks/serious-harm"
 
           whenever(getRisksForPersonService.execute(hmppsIdForPersonWithNoRisks)).thenReturn(Response(data = null))
 
