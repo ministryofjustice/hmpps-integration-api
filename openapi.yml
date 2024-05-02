@@ -605,7 +605,7 @@ paths:
                 NoQueryParametersBadRequestError:
                   $ref: "#/components/examples/InternalServerError"
 
-  /v1/persons/{hmppsId}/risks:
+  /v1/persons/{hmppsId}/risks/serious-harm:
     get:
       tags:
         - risks
@@ -914,23 +914,6 @@ paths:
                 NoQueryParametersBadRequestError:
                   $ref: "#/components/examples/InternalServerError"
 
-  /{TBC}/v1/persons/{Id}/key-workers:
-    get:
-      summary: FUTURE ENDPOINT - Returns responsible officer history, transfer history and consolidated transfer review associated with a person.
-      parameters:
-        - $ref: "#/components/parameters/Id"
-      responses:
-        "200":
-          description: Success.
-        "500":
-          description: An upstream service was not responding, so we cannot verify the accuracy of any data we did get.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-              examples:
-                NoQueryParametersBadRequestError:
-                  $ref: "#/components/examples/InternalServerError"
 
   /{TBC}/v1/persons/{Id}/prisoner-visits:
     get:
@@ -953,42 +936,6 @@ paths:
   /{TBC}/v1/persons/{Id}/probation-contact-events:
     get:
       summary: FUTURE ENDPOINT - Returns probation contact events associated with a person.
-      parameters:
-        - $ref: "#/components/parameters/Id"
-      responses:
-        "200":
-          description: Success.
-        "500":
-          description: An upstream service was not responding, so we cannot verify the accuracy of any data we did get.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-              examples:
-                NoQueryParametersBadRequestError:
-                  $ref: "#/components/examples/InternalServerError"
-
-  /{TBC}/v1/persons/{Id}/security:
-    get:
-      summary: FUTURE ENDPOINT - Returns security information such as prisoner non-associations and prisoner incidents for a person.
-      parameters:
-        - $ref: "#/components/parameters/Id"
-      responses:
-        "200":
-          description: Success.
-        "500":
-          description: An upstream service was not responding, so we cannot verify the accuracy of any data we did get.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-              examples:
-                NoQueryParametersBadRequestError:
-                  $ref: "#/components/examples/InternalServerError"
-
-  /{TBC}/v1/persons/{Id}/special-needs:
-    get:
-      summary: FUTURE ENDPOINT -  Returns special needs such as drugs test summaries, drug history and drugs test lists associated with a person.
       parameters:
         - $ref: "#/components/parameters/Id"
       responses:

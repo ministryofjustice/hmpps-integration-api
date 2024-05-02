@@ -7,7 +7,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Risks
 
 @Service
-class GetRisksForPersonService(
+class GetRiskSeriousHarmForPersonService(
   @Autowired val assessRisksAndNeedsGateway: AssessRisksAndNeedsGateway,
   @Autowired val getPersonService: GetPersonService,
 ) {
@@ -18,7 +18,7 @@ class GetRisksForPersonService(
     var personRisks: Response<Risks?> = Response(data = null)
 
     if (deliusCrn != null) {
-      personRisks = assessRisksAndNeedsGateway.getRisksForPerson(id = deliusCrn)
+      personRisks = assessRisksAndNeedsGateway.getRiskSeriousHarmForPerson(id = deliusCrn)
     }
 
     return Response(

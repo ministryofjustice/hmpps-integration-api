@@ -71,6 +71,9 @@ ecr.repo
 dps-gradle-spring-boot-suppressions.xml
 sonar-project.properties
 
+# localstack
+localstack/cache
+
 # Helm
 **/Chart.lock
 

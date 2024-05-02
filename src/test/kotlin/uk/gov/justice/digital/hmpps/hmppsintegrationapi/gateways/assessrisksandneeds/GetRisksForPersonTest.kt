@@ -58,13 +58,13 @@ class GetRisksForPersonTest(
         }
 
         it("authenticates using HMPPS Auth with credentials") {
-          assessRisksAndNeedsGateway.getRisksForPerson(deliusCrn)
+          assessRisksAndNeedsGateway.getRiskSeriousHarmForPerson(deliusCrn)
 
           verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("ASSESS_RISKS_AND_NEEDS")
         }
 
         it("returns risks for the person with the matching CRN") {
-          val response = assessRisksAndNeedsGateway.getRisksForPerson(deliusCrn)
+          val response = assessRisksAndNeedsGateway.getRiskSeriousHarmForPerson(deliusCrn)
 
           response.data.shouldBe(
             Risks(
@@ -151,7 +151,7 @@ class GetRisksForPersonTest(
         it("returns a 404 NOT FOUND status code when no person is found") {
           assessRisksAndNeedsApiMockServer.stubGetRisksForPerson(deliusCrn, "", HttpStatus.NOT_FOUND)
 
-          val response = assessRisksAndNeedsGateway.getRisksForPerson(deliusCrn)
+          val response = assessRisksAndNeedsGateway.getRiskSeriousHarmForPerson(deliusCrn)
 
           response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND).shouldBeTrue()
         }
