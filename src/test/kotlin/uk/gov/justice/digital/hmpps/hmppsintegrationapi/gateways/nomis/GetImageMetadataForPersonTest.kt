@@ -47,6 +47,14 @@ class GetImageMetadataForPersonTest(
             "imageView": "FACE",
             "imageOrientation": "FRONT",
             "imageType": "OFF_BKG"
+          },
+          {
+            "imageId": 24299,
+            "active": true,
+            "captureDateTime": "2010-08-27T16:35:00",
+            "imageView": "FACE",
+            "imageOrientation": "FRONT",
+            "imageType": "OFF_BKG"
           }
         ]
       """,
@@ -69,11 +77,26 @@ class GetImageMetadataForPersonTest(
       it("returns image metadata for the matching person ID") {
         val response = nomisGateway.getImageMetadataForPerson(offenderNo)
 
-        response.data.first().active.shouldBe(true)
-        response.data.first().captureDateTime.shouldBe(LocalDateTime.parse("2008-08-27T16:35:00"))
-        response.data.first().view.shouldBe("FACE")
-        response.data.first().orientation.shouldBe("FRONT")
-        response.data.first().type.shouldBe("OFF_BKG")
+        response.data[0].id.shouldBe(24299)
+        response.data[0].active.shouldBe(true)
+        response.data[0].captureDateTime.shouldBe(LocalDateTime.parse("2010-08-27T16:35:00"))
+        response.data[0].view.shouldBe("FACE")
+        response.data[0].orientation.shouldBe("FRONT")
+        response.data[0].type.shouldBe("OFF_BKG")
+
+        response.data[1].id.shouldBe(24213)
+        response.data[1].active.shouldBe(true)
+        response.data[1].captureDateTime.shouldBe(LocalDateTime.parse("2008-08-27T16:35:00"))
+        response.data[1].view.shouldBe("FACE")
+        response.data[1].orientation.shouldBe("FRONT")
+        response.data[1].type.shouldBe("OFF_BKG")
+      }
+
+      it("returns sorted by newest date image metadata for the matching person ID") {
+        val response = nomisGateway.getImageMetadataForPerson(offenderNo)
+
+        response.data[0].captureDateTime.shouldBe(LocalDateTime.parse("2010-08-27T16:35:00"))
+        response.data[1].captureDateTime.shouldBe(LocalDateTime.parse("2008-08-27T16:35:00"))
       }
 
       it("returns a person without image metadata when no images are found") {

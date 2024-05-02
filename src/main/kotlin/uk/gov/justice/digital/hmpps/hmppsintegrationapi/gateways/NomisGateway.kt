@@ -49,7 +49,7 @@ class NomisGateway(
 
     return when (result) {
       is WebClientWrapperResponse.Success -> {
-        Response(data = result.data.map { it.toImageMetadata() })
+        Response(data = result.data.map { it.toImageMetadata() }.sortedByDescending { it.captureDateTime })
       }
 
       is WebClientWrapperResponse.Error -> {
