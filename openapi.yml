@@ -120,7 +120,7 @@ paths:
     get:
       tags:
         - persons
-      summary: Returns metadata of images associated with a person ordered by date newest to oldest.
+      summary: Returns metadata of images associated with a person ordered by newest to oldest date.
       parameters:
         - $ref: "#/components/parameters/HmppsId"
         - $ref: "#/components/parameters/Page"
