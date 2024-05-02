@@ -14,10 +14,11 @@ class GetImageMetadataForPersonService(
 ) {
   fun execute(hmppsId: String): Response<List<ImageMetadata>> {
     val responseFromProbationOffenderSearch = probationOffenderSearchGateway.getPerson(hmppsId)
-    val nomisNumber = responseFromProbationOffenderSearch.data?.identifiers?.nomisNumber ?: return Response(
-      data = emptyList(),
-      errors = responseFromProbationOffenderSearch.errors,
-    )
+    val nomisNumber =
+      responseFromProbationOffenderSearch.data?.identifiers?.nomisNumber ?: return Response(
+        data = emptyList(),
+        errors = responseFromProbationOffenderSearch.errors,
+      )
 
     return nomisGateway.getImageMetadataForPerson(nomisNumber)
   }

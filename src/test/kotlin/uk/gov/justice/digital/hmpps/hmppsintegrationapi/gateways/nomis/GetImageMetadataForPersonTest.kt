@@ -92,12 +92,12 @@ class GetImageMetadataForPersonTest(
         response.data[1].type.shouldBe("OFF_BKG")
       }
 
-    it("returns sorted by newest date image metadata for the matching person ID") {
-      val response = nomisGateway.getImageMetadataForPerson(offenderNo)
+      it("returns sorted by newest date image metadata for the matching person ID") {
+        val response = nomisGateway.getImageMetadataForPerson(offenderNo)
 
-      response.data[0].captureDateTime.shouldBe(LocalDateTime.parse("2010-08-27T16:35:00"))
-      response.data[1].captureDateTime.shouldBe(LocalDateTime.parse("2008-08-27T16:35:00"))
-    }
+        response.data[0].captureDateTime.shouldBe(LocalDateTime.parse("2010-08-27T16:35:00"))
+        response.data[1].captureDateTime.shouldBe(LocalDateTime.parse("2008-08-27T16:35:00"))
+      }
 
       it("returns a person without image metadata when no images are found") {
         nomisApiMockServer.stubNomisApiResponse(imagePath, "[]")
