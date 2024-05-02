@@ -25,17 +25,17 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.RiskToSelf
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Risks
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetRisksForPersonService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetRiskSeriousHarmForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 import java.time.LocalDateTime
 
-@WebMvcTest(controllers = [RisksController::class])
+@WebMvcTest(controllers = [RiskSeriousHarmController::class])
 @ActiveProfiles("test")
-internal class RisksControllerTest(
+internal class RiskSeriousHarmControllerTest(
   @Autowired var springMockMvc: MockMvc,
-  @MockBean val getRisksForPersonService: GetRisksForPersonService,
+  @MockBean val getRiskSeriousHarmForPersonService: GetRiskSeriousHarmForPersonService,
   @MockBean val auditService: AuditService,
 ) : DescribeSpec(
     {
@@ -46,8 +46,8 @@ internal class RisksControllerTest(
 
       describe("GET $path") {
         beforeTest {
-          Mockito.reset(getRisksForPersonService)
-          whenever(getRisksForPersonService.execute(hmppsId)).thenReturn(
+          Mockito.reset(getRiskSeriousHarmForPersonService)
+          whenever(getRiskSeriousHarmForPersonService.execute(hmppsId)).thenReturn(
             Response(
               data =
                 Risks(
@@ -109,7 +109,7 @@ internal class RisksControllerTest(
         it("gets the risks for a person with the matching ID") {
           mockMvc.performAuthorised(path)
 
-          verify(getRisksForPersonService, VerificationModeFactory.times(1)).execute(hmppsId)
+          verify(getRiskSeriousHarmForPersonService, VerificationModeFactory.times(1)).execute(hmppsId)
         }
 
         it("returns the risks for a person with the matching ID") {
@@ -203,7 +203,7 @@ internal class RisksControllerTest(
           val encodedHmppsIdForPersonWithNoRisks = URLEncoder.encode(hmppsIdForPersonWithNoRisks, StandardCharsets.UTF_8)
           val pathForPersonWithNoRisks = "/v1/persons/$encodedHmppsIdForPersonWithNoRisks/risks/serious-harm"
 
-          whenever(getRisksForPersonService.execute(hmppsIdForPersonWithNoRisks)).thenReturn(Response(data = null))
+          whenever(getRiskSeriousHarmForPersonService.execute(hmppsIdForPersonWithNoRisks)).thenReturn(Response(data = null))
 
           val result = mockMvc.performAuthorised(pathForPersonWithNoRisks)
 
@@ -211,7 +211,7 @@ internal class RisksControllerTest(
         }
 
         it("returns a 404 NOT FOUND status code when person isn't found in the upstream API") {
-          whenever(getRisksForPersonService.execute(hmppsId)).thenReturn(
+          whenever(getRiskSeriousHarmForPersonService.execute(hmppsId)).thenReturn(
             Response(
               data = null,
               errors =
@@ -231,7 +231,7 @@ internal class RisksControllerTest(
 
         it("returns a 500 INTERNAL SERVER ERROR status code when upstream api return expected error") {
 
-          whenever(getRisksForPersonService.execute(hmppsId)).doThrow(
+          whenever(getRiskSeriousHarmForPersonService.execute(hmppsId)).doThrow(
             WebClientResponseException(500, "MockError", null, null, null, null),
           )
 

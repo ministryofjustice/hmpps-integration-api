@@ -47,7 +47,7 @@ class AssessRisksAndNeedsGateway(
     }
   }
 
-  fun getRisksForPerson(id: String): Response<Risks?> {
+  fun getRiskSeriousHarmForPerson(id: String): Response<Risks?> {
     val result =
       webClient.request<ArnRisks>(
         HttpMethod.GET,

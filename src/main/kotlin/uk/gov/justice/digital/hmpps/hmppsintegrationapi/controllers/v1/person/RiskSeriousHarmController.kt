@@ -9,21 +9,21 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFound
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.decodeUrlCharacters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Risks
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetRisksForPersonService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetRiskSeriousHarmForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 
 @RestController
 @RequestMapping("/v1/persons")
-class RisksController(
-  @Autowired val getRisksForPersonService: GetRisksForPersonService,
+class RiskSeriousHarmController(
+  @Autowired val getRiskSeriousHarmForPersonService: GetRiskSeriousHarmForPersonService,
   @Autowired val auditService: AuditService,
 ) {
   @GetMapping("{encodedHmppsId}/risks/serious-harm")
-  fun getPersonRisks(
+  fun getPersonRiskSeriousHarm(
     @PathVariable encodedHmppsId: String,
   ): Map<String, Risks?> {
     val hmppsId = encodedHmppsId.decodeUrlCharacters()
-    val response = getRisksForPersonService.execute(hmppsId)
+    val response = getRiskSeriousHarmForPersonService.execute(hmppsId)
 
     if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
       throw EntityNotFoundException("Could not find person with id: $hmppsId")

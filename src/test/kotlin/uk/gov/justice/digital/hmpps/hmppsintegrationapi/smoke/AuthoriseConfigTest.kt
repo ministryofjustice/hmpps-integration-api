@@ -31,7 +31,7 @@ class AuthoriseConfigTest : DescribeSpec(
           "/v1/persons/.*/sentences/latest-key-dates-and-adjustments",
           "/v1/persons/.*/risks/scores",
           "/v1/persons/.*/needs",
-          "/v1/persons/.*/risks",
+          "/v1/persons/.*/risks/serious-harm",
           "/v1/persons/.*/reported-adjudications",
           "/v1/persons/.*/adjudications",
           "/v1/persons/.*/licences/conditions",

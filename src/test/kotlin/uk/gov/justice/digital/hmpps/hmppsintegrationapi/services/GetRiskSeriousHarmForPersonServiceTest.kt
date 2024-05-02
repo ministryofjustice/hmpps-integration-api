@@ -21,13 +21,13 @@ import java.time.LocalDateTime
 
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
-  classes = [GetRisksForPersonService::class],
+  classes = [GetRiskSeriousHarmForPersonService::class],
 )
 internal class
-GetRisksForPersonServiceTest(
+GetRiskSeriousHarmForPersonServiceTest(
   @MockBean val assessRisksAndNeedsGateway: AssessRisksAndNeedsGateway,
   @MockBean val getPersonService: GetPersonService,
-  private val getRisksForPersonService: GetRisksForPersonService,
+  private val getRiskSeriousHarmForPersonService: GetRiskSeriousHarmForPersonService,
 ) : DescribeSpec(
     {
       val hmppsId = "1234/56789B"
@@ -44,27 +44,27 @@ GetRisksForPersonServiceTest(
           Response(data = personFromProbationOffenderSearch),
         )
 
-        whenever(assessRisksAndNeedsGateway.getRisksForPerson(deliusCrn)).thenReturn(Response(data = null))
+        whenever(assessRisksAndNeedsGateway.getRiskSeriousHarmForPerson(deliusCrn)).thenReturn(Response(data = null))
       }
 
       it("gets a person from getPersonService") {
-        getRisksForPersonService.execute(hmppsId)
+        getRiskSeriousHarmForPersonService.execute(hmppsId)
 
         verify(getPersonService, VerificationModeFactory.times(1)).execute(hmppsId = hmppsId)
       }
 
       it("gets risks for a person from ARN API using a CRN") {
-        getRisksForPersonService.execute(hmppsId)
+        getRiskSeriousHarmForPersonService.execute(hmppsId)
 
-        verify(assessRisksAndNeedsGateway, VerificationModeFactory.times(1)).getRisksForPerson(deliusCrn)
+        verify(assessRisksAndNeedsGateway, VerificationModeFactory.times(1)).getRiskSeriousHarmForPerson(deliusCrn)
       }
 
       it("returns risks for a person") {
         val risks = Risks(assessedOn = LocalDateTime.now())
 
-        whenever(assessRisksAndNeedsGateway.getRisksForPerson(deliusCrn)).thenReturn(Response(data = risks))
+        whenever(assessRisksAndNeedsGateway.getRiskSeriousHarmForPerson(deliusCrn)).thenReturn(Response(data = risks))
 
-        val response = getRisksForPersonService.execute(hmppsId)
+        val response = getRiskSeriousHarmForPersonService.execute(hmppsId)
 
         response.data.shouldBe(risks)
       }
@@ -91,20 +91,20 @@ GetRisksForPersonServiceTest(
           }
 
           it("records upstream API error for probation offender search") {
-            val response = getRisksForPersonService.execute(hmppsId)
+            val response = getRiskSeriousHarmForPersonService.execute(hmppsId)
 
             response.hasErrorCausedBy(UpstreamApiError.Type.ENTITY_NOT_FOUND, UpstreamApi.PROBATION_OFFENDER_SEARCH).shouldBe(true)
           }
 
           it("does not get risks from ARN") {
-            getRisksForPersonService.execute(hmppsId)
+            getRiskSeriousHarmForPersonService.execute(hmppsId)
 
-            verify(assessRisksAndNeedsGateway, VerificationModeFactory.times(0)).getRisksForPerson(id = deliusCrn)
+            verify(assessRisksAndNeedsGateway, VerificationModeFactory.times(0)).getRiskSeriousHarmForPerson(id = deliusCrn)
           }
         }
 
         it("returns error from ARN API when person/crn cannot be found in ARN") {
-          whenever(assessRisksAndNeedsGateway.getRisksForPerson(deliusCrn)).thenReturn(
+          whenever(assessRisksAndNeedsGateway.getRiskSeriousHarmForPerson(deliusCrn)).thenReturn(
             Response(
               data = null,
               errors =
@@ -117,7 +117,7 @@ GetRisksForPersonServiceTest(
             ),
           )
 
-          val response = getRisksForPersonService.execute(hmppsId)
+          val response = getRiskSeriousHarmForPersonService.execute(hmppsId)
 
           response.errors.shouldHaveSize(1)
           response.errors.first().causedBy.shouldBe(UpstreamApi.ASSESS_RISKS_AND_NEEDS)
