@@ -13,7 +13,7 @@ class GetPrisonOffenderManagerForPersonService(
 ) {
   fun execute(hmppsId: String): Response<PrisonOffenderManager> {
     val personResponse = getPersonService.execute(hmppsId = hmppsId)
-    val nomisNumber = personResponse.data?.identifiers?.nomisNumber
+    val nomisNumber = personResponse.data["probationOffenderSearch"]?.identifiers?.nomisNumber
     var prisonOffenderManager: Response<PrisonOffenderManager> = Response(data = PrisonOffenderManager())
 
     if (nomisNumber != null) {

@@ -53,7 +53,10 @@ internal class GetPersonServiceTest(
 
       val result = getPersonService.execute(hmppsId)
 
-      val expectedResult = Person("Molly", "Mob")
+      val expectedResult =
+        mapOf(
+          "probationOffenderSearch" to personFromProbationOffenderSearch,
+        )
 
       result.data.shouldBe(expectedResult)
     }
@@ -62,7 +65,10 @@ internal class GetPersonServiceTest(
       whenever(probationOffenderSearchGateway.getPerson(id = hmppsId)).thenReturn(Response(data = null))
 
       val result = getPersonService.execute(hmppsId)
-      val expectedResult = null
+      val expectedResult =
+        mapOf(
+          "probationOffenderSearch" to null,
+        )
 
       result.data.shouldBe(expectedResult)
     }

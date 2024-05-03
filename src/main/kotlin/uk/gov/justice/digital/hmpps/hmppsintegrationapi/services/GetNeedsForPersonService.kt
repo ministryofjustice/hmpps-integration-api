@@ -13,7 +13,7 @@ class GetNeedsForPersonService(
 ) {
   fun execute(hmppsId: String): Response<Needs?> {
     val personResponse = getPersonService.execute(hmppsId = hmppsId)
-    val deliusCrn = personResponse.data?.identifiers?.deliusCrn
+    val deliusCrn = personResponse.data["probationOffenderSearch"]?.identifiers?.deliusCrn
 
     var personNeeds: Response<Needs?> = Response(data = null)
 

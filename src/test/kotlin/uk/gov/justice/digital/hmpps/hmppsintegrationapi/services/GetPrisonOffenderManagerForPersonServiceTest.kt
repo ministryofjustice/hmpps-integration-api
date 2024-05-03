@@ -38,7 +38,7 @@ class GetPrisonOffenderManagerForPersonServiceTest(
         Mockito.reset(getPersonService)
         Mockito.reset(managePOMCaseGateway)
 
-        whenever(getPersonService.execute(hmppsId = hmppsId)).thenReturn(Response(person))
+        whenever(getPersonService.execute(hmppsId = hmppsId)).thenReturn(Response(data = mapOf("probationOffenderSearch" to person)))
         whenever(managePOMCaseGateway.getPrimaryPOMForNomisNumber(id = nomisNumber)).thenReturn(Response(prisonOffenderManager))
       }
 
@@ -49,9 +49,7 @@ class GetPrisonOffenderManagerForPersonServiceTest(
 
       it("Returns a prison offender manager for person given a hmppsId") {
         whenever(getPersonService.execute(hmppsId = hmppsId)).thenReturn(
-          Response(
-            data = person,
-          ),
+          Response(data = mapOf("probationOffenderSearch" to person)),
         )
         val result = getPrisonOffenderManagerForPersonService.execute(hmppsId)
         result.shouldBe(Response(data = prisonOffenderManager))
@@ -60,7 +58,7 @@ class GetPrisonOffenderManagerForPersonServiceTest(
       it("should return a list of errors if person not found") {
         whenever(getPersonService.execute(hmppsId = "NOT_FOUND")).thenReturn(
           Response(
-            data = null,
+            data = emptyMap(),
             errors =
               listOf(
                 UpstreamApiError(

@@ -46,7 +46,7 @@ internal class GetRiskPredictorScoresForPersonServiceTest(
 
         whenever(getPersonService.execute(hmppsId = hmppsId)).thenReturn(
           Response(
-            data = personFromProbationOffenderSearch,
+            data = mapOf("probationOffenderSearch" to personFromProbationOffenderSearch),
           ),
         )
 
@@ -91,25 +91,22 @@ internal class GetRiskPredictorScoresForPersonServiceTest(
 
         xdescribe("when a person cannot be found by hmpps Id in probation offender search") {
 
-          beforeEach {
-            whenever(getPersonService.execute(hmppsId)).thenReturn(
-              Response(
-                data = null,
-                errors =
-                  listOf(
-                    UpstreamApiError(
-                      causedBy = UpstreamApi.PRISONER_OFFENDER_SEARCH,
-                      type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-                    ),
-                    UpstreamApiError(
-                      causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH,
-                      type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-                    ),
+          whenever(getPersonService.execute(hmppsId)).thenReturn(
+            Response(
+              data = emptyMap(),
+              errors =
+                listOf(
+                  UpstreamApiError(
+                    causedBy = UpstreamApi.PRISONER_OFFENDER_SEARCH,
+                    type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
                   ),
-              ),
-            )
-          }
-
+                  UpstreamApiError(
+                    causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH,
+                    type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+                  ),
+                ),
+            ),
+          )
           it("records upstream API error for probation offender search") {
             val response = getRiskPredictorScoresForPersonService.execute(hmppsId)
 

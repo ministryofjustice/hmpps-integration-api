@@ -16,8 +16,8 @@ class GetSentencesForPersonService(
 ) {
   fun execute(hmppsId: String): Response<List<Sentence>> {
     val personResponse = getPersonService.execute(hmppsId = hmppsId)
-    val nomisNumber = personResponse.data?.identifiers?.nomisNumber
-    val deliusCrn = personResponse.data?.identifiers?.deliusCrn
+    val nomisNumber = personResponse.data["probationOffenderSearch"]?.identifiers?.nomisNumber
+    val deliusCrn = personResponse.data["probationOffenderSearch"]?.identifiers?.deliusCrn
     var bookingIdsResponse: Response<List<NomisBooking>> = Response(data = emptyList())
     var nDeliusSentencesResponse: Response<List<Sentence>> = Response(data = emptyList())
 

@@ -14,7 +14,7 @@ class GetMappaDetailForPersonService(
   fun execute(hmppsId: String): Response<MappaDetail?> {
     val personResponse = getPersonService.execute(hmppsId = hmppsId)
 
-    val deliusCrn = personResponse.data?.identifiers?.deliusCrn
+    val deliusCrn = personResponse.data["probationOffenderSearch"]?.identifiers?.deliusCrn
     var nDeliusMappaDetailResponse: Response<MappaDetail?> = Response(data = MappaDetail())
 
     if (deliusCrn != null) {

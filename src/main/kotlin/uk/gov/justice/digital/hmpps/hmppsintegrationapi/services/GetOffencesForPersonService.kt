@@ -15,8 +15,8 @@ class GetOffencesForPersonService(
 ) {
   fun execute(hmppsId: String): Response<List<Offence>> {
     val personResponse = getPersonService.execute(hmppsId = hmppsId)
-    val deliusCrn = personResponse.data?.identifiers?.deliusCrn
-    val nomisNumber = personResponse.data?.identifiers?.nomisNumber
+    val deliusCrn = personResponse.data["probationOffenderSearch"]?.identifiers?.deliusCrn
+    val nomisNumber = personResponse.data["probationOffenderSearch"]?.identifiers?.nomisNumber
 
     var nomisOffences: Response<List<Offence>> = Response(data = emptyList())
     var nDeliusOffences: Response<List<Offence>> = Response(data = emptyList())

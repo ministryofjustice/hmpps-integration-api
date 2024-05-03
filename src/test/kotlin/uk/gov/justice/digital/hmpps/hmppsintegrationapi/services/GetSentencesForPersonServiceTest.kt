@@ -55,7 +55,8 @@ internal class GetSentencesForPersonServiceTest(
 
         whenever(getPersonService.execute(hmppsId = hmppsId)).thenReturn(
           Response(
-            data = personFromProbationOffenderSearch,
+            data = mapOf("probationOffenderSearch" to personFromProbationOffenderSearch),
+            errors = emptyList(),
           ),
         )
 
@@ -93,7 +94,7 @@ internal class GetSentencesForPersonServiceTest(
 
         it("returns no sentences when the person cannot be found in either Prisoner Offender Search or Probation Offender Search") {
           whenever(getPersonService.execute(hmppsId = hmppsId)).thenReturn(
-            Response(data = null),
+            Response(data = emptyMap()),
           )
 
           val result = getSentencesForPersonService.execute(hmppsId)

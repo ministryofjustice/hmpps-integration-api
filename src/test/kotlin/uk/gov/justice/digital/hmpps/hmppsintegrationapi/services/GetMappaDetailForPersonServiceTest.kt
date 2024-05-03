@@ -50,7 +50,7 @@ internal class GetMappaDetailForPersonServiceTest(
 
         whenever(getPersonService.execute(hmppsId = hmppsId)).thenReturn(
           Response(
-            data = personFromProbationOffenderSearch,
+            data = mapOf("probationOffenderSearch" to personFromProbationOffenderSearch),
           ),
         )
 
@@ -64,7 +64,7 @@ internal class GetMappaDetailForPersonServiceTest(
       it("Returns mappa detail for person given a hmppsId") {
         whenever(getPersonService.execute(hmppsId = hmppsId)).thenReturn(
           Response(
-            data = personFromProbationOffenderSearch,
+            data = mapOf("probationOffenderSearch" to personFromProbationOffenderSearch),
           ),
         )
 
@@ -83,7 +83,7 @@ internal class GetMappaDetailForPersonServiceTest(
         beforeEach {
           whenever(getPersonService.execute(hmppsId = hmppsId)).thenReturn(
             Response(
-              data = null,
+              data = emptyMap(),
               errors =
                 listOf(
                   UpstreamApiError(

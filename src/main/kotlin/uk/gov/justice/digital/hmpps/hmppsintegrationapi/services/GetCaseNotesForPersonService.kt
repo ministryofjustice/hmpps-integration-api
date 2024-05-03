@@ -14,7 +14,7 @@ class GetCaseNotesForPersonService(
 ) {
   fun execute(filter: CaseNoteFilter): Response<List<CaseNote>> {
     val personResponse = getPersonService.execute(hmppsId = filter.hmppsId)
-    val nomisNumber = personResponse.data?.identifiers?.nomisNumber
+    val nomisNumber = personResponse.data["probationOffenderSearch"]?.identifiers?.nomisNumber
 
     var caseNotes: Response<List<CaseNote>> = Response(data = emptyList())
 

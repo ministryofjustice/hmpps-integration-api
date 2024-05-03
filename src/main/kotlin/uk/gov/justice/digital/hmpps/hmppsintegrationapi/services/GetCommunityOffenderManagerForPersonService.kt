@@ -14,7 +14,7 @@ class GetCommunityOffenderManagerForPersonService(
   fun execute(hmppsId: String): Response<CommunityOffenderManager> {
     val personResponse = getPersonService.execute(hmppsId = hmppsId)
 
-    val deliusCrn = personResponse.data?.identifiers?.deliusCrn
+    val deliusCrn = personResponse.data["probationOffenderSearch"]?.identifiers?.deliusCrn
     var nDeliusMappaDetailResponse: Response<CommunityOffenderManager> = Response(data = CommunityOffenderManager())
 
     if (deliusCrn != null) {

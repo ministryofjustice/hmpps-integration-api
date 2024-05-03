@@ -37,7 +37,12 @@ internal class GetAdjudicationsForPersonServiceTest(
         Mockito.reset(getPersonService)
         Mockito.reset(adjudicationsGateway)
 
-        whenever(getPersonService.execute(hmppsId = hmppsId)).thenReturn(Response(person))
+        whenever(getPersonService.execute(hmppsId = hmppsId)).thenReturn(
+          Response(
+            data = mapOf("probationOffenderSearch" to person),
+            errors = emptyList(),
+          ),
+        )
         whenever(adjudicationsGateway.getReportedAdjudicationsForPerson(id = prisonerNumber)).thenReturn(Response(adjudications))
       }
 
@@ -49,7 +54,7 @@ internal class GetAdjudicationsForPersonServiceTest(
       it("should return a list of errors if person not found") {
         whenever(getPersonService.execute(hmppsId = "notfound")).thenReturn(
           Response(
-            data = null,
+            data = emptyMap(),
             errors =
               listOf(
                 UpstreamApiError(

@@ -42,8 +42,8 @@ internal class GetAddressesForPersonServiceTest(
         Mockito.reset(nomisGateway)
         Mockito.reset(personService)
 
-        whenever(personService.execute(hmppsId = deliusCrn)).thenReturn(Response(person))
-        whenever(personService.execute(hmppsId = hmppsId)).thenReturn(Response(person))
+        whenever(personService.execute(hmppsId = deliusCrn)).thenReturn(Response(data = mapOf("probationOffenderSearch" to person), errors = emptyList()))
+        whenever(personService.execute(hmppsId = hmppsId)).thenReturn(Response(data = mapOf("probationOffenderSearch" to person), errors = emptyList()))
 
         whenever(probationOffenderSearchGateway.getAddressesForPerson(hmppsId)).thenReturn(Response(data = emptyList()))
         whenever(nomisGateway.getAddressesForPerson(prisonerNumber)).thenReturn(Response(data = emptyList()))

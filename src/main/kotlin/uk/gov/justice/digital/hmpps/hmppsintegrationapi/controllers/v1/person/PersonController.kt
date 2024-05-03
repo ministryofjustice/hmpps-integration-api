@@ -70,7 +70,7 @@ class PersonController(
     }
 
     auditService.createEvent("GET_PERSON_DETAILS", mapOf("hmppsId" to hmppsId))
-    return mapOf("data" to response.data)
+    return response.data
   }
 
   @GetMapping("{encodedHmppsId}/images")

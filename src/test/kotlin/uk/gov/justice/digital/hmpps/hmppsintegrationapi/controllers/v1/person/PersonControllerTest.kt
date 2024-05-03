@@ -227,7 +227,11 @@ internal class PersonControllerTest(
         beforeTest {
           Mockito.reset(getPersonService)
           Mockito.reset(auditService)
-          whenever(getPersonService.execute(hmppsId)).thenReturn(Response(data = person))
+          whenever(getPersonService.execute(hmppsId)).thenReturn(
+            Response(
+              data = mapOf("probationOffenderSearch" to person),
+            ),
+          )
         }
 
         it("returns a 200 OK status code") {
@@ -250,11 +254,15 @@ internal class PersonControllerTest(
           it("returns a 404 status code when a person cannot be found in both upstream APIs") {
             whenever(getPersonService.execute(idThatDoesNotExist)).thenReturn(
               Response(
-                data = null,
+                data = emptyMap(),
                 errors =
                   listOf(
                     UpstreamApiError(
                       causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH,
+                      type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+                    ),
+                    UpstreamApiError(
+                      causedBy = UpstreamApi.PRISONER_OFFENDER_SEARCH,
                       type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
                     ),
                   ),
@@ -270,7 +278,7 @@ internal class PersonControllerTest(
           it("does not return a 404 status code when a person was found in one upstream API") {
             whenever(getPersonService.execute(idThatDoesNotExist)).thenReturn(
               Response(
-                data = Person("someFirstName", "someLastName"),
+                data = mapOf("probationOffenderSearch" to Person("someFirstName", "someLastName")),
                 errors =
                   listOf(
                     UpstreamApiError(
@@ -300,23 +308,23 @@ internal class PersonControllerTest(
           result.response.contentAsString.shouldBe(
             """
         {
-        "data": {
-          "firstName": "Silly",
-          "lastName": "Sobbers",
-          "middleName": null,
-          "dateOfBirth": null,
-          "gender": null,
-          "ethnicity": null,
-          "aliases": [],
-          "identifiers": {
-              "nomisNumber": null,
-              "croNumber": null,
-              "deliusCrn": null
-          },
-          "pncId": null,
-          "hmppsId": null,
-          "contactDetails": null
-        }
+            "probationOffenderSearch": {
+                "firstName": "Silly",
+                "lastName": "Sobbers",
+                "middleName": null,
+                "dateOfBirth": null,
+                "gender": null,
+                "ethnicity": null,
+                "aliases": [],
+                "identifiers": {
+                    "nomisNumber": null,
+                    "croNumber": null,
+                    "deliusCrn": null
+                },
+                "pncId": null,
+                "hmppsId": null,
+                "contactDetails": null
+            }
         }
         """.removeWhitespaceAndNewlines(),
           )

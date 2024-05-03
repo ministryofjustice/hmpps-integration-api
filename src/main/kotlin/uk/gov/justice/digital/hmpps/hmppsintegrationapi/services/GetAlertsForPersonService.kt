@@ -13,7 +13,8 @@ class GetAlertsForPersonService(
 ) {
   fun execute(hmppsId: String): Response<List<Alert>> {
     val personResponse = getPersonService.execute(hmppsId = hmppsId)
-    val nomisNumber = personResponse.data?.identifiers?.nomisNumber
+    val nomisNumber = personResponse.data["probationOffenderSearch"]?.identifiers?.nomisNumber
+
     var nomisAlerts: Response<List<Alert>> = Response(data = emptyList())
 
     if (nomisNumber != null) {

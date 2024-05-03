@@ -42,7 +42,7 @@ internal class GetNeedsForPersonServiceTest(
 
         whenever(getPersonService.execute(hmppsId = hmppsId)).thenReturn(
           Response(
-            data = personFromProbationOffenderSearch,
+            data = mapOf("probationOffenderSearch" to personFromProbationOffenderSearch),
           ),
         )
 
@@ -94,7 +94,7 @@ internal class GetNeedsForPersonServiceTest(
           beforeEach {
             whenever(getPersonService.execute(hmppsId)).thenReturn(
               Response(
-                data = null,
+                data = emptyMap(),
                 errors =
                   listOf(
                     UpstreamApiError(

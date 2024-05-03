@@ -40,8 +40,12 @@ class GetCommunityOffenderManagerForPersonServiceTest(
         Mockito.reset(getPersonService)
         Mockito.reset(nDeliusGateway)
 
-        whenever(getPersonService.execute(hmppsId = hmppsId)).thenReturn(Response(person))
-        whenever(nDeliusGateway.getCommunityOffenderManagerForPerson(id = deliusCrn)).thenReturn(Response(communityOffenderManager))
+        whenever(getPersonService.execute(hmppsId = hmppsId)).thenReturn(
+          Response(
+            data = mapOf("probationOffenderSearch" to person),
+          ),
+        )
+        whenever(nDeliusGateway.getCommunityOffenderManagerForPerson(id = deliusCrn)).thenReturn(Response(data = communityOffenderManager))
       }
 
       it("performs a search according to hmpps Id") {
@@ -52,17 +56,17 @@ class GetCommunityOffenderManagerForPersonServiceTest(
       it("Returns a community offender manager for person given a hmppsId") {
         whenever(getPersonService.execute(hmppsId = hmppsId)).thenReturn(
           Response(
-            data = person,
+            data = mapOf("probationOffenderSearch" to person),
           ),
         )
         val result = getCommunityOffenderManagerForPersonService.execute(hmppsId)
-        result.shouldBe(Response(data = communityOffenderManager))
+        result shouldBe Response(data = communityOffenderManager)
       }
 
       it("should return a list of errors if person not found") {
         whenever(getPersonService.execute(hmppsId = "NOT_FOUND")).thenReturn(
           Response(
-            data = null,
+            data = emptyMap(),
             errors =
               listOf(
                 UpstreamApiError(

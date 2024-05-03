@@ -39,8 +39,17 @@ internal class GetAlertsForPersonServiceTest(
         Mockito.reset(nomisGateway)
         Mockito.reset(personService)
 
-        whenever(personService.execute(hmppsId = deliusCrn)).thenReturn(Response(person))
-        whenever(personService.execute(hmppsId = hmppsId)).thenReturn(Response(person))
+        whenever(personService.execute(hmppsId = deliusCrn)).thenReturn(
+          Response(
+            data = mapOf("probationOffenderSearch" to person),
+          ),
+        )
+
+        whenever(personService.execute(hmppsId = hmppsId)).thenReturn(
+          Response(
+            data = mapOf("probationOffenderSearch" to person),
+          ),
+        )
 
         whenever(nomisGateway.getAlertsForPerson(prisonerNumber)).thenReturn(
           Response(
@@ -68,7 +77,7 @@ internal class GetAlertsForPersonServiceTest(
         beforeEach {
           whenever(personService.execute(hmppsId = hmppsId)).thenReturn(
             Response(
-              data = null,
+              data = emptyMap(),
               errors =
                 listOf(
                   UpstreamApiError(

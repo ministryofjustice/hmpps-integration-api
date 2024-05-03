@@ -40,8 +40,11 @@ GetRiskSeriousHarmForPersonServiceTest(
         Mockito.reset(getPersonService)
         Mockito.reset(assessRisksAndNeedsGateway)
 
-        whenever(getPersonService.execute(hmppsId = hmppsId)).thenReturn(
-          Response(data = personFromProbationOffenderSearch),
+        whenever(getPersonService.execute(hmppsId)).thenReturn(
+          Response(
+            data = mapOf("probationOffenderSearch" to personFromProbationOffenderSearch),
+            errors = emptyList(),
+          ),
         )
 
         whenever(assessRisksAndNeedsGateway.getRiskSeriousHarmForPerson(deliusCrn)).thenReturn(Response(data = null))
@@ -74,7 +77,7 @@ GetRiskSeriousHarmForPersonServiceTest(
           beforeEach {
             whenever(getPersonService.execute(hmppsId)).thenReturn(
               Response(
-                data = null,
+                data = mapOf("probationOffenderSearch" to null),
                 errors =
                   listOf(
                     UpstreamApiError(

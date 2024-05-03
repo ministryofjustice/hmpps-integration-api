@@ -38,7 +38,12 @@ internal class GetLicenceConditionServiceTest(
         Mockito.reset(getPersonService)
         Mockito.reset(createAndVaryLicenceGateway)
 
-        whenever(getPersonService.execute(hmppsId = hmppsId)).thenReturn(Response(person))
+        whenever(getPersonService.execute(hmppsId = hmppsId)).thenReturn(
+          Response(
+            data = mapOf("probationOffenderSearch" to person),
+          ),
+        )
+
         whenever(createAndVaryLicenceGateway.getLicenceSummaries(id = crn)).thenReturn(Response(licences))
         whenever(createAndVaryLicenceGateway.getLicenceConditions(id = "MockLicenceId")).thenReturn(Response(conditions))
       }
@@ -51,7 +56,7 @@ internal class GetLicenceConditionServiceTest(
       it("should return a list of errors if person not found") {
         whenever(getPersonService.execute(hmppsId = "notfound")).thenReturn(
           Response(
-            data = null,
+            data = emptyMap(),
             errors =
               listOf(
                 UpstreamApiError(
@@ -61,6 +66,7 @@ internal class GetLicenceConditionServiceTest(
               ),
           ),
         )
+
         val result = getLicenceCondtionService.execute("notfound")
         result.data.licences.shouldBe(emptyList())
         result.errors.first().type.shouldBe(UpstreamApiError.Type.ENTITY_NOT_FOUND)

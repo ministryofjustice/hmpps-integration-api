@@ -13,7 +13,7 @@ class GetRiskCategoriesForPersonService(
 ) {
   fun execute(hmppsId: String): Response<RiskCategory?> {
     val personResponse = getPersonService.execute(hmppsId = hmppsId)
-    val nomisNumber = personResponse.data?.identifiers?.nomisNumber
+    val nomisNumber = personResponse.data["probationOffenderSearch"]?.identifiers?.nomisNumber
 
     var personRiskCategories: Response<RiskCategory?> = Response(data = RiskCategory())
 

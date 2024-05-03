@@ -41,7 +41,12 @@ class GetCaseNotesForPersonServiceTest(
         Mockito.reset(getPersonService)
         Mockito.reset(caseNotesGateway)
 
-        whenever(getPersonService.execute(hmppsId = hmppsId)).thenReturn(Response(person))
+        whenever(getPersonService.execute(hmppsId = hmppsId)).thenReturn(
+          Response(
+            data = mapOf("probationOffenderSearch" to person),
+          ),
+        )
+
         whenever(caseNotesGateway.getCaseNotesForPerson(id = nomisNumber, filter)).thenReturn(Response(caseNotes))
       }
 

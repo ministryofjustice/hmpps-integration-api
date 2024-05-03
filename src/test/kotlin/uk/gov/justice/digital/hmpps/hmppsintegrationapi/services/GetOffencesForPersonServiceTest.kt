@@ -39,6 +39,7 @@ internal class GetOffencesForPersonServiceTest(
       val probationOffence1 = generateTestOffence(description = "Probation offence 1", hoCode = "05800", statuteCode = null)
       val probationOffence2 = generateTestOffence(description = "Probation offence 2", hoCode = "05801", statuteCode = null)
       val probationOffence3 = generateTestOffence(description = "Probation offence 3", hoCode = "05802", statuteCode = null)
+      val personFromPrisonOffenderSearch = Person(firstName = "Paul", lastName = "Smith")
       val personFromProbationOffenderSearch =
         Person(
           firstName = "Chandler",
@@ -54,13 +55,15 @@ internal class GetOffencesForPersonServiceTest(
         require(hmppsId.matches(Regex("^[0-9]+/[0-9A-Za-z]+$"))) {
           "Invalid Hmpps Id format: $hmppsId"
         }
-
         whenever(getPersonService.execute(hmppsId = hmppsId)).thenReturn(
           Response(
-            data = personFromProbationOffenderSearch,
+            data =
+              mapOf(
+                "prisonerOffenderSearch" to personFromPrisonOffenderSearch,
+                "probationOffenderSearch" to personFromProbationOffenderSearch,
+              ),
           ),
         )
-
         whenever(nomisGateway.getOffencesForPerson(prisonerNumber)).thenReturn(
           Response(
             data =
@@ -85,17 +88,42 @@ internal class GetOffencesForPersonServiceTest(
       }
 
       it("Returns prison and probation offences given a hmppsId") {
-        whenever(getPersonService.execute(hmppsId = hmppsId)).thenReturn(
+        val personResponse =
+          Response<Map<String, Person?>>(
+            data =
+              mapOf(
+                "prisonerOffenderSearch" to personFromPrisonOffenderSearch,
+                "probationOffenderSearch" to personFromProbationOffenderSearch,
+              ),
+          )
+        whenever(getPersonService.execute(hmppsId = hmppsId)).thenReturn(personResponse)
+
+        val nomisOffencesResponse =
           Response(
-            data = personFromProbationOffenderSearch,
-          ),
-        )
+            data = listOf(prisonOffence1, prisonOffence2, prisonOffence3),
+          )
+        val nDeliusOffencesResponse =
+          Response(
+            data = listOf(probationOffence1, probationOffence2, probationOffence3),
+          )
+        whenever(nomisGateway.getOffencesForPerson(prisonerNumber)).thenReturn(nomisOffencesResponse)
+        whenever(nDeliusGateway.getOffencesForPerson(nDeliusCRN)).thenReturn(nDeliusOffencesResponse)
 
         val result = getOffencesForPersonService.execute(hmppsId)
 
-        result.shouldBe(
-          Response(data = listOf(prisonOffence1, prisonOffence2, prisonOffence3, probationOffence1, probationOffence2, probationOffence3)),
-        )
+        result shouldBe
+          Response(
+            data =
+              listOf(
+                prisonOffence1,
+                prisonOffence2,
+                prisonOffence3,
+                probationOffence1,
+                probationOffence2,
+                probationOffence3,
+              ),
+            errors = emptyList(),
+          )
       }
 
       it("gets a person using a Hmpps ID") {
@@ -135,7 +163,7 @@ internal class GetOffencesForPersonServiceTest(
         beforeEach {
           whenever(getPersonService.execute(hmppsId = hmppsId)).thenReturn(
             Response(
-              data = null,
+              data = emptyMap(),
               errors =
                 listOf(
                   UpstreamApiError(

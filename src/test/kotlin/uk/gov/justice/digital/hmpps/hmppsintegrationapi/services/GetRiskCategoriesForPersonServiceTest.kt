@@ -41,7 +41,7 @@ internal class GetRiskCategoriesForPersonServiceTest(
 
         whenever(getPersonService.execute(hmppsId = hmppsId)).thenReturn(
           Response(
-            data = personFromProbationOffenderSearch,
+            data = mapOf("probationOffenderSearch" to personFromProbationOffenderSearch),
           ),
         )
 
