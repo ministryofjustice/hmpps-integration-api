@@ -45,6 +45,7 @@ class PersonSmokeTest : DescribeSpec(
       response.body().shouldBe(
         """
         {
+        "data": {
           "prisonerOffenderSearch": {
             "firstName": "Robert",
             "lastName": "Larsen",
@@ -124,6 +125,7 @@ class PersonSmokeTest : DescribeSpec(
               "emails": null
             }
           }
+         }
         }
         """.removeWhitespaceAndNewlines(),
       )

@@ -308,7 +308,8 @@ internal class PersonControllerTest(
           result.response.contentAsString.shouldBe(
             """
         {
-            "probationOffenderSearch": {
+            "data": {
+              "probationOffenderSearch": {
                 "firstName": "Silly",
                 "lastName": "Sobbers",
                 "middleName": null,
@@ -325,6 +326,7 @@ internal class PersonControllerTest(
                 "hmppsId": null,
                 "contactDetails": null
             }
+           }
         }
         """.removeWhitespaceAndNewlines(),
           )
