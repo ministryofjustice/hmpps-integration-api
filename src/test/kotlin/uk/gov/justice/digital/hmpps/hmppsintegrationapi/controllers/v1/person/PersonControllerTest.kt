@@ -222,13 +222,19 @@ internal class PersonControllerTest(
       }
 
       describe("GET $basePath/{id}") {
-        val person = Person("Silly", "Sobbers")
+        val probationOffenderSearch = Person("Sam", "Smith", identifiers = Identifiers(nomisNumber = "1234ABC"))
+        val prisonOffenderSearch = POSPrisoner("Kim", "Kardashian")
+        val prisonResponse = Response(data = prisonOffenderSearch, errors = emptyList())
 
         beforeTest {
           Mockito.reset(getPersonService)
           Mockito.reset(auditService)
 
-          val personMap = mapOf("probationOffenderSearch" to person, "prisonerOffenderSearch" to null)
+          val personMap =
+            mapOf(
+              "probationOffenderSearch" to probationOffenderSearch,
+              "prisonerOffenderSearch" to prisonResponse.data.toPerson(),
+            )
           whenever(getPersonService.getCombinedDataForPerson(hmppsId)).thenReturn(Response(data = personMap))
         }
 
@@ -309,29 +315,48 @@ internal class PersonControllerTest(
 
           result.response.contentAsString.shouldBe(
             """
-        {
-          "data": {
-            "probationOffenderSearch": {
-              "firstName": "Silly",
-              "lastName": "Sobbers",
-              "middleName": null,
-              "dateOfBirth": null,
-              "gender": null,
-              "ethnicity": null,
-              "aliases": [],
-              "identifiers": {
-                "nomisNumber": null,
-                "croNumber": null,
-                "deliusCrn": null
-              },
-            "pncId": null,
-            "hmppsId": null,
-            "contactDetails": null
-          },
-          "prisonerOffenderSearch": null
-          }
-        }
+            {
+             "data":{
+                "probationOffenderSearch":{
+                   "firstName":"Sam",
+                   "lastName":"Smith",
+                   "middleName":null,
+                   "dateOfBirth":null,
+                   "gender":null,
+                   "ethnicity":null,
+                   "aliases":[
 
+                   ],
+                   "identifiers":{
+                      "nomisNumber":"1234ABC",
+                      "croNumber":null,
+                      "deliusCrn":null
+                   },
+                   "pncId":null,
+                   "hmppsId":null,
+                   "contactDetails":null
+                },
+                "prisonerOffenderSearch":{
+                   "firstName":"Kim",
+                   "lastName":"Kardashian",
+                   "middleName":null,
+                   "dateOfBirth":null,
+                   "gender":null,
+                   "ethnicity":null,
+                   "aliases":[
+
+                   ],
+                   "identifiers":{
+                      "nomisNumber":null,
+                      "croNumber":null,
+                      "deliusCrn":null
+                   },
+                   "pncId":null,
+                   "hmppsId":null,
+                   "contactDetails":null
+                }
+             }
+          }
         """.removeWhitespaceAndNewlines(),
           )
         }
