@@ -61,16 +61,17 @@ class PersonController(
   @GetMapping("{encodedHmppsId}")
   fun getPerson(
     @PathVariable encodedHmppsId: String,
-  ): Map<String, Person?> {
+  ): Map<String, Map<String, Person?>> {
     val hmppsId = encodedHmppsId.decodeUrlCharacters()
-    val response = getPersonService.execute(hmppsId)
+    val response = getPersonService.getCombinedDataForPerson(hmppsId)
 
     if (response.hasErrorCausedBy(ENTITY_NOT_FOUND, causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH)) {
       throw EntityNotFoundException("Could not find person with id: $hmppsId")
     }
 
     auditService.createEvent("GET_PERSON_DETAILS", mapOf("hmppsId" to hmppsId))
-    return mapOf("data" to response.data)
+    val data = response.data.mapValues { it.value }
+    return mapOf("data" to data)
   }
 
   @GetMapping("{encodedHmppsId}/images")
