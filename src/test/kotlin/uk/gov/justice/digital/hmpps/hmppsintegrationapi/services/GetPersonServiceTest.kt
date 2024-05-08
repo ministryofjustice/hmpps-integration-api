@@ -14,6 +14,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ProbationOffend
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Identifiers
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSPrisoner
 
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
@@ -35,6 +36,9 @@ internal class GetPersonServiceTest(
       )
       whenever(probationOffenderSearchGateway.getPerson(id = hmppsId)).thenReturn(
         Response(data = Person(firstName = "Qui-gon", lastName = "Jin", identifiers = Identifiers(nomisNumber = "A1234AA"))),
+      )
+      whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber = "A1234AA")).thenReturn(
+        Response(data = POSPrisoner(firstName = "Sam", lastName = "Mills")),
       )
     }
 
@@ -65,5 +69,23 @@ internal class GetPersonServiceTest(
       val expectedResult = null
 
       result.data.shouldBe(expectedResult)
+    }
+
+    it("returns a person with both probation and prison data when prison data exists") {
+      val personFromProbationOffenderSearch = Person("Paula", "First", identifiers = Identifiers(nomisNumber = "A1234AA"))
+      val personFromPrisonOffenderSearch = POSPrisoner("Sam", "Mills")
+
+      whenever(probationOffenderSearchGateway.getPerson(hmppsId)).thenReturn(
+        Response(data = personFromProbationOffenderSearch),
+      )
+      whenever(prisonerOffenderSearchGateway.getPrisonOffender("A1234AA")).thenReturn(
+        Response(data = personFromPrisonOffenderSearch),
+      )
+
+      val result = getPersonService.getCombinedDataForPerson(hmppsId)
+      val expectedResult = result.data
+
+      result.data.shouldBe(expectedResult)
+      result.errors shouldBe emptyList()
     }
   })
