@@ -8,7 +8,7 @@ import org.springframework.http.HttpStatus
 
 class RiskManagementApiMockServer : WireMockServer(WIREMOCK_PORT) {
   companion object {
-    private const val WIREMOCK_PORT = 4009
+    private const val WIREMOCK_PORT = 4091
   }
 
   fun stubGetRiskManagementPlan(
