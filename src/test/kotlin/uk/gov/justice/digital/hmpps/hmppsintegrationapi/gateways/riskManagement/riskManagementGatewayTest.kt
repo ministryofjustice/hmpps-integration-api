@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.riskManagement
 
 import io.kotest.core.spec.style.DescribeSpec
+import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory
 import org.mockito.kotlin.verify
@@ -39,20 +40,30 @@ class RiskManagementGatewayTest (
     riskManagementMockServer.stop()
   }
 
-  describe("get risks for given crn") {
+  describe("Get risks for given CRN") {
     val crn = "D1974X"
 
-    riskManagementMockServer.stubGetRiskManagementPlan(
-      crn,
-      File(
-        "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/riskManagement/fixtures/GetRiskManagementPlanResponse.json",
-      ).readText(),
-    )
+    beforeEach {
+      riskManagementMockServer.stubGetRiskManagementPlan(
+        crn,
+        File(
+          "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/riskManagement/fixtures/GetRiskManagementPlanResponse.json",
+        ).readText(),
+      )
+    }
 
     it("authenticates using HMPPS Auth with credentials") {
       riskManagementGateway.getRiskManagementPlansForCrn(crn)
+      verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("Risk Management Plan Search")
+    }
 
-      verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("Prisoner Offender Search")
+    it ("returns a risk management plan when searching with a valid CRN") {
+      val response = riskManagementGateway.getRiskManagementPlansForCrn(crn)
+      val blah = response.data
+      blah.crn.shouldBe(crn)
+      response.data.riskManagementPlan.size.shouldBe(1)
+
+      response.errors.size.shouldBe(0)
     }
 
   }
