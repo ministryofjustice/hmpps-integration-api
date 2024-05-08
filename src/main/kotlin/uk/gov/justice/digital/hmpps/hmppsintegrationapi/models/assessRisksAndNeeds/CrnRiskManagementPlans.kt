@@ -8,7 +8,7 @@ data class CrnRiskManagementPlans(
   val limitedAccessOffender: String,
   val riskManagementPlan: List<CrnRiskManagementPlan>
 ) {
-  fun toRiskManagementPlan(): List<RiskManagementPlan> {
+  fun toRiskManagementPlans(): List<RiskManagementPlan> {
     return this.riskManagementPlan.stream()
       .map {
         RiskManagementPlan(

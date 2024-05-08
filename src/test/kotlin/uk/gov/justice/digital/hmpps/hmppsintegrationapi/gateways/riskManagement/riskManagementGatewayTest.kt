@@ -1,0 +1,51 @@
+package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.riskManagement
+
+import io.kotest.core.spec.style.DescribeSpec
+import org.mockito.Mockito
+import org.mockito.internal.verification.VerificationModeFactory
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
+import org.springframework.boot.test.mock.mockito.MockBean
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.RiskManagementGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.RiskManagementApiMockServer
+import java.io.File
+
+class RiskManagementGatewayTest (
+  @MockBean val hmppsAuthGateway: HmppsAuthGateway,
+  private val riskManagementGateway: RiskManagementGateway,
+) : DescribeSpec({
+
+  val riskManagementMockServer = RiskManagementApiMockServer()
+
+  beforeEach{
+    riskManagementMockServer.start()
+    Mockito.reset(hmppsAuthGateway)
+
+    whenever(hmppsAuthGateway.getClientToken("Risk Management Plan Search")).thenReturn(HmppsAuthMockServer.TOKEN)
+  }
+
+  afterTest {
+    riskManagementMockServer.stop()
+  }
+
+  describe("get risks for given crn") {
+    val crn = "D1974X"
+
+    riskManagementMockServer.stubGetRiskManagementPlan(
+      crn,
+      File(
+        "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/riskManagement/fixtures/GetRiskManagementPlanResponse.json",
+      ).readText(),
+    )
+
+    it("authenticates using HMPPS Auth with credentials") {
+      riskManagementGateway.getRiskManagementPlansForCrn(crn)
+
+      verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("Prisoner Offender Search")
+    }
+
+  }
+
+})
