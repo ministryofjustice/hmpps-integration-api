@@ -1719,50 +1719,13 @@ components:
     Person:
       type: object
       properties:
-        firstName:
-          type: string
-          example: Arthur
-          description: first name
-        middleName:
-          type: string
-          example: John
-          nullable: true
-          description: middle name
-        lastName:
-          type: string
-          example: Morgan
-          description: last name
-        dateOfBirth:
-          type: string
-          format: date
-          example: 1965-12-01
-          description: date of birth
-        gender:
-          type: string
-          example: Male
-          description: gender
-        ethnicity:
-          type: string
-          example: "White: Eng./Welsh/Scot./N.Irish/British"
-          description: ethnicity
-        aliases:
-          type: array
-          minItems: 0
-          items:
-            $ref: "#/components/schemas/Alias"
-          description: list of aliases
-        identifiers:
-          $ref: "#/components/schemas/Identifiers"
-        pncId:
-          type: string
-          example: 2008/0545166T
-          description: An identifier from the Police National Computer (PNC)
-        hmppsId:
-          type: string
-          example: X00001
-          description: Currently a hmppsId is a CRN identifier however this will change in the future to be a new unique Hmpps identifier
-        contactDetails:
-          $ref: "#/components/schemas/ContactDetails"
+        data:
+          type: object
+          properties:
+            prisonerOffenderSearch:
+              $ref: "#/components/schemas/OffenderSearch"
+            probationOffenderSearch:
+              $ref: "#/components/schemas/OffenderSearch"
     PersonResponsibleOfficerName:
       type: object
       properties:
@@ -1902,7 +1865,45 @@ components:
           nullable: true
         prison:
           $ref: "#/components/schemas/Prison"
-
+    OffenderSearch:
+      type: object
+      properties:
+        firstName:
+          type: string
+          description: First name
+        lastName:
+          type: string
+          description: Last name
+        middleName:
+          type: string
+          nullable: true
+          description: Middle name
+        dateOfBirth:
+          type: string
+          format: date
+          description: Date of birth
+        gender:
+          type: string
+          description: Gender
+        ethnicity:
+          type: string
+          nullable: true
+          description: Ethnicity
+        aliases:
+          type: array
+          items:
+            $ref: "#/components/schemas/Alias"
+          description: List of aliases
+        identifiers:
+          $ref: "#/components/schemas/Identifiers"
+        pncId:
+          type: string
+          description: An identifier from the Police National Computer (PNC)
+        hmppsId:
+          type: string
+          description: Hmpps identifier
+        contactDetails:
+          $ref: "#/components/schemas/ContactDetails"
     Punishment:
       type: object
       properties:
