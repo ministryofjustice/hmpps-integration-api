@@ -1722,10 +1722,8 @@ components:
         data:
           type: object
           properties:
-            prisonerOffenderSearch:
-              $ref: "#/components/schemas/PrisonerOffenderSearch"
-            probationOffenderSearch:
-              $ref: "#/components/schemas/ProbationOffenderSearch"
+            offenderSearch:
+              $ref: "#/components/schemas/OffenderSearch"
     PersonResponsibleOfficerName:
       type: object
       properties:
@@ -1865,47 +1863,7 @@ components:
           nullable: true
         prison:
           $ref: "#/components/schemas/Prison"
-    PrisonerOffenderSearch:
-      type: object
-      properties:
-        firstName:
-          type: string
-          description: First name
-        lastName:
-          type: string
-          description: Last name
-        middleName:
-          type: string
-          nullable: true
-          description: Middle name
-        dateOfBirth:
-          type: string
-          format: date
-          example: 1975-04-02
-          description: Date of birth
-        gender:
-          type: string
-          description: Gender
-        ethnicity:
-          type: string
-          description: Ethnicity
-        aliases:
-          type: array
-          items:
-            $ref: "#/components/schemas/Alias"
-          description: List of aliases
-        identifiers:
-          $ref: "#/components/schemas/Identifiers"
-        pncId:
-          type: string
-          description: An identifier from the Police National Computer (PNC)
-        hmppsId:
-          type: string
-          nullable: true
-          description: Currently a hmppsId is a CRN identifier however this will change in the future to be a new unique Hmpps identifier
-        contactDetails:
-          $ref: "#/components/schemas/ContactDetails"
-    ProbationOffenderSearch:
+    OffenderSearch:
       type: object
       properties:
         firstName:
