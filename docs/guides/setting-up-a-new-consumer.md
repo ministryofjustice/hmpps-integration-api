@@ -19,7 +19,6 @@ per environment.
 ```bash
 make generate-client-certificate
 ```
-
 This will output three files in the ./scripts/client_certificates directory:
 
 - a private key e.g. `dev-nhs-client.key`
