@@ -1716,7 +1716,6 @@ components:
           type: integer
           example: 1
           description: The total number of pages
-
     Person:
       type: object
       properties:
