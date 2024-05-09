@@ -1722,7 +1722,9 @@ components:
         data:
           type: object
           properties:
-            offenderSearch:
+            prisonerOffenderSearch:
+              $ref: "#/components/schemas/OffenderSearch"
+            probationOffenderSearch:
               $ref: "#/components/schemas/OffenderSearch"
     PersonResponsibleOfficerName:
       type: object
