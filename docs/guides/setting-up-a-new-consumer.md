@@ -14,7 +14,14 @@ per environment.
 
 ## Create a client certificate
 
-1. Run the [generate-client-certificate.sh](/scripts/client_certificates/generate.sh) script with the name of the environment and client.
+1. As a pre-requisite to create a client certificate by running the script below, please ensure that:
+- Select the account you need.SSO registration scopes
+- You run `aws configure sso` and follow the prompts to populate the SSO session name [anything], the SSO start URL [https://madetech.awsapps.com/start], the region [eu-west-2] and SSO registration scopes [simply press Enter].
+- Authorise the request which will be open on the browser.
+- Select the account you want to use, according to what roles you have available. 
+- Follow the prompts to populate the client region [eu-west-2], the default output format [json], the CLI profile name [simply press Enter].
+- Verify that you have everything ready by opening the config file in the ".aws" directory.
+2. Run the [generate-client-certificate.sh](/scripts/client_certificates/generate.sh) script with the name of the environment and client.
 
 ```bash
 make generate-client-certificate
