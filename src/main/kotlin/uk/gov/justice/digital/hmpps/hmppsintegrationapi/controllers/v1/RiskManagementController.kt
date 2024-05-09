@@ -11,11 +11,10 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.RiskManagem
 @RestController
 @EnableConfigurationProperties(AuthorisationConfig::class)
 class RiskManagementController {
-
   @RequestMapping("/v1/persons/{encodedHmppsId}/risk-management-plan")
   fun getRiskManagementPlans(
     @PathVariable encodedHmppsId: String,
-  ) : Response<List<RiskManagementPlan>> {
-    return Response(emptyList(), emptyList() )
+  ): Response<List<RiskManagementPlan>> {
+    return Response(emptyList(), emptyList())
   }
 }

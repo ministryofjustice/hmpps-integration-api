@@ -1,7 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps
 
-data class RiskManagementPlan (
-
+data class RiskManagementPlan(
   val assessmentId: String,
   val dateCompleted: String,
   val initiationDate: String,
@@ -15,5 +14,4 @@ data class RiskManagementPlan (
   val victimSafetyPlanning: String,
   val latestSignLockDate: String,
   val latestCompleteDate: String,
-
 )

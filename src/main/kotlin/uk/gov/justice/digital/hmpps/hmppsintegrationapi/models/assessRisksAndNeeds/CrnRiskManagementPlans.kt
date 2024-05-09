@@ -6,7 +6,7 @@ import java.util.stream.Collectors
 data class CrnRiskManagementPlans(
   val crn: String,
   val limitedAccessOffender: String,
-  val riskManagementPlan: List<CrnRiskManagementPlan>
+  val riskManagementPlan: List<CrnRiskManagementPlan>,
 ) {
   fun toRiskManagementPlans(): List<RiskManagementPlan> {
     return this.riskManagementPlan.stream()
@@ -57,4 +57,3 @@ data class CrnRiskManagementPlan(
   val laterCompleteAssessmentExists: String,
   val latestCompleteDate: String,
 )
-

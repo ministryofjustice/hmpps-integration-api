@@ -10,17 +10,15 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 
 @Component
-class RiskManagementGateway (
+class RiskManagementGateway(
   @Value("\${services.risk-management-plan-search.base-url}") baseUrl: String,
-){
-
+) {
   private val webClient = WebClientWrapper(baseUrl)
 
   @Autowired
   lateinit var hmppsAuthGateway: HmppsAuthGateway
 
-  fun getRiskManagementPlansForCrn(crn: String): Response<CrnRiskManagementPlans> {
-
+  fun getRiskManagementPlansForCrn(crn: String): Response<CrnRiskManagementPlans?> {
     val requestBody =
       mapOf("crn" to crn)
 
@@ -39,7 +37,7 @@ class RiskManagementGateway (
 
       is WebClientWrapper.WebClientWrapperResponse.Error -> {
         Response(
-          data = CrnRiskManagementPlans("", "", emptyList()),
+          data = null,
           errors = result.errors,
         )
       }
