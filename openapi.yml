@@ -95,8 +95,10 @@ paths:
               schema:
                 type: object
                 properties:
-                  data:
-                        $ref: "#/components/schemas/Person"
+                  prisonerOffenderSearch:
+                    $ref: "#/components/schemas/Person"
+                  probationOffenderSearch:
+                    $ref: "#/components/schemas/Person"
         "404":
           description: Failed to find a person with the provided HMPPS ID.
           content:
@@ -1719,10 +1721,45 @@ components:
     Person:
       type: object
       properties:
-        prisonerOffenderSearch:
-          $ref: "#/components/schemas/OffenderSearch"
-        probationOffenderSearch:
-          $ref: "#/components/schemas/OffenderSearch"
+        data:
+          type: object
+          properties:
+            firstName:
+              type: string
+              description: First name
+            lastName:
+              type: string
+              description: Last name
+            middleName:
+              type: string
+              nullable: true
+              description: Middle name
+            dateOfBirth:
+              type: string
+              format: date
+              description: Date of birth
+            gender:
+              type: string
+              description: Gender
+            ethnicity:
+              type: string
+              nullable: true
+              description: Ethnicity
+            aliases:
+              type: array
+              items:
+                $ref: "#/components/schemas/Alias"
+              description: List of aliases
+            identifiers:
+              $ref: "#/components/schemas/Identifiers"
+            pncId:
+              type: string
+              description: An identifier from the Police National Computer (PNC)
+            hmppsId:
+              type: string
+              description: Hmpps identifier
+            contactDetails:
+              $ref: "#/components/schemas/ContactDetails"
     PersonResponsibleOfficerName:
       type: object
       properties:
@@ -1862,45 +1899,6 @@ components:
           nullable: true
         prison:
           $ref: "#/components/schemas/Prison"
-    OffenderSearch:
-      type: object
-      properties:
-        firstName:
-          type: string
-          description: First name
-        lastName:
-          type: string
-          description: Last name
-        middleName:
-          type: string
-          nullable: true
-          description: Middle name
-        dateOfBirth:
-          type: string
-          format: date
-          description: Date of birth
-        gender:
-          type: string
-          description: Gender
-        ethnicity:
-          type: string
-          nullable: true
-          description: Ethnicity
-        aliases:
-          type: array
-          items:
-            $ref: "#/components/schemas/Alias"
-          description: List of aliases
-        identifiers:
-          $ref: "#/components/schemas/Identifiers"
-        pncId:
-          type: string
-          description: An identifier from the Police National Computer (PNC)
-        hmppsId:
-          type: string
-          description: Hmpps identifier
-        contactDetails:
-          $ref: "#/components/schemas/ContactDetails"
     Punishment:
       type: object
       properties:
