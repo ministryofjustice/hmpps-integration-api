@@ -1719,13 +1719,10 @@ components:
     Person:
       type: object
       properties:
-        data:
-          type: object
-          properties:
-            prisonerOffenderSearch:
-              $ref: "#/components/schemas/OffenderSearch"
-            probationOffenderSearch:
-              $ref: "#/components/schemas/OffenderSearch"
+        prisonerOffenderSearch:
+          $ref: "#/components/schemas/OffenderSearch"
+        probationOffenderSearch:
+          $ref: "#/components/schemas/OffenderSearch"
     PersonResponsibleOfficerName:
       type: object
       properties:
