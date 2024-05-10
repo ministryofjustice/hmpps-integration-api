@@ -61,7 +61,7 @@ class PersonController(
   @GetMapping("{encodedHmppsId}")
   fun getPerson(
     @PathVariable encodedHmppsId: String,
-  ): Map<String, Map<String, Person?>> {
+  ): Map<String, Person?> {
     val hmppsId = encodedHmppsId.decodeUrlCharacters()
     val response = getPersonService.getCombinedDataForPerson(hmppsId)
 
@@ -70,8 +70,7 @@ class PersonController(
     }
 
     auditService.createEvent("GET_PERSON_DETAILS", mapOf("hmppsId" to hmppsId))
-    val data = response.data.mapValues { it.value }
-    return mapOf("data" to data)
+    return response.data
   }
 
   @GetMapping("{encodedHmppsId}/images")

@@ -317,48 +317,42 @@ internal class PersonControllerTest(
 
           result.response.contentAsString.shouldBe(
             """
-            {
-             "data":{
-                "probationOffenderSearch":{
-                   "firstName":"Sam",
-                   "lastName":"Smith",
-                   "middleName":null,
-                   "dateOfBirth":null,
-                   "gender":null,
-                   "ethnicity":null,
-                   "aliases":[
-
-                   ],
-                   "identifiers":{
-                      "nomisNumber":"1234ABC",
-                      "croNumber":null,
-                      "deliusCrn":null
-                   },
-                   "pncId":null,
-                   "hmppsId":null,
-                   "contactDetails":null
-                },
-                "prisonerOffenderSearch":{
-                   "firstName":"Kim",
-                   "lastName":"Kardashian",
-                   "middleName":null,
-                   "dateOfBirth":null,
-                   "gender":null,
-                   "ethnicity":null,
-                   "aliases":[
-
-                   ],
-                   "identifiers":{
-                      "nomisNumber":null,
-                      "croNumber":null,
-                      "deliusCrn":null
-                   },
-                   "pncId":null,
-                   "hmppsId":null,
-                   "contactDetails":null
-                }
-             }
+        {
+          "probationOffenderSearch":{
+             "firstName":"Sam",
+             "lastName":"Smith",
+             "middleName":null,
+             "dateOfBirth":null,
+             "gender":null,
+             "ethnicity":null,
+             "aliases":[],
+             "identifiers":{
+                "nomisNumber":"1234ABC",
+                "croNumber":null,
+                "deliusCrn":null
+             },
+             "pncId":null,
+             "hmppsId":null,
+             "contactDetails":null
+          },
+          "prisonerOffenderSearch":{
+             "firstName":"Kim",
+             "lastName":"Kardashian",
+             "middleName":null,
+             "dateOfBirth":null,
+             "gender":null,
+             "ethnicity":null,
+             "aliases":[],
+             "identifiers":{
+                "nomisNumber":null,
+                "croNumber":null,
+                "deliusCrn":null
+             },
+             "pncId":null,
+             "hmppsId":null,
+             "contactDetails":null
           }
+       }
         """.removeWhitespaceAndNewlines(),
           )
         }
