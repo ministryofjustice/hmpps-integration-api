@@ -12,9 +12,13 @@ per environment.
 - [kubectl](https://kubernetes.io/docs/tasks/tools/#kubectl)
 - [Access to Cloud Platform’s Kubernetes cluster](https://user-guide.cloud-platform.service.justice.gov.uk/documentation/getting-started/kubectl-config.html#installing-kubectl)
 
+As a pre-requisite to create a client certificate by running the script below, please ensure that:
+- You are logged in so that you can access AWS resources via the CLI.
+- Verify that you have all your AWS credentials ready by opening the config file in the ".aws" directory.
+
 ## Create a client certificate
 
-1. Run the [generate-client-certificate.sh](/scripts/client_certificates/generate.sh) script with the name of the environment and client.
+Run the [generate-client-certificate.sh](/scripts/client_certificates/generate.sh) script with the name of the environment and client.
 
 ```bash
 make generate-client-certificate
