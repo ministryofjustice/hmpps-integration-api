@@ -13,12 +13,8 @@ per environment.
 - [Access to Cloud Platform’s Kubernetes cluster](https://user-guide.cloud-platform.service.justice.gov.uk/documentation/getting-started/kubectl-config.html#installing-kubectl)
 
 As a pre-requisite to create a client certificate by running the script below, please ensure that:
-- Select the account you need.SSO registration scopes
-- You run `aws configure sso` and follow the prompts to populate the SSO session name [anything], the SSO start URL [https://madetech.awsapps.com/start], the region [eu-west-2] and SSO registration scopes [simply press Enter].
-- Authorise the request which will be open on the browser.
-- Select the account you want to use, according to what roles you have available.
-- Follow the prompts to populate the client region [eu-west-2], the default output format [json], the CLI profile name [simply press Enter].
-- Verify that you have everything ready by opening the config file in the ".aws" directory.
+- You are logged in so that you can access AWS resources via the CLI.
+- Verify that you have all your AWS credentials ready by opening the config file in the ".aws" directory.
 
 ## Create a client certificate
 
