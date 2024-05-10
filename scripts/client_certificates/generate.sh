@@ -51,8 +51,8 @@ upload_backup() {
   aws s3api put-object --bucket "$bucket" --key "$client_folder/" --acl private
   aws s3 cp "$file_path" "s3://$path/client.pem"
   aws s3 cp ./"$environment"-"$client"-client.pem "s3://$path/client.pem"
-  aws s3 cp ./truststore.key "s3://$path/truststore.key"
-  aws s3 cp ./truststore.pem "s3://$path/truststore.pem"
+  aws s3 cp ./"$environment"-"$client"-client.csr "s3://$path/client.csr"
+  aws s3 cp ./"$environment"-"$client"-client.key "s3://$path/client.key"
 
   aws configure set aws_access_key_id ""
   aws configure set aws_secret_access_key ""
