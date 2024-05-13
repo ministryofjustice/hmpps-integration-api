@@ -118,7 +118,6 @@ class RiskManagementControllerTest (
       )
     }
 
-
     it("returns paginated result") {
       val result = mockMvc.performAuthorised("/v1/persons/$encodedHmppsId/risk-management-plan")
 
