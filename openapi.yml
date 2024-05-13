@@ -95,10 +95,13 @@ paths:
               schema:
                 type: object
                 properties:
-                  prisonerOffenderSearch:
-                    $ref: "#/components/schemas/Person"
-                  probationOffenderSearch:
-                    $ref: "#/components/schemas/Person"
+                  data:
+                    type: object
+                    properties:
+                      prisonerOffenderSearch:
+                        $ref: "#/components/schemas/Person"
+                      probationOffenderSearch:
+                        $ref: "#/components/schemas/Person"
         "404":
           description: Failed to find a person with the provided HMPPS ID.
           content:
