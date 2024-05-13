@@ -95,7 +95,6 @@ paths:
               schema:
                 type: object
                 properties:
-                  data:
                   prisonerOffenderSearch:
                     $ref: "#/components/schemas/Person"
                   probationOffenderSearch:
@@ -1722,84 +1721,42 @@ components:
     Person:
       type: object
       properties:
-        prisonerOffenderSearch:
-          type: object
-          properties:
-            firstName:
-              type: string
-              description: First name
-            lastName:
-              type: string
-              description: Last name
-            middleName:
-              type: string
-              nullable: true
-              description: Middle name
-            dateOfBirth:
-              type: string
-              format: date
-              description: Date of birth
-            gender:
-              type: string
-              description: Gender
-            ethnicity:
-              type: string
-              nullable: true
-              description: Ethnicity
-            aliases:
-              type: array
-              items:
-                $ref: "#/components/schemas/Alias"
-              description: List of aliases
-            identifiers:
-              $ref: "#/components/schemas/Identifiers"
-            pncId:
-              type: string
-              description: An identifier from the Police National Computer (PNC)
-            hmppsId:
-              type: string
-              description: Hmpps identifier
-            contactDetails:
-              $ref: "#/components/schemas/ContactDetails"
-        probationOffenderSearch:
-            type: object
-            properties:
-              firstName:
-                type: string
-                description: First name
-              lastName:
-                type: string
-                description: Last name
-              middleName:
-                type: string
-                nullable: true
-                description: Middle name
-              dateOfBirth:
-                type: string
-                format: date
-                description: Date of birth
-              gender:
-                type: string
-                description: Gender
-              ethnicity:
-                type: string
-                nullable: true
-                description: Ethnicity
-              aliases:
-                type: array
-                items:
-                  $ref: "#/components/schemas/Alias"
-                description: List of aliases
-              identifiers:
-                $ref: "#/components/schemas/Identifiers"
-              pncId:
-                type: string
-                description: An identifier from the Police National Computer (PNC)
-              hmppsId:
-                type: string
-                description: Hmpps identifier
-              contactDetails:
-                $ref: "#/components/schemas/ContactDetails"
+        firstName:
+          type: string
+          description: First name
+        lastName:
+          type: string
+          description: Last name
+        middleName:
+          type: string
+          nullable: true
+          description: Middle name
+        dateOfBirth:
+          type: string
+          format: date
+          description: Date of birth
+        gender:
+          type: string
+          description: Gender
+        ethnicity:
+          type: string
+          nullable: true
+          description: Ethnicity
+        aliases:
+          type: array
+          items:
+            $ref: "#/components/schemas/Alias"
+          description: List of aliases
+        identifiers:
+          $ref: "#/components/schemas/Identifiers"
+        pncId:
+          type: string
+          description: An identifier from the Police National Computer (PNC)
+        hmppsId:
+          type: string
+          description: Hmpps identifier
+        contactDetails:
+          $ref: "#/components/schemas/ContactDetails"
     PersonResponsibleOfficerName:
       type: object
       properties:
