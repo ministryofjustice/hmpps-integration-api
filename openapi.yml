@@ -1726,23 +1726,29 @@ components:
       properties:
         firstName:
           type: string
+          example: Arthur
           description: First name
-        lastName:
-          type: string
-          description: Last name
         middleName:
           type: string
+          example: John
           nullable: true
           description: Middle name
+        lastName:
+          type: string
+          example: Morgan
+          description: Last name
         dateOfBirth:
           type: string
           format: date
+          example: 1965-12-01
           description: Date of birth
         gender:
           type: string
+          example: Male
           description: Gender
         ethnicity:
           type: string
+          example: "White: Eng./Welsh/Scot./N.Irish/British"
           nullable: true
           description: Ethnicity
         aliases:
@@ -1757,6 +1763,7 @@ components:
           description: An identifier from the Police National Computer (PNC)
         hmppsId:
           type: string
+          example: 2008/0545166T
           description: Hmpps identifier
         contactDetails:
           $ref: "#/components/schemas/ContactDetails"
