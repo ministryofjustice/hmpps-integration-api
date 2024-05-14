@@ -43,6 +43,8 @@ class RiskManagementControllerTest (
 
   describe("GET $basePath") {
     beforeTest {
+      Mockito.reset(getRiskManagementService)
+      Mockito.reset(auditService)
       whenever(getRiskManagementService.execute(hmppsId)).thenReturn(
         Response(
           data = listOf(
@@ -79,7 +81,7 @@ class RiskManagementControllerTest (
           )
         )
       )
-      whenever(getRiskManagementService.execute(hmppsId)).thenReturn(
+      whenever(getRiskManagementService.execute(badHmppsId)).thenReturn(
         Response(
           null,
           errors = listOf(UpstreamApiError(
@@ -103,7 +105,7 @@ class RiskManagementControllerTest (
 
     it("Gets an error if provided ID has no risk management plan") {
       val result = mockMvc.performAuthorised("/v1/persons/$encodedBadHmppsId/risk-management-plan")
-      verify(getRiskManagementService, times(1)).execute(hmppsId)
+      verify(getRiskManagementService, times(1)).execute(badHmppsId)
       assert( result.response.status == 404 )
     }
 
