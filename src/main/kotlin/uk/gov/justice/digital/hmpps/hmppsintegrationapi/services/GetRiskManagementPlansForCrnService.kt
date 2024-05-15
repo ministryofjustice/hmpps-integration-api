@@ -10,7 +10,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.RiskManagem
 class GetRiskManagementPlansForCrnService(
   @Autowired val riskManagementGateway: RiskManagementGateway,
 ) {
-
   fun execute(crn: String): Response<List<RiskManagementPlan>?> {
     val crnPlansResponse = riskManagementGateway.getRiskManagementPlansForCrn(crn)
 
