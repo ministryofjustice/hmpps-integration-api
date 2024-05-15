@@ -63,6 +63,7 @@ class RiskManagementControllerTest(
                   victimSafetyPlanning = "string",
                   latestSignLockDate = "2024-05-04T01 =04 =20",
                   latestCompleteDate = "2024-05-04T01 =04 =20",
+                  contingencyPlans = "some",
                 ),
                 RiskManagementPlan(
                   assessmentId = "123451",
@@ -78,6 +79,7 @@ class RiskManagementControllerTest(
                   victimSafetyPlanning = "string",
                   latestSignLockDate = "2024-05-04T01 =04 =20",
                   latestCompleteDate = "2024-05-04T01 =04 =20",
+                  contingencyPlans = "some",
                 ),
               ),
           ),
