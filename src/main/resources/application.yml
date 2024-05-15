@@ -76,7 +76,7 @@ services:
   manage-pom-case-api:
     base-url: http://localhost:4090
   risk-management-plan-search:
-    base-url: http://localhost:4091
+    base-url: http://localhost:4050
 
 sentry:
   traces-sample-rate: "0.05"

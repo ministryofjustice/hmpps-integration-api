@@ -22,7 +22,7 @@ services:
   hmpps-auth:
     base-url: http://hmpps-auth:8080
   risk-management-plan-search:
-    base-url: https://assess-risks-and-needs-api:4091
+    base-url: https://assess-risks-and-needs-api:4050
 
 authorisation:
   consumers:
