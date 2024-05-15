@@ -136,6 +136,16 @@ services:
     ports:
       - '4090:4010'
 
+  risk-management-plan-api:
+    build:
+      context: .
+      dockerfile: Dockerfile.setup-risk-management-plan-search
+    container_name: risk-management-plan-api
+    healthcheck:
+      test: 'wget --header="Authorization: Bearer abc" http://127.0.0.1:4091/risks/crn/D1974X/risk-management-plan -O /dev/null'
+    ports:
+      - '4091:4010'
+
   local-stack-aws:
     image: localstack/localstack:3.0
     container_name: local-stack-aws
