@@ -7,18 +7,16 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.RiskManagementPlan
 
 @Service
-class GetRiskManagementPlansForCrnService (
-  @Autowired val riskManagementGateway: RiskManagementGateway
-){
+class GetRiskManagementPlansForCrnService(
+  @Autowired val riskManagementGateway: RiskManagementGateway,
+) {
 
   fun execute(crn: String): Response<List<RiskManagementPlan>?> {
     val crnPlansResponse = riskManagementGateway.getRiskManagementPlansForCrn(crn)
 
     return Response(
       data = crnPlansResponse.data?.toRiskManagementPlans(),
-      errors = crnPlansResponse.errors
+      errors = crnPlansResponse.errors,
     )
-
   }
-
 }

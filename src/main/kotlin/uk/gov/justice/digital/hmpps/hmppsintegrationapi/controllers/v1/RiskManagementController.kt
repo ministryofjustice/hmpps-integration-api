@@ -19,11 +19,10 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.paginateWith
 
 @RestController
 @EnableConfigurationProperties(AuthorisationConfig::class)
-class RiskManagementController (
+class RiskManagementController(
   @Autowired val getRiskManagementPlansForCrnService: GetRiskManagementPlansForCrnService,
-  @Autowired val auditService: AuditService
+  @Autowired val auditService: AuditService,
 ) {
-
   @RequestMapping("/v1/persons/{encodedHmppsId}/risk-management-plan")
   fun getRiskManagementPlans(
     @PathVariable encodedHmppsId: String,
@@ -42,5 +41,4 @@ class RiskManagementController (
     auditService.createEvent("GET_RISK_MANAGEMENT_PLANS", mapOf("hmppsId" to hmppsId))
     return response.data.paginateWith(page, perPage)
   }
-
 }

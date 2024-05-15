@@ -19,106 +19,109 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
   initializers = [ConfigDataApplicationContextInitializer::class],
   classes = [GetRiskManagementPlansForCrnService::class],
 )
-class GetRiskManagementPlansForCrnServiceTest (
+class GetRiskManagementPlansForCrnServiceTest(
   @MockBean val riskManagementGateway: RiskManagementGateway,
-  private val serviceUnderTest: GetRiskManagementPlansForCrnService
-): DescribeSpec({
+  private val serviceUnderTest: GetRiskManagementPlansForCrnService,
+) : DescribeSpec({
 
-  val crn = "D1974X"
-  val badCrn = "Not a real CRN"
+    val crn = "D1974X"
+    val badCrn = "Not a real CRN"
 
-  beforeEach {
-    val testPlan = CrnRiskManagementPlans(
-      crn = crn,
-      limitedAccessOffender = "true",
-      riskManagementPlan = listOf(
-        CrnRiskManagementPlan(
-          assessmentId = "123450",
-          dateCompleted = "2024-05-04T01 =04 =20",
-          partcompStatus = "string",
-          initiationDate = "2024-05-04T01 =04 =20",
-          assessmentStatus = "string",
-          assessmentType = "string",
-          superStatus = "string",
-          keyInformationCurrentSituation = "string",
-          furtherConsiderationsCurrentSituation = "string",
-          supervision = "string",
-          monitoringAndControl = "string",
-          interventionsAndTreatment = "string",
-          victimSafetyPlanning = "string",
-          contingencyPlans = "string",
-          laterWIPAssessmentExists = "true",
-          latestWIPDate = "2024-05-04T01 =04 =20",
-          laterSignLockAssessmentExists = "true",
-          latestSignLockDate = "2024-05-04T01 =04 =20",
-          laterPartCompUnsignedAssessmentExists = "true",
-          latestPartCompUnsignedDate = "2024-05-04T01 =04 =20",
-          laterPartCompSignedAssessmentExists = "true",
-          latestPartCompSignedDate = "2024-05-04T01 =04 =20",
-          laterCompleteAssessmentExists = "true",
-          latestCompleteDate = "2024-05-04T01 =04 =20"
-        ),
-        CrnRiskManagementPlan(
-          assessmentId = "123451",
-          dateCompleted = "2024-05-04T01 =04 =20",
-          partcompStatus = "string",
-          initiationDate = "2024-05-04T01 =04 =20",
-          assessmentStatus = "string",
-          assessmentType = "string",
-          superStatus = "string",
-          keyInformationCurrentSituation = "string",
-          furtherConsiderationsCurrentSituation = "string",
-          supervision = "string",
-          monitoringAndControl = "string",
-          interventionsAndTreatment = "string",
-          victimSafetyPlanning = "string",
-          contingencyPlans = "string",
-          laterWIPAssessmentExists = "true",
-          latestWIPDate = "2024-05-04T01 =04 =20",
-          laterSignLockAssessmentExists = "true",
-          latestSignLockDate = "2024-05-04T01 =04 =20",
-          laterPartCompUnsignedAssessmentExists = "true",
-          latestPartCompUnsignedDate = "2024-05-04T01 =04 =20",
-          laterPartCompSignedAssessmentExists = "true",
-          latestPartCompSignedDate = "2024-05-04T01 =04 =20",
-          laterCompleteAssessmentExists = "true",
-          latestCompleteDate = "2024-05-04T01 =04 =20"
+    beforeEach {
+      val testPlan =
+        CrnRiskManagementPlans(
+          crn = crn,
+          limitedAccessOffender = "true",
+          riskManagementPlan =
+            listOf(
+              CrnRiskManagementPlan(
+                assessmentId = "123450",
+                dateCompleted = "2024-05-04T01 =04 =20",
+                partcompStatus = "string",
+                initiationDate = "2024-05-04T01 =04 =20",
+                assessmentStatus = "string",
+                assessmentType = "string",
+                superStatus = "string",
+                keyInformationCurrentSituation = "string",
+                furtherConsiderationsCurrentSituation = "string",
+                supervision = "string",
+                monitoringAndControl = "string",
+                interventionsAndTreatment = "string",
+                victimSafetyPlanning = "string",
+                contingencyPlans = "string",
+                laterWIPAssessmentExists = "true",
+                latestWIPDate = "2024-05-04T01 =04 =20",
+                laterSignLockAssessmentExists = "true",
+                latestSignLockDate = "2024-05-04T01 =04 =20",
+                laterPartCompUnsignedAssessmentExists = "true",
+                latestPartCompUnsignedDate = "2024-05-04T01 =04 =20",
+                laterPartCompSignedAssessmentExists = "true",
+                latestPartCompSignedDate = "2024-05-04T01 =04 =20",
+                laterCompleteAssessmentExists = "true",
+                latestCompleteDate = "2024-05-04T01 =04 =20",
+              ),
+              CrnRiskManagementPlan(
+                assessmentId = "123451",
+                dateCompleted = "2024-05-04T01 =04 =20",
+                partcompStatus = "string",
+                initiationDate = "2024-05-04T01 =04 =20",
+                assessmentStatus = "string",
+                assessmentType = "string",
+                superStatus = "string",
+                keyInformationCurrentSituation = "string",
+                furtherConsiderationsCurrentSituation = "string",
+                supervision = "string",
+                monitoringAndControl = "string",
+                interventionsAndTreatment = "string",
+                victimSafetyPlanning = "string",
+                contingencyPlans = "string",
+                laterWIPAssessmentExists = "true",
+                latestWIPDate = "2024-05-04T01 =04 =20",
+                laterSignLockAssessmentExists = "true",
+                latestSignLockDate = "2024-05-04T01 =04 =20",
+                laterPartCompUnsignedAssessmentExists = "true",
+                latestPartCompUnsignedDate = "2024-05-04T01 =04 =20",
+                laterPartCompSignedAssessmentExists = "true",
+                latestPartCompSignedDate = "2024-05-04T01 =04 =20",
+                laterCompleteAssessmentExists = "true",
+                latestCompleteDate = "2024-05-04T01 =04 =20",
+              ),
+            ),
         )
+
+      Mockito.reset(riskManagementGateway)
+
+      whenever(riskManagementGateway.getRiskManagementPlansForCrn(crn)).thenReturn(
+        Response(data = testPlan, errors = emptyList()),
       )
-    )
-
-    Mockito.reset(riskManagementGateway)
-
-    whenever(riskManagementGateway.getRiskManagementPlansForCrn(crn)).thenReturn(
-      Response(data = testPlan, errors = emptyList()),
-    )
-    whenever(riskManagementGateway.getRiskManagementPlansForCrn(badCrn)).thenReturn(
-      Response(data = null, errors = listOf(
-        UpstreamApiError(
-          causedBy = UpstreamApi.RISK_MANAGEMENT_PLAN,
-          type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-          description = "Lorem Ipsum dolor sit amet"
-        )
-      )),
-    )
-  }
-
-  describe("Get risk management") {
-
-    it ("returns plans with valid CRN") {
-      val result = serviceUnderTest.execute(crn)
-      verify(riskManagementGateway, VerificationModeFactory.times(1)).getRiskManagementPlansForCrn(crn)
-      assert(result.data?.size == 2)
-
+      whenever(riskManagementGateway.getRiskManagementPlansForCrn(badCrn)).thenReturn(
+        Response(
+          data = null,
+          errors =
+            listOf(
+              UpstreamApiError(
+                causedBy = UpstreamApi.RISK_MANAGEMENT_PLAN,
+                type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+                description = "Lorem Ipsum dolor sit amet",
+              ),
+            ),
+        ),
+      )
     }
 
-    it ("Returns error without valid CRN") {
-      val result = serviceUnderTest.execute(badCrn)
-      verify(riskManagementGateway, VerificationModeFactory.times(1)).getRiskManagementPlansForCrn(badCrn)
-      assert(result.data?.size == 0)
-      assert(result.errors.isNotEmpty())
+    describe("Get risk management") {
+
+      it("returns plans with valid CRN") {
+        val result = serviceUnderTest.execute(crn)
+        verify(riskManagementGateway, VerificationModeFactory.times(1)).getRiskManagementPlansForCrn(crn)
+        assert(result.data?.size == 2)
+      }
+
+      it("Returns error without valid CRN") {
+        val result = serviceUnderTest.execute(badCrn)
+        verify(riskManagementGateway, VerificationModeFactory.times(1)).getRiskManagementPlansForCrn(badCrn)
+        assert(result.data?.size == 0)
+        assert(result.errors.isNotEmpty())
+      }
     }
-  }
-
-})
-
+  })

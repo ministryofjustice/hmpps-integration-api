@@ -33,5 +33,5 @@ class RiskManagementSmokeTest : DescribeSpec(
         """.removeWhitespaceAndNewlines(),
       )
     }
-  }
+  },
 )
