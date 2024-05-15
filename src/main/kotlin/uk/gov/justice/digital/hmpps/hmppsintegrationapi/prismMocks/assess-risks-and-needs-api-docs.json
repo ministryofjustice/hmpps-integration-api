@@ -113,10 +113,359 @@
           }
         }
       }
+    },
+    "/risks/crn/{crn}/risk-management-plan": {
+      "get": {
+        "tags": [
+          "risks-controller"
+        ],
+        "description": "Gets Risk Management Plan from latest complete assessments for crn",
+        "operationId": "getRiskManagementPlan",
+        "parameters": [
+          {
+            "name": "crn",
+            "in": "path",
+            "description": "CRN",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "D1974X"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/RiskManagementPlansDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ErrorResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorised",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "User does not have permission to access offender with provided CRN",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User does not exist in Delius for provided user name",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/SupplementaryRiskDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
     "schemas": {
+      "ErrorResponse": {
+        "required": [
+          "errorCode",
+          "status",
+          "userMessage"
+        ],
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "integer",
+            "description": "Status of Error Code",
+            "format": "int32",
+            "example": 400
+          },
+          "developerMessage": {
+            "type": "string",
+            "description": "Developer Information message",
+            "example": "System is down"
+          },
+          "errorCode": {
+            "type": "integer",
+            "description": "Internal Error Code",
+            "format": "int32",
+            "example": 20012
+          },
+          "userMessage": {
+            "type": "string",
+            "description": "Error message information",
+            "example": "Prisoner Not Found"
+          },
+          "moreInfo": {
+            "type": "string",
+            "description": "Additional information about the error",
+            "example": "Hard disk failure"
+          }
+        }
+      },
+      "RiskManagementPlanDto": {
+        "required": [
+          "assessmentId",
+          "assessmentStatus",
+          "assessmentType"
+        ],
+        "type": "object",
+        "properties": {
+          "assessmentId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "dateCompleted": {
+            "type": "object",
+            "example": "2024-05-08T23:11:23"
+          },
+          "partcompStatus": {
+            "type": "string"
+          },
+          "initiationDate": {
+            "type": "object",
+            "example": "2024-05-08T23:11:23"
+          },
+          "assessmentStatus": {
+            "type": "string"
+          },
+          "assessmentType": {
+            "type": "string"
+          },
+          "superStatus": {
+            "type": "string"
+          },
+          "keyInformationCurrentSituation": {
+            "type": "string"
+          },
+          "furtherConsiderationsCurrentSituation": {
+            "type": "string"
+          },
+          "supervision": {
+            "type": "string"
+          },
+          "monitoringAndControl": {
+            "type": "string"
+          },
+          "interventionsAndTreatment": {
+            "type": "string"
+          },
+          "victimSafetyPlanning": {
+            "type": "string"
+          },
+          "contingencyPlans": {
+            "type": "string"
+          },
+          "laterWIPAssessmentExists": {
+            "type": "boolean"
+          },
+          "latestWIPDate": {
+            "type": "object",
+            "example": "2024-05-08T23:11:23"
+          },
+          "laterSignLockAssessmentExists": {
+            "type": "boolean"
+          },
+          "latestSignLockDate": {
+            "type": "object",
+            "example": "2024-05-08T23:11:23"
+          },
+          "laterPartCompUnsignedAssessmentExists": {
+            "type": "boolean"
+          },
+          "latestPartCompUnsignedDate": {
+            "type": "object",
+            "example": "2024-05-08T23:11:23"
+          },
+          "laterPartCompSignedAssessmentExists": {
+            "type": "boolean"
+          },
+          "latestPartCompSignedDate": {
+            "type": "object",
+            "example": "2024-05-08T23:11:23"
+          },
+          "laterCompleteAssessmentExists": {
+            "type": "boolean"
+          },
+          "latestCompleteDate": {
+            "type": "object",
+            "example": "2024-05-08T23:11:23"
+          }
+        }
+      },
+      "RiskManagementPlansDto": {
+        "required": [
+          "crn",
+          "limitedAccessOffender",
+          "riskManagementPlan"
+        ],
+        "type": "object",
+        "properties": {
+          "crn": {
+            "type": "string"
+          },
+          "limitedAccessOffender": {
+            "type": "boolean"
+          },
+          "riskManagementPlan": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RiskManagementPlanDto"
+            }
+          }
+        }
+      },
+      "SupplementaryRiskDto": {
+        "required": [
+          "createdByUserType",
+          "createdDate",
+          "crn",
+          "riskSummaryComments",
+          "source",
+          "sourceId"
+        ],
+        "type": "object",
+        "properties": {
+          "supplementaryRiskId": {
+            "type": "string",
+            "description": "Supplementary Risk ID",
+            "format": "uuid",
+            "example": "78beac68-884c-4784-9bea-fd8088f52a47"
+          },
+          "source": {
+            "type": "string",
+            "description": "Source of Risk",
+            "example": "INTERVENTION_REFERRAL",
+            "enum": [
+              "INTERVENTION_REFERRAL"
+            ]
+          },
+          "sourceId": {
+            "type": "string",
+            "description": "Source Id",
+            "example": "78beac68-884c-4784-9bea-fd8088f52a47 or 1989823"
+          },
+          "crn": {
+            "type": "string",
+            "description": "Offender CRN",
+            "example": "DX12340A"
+          },
+          "createdByUser": {
+            "type": "string",
+            "description": "Created By User",
+            "example": "Paul Newman"
+          },
+          "createdByUserType": {
+            "type": "string",
+            "description": "Created By User Type",
+            "example": "delius"
+          },
+          "createdDate": {
+            "type": "object",
+            "example": "2024-05-08T23:11:23"
+          },
+          "redactedRisk": {
+            "$ref": "#/components/schemas/RedactedOasysRiskDto"
+          },
+          "riskSummaryComments": {
+            "type": "string",
+            "description": "Risk Summary Comments",
+            "example": "Free text up to 4000 characters"
+          }
+        }
+      },
+      "RedactedOasysRiskDto": {
+        "type": "object",
+        "properties": {
+          "riskWho": {
+            "type": "string",
+            "description": "Question corresponding to OASys ROSH 10.1, 'Who is at risk'",
+            "example": "Free text up to 4000 characters"
+          },
+          "riskWhen": {
+            "type": "string",
+            "description": "Question corresponding to OASys ROSH 10.3, 'When is the risk likely to be greatest'",
+            "example": "Free text up to 4000 characters"
+          },
+          "riskNature": {
+            "type": "string",
+            "description": "Question corresponding to OASys ROSH 10.2, 'What is the nature of the risk'",
+            "example": "Free text up to 4000 characters"
+          },
+          "concernsSelfHarm": {
+            "type": "string",
+            "description": "Question corresponding to OASys ROSH 3.2, 'Concerns in relation to self harm'",
+            "example": "Free text up to 4000 characters"
+          },
+          "concernsSuicide": {
+            "type": "string",
+            "description": "Question corresponding to OASys ROSH 3.1, 'Concerns in relation to suicide'",
+            "example": "Free text up to 4000 characters"
+          },
+          "concernsHostel": {
+            "type": "string",
+            "description": "Question corresponding to OASys ROSH 3.3, 'Concerns in relation to coping in a hostel setting'",
+            "example": "Free text up to 4000 characters"
+          },
+          "concernsVulnerability": {
+            "type": "string",
+            "description": "Question corresponding to OASys ROSH 3.4, 'Concerns in relation to vulnerability'",
+            "example": "Free text up to 4000 characters"
+          }
+        },
+        "description": "Redacted risk answers"
+      },
       "AllRoshRiskDto_AllRisksView": {
         "required": [
           "otherRisks",
