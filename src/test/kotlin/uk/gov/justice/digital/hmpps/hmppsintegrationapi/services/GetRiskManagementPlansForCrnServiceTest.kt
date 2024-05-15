@@ -86,13 +86,14 @@ class GetRiskManagementPlansForCrnServiceTest(
             ),
           ),
       )
-    val testErrors = listOf(
-      UpstreamApiError(
-        causedBy = UpstreamApi.RISK_MANAGEMENT_PLAN,
-        type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-        description = "Lorem Ipsum dolor sit amet",
+    val testErrors =
+      listOf(
+        UpstreamApiError(
+          causedBy = UpstreamApi.RISK_MANAGEMENT_PLAN,
+          type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+          description = "Lorem Ipsum dolor sit amet",
+        ),
       )
-    )
 
     beforeEach {
       Mockito.reset(riskManagementGateway)
