@@ -12,6 +12,7 @@ data class RiskManagementPlan(
   val monitoringAndControl: String,
   val interventionsAndTreatment: String,
   val victimSafetyPlanning: String,
+  val contingencyPlans: String,
   val latestSignLockDate: String,
   val latestCompleteDate: String,
 )

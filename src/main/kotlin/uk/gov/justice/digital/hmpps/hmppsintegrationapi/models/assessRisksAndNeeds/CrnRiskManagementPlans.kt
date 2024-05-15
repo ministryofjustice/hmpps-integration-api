@@ -23,6 +23,7 @@ data class CrnRiskManagementPlans(
           monitoringAndControl = it.monitoringAndControl,
           interventionsAndTreatment = it.interventionsAndTreatment,
           victimSafetyPlanning = it.victimSafetyPlanning,
+          contingencyPlans = it.contingencyPlans,
           latestCompleteDate = it.latestCompleteDate,
           latestSignLockDate = it.latestSignLockDate,
         )
