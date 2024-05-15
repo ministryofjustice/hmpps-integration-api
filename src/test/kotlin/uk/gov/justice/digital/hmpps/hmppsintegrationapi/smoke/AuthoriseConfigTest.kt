@@ -40,6 +40,7 @@ class AuthoriseConfigTest : DescribeSpec(
           "/v1/persons/.*/risks/categories",
           "/v1/persons/.*/case-notes",
           "/v1/persons/.*/person-responsible-officer",
+          "/v1/persons/.*/risk-management-plan",
           "/v1/epf/person-details/.*/\\.*+[^/]*${'$'}",
           "/health",
           "/health/ping",
