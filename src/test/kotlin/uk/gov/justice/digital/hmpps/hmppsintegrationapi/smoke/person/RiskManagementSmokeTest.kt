@@ -7,12 +7,16 @@ import org.springframework.http.HttpStatus
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIHttpClient
 import java.net.URLEncoder
+import java.net.http.HttpClient
 import java.nio.charset.StandardCharsets
 
 class RiskManagementSmokeTest : DescribeSpec(
   {
     val basePath = "v1/persons"
-    val httpClient = IntegrationAPIHttpClient()
+    val httpClient = IntegrationAPIHttpClient(
+      HttpClient.newBuilder().build(),
+      "http://localhost:4050"
+    )
     val hmppsId = "2004/13116M"
     val tailPath = "risk-management-plan"
     val encodedHmppsId = URLEncoder.encode(hmppsId, StandardCharsets.UTF_8)
