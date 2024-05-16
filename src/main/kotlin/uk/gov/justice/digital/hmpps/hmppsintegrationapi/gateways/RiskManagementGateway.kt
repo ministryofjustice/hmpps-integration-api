@@ -11,7 +11,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 
 @Component
 class RiskManagementGateway(
-  @Value("\${services.risk-management-plan-search.base-url}") baseUrl: String,
+  @Value("\${services.assess-risks-and-needs.base-url}") baseUrl: String,
 ) {
   private val webClient = WebClientWrapper(baseUrl)
 
@@ -19,7 +19,6 @@ class RiskManagementGateway(
   lateinit var hmppsAuthGateway: HmppsAuthGateway
 
   fun getRiskManagementPlansForCrn(crn: String): Response<CrnRiskManagementPlans?> {
-
     val result =
       webClient.request<CrnRiskManagementPlans>(
         HttpMethod.GET,

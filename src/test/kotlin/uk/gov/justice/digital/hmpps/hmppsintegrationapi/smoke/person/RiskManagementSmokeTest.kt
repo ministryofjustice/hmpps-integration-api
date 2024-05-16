@@ -7,7 +7,6 @@ import org.springframework.http.HttpStatus
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIHttpClient
 import java.net.URLEncoder
-import java.net.http.HttpClient
 import java.nio.charset.StandardCharsets
 
 class RiskManagementSmokeTest : DescribeSpec(

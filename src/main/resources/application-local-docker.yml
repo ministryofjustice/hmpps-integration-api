@@ -21,8 +21,6 @@ services:
     base-url: http://manage-pom-case-api:4010
   hmpps-auth:
     base-url: http://hmpps-auth:8080
-  risk-management-plan-search:
-    base-url: https://assess-risks-and-needs-api:4050
 
 authorisation:
   consumers:
