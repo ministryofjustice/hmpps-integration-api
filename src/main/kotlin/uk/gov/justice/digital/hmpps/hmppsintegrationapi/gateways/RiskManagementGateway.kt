@@ -19,8 +19,6 @@ class RiskManagementGateway(
   lateinit var hmppsAuthGateway: HmppsAuthGateway
 
   fun getRiskManagementPlansForCrn(crn: String): Response<CrnRiskManagementPlans?> {
-    val requestBody =
-      mapOf("crn" to crn)
 
     val result =
       webClient.request<CrnRiskManagementPlans>(
@@ -28,7 +26,6 @@ class RiskManagementGateway(
         "/risks/crn/$crn/risk-management-plan",
         authenticationHeader(),
         UpstreamApi.RISK_MANAGEMENT_PLAN,
-        requestBody,
       )
     return when (result) {
       is WebClientWrapper.WebClientWrapperResponse.Success -> {
