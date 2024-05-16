@@ -13,10 +13,7 @@ import java.nio.charset.StandardCharsets
 class RiskManagementSmokeTest : DescribeSpec(
   {
     val basePath = "v1/persons"
-    val httpClient = IntegrationAPIHttpClient(
-      HttpClient.newBuilder().build(),
-      "http://localhost:4050"
-    )
+    val httpClient = IntegrationAPIHttpClient()
     val hmppsId = "2004/13116M"
     val tailPath = "risk-management-plan"
     val encodedHmppsId = URLEncoder.encode(hmppsId, StandardCharsets.UTF_8)
