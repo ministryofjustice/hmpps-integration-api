@@ -137,7 +137,7 @@
           "200": {
             "description": "OK",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/RiskManagementPlansDto"
                 }
@@ -356,7 +356,7 @@
             "type": "string"
           },
           "limitedAccessOffender": {
-            "type": "boolean"
+            "type": "string"
           },
           "riskManagementPlan": {
             "type": "array",
