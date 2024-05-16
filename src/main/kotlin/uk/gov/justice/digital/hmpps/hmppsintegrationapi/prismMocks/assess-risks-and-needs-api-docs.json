@@ -267,14 +267,14 @@
             "format": "int64"
           },
           "dateCompleted": {
-            "type": "object",
+            "type": "string",
             "example": "2024-05-08T23:11:23"
           },
           "partcompStatus": {
             "type": "string"
           },
           "initiationDate": {
-            "type": "object",
+            "type": "string",
             "example": "2024-05-08T23:11:23"
           },
           "assessmentStatus": {
@@ -311,35 +311,35 @@
             "type": "boolean"
           },
           "latestWIPDate": {
-            "type": "object",
+            "type": "string",
             "example": "2024-05-08T23:11:23"
           },
           "laterSignLockAssessmentExists": {
             "type": "boolean"
           },
           "latestSignLockDate": {
-            "type": "object",
+            "type": "string",
             "example": "2024-05-08T23:11:23"
           },
           "laterPartCompUnsignedAssessmentExists": {
             "type": "boolean"
           },
           "latestPartCompUnsignedDate": {
-            "type": "object",
+            "type": "string",
             "example": "2024-05-08T23:11:23"
           },
           "laterPartCompSignedAssessmentExists": {
             "type": "boolean"
           },
           "latestPartCompSignedDate": {
-            "type": "object",
+            "type": "string",
             "example": "2024-05-08T23:11:23"
           },
           "laterCompleteAssessmentExists": {
             "type": "boolean"
           },
           "latestCompleteDate": {
-            "type": "object",
+            "type": "string",
             "example": "2024-05-08T23:11:23"
           }
         }
