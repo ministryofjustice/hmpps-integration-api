@@ -32,6 +32,7 @@ class OffencesSmokeTest : DescribeSpec(
               "courtDates": [
                 "2018-02-10"
               ],
+              "courtName": "string",
               "description": "Commit an act / series of acts with intent to pervert the course of public justice",
               "endDate": "2018-03-10",
               "startDate": "2018-02-10",
@@ -45,6 +46,7 @@ class OffencesSmokeTest : DescribeSpec(
               "courtDates": [
                 "2019-08-24"
               ],
+              "courtName": "string",
               "description": "string",
               "endDate": null,
               "startDate": "2019-08-24",
@@ -58,6 +60,7 @@ class OffencesSmokeTest : DescribeSpec(
               "courtDates": [
                 "2019-08-24"
               ],
+              "courtName": "string",
               "description": "string",
               "endDate": null,
               "startDate": "2019-08-24",

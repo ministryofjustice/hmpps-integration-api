@@ -8,6 +8,7 @@ data class Offence(
   val cjsCode: String? = null,
   val hoCode: String? = null,
   val courtDates: List<LocalDate?> = listOf(),
+  val courtName: String? = null,
   val description: String? = null,
   val endDate: LocalDate? = null,
   val startDate: LocalDate? = null,
