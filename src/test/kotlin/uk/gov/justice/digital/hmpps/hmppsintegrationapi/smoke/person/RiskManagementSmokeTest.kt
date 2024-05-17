@@ -13,7 +13,7 @@ class RiskManagementSmokeTest : DescribeSpec(
   {
     val basePath = "v1/persons"
     val httpClient = IntegrationAPIHttpClient()
-    val hmppsId = "2004/13116M"
+    val hmppsId = "D1974X"
     val tailPath = "risk-management-plan"
     val encodedHmppsId = URLEncoder.encode(hmppsId, StandardCharsets.UTF_8)
 
@@ -22,14 +22,28 @@ class RiskManagementSmokeTest : DescribeSpec(
       val response = httpClient.performAuthorised("$basePath/$encodedHmppsId/$tailPath")
 
       response.statusCode().shouldBe(HttpStatus.OK.value())
-      response.body().shouldContain("\"data\":[")
       response.body().shouldContain(
         """
-          "assessmentStatus": "string",
-          "assessmentType": "string",
-          "initiationDate": "2024-05-04T01:04:20",
-          "assessmentStatus": "string",
-          "assessmentType": "string",
+          {"data":[{"assessmentId":"-9007199254740991",
+          "dateCompleted":"2024-05-08T23:11:23",
+          "initiationDate":"2024-05-08T23:11:23",
+          "assessmentStatus":"string",
+          "assessmentType":"string",
+          "keyInformationCurrentSituation":"string",
+          "furtherConsiderationsCurrentSituation":"string",
+          "supervision":"string",
+          "monitoringAndControl":"string",
+          "interventionsAndTreatment":"string",
+          "victimSafetyPlanning":"string",
+          "contingencyPlans":"string",
+          "latestSignLockDate":"2024-05-08T23:11:23",
+          "latestCompleteDate":"2024-05-08T23:11:23"}],
+          "pagination":{"isLastPage":true,
+          "count":1,
+          "page":1,
+          "perPage":10,
+          "totalCount":1,
+          "totalPages":1}}
         """.removeWhitespaceAndNewlines(),
       )
     }
