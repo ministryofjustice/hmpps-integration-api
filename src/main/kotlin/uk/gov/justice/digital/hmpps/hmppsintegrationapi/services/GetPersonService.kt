@@ -26,24 +26,17 @@ class GetPersonService(
         prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber = it)
       }
 
-    return if (prisonResponse != null) {
-      Response(
-        data =
-          mapOf(
-            "prisonerOffenderSearch" to prisonResponse.data?.toPerson(),
-            "probationOffenderSearch" to probationResponse.data,
-          ),
-        errors = prisonResponse.errors + probationResponse.errors,
+    val data =
+      mapOf(
+        "prisonerOffenderSearch" to prisonResponse?.data?.toPerson(),
+        "probationOffenderSearch" to probationResponse.data,
       )
-    } else {
-      Response(
-        data =
-          mapOf(
-            "prisonerOffenderSearch" to null,
-            "probationOffenderSearch" to probationResponse.data,
-          ),
-        errors = probationResponse.errors,
-      )
-    }
+
+    val errors = (prisonResponse?.errors ?: emptyList()) + probationResponse.errors
+
+    return Response(
+      data = data,
+      errors = errors,
+    )
   }
 }
