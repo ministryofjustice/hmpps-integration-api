@@ -46,7 +46,7 @@ class OffencesSmokeTest : DescribeSpec(
               "courtDates": [
                 "2019-08-24"
               ],
-              "courtName": "string",
+              "courtName": null,
               "description": "string",
               "endDate": null,
               "startDate": "2019-08-24",
@@ -60,7 +60,7 @@ class OffencesSmokeTest : DescribeSpec(
               "courtDates": [
                 "2019-08-24"
               ],
-              "courtName": "string",
+              "courtName": null,
               "description": "string",
               "endDate": null,
               "startDate": "2019-08-24",
