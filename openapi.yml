@@ -645,7 +645,41 @@ paths:
               examples:
                 NoQueryParametersBadRequestError:
                   $ref: "#/components/examples/InternalServerError"
-
+  /v1/persons/{hmppsId}/risk-management-plan:
+    get:
+      tags:
+        - risks
+      summary: Returns a list of Risk Management Plans created for the person with the provided HMPPS ID.
+      parameters:
+        - $ref: "#/components/parameters/HmppsId"
+      responses:
+        "200":
+          description: Successfully found risk management plans for a person with the provided HMPPS ID.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/RiskManagementPlan"
+        "404":
+          description: Failed to find risk management plans for a person with the provided HMPPS ID.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                PersonNotFoundError:
+                  $ref: "#/components/examples/PersonNotFoundError"
+        "500":
+          description: An upstream service was not responding, so we cannot verify the accuracy of any data we did get.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                NoQueryParametersBadRequestError:
+                  $ref: "#/components/examples/InternalServerError"
   /v1/epf/person-details/{hmppsId}/{eventNumber}:
     get:
       summary: Probation case information for the Effective Proposals Framework service
@@ -2458,6 +2492,65 @@ components:
           type: string
           example: "Risk of self harm concerns due to ..."
           description: Supporting comments for any current concerns
+    RiskManagementPlan:
+      type: object
+      properties:
+        assessmentId:
+          type: string
+          example: "123456"
+          description: The unique ID of the risk management plan
+        dateCompleted:
+          type: string
+          example: "2024-05-04T01:04:20"
+          description: The date that the risk management plan was completed
+        initiationDate:
+          type: string
+          example: "2024-05-04T01:04:20"
+          description: The date of plan initiation
+        assessmentStatus:
+          type: string
+          example: "COMPLETE"
+          description: The status of the plan
+        assessmentType:
+          type: string
+          example: "string"
+          description: The type of assessment
+        keyInformationCurrentSituation:
+          type: string
+          example: "string"
+          description: Key information about the current situation of the subject being assessed
+        furtherConsiderationsCurrentSituation:
+          type: string
+          example: "string"
+          description: Further considerations about the situation of the subject being assessed
+        supervision:
+          type: string
+          example: "string"
+          description: Who they see, when and why, any support they get from their community, family and friends, and how well they're desisting from problematic behaviour
+        monitoringAndControl:
+          type: string
+          example: "string"
+          description: Information on restrictions in place to prevent reoffending, what steps have been taken to monitor potential reoffending, including license conditions, community order requirements, PPM restrictions and such.
+        interventionsAndTreatment:
+          type: string
+          example: "string"
+          description: Interventions delivered to develop controls and protective factors to reduce risk of reoffending, including practical support, requirements to support interventions and details of who and where these interventions will be administered.
+        victimSafetyPlanning:
+          type: string
+          example: "string"
+          description: Restrictions in place to specifically protect victims of, adults known to, and children potentially at risk from the offender.
+        contingencyPlans:
+          type: string
+          example: "string"
+          description: Future plans in the form "If X happens, we will do Y...." for if parts of the risk management plan break down or requirements or restrictions are breached by the offender.
+        latestSignLockDate:
+          type: string
+          example: "2024-05-04T01:04:20"
+          description: An assessment is considered 'Signed and locked' once it is signed by the assessor, making the plan read-only. This is the date the plan has been signed by the assessor.
+        latestCompleteDate:
+          type: string
+          example: "2024-05-04T01:04:20"
+          description: Once a countersignature has been applied to the plan, the plan is considered complete. This is the date the plan has been countersigned.
     OtherRisks:
       type: object
       properties:

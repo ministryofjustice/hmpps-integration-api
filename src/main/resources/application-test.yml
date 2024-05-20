@@ -61,6 +61,7 @@ authorisation:
       - "/v1/persons/.*/protected-characteristics"
       - "/v1/persons/.*/risks/mappadetail"
       - "/v1/persons/.*/risks/categories"
+      - "/v1/persons/.*/risk-management-plan"
       - "/health"
       - "/health/ping"
       - "/health/readiness"
