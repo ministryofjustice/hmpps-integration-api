@@ -1,7 +1,15 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.probationoffendersearch
 
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Address
 import java.time.LocalDate
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Address as HmppsAddress
+
+data class ContactDetailsWithAddress(
+  val contactDetails: Addresses? = null,
+)
+
+data class Addresses(
+  val addresses: List<Address>? = listOf(),
+)
 
 data class Address(
   val addressNumber: String?,
@@ -18,7 +26,7 @@ data class Address(
   val notes: String?,
 ) {
   fun toAddress() =
-    Address(
+    HmppsAddress(
       country = null,
       county = this.county,
       endDate = this.to,
@@ -39,7 +47,7 @@ data class Address(
     val description: String?,
   ) {
     fun toAddressType() =
-      Address.Type(
+      HmppsAddress.Type(
         code = this.code,
         description = this.description ?: this.code,
       )
