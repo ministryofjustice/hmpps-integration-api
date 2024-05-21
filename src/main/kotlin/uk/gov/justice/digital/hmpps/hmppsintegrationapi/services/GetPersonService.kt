@@ -32,11 +32,9 @@ class GetPersonService(
         "probationOffenderSearch" to probationResponse.data,
       )
 
-    val errors = (prisonResponse?.errors ?: emptyList()) + probationResponse.errors
-
     return Response(
       data = data,
-      errors = errors,
+      errors = (prisonResponse?.errors ?: emptyList()) + probationResponse.errors,
     )
   }
 }
