@@ -14,6 +14,7 @@ fun generateTestOffence(
   startDate: LocalDate? = LocalDate.parse("2020-02-03"),
   endDate: LocalDate? = LocalDate.parse("2020-03-03"),
   courtDates: List<LocalDate?> = listOf(LocalDate.parse("2020-04-03")),
+  courtName: String? = "Llandudno Magistrates Court",
   statuteCode: String? = "RR12",
 ): Offence =
   Offence(
@@ -25,5 +26,6 @@ fun generateTestOffence(
     startDate = startDate,
     endDate = endDate,
     courtDates = courtDates,
+    courtName = courtName,
     statuteCode = statuteCode,
   )
