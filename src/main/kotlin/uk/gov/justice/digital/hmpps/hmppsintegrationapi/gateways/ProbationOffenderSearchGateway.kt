@@ -128,7 +128,7 @@ class ProbationOffenderSearchGateway(
 
     return when (result) {
       is WebClientWrapperResponse.Success -> {
-         return Response(result.data.firstOrNull()?.contactDetails?.addresses.orEmpty().map { it.toAddress() })
+        return Response(result.data.firstOrNull()?.contactDetails?.addresses.orEmpty().map { it.toAddress() })
       }
       is WebClientWrapperResponse.Error -> {
         Response(

@@ -1,13 +1,13 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.probationoffendersearch
 
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Address as HmppsAddress
 import java.time.LocalDate
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Address as HmppsAddress
 
 data class ContactDetailsWithAddress(
   val contactDetails: Addresses? = null,
 )
 
-data class Addresses (
+data class Addresses(
   val addresses: List<Address>? = listOf(),
 )
 
