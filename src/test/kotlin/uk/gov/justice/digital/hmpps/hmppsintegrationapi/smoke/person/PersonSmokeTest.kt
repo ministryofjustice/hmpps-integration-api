@@ -45,41 +45,69 @@ class PersonSmokeTest : DescribeSpec(
       response.body().shouldBe(
         """
   {
-    "data": {
-      "firstName": "string",
-      "lastName": "string",
-      "middleName": "string",
-      "dateOfBirth": "2019-08-24",
-      "gender": "string",
-      "ethnicity": "string",
-      "aliases": [
-        {
-          "firstName": "string",
-          "lastName": "string",
-          "middleName": "string",
-          "dateOfBirth": "2019-08-24",
-          "gender": "string",
-          "ethnicity": null
-        }
-      ],
-      "identifiers": {
-          "nomisNumber": "G5555TT",
-          "croNumber": "123456/24A",
-          "deliusCrn": "A123456"
+   "data":{
+      "prisonerOffenderSearch":{
+         "firstName":"Robert",
+         "lastName":"Larsen",
+         "middleName":"John James",
+         "dateOfBirth":"1975-04-02",
+         "gender":"Female",
+         "ethnicity":"White: Eng./Welsh/Scot./N.Irish/British",
+         "aliases":[
+            {
+               "firstName":"Robert",
+               "lastName":"Lorsen",
+               "middleName":"Trevor",
+               "dateOfBirth":"1975-04-02",
+               "gender":"Male",
+               "ethnicity":"White : Irish"
+            }
+         ],
+         "identifiers":{
+            "nomisNumber":"A1234AA",
+            "croNumber":"29906/12J",
+            "deliusCrn":null
+         },
+         "pncId":"12/394773H",
+         "hmppsId":null,
+         "contactDetails":null
       },
-      "pncId": "2012/0052494Q",
-      "hmppsId": "A123456",
-      "contactDetails": {
-        "phoneNumbers": [
-          {
-            "number": "string",
-            "type": "TELEPHONE"
-          }
-        ],
-        "emails":null
+      "probationOffenderSearch":{
+         "firstName":"string",
+         "lastName":"string",
+         "middleName":"string",
+         "dateOfBirth":"2019-08-24",
+         "gender":"string",
+         "ethnicity":"string",
+         "aliases":[
+            {
+               "firstName":"string",
+               "lastName":"string",
+               "middleName":"string",
+               "dateOfBirth":"2019-08-24",
+               "gender":"string",
+               "ethnicity":null
+            }
+         ],
+         "identifiers":{
+            "nomisNumber":"G5555TT",
+            "croNumber":"123456/24A",
+            "deliusCrn":"A123456"
+         },
+         "pncId":"2012/0052494Q",
+         "hmppsId":"A123456",
+         "contactDetails":{
+            "phoneNumbers":[
+               {
+                  "number":"string",
+                  "type":"TELEPHONE"
+               }
+            ],
+            "emails":null
+         }
       }
-    }
-  }
+   }
+}
     """.removeWhitespaceAndNewlines(),
       )
     }

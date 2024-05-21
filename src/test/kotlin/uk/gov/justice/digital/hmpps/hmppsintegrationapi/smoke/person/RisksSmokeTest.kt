@@ -111,7 +111,7 @@ class RisksSmokeTest : DescribeSpec(
     }
 
     it("returns rosh risks for a person") {
-      val response = httpClient.performAuthorised(basePath)
+      val response = httpClient.performAuthorised("$basePath/serious-harm")
 
       response.statusCode().shouldBe(HttpStatus.OK.value())
       response.body().shouldEqualJson(

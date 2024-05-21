@@ -14,6 +14,9 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ProbationOffend
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Identifiers
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSPrisoner
 
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
@@ -35,6 +38,9 @@ internal class GetPersonServiceTest(
       )
       whenever(probationOffenderSearchGateway.getPerson(id = hmppsId)).thenReturn(
         Response(data = Person(firstName = "Qui-gon", lastName = "Jin", identifiers = Identifiers(nomisNumber = "A1234AA"))),
+      )
+      whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber = "A1234AA")).thenReturn(
+        Response(data = POSPrisoner(firstName = "Sam", lastName = "Mills")),
       )
     }
 
@@ -65,5 +71,40 @@ internal class GetPersonServiceTest(
       val expectedResult = null
 
       result.data.shouldBe(expectedResult)
+    }
+
+    it("returns a person with both probation and prison data when prison data exists") {
+      val personFromProbationOffenderSearch = Person("Paula", "First", identifiers = Identifiers(nomisNumber = "A1234AA"))
+      val personFromPrisonOffenderSearch = POSPrisoner("Sam", "Mills")
+
+      whenever(probationOffenderSearchGateway.getPerson(hmppsId)).thenReturn(
+        Response(data = personFromProbationOffenderSearch),
+      )
+      whenever(prisonerOffenderSearchGateway.getPrisonOffender("A1234AA")).thenReturn(
+        Response(data = personFromPrisonOffenderSearch),
+      )
+
+      val result = getPersonService.getCombinedDataForPerson(hmppsId)
+      val expectedResult = result.data
+
+      result.data.shouldBe(expectedResult)
+      result.errors shouldBe emptyList()
+    }
+
+    it("returns errors when unable to retrieve prison data and data when probation data is available") {
+      val personFromProbationOffenderSearch = Person("Paula", "First", identifiers = Identifiers(nomisNumber = "A1234AA"))
+
+      whenever(probationOffenderSearchGateway.getPerson(hmppsId)).thenReturn(Response(data = personFromProbationOffenderSearch))
+      whenever(prisonerOffenderSearchGateway.getPrisonOffender("A1234AA")).thenReturn(Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.PRISONER_OFFENDER_SEARCH, UpstreamApiError.Type.ENTITY_NOT_FOUND, "MockError"))))
+
+      val result = getPersonService.getCombinedDataForPerson(hmppsId)
+      result.data shouldBe
+        mapOf(
+          "prisonerOffenderSearch" to null,
+          "probationOffenderSearch" to personFromProbationOffenderSearch,
+        )
+      result.errors.first().causedBy.shouldBe(UpstreamApi.PRISONER_OFFENDER_SEARCH)
+      result.errors.first().type.shouldBe(UpstreamApiError.Type.ENTITY_NOT_FOUND)
+      result.errors.first().description.shouldBe("MockError")
     }
   })

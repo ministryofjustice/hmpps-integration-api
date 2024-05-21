@@ -20,12 +20,14 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ContactDetailsWithEmailAndPhone
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Identifiers
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ImageMetadata
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PhoneNumber
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSPrisoner
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetImageMetadataForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonsService
@@ -222,12 +224,20 @@ internal class PersonControllerTest(
       }
 
       describe("GET $basePath/{id}") {
-        val person = Person("Silly", "Sobbers")
+        val probationOffenderSearch = Person("Sam", "Smith", identifiers = Identifiers(nomisNumber = "1234ABC"))
+        val prisonOffenderSearch = POSPrisoner("Kim", "Kardashian")
+        val prisonResponse = Response(data = prisonOffenderSearch, errors = emptyList())
 
         beforeTest {
           Mockito.reset(getPersonService)
           Mockito.reset(auditService)
-          whenever(getPersonService.execute(hmppsId)).thenReturn(Response(data = person))
+
+          val personMap =
+            mapOf(
+              "probationOffenderSearch" to probationOffenderSearch,
+              "prisonerOffenderSearch" to prisonResponse.data.toPerson(),
+            )
+          whenever(getPersonService.getCombinedDataForPerson(hmppsId)).thenReturn(Response(data = personMap))
         }
 
         it("returns a 200 OK status code") {
@@ -248,9 +258,13 @@ internal class PersonControllerTest(
           val idThatDoesNotExist = "9999/11111Z"
 
           it("returns a 404 status code when a person cannot be found in both upstream APIs") {
-            whenever(getPersonService.execute(idThatDoesNotExist)).thenReturn(
+            whenever(getPersonService.getCombinedDataForPerson(idThatDoesNotExist)).thenReturn(
               Response(
-                data = null,
+                data =
+                  mapOf(
+                    "prisonerOffenderSearch" to null,
+                    "probationOffenderSearch" to null,
+                  ),
                 errors =
                   listOf(
                     UpstreamApiError(
@@ -268,9 +282,13 @@ internal class PersonControllerTest(
           }
 
           it("does not return a 404 status code when a person was found in one upstream API") {
-            whenever(getPersonService.execute(idThatDoesNotExist)).thenReturn(
+            whenever(getPersonService.getCombinedDataForPerson(idThatDoesNotExist)).thenReturn(
               Response(
-                data = Person("someFirstName", "someLastName"),
+                data =
+                  mapOf(
+                    "prisonerOffenderSearch" to null,
+                    "probationOffenderSearch" to Person("someFirstName", "someLastName"),
+                  ),
                 errors =
                   listOf(
                     UpstreamApiError(
@@ -291,7 +309,7 @@ internal class PersonControllerTest(
         it("gets a person with the matching ID") {
           mockMvc.performAuthorised("$basePath/$encodedHmppsId")
 
-          verify(getPersonService, times(1)).execute(hmppsId)
+          verify(getPersonService, times(1)).getCombinedDataForPerson(hmppsId)
         }
 
         it("returns a person with the matching ID") {
@@ -299,25 +317,48 @@ internal class PersonControllerTest(
 
           result.response.contentAsString.shouldBe(
             """
-        {
-        "data": {
-          "firstName": "Silly",
-          "lastName": "Sobbers",
-          "middleName": null,
-          "dateOfBirth": null,
-          "gender": null,
-          "ethnicity": null,
-          "aliases": [],
-          "identifiers": {
-              "nomisNumber": null,
-              "croNumber": null,
-              "deliusCrn": null
-          },
-          "pncId": null,
-          "hmppsId": null,
-          "contactDetails": null
-        }
-        }
+            {
+             "data":{
+                "probationOffenderSearch":{
+                   "firstName":"Sam",
+                   "lastName":"Smith",
+                   "middleName":null,
+                   "dateOfBirth":null,
+                   "gender":null,
+                   "ethnicity":null,
+                   "aliases":[
+
+                   ],
+                   "identifiers":{
+                      "nomisNumber":"1234ABC",
+                      "croNumber":null,
+                      "deliusCrn":null
+                   },
+                   "pncId":null,
+                   "hmppsId":null,
+                   "contactDetails":null
+                },
+                "prisonerOffenderSearch":{
+                   "firstName":"Kim",
+                   "lastName":"Kardashian",
+                   "middleName":null,
+                   "dateOfBirth":null,
+                   "gender":null,
+                   "ethnicity":null,
+                   "aliases":[
+
+                   ],
+                   "identifiers":{
+                      "nomisNumber":null,
+                      "croNumber":null,
+                      "deliusCrn":null
+                   },
+                   "pncId":null,
+                   "hmppsId":null,
+                   "contactDetails":null
+                }
+             }
+          }
         """.removeWhitespaceAndNewlines(),
           )
         }
