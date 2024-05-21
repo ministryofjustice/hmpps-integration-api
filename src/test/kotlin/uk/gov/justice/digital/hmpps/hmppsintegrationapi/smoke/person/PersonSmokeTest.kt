@@ -70,25 +70,6 @@ class PersonSmokeTest : DescribeSpec(
       "pncId": "2012/0052494Q",
       "hmppsId": "A123456",
       "contactDetails": {
-        "addresses": [
-          {
-            "addressNumber": "string",
-            "district": "string",
-            "buildingName": "string",
-            "county": "string",
-            "from": "2019-08-24",
-            "postcode": "string",
-            "streetName": "string",
-            "type": {
-              "code": "string",
-              "description": "string"
-            },
-            "to": "2019-08-24",
-            "town": "string",
-            "noFixedAbode": true,
-            "notes": "string"
-          }
-        ],
         "phoneNumbers": [
           {
             "number": "string",
