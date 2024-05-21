@@ -25,7 +25,7 @@ services:
       - LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_WEB=TRACE
 
   hmpps-auth:
-    image: quay.io/hmpps/hmpps-auth:2024-05-20.23309.58337c3
+    image: quay.io/hmpps/hmpps-auth:latest
     container_name: hmpps-auth
     ports:
       - "9090:8080"
