@@ -28,7 +28,7 @@ class SupervisionsTest : DescribeSpec(
                       listOf(
                         NDeliusAdditionalOffence(description = "additionalFoo", code = "12345", date = "2001-01-01"),
                       ),
-                    courtAppearances = listOf(NDeliusCourtAppearance(date = "2009-07-07T00:00:00+01:00")),
+                    courtAppearances = listOf(NDeliusCourtAppearance(date = "2009-07-07T00:00:00+01:00", court = "London Magistrates Court")),
                   ),
                   NDeliusSupervision(
                     custodial = true,
@@ -37,7 +37,7 @@ class SupervisionsTest : DescribeSpec(
                       listOf(
                         NDeliusAdditionalOffence(description = "additionalFoo2", code = "98765", date = "2001-02-02"),
                       ),
-                    courtAppearances = listOf(NDeliusCourtAppearance(date = "2010-07-07T00:00:00+01:00")),
+                    courtAppearances = listOf(NDeliusCourtAppearance(date = "2010-07-07T00:00:00+01:00", court = "London Magistrates Court")),
                   ),
                 ),
             )
@@ -52,6 +52,7 @@ class SupervisionsTest : DescribeSpec(
                 description = "foobar",
                 hoCode = "05800",
                 courtDates = listOf(LocalDate.parse("2009-07-07")),
+                courtName = "London Magistrates Court",
                 startDate = LocalDate.parse("2000-01-02"),
               ),
               Offence(
@@ -60,6 +61,7 @@ class SupervisionsTest : DescribeSpec(
                 description = "additionalFoo",
                 hoCode = "12345",
                 courtDates = listOf(LocalDate.parse("2009-07-07")),
+                courtName = "London Magistrates Court",
                 startDate = LocalDate.parse("2001-01-01"),
               ),
               Offence(
@@ -68,6 +70,7 @@ class SupervisionsTest : DescribeSpec(
                 description = "barbaz",
                 hoCode = "05800",
                 courtDates = listOf(LocalDate.parse("2010-07-07")),
+                courtName = "London Magistrates Court",
                 startDate = LocalDate.parse("2003-03-03"),
               ),
               Offence(
@@ -76,6 +79,7 @@ class SupervisionsTest : DescribeSpec(
                 description = "additionalFoo2",
                 hoCode = "98765",
                 courtDates = listOf(LocalDate.parse("2010-07-07")),
+                courtName = "London Magistrates Court",
                 startDate = LocalDate.parse("2001-02-02"),
               ),
             ),
@@ -92,7 +96,7 @@ class SupervisionsTest : DescribeSpec(
                     custodial = true,
                     mainOffence = NDeliusMainOffence(description = "foobar", code = "05800", date = "2000-01-02"),
                     additionalOffences = listOf(NDeliusAdditionalOffence(description = "additionalFoo", code = "12345")),
-                    courtAppearances = listOf(NDeliusCourtAppearance(date = "2009-07-07T00:00:00+01:00")),
+                    courtAppearances = listOf(NDeliusCourtAppearance(date = "2009-07-07T00:00:00+01:00", court = "London Magistrates Court")),
                   ),
                 ),
             )
@@ -107,6 +111,7 @@ class SupervisionsTest : DescribeSpec(
                 description = "foobar",
                 hoCode = "05800",
                 courtDates = listOf(LocalDate.parse("2009-07-07")),
+                courtName = "London Magistrates Court",
                 startDate = LocalDate.parse("2000-01-02"),
               ),
               Offence(
@@ -115,6 +120,7 @@ class SupervisionsTest : DescribeSpec(
                 description = "additionalFoo",
                 hoCode = "12345",
                 courtDates = listOf(LocalDate.parse("2009-07-07")),
+                courtName = "London Magistrates Court",
                 startDate = null,
               ),
             ),
@@ -135,7 +141,7 @@ class SupervisionsTest : DescribeSpec(
                       listOf(
                         NDeliusAdditionalOffence(description = "additionalFoo", code = "12345", date = "2001-01-01"),
                       ),
-                    courtAppearances = listOf(NDeliusCourtAppearance(date = "2009-07-07T00:00:00+01:00")),
+                    courtAppearances = listOf(NDeliusCourtAppearance(date = "2009-07-07T00:00:00+01:00", court = "London Magistrates Court")),
                   ),
                 ),
             )
@@ -150,6 +156,7 @@ class SupervisionsTest : DescribeSpec(
                 description = "foobar",
                 hoCode = "05800",
                 courtDates = listOf(LocalDate.parse("2009-07-07")),
+                courtName = "London Magistrates Court",
                 startDate = LocalDate.parse("2000-01-02"),
               ),
               Offence(
@@ -158,6 +165,7 @@ class SupervisionsTest : DescribeSpec(
                 description = "additionalFoo",
                 hoCode = "12345",
                 courtDates = listOf(LocalDate.parse("2009-07-07")),
+                courtName = "London Magistrates Court",
                 startDate = LocalDate.parse("2001-01-01"),
               ),
             ),
@@ -177,13 +185,13 @@ class SupervisionsTest : DescribeSpec(
                     custodial = true,
                     mainOffence = NDeliusMainOffence(description = "foobar", code = "05800", date = "2019-09-09"),
                     additionalOffences = emptyList(),
-                    courtAppearances = listOf(NDeliusCourtAppearance(date = "2009-07-07T00:00:00+01:00")),
+                    courtAppearances = listOf(NDeliusCourtAppearance(date = "2009-07-07T00:00:00+01:00", court = "London Magistrates Court")),
                   ),
                   NDeliusSupervision(
                     custodial = true,
                     mainOffence = NDeliusMainOffence(description = "barbaz", code = "05800", date = "2020-02-03"),
                     additionalOffences = emptyList(),
-                    courtAppearances = listOf(NDeliusCourtAppearance(date = "2010-07-07T00:00:00+01:00")),
+                    courtAppearances = listOf(NDeliusCourtAppearance(date = "2010-07-07T00:00:00+01:00", court = "London Magistrates Court")),
                   ),
                 ),
             )
@@ -198,6 +206,7 @@ class SupervisionsTest : DescribeSpec(
                 description = "foobar",
                 hoCode = "05800",
                 courtDates = listOf(LocalDate.parse("2009-07-07")),
+                courtName = "London Magistrates Court",
                 startDate = LocalDate.parse("2019-09-09"),
               ),
               Offence(
@@ -206,6 +215,7 @@ class SupervisionsTest : DescribeSpec(
                 description = "barbaz",
                 hoCode = "05800",
                 courtDates = listOf(LocalDate.parse("2010-07-07")),
+                courtName = "London Magistrates Court",
                 startDate = LocalDate.parse("2020-02-03"),
               ),
             ),

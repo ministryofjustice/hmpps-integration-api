@@ -1,6 +1,6 @@
 services:
   prison-api:
-    base-url: https://api-preprod.prison.service.justice.gov.uk
+    base-url: https://prison-api-preprod.prison.service.justice.gov.uk
   prisoner-offender-search:
     base-url: https://prisoner-search-preprod.prison.service.justice.gov.uk
   probation-offender-search:

@@ -86,3 +86,6 @@ __pycache__/
 *.key
 *.csr
 *.pem
+
+# Localstack
+localstack/cache

@@ -21,8 +21,13 @@ class GetLicenceConditionService(
     if (crn != null) {
       licences = createAndVaryLicenceGateway.getLicenceSummaries(id = crn)
       licences.data.forEach {
-        val conditions = createAndVaryLicenceGateway.getLicenceConditions(it.id)
-        it.conditions = conditions.data
+        val licenceId = it.id.toIntOrNull()
+        if (licenceId != null) {
+          val conditions = createAndVaryLicenceGateway.getLicenceConditions(licenceId)
+          it.conditions = conditions.data
+        } else {
+          it.conditions = emptyList()
+        }
       }
       personLicences = PersonLicences(hmppsId, licences.data.firstOrNull()?.offenderNumber, licences.data)
     }

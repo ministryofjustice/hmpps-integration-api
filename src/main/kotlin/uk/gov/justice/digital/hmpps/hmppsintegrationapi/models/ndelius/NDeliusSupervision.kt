@@ -17,7 +17,10 @@ data class NDeliusSupervision(
 ) {
   fun toOffences(): List<Offence> {
     val courtDates = this.courtAppearances.mapNotNull { LocalDate.parse(it.date, DateTimeFormatter.ISO_OFFSET_DATE_TIME) }
-    return listOf(this.mainOffence.toOffence(courtDates)) + this.additionalOffences.map { it.toOffence(courtDates) }
+    val courtName = this.courtAppearances.firstOrNull()?.court
+    val mainOffence = this.mainOffence.toOffence(courtDates, courtName)
+    val additionalOffences = this.additionalOffences.map { it.toOffence(courtDates, courtName) }
+    return listOf(mainOffence) + additionalOffences
   }
 
   fun toSentence(): Sentence {
