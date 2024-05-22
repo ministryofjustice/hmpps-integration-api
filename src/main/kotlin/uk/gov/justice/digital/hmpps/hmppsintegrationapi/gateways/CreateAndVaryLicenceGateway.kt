@@ -45,7 +45,7 @@ class CreateAndVaryLicenceGateway(
     }
   }
 
-  fun getLicenceConditions(id: String): Response<List<LicenceCondition>> {
+  fun getLicenceConditions(id: Int): Response<List<LicenceCondition>> {
     val result =
       webClient.request<CvlLicence>(
         HttpMethod.GET,
