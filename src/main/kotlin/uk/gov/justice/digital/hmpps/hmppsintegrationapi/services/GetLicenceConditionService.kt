@@ -13,21 +13,17 @@ class GetLicenceConditionService(
   @Autowired val getPersonService: GetPersonService,
 ) {
   fun execute(hmppsId: String): Response<PersonLicences> {
-    val personResponse = getPersonService.execute(hmppsId = hmppsId)
+    val personResponse = getPersonService.execute(hmppsId)
     val crn = personResponse.data?.identifiers?.deliusCrn
 
     var licences: Response<List<Licence>> = Response(data = emptyList())
     var personLicences = PersonLicences(hmppsId)
     if (crn != null) {
       licences = createAndVaryLicenceGateway.getLicenceSummaries(id = crn)
-      licences.data.forEach {
-        val licenceId = it.id.toIntOrNull()
-        if (licenceId != null) {
-          val conditions = createAndVaryLicenceGateway.getLicenceConditions(licenceId)
-          it.conditions = conditions.data
-        } else {
-          it.conditions = emptyList()
-        }
+      licences.data.forEach { summary ->
+        summary.conditions = summary.id.toIntOrNull()?.let { licenceId ->
+          createAndVaryLicenceGateway.getLicenceConditions(licenceId).data
+        } ?: emptyList()
       }
       personLicences = PersonLicences(hmppsId, licences.data.firstOrNull()?.offenderNumber, licences.data)
     }
