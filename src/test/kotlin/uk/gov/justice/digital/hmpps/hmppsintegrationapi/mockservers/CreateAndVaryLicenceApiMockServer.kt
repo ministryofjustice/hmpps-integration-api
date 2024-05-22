@@ -29,7 +29,7 @@ class CreateAndVaryLicenceApiMockServer : WireMockServer(WIREMOCK_PORT) {
   }
 
   fun stubGetLicenceConditions(
-    id: String,
+    id: Int,
     body: String,
     status: HttpStatus = HttpStatus.OK,
   ) {

@@ -112,7 +112,7 @@ services:
       dockerfile: Dockerfile.setup-create-and-vary-a-licence-api
     container_name: create-and-vary-licence-api
     healthcheck:
-      test: 'wget --header="Authorization: Bearer abc" http://0.0.0.0:4010/public/licences/id/abc -O /dev/null'
+      test: 'wget --header="Authorization: Bearer abc" http://0.0.0.0:4010/public/licences/id/123 -O /dev/null'
     ports:
       - '4070:4010'
 

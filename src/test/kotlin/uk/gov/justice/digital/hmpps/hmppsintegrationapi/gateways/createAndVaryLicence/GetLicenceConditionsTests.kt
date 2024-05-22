@@ -29,7 +29,7 @@ class GetLicenceConditionsTests(
 ) : DescribeSpec(
     {
       val createAndVaryLicenceApiMockServer = CreateAndVaryLicenceApiMockServer()
-      val conditionId = "X777776"
+      val conditionId = 12345
 
       beforeEach {
         createAndVaryLicenceApiMockServer.start()
