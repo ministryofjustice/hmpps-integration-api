@@ -29,17 +29,15 @@ class GetAddressesForPersonTest(
 ) : DescribeSpec(
     {
       val probationOffenderSearchApiMockServer = ProbationOffenderSearchApiMockServer()
-      val hmppsId = "2002/1121M"
+      val hmppsId = "X777776"
 
       beforeEach {
         probationOffenderSearchApiMockServer.start()
         probationOffenderSearchApiMockServer.stubPostOffenderSearch(
-          "{\"pncNumber\": \"$hmppsId\"}",
+          "{\"crn\": \"$hmppsId\"}",
           """
         [
           {
-            "firstName": "English",
-            "surname": "Breakfast",
             "contactDetails": {
               "addresses": [
                 {
@@ -102,7 +100,7 @@ class GetAddressesForPersonTest(
 
       it("returns an empty list when no addresses are found") {
         probationOffenderSearchApiMockServer.stubPostOffenderSearch(
-          "{\"pncNumber\": \"$hmppsId\"}",
+          "{\"crn\": \"$hmppsId\"}",
           """
         [
           {
@@ -123,7 +121,7 @@ class GetAddressesForPersonTest(
 
       it("returns an error when no results are returned") {
         probationOffenderSearchApiMockServer.stubPostOffenderSearch(
-          "{\"pncNumber\": \"$hmppsId\"}",
+          "{\"crn\": \"$hmppsId\"}",
           "[]",
         )
 
@@ -134,7 +132,7 @@ class GetAddressesForPersonTest(
 
       it("returns an empty list when there is no contactDetails field") {
         probationOffenderSearchApiMockServer.stubPostOffenderSearch(
-          "{\"pncNumber\": \"$hmppsId\"}",
+          "{\"crn\": \"$hmppsId\"}",
           """
         [
           {
@@ -152,7 +150,7 @@ class GetAddressesForPersonTest(
 
       it("returns an empty list when contactDetails field is null") {
         probationOffenderSearchApiMockServer.stubPostOffenderSearch(
-          "{\"pncNumber\": \"$hmppsId\"}",
+          "{\"crn\": \"$hmppsId\"}",
           """
         [
           {
@@ -171,7 +169,7 @@ class GetAddressesForPersonTest(
 
       it("returns an empty list when contactDetails.addresses field is null") {
         probationOffenderSearchApiMockServer.stubPostOffenderSearch(
-          "{\"pncNumber\": \"$hmppsId\"}",
+          "{\"crn\": \"$hmppsId\"}",
           """
         [
           {
@@ -192,7 +190,7 @@ class GetAddressesForPersonTest(
 
       it("returns an empty list when the type is an empty object") {
         probationOffenderSearchApiMockServer.stubPostOffenderSearch(
-          "{\"pncNumber\": \"$hmppsId\"}",
+          "{\"crn\": \"$hmppsId\"}",
           """
         [
           {

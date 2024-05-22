@@ -10,13 +10,17 @@ data class NDeliusAdditionalOffence(
   val code: String? = null,
   val date: String? = null,
 ) {
-  fun toOffence(courtDates: List<LocalDate>): Offence =
+  fun toOffence(
+    courtDates: List<LocalDate>,
+    courtName: String?,
+  ): Offence =
     Offence(
       serviceSource = UpstreamApi.NDELIUS,
       systemSource = SystemSource.PROBATION_SYSTEMS,
       cjsCode = null,
       hoCode = this.code,
       courtDates = courtDates,
+      courtName = courtName,
       endDate = null,
       startDate = if (!this.date.isNullOrEmpty()) LocalDate.parse(this.date) else null,
       statuteCode = null,

@@ -11,6 +11,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.probationoffendersearch.ContactDetailsWithAddress
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.probationoffendersearch.Offender
 
 @Component
@@ -116,8 +117,26 @@ class ProbationOffenderSearchGateway(
   }
 
   fun getAddressesForPerson(hmppsId: String): Response<List<Address>> {
-    val offender = getOffender(hmppsId)
-    return Response(data = offender.data?.contactDetails?.addresses.orEmpty().map { it.toAddress() }, errors = offender.errors)
+    val result =
+      webClient.requestList<ContactDetailsWithAddress>(
+        HttpMethod.POST,
+        "/search",
+        authenticationHeader(),
+        UpstreamApi.PROBATION_OFFENDER_SEARCH,
+        mapOf("crn" to hmppsId),
+      )
+
+    return when (result) {
+      is WebClientWrapperResponse.Success -> {
+        return Response(result.data.firstOrNull()?.contactDetails?.addresses.orEmpty().map { it.toAddress() })
+      }
+      is WebClientWrapperResponse.Error -> {
+        Response(
+          data = emptyList(),
+          errors = result.errors,
+        )
+      }
+    }
   }
 
   private fun authenticationHeader(): Map<String, String> {

@@ -139,13 +139,13 @@
         {
           "type": "Sentence",
           "date": "2009-09-01T00:00:00+01:00",
-          "court": "Rhuddlan Magistrates Court",
+          "court": "Llandudno Magistrates Court",
           "plea": "Guilty"
         },
         {
           "type": "Trial/Adjournment",
           "date": "2009-08-11T00:00:00+01:00",
-          "court": "Rhuddlan Magistrates Court",
+          "court": "Llandudno Magistrates Court",
           "plea": "Guilty"
         }
       ]
