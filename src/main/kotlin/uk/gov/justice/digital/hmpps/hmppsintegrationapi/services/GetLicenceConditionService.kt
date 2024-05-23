@@ -30,7 +30,7 @@ class GetLicenceConditionService(
 
     return Response(
       data = personLicences,
-      errors = licences.errors,
+      errors = personResponse.errors + licences.errors,
     )
   }
 }
