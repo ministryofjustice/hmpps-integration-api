@@ -34,8 +34,8 @@ Boundary(aws_cloudplatform, "Cloud Platform", "A Kubernetes cluster using Amazon
 }
 
 Rel(consumer, spring_boot_api, "Makes API calls to", "JSON/HTTPS")
-Rel(consumer, messaging, "Retrieves updates")
-Rel_Right(spring_boot_api, messaging, "Posts updates")
+Rel(messaging, consumer, "Retrieves updates")
+Rel_Up(upstream, messaging, "Posts updates")
 Rel_Right(spring_boot_api, hmpps_auth, "Authenticates", "Bearer Token")
 Rel_Down(spring_boot_api, upstream, "Makes API calls to", "JSON/HTTPS")
 
