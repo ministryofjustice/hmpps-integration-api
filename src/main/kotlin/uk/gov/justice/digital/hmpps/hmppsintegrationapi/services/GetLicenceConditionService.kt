@@ -10,27 +10,26 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 @Service
 class GetLicenceConditionService(
   @Autowired val createAndVaryLicenceGateway: CreateAndVaryLicenceGateway,
-  @Autowired val getPersonService: GetPersonService,
+//  @Autowired val getPersonService: GetPersonService,
 ) {
   fun execute(hmppsId: String): Response<PersonLicences> {
-    val personResponse = getPersonService.execute(hmppsId)
-    val crn = personResponse.data?.identifiers?.deliusCrn
+//    val personResponse = getPersonService.execute(hmppsId)
+//    val crn = personResponse.data?.identifiers?.deliusCrn
 
     var licences: Response<List<Licence>> = Response(data = emptyList())
     var personLicences = PersonLicences(hmppsId)
-    if (crn != null) {
-      licences = createAndVaryLicenceGateway.getLicenceSummaries(id = crn)
-      licences.data.forEach { summary ->
-        summary.conditions = summary.id.toIntOrNull()?.let { licenceId ->
-          createAndVaryLicenceGateway.getLicenceConditions(licenceId).data
-        } ?: emptyList()
-      }
+
+    licences = createAndVaryLicenceGateway.getLicenceSummaries(id = hmppsId)
+    licences.data.forEach { summary ->
+      summary.conditions = summary.id.toIntOrNull()?.let { licenceId ->
+        createAndVaryLicenceGateway.getLicenceConditions(licenceId).data
+      } ?: emptyList()
       personLicences = PersonLicences(hmppsId, licences.data.firstOrNull()?.offenderNumber, licences.data)
     }
 
     return Response(
       data = personLicences,
-      errors = personResponse.errors + licences.errors,
+      errors = licences.errors,
     )
   }
 }
