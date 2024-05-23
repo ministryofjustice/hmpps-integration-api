@@ -34,7 +34,6 @@ internal class GetLicenceConditionServiceTest(
 //        whenever(createAndVaryLicenceGateway.getLicenceSummaries(id = crn)).thenReturn(Response(licences))
 //        whenever(createAndVaryLicenceGateway.getLicenceConditions(id = 12345)).thenReturn(Response(conditions))
 //      }
-
 //      it("performs a search according to hmpps Id") {
 //        getLicenceConditionService.execute(hmppsId)
 //        verify(getPersonService, VerificationModeFactory.times(1)).execute(hmppsId = hmppsId)

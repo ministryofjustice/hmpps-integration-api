@@ -11,8 +11,8 @@ Accepted
 The [OpenAPI specification](https://spec.openapis.org/oas/latest.html) is a standard for describing REST APIs and
 [Swagger UI](https://swagger.io/tools/swagger-ui/) is used to visualise and interact with a specification file in more
 user-friendly manner. These are used widely used within HMPPS to document APIs,
-e.g. [Prison API's OpenAPI specification](https://api.prison.service.justice.gov.uk/v3/api-docs)
-and [Prison API's Swagger UI](https://api.prison.service.justice.gov.uk/swagger-ui/index.html). This is achieved by
+e.g. [Prison API's OpenAPI specification](https://prison-api.prison.service.justice.gov.uk/v3/api-docs)
+and [Prison API's Swagger UI](https://prison-api.prison.service.justice.gov.uk/swagger-ui/index.html). This is achieved by
 using the [SpringDoc OpenAPI library](https://springdoc.org) and annotating the codebase which the library then uses to
 expose two endpoints: one for the OpenAPI specification in JSON format and another for Swagger UI.
 

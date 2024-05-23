@@ -18,7 +18,6 @@ class GetLicenceConditionService(
 
     var licences: Response<List<Licence>> = Response(data = emptyList())
     var personLicences = PersonLicences(hmppsId)
-
     licences = createAndVaryLicenceGateway.getLicenceSummaries(id = hmppsId)
     licences.data.forEach { summary ->
       summary.conditions = summary.id.toIntOrNull()?.let { licenceId ->
