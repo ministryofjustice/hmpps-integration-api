@@ -21,7 +21,7 @@ Boundary(moj, "Ministry of Justice (MOJ)", "Ministerial Department") {
 }
 
 Rel_Down(consumer, hmpps_integration_api, "Uses")
-Rel_Right(hmpps_integration_api, messaging, "Posts updates")
+Rel_Up(upstream, messaging, "Posts updates")
 Rel_Up(messaging, consumer, "Retrieves updates")
 Rel(hmpps_integration_api, upstream, "Queries for data")
 
