@@ -14,7 +14,7 @@ services:
   adjudications:
     base-url: https://manage-adjudications-api-dev.hmpps.service.justice.gov.uk
   create-and-vary-licence:
-    base-url: https://create-and-vary-a-licence-api-dev.hmpps.service.justice.gov.uk
+    base-url: https://create-and-vary-a-licence-api-test2.hmpps.service.justice.gov.uk
   case-notes:
     base-url: https://dev.offender-case-notes.service.justice.gov.uk
   manage-pom-case-api:
