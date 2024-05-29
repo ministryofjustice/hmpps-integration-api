@@ -57,6 +57,7 @@ The [deployment diagram](./deployment.svg) provides a directional flow diagram t
 ### Certificates diagram
 
 Certificates are used to secure the components that make up our API. 
+When trying to troubleshoot any issues, it is important to remember that we use **two** types of certificates in our authentication model, which realistically might have different expiration dates, and therefore would require distinct renewal processes.
 
 There are two levels of authentication:
 
@@ -68,13 +69,17 @@ There are two levels of authentication:
     - We store our CA certificate (truststore.pem) in an S3 bucket in order for API Gateway to verify the identity of a consumer application.
     - We store our private key in a Kubernetes secret (api-gateway-certificate-authority) so that we can generate client certificates.
 2. For the consumer application, we create a client certificate (client.pem), which includes their public key. We also create their private key (client.key).
-3. We send both the client certificate (client.pem) and the private key (client.key) to the consumer application to be used for mutual TLS.
+3. We send both the client certificate (client.pem) and the private key (client.key) to the consumer application to be used for mutual TLS. 
+4. To inspect the certificate, retrieve and decode the public key, using this command to get it: `kubectl get secret mutual-tls-auth -n hmpps-integration-api-$environment -o json | jq -r '.data."truststore-public-key"' | base64 --decode`. Then decode the SSL certificate.
 
 **Client Certificate Authentication:**
 1. We use Terraform to get API Gateway to create a client certificate (apigw_client.pem), which includes their public key.
-    - Behind the scenes, API Gateway also creates a private key (apigw_client.key) which we do not have access to.
-2. We store the client certificate (apigw_client.pem) in a Kubernetes secret.
-
+    - The resource we use to instruct API Gateway to generate a client certificate is "aws_api_gateway_client_certificate". 
+    - The public key is included in the certificate, while the private key (apigw_client.key) is managed internally by API Gateway and is not exposed. 
+2. The generated client certificate (apigw_client.pem) is retrieved and stored in a Kubernetes secret. 
+    - The Terraform resource which stores the certificate is "kubernetes_secret".
+    - "kubernetes_secret" takes the PEM-encoded certificate from the API Gateway resource and stores it under a specified key (e.g., ca.crt) within the secret.
+3. To inspect the certificate, retrieve and decode the public key, using this command to get it: `kubectl get secret client-certificate-auth -n hmpps-integration-api-$environment -o json | jq -r '.data."ca.crt"' | base64 --decode`. Then decode the SSL certificate.
 
 [![Certificates diagram](./certificates.svg)](./certificates.svg)
 
