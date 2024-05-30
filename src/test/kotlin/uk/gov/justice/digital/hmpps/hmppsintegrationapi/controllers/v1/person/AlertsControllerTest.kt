@@ -193,7 +193,7 @@ internal class AlertsControllerTest(
         beforeTest {
           Mockito.reset(getAlertsForPersonService)
           Mockito.reset(auditService)
-          whenever(getAlertsForPersonService.execute(hmppsId)).thenReturn(
+          whenever(getAlertsForPersonService.getAlertsForPnd(hmppsId)).thenReturn(
             Response(
               data =
                 listOf(
@@ -220,7 +220,7 @@ internal class AlertsControllerTest(
         }
 
         it("returns paginated results for PND") {
-          whenever(getAlertsForPersonService.execute(hmppsId)).thenReturn(
+          whenever(getAlertsForPersonService.getAlertsForPnd(hmppsId)).thenReturn(
             Response(
               data =
                 List(20) {
@@ -252,7 +252,7 @@ internal class AlertsControllerTest(
             URLEncoder.encode(hmppsIdForPersonWithNoAlerts, StandardCharsets.UTF_8)
           val alertPath = "/v1/persons/$encodedHmppsIdForPersonWithNoAlerts/alerts/pnd"
 
-          whenever(getAlertsForPersonService.execute(hmppsIdForPersonWithNoAlerts)).thenReturn(
+          whenever(getAlertsForPersonService.getAlertsForPnd(hmppsIdForPersonWithNoAlerts)).thenReturn(
             Response(
               data = emptyList(),
             ),
@@ -275,7 +275,7 @@ internal class AlertsControllerTest(
         it("gets the alerts for PND for a person with the matching ID") {
           mockMvc.performAuthorised(pndPath)
 
-          verify(getAlertsForPersonService, VerificationModeFactory.times(1)).execute(hmppsId)
+          verify(getAlertsForPersonService, VerificationModeFactory.times(1)).getAlertsForPnd(hmppsId)
         }
       }
     },

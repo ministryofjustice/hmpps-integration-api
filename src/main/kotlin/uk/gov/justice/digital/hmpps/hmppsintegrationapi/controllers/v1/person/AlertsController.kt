@@ -44,7 +44,7 @@ class AlertsController(
     @RequestParam(required = false, defaultValue = "10", name = "perPage") perPage: Int,
   ): PaginatedResponse<Alert> {
     val hmppsId = encodedHmppsId.decodeUrlCharacters()
-    val response = getAlertsForPersonService.execute(hmppsId)
+    val response = getAlertsForPersonService.getAlertsForPnd(hmppsId)
 
     if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
       throw EntityNotFoundException("Could not find person with id: $hmppsId")

@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.collections.shouldHaveSize
+import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory
 import org.mockito.kotlin.verify
@@ -30,7 +31,8 @@ internal class GetAlertsForPersonServiceTest(
       val hmppsId = "1234/56789B"
       val prisonerNumber = "Z99999ZZ"
       val deliusCrn = "X777776"
-      val alert = Alert()
+      val alert = Alert(code = "XA", codeDescription = "Test Alert XA")
+      val nonMatchingAlert = Alert(code = "INVALID", codeDescription = "Invalid Alert")
 
       val person =
         Person(firstName = "Qui-gon", lastName = "Jin", identifiers = Identifiers(nomisNumber = prisonerNumber, deliusCrn = deliusCrn))
@@ -47,6 +49,7 @@ internal class GetAlertsForPersonServiceTest(
             data =
               listOf(
                 alert,
+                nonMatchingAlert,
               ),
           ),
         )
@@ -107,6 +110,32 @@ internal class GetAlertsForPersonServiceTest(
 
         val response = getAlertsForPersonService.execute(hmppsId)
         response.errors.shouldHaveSize(1)
+      }
+
+      it("records errors when it cannot find PND alerts for a person") {
+        whenever(nomisGateway.getAlertsForPerson(id = prisonerNumber)).thenReturn(
+          Response(
+            data = emptyList(),
+            errors =
+              listOf(
+                UpstreamApiError(
+                  causedBy = UpstreamApi.NOMIS,
+                  type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+                ),
+              ),
+          ),
+        )
+
+        val response = getAlertsForPersonService.getAlertsForPnd(hmppsId)
+        response.errors.shouldHaveSize(1)
+      }
+
+      it("returns PND filtered data") {
+        val response = getAlertsForPersonService.getAlertsForPnd(hmppsId)
+
+        response.data.shouldHaveSize(1)
+        response.data[0].code shouldBe "XA"
+        response.data[0].codeDescription shouldBe "Test Alert XA"
       }
     },
   )
