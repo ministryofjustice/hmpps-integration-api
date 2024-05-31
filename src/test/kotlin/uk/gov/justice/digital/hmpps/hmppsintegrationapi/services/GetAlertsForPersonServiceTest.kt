@@ -137,5 +137,20 @@ internal class GetAlertsForPersonServiceTest(
         response.data[0].code shouldBe "XA"
         response.data[0].codeDescription shouldBe "Test Alert XA"
       }
+
+      it("returns an error when the alert code is not in the allowed list") {
+        whenever(personService.execute(hmppsId = deliusCrn)).thenReturn(Response(person))
+        whenever(personService.execute(hmppsId = hmppsId)).thenReturn(Response(person))
+        whenever(nomisGateway.getAlertsForPerson(prisonerNumber)).thenReturn(
+          Response(
+            data = listOf(nonMatchingAlert),
+          ),
+        )
+
+        val response = getAlertsForPersonService.getAlertsForPnd(hmppsId)
+
+        response.errors.shouldHaveSize(1)
+        response.data.shouldHaveSize(0)
+      }
     },
   )

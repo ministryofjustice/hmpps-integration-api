@@ -5,6 +5,8 @@ import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NomisGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Alert
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 
 @Service
 class GetAlertsForPersonService(
@@ -42,6 +44,18 @@ class GetAlertsForPersonService(
               "RSS", "RST", "RDP", "REG", "RLG", "ROP", "RRV", "RTP", "RYP", "HS", "SC",
             )
         }.orEmpty()
+      if (filteredAlerts.isEmpty()) {
+        return Response(
+          data = emptyList(),
+          errors =
+            listOf(
+              UpstreamApiError(
+                causedBy = UpstreamApi.PRISONER_OFFENDER_SEARCH,
+                type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+              ),
+            ),
+        )
+      }
       nomisAlerts = Response(data = filteredAlerts, errors = allNomisAlerts.errors)
     }
 
