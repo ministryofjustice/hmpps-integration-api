@@ -340,6 +340,50 @@ paths:
                 NoQueryParametersBadRequestError:
                   $ref: "#/components/examples/InternalServerError"
 
+  /v1/persons/{hmppsId}/alerts/pnd:
+    get:
+      tags:
+        - persons
+        - alerts
+      summary: Returns alerts associated with a person.
+      parameters:
+        - $ref: "#/components/parameters/HmppsId"
+        - $ref: "#/components/parameters/Page"
+        - $ref: "#/components/parameters/PerPage"
+      responses:
+        "200":
+          description: Successfully found alerts for a person with the provided HMPPS ID.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    minItems: 0
+                    items:
+                      $ref: "#/components/schemas/Alert"
+                  pagination:
+                    $ref: "#/components/schemas/Pagination"
+        "404":
+          description: Failed to find alerts a person with the provided HMPPS ID.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                PersonNotFoundError:
+                  $ref: "#/components/examples/PersonNotFoundError"
+        "500":
+          description: An upstream service was not responding, so we cannot verify the accuracy of any data we did get.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                NoQueryParametersBadRequestError:
+                  $ref: "#/components/examples/InternalServerError"
+
   /v1/persons/{hmppsId}/sentences:
     get:
       tags:

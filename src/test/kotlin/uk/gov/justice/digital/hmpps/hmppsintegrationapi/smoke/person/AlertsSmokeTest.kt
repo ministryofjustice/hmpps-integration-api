@@ -50,5 +50,38 @@ class AlertsSmokeTest : DescribeSpec(
           """.removeWhitespaceAndNewlines(),
       )
     }
+    it("returns PND alerts for a person") {
+      val response = httpClient.performAuthorised("$basePath/pnd")
+
+      response.statusCode().shouldBe(HttpStatus.OK.value())
+      response.body().shouldEqualJson(
+        """
+        {
+          "data": [
+            {
+              "offenderNo": "G3878UK",
+              "type": "X",
+              "typeDescription": "Security",
+              "code": "XER",
+              "codeDescription": "Escape Risk",
+              "comment": "Profession lock pick.",
+              "dateCreated": "2019-08-20",
+              "dateExpired": "2020-08-20",
+              "expired": true,
+              "active": false
+            }
+          ],
+            "pagination": {
+              "isLastPage": true,
+              "count": 1,
+              "page": 1,
+              "perPage": 10,
+              "totalCount": 1,
+              "totalPages": 1
+            }
+          }
+          """.removeWhitespaceAndNewlines(),
+      )
+    }
   },
 )

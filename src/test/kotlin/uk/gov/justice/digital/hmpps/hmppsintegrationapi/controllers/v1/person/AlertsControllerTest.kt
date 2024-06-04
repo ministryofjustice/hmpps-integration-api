@@ -39,6 +39,7 @@ internal class AlertsControllerTest(
       val hmppsId = "9999/11111A"
       val encodedHmppsId = URLEncoder.encode(hmppsId, StandardCharsets.UTF_8)
       val path = "/v1/persons/$encodedHmppsId/alerts"
+      val pndPath = "/v1/persons/$encodedHmppsId/alerts/pnd"
       val mockMvc = IntegrationAPIMockMvc(springMockMvc)
 
       describe("GET $path") {
@@ -186,6 +187,95 @@ internal class AlertsControllerTest(
               "{\"status\":500,\"errorCode\":null,\"userMessage\":\"500 MockError\",\"developerMessage\":\"Unable to complete request as an upstream service is not responding\",\"moreInfo\":null}",
             ),
           )
+        }
+      }
+      describe("GET $pndPath") {
+        beforeTest {
+          Mockito.reset(getAlertsForPersonService)
+          Mockito.reset(auditService)
+          whenever(getAlertsForPersonService.getAlertsForPnd(hmppsId)).thenReturn(
+            Response(
+              data =
+                listOf(
+                  Alert(
+                    offenderNo = "A1111BB",
+                    type = "B",
+                    typeDescription = "Security again",
+                    code = "BBB",
+                    codeDescription = "For Release",
+                    comment = "IS83",
+                    dateCreated = LocalDate.parse("2022-09-01"),
+                    dateExpired = LocalDate.parse("2023-09-01"),
+                    expired = false,
+                    active = false,
+                  ),
+                ),
+            ),
+          )
+        }
+
+        it("returns a 200 OK status code for PND") {
+          val result = mockMvc.performAuthorised(pndPath)
+          result.response.status.shouldBe(HttpStatus.OK.value())
+        }
+
+        it("returns paginated results for PND") {
+          whenever(getAlertsForPersonService.getAlertsForPnd(hmppsId)).thenReturn(
+            Response(
+              data =
+                List(20) {
+                  Alert(
+                    offenderNo = "B0000ZZ",
+                    type = "Z",
+                    typeDescription = "Threat",
+                    code = "BBB",
+                    codeDescription = "Not For Release",
+                    comment = "IS91",
+                    dateCreated = LocalDate.parse("2022-09-01"),
+                    dateExpired = LocalDate.parse("2023-10-01"),
+                    expired = false,
+                    active = false,
+                  )
+                },
+            ),
+          )
+
+          val result = mockMvc.performAuthorised("$pndPath?page=1&perPage=10")
+
+          result.response.contentAsString.shouldContainJsonKeyValue("$.pagination.page", 1)
+          result.response.contentAsString.shouldContainJsonKeyValue("$.pagination.totalPages", 2)
+        }
+
+        it("returns an empty list embedded in a JSON object when no alerts are found for PND") {
+          val hmppsIdForPersonWithNoAlerts = "1111/22334A"
+          val encodedHmppsIdForPersonWithNoAlerts =
+            URLEncoder.encode(hmppsIdForPersonWithNoAlerts, StandardCharsets.UTF_8)
+          val alertPath = "/v1/persons/$encodedHmppsIdForPersonWithNoAlerts/alerts/pnd"
+
+          whenever(getAlertsForPersonService.getAlertsForPnd(hmppsIdForPersonWithNoAlerts)).thenReturn(
+            Response(
+              data = emptyList(),
+            ),
+          )
+
+          val result = mockMvc.performAuthorised(alertPath)
+
+          result.response.contentAsString.shouldContain("\"data\":[]".removeWhitespaceAndNewlines())
+        }
+
+        it("logs audit for PND") {
+          mockMvc.performAuthorised(pndPath)
+
+          verify(
+            auditService,
+            VerificationModeFactory.times(1),
+          ).createEvent("GET_PERSON_ALERTS_PND", mapOf("hmppsId" to hmppsId))
+        }
+
+        it("gets the alerts for PND for a person with the matching ID") {
+          mockMvc.performAuthorised(pndPath)
+
+          verify(getAlertsForPersonService, VerificationModeFactory.times(1)).getAlertsForPnd(hmppsId)
         }
       }
     },
