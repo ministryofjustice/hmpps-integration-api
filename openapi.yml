@@ -960,80 +960,6 @@ paths:
               examples:
                 NoQueryParametersBadRequestError:
                   $ref: "#/components/examples/InternalServerError"
-
-  /{TBC}/v1/persons/{Id}/accommodations:
-    get:
-      summary: FUTURE ENDPOINT - Returns accommodation and referral information associated with a person.
-      parameters:
-        - $ref: "#/components/parameters/Id"
-      responses:
-        "200":
-          description: Success.
-        "500":
-          description: An upstream service was not responding, so we cannot verify the accuracy of any data we did get.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-              examples:
-                NoQueryParametersBadRequestError:
-                  $ref: "#/components/examples/InternalServerError"
-
-  /{TBC}/v1/persons/{Id}/interventions:
-    get:
-      summary: FUTURE ENDPOINT - Returns activities and Non-Statutory Interventions (NSIs) associated with a person.
-      parameters:
-        - $ref: "#/components/parameters/Id"
-      responses:
-        "200":
-          description: Success.
-        "500":
-          description: An upstream service was not responding, so we cannot verify the accuracy of any data we did get.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-              examples:
-                NoQueryParametersBadRequestError:
-                  $ref: "#/components/examples/InternalServerError"
-
-
-  /{TBC}/v1/persons/{Id}/prisoner-visits:
-    get:
-      summary: FUTURE ENDPOINT -  Returns prisoner visits associated with a person.
-      parameters:
-        - $ref: "#/components/parameters/Id"
-      responses:
-        "200":
-          description: Success.
-        "500":
-          description: An upstream service was not responding, so we cannot verify the accuracy of any data we did get.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-              examples:
-                NoQueryParametersBadRequestError:
-                  $ref: "#/components/examples/InternalServerError"
-
-  /{TBC}/v1/persons/{Id}/probation-contact-events:
-    get:
-      summary: FUTURE ENDPOINT - Returns probation contact events associated with a person.
-      parameters:
-        - $ref: "#/components/parameters/Id"
-      responses:
-        "200":
-          description: Success.
-        "500":
-          description: An upstream service was not responding, so we cannot verify the accuracy of any data we did get.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-              examples:
-                NoQueryParametersBadRequestError:
-                  $ref: "#/components/examples/InternalServerError"
-
 components:
   parameters:
     HmppsId:
@@ -1911,7 +1837,7 @@ components:
         hmppsId:
           type: string
           example: 2008/0545166T
-          description: Currently a hmppsId is a PNC identifier however this will change in the near future to be a CRN identifier
+          description: A CRN identifier
         offenderNumber:
           type: string
           example: Z1234ZZ
