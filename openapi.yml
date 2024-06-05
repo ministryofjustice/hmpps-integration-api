@@ -167,7 +167,7 @@ paths:
                 NoQueryParametersBadRequestError:
                   $ref: "#/components/examples/InternalServerError"
 
-  /v1/images/{id}:
+  /v1/images/{hmppsId}:
     get:
       tags:
         - images
@@ -770,7 +770,7 @@ paths:
                 NoQueryParametersBadRequestError:
                   $ref: "#/components/examples/InternalServerError"
 
-  /v1/persons/{Id}/adjudications:
+  /v1/persons/{hmppsId}/adjudications:
     get:
       summary: Returns adjudications associated with a person.
       parameters:
