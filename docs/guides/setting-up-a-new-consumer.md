@@ -92,7 +92,7 @@ kubectl -n hmpps-integration-api-<environment> get secrets consumer-api-keys -o 
    2. client certificate
    3. API key
    
-## Create new consumer subscriber queue
+## Create new consumer subscriber queue for events
 
 ### Create basic infrastructure
 Within the [Cloud Platform Environments GitHub repository](https://github.com/ministryofjustice/cloud-platform-environments/tree/main) and the namespace of the environment:
@@ -100,7 +100,7 @@ Within the [Cloud Platform Environments GitHub repository](https://github.com/mi
 1. Create a branch.
 2. Add new client subscriber terraform file. Example: [event-subscriber-mapps.tf](https://github.com/ministryofjustice/cloud-platform-environments/pull/22091/files#diff-4046866c9398b1db59a427052406a08c2adab45aadbc278f16232157a636f451)
 3. Rename client name "mapps" to new client name
-4. Add new client filter list secret. exmaple [secret.tf](https://github.com/ministryofjustice/cloud-platform-environments/pull/22091/files#diff-bc13dba50c430d2a667e5b867d2798770e5e8c48697407d93e2febedb3ff46dc)
+4. Add new client filter list secret. example [secret.tf](https://github.com/ministryofjustice/cloud-platform-environments/pull/22091/files#diff-bc13dba50c430d2a667e5b867d2798770e5e8c48697407d93e2febedb3ff46dc)
 5. Follow steps 3-8 in [Create an API key](#create-an-api-key) to merge branch to main. 
 
 After the change is merged and applied, you can retrieve client queue name and ARN with the following command:
