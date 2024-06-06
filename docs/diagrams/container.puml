@@ -20,13 +20,14 @@ Boundary(aws_cloudplatform, "Cloud Platform", "A Kubernetes cluster using Amazon
 
     Boundary(upstream, "Legacy Upstream Systems", "Various HMPPS upstream systems, some of these will eventually be replaced"){
         Container(prison_api, "Prison API", "Spring Boot Java API", "API over NOMIS DB used by Digital Prison team applications and services", $link="https://github.com/ministryofjustice/prison-api")
-        Container(probation_offender_search, "Probation Offender Search", "Springoot Kotlin API", "API over the nDelius offender data held in Elasticsearch", $link="https://probation-offender-search-dev.hmpps.service.justice.gov.uk/swagger-ui/index.html")
+        Container(probation_offender_search, "Probation Offender Search", "Springboot Kotlin API", "API over the nDelius offender data held in Elasticsearch", $link="https://probation-offender-search-dev.hmpps.service.justice.gov.uk/swagger-ui/index.html")
         Container(prisoner_search, "Prisoner Search", "Spring Boot Kotlin API", "API over the NOMIS prisoner data held in OpenSearch", $link="https://github.com/ministryofjustice/hmpps-prisoner-search")
         Container(oasys, "OASys", "Spring Boot Kotlin API", "REST access to the OASys Oracle DB offender assessment information", $link="https://github.com/ministryofjustice/offender-assessments-api-kotlin", $tags="not_yet_implemented")
         Container(oasys_arn, "Assess Risks and Needs", "Spring Boot Kotlin API", "API over the Risks, Needs and Responsivity (RNR) data for an offender held in the Assess Risks and Needs Service", $link="https://github.com/ministryofjustice/hmpps-assess-risks-and-needs")
         Container(adjudications, "Adjudications", "Spring Boot Kotlin API", "Adjudications related to an offender", $link="https://github.com/ministryofjustice/hmpps-manage-adjudications-api")
         Container(case_notes, "Case Notes", "Spring Boot Kotlin API", "Case Notes related to an offender", $link="https://github.com/ministryofjustice/offender-case-notes")
         Container(effective_proposal_framework, "EPF and nDelius", "Spring Boot Kotlin API")
+        Container(manage_POM_cases, "Offender Management Allocation Manager", "Ruby on Rails app", "A Ruby On Rails application for allocating Prisoners to Prisoner Offender Managers (POMs)", $link="https://github.com/ministryofjustice/offender-management-allocation-manager")
         Container(create_and_vary_license, "Create and Vary License", "Spring Boot Kotlin API", "Licenses related to an offender", $link="https://github.com/ministryofjustice/create-and-vary-a-licence-api")
         Container(hmpps_auth, "HMPPS Auth", "Spring Boot Kotlin API", "HMPPS Auth Server For HMPPS Digital Services", $link="https://github.com/ministryofjustice/hmpps-auth")
         Lay_L(prisoner_search, prison_api)

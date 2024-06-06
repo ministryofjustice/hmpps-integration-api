@@ -11,7 +11,7 @@ Nodes are spread across multiple (up to 3) Availability Zones.
 
 ## Deployment health checks
 
-Healthchecks are run by Kubernetes to assess the health of each node. If a node fails 3 times in a row, it is declared unhealthy and a new one put in to take its place.
+Health checks are run by Kubernetes to assess the health of each node. If a node fails 3 times in a row, it is declared unhealthy and a new one put in to take its place.
 Kubernetes with auto heal and prevent any corrupt nodes from replacing existing healthy ones.
 
 ## Heartbeat

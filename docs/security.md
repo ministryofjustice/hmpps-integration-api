@@ -13,7 +13,7 @@ These tokens have limited read-only access to accomplish only tasks required by 
 Below is a list of protected resources that make up the service, and access levels to those resources.
 
 | Access               | Controlled by                                                         | Limited to                      |
-| -------------------- | --------------------------------------------------------------------- | ------------------------------- |
+|----------------------|-----------------------------------------------------------------------|---------------------------------|
 | API                  | API Keys, Certificates                                                | Registered External consumers   |
 | AWS Account (Live)   | IAM users with access credentials and two-factor authentication (2FA) | Members of Cloud Platform team  |
 | Namespace Secrets    | GitHub teams                                                          | HMPPS Integration API engineers |
