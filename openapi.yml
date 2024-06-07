@@ -167,7 +167,7 @@ paths:
                 NoQueryParametersBadRequestError:
                   $ref: "#/components/examples/InternalServerError"
 
-  /v1/images/{hmppsId}:
+  /v1/images/{id}:
     get:
       tags:
         - images
@@ -970,6 +970,14 @@ components:
       required: true
       schema:
         type: string
+    id:
+      name: id
+      description: An numeric Id
+      example: 2461788
+      in: path
+      required: true
+      schema:
+        type: number
     page:
       name: page
       in: query
