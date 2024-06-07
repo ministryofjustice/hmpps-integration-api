@@ -173,7 +173,7 @@ paths:
         - images
       summary: Returns an image in bytes as a JPEG.
       parameters:
-        - name: id
+        - name: imageId
           in: path
           required: true
           schema:
