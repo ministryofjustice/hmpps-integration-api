@@ -950,6 +950,13 @@ paths:
           required: false
           description: Filter by the location. example MDI
         - $ref: "#/components/parameters/hmppsId"
+        - name: sortBy
+          in: query
+          description: |
+            Specifies the field to sort the alerts by.
+          schema:
+            type: string
+            default: CreatDateTime
       responses:
         "200":
           description: Successfully found case notes for a person with the provided HMPPS ID.
