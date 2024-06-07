@@ -45,6 +45,13 @@ paths:
             default: false
           required: false
           description: Whether to return results that match the search criteria within the aliases of a person
+        - name: sortBy
+          in: query
+          description: |
+            Specifies the field to sort the persons by.
+          schema:
+            type: string
+            default: dateOfBirth
         - $ref: "#/components/parameters/page"
         - $ref: "#/components/parameters/perPage"
       responses:
@@ -80,6 +87,7 @@ paths:
               examples:
                 NoQueryParametersBadRequestError:
                   $ref: "#/components/examples/InternalServerError"
+
   /v1/persons/{hmppsId}:
     get:
       tags:
@@ -130,6 +138,13 @@ paths:
         - $ref: "#/components/parameters/hmppsId"
         - $ref: "#/components/parameters/page"
         - $ref: "#/components/parameters/perPage"
+        - name: sortBy
+          in: query
+          description: |
+            Specifies the field to sort the persons by.
+          schema:
+            type: string
+            default: captureDateTime
       responses:
         "200":
           description:  >
@@ -306,6 +321,13 @@ paths:
         - $ref: "#/components/parameters/hmppsId"
         - $ref: "#/components/parameters/page"
         - $ref: "#/components/parameters/perPage"
+        - name: sortBy
+          in: query
+          description: |
+            Specifies the field to sort the alerts by.
+          schema:
+            type: string
+            default: dateCreated
       responses:
         "200":
           description: Successfully found alerts for a person with the provided HMPPS ID.
@@ -350,6 +372,13 @@ paths:
         - $ref: "#/components/parameters/hmppsId"
         - $ref: "#/components/parameters/page"
         - $ref: "#/components/parameters/perPage"
+        - name: sortBy
+          in: query
+          description: |
+            Specifies the field to sort the PND alerts by.
+          schema:
+            type: string
+            default: dateCreated
       responses:
         "200":
           description: Successfully found alerts for a person with the provided HMPPS ID.
@@ -393,6 +422,13 @@ paths:
         - $ref: "#/components/parameters/hmppsId"
         - $ref: "#/components/parameters/page"
         - $ref: "#/components/parameters/perPage"
+        - name: sortBy
+          in: query
+          description: |
+            Specifies the field to sort the alerts by.
+          schema:
+            type: string
+            default: dateOfSentencing
       responses:
         "200":
           description: Successfully found sentences for a person with the provided HMPPS ID.
@@ -472,6 +508,13 @@ paths:
         - $ref: "#/components/parameters/hmppsId"
         - $ref: "#/components/parameters/page"
         - $ref: "#/components/parameters/perPage"
+        - name: sortBy
+          in: query
+          description: |
+            Specifies the field to sort the alerts by.
+          schema:
+            type: string
+            default: completedDate
       responses:
         "200":
           description: Successfully found risk scores for a person with the provided HMPPS ID.
@@ -513,6 +556,13 @@ paths:
       summary: Returns the categories related to an offender.
       parameters:
         - $ref: "#/components/parameters/hmppsId"
+        - name: sortBy
+          in: query
+          description: |
+            Specifies the field to sort the alerts by.
+          schema:
+            type: string
+            default: assessmentDate
       responses:
         "200":
           description: Successfully found risk categories for a person with the provided HMPPS ID.
@@ -625,6 +675,13 @@ paths:
               However, the process by which needs are assessed is changing as early as next year (2024), specifically moving to a strength-based model that seeks to identify and develop the strengths of people with convictions. As a consequence of this, the information provided by this endpoint will also change.
       parameters:
         - $ref: "#/components/parameters/hmppsId"
+        - name: sortBy
+          in: query
+          description: |
+            Specifies the field to sort the alerts by.
+          schema:
+            type: string
+            default: assessedOn
       responses:
         "200":
           description: Successfully found criminogenic needs for a person with the provided HMPPS ID.
