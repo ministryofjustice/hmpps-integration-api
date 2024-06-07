@@ -752,7 +752,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/CaseDetails'
         "404":
-          description: "A person detail with the provided hmppsId and event number does not exist in Delius."
+          description: "Failed to find a person detail with the provided hmppsId and event number in Delius."
           content:
             application/json:
               schema:
@@ -787,7 +787,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Adjudication'
         "404":
-          description: "Adjudications for the person with the provided hmppsId does not exist."
+          description: "Failed to find adjudications for the person with the provided hmppsId."
           content:
             application/json:
               schema:
