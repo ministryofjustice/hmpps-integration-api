@@ -173,7 +173,7 @@ paths:
         - images
       summary: Returns an image in bytes as a JPEG.
       parameters:
-        - name: id
+        - name: imageId
           in: path
           required: true
           schema:
@@ -966,6 +966,14 @@ components:
       name: hmppsId
       description: A URL-encoded HMPPS identifier
       example: 2008%2F0545166T
+      in: path
+      required: true
+      schema:
+        type: string
+    imageId:
+      name: imageId
+      description: An Id (TBC), potentially Case Reference Number (CRN)
+      example: X00001
       in: path
       required: true
       schema:
