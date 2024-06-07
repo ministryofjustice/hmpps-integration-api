@@ -970,6 +970,14 @@ components:
       required: true
       schema:
         type: string
+    imageId:
+      name: imageId
+      description: An Id (TBC), potentially Case Reference Number (CRN)
+      example: X00001
+      in: path
+      required: true
+      schema:
+        type: string
     page:
       name: page
       in: query
