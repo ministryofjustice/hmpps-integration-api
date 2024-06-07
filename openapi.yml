@@ -45,8 +45,8 @@ paths:
             default: false
           required: false
           description: Whether to return results that match the search criteria within the aliases of a person
-        - $ref: "#/components/parameters/Page"
-        - $ref: "#/components/parameters/PerPage"
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/perPage"
       responses:
         "200":
           description: Successfully performed the query on upstream APIs. An empty list is returned when no results are found.
@@ -128,8 +128,8 @@ paths:
       summary: Returns metadata of images associated with a person ordered by newest to oldest date.
       parameters:
         - $ref: "#/components/parameters/hmppsId"
-        - $ref: "#/components/parameters/Page"
-        - $ref: "#/components/parameters/PerPage"
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/perPage"
       responses:
         "200":
           description:  >
@@ -212,8 +212,8 @@ paths:
       summary: Returns addresses associated with a person.
       parameters:
         - $ref: "#/components/parameters/hmppsId"
-        - $ref: "#/components/parameters/Page"
-        - $ref: "#/components/parameters/PerPage"
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/perPage"
       responses:
         "200":
           description: Successfully found a person with the provided HMPPS ID.
@@ -260,8 +260,8 @@ paths:
         Prison systems record only custodial sentences, while Probation systems record only the main offence and some additional offences for case management purposes. Other offences recorded by HMCTS and police may not be included.
       parameters:
         - $ref: "#/components/parameters/hmppsId"
-        - $ref: "#/components/parameters/Page"
-        - $ref: "#/components/parameters/PerPage"
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/perPage"
       responses:
         "200":
           description: Successfully found offences for a person with the provided HMPPS ID.
@@ -304,8 +304,8 @@ paths:
       summary: Returns alerts associated with a person.
       parameters:
         - $ref: "#/components/parameters/hmppsId"
-        - $ref: "#/components/parameters/Page"
-        - $ref: "#/components/parameters/PerPage"
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/perPage"
       responses:
         "200":
           description: Successfully found alerts for a person with the provided HMPPS ID.
@@ -348,8 +348,8 @@ paths:
       summary: Returns alerts associated with a person.
       parameters:
         - $ref: "#/components/parameters/hmppsId"
-        - $ref: "#/components/parameters/Page"
-        - $ref: "#/components/parameters/PerPage"
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/perPage"
       responses:
         "200":
           description: Successfully found alerts for a person with the provided HMPPS ID.
@@ -391,8 +391,8 @@ paths:
       summary: Returns sentences associated with a person.
       parameters:
         - $ref: "#/components/parameters/hmppsId"
-        - $ref: "#/components/parameters/Page"
-        - $ref: "#/components/parameters/PerPage"
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/perPage"
       responses:
         "200":
           description: Successfully found sentences for a person with the provided HMPPS ID.
@@ -470,8 +470,8 @@ paths:
       summary: Returns risk scores from the last year associated with a person.
       parameters:
         - $ref: "#/components/parameters/hmppsId"
-        - $ref: "#/components/parameters/Page"
-        - $ref: "#/components/parameters/PerPage"
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/perPage"
       responses:
         "200":
           description: Successfully found risk scores for a person with the provided HMPPS ID.
@@ -970,15 +970,7 @@ components:
       required: true
       schema:
         type: string
-    Id:
-      name: Id
-      description: An Id (TBC), potentially Case Reference Number (CRN)
-      example: X00001
-      in: path
-      required: true
-      schema:
-        type: string
-    Page:
+    page:
       name: page
       in: query
       schema:
@@ -987,7 +979,7 @@ components:
         default: 1
       required: false
       description: The page number (starting from 1)
-    PerPage:
+    perPage:
       name: perPage
       in: query
       schema:
