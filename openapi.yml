@@ -1226,7 +1226,8 @@ components:
           minItems: 0
           items:
             $ref: "#/components/schemas/AddressType"
-          description: Type or usage of address
+          description: <
+            Type or usage of address, for example `Business Address`, `Home Address`, `Work Address`.
         notes:
           type: string
           example: This is their partner's address.
@@ -1237,7 +1238,7 @@ components:
           type: string
           example: BUS
           description: >
-            Address type code, for example: `BUS`.
+            Address type code, for example: `BUS`, `HOME`, `WORK`.
         description:
           type: string
           example: Business Address
