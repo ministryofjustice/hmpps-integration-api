@@ -189,6 +189,7 @@ workflows:
             branches:
               only:
                 - main
+
       - hmpps/deploy_env:
           <<: *slack-fail-post-step
           name: deploy-to-dev

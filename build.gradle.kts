@@ -1,5 +1,5 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "5.15.5"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "6.0.0"
   kotlin("plugin.spring") version "1.9.20"
 }
 
@@ -8,6 +8,7 @@ configurations {
 }
 
 dependencies {
+  runtimeOnly("org.flywaydb:flyway-database-postgresql")
   implementation("org.springframework.boot:spring-boot-starter-webflux:3.2.4")
   implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.1")
   implementation("io.sentry:sentry-spring-boot-starter-jakarta:6.34.0")
