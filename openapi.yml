@@ -2049,6 +2049,8 @@ components:
       properties:
         name:
           type: string
+          example: "Manchester Crown Court"
+          description: The name of the court.
     PersonResponsibleOfficerTeam:
       type: object
       properties:
@@ -2161,6 +2163,7 @@ components:
         code:
           type: string
           nullable: true
+          description: The prison code, which is usually short for the prison name.
     PrisonOffenderManager:
       type: object
       properties:
