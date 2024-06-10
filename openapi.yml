@@ -290,7 +290,36 @@ paths:
                     minItems: 0
                     items:
                       $ref: "#/components/schemas/Offence"
-                  pagination:
+              examples:
+                successfulResponse:
+                  summary: Example response with all properties and possible enum values
+                  value:
+                    data:
+                      - serviceSource: NOMIS
+                        systemSource: PRISON_SYSTEMS
+                        cjsCode: RR84170
+                        courtDates:
+                          - "2018-02-10"
+                          - "2019-02-10"
+                        courtName: "London Magistrates Court"
+                        description: "Commit an act / series of acts with intent to pervert the course of public justice"
+                        endDate: "2018-03-10"
+                        hoCode: 06601
+                        startDate: "1965-12-01"
+                        statuteCode: RR84
+                      - serviceSource: NDELIUS
+                        systemSource: PROBATION_SYSTEMS
+                        cjsCode: RR12345
+                        courtDates:
+                          - "2020-05-15"
+                          - "2021-05-15"
+                        courtName: "Manchester Crown Court"
+                        description: "Assault causing grievous bodily harm"
+                        endDate: "2020-06-20"
+                        hoCode: 06602
+                        startDate: "2020-05-10"
+                        statuteCode: RR85
+                pagination:
                     $ref: "#/components/schemas/Pagination"
         "404":
           description: Failed to find offences a person with the provided HMPPS ID.
@@ -908,6 +937,98 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/PersonLicencesData"
+              examples:
+                successfulResponse:
+                  summary: Example response with all properties and possible enum values
+                  value:
+                    data:
+                      hmppsId: "2008/0545166T"
+                      offenderNumber: "Z1234ZZ"
+                      licences:
+                        - status: "IN_PROGRESS"
+                          typeCode: "AP"
+                          createdDate: "2015-09-23"
+                          approvedDate: "2015-09-24"
+                          updatedDate: "2015-10-23"
+                          conditions:
+                            - type: "Standard"
+                              code: "5a105297-dce1-4d18-b9ea-4195b46b7594"
+                              category: "Residence at a specific place"
+                              condition: "You must reside at an approved address"
+                            - type: "Custom"
+                              code: "b457e9c3-68c6-4f5e-9bd8-c36c5b7e70fb"
+                              category: "Contact Restrictions"
+                              condition: "You must not contact the victim"
+                        - status: "SUBMITTED"
+                          typeCode: "PSS"
+                          createdDate: "2016-01-15"
+                          approvedDate: "2016-01-16"
+                          updatedDate: "2016-02-15"
+                          conditions:
+                            - type: "Standard"
+                              code: "5a105297-dce1-4d18-b9ea-4195b46b7594"
+                              category: "Residence at a specific place"
+                              condition: "You must reside at an approved address"
+                        - status: "APPROVED"
+                          typeCode: "AP_PSS"
+                          createdDate: "2017-03-10"
+                          approvedDate: "2017-03-11"
+                          updatedDate: "2017-04-10"
+                          conditions:
+                            - type: "Standard"
+                              code: "5a105297-dce1-4d18-b9ea-4195b46b7594"
+                              category: "Residence at a specific place"
+                              condition: "You must reside at an approved address"
+                        - status: "ACTIVE"
+                          typeCode: "AP"
+                          createdDate: "2018-05-20"
+                          approvedDate: "2018-05-21"
+                          updatedDate: "2018-06-20"
+                          conditions:
+                            - type: "Custom"
+                              code: "c97f33e3-1e50-4b28-8f71-5de3e2fbbf79"
+                              category: "Travel Restrictions"
+                              condition: "You must not leave the country without permission"
+                        - status: "VARIATION_IN_PROGRESS"
+                          typeCode: "PSS"
+                          createdDate: "2019-07-01"
+                          approvedDate: "2019-07-02"
+                          updatedDate: "2019-08-01"
+                          conditions:
+                            - type: "Rehabilitation"
+                              code: "a5371dd7-7f54-42b9-9c3b-35f9e8f6f1e9"
+                              category: "Rehabilitation Program"
+                              condition: "You must participate in a rehabilitation program"
+                        - status: "VARIATION_SUBMITTED"
+                          typeCode: "AP_PSS"
+                          createdDate: "2020-09-12"
+                          approvedDate: "2020-09-13"
+                          updatedDate: "2020-10-12"
+                          conditions:
+                            - type: "Monitoring"
+                              code: "e4a8b9cf-4a50-44a2-8a0c-5f38d2fae6f9"
+                              category: "Electronic Monitoring"
+                              condition: "You must comply with electronic monitoring"
+                        - status: "VARIATION_APPROVED"
+                          typeCode: "AP"
+                          createdDate: "2021-11-23"
+                          approvedDate: "2021-11-24"
+                          updatedDate: "2021-12-23"
+                          conditions:
+                            - type: "Substance Abuse"
+                              code: "d4b8b1e8-9e4e-4f6a-a2df-b41e8f8e8e8e"
+                              category: "Alcohol Restrictions"
+                              condition: "You must not consume alcohol"
+                        - status: "VARIATION_REJECTED"
+                          typeCode: "PSS"
+                          createdDate: "2022-01-01"
+                          approvedDate: "2022-01-02"
+                          updatedDate: "2022-02-01"
+                          conditions:
+                            - type: "Association"
+                              code: "f9e8f1c8-2f4a-4a6a-a1de-5e7e9f7d9e8f"
+                              category: "Contact Restrictions"
+                              condition: "You must not associate with known criminals"
         "404":
           description: Failed to find licenses for a person with the provided HMPPS ID.
           content:
@@ -1393,7 +1514,10 @@ components:
       properties:
         status:
           type: integer
-          enum: [ 400, 404, 500 ]
+          enum:
+            - 400
+            - 404
+            - 500
         errorCode:
           type: integer
           nullable: true
@@ -1473,7 +1597,13 @@ components:
         view:
           type: string
           example: FACE
-          enum: [FACE, TAT, OTH, SCAR, MARK, OIC]
+          enum:
+            - FACE
+            - TAT
+            - OTH
+            - SCAR
+            - MARK
+            - OIC
           description: >
             View is the subject focus; describing the inner focus or subject of the image, normally referring to a marking, tattoo or deeper level focus of the orientation. In practise this is the interior foci of what is captured in the 'orientation' field.
               Options include:
@@ -1486,7 +1616,30 @@ components:
         orientation:
           type: string
           example: FRONT
-          enum: [ANKLE, ARM, DAMAGE, EAR, ELBOW, FACE, FIGHT, FINGER, FOOT, FRONT, HAND, HEAD, INCIDENT, INJURY, KNEE, LEG, LIP, NECK, NOSE, SHOULDER, THIGH, TOE, TORSO]
+          enum:
+            - ANKLE
+            - ARM
+            - DAMAGE
+            - EAR
+            - ELBOW
+            - FACE
+            - FIGHT
+            - FINGER
+            - FOOT
+            - FRONT
+            - HAND
+            - HEAD
+            - INCIDENT
+            - INJURY
+            - KNEE
+            - LEG
+            - LIP
+            - NECK
+            - NOSE
+            - SHOULDER
+            - THIGH
+            - TOE
+            - TORSO
           description: >
             Orientation is the scope focus; describing the scope or outer focus of the image, normally referring to the highest level object of interest within the bounds of the photo itself. This is normally a body part or an angle of photography, such as a photo of someone’s facial view (`FRONT`) or arm (`ARM`).
               Options include:
@@ -1516,7 +1669,11 @@ components:
         type:
           type: string
           example: OFF_BKG
-          enum: [OFF_BKG, OFF_IDM, OIC, PPTY]
+          enum:
+            - OFF_BKG
+            - OFF_IDM
+            - OIC
+            - PPTY
           description: >
             Type is the contextual focus; describing the context or scenario the image was taken within. It could be for a particular purpose or capturing the results of a particular type of incident.
               Options include:
@@ -1615,14 +1772,38 @@ components:
       properties:
         status:
           type: string
+          enum:
+            - IN_PROGRESS
+            - SUBMITTED
+            - APPROVED
+            - ACTIVE
+            - VARIATION_IN_PROGRESS
+            - VARIATION_SUBMITTED
+            - VARIATION_APPROVED
+            - VARIATION_REJECTED
           example: IN_PROGRESS
-          "enum": [ "IN_PROGRESS","SUBMITTED","APPROVED","ACTIVE","VARIATION_IN_PROGRESS","VARIATION_SUBMITTED","VARIATION_APPROVED","VARIATION_REJECTED" ]
-          description: Licence status
+          description: >
+            Licence status. Options include:
+            `IN_PROGRESS`,
+            `SUBMITTED`,
+            `APPROVED`,
+            `ACTIVE`,
+            `VARIATION_IN_PROGRESS`,
+            `VARIATION_SUBMITTED`,
+            `VARIATION_APPROVED`,
+            `VARIATION_REJECTED`
         typeCode:
           type: string
           example: AP
-          enum: [ "AP","PSS","AP_PSS" ]
-          description: The type of licence
+          enum:
+            - AP
+            - PSS
+            - AP_PSS
+          description: >
+            The type of licence. Options include:
+            `AP`,
+            `PSS`,
+            `AP_PSS`
         createdDate:
           type: string
           format: date
@@ -1684,14 +1865,24 @@ components:
       properties:
         serviceSource:
           type: string
-          enum: [ NOMIS, NDELIUS ]
+          enum:
+            - NOMIS
+            - NDELIUS
           example: NOMIS
-          description: Which upstream API service the sentence originates from
+          description: >
+            Which upstream API service the sentence originates from. Options include:
+            `NOMIS`,
+            `NDELIUS`
         systemSource:
           type: string
-          enum: [ PRISON_SYSTEMS, PROBATION_SYSTEMS ]
+          enum:
+            - PRISON_SYSTEMS
+            - PROBATION_SYSTEMS
           example: PROBATION_SYSTEMS
-          description: Which upstream API system the sentence originates from
+          description: >
+            Which upstream API system the sentence originates from. Options include:
+            `PRISON_SYSTEMS`,
+            `PROBATION_SYSTEMS`
         cjsCode:
           type: string
           example: RR84170
@@ -2038,14 +2229,24 @@ components:
       properties:
         serviceSource:
           type: string
-          enum: [NOMIS, NDELIUS]
+          enum:
+            - NOMIS
+            - NDELIUS
           example: NOMIS
-          description: Which upstream API service the sentence originates from
+          description: >
+            Which upstream API service the sentence originates from. Options include:
+            `NOMIS`,
+            `NDELIUS`
         systemSource:
           type: string
-          enum: [ PRISON_SYSTEMS, PROBATION_SYSTEMS ]
+          enum:
+          - PRISON_SYSTEMS
+          - PROBATION_SYSTEMS
           example: PROBATION_SYSTEMS
-          description: Which upstream API system the sentence originates from
+          description: >
+            Which upstream API system the sentence originates from. Options include:
+            `PRISON_SYSTEMS`,
+            `PROBATION_SYSTEMS`
         dateOfSentencing:
           type: string
           format: date
@@ -2168,9 +2369,18 @@ components:
           description: Release date for non-DTO sentence (if applicable). This will be based on one of ARD, CRD, NPD or PRRD.
         releaseDateType:
           type: string
-          enum: [ ARD, CRD, NPD, PRRD ]
+          enum:
+          - ARD
+          - CRD
+          - NPD
+          - PRRD
           example: ARD
-          description: Indicates which type of non-DTO release date is the effective release date. One of 'ARD', 'CRD', 'NPD' or 'PRRD'.
+          description: >
+            Indicates which type of non-DTO release date is the effective release date. One of 'ARD', 'CRD', 'NPD' or 'PRRD'. Options include:
+            `ARD`,
+            `CRD`,
+            `NPD`,
+            `PRRD`
     ReasonableAdjustment:
       type: object
       properties:
@@ -2278,9 +2488,20 @@ components:
           description: Duration of the sentence
         units:
           type: string
-          enum: [Hours, Days, Weeks, Months, Years]
+          enum:
+          - Hours
+          - Days
+          - Weeks
+          - Months
+          - Years
           example: Hours
-          description: Time unit that is used in combination with the duration field
+          description: >
+            Time unit that is used in combination with the duration field. Options include:
+            `Hours`,
+            `Days`,
+            `Weeks`,
+            `Months`,
+            `Years`
         terms:
           type: array
           minItems: 0
@@ -2307,7 +2528,20 @@ components:
           description: Number of days in the term
         prisonTermCode:
           type: string
-          enum: [CUR, DEF, DET, HOURS, IMP, LIC, PSYCH, SCUS, SEC104, SEC105, SEC86, SUP, SUSP]
+          enum:
+            - CUR
+            - DEF
+            - DET
+            - HOURS
+            - IMP
+            - LIC
+            - PSYCH
+            - SCUS
+            - SEC104
+            - SEC105
+            - SEC86
+            - SUP
+            - SUSP
           example: IMP
           description: >
             The sentence term code
@@ -2374,9 +2608,14 @@ components:
           description: Risk scores calculation completion date
         assessmentStatus:
           type: string
-          enum: [ COMPLETE, LOCKED_INCOMPLETE ]
+          enum:
+            - COMPLETE
+            - LOCKED_INCOMPLETE
           example: COMPLETE
-          description: Whether the risk score calculation is complete
+          description: >
+            Whether the risk score calculation is complete. Options include:
+            `COMPLETE`,
+            `LOCKED_INCOMPLETE`
         groupReconviction:
           $ref: "#/components/schemas/GroupReconviction"
         violencePredictor:
@@ -2392,7 +2631,12 @@ components:
       properties:
         scoreLevel:
           type: string
-          enum: [ LOW, MEDIUM, HIGH, VERY_HIGH, NOT_APPLICABLE ]
+          enum:
+            - LOW
+            - MEDIUM
+            - HIGH
+            - VERY_HIGH
+            - NOT_APPLICABLE
           example: LOW
           description: >
             Indicator for risk of group reconviction. Options include:
@@ -2407,7 +2651,12 @@ components:
       properties:
         scoreLevel:
           type: string
-          enum: [ LOW, MEDIUM, HIGH, VERY_HIGH, NOT_APPLICABLE ]
+          enum:
+            - LOW
+            - MEDIUM
+            - HIGH
+            - VERY_HIGH
+            - NOT_APPLICABLE
           example: MEDIUM
           description: >
             Indicator for risk of violence. Options include:
@@ -2422,7 +2671,12 @@ components:
       properties:
         scoreLevel:
           type: string
-          enum: [ LOW, MEDIUM, HIGH, VERY_HIGH, NOT_APPLICABLE ]
+          enum:
+            - LOW
+            - MEDIUM
+            - HIGH
+            - VERY_HIGH
+            - NOT_APPLICABLE
           example: VERY_HIGH
           description: >
             Indicator for general prediction. Options include:
@@ -2437,7 +2691,12 @@ components:
       properties:
         scoreLevel:
           type: string
-          enum: [ LOW, MEDIUM, HIGH, VERY_HIGH, NOT_APPLICABLE ]
+          enum:
+            - LOW
+            - MEDIUM
+            - HIGH
+            - VERY_HIGH
+            - NOT_APPLICABLE
           example: MEDIUM
           description: >
             Indicator for risk of serious recidivism. Options include:
@@ -2452,7 +2711,12 @@ components:
       properties:
         indecentScoreLevel:
           type: string
-          enum: [ LOW, MEDIUM, HIGH, VERY_HIGH, NOT_APPLICABLE ]
+          enum:
+            - LOW
+            - MEDIUM
+            - HIGH
+            - VERY_HIGH
+            - NOT_APPLICABLE
           example: HIGH
           description: >
             Indicator for risk of sexual indecency. Options include:
@@ -2463,7 +2727,12 @@ components:
             `NOT_APPLICABLE`,
         contactScoreLevel:
           type: string
-          enum: [ LOW, MEDIUM, HIGH, VERY_HIGH, NOT_APPLICABLE ]
+          enum:
+            - LOW
+            - MEDIUM
+            - HIGH
+            - VERY_HIGH
+            - NOT_APPLICABLE
           example: MEDIUM
           description: >
             Indicator for risk of sexual contact. Options include:
@@ -2506,22 +2775,49 @@ components:
         risk:
           type: string
           example: "YES"
-          enum: [ YES, NO, DK, NA ]
-          description: Presence of risk
+          enum:
+            - YES
+            - NO
+            - DK
+            - NA
+          description: >
+            Presence of risk. Options include:
+            `YES`,
+            `NO`,
+            `DK`,
+            `NA`
         previous:
           type: string
           example: "NO"
-          enum: [ YES, NO, DK, NA ]
-          description: Previous concerns
+          enum:
+            - YES
+            - NO
+            - DK
+            - NA
+          description: >
+            Previous concerns. Options include:
+            `YES`,
+            `NO`,
+            `DK`,
+            `NA`
         previousConcernsText:
           type: string
           example: "Risk of self harm concerns due to ..."
-          description: Supporting comments for any previous concerns
+          description: Supporting comments for any previous concerns.
         current:
           type: string
           example: "YES"
-          enum: [ YES, NO, DK, NA ]
-          description: Current concerns
+          enum:
+            - YES
+            - NO
+            - DK
+            - NA
+          description: >
+            Current concerns. Options include:
+            `YES`,
+            `NO`,
+            `DK`,
+            `NA`
         currentConcernsText:
           type: string
           example: "Risk of self harm concerns due to ..."
@@ -2591,23 +2887,59 @@ components:
         escapeOrAbscond:
           type: string
           example: "YES"
-          enum: [ YES, NO, DK, NA ]
-          description: Risk of escape/abscond
+          enum:
+            - YES
+            - NO
+            - DK
+            - NA
+          description: >
+            Risk of escape/abscond. Options include:
+            `YES`,
+            `NO`,
+            `DK`,
+            `NA`
         controlIssuesDisruptiveBehaviour:
           type: string
           example: "DK"
-          enum: [ YES, NO, DK, NA ]
-          description: Risk control issues/disruptive behaviour
+          enum:
+            - YES
+            - NO
+            - DK
+            - NA
+          description: >
+            Risk control issues/disruptive behaviour. Options include:
+            `YES`,
+            `NO`,
+            `DK`,
+            `NA`
         breachOfTrust:
           type: string
           example: "NO"
-          enum: [ YES, NO, DK, NA ]
-          description: Risk of breach of trust
+          enum:
+            - YES
+            - NO
+            - DK
+            - NA
+          description: >
+            Risk of breach of trust. Options include:
+            `YES`,
+            `NO`,
+            `DK`,
+            `NA`
         riskToOtherPrisoners:
           type: string
           example: "YES"
-          enum: [ YES, NO, DK, NA ]
-          description: Risk to other prisoners
+          enum:
+            - YES
+            - NO
+            - DK
+            - NA
+          description: >
+            Risk to other prisoners. Options include:
+            `YES`,
+            `NO`,
+            `DK`,
+            `NA`
     Summary:
       type: object
       properties:
@@ -2634,7 +2966,11 @@ components:
         overallRiskLevel:
           type: string
           example: HIGH
-          enum: [ VERY_HIGH, HIGH, MEDIUM, LOW ]
+          enum:
+            - VERY_HIGH
+            - HIGH
+            - MEDIUM
+            - LOW
           description: The overall risk level
         riskInCommunity:
           type: object
@@ -2644,23 +2980,43 @@ components:
             children:
               type: string
               example: HIGH
-              enum: [ VERY_HIGH, HIGH, MEDIUM, LOW ]
+              enum:
+                - VERY_HIGH
+                - HIGH
+                - MEDIUM
+                - LOW
             public:
               type: string
               example: Medium
-              enum: [ VERY_HIGH, HIGH, MEDIUM, LOW ]
+              enum:
+                - VERY_HIGH
+                - HIGH
+                - MEDIUM
+                - LOW
             knownAdult:
               type: string
               example: VERY_HIGH
-              enum: [ VERY_HIGH, HIGH, MEDIUM, LOW ]
+              enum:
+                - VERY_HIGH
+                - HIGH
+                - MEDIUM
+                - LOW
             staff:
               type: string
               example: HIGH
-              enum: [ VERY_HIGH, HIGH, MEDIUM, LOW ]
+              enum:
+                - VERY_HIGH
+                - HIGH
+                - MEDIUM
+                - LOW
             prisoners:
               type: string
               example: LOW
-              enum: [ VERY_HIGH, HIGH, MEDIUM, LOW ]
+              enum:
+                - VERY_HIGH
+                - HIGH
+                - MEDIUM
+                - LOW
         riskInCustody:
           type: object
           description: >
@@ -2669,23 +3025,43 @@ components:
             children:
               type: string
               example: HIGH
-              enum: [ VERY_HIGH, HIGH, MEDIUM, LOW ]
+              enum:
+                - VERY_HIGH
+                - HIGH
+                - MEDIUM
+                - LOW
             public:
               type: string
               example: Medium
-              enum: [ VERY_HIGH, HIGH, MEDIUM, LOW ]
+              enum:
+                - VERY_HIGH
+                - HIGH
+                - MEDIUM
+                - LOW
             knownAdult:
               type: string
               example: VERY_HIGH
-              enum: [ VERY_HIGH, HIGH, MEDIUM, LOW ]
+              enum:
+                - VERY_HIGH
+                - HIGH
+                - MEDIUM
+                - LOW
             staff:
               type: string
               example: HIGH
-              enum: [ VERY_HIGH, HIGH, MEDIUM, LOW ]
+              enum:
+                - VERY_HIGH
+                - HIGH
+                - MEDIUM
+                - LOW
             prisoners:
               type: string
               example: LOW
-              enum: [ VERY_HIGH, HIGH, MEDIUM, LOW ]
+              enum:
+                - VERY_HIGH
+                - HIGH
+                - MEDIUM
+                - LOW
     Needs:
       type: object
       properties:
