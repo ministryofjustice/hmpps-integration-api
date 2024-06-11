@@ -2372,7 +2372,9 @@ components:
           type: string
           format: date
           example: 2023-03-01
-          description: Release date for non-DTO sentence (if applicable). This will be based on one of ARD, CRD, NPD or PRRD.
+          description: >
+            Release date for non-DTO sentence (if applicable). This will be based on one of ARD, CRD, NPD or PRRD.
+            NonDto stands for Non-Detention training order.
         releaseDateType:
           type: string
           enum:
