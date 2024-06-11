@@ -1,7 +1,7 @@
 ---
 title: Open API Specification
 weight: 5
-owner_slack: "#hmpps-integration-api-alerts"
+owner_slack: "&#35;hmpps-integration-api-alerts"
 last_reviewed_on: 2024-05-23
 review_in: 3 months
 ---
@@ -11,3 +11,5 @@ api>
 ## OpenAPI specification
 
 [View our OpenAPI specification file in YAML format](https://raw.githubusercontent.com/ministryofjustice/hmpps-integration-api/main/openapi.yml).
+
+This page was last reviewed on <%= front_matter['last_reviewed_on'].strftime('%d %B %Y') %>. It needs to be reviewed again on <%= (front_matter['last_reviewed_on'] + front_matter['review_in'].months).strftime('%d %B %Y') %> by the page owner [ <%= front_matter['owner_slack'] %> ](https://moj.enterprise.slack.com/archives/C052TUCR12L).
