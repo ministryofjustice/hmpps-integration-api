@@ -30,7 +30,11 @@ class AdjudicationsGateway(
 
     return when (result) {
       is WebClientWrapper.WebClientWrapperResponse.Success -> {
-        Response(data = result.data.map { it.toAdjudication() })
+        Response(
+          data = result.data
+            .map { it.toAdjudication() }
+            .sortedBy { it.incidentDetails?.dateTimeOfIncident }
+        )
       }
 
       is WebClientWrapper.WebClientWrapperResponse.Error -> {

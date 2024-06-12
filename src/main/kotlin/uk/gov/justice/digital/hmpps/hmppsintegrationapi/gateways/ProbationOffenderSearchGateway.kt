@@ -104,7 +104,7 @@ class ProbationOffenderSearchGateway(
     return when (result) {
       is WebClientWrapperResponse.Success -> {
         Response(
-          data = result.data.map { it.toPerson() },
+          result.data.map { it.toPerson() }.sortedBy { it.dateOfBirth },
         )
       }
       is WebClientWrapperResponse.Error -> {
