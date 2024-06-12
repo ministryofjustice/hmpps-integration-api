@@ -28,7 +28,7 @@ import java.time.LocalDateTime
 )
 class CaseNotesGatewayTest(
   @MockBean val hmppsAuthGateway: HmppsAuthGateway,
-  val caseNotesGateway: CaseNotesGateway,
+  private val caseNotesGateway: CaseNotesGateway,
 ) : DescribeSpec(
     {
 

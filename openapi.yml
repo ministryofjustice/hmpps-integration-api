@@ -12,7 +12,7 @@ paths:
     get:
       tags:
         - persons
-      summary: Returns person(s) by search criteria. At least one query parameter must be specified.
+      summary: Returns person(s) by search criteria, sorted by date of birth. At least one query parameter must be specified.
       parameters:
         - in: query
           name: first_name
@@ -126,7 +126,7 @@ paths:
     get:
       tags:
         - persons
-      summary: Returns metadata of images associated with a person ordered by newest to oldest date.
+      summary: Returns metadata of images associated with a person sorted by captureDateTime.
       parameters:
         - $ref: "#/components/parameters/hmppsId"
         - $ref: "#/components/parameters/page"
@@ -210,7 +210,7 @@ paths:
     get:
       tags:
         - persons
-      summary: Returns addresses associated with a person.
+      summary: Returns addresses associated with a person, ordered by startDate.
       parameters:
         - $ref: "#/components/parameters/hmppsId"
         - $ref: "#/components/parameters/page"
@@ -254,7 +254,7 @@ paths:
       tags:
         - persons
       summary: >
-        Returns offences associated with a person.
+        Returns offences associated with a person, ordered by startDate.
 
         Note: This API does not contain the complete list of offences for a person.
         Offences are retrieved from Prison and Probation systems exclusively.
@@ -331,7 +331,7 @@ paths:
       tags:
         - persons
         - alerts
-      summary: Returns alerts associated with a person.
+      summary: Returns alerts associated with a person, sorted by dateCreated.
       parameters:
         - $ref: "#/components/parameters/hmppsId"
         - $ref: "#/components/parameters/page"
@@ -375,7 +375,7 @@ paths:
       tags:
         - persons
         - alerts
-      summary: Returns alerts associated with a person.
+      summary: Returns alerts associated with a person, sorted by dateCreated.
       parameters:
         - $ref: "#/components/parameters/hmppsId"
         - $ref: "#/components/parameters/page"
@@ -418,7 +418,7 @@ paths:
     get:
       tags:
         - persons
-      summary: Returns sentences associated with a person.
+      summary: Returns sentences associated with a person, sorted by dateOfSentencing.
       parameters:
         - $ref: "#/components/parameters/hmppsId"
         - $ref: "#/components/parameters/page"
@@ -497,7 +497,7 @@ paths:
     get:
       tags:
         - risks
-      summary: Returns risk scores from the last year associated with a person.
+      summary: Returns risk scores from the last year associated with a person, sorted by completedDate.
       parameters:
         - $ref: "#/components/parameters/hmppsId"
         - $ref: "#/components/parameters/page"
@@ -802,7 +802,7 @@ paths:
 
   /v1/persons/{hmppsId}/adjudications:
     get:
-      summary: Returns adjudications associated with a person.
+      summary: Returns adjudications associated with a person, sorted by dateTimeOfIncident.
       parameters:
         - name: hmppsId
           in: path
@@ -871,7 +871,7 @@ paths:
 
   /v1/persons/{hmppsId}/licences/conditions:
     get:
-      summary: Returns license conditions associated with a person.
+      summary: Returns license conditions associated with a person, sorted by createdDateTime.
       parameters:
         - $ref: "#/components/parameters/hmppsId"
       responses:
