@@ -89,7 +89,7 @@ class NomisGateway(
 
     return when (result) {
       is WebClientWrapperResponse.Success -> {
-        Response(data = result.data.map { it.toAddress() })
+        Response(data = result.data.map { it.toAddress() }.sortedBy { it.startDate })
       }
 
       is WebClientWrapperResponse.Error -> {
@@ -111,7 +111,7 @@ class NomisGateway(
       )
     return when (result) {
       is WebClientWrapperResponse.Success -> {
-        Response(data = result.data.map { it.toOffence() })
+        Response(data = result.data.map { it.toOffence() }.sortedBy { it.startDate })
       }
 
       is WebClientWrapperResponse.Error -> {
@@ -133,7 +133,7 @@ class NomisGateway(
       )
     return when (result) {
       is WebClientWrapperResponse.Success -> {
-        Response(data = result.data.map { it.toAlert() })
+        Response(data = result.data.map { it.toAlert() }.sortedBy { it.dateCreated })
       }
 
       is WebClientWrapperResponse.Error -> {
@@ -155,7 +155,7 @@ class NomisGateway(
       )
     return when (result) {
       is WebClientWrapperResponse.Success -> {
-        Response(data = result.data.map { it.toSentence() })
+        Response(data = result.data.map { it.toSentence() }.sortedBy { it.dateOfSentencing })
       }
 
       is WebClientWrapperResponse.Error -> {
