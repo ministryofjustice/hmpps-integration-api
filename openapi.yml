@@ -12,7 +12,7 @@ paths:
     get:
       tags:
         - persons
-      summary: Returns person(s) by search criteria, sorted by date of birth (descending). At least one query parameter must be specified.
+      summary: Returns person(s) by search criteria, sorted by date of birth (newest first). At least one query parameter must be specified.
       parameters:
         - in: query
           name: first_name
@@ -126,7 +126,7 @@ paths:
     get:
       tags:
         - persons
-      summary: Returns metadata of images associated with a person sorted by captureDateTime (descending).
+      summary: Returns metadata of images associated with a person sorted by captureDateTime (newest first).
       parameters:
         - $ref: "#/components/parameters/hmppsId"
         - $ref: "#/components/parameters/page"
@@ -254,7 +254,7 @@ paths:
       tags:
         - persons
       summary: >
-        Returns offences associated with a person, ordered by startDate (descending).
+        Returns offences associated with a person, ordered by startDate (newest first).
         >
           Note: This API does not contain the complete list of offences for a person.
           Offences are retrieved from Prison and Probation systems exclusively.
@@ -331,7 +331,7 @@ paths:
       tags:
         - persons
         - alerts
-      summary: Returns alerts associated with a person, sorted by dateCreated (descending).
+      summary: Returns alerts associated with a person, sorted by dateCreated (newest first).
       parameters:
         - $ref: "#/components/parameters/hmppsId"
         - $ref: "#/components/parameters/page"
@@ -375,7 +375,7 @@ paths:
       tags:
         - persons
         - alerts
-      summary: Returns alerts associated with a person, sorted by dateCreated (descending).
+      summary: Returns alerts associated with a person, sorted by dateCreated (newest first).
       parameters:
         - $ref: "#/components/parameters/hmppsId"
         - $ref: "#/components/parameters/page"
@@ -418,7 +418,7 @@ paths:
     get:
       tags:
         - persons
-      summary: Returns sentences associated with a person, sorted by dateOfSentencing (descending).
+      summary: Returns sentences associated with a person, sorted by dateOfSentencing (newest first).
       parameters:
         - $ref: "#/components/parameters/hmppsId"
         - $ref: "#/components/parameters/page"
@@ -497,7 +497,7 @@ paths:
     get:
       tags:
         - risks
-      summary: Returns risk scores from the last year associated with a person, sorted by completedDate (descending).
+      summary: Returns risk scores from the last year associated with a person, sorted by completedDate (newest first).
       parameters:
         - $ref: "#/components/parameters/hmppsId"
         - $ref: "#/components/parameters/page"
@@ -802,7 +802,7 @@ paths:
 
   /v1/persons/{hmppsId}/adjudications:
     get:
-      summary: Returns adjudications associated with a person, sorted by dateTimeOfIncident (descending).
+      summary: Returns adjudications associated with a person, sorted by dateTimeOfIncident (newest first).
       parameters:
         - name: hmppsId
           in: path
@@ -871,7 +871,7 @@ paths:
 
   /v1/persons/{hmppsId}/licences/conditions:
     get:
-      summary: Returns license conditions associated with a person, sorted by createdDateTime (descending).
+      summary: Returns license conditions associated with a person, sorted by createdDateTime (newest first).
       parameters:
         - $ref: "#/components/parameters/hmppsId"
       responses:
@@ -1546,7 +1546,7 @@ components:
             - OIC
           description: >
             View is the subject focus; describing the inner focus or subject of the image, normally referring to a marking, tattoo or deeper level focus of the orientation. In practise this is the interior foci of what is captured in the 'orientation' field.
-              Options include:
+              Possible values are:
               `FACE` - Facing,
               `TAT` - Tattoo,
               `OTH` - Other,
@@ -1582,7 +1582,7 @@ components:
             - TORSO
           description: >
             Orientation is the scope focus; describing the scope or outer focus of the image, normally referring to the highest level object of interest within the bounds of the photo itself. This is normally a body part or an angle of photography, such as a photo of someone’s facial view (`FRONT`) or arm (`ARM`).
-              Options include:
+              Possible values are:
               `ANKLE` - Ankle,
               `ARM` - Arm,
               `DAMAGE` - Damage,
@@ -1616,7 +1616,7 @@ components:
             - PPTY
           description: >
             Type is the contextual focus; describing the context or scenario the image was taken within. It could be for a particular purpose or capturing the results of a particular type of incident.
-              Options include:
+              Possible values are:
               `OFF_BKG` - Offender Booking,
               `OFF_IDM` - Offender Identification Marks,
               `OIC` - Offence In Custody,
@@ -1723,7 +1723,7 @@ components:
             - VARIATION_REJECTED
           example: IN_PROGRESS
           description: >
-            Licence status. Options include:
+            Licence status. Possible values are:
             `IN_PROGRESS`,
             `SUBMITTED`,
             `APPROVED`,
@@ -1740,7 +1740,7 @@ components:
             - PSS
             - AP_PSS
           description: >
-            The type of licence. Options include:
+            The type of licence. Possible values are:
             `AP`,
             `PSS`,
             `AP_PSS`
@@ -1810,7 +1810,7 @@ components:
             - NDELIUS
           example: NOMIS
           description: >
-            Which upstream API service the sentence originates from. Options include:
+            Which upstream API service the sentence originates from. Possible values are:
             `NOMIS`,
             `NDELIUS`
         systemSource:
@@ -1820,7 +1820,7 @@ components:
             - PROBATION_SYSTEMS
           example: PROBATION_SYSTEMS
           description: >
-            Which upstream API system the sentence originates from. Options include:
+            Which upstream API system the sentence originates from. Possible values are:
             `PRISON_SYSTEMS`,
             `PROBATION_SYSTEMS`
         cjsCode:
@@ -2177,7 +2177,7 @@ components:
             - NDELIUS
           example: NOMIS
           description: >
-            Which upstream API service the sentence originates from. Options include:
+            Which upstream API service the sentence originates from. Possible values are:
             `NOMIS`,
             `NDELIUS`
         systemSource:
@@ -2187,7 +2187,7 @@ components:
           - PROBATION_SYSTEMS
           example: PROBATION_SYSTEMS
           description: >
-            Which upstream API system the sentence originates from. Options include:
+            Which upstream API system the sentence originates from. Possible values are:
             `PRISON_SYSTEMS`,
             `PROBATION_SYSTEMS`
         dateOfSentencing:
@@ -2321,7 +2321,7 @@ components:
           - PRRD
           example: ARD
           description: >
-            Indicates which type of non-DTO release date is the effective release date. One of 'ARD', 'CRD', 'NPD' or 'PRRD'. Options include:
+            Indicates which type of non-DTO release date is the effective release date. One of 'ARD', 'CRD', 'NPD' or 'PRRD'. Possible values are:
             `ARD`,
             `CRD`,
             `NPD`,
@@ -2441,7 +2441,7 @@ components:
           - Years
           example: Hours
           description: >
-            Time unit that is used in combination with the duration field. Options include:
+            Time unit that is used in combination with the duration field. Possible values are:
             `Hours`,
             `Days`,
             `Weeks`,
@@ -2490,7 +2490,7 @@ components:
           example: IMP
           description: >
             The sentence term code
-              Options include:
+              Possible values are:
               `CUR` - Curfew Period,
               `DEF` - Deferment Period,
               `DET` - Detention,
@@ -2558,7 +2558,7 @@ components:
             - LOCKED_INCOMPLETE
           example: COMPLETE
           description: >
-            Whether the risk score calculation is complete. Options include:
+            Whether the risk score calculation is complete. Possible values are:
             `COMPLETE`,
             `LOCKED_INCOMPLETE`
         groupReconviction:
@@ -2584,7 +2584,7 @@ components:
             - NOT_APPLICABLE
           example: LOW
           description: >
-            Indicator for risk of group reconviction. Options include:
+            Indicator for risk of group reconviction. Possible values are:
             `LOW`,
             `MEDIUM`,
             `HIGH`,
@@ -2604,7 +2604,7 @@ components:
             - NOT_APPLICABLE
           example: MEDIUM
           description: >
-            Indicator for risk of violence. Options include:
+            Indicator for risk of violence. Possible values are:
             `LOW`,
             `MEDIUM`,
             `HIGH`,
@@ -2624,7 +2624,7 @@ components:
             - NOT_APPLICABLE
           example: VERY_HIGH
           description: >
-            Indicator for general prediction. Options include:
+            Indicator for general prediction. Possible values are:
             `LOW`,
             `MEDIUM`,
             `HIGH`,
@@ -2644,7 +2644,7 @@ components:
             - NOT_APPLICABLE
           example: MEDIUM
           description: >
-            Indicator for risk of serious recidivism. Options include:
+            Indicator for risk of serious recidivism. Possible values are:
             `LOW`,
             `MEDIUM`,
             `HIGH`,
@@ -2664,7 +2664,7 @@ components:
             - NOT_APPLICABLE
           example: HIGH
           description: >
-            Indicator for risk of sexual indecency. Options include:
+            Indicator for risk of sexual indecency. Possible values are:
             `LOW`,
             `MEDIUM`,
             `HIGH`,
@@ -2680,7 +2680,7 @@ components:
             - NOT_APPLICABLE
           example: MEDIUM
           description: >
-            Indicator for risk of sexual contact. Options include:
+            Indicator for risk of sexual contact. Possible values are:
             `LOW`,
             `MEDIUM`,
             `HIGH`,
@@ -2726,7 +2726,7 @@ components:
             - DK
             - NA
           description: >
-            Presence of risk. Options include:
+            Presence of risk. Possible values are:
             `YES`,
             `NO`,
             `DK`,
@@ -2740,7 +2740,7 @@ components:
             - DK
             - NA
           description: >
-            Previous concerns. Options include:
+            Previous concerns. Possible values are:
             `YES`,
             `NO`,
             `DK`,
@@ -2758,7 +2758,7 @@ components:
             - DK
             - NA
           description: >
-            Current concerns. Options include:
+            Current concerns. Possible values are:
             `YES`,
             `NO`,
             `DK`,
@@ -2838,7 +2838,7 @@ components:
             - DK
             - NA
           description: >
-            Risk of escape/abscond. Options include:
+            Risk of escape/abscond. Possible values are:
             `YES`,
             `NO`,
             `DK`,
@@ -2852,7 +2852,7 @@ components:
             - DK
             - NA
           description: >
-            Risk control issues/disruptive behaviour. Options include:
+            Risk control issues/disruptive behaviour. Possible values are:
             `YES`,
             `NO`,
             `DK`,
@@ -2866,7 +2866,7 @@ components:
             - DK
             - NA
           description: >
-            Risk of breach of trust. Options include:
+            Risk of breach of trust. Possible values are:
             `YES`,
             `NO`,
             `DK`,
@@ -2880,7 +2880,7 @@ components:
             - DK
             - NA
           description: >
-            Risk to other prisoners. Options include:
+            Risk to other prisoners. Possible values are:
             `YES`,
             `NO`,
             `DK`,
