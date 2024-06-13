@@ -32,9 +32,9 @@ class AdjudicationsGateway(
       is WebClientWrapper.WebClientWrapperResponse.Success -> {
         Response(
           data =
-            result.data
-              .map { it.toAdjudication() }
-              .sortedBy { it.incidentDetails?.dateTimeOfIncident },
+          result.data
+            .map { it.toAdjudication() }
+            .sortedByDescending { it.incidentDetails?.dateTimeOfIncident },
         )
       }
 
