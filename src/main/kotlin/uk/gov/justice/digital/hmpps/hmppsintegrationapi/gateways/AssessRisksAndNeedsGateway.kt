@@ -36,9 +36,10 @@ class AssessRisksAndNeedsGateway(
     return when (result) {
       is WebClientWrapperResponse.Success -> {
         Response(
-          data = result.data
-            .map { it.toRiskPredictorScore() }
-            .sortedByDescending { it.completedDate }
+          data =
+            result.data
+              .map { it.toRiskPredictorScore() }
+              .sortedByDescending { it.completedDate },
         )
       }
 
