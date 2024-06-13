@@ -12,7 +12,7 @@ paths:
     get:
       tags:
         - persons
-      summary: Returns person(s) by search criteria, sorted by date of birth. At least one query parameter must be specified.
+      summary: Returns person(s) by search criteria, sorted by date of birth (descending). At least one query parameter must be specified.
       parameters:
         - in: query
           name: first_name
@@ -44,7 +44,7 @@ paths:
             type: boolean
             default: false
           required: false
-          description: Whether to return results that match the search criteria within the aliases of a person, sorted by date of birth.
+          description: Whether to return results that match the search criteria within the aliases of a person.
         - $ref: "#/components/parameters/page"
         - $ref: "#/components/parameters/perPage"
       responses:
@@ -126,7 +126,7 @@ paths:
     get:
       tags:
         - persons
-      summary: Returns metadata of images associated with a person sorted by captureDateTime.
+      summary: Returns metadata of images associated with a person sorted by captureDateTime (descending).
       parameters:
         - $ref: "#/components/parameters/hmppsId"
         - $ref: "#/components/parameters/page"
@@ -254,11 +254,11 @@ paths:
       tags:
         - persons
       summary: >
-        Returns offences associated with a person, ordered by startDate.
-
-        Note: This API does not contain the complete list of offences for a person.
-        Offences are retrieved from Prison and Probation systems exclusively.
-        Prison systems record only custodial sentences, while Probation systems record only the main offence and some additional offences for case management purposes. Other offences recorded by HMCTS and police may not be included.
+        Returns offences associated with a person, ordered by startDate (descending).
+        >
+          Note: This API does not contain the complete list of offences for a person.
+          Offences are retrieved from Prison and Probation systems exclusively.
+          Prison systems record only custodial sentences, while Probation systems record only the main offence and some additional offences for case management purposes. Other offences recorded by HMCTS and police may not be included.
       parameters:
         - $ref: "#/components/parameters/hmppsId"
         - $ref: "#/components/parameters/page"
@@ -331,7 +331,7 @@ paths:
       tags:
         - persons
         - alerts
-      summary: Returns alerts associated with a person, sorted by dateCreated.
+      summary: Returns alerts associated with a person, sorted by dateCreated (descending).
       parameters:
         - $ref: "#/components/parameters/hmppsId"
         - $ref: "#/components/parameters/page"
@@ -375,7 +375,7 @@ paths:
       tags:
         - persons
         - alerts
-      summary: Returns alerts associated with a person, sorted by dateCreated.
+      summary: Returns alerts associated with a person, sorted by dateCreated (descending).
       parameters:
         - $ref: "#/components/parameters/hmppsId"
         - $ref: "#/components/parameters/page"
@@ -418,7 +418,7 @@ paths:
     get:
       tags:
         - persons
-      summary: Returns sentences associated with a person, sorted by dateOfSentencing.
+      summary: Returns sentences associated with a person, sorted by dateOfSentencing (descending).
       parameters:
         - $ref: "#/components/parameters/hmppsId"
         - $ref: "#/components/parameters/page"
@@ -497,7 +497,7 @@ paths:
     get:
       tags:
         - risks
-      summary: Returns risk scores from the last year associated with a person, sorted by completedDate.
+      summary: Returns risk scores from the last year associated with a person, sorted by completedDate (descending).
       parameters:
         - $ref: "#/components/parameters/hmppsId"
         - $ref: "#/components/parameters/page"
@@ -802,7 +802,7 @@ paths:
 
   /v1/persons/{hmppsId}/adjudications:
     get:
-      summary: Returns adjudications associated with a person, sorted by dateTimeOfIncident.
+      summary: Returns adjudications associated with a person, sorted by dateTimeOfIncident (descending).
       parameters:
         - name: hmppsId
           in: path
@@ -871,7 +871,7 @@ paths:
 
   /v1/persons/{hmppsId}/licences/conditions:
     get:
-      summary: Returns license conditions associated with a person, sorted by createdDateTime.
+      summary: Returns license conditions associated with a person, sorted by createdDateTime (descending).
       parameters:
         - $ref: "#/components/parameters/hmppsId"
       responses:
