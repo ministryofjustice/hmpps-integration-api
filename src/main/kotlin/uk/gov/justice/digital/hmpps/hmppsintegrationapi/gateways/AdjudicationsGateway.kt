@@ -34,7 +34,7 @@ class AdjudicationsGateway(
           data =
             result.data
               .map { it.toAdjudication() }
-              .sortedBy { it.incidentDetails?.dateTimeOfIncident },
+              .sortedByDescending { it.incidentDetails?.dateTimeOfIncident },
         )
       }
 

@@ -72,7 +72,7 @@ class PrisonerOffenderSearchGatewayTest(
         verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("Prisoner Offender Search")
       }
 
-      it("returns person(s) when searching on first name, last name and date of birth") {
+      it("returns person(s) when searching on first name, last name and date of birth, in a descending order according to date of birth") {
         val response = prisonerOffenderSearchGateway.getPersons(firstName, lastName, dateOfBirth)
 
         response.data.count().shouldBe(4)
@@ -80,15 +80,15 @@ class PrisonerOffenderSearchGatewayTest(
           it.firstName.shouldBe(firstName)
           it.lastName.shouldBe(lastName)
         }
-        response.data[0].identifiers.nomisNumber.shouldBe("A7796DY")
-        response.data[1].identifiers.nomisNumber.shouldBe("G9347GV")
-        response.data[2].identifiers.nomisNumber.shouldBe("A5043DY")
-        response.data[3].identifiers.nomisNumber.shouldBe("A5083DY")
+        response.data[0].identifiers.nomisNumber.shouldBe("A5043DY")
+        response.data[1].identifiers.nomisNumber.shouldBe("A5083DY")
+        response.data[2].identifiers.nomisNumber.shouldBe("G9347GV")
+        response.data[3].identifiers.nomisNumber.shouldBe("A7796DY")
 
         response.data[0].pncId.shouldBeNull()
-        response.data[1].pncId.shouldBe("95/289622B")
-        response.data[2].pncId.shouldBeNull()
-        response.data[3].pncId.shouldBe("03/11985X")
+        response.data[1].pncId.shouldBe("03/11985X")
+        response.data[2].pncId.shouldBe("95/289622B")
+        response.data[3].pncId.shouldBeNull()
       }
 
       it("returns person(s) when searching on first name only") {
