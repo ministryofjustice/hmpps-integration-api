@@ -1,6 +1,8 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.controllers.v1.person
 
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.data.domain.PageImpl
+import org.springframework.data.domain.PageRequest
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
@@ -33,6 +35,13 @@ class RiskPredictorScoresController(
     if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
       throw EntityNotFoundException("Could not find person with id: $hmppsId")
     }
+
+    if (response.hasError(UpstreamApiError.Type.FORBIDDEN)) {
+      val emptyData = emptyList<RiskPredictorScore>()
+      val emptyPage = PageImpl(emptyData, PageRequest.of(page - 1, perPage), 0)
+      return PaginatedResponse(emptyPage)
+    }
+
     auditService.createEvent("GET_PERSON_RISK_SCORES", mapOf("hmppsId" to hmppsId))
     return response.data.paginateWith(page, perPage)
   }
