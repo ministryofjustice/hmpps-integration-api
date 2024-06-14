@@ -119,7 +119,7 @@ internal class GetRiskPredictorScoresForPersonServiceTest(
           it("records upstream 403 API error for probation offender search") {
             val response = getRiskPredictorScoresForPersonService.execute(hmppsId)
 
-            response.hasErrorCausedBy(UpstreamApiError.Type.FORBIDDEN, UpstreamApi.PROBATION_OFFENDER_SEARCH).shouldBe(true)
+            response.hasErrorCausedBy(UpstreamApiError.Type.FORBIDDEN, UpstreamApi.ASSESS_RISKS_AND_NEEDS).shouldBe(true)
           }
 
           it("does not get risk predictor scores from ARN") {
