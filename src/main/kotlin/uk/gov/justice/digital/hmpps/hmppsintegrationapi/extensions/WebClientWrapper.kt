@@ -38,7 +38,7 @@ class WebClientWrapper(
     headers: Map<String, String>,
     upstreamApi: UpstreamApi,
     requestBody: Map<String, Any?>? = null,
-    returnsEmpty: Boolean = false,
+    forbiddenAsError: Boolean = false,
   ): WebClientWrapperResponse<T> {
     return try {
       val responseData =
@@ -48,7 +48,7 @@ class WebClientWrapper(
 
       WebClientWrapperResponse.Success(responseData)
     } catch (exception: WebClientResponseException) {
-      getErrorType(exception, upstreamApi, returnsEmpty)
+      getErrorType(exception, upstreamApi, forbiddenAsError)
     }
   }
 
