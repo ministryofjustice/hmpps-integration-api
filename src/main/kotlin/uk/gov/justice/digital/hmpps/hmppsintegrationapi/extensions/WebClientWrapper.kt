@@ -58,7 +58,7 @@ class WebClientWrapper(
     headers: Map<String, String>,
     upstreamApi: UpstreamApi,
     requestBody: Map<String, Any?>? = null,
-    returnsEmpty: Boolean = false,
+    forbiddenAsError: Boolean = false,
   ): WebClientWrapperResponse<List<T>> {
     return try {
       val responseData =
@@ -69,7 +69,7 @@ class WebClientWrapper(
 
       WebClientWrapperResponse.Success(responseData)
     } catch (exception: WebClientResponseException) {
-      getErrorType(exception, upstreamApi, returnsEmpty)
+      getErrorType(exception, upstreamApi, forbiddenAsError)
     }
   }
 
@@ -94,12 +94,12 @@ class WebClientWrapper(
   fun getErrorType(
     exception: WebClientResponseException,
     upstreamApi: UpstreamApi,
-    returnsEmpty: Boolean = false,
+    forbiddenAsError: Boolean = false,
   ): WebClientWrapperResponse.Error {
     val errorType =
       when (exception.statusCode) {
         HttpStatus.NOT_FOUND -> UpstreamApiError.Type.ENTITY_NOT_FOUND
-        HttpStatus.FORBIDDEN -> if (returnsEmpty) UpstreamApiError.Type.FORBIDDEN else throw exception
+        HttpStatus.FORBIDDEN -> if (forbiddenAsError) UpstreamApiError.Type.FORBIDDEN else throw exception
         else -> throw exception
       }
     return WebClientWrapperResponse.Error(
