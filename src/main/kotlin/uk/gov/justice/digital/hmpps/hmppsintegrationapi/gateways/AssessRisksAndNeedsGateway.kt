@@ -60,7 +60,7 @@ class AssessRisksAndNeedsGateway(
         "/risks/crn/$id",
         authenticationHeader(),
         UpstreamApi.ASSESS_RISKS_AND_NEEDS,
-        forbiddenAsError = true
+        forbiddenAsError = true,
       )
 
     return when (result) {
