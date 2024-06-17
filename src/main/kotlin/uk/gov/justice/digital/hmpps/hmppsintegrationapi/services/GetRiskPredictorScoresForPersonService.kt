@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.AssessRisksAndNeedsGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.RiskPredictorScore
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 
 @Service
 class GetRiskPredictorScoresForPersonService(
@@ -20,9 +19,6 @@ class GetRiskPredictorScoresForPersonService(
 
     if (deliusCrn != null) {
       personRiskPredictorScores = assessRisksAndNeedsGateway.getRiskPredictorScoresForPerson(id = deliusCrn)
-      if (personRiskPredictorScores.hasError(UpstreamApiError.Type.FORBIDDEN)) {
-        return Response(data = emptyList(), errors = personResponse.errors + personRiskPredictorScores.errors)
-      }
     }
 
     return Response(

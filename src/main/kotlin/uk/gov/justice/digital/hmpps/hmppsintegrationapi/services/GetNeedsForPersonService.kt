@@ -20,9 +20,6 @@ class GetNeedsForPersonService(
 
     if (deliusCrn != null) {
       personNeeds = assessRisksAndNeedsGateway.getNeedsForPerson(id = deliusCrn)
-      if (personNeeds.hasError(UpstreamApiError.Type.FORBIDDEN)) {
-        return Response(data = null, errors = personResponse.errors + personNeeds.errors)
-      }
     }
 
     return Response(
