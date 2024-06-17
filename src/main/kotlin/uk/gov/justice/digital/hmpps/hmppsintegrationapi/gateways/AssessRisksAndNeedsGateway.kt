@@ -31,6 +31,7 @@ class AssessRisksAndNeedsGateway(
         "/risks/crn/$id/predictors/all",
         authenticationHeader(),
         UpstreamApi.ASSESS_RISKS_AND_NEEDS,
+        forbiddenAsError = true,
       )
 
     return when (result) {
@@ -59,6 +60,7 @@ class AssessRisksAndNeedsGateway(
         "/risks/crn/$id",
         authenticationHeader(),
         UpstreamApi.ASSESS_RISKS_AND_NEEDS,
+        forbiddenAsError = true,
       )
 
     return when (result) {
@@ -82,6 +84,7 @@ class AssessRisksAndNeedsGateway(
         "/needs/crn/$id",
         authenticationHeader(),
         UpstreamApi.ASSESS_RISKS_AND_NEEDS,
+        forbiddenAsError = true,
       )
 
     return when (result) {
