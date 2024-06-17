@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.AssessRisksAndNeedsGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Needs
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 
 @Service
 class GetNeedsForPersonService(
@@ -19,6 +20,9 @@ class GetNeedsForPersonService(
 
     if (deliusCrn != null) {
       personNeeds = assessRisksAndNeedsGateway.getNeedsForPerson(id = deliusCrn)
+      if (personNeeds.hasError(UpstreamApiError.Type.FORBIDDEN)) {
+        return Response(data = null, errors = personResponse.errors + personNeeds.errors)
+      }
     }
 
     return Response(

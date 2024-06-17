@@ -110,10 +110,16 @@ internal class GetNeedsForPersonServiceTest(
             )
           }
 
-          it("records upstream API error for probation offender search") {
+          it("records upstream 404 API error for probation offender search") {
             val response = getNeedsForPersonService.execute(hmppsId)
 
             response.hasErrorCausedBy(UpstreamApiError.Type.ENTITY_NOT_FOUND, UpstreamApi.PROBATION_OFFENDER_SEARCH).shouldBe(true)
+          }
+
+          it("records upstream 403 API error for probation offender search") {
+            val response = getNeedsForPersonService.execute(hmppsId)
+
+            response.hasErrorCausedBy(UpstreamApiError.Type.FORBIDDEN, UpstreamApi.ASSESS_RISKS_AND_NEEDS).shouldBe(true)
           }
 
           it("does not get needs from ARN") {
