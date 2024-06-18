@@ -106,7 +106,9 @@ class GetSentencesForPersonTest(
           {
           "communityManager": {},
            "mappaDetail": {},
-            "supervisions": [] }
+           "supervisions": [],
+           "dynamicRisks": []
+           }
           """,
           )
 
