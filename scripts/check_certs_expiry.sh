@@ -1,41 +1,67 @@
 #!/bin/bash
 
-CERT_FILE="client_certificates/dev-event-service-client.pem"
-
-if [ ! -f "$CERT_FILE" ]; then
-  echo "Certificate file not found!"
-  exit 1
-fi
-
-EXPIRY_DATE=$(openssl x509 -in "$CERT_FILE" -noout -enddate | cut -d= -f2)
-
-date_to_seconds() {
-  if date --version >/dev/null 2>&1; then
-    # GNU date
-    date -d "$1" +%s
-  else
-    # BSD date (macOS)
-    date -jf "%b %d %H:%M:%S %Y %Z" "$1" +%s 2>/dev/null || date -jf "%b %d %H:%M:%S %Y %Z" "$1" "+%s"
+check_certificate_file_exists() {
+  if [ ! -f "$1" ]; then
+    echo "Certificate file not found: $1"
+    exit 1
   fi
 }
 
-EXPIRY_DATE_SECONDS=$(date_to_seconds "$EXPIRY_DATE")
+get_certificate_expiry_date() {
+  local cert_file="$1"
+  local expiry_date
 
-if date --version >/dev/null 2>&1; then
-  # GNU date
-  CURRENT_DATE_SECONDS=$(date +%s)
-  THIRTY_DAYS_SECONDS=$(date -d "+30 days" +%s)
-else
-  # BSD date (macOS)
-  CURRENT_DATE_SECONDS=$(date +%s)
-  THIRTY_DAYS_SECONDS=$(date -v +30d +%s)
-fi
+  expiry_date=$(openssl x509 -in "$cert_file" -noout -enddate | cut -d= -f2)
+  if [ $? -ne 0 ]; then
+    echo "Failed to read certificate expiry date."
+    exit 1
+  fi
 
-DIFFERENCE=$((EXPIRY_DATE_SECONDS - CURRENT_DATE_SECONDS))
+  echo "$expiry_date"
+}
 
-if [ "$DIFFERENCE" -le $((30 * 24 * 60 * 60)) ]; then
-  DAYS_LEFT=$((DIFFERENCE / (24 * 60 * 60)))
-  echo "The certificate will expire on $EXPIRY_DATE in $DAYS_LEFT days."
-else
-  echo "The certificate is valid for more than 30 days."
-fi
+convert_date_to_seconds() {
+  local date_str="$1"
+  if date --version >/dev/null 2>&1; then
+    # GNU date
+    date -d "$date_str" +%s
+  else
+    # BSD date (macOS)
+    date -jf "%b %d %H:%M:%S %Y %Z" "$date_str" +%s 2>/dev/null || date -jf "%b %d %H:%M:%S %Y %Z" "$date_str" "+%s"
+  fi
+}
+
+check_certificate_expiry() {
+  local expiry_seconds="$1"
+  local current_seconds="$2"
+  local difference=$((expiry_seconds - current_seconds))
+
+  if [ "$difference" -le $((30 * 24 * 60 * 60)) ]; then
+    local days_left=$((difference / (24 * 60 * 60)))
+    echo "The certificate will expire within the next 30 days (in $days_left days)."
+  else
+    echo "The certificate is valid for more than 30 days."
+  fi
+}
+
+# Main function
+main() {
+  local cert_file="client_certificates/dev-notification-test-client.pem"
+
+  check_certificate_file_exists "$cert_file"
+
+  local expiry_date
+  expiry_date=$(get_certificate_expiry_date "$cert_file")
+
+  local expiry_date_seconds
+  expiry_date_seconds=$(convert_date_to_seconds "$expiry_date")
+
+  local current_date_seconds
+  current_date_seconds=$(date +%s)
+
+  echo "The certificate will expire on $expiry_date."
+
+  check_certificate_expiry "$expiry_date_seconds" "$current_date_seconds"
+}
+
+main
