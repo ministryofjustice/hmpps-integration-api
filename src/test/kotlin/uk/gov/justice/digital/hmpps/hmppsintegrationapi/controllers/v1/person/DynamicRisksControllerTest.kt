@@ -19,9 +19,9 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DynamicRisk
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetDynamicRisksForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 import java.net.URLEncoder
@@ -53,14 +53,14 @@ internal class DynamicRisksControllerTest(
                     description = "Subject has a ViSOR record",
                     startDate = "2023-09-08",
                     reviewDate = "2026-04-29",
-                    notes = "Nothing to say"
+                    notes = "Nothing to say",
                   ),
                   DynamicRisk(
                     code = "RHRH",
                     description = "High Risk of Harm",
                     startDate = "2022-09-01",
                     reviewDate = "2024-12-23",
-                    notes = "A lot of notes"
+                    notes = "A lot of notes",
                   ),
                 ),
             ),
@@ -159,7 +159,7 @@ internal class DynamicRisksControllerTest(
                     description = "Not For Release",
                     startDate = "2022-08-01",
                     reviewDate = "2025-08-01",
-                    notes = "Notes all written here"
+                    notes = "Notes all written here",
                   )
                 },
             ),
@@ -186,5 +186,5 @@ internal class DynamicRisksControllerTest(
           )
         }
       }
-    }
+    },
   )
