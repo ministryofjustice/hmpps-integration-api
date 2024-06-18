@@ -9,7 +9,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 
 @Service
-class GetDynamicRisksForPersonService (
+class GetDynamicRisksForPersonService(
   @Autowired val nDeliusGateway: NDeliusGateway,
   @Autowired val getPersonService: GetPersonService,
 ) {
@@ -21,14 +21,15 @@ class GetDynamicRisksForPersonService (
 
     if (deliusCrn != null) {
       val allNDeliusDynamicRisks = nDeliusGateway.getDynamicRisksForPerson(deliusCrn)
-      val filteredNDeliusDynamicRisks = allNDeliusDynamicRisks.data?.filter {
-        it.code in
-          listOf(
-            "RCCO", "RCPR", "REG22", "RVLN", "ALT8", "STRG", "AVIS", "ALT1", "WEAP",
-            "RHRH", "RLRH", "RMRH", "RVHR", "RCHD", "REG15", "REG16", "REG17",
-            "ALT4", "AVS2", "ALT7", "ALSH"
-          )
-      }.orEmpty()
+      val filteredNDeliusDynamicRisks =
+        allNDeliusDynamicRisks.data?.filter {
+          it.code in
+            listOf(
+              "RCCO", "RCPR", "REG22", "RVLN", "ALT8", "STRG", "AVIS", "ALT1", "WEAP",
+              "RHRH", "RLRH", "RMRH", "RVHR", "RCHD", "REG15", "REG16", "REG17",
+              "ALT4", "AVS2", "ALT7", "ALSH",
+            )
+        }.orEmpty()
       if (filteredNDeliusDynamicRisks.isEmpty()) {
         return Response(
           data = emptyList(),
@@ -36,7 +37,7 @@ class GetDynamicRisksForPersonService (
             listOf(
               UpstreamApiError(
                 causedBy = UpstreamApi.NDELIUS,
-                type = UpstreamApiError.Type.ENTITY_NOT_FOUND
+                type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
               ),
             ),
         )
@@ -46,7 +47,7 @@ class GetDynamicRisksForPersonService (
 
     return Response(
       data = nDeliusDynamicRisks.data,
-      errors = personResponse.errors + nDeliusDynamicRisks.errors
+      errors = personResponse.errors + nDeliusDynamicRisks.errors,
     )
   }
 }
