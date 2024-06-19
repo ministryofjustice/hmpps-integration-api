@@ -117,17 +117,16 @@ class RisksSmokeTest : DescribeSpec(
       response.body().shouldEqualJson(
         """
         {
-          "data":
-          [
-            {
-              "code": "RCCO",
-              "description": "Child protection issues",
-              "startDate": "2018-07-27",
-              "reviewDate": "2026-03-20",
-              "notes": "These notes are about the person."
-            }
-          ]
-        }
+          "data": [
+              {
+                "code": "RCCO",
+                "description": "Child protection issues",
+                "startDate": "2018-07-27",
+                "reviewDate": "2026-03-20",
+                "notes": "These notes are about the person."
+              }
+            ]
+          }
         """.removeWhitespaceAndNewlines(),
       )
     }
