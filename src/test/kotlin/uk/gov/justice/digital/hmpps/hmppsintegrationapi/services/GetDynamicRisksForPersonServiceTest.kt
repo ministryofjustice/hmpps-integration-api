@@ -30,8 +30,8 @@ internal class GetDynamicRisksForPersonServiceTest(
     {
       val hmppsId = "1234/56789B"
       val deliusCrn = "X112233"
-      val dynamicRisk = DynamicRisk(code = "RCCO", description = "Child Concerns")
-      val nonMatchingDynamicRisk = DynamicRisk(code = "INVALID", description = "Invalid Dynamic Risk!")
+      val dynamicRisk = DynamicRisk(code = "RCCO", description = "Child Concerns", startDate = "2010-07-07")
+      val nonMatchingDynamicRisk = DynamicRisk(code = "INVALID", description = "Invalid Dynamic Risk!", startDate = "2010-07-07")
 
       val person =
         Person(firstName = "Qui-gon", lastName = "Jin", identifiers = Identifiers(deliusCrn = deliusCrn))
