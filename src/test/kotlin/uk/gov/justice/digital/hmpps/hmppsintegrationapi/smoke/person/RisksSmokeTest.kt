@@ -120,10 +120,10 @@ class RisksSmokeTest : DescribeSpec(
           "data": [
               {
                 "code": "RCCO",
-                "description": "Child protection issues",
-                "startDate": "2018-07-27",
-                "reviewDate": "2026-03-20",
-                "notes": "These notes are about the person."
+                "description": "Child Concerns",
+                "startDate": "string",
+                "reviewDate": "string",
+                "notes": "string"
               }
             ]
           }
