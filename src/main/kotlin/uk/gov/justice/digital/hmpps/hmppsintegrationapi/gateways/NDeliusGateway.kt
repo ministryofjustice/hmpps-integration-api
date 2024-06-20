@@ -81,7 +81,7 @@ class NDeliusGateway(
 
     return when (result) {
       is WebClientWrapperResponse.Success -> {
-        Response(data = result.data.dynamicRisks?.map { it.toDynamicRisk() } ?: emptyList())
+        Response(data = result.data.dynamicRisks.map { it.toDynamicRisk() })
       }
 
       is WebClientWrapperResponse.Error -> {
