@@ -130,7 +130,7 @@ internal class GetDynamicRisksForPersonServiceTest(
 
         val response = getDynamicRisksForPersonService.execute(hmppsId)
 
-        response.errors.shouldHaveSize(1)
+        response.errors.shouldHaveSize(0)
         response.data.shouldHaveSize(0)
       }
     },

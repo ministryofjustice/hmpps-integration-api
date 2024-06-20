@@ -70,7 +70,7 @@ class NDeliusGateway(
     }
   }
 
-  fun getDynamicRisksForPerson(id: String): Response<List<DynamicRisk>?> {
+  fun getDynamicRisksForPerson(id: String): Response<List<DynamicRisk>> {
     val result =
       webClient.request<NDeliusSupervisions>(
         HttpMethod.GET,
@@ -81,7 +81,7 @@ class NDeliusGateway(
 
     return when (result) {
       is WebClientWrapperResponse.Success -> {
-        Response(data = result.data.dynamicRisks?.map { it.toDynamicRisk() })
+        Response(data = result.data.dynamicRisks?.map { it.toDynamicRisk() } ?: emptyList())
       }
 
       is WebClientWrapperResponse.Error -> {

@@ -30,18 +30,6 @@ class GetDynamicRisksForPersonService(
               "ALT4", "AVS2", "ALT7", "ALSH",
             )
         }.orEmpty()
-      if (filteredNDeliusDynamicRisks.isEmpty()) {
-        return Response(
-          data = emptyList(),
-          errors =
-            listOf(
-              UpstreamApiError(
-                causedBy = UpstreamApi.NDELIUS,
-                type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-              ),
-            ),
-        )
-      }
       nDeliusDynamicRisks = Response(data = filteredNDeliusDynamicRisks, errors = allNDeliusDynamicRisks.errors)
     }
 
