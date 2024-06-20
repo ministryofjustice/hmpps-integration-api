@@ -118,15 +118,23 @@ class RisksSmokeTest : DescribeSpec(
         """
         {
           "data": [
-              {
-                "code": "RCCO",
-                "description": "Child Concerns",
-                "startDate": "string",
-                "reviewDate": "string",
-                "notes": "string"
-              }
-            ]
+            {
+              "code": "RCCO",
+              "description": "Child Concerns",
+              "startDate": "2019-08-24",
+              "reviewDate": "2019-08-24",
+              "notes": "string"
+            }
+          ],
+          "pagination": {
+            "isLastPage": true,
+            "count": 1,
+            "page": 1,
+            "perPage": 10,
+            "totalCount": 1,
+            "totalPages": 1
           }
+      }
         """.removeWhitespaceAndNewlines(),
       )
     }
