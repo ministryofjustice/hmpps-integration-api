@@ -12,6 +12,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.MappaDetail
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Offence
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Sentence
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.StatusInformation
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.NDeliusSupervisions
 
@@ -82,6 +83,29 @@ class NDeliusGateway(
     return when (result) {
       is WebClientWrapperResponse.Success -> {
         Response(data = result.data.dynamicRisks.map { it.toDynamicRisk() })
+      }
+
+      is WebClientWrapperResponse.Error -> {
+        Response(
+          data = emptyList(),
+          errors = result.errors,
+        )
+      }
+    }
+  }
+
+  fun getStatusInformationForPerson(id: String): Response<List<StatusInformation>> {
+    val result =
+      webClient.request<NDeliusSupervisions>(
+        HttpMethod.GET,
+        "/case/$id/supervisions",
+        authenticationHeader(),
+        UpstreamApi.NDELIUS,
+      )
+
+    return when (result) {
+      is WebClientWrapperResponse.Success -> {
+        Response(data = result.data.personStatus.map { it.toStatusInformation() })
       }
 
       is WebClientWrapperResponse.Error -> {
