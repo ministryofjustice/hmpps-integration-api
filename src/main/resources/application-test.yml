@@ -49,6 +49,7 @@ authorisation:
       - "/v1/persons/.*/alerts"
       - "/v1/persons/.*/alerts/pnd"
       - "/v1/persons/.*/sentences"
+      - "/v1/persons/.*/status-information"
       - "/v1/persons/.*/sentences/latest-key-dates-and-adjustments"
       - "/v1/persons/.*/risks/scores"
       - "/v1/persons/.*/needs"
