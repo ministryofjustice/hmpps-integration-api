@@ -16,7 +16,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGatewa
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.NDeliusApiMockServer
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.MappaDetail
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.StatusInformation
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import java.io.File
@@ -26,7 +26,7 @@ import java.io.File
   initializers = [ConfigDataApplicationContextInitializer::class],
   classes = [NDeliusGateway::class],
 )
-class GetMappaDetailForPersonTest(
+class GetStatusInformationForPersonTest(
   @MockBean val hmppsAuthGateway: HmppsAuthGateway,
   val nDeliusGateway: NDeliusGateway,
 ) :
@@ -53,28 +53,28 @@ class GetMappaDetailForPersonTest(
         }
 
         it("authenticates using HMPPS Auth with credentials") {
-          nDeliusGateway.getMappaDetailForPerson(deliusCrn)
+          nDeliusGateway.getStatusInformationForPerson(deliusCrn)
 
           verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("nDelius")
         }
 
-        it("returns Mappa detail for the matching CRN") {
-          val response = nDeliusGateway.getMappaDetailForPerson(deliusCrn)
+        it("returns status information for the matching CRN") {
+          val response = nDeliusGateway.getStatusInformationForPerson(deliusCrn)
 
           response.data.shouldBe(
-            MappaDetail(
-              level = 1,
-              levelDescription = "string",
-              category = 1,
-              categoryDescription = "string",
-              startDate = "string",
-              reviewDate = "string",
-              notes = "string",
+            listOf(
+              StatusInformation(
+                code = "ASFO",
+                description = "Serious Further Offence - Subject to SFO review/investigation",
+                startDate = "2020-12-04",
+                reviewDate = "2030-07-25",
+                notes = "No notes.",
+              ),
             ),
           )
         }
 
-        it("returns an empty list if no mappa detail is found") {
+        it("returns an empty list if no status information is found") {
           nDeliusApiMockServer.stubGetSupervisionsForPerson(
             deliusCrn,
             """
@@ -88,15 +88,15 @@ class GetMappaDetailForPersonTest(
           """,
           )
 
-          val response = nDeliusGateway.getMappaDetailForPerson(deliusCrn)
+          val response = nDeliusGateway.getStatusInformationForPerson(deliusCrn)
 
-          response.data.shouldBe(MappaDetail())
+          response.data.shouldBe(emptyList())
         }
 
         it("returns an error when 404 Not Found is returned because no person is found") {
           nDeliusApiMockServer.stubGetSupervisionsForPerson(deliusCrn, "", HttpStatus.NOT_FOUND)
 
-          val response = nDeliusGateway.getMappaDetailForPerson(deliusCrn)
+          val response = nDeliusGateway.getStatusInformationForPerson(deliusCrn)
 
           response.errors.shouldHaveSize(1)
           response.errors.first().causedBy.shouldBe(UpstreamApi.NDELIUS)

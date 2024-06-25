@@ -16,7 +16,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGatewa
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.NDeliusApiMockServer
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.MappaDetail
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DynamicRisk
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import java.io.File
@@ -26,7 +26,7 @@ import java.io.File
   initializers = [ConfigDataApplicationContextInitializer::class],
   classes = [NDeliusGateway::class],
 )
-class GetMappaDetailForPersonTest(
+class GetDynamicRisksForPersonTest(
   @MockBean val hmppsAuthGateway: HmppsAuthGateway,
   val nDeliusGateway: NDeliusGateway,
 ) :
@@ -53,28 +53,28 @@ class GetMappaDetailForPersonTest(
         }
 
         it("authenticates using HMPPS Auth with credentials") {
-          nDeliusGateway.getMappaDetailForPerson(deliusCrn)
+          nDeliusGateway.getDynamicRisksForPerson(deliusCrn)
 
           verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("nDelius")
         }
 
-        it("returns Mappa detail for the matching CRN") {
-          val response = nDeliusGateway.getMappaDetailForPerson(deliusCrn)
+        it("returns dynamic risks for the matching CRN") {
+          val response = nDeliusGateway.getDynamicRisksForPerson(deliusCrn)
 
           response.data.shouldBe(
-            MappaDetail(
-              level = 1,
-              levelDescription = "string",
-              category = 1,
-              categoryDescription = "string",
-              startDate = "string",
-              reviewDate = "string",
-              notes = "string",
+            listOf(
+              DynamicRisk(
+                code = "RCCO",
+                description = "Child protection issues",
+                startDate = "2018-07-27",
+                reviewDate = "2026-03-20",
+                notes = "These notes are about the person.",
+              ),
             ),
           )
         }
 
-        it("returns an empty list if no mappa detail is found") {
+        it("returns an empty list if no dynamic risks are found") {
           nDeliusApiMockServer.stubGetSupervisionsForPerson(
             deliusCrn,
             """
@@ -88,15 +88,15 @@ class GetMappaDetailForPersonTest(
           """,
           )
 
-          val response = nDeliusGateway.getMappaDetailForPerson(deliusCrn)
+          val response = nDeliusGateway.getDynamicRisksForPerson(deliusCrn)
 
-          response.data.shouldBe(MappaDetail())
+          response.data.shouldBe(emptyList())
         }
 
         it("returns an error when 404 Not Found is returned because no person is found") {
           nDeliusApiMockServer.stubGetSupervisionsForPerson(deliusCrn, "", HttpStatus.NOT_FOUND)
 
-          val response = nDeliusGateway.getMappaDetailForPerson(deliusCrn)
+          val response = nDeliusGateway.getDynamicRisksForPerson(deliusCrn)
 
           response.errors.shouldHaveSize(1)
           response.errors.first().causedBy.shouldBe(UpstreamApi.NDELIUS)

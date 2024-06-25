@@ -67,5 +67,6 @@ authorisation:
       - "/v1/persons/.*/risks/dynamic"
       - "/v1/persons/.*/licences/conditions"
       - "/v1/persons/.*/person-responsible-officer"
+      - "/v1/persons/.*/status-information"
     event-service:
       - "/v1/config/authorisation"

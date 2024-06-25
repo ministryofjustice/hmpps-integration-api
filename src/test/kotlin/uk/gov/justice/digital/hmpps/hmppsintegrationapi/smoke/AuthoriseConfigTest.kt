@@ -39,6 +39,7 @@ class AuthoriseConfigTest : DescribeSpec(
           "/v1/persons/.*/protected-characteristics",
           "/v1/persons/.*/risks/mappadetail",
           "/v1/persons/.*/risks/categories",
+          "/v1/persons/.*/status-information",
           "/v1/persons/.*/risks/dynamic",
           "/v1/persons/.*/case-notes",
           "/v1/persons/.*/person-responsible-officer",

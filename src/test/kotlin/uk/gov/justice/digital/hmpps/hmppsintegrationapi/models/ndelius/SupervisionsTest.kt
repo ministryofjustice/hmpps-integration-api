@@ -42,6 +42,7 @@ class SupervisionsTest : DescribeSpec(
                   ),
                 ),
               dynamicRisks = listOf(NDeliusDynamicRisk(code = "RCCO", description = "Child stuff", startDate = "2010-07-07")),
+              personStatus = listOf(NDeliusPersonStatus()),
             )
 
           val integrationApiOffences = supervisions.supervisions.flatMap { it.toOffences() }
@@ -102,6 +103,7 @@ class SupervisionsTest : DescribeSpec(
                   ),
                 ),
               dynamicRisks = listOf(NDeliusDynamicRisk(code = "RCCO", description = "Child stuff", startDate = "2010-07-07")),
+              personStatus = listOf(NDeliusPersonStatus()),
             )
 
           val integrationApiOffences = supervisions.supervisions.flatMap { it.toOffences() }
@@ -148,6 +150,7 @@ class SupervisionsTest : DescribeSpec(
                   ),
                 ),
               dynamicRisks = listOf(NDeliusDynamicRisk(code = "RCCO", description = "Child stuff", startDate = "2010-07-07")),
+              personStatus = listOf(NDeliusPersonStatus()),
             )
 
           val integrationApiOffences = supervisions.supervisions.flatMap { it.toOffences() }
@@ -199,6 +202,7 @@ class SupervisionsTest : DescribeSpec(
                   ),
                 ),
               dynamicRisks = listOf(NDeliusDynamicRisk(code = "RCCO", description = "Child stuff", startDate = "2010-07-07")),
+              personStatus = listOf(NDeliusPersonStatus()),
             )
 
           val integrationApiOffences = supervisions.supervisions.flatMap { it.toOffences() }
@@ -259,6 +263,7 @@ class SupervisionsTest : DescribeSpec(
               ),
             ),
             dynamicRisks = listOf(NDeliusDynamicRisk(code = "RCCO", description = "Child stuff", startDate = "2010-07-07")),
+            personStatus = listOf(NDeliusPersonStatus()),
           )
 
         val integrationApiSentences = supervisions.supervisions.map { it.toSentence() }
@@ -303,6 +308,7 @@ class SupervisionsTest : DescribeSpec(
               NDeliusSupervision(custodial = true),
             ),
             dynamicRisks = listOf(NDeliusDynamicRisk(code = "RCCO", description = "Child stuff", startDate = "2010-07-07")),
+            personStatus = listOf(NDeliusPersonStatus()),
           )
 
         supervisions.supervisions.first().toSentence().shouldBe(
@@ -340,9 +346,10 @@ class SupervisionsTest : DescribeSpec(
                   notes = "To review in April.",
                 ),
               ),
+            personStatus = listOf(NDeliusPersonStatus()),
           )
 
-        supervisions.dynamicRisks?.first()?.toDynamicRisk().shouldBe(
+        supervisions.dynamicRisks.first().toDynamicRisk().shouldBe(
           DynamicRisk(
             code = "ABC",
             description = "Child Concerns",

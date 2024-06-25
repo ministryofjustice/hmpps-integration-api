@@ -5,4 +5,5 @@ data class NDeliusSupervisions(
   val mappaDetail: NDeliusMappaDetail? = null,
   val supervisions: List<NDeliusSupervision>,
   val dynamicRisks: List<NDeliusDynamicRisk>,
+  val personStatus: List<NDeliusPersonStatus>,
 )
