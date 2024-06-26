@@ -8,10 +8,14 @@ configure_aws_credentials() {
     export AWS_SECRET_ACCESS_KEY="$secret_access_key"
 }
 
+get_folders_from_s3() {
+    local s3_bucket="$1"
+    aws s3 ls "s3://$s3_bucket/" | grep 'PRE' | awk '{print $2}' | sed 's#/##'
+}
+
 get_certificate_from_s3() {
-    local environment="$1"
+    local s3_bucket="$1"
     local client="$2"
-    local s3_bucket="hmpps-integration-api-$environment-certificates-backup"
     local s3_key="$client/client.pem"
     local file_path="./tmp/client.pem"
 
@@ -23,9 +27,10 @@ get_certificate_from_s3() {
 }
 
 get_certificate_expiry_date() {
+    local file_path="$1"
     local expiry_date
 
-    expiry_date=$(openssl x509 -in "./tmp/client.pem" -noout -enddate | cut -d= -f2)
+    expiry_date=$(openssl x509 -in "$file_path" -noout -enddate | cut -d= -f2)
     if [ $? -ne 0 ]; then
         echo "Failed to read certificate expiry date."
         exit 1
@@ -49,11 +54,13 @@ check_certificate_expiry() {
     local environment="$1"
     local client="$2"
     local slack_webhook_url="$3"
+    local s3_bucket="hmpps-integration-api-$environment-certificates-backup"
+    local file_path="./tmp/client.pem"
 
-    get_certificate_from_s3 "$environment" "$client"
+    get_certificate_from_s3 "$s3_bucket" "$client"
 
     local expiry_date
-    expiry_date="$(get_certificate_expiry_date)"
+    expiry_date="$(get_certificate_expiry_date "$file_path")"
 
     local expiry_seconds
     expiry_seconds="$(convert_date_to_seconds "$expiry_date")"
@@ -64,25 +71,53 @@ check_certificate_expiry() {
     local difference=$((expiry_seconds - current_seconds))
 
     if [ "$difference" -le $((30 * 24 * 60 * 60)) ]; then
-        message=" **TEST** The certificate for $client in $environment will expire within the next 30 days (in $((difference / (24 * 60 * 60))) days)."
-#        curl -X POST -H 'Content-type: application/json' --data "{\"text\":\"$message\"}" "$slack_webhook_url"
-        echo "$message"
+        message="**TEST** The certificate for $client in $environment will expire within the next 30 days (in $((difference / (24 * 60 * 60))) days)."
+        curl -X POST -H 'Content-type: application/json' --data "{\"text\":\"$message\"}" "$slack_webhook_url"
     else
-        message=" **TEST** The certificate for $client in $environment is valid for more than 30 days and expires on $expiry_date."
-#        curl -X POST -H 'Content-type: application/json' --data "{\"text\":\"$message\"}" "$slack_webhook_url"
-        echo "$message"
+        message="**TEST** The certificate for $client in $environment is valid for more than 30 days and expires on $expiry_date."
+        curl -X POST -H 'Content-type: application/json' --data "{\"text\":\"$message\"}" "$slack_webhook_url"
+    fi
+}
+
+check_internal_certificate_expiry() {
+    local environment="$1"
+    local slack_webhook_url="$2"
+    local file_path="./tmp/ca.crt"
+
+    kubectl get secret "client-certificate-auth" -n "hmpps-integration-api-$environment" -o json | jq -r '.data."ca.crt"' | base64 --decode > "$file_path"
+
+    local expiry_date
+    expiry_date="$(get_certificate_expiry_date "$file_path")"
+
+    local expiry_seconds
+    expiry_seconds="$(convert_date_to_seconds "$expiry_date")"
+
+    local current_seconds
+    current_seconds="$(date +%s)"
+
+    local difference=$((expiry_seconds - current_seconds))
+
+    if [ "$difference" -le $((30 * 24 * 60 * 60)) ]; then
+        message="**TEST** The internal certificate in $environment will expire within the next 30 days (in $((difference / (24 * 60 * 60))) days)."
+        curl -X POST -H 'Content-type: application/json' --data "{\"text\":\"$message\"}" "$slack_webhook_url"
+    else
+        message="**TEST** The internal certificate in $environment is valid for more than 30 days and expires on $expiry_date."
+        curl -X POST -H 'Content-type: application/json' --data "{\"text\":\"$message\"}" "$slack_webhook_url"
     fi
 }
 
 main() {
     environments=("dev" "preprod" "prod")
-    clients=("ctrlo")
+    slack_webhook_url=$(kubectl -n hmpps-integration-api-dev get secrets slack-webhook-url -o json | jq -r '.data."slack_webhook_url"' | base64 --decode)
 
     for environment in "${environments[@]}"; do
         configure_aws_credentials "$environment"
-        for client in "${clients[@]}"; do
-            check_certificate_expiry "$environment" "$client" "$(kubectl -n hmpps-integration-api-dev get secrets slack-webhook-url -o json  | jq -r '.data."slack_webhook_url"' | base64 --decode)"
+#        clients=$(get_folders_from_s3 "hmpps-integration-api-$environment-certificates-backup")
+        clients=("ctrlo")
+        for client in $clients; do
+            check_certificate_expiry "$environment" "$client" "$slack_webhook_url"
         done
+        check_internal_certificate_expiry "$environment" "$slack_webhook_url"
     done
 }
 
