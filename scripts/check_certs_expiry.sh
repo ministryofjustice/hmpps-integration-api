@@ -78,7 +78,8 @@ generate_message() {
     local certificate_name="$4"
 
     if [ "$difference" -le $((30 * 24 * 60 * 60)) ]; then
-        echo "**ALERT** The certificate for $certificate_name in $environment will expire within the next 30 days (in $((difference / (24 * 60 * 60))) days)."    else
+        echo "**ALERT** The certificate for $certificate_name in $environment will expire within the next 30 days (in $((difference / (24 * 60 * 60))) days)."
+    else
         echo "**TEST** The certificate for $certificate_name in $environment is valid for more than 30 days and expires on $expiry_date."
     fi
 }
@@ -103,7 +104,10 @@ check_certificate_expiry() {
     local expiry_seconds
     expiry_seconds="$(convert_date_to_seconds "$expiry_date")"
 
-    local difference=$((expiry_seconds - "$(date +%s)"))
+    local current_seconds
+    current_seconds="$(date +%s)"
+
+    local difference=$((expiry_seconds - current_seconds))
 
     local message
     message=$(generate_message "$difference" "$expiry_date" "$environment" "$certificate_name")
