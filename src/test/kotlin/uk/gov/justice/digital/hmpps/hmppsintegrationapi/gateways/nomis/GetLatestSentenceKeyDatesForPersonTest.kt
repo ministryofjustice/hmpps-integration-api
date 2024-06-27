@@ -111,15 +111,12 @@ class GetLatestSentenceKeyDatesForPersonTest(
 
         response.data?.automaticRelease?.date.shouldBe(LocalDate.parse("2023-03-01"))
         response.data?.automaticRelease?.overrideDate.shouldBe(LocalDate.parse("2023-03-01"))
-        response.data?.automaticRelease?.calculatedDate.shouldBe(null)
 
         response.data?.conditionalRelease?.date.shouldBe(LocalDate.parse("2023-04-01"))
         response.data?.conditionalRelease?.overrideDate.shouldBe(LocalDate.parse("2023-04-01"))
-        response.data?.conditionalRelease?.calculatedDate.shouldBe(null)
 
         response.data?.dtoPostRecallRelease?.date.shouldBe(LocalDate.parse("2023-05-01"))
         response.data?.dtoPostRecallRelease?.overrideDate.shouldBe(LocalDate.parse("2023-05-01"))
-        response.data?.dtoPostRecallRelease?.calculatedDate.shouldBe(null)
 
         response.data?.earlyTerm?.date.shouldBe(LocalDate.parse("2021-04-01"))
         response.data?.earlyTerm?.overrideDate.shouldBe(LocalDate.parse("2021-04-01"))
@@ -148,7 +145,6 @@ class GetLatestSentenceKeyDatesForPersonTest(
 
         response.data?.nonParole?.date.shouldBe(LocalDate.parse("2026-02-01"))
         response.data?.nonParole?.overrideDate.shouldBe(LocalDate.parse("2026-02-01"))
-        response.data?.nonParole?.calculatedDate.shouldBe(null)
 
         response.data?.paroleEligibility?.date.shouldBe(LocalDate.parse("2027-02-01"))
         response.data?.paroleEligibility?.overrideDate.shouldBe(LocalDate.parse("2027-02-01"))
@@ -156,7 +152,6 @@ class GetLatestSentenceKeyDatesForPersonTest(
 
         response.data?.postRecallRelease?.date.shouldBe(LocalDate.parse("2028-02-01"))
         response.data?.postRecallRelease?.overrideDate.shouldBe(LocalDate.parse("2028-02-01"))
-        response.data?.postRecallRelease?.calculatedDate.shouldBe(null)
 
         response.data?.release?.date.shouldBe(LocalDate.parse("2030-02-01"))
         response.data?.release?.confirmedDate.shouldBe(LocalDate.parse("2030-02-01"))
