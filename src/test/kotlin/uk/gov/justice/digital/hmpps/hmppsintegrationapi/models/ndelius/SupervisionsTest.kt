@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.generateTestSentence
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DynamicRisk
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Offence
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Sentence
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SentenceLength
@@ -40,6 +41,7 @@ class SupervisionsTest : DescribeSpec(
                     courtAppearances = listOf(NDeliusCourtAppearance(date = "2010-07-07T00:00:00+01:00", court = "London Magistrates Court")),
                   ),
                 ),
+              dynamicRisks = listOf(NDeliusDynamicRisk(code = "RCCO", description = "Child stuff", startDate = "2010-07-07")),
             )
 
           val integrationApiOffences = supervisions.supervisions.flatMap { it.toOffences() }
@@ -99,6 +101,7 @@ class SupervisionsTest : DescribeSpec(
                     courtAppearances = listOf(NDeliusCourtAppearance(date = "2009-07-07T00:00:00+01:00", court = "London Magistrates Court")),
                   ),
                 ),
+              dynamicRisks = listOf(NDeliusDynamicRisk(code = "RCCO", description = "Child stuff", startDate = "2010-07-07")),
             )
 
           val integrationApiOffences = supervisions.supervisions.flatMap { it.toOffences() }
@@ -144,6 +147,7 @@ class SupervisionsTest : DescribeSpec(
                     courtAppearances = listOf(NDeliusCourtAppearance(date = "2009-07-07T00:00:00+01:00", court = "London Magistrates Court")),
                   ),
                 ),
+              dynamicRisks = listOf(NDeliusDynamicRisk(code = "RCCO", description = "Child stuff", startDate = "2010-07-07")),
             )
 
           val integrationApiOffences = supervisions.supervisions.flatMap { it.toOffences() }
@@ -194,6 +198,7 @@ class SupervisionsTest : DescribeSpec(
                     courtAppearances = listOf(NDeliusCourtAppearance(date = "2010-07-07T00:00:00+01:00", court = "London Magistrates Court")),
                   ),
                 ),
+              dynamicRisks = listOf(NDeliusDynamicRisk(code = "RCCO", description = "Child stuff", startDate = "2010-07-07")),
             )
 
           val integrationApiOffences = supervisions.supervisions.flatMap { it.toOffences() }
@@ -253,6 +258,7 @@ class SupervisionsTest : DescribeSpec(
                   ),
               ),
             ),
+            dynamicRisks = listOf(NDeliusDynamicRisk(code = "RCCO", description = "Child stuff", startDate = "2010-07-07")),
           )
 
         val integrationApiSentences = supervisions.supervisions.map { it.toSentence() }
@@ -296,6 +302,7 @@ class SupervisionsTest : DescribeSpec(
             listOf(
               NDeliusSupervision(custodial = true),
             ),
+            dynamicRisks = listOf(NDeliusDynamicRisk(code = "RCCO", description = "Child stuff", startDate = "2010-07-07")),
           )
 
         supervisions.supervisions.first().toSentence().shouldBe(
@@ -312,6 +319,36 @@ class SupervisionsTest : DescribeSpec(
                 units = null,
                 terms = emptyList(),
               ),
+          ),
+        )
+      }
+    }
+    describe("#toDynamicRisk") {
+      it("returns dynamic risk when present") {
+        val supervisions =
+          NDeliusSupervisions(
+            communityManager = NDeliusCommunityManager(),
+            mappaDetail = NDeliusMappaDetail(),
+            listOf(NDeliusSupervision(custodial = true)),
+            dynamicRisks =
+              listOf(
+                NDeliusDynamicRisk(
+                  code = "ABC",
+                  description = "Child Concerns",
+                  startDate = "2020-01-02",
+                  reviewDate = "2025-04-04",
+                  notes = "To review in April.",
+                ),
+              ),
+          )
+
+        supervisions.dynamicRisks?.first()?.toDynamicRisk().shouldBe(
+          DynamicRisk(
+            code = "ABC",
+            description = "Child Concerns",
+            startDate = "2020-01-02",
+            reviewDate = "2025-04-04",
+            notes = "To review in April.",
           ),
         )
       }

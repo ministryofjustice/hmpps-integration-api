@@ -43,7 +43,7 @@ class PrisonerOffenderSearchGateway(
 
     return when (result) {
       is WebClientWrapperResponse.Success -> {
-        Response(data = result.data.content.map { it.toPerson() }.sortedBy { it.dateOfBirth })
+        Response(data = result.data.content.map { it.toPerson() }.sortedByDescending { it.dateOfBirth })
       }
 
       is WebClientWrapperResponse.Error -> {

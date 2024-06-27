@@ -116,5 +116,13 @@ class GetRiskPredictorScoresForPersonTest(
 
           response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND).shouldBeTrue()
         }
+
+        it("returns a 403 FORBIDDEN status code when forbidden") {
+          assessRisksAndNeedsApiMockServer.stubGetRiskPredictorScoresForPerson(deliusCrn, "", HttpStatus.FORBIDDEN)
+
+          val response = assessRisksAndNeedsGateway.getRiskPredictorScoresForPerson(deliusCrn)
+
+          response.hasError(UpstreamApiError.Type.FORBIDDEN).shouldBeTrue()
+        }
       },
     )
