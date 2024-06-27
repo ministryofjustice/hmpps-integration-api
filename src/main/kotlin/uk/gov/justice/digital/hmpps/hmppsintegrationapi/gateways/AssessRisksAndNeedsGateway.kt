@@ -31,11 +31,17 @@ class AssessRisksAndNeedsGateway(
         "/risks/crn/$id/predictors/all",
         authenticationHeader(),
         UpstreamApi.ASSESS_RISKS_AND_NEEDS,
+        forbiddenAsError = true,
       )
 
     return when (result) {
       is WebClientWrapperResponse.Success -> {
-        Response(data = result.data.map { it.toRiskPredictorScore() }.sortedBy { it.completedDate })
+        Response(
+          data =
+            result.data
+              .map { it.toRiskPredictorScore() }
+              .sortedByDescending { it.completedDate },
+        )
       }
 
       is WebClientWrapperResponse.Error -> {
@@ -54,6 +60,7 @@ class AssessRisksAndNeedsGateway(
         "/risks/crn/$id",
         authenticationHeader(),
         UpstreamApi.ASSESS_RISKS_AND_NEEDS,
+        forbiddenAsError = true,
       )
 
     return when (result) {
@@ -77,6 +84,7 @@ class AssessRisksAndNeedsGateway(
         "/needs/crn/$id",
         authenticationHeader(),
         UpstreamApi.ASSESS_RISKS_AND_NEEDS,
+        forbiddenAsError = true,
       )
 
     return when (result) {

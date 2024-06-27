@@ -86,7 +86,8 @@ class GetCommunityOffenderManagerForPersonTest(
             {
               "communityManager": {},
               "mappaDetail": {},
-              "supervisions": []
+              "supervisions": [],
+              "dynamicRisks": []
             }
           """,
         )

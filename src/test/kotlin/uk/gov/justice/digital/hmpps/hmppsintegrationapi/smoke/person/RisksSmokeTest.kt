@@ -89,7 +89,7 @@ class RisksSmokeTest : DescribeSpec(
       )
     }
 
-    it("return mappa detail for a person") {
+    it("returns mappa detail for a person") {
       val response = httpClient.performAuthorised("$basePath/mappadetail")
 
       response.statusCode().shouldBe(HttpStatus.OK.value())
@@ -106,6 +106,35 @@ class RisksSmokeTest : DescribeSpec(
             "notes": "string"
           }
         }
+        """.removeWhitespaceAndNewlines(),
+      )
+    }
+
+    it("returns dynamic risks for a person") {
+      val response = httpClient.performAuthorised("$basePath/dynamic")
+
+      response.statusCode().shouldBe(HttpStatus.OK.value())
+      response.body().shouldEqualJson(
+        """
+        {
+          "data": [
+            {
+              "code": "RCCO",
+              "description": "Child Concerns",
+              "startDate": "2019-08-24",
+              "reviewDate": "2019-08-24",
+              "notes": "string"
+            }
+          ],
+          "pagination": {
+            "isLastPage": true,
+            "count": 1,
+            "page": 1,
+            "perPage": 10,
+            "totalCount": 1,
+            "totalPages": 1
+          }
+      }
         """.removeWhitespaceAndNewlines(),
       )
     }

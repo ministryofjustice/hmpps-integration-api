@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.collections.shouldHaveSize
+import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory
@@ -90,10 +91,18 @@ GetRiskSeriousHarmForPersonServiceTest(
             )
           }
 
-          it("records upstream API error for probation offender search") {
+          it("records upstream 404 API error for probation offender search") {
             val response = getRiskSeriousHarmForPersonService.execute(hmppsId)
 
             response.hasErrorCausedBy(UpstreamApiError.Type.ENTITY_NOT_FOUND, UpstreamApi.PROBATION_OFFENDER_SEARCH).shouldBe(true)
+          }
+
+          it("records upstream 403 API error for probation offender search") {
+            val response = getRiskSeriousHarmForPersonService.execute(hmppsId)
+
+            response.data.shouldBeNull()
+            response.errors.shouldHaveSize(1)
+            response.hasErrorCausedBy(UpstreamApiError.Type.FORBIDDEN, UpstreamApi.ASSESS_RISKS_AND_NEEDS).shouldBe(true)
           }
 
           it("does not get risks from ARN") {

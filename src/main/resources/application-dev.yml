@@ -64,6 +64,7 @@ authorisation:
       - "/v1/persons/.*/sentences/latest-key-dates-and-adjustments"
       - "/v1/persons/.*/risks/scores"
       - "/v1/persons/.*/risks/serious-harm"
+      - "/v1/persons/.*/risks/dynamic"
       - "/v1/persons/.*/licences/conditions"
       - "/v1/persons/.*/person-responsible-officer"
     event-service:

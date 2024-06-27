@@ -81,7 +81,8 @@ class GetMappaDetailForPersonTest(
             {
               "communityManager": {},
               "mappaDetail": {},
-              "supervisions": []
+              "supervisions": [],
+              "dynamicRisks": []
             }
           """,
           )
