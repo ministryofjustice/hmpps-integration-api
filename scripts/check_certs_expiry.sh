@@ -129,6 +129,7 @@ main() {
         for client in $clients; do
             check_certificate_expiry "s3" "hmpps-integration-api-$environment-certificates-backup" "./tmp/client.pem" "$environment" "$client" "$slack_webhook_url"
         done
-    done}
+    done
+}
 
 main
