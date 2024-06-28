@@ -97,18 +97,15 @@ class SentencesSmokeTest : DescribeSpec(
                 },
                 "automaticRelease": {
                     "date": "2020-02-03",
-                    "overrideDate": "2020-02-03",
-                    "calculatedDate": null
+                    "overrideDate": "2020-02-03"
                 },
                 "conditionalRelease": {
                     "date": "2020-02-03",
-                    "overrideDate": "2020-02-03",
-                    "calculatedDate": null
+                    "overrideDate": "2020-02-03"
                 },
                 "dtoPostRecallRelease": {
                     "date": "2020-02-03",
-                    "overrideDate": "2020-04-01",
-                    "calculatedDate": null
+                    "overrideDate": "2020-04-01"
                 },
                 "earlyTerm": {
                     "date": "2020-02-03",
@@ -143,8 +140,7 @@ class SentencesSmokeTest : DescribeSpec(
                 },
                 "nonParole": {
                     "date": "2020-02-03",
-                    "overrideDate": "2020-02-03",
-                    "calculatedDate": null
+                    "overrideDate": "2020-02-03"
                 },
                 "paroleEligibility": {
                     "date": "2020-02-03",
@@ -153,8 +149,7 @@ class SentencesSmokeTest : DescribeSpec(
                 },
                 "postRecallRelease": {
                     "date": "2020-02-03",
-                    "overrideDate": "2020-04-01",
-                    "calculatedDate": null
+                    "overrideDate": "2020-04-01"
                 },
                 "release": {
                     "date": "2020-04-01",

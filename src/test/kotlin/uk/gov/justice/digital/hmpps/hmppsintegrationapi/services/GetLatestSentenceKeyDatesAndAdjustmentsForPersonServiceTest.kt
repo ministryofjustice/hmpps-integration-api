@@ -179,15 +179,12 @@ internal class GetLatestSentenceKeyDatesAndAdjustmentsForPersonServiceTest(
 
         response.data?.automaticRelease?.date.shouldBe(LocalDate.parse("2023-11-02"))
         response.data?.automaticRelease?.overrideDate.shouldBe(LocalDate.parse("2023-11-02"))
-        response.data?.automaticRelease?.calculatedDate.shouldBe(null)
 
         response.data?.conditionalRelease?.date.shouldBe(LocalDate.parse("2023-12-02"))
         response.data?.conditionalRelease?.overrideDate.shouldBe(LocalDate.parse("2023-12-02"))
-        response.data?.conditionalRelease?.calculatedDate.shouldBe(null)
 
         response.data?.dtoPostRecallRelease?.date.shouldBe(LocalDate.parse("2024-01-02"))
         response.data?.dtoPostRecallRelease?.overrideDate.shouldBe(LocalDate.parse("2024-01-02"))
-        response.data?.dtoPostRecallRelease?.calculatedDate.shouldBe(null)
 
         response.data?.earlyTerm?.date.shouldBe(LocalDate.parse("2021-11-02"))
         response.data?.earlyTerm?.overrideDate.shouldBe(LocalDate.parse("2021-11-02"))
@@ -216,7 +213,6 @@ internal class GetLatestSentenceKeyDatesAndAdjustmentsForPersonServiceTest(
 
         response.data?.nonParole?.date.shouldBe(LocalDate.parse("2026-11-02"))
         response.data?.nonParole?.overrideDate.shouldBe(LocalDate.parse("2026-11-02"))
-        response.data?.nonParole?.calculatedDate.shouldBe(null)
 
         response.data?.paroleEligibility?.date.shouldBe(LocalDate.parse("2027-02-01"))
         response.data?.paroleEligibility?.overrideDate.shouldBe(LocalDate.parse("2027-02-01"))
@@ -224,7 +220,6 @@ internal class GetLatestSentenceKeyDatesAndAdjustmentsForPersonServiceTest(
 
         response.data?.postRecallRelease?.date.shouldBe(LocalDate.parse("2028-02-01"))
         response.data?.postRecallRelease?.overrideDate.shouldBe(LocalDate.parse("2028-02-01"))
-        response.data?.postRecallRelease?.calculatedDate.shouldBe(null)
 
         response.data?.release?.date.shouldBe(LocalDate.parse("2030-02-01"))
         response.data?.release?.confirmedDate.shouldBe(LocalDate.parse("2030-02-01"))
