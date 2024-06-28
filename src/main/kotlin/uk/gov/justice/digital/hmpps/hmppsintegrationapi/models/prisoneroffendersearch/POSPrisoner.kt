@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffender
 
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Identifiers
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonIntegrationpes.PESPrisonerDetails
 import java.time.LocalDate
 
 data class POSPrisoner(
@@ -17,6 +18,9 @@ data class POSPrisoner(
   val bookingId: String? = null,
   val maritalStatus: String? = null,
   val croNumber: String? = null,
+  val prisonId: String? = null,
+  val prisonName: String? = null,
+  val cellLocation: String? = null,
 ) {
   fun toPerson(): Person =
     Person(
@@ -33,5 +37,15 @@ data class POSPrisoner(
           croNumber = this.croNumber,
         ),
       pncId = this.pncNumber,
+    )
+
+  fun toPESPrisonerDetails(): PESPrisonerDetails =
+    PESPrisonerDetails(
+      prisonerNumber = this.prisonerNumber,
+      firstName = this.firstName,
+      lastName = this.lastName,
+      prisonId = this.prisonId,
+      prisonName = this.prisonName,
+      cellLocation = this.cellLocation,
     )
 }

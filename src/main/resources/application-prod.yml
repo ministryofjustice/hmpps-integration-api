@@ -28,6 +28,8 @@ authorisation:
   consumers:
     ctrlo:
       - "/v1/epf/person-details/.*/\\.*+[^/]*$"
+    moj.pes:
+      - "/v1/pes/prisoner-details/\\.*+[^/]*$"
     kubernetes-health-check-client:
       - "/health/liveness"
       - "/health/readiness"

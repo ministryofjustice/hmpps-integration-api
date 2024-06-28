@@ -11,6 +11,7 @@ class PrisonerTest : DescribeSpec(
   {
     describe("#toPerson") {
       it("maps one-to-one attributes to person attributes") {
+
         val prisoner =
           POSPrisoner(
             firstName = "First Name",
@@ -41,6 +42,38 @@ class PrisonerTest : DescribeSpec(
         person.identifiers.croNumber.shouldBe(prisoner.croNumber)
         person.identifiers.deliusCrn.shouldBeNull()
         person.pncId.shouldBe(prisoner.pncNumber)
+      }
+    }
+    describe("#toPESPrisonerDetails") {
+      it("maps one-to-one attributes to PESPrisonerDetails attributes") {
+
+        val prisoner =
+          POSPrisoner(
+            firstName = "First Name",
+            lastName = "Last Name",
+            middleNames = "Middle Name",
+            dateOfBirth = LocalDate.parse("2023-03-01"),
+            gender = "Gender",
+            ethnicity = "Ethnicity",
+            prisonerNumber = "prisonerNumber",
+            pncNumber = "pncNumber",
+            croNumber = "croNumber",
+            aliases =
+              listOf(
+                POSPrisonerAlias(firstName = "Alias First Name", lastName = "Alias Last Name"),
+              ),
+            prisonId = "LEI",
+            prisonName = "HMP Leeds",
+            cellLocation = "6-2-006",
+          )
+
+        val pesPrisoner = prisoner.toPESPrisonerDetails()
+        pesPrisoner.prisonerNumber.shouldBe(prisoner.prisonerNumber)
+        pesPrisoner.firstName.shouldBe(prisoner.firstName)
+        pesPrisoner.lastName.shouldBe(prisoner.lastName)
+        pesPrisoner.prisonId.shouldBe(prisoner.prisonId)
+        pesPrisoner.prisonName.shouldBe(prisoner.prisonName)
+        pesPrisoner.cellLocation.shouldBe(prisoner.cellLocation)
       }
     }
   },
