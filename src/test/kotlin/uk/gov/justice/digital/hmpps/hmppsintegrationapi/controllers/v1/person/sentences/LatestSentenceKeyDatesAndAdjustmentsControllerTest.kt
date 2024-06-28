@@ -157,106 +157,101 @@ internal class LatestSentenceKeyDatesAndAdjustmentsControllerTest(
 
         result.response.contentAsString.shouldContain(
           """
-        {
-          "data": {
-            "adjustments": {
-                "additionalDaysAwarded": 7,
-                "unlawfullyAtLarge": 10,
-                "lawfullyAtLarge": 2,
-                "restoredAdditionalDaysAwarded": 0,
-                "specialRemission": 11,
-                "recallSentenceRemand": 1,
-                "recallSentenceTaggedBail": 3,
-                "remand": 6,
-                "taggedBail": 3,
-                "unusedRemand": 6
-            },
-            "automaticRelease": {
-                "date": "2023-04-01",
-                "overrideDate": "2023-04-01",
-                "calculatedDate": null
-            },
-            "conditionalRelease": {
-                "date": "2023-05-01",
-                "overrideDate": "2023-05-01",
-                "calculatedDate": null
-            },
-            "dtoPostRecallRelease": {
-                "date": "2024-01-02",
-                "overrideDate": "2024-01-02",
-                "calculatedDate": null
-            },
-            "earlyTerm": {
-                "date": "2021-11-02",
-                "overrideDate": "2021-11-02",
-                "calculatedDate": "2021-11-02"
-            },
-            "homeDetentionCurfew": {
-                "actualDate": "2022-04-01",
-                "eligibilityCalculatedDate": "2022-04-01",
-                "eligibilityDate": "2022-04-01",
-                "eligibilityOverrideDate": "2022-04-01",
-                "endDate": "2022-04-01"
-            },
-            "lateTerm": {
-                "date": "2022-01-01",
-                "overrideDate": "2022-01-01",
-                "calculatedDate": "2022-01-01"
-            },
-            "licenceExpiry": {
-                "date": "2025-02-01",
-                "overrideDate": "2025-02-01",
-                "calculatedDate": "2025-02-01"
-            },
-            "midTerm": {
-                "date": "2024-02-01",
-                "overrideDate": "2024-02-01",
-                "calculatedDate": "2024-02-01"
-            },
-            "nonDto": {
-                "date": "2024-02-01",
-                "releaseDateType": "CRD"
-            },
-            "nonParole": {
-                "date": "2026-11-02",
-                "overrideDate": "2026-11-02",
-                "calculatedDate": null
-            },
-            "paroleEligibility": {
-                "date": "2027-02-01",
-                "overrideDate": "2027-02-01",
-                "calculatedDate": "2027-02-01"
-            },
-            "postRecallRelease": {
-                "date": "2028-02-01",
-                "overrideDate": "2028-02-01",
-                "calculatedDate": null
-            },
-            "release": {
-                "date": "2030-02-01",
-                "confirmedDate": "2030-02-01"
-            },
-            "sentence": {
-              "effectiveEndDate": "2025-02-01",
-              "expiryCalculatedDate": "2025-02-01",
-              "expiryDate": "2025-02-01",
-              "expiryOverrideDate": "2025-02-01",
-              "startDate": "2025-02-01"
-            },
-            "topupSupervision": {
-              "expiryCalculatedDate": "2022-04-01",
-              "expiryDate": "2022-04-01",
-              "expiryOverrideDate": "2022-04-01",
-              "startDate": "2022-04-01"
-            },
-            "actualParoleDate": "2031-02-01",
-            "earlyRemovalSchemeEligibilityDate": "2031-02-01",
-            "releaseOnTemporaryLicenceDate": "2031-02-01",
-            "tariffDate": "2031-02-01",
-            "tariffEarlyRemovalSchemeEligibilityDate": "2031-02-01"
+          {
+            "data": {
+                "adjustments": {
+                    "additionalDaysAwarded": 7,
+                    "unlawfullyAtLarge": 10,
+                    "lawfullyAtLarge": 2,
+                    "restoredAdditionalDaysAwarded": 0,
+                    "specialRemission": 11,
+                    "recallSentenceRemand": 1,
+                    "recallSentenceTaggedBail": 3,
+                    "remand": 6,
+                    "taggedBail": 3,
+                    "unusedRemand": 6
+                },
+                "automaticRelease": {
+                    "date": "2023-04-01",
+                    "overrideDate": "2023-04-01"
+                },
+                "conditionalRelease": {
+                    "date": "2023-05-01",
+                    "overrideDate": "2023-05-01"
+                },
+                "dtoPostRecallRelease": {
+                    "date": "2024-01-02",
+                    "overrideDate": "2024-01-02"
+                },
+                "earlyTerm": {
+                    "date": "2021-11-02",
+                    "overrideDate": "2021-11-02",
+                    "calculatedDate": "2021-11-02"
+                },
+                "homeDetentionCurfew": {
+                    "actualDate": "2022-04-01",
+                    "eligibilityCalculatedDate": "2022-04-01",
+                    "eligibilityDate": "2022-04-01",
+                    "eligibilityOverrideDate": "2022-04-01",
+                    "endDate": "2022-04-01"
+                },
+                "lateTerm": {
+                    "date": "2022-01-01",
+                    "overrideDate": "2022-01-01",
+                    "calculatedDate": "2022-01-01"
+                },
+                "licenceExpiry": {
+                    "date": "2025-02-01",
+                    "overrideDate": "2025-02-01",
+                    "calculatedDate": "2025-02-01"
+                },
+                "midTerm": {
+                    "date": "2024-02-01",
+                    "overrideDate": "2024-02-01",
+                    "calculatedDate": "2024-02-01"
+                },
+                "nonDto": {
+                    "date": "2024-02-01",
+                    "releaseDateType": "CRD"
+                },
+                "nonParole": {
+                    "date": "2026-11-02",
+                    "overrideDate": "2026-11-02"
+                },
+                "paroleEligibility": {
+                    "date": "2027-02-01",
+                    "overrideDate": "2027-02-01",
+                    "calculatedDate": "2027-02-01"
+                },
+                "postRecallRelease": {
+                    "date": "2028-02-01",
+                    "overrideDate": "2028-02-01"
+                },
+                "release": {
+                    "date": "2030-02-01",
+                    "confirmedDate": "2030-02-01"
+                },
+                "sentence": {
+                    "effectiveEndDate": "2025-02-01",
+                    "expiryCalculatedDate": "2025-02-01",
+                    "expiryDate": "2025-02-01",
+                    "expiryOverrideDate": "2025-02-01",
+                    "startDate": "2025-02-01"
+                },
+                "topupSupervision": {
+                    "expiryCalculatedDate": "2022-04-01",
+                    "expiryDate": "2022-04-01",
+                    "expiryOverrideDate": "2022-04-01",
+                    "startDate": "2022-04-01"
+                },
+                "actualParoleDate": "2031-02-01",
+                "earlyRemovalSchemeEligibilityDate": "2031-02-01",
+                "releaseOnTemporaryLicenceDate": "2031-02-01",
+                "tariffDate": "2031-02-01",
+                "tariffEarlyRemovalSchemeEligibilityDate": "2031-02-01"
+              }
           }
-        }
-        """.removeWhitespaceAndNewlines(),
+          """.removeWhitespaceAndNewlines(),
         )
       }
 
