@@ -52,6 +52,7 @@ authorisation:
       - "/v1/epf/person-details/.*/\\.*+[^/]*$"
     moj-pes:
       - "/v1/persons/.*/name"
+      - "/v1/hmpps-id/nomis-number/\\.*+[^/]*$"
     kubernetes-health-check-client:
       - "/health/liveness"
       - "/health/readiness"
