@@ -27,6 +27,8 @@ class ProbationOffenderSearchGateway(
     val queryField =
       if (isPncNumber(id)) {
         "pncNumber"
+      } else if (isNomsNumber(id)) {
+        "nomsNumber"
       } else {
         "crn"
       }
@@ -149,5 +151,9 @@ class ProbationOffenderSearchGateway(
 
   private fun isPncNumber(id: String?): Boolean {
     return id?.matches(Regex("^[0-9]+/[0-9A-Za-z]+$")) == true
+  }
+
+  private fun isNomsNumber(id: String?): Boolean {
+    return id?.matches(Regex("^[A-Z]\\d{4}[A-Z]{2}+$")) == true
   }
 }
