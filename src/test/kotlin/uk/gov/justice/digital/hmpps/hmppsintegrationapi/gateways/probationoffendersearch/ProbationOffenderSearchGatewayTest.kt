@@ -413,5 +413,30 @@ class ProbationOffenderSearchGatewayTest(
           probationOffenderSearchGateway.getPerson(hmppsId)
         }
       }
+
+      describe("when a Nomis number is used to make requests") {
+        val hmppsId = "A7777ZZ"
+
+        it("calls the Probation API service with a Nomis number") {
+          probationOffenderSearchApiMockServer.stubPostOffenderSearch(
+            "{\"nomsNumber\": \"$hmppsId\"}",
+            """
+          [
+           {
+            "firstName": "Jonathan",
+            "surname": "Bravo",
+            "dateOfBirth": "1970-02-07",
+            "offenderAliases": []
+          }
+        ]
+        """,
+          )
+
+          val response = probationOffenderSearchGateway.getPerson(hmppsId)
+
+          response.data?.firstName.shouldBe("Jonathan")
+          response.data?.lastName.shouldBe("Bravo")
+        }
+      }
     }
   })
