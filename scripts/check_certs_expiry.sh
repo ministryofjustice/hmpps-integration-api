@@ -73,14 +73,11 @@ convert_date_to_seconds() {
 
 generate_message() {
     local difference="$1"
-    local expiry_date="$2"
-    local environment="$3"
-    local certificate_name="$4"
+    local environment="$2"
+    local certificate_name="$3"
 
     if [ "$difference" -le $((30 * 24 * 60 * 60)) ]; then
-        echo "**ALERT** The certificate for $certificate_name in $environment will expire within the next 30 days (in $((difference / (24 * 60 * 60))) days)."
-    else
-        echo "**TEST** The certificate for $certificate_name in $environment is valid for more than 30 days and expires on $expiry_date."
+        echo "**ALERT ACTION REQUIRED** The certificate for $certificate_name in $environment will expire within the next 30 days (in $((difference / (24 * 60 * 60))) days)."
     fi
 }
 
@@ -110,7 +107,7 @@ check_certificate_expiry() {
     local difference=$((expiry_seconds - current_seconds))
 
     local message
-    message=$(generate_message "$difference" "$expiry_date" "$environment" "$certificate_name")
+    message=$(generate_message "$difference" "$environment" "$certificate_name")
 
     curl -X POST -H 'Content-type: application/json' --data "{\"text\":\"$message\"}" "$slack_webhook_url"
 }
