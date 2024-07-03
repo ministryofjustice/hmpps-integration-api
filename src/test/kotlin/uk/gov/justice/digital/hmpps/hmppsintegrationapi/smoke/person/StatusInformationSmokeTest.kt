@@ -31,13 +31,13 @@ class StatusInformationSmokeTest : DescribeSpec(
               "reviewDate": "2019-08-24",
               "notes": "string"
             }
-          ],
+        ],
         "pagination": {
           "isLastPage": true,
-          "count": 3,
+          "count": 1,
           "page": 1,
           "perPage": 10,
-          "totalCount": 3,
+          "totalCount": 1,
           "totalPages": 1
         }
       }
