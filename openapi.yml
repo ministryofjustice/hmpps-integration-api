@@ -1772,21 +1772,21 @@ components:
         dtoPostRecallRelease:
           $ref: "#/components/schemas/SentenceKeyDate"
         earlyTerm:
-          $ref: "#/components/schemas/SentenceKeyDate"
+          $ref: "#/components/schemas/SentenceKeyDateWithCalculatedDate"
         homeDetentionCurfew:
           $ref: "#/components/schemas/HomeDetentionCurfewDate"
         lateTerm:
-          $ref: "#/components/schemas/SentenceKeyDate"
+          $ref: "#/components/schemas/SentenceKeyDateWithCalculatedDate"
         licenceExpiry:
-          $ref: "#/components/schemas/SentenceKeyDate"
+          $ref: "#/components/schemas/SentenceKeyDateWithCalculatedDate"
         midTerm:
-          $ref: "#/components/schemas/SentenceKeyDate"
+          $ref: "#/components/schemas/SentenceKeyDateWithCalculatedDate"
         nonDto:
           $ref: "#/components/schemas/NonDtoDate"
         nonParole:
           $ref: "#/components/schemas/SentenceKeyDate"
         paroleEligibility:
-          $ref: "#/components/schemas/SentenceKeyDate"
+          $ref: "#/components/schemas/SentenceKeyDateWithCalculatedDate"
         postRecallRelease:
           $ref: "#/components/schemas/SentenceKeyDate"
         release:
@@ -2369,7 +2369,7 @@ components:
           type: integer
           example: 13
           description: Number of tagged bail days
-    SentenceKeyDate:
+    SentenceKeyDateWithCalculatedDate:
       type: object
       properties:
         date:
@@ -2387,6 +2387,19 @@ components:
           format: date
           example: 2023-03-01
           description: release calculated date for offender
+    SentenceKeyDate:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+          example: 2023-03-01
+          description: release date for offender
+        overrideDate:
+          type: string
+          format: date
+          example: 2023-03-01
+          description: release override date for offender
     HomeDetentionCurfewDate:
       type: object
       properties:
