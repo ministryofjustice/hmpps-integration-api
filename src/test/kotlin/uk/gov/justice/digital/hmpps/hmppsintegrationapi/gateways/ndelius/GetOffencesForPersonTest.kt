@@ -147,7 +147,8 @@ class GetOffencesForPersonTest(
           "communityManager": {},
           "mappaDetail": null,
           "supervisions": [],
-          "dynamicRisks": []
+          "dynamicRisks": [],
+          "personStatus": []
           }
           """,
           )
