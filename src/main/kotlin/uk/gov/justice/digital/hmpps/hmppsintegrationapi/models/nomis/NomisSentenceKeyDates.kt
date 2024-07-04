@@ -5,6 +5,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NonDtoDate
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ReleaseDate
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SentenceDate
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SentenceKeyDate
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SentenceKeyDateWithCalculatedDate
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SentenceKeyDates
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.TopupSupervision
 import java.time.LocalDate
@@ -64,7 +65,7 @@ data class NomisSentenceKeyDates(
       automaticRelease = SentenceKeyDate(date = this.automaticReleaseDate, overrideDate = this.automaticReleaseOverrideDate),
       conditionalRelease = SentenceKeyDate(date = this.conditionalReleaseDate, overrideDate = this.conditionalReleaseOverrideDate),
       dtoPostRecallRelease = SentenceKeyDate(date = this.dtoPostRecallReleaseDate, overrideDate = this.dtoPostRecallReleaseDateOverride),
-      earlyTerm = SentenceKeyDate(date = this.earlyTermDate, overrideDate = this.etdOverrideDate, calculatedDate = this.etdCalculatedDate),
+      earlyTerm = SentenceKeyDateWithCalculatedDate(date = this.earlyTermDate, overrideDate = this.etdOverrideDate, calculatedDate = this.etdCalculatedDate),
       homeDetentionCurfew =
         HomeDetentionCurfewDate(
           actualDate = this.homeDetentionCurfewActualDate,
@@ -73,18 +74,18 @@ data class NomisSentenceKeyDates(
           eligibilityOverrideDate = this.homeDetentionCurfewEligibilityOverrideDate,
           endDate = this.homeDetentionCurfewEndDate,
         ),
-      lateTerm = SentenceKeyDate(date = this.lateTermDate, overrideDate = this.ltdOverrideDate, calculatedDate = this.ltdCalculatedDate),
+      lateTerm = SentenceKeyDateWithCalculatedDate(date = this.lateTermDate, overrideDate = this.ltdOverrideDate, calculatedDate = this.ltdCalculatedDate),
       licenceExpiry =
-        SentenceKeyDate(
+        SentenceKeyDateWithCalculatedDate(
           date = this.licenceExpiryDate,
           overrideDate = this.licenceExpiryOverrideDate,
           calculatedDate = this.licenceExpiryCalculatedDate,
         ),
-      midTerm = SentenceKeyDate(date = this.midTermDate, overrideDate = this.mtdOverrideDate, calculatedDate = this.mtdCalculatedDate),
+      midTerm = SentenceKeyDateWithCalculatedDate(date = this.midTermDate, overrideDate = this.mtdOverrideDate, calculatedDate = this.mtdCalculatedDate),
       nonDto = NonDtoDate(date = this.nonDtoReleaseDate, releaseDateType = this.nonDtoReleaseDateType),
       nonParole = SentenceKeyDate(date = this.nonParoleDate, overrideDate = this.nonParoleOverrideDate),
       paroleEligibility =
-        SentenceKeyDate(
+        SentenceKeyDateWithCalculatedDate(
           date = this.paroleEligibilityDate,
           overrideDate = this.paroleEligibilityOverrideDate,
           calculatedDate = this.paroleEligibilityCalculatedDate,
