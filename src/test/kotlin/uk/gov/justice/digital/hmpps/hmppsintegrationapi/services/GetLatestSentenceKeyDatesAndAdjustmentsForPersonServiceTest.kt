@@ -22,6 +22,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SentenceAdjustment
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SentenceDate
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SentenceKeyDate
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SentenceKeyDateWithCalculatedDate
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SentenceKeyDates
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.TopupSupervision
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
@@ -62,7 +63,7 @@ internal class GetLatestSentenceKeyDatesAndAdjustmentsForPersonServiceTest(
                 conditionalRelease = SentenceKeyDate(date = LocalDate.parse("2023-12-02"), overrideDate = LocalDate.parse("2023-12-02")),
                 dtoPostRecallRelease = SentenceKeyDate(date = LocalDate.parse("2024-01-02"), overrideDate = LocalDate.parse("2024-01-02")),
                 earlyTerm =
-                  SentenceKeyDate(
+                  SentenceKeyDateWithCalculatedDate(
                     date = LocalDate.parse("2021-11-02"),
                     overrideDate = LocalDate.parse("2021-11-02"),
                     calculatedDate = LocalDate.parse("2021-11-02"),
@@ -76,19 +77,19 @@ internal class GetLatestSentenceKeyDatesAndAdjustmentsForPersonServiceTest(
                     endDate = LocalDate.parse("2022-04-01"),
                   ),
                 lateTerm =
-                  SentenceKeyDate(
+                  SentenceKeyDateWithCalculatedDate(
                     date = LocalDate.parse("2022-01-01"),
                     overrideDate = LocalDate.parse("2022-01-01"),
                     calculatedDate = LocalDate.parse("2022-01-01"),
                   ),
                 licenceExpiry =
-                  SentenceKeyDate(
+                  SentenceKeyDateWithCalculatedDate(
                     date = LocalDate.parse("2025-02-01"),
                     overrideDate = LocalDate.parse("2025-02-01"),
                     calculatedDate = LocalDate.parse("2025-02-01"),
                   ),
                 midTerm =
-                  SentenceKeyDate(
+                  SentenceKeyDateWithCalculatedDate(
                     date = LocalDate.parse("2024-02-01"),
                     overrideDate = LocalDate.parse("2024-02-01"),
                     calculatedDate = LocalDate.parse("2024-02-01"),
@@ -96,7 +97,7 @@ internal class GetLatestSentenceKeyDatesAndAdjustmentsForPersonServiceTest(
                 nonDto = NonDtoDate(date = LocalDate.parse("2024-02-01"), releaseDateType = "CRD"),
                 nonParole = SentenceKeyDate(date = LocalDate.parse("2026-11-02"), overrideDate = LocalDate.parse("2026-11-02")),
                 paroleEligibility =
-                  SentenceKeyDate(
+                  SentenceKeyDateWithCalculatedDate(
                     date = LocalDate.parse("2027-02-01"),
                     overrideDate = LocalDate.parse("2027-02-01"),
                     calculatedDate = LocalDate.parse("2027-02-01"),
