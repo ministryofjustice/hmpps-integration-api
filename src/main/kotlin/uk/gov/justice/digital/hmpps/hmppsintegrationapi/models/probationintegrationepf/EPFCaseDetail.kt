@@ -1,10 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.probationintegrationepf
 
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CaseDetail
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CaseSentence
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CourtAppearance
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Name
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ResponsibleProvider
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.*
 
 data class EPFCaseDetail(
   val nomsId: String? = null,
@@ -15,6 +11,7 @@ data class EPFCaseDetail(
   val sentence: CaseSentence? = null,
   val responsibleProvider: ResponsibleProvider? = null,
   val ogrsScore: Long? = null,
+  val rsrScore: Double? = null,
   val age: Long? = null,
   val ageAtRelease: Long? = null,
 ) {
@@ -31,6 +28,7 @@ data class EPFCaseDetail(
         ),
       responsibleProvider = ResponsibleProvider(code = this.responsibleProvider?.code, name = this.responsibleProvider?.name),
       ogrsScore = this.ogrsScore,
+      rsrScore = this.rsrScore,
       age = this.age,
       ageAtRelease = this.ageAtRelease,
     )

@@ -9,6 +9,7 @@ data class CaseDetail(
   val sentence: CaseSentence? = null,
   val responsibleProvider: ResponsibleProvider? = null,
   val ogrsScore: Long? = null,
+  val rsrScore: Double? = null,
   val age: Long? = null,
   val ageAtRelease: Long? = null,
 )

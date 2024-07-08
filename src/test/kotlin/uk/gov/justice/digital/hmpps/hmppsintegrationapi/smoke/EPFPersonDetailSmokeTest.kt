@@ -48,6 +48,7 @@ class EPFPersonDetailSmokeTest : DescribeSpec(
             "name": "string"
           },
           "ogrsScore": -9007199254740991,
+          "rsrScore": -1.7976931348623157E308,
           "age": -9007199254740991,
           "ageAtRelease": -9007199254740991
         },
