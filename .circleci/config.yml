@@ -310,18 +310,3 @@ workflows:
           context:
             - veracode-credentials
             - hmpps-common-vars
-  heartbeat-interval:
-    triggers:
-      - schedule:
-          cron: "0,15,30,45 * * * *"
-          filters:
-            branches:
-              only:
-                - main
-    jobs:
-      - heartbeat:
-          <<: *slack-fail-post-step
-          name: heartbeat-for-dev
-          context:
-            - hmpps-common-vars
-            - hmpps-integration-api-heartbeat-dev
