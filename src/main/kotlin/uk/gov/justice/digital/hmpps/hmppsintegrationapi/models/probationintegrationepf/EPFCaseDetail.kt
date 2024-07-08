@@ -1,6 +1,10 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.probationintegrationepf
 
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.*
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CaseDetail
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CaseSentence
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CourtAppearance
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Name
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ResponsibleProvider
 
 data class EPFCaseDetail(
   val nomsId: String? = null,
