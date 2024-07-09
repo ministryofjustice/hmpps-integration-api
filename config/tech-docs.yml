@@ -5,13 +5,14 @@ host: https://ministryofjustice.github.io/hmpps-integration-api-docs
 
 # Header-related options
 show_govuk_logo: false
-service_name: HMPPS Integration API Documentation
+service_name: HMPPS Integration API And Events Documentation
 service_link: /
 
 # Links to show on right-hand-side of header
 header_links:
   Docs GitHub: https://github.com/ministryofjustice/hmpps-integration-api-docs
   Integration API GitHub: https://github.com/ministryofjustice/hmpps-integration-api
+  Integration Events Github: https://github.com/ministryofjustice/hmpps-integration-events
 
 # Enables search functionality. This indexes pages only and is not recommended for single-page sites.
 enable_search: true
