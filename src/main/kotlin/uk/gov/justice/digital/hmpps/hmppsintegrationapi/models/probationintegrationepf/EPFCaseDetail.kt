@@ -15,6 +15,7 @@ data class EPFCaseDetail(
   val sentence: CaseSentence? = null,
   val responsibleProvider: ResponsibleProvider? = null,
   val ogrsScore: Long? = null,
+  val rsrScore: Double? = null,
   val age: Long? = null,
   val ageAtRelease: Long? = null,
 ) {
@@ -31,6 +32,7 @@ data class EPFCaseDetail(
         ),
       responsibleProvider = ResponsibleProvider(code = this.responsibleProvider?.code, name = this.responsibleProvider?.name),
       ogrsScore = this.ogrsScore,
+      rsrScore = this.rsrScore,
       age = this.age,
       ageAtRelease = this.ageAtRelease,
     )
