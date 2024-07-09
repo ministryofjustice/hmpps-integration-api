@@ -118,13 +118,3 @@ kubectl -n hmpps-integration-api-[environment] get secrets [your queue secret na
 6. Update terraform to load the secret value from AWS and update filter_policy value. Follow [Example](https://github.com/ministryofjustice/cloud-platform-environments/pull/22111/files). Note: The name of aws_secretsmanager_secret module has to be same as the secret name created from step 4/5 above. 
 7. Follow steps 3-8 in [Create an API key](#create-an-api-key) to merge branch to main. 
 
-## Create a new endpoint for a client
-
-### Create basic infrastructure
-Within the [Cloud Platform Environments GitHub repository](https://github.com/ministryofjustice/cloud-platform-environments/tree/main) and the namespace of the environment:
-
-1. Create a branch.
-2. Add a new API Gateway resource, a SQS method, a SQS method response, and an integration. Example: [api_gateway.tf](https://github.com/ministryofjustice/cloud-platform-environments/pull/22695/files)
-3. Ensure that all the permissions are up-to-date and add a new role and policy for your new resource. Example: [iam.tf](https://github.com/ministryofjustice/cloud-platform-environments/pull/22787/files#diff-a376622fa4a4c2fd9404d5ee4221487259264608a0cbe36b99c150c472558f29)
-4. Check that the integration is pointing to the right queue. Example: [api_gateway.tf](https://github.com/ministryofjustice/cloud-platform-environments/pull/22795/files)
-5. Deploy and test (do not use Postman, rather use a GET cURL command with "x-api-key" as your header.)
