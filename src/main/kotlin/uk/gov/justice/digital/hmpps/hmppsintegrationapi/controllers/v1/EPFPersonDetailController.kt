@@ -26,7 +26,7 @@ class EPFPersonDetailController(
     val response = getEPFPersonDetailService.execute(hmppsId, eventNumber)
 
     if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
-      throw EntityNotFoundException("Could not retrieve person details for person with id: $hmppsId")
+      throw EntityNotFoundException("The case details for this person cannot be retrieved. Please ensure the CRN and event number are correct and If the person has Limited Access Only (LAO) applied to their NDelius record, then it will not be possible to retrieve their details. In such circumstances, please enter the person's details manually")
     }
 
     auditService.createEvent(
