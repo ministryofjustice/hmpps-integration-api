@@ -130,5 +130,18 @@ class PersonSmokeTest : DescribeSpec(
       """.removeWhitespaceAndNewlines(),
       )
     }
+
+    it("returns person name details for a person") {
+      val response = httpClient.performAuthorised("$basePath/$encodedHmppsId/name")
+
+      response.statusCode().shouldBe(HttpStatus.OK.value())
+      response.body().shouldContain("\"data\":[")
+      response.body().shouldContain(
+        """
+            "firstName": "Robert",
+            "lastName": "Larsen",
+      """.removeWhitespaceAndNewlines(),
+      )
+    }
   },
 )
