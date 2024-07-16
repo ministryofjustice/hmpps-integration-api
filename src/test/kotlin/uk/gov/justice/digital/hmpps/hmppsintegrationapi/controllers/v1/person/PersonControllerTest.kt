@@ -23,12 +23,14 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ContactDeta
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Identifiers
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ImageMetadata
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonName
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PhoneNumber
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSPrisoner
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetImageMetadataForPersonService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetNameForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonsService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
@@ -44,6 +46,7 @@ internal class PersonControllerTest(
   @Autowired var springMockMvc: MockMvc,
   @MockBean val getPersonService: GetPersonService,
   @MockBean val getPersonsService: GetPersonsService,
+  @MockBean val getNameForPersonService: GetNameForPersonService,
   @MockBean val getImageMetadataForPersonService: GetImageMetadataForPersonService,
   @MockBean val auditService: AuditService,
 ) : DescribeSpec(
@@ -357,6 +360,81 @@ internal class PersonControllerTest(
                    "hmppsId":null,
                    "contactDetails":null
                 }
+             }
+          }
+        """.removeWhitespaceAndNewlines(),
+          )
+        }
+      }
+
+      describe("GET $basePath/$encodedHmppsId/name") {
+        val probationOffenderSearch = Person("Sam", "Smith", identifiers = Identifiers(nomisNumber = "1234ABC"))
+        val prisonOffenderSearch = POSPrisoner("Sam", "Smith")
+        val prisonResponse = Response(data = prisonOffenderSearch, errors = emptyList())
+
+        beforeTest {
+          Mockito.reset(getNameForPersonService)
+          whenever(getNameForPersonService.execute(hmppsId)).thenReturn(
+            Response(
+              data = PersonName(firstName = "Sam", lastName = "Smith"),
+            ),
+          )
+          Mockito.reset(auditService)
+        }
+
+        it("returns a 200 OK status code") {
+          val result = mockMvc.performAuthorised("$basePath/$encodedHmppsId/name")
+
+          result.response.status.shouldBe(HttpStatus.OK.value())
+        }
+
+        it("logs audit") {
+          mockMvc.performAuthorised("$basePath/$encodedHmppsId/name")
+          verify(auditService, times(1)).createEvent("GET_PERSON_NAME", mapOf("hmppsId" to hmppsId))
+        }
+
+        describe("404 Not found") {
+          beforeTest {
+            Mockito.reset(auditService)
+          }
+          val idThatDoesNotExist = "9999/11111Z"
+
+          it("returns a 404 status code when a person cannot be found in both upstream APIs") {
+            whenever(getNameForPersonService.execute(idThatDoesNotExist)).thenReturn(
+              Response(
+                data = null,
+                errors =
+                  listOf(
+                    UpstreamApiError(
+                      causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH,
+                      type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+                    ),
+                  ),
+              ),
+            )
+
+            val encodedIdThatDoesNotExist = URLEncoder.encode(idThatDoesNotExist, StandardCharsets.UTF_8)
+            val result = mockMvc.performAuthorised("$basePath/$encodedIdThatDoesNotExist/name")
+
+            result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
+          }
+        }
+
+        it("gets a person name details with the matching ID") {
+          mockMvc.performAuthorised("$basePath/$encodedHmppsId/name")
+
+          verify(getNameForPersonService, times(1)).execute(hmppsId)
+        }
+
+        it("returns person name with the matching ID") {
+          val result = mockMvc.performAuthorised("$basePath/$encodedHmppsId/name")
+
+          result.response.contentAsString.shouldBe(
+            """
+            {
+             "data":{
+                   "firstName":"Sam",
+                   "lastName":"Smith"
              }
           }
         """.removeWhitespaceAndNewlines(),
