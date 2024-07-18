@@ -219,5 +219,19 @@ class PersonSmokeTest : DescribeSpec(
       """.removeWhitespaceAndNewlines(),
       )
     }
+
+    it("returns person cell location if in prison") {
+      val response = httpClient.performAuthorised("$basePath/$encodedHmppsId/cell-location")
+
+      response.statusCode().shouldBe(HttpStatus.OK.value())
+      response.body().shouldContain("\"data\":{")
+      response.body().shouldContain(
+        """
+           "prisonCode":"MDI",
+           "prisonName":"HMP Leeds",
+           "cell":"A-1-002"
+      """.removeWhitespaceAndNewlines(),
+      )
+    }
   },
 )
