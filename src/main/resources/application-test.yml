@@ -65,6 +65,7 @@ authorisation:
       - "/v1/persons/.*/risks/mappadetail"
       - "/v1/persons/.*/risks/categories"
       - "/v1/persons/.*/risk-management-plan"
+      - "/v1/persons/.*/cell-location"
       - "/v1/persons/.*/status-information"
       - "/v1/hmpps-id/nomis-number/\\.*+[^/]*$"
       - "/health"
