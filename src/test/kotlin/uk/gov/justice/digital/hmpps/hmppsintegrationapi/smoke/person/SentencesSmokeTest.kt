@@ -136,7 +136,7 @@ class SentencesSmokeTest : DescribeSpec(
                 },
                 "nonDto": {
                     "date": "2020-04-01",
-                    "releaseDateType": "ARD"
+                    "releaseDateType": "CRD"
                 },
                 "nonParole": {
                     "date": "2020-02-03",

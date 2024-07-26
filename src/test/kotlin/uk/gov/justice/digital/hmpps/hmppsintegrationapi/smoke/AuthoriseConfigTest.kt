@@ -23,6 +23,7 @@ class AuthoriseConfigTest : DescribeSpec(
           "/v1/persons",
           "/v1/persons/\\.*+[^/]*${'$'}",
           "/v1/persons/.*/images",
+          "/v1/persons/.*/name",
           "/v1/images/\\.*+[^/]*${'$'}",
           "/v1/persons/.*/addresses",
           "/v1/persons/.*/offences",

@@ -11,10 +11,12 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFound
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.decodeUrlCharacters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ImageMetadata
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonName
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError.Type.ENTITY_NOT_FOUND
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetImageMetadataForPersonService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetNameForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonsService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
@@ -28,6 +30,7 @@ import java.time.format.DateTimeFormatter
 class PersonController(
   @Autowired val getPersonService: GetPersonService,
   @Autowired val getPersonsService: GetPersonsService,
+  @Autowired val getNameForPersonService: GetNameForPersonService,
   @Autowired val getImageMetadataForPersonService: GetImageMetadataForPersonService,
   @Autowired val auditService: AuditService,
 ) {
@@ -90,6 +93,23 @@ class PersonController(
 
     auditService.createEvent("GET_PERSON_IMAGE", mapOf("hmppsId" to hmppsId))
     return response.data.paginateWith(page, perPage)
+  }
+
+  @GetMapping("{encodedHmppsId}/name")
+  fun getPersonName(
+    @PathVariable encodedHmppsId: String,
+  ): Map<String, PersonName?> {
+    val hmppsId = encodedHmppsId.decodeUrlCharacters()
+
+    val response = getNameForPersonService.execute(hmppsId)
+
+    if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
+      throw EntityNotFoundException("Could not find person with id: $hmppsId")
+    }
+
+    auditService.createEvent("GET_PERSON_NAME", mapOf("hmppsId" to hmppsId))
+
+    return mapOf("data" to response.data)
   }
 
   private fun isValidISODateFormat(dateString: String): Boolean {

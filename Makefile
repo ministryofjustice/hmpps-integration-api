@@ -3,7 +3,7 @@ authenticate-docker:
 
 build-dev:
 	docker-compose pull hmpps-auth
-	docker-compose build
+	docker-compose build --no-cache
 
 build:
 	docker build -t hmpps-integration-api .

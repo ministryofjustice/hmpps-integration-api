@@ -2,7 +2,7 @@ FROM node:current-alpine3.17
 
 RUN apk update && apk add bash curl --no-cache
 
-RUN curl https://allocation-manager-staging.apps.live.cloud-platform.service.justice.gov.uk/v3/api-docs.json > manage-pom-case-api.json && \
+RUN curl https://dev.moic.service.justice.gov.uk/v3/api-docs.json > manage-pom-case-api.json && \
     npm install -g @stoplight/prism-cli
 
 RUN adduser -D user

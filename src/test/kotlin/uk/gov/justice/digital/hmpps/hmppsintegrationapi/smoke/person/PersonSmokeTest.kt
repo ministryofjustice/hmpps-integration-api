@@ -100,7 +100,7 @@ class PersonSmokeTest : DescribeSpec(
                         "phoneNumbers": [
                             {
                                 "number": "string",
-                                "type": "TELEPHONE"
+                                "type": "string"
                             }
                         ],
                         "emails": [
@@ -127,6 +127,17 @@ class PersonSmokeTest : DescribeSpec(
             "view":"OIC",
             "orientation":"NECK",
             "type":"OFF_IDM"
+      """.removeWhitespaceAndNewlines(),
+      )
+    }
+
+    it("returns person name details for a person") {
+      val response = httpClient.performAuthorised("$basePath/$encodedHmppsId/name")
+
+      response.statusCode().shouldBe(HttpStatus.OK.value())
+      response.body().shouldBe(
+        """
+        {"data":{"firstName":"string","lastName":"string"}}
       """.removeWhitespaceAndNewlines(),
       )
     }
