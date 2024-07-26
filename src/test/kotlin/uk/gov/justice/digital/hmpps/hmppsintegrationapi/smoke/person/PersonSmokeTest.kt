@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.smoke.person
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
+import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIHttpClient
@@ -100,7 +101,7 @@ class PersonSmokeTest : DescribeSpec(
                         "phoneNumbers": [
                             {
                                 "number": "string",
-                                "type": "TELEPHONE"
+                                "type": "string"
                             }
                         ],
                         "emails": [
@@ -135,11 +136,9 @@ class PersonSmokeTest : DescribeSpec(
       val response = httpClient.performAuthorised("$basePath/$encodedHmppsId/name")
 
       response.statusCode().shouldBe(HttpStatus.OK.value())
-      response.body().shouldContain("\"data\":[")
-      response.body().shouldContain(
+      response.body().shouldBe(
         """
-            "firstName": "Robert",
-            "lastName": "Larsen",
+        {"data":{"firstName":"string","lastName":"string"}}
       """.removeWhitespaceAndNewlines(),
       )
     }

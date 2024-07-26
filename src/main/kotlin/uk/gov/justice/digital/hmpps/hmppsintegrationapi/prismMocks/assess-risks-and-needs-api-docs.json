@@ -540,7 +540,7 @@
           "risk": {
             "type": "string",
             "description": "is there any risk",
-            "example": "Yes, No, Don't know, null",
+            "example": "YES",
             "enum": [
               "YES",
               "NO",
@@ -551,7 +551,7 @@
           "previous": {
             "type": "string",
             "description": "Previous concerns",
-            "example": "Yes, No, Don't know",
+            "example": "YES",
             "enum": [
               "YES",
               "NO",
@@ -567,7 +567,7 @@
           "current": {
             "type": "string",
             "description": "Current concerns",
-            "example": "Yes, No, Don't know",
+            "example": "YES",
             "enum": [
               "YES",
               "NO",
