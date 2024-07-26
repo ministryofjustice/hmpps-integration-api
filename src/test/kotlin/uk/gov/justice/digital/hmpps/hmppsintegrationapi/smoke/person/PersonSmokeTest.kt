@@ -178,7 +178,7 @@ class PersonSmokeTest : DescribeSpec(
                         "phoneNumbers": [
                             {
                                 "number": "string",
-                                "type": "TELEPHONE"
+                                "type": "string"
                             }
                         ],
                         "emails": [
