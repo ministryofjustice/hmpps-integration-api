@@ -60,6 +60,43 @@ class OffenderTest : DescribeSpec(
 
         person.middleName.shouldBeEmpty()
       }
+
+      it("returns crn as HMPPS ID when crn is returned") {
+        val prisoner =
+          Offender(
+            firstName = "First Name",
+            surname = "Surname",
+            otherIds =
+              OtherIds(
+                pncNumber = "pncNumber",
+                nomsNumber = "nomsNumber",
+                croNumber = "croNumber",
+                crn = "crnNumber",
+              ),
+          )
+
+        val person = prisoner.toPerson()
+
+        person.hmppsId.shouldBe("crnNumber")
+      }
+
+      it("returns nomsNumber as HMPPS ID when no crn") {
+        val prisoner =
+          Offender(
+            firstName = "First Name",
+            surname = "Surname",
+            otherIds =
+              OtherIds(
+                pncNumber = "pncNumber",
+                nomsNumber = "nomsNumber",
+                croNumber = "croNumber",
+              ),
+          )
+
+        val person = prisoner.toPerson()
+
+        person.hmppsId.shouldBe("nomsNumber")
+      }
     }
   },
 )

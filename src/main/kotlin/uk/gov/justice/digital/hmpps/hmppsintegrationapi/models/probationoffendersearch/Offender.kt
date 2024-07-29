@@ -33,7 +33,7 @@ data class Offender(
           deliusCrn = otherIds.crn,
         ),
       pncId = otherIds.pncNumber,
-      hmppsId = otherIds.crn,
+      hmppsId = if (otherIds.crn?.isNotEmpty() == true) otherIds.crn else otherIds.nomsNumber,
       contactDetails = this.contactDetails?.toContactDetails(),
     )
 

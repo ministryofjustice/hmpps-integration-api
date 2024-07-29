@@ -66,6 +66,7 @@ authorisation:
       - "/v1/persons/.*/risks/categories"
       - "/v1/persons/.*/risk-management-plan"
       - "/v1/persons/.*/status-information"
+      - "/v1/hmpps-id/nomis-number/\\.*+[^/]*$"
       - "/health"
       - "/health/ping"
       - "/health/readiness"
@@ -73,4 +74,3 @@ authorisation:
       - "/info"
     config-test:
       - "/v1/config/authorisation"
-
