@@ -50,6 +50,7 @@ authorisation:
       - "/v1/persons/.*/case-notes"
       - "/v1/persons/.*/person-responsible-officer"
       - "/v1/persons/.*/risk-management-plan"
+      - "/v1/persons/.*/cell-location"
       - "/v1/epf/person-details/.*/\\.*+[^/]*$"
       - "/v1/hmpps-id/nomis-number/\\.*+[^/]*$"
       - "/health"

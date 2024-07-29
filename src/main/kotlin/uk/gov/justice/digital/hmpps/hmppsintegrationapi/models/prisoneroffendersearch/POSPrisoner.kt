@@ -17,6 +17,10 @@ data class POSPrisoner(
   val bookingId: String? = null,
   val maritalStatus: String? = null,
   val croNumber: String? = null,
+  val prisonId: String? = null,
+  val prisonName: String? = null,
+  val cellLocation: String? = null,
+  val inOutStatus: String? = null,
 ) {
   fun toPerson(): Person =
     Person(
