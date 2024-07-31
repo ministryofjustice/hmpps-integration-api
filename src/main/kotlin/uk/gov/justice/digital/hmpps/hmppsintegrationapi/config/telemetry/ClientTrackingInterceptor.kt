@@ -18,9 +18,11 @@ class ClientTrackingConfiguration(private val clientTrackingInterceptor: ClientT
 
 @Component
 class ClientTrackingInterceptor : HandlerInterceptor {
-
-  override fun preHandle(request: HttpServletRequest, response: HttpServletResponse, handler: Any): Boolean {
-
+  override fun preHandle(
+    request: HttpServletRequest,
+    response: HttpServletResponse,
+    handler: Any,
+  ): Boolean {
     val subjectDistinguishedName = request.getAttribute("clientName") as String?
     subjectDistinguishedName?.let {
       try {
