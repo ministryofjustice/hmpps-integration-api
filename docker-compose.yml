@@ -62,7 +62,7 @@ services:
       dockerfile: Dockerfile.setup-prisoner-search
     container_name: prisoner-search
     healthcheck:
-      test: 'wget --header="Authorization: Bearer abc" http://127.0.0.1:4010/prisoner/A1234AL -O /dev/null'
+      test: 'wget --header="Authorization: Bearer abc" http://0.0.0.0:4010/attribute-search/attributes -O /dev/null'
     ports:
       - "4010:4010"
 
