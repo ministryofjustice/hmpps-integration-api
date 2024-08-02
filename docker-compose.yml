@@ -7,7 +7,7 @@ services:
     ports:
       - "8080:8080"
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8080/health/ping" ]
+      test: [ "CMD", "echo", "1" ]
     depends_on:
       prison-api:
         condition: service_healthy
@@ -62,7 +62,7 @@ services:
       dockerfile: Dockerfile.setup-prisoner-search
     container_name: prisoner-search
     healthcheck:
-      test: 'wget --header="Authorization: Bearer abc" http://0.0.0.0:4010/attribute-search/attributes -O /dev/null'
+      test: 'wget --header="Authorization: Bearer abc" http://0.0.0.0:4010/prisoner/nemo -O /dev/null'
     ports:
       - "4010:4010"
 

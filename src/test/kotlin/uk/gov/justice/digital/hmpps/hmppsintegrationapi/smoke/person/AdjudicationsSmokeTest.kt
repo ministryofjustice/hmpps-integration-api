@@ -43,18 +43,18 @@ class AdjudicationsSmokeTest : DescribeSpec(
               "paragraphDescription": "Committed an assault"
             }
           },
-          "status": "string",
+          "status": "ACCEPTED",
           "statusReason": "string",
           "statusDetails": "string",
           "hearings": [
             {
               "dateTimeOfHearing": "2021-07-05T10:35:17",
-              "oicHearingType": "string",
+              "oicHearingType": "GOV_ADULT",
               "outcome": {
-                "code": "string",
-                "reason": "string",
+                "code": "COMPLETE",
+                "reason": "LEGAL_ADVICE",
                 "details": "string",
-                "plea": "string"
+                "plea": "UNFIT"
               }
             }
           ],
@@ -62,27 +62,27 @@ class AdjudicationsSmokeTest : DescribeSpec(
             {
               "hearing": {
                 "dateTimeOfHearing": "2021-07-05T10:35:17",
-                "oicHearingType": "string",
+                "oicHearingType": "GOV_ADULT",
                 "outcome": {
-                  "code": "string",
-                  "reason": "string",
+                  "code": "COMPLETE",
+                  "reason": "LEGAL_ADVICE",
                   "details": "string",
-                  "plea": "string"
+                  "plea": "UNFIT"
                 }
               },
               "outcome": {
                 "outcome": {
-                  "code": "string",
+                  "code": "REFER_POLICE",
                   "details": "string",
-                  "reason": "string",
-                  "quashedReason": "string",
+                  "reason": "ANOTHER_WAY",
+                  "quashedReason": "FLAWED_CASE",
                   "canRemove": true
                 },
                 "referralOutcome": {
-                  "code": "string",
+                  "code": "REFER_POLICE",
                   "details": "string",
-                  "reason": "string",
-                  "quashedReason": "string",
+                  "reason": "ANOTHER_WAY",
+                  "quashedReason": "FLAWED_CASE",
                   "canRemove": true
                 }
               }
@@ -90,8 +90,8 @@ class AdjudicationsSmokeTest : DescribeSpec(
           ],
           "punishments": [
             {
-              "type": "string",
-              "privilegeType": "string",
+              "type": "PRIVILEGE",
+              "privilegeType": "CANTEEN",
               "otherPrivilege": "string",
               "schedule": {
                 "days": -2147483648,
@@ -104,7 +104,7 @@ class AdjudicationsSmokeTest : DescribeSpec(
           "punishmentComments": [
             {
               "comment": "string",
-              "reasonForChange": "string",
+              "reasonForChange": "APPEAL",
               "dateTime": "2021-07-05T10:35:17"
             }
           ]

@@ -19,7 +19,6 @@ class AddressSmokeTest : DescribeSpec(
     it("returns addresses for a person") {
       val response = httpClient.performAuthorised("$basePath/$encodedHmppsId/addresses")
 
-      response.statusCode().shouldBe(HttpStatus.OK.value())
       response.body().shouldEqualJson(
         """
       {
@@ -72,6 +71,7 @@ class AddressSmokeTest : DescribeSpec(
       }
       """.removeWhitespaceAndNewlines(),
       )
+      response.statusCode().shouldBe(HttpStatus.OK.value())
     }
   },
 )

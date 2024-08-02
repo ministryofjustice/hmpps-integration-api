@@ -28,6 +28,9 @@ heartbeat:
 
 test: unit-test smoke-test
 
+e2e:
+	./gradlew smokeTest --warning-mode all
+
 lint:
 	./gradlew ktlintCheck
 

@@ -19,7 +19,6 @@ class SentencesSmokeTest : DescribeSpec(
     it("returns sentences for a person") {
       val response = httpClient.performAuthorised(basePath)
 
-      response.statusCode().shouldBe(HttpStatus.OK.value())
       response.body().shouldEqualJson(
         """
         {
@@ -73,6 +72,8 @@ class SentencesSmokeTest : DescribeSpec(
         }
         """.removeWhitespaceAndNewlines(),
       )
+
+      response.statusCode().shouldBe(HttpStatus.OK.value())
     }
 
     it("returns latest sentence key dates and adjustments for a person") {

@@ -40,7 +40,7 @@ class NeedsSmokeTest : DescribeSpec(
                 "type": "DRUG_MISUSE",
                 "riskOfHarm": false,
                 "riskOfReoffending": false,
-                "severity": "SEVERE"
+                "severity": "NO_NEED"
               }
             ],
             "unansweredNeeds": [

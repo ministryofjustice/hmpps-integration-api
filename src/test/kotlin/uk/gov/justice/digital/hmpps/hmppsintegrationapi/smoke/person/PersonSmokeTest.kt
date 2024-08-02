@@ -24,17 +24,56 @@ class PersonSmokeTest : DescribeSpec(
       val response = httpClient.performAuthorised("$basePath?$queryParams")
 
       response.statusCode().shouldBe(HttpStatus.OK.value())
-      response.body().shouldContain("\"data\":[")
-      response.body().shouldContain(
+      response.body().shouldBe(
         """
-          "firstName":"Robert",
-          "lastName":"Larsen"
-        """.removeWhitespaceAndNewlines(),
-      )
-      response.body().shouldContain(
-        """
-          "firstName":"string",
-          "lastName":"string"
+          {
+  "data": [
+    {
+      "firstName": "string",
+      "lastName": "string",
+      "middleName": "string",
+      "dateOfBirth": "2019-08-24",
+      "gender": "string",
+      "ethnicity": "string",
+      "aliases": [
+        {
+          "firstName": "string",
+          "lastName": "string",
+          "middleName": "string",
+          "dateOfBirth": "2019-08-24",
+          "gender": "string",
+          "ethnicity": null
+        }
+      ],
+      "identifiers": {
+        "nomisNumber": "G5555TT",
+        "croNumber": "123456/24A",
+        "deliusCrn": "A123456"
+      },
+      "pncId": "2012/0052494Q",
+      "hmppsId": "A123456",
+      "contactDetails": {
+        "phoneNumbers": [
+          {
+            "number": "string",
+            "type": "TELEPHONE"
+          }
+        ],
+        "emails": [
+          "string"
+        ]
+      }
+    }
+  ],
+  "pagination": {
+    "isLastPage": true,
+    "count": 1,
+    "page": 1,
+    "perPage": 10,
+    "totalCount": 1,
+    "totalPages": 1
+  }
+}
         """.removeWhitespaceAndNewlines(),
       )
     }
@@ -100,7 +139,7 @@ class PersonSmokeTest : DescribeSpec(
                         "phoneNumbers": [
                             {
                                 "number": "string",
-                                "type": "string"
+                                "type": "TELEPHONE"
                             }
                         ],
                         "emails": [
@@ -178,7 +217,7 @@ class PersonSmokeTest : DescribeSpec(
                         "phoneNumbers": [
                             {
                                 "number": "string",
-                                "type": "string"
+                                "type": "TELEPHONE"
                             }
                         ],
                         "emails": [

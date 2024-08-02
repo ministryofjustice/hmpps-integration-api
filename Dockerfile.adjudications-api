@@ -2,12 +2,14 @@ FROM node:current-alpine3.17
 
 RUN apk update && apk add bash curl --no-cache
 
-RUN curl https://manage-adjudications-api-dev.hmpps.service.justice.gov.uk/v3/api-docs > adjudications_api.json && \
-    sed -i "s+\*/\*+application/json+g" adjudications_api.json && \
-    npm install -g @stoplight/prism-cli
+COPY src/main/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/prismMocks/adjudications_api.json /adjudications_api.json
+
+RUN sed -i "s+\*/\*+application/json+g" adjudications_api.json
+
+RUN npm install -g @stoplight/prism-cli
 
 RUN adduser -D user
 
 USER user
 
-CMD prism mock -v trace -p 4010 -h 0.0.0.0 /adjudications_api.json
+CMD prism mock -p 4010 -h 0.0.0.0 /adjudications_api.json

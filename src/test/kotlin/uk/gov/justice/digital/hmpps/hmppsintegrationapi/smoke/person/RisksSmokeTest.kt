@@ -77,7 +77,7 @@ class RisksSmokeTest : DescribeSpec(
               "assessmentDate": "2018-02-11",
               "nextReviewDate": "2018-02-11",
               "assessmentAgencyId": "MDI",
-              "assessmentStatus": "A",
+              "assessmentStatus": "P",
               "assessmentComment": "Comment details"
             }
           ],
