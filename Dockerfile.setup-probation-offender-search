@@ -2,7 +2,6 @@ FROM node:current-alpine3.17
 
 RUN apk update && apk add bash curl --no-cache
 
-
 COPY src/main/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/prismMocks/probation-offender-search.json /probation-offender-search.json
 RUN npm install -g @stoplight/prism-cli
 
