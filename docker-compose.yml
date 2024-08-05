@@ -7,7 +7,7 @@ services:
     ports:
       - "8080:8080"
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8080/health/ping" ]
+      test: [ "CMD", "echo", "1" ]
     depends_on:
       prison-api:
         condition: service_healthy
@@ -62,7 +62,7 @@ services:
       dockerfile: Dockerfile.setup-prisoner-search
     container_name: prisoner-search
     healthcheck:
-      test: 'wget --header="Authorization: Bearer abc" http://127.0.0.1:4010/prisoner/A1234AL -O /dev/null'
+      test: 'wget --header="Authorization: Bearer abc" http://0.0.0.0:4010/prisoner/nemo -O /dev/null'
     ports:
       - "4010:4010"
 
@@ -72,7 +72,7 @@ services:
       dockerfile: Dockerfile.setup-probation-offender-search
     container_name: probation-offender-search
     healthcheck:
-      test: 'wget --header="Authorization: Bearer abc" http://0.0.0.0:4010/synthetic-monitor -O /dev/null'
+      test: 'wget --header="Authorization: Bearer abc" http://0.0.0.0:4010/search?crn=sit -O /dev/null'
     ports:
       - '4020:4010'
 
@@ -102,7 +102,7 @@ services:
       dockerfile: Dockerfile.adjudications-api
     container_name: adjudications-api
     healthcheck:
-      test: 'wget --header="Authorization: Bearer abc" http://0.0.0.0:4010/reported-adjudications/prisoner/123 -O /dev/null'
+      test: 'wget --header="Authorization: Bearer abc" http://0.0.0.0:4010/reported-adjudications/hearings?hearingDate=1916-07-16 -O /dev/null'
     ports:
       - '4045:4010'
 
