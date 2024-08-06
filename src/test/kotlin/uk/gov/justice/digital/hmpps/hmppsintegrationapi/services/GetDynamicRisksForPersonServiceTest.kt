@@ -114,24 +114,11 @@ internal class GetDynamicRisksForPersonServiceTest(
       it("returns dynamic risks filtered data") {
         val response = getDynamicRisksForPersonService.execute(hmppsId)
 
-        response.data.shouldHaveSize(1)
+        response.data.shouldHaveSize(2)
         response.data[0].code shouldBe "RCCO"
         response.data[0].description shouldBe "Child Concerns"
-      }
-
-      it("returns an error when the dynamic risk code is not in the allowed list") {
-        whenever(personService.execute(hmppsId = deliusCrn)).thenReturn(Response(person))
-        whenever(personService.execute(hmppsId = hmppsId)).thenReturn(Response(person))
-        whenever(nDeliusGateway.getDynamicRisksForPerson(deliusCrn)).thenReturn(
-          Response(
-            data = listOf(nonMatchingDynamicRisk),
-          ),
-        )
-
-        val response = getDynamicRisksForPersonService.execute(hmppsId)
-
-        response.errors.shouldHaveSize(0)
-        response.data.shouldHaveSize(0)
+        response.data[1].code shouldBe "INVALID"
+        response.data[1].description shouldBe "Invalid Dynamic Risk!"
       }
     },
   )
