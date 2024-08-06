@@ -19,16 +19,8 @@ class GetDynamicRisksForPersonService(
 
     if (deliusCrn != null) {
       val allNDeliusDynamicRisks = nDeliusGateway.getDynamicRisksForPerson(deliusCrn)
-      val filteredNDeliusDynamicRisks =
-        allNDeliusDynamicRisks.data.filter {
-          it.code in
-            listOf(
-              "RCCO", "RCPR", "REG22", "RVLN", "ALT8", "STRG", "AVIS", "ALT1", "WEAP",
-              "RHRH", "RLRH", "RMRH", "RVHR", "RCHD", "REG15", "REG16", "REG17",
-              "ALT4", "AVS2", "ALT7", "ALSH",
-            )
-        }
-      nDeliusDynamicRisks = Response(data = filteredNDeliusDynamicRisks, errors = allNDeliusDynamicRisks.errors)
+
+      nDeliusDynamicRisks = Response(data = allNDeliusDynamicRisks.data, errors = allNDeliusDynamicRisks.errors)
     }
 
     return Response(
