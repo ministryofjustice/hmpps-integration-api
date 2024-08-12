@@ -21,10 +21,10 @@ class AuthoriseConfigTest : DescribeSpec(
       {
         "automated-test-client": [
           "/v1/persons",
-          "/v1/persons/\\.*+[^/]*${'$'}",
+          "/v1/persons/[^/]*$",
           "/v1/persons/.*/images",
           "/v1/persons/.*/name",
-          "/v1/images/\\.*+[^/]*${'$'}",
+          "/v1/images/[^/]*$",
           "/v1/persons/.*/addresses",
           "/v1/persons/.*/offences",
           "/v1/persons/.*/alerts",
@@ -46,8 +46,8 @@ class AuthoriseConfigTest : DescribeSpec(
           "/v1/persons/.*/person-responsible-officer",
           "/v1/persons/.*/risk-management-plan",
           "/v1/persons/.*/cell-location",
-          "/v1/epf/person-details/.*/\\.*+[^/]*${'$'}",
-          "/v1/hmpps-id/nomis-number/\\.*+[^/]*${'$'}",
+          "/v1/epf/person-details/.*/[^/]*$",
+          "/v1/hmpps-id/nomis-number/[^/]*$",
           "/health",
           "/health/ping",
           "/health/readiness",

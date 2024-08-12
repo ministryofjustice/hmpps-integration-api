@@ -27,10 +27,10 @@ services:
 authorisation:
   consumers:
     ctrlo:
-      - "/v1/epf/person-details/.*/\\.*+[^/]*$"
+      - "/v1/epf/person-details/.*/[^/]*$"
     moj-pes:
       - "/v1/persons/.*/name"
-      - "/v1/hmpps-id/nomis-number/\\.*+[^/]*$"
+      - "/v1/hmpps-id/nomis-number/[^/]*$"
       - "/v1/persons/.*/cell-location"
     kubernetes-health-check-client:
       - "/health/liveness"
