@@ -28,7 +28,7 @@ authorisation:
   consumers:
     mapps.client.org:
       - "/v1/persons"
-      - "/v1/persons/\\.*+[^/]*$"
+      - "/v1/persons/[^/]*$"
       - "/v1/persons/.*/images"
       - "/v1/images/.*"
       - "/v1/persons/.*/addresses"
@@ -49,19 +49,19 @@ authorisation:
       - "/v1/persons/.*/person-responsible-officer"
       - "/v1/persons/.*/risk-management-plan"
     ctrlo:
-      - "/v1/epf/person-details/.*/\\.*+[^/]*$"
+      - "/v1/epf/person-details/.*/[^/]*$"
     moj-pes:
       - "/v1/persons/.*/name"
-      - "/v1/hmpps-id/nomis-number/\\.*+[^/]*$"
+      - "/v1/hmpps-id/nomis-number/[^/]*$"
       - "/v1/persons/.*/cell-location"
     kubernetes-health-check-client:
       - "/health/liveness"
       - "/health/readiness"
     heartbeat:
-      - "/v1/persons/\\.*+[^/]*$"
+      - "/v1/persons/[^/]*$"
     pnd:
       - "/v1/persons"
-      - "/v1/persons/\\.*+[^/]*$"
+      - "/v1/persons/[^/]*$"
       - "/v1/persons/.*/addresses"
       - "/v1/persons/.*/alerts/pnd"
       - "/v1/persons/.*/sentences"
