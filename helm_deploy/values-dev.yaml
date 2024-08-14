@@ -17,7 +17,6 @@ generic-service:
 
   env:
     SPRING_PROFILES_ACTIVE: dev
-    APPLICATIONINSIGHTS_CONFIGURATION_FILE: applicationinsights.dev.json
     SENTRY_ENV: dev
 
   namespace_secrets:
