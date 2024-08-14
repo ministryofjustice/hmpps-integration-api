@@ -17,7 +17,6 @@ generic-service:
 
   env:
     SPRING_PROFILES_ACTIVE: preprod
-    APPLICATIONINSIGHTS_CONFIGURATION_FILE: applicationinsights.dev.json
     SENTRY_ENV: preprod
 
   namespace_secrets:
