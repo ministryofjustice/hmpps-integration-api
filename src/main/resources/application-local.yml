@@ -1,26 +1,16 @@
 services:
-  probation-offender-search:
-    base-url: http://localhost:4020
-  prisoner-offender-search:
-    base-url: http://localhost:4010
-  prison-api:
-    base-url: http://localhost:4030
-  ndelius:
-    base-url: http://localhost:4040
-  assess-risks-and-needs:
-    base-url: http://localhost:4050
-  probation-integration-epf:
-    base-url: http://localhost:4060
-  hmpps-auth:
-    base-url: http://localhost:9090
-  adjudications:
-    base-url: http://localhost:4045
-  create-and-vary-licence:
-    base-url: http://localhost:4070
-  case-notes:
-    base-url: http://localhost:4080
-  manage-pom-case-api:
-    base-url: http://localhost:4090
+  hmpps-auth.base-url: http://localhost:9090
+
+  adjudications.base-url: http://localhost:4010
+  assess-risks-and-needs.base-url: http://localhost:4011
+  case-notes.base-url: http://localhost:4012
+  create-and-vary-licence.base-url: http://localhost:4013
+  manage-pom-case-api.base-url: http://localhost:4014
+  ndelius.base-url: http://localhost:4015
+  prison-api.base-url: http://localhost:4016
+  prisoner-offender-search.base-url: http://localhost:4017
+  probation-integration-epf.base-url: http://localhost:4018
+  probation-offender-search.base-url: http://localhost:4019
 
 hmpps.sqs:
   provider: localstack
@@ -67,3 +57,5 @@ authorisation:
       - "/info"
     config-test:
       - "/v1/config/authorisation"
+    all-access:
+      - "/.*"

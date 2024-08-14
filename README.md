@@ -123,11 +123,17 @@ make serve
 Each service is then accessible at:
 
 - [http://localhost:8080](http://localhost:8080) for this application
-- [http://localhost:4030](http://localhost:4030) for the Prison API
-- [http://localhost:4040](http://localhost:4040) for the ndelius API
-- [http://localhost:4020](http://localhost:4020) for the Probation Offender Search
-- [http://localhost:4010](http://localhost:4010) for the Prisoner Search
+- [http://localhost:4010](http://localhost:4010) to [http://localhost:40XX]() for mocked HMPPS APIs
 - [http://localhost:9090](http://localhost:9090) for the HMPPS Auth service
+
+To call the integration-api, you need to pass a distinguished name in the `subject-distinguished-name` header. The `CN` attribute should match the client you wish to access the service as.
+The list of clients and their authorised endpoints can be found in [application-local-docker.yml](src/main/resources/application-local-docker.yml).
+
+For example,
+
+```bash
+curl -H "subject-distinguished-name: O=local,CN=all-access" http://localhost:8080/health
+```
 
 As part of getting the HMPPS Auth service running
 locally, [the in-memory database is seeded with data including a number of clients](https://github.com/ministryofjustice/hmpps-auth/blob/main/src/main/resources/db/dev/data/auth/V900_0__clients.sql). A client can have different permissions i.e. read, write, reporting, although strangely the column name is called `​​autoapprove`.

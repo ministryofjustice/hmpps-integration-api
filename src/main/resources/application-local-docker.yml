@@ -1,26 +1,16 @@
 services:
-  probation-offender-search:
-    base-url: http://probation-offender-search:4010
-  prisoner-offender-search:
-    base-url: http://prisoner-search:4010
-  prison-api:
-    base-url: http://prison-api:4010
-  ndelius:
-    base-url: http://ndelius-api:4010
-  assess-risks-and-needs:
-    base-url: http://assess-risks-and-needs-api:4010
-  probation-integration-epf:
-    base-url: http://probation-integration-epf-api:4010
-  adjudications:
-    base-url: http://adjudications-api:4010
-  create-and-vary-licence:
-    base-url: http://create-and-vary-licence-api:4010
-  case-notes:
-    base-url: http://case-notes-api:4010
-  manage-pom-case-api:
-    base-url: http://manage-pom-case-api:4010
-  hmpps-auth:
-    base-url: http://hmpps-auth:8080
+  hmpps-auth.base-url: http://hmpps-auth:8080
+
+  adjudications.base-url: http://prism:4010
+  assess-risks-and-needs.base-url: http://prism:4011
+  case-notes.base-url: http://prism:4012
+  create-and-vary-licence.base-url: http://prism:4013
+  manage-pom-case-api.base-url: http://prism:4014
+  ndelius.base-url: http://prism:4015
+  prison-api.base-url: http://prism:4016
+  prisoner-offender-search.base-url: http://prism:4017
+  probation-integration-epf.base-url: http://prism:4018
+  probation-offender-search.base-url: http://prism:4019
 
 authorisation:
   consumers:
@@ -60,6 +50,8 @@ authorisation:
       - "/info"
     config-test:
       - "/v1/config/authorisation"
+    all-access:
+      - "/.*"
 
 hmpps.sqs:
   provider: localstack

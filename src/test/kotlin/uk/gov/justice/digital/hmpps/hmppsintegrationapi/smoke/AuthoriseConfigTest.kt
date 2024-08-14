@@ -56,6 +56,9 @@ class AuthoriseConfigTest : DescribeSpec(
         ],
         "config-test": [
           "/v1/config/authorisation"
+        ],
+        "all-access": [
+          "/.*"
         ]
       }
       """.removeWhitespaceAndNewlines(),
