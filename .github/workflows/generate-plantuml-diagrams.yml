@@ -13,7 +13,7 @@ jobs:
     env:
       BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Install Graphviz Dependency
         run: |
           sudo apt-get install graphviz

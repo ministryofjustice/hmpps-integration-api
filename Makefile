@@ -2,20 +2,23 @@ authenticate-docker:
 	./scripts/authenticate_docker.sh
 
 build-dev:
-	docker-compose pull hmpps-auth
-	docker-compose build --no-cache
+	docker compose pull hmpps-auth
+	docker compose build
 
 build:
 	docker build -t hmpps-integration-api .
 
+serve-dependencies:
+	docker compose up hmpps-auth prism local-stack-aws --build -d
+
 serve: build-dev
-	docker-compose up -d
+	docker compose up -d
 
 publish:
 	./scripts/publish.sh
 
 stop:
-	docker-compose down
+	docker compose down
 
 unit-test:
 	./gradlew unitTest

@@ -1,5 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps
 
+import io.swagger.v3.oas.annotations.media.Schema
+
 data class CaseDetail(
   val nomsId: String? = null,
   val name: Name? = null,
@@ -45,5 +47,6 @@ data class CourtAppearance(
 )
 
 data class CourtDetails(
+  @Schema(description = "The name of the court", example = "Manchester Crown Court")
   val name: String? = null,
 )

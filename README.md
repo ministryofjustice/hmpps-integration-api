@@ -88,20 +88,21 @@ minutes.
 
 ## Usage
 
-### Running the application
+### Running the application locally
 
 To run the application using IntelliJ:
 
-1. Select the `HmppsIntegrationApi` run configuration file.
-2. Click the run button.
+1. Start dependencies using `make serve-dependencies`
+2. Select the `HmppsIntegrationApi` run configuration file.
+3. Click the run button.
 
-To run the application using the command line:
+Or, to run the application using the command line:
 
 ```bash
-./gradlew bootRun
+SPRING_PROFILES_ACTIVE=local ./gradlew bootRun
 ```
 
-Then visit [http://localhost:8080](http://localhost:8080).
+Then visit [http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html).
 
 #### With dependent services
 

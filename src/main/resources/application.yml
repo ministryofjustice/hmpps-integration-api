@@ -18,6 +18,9 @@ spring:
       test:
         - "stdout"
 
+springdoc:
+  default-produces-media-type: application/json
+
 server:
   port: 8080
   servlet:
