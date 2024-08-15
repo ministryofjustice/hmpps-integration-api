@@ -1,24 +1,15 @@
-version: "3.9"
 services:
   hmpps-integration-api:
     build:
       context: .
     container_name: hmpps-integration-api
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/health" ]
+    depends_on:
+      hmpps-auth:
+        condition: service_healthy
     ports:
       - "8080:8080"
-    healthcheck:
-      test: [ "CMD", "echo", "1" ]
-    depends_on:
-      prison-api:
-        condition: service_healthy
-      prisoner-search:
-        condition: service_healthy
-      probation-offender-search:
-        condition: service_healthy
-      probation-integration-epf-api:
-        condition: service_healthy
-      manage-pom-case-api:
-        condition: service_healthy
     environment:
       - SERVER_PORT=8080
       - SPRING_PROFILES_ACTIVE=local-docker
@@ -36,105 +27,22 @@ services:
       - SPRING_PROFILES_ACTIVE=dev
       - LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_WEB=TRACE
 
-  ndelius-api:
+  prism:
     build:
       context: .
-      dockerfile: Dockerfile.setup-ndelius-api
-    container_name: ndelius-api
-    healthcheck:
-      test: 'wget --header="Authorization: Bearer abc" http://127.0.0.1:4010/case/abc/supervisions -O /dev/null'
+      dockerfile: Dockerfile.prism
+    container_name: prism
     ports:
-      - '4040:4010'
-
-  prison-api:
-    build:
-      context: .
-      dockerfile: Dockerfile.setup-prison-api
-    container_name: prison-api
-    healthcheck:
-      test: 'wget --header="Authorization: Bearer abc" http://127.0.0.1:4010/api/offenders/A1234AL -O /dev/null'
-    ports:
-      - '4030:4010'
-
-  prisoner-search:
-    build:
-      context: .
-      dockerfile: Dockerfile.setup-prisoner-search
-    container_name: prisoner-search
-    healthcheck:
-      test: 'wget --header="Authorization: Bearer abc" http://0.0.0.0:4010/prisoner/nemo -O /dev/null'
-    ports:
-      - "4010:4010"
-
-  probation-offender-search:
-    build:
-      context: .
-      dockerfile: Dockerfile.setup-probation-offender-search
-    container_name: probation-offender-search
-    healthcheck:
-      test: 'wget --header="Authorization: Bearer abc" http://0.0.0.0:4010/search?crn=sit -O /dev/null'
-    ports:
-      - '4020:4010'
-
-  assess-risks-and-needs-api:
-    build:
-      context: .
-      dockerfile: Dockerfile.setup-assess-risks-and-needs-api
-    container_name: assess-risks-and-needs-api
-    healthcheck:
-      test: 'wget --header="Authorization: Bearer abc" http://0.0.0.0:4010/risks/crn/abc/predictors/all -O /dev/null'
-    ports:
-      - '4050:4010'
-
-  probation-integration-epf-api:
-    build:
-      context: .
-      dockerfile: Dockerfile.setup-probation-integration-epf-api
-    container_name: probation-integration-epf-api
-    healthcheck:
-      test: 'wget --header="Authorization: Bearer abc" http://0.0.0.0:4010/case-details/crn/1234 -O /dev/null'
-    ports:
-      - '4060:4010'
-
-  adjudications-api:
-    build:
-      context: .
-      dockerfile: Dockerfile.adjudications-api
-    container_name: adjudications-api
-    healthcheck:
-      test: 'wget --header="Authorization: Bearer abc" http://0.0.0.0:4010/reported-adjudications/hearings?hearingDate=1916-07-16 -O /dev/null'
-    ports:
-      - '4045:4010'
-
-  create-and-vary-licence-api:
-    build:
-      context: .
-      dockerfile: Dockerfile.setup-create-and-vary-a-licence-api
-    container_name: create-and-vary-licence-api
-    healthcheck:
-      test: 'wget --header="Authorization: Bearer abc" http://0.0.0.0:4010/public/licences/id/123 -O /dev/null'
-    ports:
-      - '4070:4010'
-
-  case-notes-api:
-    build:
-      context: .
-      dockerfile: Dockerfile.setup-case-notes-api
-    container_name: case-notes-api
-    healthcheck:
-      test: 'wget --header="Authorization: Bearer abc" http://0.0.0.0:4010/case-notes/1234 -O /dev/null'
-    ports:
-      - '4080:4010'
-
-  manage-pom-case-api:
-    build:
-      context: .
-      dockerfile: Dockerfile.setup-manage-pom-case-api
-    container_name: manage-pom-case-api
-    healthcheck:
-      test: 'wget --header="Authorization: Bearer abc" http://127.0.0.1:4010/api/allocation/X1234YZ/primary_pom -O /dev/null'
-    ports:
-      - '4090:4010'
+      - '4010:4010'
+      - '4011:4011'
+      - '4012:4012'
+      - '4013:4013'
+      - '4014:4014'
+      - '4015:4015'
+      - '4016:4016'
+      - '4017:4017'
+      - '4018:4018'
+      - '4019:4019'
 
   local-stack-aws:
     image: localstack/localstack:3.0
