@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.OpenAPIConfig.Companion.HMPPS_ID
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.decodeUrlCharacters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.MappaDetail
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetMappaDetailForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
@@ -38,7 +38,7 @@ class MappaDetailController(
   )
   fun getMappaDetail(
     @Parameter(ref = HMPPS_ID) @PathVariable encodedHmppsId: String,
-  ): Response<MappaDetail?> {
+  ): DataResponse<MappaDetail?> {
     val hmppsId = encodedHmppsId.decodeUrlCharacters()
     val response = getMappaDetailForPersonService.execute(hmppsId)
 
@@ -46,6 +46,6 @@ class MappaDetailController(
       throw EntityNotFoundException("Could not find person with id: $hmppsId")
     }
     auditService.createEvent("GET_MAPPA_DETAIL", mapOf("hmppsId" to hmppsId))
-    return Response(response.data)
+    return DataResponse(response.data)
   }
 }

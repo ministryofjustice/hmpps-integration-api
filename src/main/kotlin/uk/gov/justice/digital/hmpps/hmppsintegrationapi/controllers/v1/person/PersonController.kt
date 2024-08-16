@@ -18,10 +18,10 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.OpenAPIConfig.Com
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.OpenAPIConfig.Companion.PER_PAGE
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.decodeUrlCharacters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ImageMetadata
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonName
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError.Type.ENTITY_NOT_FOUND
@@ -95,7 +95,7 @@ class PersonController(
   )
   fun getPerson(
     @Parameter(ref = HMPPS_ID) @PathVariable encodedHmppsId: String,
-  ): Response<Map<String, Person?>> {
+  ): DataResponse<Map<String, Person?>> {
     val hmppsId = encodedHmppsId.decodeUrlCharacters()
     val response = getPersonService.getCombinedDataForPerson(hmppsId)
 
@@ -105,7 +105,7 @@ class PersonController(
 
     auditService.createEvent("GET_PERSON_DETAILS", mapOf("hmppsId" to hmppsId))
     val data = response.data.mapValues { it.value }
-    return Response(data)
+    return DataResponse(data)
   }
 
   @GetMapping("{encodedHmppsId}/images")
@@ -145,7 +145,7 @@ class PersonController(
   )
   fun getPersonName(
     @Parameter(ref = HMPPS_ID) @PathVariable encodedHmppsId: String,
-  ): Response<PersonName?> {
+  ): DataResponse<PersonName?> {
     val hmppsId = encodedHmppsId.decodeUrlCharacters()
 
     val response = getNameForPersonService.execute(hmppsId)
@@ -156,7 +156,7 @@ class PersonController(
 
     auditService.createEvent("GET_PERSON_NAME", mapOf("hmppsId" to hmppsId))
 
-    return Response(response.data)
+    return DataResponse(response.data)
   }
 
   private fun isValidISODateFormat(dateString: String): Boolean {

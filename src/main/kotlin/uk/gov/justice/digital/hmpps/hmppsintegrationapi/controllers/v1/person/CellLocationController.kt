@@ -11,7 +11,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.OpenAPIConfig.Com
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.decodeUrlCharacters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CellLocation
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetCellLocationForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
@@ -26,7 +26,7 @@ class CellLocationController(
   @GetMapping("{encodedHmppsId}/cell-location")
   fun getPersonCellLocation(
     @Parameter(ref = HMPPS_ID) @PathVariable encodedHmppsId: String,
-  ): Response<CellLocation?> {
+  ): DataResponse<CellLocation?> {
     val hmppsId = encodedHmppsId.decodeUrlCharacters()
 
     val response = getCellLocationForPersonService.execute(hmppsId)
@@ -37,6 +37,6 @@ class CellLocationController(
 
     auditService.createEvent("GET_PERSON_CELL_LOCATION", mapOf("hmppsId" to hmppsId))
 
-    return Response(response.data)
+    return DataResponse(response.data)
   }
 }

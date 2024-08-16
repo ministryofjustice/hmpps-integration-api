@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.OpenAPIConfig.Companion.HMPPS_ID
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.decodeUrlCharacters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonResponsibleOfficer
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetCommunityOffenderManagerForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPrisonOffenderManagerForPersonService
@@ -40,7 +40,7 @@ class PersonResponsibleOfficerController(
   )
   fun getPersonResponsibleOfficer(
     @Parameter(ref = HMPPS_ID) @PathVariable encodedHmppsId: String,
-  ): Response<PersonResponsibleOfficer> {
+  ): DataResponse<PersonResponsibleOfficer> {
     val hmppsId = encodedHmppsId.decodeUrlCharacters()
     val prisonOffenderManager = getPrisonOffenderManagerForPersonService.execute(hmppsId)
     val communityOffenderManager = getCommunityOffenderManagerForPersonService.execute(hmppsId)
@@ -60,6 +60,6 @@ class PersonResponsibleOfficerController(
       )
 
     auditService.createEvent("GET_PERSON_RESPONSIBLE_OFFICER", mapOf("hmppsId" to hmppsId))
-    return Response(mergedData)
+    return DataResponse(mergedData)
   }
 }

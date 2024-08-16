@@ -17,8 +17,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.OpenAPIConfig.Com
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.OpenAPIConfig.Companion.PER_PAGE
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.decodeUrlCharacters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.LatestSentenceKeyDatesAndAdjustments
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Sentence
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
@@ -71,7 +71,7 @@ class SentencesController(
   )
   fun getPersonLatestSentenceKeyDatesAndAdjustments(
     @Parameter(ref = HMPPS_ID) @PathVariable encodedHmppsId: String,
-  ): Response<LatestSentenceKeyDatesAndAdjustments?> {
+  ): DataResponse<LatestSentenceKeyDatesAndAdjustments?> {
     val hmppsId = encodedHmppsId.decodeUrlCharacters()
     val response = getLatestSentenceKeyDatesAndAdjustmentsForPersonService.execute(hmppsId)
 
@@ -82,6 +82,6 @@ class SentencesController(
       "GET_PERSON_SENTENCES_LATEST_KEY_DATES_AND_ADJUSTMENTS",
       mapOf("hmppsId" to hmppsId),
     )
-    return Response(response.data)
+    return DataResponse(response.data)
   }
 }
