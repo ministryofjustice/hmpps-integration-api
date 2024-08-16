@@ -20,6 +20,7 @@ spring:
 
 springdoc:
   default-produces-media-type: application/json
+  api-docs.version: openapi_3_1
 
 server:
   port: 8080

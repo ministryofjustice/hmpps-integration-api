@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.OpenAPIConfig.Companion.HMPPS_ID
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.decodeUrlCharacters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.filters.CaseNoteFilter
@@ -43,7 +42,7 @@ class CaseNotesController(
     ],
   )
   fun getCaseNotesForPerson(
-    @Parameter(ref = HMPPS_ID) @PathVariable encodedHmppsId: String,
+    @Parameter(description = "A URL-encoded HMPPS identifier", example = "2008%2F0545166T") @PathVariable encodedHmppsId: String,
     @Parameter(description = "Filter case notes from this date")
     @RequestParam(required = false, name = "startDate")
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)

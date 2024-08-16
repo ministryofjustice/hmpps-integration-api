@@ -10,12 +10,10 @@ import io.swagger.v3.oas.annotations.security.SecurityScheme
 import io.swagger.v3.oas.annotations.servers.Server
 import io.swagger.v3.oas.models.OpenAPI
 import io.swagger.v3.oas.models.media.Schema
-import io.swagger.v3.oas.models.parameters.Parameter
 import org.springdoc.core.customizers.GlobalOpenApiCustomizer
 import org.springdoc.core.customizers.OpenApiCustomizer
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import java.math.BigDecimal
 
 @OpenAPIDefinition(
   info =
@@ -51,44 +49,11 @@ import java.math.BigDecimal
 )
 @Configuration
 class OpenAPIConfig {
-  companion object {
-    const val HMPPS_ID = "#components/parameters/hmppsId"
-    const val PAGE = "#components/parameters/page"
-    const val PER_PAGE = "#components/parameters/perPage"
-  }
-
   @Bean
   fun openApiCustomizer(): OpenApiCustomizer =
     object : GlobalOpenApiCustomizer {
       override fun customise(openApi: OpenAPI) {
         openApi.components
-          .addParameters(
-            "hmppsId",
-            Parameter()
-              .name("hmppsId")
-              .description("A URL-encoded HMPPS identifier")
-              .example("2008%2F0545166T")
-              .schema(Schema<String>().type("string"))
-              .`in`("path")
-              .required(true),
-          )
-          .addParameters(
-            "page",
-            Parameter()
-              .name("page")
-              .description("The page number (starting from 1)")
-              .schema(Schema<Int>().type("number").minimum(BigDecimal.ONE)._default(1))
-              .`in`("query")
-              .required(false),
-          )
-          .addParameters(
-            "perPage",
-            Parameter().name("perPage")
-              .description("The maximum number of results for a page")
-              .schema(Schema<Int>().type("number").minimum(BigDecimal.ONE)._default(10))
-              .`in`("query")
-              .required(false),
-          )
           .addSchemas(
             "BadRequest",
             Schema<ErrorResponse>()

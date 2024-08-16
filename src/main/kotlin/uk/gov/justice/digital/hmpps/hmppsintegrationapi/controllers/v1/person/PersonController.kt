@@ -13,9 +13,6 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.OpenAPIConfig.Companion.HMPPS_ID
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.OpenAPIConfig.Companion.PAGE
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.OpenAPIConfig.Companion.PER_PAGE
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.decodeUrlCharacters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
@@ -64,8 +61,8 @@ class PersonController(
     @Parameter(description = "A URL-encoded pnc identifier") @RequestParam(required = false, name = "pnc_number") pncNumber: String?,
     @Parameter(description = "The date of birth of the person") @RequestParam(required = false, name = "date_of_birth") dateOfBirth: String?,
     @Parameter(description = "Whether to return results that match the search criteria within the aliases of a person.") @RequestParam(required = false, defaultValue = "false", name = "search_within_aliases") searchWithinAliases: Boolean,
-    @Parameter(ref = PAGE) @RequestParam(required = false, defaultValue = "1", name = "page") page: Int,
-    @Parameter(ref = PER_PAGE) @RequestParam(required = false, defaultValue = "10", name = "perPage") perPage: Int,
+    @Parameter(description = "The page number (starting from 1)", schema = Schema(minimum = "1")) @RequestParam(required = false, defaultValue = "1", name = "page") page: Int,
+    @Parameter(description = "The maximum number of results for a page", schema = Schema(minimum = "1")) @RequestParam(required = false, defaultValue = "10", name = "perPage") perPage: Int,
   ): PaginatedResponse<Person?> {
     if (firstName == null && lastName == null && pncNumber == null && dateOfBirth == null) {
       throw ValidationException("No query parameters specified.")
@@ -94,7 +91,7 @@ class PersonController(
     ],
   )
   fun getPerson(
-    @Parameter(ref = HMPPS_ID) @PathVariable encodedHmppsId: String,
+    @Parameter(description = "A URL-encoded HMPPS identifier", example = "2008%2F0545166T") @PathVariable encodedHmppsId: String,
   ): DataResponse<Map<String, Person?>> {
     val hmppsId = encodedHmppsId.decodeUrlCharacters()
     val response = getPersonService.getCombinedDataForPerson(hmppsId)
@@ -118,9 +115,9 @@ class PersonController(
     ],
   )
   fun getPersonImages(
-    @Parameter(ref = HMPPS_ID) @PathVariable encodedHmppsId: String,
-    @Parameter(ref = PAGE) @RequestParam(required = false, defaultValue = "1", name = "page") page: Int,
-    @Parameter(ref = PER_PAGE) @RequestParam(required = false, defaultValue = "10", name = "perPage") perPage: Int,
+    @Parameter(description = "A URL-encoded HMPPS identifier", example = "2008%2F0545166T") @PathVariable encodedHmppsId: String,
+    @Parameter(description = "The page number (starting from 1)", schema = Schema(minimum = "1")) @RequestParam(required = false, defaultValue = "1", name = "page") page: Int,
+    @Parameter(description = "The maximum number of results for a page", schema = Schema(minimum = "1")) @RequestParam(required = false, defaultValue = "10", name = "perPage") perPage: Int,
   ): PaginatedResponse<ImageMetadata?> {
     val hmppsId = encodedHmppsId.decodeUrlCharacters()
 
@@ -144,7 +141,7 @@ class PersonController(
     ],
   )
   fun getPersonName(
-    @Parameter(ref = HMPPS_ID) @PathVariable encodedHmppsId: String,
+    @Parameter(description = "A URL-encoded HMPPS identifier", example = "2008%2F0545166T") @PathVariable encodedHmppsId: String,
   ): DataResponse<PersonName?> {
     val hmppsId = encodedHmppsId.decodeUrlCharacters()
 
