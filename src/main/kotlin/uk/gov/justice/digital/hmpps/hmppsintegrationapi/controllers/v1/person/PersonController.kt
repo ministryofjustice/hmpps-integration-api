@@ -46,7 +46,7 @@ class PersonController(
   @Operation(
     summary = "Returns person(s) by search criteria, sorted by date of birth (newest first). At least one query parameter must be specified.",
     responses = [
-      ApiResponse(responseCode = "200", description = "Successfully performed the query on upstream APIs. An empty list is returned when no results are found."),
+      ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully performed the query on upstream APIs. An empty list is returned when no results are found."),
       ApiResponse(
         responseCode = "400",
         description = "There were no query parameters passed in. At least one must be specified.",
@@ -85,7 +85,7 @@ class PersonController(
   @Operation(
     summary = "Returns a person.",
     responses = [
-      ApiResponse(responseCode = "200", description = "Successfully found a person with the provided HMPPS ID."),
+      ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found a person with the provided HMPPS ID."),
       ApiResponse(responseCode = "404", content = [Content(schema = Schema(ref = "#/components/schemas/PersonNotFound"))]),
       ApiResponse(responseCode = "500", content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]),
     ],
@@ -109,7 +109,7 @@ class PersonController(
   @Operation(
     summary = "Returns metadata of images associated with a person sorted by captureDateTime (newest first).",
     responses = [
-      ApiResponse(responseCode = "200", description = "Successfully found a person with the provided HMPPS ID. If a person doesn't have any images, then an empty list (`[]`) is returned in the `data` property."),
+      ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found a person with the provided HMPPS ID. If a person doesn't have any images, then an empty list (`[]`) is returned in the `data` property."),
       ApiResponse(responseCode = "404", content = [Content(schema = Schema(ref = "#/components/schemas/PersonNotFound"))]),
       ApiResponse(responseCode = "500", content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]),
     ],
@@ -135,7 +135,7 @@ class PersonController(
   @Operation(
     summary = "Returns a person's name",
     responses = [
-      ApiResponse(responseCode = "200", description = "Successfully found a person with the provided HMPPS ID."),
+      ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found a person with the provided HMPPS ID."),
       ApiResponse(responseCode = "404", content = [Content(schema = Schema(ref = "#/components/schemas/PersonNotFound"))]),
       ApiResponse(responseCode = "500", content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]),
     ],

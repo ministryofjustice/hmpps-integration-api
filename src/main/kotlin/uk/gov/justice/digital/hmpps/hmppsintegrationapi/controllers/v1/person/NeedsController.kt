@@ -35,7 +35,7 @@ class NeedsController(
             However, the process by which needs are assessed is changing as early as next year (2024), specifically moving to a strength-based model that seeks to identify and develop the strengths of people with convictions. As a consequence of this, the information provided by this endpoint will also change.
     """,
     responses = [
-      ApiResponse(responseCode = "200", description = "Successfully found criminogenic needs for a person with the provided HMPPS ID."),
+      ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found criminogenic needs for a person with the provided HMPPS ID."),
       ApiResponse(responseCode = "404", content = [Content(schema = Schema(ref = "#/components/schemas/PersonNotFound"))]),
       ApiResponse(responseCode = "500", content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]),
     ],

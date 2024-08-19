@@ -30,7 +30,7 @@ class ProtectedCharacteristicsController(
   @Operation(
     summary = "Returns protected characteristics of a person.",
     responses = [
-      ApiResponse(responseCode = "200"),
+      ApiResponse(responseCode = "200", useReturnTypeSchema = true),
       ApiResponse(responseCode = "404", content = [Content(schema = Schema(ref = "#/components/schemas/PersonNotFound"))]),
       ApiResponse(responseCode = "500", content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]),
     ],

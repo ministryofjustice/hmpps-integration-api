@@ -37,7 +37,7 @@ class SentencesController(
   @Operation(
     summary = "Returns sentences associated with a person, sorted by dateOfSentencing (newest first).",
     responses = [
-      ApiResponse(responseCode = "200", description = "Successfully found sentences for a person with the provided HMPPS ID."),
+      ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found sentences for a person with the provided HMPPS ID."),
       ApiResponse(responseCode = "404", content = [Content(schema = Schema(ref = "#/components/schemas/PersonNotFound"))]),
       ApiResponse(responseCode = "500", content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]),
     ],
@@ -61,7 +61,7 @@ class SentencesController(
   @Operation(
     summary = "Returns the key dates and adjustments about a person's release from prison for their latest sentence.",
     responses = [
-      ApiResponse(responseCode = "200", description = "Successfully found latest sentence key dates and adjustments for a person with the provided HMPPS ID."),
+      ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found latest sentence key dates and adjustments for a person with the provided HMPPS ID."),
       ApiResponse(responseCode = "404", content = [Content(schema = Schema(ref = "#/components/schemas/PersonNotFound"))]),
       ApiResponse(responseCode = "500", content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]),
     ],

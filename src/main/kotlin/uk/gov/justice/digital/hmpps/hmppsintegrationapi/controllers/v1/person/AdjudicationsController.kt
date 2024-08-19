@@ -32,7 +32,7 @@ class AdjudicationsController(
   @Operation(
     summary = "Returns adjudications associated with a person, sorted by dateTimeOfIncident (newest first).",
     responses = [
-      ApiResponse(responseCode = "200", description = "OK"),
+      ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "OK"),
       ApiResponse(responseCode = "404", description = "Failed to find adjudications for the person with the provided hmppsId.", content = [Content(schema = Schema(ref = "#/components/schemas/PersonNotFound"))]),
       ApiResponse(responseCode = "500", content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]),
     ],
