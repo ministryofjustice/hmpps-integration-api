@@ -1,5 +1,10 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.controllers.v1
 
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.media.Content
+import io.swagger.v3.oas.annotations.media.Schema
+import io.swagger.v3.oas.annotations.responses.ApiResponse
+import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -14,11 +19,26 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditS
 
 @RestController
 @RequestMapping("/v1/epf/person-details")
+@Tag(name = "default")
 class EPFPersonDetailController(
   @Autowired val getEPFPersonDetailService: GetEPFPersonDetailService,
   @Autowired val auditService: AuditService,
 ) {
   @GetMapping("{hmppsId}/{eventNumber}")
+  @Operation(
+    summary = "Probation case information for the Effective Proposals Framework service",
+    description = """
+      <p>Accepts a Hmpps Id (hmppsId) and Delius Event number
+      and returns a data structure giving background information on the probation case
+      for use in the Effective Proposals Framework system. The information is used to
+      reduce the need for the EPF user to re-key information already held in Delius.</p>
+    """,
+    responses = [
+      ApiResponse(responseCode = "200"),
+      ApiResponse(responseCode = "404", content = [Content(schema = Schema(ref = "#/components/schemas/PersonNotFound"))]),
+      ApiResponse(responseCode = "500", content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]),
+    ],
+  )
   fun getCaseDetail(
     @PathVariable hmppsId: String,
     @PathVariable eventNumber: Int,

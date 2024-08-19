@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps
 
+import io.swagger.v3.oas.annotations.media.Schema
 import java.time.LocalDate
 
 data class LatestSentenceKeyDatesAndAdjustments(
@@ -19,10 +20,15 @@ data class LatestSentenceKeyDatesAndAdjustments(
   val release: ReleaseDate? = null,
   val sentence: SentenceDate? = null,
   val topupSupervision: TopupSupervision? = null,
+  @Schema(description = "the offender's actual parole date", example = "2023-03-01")
   val actualParoleDate: LocalDate? = null,
+  @Schema(description = "the date on which offender will be eligible for early removal (under the Early Removal Scheme for foreign nationals).", example = "2023-03-01")
   val earlyRemovalSchemeEligibilityDate: LocalDate? = null,
+  @Schema(description = "the date on which offender will be released on temporary licence.", example = "2023-03-01")
   val releaseOnTemporaryLicenceDate: LocalDate? = null,
+  @Schema(description = "date on which minimum term is reached for parole (indeterminate/life sentences).", example = "2023-03-01")
   val tariffDate: LocalDate? = null,
+  @Schema(description = "tariffEarlyRemovalSchemeEligibilityDate.", example = "2023-03-01")
   val tariffEarlyRemovalSchemeEligibilityDate: LocalDate? = null,
 )
 

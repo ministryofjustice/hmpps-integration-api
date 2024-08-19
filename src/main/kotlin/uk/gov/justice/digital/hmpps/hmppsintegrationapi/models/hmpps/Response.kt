@@ -12,3 +12,5 @@ data class Response<T>(val data: T, val errors: List<UpstreamApiError> = emptyLi
     causedBy: UpstreamApi,
   ): Boolean = this.errors.any { it.type == type && it.causedBy == causedBy }
 }
+
+data class DataResponse<T>(val data: T)

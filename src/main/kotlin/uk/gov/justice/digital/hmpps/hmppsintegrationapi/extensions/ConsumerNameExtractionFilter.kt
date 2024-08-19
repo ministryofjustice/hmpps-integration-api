@@ -7,12 +7,14 @@ import jakarta.servlet.ServletRequest
 import jakarta.servlet.ServletResponse
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
+import org.springframework.context.annotation.Profile
 import org.springframework.core.annotation.Order
 import org.springframework.stereotype.Component
 import java.io.IOException
 
 @Component
 @Order(0)
+@Profile("!local")
 class ConsumerNameExtractionFilter : Filter {
   @Throws(IOException::class, ServletException::class)
   override fun doFilter(
@@ -40,5 +42,18 @@ class ConsumerNameExtractionFilter : Filter {
     }
 
     return match.groupValues[1]
+  }
+}
+
+@Component
+@Order(0)
+@Profile("local")
+class LocalConsumerNameExtractionFilter : Filter {
+  override fun doFilter(
+    request: ServletRequest,
+    response: ServletResponse?,
+    chain: FilterChain,
+  ) {
+    chain.doFilter(request.apply { setAttribute("clientName", "all-access") }, response)
   }
 }
