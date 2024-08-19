@@ -43,6 +43,7 @@ class OffencesController(
         description = "Successfully found offences for a person with the provided HMPPS ID.",
         content = [
           Content(
+            schema = Schema(implementation = PaginatedResponse::class),
             examples = [
               ExampleObject(
                 """{
