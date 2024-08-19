@@ -33,19 +33,15 @@ import org.springframework.context.annotation.Configuration
     Server(url = "https://hmpps-integration-api-prod.apps.live.cloud-platform.service.justice.gov.uk", description = "Production"),
   ],
   security = [
-    SecurityRequirement(name = "mutual-tls"),
-    SecurityRequirement(name = "api-key"),
+    SecurityRequirement(name = "dn"),
   ],
 )
 @SecurityScheme(
-  name = "mutual-tls",
-  type = SecuritySchemeType.MUTUALTLS,
-)
-@SecurityScheme(
-  name = "api-key",
+  name = "dn",
   type = SecuritySchemeType.APIKEY,
   `in` = SecuritySchemeIn.HEADER,
-  paramName = "x-api-key",
+  paramName = "subject-distinguished-name",
+  description = "Example: O=test,CN=automated-test-client"
 )
 @Configuration
 class OpenAPIConfig {
