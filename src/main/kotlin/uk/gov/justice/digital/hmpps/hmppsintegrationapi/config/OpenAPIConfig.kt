@@ -33,19 +33,15 @@ import org.springframework.context.annotation.Configuration
     Server(url = "https://hmpps-integration-api-prod.apps.live.cloud-platform.service.justice.gov.uk", description = "Production"),
   ],
   security = [
-    SecurityRequirement(name = "mutual-tls"),
-    SecurityRequirement(name = "api-key"),
+    SecurityRequirement(name = "dn"),
   ],
 )
 @SecurityScheme(
-  name = "mutual-tls",
-  type = SecuritySchemeType.MUTUALTLS,
-)
-@SecurityScheme(
-  name = "api-key",
+  name = "dn",
   type = SecuritySchemeType.APIKEY,
   `in` = SecuritySchemeIn.HEADER,
-  paramName = "x-api-key",
+  paramName = "subject-distinguished-name",
+  description = "Example: O=test,CN=automated-test-client",
 )
 @Configuration
 class OpenAPIConfig {
@@ -56,20 +52,33 @@ class OpenAPIConfig {
         openApi.components
           .addSchemas(
             "BadRequest",
-            Schema<ErrorResponse>()
-              .example(ErrorResponse(400, userMessage = "Validation failure: No query parameters specified.", developerMessage = "No query parameters specified.")),
+            Schema<ErrorResponse>().properties(
+              mapOf(
+                "status" to Schema<Int>().type("number").example(400),
+                "userMessage" to Schema<String>().type("string").example("Validation failure: No query parameters specified."),
+                "developerMessage" to Schema<String>().type("string").example("No query parameters specified."),
+              ),
+            ),
           )
           .addSchemas(
             "PersonNotFound",
-            Schema<ErrorResponse>()
-              .description("Failed to find a person with the provided HMPPS ID.")
-              .example(ErrorResponse(404, userMessage = "404 Not found error: Could not find person with HMPPS id: 2003/0011991D.", developerMessage = "Could not find person with HMPPS id: 2003/0011991D.")),
+            Schema<ErrorResponse>().description("Failed to find a person with the provided HMPPS ID.").properties(
+              mapOf(
+                "status" to Schema<Int>().type("number").example(404),
+                "userMessage" to Schema<String>().type("string").example("404 Not found error: Could not find person with HMPPS id: 2003/0011991D."),
+                "developerMessage" to Schema<String>().type("string").example("Could not find person with HMPPS id: 2003/0011991D."),
+              ),
+            ),
           )
           .addSchemas(
             "InternalServerError",
-            Schema<ErrorResponse>()
-              .description("An upstream service was not responding, so we cannot verify the accuracy of any data we did get.")
-              .example(ErrorResponse(500, userMessage = "Internal Server Error", developerMessage = "Unable to complete request as an upstream service is not responding.")),
+            Schema<ErrorResponse>().description("An upstream service was not responding, so we cannot verify the accuracy of any data we did get.").properties(
+              mapOf(
+                "status" to Schema<Int>().type("number").example(500),
+                "userMessage" to Schema<String>().type("string").example("Internal Server Error"),
+                "developerMessage" to Schema<String>().type("string").example("Unable to complete request as an upstream service is not responding."),
+              ),
+            ),
           )
       }
     }

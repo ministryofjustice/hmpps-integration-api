@@ -32,7 +32,7 @@ class PersonResponsibleOfficerController(
   @Operation(
     summary = "Returns the person responsible officer associated with a person.",
     responses = [
-      ApiResponse(responseCode = "200", description = "Successfully found the person responsible officer for a person with the provided HMPPS ID."),
+      ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found the person responsible officer for a person with the provided HMPPS ID."),
       ApiResponse(responseCode = "404", content = [Content(schema = Schema(ref = "#/components/schemas/PersonNotFound"))]),
       ApiResponse(responseCode = "500", content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]),
     ],

@@ -30,7 +30,7 @@ class MappaDetailController(
   @Operation(
     summary = "Returns the mappa detail related to a person.",
     responses = [
-      ApiResponse(responseCode = "200", description = "Successfully found mappa detail for a person with the provided HMPPS ID."),
+      ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found mappa detail for a person with the provided HMPPS ID."),
       ApiResponse(responseCode = "404", content = [Content(schema = Schema(ref = "#/components/schemas/PersonNotFound"))]),
       ApiResponse(responseCode = "500", content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]),
     ],

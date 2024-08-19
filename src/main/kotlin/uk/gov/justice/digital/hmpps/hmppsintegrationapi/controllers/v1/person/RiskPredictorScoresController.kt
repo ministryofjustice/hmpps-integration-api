@@ -32,7 +32,7 @@ class RiskPredictorScoresController(
   @Operation(
     summary = "Returns risk scores from the last year associated with a person, sorted by completedDate (newest first). This endpoint does not serve LAO (Limited Access Offender) data.",
     responses = [
-      ApiResponse(responseCode = "200", description = "Successfully found risk scores for a person with the provided HMPPS ID."),
+      ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found risk scores for a person with the provided HMPPS ID."),
       ApiResponse(responseCode = "404", content = [Content(schema = Schema(ref = "#/components/schemas/PersonNotFound"))]),
       ApiResponse(responseCode = "500", content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]),
     ],

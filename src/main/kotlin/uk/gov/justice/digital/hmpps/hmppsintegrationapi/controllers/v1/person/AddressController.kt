@@ -31,7 +31,7 @@ class AddressController(
   @Operation(
     summary = "Returns addresses associated with a person, ordered by startDate.",
     responses = [
-      ApiResponse(responseCode = "200", description = "Successfully found a person with the provided HMPPS ID."),
+      ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found a person with the provided HMPPS ID."),
       ApiResponse(responseCode = "404", content = [Content(schema = Schema(ref = "#/components/schemas/PersonNotFound"))]),
       ApiResponse(responseCode = "500", content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]),
     ],
