@@ -41,7 +41,7 @@ import org.springframework.context.annotation.Configuration
   type = SecuritySchemeType.APIKEY,
   `in` = SecuritySchemeIn.HEADER,
   paramName = "subject-distinguished-name",
-  description = "Example: O=test,CN=automated-test-client"
+  description = "Example: O=test,CN=automated-test-client",
 )
 @Configuration
 class OpenAPIConfig {
