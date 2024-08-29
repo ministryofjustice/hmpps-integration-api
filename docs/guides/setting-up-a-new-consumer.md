@@ -101,14 +101,26 @@ Within the [Cloud Platform Environments GitHub repository](https://github.com/mi
 2. Add new client subscriber terraform file. Example: [event-subscriber-mapps.tf](https://github.com/ministryofjustice/cloud-platform-environments/pull/22091/files#diff-4046866c9398b1db59a427052406a08c2adab45aadbc278f16232157a636f451)
 3. Rename client name "mapps" to new client name
 4. Add new client filter list secret. example [secret.tf](https://github.com/ministryofjustice/cloud-platform-environments/pull/22091/files#diff-bc13dba50c430d2a667e5b867d2798770e5e8c48697407d93e2febedb3ff46dc)
-5. Follow steps 3-8 in [Create an API key](#create-an-api-key) to merge branch to main. 
+5. Add a client queue mapping. Example: [locals.tf](https://github.com/ministryofjustice/cloud-platform-environments/blob/6e6ad3d6c8bd070b3ba65ce8568fa79c2cfe4e30/namespaces/live.cloud-platform.service.justice.gov.uk/hmpps-integration-api-dev/resources/locals.tf#L13)
+6. Follow steps 3-8 in [Create an API key](#create-an-api-key) to merge branch to main.
+7. Retrieve the client queue name and ARN with the following command:
+    ```bash
+    kubectl -n hmpps-integration-api-[environment] get secrets [your queue secret name] -o json
+    # E.g. kubectl -n hmpps-integration-api-dev get secrets event-mapps-queue  -o json 
+    ```
+8. Send the client queue name and ARN to the consumer
 
-After the change is merged and applied, you can retrieve client queue name and ARN with the following command:
+The consumer can use the `POST /token` endpoint in API Gateway to retrieve temporary credentials, then use the SQS APIs or SDKs to receive and delete messages. For example:
+```shell
+temporary_credentials=$(curl --cert client.pem --key client.key -H "x-api-key: $api_key" -XPOST https://dev.integration-api.hmpps.service.justice.gov.uk/token)
+export AWS_ACCESS_KEY_ID=$(jq -r '.AccessKeyId' <<< "$creds")
+export AWS_SECRET_ACCESS_KEY=$(jq -r '.SecretAccessKey' <<< "$creds")
+export AWS_SESSION_TOKEN=$(jq -r '.SessionToken' <<< "$creds")
 
-```bash
-kubectl -n hmpps-integration-api-[environment] get secrets [your queue secret name] -o json
-# E.g. kubectl -n hmpps-integration-api-dev get secrets event-mapps-queue  -o json 
+aws sqs get-queue-attributes --attribute-names ApproximateNumberOfMessages --queue-url "https://sqs.eu-west-2.amazonaws.com/754256621582/$client_queue_name" --region eu-west-2 --output text
+> 1234
 ```
+
 ### Using AWS secret for filter Policy
 1. Login to the [AWS Console](https://user-guide.cloud-platform.service.justice.gov.uk/documentation/getting-started/accessing-the-cloud-console.html), navigate to Secrets Manager and navigate to the secret created in the previous step by search using the secret description. e.g. MAPPS event filter list Pre-prod
 2. Click on the secret and then click on Retrieve secret value. If this is your first time accessing the new secret, you will see an error Failed to get the secret value.
