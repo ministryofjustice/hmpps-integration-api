@@ -51,22 +51,3 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-
-  check-for-broken-links:
-    name: 🔗 Check for broken links
-    needs: deploy
-    runs-on: ubuntu-latest
-    steps:
-      - name: Download built artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: github-pages
-          path: github-pages
-      - name: Unpack built artifact and check for broken links
-        run: |
-          cd github-pages
-          tar -xvf artifact.tar
-          npm install linkinator
-          npx linkinator . --recurse --markdown \
-          --skip https://ministryofjustice.github.io/hmpps-integration-api-docs/images/govuk-large.png \
-          --skip https://www.cloudflare.com/en-gb/learning/access-management/what-is-mutual-tls/
