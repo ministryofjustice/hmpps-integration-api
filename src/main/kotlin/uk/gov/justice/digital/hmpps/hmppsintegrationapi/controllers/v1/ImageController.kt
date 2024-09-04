@@ -27,7 +27,7 @@ class ImageController(
   @Operation(
     summary = "Returns an image in bytes as a JPEG.",
     responses = [
-      ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found an image with the provided ID."),
+      ApiResponse(responseCode = "200", description = "Successfully found an image with the provided ID.", content = [Content(mediaType = "image/jpeg", schema = Schema(type = "string", format = "binary"))]),
       ApiResponse(responseCode = "404", description = "Failed to find an image with the provided ID.", content = [Content(schema = Schema(ref = "#/components/schemas/PersonNotFound"))]),
       ApiResponse(responseCode = "500", content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]),
     ],
