@@ -22,6 +22,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMo
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ContactDetailsWithEmailAndPhone
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Identifiers
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ImageMetadata
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.OffenderSearchResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonName
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PhoneNumber
@@ -236,10 +237,11 @@ internal class PersonControllerTest(
           Mockito.reset(auditService)
 
           val personMap =
-            mapOf(
-              "probationOffenderSearch" to probationOffenderSearch,
-              "prisonerOffenderSearch" to prisonResponse.data.toPerson(),
+            OffenderSearchResponse(
+              probationOffenderSearch = probationOffenderSearch,
+              prisonerOffenderSearch = prisonResponse.data.toPerson(),
             )
+
           whenever(getPersonService.getCombinedDataForPerson(hmppsId)).thenReturn(Response(data = personMap))
         }
 
@@ -263,11 +265,7 @@ internal class PersonControllerTest(
           it("returns a 404 status code when a person cannot be found in both upstream APIs") {
             whenever(getPersonService.getCombinedDataForPerson(idThatDoesNotExist)).thenReturn(
               Response(
-                data =
-                  mapOf(
-                    "prisonerOffenderSearch" to null,
-                    "probationOffenderSearch" to null,
-                  ),
+                data = OffenderSearchResponse(null, null),
                 errors =
                   listOf(
                     UpstreamApiError(
@@ -287,11 +285,7 @@ internal class PersonControllerTest(
           it("does not return a 404 status code when a person was found in one upstream API") {
             whenever(getPersonService.getCombinedDataForPerson(idThatDoesNotExist)).thenReturn(
               Response(
-                data =
-                  mapOf(
-                    "prisonerOffenderSearch" to null,
-                    "probationOffenderSearch" to Person("someFirstName", "someLastName"),
-                  ),
+                data = OffenderSearchResponse(prisonerOffenderSearch = null, probationOffenderSearch = Person("someFirstName", "someLastName")),
                 errors =
                   listOf(
                     UpstreamApiError(

@@ -12,6 +12,7 @@ import org.springframework.test.context.ContextConfiguration
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ProbationOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Identifiers
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.OffenderSearchResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
@@ -98,11 +99,7 @@ internal class GetPersonServiceTest(
       whenever(prisonerOffenderSearchGateway.getPrisonOffender("A1234AA")).thenReturn(Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.PRISONER_OFFENDER_SEARCH, UpstreamApiError.Type.ENTITY_NOT_FOUND, "MockError"))))
 
       val result = getPersonService.getCombinedDataForPerson(hmppsId)
-      result.data shouldBe
-        mapOf(
-          "prisonerOffenderSearch" to null,
-          "probationOffenderSearch" to personFromProbationOffenderSearch,
-        )
+      result.data shouldBe OffenderSearchResponse(prisonerOffenderSearch = null, probationOffenderSearch = personFromProbationOffenderSearch)
       result.errors.first().causedBy.shouldBe(UpstreamApi.PRISONER_OFFENDER_SEARCH)
       result.errors.first().type.shouldBe(UpstreamApiError.Type.ENTITY_NOT_FOUND)
       result.errors.first().description.shouldBe("MockError")
