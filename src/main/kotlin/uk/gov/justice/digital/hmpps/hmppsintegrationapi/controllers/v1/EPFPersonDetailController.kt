@@ -27,11 +27,10 @@ class EPFPersonDetailController(
   @GetMapping("{hmppsId}/{eventNumber}")
   @Operation(
     summary = "Probation case information for the Effective Proposals Framework service",
-    description = """
-      <p>Accepts a Hmpps Id (hmppsId) and Delius Event number
+    description = """Accepts an HMPPS Id (hmppsId) and Delius Event number
       and returns a data structure giving background information on the probation case
       for use in the Effective Proposals Framework system. The information is used to
-      reduce the need for the EPF user to re-key information already held in Delius.</p>
+      reduce the need for the EPF user to re-key information already held in Delius.
     """,
     responses = [
       ApiResponse(responseCode = "200", useReturnTypeSchema = true),
