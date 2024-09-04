@@ -2,17 +2,17 @@
 title: API Changes and Versioning
 weight: 4
 owner_slack: "#hmpps-integration-api-alerts"
-last_reviewed_on: 2024-05-23
-review_in: 2 months
+last_reviewed_on: 2024-09-03
+review_in: 3 months
 ---
 
-# API changes and versioning
+# API Changes and Versioning
 
 As HMPPS Integration API evolves, more features will be added, and features that already exist will change. Both consumers and MOJ must be prepared to handle these changes, and to manage them carefully.
 
 There will broadly speaking be two kinds of changes - "non-breaking" changes, where consumers should be able to use the new version without modifying their usage, and "breaking" changes where we would expect that consumers would not be able to seamlessly use the new version.
 
-## Non-breaking change
+## Non-Breaking Change
 
 We would like to minimise the number of breaking changes, and where this is not possible, we will increment the API version and manage the migration.
 
@@ -21,7 +21,7 @@ We would like to minimise the number of breaking changes, and where this is not 
 - MOJ - may add new elements and change/remove elements that we know are not in use
 - Consumers - implementation must accept new elements and changes to elements that are not in use (i.e. it must be resilient to non-breaking API changes)
 
-## Breaking change
+## Breaking Change
 
 Where a non-breaking change is not possible, there is then a breaking change. In this case, we will increment the version of the API
 
@@ -31,7 +31,7 @@ Where a non-breaking change is not possible, there is then a breaking change. In
 - Consumers - must commit to moving to the new version of the API within a reasonable timescale, usually 1 month
 - Depending on the size of the change, MOJ may require the Consumer to go through additional re-assurance steps
 
-## Ongoing assurance
+## Ongoing Assurance
 
 As part of including new functionality into the system, new processes will be available to be undertaken via the API. As these are introduced, we will ask consumers to go through further rounds of assurance, broadly similar to the initial round described above.
 

@@ -2,26 +2,27 @@
 title: Authentication
 weight: 3
 owner_slack: "#hmpps-integration-api-alerts"
-last_reviewed_on: 2024-05-23
-review_in: 2 months
+last_reviewed_on: 2024-09-03
+review_in: 3 months
 ---
 
 # Authentication
 
 API consumers are authenticated on a service to service level using:
 
-- [mutual TLS](https://www.cloudflare.com/en-gb/learning/access-management/what-is-mutual-tls/) to ensure trust on both
-  the server and client side
+- [mutual TLS](https://www.cloudflare.com/en-gb/learning/access-management/what-is-mutual-tls/) to ensure trust on both the server and client side
 - API keys to track and manage usage of the client
 
 ## Connect using mutual TLS
 
-Using two-way authentication allows HMPPS to additionally verify the identity of a consumer before securely providing
-any data. This means a certificate must be presented as part of making a request.
+Using two-way authentication allows HMPPS to additionally verify the identity of a consumer before securely providing any data. This means a certificate must be presented as part of making a request.
 
 ## Send an API key
 
-To provide an API key, add an HTTP header called `x-api-key` with the value of the API key to the API request, ensuring
-it's not encoded in Base64.
+To provide an API key, add an HTTP header called `x-api-key` with the value of the API key to the API request, ensuring it's not encoded in Base64.
 
 Without an API key, a `403 Forbidden` HTTP response is returned.
+
+## Obtain an SQS Token
+
+For consumers that have an SQS queue configured, temporary AWS access credentials that can be used with standard AWS tooling to interact with SQS can be obtained by calling the `/token` endpoint. Both a valid TLS certificate and an API key must be supplied with the token request. Note that the token endpoint is not versioned.
