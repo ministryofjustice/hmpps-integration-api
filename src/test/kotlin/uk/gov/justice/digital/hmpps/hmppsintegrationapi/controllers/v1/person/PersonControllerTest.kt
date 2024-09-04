@@ -316,25 +316,6 @@ internal class PersonControllerTest(
             """
             {
              "data":{
-                "probationOffenderSearch":{
-                   "firstName":"Sam",
-                   "lastName":"Smith",
-                   "middleName":null,
-                   "dateOfBirth":null,
-                   "gender":null,
-                   "ethnicity":null,
-                   "aliases":[
-
-                   ],
-                   "identifiers":{
-                      "nomisNumber":"1234ABC",
-                      "croNumber":null,
-                      "deliusCrn":null
-                   },
-                   "pncId":null,
-                   "hmppsId":null,
-                   "contactDetails":null
-                },
                 "prisonerOffenderSearch":{
                    "firstName":"Kim",
                    "lastName":"Kardashian",
@@ -347,6 +328,25 @@ internal class PersonControllerTest(
                    ],
                    "identifiers":{
                       "nomisNumber":null,
+                      "croNumber":null,
+                      "deliusCrn":null
+                   },
+                   "pncId":null,
+                   "hmppsId":null,
+                   "contactDetails":null
+                },
+                "probationOffenderSearch":{
+                   "firstName":"Sam",
+                   "lastName":"Smith",
+                   "middleName":null,
+                   "dateOfBirth":null,
+                   "gender":null,
+                   "ethnicity":null,
+                   "aliases":[
+
+                   ],
+                   "identifiers":{
+                      "nomisNumber":"1234ABC",
                       "croNumber":null,
                       "deliusCrn":null
                    },
