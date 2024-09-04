@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ProbationOffenderSearchGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.OffenderSearchResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 
@@ -18,7 +19,7 @@ class GetPersonService(
     return Response(data = personFromProbationOffenderSearch.data, errors = personFromProbationOffenderSearch.errors)
   }
 
-  fun getCombinedDataForPerson(hmppsId: String): Response<Map<String, Person?>> {
+  fun getCombinedDataForPerson(hmppsId: String): Response<OffenderSearchResponse> {
     val probationResponse = probationOffenderSearchGateway.getPerson(id = hmppsId)
 
     val prisonResponse =
@@ -27,9 +28,9 @@ class GetPersonService(
       }
 
     val data =
-      mapOf(
-        "prisonerOffenderSearch" to prisonResponse?.data?.toPerson(),
-        "probationOffenderSearch" to probationResponse.data,
+      OffenderSearchResponse(
+        prisonerOffenderSearch = prisonResponse?.data?.toPerson(),
+        probationOffenderSearch = probationResponse.data,
       )
 
     return Response(
