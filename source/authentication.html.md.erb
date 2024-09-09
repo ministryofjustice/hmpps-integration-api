@@ -26,3 +26,21 @@ Without an API key, a `403 Forbidden` HTTP response is returned.
 ## Obtain an SQS Token
 
 For consumers that have an SQS queue configured, temporary AWS access credentials that can be used with standard AWS tooling to interact with SQS can be obtained by calling the `/token` endpoint. Both a valid TLS certificate and an API key must be supplied with the token request. Note that the token endpoint is not versioned.
+
+# Example Interactions
+
+## Read from an API Endpoint
+
+Make an authenticated data request to the API using the client-specific TLS certificate, private key and API key:
+
+```sh
+curl --cert <client-cert-file> --key <client-key-file> -X GET https://<environment>.integration-api.hmpps.service.justice.gov.uk/v1/persons/X802678/risks/scores -H 'x-api-key: <api-key>'
+```
+
+## Obtain an SQS Token
+
+Make an authenticated token request to the API using the client-specific TLS certificate, private key and API key:
+
+```sh
+curl --cert <client-cert-file> --key <client-key-file> -X POST https://<environment>.integration-api.hmpps.service.justice.gov.uk/token -H 'x-api-key: <api-key>'
+```
