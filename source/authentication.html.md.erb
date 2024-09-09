@@ -8,38 +8,34 @@ review_in: 3 months
 
 # Authentication
 
+## Reading from the API
+
 API consumers are authenticated on a service to service level using:
 
-- [mutual TLS](https://www.cloudflare.com/en-gb/learning/access-management/what-is-mutual-tls/) to ensure trust on both the server and client side
+- [Mutual TLS](https://www.cloudflare.com/en-gb/learning/access-management/what-is-mutual-tls/) to ensure trust on both the server and client side
 - API keys to track and manage usage of the client
 
-## Connect using mutual TLS
+Using mutual TLS authentication allows HMPPS to additionally verify the identity of a consumer before securely providing any data and therefore a client must present it's own TLS certificate, issued by HMPPS, as part of making a request. Providing an API key enables per-client management of API interactions such as rate limiting and therefore a valid API key must also be presented as part of making a request.
 
-Using two-way authentication allows HMPPS to additionally verify the identity of a consumer before securely providing any data. This means a certificate must be presented as part of making a request.
+Providing a client certificate and key for mTLS is dependent on the tools used to make the request. As an example when using `curl` the certificate and key are provided as request parameters. If a valid TLS certificate and private key is not supplied the TLS handshake will not complete.
 
-## Send an API key
+Providing an API key can be done using an HTTP header called `x-api-key` with the value of the API key as the header value, ensuring it's not encoded in Base64. If a valid API key is not supplied a `403 Forbidden` HTTP response is returned.
 
-To provide an API key, add an HTTP header called `x-api-key` with the value of the API key to the API request, ensuring it's not encoded in Base64.
+### Example: Read from an API Endpoint
 
-Without an API key, a `403 Forbidden` HTTP response is returned.
-
-## Obtain an SQS Token
-
-For consumers that have an SQS queue configured, temporary AWS access credentials that can be used with standard AWS tooling to interact with SQS can be obtained by calling the `/token` endpoint. Both a valid TLS certificate and an API key must be supplied with the token request. Note that the token endpoint is not versioned.
-
-# Example Interactions
-
-## Read from an API Endpoint
-
-Make an authenticated data request to the API using the client-specific TLS certificate, private key and API key:
+To make an authenticated data request to the API using the client-specific TLS certificate, private key and API key:
 
 ```sh
 curl --cert <client-cert-file> --key <client-key-file> -X GET https://<environment>.integration-api.hmpps.service.justice.gov.uk/v1/persons/X802678/risks/scores -H 'x-api-key: <api-key>'
 ```
 
-## Obtain an SQS Token
+## Interacting with an HMPPS SQS Queue
 
-Make an authenticated token request to the API using the client-specific TLS certificate, private key and API key:
+For consumers that have an SQS queue configured, temporary AWS access credentials that can be used with standard AWS tooling to interact with SQS can be obtained by calling the `/token` endpoint. Both a valid TLS certificate and an API key must be supplied with the token request. Note that the token endpoint is not versioned.
+
+### Example: Create and Read a Temporary SQS Token
+
+To make an authenticated token request to the API using the client-specific TLS certificate, private key and API key:
 
 ```sh
 curl --cert <client-cert-file> --key <client-key-file> -X POST https://<environment>.integration-api.hmpps.service.justice.gov.uk/token -H 'x-api-key: <api-key>'
