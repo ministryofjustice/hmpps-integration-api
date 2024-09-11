@@ -2,7 +2,7 @@ authenticate-docker:
 	./scripts/authenticate_docker.sh
 
 build-dev:
-	docker compose pull hmpps-auth
+	#docker compose pull hmpps-auth
 	docker compose build
 
 build:
@@ -26,8 +26,8 @@ unit-test:
 smoke-test: serve
 	./gradlew smokeTest --warning-mode all
 
-integration-test:
-	./gradlew integrationTest
+integration-test: serve
+	./gradlew integrationTest --warning-mode all
 
 heartbeat:
 	./scripts/heartbeat.sh
@@ -35,7 +35,7 @@ heartbeat:
 test: unit-test smoke-test
 
 e2e:
-	./gradlew smokeTest --warning-mode all
+	./gradlew integrationTest --warning-mode all
 
 lint:
 	./gradlew ktlintCheck

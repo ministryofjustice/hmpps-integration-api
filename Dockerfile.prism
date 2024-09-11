@@ -13,7 +13,6 @@ ADD https://probation-offender-search-dev.hmpps.service.justice.gov.uk/v3/api-do
 ADD https://prisoner-search-dev.prison.service.justice.gov.uk/v3/api-docs /tmp/prisoner-offender-search-tmp.json
 RUN jq 'del(.components.schemas.Query.properties.subQueries)' /tmp/prisoner-offender-search-tmp.json > prisoner-offender-search-tmp1.json
 RUN swagger-cli bundle -r -o /prismMocks/prisoner-offender-search.json prisoner-offender-search-tmp1.json
-
 RUN sed -i 's/\*\/\*/application\/json/g' /prismMocks/prisoner-offender-search.json
 
 ENTRYPOINT sh -c 'port=4010; for file in $(ls /prismMocks/*.json | sort); do node dist/index.js mock -p $port -h 0.0.0.0 $file & port=$((port + 1)); done; wait'

@@ -1,5 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration
 
+import org.junit.jupiter.api.AfterAll
+import org.junit.jupiter.api.BeforeAll
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
@@ -7,6 +9,9 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDO
 import org.springframework.http.HttpHeaders
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
+import java.io.File
 
 @ActiveProfiles("integration-test")
 @AutoConfigureMockMvc
@@ -15,9 +20,28 @@ abstract class IntegrationTestBase {
   @Autowired
   lateinit var mockMvc: MockMvc
 
+  companion object {
+    private val hmppsAuthMockServer = HmppsAuthMockServer()
+
+    @BeforeAll
+    @JvmStatic
+    fun startMockServers() {
+      hmppsAuthMockServer.start()
+      hmppsAuthMockServer.stubGetOAuthToken("client", "client-secret")
+    }
+
+    @AfterAll
+    @JvmStatic
+    fun stopMockServers() {
+      hmppsAuthMockServer.stop()
+    }
+  }
+
   fun getAuthHeader(): HttpHeaders {
     val headers = HttpHeaders()
     headers.set("subject-distinguished-name", "C=GB,ST=London,L=London,O=Home Office,CN=automated-test-client")
     return headers
   }
+
+  fun getExpectedResponse(filename: String): String = File("./src/test/resources/expected-responses/$filename").readText(Charsets.UTF_8).removeWhitespaceAndNewlines()
 }

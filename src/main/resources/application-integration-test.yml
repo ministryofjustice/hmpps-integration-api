@@ -7,9 +7,11 @@ management.endpoint:
 
 services:
   prison-api:
-    base-url: http://localhost:4000
+    base-url: http://localhost:4016
   hmpps-auth:
-    base-url: http://localhost:9090
+    base-url: http://localhost:3000
+    username: client
+    password: client-secret
   prisoner-offender-search:
     base-url: http://localhost:4017
   probation-offender-search:
