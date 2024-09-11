@@ -33,7 +33,8 @@ services:
       dockerfile: Dockerfile.prism
     container_name: prism
     healthcheck:
-      test: 'wget --header="Authorization: Bearer abc" http://127.0.0.1:4017/prisoner/A1234AL -O /dev/null'
+      test: 'curl -H "Authorization: Bearer abc" http://127.0.0.1:4017/prisoner/A1234AL &&
+            curl -H "Authorization: Bearer abc" http://127.0.0.1:4018/case-details/officiis/1134670863'
     ports:
       - '4010:4010'
       - '4011:4011'

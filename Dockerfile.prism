@@ -1,7 +1,7 @@
 FROM stoplight/prism:5
 
 
-RUN apk add --no-cache jq
+RUN apk add --no-cache curl jq
 RUN npm install -g @apidevtools/swagger-cli
 COPY src/main/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/prismMocks /prismMocks
 ADD https://ministryofjustice.github.io/hmpps-probation-integration-services/tech-docs/projects/external-api-and-delius/api-docs.json /prismMocks/ndelius.json
