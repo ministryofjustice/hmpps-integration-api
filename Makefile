@@ -12,7 +12,7 @@ serve-dependencies:
 	docker compose up hmpps-auth prism local-stack-aws --build -d
 
 serve: build-dev
-	docker compose up -d
+	docker compose up -d --wait
 
 publish:
 	./scripts/publish.sh
