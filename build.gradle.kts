@@ -42,12 +42,19 @@ tasks {
   register<Test>("unitTest") {
     filter {
       excludeTestsMatching("uk.gov.justice.digital.hmpps.hmppsintegrationapi.smoke*")
+      excludeTestsMatching("uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration*")
     }
   }
 
   register<Test>("smokeTest") {
     filter {
       includeTestsMatching("uk.gov.justice.digital.hmpps.hmppsintegrationapi.smoke*")
+    }
+  }
+
+  register<Test>("integrationTest") {
+    filter {
+      includeTestsMatching("uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration*")
     }
   }
 
