@@ -62,4 +62,16 @@ internal class PersonIntegrationTest : IntegrationTestBase() {
         ),
       )
   }
+
+  @Test
+  fun `returns person cell location if in prison`() {
+    mockMvc.perform(
+      get("$basePath/$encodedHmppsId/cell-location").headers(getAuthHeader()),
+    )
+      .andExpect(status().isOk)
+      .andDo(print())
+      .andExpect(content().json("""
+        {"data":{"prisonCode":"MDI","prisonName":"HMP Leeds","cell":"A-1-002"}}
+      """))
+  }
 }

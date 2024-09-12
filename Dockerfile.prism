@@ -3,16 +3,23 @@ FROM stoplight/prism:5
 
 RUN apk add --no-cache curl jq
 RUN npm install -g @apidevtools/swagger-cli
-COPY src/main/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/prismMocks /prismMocks
-ADD https://ministryofjustice.github.io/hmpps-probation-integration-services/tech-docs/projects/external-api-and-delius/api-docs.json /prismMocks/ndelius.json
-ADD https://ministryofjustice.github.io/hmpps-probation-integration-services/tech-docs/projects/effective-proposal-framework-and-delius/api-docs.json /prismMocks/probation-integration-epf.json
+RUN mkdir /prismMocks
+
+ADD https://manage-adjudications-api-dev.hmpps.service.justice.gov.uk/v3/api-docs /prismMocks/adjudications.json
+ADD https://assess-risks-and-needs-dev.hmpps.service.justice.gov.uk/v3/api-docs /prismMocks/assess-risks-and-needs.json
+ADD https://dev.offender-case-notes.service.justice.gov.uk/v3/api-docs /prismMocks/case-notes.json
+ADD https://create-and-vary-a-licence-api-dev.hmpps.service.justice.gov.uk/v3/api-docs /prismMocks/create-and-vary-a-licence.json
 ADD https://dev.moic.service.justice.gov.uk/v3/api-docs.json /prismMocks/manage-pom-case-api.json
+ADD https://ministryofjustice.github.io/hmpps-probation-integration-services/tech-docs/projects/external-api-and-delius/api-docs.json /prismMocks/ndelius.json
 ADD https://prison-api-dev.prison.service.justice.gov.uk/v3/api-docs /prismMocks/prison-api.json
 ADD https://probation-offender-search-dev.hmpps.service.justice.gov.uk/v3/api-docs /prismMocks/probation-offender-search.json
-
+ADD https://ministryofjustice.github.io/hmpps-probation-integration-services/tech-docs/projects/effective-proposal-framework-and-delius/api-docs.json /prismMocks/probation-integration-epf.json
 ADD https://prisoner-search-dev.prison.service.justice.gov.uk/v3/api-docs /tmp/prisoner-offender-search-tmp.json
+
 RUN jq 'del(.components.schemas.Query.properties.subQueries)' /tmp/prisoner-offender-search-tmp.json > prisoner-offender-search-tmp1.json
 RUN swagger-cli bundle -r -o /prismMocks/prisoner-offender-search.json prisoner-offender-search-tmp1.json
+
+RUN sed -i 's/\*\/\*/application\/json/g' /prismMocks/adjudications.json
 RUN sed -i 's/\*\/\*/application\/json/g' /prismMocks/prisoner-offender-search.json
 
 ENTRYPOINT sh -c 'port=4010; for file in $(ls /prismMocks/*.json | sort); do node dist/index.js mock -p $port -h 0.0.0.0 $file & port=$((port + 1)); done; wait'
