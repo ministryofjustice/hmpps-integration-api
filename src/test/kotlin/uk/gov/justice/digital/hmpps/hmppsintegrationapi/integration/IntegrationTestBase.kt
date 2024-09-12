@@ -24,9 +24,9 @@ abstract class IntegrationTestBase {
   @Autowired
   lateinit var mockMvc: MockMvc
 
-  val basePath = "/v1/persons"
-  final val hmppsId = "2004/13116M"
-  val encodedHmppsId = URLEncoder.encode(hmppsId, StandardCharsets.UTF_8)
+  final val basePath = "/v1/persons"
+  final val pnc = URLEncoder.encode("2004/13116M", StandardCharsets.UTF_8)
+  final val nomsId = "G2996UX"
 
   companion object {
     private val hmppsAuthMockServer = HmppsAuthMockServer()

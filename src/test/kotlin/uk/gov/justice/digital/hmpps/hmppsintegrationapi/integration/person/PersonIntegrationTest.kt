@@ -5,7 +5,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationTestBase
 
-internal class PersonIntegrationTest : IntegrationTestBase() {
+class PersonIntegrationTest : IntegrationTestBase() {
   @Test
   fun `returns a list of persons using first name and last name as search parameters`() {
     val firstName = "Example_First_Name"
@@ -19,21 +19,21 @@ internal class PersonIntegrationTest : IntegrationTestBase() {
 
   @Test
   fun `returns a person from Prisoner Offender Search and Probation Offender Search`() {
-    callApi("$basePath/$encodedHmppsId")
+    callApi("$basePath/$pnc")
       .andExpect(status().isOk)
       .andExpect(content().json(getExpectedResponse("person-offender-and-probation-search-response")))
   }
 
   @Test
   fun `returns image metadata for a person`() {
-    callApi("$basePath/$encodedHmppsId/images")
+    callApi("$basePath/$pnc/images")
       .andExpect(status().isOk)
       .andExpect(content().json(getExpectedResponse("person-image-meta-data")))
   }
 
   @Test
   fun `returns person name details for a person`() {
-    callApi("$basePath/$encodedHmppsId/name")
+    callApi("$basePath/$pnc/name")
       .andExpect(status().isOk)
       .andExpect(
         content().json(
@@ -46,7 +46,7 @@ internal class PersonIntegrationTest : IntegrationTestBase() {
 
   @Test
   fun `returns person cell location if in prison`() {
-    callApi("$basePath/$encodedHmppsId/cell-location")
+    callApi("$basePath/$pnc/cell-location")
       .andExpect(status().isOk)
       .andExpect(
         content().json(

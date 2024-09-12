@@ -12,6 +12,8 @@ services:
     base-url: http://localhost:3000
     username: client
     password: client-secret
+  adjudications:
+    base-url: http://localhost:4010
   prisoner-offender-search:
     base-url: http://localhost:4017
   probation-offender-search:
@@ -22,8 +24,6 @@ services:
     base-url: http://localhost:4004
   probation-integration-epf:
     base-url: http://localhost:4005
-  adjudications:
-    base-url: http://localhost:4006
   create-and-vary-licence:
     base-url: http://localhost:4007
   case-notes:
