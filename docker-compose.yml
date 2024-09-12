@@ -33,9 +33,16 @@ services:
       dockerfile: Dockerfile.prism
     container_name: prism
     healthcheck:
-      test: 'curl -H "Authorization: Bearer abc" -f http://localhost:4010/reported-adjudications/hearings?hearingDate=1910-06-03 &&
-            curl -H "Authorization: Bearer abc" -f http://127.0.0.1:4017/prisoner/A1234AL &&
-            curl -H "Authorization: Bearer abc" -f http://127.0.0.1:4018/case-details/officiis/1134670863'
+      test: 'curl -H "Authorization: Bearer abc" -f http://0.0.0.0:4010/reported-adjudications/hearings?hearingDate=1910-06-03 &&
+            curl -H "Authorization: Bearer abc" -f http://0.0.0.0:4011/risks/crn/voluptatem/predictors/all &&
+            curl -H "Authorization: Bearer abc" -f http://0.0.0.0:4012/case-notes/types?selectableBy=DPS_USER &&
+            curl -H "Authorization: Bearer abc" -f http://0.0.0.0:4013/public/licences/id/123 &&
+            curl -H "Authorization: Bearer abc" -f http://0.0.0.0:4014/api/allocation/X1234YZ/primary_pom &&
+            curl -H "Authorization: Bearer abc" -f http://0.0.0.0:4015/case/abc/supervisions &&
+            curl -H "Authorization: Bearer abc" -f http://0.0.0.0:4016/api/case-notes/usage &&
+            curl -H "Authorization: Bearer abc" -f http://0.0.0.0:4017/prisoner/A1234AL &&
+            curl -H "Authorization: Bearer abc" -f http://0.0.0.0:4018/case-details/crn/1234 &&
+            curl -H "Authorization: Bearer abc" -f http://0.0.0.0:4019/search?crn=sit'
     ports:
       - '4010:4010'
       - '4011:4011'
