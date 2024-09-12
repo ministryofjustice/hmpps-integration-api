@@ -9,9 +9,13 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDO
 import org.springframework.http.HttpHeaders
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.ResultActions
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
 import java.io.File
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 
 @ActiveProfiles("integration-test")
 @AutoConfigureMockMvc
@@ -19,6 +23,10 @@ import java.io.File
 abstract class IntegrationTestBase {
   @Autowired
   lateinit var mockMvc: MockMvc
+
+  val basePath = "/v1/persons"
+  final val hmppsId = "2004/13116M"
+  val encodedHmppsId = URLEncoder.encode(hmppsId, StandardCharsets.UTF_8)
 
   companion object {
     private val hmppsAuthMockServer = HmppsAuthMockServer()
@@ -44,4 +52,10 @@ abstract class IntegrationTestBase {
   }
 
   fun getExpectedResponse(filename: String): String = File("./src/test/resources/expected-responses/$filename").readText(Charsets.UTF_8).removeWhitespaceAndNewlines()
+
+  fun callApi(path: String): ResultActions {
+    return mockMvc.perform(
+      get(path).headers(getAuthHeader()),
+    )
+  }
 }
