@@ -6,6 +6,7 @@ import org.springframework.web.reactive.function.BodyInserters
 import org.springframework.web.reactive.function.client.ExchangeStrategies
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.WebClientResponseException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 
@@ -111,4 +112,12 @@ class WebClientWrapper(
       ),
     )
   }
+}
+
+inline fun <reified T> WebClientWrapper.WebClientWrapperResponse<T>.getOrError(error: (errors: List<UpstreamApiError>) -> Response<Any?>): T {
+  if (this is WebClientWrapper.WebClientWrapperResponse.Error) {
+    error(this.errors)
+  }
+  val success = this as WebClientWrapper.WebClientWrapperResponse.Success
+  return success.data
 }
