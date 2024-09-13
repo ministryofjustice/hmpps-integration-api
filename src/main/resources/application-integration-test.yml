@@ -14,22 +14,22 @@ services:
     password: client-secret
   adjudications:
     base-url: http://localhost:4010
-  prisoner-offender-search:
-    base-url: http://localhost:4017
-  probation-offender-search:
-    base-url: http://localhost:4019
-  ndelius:
-    base-url: http://localhost:4015
   assess-risks-and-needs:
     base-url: http://localhost:4011
-  probation-integration-epf:
-    base-url: http://localhost:4005
-  create-and-vary-licence:
-    base-url: http://localhost:4013
   case-notes:
     base-url: http://localhost:4012
+  create-and-vary-licence:
+    base-url: http://localhost:4013
   manage-pom-case-api:
     base-url: http://localhost:4014
+  ndelius:
+    base-url: http://localhost:4015
+  prisoner-offender-search:
+    base-url: http://localhost:4017
+  probation-integration-epf:
+    base-url: http://localhost:4018
+  probation-offender-search:
+    base-url: http://localhost:4019
 
 hmpps.sqs:
   provider: localstack
