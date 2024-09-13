@@ -25,4 +25,5 @@ RUN sed -i 's/\*\/\*/application\/json/g' /prismMocks/assess-risks-and-needs.jso
 RUN sed -i 's/\*\/\*/application\/json/g' /prismMocks/case-notes.json
 RUN sed -i 's/\*\/\*/application\/json/g' /prismMocks/prisoner-offender-search.json
 
+COPY src/main/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/prismMocks/case-notes.json /prismMocks/case-notes.json
 ENTRYPOINT sh -c 'port=4010; for file in $(ls /prismMocks/*.json | sort); do node dist/index.js mock -p $port -h 0.0.0.0 $file & port=$((port + 1)); done; wait'

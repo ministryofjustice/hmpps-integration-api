@@ -27,7 +27,7 @@ services:
   create-and-vary-licence:
     base-url: http://localhost:4007
   case-notes:
-    base-url: http://localhost:4008
+    base-url: http://localhost:4012
   manage-pom-case-api:
     base-url: http://localhost:4009
 
