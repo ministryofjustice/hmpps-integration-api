@@ -29,7 +29,7 @@ services:
   case-notes:
     base-url: http://localhost:4012
   manage-pom-case-api:
-    base-url: http://localhost:4009
+    base-url: http://localhost:4014
 
 hmpps.sqs:
   provider: localstack
