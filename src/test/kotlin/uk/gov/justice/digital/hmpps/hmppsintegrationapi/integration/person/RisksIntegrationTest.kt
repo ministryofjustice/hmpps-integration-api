@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.person
 
-import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
@@ -10,7 +9,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationT
 class RisksIntegrationTest : IntegrationTestBase() {
 
   @ParameterizedTest
-  @ValueSource(strings = ["scores", "categories"])
+  @ValueSource(strings = ["scores", "categories", "mappadetail", "dynamic", "serious-harm"])
   fun `returns protected characteristics for a person`(path: String) {
     callApi("$basePath/$crn/risks/$path")
       .andExpect(status().isOk)
