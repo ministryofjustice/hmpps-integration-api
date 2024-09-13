@@ -35,7 +35,7 @@ internal class ReferenceDataControllerTests(
 
       describe("returns reference data") {
         val mockMvc = IntegrationAPIMockMvc(springMockMvc)
-        val path = "/v1/reference-data"
+        val path = "/v1/hmpps/reference-data"
 
         it("returns a 200 OK status code") {
           val result = mockMvc.performAuthorised(path)

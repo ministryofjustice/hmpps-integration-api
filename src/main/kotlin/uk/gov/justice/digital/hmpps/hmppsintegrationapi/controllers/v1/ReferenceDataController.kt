@@ -18,7 +18,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.ReferenceDataSe
 @Hidden
 @RestController
 @EnableConfigurationProperties(AuthorisationConfig::class)
-@RequestMapping("/v1/reference-data")
+@RequestMapping("/v1/hmpps/reference-data")
 class ReferenceDataController(
   var referenceDataService: ReferenceDataService,
 ) {

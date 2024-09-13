@@ -73,6 +73,6 @@ authorisation:
       - "/health/readiness"
       - "/health/liveness"
       - "/info"
-      - "/v1/reference-data"
+      - "/v1/hmpps/reference-data"
     config-test:
       - "/v1/config/authorisation"
