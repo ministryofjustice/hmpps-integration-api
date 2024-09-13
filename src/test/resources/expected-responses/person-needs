@@ -1,0 +1,29 @@
+{
+  "data": {
+    "assessedOn": "2024-09-04T01:01:29",
+    "identifiedNeeds": [
+      {
+        "type": "DRUG_MISUSE",
+        "riskOfHarm": false,
+        "riskOfReoffending": false,
+        "severity": "NO_NEED"
+      }
+    ],
+    "notIdentifiedNeeds": [
+      {
+        "type": "DRUG_MISUSE",
+        "riskOfHarm": false,
+        "riskOfReoffending": false,
+        "severity": "NO_NEED"
+      }
+    ],
+    "unansweredNeeds": [
+      {
+        "type": "DRUG_MISUSE",
+        "riskOfHarm": false,
+        "riskOfReoffending": false,
+        "severity": "SEVERE"
+      }
+    ]
+  }
+}
