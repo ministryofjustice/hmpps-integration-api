@@ -55,6 +55,7 @@ authorisation:
       - "/health/readiness"
       - "/health/liveness"
       - "/info"
+      - "/v1/reference-data"
     config-test:
       - "/v1/config/authorisation"
     all-access:
