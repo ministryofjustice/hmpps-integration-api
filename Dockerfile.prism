@@ -11,7 +11,7 @@ ADD https://dev.offender-case-notes.service.justice.gov.uk/v3/api-docs /prismMoc
 ADD https://create-and-vary-a-licence-api-dev.hmpps.service.justice.gov.uk/v3/api-docs /prismMocks/create-and-vary-a-licence.json
 ADD https://dev.moic.service.justice.gov.uk/v3/api-docs.json /prismMocks/manage-pom-case-api.json
 ADD https://ministryofjustice.github.io/hmpps-probation-integration-services/tech-docs/projects/external-api-and-delius/api-docs.json /prismMocks/ndelius.json
-ADD https://prison-api-dev.prison.service.justice.gov.uk/v3/api-docs /prismMocks/prison-api.json
+ADD https://prison-api-dev.prison.service.justice.gov.uk/v3/api-docs /tmp/prison-api.json
 ADD https://probation-offender-search-dev.hmpps.service.justice.gov.uk/v3/api-docs /prismMocks/probation-offender-search.json
 ADD https://ministryofjustice.github.io/hmpps-probation-integration-services/tech-docs/projects/effective-proposal-framework-and-delius/api-docs.json /prismMocks/probation-integration-epf.json
 ADD https://prisoner-search-dev.prison.service.justice.gov.uk/v3/api-docs /tmp/prisoner-offender-search-tmp.json
@@ -19,6 +19,12 @@ ADD https://prisoner-search-dev.prison.service.justice.gov.uk/v3/api-docs /tmp/p
 RUN jq 'del(.components.schemas.Query.properties.subQueries)' /tmp/prisoner-offender-search-tmp.json > /tmp/prisoner-offender-search-tmp1.json
 RUN swagger-cli bundle -r -o /prismMocks/prisoner-offender-search.json /tmp/prisoner-offender-search-tmp1.json
 RUN swagger-cli bundle -r -o /prismMocks/adjudications.json /tmp/adjudications.json
+
+RUN jq 'del(.components.schemas.ReferenceCode.properties.subCodes.items)' /tmp/prison-api.json > /tmp/prison-api-tmp.json && mv /tmp/prison-api-tmp.json /tmp/prison-api.json
+RUN jq 'del(.components.schemas.ResidentialLocation.properties.subCodes.items)' /tmp/prison-api.json > /tmp/prison-api-tmp.json && mv /tmp/prison-api-tmp.json /tmp/prison-api.json
+RUN jq 'del(.components.schemas.ResidentialLocation.properties.subLocations.items)' /tmp/prison-api.json > /tmp/prison-api-tmp.json && mv /tmp/prison-api-tmp.json /tmp/prison-api.json
+RUN jq 'del(.components.schemas.LocationGroup.properties.children.items)' /tmp/prison-api.json > /tmp/prison-api-tmp.json && mv /tmp/prison-api-tmp.json /tmp/prison-api.json
+RUN swagger-cli bundle -r -o /prismMocks/prison-api-1.json /tmp/prison-api.json
 
 RUN sed -i 's/\*\/\*/application\/json/g' /prismMocks/adjudications.json
 RUN sed -i 's/\*\/\*/application\/json/g' /prismMocks/assess-risks-and-needs.json
