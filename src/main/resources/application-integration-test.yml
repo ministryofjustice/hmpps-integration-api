@@ -19,7 +19,7 @@ services:
   probation-offender-search:
     base-url: http://localhost:4019
   ndelius:
-    base-url: http://localhost:4003
+    base-url: http://localhost:4015
   assess-risks-and-needs:
     base-url: http://localhost:4011
   probation-integration-epf:
