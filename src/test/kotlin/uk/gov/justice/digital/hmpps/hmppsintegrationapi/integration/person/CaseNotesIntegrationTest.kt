@@ -6,7 +6,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationTestBase
 
 class CaseNotesIntegrationTest : IntegrationTestBase() {
-
   @Test
   fun `returns case notes for a person`() {
     callApi("$basePath/$crn/case-notes")

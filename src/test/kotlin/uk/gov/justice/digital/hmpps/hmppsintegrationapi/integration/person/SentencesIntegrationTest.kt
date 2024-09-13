@@ -5,8 +5,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationTestBase
 
-class SentencesIntegrationTest :  IntegrationTestBase() {
-
+class SentencesIntegrationTest : IntegrationTestBase() {
   final var path = "$basePath/$pnc/sentences"
 
   @Test

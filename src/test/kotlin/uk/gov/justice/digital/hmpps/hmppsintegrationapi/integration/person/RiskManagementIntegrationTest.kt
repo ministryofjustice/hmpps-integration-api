@@ -6,7 +6,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationTestBase
 
 class RiskManagementIntegrationTest : IntegrationTestBase() {
-
   @Test
   fun `returns protected characteristics for a person`() {
     callApi("$basePath/$crn/risk-management-plan")

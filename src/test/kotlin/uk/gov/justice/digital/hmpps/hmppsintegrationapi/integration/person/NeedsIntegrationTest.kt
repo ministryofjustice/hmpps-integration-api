@@ -6,7 +6,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationTestBase
 
 class NeedsIntegrationTest : IntegrationTestBase() {
-
   @Test
   fun `returns needs for a person`() {
     callApi("$basePath/$pnc/needs")

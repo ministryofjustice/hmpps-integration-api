@@ -7,7 +7,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationTestBase
 
 class RisksIntegrationTest : IntegrationTestBase() {
-
   @ParameterizedTest
   @ValueSource(strings = ["scores", "categories", "mappadetail", "dynamic", "serious-harm"])
   fun `returns protected characteristics for a person`(path: String) {
