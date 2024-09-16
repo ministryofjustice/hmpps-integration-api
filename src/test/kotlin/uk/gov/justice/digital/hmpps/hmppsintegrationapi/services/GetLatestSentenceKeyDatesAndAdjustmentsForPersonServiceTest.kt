@@ -17,6 +17,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HomeDetenti
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Identifiers
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NonDtoDate
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonOnProbation
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ReleaseDate
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SentenceAdjustment
@@ -48,10 +49,13 @@ internal class GetLatestSentenceKeyDatesAndAdjustmentsForPersonServiceTest(
         whenever(probationOffenderSearchGateway.getPerson(id = hmppsId)).thenReturn(
           Response(
             data =
-              Person(
-                firstName = "Baylan",
-                lastName = "Skoll",
-                identifiers = Identifiers(nomisNumber = nomisNumber),
+              PersonOnProbation(
+                Person(
+                  firstName = "Baylan",
+                  lastName = "Skoll",
+                  identifiers = Identifiers(nomisNumber = nomisNumber),
+                ),
+                false,
               ),
           ),
         )
@@ -268,10 +272,13 @@ internal class GetLatestSentenceKeyDatesAndAdjustmentsForPersonServiceTest(
         whenever(probationOffenderSearchGateway.getPerson(id = hmppsId)).thenReturn(
           Response(
             data =
-              Person(
-                firstName = "Shin",
-                lastName = "Hati",
-                identifiers = Identifiers(nomisNumber = null),
+              PersonOnProbation(
+                Person(
+                  firstName = "Shin",
+                  lastName = "Hati",
+                  identifiers = Identifiers(nomisNumber = null),
+                ),
+                false,
               ),
             errors = emptyList(),
           ),

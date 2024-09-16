@@ -8,6 +8,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrap
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper.WebClientWrapperResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Address
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonOnProbation
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
@@ -72,9 +73,9 @@ class ProbationOffenderSearchGateway(
     }
   }
 
-  fun getPerson(id: String? = null): Response<Person?> {
+  fun getPerson(id: String? = null): Response<PersonOnProbation?> {
     val offender = getOffender(id)
-    return Response(data = offender.data?.toPerson(), errors = offender.errors)
+    return Response(data = offender.data?.toPersonOnProbation(), errors = offender.errors)
   }
 
   fun getPersons(

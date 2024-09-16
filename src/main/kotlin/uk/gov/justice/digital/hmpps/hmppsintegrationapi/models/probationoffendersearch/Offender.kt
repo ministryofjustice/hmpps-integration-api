@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.probationoffende
 
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Identifiers
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonOnProbation
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonProtectedCharacteristics
 import java.time.LocalDate
 
@@ -16,8 +17,9 @@ data class Offender(
   val contactDetails: ContactDetails? = null,
   val otherIds: OtherIds = OtherIds(),
   val age: Number = 0,
+  val activeProbationManagedSentence: Boolean = false,
 ) {
-  fun toPerson(): Person =
+  fun toPerson() =
     Person(
       firstName = this.firstName,
       lastName = this.surname,
@@ -35,6 +37,12 @@ data class Offender(
       pncId = otherIds.pncNumber,
       hmppsId = if (otherIds.crn?.isNotEmpty() == true) otherIds.crn else otherIds.nomsNumber,
       contactDetails = this.contactDetails?.toContactDetails(),
+    )
+
+  fun toPersonOnProbation() =
+    PersonOnProbation(
+      toPerson(),
+      underActiveSupervision = this.activeProbationManagedSentence,
     )
 
   fun toPersonProtectedCharacteristics(): PersonProtectedCharacteristics =
