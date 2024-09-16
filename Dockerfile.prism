@@ -16,8 +16,6 @@ ADD https://probation-offender-search-dev.hmpps.service.justice.gov.uk/v3/api-do
 ADD https://ministryofjustice.github.io/hmpps-probation-integration-services/tech-docs/projects/effective-proposal-framework-and-delius/api-docs.json /prismMocks/probation-integration-epf.json
 ADD https://prisoner-search-dev.prison.service.justice.gov.uk/v3/api-docs /tmp/prisoner-offender-search-tmp.json
 
-COPY src/main/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/prismMocks/case-notes-dev.json /prismMocks/case-notes.json
-
 RUN jq 'del(.components.schemas.Query.properties.subQueries)' /tmp/prisoner-offender-search-tmp.json > /tmp/prisoner-offender-search-tmp1.json
 RUN swagger-cli bundle -r -o /prismMocks/prisoner-offender-search.json /tmp/prisoner-offender-search-tmp1.json
 RUN swagger-cli bundle -r -o /prismMocks/adjudications.json /tmp/adjudications.json
@@ -28,11 +26,13 @@ RUN jq 'del(.components.schemas.ResidentialLocation.properties.subLocations.item
 RUN jq 'del(.components.schemas.LocationGroup.properties.children.items)' /tmp/prison-api.json > /tmp/prison-api-tmp.json && mv /tmp/prison-api-tmp.json /tmp/prison-api.json
 RUN swagger-cli bundle -r -o /prismMocks/prison-api-1.json /tmp/prison-api.json
 
-RUN jq 'del(.components.schemas.CaseNoteFilter.required)' /tmp/case-notes.json > /tmp/case-notes.tmp.json && mv /tmp/case-notes.tmp.json /tmp/case-notes.json
+RUN jq 'del(.components.schemas.CaseNoteFilter.required)' /tmp/case-notes.json > /tmp/case-notes.tmp.json && mv /tmp/case-notes.tmp.json /prismMocks/case-notes.json
 
 RUN sed -i 's/\*\/\*/application\/json/g' /prismMocks/adjudications.json
 RUN sed -i 's/\*\/\*/application\/json/g' /prismMocks/assess-risks-and-needs.json
 RUN sed -i 's/\*\/\*/application\/json/g' /prismMocks/case-notes.json
 RUN sed -i 's/\*\/\*/application\/json/g' /prismMocks/prisoner-offender-search.json
+
+COPY src/main/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/prismMocks/create-and-vary-licence.json /prismMocks/create-and-vary-a-licence.json
 
 ENTRYPOINT sh -c 'port=4010; for file in $(ls /prismMocks/*.json | sort); do node dist/index.js mock -p $port -h 0.0.0.0 $file & port=$((port + 1)); done; wait'

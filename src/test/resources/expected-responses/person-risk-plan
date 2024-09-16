@@ -2,8 +2,8 @@
   "data": [
     {
       "assessmentId": "-9007199254740991",
-      "dateCompleted": "2024-09-09T14:22:03",
-      "initiationDate": "2024-09-09T14:22:03",
+      "dateCompleted": "2024-09-04T01:01:29",
+      "initiationDate": "2024-09-04T01:01:29",
       "assessmentStatus": "string",
       "assessmentType": "string",
       "keyInformationCurrentSituation": "string",
@@ -13,8 +13,8 @@
       "interventionsAndTreatment": "string",
       "victimSafetyPlanning": "string",
       "contingencyPlans": "string",
-      "latestSignLockDate": "2024-09-09T14:22:03",
-      "latestCompleteDate": "2024-09-09T14:22:03"
+      "latestSignLockDate": "2024-09-04T01:01:29",
+      "latestCompleteDate": "2024-09-04T01:01:29"
     }
   ],
   "pagination": {
