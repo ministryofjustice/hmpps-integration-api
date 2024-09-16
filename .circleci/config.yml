@@ -156,7 +156,7 @@ workflows:
           context:
             - hmpps-common-vars
           <<: *slack-fail-post-step
-      - smoke-tests:
+      - integration-tests:
           context:
             - hmpps-common-vars
           <<: *slack-fail-post-step
@@ -182,7 +182,7 @@ workflows:
           requires:
             - lint-code
             - unit-tests
-            - smoke-tests
+            - integration-tests
             - lint-helm-charts
             - build_docker
           filters:
