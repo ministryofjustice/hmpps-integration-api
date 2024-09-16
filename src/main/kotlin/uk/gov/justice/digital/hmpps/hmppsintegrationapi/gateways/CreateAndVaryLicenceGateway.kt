@@ -33,7 +33,7 @@ class CreateAndVaryLicenceGateway(
 
     return when (result) {
       is WebClientWrapperResponse.Success -> {
-        val sortedLicences = result.data.sortedByDescending { it.createdDateTime }
+        val sortedLicences = result.data.sortedByDescending { it.dateCreated }
         Response(data = sortedLicences.map { it.toLicence() })
       }
 

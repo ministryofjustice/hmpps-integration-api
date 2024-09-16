@@ -1,6 +1,6 @@
 {
   "data": {
-    "assessedOn": "2024-09-04T01:01:29",
+    "assessedOn": "2024-09-09T14:22:03",
     "riskToSelf": {
       "suicide": {
         "risk": "YES",
@@ -17,24 +17,24 @@
         "currentConcernsText": "Risk of self harms concerns due to ..."
       },
       "custody": {
-        "risk": "Yes, No, Don't know, null",
-        "previous": "Yes, No, Don't know",
+        "risk": "YES",
+        "previous": "YES",
         "previousConcernsText": "Risk of self harms concerns due to ...",
-        "current": "Yes, No, Don't know",
+        "current": "YES",
         "currentConcernsText": "Risk of self harms concerns due to ..."
       },
       "hostelSetting": {
-        "risk": "Yes, No, Don't know, null",
-        "previous": "Yes, No, Don't know",
+        "risk": "YES",
+        "previous": "YES",
         "previousConcernsText": "Risk of self harms concerns due to ...",
-        "current": "Yes, No, Don't know",
+        "current": "YES",
         "currentConcernsText": "Risk of self harms concerns due to ..."
       },
       "vulnerability": {
-        "risk": "Yes, No, Don't know, null",
-        "previous": "Yes, No, Don't know",
+        "risk": "YES",
+        "previous": "YES",
         "previousConcernsText": "Risk of self harms concerns due to ...",
-        "current": "Yes, No, Don't know",
+        "current": "YES",
         "currentConcernsText": "Risk of self harms concerns due to ..."
       }
     },

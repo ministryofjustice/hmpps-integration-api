@@ -6,8 +6,6 @@ management.endpoint:
   info.cache.time-to-live: 0
 
 services:
-  prison-api:
-    base-url: http://localhost:4016
   hmpps-auth:
     base-url: http://localhost:3000
     username: client
@@ -24,6 +22,8 @@ services:
     base-url: http://localhost:4014
   ndelius:
     base-url: http://localhost:4015
+  prison-api:
+    base-url: http://localhost:4016
   prisoner-offender-search:
     base-url: http://localhost:4017
   probation-integration-epf:

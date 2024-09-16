@@ -8,13 +8,13 @@ class LicenceTest : DescribeSpec(
       it("maps one-to-one attributes to integration API attributes") {
         val cvlLcence =
           CvlLicenceSummary(
-            id = "MockId",
-            prisonNumber = "1140484",
+            licenceId = "MockId",
+            nomisId = "1140484",
           )
 
         val integrationApiLicence = cvlLcence.toLicence()
 
-        integrationApiLicence.offenderNumber.shouldBe(cvlLcence.prisonNumber)
+        integrationApiLicence.offenderNumber.shouldBe(cvlLcence.nomisId)
       }
     }
   },

@@ -7,7 +7,7 @@ RUN mkdir /prismMocks
 
 ADD https://manage-adjudications-api-dev.hmpps.service.justice.gov.uk/v3/api-docs /tmp/adjudications.json
 ADD https://assess-risks-and-needs-dev.hmpps.service.justice.gov.uk/v3/api-docs /prismMocks/assess-risks-and-needs.json
-ADD https://dev.offender-case-notes.service.justice.gov.uk/v3/api-docs /prismMocks/case-notes.json
+ADD https://dev.offender-case-notes.service.justice.gov.uk/v3/api-docs /tmp/case-notes.json
 ADD https://create-and-vary-a-licence-api-dev.hmpps.service.justice.gov.uk/v3/api-docs /prismMocks/create-and-vary-a-licence.json
 ADD https://dev.moic.service.justice.gov.uk/v3/api-docs.json /prismMocks/manage-pom-case-api.json
 ADD https://ministryofjustice.github.io/hmpps-probation-integration-services/tech-docs/projects/external-api-and-delius/api-docs.json /prismMocks/ndelius.json
@@ -15,6 +15,8 @@ ADD https://prison-api-dev.prison.service.justice.gov.uk/v3/api-docs /tmp/prison
 ADD https://probation-offender-search-dev.hmpps.service.justice.gov.uk/v3/api-docs /prismMocks/probation-offender-search.json
 ADD https://ministryofjustice.github.io/hmpps-probation-integration-services/tech-docs/projects/effective-proposal-framework-and-delius/api-docs.json /prismMocks/probation-integration-epf.json
 ADD https://prisoner-search-dev.prison.service.justice.gov.uk/v3/api-docs /tmp/prisoner-offender-search-tmp.json
+
+COPY src/main/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/prismMocks/case-notes-dev.json /prismMocks/case-notes.json
 
 RUN jq 'del(.components.schemas.Query.properties.subQueries)' /tmp/prisoner-offender-search-tmp.json > /tmp/prisoner-offender-search-tmp1.json
 RUN swagger-cli bundle -r -o /prismMocks/prisoner-offender-search.json /tmp/prisoner-offender-search-tmp1.json
@@ -25,6 +27,8 @@ RUN jq 'del(.components.schemas.ResidentialLocation.properties.subCodes.items)' 
 RUN jq 'del(.components.schemas.ResidentialLocation.properties.subLocations.items)' /tmp/prison-api.json > /tmp/prison-api-tmp.json && mv /tmp/prison-api-tmp.json /tmp/prison-api.json
 RUN jq 'del(.components.schemas.LocationGroup.properties.children.items)' /tmp/prison-api.json > /tmp/prison-api-tmp.json && mv /tmp/prison-api-tmp.json /tmp/prison-api.json
 RUN swagger-cli bundle -r -o /prismMocks/prison-api-1.json /tmp/prison-api.json
+
+RUN jq 'del(.components.schemas.CaseNoteFilter.required)' /tmp/case-notes.json > /tmp/case-notes.tmp.json && mv /tmp/case-notes.tmp.json /tmp/case-notes.json
 
 RUN sed -i 's/\*\/\*/application\/json/g' /prismMocks/adjudications.json
 RUN sed -i 's/\*\/\*/application\/json/g' /prismMocks/assess-risks-and-needs.json

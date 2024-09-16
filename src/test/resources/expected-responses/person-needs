@@ -1,6 +1,6 @@
 {
   "data": {
-    "assessedOn": "2024-09-04T01:01:29",
+    "assessedOn": "2024-09-09T14:22:03",
     "identifiedNeeds": [
       {
         "type": "DRUG_MISUSE",
@@ -22,7 +22,7 @@
         "type": "DRUG_MISUSE",
         "riskOfHarm": false,
         "riskOfReoffending": false,
-        "severity": "SEVERE"
+        "severity": "NO_NEED"
       }
     ]
   }
