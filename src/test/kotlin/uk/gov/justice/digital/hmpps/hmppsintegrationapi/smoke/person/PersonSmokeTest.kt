@@ -112,6 +112,7 @@ class PersonSmokeTest : DescribeSpec(
                     "contactDetails": null
                 },
                 "probationOffenderSearch": {
+                    "underActiveSupervision": true,
                     "firstName": "string",
                     "lastName": "string",
                     "middleName": "string",
@@ -190,6 +191,7 @@ class PersonSmokeTest : DescribeSpec(
                     "contactDetails": null
                 },
                 "probationOffenderSearch": {
+                    "underActiveSupervision": true,
                     "firstName": "string",
                     "lastName": "string",
                     "middleName": "string",

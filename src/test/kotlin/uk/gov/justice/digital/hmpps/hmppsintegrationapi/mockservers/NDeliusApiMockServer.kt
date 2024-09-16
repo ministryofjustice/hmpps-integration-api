@@ -11,6 +11,25 @@ class NDeliusApiMockServer : WireMockServer(WIREMOCK_PORT) {
     private const val WIREMOCK_PORT = 4003
   }
 
+  fun stubDeliusApiResponse(
+    path: String,
+    body: String,
+    status: HttpStatus = HttpStatus.OK,
+  ) {
+    stubFor(
+      get(path)
+        .withHeader(
+          "Authorization",
+          matching("Bearer ${HmppsAuthMockServer.TOKEN}"),
+        ).willReturn(
+          aResponse()
+            .withHeader("Content-Type", "application/json")
+            .withStatus(status.value())
+            .withBody(body.trimIndent()),
+        ),
+    )
+  }
+
   fun stubGetSupervisionsForPerson(
     crn: String,
     body: String,

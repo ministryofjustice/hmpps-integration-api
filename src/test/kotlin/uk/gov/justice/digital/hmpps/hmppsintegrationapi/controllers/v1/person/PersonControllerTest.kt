@@ -25,6 +25,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ImageMetada
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.OffenderSearchResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonName
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonOnProbation
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PhoneNumber
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
@@ -228,7 +229,7 @@ internal class PersonControllerTest(
       }
 
       describe("GET $basePath/{id}") {
-        val probationOffenderSearch = Person("Sam", "Smith", identifiers = Identifiers(nomisNumber = "1234ABC"))
+        val probationOffenderSearch = PersonOnProbation(Person("Sam", "Smith", identifiers = Identifiers(nomisNumber = "1234ABC")), underActiveSupervision = true)
         val prisonOffenderSearch = POSPrisoner("Kim", "Kardashian")
         val prisonResponse = Response(data = prisonOffenderSearch, errors = emptyList())
 
@@ -285,7 +286,7 @@ internal class PersonControllerTest(
           it("does not return a 404 status code when a person was found in one upstream API") {
             whenever(getPersonService.getCombinedDataForPerson(idThatDoesNotExist)).thenReturn(
               Response(
-                data = OffenderSearchResponse(prisonerOffenderSearch = null, probationOffenderSearch = Person("someFirstName", "someLastName")),
+                data = OffenderSearchResponse(prisonerOffenderSearch = null, probationOffenderSearch = PersonOnProbation(Person("someFirstName", "someLastName"), underActiveSupervision = false)),
                 errors =
                   listOf(
                     UpstreamApiError(
@@ -336,6 +337,7 @@ internal class PersonControllerTest(
                    "contactDetails":null
                 },
                 "probationOffenderSearch":{
+                   "underActiveSupervision":true,
                    "firstName":"Sam",
                    "lastName":"Smith",
                    "middleName":null,
@@ -362,9 +364,7 @@ internal class PersonControllerTest(
       }
 
       describe("GET $basePath/$encodedHmppsId/name") {
-        val probationOffenderSearch = Person("Sam", "Smith", identifiers = Identifiers(nomisNumber = "1234ABC"))
         val prisonOffenderSearch = POSPrisoner("Sam", "Smith")
-        val prisonResponse = Response(data = prisonOffenderSearch, errors = emptyList())
 
         beforeTest {
           Mockito.reset(getNameForPersonService)

@@ -48,6 +48,7 @@ authorisation:
       - "/v1/persons/.*/risks/categories"
       - "/v1/persons/.*/person-responsible-officer"
       - "/v1/persons/.*/risk-management-plan"
+      - "/v1/hmpps/reference-data"
     ctrlo:
       - "/v1/epf/person-details/.*/[^/]*$"
     moj-pes:
@@ -72,6 +73,7 @@ authorisation:
       - "/v1/persons/.*/licences/conditions"
       - "/v1/persons/.*/person-responsible-officer"
       - "/v1/persons/.*/status-information"
+      - "/v1/hmpps/reference-data"
     event-service:
       - "/v1/config/authorisation"
     mryall:
@@ -87,3 +89,4 @@ authorisation:
       - "/v1/persons/.*/licences/conditions"
       - "/v1/persons/.*/person-responsible-officer"
       - "/v1/persons/.*/status-information"
+      - "/v1/hmpps/reference-data"

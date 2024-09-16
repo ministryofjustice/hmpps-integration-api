@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonAlias
 import io.swagger.v3.oas.annotations.media.Schema
 import java.time.LocalDate
 
-data class Person(
+open class Person(
   @Schema(description = "First name", example = "John")
   val firstName: String,
   @JsonAlias("surname")
