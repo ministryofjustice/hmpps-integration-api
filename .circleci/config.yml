@@ -99,7 +99,7 @@ jobs:
           key: gradle-{{ checksum "build.gradle.kts" }}
       - store_test_results:
           path: build/test-results
-  smoke-tests:
+  integration-tests:
     machine:
       image: ubuntu-2204:2022.10.2
     steps:
@@ -116,8 +116,8 @@ jobs:
             sudo update-alternatives --set javac /usr/lib/jvm/java-21-openjdk-amd64/bin/javac
             java -version
       - run:
-          name: Run smoke tests
-          command: make smoke-test
+          name: Run integration tests
+          command: make integration-test
   create-and-push-image-to-ecr:
     docker:
       - image: ministryofjustice/cloud-platform-tools
