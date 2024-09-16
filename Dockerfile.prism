@@ -8,7 +8,7 @@ RUN mkdir /prismMocks
 ADD https://manage-adjudications-api-dev.hmpps.service.justice.gov.uk/v3/api-docs /tmp/adjudications.json
 ADD https://assess-risks-and-needs-dev.hmpps.service.justice.gov.uk/v3/api-docs /prismMocks/assess-risks-and-needs.json
 ADD https://dev.offender-case-notes.service.justice.gov.uk/v3/api-docs /tmp/case-notes.json
-ADD https://create-and-vary-a-licence-api-dev.hmpps.service.justice.gov.uk/v3/api-docs /prismMocks/create-and-vary-a-licence.json
+ADD https://create-and-vary-a-licence-api-dev.hmpps.service.justice.gov.uk/v3/api-docs/public /prismMocks/create-and-vary-a-licence.json
 ADD https://dev.moic.service.justice.gov.uk/v3/api-docs.json /prismMocks/manage-pom-case-api.json
 ADD https://ministryofjustice.github.io/hmpps-probation-integration-services/tech-docs/projects/external-api-and-delius/api-docs.json /prismMocks/ndelius.json
 ADD https://prison-api-dev.prison.service.justice.gov.uk/v3/api-docs /tmp/prison-api.json
@@ -32,7 +32,5 @@ RUN sed -i 's/\*\/\*/application\/json/g' /prismMocks/adjudications.json
 RUN sed -i 's/\*\/\*/application\/json/g' /prismMocks/assess-risks-and-needs.json
 RUN sed -i 's/\*\/\*/application\/json/g' /prismMocks/case-notes.json
 RUN sed -i 's/\*\/\*/application\/json/g' /prismMocks/prisoner-offender-search.json
-
-COPY src/main/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/prismMocks/create-and-vary-licence.json /prismMocks/create-and-vary-a-licence.json
 
 ENTRYPOINT sh -c 'port=4010; for file in $(ls /prismMocks/*.json | sort); do node dist/index.js mock -p $port -h 0.0.0.0 $file & port=$((port + 1)); done; wait'
