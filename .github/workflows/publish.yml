@@ -3,8 +3,6 @@ name: Publish gh-pages
 on:
   workflow_dispatch:
   push:
-    branches:
-      - "main"
     paths-ignore:
       - "docs/**"
 
@@ -41,6 +39,7 @@ jobs:
   deploy:
     name: 🚀 Deploy application
     needs: build
+    if: github.ref_name == 'main'
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
