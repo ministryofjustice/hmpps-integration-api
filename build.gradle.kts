@@ -14,7 +14,7 @@ dependencies {
   implementation("io.sentry:sentry-spring-boot-starter-jakarta:6.34.0")
   implementation("io.sentry:sentry-logback:6.34.0")
   implementation("org.springframework.data:spring-data-commons:3.3.4")
-  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:3.1.1") {
+  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:4.4.3") {
     exclude("org.springframework.security", "spring-security-config")
     exclude("org.springframework.security", "spring-security-core")
     exclude("org.springframework.security", "spring-security-crypto")
