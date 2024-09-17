@@ -14,7 +14,7 @@
       "sensitive": true,
       "amendments": [
         {
-          "caseNoteAmendmentId": null,
+          "caseNoteAmendmentId": 123232,
           "creationDateTime": "2019-08-24T14:15:22",
           "additionalNoteText": "Some Additional Text"
         }
