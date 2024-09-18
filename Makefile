@@ -9,7 +9,7 @@ build:
 	docker build -t hmpps-integration-api .
 
 serve-dependencies:
-	docker compose up hmpps-auth prism local-stack-aws --build -d
+	docker compose up prism local-stack-aws --build -d
 
 serve: build-dev
 	docker compose up -d --wait
