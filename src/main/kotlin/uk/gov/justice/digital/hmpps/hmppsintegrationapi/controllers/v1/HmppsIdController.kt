@@ -15,7 +15,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetHmppsIdServi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 
 @RestController
-@RequestMapping("/v1/hmpps-id")
+@RequestMapping("/v1/hmpps/id")
 @Tag(name = "default")
 class HmppsIdController(
   @Autowired val getHmppsIdService: GetHmppsIdService,

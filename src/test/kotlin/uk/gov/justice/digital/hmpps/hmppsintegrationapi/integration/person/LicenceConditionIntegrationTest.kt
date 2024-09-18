@@ -8,7 +8,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationT
 class LicenceConditionIntegrationTest : IntegrationTestBase() {
   @Test
   fun `returns alerts for a person`() {
-    callApi("$basePath/$crn/licences/conditions")
+    callApi("$basePath/$nomsId/licences/conditions")
       .andExpect(status().isOk)
       .andExpect(content().json(getExpectedResponse("person-licence-conditions")))
   }
