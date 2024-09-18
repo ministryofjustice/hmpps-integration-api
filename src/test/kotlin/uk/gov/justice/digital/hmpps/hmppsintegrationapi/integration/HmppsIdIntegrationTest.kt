@@ -9,8 +9,12 @@ class HmppsIdIntegrationTest : IntegrationTestBase() {
   fun `gets the person detail`() {
     callApi("/v1/hmpps/id/nomis-number/$nomsId")
       .andExpect(status().isOk)
-      .andExpect(content().json("""
+      .andExpect(
+        content().json(
+          """
         {"data":{"hmppsId":"A123456"}}
-      """))
+      """,
+        ),
+      )
   }
 }
