@@ -28,7 +28,7 @@ internal class HmppsIdControllerTest(
   @MockBean val auditService: AuditService,
 ) : DescribeSpec({
     val nomisNumber = "A1234AA"
-    val path = "/v1/hmpps-id/nomis-number/$nomisNumber"
+    val path = "/v1/hmpps/id/nomis-number/$nomisNumber"
     val mockMvc = IntegrationAPIMockMvc(springMockMvc)
 
     describe("GET $path") {

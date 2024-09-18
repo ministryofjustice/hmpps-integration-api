@@ -8,7 +8,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationT
 class AddressIntegrationTest : IntegrationTestBase() {
   @Test
   fun `returns addresses for a person`() {
-    callApi("$basePath/pnc/addresses")
+    callApi("$basePath/$pnc/addresses")
       .andExpect(status().isOk)
       .andExpect(content().json(getExpectedResponse("person-addresses")))
   }
