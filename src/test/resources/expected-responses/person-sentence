@@ -1,0 +1,49 @@
+{
+  "data": [
+      {
+        "serviceSource": "NOMIS",
+        "systemSource": "PRISON_SYSTEMS",
+        "dateOfSentencing": "2019-08-24",
+        "description": "string",
+        "isActive": null,
+        "isCustodial": true,
+        "fineAmount": -1.7976931348623157E308,
+        "length": {
+          "duration": null,
+          "units": null,
+          "terms": [
+            {
+              "years": 1,
+              "months": 2,
+              "weeks": 3,
+              "days": 4,
+              "hours": null,
+              "prisonTermCode": "string"
+            }
+          ]
+        }
+      },
+      {
+        "serviceSource": "NDELIUS",
+        "systemSource": "PROBATION_SYSTEMS",
+        "dateOfSentencing": "2019-08-24",
+        "description": "string",
+        "isActive": true,
+        "isCustodial": false,
+        "fineAmount": null,
+        "length": {
+          "duration": -2147483648,
+          "units": "Hours",
+          "terms": []
+        }
+      }
+    ],
+  "pagination": {
+    "isLastPage": true,
+    "count": 2,
+    "page": 1,
+    "perPage": 10,
+    "totalCount": 2,
+    "totalPages": 1
+  }
+}

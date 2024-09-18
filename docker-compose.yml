@@ -1,37 +1,20 @@
 services:
-  hmpps-integration-api:
-    build:
-      context: .
-    container_name: hmpps-integration-api
-    healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8080/health" ]
-    depends_on:
-      hmpps-auth:
-        condition: service_healthy
-    ports:
-      - "8080:8080"
-    environment:
-      - SERVER_PORT=8080
-      - SPRING_PROFILES_ACTIVE=local-docker
-      - LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_WEB=TRACE
-
-  hmpps-auth:
-    image: quay.io/hmpps/hmpps-auth:latest
-    container_name: hmpps-auth
-    ports:
-      - "9090:8080"
-    healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8080/auth/health" ]
-    environment:
-      - SERVER_PORT=8080
-      - SPRING_PROFILES_ACTIVE=dev
-      - LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_WEB=TRACE
-
   prism:
     build:
       context: .
       dockerfile: Dockerfile.prism
     container_name: prism
+    healthcheck:
+      test: 'curl -H "Authorization: Bearer abc" -f http://0.0.0.0:4010/reported-adjudications/hearings?hearingDate=1910-06-03 &&
+            curl -H "Authorization: Bearer abc" -f http://0.0.0.0:4011/risks/crn/voluptatem/predictors/all &&
+            curl -H "Authorization: Bearer abc" -f http://0.0.0.0:4012/case-notes/A1234AA/518b2200-6489-4c77-8514-10cf80ccd488 &&
+            curl -H "Authorization: Bearer abc" -f http://0.0.0.0:4013/public/licences/id/123 &&
+            curl -H "Authorization: Bearer abc" -f http://0.0.0.0:4014/api/allocation/X1234YZ/primary_pom &&
+            curl -H "Authorization: Bearer abc" -f http://0.0.0.0:4015/case/abc/supervisions &&
+            curl -H "Authorization: Bearer abc" -f http://0.0.0.0:4016/api/offenders/A1234AA &&
+            curl -H "Authorization: Bearer abc" -f http://0.0.0.0:4017/prisoner/A1234AL &&
+            curl -H "Authorization: Bearer abc" -f http://0.0.0.0:4018/case-details/crn/1234 &&
+            curl -H "Authorization: Bearer abc" -f http://0.0.0.0:4019/search?crn=sit'
     ports:
       - '4010:4010'
       - '4011:4011'

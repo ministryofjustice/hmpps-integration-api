@@ -1,0 +1,35 @@
+{
+  "data": {
+    "age": -2147483648,
+    "gender": "string",
+    "sexualOrientation": "string",
+    "ethnicity": "string",
+    "nationality": "string",
+    "religion": "string",
+    "disabilities": [
+        {
+            "disabilityType": {
+                "code": "string",
+                "description": "string"
+            },
+            "condition": {
+                "code": "string",
+                "description": "string"
+            },
+            "startDate": "2019-08-24",
+            "endDate": "2019-08-24",
+            "notes": "string"
+        }
+    ],
+    "maritalStatus": "Widowed",
+    "reasonableAdjustments": [
+        {
+            "treatmentCode": "WHEELCHR_ACC",
+            "commentText": "abcd",
+            "startDate": "2010-06-21",
+            "endDate": "2010-06-21",
+            "treatmentDescription": "Wheelchair accessibility"
+        }
+    ]
+}
+}

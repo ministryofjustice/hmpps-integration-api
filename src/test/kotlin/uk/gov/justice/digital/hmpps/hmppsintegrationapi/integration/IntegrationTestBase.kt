@@ -3,42 +3,60 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
+import org.springframework.http.HttpHeaders
 import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.web.reactive.server.WebTestClient
+import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.ResultActions
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.NomisApiMockServer
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.PrisonerOffenderSearchApiMockServer
+import java.io.File
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 
-@ActiveProfiles("test")
+@ActiveProfiles("integration-test")
+@AutoConfigureMockMvc
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 abstract class IntegrationTestBase {
-  @Suppress("SpringJavaInjectionPointsAutowiringInspection")
   @Autowired
-  lateinit var webTestClient: WebTestClient
+  lateinit var mockMvc: MockMvc
+
+  final val basePath = "/v1/persons"
+  final val pnc = URLEncoder.encode("2004/13116M", StandardCharsets.UTF_8)
+  final val nomsId = "G2996UX"
+  final val crn = "ABC123"
 
   companion object {
-    private val nomisApiMockServer = NomisApiMockServer()
-    private val prisonerOffenderSearchApiMockServer = PrisonerOffenderSearchApiMockServer()
     private val hmppsAuthMockServer = HmppsAuthMockServer()
 
     @BeforeAll
     @JvmStatic
     fun startMockServers() {
-      nomisApiMockServer.start()
       hmppsAuthMockServer.start()
-      prisonerOffenderSearchApiMockServer.start()
-
       hmppsAuthMockServer.stubGetOAuthToken("client", "client-secret")
     }
 
     @AfterAll
     @JvmStatic
     fun stopMockServers() {
-      nomisApiMockServer.stop()
       hmppsAuthMockServer.stop()
-      prisonerOffenderSearchApiMockServer.stop()
     }
+  }
+
+  fun getAuthHeader(): HttpHeaders {
+    val headers = HttpHeaders()
+    headers.set("subject-distinguished-name", "C=GB,ST=London,L=London,O=Home Office,CN=automated-test-client")
+    return headers
+  }
+
+  fun getExpectedResponse(filename: String): String = File("./src/test/resources/expected-responses/$filename").readText(Charsets.UTF_8).removeWhitespaceAndNewlines()
+
+  fun callApi(path: String): ResultActions {
+    return mockMvc.perform(
+      get(path).headers(getAuthHeader()),
+    )
   }
 }

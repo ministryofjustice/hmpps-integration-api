@@ -2,7 +2,7 @@ authenticate-docker:
 	./scripts/authenticate_docker.sh
 
 build-dev:
-	docker compose pull hmpps-auth
+	#docker compose pull hmpps-auth
 	docker compose build
 
 build:
@@ -12,7 +12,7 @@ serve-dependencies:
 	docker compose up hmpps-auth prism local-stack-aws --build -d
 
 serve: build-dev
-	docker compose up -d
+	docker compose up -d --wait
 
 publish:
 	./scripts/publish.sh
@@ -26,13 +26,16 @@ unit-test:
 smoke-test: serve
 	./gradlew smokeTest --warning-mode all
 
+integration-test: serve
+	./gradlew integrationTest --warning-mode all
+
 heartbeat:
 	./scripts/heartbeat.sh
 
 test: unit-test smoke-test
 
 e2e:
-	./gradlew smokeTest --warning-mode all
+	./gradlew integrationTest --warning-mode all
 
 lint:
 	./gradlew ktlintCheck
