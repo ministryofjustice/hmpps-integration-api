@@ -1,5 +1,5 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "6.0.5"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "6.0.6"
   kotlin("plugin.spring") version "2.0.20"
 }
 
@@ -9,12 +9,12 @@ configurations {
 
 dependencies {
   runtimeOnly("org.flywaydb:flyway-database-postgresql")
-  implementation("org.springframework.boot:spring-boot-starter-webflux:3.3.3")
-  implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.2")
+  implementation("org.springframework.boot:spring-boot-starter-webflux:3.3.4")
+  implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
   implementation("io.sentry:sentry-spring-boot-starter-jakarta:7.14.0")
   implementation("io.sentry:sentry-logback:7.14.0")
   implementation("org.springframework.data:spring-data-commons:3.3.4")
-  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:4.4.3") {
+  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:4.4.4") {
     exclude("org.springframework.security", "spring-security-config")
     exclude("org.springframework.security", "spring-security-core")
     exclude("org.springframework.security", "spring-security-crypto")
