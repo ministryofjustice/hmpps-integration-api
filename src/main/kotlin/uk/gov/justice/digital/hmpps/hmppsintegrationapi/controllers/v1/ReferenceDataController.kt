@@ -1,7 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.controllers.v1
 
 import ReferenceData
-import io.swagger.v3.oas.annotations.Hidden
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.ExampleObject
@@ -15,7 +14,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConf
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.ReferenceDataService
 
-@Hidden
 @RestController
 @EnableConfigurationProperties(AuthorisationConfig::class)
 @RequestMapping("/v1/hmpps/reference-data")
@@ -166,7 +164,5 @@ class ReferenceDataController(
       ApiResponse(responseCode = "500", content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]),
     ],
   )
-  fun getReferenceData(): Response<ReferenceData?> {
-    return referenceDataService.referenceData()
-  }
+  fun getReferenceData(): Response<ReferenceData?> = referenceDataService.referenceData()
 }
