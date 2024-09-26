@@ -22,11 +22,7 @@ class ReferenceDataController(
 ) {
   @GetMapping
   @Operation(
-    summary = """
-      Returns probation and prison reference data.
-      > Prison Reference Data Types: PHONE_TYPE, ALERT_TYPE, ETHNICITY, GENDER
-      > Probation Reference Data Types: PHONE_TYPE, REGISTER_TYPE, ETHNICITY, GENDER
-    """,
+    summary = """Returns probation and prison reference data codes descriptions for values returned by the API""",
     responses = [
       ApiResponse(
         responseCode = "200",
@@ -43,56 +39,12 @@ class ReferenceDataController(
                         {
                           "code": "a",
                           "description": "desc_a"
-                        },
-                        {
-                          "code": "b",
-                          "description": "desc_b"
-                        },
-                        {
-                          "code": "c",
-                          "description": "desc_c"
                         }
                       ],
                       "ALERT_TYPE": [
                         {
                           "code": "a",
                           "description": "desc_a"
-                        },
-                        {
-                          "code": "b",
-                          "description": "desc_b"
-                        },
-                        {
-                          "code": "c",
-                          "description": "desc_c"
-                        }
-                      ],
-                      "ETHNICITY": [
-                        {
-                          "code": "a",
-                          "description": "desc_a"
-                        },
-                        {
-                          "code": "b",
-                          "description": "desc_b"
-                        },
-                        {
-                          "code": "c",
-                          "description": "desc_c"
-                        }
-                      ],
-                      "GENDER": [
-                        {
-                          "code": "a",
-                          "description": "desc_a"
-                        },
-                        {
-                          "code": "b",
-                          "description": "desc_b"
-                        },
-                        {
-                          "code": "c",
-                          "description": "desc_c"
                         }
                       ]
                     },
@@ -101,58 +53,15 @@ class ReferenceDataController(
                         {
                           "code": "a",
                           "description": "desc_a"
-                        },
-                        {
-                          "code": "b",
-                          "description": "desc_b"
-                        },
-                        {
-                          "code": "c",
-                          "description": "desc_c"
                         }
                       ],
                       "REGISTER_TYPE": [
                         {
                           "code": "a",
                           "description": "desc_a"
-                        },
-                        {
-                          "code": "b",
-                          "description": "desc_b"
-                        },
-                        {
-                          "code": "c",
-                          "description": "desc_c"
-                        }
-                      ],
-                      "ETHNICITY": [
-                        {
-                          "code": "a",
-                          "description": "desc_a"
-                        },
-                        {
-                          "code": "b",
-                          "description": "desc_b"
-                        },
-                        {
-                          "code": "c",
-                          "description": "desc_c"
-                        }
-                      ],
-                      "GENDER": [
-                        {
-                          "code": "a",
-                          "description": "desc_a"
-                        },
-                        {
-                          "code": "b",
-                          "description": "desc_b"
-                        },
-                        {
-                          "code": "c",
-                          "description": "desc_c"
                         }
                       ]
+                    }
                   },
                   "errors": []
                 }""",
