@@ -11,6 +11,17 @@ updates:
           - "patch"
         patterns:
           - "*"
+  - package-ecosystem: "bundler"
+    directory: "/tech-docs"
+    schedule:
+      interval: "weekly"
+    groups:
+      minor:
+        update-types:
+          - "minor"
+          - "patch"
+        patterns:
+          - "*"
 
   - package-ecosystem: "github-actions"
     directory: "/"

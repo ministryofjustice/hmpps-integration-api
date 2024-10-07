@@ -1,3 +1,5 @@
+IMAGE := ministryofjustice/tech-docs-github-pages-publisher:v3
+
 authenticate-docker:
 	./scripts/authenticate_docker.sh
 
@@ -49,4 +51,23 @@ check:
 generate-client-certificate:
 	cd ./scripts/client_certificates && ./generate.sh
 
-.PHONY: authenticate-docker build-dev test serve publish unit-test smoke-test build lint
+preview-docs:
+	docker run --rm \
+		-v $$(pwd)/tech-docs/config:/app/config \
+		-v $$(pwd)/tech-docs/source:/app/source \
+		-p 4567:4567 \
+		-it $(IMAGE) /scripts/preview.sh
+
+deploy-docs:
+	docker run --rm \
+		-v $$(pwd)/tech-docs/config:/app/config \
+		-v $$(pwd)/tech-docs/source:/app/source \
+		-it $(IMAGE) /scripts/deploy.sh
+
+check-docs:
+	docker run --rm \
+		-v $$(pwd)/tech-docs/config:/app/config \
+		-v $$(pwd)/tech-docs/source:/app/source \
+		-it $(IMAGE) /scripts/check-url-links.sh
+
+.PHONY: authenticate-docker build-dev test serve publish unit-test smoke-test build lint preview-docs check-docs

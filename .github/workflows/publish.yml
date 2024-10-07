@@ -1,0 +1,53 @@
+name: Publish gh-pages
+
+on:
+  workflow_dispatch:
+  push:
+    paths-ignore:
+      - "docs/**"
+
+# GITHUB_TOKEN permissions to allow deployment to GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow one concurrent deployment
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: 🏗 Build application
+    runs-on: ubuntu-latest
+    container:
+      image: ministryofjustice/tech-docs-github-pages-publisher:v3.0.1
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Compile Markdown to HTML and create artifact
+        run: |
+          /scripts/deploy.sh
+        working-directory: tech-docs/
+      - name: Upload artifact to be published
+        uses: actions/upload-artifact@v4
+        with:
+          name: github-pages
+          path: tech-docs/artifact.tar
+          retention-days: 1
+
+  deploy:
+    name: 🚀 Deploy application
+    needs: build
+    if: github.ref_name == 'main'
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
