@@ -30,7 +30,7 @@ This repository is used to generate the [technical documentation website](https:
 1. Clone the repository.
 
 ```bash
-git clone git@github.com:ministryofjustice/hmpps-integration-api-docs.git
+git clone git@github.com:ministryofjustice/hmpps-integration-api.git
 ```
 
 ## Usage
@@ -40,7 +40,7 @@ git clone git@github.com:ministryofjustice/hmpps-integration-api-docs.git
 To run the application for local development:
 
 ```bash
-make preview
+make preview-docs
 ```
 
 Then visit http://localhost:4567.
@@ -50,7 +50,7 @@ Then visit http://localhost:4567.
 To check the application compiles and URLs are valid:
 
 ```bash
-make check
+make check-docs
 ```
 
 For more details see the [Tech Docs GitHub Pages Publisher GitHub repository](https://github.com/ministryofjustice/tech-docs-github-pages-publisher).
