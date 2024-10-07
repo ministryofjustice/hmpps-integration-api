@@ -26,8 +26,8 @@ dependencies {
   testImplementation("io.kotest:kotest-assertions-core-jvm:5.9.1")
   testImplementation("org.wiremock:wiremock-standalone:3.9.1")
   testImplementation("io.kotest.extensions:kotest-extensions-spring:1.3.0")
-  testImplementation("org.mockito:mockito-core:5.13.0")
-  testImplementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.17.2")
+  testImplementation("org.mockito:mockito-core:5.14.1")
+  testImplementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.18.0")
 
   annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 }
