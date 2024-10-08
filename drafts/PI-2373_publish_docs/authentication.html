@@ -9,19 +9,19 @@
 
     <link href="stylesheets/manifest.css" rel="stylesheet" />
 
-    <link rel="canonical" href="https://ministryofjustice.github.io/hmpps-integration-api-docs/authentication.html">
+    <link rel="canonical" href="https://ministryofjustice.github.io/hmpps-integration-api/authentication.html">
 
       <meta name="robots" content="noindex" />
       <meta name="twitter:card" content="summary" />
       <meta name="twitter:domain" content="ministryofjustice.github.io" />
-      <meta name="twitter:image" content="https://ministryofjustice.github.io/hmpps-integration-api-docs/images/govuk-large.png" />
+      <meta name="twitter:image" content="https://ministryofjustice.github.io/hmpps-integration-api/images/govuk-large.png" />
       <meta name="twitter:title" content="HMPPS Integration API And Events Documentation" />
-      <meta name="twitter:url" content="https://ministryofjustice.github.io/hmpps-integration-api-docs/authentication.html" />
+      <meta name="twitter:url" content="https://ministryofjustice.github.io/hmpps-integration-api/authentication.html" />
 
-      <meta property="og:image" content="https://ministryofjustice.github.io/hmpps-integration-api-docs/images/govuk-large.png" />
+      <meta property="og:image" content="https://ministryofjustice.github.io/hmpps-integration-api/images/govuk-large.png" />
       <meta property="og:site_name" content="HMPPS Integration API And Events Documentation" />
       <meta property="og:type" content="object" />
-      <meta property="og:url" content="https://ministryofjustice.github.io/hmpps-integration-api-docs/authentication.html" />
+      <meta property="og:url" content="https://ministryofjustice.github.io/hmpps-integration-api/authentication.html" />
 
     
   </head>
@@ -47,9 +47,6 @@
         <button type="button" class="govuk-header__menu-button govuk-js-header-toggle" aria-controls="navigation" aria-label="Show or hide menu">Menu</button>
         <ul id="navigation" class="govuk-header__navigation-list">
             <li class="govuk-header__navigation-item">
-              <a class="govuk-header__link" href="https://github.com/ministryofjustice/hmpps-integration-api-docs">Docs GitHub</a>
-            </li>
-            <li class="govuk-header__navigation-item">
               <a class="govuk-header__link" href="https://github.com/ministryofjustice/hmpps-integration-api">Integration API GitHub</a>
             </li>
             <li class="govuk-header__navigation-item">
@@ -74,7 +71,7 @@
             <div class="toc" data-module="table-of-contents" tabindex="-1" aria-label="Table of contents" role="dialog">
               <div class="search" data-module="search" data-path-to-site-root="./">
   <form action="https://www.google.co.uk/search" method="get" role="search" class="search__form govuk-!-margin-bottom-4">
-    <input type="hidden" name="as_sitesearch" value="https://ministryofjustice.github.io/hmpps-integration-api-docs"/>
+    <input type="hidden" name="as_sitesearch" value="https://ministryofjustice.github.io/hmpps-integration-api"/>
     <label class="govuk-label search__label" for="search" aria-hidden="true">
       Search (via Google)
     </label>
@@ -92,7 +89,43 @@
               <nav id="toc" class="js-toc-list toc__list" aria-labelledby="toc-heading" data-module="collapsible-navigation">
                       <ul>
   <li>
-    <a href="./documentation/adr/index.html"><span>Relevant Architecture Decision Records</span></a>
+    <a href="./api-changes-and-versioning.html"><span>API Changes and Versioning</span></a>
+    <ul>
+      <li>
+        <a href="./api-changes-and-versioning.html#non-breaking-change"><span>Non-Breaking Change</span></a>
+      </li>
+      <li>
+        <a href="./api-changes-and-versioning.html#breaking-change"><span>Breaking Change</span></a>
+      </li>
+      <li>
+        <a href="./api-changes-and-versioning.html#ongoing-assurance"><span>Ongoing Assurance</span></a>
+      </li>
+      <li>
+        <a href="./api-changes-and-versioning.html#uri-path"><span>URI Path</span></a>
+      </li>
+    </ul>
+  </li>
+  <li>
+    <a href="./authentication.html"><span>Authentication</span></a>
+    <ul>
+      <li>
+        <a href="./authentication.html#reading-from-the-api"><span>Reading from the API</span></a>
+      </li>
+      <li>
+        <a href="./authentication.html#interacting-with-an-hmpps-sqs-queue"><span>Interacting with an HMPPS SQS Queue</span></a>
+      </li>
+    </ul>
+  </li>
+  <li>
+    <a href="./documentation/get-started/index.html"><span>Get started</span></a>
+    <ul>
+      <li>
+        <a href="./documentation/get-started/index.html#request-access"><span>Request access</span></a>
+      </li>
+      <li>
+        <a href="./documentation/get-started/index.html#explore-available-endpoints"><span>Explore Available Endpoints</span></a>
+      </li>
+    </ul>
   </li>
   <li>
     <a href="./documentation/api/index.html"><span>HMPPS Integration API v1.0</span></a>
@@ -193,49 +226,13 @@
     </ul>
   </li>
   <li>
-    <a href="./documentation/get-started/index.html"><span>Get started</span></a>
-    <ul>
-      <li>
-        <a href="./documentation/get-started/index.html#request-access"><span>Request access</span></a>
-      </li>
-      <li>
-        <a href="./documentation/get-started/index.html#explore-available-endpoints"><span>Explore Available Endpoints</span></a>
-      </li>
-    </ul>
+    <a href="./documentation/adr/index.html"><span>Relevant Architecture Decision Records</span></a>
   </li>
   <li>
     <a href="./index.html"><span>About</span></a>
     <ul>
       <li>
         <a href="./index.html#diagrams"><span>Diagrams</span></a>
-      </li>
-    </ul>
-  </li>
-  <li>
-    <a href="./authentication.html"><span>Authentication</span></a>
-    <ul>
-      <li>
-        <a href="./authentication.html#reading-from-the-api"><span>Reading from the API</span></a>
-      </li>
-      <li>
-        <a href="./authentication.html#interacting-with-an-hmpps-sqs-queue"><span>Interacting with an HMPPS SQS Queue</span></a>
-      </li>
-    </ul>
-  </li>
-  <li>
-    <a href="./api-changes-and-versioning.html"><span>API Changes and Versioning</span></a>
-    <ul>
-      <li>
-        <a href="./api-changes-and-versioning.html#non-breaking-change"><span>Non-Breaking Change</span></a>
-      </li>
-      <li>
-        <a href="./api-changes-and-versioning.html#breaking-change"><span>Breaking Change</span></a>
-      </li>
-      <li>
-        <a href="./api-changes-and-versioning.html#ongoing-assurance"><span>Ongoing Assurance</span></a>
-      </li>
-      <li>
-        <a href="./api-changes-and-versioning.html#uri-path"><span>URI Path</span></a>
       </li>
     </ul>
   </li>
@@ -273,9 +270,9 @@
 
           <aside>
               <ul class="contribution-banner">
-                <li><a href="https://github.com/ministryofjustice/hmpps-integration-api-docs/blob/main/source/authentication.html.md.erb">View source</a></li>
-                <li><a href="https://github.com/ministryofjustice/hmpps-integration-api-docs/issues/new?body=Problem+with+%27%27+%28https%3A%2F%2Fministryofjustice.github.io%2Fhmpps-integration-api-docs%2Fauthentication.html%29&amp;labels=bug&amp;title=Re%3A+%27%27">Report problem</a></li>
-                <li><a href="https://github.com/ministryofjustice/hmpps-integration-api-docs">GitHub Repo</a></li>
+                <li><a href="https://github.com/ministryofjustice/hmpps-integration-api/blob/main/source/authentication.html.md.erb">View source</a></li>
+                <li><a href="https://github.com/ministryofjustice/hmpps-integration-api/issues/new?body=Problem+with+%27%27+%28https%3A%2F%2Fministryofjustice.github.io%2Fhmpps-integration-api%2Fauthentication.html%29&amp;labels=bug&amp;title=Re%3A+%27%27">Report problem</a></li>
+                <li><a href="https://github.com/ministryofjustice/hmpps-integration-api">GitHub Repo</a></li>
               </ul>
           </aside>
 
