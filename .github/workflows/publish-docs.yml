@@ -5,7 +5,7 @@ on:
   push:
 
 jobs:
-  build:
+  deploy-openapi:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -22,20 +22,58 @@ jobs:
           timeout 300 sh -c 'until curl -s localhost:8080/v3/api-docs; do sleep 5; done'
         env:
           SPRING_PROFILES_ACTIVE: local
+      - name: Bundle OpenAPI specs
+        run: |
+          mkdir openapi
+          curl -sf localhost:8080/v3/api-docs -o openapi/api-docs.json
+        working-directory: .
+      - uses: actions/upload-artifact@v4
+        with:
+          name: openapi
+          path: openapi/
+      - name: Deploy OpenAPI
+        uses: JamesIves/github-pages-deploy-action@920cbb300dcd3f0568dbc42700c61e2fd9e6139c # v4.6.4
+        with:
+          folder: openapi
+          target-folder: openapi
+
+  build-docs:
+    runs-on: ubuntu-latest
+    needs:
+      - deploy-openapi
+    steps:
+      - uses: actions/checkout@v4
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: 3.1
           bundler-cache: true
           working-directory: tech-docs
-      - name: Build
+      - name: Build Docs
         run: |
           gem install middleman
           bundle exec middleman build --verbose
         working-directory: tech-docs
-      - name: Bundle OpenAPI specs
-        run: |
-          curl -sf localhost:8080/v3/api-docs -o api-docs.json
-        working-directory: tech-docs/build
       - uses: actions/upload-artifact@v4
         with:
-          path: tech-docs/build
+          name: documentation
+          path: tech-docs/build/
+
+  deploy-docs:
+    runs-on: ubuntu-latest
+    if: github.ref_name == 'main' || (github.event_name == 'workflow_dispatch')
+    needs:
+      - build-docs
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: documentation
+          path: tech-docs-build
+      - uses: actions/download-artifact@v4
+        with:
+          name: openapi
+          path: tech-docs-build/openapi/
+      - name: Deploy
+        uses: JamesIves/github-pages-deploy-action@920cbb300dcd3f0568dbc42700c61e2fd9e6139c # v4.6.4
+        with:
+          folder: tech-docs-build
