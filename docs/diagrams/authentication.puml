@@ -1,0 +1,47 @@
+@startuml authentication
+
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+!include <awslib/AWSCommon.puml>
+!include <awslib/ApplicationIntegration/APIGateway.puml>
+!include <awslib/Storage/SimpleStorageService.puml>
+!include <awslib/Containers/ElasticKubernetesService.puml>
+
+!include <tupadr3/common>
+!include <office/Servers/certificate_authority.puml>
+!include <tupadr3/devicons/nginx.puml>
+
+Title [Authentication] HMPPS Integration API
+
+Person(user, "User")
+
+Boundary(mutual_tls, "Mutual TLS authentication", "") {
+  Container(consumer_app, "Consumer Application", "API", "Requires data from HMPPS.")
+  OFF_CERTIFICATE_AUTHORITY(public_ca, "Public CA")
+  SimpleStorageService(s3_truststore, "HMPPS Integration API", "S3 Bucket", "Stores root certificate authority.")
+  OFF_CERTIFICATE_AUTHORITY(truststore, "Certificate Authority")
+  APIGateway(api_gw, "HMPPS Integration API", "API Gateway", "Manages requests from consumer applications.")
+}
+
+Boundary(client_cert_auth, "Client certificate authentication", "") {
+  ElasticKubernetesService(hmpps_integration_api, "HMPPS Integration API", "Elastic Kubernetes Service", "Uses NGINX ingress controller to manage authentication.")
+  OFF_CERTIFICATE_AUTHORITY(apigw_ca, "API Gateway CA")
+}
+
+' Mutual TLS
+Rel_Down(user, consumer_app, "1. Makes request")
+Rel_Up(api_gw, consumer_app, "2. Presents server certificate")
+Rel_Right(consumer_app, public_ca, "3. Verifies server certificate")
+Rel_Down(consumer_app, api_gw, "4. Presents client certificate")
+Rel_Right(api_gw, s3_truststore, "5. Verifies client certificate")
+Rel_Right(s3_truststore, truststore, "6. Stores certificate authority")
+Rel_Down(consumer_app, api_gw, "7. Makes request")
+
+' Client certificate authentication
+Rel_Down(api_gw, hmpps_integration_api, "8. Presents client certificate")
+Rel_Right(hmpps_integration_api, apigw_ca, "9. Verifies client certificate")
+Rel_Right(api_gw, hmpps_integration_api, "10. Forwards request")
+
+SHOW_DYNAMIC_LEGEND()
+
+@enduml

@@ -1,0 +1,4 @@
+source "https://rubygems.org"
+
+# Include the tech docs gem
+gem 'govuk_tech_docs'

@@ -1,0 +1,312 @@
+version: 2.1
+
+orbs:
+  hmpps: ministryofjustice/hmpps@8
+  slack: circleci/slack@4.12.1
+  shellcheck: circleci/shellcheck@3
+  aws-cli: circleci/aws-cli@4.0.0
+  aws-ecr: circleci/aws-ecr@8.2.1
+
+parameters:
+  alerts-slack-channel:
+    type: string
+    default: hmpps-integration-api-alerts
+  releases-slack-channel:
+    type: string
+    default: hmpps-integration-api-alerts
+
+slack-fail-post-step: &slack-fail-post-step
+  post-steps:
+    - slack/notify:
+        event: fail
+        branch_pattern: main
+        channel: << pipeline.parameters.alerts-slack-channel >>
+        custom: |
+          {
+            "blocks": [
+              {
+                "type": "header",
+                "text": {
+                  "type": "plain_text",
+                  "text": ":this-is-fine-fire: ${CIRCLE_JOB} job has failed",
+                  "emoji": true
+                }
+              },
+              {
+                "type": "context",
+                "elements": [
+                  {
+                    "type": "mrkdwn",
+                    "text": "Project: *${CIRCLE_PROJECT_REPONAME}*"
+                  },
+                  {
+                    "type": "mrkdwn",
+                    "text": "Branch: *${CIRCLE_BRANCH}*"
+                  },
+                  {
+                    "type": "mrkdwn",
+                    "text": "Build: *#${CIRCLE_BUILD_NUM}*"
+                  }
+                ]
+              },
+              {
+                "type": "actions",
+                "elements": [
+                  {
+                    "type": "button",
+                    "text": { "type": "plain_text", "text": "View job" },
+                    "url": "${CIRCLE_BUILD_URL}"
+                  }
+                ]
+              }
+            ]
+          }
+
+jobs:
+  lint-code:
+    executor:
+      name: hmpps/java
+      tag: "21.0"
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - gradle-{{ checksum "build.gradle.kts" }}
+            - gradle-
+      - run:
+          name: Lint code
+          command: make lint
+      - save_cache:
+          paths:
+            - ~/.gradle
+          key: gradle-{{ checksum "build.gradle.kts" }}
+  unit-tests:
+    executor:
+      name: hmpps/java
+      tag: "21.0"
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - gradle-{{ checksum "build.gradle.kts" }}
+            - gradle-
+      - run:
+          name: Run unit tests
+          command: make unit-test
+      - save_cache:
+          paths:
+            - ~/.gradle
+          key: gradle-{{ checksum "build.gradle.kts" }}
+      - store_test_results:
+          path: build/test-results
+  integration-tests:
+    machine:
+      image: ubuntu-2204:2022.10.2
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - gradle-{{ checksum "build.gradle.kts" }}
+            - gradle-
+      - run:
+          name: Install OpenJDK 21
+          command: |
+            sudo apt-get update && sudo apt-get install openjdk-21-jdk
+            sudo update-alternatives --set java /usr/lib/jvm/java-21-openjdk-amd64/bin/java
+            sudo update-alternatives --set javac /usr/lib/jvm/java-21-openjdk-amd64/bin/javac
+            java -version
+      - run:
+          name: Run integration tests
+          command: make integration-test
+  create-and-push-image-to-ecr:
+    docker:
+      - image: ministryofjustice/cloud-platform-tools
+    steps:
+      - checkout
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - run:
+          name: Build application Docker image
+          command: make build
+      - hmpps/create_app_version
+      - aws-cli/setup:
+          role_arn: $ECR_ROLE_TO_ASSUME
+          region: AWS_DEFAULT_REGION
+      - deploy:
+          name: Push application Docker image
+          command: make publish
+  heartbeat:
+    machine:
+      image: ubuntu-2204:2022.10.2
+    steps:
+      - checkout
+      - run:
+          name: Run heartbeat
+          command: make heartbeat
+
+workflows:
+  version: 2
+  build-test-and-deploy:
+    jobs:
+      - lint-code:
+          context:
+            - hmpps-common-vars
+          <<: *slack-fail-post-step
+      - unit-tests:
+          context:
+            - hmpps-common-vars
+          <<: *slack-fail-post-step
+      - integration-tests:
+          context:
+            - hmpps-common-vars
+          <<: *slack-fail-post-step
+      - hmpps/helm_lint:
+          context:
+            - hmpps-common-vars
+          <<: *slack-fail-post-step
+          name: lint-helm-charts
+          env: dev
+      - hmpps/build_multiplatform_docker:
+          name: build_docker
+          filters:
+            branches:
+              only:
+                - main
+
+      - create-and-push-image-to-ecr:
+          <<: *slack-fail-post-step
+          name: create-and-push-image-to-dev-ecr
+          context:
+            - hmpps-integration-api-dev
+            - hmpps-common-vars
+          requires:
+            - lint-code
+            - unit-tests
+            - integration-tests
+            - lint-helm-charts
+            - build_docker
+          filters:
+            branches:
+              only:
+                - main
+
+      - hmpps/deploy_env:
+          <<: *slack-fail-post-step
+          name: deploy-to-dev
+          context:
+            - hmpps-integration-api-dev
+            - hmpps-common-vars
+          requires:
+            - create-and-push-image-to-dev-ecr
+          filters:
+            branches:
+              only:
+                - main
+          env: "dev"
+          helm_timeout: 5m
+          slack_channel_name: << pipeline.parameters.releases-slack-channel >>
+          slack_notification: false
+
+      - heartbeat:
+          <<: *slack-fail-post-step
+          name: post-deploy-heartbeat-for-dev
+          context:
+            - hmpps-common-vars
+            - hmpps-integration-api-heartbeat-dev
+          requires:
+            - deploy-to-dev
+
+      - create-and-push-image-to-ecr:
+          <<: *slack-fail-post-step
+          name: create-and-push-image-to-preprod-ecr
+          context:
+            - hmpps-common-vars
+            - hmpps-integration-api-preprod
+          requires:
+            - post-deploy-heartbeat-for-dev
+          filters:
+            branches:
+              only:
+                - main
+      - hmpps/deploy_env:
+          <<: *slack-fail-post-step
+          name: deploy-to-preprod
+          context:
+            - hmpps-integration-api-preprod
+            - hmpps-common-vars
+          requires:
+            - create-and-push-image-to-preprod-ecr
+          filters:
+            branches:
+              only:
+                - main
+          env: "preprod"
+          helm_timeout: 5m
+          slack_channel_name: << pipeline.parameters.releases-slack-channel >>
+          slack_notification: false
+
+      - create-and-push-image-to-ecr:
+          <<: *slack-fail-post-step
+          name: create-and-push-image-to-prod-ecr
+          context:
+            - hmpps-integration-api-prod
+            - hmpps-common-vars
+          requires:
+            - deploy-to-preprod
+          filters:
+            branches:
+              only:
+                - main
+      - hmpps/deploy_env:
+          <<: *slack-fail-post-step
+          name: deploy-to-prod
+          context:
+            - hmpps-integration-api-prod
+            - hmpps-common-vars
+          requires:
+            - create-and-push-image-to-prod-ecr
+          filters:
+            branches:
+              only:
+                - main
+          env: "prod"
+          helm_timeout: 5m
+          slack_channel_name: << pipeline.parameters.releases-slack-channel >>
+          slack_notification: false
+  security:
+    triggers:
+      - schedule:
+          cron: "11 5 * * 1-5"
+          filters:
+            branches:
+              only:
+                - main
+    jobs:
+      - hmpps/gradle_owasp_dependency_check:
+          jdk_tag: "21.0"
+          slack_channel: << pipeline.parameters.alerts-slack-channel >>
+          context:
+            - hmpps-common-vars
+      - hmpps/veracode_pipeline_scan:
+          slack_channel: << pipeline.parameters.alerts-slack-channel >>
+          context:
+            - veracode-credentials
+            - hmpps-common-vars
+      - hmpps/trivy_latest_scan:
+                slack_channel: << pipeline.parameters.alerts-slack-channel >>
+                context:
+                  - hmpps-common-vars
+  security-weekly:
+    triggers:
+      - schedule:
+          cron: "0 5 * * 1"
+          filters:
+            branches:
+              only:
+                - main
+    jobs:
+      - hmpps/veracode_policy_scan:
+          slack_channel: << pipeline.parameters.alerts-slack-channel >>
+          context:
+            - veracode-credentials
+            - hmpps-common-vars

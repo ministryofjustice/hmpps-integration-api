@@ -1,0 +1,40 @@
+services:
+  prison-api:
+    base-url: https://prison-api.prison.service.justice.gov.uk
+  prisoner-offender-search:
+    base-url: https://prisoner-search.prison.service.justice.gov.uk
+  probation-offender-search:
+    base-url: https://probation-offender-search.hmpps.service.justice.gov.uk
+  ndelius:
+    base-url: https://external-api-and-delius.hmpps.service.justice.gov.uk
+  assess-risks-and-needs:
+    base-url: https://assess-risks-and-needs.hmpps.service.justice.gov.uk
+  probation-integration-epf:
+    base-url: https://effective-proposal-framework-and-delius.hmpps.service.justice.gov.uk
+  adjudications:
+    base-url: https://manage-adjudications-api-prod.hmpps.service.justice.gov.uk
+  create-and-vary-licence:
+    base-url: https://create-and-vary-a-licence-api-prod.hmpps.service.justice.gov.uk
+  case-notes:
+    base-url: https://prod.offender-case-notes.service.justice.gov.uk
+  manage-pom-case-api:
+    base-url: https://moic.service.justice.gov.uk
+  hmpps-auth:
+    base-url: https://sign-in.hmpps.service.justice.gov.uk
+    username: ${CLIENT_ID}
+    password: ${CLIENT_SECRET}
+
+authorisation:
+  consumers:
+    ctrlo:
+      - "/v1/epf/person-details/.*/[^/]*$"
+    moj-pes:
+      - "/v1/persons/.*/name"
+      - "/v1/hmpps/id/nomis-number/[^/]*$"
+      - "/v1/persons/.*/cell-location"
+      - "/v1/hmpps/reference-data"
+    kubernetes-health-check-client:
+      - "/health/liveness"
+      - "/health/readiness"
+    event-service:
+      - "/v1/config/authorisation"

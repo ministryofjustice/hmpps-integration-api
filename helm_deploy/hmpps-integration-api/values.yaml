@@ -1,0 +1,62 @@
+---
+generic-service:
+  nameOverride: hmpps-integration-api
+
+  replicaCount: 4
+
+  serviceAccountName: hmpps-integration-api
+
+  image:
+    repository: quay.io/hmpps/hmpps-integration-api
+    tag: app_version    # override at deployment time
+    port: 8080
+
+  livenessProbe:
+    httpGet:
+      path: /health/liveness
+      httpHeaders:
+        - name: subject-distinguished-name
+          value: "O=K8s,CN=kubernetes-health-check-client"
+
+  readinessProbe:
+    httpGet:
+      path: /health/readiness
+      httpHeaders:
+        - name: subject-distinguished-name
+          value: "O=K8s,CN=kubernetes-health-check-client"
+
+  ingress:
+    enabled: true
+    v1_2_enabled: true
+    v0_47_enabled: false
+    host: app-hostname.local    # override per environment
+    tlsSecretName: ""
+    annotations:
+      nginx.ingress.kubernetes.io/auth-tls-verify-client: "on"
+      nginx.ingress.kubernetes.io/auth-tls-verify-depth: "1"
+      nginx.ingress.kubernetes.io/auth-tls-pass-certificate-to-upstream: "true"
+      nginx.ingress.kubernetes.io/limit-rps: "100"
+
+  # Environment variables to load into the deployment
+  env:
+    JAVA_OPTS: "-Xmx512m"
+    SERVER_PORT: "8080"
+    SPRING_PROFILES_ACTIVE: "logstash"
+    APPLICATIONINSIGHTS_CONNECTION_STRING: "InstrumentationKey=$(APPINSIGHTS_INSTRUMENTATIONKEY)"
+    APPLICATIONINSIGHTS_CONFIGURATION_FILE: applicationinsights.json
+    HMPPS_SQS_USE_WEB_TOKEN: "true"
+  # Pre-existing kubernetes secrets to load as environment variables in the deployment.
+  # namespace_secrets:
+  #   [name of kubernetes secret]:
+  #     [name of environment variable as seen by app]: [key of kubernetes secret to load]
+
+  namespace_secrets:
+    sqs-hmpps-audit-secret:
+      HMPPS_SQS_QUEUES_AUDIT_QUEUE_NAME: "sqs_queue_name"
+
+
+  allowlist:
+    unrestricted: "0.0.0.0/0"
+
+generic-prometheus-alerts:
+  targetApplication: hmpps-integration-api

@@ -1,0 +1,32 @@
+{
+  "crn": "D1974X",
+  "limitedAccessOffender": true,
+  "riskManagementPlan": [
+    {
+      "assessmentId": 0,
+      "dateCompleted": "2024-05-04T01:04:20",
+      "partcompStatus": "string",
+      "initiationDate": "2024-05-04T01:04:20",
+      "assessmentStatus": "string",
+      "assessmentType": "string",
+      "superStatus": "string",
+      "keyInformationCurrentSituation": "string",
+      "furtherConsiderationsCurrentSituation": "string",
+      "supervision": "string",
+      "monitoringAndControl": "string",
+      "interventionsAndTreatment": "string",
+      "victimSafetyPlanning": "string",
+      "contingencyPlans": "string",
+      "laterWIPAssessmentExists": true,
+      "latestWIPDate": "2024-05-04T01:04:20",
+      "laterSignLockAssessmentExists": true,
+      "latestSignLockDate": "2024-05-04T01:04:20",
+      "laterPartCompUnsignedAssessmentExists": true,
+      "latestPartCompUnsignedDate": "2024-05-04T01:04:20",
+      "laterPartCompSignedAssessmentExists": true,
+      "latestPartCompSignedDate": "2024-05-04T01:04:20",
+      "laterCompleteAssessmentExists": true,
+      "latestCompleteDate": "2024-05-04T01:04:20"
+    }
+  ]
+}

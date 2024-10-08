@@ -1,0 +1,73 @@
+@startuml testing-strategy
+
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+skinparam linetype ortho
+
+!global $WHITE = "#FFFFF"
+!global $UNIT_TESTS_COLOR = "#8B43D5"
+!global $SMOKE_TESTS_COLOR = "#1AB5B5"
+!global $SIMULATORS_COLOR = "#2F7070"
+!global $MOCK_SERVERS_COLOR = "#512A78"
+
+AddElementTag("unit_tests", $bgColor=$UNIT_TESTS_COLOR, $fontColor=$WHITE)
+AddElementTag("smoke_tests", $bgColor=$SMOKE_TESTS_COLOR, $fontColor=$WHITE)
+AddElementTag("simulators", $bgColor=$SIMULATORS_COLOR, $fontColor=$WHITE)
+AddElementTag("mock_servers", $bgColor=$MOCK_SERVERS_COLOR, $fontColor=$WHITE)
+
+AddRelTag("mocks", $textColor="#666666", $lineColor="#666666", $lineStyle = DottedLine())
+
+
+title [Testing Strategy] HMPPS Integration API
+
+System_Ext(consumer, "Consumer Application", "An authenticated consumer of the Integration API.")
+
+Boundary(spring_boot_api, "HMPPS Integration REST API", "Spring Boot Kotlin API"){
+  Container(controller, "Controller", "Spring Boot API Controller", "")
+  Container(service, "Service", "Spring Boot Service Bean", "")
+  Container(gateway, "Gateway", "Spring Boot Component Bean", "")
+  Container(model, "Model", "Kotlin Data Class", "")
+}
+
+Boundary(unit_test_boundary, "Unit Tests", "Kotlin"){
+  Container(controller_tests, "Controller Tests", "WebMvcTest, Kotest, Mockito", "Tests the web layer of the application with stubbed services.",$tags="unit_tests")
+  Container(service_tests, "Service Tests", "Kotest, Mockito", "Tests the business logic of the application with stubbed gateways.", $tags="unit_tests")
+  Container(gateway_tests, "Gateway Tests", "Kotest, Mockito", "Tests integration with upstream APIs using mocked servers.",$tags="unit_tests")
+  Container(model_tests, "Model Tests", "Kotest, Mockito", "Tests mapping between from upstream api models and our hmpps models",$tags="unit_tests")
+  Container(mock_servers, "Mock Servers", "WireMock", "Provides canned responses mocking upstream API endpoints.", $tags="mock_servers")
+}
+
+Boundary(smoke_test_boundary, "Smoke Tests", "Docker Compose, Kotlin"){
+  Container(smoke_tests, "Smoke Tests", "Kotest", "End-to-end testing of the core functionality of our API with mocked upstream APIs.", $tags="smoke_tests")  
+  Container(simulators, "Simulators", "Prism", " Mocked upstream APIs based on the most up-to-date OpenAPI schemas.", $tags="simulators")
+}
+
+System_Ext(upstream, "Upstream Systems", "Integrated systems where data is retrieved from.")
+
+Lay_D(controller_tests, service_tests)
+Lay_D(service_tests, gateway_tests)
+Lay_D(service_tests, model_tests)
+Lay_D(consumer, controller)
+Lay_Distance(smoke_tests, simulators, 3)
+
+Rel(consumer, controller, "Makes API calls to", "JSON/HTTPS")
+Rel_Down(controller, service, "Uses")
+Rel_Down(service, gateway, "Uses")
+Rel_Down(gateway, upstream, "Makes API calls to", "JSON/HTTPS")
+Rel_Left(gateway, model, "")
+
+Rel_Down(smoke_tests, spring_boot_api, "Tests")
+Rel_Down(smoke_tests, simulators, "Uses")
+Rel_Right(smoke_tests, consumer, "Mocks", $tags="mocks")
+Rel_Right(simulators, upstream, "Mocks", $tags="mocks")
+
+Rel_Left(controller_tests, controller, "Tests")
+Rel_Left(service_tests, service, "Tests")
+Rel_Left(gateway_tests, gateway, "Tests")
+Rel_Down(gateway_tests, mock_servers, "Uses")
+Rel_Left(model_tests, model, "Tests")
+Rel_Left(mock_servers, upstream, "Mocks", $tags="mocks")
+
+SHOW_DYNAMIC_LEGEND()
+
+@enduml

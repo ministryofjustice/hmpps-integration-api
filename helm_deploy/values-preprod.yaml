@@ -1,0 +1,34 @@
+---
+# Per environment values which override defaults in hmpps-integration-api/values.yaml
+
+generic-service:
+  replicaCount: 2
+
+  image:
+    repository: 754256621582.dkr.ecr.eu-west-2.amazonaws.com/hmpps-integration-api/hmpps-integration-api-preprod-ecr
+
+  ingress:
+    host: hmpps-integration-api-preprod.apps.live.cloud-platform.service.justice.gov.uk
+    annotations:
+      nginx.ingress.kubernetes.io/auth-tls-secret: "hmpps-integration-api-preprod/client-certificate-auth"
+
+  poddisruptionbudget:
+    enabled: false
+
+  env:
+    SPRING_PROFILES_ACTIVE: preprod
+    SENTRY_ENV: preprod
+
+  namespace_secrets:
+    hmpps-auth:
+      CLIENT_ID: "client-id"
+      CLIENT_SECRET: "client-secret"
+    other-services:
+      APPINSIGHTS_INSTRUMENTATIONKEY: "azure-app-insights"
+      SENTRY_DSN: "sentry"
+
+
+# CloudPlatform AlertManager receiver to route prometheus alerts to slack
+# See https://user-guide.cloud-platform.service.justice.gov.uk/documentation/monitoring-an-app/how-to-create-alarms.html#creating-your-own-custom-alerts
+generic-prometheus-alerts:
+  alertSeverity: digital-prison-service-dev

@@ -1,0 +1,104 @@
+services:
+  prison-api:
+    base-url: https://prison-api-dev.prison.service.justice.gov.uk
+  prisoner-offender-search:
+    base-url: https://prisoner-search-dev.prison.service.justice.gov.uk
+  probation-offender-search:
+    base-url: https://probation-offender-search-dev.hmpps.service.justice.gov.uk
+  ndelius:
+    base-url: https://external-api-and-delius-dev.hmpps.service.justice.gov.uk
+  assess-risks-and-needs:
+    base-url: https://assess-risks-and-needs-dev.hmpps.service.justice.gov.uk
+  probation-integration-epf:
+    base-url: https://effective-proposal-framework-and-delius-dev.hmpps.service.justice.gov.uk
+  adjudications:
+    base-url: https://manage-adjudications-api-dev.hmpps.service.justice.gov.uk
+  create-and-vary-licence:
+    base-url: https://create-and-vary-a-licence-api-test2.hmpps.service.justice.gov.uk
+  case-notes:
+    base-url: https://dev.offender-case-notes.service.justice.gov.uk
+  manage-pom-case-api:
+    base-url: https://dev.moic.service.justice.gov.uk
+  hmpps-auth:
+    base-url: https://sign-in-dev.hmpps.service.justice.gov.uk
+    username: ${CLIENT_ID}
+    password: ${CLIENT_SECRET}
+
+authorisation:
+  consumers:
+    mapps.client.org:
+      - "/v1/persons"
+      - "/v1/persons/[^/]*$"
+      - "/v1/persons/.*/images"
+      - "/v1/images/.*"
+      - "/v1/persons/.*/addresses"
+      - "/v1/persons/.*/offences"
+      - "/v1/persons/.*/alerts"
+      - "/v1/persons/.*/sentences"
+      - "/v1/persons/.*/sentences/latest-key-dates-and-adjustments"
+      - "/v1/persons/.*/risks/scores"
+      - "/v1/persons/.*/needs"
+      - "/v1/persons/.*/risks/serious-harm"
+      - "/v1/persons/.*/reported-adjudications"
+      - "/v1/persons/.*/adjudications"
+      - "/v1/persons/.*/licences/conditions"
+      - "/v1/persons/.*/case-notes"
+      - "/v1/persons/.*/protected-characteristics"
+      - "/v1/persons/.*/risks/mappadetail"
+      - "/v1/persons/.*/risks/categories"
+      - "/v1/persons/.*/person-responsible-officer"
+      - "/v1/persons/.*/risk-management-plan"
+      - "/v1/hmpps/reference-data"
+    ctrlo:
+      - "/v1/epf/person-details/.*/[^/]*$"
+    moj-pes:
+      - "/v1/persons/.*/name"
+      - "/v1/hmpps/id/nomis-number/[^/]*$"
+      - "/v1/persons/.*/cell-location"
+    kubernetes-health-check-client:
+      - "/health/liveness"
+      - "/health/readiness"
+    heartbeat:
+      - "/v1/persons/[^/]*$"
+    pnd:
+      - "/v1/persons"
+      - "/v1/persons/[^/]*$"
+      - "/v1/persons/.*/addresses"
+      - "/v1/persons/.*/alerts/pnd"
+      - "/v1/persons/.*/sentences"
+      - "/v1/persons/.*/sentences/latest-key-dates-and-adjustments"
+      - "/v1/persons/.*/risks/scores"
+      - "/v1/persons/.*/risks/serious-harm"
+      - "/v1/persons/.*/risks/dynamic"
+      - "/v1/persons/.*/licences/conditions"
+      - "/v1/persons/.*/person-responsible-officer"
+      - "/v1/persons/.*/status-information"
+      - "/v1/hmpps/reference-data"
+    event-service:
+      - "/v1/config/authorisation"
+    mryall:
+      - "/v1/hmpps/reference-data"
+      - "/v1/images/.*"
+      - "/v1/persons"
+      - "/v1/persons/.*/addresses"
+      - "/v1/persons/.*/adjudications"
+      - "/v1/persons/.*/alerts"
+      - "/v1/persons/.*/alerts/pnd"
+      - "/v1/persons/.*/case-notes"
+      - "/v1/persons/.*/images"
+      - "/v1/persons/.*/licences/conditions"
+      - "/v1/persons/.*/needs"
+      - "/v1/persons/.*/offences"
+      - "/v1/persons/.*/person-responsible-officer"
+      - "/v1/persons/.*/protected-characteristics"
+      - "/v1/persons/.*/reported-adjudications"
+      - "/v1/persons/.*/risk-management-plan"
+      - "/v1/persons/.*/risks/categories"
+      - "/v1/persons/.*/risks/dynamic"
+      - "/v1/persons/.*/risks/mappadetail"
+      - "/v1/persons/.*/risks/scores"
+      - "/v1/persons/.*/risks/serious-harm"
+      - "/v1/persons/.*/sentences"
+      - "/v1/persons/.*/sentences/latest-key-dates-and-adjustments"
+      - "/v1/persons/.*/status-information"
+      - "/v1/persons/[^/]*$"

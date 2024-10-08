@@ -1,0 +1,50 @@
+services:
+  prism:
+    build:
+      context: .
+      dockerfile: Dockerfile.prism
+    container_name: prism
+    healthcheck:
+      test: 'curl -H "Authorization: Bearer abc" -f http://0.0.0.0:4010/reported-adjudications/hearings?hearingDate=1910-06-03 &&
+            curl -H "Authorization: Bearer abc" -f http://0.0.0.0:4011/risks/crn/voluptatem/predictors/all &&
+            curl -H "Authorization: Bearer abc" -f http://0.0.0.0:4012/case-notes/A1234AA/518b2200-6489-4c77-8514-10cf80ccd488 &&
+            curl -H "Authorization: Bearer abc" -f http://0.0.0.0:4013/public/licences/id/123 &&
+            curl -H "Authorization: Bearer abc" -f http://0.0.0.0:4014/api/allocation/X1234YZ/primary_pom &&
+            curl -H "Authorization: Bearer abc" -f http://0.0.0.0:4015/case/abc/supervisions &&
+            curl -H "Authorization: Bearer abc" -f http://0.0.0.0:4016/api/offenders/A1234AA &&
+            curl -H "Authorization: Bearer abc" -f http://0.0.0.0:4017/prisoner/A1234AL &&
+            curl -H "Authorization: Bearer abc" -f http://0.0.0.0:4018/case-details/crn/1234 &&
+            curl -H "Authorization: Bearer abc" -f http://0.0.0.0:4019/search?crn=sit'
+    ports:
+      - '4010:4010'
+      - '4011:4011'
+      - '4012:4012'
+      - '4013:4013'
+      - '4014:4014'
+      - '4015:4015'
+      - '4016:4016'
+      - '4017:4017'
+      - '4018:4018'
+      - '4019:4019'
+
+  local-stack-aws:
+    image: localstack/localstack:3.0
+    container_name: local-stack-aws
+    ports:
+      - "4566:4566"
+    environment:
+      - SERVICES=sns,sqs
+      - DEBUG=${DEBUG- }
+      - DATA_DIR=${DATA_DIR- }
+      - PORT_WEB_UI=${PORT_WEB_UI- }
+      - LAMBDA_EXECUTOR=${LAMBDA_EXECUTOR- }
+      - KINESIS_ERROR_PROBABILITY=${KINESIS_ERROR_PROBABILITY- }
+      - DOCKER_HOST=unix:///var/run/docker.sock
+      - AWS_EXECUTION_ENV=True
+      - DEFAULT_REGION=eu-west-2
+    volumes:
+      - './localstack:/var/lib/localstack'
+      - "/var/run/docker.sock:/var/run/docker.sock"
+
+networks:
+  hmpps:

@@ -1,0 +1,4 @@
+graphviz==0.20.1
+pandas==2.0.2
+requests==2.32.0
+PyYAML==6.0
