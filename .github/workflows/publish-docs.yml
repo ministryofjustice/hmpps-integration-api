@@ -77,7 +77,6 @@ jobs:
         uses: JamesIves/github-pages-deploy-action@920cbb300dcd3f0568dbc42700c61e2fd9e6139c # v4.6.4
         with:
           folder: tech-docs-build
-          target-folder: tech-docs
       - name: Deploy branch
         if: github.ref_name != 'main'
         uses: JamesIves/github-pages-deploy-action@920cbb300dcd3f0568dbc42700c61e2fd9e6139c # v4.6.4
