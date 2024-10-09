@@ -5,23 +5,24 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 
-    <title>HMPPS Integration API And Events Documentation</title>
+    <title>API Changes and Versioning - HMPPS Integration API And Events Documentation</title>
 
     <link href="stylesheets/manifest.css" rel="stylesheet" />
 
-    <link rel="canonical" href="https://ministryofjustice.github.io/hmpps-integration-api-docs/api-changes-and-versioning.html">
+    <link rel="canonical" href="https://ministryofjustice.github.io/hmpps-integration-api/api-changes-and-versioning.html">
 
       <meta name="robots" content="noindex" />
       <meta name="twitter:card" content="summary" />
       <meta name="twitter:domain" content="ministryofjustice.github.io" />
-      <meta name="twitter:image" content="https://ministryofjustice.github.io/hmpps-integration-api-docs/images/govuk-large.png" />
-      <meta name="twitter:title" content="HMPPS Integration API And Events Documentation" />
-      <meta name="twitter:url" content="https://ministryofjustice.github.io/hmpps-integration-api-docs/api-changes-and-versioning.html" />
+      <meta name="twitter:image" content="https://ministryofjustice.github.io/hmpps-integration-api/images/govuk-large.png" />
+      <meta name="twitter:title" content="API Changes and Versioning - HMPPS Integration API And Events Documentation" />
+      <meta name="twitter:url" content="https://ministryofjustice.github.io/hmpps-integration-api/api-changes-and-versioning.html" />
 
-      <meta property="og:image" content="https://ministryofjustice.github.io/hmpps-integration-api-docs/images/govuk-large.png" />
+      <meta property="og:image" content="https://ministryofjustice.github.io/hmpps-integration-api/images/govuk-large.png" />
       <meta property="og:site_name" content="HMPPS Integration API And Events Documentation" />
+      <meta property="og:title" content="API Changes and Versioning" />
       <meta property="og:type" content="object" />
-      <meta property="og:url" content="https://ministryofjustice.github.io/hmpps-integration-api-docs/api-changes-and-versioning.html" />
+      <meta property="og:url" content="https://ministryofjustice.github.io/hmpps-integration-api/api-changes-and-versioning.html" />
 
     
   </head>
@@ -36,7 +37,7 @@
         <header class="govuk-header app-header" role="banner" data-module="govuk-header">
   <div class="govuk-header__container govuk-header__container--full-width">
     <div class="govuk-header__logo">
-      <a href="/" class="govuk-header__link govuk-header__link--homepage">
+      <a href="./" class="govuk-header__link govuk-header__link--homepage">
         <span class="govuk-header__product-name">
           HMPPS Integration API And Events Documentation
         </span>
@@ -46,9 +47,6 @@
       <nav class="govuk-header__navigation govuk-header__navigation--end" aria-label="Menu">
         <button type="button" class="govuk-header__menu-button govuk-js-header-toggle" aria-controls="navigation" aria-label="Show or hide menu">Menu</button>
         <ul id="navigation" class="govuk-header__navigation-list">
-            <li class="govuk-header__navigation-item">
-              <a class="govuk-header__link" href="https://github.com/ministryofjustice/hmpps-integration-api-docs">Docs GitHub</a>
-            </li>
             <li class="govuk-header__navigation-item">
               <a class="govuk-header__link" href="https://github.com/ministryofjustice/hmpps-integration-api">Integration API GitHub</a>
             </li>
@@ -74,7 +72,7 @@
             <div class="toc" data-module="table-of-contents" tabindex="-1" aria-label="Table of contents" role="dialog">
               <div class="search" data-module="search" data-path-to-site-root="./">
   <form action="https://www.google.co.uk/search" method="get" role="search" class="search__form govuk-!-margin-bottom-4">
-    <input type="hidden" name="as_sitesearch" value="https://ministryofjustice.github.io/hmpps-integration-api-docs"/>
+    <input type="hidden" name="as_sitesearch" value="https://ministryofjustice.github.io/hmpps-integration-api"/>
     <label class="govuk-label search__label" for="search" aria-hidden="true">
       Search (via Google)
     </label>
@@ -92,19 +90,21 @@
               <nav id="toc" class="js-toc-list toc__list" aria-labelledby="toc-heading" data-module="collapsible-navigation">
                       <ul>
   <li>
-    <a href="./api-changes-and-versioning.html"><span>API Changes and Versioning</span></a>
+    <a href="./index.html"><span>About</span></a>
     <ul>
       <li>
-        <a href="./api-changes-and-versioning.html#non-breaking-change"><span>Non-Breaking Change</span></a>
+        <a href="./index.html#diagrams"><span>Diagrams</span></a>
+      </li>
+    </ul>
+  </li>
+  <li>
+    <a href="./documentation/get-started/index.html"><span>Get started</span></a>
+    <ul>
+      <li>
+        <a href="./documentation/get-started/index.html#request-access"><span>Request access</span></a>
       </li>
       <li>
-        <a href="./api-changes-and-versioning.html#breaking-change"><span>Breaking Change</span></a>
-      </li>
-      <li>
-        <a href="./api-changes-and-versioning.html#ongoing-assurance"><span>Ongoing Assurance</span></a>
-      </li>
-      <li>
-        <a href="./api-changes-and-versioning.html#uri-path"><span>URI Path</span></a>
+        <a href="./documentation/get-started/index.html#explore-available-endpoints"><span>Explore Available Endpoints</span></a>
       </li>
     </ul>
   </li>
@@ -120,13 +120,19 @@
     </ul>
   </li>
   <li>
-    <a href="./documentation/get-started/index.html"><span>Get started</span></a>
+    <a href="./api-changes-and-versioning.html"><span>API Changes and Versioning</span></a>
     <ul>
       <li>
-        <a href="./documentation/get-started/index.html#request-access"><span>Request access</span></a>
+        <a href="./api-changes-and-versioning.html#non-breaking-change"><span>Non-Breaking Change</span></a>
       </li>
       <li>
-        <a href="./documentation/get-started/index.html#explore-available-endpoints"><span>Explore Available Endpoints</span></a>
+        <a href="./api-changes-and-versioning.html#breaking-change"><span>Breaking Change</span></a>
+      </li>
+      <li>
+        <a href="./api-changes-and-versioning.html#ongoing-assurance"><span>Ongoing Assurance</span></a>
+      </li>
+      <li>
+        <a href="./api-changes-and-versioning.html#uri-path"><span>URI Path</span></a>
       </li>
     </ul>
   </li>
@@ -231,14 +237,6 @@
   <li>
     <a href="./documentation/adr/index.html"><span>Relevant Architecture Decision Records</span></a>
   </li>
-  <li>
-    <a href="./index.html"><span>About</span></a>
-    <ul>
-      <li>
-        <a href="./index.html#diagrams"><span>Diagrams</span></a>
-      </li>
-    </ul>
-  </li>
 </ul>
 
 
@@ -277,15 +275,25 @@
 <div class="highlight"><pre class="highlight plaintext" tabindex="0"><code>https://integration-api.hmpps.service.justice.gov.uk/v1/images/123456
 </code></pre></div><p>Versions will increment by major version only and no minor version updates will be supported.</p>
 
-            
+              <div data-module='page-expiry' data-last-reviewed-on="2024-12-03">
+    <div class='page-expiry--not-expired'>
+      This page was last reviewed on 3 September 2024.
+
+        It needs to be reviewed again on 3 December 2024
+        by the page owner <a href="">#hmpps-integration-api-alerts</a>
+        .
+    </div>
+
+    <div class='page-expiry--expired'>
+      This page was set to be reviewed before 3 December 2024
+       by the page owner <a href="">#hmpps-integration-api-alerts</a>.
+      This might mean the content is out of date.
+    </div>
+  </div>
+
           </main>
 
           <aside>
-              <ul class="contribution-banner">
-                <li><a href="https://github.com/ministryofjustice/hmpps-integration-api-docs/blob/main/source/api-changes-and-versioning.html.md.erb">View source</a></li>
-                <li><a href="https://github.com/ministryofjustice/hmpps-integration-api-docs/issues/new?body=Problem+with+%27%27+%28https%3A%2F%2Fministryofjustice.github.io%2Fhmpps-integration-api-docs%2Fapi-changes-and-versioning.html%29&amp;labels=bug&amp;title=Re%3A+%27%27">Report problem</a></li>
-                <li><a href="https://github.com/ministryofjustice/hmpps-integration-api-docs">GitHub Repo</a></li>
-              </ul>
           </aside>
 
           <footer class="govuk-footer app-footer" role="contentinfo">
