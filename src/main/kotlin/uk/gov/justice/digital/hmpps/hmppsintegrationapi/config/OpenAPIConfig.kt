@@ -28,9 +28,9 @@ import org.springframework.context.annotation.Configuration
       version = "1.0",
     ),
   servers = [
-    Server(url = "https://hmpps-integration-api-dev.apps.live.cloud-platform.service.justice.gov.uk", description = "Development server"),
-    Server(url = "https://hmpps-integration-api-preprod.apps.live.cloud-platform.service.justice.gov.uk", description = "Pre-production server, containing live data"),
-    Server(url = "https://hmpps-integration-api-prod.apps.live.cloud-platform.service.justice.gov.uk", description = "Production"),
+    Server(url = "https://dev.integration-api.hmpps.service.justice.gov.uk", description = "Development server"),
+    Server(url = "https://preprod.integration-api.hmpps.service.justice.gov.uk", description = "Pre-production server, containing live data"),
+    Server(url = "https://integration-api.hmpps.service.justice.gov.uk", description = "Production"),
   ],
   security = [
     SecurityRequirement(name = "dn"),
