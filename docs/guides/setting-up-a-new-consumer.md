@@ -80,18 +80,55 @@ openssl x509 -in ./scripts/client_certificates/[environment]-[consumer]-client.p
 
 ## Send the credentials to the consumer
 
-1. Retrieve the API key for the new consumer using Kubectl.
-
+Retrieve the client api key
 ```bash
 kubectl -n hmpps-integration-api-<environment> get secrets consumer-api-keys -o json | jq -r '.data.<client>' | base64 -d
 # E.g. kubectl -n hmpps-integration-api-dev get secrets consumer-api-keys -o json | jq -r '.data.dev' | base64 -d
 ```
 
-2. Using [One-Time Secret](https://password.link/en) and email, send the new consumer their:
-   1. private key
-   2. client certificate
-   3. API key
-   
+Ask the client to generate a key pair and to provide the **public key only** via email
+```bash
+# Generate private key
+openssl genrsa -out hmpps-integration-api-cred-exchange-private-key.pem 3072
+
+# Generate public key
+openssl rsa -in hmpps-integration-api-cred-exchange-private-key.pem -pubout -out hmpps-integration-api-cred-exchange-public-key.pem
+
+```
+
+As size of data we can encrypt with the client's public key is limited we now create a symmetric encryption key and encrypt using the client's public key
+```bash
+# Create a symmetric key
+head /dev/urandom | sha256sum > symmetric.key
+
+# Encrypt with client's public key
+openssl pkeyutl -encrypt -pubin -inkey hmpps-integration-api-cred-exchange-public-key.pem -in symmetric.key -out symmetric.key.enc
+```
+
+We can now encrypt the client's access credentials for an environment using the symmetric key
+```bash
+# Create a tarball of the access credentials
+tar cvfz hmpps-integration-api-preprod.tar.gz preprod/preprod-client.key preprod/preprod-client.pem preprod/preprod-api-key
+
+# Encrypt using symmetric key
+openssl enc -aes-256-cbc -pbkdf2 -iter 310000 -md sha256 -salt -in hmpps-integration-api-preprod.tar.gz -out hmpps-integration-api-preprod.tar.gz.enc -pass file:./symmetric.key
+```
+
+…and encrypt the symmetric key using the client's supplied public key
+```bash
+# Encrypt with client's public key
+openssl pkeyutl -encrypt -pubin -inkey hmpps-integration-api-cred-exchange-public-key.pem -in symmetric.key -out symmetric.key.enc
+```
+
+We can now send the **encrypted** symmetric key (`symmetric.key.enc`) and **encrypted** access credentials (`hmpps-integration-api-preprod.tar.gz.enc`) to the client via email. The client may now decrypt the symmetric key using their private key and subsequently the access credentials using the symmetric key
+```Bash
+# Decrypt symmetric key file with private key
+openssl pkeyutl -decrypt -inkey hmpps-integration-api-cred-exchange-private-key.pem -in symmetric.key.enc -out symmetric.key
+
+# Decrypt access credentials using symmetric key
+openssl enc -d -aes-256-cbc -pbkdf2 -iter 310000 -md sha256 -salt -in hmpps-integration-api-preprod.tar.gz.enc -out hmpps-integration-api-preprod.tar.gz -pass file:./symmetric.key
+```
+
 ## Create new consumer subscriber queue for events
 
 ### Create basic infrastructure
@@ -106,7 +143,7 @@ Within the [Cloud Platform Environments GitHub repository](https://github.com/mi
 7. Retrieve the client queue name and ARN with the following command:
     ```bash
     kubectl -n hmpps-integration-api-[environment] get secrets [your queue secret name] -o json
-    # E.g. kubectl -n hmpps-integration-api-dev get secrets event-mapps-queue  -o json 
+    # E.g. kubectl -n hmpps-integration-api-dev get secrets event-mapps-queue  -o json
     ```
 8. Send the client queue name and ARN to the consumer
 
@@ -125,8 +162,7 @@ aws sqs get-queue-attributes --attribute-names ApproximateNumberOfMessages --que
 1. Login to the [AWS Console](https://user-guide.cloud-platform.service.justice.gov.uk/documentation/getting-started/accessing-the-cloud-console.html), navigate to Secrets Manager and navigate to the secret created in the previous step by search using the secret description. e.g. MAPPS event filter list Pre-prod
 2. Click on the secret and then click on Retrieve secret value. If this is your first time accessing the new secret, you will see an error Failed to get the secret value.
 3. Click on Set secret Value, and set the Plaintext value as: {"eventType":["default"]}. Setting filter to default will block subscriber receiving any messages. Event notifier will update the subscriber and AWS secret with actual filter list later.
-4. Save the change 
-5. Create new [Cloud Platform Environments GitHub repository](https://github.com/ministryofjustice/cloud-platform-environments/tree/main) branch 
-6. Update terraform to load the secret value from AWS and update filter_policy value. Follow [Example](https://github.com/ministryofjustice/cloud-platform-environments/pull/22111/files). Note: The name of aws_secretsmanager_secret module has to be same as the secret name created from step 4/5 above. 
-7. Follow steps 3-8 in [Create an API key](#create-an-api-key) to merge branch to main. 
-
+4. Save the change
+5. Create new [Cloud Platform Environments GitHub repository](https://github.com/ministryofjustice/cloud-platform-environments/tree/main) branch
+6. Update terraform to load the secret value from AWS and update filter_policy value. Follow [Example](https://github.com/ministryofjustice/cloud-platform-environments/pull/22111/files). Note: The name of aws_secretsmanager_secret module has to be same as the secret name created from step 4/5 above.
+7. Follow steps 3-8 in [Create an API key](#create-an-api-key) to merge branch to main.
