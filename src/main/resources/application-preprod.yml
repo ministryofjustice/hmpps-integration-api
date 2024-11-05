@@ -12,7 +12,7 @@ services:
   probation-integration-epf:
     base-url: https://effective-proposal-framework-and-delius-preprod.hmpps.service.justice.gov.uk
   adjudications:
-      base-url: https://manage-adjudications-api-preprod.hmpps.service.justice.gov.uk
+    base-url: https://manage-adjudications-api-preprod.hmpps.service.justice.gov.uk
   create-and-vary-licence:
     base-url: https://create-and-vary-a-licence-api-preprod.hmpps.service.justice.gov.uk
   case-notes:
