@@ -6,7 +6,7 @@ on:
 
 jobs:
   format-code:
-    if: ${{ github.actor != 'dependabot[bot]' }}
+    if: github.actor != 'dependabot[bot]'
     name: 🧹 Format code
     runs-on: ubuntu-latest
     steps:
