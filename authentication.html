@@ -10,15 +10,20 @@
     <link href="stylesheets/manifest.css" rel="stylesheet" />
 
     <link rel="canonical" href="https://ministryofjustice.github.io/hmpps-integration-api/authentication.html">
+    <link rel="icon" sizes="48x48" href="assets/govuk/assets/images/favicon.ico">
+    <link rel="icon" sizes="any" href="assets/govuk/assets/images/favicon.svg" type="image/svg+xml">
+    <link rel="mask-icon" href="assets/govuk/assets/images/govuk-icon-mask.svg" color="#0b0c0c">
+    <link rel="apple-touch-icon" href="assets/govuk/assets/images/govuk-icon-180.png">
+    <link rel="manifest" href="/assets/govuk/assets/manifest.json">
 
       <meta name="robots" content="noindex" />
       <meta name="twitter:card" content="summary" />
       <meta name="twitter:domain" content="ministryofjustice.github.io" />
-      <meta name="twitter:image" content="https://ministryofjustice.github.io/hmpps-integration-api/images/govuk-large.png" />
+      <meta name="twitter:image" content="https://ministryofjustice.github.io/hmpps-integration-api/assets/govuk/assets/images/govuk-opengraph-image.png" />
       <meta name="twitter:title" content="Authentication - HMPPS Integration API And Events Documentation" />
       <meta name="twitter:url" content="https://ministryofjustice.github.io/hmpps-integration-api/authentication.html" />
 
-      <meta property="og:image" content="https://ministryofjustice.github.io/hmpps-integration-api/images/govuk-large.png" />
+      <meta property="og:image" content="https://ministryofjustice.github.io/hmpps-integration-api/assets/govuk/assets/images/govuk-opengraph-image.png" />
       <meta property="og:site_name" content="HMPPS Integration API And Events Documentation" />
       <meta property="og:title" content="Authentication" />
       <meta property="og:type" content="object" />
@@ -28,7 +33,7 @@
   </head>
 
   <body class="govuk-template__body">
-    <script>document.body.className = ((document.body.className) ? document.body.className + ' js-enabled' : 'js-enabled');</script>
+    <script>document.body.className += ' js-enabled' + ('noModule' in HTMLScriptElement.prototype ? ' govuk-frontend-supported' : '');</script>
 
     <div class="app-pane">
       <div class="app-pane__header toc-open-disabled">
@@ -45,7 +50,7 @@
     </div>
     <div class="govuk-header__content">
       <nav class="govuk-header__navigation govuk-header__navigation--end" aria-label="Menu">
-        <button type="button" class="govuk-header__menu-button govuk-js-header-toggle" aria-controls="navigation" aria-label="Show or hide menu">Menu</button>
+        <button type="button" class="govuk-header__menu-button govuk-js-header-toggle" aria-controls="navigation" hidden>Menu</button>
         <ul id="navigation" class="govuk-header__navigation-list">
             <li class="govuk-header__navigation-item">
               <a class="govuk-header__link" href="https://github.com/ministryofjustice/hmpps-integration-api">Integration API GitHub</a>
@@ -69,15 +74,15 @@
 
       <div class="app-pane__body" data-module="in-page-navigation">
           <div class="app-pane__toc">
-            <div class="toc" data-module="table-of-contents" tabindex="-1" aria-label="Table of contents" role="dialog">
+            <div class="toc" data-module="table-of-contents" tabindex="-1" aria-label="Table of contents">
               <div class="search" data-module="search" data-path-to-site-root="./">
   <form action="https://www.google.co.uk/search" method="get" role="search" class="search__form govuk-!-margin-bottom-4">
     <input type="hidden" name="as_sitesearch" value="https://ministryofjustice.github.io/hmpps-integration-api"/>
-    <label class="govuk-label search__label" for="search" aria-hidden="true">
+    <label class="govuk-label search__label" for="search">
       Search (via Google)
     </label>
     <input
-      type="text"
+      type="search"
       id="search" name="q"
       class="govuk-input govuk-!-margin-bottom-0 search__input"
       aria-controls="search-results"
@@ -275,7 +280,7 @@
         .
     </div>
 
-    <div class='page-expiry--expired'>
+    <div class='page-expiry--expired' hidden>
       This page was set to be reviewed before 3 December 2024
        by the page owner <a href="">#hmpps-integration-api-alerts</a>.
       This might mean the content is out of date.
@@ -329,6 +334,7 @@
     </div>
 
     
+    <script src="javascripts/govuk_frontend.js" type="module"></script>
     <script src="javascripts/application.js"></script>
   </body>
 </html>
