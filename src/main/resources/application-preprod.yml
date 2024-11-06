@@ -12,7 +12,7 @@ services:
   probation-integration-epf:
     base-url: https://effective-proposal-framework-and-delius-preprod.hmpps.service.justice.gov.uk
   adjudications:
-      base-url: https://manage-adjudications-api-preprod.hmpps.service.justice.gov.uk
+    base-url: https://manage-adjudications-api-preprod.hmpps.service.justice.gov.uk
   create-and-vary-licence:
     base-url: https://create-and-vary-a-licence-api-preprod.hmpps.service.justice.gov.uk
   case-notes:
@@ -32,7 +32,6 @@ authorisation:
       - "/v1/persons/.*/name"
       - "/v1/hmpps/id/nomis-number/[^/]*$"
       - "/v1/persons/.*/cell-location"
-      - "/v1/hmpps/reference-data"
     kubernetes-health-check-client:
       - "/health/liveness"
       - "/health/readiness"

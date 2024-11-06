@@ -32,7 +32,6 @@ authorisation:
       - "/v1/persons/.*/name"
       - "/v1/hmpps/id/nomis-number/[^/]*$"
       - "/v1/persons/.*/cell-location"
-      - "/v1/hmpps/reference-data"
     kubernetes-health-check-client:
       - "/health/liveness"
       - "/health/readiness"
