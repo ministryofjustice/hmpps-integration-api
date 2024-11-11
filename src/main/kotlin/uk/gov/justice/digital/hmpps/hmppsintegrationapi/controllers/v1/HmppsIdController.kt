@@ -42,7 +42,7 @@ class HmppsIdController(
     return DataResponse(response.data)
   }
 
-  @GetMapping("{encodedNomisNumber}/nomis-number")
+  @GetMapping("{encodedHmppsId}/nomis-number")
   @Operation(
     summary = "Return NOMS number for a given hmpps Id",
     description = """Accepts a HMPPS Id (hmppsId) and looks up the corresponding NOMS number.
@@ -54,9 +54,9 @@ class HmppsIdController(
     ],
   )
   fun getNomisNumberByHMPPSID(
-    @PathVariable encodedNomisNumber: String,
+    @PathVariable encodedHmppsId: String,
   ): DataResponse<NomisNumber?> {
-    val hmppsId = encodedNomisNumber.decodeUrlCharacters()
+    val hmppsId = encodedHmppsId.decodeUrlCharacters()
 
     val response = getHmppsIdService.getNomisNumber(hmppsId)
 
