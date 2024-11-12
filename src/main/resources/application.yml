@@ -40,7 +40,7 @@ management:
     web:
       base-path: /
       exposure:
-        include: 'info, health'
+        include: "info, health"
   endpoint:
     health:
       cache:
@@ -83,4 +83,3 @@ services:
 
 sentry:
   traces-sample-rate: "0.05"
-
