@@ -13,9 +13,7 @@
   "paths": {
     "/queue-admin/retry-dlq/{dlqName}": {
       "put": {
-        "tags": [
-          "hmpps-queue-resource"
-        ],
+        "tags": ["hmpps-queue-resource"],
         "operationId": "retryDlq",
         "parameters": [
           {
@@ -43,9 +41,7 @@
     },
     "/queue-admin/retry-all-dlqs": {
       "put": {
-        "tags": [
-          "hmpps-queue-resource"
-        ],
+        "tags": ["hmpps-queue-resource"],
         "operationId": "retryAllDlqs",
         "responses": {
           "200": {
@@ -66,9 +62,7 @@
     },
     "/queue-admin/purge-queue/{queueName}": {
       "put": {
-        "tags": [
-          "hmpps-queue-resource"
-        ],
+        "tags": ["hmpps-queue-resource"],
         "operationId": "purgeQueue",
         "parameters": [
           {
@@ -96,9 +90,7 @@
     },
     "/person/{prisonNumber}/education": {
       "get": {
-        "tags": [
-          "education-controller"
-        ],
+        "tags": ["education-controller"],
         "operationId": "getEduction",
         "parameters": [
           {
@@ -125,9 +117,7 @@
         }
       },
       "put": {
-        "tags": [
-          "education-controller"
-        ],
+        "tags": ["education-controller"],
         "operationId": "updateEducation",
         "parameters": [
           {
@@ -157,9 +147,7 @@
         }
       },
       "post": {
-        "tags": [
-          "education-controller"
-        ],
+        "tags": ["education-controller"],
         "operationId": "createEducation",
         "parameters": [
           {
@@ -191,9 +179,7 @@
     },
     "/inductions/{prisonNumber}": {
       "get": {
-        "tags": [
-          "induction-controller"
-        ],
+        "tags": ["induction-controller"],
         "operationId": "getInduction",
         "parameters": [
           {
@@ -220,9 +206,7 @@
         }
       },
       "put": {
-        "tags": [
-          "induction-controller"
-        ],
+        "tags": ["induction-controller"],
         "operationId": "updateInduction",
         "parameters": [
           {
@@ -252,9 +236,7 @@
         }
       },
       "post": {
-        "tags": [
-          "induction-controller"
-        ],
+        "tags": ["induction-controller"],
         "operationId": "createInduction",
         "parameters": [
           {
@@ -286,9 +268,7 @@
     },
     "/conversations/{prisonNumber}/{conversationReference}": {
       "get": {
-        "tags": [
-          "conversation-controller"
-        ],
+        "tags": ["conversation-controller"],
         "operationId": "getConversation",
         "parameters": [
           {
@@ -324,9 +304,7 @@
         }
       },
       "put": {
-        "tags": [
-          "conversation-controller"
-        ],
+        "tags": ["conversation-controller"],
         "operationId": "updateConversation",
         "parameters": [
           {
@@ -374,9 +352,7 @@
     },
     "/action-plans/{prisonNumber}/goals/{goalReference}": {
       "get": {
-        "tags": [
-          "goal-controller"
-        ],
+        "tags": ["goal-controller"],
         "operationId": "getPrisonerGoal",
         "parameters": [
           {
@@ -412,9 +388,7 @@
         }
       },
       "put": {
-        "tags": [
-          "goal-controller"
-        ],
+        "tags": ["goal-controller"],
         "operationId": "updateGoal",
         "parameters": [
           {
@@ -455,9 +429,7 @@
     },
     "/action-plans/{prisonNumber}/goals/{goalReference}/unarchive": {
       "put": {
-        "tags": [
-          "goal-controller"
-        ],
+        "tags": ["goal-controller"],
         "operationId": "unarchiveGoal",
         "parameters": [
           {
@@ -498,9 +470,7 @@
     },
     "/action-plans/{prisonNumber}/goals/{goalReference}/complete": {
       "put": {
-        "tags": [
-          "goal-controller"
-        ],
+        "tags": ["goal-controller"],
         "operationId": "completeGoal",
         "parameters": [
           {
@@ -541,9 +511,7 @@
     },
     "/action-plans/{prisonNumber}/goals/{goalReference}/archive": {
       "put": {
-        "tags": [
-          "goal-controller"
-        ],
+        "tags": ["goal-controller"],
         "operationId": "archiveGoal",
         "parameters": [
           {
@@ -584,9 +552,7 @@
     },
     "/conversations/{prisonNumber}": {
       "get": {
-        "tags": [
-          "conversation-controller"
-        ],
+        "tags": ["conversation-controller"],
         "operationId": "getConversations",
         "parameters": [
           {
@@ -631,9 +597,7 @@
         }
       },
       "post": {
-        "tags": [
-          "conversation-controller"
-        ],
+        "tags": ["conversation-controller"],
         "operationId": "createConversation",
         "parameters": [
           {
@@ -665,9 +629,7 @@
     },
     "/ciag/induction/list": {
       "post": {
-        "tags": [
-          "ciag-induction-controller"
-        ],
+        "tags": ["ciag-induction-controller"],
         "operationId": "getInductionSummaries",
         "requestBody": {
           "content": {
@@ -695,9 +657,7 @@
     },
     "/action-plans": {
       "post": {
-        "tags": [
-          "action-plan-controller"
-        ],
+        "tags": ["action-plan-controller"],
         "operationId": "getActionPlanSummaries",
         "requestBody": {
           "content": {
@@ -725,9 +685,7 @@
     },
     "/action-plans/{prisonNumber}": {
       "get": {
-        "tags": [
-          "action-plan-controller"
-        ],
+        "tags": ["action-plan-controller"],
         "operationId": "getActionPlan",
         "parameters": [
           {
@@ -754,9 +712,7 @@
         }
       },
       "post": {
-        "tags": [
-          "action-plan-controller"
-        ],
+        "tags": ["action-plan-controller"],
         "operationId": "createActionPlan",
         "parameters": [
           {
@@ -788,9 +744,7 @@
     },
     "/action-plans/{prisonNumber}/goals": {
       "get": {
-        "tags": [
-          "goal-controller"
-        ],
+        "tags": ["goal-controller"],
         "operationId": "getGoals",
         "parameters": [
           {
@@ -811,11 +765,7 @@
               "type": "array",
               "items": {
                 "type": "string",
-                "enum": [
-                  "ACTIVE",
-                  "COMPLETED",
-                  "ARCHIVED"
-                ]
+                "enum": ["ACTIVE", "COMPLETED", "ARCHIVED"]
               }
             }
           }
@@ -834,9 +784,7 @@
         }
       },
       "post": {
-        "tags": [
-          "goal-controller"
-        ],
+        "tags": ["goal-controller"],
         "operationId": "createGoals",
         "parameters": [
           {
@@ -868,9 +816,7 @@
     },
     "/timelines/{prisonNumber}": {
       "get": {
-        "tags": [
-          "timeline-controller"
-        ],
+        "tags": ["timeline-controller"],
         "operationId": "getTimeline",
         "parameters": [
           {
@@ -899,9 +845,7 @@
     },
     "/subject-access-request": {
       "get": {
-        "tags": [
-          "Subject Access Request"
-        ],
+        "tags": ["Subject Access Request"],
         "summary": "Provides content for a prisoner to satisfy the needs of a subject access request on their behalf",
         "description": "Requires role SAR_DATA_ACCESS or additional role as specified by hmpps.sar.additionalAccessRole configuration.",
         "operationId": "getSarContentByReference",
@@ -1011,9 +955,7 @@
     },
     "/queue-admin/get-dlq-messages/{dlqName}": {
       "get": {
-        "tags": [
-          "hmpps-queue-resource"
-        ],
+        "tags": ["hmpps-queue-resource"],
         "operationId": "getDlqMessages",
         "parameters": [
           {
@@ -1051,9 +993,7 @@
     },
     "/inductions/{prisonNumber}/induction-schedule": {
       "get": {
-        "tags": [
-          "induction-schedule-controller"
-        ],
+        "tags": ["induction-schedule-controller"],
         "operationId": "getInductionSchedule",
         "parameters": [
           {
@@ -1082,9 +1022,7 @@
     },
     "/action-plans/{prisonNumber}/reviews": {
       "get": {
-        "tags": [
-          "review-controller"
-        ],
+        "tags": ["review-controller"],
         "operationId": "getActionPlanReviews",
         "parameters": [
           {
@@ -1115,9 +1053,7 @@
   "components": {
     "schemas": {
       "RetryDlqResult": {
-        "required": [
-          "messagesFoundCount"
-        ],
+        "required": ["messagesFoundCount"],
         "type": "object",
         "properties": {
           "messagesFoundCount": {
@@ -1127,9 +1063,7 @@
         }
       },
       "PurgeQueueResult": {
-        "required": [
-          "messagesFoundCount"
-        ],
+        "required": ["messagesFoundCount"],
         "type": "object",
         "properties": {
           "messagesFoundCount": {
@@ -1139,11 +1073,7 @@
         }
       },
       "CreateOrUpdateAchievedQualificationRequest": {
-        "required": [
-          "grade",
-          "level",
-          "subject"
-        ],
+        "required": ["grade", "level", "subject"],
         "type": "object",
         "properties": {
           "subject": {
@@ -1156,17 +1086,7 @@
           "level": {
             "type": "string",
             "example": "null",
-            "enum": [
-              "ENTRY_LEVEL",
-              "LEVEL_1",
-              "LEVEL_2",
-              "LEVEL_3",
-              "LEVEL_4",
-              "LEVEL_5",
-              "LEVEL_6",
-              "LEVEL_7",
-              "LEVEL_8"
-            ]
+            "enum": ["ENTRY_LEVEL", "LEVEL_1", "LEVEL_2", "LEVEL_3", "LEVEL_4", "LEVEL_5", "LEVEL_6", "LEVEL_7", "LEVEL_8"]
           },
           "grade": {
             "maxLength": 50,
@@ -1186,12 +1106,7 @@
         "example": null
       },
       "UpdateEducationRequest": {
-        "required": [
-          "educationLevel",
-          "prisonId",
-          "qualifications",
-          "reference"
-        ],
+        "required": ["educationLevel", "prisonId", "qualifications", "reference"],
         "type": "object",
         "properties": {
           "reference": {
@@ -1230,9 +1145,7 @@
         }
       },
       "FutureWorkInterest": {
-        "required": [
-          "workType"
-        ],
+        "required": ["workType"],
         "type": "object",
         "properties": {
           "workType": {
@@ -1275,9 +1188,7 @@
         "example": null
       },
       "InPrisonTrainingInterest": {
-        "required": [
-          "trainingType"
-        ],
+        "required": ["trainingType"],
         "type": "object",
         "properties": {
           "trainingType": {
@@ -1311,9 +1222,7 @@
         "example": null
       },
       "InPrisonWorkInterest": {
-        "required": [
-          "workType"
-        ],
+        "required": ["workType"],
         "type": "object",
         "properties": {
           "workType": {
@@ -1345,9 +1254,7 @@
         "example": null
       },
       "PersonalInterest": {
-        "required": [
-          "interestType"
-        ],
+        "required": ["interestType"],
         "type": "object",
         "properties": {
           "interestType": {
@@ -1383,9 +1290,7 @@
         "example": null
       },
       "PersonalSkill": {
-        "required": [
-          "skillType"
-        ],
+        "required": ["skillType"],
         "type": "object",
         "properties": {
           "skillType": {
@@ -1415,9 +1320,7 @@
         "example": null
       },
       "PreviousWorkExperience": {
-        "required": [
-          "experienceType"
-        ],
+        "required": ["experienceType"],
         "type": "object",
         "properties": {
           "experienceType": {
@@ -1467,9 +1370,7 @@
         "example": null
       },
       "UpdateFutureWorkInterestsRequest": {
-        "required": [
-          "interests"
-        ],
+        "required": ["interests"],
         "type": "object",
         "properties": {
           "interests": {
@@ -1490,10 +1391,7 @@
         "example": null
       },
       "UpdateInPrisonInterestsRequest": {
-        "required": [
-          "inPrisonTrainingInterests",
-          "inPrisonWorkInterests"
-        ],
+        "required": ["inPrisonTrainingInterests", "inPrisonWorkInterests"],
         "type": "object",
         "properties": {
           "inPrisonWorkInterests": {
@@ -1522,10 +1420,7 @@
         "example": null
       },
       "UpdateInductionRequest": {
-        "required": [
-          "prisonId",
-          "reference"
-        ],
+        "required": ["prisonId", "reference"],
         "type": "object",
         "properties": {
           "reference": {
@@ -1564,10 +1459,7 @@
         }
       },
       "UpdatePersonalSkillsAndInterestsRequest": {
-        "required": [
-          "interests",
-          "skills"
-        ],
+        "required": ["interests", "skills"],
         "type": "object",
         "properties": {
           "skills": {
@@ -1629,9 +1521,7 @@
         "example": null
       },
       "UpdatePreviousTrainingRequest": {
-        "required": [
-          "trainingTypes"
-        ],
+        "required": ["trainingTypes"],
         "type": "object",
         "properties": {
           "trainingTypes": {
@@ -1674,19 +1564,13 @@
         "example": null
       },
       "UpdatePreviousWorkExperiencesRequest": {
-        "required": [
-          "hasWorkedBefore"
-        ],
+        "required": ["hasWorkedBefore"],
         "type": "object",
         "properties": {
           "hasWorkedBefore": {
             "type": "string",
             "example": "null",
-            "enum": [
-              "YES",
-              "NO",
-              "NOT_RELEVANT"
-            ]
+            "enum": ["YES", "NO", "NOT_RELEVANT"]
           },
           "reference": {
             "type": "string",
@@ -1713,10 +1597,7 @@
         "example": null
       },
       "UpdateWorkOnReleaseRequest": {
-        "required": [
-          "hopingToWork",
-          "reference"
-        ],
+        "required": ["hopingToWork", "reference"],
         "type": "object",
         "properties": {
           "reference": {
@@ -1728,11 +1609,7 @@
           "hopingToWork": {
             "type": "string",
             "example": "null",
-            "enum": [
-              "YES",
-              "NO",
-              "NOT_SURE"
-            ]
+            "enum": ["YES", "NO", "NOT_SURE"]
           },
           "affectAbilityToWork": {
             "type": "array",
@@ -1768,10 +1645,7 @@
         "example": null
       },
       "UpdateConversationRequest": {
-        "required": [
-          "note",
-          "prisonId"
-        ],
+        "required": ["note", "prisonId"],
         "type": "object",
         "properties": {
           "prisonId": {
@@ -1788,12 +1662,7 @@
         }
       },
       "Conversation": {
-        "required": [
-          "note",
-          "prisonNumber",
-          "reference",
-          "type"
-        ],
+        "required": ["note", "prisonNumber", "reference", "type"],
         "type": "object",
         "properties": {
           "reference": {
@@ -1805,11 +1674,7 @@
           },
           "type": {
             "type": "string",
-            "enum": [
-              "INDUCTION",
-              "GENERAL",
-              "REVIEW"
-            ]
+            "enum": ["INDUCTION", "GENERAL", "REVIEW"]
           },
           "note": {
             "$ref": "#/components/schemas/ConversationNote"
@@ -1817,12 +1682,7 @@
         }
       },
       "ConversationNote": {
-        "required": [
-          "content",
-          "createdAtPrison",
-          "lastUpdatedAtPrison",
-          "reference"
-        ],
+        "required": ["content", "createdAtPrison", "lastUpdatedAtPrison", "reference"],
         "type": "object",
         "properties": {
           "reference": {
@@ -1861,13 +1721,7 @@
         }
       },
       "UpdateGoalRequest": {
-        "required": [
-          "goalReference",
-          "prisonId",
-          "steps",
-          "targetCompletionDate",
-          "title"
-        ],
+        "required": ["goalReference", "prisonId", "steps", "targetCompletionDate", "title"],
         "type": "object",
         "properties": {
           "goalReference": {
@@ -1910,21 +1764,13 @@
         }
       },
       "UpdateStepRequest": {
-        "required": [
-          "sequenceNumber",
-          "status",
-          "title"
-        ],
+        "required": ["sequenceNumber", "status", "title"],
         "type": "object",
         "properties": {
           "status": {
             "type": "string",
             "example": "null",
-            "enum": [
-              "NOT_STARTED",
-              "ACTIVE",
-              "COMPLETE"
-            ]
+            "enum": ["NOT_STARTED", "ACTIVE", "COMPLETE"]
           },
           "title": {
             "type": "string",
@@ -1948,9 +1794,7 @@
         "example": null
       },
       "UnarchiveGoalRequest": {
-        "required": [
-          "goalReference"
-        ],
+        "required": ["goalReference"],
         "type": "object",
         "properties": {
           "goalReference": {
@@ -1962,9 +1806,7 @@
         }
       },
       "CompleteGoalRequest": {
-        "required": [
-          "goalReference"
-        ],
+        "required": ["goalReference"],
         "type": "object",
         "properties": {
           "goalReference": {
@@ -1981,10 +1823,7 @@
         }
       },
       "ArchiveGoalRequest": {
-        "required": [
-          "goalReference",
-          "reason"
-        ],
+        "required": ["goalReference", "reason"],
         "type": "object",
         "properties": {
           "goalReference": {
@@ -2016,11 +1855,7 @@
         }
       },
       "CreateAchievedQualificationRequest": {
-        "required": [
-          "grade",
-          "level",
-          "subject"
-        ],
+        "required": ["grade", "level", "subject"],
         "type": "object",
         "properties": {
           "subject": {
@@ -2033,17 +1868,7 @@
           "level": {
             "type": "string",
             "example": "null",
-            "enum": [
-              "ENTRY_LEVEL",
-              "LEVEL_1",
-              "LEVEL_2",
-              "LEVEL_3",
-              "LEVEL_4",
-              "LEVEL_5",
-              "LEVEL_6",
-              "LEVEL_7",
-              "LEVEL_8"
-            ]
+            "enum": ["ENTRY_LEVEL", "LEVEL_1", "LEVEL_2", "LEVEL_3", "LEVEL_4", "LEVEL_5", "LEVEL_6", "LEVEL_7", "LEVEL_8"]
           },
           "grade": {
             "maxLength": 50,
@@ -2057,11 +1882,7 @@
         "example": null
       },
       "CreateEducationRequest": {
-        "required": [
-          "educationLevel",
-          "prisonId",
-          "qualifications"
-        ],
+        "required": ["educationLevel", "prisonId", "qualifications"],
         "type": "object",
         "properties": {
           "prisonId": {
@@ -2094,9 +1915,7 @@
         }
       },
       "CreateFutureWorkInterestsRequest": {
-        "required": [
-          "interests"
-        ],
+        "required": ["interests"],
         "type": "object",
         "properties": {
           "interests": {
@@ -2111,10 +1930,7 @@
         "example": null
       },
       "CreateInPrisonInterestsRequest": {
-        "required": [
-          "inPrisonTrainingInterests",
-          "inPrisonWorkInterests"
-        ],
+        "required": ["inPrisonTrainingInterests", "inPrisonWorkInterests"],
         "type": "object",
         "properties": {
           "inPrisonWorkInterests": {
@@ -2137,10 +1953,7 @@
         "example": null
       },
       "CreateInductionRequest": {
-        "required": [
-          "prisonId",
-          "workOnRelease"
-        ],
+        "required": ["prisonId", "workOnRelease"],
         "type": "object",
         "properties": {
           "prisonId": {
@@ -2173,10 +1986,7 @@
         }
       },
       "CreatePersonalSkillsAndInterestsRequest": {
-        "required": [
-          "interests",
-          "skills"
-        ],
+        "required": ["interests", "skills"],
         "type": "object",
         "properties": {
           "skills": {
@@ -2226,9 +2036,7 @@
         "example": null
       },
       "CreatePreviousTrainingRequest": {
-        "required": [
-          "trainingTypes"
-        ],
+        "required": ["trainingTypes"],
         "type": "object",
         "properties": {
           "trainingTypes": {
@@ -2265,19 +2073,13 @@
         "example": null
       },
       "CreatePreviousWorkExperiencesRequest": {
-        "required": [
-          "hasWorkedBefore"
-        ],
+        "required": ["hasWorkedBefore"],
         "type": "object",
         "properties": {
           "hasWorkedBefore": {
             "type": "string",
             "example": "null",
-            "enum": [
-              "YES",
-              "NO",
-              "NOT_RELEVANT"
-            ]
+            "enum": ["YES", "NO", "NOT_RELEVANT"]
           },
           "hasWorkedBeforeNotRelevantReason": {
             "maxLength": 512,
@@ -2298,19 +2100,13 @@
         "example": null
       },
       "CreateWorkOnReleaseRequest": {
-        "required": [
-          "hopingToWork"
-        ],
+        "required": ["hopingToWork"],
         "type": "object",
         "properties": {
           "hopingToWork": {
             "type": "string",
             "example": "null",
-            "enum": [
-              "YES",
-              "NO",
-              "NOT_SURE"
-            ]
+            "enum": ["YES", "NO", "NOT_SURE"]
           },
           "affectAbilityToWork": {
             "type": "array",
@@ -2346,11 +2142,7 @@
         "example": null
       },
       "CreateConversationRequest": {
-        "required": [
-          "note",
-          "prisonId",
-          "type"
-        ],
+        "required": ["note", "prisonId", "type"],
         "type": "object",
         "properties": {
           "prisonId": {
@@ -2362,11 +2154,7 @@
           "type": {
             "type": "string",
             "example": "null",
-            "enum": [
-              "INDUCTION",
-              "GENERAL",
-              "REVIEW"
-            ]
+            "enum": ["INDUCTION", "GENERAL", "REVIEW"]
           },
           "note": {
             "type": "string",
@@ -2376,9 +2164,7 @@
         }
       },
       "GetCiagInductionSummariesRequest": {
-        "required": [
-          "offenderIds"
-        ],
+        "required": ["offenderIds"],
         "type": "object",
         "properties": {
           "offenderIds": {
@@ -2394,9 +2180,7 @@
         }
       },
       "CiagInductionSummaryListResponse": {
-        "required": [
-          "ciagProfileList"
-        ],
+        "required": ["ciagProfileList"],
         "type": "object",
         "properties": {
           "ciagProfileList": {
@@ -2410,15 +2194,7 @@
         }
       },
       "CiagInductionSummaryResponse": {
-        "required": [
-          "createdBy",
-          "createdDateTime",
-          "desireToWork",
-          "hopingToGetWork",
-          "modifiedBy",
-          "modifiedDateTime",
-          "offenderId"
-        ],
+        "required": ["createdBy", "createdDateTime", "desireToWork", "hopingToGetWork", "modifiedBy", "modifiedDateTime", "offenderId"],
         "type": "object",
         "properties": {
           "offenderId": {
@@ -2435,11 +2211,7 @@
           "hopingToGetWork": {
             "type": "string",
             "example": "null",
-            "enum": [
-              "YES",
-              "NO",
-              "NOT_SURE"
-            ]
+            "enum": ["YES", "NO", "NOT_SURE"]
           },
           "createdBy": {
             "type": "string",
@@ -2468,9 +2240,7 @@
         "example": null
       },
       "GetActionPlanSummariesRequest": {
-        "required": [
-          "prisonNumbers"
-        ],
+        "required": ["prisonNumbers"],
         "type": "object",
         "properties": {
           "prisonNumbers": {
@@ -2486,9 +2256,7 @@
         }
       },
       "ActionPlanSummaryListResponse": {
-        "required": [
-          "actionPlanSummaries"
-        ],
+        "required": ["actionPlanSummaries"],
         "type": "object",
         "properties": {
           "actionPlanSummaries": {
@@ -2502,10 +2270,7 @@
         }
       },
       "ActionPlanSummaryResponse": {
-        "required": [
-          "prisonNumber",
-          "reference"
-        ],
+        "required": ["prisonNumber", "reference"],
         "type": "object",
         "properties": {
           "reference": {
@@ -2529,9 +2294,7 @@
         "example": null
       },
       "CreateActionPlanRequest": {
-        "required": [
-          "goals"
-        ],
+        "required": ["goals"],
         "type": "object",
         "properties": {
           "goals": {
@@ -2552,12 +2315,7 @@
         }
       },
       "CreateGoalRequest": {
-        "required": [
-          "prisonId",
-          "steps",
-          "targetCompletionDate",
-          "title"
-        ],
+        "required": ["prisonId", "steps", "targetCompletionDate", "title"],
         "type": "object",
         "properties": {
           "title": {
@@ -2596,10 +2354,7 @@
         "example": null
       },
       "CreateStepRequest": {
-        "required": [
-          "sequenceNumber",
-          "title"
-        ],
+        "required": ["sequenceNumber", "title"],
         "type": "object",
         "properties": {
           "title": {
@@ -2618,9 +2373,7 @@
         "example": null
       },
       "CreateGoalsRequest": {
-        "required": [
-          "goals"
-        ],
+        "required": ["goals"],
         "type": "object",
         "properties": {
           "goals": {
@@ -2636,16 +2389,7 @@
         }
       },
       "TimelineEventResponse": {
-        "required": [
-          "actionedBy",
-          "contextualInfo",
-          "correlationId",
-          "eventType",
-          "prisonId",
-          "reference",
-          "sourceReference",
-          "timestamp"
-        ],
+        "required": ["actionedBy", "contextualInfo", "correlationId", "eventType", "prisonId", "reference", "sourceReference", "timestamp"],
         "type": "object",
         "properties": {
           "reference": {
@@ -2727,11 +2471,7 @@
         "example": null
       },
       "TimelineResponse": {
-        "required": [
-          "events",
-          "prisonNumber",
-          "reference"
-        ],
+        "required": ["events", "prisonNumber", "reference"],
         "type": "object",
         "properties": {
           "reference": {
@@ -2758,9 +2498,7 @@
         }
       },
       "ErrorResponse": {
-        "required": [
-          "status"
-        ],
+        "required": ["status"],
         "type": "object",
         "properties": {
           "status": {
@@ -2782,9 +2520,7 @@
         }
       },
       "HmppsSubjectAccessRequestContent": {
-        "required": [
-          "content"
-        ],
+        "required": ["content"],
         "type": "object",
         "properties": {
           "content": {
@@ -2794,10 +2530,7 @@
         }
       },
       "DlqMessage": {
-        "required": [
-          "body",
-          "messageId"
-        ],
+        "required": ["body", "messageId"],
         "type": "object",
         "properties": {
           "body": {
@@ -2812,11 +2545,7 @@
         }
       },
       "GetDlqResult": {
-        "required": [
-          "messages",
-          "messagesFoundCount",
-          "messagesReturnedCount"
-        ],
+        "required": ["messages", "messagesFoundCount", "messagesReturnedCount"],
         "type": "object",
         "properties": {
           "messagesFoundCount": {
@@ -2866,17 +2595,7 @@
           "level": {
             "type": "string",
             "example": "null",
-            "enum": [
-              "ENTRY_LEVEL",
-              "LEVEL_1",
-              "LEVEL_2",
-              "LEVEL_3",
-              "LEVEL_4",
-              "LEVEL_5",
-              "LEVEL_6",
-              "LEVEL_7",
-              "LEVEL_8"
-            ]
+            "enum": ["ENTRY_LEVEL", "LEVEL_1", "LEVEL_2", "LEVEL_3", "LEVEL_4", "LEVEL_5", "LEVEL_6", "LEVEL_7", "LEVEL_8"]
           },
           "grade": {
             "maxLength": 50,
@@ -3549,11 +3268,7 @@
           "hasWorkedBefore": {
             "type": "string",
             "example": "null",
-            "enum": [
-              "YES",
-              "NO",
-              "NOT_RELEVANT"
-            ]
+            "enum": ["YES", "NO", "NOT_RELEVANT"]
           },
           "experiences": {
             "type": "array",
@@ -3640,11 +3355,7 @@
           "hopingToWork": {
             "type": "string",
             "example": "null",
-            "enum": [
-              "YES",
-              "NO",
-              "NOT_SURE"
-            ]
+            "enum": ["YES", "NO", "NOT_SURE"]
           },
           "affectAbilityToWork": {
             "type": "array",
@@ -3899,13 +3610,7 @@
         "example": null
       },
       "ConversationsResponse": {
-        "required": [
-          "content",
-          "pageNumber",
-          "pageSize",
-          "totalElements",
-          "totalPages"
-        ],
+        "required": ["content", "pageNumber", "pageSize", "totalElements", "totalPages"],
         "type": "object",
         "properties": {
           "totalElements": {
@@ -3934,11 +3639,7 @@
         }
       },
       "ActionPlanResponse": {
-        "required": [
-          "goals",
-          "prisonNumber",
-          "reference"
-        ],
+        "required": ["goals", "prisonNumber", "reference"],
         "type": "object",
         "properties": {
           "reference": {
@@ -4005,11 +3706,7 @@
           "status": {
             "type": "string",
             "example": "null",
-            "enum": [
-              "ACTIVE",
-              "COMPLETED",
-              "ARCHIVED"
-            ]
+            "enum": ["ACTIVE", "COMPLETED", "ARCHIVED"]
           },
           "steps": {
             "maxItems": 2147483647,
@@ -4124,13 +3821,7 @@
           "type": {
             "type": "string",
             "example": "null",
-            "enum": [
-              "GOAL",
-              "GOAL_ARCHIVAL",
-              "GOAL_COMPLETION",
-              "REVIEW",
-              "INDUCTION"
-            ]
+            "enum": ["GOAL", "GOAL_ARCHIVAL", "GOAL_COMPLETION", "REVIEW", "INDUCTION"]
           },
           "createdBy": {
             "type": "string",
@@ -4179,12 +3870,7 @@
         "example": null
       },
       "StepResponse": {
-        "required": [
-          "sequenceNumber",
-          "status",
-          "stepReference",
-          "title"
-        ],
+        "required": ["sequenceNumber", "status", "stepReference", "title"],
         "type": "object",
         "properties": {
           "stepReference": {
@@ -4201,11 +3887,7 @@
           "status": {
             "type": "string",
             "example": "null",
-            "enum": [
-              "NOT_STARTED",
-              "ACTIVE",
-              "COMPLETE"
-            ]
+            "enum": ["NOT_STARTED", "ACTIVE", "COMPLETE"]
           },
           "sequenceNumber": {
             "type": "integer",
@@ -4218,10 +3900,7 @@
         "example": null
       },
       "ActionPlanReviewsResponse": {
-        "required": [
-          "completedReviews",
-          "scheduledReview"
-        ],
+        "required": ["completedReviews", "scheduledReview"],
         "type": "object",
         "properties": {
           "scheduledReview": {
@@ -4238,16 +3917,7 @@
         }
       },
       "CompletedActionPlanReviewResponse": {
-        "required": [
-          "completedDate",
-          "createdAt",
-          "createdAtPrison",
-          "createdBy",
-          "createdByDisplayName",
-          "deadlineDate",
-          "note",
-          "reference"
-        ],
+        "required": ["completedDate", "createdAt", "createdAtPrison", "createdBy", "createdByDisplayName", "deadlineDate", "note", "reference"],
         "type": "object",
         "properties": {
           "reference": {
@@ -4419,9 +4089,7 @@
         "example": null
       },
       "GetGoalsResponse": {
-        "required": [
-          "goals"
-        ],
+        "required": ["goals"],
         "type": "object",
         "properties": {
           "goals": {
