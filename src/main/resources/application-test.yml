@@ -30,6 +30,8 @@ services:
     base-url: http://localhost:4008
   manage-pom-case-api:
     base-url: http://localhost:4009
+  plp:
+    base-url: http://localhost:4010
 
 hmpps.sqs:
   provider: localstack
@@ -67,7 +69,9 @@ authorisation:
       - "/v1/persons/.*/risk-management-plan"
       - "/v1/persons/.*/cell-location"
       - "/v1/persons/.*/status-information"
+      - "/v1/persons/.*/plp/inductionScheduleUpdated"
       - "/v1/hmpps/id/nomis-number/[^/]*$"
+      - "/v1/hmpps/id/.*/nomis-number"
       - "/health"
       - "/health/ping"
       - "/health/readiness"

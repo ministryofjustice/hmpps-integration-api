@@ -12,4 +12,5 @@ enum class UpstreamApi {
   MANAGE_POM_CASE,
   RISK_MANAGEMENT_PLAN,
   TEST,
+  PLP,
 }
