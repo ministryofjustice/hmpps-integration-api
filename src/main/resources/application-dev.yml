@@ -108,3 +108,6 @@ authorisation:
     kilco:
       - "/v1/persons"
       - "/v1/persons/[^/]*$"
+    meganexus:
+      - "/v1/persons/.*/plp/inductionScheduleUpdated"
+      - "/v1/hmpps/id/.*/nomis-number"
