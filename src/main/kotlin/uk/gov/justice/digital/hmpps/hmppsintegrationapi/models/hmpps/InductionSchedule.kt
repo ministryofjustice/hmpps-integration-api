@@ -34,7 +34,10 @@ data class InductionSchedule(
 )
 
 class InductionScheduleDeserializer : JsonDeserializer<InductionSchedule>() {
-  override fun deserialize(parser: JsonParser, ctxt: DeserializationContext): InductionSchedule {
+  override fun deserialize(
+    parser: JsonParser,
+    ctxt: DeserializationContext,
+  ): InductionSchedule {
     val node = parser.codec.readTree<com.fasterxml.jackson.databind.JsonNode>(parser)
     val nomisNumber = node["prisonNumber"]?.asText()
     val deadlineDate = node["deadlineDate"]?.asText()?.let { LocalDate.parse(it) }
@@ -45,7 +48,7 @@ class InductionScheduleDeserializer : JsonDeserializer<InductionSchedule>() {
       deadlineDate = deadlineDate,
       scheduleStatus = scheduleStatus,
       scheduleCalculationRule = scheduleCalculationRule,
-      nomisNumber = nomisNumber
+      nomisNumber = nomisNumber,
     )
   }
 }
