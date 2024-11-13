@@ -30,7 +30,7 @@ class GetPersonService(
 
   fun identifyHmppsId(input: String): IdentifierType {
     val nomsPattern = Regex("^[A-Z]\\d{4}[A-Z]{2}$")
-    val crnPattern = Regex("^[A-Z]{1,2}\\d{6}$")
+    val crnPattern = Regex("^[A-Z]\\d{6}$")
 
     return when {
       nomsPattern.matches(input) -> IdentifierType.NOMS
