@@ -19,6 +19,8 @@ services:
     base-url: https://preprod.offender-case-notes.service.justice.gov.uk
   manage-pom-case-api:
     base-url: https://preprod.moic.service.justice.gov.uk
+  plp:
+    base-url: https://learningandworkprogress-api-preprod.hmpps.service.justice.gov.uk
   hmpps-auth:
     base-url: https://sign-in-preprod.hmpps.service.justice.gov.uk
     username: ${CLIENT_ID}

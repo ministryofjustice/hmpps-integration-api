@@ -19,6 +19,8 @@ services:
     base-url: https://dev.offender-case-notes.service.justice.gov.uk
   manage-pom-case-api:
     base-url: https://dev.moic.service.justice.gov.uk
+  plp:
+    base-url: https://learningandworkprogress-api-dev.hmpps.service.justice.gov.uk
   hmpps-auth:
     base-url: https://sign-in-dev.hmpps.service.justice.gov.uk
     username: ${CLIENT_ID}
@@ -48,6 +50,7 @@ authorisation:
       - "/v1/persons/.*/risks/categories"
       - "/v1/persons/.*/person-responsible-officer"
       - "/v1/persons/.*/risk-management-plan"
+      - "/v1/persons/.*/plp/inductionScheduleUpdated"
       - "/v1/hmpps/reference-data"
     ctrlo:
       - "/v1/epf/person-details/.*/[^/]*$"
@@ -105,3 +108,6 @@ authorisation:
     kilco:
       - "/v1/persons"
       - "/v1/persons/[^/]*$"
+    meganexus:
+      - "/v1/persons/.*/plp/inductionScheduleUpdated"
+      - "/v1/hmpps/id/.*/nomis-number"

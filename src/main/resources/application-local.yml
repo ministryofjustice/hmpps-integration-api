@@ -11,6 +11,7 @@ services:
   prisoner-offender-search.base-url: http://localhost:4017
   probation-integration-epf.base-url: http://localhost:4018
   probation-offender-search.base-url: http://localhost:4019
+  plp.base-url: http://localhost:4020
 
 hmpps.sqs:
   provider: localstack
@@ -48,6 +49,7 @@ authorisation:
       - "/v1/persons/.*/status-information"
       - "/v1/persons/.*/risk-management-plan"
       - "/v1/persons/.*/cell-location"
+      - "/v1/persons/.*/plp/inductionScheduleUpdated"
       - "/v1/epf/person-details/.*/[^/]*$"
       - "/v1/hmpps/id/nomis-number/[^/]*$"
       - "/health"
