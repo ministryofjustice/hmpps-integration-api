@@ -21,4 +21,10 @@ data class InductionSchedule(
     example = "NEW_PRISON_ADMISSION",
   )
   val scheduleCalculationRule: String? = null,
+
+  @Schema(
+    description = "The prison number or NOMS number of the person.",
+    example = "A1234BC",
+  )
+  val prisonNumber: String? = null,
 )

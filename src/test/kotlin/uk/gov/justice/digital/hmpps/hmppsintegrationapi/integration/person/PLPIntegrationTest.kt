@@ -16,7 +16,8 @@ class PLPIntegrationTest : IntegrationTestBase() {
            {"data": {
             "deadlineDate":"2019-08-24",
             "scheduleStatus":"SCHEDULED",
-            "scheduleCalculationRule": "NEW_PRISON_ADMISSION"}}
+            "scheduleCalculationRule": "NEW_PRISON_ADMISSION",
+            "prisonNumber": "A1234BC"}}
       """,
         ),
       )
