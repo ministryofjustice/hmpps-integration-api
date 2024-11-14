@@ -1,14 +1,18 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
+import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind.DeserializationContext
 import com.fasterxml.jackson.databind.JsonDeserializer
+import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import io.swagger.v3.oas.annotations.media.Schema
+import java.time.Instant
 import java.time.LocalDate
 
 @JsonIgnoreProperties(ignoreUnknown = true)
+@JsonInclude(JsonInclude.Include.NON_DEFAULT)
 @JsonDeserialize(using = InductionScheduleDeserializer::class)
 data class InductionSchedule(
   @Schema(
@@ -20,17 +24,37 @@ data class InductionSchedule(
     description = "The current status of the Induction Schedule",
     example = "SCHEDULED",
   )
-  val scheduleStatus: String? = null,
+  val status: String? = null,
   @Schema(
     description = "The Induction Schedule rule used to determine deadline date.",
     example = "NEW_PRISON_ADMISSION",
   )
-  val scheduleCalculationRule: String? = null,
+  val calculationRule: String? = null,
   @Schema(
     description = "The Nomis number of the person.",
     example = "A1234BC",
   )
   val nomisNumber: String? = null,
+  @Schema(
+    description = "The name of the person who used the PLP system to update the Induction Schedule, or 'system' for system generated updates.",
+    example = "John Smith",
+  )
+  val systemUpdatedBy: String? = null,
+  @Schema(
+    description = "An ISO-8601 timestamp representing the time the PLP system was used to update the Induction Schedule.",
+    example = "2023-06-19T09:39:44Z",
+  )
+  val systemUpdatedAt: Instant? = null,
+  @Schema(
+    description = "The name of the person who performed the Induction with the prisoner. In the case of system generated updates or setting an exemption this field will not be present.",
+    example = "Fred Jones",
+  )
+  val inductionPerformedBy: String? = null,
+  @Schema(
+    description = "An ISO-8601 date representing when the Induction was performed with the prisoner. In the case of system generated updates this field will not be present.",
+    example = "2023-06-30",
+  )
+  val inductionPerformedAt: LocalDate? = null,
 )
 
 class InductionScheduleDeserializer : JsonDeserializer<InductionSchedule>() {
@@ -38,17 +62,25 @@ class InductionScheduleDeserializer : JsonDeserializer<InductionSchedule>() {
     parser: JsonParser,
     ctxt: DeserializationContext,
   ): InductionSchedule {
-    val node = parser.codec.readTree<com.fasterxml.jackson.databind.JsonNode>(parser)
+    val node = parser.codec.readTree<JsonNode>(parser)
     val nomisNumber = node["prisonNumber"]?.asText()
     val deadlineDate = node["deadlineDate"]?.asText()?.let { LocalDate.parse(it) }
     val scheduleStatus = node["scheduleStatus"]?.asText()
     val scheduleCalculationRule = node["scheduleCalculationRule"]?.asText()
+    val systemUpdatedBy = node["updatedByDisplayName"]?.asText()
+    val systemUpdatedAt = node["updatedAt"]?.asText()?.let { Instant.parse(it) }
+    val inductionPerformedBy = node["inductionPerformedBy"]?.asText()
+    val inductionPerformedAt = node["inductionPerformedAt"]?.asText()?.let { LocalDate.parse(it) }
 
     return InductionSchedule(
       deadlineDate = deadlineDate,
-      scheduleStatus = scheduleStatus,
-      scheduleCalculationRule = scheduleCalculationRule,
+      status = scheduleStatus,
+      calculationRule = scheduleCalculationRule,
       nomisNumber = nomisNumber,
+      systemUpdatedBy = systemUpdatedBy,
+      systemUpdatedAt = systemUpdatedAt,
+      inductionPerformedBy = inductionPerformedBy,
+      inductionPerformedAt = inductionPerformedAt,
     )
   }
 }
