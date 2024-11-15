@@ -28,6 +28,7 @@ abstract class IntegrationTestBase {
   final val pnc = URLEncoder.encode("2004/13116M", StandardCharsets.UTF_8)
   final val nomsId = "G2996UX"
   final val crn = "AB123123"
+  final val nomsIdNotInDelius = "A1234AA"
 
   companion object {
     private val hmppsAuthMockServer = HmppsAuthMockServer()

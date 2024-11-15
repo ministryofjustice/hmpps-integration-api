@@ -11,10 +11,16 @@ class GetHmppsIdService(
   @Autowired val getPersonService: GetPersonService,
 ) {
   fun execute(hmppsId: String): Response<HmppsId?> {
-    val personResponse = getPersonService.execute(hmppsId = hmppsId)
+    val personResponse = getPersonService.execute(hmppsId)
+
+    val hmppsIdToReturn =
+      personResponse.data?.hmppsId ?: run {
+        // Attempt to look up the person in NOMIS if not found in the probation offender search
+        getPersonService.getPersonFromNomis(hmppsId).data?.prisonerNumber
+      }
 
     return Response(
-      data = HmppsId(hmppsId = personResponse.data?.hmppsId),
+      data = HmppsId(hmppsIdToReturn),
       errors = personResponse.errors,
     )
   }
