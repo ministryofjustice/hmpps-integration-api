@@ -103,4 +103,6 @@ class GetPersonService(
       errors = (prisonResponse?.errors ?: emptyList()) + probationResponse.errors,
     )
   }
+
+  fun getPersonFromNomis(nomisNumber: String) = prisonerOffenderSearchGateway.getPrisonOffender(nomisNumber)
 }
