@@ -11,10 +11,10 @@ dependencies {
   runtimeOnly("org.flywaydb:flyway-database-postgresql")
   implementation("org.springframework.boot:spring-boot-starter-webflux:3.3.5")
   implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
-  implementation("io.sentry:sentry-spring-boot-starter-jakarta:7.16.0")
-  implementation("io.sentry:sentry-logback:7.16.0")
-  implementation("org.springframework.data:spring-data-commons:3.3.5")
-  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:5.1.0") {
+  implementation("io.sentry:sentry-spring-boot-starter-jakarta:7.18.0")
+  implementation("io.sentry:sentry-logback:7.18.0")
+  implementation("org.springframework.data:spring-data-commons:3.4.0")
+  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:5.1.1") {
     exclude("org.springframework.security", "spring-security-config")
     exclude("org.springframework.security", "spring-security-core")
     exclude("org.springframework.security", "spring-security-crypto")
