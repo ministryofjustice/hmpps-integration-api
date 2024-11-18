@@ -12,7 +12,7 @@ import java.time.Instant
 import java.time.LocalDate
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-@JsonInclude(JsonInclude.Include.NON_DEFAULT)
+@JsonInclude(JsonInclude.Include.USE_DEFAULTS)
 @JsonDeserialize(using = InductionScheduleDeserializer::class)
 data class InductionSchedule(
   @Schema(
@@ -69,8 +69,8 @@ class InductionScheduleDeserializer : JsonDeserializer<InductionSchedule>() {
     val scheduleCalculationRule = node["scheduleCalculationRule"]?.asText()
     val systemUpdatedBy = node["updatedByDisplayName"]?.asText()
     val systemUpdatedAt = node["updatedAt"]?.asText()?.let { Instant.parse(it) }
-    val inductionPerformedBy = node["inductionPerformedBy"]?.asText()
-    val inductionPerformedAt = node["inductionPerformedAt"]?.asText()?.let { LocalDate.parse(it) }
+    val inductionPerformedBy = node["inductionPerformedBy"]?.takeUnless { it.isNull }?.asText()
+    val inductionPerformedAt = node["inductionPerformedAt"]?.takeUnless { it.isNull }?.asText()?.let { LocalDate.parse(it) }
 
     return InductionSchedule(
       deadlineDate = deadlineDate,
