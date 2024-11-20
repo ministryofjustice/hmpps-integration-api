@@ -33,6 +33,8 @@ authorisation:
     moj-pes:
       - "/v1/persons/.*/name"
       - "/v1/hmpps/id/nomis-number/[^/]*$"
+      - "/v1/hmpps/id/by-nomis-number/[^/]*$"
+      - "/v1/hmpps/id/nomis-number/by-hmpps-id/[^/]*$"
       - "/v1/persons/.*/cell-location"
     kubernetes-health-check-client:
       - "/health/liveness"
