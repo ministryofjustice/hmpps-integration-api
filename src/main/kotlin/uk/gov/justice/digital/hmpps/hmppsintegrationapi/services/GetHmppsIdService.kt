@@ -11,13 +11,14 @@ class GetHmppsIdService(
   @Autowired val getPersonService: GetPersonService,
 ) {
   fun execute(hmppsId: String): Response<HmppsId?> {
-    val personResponse = getPersonService.execute(hmppsId)
+    val personResponse = getPersonService.execute(hmppsId.uppercase())
 
-    val hmppsIdToReturn =
-      personResponse.data?.hmppsId ?: run {
-        // Attempt to look up the person in NOMIS if not found in the probation offender search
-        getPersonService.getPersonFromNomis(hmppsId).data?.prisonerNumber
-      }
+    var hmppsIdToReturn =
+      personResponse.data?.hmppsId
+
+    if (hmppsIdToReturn == null) {
+      hmppsIdToReturn = getPersonService.getPersonFromNomis(hmppsId.uppercase()).data?.prisonerNumber
+    }
 
     return Response(
       data = HmppsId(hmppsIdToReturn),
