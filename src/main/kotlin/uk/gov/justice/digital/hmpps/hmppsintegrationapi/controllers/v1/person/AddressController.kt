@@ -27,7 +27,7 @@ class AddressController(
   @Autowired val auditService: AuditService,
   @Autowired val getAddressesForPersonService: GetAddressesForPersonService,
 ) {
-  @GetMapping("{encodedHmppsId}/addresses")
+  @GetMapping("{hmppsId}/addresses")
   @Operation(
     summary = "Returns addresses associated with a person, ordered by startDate.",
     responses = [
@@ -37,9 +37,8 @@ class AddressController(
     ],
   )
   fun getPersonAddresses(
-    @Parameter(description = "A URL-encoded HMPPS identifier", example = "2008%2F0545166T") @PathVariable encodedHmppsId: String,
+    @Parameter(description = "A URL-encoded HMPPS identifier", example = "B123123") @PathVariable hmppsId: String,
   ): DataResponse<List<Address>> {
-    val hmppsId = encodedHmppsId.decodeUrlCharacters()
     val response = getAddressesForPersonService.execute(hmppsId)
 
     if (
