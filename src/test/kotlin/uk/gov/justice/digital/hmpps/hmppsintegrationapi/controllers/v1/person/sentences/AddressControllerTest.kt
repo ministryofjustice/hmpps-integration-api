@@ -22,8 +22,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetAddressesForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
-import java.net.URLEncoder
-import java.nio.charset.StandardCharsets
 
 @WebMvcTest(controllers = [AddressController::class])
 @ActiveProfiles("test")
@@ -33,12 +31,11 @@ internal class AddressControllerTest(
   @MockBean val auditService: AuditService,
 ) : DescribeSpec(
     {
-      val hmppsId = "2003/13116M"
-      val encodedHmppsId = URLEncoder.encode(hmppsId, StandardCharsets.UTF_8)
+      val hmppsId = "A123123"
       val basePath = "/v1/persons"
       val mockMvc = IntegrationAPIMockMvc(springMockMvc)
 
-      describe("GET $basePath/{encodedHmppsId}/addresses") {
+      describe("GET $basePath/{hmppsId}/addresses") {
         beforeTest {
           Mockito.reset(getAddressesForPersonService)
           Mockito.reset(auditService)
@@ -46,19 +43,19 @@ internal class AddressControllerTest(
         }
 
         it("returns a 200 OK status code") {
-          val result = mockMvc.performAuthorised("$basePath/$encodedHmppsId/addresses")
+          val result = mockMvc.performAuthorised("$basePath/$hmppsId/addresses")
 
           result.response.status.shouldBe(HttpStatus.OK.value())
         }
 
         it("gets the addresses for a person with the matching ID") {
-          mockMvc.performAuthorised("$basePath/$encodedHmppsId/addresses")
+          mockMvc.performAuthorised("$basePath/$hmppsId/addresses")
 
           verify(getAddressesForPersonService, VerificationModeFactory.times(1)).execute(hmppsId)
         }
 
         it("returns the addresses for a person with the matching ID") {
-          val result = mockMvc.performAuthorised("$basePath/$encodedHmppsId/addresses")
+          val result = mockMvc.performAuthorised("$basePath/$hmppsId/addresses")
           result.response.contentAsString.shouldBe(
             """
         {
@@ -94,7 +91,7 @@ internal class AddressControllerTest(
         }
 
         it("logs audit") {
-          mockMvc.performAuthorised("$basePath/$encodedHmppsId/addresses")
+          mockMvc.performAuthorised("$basePath/$hmppsId/addresses")
           verify(
             auditService,
             VerificationModeFactory.times(1),
@@ -119,7 +116,7 @@ internal class AddressControllerTest(
             ),
           )
 
-          val result = mockMvc.performAuthorised("$basePath/$encodedHmppsId/addresses")
+          val result = mockMvc.performAuthorised("$basePath/$hmppsId/addresses")
 
           result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
         }
@@ -138,7 +135,7 @@ internal class AddressControllerTest(
             ),
           )
 
-          val result = mockMvc.performAuthorised("$basePath/$encodedHmppsId/addresses")
+          val result = mockMvc.performAuthorised("$basePath/$hmppsId/addresses")
 
           result.response.status.shouldBe(HttpStatus.OK.value())
         }
@@ -149,7 +146,7 @@ internal class AddressControllerTest(
             WebClientResponseException(500, "MockError", null, null, null, null),
           )
 
-          val result = mockMvc.performAuthorised("$basePath/$encodedHmppsId/addresses")
+          val result = mockMvc.performAuthorised("$basePath/$hmppsId/addresses")
           assert(result.response.status == 500)
           assert(
             result.response.contentAsString.equals(
