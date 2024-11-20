@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.decodeUrlCharacters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HmppsId
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NomisNumber
@@ -25,12 +24,20 @@ class HmppsIdController(
   @Autowired val getHmppsIdService: GetHmppsIdService,
   @Autowired val auditService: AuditService,
 ) {
-  @GetMapping("nomis-number/{encodedNomisNumber}")
+  @GetMapping("nomis-number/{nomisNumber}", "by-nomis-number/{nomisNumber}")
+  @Operation(
+    summary = "Return a HMPPS id for a given nomis number",
+    description = """Accepts a nomis number and looks up the corresponding HMPPS Id (hmppsId).
+    """,
+    responses = [
+      ApiResponse(responseCode = "200", useReturnTypeSchema = true),
+      ApiResponse(responseCode = "404", description = "Nomis number could not be found."),
+      ApiResponse(responseCode = "400", description = "Invalid hmppsId."),
+    ],
+  )
   fun getHmppsIdByNomisNumber(
-    @PathVariable encodedNomisNumber: String,
+    @PathVariable nomisNumber: String,
   ): DataResponse<HmppsId?> {
-    val nomisNumber = encodedNomisNumber.decodeUrlCharacters()
-
     val response = getHmppsIdService.execute(nomisNumber)
 
     if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
@@ -42,24 +49,21 @@ class HmppsIdController(
     return DataResponse(response.data)
   }
 
-  @GetMapping("{encodedHmppsId}/nomis-number")
+  @GetMapping("nomis-number/by-hmpps-id/{hmppsId}")
   @Operation(
-    summary = "Return NOMS number for a given hmpps Id",
-    description = """Accepts a HMPPS Id (hmppsId) and looks up the corresponding NOMS number.
+    summary = "Return nomis number for a given HMPPS Id",
+    description = """Accepts a HMPPS Id (hmppsId) and looks up the corresponding nomis number.
     """,
     responses = [
       ApiResponse(responseCode = "200", useReturnTypeSchema = true),
-      ApiResponse(responseCode = "404", description = "NOMS number could not be found."),
+      ApiResponse(responseCode = "404", description = "Nomis number could not be found."),
       ApiResponse(responseCode = "400", description = "Invalid hmppsId."),
     ],
   )
   fun getNomisNumberByHMPPSID(
-    @PathVariable encodedHmppsId: String,
+    @PathVariable hmppsId: String,
   ): DataResponse<NomisNumber?> {
-    val hmppsId = encodedHmppsId.decodeUrlCharacters()
-
     val response = getHmppsIdService.getNomisNumber(hmppsId)
-
     if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
       throw EntityNotFoundException("Could not find nomis number for HMPPS ID: $hmppsId")
     }

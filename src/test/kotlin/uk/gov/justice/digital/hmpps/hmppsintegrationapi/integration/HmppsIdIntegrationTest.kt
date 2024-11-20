@@ -19,8 +19,21 @@ class HmppsIdIntegrationTest : IntegrationTestBase() {
   }
 
   @Test
+  fun `gets the person detail using new url`() {
+    callApi("/v1/hmpps/id/by-nomis-number/$nomsId")
+      .andExpect(status().isOk)
+      .andExpect(
+        content().json(
+          """
+        {"data":{"hmppsId":"A123456"}}
+      """,
+        ),
+      )
+  }
+
+  @Test
   fun `gets the nomis Id for a HMPPSID where the id is a crn`() {
-    callApi("/v1/hmpps/id/$crn/nomis-number")
+    callApi("/v1/hmpps/id/nomis-number/by-hmpps-id/$crn")
       .andExpect(status().isOk)
       .andExpect(
         content().json(
@@ -33,7 +46,7 @@ class HmppsIdIntegrationTest : IntegrationTestBase() {
 
   @Test
   fun `gets the nomis Id for a HMPPSID where the id is a NOMIS id`() {
-    callApi("/v1/hmpps/id/$nomsId/nomis-number")
+    callApi("/v1/hmpps/id/nomis-number/by-hmpps-id/$nomsId")
       .andExpect(status().isOk)
       .andExpect(
         content().json(
@@ -46,7 +59,7 @@ class HmppsIdIntegrationTest : IntegrationTestBase() {
 
   @Test
   fun `gets the nomis Id for a HMPPSID where the id is a NOMIS id AND is not in delius`() {
-    callApi("/v1/hmpps/id/$nomsIdNotInDelius/nomis-number")
+    callApi("/v1/hmpps/id/nomis-number/by-hmpps-id/$nomsIdNotInDelius")
       .andExpect(status().isOk)
       .andExpect(
         content().json(
@@ -59,7 +72,7 @@ class HmppsIdIntegrationTest : IntegrationTestBase() {
 
   @Test
   fun `gets the nomis Id for a HMPPSID where the id is invalid`() {
-    callApi("/v1/hmpps/id/invalidId/nomis-number")
+    callApi("/v1/hmpps/id/nomis-number/by-hmpps-id/invalidId")
       .andExpect(status().is4xxClientError)
       .andExpect(
         content().json(
@@ -72,7 +85,7 @@ class HmppsIdIntegrationTest : IntegrationTestBase() {
 
   @Test
   fun `gets the nomis Id for a HMPPSID where the id not found`() {
-    callApi("/v1/hmpps/id/invalidId/nomis-number")
+    callApi("/v1/hmpps/id/nomis-number/by-hmpps-id/invalidId")
       .andExpect(status().is4xxClientError)
       .andExpect(
         content().json(
