@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways
 
-import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpMethod
@@ -18,8 +17,6 @@ class PrisonerOffenderSearchGateway(
   @Value("\${services.prisoner-offender-search.base-url}") baseUrl: String,
 ) {
   private val webClient = WebClientWrapper(baseUrl)
-
-  private val log: org.slf4j.Logger = LoggerFactory.getLogger(this::class.java)
 
   @Autowired
   lateinit var hmppsAuthGateway: HmppsAuthGateway
@@ -59,7 +56,6 @@ class PrisonerOffenderSearchGateway(
   }
 
   fun getPrisonOffender(nomsNumber: String): Response<POSPrisoner?> {
-    log.info("looking up the person via prison search $nomsNumber")
     val result =
       webClient.request<POSPrisoner>(
         HttpMethod.GET,
@@ -70,12 +66,10 @@ class PrisonerOffenderSearchGateway(
 
     return when (result) {
       is WebClientWrapperResponse.Success -> {
-        log.info("found a match via prison search $nomsNumber")
         Response(data = result.data)
       }
 
       is WebClientWrapperResponse.Error -> {
-        log.error("An error occurred getting person from prion search: ${result.errors}")
         Response(
           data = null,
           errors = result.errors,
