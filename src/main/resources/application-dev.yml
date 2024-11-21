@@ -114,3 +114,8 @@ authorisation:
       - "/v1/persons/.*/plp/inductionScheduleUpdated"
       - "/v1/hmpps/id/by-nomis-number/[^/]*$"
       - "/v1/hmpps/id/nomis-number/by-hmpps-id/[^/]*$"
+
+logging:
+  level:
+    root: INFO
+    uk.gov.justice.digital.hmpps.hmppsintegrationapi: DEBUG
