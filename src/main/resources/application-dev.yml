@@ -50,7 +50,7 @@ authorisation:
       - "/v1/persons/.*/risks/categories"
       - "/v1/persons/.*/person-responsible-officer"
       - "/v1/persons/.*/risk-management-plan"
-      - "/v1/persons/.*plp-induction-schedule"
+      - "/v1/persons/.*/plp-induction-schedule"
       - "/v1/hmpps/reference-data"
     ctrlo:
       - "/v1/epf/person-details/.*/[^/]*$"
@@ -111,6 +111,6 @@ authorisation:
       - "/v1/persons"
       - "/v1/persons/[^/]*$"
     meganexus:
-      - "/v1/persons/.*plp-induction-schedule"
+      - "/v1/persons/.*/plp-induction-schedule"
       - "/v1/hmpps/id/by-nomis-number/[^/]*$"
       - "/v1/hmpps/id/nomis-number/by-hmpps-id/[^/]*$"
