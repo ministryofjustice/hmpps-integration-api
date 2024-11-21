@@ -11,7 +11,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 class GetHmppsIdService(
   @Autowired val getPersonService: GetPersonService,
 ) {
-
   private val log: org.slf4j.Logger = LoggerFactory.getLogger(this::class.java)
 
   fun execute(hmppsId: String): Response<HmppsId?> {
