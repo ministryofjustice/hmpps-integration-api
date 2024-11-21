@@ -27,7 +27,7 @@ class PLPController(
   @Autowired val getInductionScheduleForPersonService: GetInductionScheduleForPersonService,
   @Autowired val auditService: AuditService,
 ) {
-  @GetMapping("{encodedHmppsId}/plp/inductionScheduleUpdated")
+  @GetMapping("{encodedHmppsId}plp-induction-schedule")
   @Operation(
     summary = "Returns plp the induction schedule associated with a person.",
     responses = [

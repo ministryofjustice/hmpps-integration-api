@@ -68,7 +68,7 @@ authorisation:
       - "/v1/persons/.*/person-responsible-officer"
       - "/v1/persons/.*/risk-management-plan"
       - "/v1/persons/.*/cell-location"
-      - "/v1/persons/.*/plp/inductionScheduleUpdated"
+      - "/v1/persons/.*plp-induction-schedule"
       - "/v1/epf/person-details/.*/[^/]*$"
       - "/v1/hmpps/id/nomis-number/[^/]*$"
       - "/v1/hmpps/id/by-nomis-number/[^/]*$"
