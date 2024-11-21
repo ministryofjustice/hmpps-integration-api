@@ -8,7 +8,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationT
 class PLPIntegrationTest : IntegrationTestBase() {
   @Test
   fun `returns a persons integration schedule`() {
-    callApi("$basePath/K5995YZ/plp/inductionScheduleUpdated")
+    callApi("$basePath/K5995YZplp-induction-schedule")
       .andExpect(status().isOk)
       .andExpect(
         content().json(
