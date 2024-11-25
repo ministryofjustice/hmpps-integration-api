@@ -17,17 +17,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Sentence
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SentenceAdjustment
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SentenceKeyDates
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisAddress
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisAlert
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisBooking
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisImageDetail
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisInmateDetail
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisOffenceHistoryDetail
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisOffenderSentence
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisReasonableAdjustments
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisReferenceCode
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisSentence
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisSentenceSummary
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.*
 
 @Component
 class NomisGateway(
@@ -299,6 +289,27 @@ class NomisGateway(
       is WebClientWrapperResponse.Error -> {
         Response(
           data = emptyList(),
+          errors = result.errors,
+        )
+      }
+    }
+  }
+
+  fun getOffendersAccount(nomisNumber: String): Response<NomisPersonAccount> {
+  val result = webClient.request<NomisPersonAccount>(
+    HttpMethod.GET,
+    "/api/offenders/$nomisNumber/accounts",
+    authenticationHeader(),
+    UpstreamApi.NOMIS,
+  )
+
+    return when (result) {
+      is WebClientWrapperResponse.Success -> {
+        Response(data = result.data)
+      }
+      is WebClientWrapperResponse.Error -> {
+        Response(
+          data = NomisPersonAccount(),
           errors = result.errors,
         )
       }

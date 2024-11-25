@@ -29,6 +29,7 @@ abstract class IntegrationTestBase {
   final val nomsId = "G2996UX"
   final val crn = "AB123123"
   final val nomsIdNotInDelius = "A1234AA"
+  final val hmppsId = "A123456"
 
   companion object {
     private val hmppsAuthMockServer = HmppsAuthMockServer()

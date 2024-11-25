@@ -816,8 +816,71 @@
           }
         }
       }
+    },
+    "/api/offenders/{nomisNumber}/accounts": {
+      "get": {
+  "tags": [
+    "offender-accounts"
+  ],
+  "summary": "List of offenders accounts",
+  "description": "",
+  "operationId": "getOffendersAccounts",
+  "parameters": [
+    {
+      "name": "nomisNumber",
+      "in": "path",
+      "description": "get offenders accounts using nomsid",
+      "required": true,
+      "schema": {
+        "type": "string"
+      }
     }
-  },
+  ],
+  "responses": {
+    "200": {
+      "description": "OK",
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/Account"
+        }
+          }
+      }
+    },
+    "404": {
+      "description": "Requested resource not found.",
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      }
+    },
+    "500": {
+      "description": "Unrecoverable error occurred whilst processing request.",
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      }
+    },
+    "400": {
+      "description": "Invalid request.",
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      }
+    }
+  }
+}
+}
+},
   "components": {
     "schemas": {
       "CaseLoad": {
@@ -13959,23 +14022,28 @@
         "properties": {
           "spends": {
             "type": "number",
-            "description": "Spends sub account balance."
+            "description": "Spends sub account balance.",
+            "example": 100.0
           },
           "cash": {
             "type": "number",
-            "description": "Cash sub account balance."
+            "description": "Cash sub account balance.",
+            "example": 101.0
           },
           "savings": {
             "type": "number",
-            "description": "Saves sub account balance."
+            "description": "Saves sub account balance.",
+            "example": "20000000"
           },
           "damageObligations": {
             "type": "number",
-            "description": "Damage obligation balance."
+            "description": "Damage obligation balance.",
+            "example": 0.0
           },
           "currency": {
             "type": "string",
-            "description": "Currency of these balances."
+            "description": "Currency of these balances.",
+            "example": "GBP"
           }
         },
         "description": "Prisoner Account Balance"

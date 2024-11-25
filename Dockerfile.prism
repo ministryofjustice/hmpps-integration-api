@@ -20,6 +20,7 @@ RUN sed -i 's/\*\/\*/application\/json/g' /prismMocks/adjudications.json
 RUN sed -i 's/\*\/\*/application\/json/g' /prismMocks/assess-risks-and-needs.json
 RUN sed -i 's/\*\/\*/application\/json/g' /prismMocks/case-notes.json
 RUN sed -i 's/\*\/\*/application\/json/g' /prismMocks/prisoner-offender-search.json
+RUN sed -i 's/\*\/\*/application\/json/g' /prismMocks/prison-api.json
 
 # new files from this point on need to start with an x- followed by the port number:
 ADD https://learningandworkprogress-api-dev.hmpps.service.justice.gov.uk/v3/api-docs /prismMocks/x4020-plp-api.json

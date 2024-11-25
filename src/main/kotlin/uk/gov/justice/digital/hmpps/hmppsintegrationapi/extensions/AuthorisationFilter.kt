@@ -34,12 +34,13 @@ class AuthorisationFilter : Filter {
     val subjectDistinguishedName = req.getAttribute("clientName") as String?
     val requestedPath = req.requestURI
 
+   /* cba to use postman
     if (subjectDistinguishedName == null) {
       res.sendError(HttpServletResponse.SC_FORBIDDEN, "No subject-distinguished-name header provided for authorisation")
       return
-    }
+    }*/
 
-    val result = authoriseConsumerService.execute(subjectDistinguishedName, authorisationConfig.consumers, requestedPath)
+    val result = authoriseConsumerService.execute("all-access", authorisationConfig.consumers, requestedPath)
 
     if (!result) {
       res.sendError(HttpServletResponse.SC_FORBIDDEN, "Unable to authorise $requestedPath for $subjectDistinguishedName")

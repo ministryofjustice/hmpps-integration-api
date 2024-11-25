@@ -1,17 +1,17 @@
 services:
-  hmpps-auth.base-url: http://hmpps-auth:8080
+  hmpps-auth.base-url: http://localhost:8080
 
-  adjudications.base-url: http://prism:4010
-  assess-risks-and-needs.base-url: http://prism:4011
-  case-notes.base-url: http://prism:4012
-  create-and-vary-licence.base-url: http://prism:4013
-  manage-pom-case-api.base-url: http://prism:4014
-  ndelius.base-url: http://prism:4015
-  prison-api.base-url: http://prism:4016
-  prisoner-offender-search.base-url: http://prism:4017
-  probation-integration-epf.base-url: http://prism:4018
-  probation-offender-search.base-url: http://prism:4019
-  plp.base-url: http://prism:4020
+  adjudications.base-url: http://localhost:4010
+  assess-risks-and-needs.base-url: http://localhost:4011
+  case-notes.base-url: http://localhost:4012
+  create-and-vary-licence.base-url: http://localhost:4013
+  manage-pom-case-api.base-url: http://localhost:4014
+  ndelius.base-url: http://localhost:4015
+  prison-api.base-url: http://localhost:4016
+  prisoner-offender-search.base-url: http://localhost:4017
+  probation-integration-epf.base-url: http://localhost:4018
+  probation-offender-search.base-url: http://localhost:4019
+  plp.base-url: http://localhost:4020
 
 authorisation:
   consumers:
@@ -58,7 +58,7 @@ authorisation:
 
 hmpps.sqs:
   provider: localstack
-  localstackUrl: http://local-stack-aws:4566
+  localstackUrl: http://localhost:4566
   useWebToken: false
   queues:
     audit:
