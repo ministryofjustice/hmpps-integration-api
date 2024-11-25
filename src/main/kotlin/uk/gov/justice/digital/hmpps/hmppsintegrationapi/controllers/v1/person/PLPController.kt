@@ -13,11 +13,12 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.decodeUrlCharacters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.InductionSchedule
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ReviewSchedule
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetInductionScheduleForPersonService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetReviewScheduleForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 
 @RestController
@@ -25,9 +26,10 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditS
 @Tags(Tag(name = "persons"), Tag(name = "alerts"))
 class PLPController(
   @Autowired val getInductionScheduleForPersonService: GetInductionScheduleForPersonService,
+  @Autowired val getReviewScheduleForPersonService: GetReviewScheduleForPersonService,
   @Autowired val auditService: AuditService,
 ) {
-  @GetMapping("{encodedHmppsId}/plp-induction-schedule")
+  @GetMapping("{hmppsId}/plp-induction-schedule")
   @Operation(
     summary = "Returns plp the induction schedule associated with a person.",
     responses = [
@@ -37,15 +39,35 @@ class PLPController(
     ],
   )
   fun getInductionSchedule(
-    @Parameter(description = "A URL-encoded HMPPS identifier", example = "2008%2F0545166T") @PathVariable encodedHmppsId: String,
+    @Parameter(description = "A HMPPS id", example = "A123123") @PathVariable hmppsId: String,
   ): DataResponse<InductionSchedule> {
-    val hmppsId = encodedHmppsId.decodeUrlCharacters()
     val response = getInductionScheduleForPersonService.execute(hmppsId)
 
     if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
       throw EntityNotFoundException("Could not find person with id: $hmppsId")
     }
     auditService.createEvent("GET_INDUCTION_SCHEDULE", mapOf("hmppsId" to hmppsId))
+    return DataResponse(response.data)
+  }
+
+  @GetMapping("{hmppsId}/plp-review-schedule")
+  @Operation(
+    summary = "Returns plp the review schedule associated with a person.",
+    responses = [
+      ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found induction schedule for a person with the provided HMPPS ID."),
+      ApiResponse(responseCode = "404", content = [Content(schema = Schema(ref = "#/components/schemas/PersonNotFound"))]),
+      ApiResponse(responseCode = "500", content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]),
+    ],
+  )
+  fun getReviewSchedule(
+    @Parameter(description = "A HmppsId ", example = "A123123") @PathVariable hmppsId: String,
+  ): DataResponse<ReviewSchedule> {
+    val response = getReviewScheduleForPersonService.execute(hmppsId)
+
+    if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
+      throw EntityNotFoundException("Could not find person with id: $hmppsId")
+    }
+    auditService.createEvent("GET_REVIEW_SCHEDULE", mapOf("hmppsId" to hmppsId))
     return DataResponse(response.data)
   }
 }
