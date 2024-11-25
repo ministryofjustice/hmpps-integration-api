@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.InductionSchedule
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ReviewSchedule
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetInductionScheduleForPersonService
@@ -39,7 +40,7 @@ class PLPController(
   )
   fun getInductionSchedule(
     @Parameter(description = "A HMPPS id", example = "A123123") @PathVariable hmppsId: String,
-  ): DataResponse<ReviewSchedule> {
+  ): DataResponse<InductionSchedule> {
     val response = getInductionScheduleForPersonService.execute(hmppsId)
 
     if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {

@@ -6,6 +6,7 @@ import org.springframework.http.HttpMethod
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper.WebClientWrapperResponse
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.InductionSchedule
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ReviewSchedule
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
@@ -19,9 +20,9 @@ class PLPGateway(
   @Autowired
   lateinit var hmppsAuthGateway: HmppsAuthGateway
 
-  fun getInductionSchedule(prisonerNumber: String): Response<ReviewSchedule> {
+  fun getInductionSchedule(prisonerNumber: String): Response<InductionSchedule> {
     val result =
-      webClient.request<ReviewSchedule>(
+      webClient.request<InductionSchedule>(
         HttpMethod.GET,
         "/inductions/$prisonerNumber/induction-schedule",
         authenticationHeader(),
@@ -36,7 +37,7 @@ class PLPGateway(
 
       is WebClientWrapperResponse.Error -> {
         Response(
-          data = ReviewSchedule(),
+          data = InductionSchedule(),
           errors = result.errors,
         )
       }

@@ -3,20 +3,20 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PLPGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.InductionSchedule
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ReviewSchedule
 
 @Service
 class GetInductionScheduleForPersonService(
   @Autowired val plpGateway: PLPGateway,
   @Autowired val getPersonService: GetPersonService,
 ) {
-  fun execute(hmppsId: String): Response<ReviewSchedule> {
+  fun execute(hmppsId: String): Response<InductionSchedule> {
     val response = getPersonService.getNomisNumber(hmppsId = hmppsId)
 
     response.data?.nomisNumber?.let {
       return plpGateway.getInductionSchedule(it)
     }
-    return Response(ReviewSchedule(), response.errors)
+    return Response(InductionSchedule(), response.errors)
   }
 }
