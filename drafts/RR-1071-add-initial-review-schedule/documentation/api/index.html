@@ -662,14 +662,19 @@
 <pre><code>{
   "data": {
     "deadlineDate": "2023-09-01",
-    "nomisNumber": "string",
-    "description": "string"
+    "status": "SCHEDULED",
+    "calculationRule": "NEW_PRISON_ADMISSION",
+    "nomisNumber": "A1234BC",
+    "systemUpdatedBy": "John Smith",
+    "systemUpdatedAt": "2023-06-19T09:39:44Z",
+    "inductionPerformedBy": "Fred Jones",
+    "inductionPerformedAt": "2023-06-30"
   }
 }</code></pre>
 
 </td>
 <td>
-<a href='#schema-dataresponsereviewschedule'>DataResponseReviewSchedule</a>
+<a href='#schema-dataresponseinductionschedule'>DataResponseInductionSchedule</a>
 </td>
 </tr>
 
@@ -5177,6 +5182,128 @@
 <td>string</td>
 <td>false</td>
 <td></td>
+<td>
+  
+</td>
+</tr>
+
+</tbody>
+</table>
+
+<h3 id="schema-dataresponseinductionschedule">DataResponseInductionSchedule</h3>
+
+
+<table class='schema-dataresponseinductionschedule'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>data</td>
+<td>object</td>
+<td>true</td>
+<td></td>
+<td>
+  <a href='#schema-inductionschedule'>InductionSchedule</a>
+</td>
+</tr>
+
+</tbody>
+</table>
+
+<h3 id="schema-inductionschedule">InductionSchedule</h3>
+
+
+<table class='schema-inductionschedule'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>deadlineDate</td>
+<td>string</td>
+<td>false</td>
+<td><p>An ISO-8601 date representing when the Induction should be completed by.</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>status</td>
+<td>string</td>
+<td>false</td>
+<td><p>The current status of the Induction Schedule</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>calculationRule</td>
+<td>string</td>
+<td>false</td>
+<td><p>The Induction Schedule rule used to determine deadline date.</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>nomisNumber</td>
+<td>string</td>
+<td>false</td>
+<td><p>The Nomis number of the person.</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>systemUpdatedBy</td>
+<td>string</td>
+<td>false</td>
+<td><p>The name of the person who used the PLP system to update the Induction Schedule, or &lsquo;system&rsquo; for system generated updates.</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>systemUpdatedAt</td>
+<td>string</td>
+<td>false</td>
+<td><p>An ISO-8601 timestamp representing the time the PLP system was used to update the Induction Schedule.</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>inductionPerformedBy</td>
+<td>string</td>
+<td>false</td>
+<td><p>The name of the person who performed the Induction with the prisoner. In the case of system generated updates or setting an exemption this field will not be present.</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>inductionPerformedAt</td>
+<td>string</td>
+<td>false</td>
+<td><p>An ISO-8601 date representing when the Induction was performed with the prisoner. In the case of system generated updates this field will not be present.</p>
+</td>
 <td>
   
 </td>
