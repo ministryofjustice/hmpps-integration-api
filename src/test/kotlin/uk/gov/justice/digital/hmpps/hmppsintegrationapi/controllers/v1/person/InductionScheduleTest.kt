@@ -4,11 +4,11 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Test
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ReviewSchedule
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.InductionSchedule
 import java.time.Instant
 import java.time.LocalDate
 
-class ReviewScheduleTest {
+class InductionScheduleTest {
   private val objectMapper =
     ObjectMapper().apply {
       // Register the custom deserializer
@@ -34,7 +34,7 @@ class ReviewScheduleTest {
         """
 
     // When
-    val result = objectMapper.readValue(json, ReviewSchedule::class.java)
+    val result = objectMapper.readValue(json, InductionSchedule::class.java)
 
     // Then
     assertEquals("A1234BC", result.nomisNumber)
@@ -57,7 +57,7 @@ class ReviewScheduleTest {
         """
 
     // When
-    val result = objectMapper.readValue(json, ReviewSchedule::class.java)
+    val result = objectMapper.readValue(json, InductionSchedule::class.java)
 
     // Then
     assertEquals("A1234BC", result.nomisNumber)
@@ -87,7 +87,7 @@ class ReviewScheduleTest {
         """
 
     // When
-    val result = objectMapper.readValue(json, ReviewSchedule::class.java)
+    val result = objectMapper.readValue(json, InductionSchedule::class.java)
 
     // Then
     assertEquals("A1234BC", result.nomisNumber)

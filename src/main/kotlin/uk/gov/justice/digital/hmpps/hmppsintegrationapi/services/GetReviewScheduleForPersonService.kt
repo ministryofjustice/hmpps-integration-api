@@ -16,10 +16,13 @@ class GetReviewScheduleForPersonService(
     val response = getPersonService.getNomisNumber(hmppsId = hmppsId)
 
     response.data?.nomisNumber?.let {
-      return Response(ReviewSchedule(
-        deadlineDate = LocalDate.now().plusMonths(1),
-        nomisNumber = it,
-        description = "This is a hardcoded response."))
+      return Response(
+        ReviewSchedule(
+          deadlineDate = LocalDate.now().plusMonths(1),
+          nomisNumber = it,
+          description = "This is a hardcoded response.",
+        ),
+      )
 //      return plpGateway.getReviewSchedule(it) // <-- this will be call the PLP service once the downstream code is written
     }
     return Response(ReviewSchedule(), response.errors)
