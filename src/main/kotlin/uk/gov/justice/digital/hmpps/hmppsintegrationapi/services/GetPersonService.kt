@@ -106,3 +106,7 @@ class GetPersonService(
 
   fun getPersonFromNomis(nomisNumber: String) = prisonerOffenderSearchGateway.getPrisonOffender(nomisNumber)
 }
+
+fun isNomsNumber(id: String?): Boolean {
+  return id?.matches(Regex("^[A-Z]\\d{4}[A-Z]{2}+$")) == true
+}
