@@ -13,8 +13,8 @@ class GetCellLocationForPersonService(
 ) {
   fun execute(hmppsId: String): Response<CellLocation?> {
 
-    val prisonResponse = when {
-      isNomsNumber(hmppsId) -> prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber = hmppsId)
+    val prisonResponse = when (isNomsNumber(hmppsId)) {
+      true -> prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber = hmppsId)
       else -> {
         val personResponse = getPersonService.execute(hmppsId = hmppsId)
 
