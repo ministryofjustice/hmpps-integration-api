@@ -12,24 +12,24 @@ class GetCellLocationForPersonService(
   @Autowired val prisonerOffenderSearchGateway: PrisonerOffenderSearchGateway,
 ) {
   fun execute(hmppsId: String): Response<CellLocation?> {
+    val prisonResponse =
+      when (isNomsNumber(hmppsId)) {
+        true -> prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber = hmppsId)
+        else -> {
+          val personResponse = getPersonService.execute(hmppsId = hmppsId)
 
-    val prisonResponse = when (isNomsNumber(hmppsId)) {
-      true -> prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber = hmppsId)
-      else -> {
-        val personResponse = getPersonService.execute(hmppsId = hmppsId)
+          if (personResponse.data == null) {
+            return Response(
+              data = CellLocation(),
+              errors = personResponse.errors,
+            )
+          }
 
-        if (personResponse.data == null) {
-          return Response(
-            data = CellLocation(),
-            errors = personResponse.errors
-          )
-        }
-
-        personResponse.data.identifiers.nomisNumber?.let {
-          prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber = it)
+          personResponse.data.identifiers.nomisNumber?.let {
+            prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber = it)
+          }
         }
       }
-    }
 
     val cellLocation =
       if (prisonResponse?.data?.inOutStatus == "IN") {
@@ -40,8 +40,7 @@ class GetCellLocationForPersonService(
 
     return Response(
       data = cellLocation,
-      errors = prisonResponse?.errors ?: emptyList()
+      errors = prisonResponse?.errors ?: emptyList(),
     )
-
   }
 }

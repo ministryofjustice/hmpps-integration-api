@@ -82,12 +82,12 @@ internal class GetCellLocationForPersonServiceTest(
           Response(
             data = null,
             errors =
-            listOf(
-              UpstreamApiError(
-                causedBy = UpstreamApi.PRISONER_OFFENDER_SEARCH,
-                type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+              listOf(
+                UpstreamApiError(
+                  causedBy = UpstreamApi.PRISONER_OFFENDER_SEARCH,
+                  type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+                ),
               ),
-            ),
           ),
         )
 
