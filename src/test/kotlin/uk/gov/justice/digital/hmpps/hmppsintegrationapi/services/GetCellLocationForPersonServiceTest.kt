@@ -8,8 +8,8 @@ import org.mockito.internal.verification.VerificationModeFactory
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
-import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.context.ContextConfiguration
+import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CellLocation
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Identifiers
@@ -24,8 +24,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffenders
   classes = [GetCellLocationForPersonService::class],
 )
 internal class GetCellLocationForPersonServiceTest(
-  @MockBean val getPersonService: GetPersonService,
-  @MockBean val prisonerOffenderSearchGateway: PrisonerOffenderSearchGateway,
+  @MockitoBean val getPersonService: GetPersonService,
+  @MockitoBean val prisonerOffenderSearchGateway: PrisonerOffenderSearchGateway,
   private val getCellLocationForPersonService: GetCellLocationForPersonService,
 ) : DescribeSpec(
     {
@@ -74,6 +74,27 @@ internal class GetCellLocationForPersonServiceTest(
 
         response.errors.shouldHaveSize(1)
         response.errors.first().causedBy.shouldBe(UpstreamApi.PROBATION_OFFENDER_SEARCH)
+        response.errors.first().type.shouldBe(UpstreamApiError.Type.ENTITY_NOT_FOUND)
+      }
+
+      it("returns the upstream error when nomis id is not found") {
+        whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomisNumber)).thenReturn(
+          Response(
+            data = null,
+            errors =
+              listOf(
+                UpstreamApiError(
+                  causedBy = UpstreamApi.PRISONER_OFFENDER_SEARCH,
+                  type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+                ),
+              ),
+          ),
+        )
+
+        val response = getCellLocationForPersonService.execute(nomisNumber)
+
+        response.errors.shouldHaveSize(1)
+        response.errors.first().causedBy.shouldBe(UpstreamApi.PRISONER_OFFENDER_SEARCH)
         response.errors.first().type.shouldBe(UpstreamApiError.Type.ENTITY_NOT_FOUND)
       }
     },

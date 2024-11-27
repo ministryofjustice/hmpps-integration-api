@@ -1,6 +1,8 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.person
 
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.ValueSource
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationTestBase
@@ -44,9 +46,10 @@ class PersonIntegrationTest : IntegrationTestBase() {
       )
   }
 
-  @Test
-  fun `returns person cell location if in prison`() {
-    callApi("$basePath/$pnc/cell-location")
+  @ParameterizedTest
+  @ValueSource(strings = ["2004%2F13116M", "G2996UX"])
+  fun `returns person cell location if in prison`(hmppsId: String) {
+    callApi("$basePath/$hmppsId/cell-location")
       .andExpect(status().isOk)
       .andExpect(
         content().json(

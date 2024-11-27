@@ -12,11 +12,23 @@ class GetCellLocationForPersonService(
   @Autowired val prisonerOffenderSearchGateway: PrisonerOffenderSearchGateway,
 ) {
   fun execute(hmppsId: String): Response<CellLocation?> {
-    val personResponse = getPersonService.execute(hmppsId = hmppsId)
-
     val prisonResponse =
-      personResponse.data?.identifiers?.nomisNumber?.let {
-        prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber = it)
+      when (isNomsNumber(hmppsId)) {
+        true -> prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber = hmppsId)
+        else -> {
+          val personResponse = getPersonService.execute(hmppsId = hmppsId)
+
+          if (personResponse.data == null) {
+            return Response(
+              data = CellLocation(),
+              errors = personResponse.errors,
+            )
+          }
+
+          personResponse.data.identifiers.nomisNumber?.let {
+            prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber = it)
+          }
+        }
       }
 
     val cellLocation =
@@ -28,7 +40,7 @@ class GetCellLocationForPersonService(
 
     return Response(
       data = cellLocation,
-      errors = personResponse.errors + (prisonResponse?.errors ?: emptyList()),
+      errors = prisonResponse?.errors ?: emptyList(),
     )
   }
 }
