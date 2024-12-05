@@ -138,7 +138,7 @@ internal class GetPersonServiceTest(
 
     it("returns error when invalid hmppsId is provided") {
       val invalidHmppsId = "invalid_id"
-      val expectedError = UpstreamApiError(UpstreamApi.NOMIS, UpstreamApiError.Type.BAD_REQUEST, "Invalid HMPPS ID: $hmppsId")
+      val expectedError = UpstreamApiError(UpstreamApi.NOMIS, UpstreamApiError.Type.BAD_REQUEST, "Invalid HMPPS ID: $invalidHmppsId")
       val result = getPersonService.getPrisoner(invalidHmppsId)
 
       result.data.shouldBe(null)
