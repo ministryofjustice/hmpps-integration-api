@@ -157,12 +157,11 @@ class PersonController(
     return DataResponse(response.data)
   }
 
-  private fun isValidISODateFormat(dateString: String): Boolean {
-    return try {
+  private fun isValidISODateFormat(dateString: String): Boolean =
+    try {
       LocalDate.parse(dateString, DateTimeFormatter.ISO_DATE)
       true
     } catch (e: Exception) {
       false
     }
-  }
 }

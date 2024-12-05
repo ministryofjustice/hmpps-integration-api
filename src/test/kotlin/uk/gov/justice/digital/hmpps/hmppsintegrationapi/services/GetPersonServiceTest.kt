@@ -1,23 +1,20 @@
+@file:Suppress("ktlint:standard:no-wildcard-imports")
+
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.types.shouldBeTypeOf
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
-import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.context.ContextConfiguration
+import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ProbationOffenderSearchGateway
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Identifiers
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.OffenderSearchResponse
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonOnProbation
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.*
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSPrisoner
 
 @ContextConfiguration(
@@ -25,8 +22,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffenders
   classes = [GetPersonService::class],
 )
 internal class GetPersonServiceTest(
-  @MockBean val prisonerOffenderSearchGateway: PrisonerOffenderSearchGateway,
-  @MockBean val probationOffenderSearchGateway: ProbationOffenderSearchGateway,
+  @MockitoBean val prisonerOffenderSearchGateway: PrisonerOffenderSearchGateway,
+  @MockitoBean val probationOffenderSearchGateway: ProbationOffenderSearchGateway,
   private val getPersonService: GetPersonService,
 ) : DescribeSpec({
     val hmppsId = "2003/13116M"
@@ -99,8 +96,70 @@ internal class GetPersonServiceTest(
 
       val result = getPersonService.getCombinedDataForPerson(hmppsId)
       result.data shouldBe OffenderSearchResponse(prisonerOffenderSearch = null, probationOffenderSearch = personFromProbationOffenderSearch)
-      result.errors.first().causedBy.shouldBe(UpstreamApi.PRISONER_OFFENDER_SEARCH)
-      result.errors.first().type.shouldBe(UpstreamApiError.Type.ENTITY_NOT_FOUND)
-      result.errors.first().description.shouldBe("MockError")
+      result.errors
+        .first()
+        .causedBy
+        .shouldBe(UpstreamApi.PRISONER_OFFENDER_SEARCH)
+      result.errors
+        .first()
+        .type
+        .shouldBe(UpstreamApiError.Type.ENTITY_NOT_FOUND)
+      result.errors
+        .first()
+        .description
+        .shouldBe("MockError")
+    }
+
+    it("returns a prisoner when valid hmppsId is provided") {
+      val validHmppsId = "G2996UX"
+      val person = Person(firstName = "Sam", lastName = "Mills")
+      whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber = "G2996UX")).thenReturn(
+        Response(data = POSPrisoner(firstName = "Sam", lastName = "Mills")),
+      )
+
+      val result = getPersonService.getPrisoner(validHmppsId)
+
+      result.data.shouldBeTypeOf<Person>()
+      result.data!!.firstName.shouldBe(person.firstName)
+      result.data!!.lastName.shouldBe(person.lastName)
+      result.errors.shouldBe(emptyList())
+    }
+
+    it("returns null when prisoner is not found") {
+      val zeroHitHmppsId = "G2996UX"
+      val prisonResponse: Response<POSPrisoner?> = Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.PRISONER_OFFENDER_SEARCH, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found")))
+
+      whenever(prisonerOffenderSearchGateway.getPrisonOffender("G2996UX")).thenReturn(Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.PRISONER_OFFENDER_SEARCH, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found"))))
+      val result = getPersonService.getPrisoner(zeroHitHmppsId)
+
+      result.data.shouldBe(null)
+      result.errors.shouldBe(prisonResponse.errors)
+    }
+
+    it("returns error when invalid hmppsId is provided") {
+      val invalidHmppsId = "invalid_id"
+      val expectedError = UpstreamApiError(UpstreamApi.NOMIS, UpstreamApiError.Type.BAD_REQUEST, "Invalid HMPPS ID: $hmppsId")
+      val result = getPersonService.getPrisoner(invalidHmppsId)
+
+      result.data.shouldBe(null)
+      result.errors.shouldBe(listOf(expectedError))
+    }
+
+    it("returns error when nomis number is not found") {
+      val hmppsIdInCrnFormat = "AB123123"
+      val expectedError =
+        listOf(
+          UpstreamApiError(UpstreamApi.NOMIS, UpstreamApiError.Type.ENTITY_NOT_FOUND, "NOMIS number not found"),
+          UpstreamApiError(causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH, type = UpstreamApiError.Type.ENTITY_NOT_FOUND, description = "NOMIS number not found"),
+        )
+
+      whenever(probationOffenderSearchGateway.getPerson(id = hmppsIdInCrnFormat)).thenReturn(
+        Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.NOMIS, UpstreamApiError.Type.ENTITY_NOT_FOUND, "NOMIS number not found"))),
+      )
+
+      val result = getPersonService.getPrisoner(hmppsIdInCrnFormat)
+
+      result.data.shouldBe(null)
+      result.errors.shouldBe(expectedError)
     }
   })
