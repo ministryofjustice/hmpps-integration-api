@@ -61,6 +61,7 @@ authorisation:
       - "/health/liveness"
       - "/info"
       - "/v1/hmpps/reference-data"
+      - "/v1/prison/prisoners/[^/]*$"
     config-test:
       - "/v1/config/authorisation"
     all-access:

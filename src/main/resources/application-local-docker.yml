@@ -53,6 +53,7 @@ authorisation:
       - "/health/readiness"
       - "/health/liveness"
       - "/info"
+      - "/v1/prison/prisoners/[^/]*$"
     config-test:
       - "/v1/config/authorisation"
     all-access:
