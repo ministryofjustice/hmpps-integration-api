@@ -27,7 +27,7 @@ class PrisonController(
   @Autowired val getPersonService: GetPersonService,
   @Autowired val auditService: AuditService,
 ) {
-  @GetMapping("/prisoners/{encodedHmppsId}")
+  @GetMapping("/prisoners/{hmppsId}")
   @Operation(
     summary = "Returns a single prisoners details given an hmppsId, does not query for a probation person.",
     responses = [
@@ -37,9 +37,9 @@ class PrisonController(
     ],
   )
   fun getPerson(
-    @Parameter(description = "A HMPPS identifier", example = "2008%2F0545166T", required = true) @PathVariable encodedHmppsId: String,
+    @Parameter(description = "A HMPPS identifier", example = "2008%2F0545166T", required = true) @PathVariable hmppsId: String,
   ): DataResponse<Person?> {
-    val decodedHmppsId = encodedHmppsId.decodeUrlCharacters()
+    val decodedHmppsId = hmppsId.decodeUrlCharacters()
 
     val response = getPersonService.getPrisoner(decodedHmppsId)
 

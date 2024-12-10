@@ -116,17 +116,17 @@ class GetPersonService(
     }
 
     val nomisNumber = prisonerNomisNumber.data?.nomisNumber
-    if (nomisNumber == null) {
-      return Response(
-        data = null,
-        errors = prisonerNomisNumber.errors,
-      )
-    }
 
     val prisonResponse =
       try {
-        getPersonFromNomis(nomisNumber)
+        getPersonFromNomis(nomisNumber!!)
       } catch (e: RuntimeException) {
+        if (nomisNumber == null) {
+          return Response(
+            data = null,
+            errors = prisonerNomisNumber.errors,
+          )
+        }
         return Response(
           data = null,
           errors = listOf(UpstreamApiError(description = e.message ?: "Service error", type = UpstreamApiError.Type.INTERNAL_SERVER_ERROR, causedBy = UpstreamApi.PRISONER_OFFENDER_SEARCH)),
