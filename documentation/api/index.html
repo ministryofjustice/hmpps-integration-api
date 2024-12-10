@@ -148,6 +148,9 @@
         <a href="../../documentation/api/index.html#servers"><span>Servers</span></a>
       </li>
       <li>
+        <a href="../../documentation/api/index.html#v1-prison-prisoners-hmppsid"><span>/v1/prison/prisoners/{hmppsId}</span></a>
+      </li>
+      <li>
         <a href="../../documentation/api/index.html#v1-persons"><span>/v1/persons</span></a>
       </li>
       <li>
@@ -291,6 +294,143 @@
     <a href="https://integration-api.hmpps.service.justice.gov.uk">https://integration-api.hmpps.service.justice.gov.uk</a>
   
   </div>
+
+
+
+<h2 id="v1-prison-prisoners-hmppsid">/v1/prison/prisoners/{hmppsId}</h2>
+
+<h3 id="v1-prison-prisoners-hmppsid-get">get</h3>
+
+  <p><em>Returns a single prisoners details given an hmppsId, does not query for a probation person.</em></p>
+
+
+
+
+<h4 id="v1-prison-prisoners-hmppsid-get-parameters">Parameters</h4>
+<table>
+<thead>
+<tr><th>Parameter</th><th>In</th><th>Type</th><th>Required</th><th>Description</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>hmppsId</td>
+<td>path</td>
+<td>string</td>
+<td>true</td>
+<td><p>A HMPPS identifier</p>
+
+
+</td>
+</tr>
+
+</tbody>
+</table>
+
+
+
+
+<h4 id="v1-prison-prisoners-hmppsid-get-responses">Responses</h4>
+<table>
+<thead>
+<tr><th>Status</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>200</td>
+<td>
+<p>Successfully found a prisoner with the provided HMPPS ID.</p>
+
+
+
+<pre><code>{
+  "data": {
+    "firstName": "John",
+    "lastName": "Morgan",
+    "middleName": "John",
+    "dateOfBirth": "1965-12-01",
+    "gender": "Male",
+    "ethnicity": "White: Eng./Welsh/Scot./N.Irish/British",
+    "aliases": [
+      {
+        "firstName": "John",
+        "lastName": "Marston",
+        "middleName": "Marston",
+        "dateOfBirth": "1965-12-01",
+        "gender": "Male",
+        "ethnicity": "Prefer not to say"
+      }
+    ],
+    "identifiers": {
+      "nomisNumber": "A1234AA",
+      "croNumber": "SF80/655108T",
+      "deliusCrn": "X00001"
+    },
+    "pncId": "string",
+    "hmppsId": "2008/0545166T",
+    "contactDetails": {
+      "phoneNumbers": [
+        {
+          "number": "079123456789",
+          "type": "TELEPHONE"
+        }
+      ],
+      "emails": [
+        {
+        }
+      ]
+    }
+  }
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-dataresponseperson'>DataResponsePerson</a>
+</td>
+</tr>
+
+<tr>
+<td>404</td>
+<td>
+<p>Not Found</p>
+
+
+
+<pre><code>{
+  "status": 404,
+  "userMessage": "404 Not found error: Could not find person with HMPPS id: 2003/0011991D.",
+  "developerMessage": "Could not find person with HMPPS id: 2003/0011991D."
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-personnotfound'>PersonNotFound</a>
+</td>
+</tr>
+
+<tr>
+<td>500</td>
+<td>
+<p>Internal Server Error</p>
+
+
+
+<pre><code>{
+  "status": 500,
+  "userMessage": "Internal Server Error",
+  "developerMessage": "Unable to complete request as an upstream service is not responding."
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-internalservererror'>InternalServerError</a>
+</td>
+</tr>
+
+</tbody>
+</table>
+
 
 
 
@@ -4804,6 +4944,28 @@
 </tbody>
 </table>
 
+<h3 id="schema-dataresponseperson">DataResponsePerson</h3>
+
+
+<table class='schema-dataresponseperson'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>data</td>
+<td>object</td>
+<td>true</td>
+<td></td>
+<td>
+  <a href='#schema-person'>Person</a>
+</td>
+</tr>
+
+</tbody>
+</table>
+
 <h3 id="schema-identifiers">Identifiers</h3>
 <p>Other unique identifiers for a person.</p>
 
@@ -4841,116 +5003,6 @@
 <td>string</td>
 <td>false</td>
 <td><p>A Case Reference Number from Delius.</p>
-</td>
-<td>
-  
-</td>
-</tr>
-
-</tbody>
-</table>
-
-<h3 id="schema-paginatedresponseperson">PaginatedResponsePerson</h3>
-
-
-<table class='schema-paginatedresponseperson'>
-<thead>
-<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
-</thead>
-<tbody>
-
-<tr>
-<td>data</td>
-<td>array</td>
-<td>true</td>
-<td></td>
-<td>
-  <a href='#schema-person'>Person</a>
-</td>
-</tr>
-
-<tr>
-<td>pagination</td>
-<td>object</td>
-<td>true</td>
-<td></td>
-<td>
-  <a href='#schema-pagination'>Pagination</a>
-</td>
-</tr>
-
-</tbody>
-</table>
-
-<h3 id="schema-pagination">Pagination</h3>
-
-
-<table class='schema-pagination'>
-<thead>
-<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
-</thead>
-<tbody>
-
-<tr>
-<td>isLastPage</td>
-<td>boolean</td>
-<td>true</td>
-<td><p>Is the current page the last one?</p>
-</td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>count</td>
-<td>integer</td>
-<td>true</td>
-<td><p>The number of results in <code>data</code> for the current page</p>
-</td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>page</td>
-<td>integer</td>
-<td>true</td>
-<td><p>The current page number</p>
-</td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>perPage</td>
-<td>integer</td>
-<td>true</td>
-<td><p>The maximum number of results in <code>data</code> for a page</p>
-</td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>totalCount</td>
-<td>integer</td>
-<td>true</td>
-<td><p>The total number of results in <code>data</code> across all pages</p>
-</td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>totalPages</td>
-<td>integer</td>
-<td>true</td>
-<td><p>The total number of pages</p>
 </td>
 <td>
   
@@ -5116,6 +5168,116 @@
 <td>string</td>
 <td>false</td>
 <td><p>The type of number</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+</tbody>
+</table>
+
+<h3 id="schema-paginatedresponseperson">PaginatedResponsePerson</h3>
+
+
+<table class='schema-paginatedresponseperson'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>data</td>
+<td>array</td>
+<td>true</td>
+<td></td>
+<td>
+  <a href='#schema-person'>Person</a>
+</td>
+</tr>
+
+<tr>
+<td>pagination</td>
+<td>object</td>
+<td>true</td>
+<td></td>
+<td>
+  <a href='#schema-pagination'>Pagination</a>
+</td>
+</tr>
+
+</tbody>
+</table>
+
+<h3 id="schema-pagination">Pagination</h3>
+
+
+<table class='schema-pagination'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>isLastPage</td>
+<td>boolean</td>
+<td>true</td>
+<td><p>Is the current page the last one?</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>count</td>
+<td>integer</td>
+<td>true</td>
+<td><p>The number of results in <code>data</code> for the current page</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>page</td>
+<td>integer</td>
+<td>true</td>
+<td><p>The current page number</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>perPage</td>
+<td>integer</td>
+<td>true</td>
+<td><p>The maximum number of results in <code>data</code> for a page</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>totalCount</td>
+<td>integer</td>
+<td>true</td>
+<td><p>The total number of results in <code>data</code> across all pages</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>totalPages</td>
+<td>integer</td>
+<td>true</td>
+<td><p>The total number of pages</p>
 </td>
 <td>
   
