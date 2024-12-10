@@ -44,8 +44,8 @@ class GetPersonService(
    * When it is a noms number then return it.
    * When it is a CRN look up the prisoner in probation offender search and then return it
    */
-  fun getNomisNumber(hmppsId: String): Response<NomisNumber?> {
-    return when (identifyHmppsId(hmppsId)) {
+  fun getNomisNumber(hmppsId: String): Response<NomisNumber?> =
+    when (identifyHmppsId(hmppsId)) {
       IdentifierType.NOMS -> Response(data = NomisNumber(hmppsId))
 
       IdentifierType.CRN -> {
@@ -82,7 +82,6 @@ class GetPersonService(
             ),
         )
     }
-  }
 
   fun getCombinedDataForPerson(hmppsId: String): Response<OffenderSearchResponse> {
     val probationResponse = probationOffenderSearchGateway.getPerson(id = hmppsId)
@@ -105,8 +104,47 @@ class GetPersonService(
   }
 
   fun getPersonFromNomis(nomisNumber: String) = prisonerOffenderSearchGateway.getPrisonOffender(nomisNumber)
+
+  fun getPrisoner(hmppsId: String): Response<Person?> {
+    val prisonerNomisNumber = getNomisNumber(hmppsId)
+
+    if (prisonerNomisNumber.errors.isNotEmpty()) {
+      return Response(
+        data = null,
+        errors = prisonerNomisNumber.errors,
+      )
+    }
+
+    val nomisNumber = prisonerNomisNumber.data?.nomisNumber
+
+    val prisonResponse =
+      try {
+        getPersonFromNomis(nomisNumber!!)
+      } catch (e: RuntimeException) {
+        if (nomisNumber == null) {
+          return Response(
+            data = null,
+            errors = prisonerNomisNumber.errors,
+          )
+        }
+        return Response(
+          data = null,
+          errors = listOf(UpstreamApiError(description = e.message ?: "Service error", type = UpstreamApiError.Type.INTERNAL_SERVER_ERROR, causedBy = UpstreamApi.PRISONER_OFFENDER_SEARCH)),
+        )
+      }
+
+    if (prisonResponse.errors.isNotEmpty()) {
+      return Response(
+        data = null,
+        errors = prisonResponse.errors,
+      )
+    }
+
+    return Response(
+      data = prisonResponse.data?.toPerson(),
+      errors = prisonResponse.errors,
+    )
+  }
 }
 
-fun isNomsNumber(id: String?): Boolean {
-  return id?.matches(Regex("^[A-Z]\\d{4}[A-Z]{2}+$")) == true
-}
+fun isNomsNumber(id: String?): Boolean = id?.matches(Regex("^[A-Z]\\d{4}[A-Z]{2}+$")) == true

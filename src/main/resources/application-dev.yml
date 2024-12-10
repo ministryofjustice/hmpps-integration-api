@@ -108,6 +108,7 @@ authorisation:
       - "/v1/persons/.*/sentences/latest-key-dates-and-adjustments"
       - "/v1/persons/.*/status-information"
       - "/v1/persons/[^/]*$"
+      - "/v1/prison/prisoners/[^/]*$"
     kilco:
       - "/v1/persons"
       - "/v1/persons/[^/]*$"

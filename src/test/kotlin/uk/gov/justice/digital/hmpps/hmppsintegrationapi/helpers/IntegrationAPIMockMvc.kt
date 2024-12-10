@@ -23,7 +23,5 @@ class IntegrationAPIMockMvc(
     return mockMvc.perform(MockMvcRequestBuilders.get(path).header("subject-distinguished-name", subjectDistinguishedName)).andReturn()
   }
 
-  fun performUnAuthorised(path: String): MvcResult {
-    return mockMvc.perform(MockMvcRequestBuilders.get(path)).andReturn()
-  }
+  fun performUnAuthorised(path: String): MvcResult = mockMvc.perform(MockMvcRequestBuilders.get(path)).andReturn()
 }
