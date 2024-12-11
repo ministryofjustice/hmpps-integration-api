@@ -11,9 +11,9 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
-import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
+import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
@@ -33,8 +33,8 @@ import java.time.LocalDate
 @ActiveProfiles("test")
 internal class OffencesControllerTest(
   @Autowired var springMockMvc: MockMvc,
-  @MockBean val getOffencesForPersonService: GetOffencesForPersonService,
-  @MockBean val auditService: AuditService,
+  @MockitoBean val getOffencesForPersonService: GetOffencesForPersonService,
+  @MockitoBean val auditService: AuditService,
 ) : DescribeSpec(
     {
       val hmppsId = "9999/11111A"

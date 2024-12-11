@@ -7,8 +7,8 @@ import org.mockito.internal.verification.VerificationModeFactory
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
-import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.context.ContextConfiguration
+import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.CaseNotesGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.filters.CaseNoteFilter
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CaseNote
@@ -21,8 +21,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
   classes = [GetCaseNotesForPersonService::class],
 )
 class GetCaseNotesForPersonServiceTest(
-  @MockBean val caseNotesGateway: CaseNotesGateway,
-  @MockBean val getPersonService: GetPersonService,
+  @MockitoBean val caseNotesGateway: CaseNotesGateway,
+  @MockitoBean val getPersonService: GetPersonService,
   private val getCaseNoteForPersonService: GetCaseNotesForPersonService,
 ) : DescribeSpec(
     {

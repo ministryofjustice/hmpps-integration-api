@@ -6,8 +6,8 @@ import org.mockito.internal.verification.VerificationModeFactory
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
-import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.context.ContextConfiguration
+import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.RiskManagementGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNeeds.CrnRiskManagementPlan
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNeeds.CrnRiskManagementPlans
@@ -20,7 +20,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
   classes = [GetRiskManagementPlansForCrnService::class],
 )
 class GetRiskManagementPlansForCrnServiceTest(
-  @MockBean val riskManagementGateway: RiskManagementGateway,
+  @MockitoBean val riskManagementGateway: RiskManagementGateway,
   private val serviceUnderTest: GetRiskManagementPlansForCrnService,
 ) : DescribeSpec({
 

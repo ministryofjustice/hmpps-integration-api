@@ -5,8 +5,8 @@ import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
 import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
-import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.context.ContextConfiguration
+import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ProbationIntegrationEPFGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CaseDetail
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
@@ -16,7 +16,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
   classes = [GetEPFPersonDetailService::class],
 )
 internal class GetEPFPersonDetailServiceTest(
-  @MockBean val probationIntegrationEPFGateway: ProbationIntegrationEPFGateway,
+  @MockitoBean val probationIntegrationEPFGateway: ProbationIntegrationEPFGateway,
   private val getEPFPersonDetailService: GetEPFPersonDetailService,
 ) : DescribeSpec(
     {

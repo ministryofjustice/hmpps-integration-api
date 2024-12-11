@@ -8,10 +8,10 @@ import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
 import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
-import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
+import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.NDeliusApiMockServer
@@ -23,7 +23,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.NomisApiMock
   classes = [ReferenceDataService::class],
 )
 class ReferenceDataServiceTest(
-  @MockBean val hmppsAuthGateway: HmppsAuthGateway,
+  @MockitoBean val hmppsAuthGateway: HmppsAuthGateway,
   private val referenceDataService: ReferenceDataService,
   private val objectMapper: ObjectMapper = ObjectMapper().registerKotlinModule(),
 ) : DescribeSpec(

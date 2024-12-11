@@ -9,9 +9,9 @@ import org.mockito.Mockito
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
-import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
+import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.MockMvcExtensions.contentAsJson
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
@@ -22,7 +22,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.ReferenceDataSe
 @ActiveProfiles("test")
 internal class ReferenceDataControllerTests(
   @Autowired var springMockMvc: MockMvc,
-  @MockBean val referenceDataService: ReferenceDataService,
+  @MockitoBean val referenceDataService: ReferenceDataService,
   val objectMapper: ObjectMapper = ObjectMapper().registerKotlinModule(),
 ) : DescribeSpec(
     {

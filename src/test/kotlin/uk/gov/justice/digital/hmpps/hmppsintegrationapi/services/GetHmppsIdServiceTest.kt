@@ -5,8 +5,8 @@ import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
 import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
-import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.context.ContextConfiguration
+import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HmppsId
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Identifiers
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
@@ -17,7 +17,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
   classes = [GetHmppsIdService::class],
 )
 internal class GetHmppsIdServiceTest(
-  @MockBean val getPersonService: GetPersonService,
+  @MockitoBean val getPersonService: GetPersonService,
   private val getHmppsIdService: GetHmppsIdService,
 ) : DescribeSpec(
     {

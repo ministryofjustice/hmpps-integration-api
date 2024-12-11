@@ -8,8 +8,8 @@ import org.mockito.internal.verification.VerificationModeFactory
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
-import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.context.ContextConfiguration
+import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.AssessRisksAndNeedsGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.GeneralPredictor
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.GroupReconviction
@@ -29,8 +29,8 @@ import java.time.LocalDateTime
   classes = [GetRiskPredictorScoresForPersonService::class],
 )
 internal class GetRiskPredictorScoresForPersonServiceTest(
-  @MockBean val assessRisksAndNeedsGateway: AssessRisksAndNeedsGateway,
-  @MockBean val getPersonService: GetPersonService,
+  @MockitoBean val assessRisksAndNeedsGateway: AssessRisksAndNeedsGateway,
+  @MockitoBean val getPersonService: GetPersonService,
   private val getRiskPredictorScoresForPersonService: GetRiskPredictorScoresForPersonService,
 ) : DescribeSpec(
     {

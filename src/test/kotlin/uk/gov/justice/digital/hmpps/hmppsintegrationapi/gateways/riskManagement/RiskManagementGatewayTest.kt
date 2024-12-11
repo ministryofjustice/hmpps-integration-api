@@ -7,9 +7,9 @@ import org.mockito.internal.verification.VerificationModeFactory
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
-import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
+import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.RiskManagementGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
@@ -23,7 +23,7 @@ import java.io.File
   classes = [RiskManagementGateway::class],
 )
 class RiskManagementGatewayTest(
-  @MockBean val hmppsAuthGateway: HmppsAuthGateway,
+  @MockitoBean val hmppsAuthGateway: HmppsAuthGateway,
   private val riskManagementGateway: RiskManagementGateway,
 ) : DescribeSpec({
 
