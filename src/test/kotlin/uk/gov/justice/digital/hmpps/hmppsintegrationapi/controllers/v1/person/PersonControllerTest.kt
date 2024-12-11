@@ -334,7 +334,11 @@ internal class PersonControllerTest(
                    },
                    "pncId":null,
                    "hmppsId":null,
-                   "contactDetails":null
+                   "contactDetails":null,
+                   "currentRestriction": null,
+                   "restrictionMessage": null,
+                   "currentExclusion": null,
+                   "exclusionMessage": null
                 },
                 "probationOffenderSearch":{
                    "underActiveSupervision":true,
@@ -345,7 +349,6 @@ internal class PersonControllerTest(
                    "gender":null,
                    "ethnicity":null,
                    "aliases":[
-
                    ],
                    "identifiers":{
                       "nomisNumber":"1234ABC",
@@ -355,10 +358,10 @@ internal class PersonControllerTest(
                    "pncId":null,
                    "hmppsId":null,
                    "contactDetails":null,
-                   "currentRestriction": false,
+                   "currentRestriction": null,
                    "restrictionMessage": null,
-                   "currentExclusion": true,
-                   "exclusionMessage": "An exclusion exists"
+                   "currentExclusion": null,
+                   "exclusionMessage": null
                 }
              }
           }
@@ -368,7 +371,6 @@ internal class PersonControllerTest(
       }
 
       describe("GET $basePath/$encodedHmppsId/name") {
-        val prisonOffenderSearch = POSPrisoner("Sam", "Smith")
 
         beforeTest {
           Mockito.reset(getNameForPersonService)
