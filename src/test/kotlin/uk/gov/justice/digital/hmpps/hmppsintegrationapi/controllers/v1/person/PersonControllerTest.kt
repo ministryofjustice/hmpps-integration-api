@@ -12,9 +12,9 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
-import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
+import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
@@ -46,11 +46,11 @@ import kotlin.random.Random
 @ActiveProfiles("test")
 internal class PersonControllerTest(
   @Autowired var springMockMvc: MockMvc,
-  @MockBean val getPersonService: GetPersonService,
-  @MockBean val getPersonsService: GetPersonsService,
-  @MockBean val getNameForPersonService: GetNameForPersonService,
-  @MockBean val getImageMetadataForPersonService: GetImageMetadataForPersonService,
-  @MockBean val auditService: AuditService,
+  @MockitoBean val getPersonService: GetPersonService,
+  @MockitoBean val getPersonsService: GetPersonsService,
+  @MockitoBean val getNameForPersonService: GetNameForPersonService,
+  @MockitoBean val getImageMetadataForPersonService: GetImageMetadataForPersonService,
+  @MockitoBean val auditService: AuditService,
 ) : DescribeSpec(
     {
       val hmppsId = "2003/13116M"
@@ -229,7 +229,7 @@ internal class PersonControllerTest(
       }
 
       describe("GET $basePath/{id}") {
-        val probationOffenderSearch = PersonOnProbation(Person("Sam", "Smith", identifiers = Identifiers(nomisNumber = "1234ABC")), underActiveSupervision = true)
+        val probationOffenderSearch = PersonOnProbation(Person("Sam", "Smith", identifiers = Identifiers(nomisNumber = "1234ABC"), currentExclusion = true, exclusionMessage = "An exclusion exists", currentRestriction = false), underActiveSupervision = true)
         val prisonOffenderSearch = POSPrisoner("Kim", "Kardashian")
         val prisonResponse = Response(data = prisonOffenderSearch, errors = emptyList())
 
@@ -334,7 +334,11 @@ internal class PersonControllerTest(
                    },
                    "pncId":null,
                    "hmppsId":null,
-                   "contactDetails":null
+                   "contactDetails":null,
+                   "currentRestriction": null,
+                   "restrictionMessage": null,
+                   "currentExclusion": null,
+                   "exclusionMessage": null
                 },
                 "probationOffenderSearch":{
                    "underActiveSupervision":true,
@@ -345,7 +349,6 @@ internal class PersonControllerTest(
                    "gender":null,
                    "ethnicity":null,
                    "aliases":[
-
                    ],
                    "identifiers":{
                       "nomisNumber":"1234ABC",
@@ -354,7 +357,11 @@ internal class PersonControllerTest(
                    },
                    "pncId":null,
                    "hmppsId":null,
-                   "contactDetails":null
+                   "contactDetails":null,
+                   "currentRestriction": null,
+                   "restrictionMessage": null,
+                   "currentExclusion": null,
+                   "exclusionMessage": null
                 }
              }
           }
@@ -364,7 +371,6 @@ internal class PersonControllerTest(
       }
 
       describe("GET $basePath/$encodedHmppsId/name") {
-        val prisonOffenderSearch = POSPrisoner("Sam", "Smith")
 
         beforeTest {
           Mockito.reset(getNameForPersonService)

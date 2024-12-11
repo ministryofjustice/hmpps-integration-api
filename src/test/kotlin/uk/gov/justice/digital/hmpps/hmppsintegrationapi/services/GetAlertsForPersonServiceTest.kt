@@ -8,8 +8,8 @@ import org.mockito.internal.verification.VerificationModeFactory
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
-import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.context.ContextConfiguration
+import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NomisGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Alert
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Identifiers
@@ -23,8 +23,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
   classes = [GetAlertsForPersonService::class],
 )
 internal class GetAlertsForPersonServiceTest(
-  @MockBean val nomisGateway: NomisGateway,
-  @MockBean val personService: GetPersonService,
+  @MockitoBean val nomisGateway: NomisGateway,
+  @MockitoBean val personService: GetPersonService,
   private val getAlertsForPersonService: GetAlertsForPersonService,
 ) : DescribeSpec(
     {

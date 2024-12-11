@@ -7,8 +7,8 @@ import org.mockito.internal.verification.VerificationModeFactory.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
-import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.context.ContextConfiguration
+import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ProbationOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
@@ -19,8 +19,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
   classes = [GetPersonsService::class],
 )
 internal class GetPersonsServiceTest(
-  @MockBean val prisonerOffenderSearchGateway: PrisonerOffenderSearchGateway,
-  @MockBean val probationOffenderSearchGateway: ProbationOffenderSearchGateway,
+  @MockitoBean val prisonerOffenderSearchGateway: PrisonerOffenderSearchGateway,
+  @MockitoBean val probationOffenderSearchGateway: ProbationOffenderSearchGateway,
   private val getPersonsService: GetPersonsService,
 ) : DescribeSpec({
     val firstName = "Bruce"

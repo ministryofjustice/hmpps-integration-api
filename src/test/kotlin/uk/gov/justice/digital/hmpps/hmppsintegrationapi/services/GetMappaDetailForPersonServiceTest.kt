@@ -7,8 +7,8 @@ import org.mockito.internal.verification.VerificationModeFactory
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
-import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.context.ContextConfiguration
+import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Identifiers
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.MappaDetail
@@ -22,8 +22,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
   classes = [GetMappaDetailForPersonService::class],
 )
 internal class GetMappaDetailForPersonServiceTest(
-  @MockBean val getPersonService: GetPersonService,
-  @MockBean val nDeliusGateway: NDeliusGateway,
+  @MockitoBean val getPersonService: GetPersonService,
+  @MockitoBean val nDeliusGateway: NDeliusGateway,
   private val getMappaDetailForPersonService: GetMappaDetailForPersonService,
 ) : DescribeSpec(
     {

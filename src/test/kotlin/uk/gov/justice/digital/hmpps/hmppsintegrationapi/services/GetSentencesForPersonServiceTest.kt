@@ -9,8 +9,8 @@ import org.mockito.internal.verification.VerificationModeFactory
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
-import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.context.ContextConfiguration
+import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NomisGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.generateTestSentence
@@ -26,9 +26,9 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisBookin
   classes = [GetSentencesForPersonService::class],
 )
 internal class GetSentencesForPersonServiceTest(
-  @MockBean val nomisGateway: NomisGateway,
-  @MockBean val getPersonService: GetPersonService,
-  @MockBean val nDeliusGateway: NDeliusGateway,
+  @MockitoBean val nomisGateway: NomisGateway,
+  @MockitoBean val getPersonService: GetPersonService,
+  @MockitoBean val nDeliusGateway: NDeliusGateway,
   private val getSentencesForPersonService: GetSentencesForPersonService,
 ) : DescribeSpec(
     {

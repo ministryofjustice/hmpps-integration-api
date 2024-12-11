@@ -61,6 +61,10 @@ internal class PrisonControllerTest(
               gender = "Male",
               ethnicity = "Caucasian",
               pncId = "PNC123456",
+              currentExclusion = true,
+              exclusionMessage = "An exclusion is present",
+              currentRestriction = true,
+              restrictionMessage = "A restriction is present",
             ),
         ),
       )
@@ -85,7 +89,11 @@ internal class PrisonControllerTest(
                    },
                    "pncId": "PNC123456",
                    "hmppsId": null,
-                   "contactDetails": null
+                   "contactDetails": null,
+                   "currentRestriction": true,
+                   "restrictionMessage": "A restriction is present",
+                   "currentExclusion": true,
+                   "exclusionMessage": "An exclusion is present"
                 }
              }
           """.removeWhitespaceAndNewlines(),

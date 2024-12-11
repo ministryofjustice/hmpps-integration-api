@@ -8,8 +8,8 @@ import org.mockito.internal.verification.VerificationModeFactory
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
-import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.context.ContextConfiguration
+import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonName
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
@@ -21,7 +21,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
   classes = [GetNameForPersonService::class],
 )
 internal class GetPersonNameServiceTest(
-  @MockBean val getPersonService: GetPersonService,
+  @MockitoBean val getPersonService: GetPersonService,
   private val getNameForPersonService: GetNameForPersonService,
 ) : DescribeSpec(
     {

@@ -7,8 +7,8 @@ import org.mockito.internal.verification.VerificationModeFactory
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
-import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.context.ContextConfiguration
+import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.CreateAndVaryLicenceGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Identifiers
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Licence
@@ -23,8 +23,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
   classes = [GetLicenceConditionService::class],
 )
 internal class GetLicenceConditionServiceTest(
-  @MockBean val createAndVaryLicenceGateway: CreateAndVaryLicenceGateway,
-  @MockBean val getPersonService: GetPersonService,
+  @MockitoBean val createAndVaryLicenceGateway: CreateAndVaryLicenceGateway,
+  @MockitoBean val getPersonService: GetPersonService,
   private val getLicenceConditionService: GetLicenceConditionService,
 ) : DescribeSpec(
     {

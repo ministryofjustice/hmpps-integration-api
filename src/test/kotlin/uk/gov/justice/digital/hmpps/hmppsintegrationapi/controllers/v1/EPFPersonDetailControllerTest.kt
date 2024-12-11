@@ -9,9 +9,9 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
-import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
+import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
@@ -24,8 +24,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditS
 @ActiveProfiles("test")
 internal class EPFPersonDetailControllerTest(
   @Autowired var springMockMvc: MockMvc,
-  @MockBean val getEPFPersonDetailService: GetEPFPersonDetailService,
-  @MockBean val auditService: AuditService,
+  @MockitoBean val getEPFPersonDetailService: GetEPFPersonDetailService,
+  @MockitoBean val auditService: AuditService,
 ) : DescribeSpec({
     val hmppsId = "X12345"
     val eventNumber = 1234

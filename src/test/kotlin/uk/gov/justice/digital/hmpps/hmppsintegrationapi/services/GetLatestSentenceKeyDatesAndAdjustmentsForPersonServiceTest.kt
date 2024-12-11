@@ -9,8 +9,8 @@ import org.mockito.internal.verification.VerificationModeFactory
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
-import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.context.ContextConfiguration
+import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NomisGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ProbationOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HomeDetentionCurfewDate
@@ -35,8 +35,8 @@ import java.time.LocalDate
   classes = [GetLatestSentenceKeyDatesAndAdjustmentsForPersonService::class],
 )
 internal class GetLatestSentenceKeyDatesAndAdjustmentsForPersonServiceTest(
-  @MockBean val probationOffenderSearchGateway: ProbationOffenderSearchGateway,
-  @MockBean val nomisGateway: NomisGateway,
+  @MockitoBean val probationOffenderSearchGateway: ProbationOffenderSearchGateway,
+  @MockitoBean val nomisGateway: NomisGateway,
   private val getLatestSentenceKeyDatesAndAdjustmentsForPersonService: GetLatestSentenceKeyDatesAndAdjustmentsForPersonService,
 ) : DescribeSpec(
     {

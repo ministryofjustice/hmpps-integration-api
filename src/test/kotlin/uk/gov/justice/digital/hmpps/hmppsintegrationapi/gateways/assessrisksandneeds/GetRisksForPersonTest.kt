@@ -8,10 +8,10 @@ import org.mockito.internal.verification.VerificationModeFactory
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
-import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
+import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.AssessRisksAndNeedsGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.AssessRisksAndNeedsApiMockServer
@@ -31,7 +31,7 @@ import java.time.LocalDateTime
   classes = [AssessRisksAndNeedsGateway::class],
 )
 class GetRisksForPersonTest(
-  @MockBean val hmppsAuthGateway: HmppsAuthGateway,
+  @MockitoBean val hmppsAuthGateway: HmppsAuthGateway,
   val assessRisksAndNeedsGateway: AssessRisksAndNeedsGateway,
 ) :
   DescribeSpec(

@@ -10,10 +10,10 @@ import org.mockito.internal.verification.VerificationModeFactory
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
-import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
+import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
@@ -30,7 +30,7 @@ import java.time.format.DateTimeFormatter
   classes = [ProbationOffenderSearchGateway::class],
 )
 class ProbationOffenderSearchGatewayTest(
-  @MockBean val hmppsAuthGateway: HmppsAuthGateway,
+  @MockitoBean val hmppsAuthGateway: HmppsAuthGateway,
   private val probationOffenderSearchGateway: ProbationOffenderSearchGateway,
 ) : DescribeSpec({
     val probationOffenderSearchApiMockServer = ProbationOffenderSearchApiMockServer()
