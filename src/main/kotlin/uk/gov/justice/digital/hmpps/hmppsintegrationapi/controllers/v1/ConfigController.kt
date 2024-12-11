@@ -15,7 +15,8 @@ class ConfigController(
   var authorisationConfig: AuthorisationConfig,
 ) {
   @GetMapping("authorisation")
-  fun getAuthorisation(): Map<String, List<String>> {
-    return authorisationConfig.consumers
-  }
+  fun getAuthorisation(): Map<String, List<String>> =
+    authorisationConfig.consumers.entries
+      .map { it.key.replace(".include", "") to it.value }
+      .toMap()
 }

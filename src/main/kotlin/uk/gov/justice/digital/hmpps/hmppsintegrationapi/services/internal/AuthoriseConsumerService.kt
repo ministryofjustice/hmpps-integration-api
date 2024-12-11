@@ -14,7 +14,7 @@ class AuthoriseConsumerService {
     println("consumer: $consumer")
     println("requestedPath: $requestedPath")
 
-    consumerPathConfig[consumer]?.forEach {
+    consumerPathConfig[consumer + ".include"]?.forEach {
       if (Regex(it).matches(requestedPath)) {
         return true
       }
