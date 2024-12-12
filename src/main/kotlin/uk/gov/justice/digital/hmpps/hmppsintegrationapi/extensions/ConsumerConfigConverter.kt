@@ -8,5 +8,5 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Consum
 @Component
 @ConfigurationPropertiesBinding
 class ConsumerConfigConverter : Converter<String, ConsumerConfig> {
-  override fun convert(source: String): ConsumerConfig? = ConsumerConfig(include = source.split("").map { it.trim() }.filter { it.isNotEmpty() })
+  override fun convert(source: String): ConsumerConfig? = ConsumerConfig(include = emptyList())
 }

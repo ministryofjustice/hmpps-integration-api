@@ -36,4 +36,10 @@ class ConfigControllerTests(
     val result = mockMvc.performAuthorisedWithCN(basePath, "no-include")
     result.response.status.shouldBe(403)
   }
+
+  @Test
+  fun `will not throw an exception when is an empty includes property exists`() {
+    val result = mockMvc.performAuthorisedWithCN(basePath, "empty-include")
+    result.response.status.shouldBe(403)
+  }
 }

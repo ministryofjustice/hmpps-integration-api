@@ -87,3 +87,5 @@ authorisation:
        include:
           - "/v1/config/authorisation"
     no-include:
+    empty-include:
+       include:
