@@ -1,0 +1,20 @@
+{
+  "reviewSchedules": [
+    {
+      "createdBy": "asmith_gen",
+      "createdByDisplayName": "Alex Smith",
+      "createdAt": "2023-06-19T09:39:44Z",
+      "createdAtPrison": "BXI",
+      "updatedBy": "asmith_gen",
+      "updatedByDisplayName": "Alex Smith",
+      "updatedAt": "2023-06-19T09:39:44Z",
+      "updatedAtPrison": "BXI",
+      "reference": "c88a6c48-97e2-4c04-93b5-98619966447b",
+      "reviewDateFrom": "2023-11-19",
+      "reviewDateTo": "2023-12-19",
+      "status": "SCHEDULED",
+      "calculationRule": "PRISONER_READMISSION",
+      "version": 0
+    }
+  ]
+}
