@@ -9,6 +9,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrap
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.InductionSchedule
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ReviewSchedule
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ReviewSchedules
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 
 @Component
@@ -44,9 +45,9 @@ class PLPGateway(
     }
   }
 
-  fun getReviewSchedule(prisonerNumber: String): Response<ReviewSchedule> {
+  fun getReviewSchedules(prisonerNumber: String): Response<ReviewSchedules> {
     val result =
-      webClient.request<ReviewSchedule>(
+      webClient.request<ReviewSchedules>(
         HttpMethod.GET,
         "/inductions/$prisonerNumber/review-schedule",
         authenticationHeader(),
@@ -55,13 +56,13 @@ class PLPGateway(
 
     return when (result) {
       is WebClientWrapperResponse.Success -> {
-        val inductionSchedule = result.data
-        Response(data = inductionSchedule)
+        val reviewSchedules = result.data
+        Response(data = reviewSchedules)
       }
 
       is WebClientWrapperResponse.Error -> {
         Response(
-          data = ReviewSchedule(),
+          data = ReviewSchedules(listOf()),
           errors = result.errors,
         )
       }
