@@ -9,7 +9,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Consum
 class AuthoriseConsumerService {
   fun execute(
     consumer: String,
-    consumerPathConfig: Map<String, ConsumerConfig>,
+    consumerPathConfig: Map<String, ConsumerConfig?>,
     requestedPath: String,
   ): Boolean {
     println("consumer: $consumer")

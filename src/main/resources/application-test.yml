@@ -86,3 +86,4 @@ authorisation:
     config-test:
        include:
           - "/v1/config/authorisation"
+    no-include:
