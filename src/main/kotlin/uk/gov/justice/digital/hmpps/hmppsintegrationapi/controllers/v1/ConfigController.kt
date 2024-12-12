@@ -15,8 +15,7 @@ class ConfigController(
   var authorisationConfig: AuthorisationConfig,
 ) {
   @GetMapping("authorisation")
-  fun getAuthorisation(): Map<String, List<String>> =
-    authorisationConfig.consumers.entries
-      .map { it.key.replace(".include", "") to it.value }
-      .toMap()
+  fun getAuthorisation(): Map<String, List<String>> = authorisationConfig.consumers.entries.associate { it.key to defaultToEmptyList(it.value.include) }
+
+  private fun defaultToEmptyList(includes: List<String>?): List<String> = if (includes.isNullOrEmpty()) emptyList() else includes
 }
