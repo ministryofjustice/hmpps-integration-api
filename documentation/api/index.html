@@ -704,15 +704,30 @@
 
 <pre><code>{
   "data": {
-    "deadlineDate": "2023-09-01",
-    "nomisNumber": "string",
-    "description": "string"
+    "reviewSchedules": [
+      {
+        "reference": "string",
+        "reviewDateFrom": "string",
+        "reviewDateTo": "string",
+        "status": "string",
+        "calculationRule": "string",
+        "createdBy": "string",
+        "createdByDisplayName": "string",
+        "createdAt": "string",
+        "createdAtPrison": "string",
+        "updatedBy": "string",
+        "updatedByDisplayName": "string",
+        "updatedAt": "string",
+        "updatedAtPrison": "string",
+        "version": "integer"
+      }
+    ]
   }
 }</code></pre>
 
 </td>
 <td>
-<a href='#schema-dataresponsereviewschedule'>DataResponseReviewSchedule</a>
+<a href='#schema-dataresponsereviewschedules'>DataResponseReviewSchedules</a>
 </td>
 </tr>
 
@@ -5347,10 +5362,10 @@
 </tbody>
 </table>
 
-<h3 id="schema-dataresponsereviewschedule">DataResponseReviewSchedule</h3>
+<h3 id="schema-dataresponsereviewschedules">DataResponseReviewSchedules</h3>
 
 
-<table class='schema-dataresponsereviewschedule'>
+<table class='schema-dataresponsereviewschedules'>
 <thead>
 <tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
 </thead>
@@ -5362,7 +5377,7 @@
 <td>true</td>
 <td></td>
 <td>
-  <a href='#schema-reviewschedule'>ReviewSchedule</a>
+  <a href='#schema-reviewschedules'>ReviewSchedules</a>
 </td>
 </tr>
 
@@ -5379,20 +5394,9 @@
 <tbody>
 
 <tr>
-<td>deadlineDate</td>
+<td>reference</td>
 <td>string</td>
-<td>false</td>
-<td><p>An ISO-8601 date representing when the Review should be completed by.</p>
-</td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>nomisNumber</td>
-<td>string</td>
-<td>false</td>
+<td>true</td>
 <td></td>
 <td>
   
@@ -5400,12 +5404,154 @@
 </tr>
 
 <tr>
-<td>description</td>
+<td>reviewDateFrom</td>
 <td>string</td>
-<td>false</td>
+<td>true</td>
 <td></td>
 <td>
   
+</td>
+</tr>
+
+<tr>
+<td>reviewDateTo</td>
+<td>string</td>
+<td>true</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>status</td>
+<td>string</td>
+<td>true</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>calculationRule</td>
+<td>string</td>
+<td>true</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>createdBy</td>
+<td>string</td>
+<td>true</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>createdByDisplayName</td>
+<td>string</td>
+<td>true</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>createdAt</td>
+<td>string</td>
+<td>true</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>createdAtPrison</td>
+<td>string</td>
+<td>true</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>updatedBy</td>
+<td>string</td>
+<td>true</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>updatedByDisplayName</td>
+<td>string</td>
+<td>true</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>updatedAt</td>
+<td>string</td>
+<td>true</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>updatedAtPrison</td>
+<td>string</td>
+<td>true</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>version</td>
+<td>integer</td>
+<td>true</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+</tbody>
+</table>
+
+<h3 id="schema-reviewschedules">ReviewSchedules</h3>
+
+
+<table class='schema-reviewschedules'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>reviewSchedules</td>
+<td>array</td>
+<td>true</td>
+<td></td>
+<td>
+  <a href='#schema-reviewschedule'>ReviewSchedule</a>
 </td>
 </tr>
 
