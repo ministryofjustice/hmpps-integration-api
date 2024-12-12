@@ -48,7 +48,7 @@ class PLPGateway(
     val result =
       webClient.request<ReviewSchedules>(
         HttpMethod.GET,
-        "/inductions/$prisonerNumber/review-schedule",
+        "/action-plans/$prisonerNumber/reviews/review-schedules",
         authenticationHeader(),
         UpstreamApi.PLP,
       )
