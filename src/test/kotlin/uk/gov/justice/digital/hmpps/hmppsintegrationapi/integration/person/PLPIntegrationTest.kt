@@ -25,7 +25,6 @@ class PLPIntegrationTest : IntegrationTestBase() {
       )
   }
 
-
   @Test
   fun `returns a persons review schedule`() {
     callApi("$basePath/K5995YZ/plp-review-schedule")

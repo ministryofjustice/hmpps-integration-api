@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonInclude
 import java.time.Instant
 import java.time.LocalDate
 
-
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.USE_DEFAULTS)
 data class ReviewSchedules(
