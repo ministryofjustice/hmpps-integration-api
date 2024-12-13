@@ -134,7 +134,7 @@ internal class PrisonControllerTest(
             listOf(
               UpstreamApiError(
                 type = ENTITY_NOT_FOUND,
-                causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH,
+                causedBy = UpstreamApi.PRISONER_OFFENDER_SEARCH,
                 description = "Prisoner not found",
               ),
             ),

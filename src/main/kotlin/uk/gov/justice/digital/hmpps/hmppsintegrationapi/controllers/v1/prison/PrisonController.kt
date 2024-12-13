@@ -43,7 +43,7 @@ class PrisonController(
 
     val response = getPersonService.getPrisoner(decodedHmppsId)
 
-    if (response.hasErrorCausedBy(ENTITY_NOT_FOUND, causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH)) {
+    if (response.hasErrorCausedBy(ENTITY_NOT_FOUND, causedBy = UpstreamApi.PRISONER_OFFENDER_SEARCH)) {
       throw EntityNotFoundException("Could not find person with hmppsId: $decodedHmppsId")
     }
 

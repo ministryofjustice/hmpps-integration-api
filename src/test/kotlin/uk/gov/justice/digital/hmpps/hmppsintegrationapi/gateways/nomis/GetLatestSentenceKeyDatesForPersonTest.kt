@@ -30,7 +30,7 @@ class GetLatestSentenceKeyDatesForPersonTest(
 ) : DescribeSpec(
     {
       val nomisApiMockServer = NomisApiMockServer()
-      val offenderNo = "abc123"
+      val offenderNo = "A1234AB"
       val sentencePath = "/api/offenders/$offenderNo/sentences"
       beforeEach {
         nomisApiMockServer.start()
