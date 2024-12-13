@@ -17,9 +17,13 @@ class GetPersonService(
   @Autowired val prisonerOffenderSearchGateway: PrisonerOffenderSearchGateway,
 ) {
   fun execute(hmppsId: String): Response<Person?> {
-    val personFromProbationOffenderSearch = probationOffenderSearchGateway.getPerson(id = hmppsId)
-
-    return Response(data = personFromProbationOffenderSearch.data, errors = personFromProbationOffenderSearch.errors)
+    val probationResponse = probationOffenderSearchGateway.getPerson(id = hmppsId)
+    if (identifyHmppsId(hmppsId) == IdentifierType.NOMS && probationResponse.data == null) {
+      val prisonResponse = prisonerOffenderSearchGateway.getPrisonOffender(hmppsId)
+      return Response(data = prisonResponse.data?.toPerson(), prisonResponse.errors)
+    } else {
+      return Response(data = probationResponse.data, errors = probationResponse.errors)
+    }
   }
 
   enum class IdentifierType {
