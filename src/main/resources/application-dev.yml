@@ -132,4 +132,3 @@ authorisation:
         - "/v1/persons"
         - "/v1/persons/[^/]*$"
         - "/v1/prison/prisoners/[^/]*$"
-
