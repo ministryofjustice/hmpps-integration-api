@@ -1,7 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.controllers.v1.prison
 
 import io.swagger.v3.oas.annotations.Operation
-import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
@@ -12,7 +11,6 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.decodeUrlCharacters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
@@ -37,17 +35,15 @@ class PrisonController(
     ],
   )
   fun getPerson(
-    @Parameter(description = "A HMPPS identifier", example = "2008%2F0545166T", required = true) @PathVariable hmppsId: String,
+    @PathVariable hmppsId: String,
   ): DataResponse<Person?> {
-    val decodedHmppsId = hmppsId.decodeUrlCharacters()
-
-    val response = getPersonService.getPrisoner(decodedHmppsId)
+    val response = getPersonService.getPrisoner(hmppsId)
 
     if (response.hasErrorCausedBy(ENTITY_NOT_FOUND, causedBy = UpstreamApi.PRISONER_OFFENDER_SEARCH)) {
-      throw EntityNotFoundException("Could not find person with hmppsId: $decodedHmppsId")
+      throw EntityNotFoundException("Could not find person with hmppsId: $hmppsId")
     }
 
-    auditService.createEvent("GET_PERSON_DETAILS", mapOf("hmppsId" to decodedHmppsId))
+    auditService.createEvent("GET_PERSON_DETAILS", mapOf("hmppsId" to hmppsId))
     val data = response.data
     return DataResponse(data)
   }

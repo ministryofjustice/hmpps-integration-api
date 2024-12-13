@@ -127,3 +127,8 @@ authorisation:
         - "/v1/persons/.*/plp-review-schedule"
         - "/v1/hmpps/id/by-nomis-number/[^/]*$"
         - "/v1/hmpps/id/nomis-number/by-hmpps-id/[^/]*$"
+    bmadley:
+      include:
+        - "/v1/persons"
+        - "/v1/persons/[^/]*$"
+        - "/v1/prison/prisoners/[^/]*$"
