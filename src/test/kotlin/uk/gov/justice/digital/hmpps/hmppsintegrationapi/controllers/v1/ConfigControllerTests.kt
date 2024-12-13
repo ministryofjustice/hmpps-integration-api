@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import io.kotest.matchers.collections.shouldContainOnly
 import io.kotest.matchers.maps.shouldHaveKeys
+import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
@@ -28,5 +29,17 @@ class ConfigControllerTests(
     actualConfig.shouldHaveKeys("automated-test-client")
     actualConfig.shouldHaveKeys("config-test")
     actualConfig["config-test"].shouldContainOnly("/v1/config/authorisation")
+  }
+
+  @Test
+  fun `will not throw an exception when no includes property exists`() {
+    val result = mockMvc.performAuthorisedWithCN(basePath, "no-include")
+    result.response.status.shouldBe(403)
+  }
+
+  @Test
+  fun `will not throw an exception when is an empty includes property exists`() {
+    val result = mockMvc.performAuthorisedWithCN(basePath, "empty-include")
+    result.response.status.shouldBe(403)
   }
 }
