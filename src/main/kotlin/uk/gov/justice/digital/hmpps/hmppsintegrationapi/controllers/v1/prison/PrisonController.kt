@@ -93,11 +93,11 @@ class PrisonController(
       mapOf("firstName" to firstName, "lastName" to lastName, "aliases" to searchWithinAliases.toString(), "dateOfBirth" to dateOfBirth),
     )
 
-    if (response != null && response.errors.isNotEmpty()) {
+    if (response.hasErrorCausedBy(ENTITY_NOT_FOUND, causedBy = UpstreamApi.PRISONER_OFFENDER_SEARCH)) {
       throw EntityNotFoundException("Could not find persons with supplied query parameters: $firstName, $lastName, $dateOfBirth")
     }
 
-    return response!!.data!!.paginateWith(page, perPage)
+    return response.data.paginateWith(page, perPage)
   }
 
   private fun isValidISODateFormat(dateString: String): Boolean =

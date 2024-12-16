@@ -166,7 +166,7 @@ internal class PrisonControllerTest(
 
         whenever(getPrisonersService.execute("Barry", "Allen", "2023-03-01")).thenReturn(
           Response(
-            data = null,
+            data = emptyList(),
             errors =
               listOf(
                 UpstreamApiError(

@@ -15,7 +15,7 @@ class GetPrisonersService(
     lastName: String?,
     dateOfBirth: String?,
     searchWithinAliases: Boolean = false,
-  ): Response<List<Person>?>? {
+  ): Response<List<Person>> {
     val responseFromPrisonerOffenderSearch =
       prisonerOffenderSearchGateway.getPersons(
         firstName,
