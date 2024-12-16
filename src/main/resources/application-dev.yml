@@ -124,6 +124,8 @@ authorisation:
       include:
         - "/v1/persons"
         - "/v1/persons/[^/]*$"
+        - "/v1/prison/prisoners"
+        - "/v1/prison/prisoners/[^/]*$"
     meganexus:
       include:
         - "/v1/persons/.*/plp-induction-schedule"
@@ -135,11 +137,9 @@ authorisation:
         - "/v1/persons"
         - "/v1/persons/[^/]*$"
         - "/v1/prison/prisoners/[^/]*$"
-<<<<<<< Updated upstream
+        - "/v1/prison/prisoners"
     serco:
       include:
         - "/v1/persons"
         - "/v1/prison/prisoners/[^/]*$"
-=======
         - "/v1/prison/prisoners"
->>>>>>> Stashed changes
