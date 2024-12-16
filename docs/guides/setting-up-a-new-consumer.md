@@ -6,6 +6,7 @@ To enable a consumer to access our API, they need:
 - an API key
 
 per environment. This document is split into two parts:
+
 1. Generate credentials for the consumer
 2. Send the credentials to the consumer
 
