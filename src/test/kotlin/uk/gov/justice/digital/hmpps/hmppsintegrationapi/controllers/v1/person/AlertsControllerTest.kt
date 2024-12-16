@@ -39,7 +39,7 @@ internal class AlertsControllerTest(
       val hmppsId = "9999/11111A"
       val encodedHmppsId = URLEncoder.encode(hmppsId, StandardCharsets.UTF_8)
       val path = "/v1/persons/$encodedHmppsId/alerts"
-      val pndPath = "/v1/persons/$encodedHmppsId/alerts/pnd"
+      val pndPath = "/v1/pnd/persons/$encodedHmppsId/alerts"
       val mockMvc = IntegrationAPIMockMvc(springMockMvc)
 
       describe("GET $path") {
@@ -250,7 +250,7 @@ internal class AlertsControllerTest(
           val hmppsIdForPersonWithNoAlerts = "1111/22334A"
           val encodedHmppsIdForPersonWithNoAlerts =
             URLEncoder.encode(hmppsIdForPersonWithNoAlerts, StandardCharsets.UTF_8)
-          val alertPath = "/v1/persons/$encodedHmppsIdForPersonWithNoAlerts/alerts/pnd"
+          val alertPath = "/v1/pnd/persons/$encodedHmppsIdForPersonWithNoAlerts/alerts"
 
           whenever(getAlertsForPersonService.getAlertsForPnd(hmppsIdForPersonWithNoAlerts)).thenReturn(
             Response(
