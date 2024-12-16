@@ -134,3 +134,7 @@ authorisation:
         - "/v1/persons"
         - "/v1/persons/[^/]*$"
         - "/v1/prison/prisoners/[^/]*$"
+    serco:
+      include:
+        - "/v1/persons"
+        - "/v1/prison/prisoners/[^/]*$"
