@@ -123,13 +123,6 @@ tar cvfz hmpps-integration-api-preprod.tar.gz preprod/preprod-client.key preprod
 openssl enc -aes-256-cbc -pbkdf2 -iter 310000 -md sha256 -salt -in hmpps-integration-api-preprod.tar.gz -out hmpps-integration-api-preprod.tar.gz.enc -pass file:./symmetric.key
 ```
 
-…and encrypt the symmetric key using the client's supplied public key
-
-```bash
-# Encrypt with client's public key
-openssl pkeyutl -encrypt -pubin -inkey hmpps-integration-api-cred-exchange-public-key.pem -in symmetric.key -out symmetric.key.enc
-```
-
 We can now send the **encrypted** symmetric key (`symmetric.key.enc`) and **encrypted** access credentials (`hmpps-integration-api-preprod.tar.gz.enc`) to the client via email. The client may now decrypt the symmetric key using their private key and subsequently the access credentials using the symmetric key
 
 ```Bash
