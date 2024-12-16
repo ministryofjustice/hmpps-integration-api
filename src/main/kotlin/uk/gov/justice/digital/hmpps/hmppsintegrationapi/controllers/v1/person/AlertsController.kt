@@ -23,13 +23,13 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.PaginatedResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.paginateWith
 
 @RestController
-@RequestMapping("/v1/persons")
+@RequestMapping("/v1")
 @Tags(Tag(name = "persons"), Tag(name = "alerts"))
 class AlertsController(
   @Autowired val getAlertsForPersonService: GetAlertsForPersonService,
   @Autowired val auditService: AuditService,
 ) {
-  @GetMapping("{encodedHmppsId}/alerts")
+  @GetMapping("/persons/{encodedHmppsId}/alerts")
   @Operation(
     summary = "Returns alerts associated with a person, sorted by dateCreated (newest first).",
     responses = [
@@ -53,8 +53,9 @@ class AlertsController(
     return response.data.paginateWith(page, perPage)
   }
 
-  @GetMapping("{encodedHmppsId}/alerts/pnd")
+  @GetMapping("/persons/{encodedHmppsId}/alerts/pnd")
   @Operation(
+    deprecated = true,
     summary = "Returns alerts associated with a person, sorted by dateCreated (newest first).",
     responses = [
       ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found alerts for a person with the provided HMPPS ID."),
@@ -63,6 +64,30 @@ class AlertsController(
     ],
   )
   fun getPersonAlertsPND(
+    @Parameter(description = "A URL-encoded HMPPS identifier", example = "2008%2F0545166T") @PathVariable encodedHmppsId: String,
+    @Parameter(description = "The page number (starting from 1)", schema = Schema(minimum = "1")) @RequestParam(required = false, defaultValue = "1", name = "page") page: Int,
+    @Parameter(description = "The maximum number of results for a page", schema = Schema(minimum = "1")) @RequestParam(required = false, defaultValue = "10", name = "perPage") perPage: Int,
+  ): PaginatedResponse<Alert> {
+    val hmppsId = encodedHmppsId.decodeUrlCharacters()
+    val response = getAlertsForPersonService.getAlertsForPnd(hmppsId)
+
+    if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
+      throw EntityNotFoundException("Could not find person with id: $hmppsId")
+    }
+    auditService.createEvent("GET_PERSON_ALERTS_PND", mapOf("hmppsId" to hmppsId))
+    return response.data.paginateWith(page, perPage)
+  }
+
+  @GetMapping("/pnd/persons/{encodedHmppsId}/alerts")
+  @Operation(
+    summary = "Returns alerts associated with a person, sorted by dateCreated (newest first).",
+    responses = [
+      ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found alerts for a person with the provided HMPPS ID."),
+      ApiResponse(responseCode = "404", content = [Content(schema = Schema(ref = "#/components/schemas/PersonNotFound"))]),
+      ApiResponse(responseCode = "500", content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]),
+    ],
+  )
+  fun getPndPersonAlerts(
     @Parameter(description = "A URL-encoded HMPPS identifier", example = "2008%2F0545166T") @PathVariable encodedHmppsId: String,
     @Parameter(description = "The page number (starting from 1)", schema = Schema(minimum = "1")) @RequestParam(required = false, defaultValue = "1", name = "page") page: Int,
     @Parameter(description = "The maximum number of results for a page", schema = Schema(minimum = "1")) @RequestParam(required = false, defaultValue = "10", name = "perPage") perPage: Int,
