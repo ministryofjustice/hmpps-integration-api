@@ -56,6 +56,7 @@ authorisation:
         - "/health/liveness"
         - "/info"
         - "/v1/prison/prisoners/[^/]*$"
+        - "/v1/prison/prisoners"
     config-test:
       include:
         - "/v1/config/authorisation"

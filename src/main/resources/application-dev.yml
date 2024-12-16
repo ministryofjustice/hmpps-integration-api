@@ -119,6 +119,7 @@ authorisation:
         - "/v1/persons/.*/status-information"
         - "/v1/persons/[^/]*$"
         - "/v1/prison/prisoners/[^/]*$"
+        - "/v1/prison/prisoners"
     kilco:
       include:
         - "/v1/persons"
@@ -134,7 +135,11 @@ authorisation:
         - "/v1/persons"
         - "/v1/persons/[^/]*$"
         - "/v1/prison/prisoners/[^/]*$"
+<<<<<<< Updated upstream
     serco:
       include:
         - "/v1/persons"
         - "/v1/prison/prisoners/[^/]*$"
+=======
+        - "/v1/prison/prisoners"
+>>>>>>> Stashed changes
