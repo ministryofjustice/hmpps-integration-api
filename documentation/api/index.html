@@ -148,6 +148,9 @@
         <a href="../../documentation/api/index.html#servers"><span>Servers</span></a>
       </li>
       <li>
+        <a href="../../documentation/api/index.html#v1-prison-prisoners"><span>/v1/prison/prisoners</span></a>
+      </li>
+      <li>
         <a href="../../documentation/api/index.html#v1-prison-prisoners-hmppsid"><span>/v1/prison/prisoners/{hmppsId}</span></a>
       </li>
       <li>
@@ -297,6 +300,212 @@
     <a href="https://integration-api.hmpps.service.justice.gov.uk">https://integration-api.hmpps.service.justice.gov.uk</a>
   
   </div>
+
+
+
+<h2 id="v1-prison-prisoners">/v1/prison/prisoners</h2>
+
+<h3 id="v1-prison-prisoners-get">get</h3>
+
+  <p><em>Returns person(s) by search criteria, sorted by date of birth (newest first). Only queries prisoner search.</em></p>
+
+
+
+
+<h4 id="v1-prison-prisoners-get-parameters">Parameters</h4>
+<table>
+<thead>
+<tr><th>Parameter</th><th>In</th><th>Type</th><th>Required</th><th>Description</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>first_name</td>
+<td>query</td>
+<td>string</td>
+<td>false</td>
+<td><p>The first name of the person</p>
+
+
+</td>
+</tr>
+
+<tr>
+<td>last_name</td>
+<td>query</td>
+<td>string</td>
+<td>false</td>
+<td><p>The last name of the person</p>
+
+
+</td>
+</tr>
+
+<tr>
+<td>date_of_birth</td>
+<td>query</td>
+<td>string</td>
+<td>false</td>
+<td><p>The date of birth of the person</p>
+
+
+</td>
+</tr>
+
+<tr>
+<td>search_within_aliases</td>
+<td>query</td>
+<td>boolean</td>
+<td>false</td>
+<td><p>Whether to return results that match the search criteria within the aliases of a person.</p>
+
+
+</td>
+</tr>
+
+<tr>
+<td>page</td>
+<td>query</td>
+<td>string</td>
+<td>false</td>
+<td><p>The page number (starting from 1)</p>
+
+
+</td>
+</tr>
+
+<tr>
+<td>perPage</td>
+<td>query</td>
+<td>string</td>
+<td>false</td>
+<td><p>The maximum number of results for a page</p>
+
+
+</td>
+</tr>
+
+</tbody>
+</table>
+
+
+
+
+<h4 id="v1-prison-prisoners-get-responses">Responses</h4>
+<table>
+<thead>
+<tr><th>Status</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>200</td>
+<td>
+<p>Successfully performed the query on upstream APIs. An empty list is returned when no results are found.</p>
+
+
+
+<pre><code>{
+  "data": [
+    {
+      "firstName": "John",
+      "lastName": "Morgan",
+      "middleName": "John",
+      "dateOfBirth": "1965-12-01",
+      "gender": "Male",
+      "ethnicity": "White: Eng./Welsh/Scot./N.Irish/British",
+      "aliases": [
+        {
+          "firstName": "John",
+          "lastName": "Marston",
+          "middleName": "Marston",
+          "dateOfBirth": "1965-12-01",
+          "gender": "Male",
+          "ethnicity": "Prefer not to say"
+        }
+      ],
+      "identifiers": {
+        "nomisNumber": "A1234AA",
+        "croNumber": "SF80/655108T",
+        "deliusCrn": "X00001"
+      },
+      "pncId": "string",
+      "hmppsId": "2008/0545166T",
+      "contactDetails": {
+        "phoneNumbers": [
+          {
+            "number": "079123456789",
+            "type": "TELEPHONE"
+          }
+        ],
+        "emails": [
+          {
+          }
+        ]
+      },
+      "currentRestriction": "boolean",
+      "restrictionMessage": "string",
+      "currentExclusion": "boolean",
+      "exclusionMessage": "string"
+    }
+  ],
+  "pagination": {
+    "isLastPage": true,
+    "count": 1,
+    "page": 1,
+    "perPage": 10,
+    "totalCount": 1,
+    "totalPages": 1
+  }
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-paginatedresponseperson'>PaginatedResponsePerson</a>
+</td>
+</tr>
+
+<tr>
+<td>400</td>
+<td>
+<p>There were no query parameters passed in. At least one must be specified.</p>
+
+
+
+<pre><code>{
+  "status": 400,
+  "userMessage": "Validation failure: No query parameters specified.",
+  "developerMessage": "No query parameters specified."
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-badrequest'>BadRequest</a>
+</td>
+</tr>
+
+<tr>
+<td>500</td>
+<td>
+<p>Internal Server Error</p>
+
+
+
+<pre><code>{
+  "status": 500,
+  "userMessage": "Internal Server Error",
+  "developerMessage": "Unable to complete request as an upstream service is not responding."
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-internalservererror'>InternalServerError</a>
+</td>
+</tr>
+
+</tbody>
+</table>
+
 
 
 
@@ -5125,28 +5334,6 @@
 </tbody>
 </table>
 
-<h3 id="schema-dataresponseperson">DataResponsePerson</h3>
-
-
-<table class='schema-dataresponseperson'>
-<thead>
-<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
-</thead>
-<tbody>
-
-<tr>
-<td>data</td>
-<td>object</td>
-<td>true</td>
-<td></td>
-<td>
-  <a href='#schema-person'>Person</a>
-</td>
-</tr>
-
-</tbody>
-</table>
-
 <h3 id="schema-identifiers">Identifiers</h3>
 <p>Other unique identifiers for a person.</p>
 
@@ -5184,6 +5371,116 @@
 <td>string</td>
 <td>false</td>
 <td><p>A Case Reference Number from Delius.</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+</tbody>
+</table>
+
+<h3 id="schema-paginatedresponseperson">PaginatedResponsePerson</h3>
+
+
+<table class='schema-paginatedresponseperson'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>data</td>
+<td>array</td>
+<td>true</td>
+<td></td>
+<td>
+  <a href='#schema-person'>Person</a>
+</td>
+</tr>
+
+<tr>
+<td>pagination</td>
+<td>object</td>
+<td>true</td>
+<td></td>
+<td>
+  <a href='#schema-pagination'>Pagination</a>
+</td>
+</tr>
+
+</tbody>
+</table>
+
+<h3 id="schema-pagination">Pagination</h3>
+
+
+<table class='schema-pagination'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>isLastPage</td>
+<td>boolean</td>
+<td>true</td>
+<td><p>Is the current page the last one?</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>count</td>
+<td>integer</td>
+<td>true</td>
+<td><p>The number of results in <code>data</code> for the current page</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>page</td>
+<td>integer</td>
+<td>true</td>
+<td><p>The current page number</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>perPage</td>
+<td>integer</td>
+<td>true</td>
+<td><p>The maximum number of results in <code>data</code> for a page</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>totalCount</td>
+<td>integer</td>
+<td>true</td>
+<td><p>The total number of results in <code>data</code> across all pages</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>totalPages</td>
+<td>integer</td>
+<td>true</td>
+<td><p>The total number of pages</p>
 </td>
 <td>
   
@@ -5398,6 +5695,28 @@
 </tbody>
 </table>
 
+<h3 id="schema-dataresponseperson">DataResponsePerson</h3>
+
+
+<table class='schema-dataresponseperson'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>data</td>
+<td>object</td>
+<td>true</td>
+<td></td>
+<td>
+  <a href='#schema-person'>Person</a>
+</td>
+</tr>
+
+</tbody>
+</table>
+
 <h3 id="schema-alert">Alert</h3>
 
 
@@ -5536,116 +5855,6 @@
 <td></td>
 <td>
   <a href='#schema-alert'>Alert</a>
-</td>
-</tr>
-
-<tr>
-<td>pagination</td>
-<td>object</td>
-<td>true</td>
-<td></td>
-<td>
-  <a href='#schema-pagination'>Pagination</a>
-</td>
-</tr>
-
-</tbody>
-</table>
-
-<h3 id="schema-pagination">Pagination</h3>
-
-
-<table class='schema-pagination'>
-<thead>
-<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
-</thead>
-<tbody>
-
-<tr>
-<td>isLastPage</td>
-<td>boolean</td>
-<td>true</td>
-<td><p>Is the current page the last one?</p>
-</td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>count</td>
-<td>integer</td>
-<td>true</td>
-<td><p>The number of results in <code>data</code> for the current page</p>
-</td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>page</td>
-<td>integer</td>
-<td>true</td>
-<td><p>The current page number</p>
-</td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>perPage</td>
-<td>integer</td>
-<td>true</td>
-<td><p>The maximum number of results in <code>data</code> for a page</p>
-</td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>totalCount</td>
-<td>integer</td>
-<td>true</td>
-<td><p>The total number of results in <code>data</code> across all pages</p>
-</td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>totalPages</td>
-<td>integer</td>
-<td>true</td>
-<td><p>The total number of pages</p>
-</td>
-<td>
-  
-</td>
-</tr>
-
-</tbody>
-</table>
-
-<h3 id="schema-paginatedresponseperson">PaginatedResponsePerson</h3>
-
-
-<table class='schema-paginatedresponseperson'>
-<thead>
-<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
-</thead>
-<tbody>
-
-<tr>
-<td>data</td>
-<td>array</td>
-<td>true</td>
-<td></td>
-<td>
-  <a href='#schema-person'>Person</a>
 </td>
 </tr>
 
