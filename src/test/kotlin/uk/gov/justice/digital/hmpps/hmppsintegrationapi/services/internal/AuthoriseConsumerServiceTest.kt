@@ -19,7 +19,7 @@ internal class AuthoriseConsumerServiceTest(
 
       val consumerPathConfig =
         mapOf(
-          "automated-test-client" to ConsumerConfig(listOf("/persons/.*")),
+          "automated-test-client" to ConsumerConfig(listOf("/persons/.*"), emptyMap()),
         )
 
       var requestedPath = "/persons/123"
