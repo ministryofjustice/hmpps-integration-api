@@ -54,9 +54,11 @@ authorisation:
         - "/v1/persons/.*/plp-induction-schedule"
         - "/v1/persons/.*/plp-review-schedule"
         - "/v1/hmpps/reference-data"
+      filters:
     ctrlo:
       include:
         - "/v1/epf/person-details/.*/[^/]*$"
+      filters:
     moj-pes:
       include:
         - "/v1/persons/.*/name"
@@ -64,13 +66,16 @@ authorisation:
         - "/v1/hmpps/id/by-nomis-number/[^/]*$"
         - "/v1/hmpps/id/nomis-number/by-hmpps-id/[^/]*$"
         - "/v1/persons/.*/cell-location"
+      filters:
     kubernetes-health-check-client:
       include:
         - "/health/liveness"
         - "/health/readiness"
+      filters:
     heartbeat:
       include:
         - "/v1/persons/[^/]*$"
+      filters:
     pnd:
       include:
         - "/v1/persons"
@@ -87,9 +92,11 @@ authorisation:
         - "/v1/persons/.*/person-responsible-officer"
         - "/v1/persons/.*/status-information"
         - "/v1/hmpps/reference-data"
+      filters:
     event-service:
       include:
         - "/v1/config/authorisation"
+      filters:
     mryall:
       include:
         - "/v1/hmpps/reference-data"
@@ -120,26 +127,31 @@ authorisation:
         - "/v1/persons/[^/]*$"
         - "/v1/prison/prisoners/[^/]*$"
         - "/v1/prison/prisoners"
+      filters:
     kilco:
       include:
         - "/v1/persons"
         - "/v1/persons/[^/]*$"
         - "/v1/prison/prisoners"
         - "/v1/prison/prisoners/[^/]*$"
+      filters:
     meganexus:
       include:
         - "/v1/persons/.*/plp-induction-schedule"
         - "/v1/persons/.*/plp-review-schedule"
         - "/v1/hmpps/id/by-nomis-number/[^/]*$"
         - "/v1/hmpps/id/nomis-number/by-hmpps-id/[^/]*$"
+      filters:
     bmadley:
       include:
         - "/v1/persons"
         - "/v1/persons/[^/]*$"
         - "/v1/prison/prisoners/[^/]*$"
         - "/v1/prison/prisoners"
+      filters:
     serco:
       include:
         - "/v1/persons"
         - "/v1/prison/prisoners/[^/]*$"
         - "/v1/prison/prisoners"
+      filters:
