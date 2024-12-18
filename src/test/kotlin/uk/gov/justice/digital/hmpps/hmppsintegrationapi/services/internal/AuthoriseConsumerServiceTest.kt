@@ -6,6 +6,7 @@ import io.kotest.matchers.booleans.shouldBeTrue
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
 import org.springframework.test.context.ContextConfiguration
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
@@ -19,7 +20,7 @@ internal class AuthoriseConsumerServiceTest(
 
       val consumerPathConfig =
         mapOf(
-          "automated-test-client" to ConsumerConfig(listOf("/persons/.*"), emptyMap()),
+          "automated-test-client" to ConsumerConfig(listOf("/persons/.*"), ConsumerFilters()),
         )
 
       var requestedPath = "/persons/123"

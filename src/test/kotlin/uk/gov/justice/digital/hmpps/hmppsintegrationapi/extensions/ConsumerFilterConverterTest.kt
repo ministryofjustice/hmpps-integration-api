@@ -3,16 +3,15 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 import org.springframework.test.context.ActiveProfiles
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 @ActiveProfiles("test")
-class ConsumerConfigConverterTest {
+class ConsumerFilterConverterTest {
   @Test
-  fun `converts empty string to empty list`() {
+  fun `converts empty string to empty ConsumerFilter object`() {
     val consumerConfig = ""
-    val actual = ConsumerConfigConverter().convert(consumerConfig)
+    val actual = ConsumerFilterConverter().convert(consumerConfig)
 
-    actual.shouldBe(ConsumerConfig(emptyList(), ConsumerFilters()))
+    actual.shouldBe(ConsumerFilters())
   }
 }
