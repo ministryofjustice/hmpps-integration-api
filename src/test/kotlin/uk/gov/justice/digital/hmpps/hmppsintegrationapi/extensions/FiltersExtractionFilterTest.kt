@@ -30,6 +30,8 @@ class FiltersExtractionFilterTest {
     val mockResponse = mock(HttpServletResponse::class.java)
     val mockChain = mock(FilterChain::class.java)
 
+    authorisationConfig.consumers = mapOf("consumer-name" to ConsumerConfig(include = null, filters = ConsumerFilters(emptyMap())))
+
     // Act
     filtersExtractionFilter.doFilter(mockRequest, mockResponse, mockChain)
 
@@ -43,13 +45,14 @@ class FiltersExtractionFilterTest {
     val mockRequest = mock(HttpServletRequest::class.java)
     whenever(mockRequest.getAttribute("clientName")).thenReturn("consumer-name")
 
+    val mockResponse = mock(HttpServletResponse::class.java)
     val mockChain = mock(FilterChain::class.java)
 
     val expectedFilters = ConsumerFilters(mapOf("example-filter" to listOf("filter-1", "filter-2")))
     authorisationConfig.consumers = mapOf("consumer-name" to ConsumerConfig(include = null, filters = expectedFilters))
 
     // Act
-    filtersExtractionFilter.doFilter(mockRequest, null, mockChain)
+    filtersExtractionFilter.doFilter(mockRequest, mockResponse, mockChain)
 
     // Assert
     verify(mockRequest, times(1)).setAttribute("filters", expectedFilters)
@@ -61,13 +64,14 @@ class FiltersExtractionFilterTest {
     val mockRequest = mock(HttpServletRequest::class.java)
     whenever(mockRequest.getAttribute("clientName")).thenReturn("invalid-consumer-name")
 
+    val mockResponse = mock(HttpServletResponse::class.java)
     val mockChain = mock(FilterChain::class.java)
 
     val expectedFilters = ConsumerFilters(mapOf("example-filter" to listOf("filter-1", "filter-2")))
     authorisationConfig.consumers = mapOf("consumer-name" to ConsumerConfig(include = null, filters = expectedFilters))
 
     // Act
-    filtersExtractionFilter.doFilter(mockRequest, null, mockChain)
+    filtersExtractionFilter.doFilter(mockRequest, mockResponse, mockChain)
 
     // Assert
     verify(mockRequest, times(0)).setAttribute("filters", expectedFilters)

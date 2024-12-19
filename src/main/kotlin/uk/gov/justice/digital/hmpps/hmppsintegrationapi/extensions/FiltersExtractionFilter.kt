@@ -1,10 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions
 
-import jakarta.servlet.Filter
-import jakarta.servlet.FilterChain
-import jakarta.servlet.ServletException
-import jakarta.servlet.ServletRequest
-import jakarta.servlet.ServletResponse
+import jakarta.servlet.*
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.context.properties.EnableConfigurationProperties
@@ -26,18 +22,18 @@ class FiltersExtractionFilter
     @Throws(IOException::class, ServletException::class)
     override fun doFilter(
       request: ServletRequest,
-      response: ServletResponse?,
+      response: ServletResponse,
       chain: FilterChain,
     ) {
       val subjectDistinguishedName = request.getAttribute("clientName") as String?
-      val requestingConsumer: ConsumerConfig? = authorisationConfig.consumers[subjectDistinguishedName]
+      val consumerConfig: ConsumerConfig? = authorisationConfig.consumers[subjectDistinguishedName]
 
-      if (requestingConsumer == null) {
+      if (consumerConfig == null) {
         (response as HttpServletResponse).sendError(HttpServletResponse.SC_FORBIDDEN, "TODO")
         return
       }
 
-      val requestingConsumersFilters: ConsumerFilters? = requestingConsumer.filters
+      val requestingConsumersFilters: ConsumerFilters? = consumerConfig.filters
 
       request.setAttribute("filters", requestingConsumersFilters)
       chain.doFilter(request, response)
