@@ -37,6 +37,7 @@ class PrisonController(
   @GetMapping("/prisoners/{hmppsId}")
   @Operation(
     summary = "Returns a single prisoners details given an hmppsId, does not query for a probation person.",
+    description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
     responses = [
       ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found a prisoner with the provided HMPPS ID."),
       ApiResponse(responseCode = "404", content = [Content(schema = Schema(ref = "#/components/schemas/PersonNotFound"))]),
@@ -60,6 +61,7 @@ class PrisonController(
   @GetMapping("/prisoners")
   @Operation(
     summary = "Returns person(s) by search criteria, sorted by date of birth (newest first). Only queries prisoner search.",
+    description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
     responses = [
       ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully performed the query on upstream APIs. An empty list is returned when no results are found."),
       ApiResponse(

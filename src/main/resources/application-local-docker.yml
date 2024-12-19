@@ -57,12 +57,15 @@ authorisation:
         - "/info"
         - "/v1/prison/prisoners/[^/]*$"
         - "/v1/prison/prisoners"
+      filters:
     config-test:
       include:
         - "/v1/config/authorisation"
+      filters:
     all-access:
       include:
         - "/.*"
+      filters:
 
 hmpps.sqs:
   provider: localstack

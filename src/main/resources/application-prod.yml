@@ -31,6 +31,7 @@ authorisation:
     ctrlo:
       include:
         - "/v1/epf/person-details/.*/[^/]*$"
+      filters:
     moj-pes:
       include:
         - "/v1/persons/.*/name"
@@ -38,10 +39,13 @@ authorisation:
         - "/v1/hmpps/id/by-nomis-number/[^/]*$"
         - "/v1/hmpps/id/nomis-number/by-hmpps-id/[^/]*$"
         - "/v1/persons/.*/cell-location"
+      filters:
     kubernetes-health-check-client:
       include:
         - "/health/liveness"
         - "/health/readiness"
+      filters:
     event-service:
       include:
         - "/v1/config/authorisation"
+      filters:
