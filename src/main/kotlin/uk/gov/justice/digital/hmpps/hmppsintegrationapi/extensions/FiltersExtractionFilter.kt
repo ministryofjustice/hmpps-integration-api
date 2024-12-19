@@ -33,7 +33,7 @@ class FiltersExtractionFilter
       val consumerConfig: ConsumerConfig? = authorisationConfig.consumers[subjectDistinguishedName]
 
       if (consumerConfig == null) {
-        (response as HttpServletResponse).sendError(HttpServletResponse.SC_FORBIDDEN, "TODO")
+        (response as HttpServletResponse).sendError(HttpServletResponse.SC_FORBIDDEN, "No consumer authorisation config found for $subjectDistinguishedName")
         return
       }
 
