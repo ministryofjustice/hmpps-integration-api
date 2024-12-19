@@ -6,8 +6,6 @@ import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.junit.jupiter.api.Test
-import org.mockito.InjectMocks
-import org.mockito.Mock
 import org.mockito.Mockito.*
 import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConfig
@@ -15,10 +13,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Consum
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 class FiltersExtractionFilterTest {
-  @Mock
   private var authorisationConfig: AuthorisationConfig = AuthorisationConfig()
-
-  @InjectMocks
   private var filtersExtractionFilter: FiltersExtractionFilter = FiltersExtractionFilter(authorisationConfig)
 
   @Test
