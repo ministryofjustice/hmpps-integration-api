@@ -6,6 +6,7 @@ import org.springframework.http.HttpMethod
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper.WebClientWrapperResponse
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ActionPlanReviewsResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.InductionSchedule
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ReviewSchedules
@@ -62,6 +63,30 @@ class PLPGateway(
       is WebClientWrapperResponse.Error -> {
         Response(
           data = ReviewSchedules(listOf()),
+          errors = result.errors,
+        )
+      }
+    }
+  }
+
+  fun getReviews(prisonerNumber: String): Response<ActionPlanReviewsResponse> {
+    val result =
+      webClient.request<ActionPlanReviewsResponse>(
+        HttpMethod.GET,
+        "/action-plans/$prisonerNumber/reviews",
+        authenticationHeader(),
+        UpstreamApi.PLP,
+      )
+
+    return when (result) {
+      is WebClientWrapperResponse.Success -> {
+        val response = result.data
+        Response(data = response)
+      }
+
+      is WebClientWrapperResponse.Error -> {
+        Response(
+          data = ActionPlanReviewsResponse(completedReviews = listOf()),
           errors = result.errors,
         )
       }
