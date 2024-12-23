@@ -34,15 +34,17 @@ class GetReviewScheduleForPersonService(
 
     // Step 4: Update review schedules with completed reviews
     val updatedReviewSchedules =
-      reviewSchedulesResponse.data.reviewSchedules.map { reviewSchedule ->
-        val completed = mappedReviews[reviewSchedule.reference]
-        completed?.let {
-          reviewSchedule.copy(
-            conductedBy = it.conductedBy,
-            conductedRole = it.conductedByRole,
-          )
-        } ?: reviewSchedule
-      }
+      reviewSchedulesResponse.data.reviewSchedules
+        .filter { it.status == "COMPLETED" }
+        .map { reviewSchedule ->
+          val completed = mappedReviews[reviewSchedule.reference]
+          completed?.let {
+            reviewSchedule.copy(
+              completedBy = it.conductedBy,
+              completedByRole = it.conductedByRole,
+            )
+          } ?: reviewSchedule
+        }
 
     // Step 5: Return the updated review schedules
     return Response(
