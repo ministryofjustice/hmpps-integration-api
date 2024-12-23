@@ -50,4 +50,17 @@ class AuthorisationFilterTest {
     // Assert
     verify(mockResponse, times(1)).sendError(403, "Unable to authorise /v1/persons for consumer-name")
   }
+
+  @Test
+  fun `generates error when subject distinguished name is null in the request`() {
+    val mockRequest = mock(HttpServletRequest::class.java)
+    whenever(mockRequest.requestURI).thenReturn("/v1/persons")
+    whenever(mockRequest.getAttribute("clientName")).thenReturn(null)
+    val mockResponse = mock(HttpServletResponse::class.java)
+    val mockChain = mock(FilterChain::class.java)
+
+    authorisationFilter.doFilter(mockRequest, mockResponse, mockChain)
+
+    verify(mockResponse, times(1)).sendError(403, "No subject-distinguished-name header provided for authorisation")
+  }
 }
