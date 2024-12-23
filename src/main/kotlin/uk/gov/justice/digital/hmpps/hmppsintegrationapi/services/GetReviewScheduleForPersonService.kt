@@ -14,8 +14,9 @@ class GetReviewScheduleForPersonService(
   fun execute(hmppsId: String): Response<ReviewSchedules> {
     // Step 1: Get the NOMIS number for the given HMPPS ID
     val nomisNumberResponse = getPersonService.getNomisNumber(hmppsId)
-    val nomisNumber = nomisNumberResponse.data?.nomisNumber
-      ?: return Response(ReviewSchedules(emptyList()), nomisNumberResponse.errors)
+    val nomisNumber =
+      nomisNumberResponse.data?.nomisNumber
+        ?: return Response(ReviewSchedules(emptyList()), nomisNumberResponse.errors)
 
     // Step 2: Fetch completed reviews
     val plpReviewsResponse = plpGateway.getReviews(nomisNumber)
@@ -32,20 +33,21 @@ class GetReviewScheduleForPersonService(
     }
 
     // Step 4: Update review schedules with completed reviews
-    val updatedReviewSchedules = reviewSchedulesResponse.data.reviewSchedules.map { reviewSchedule ->
-      val completed = mappedReviews[reviewSchedule.reference]
-      completed?.let {
-        reviewSchedule.copy(
-          conductedBy = it.conductedBy,
-          conductedRole = it.conductedByRole
-        )
-      } ?: reviewSchedule
-    }
+    val updatedReviewSchedules =
+      reviewSchedulesResponse.data.reviewSchedules.map { reviewSchedule ->
+        val completed = mappedReviews[reviewSchedule.reference]
+        completed?.let {
+          reviewSchedule.copy(
+            conductedBy = it.conductedBy,
+            conductedRole = it.conductedByRole,
+          )
+        } ?: reviewSchedule
+      }
 
     // Step 5: Return the updated review schedules
     return Response(
       ReviewSchedules(updatedReviewSchedules),
-      emptyList() // No errors since both calls succeeded
+      emptyList(),
     )
   }
 }

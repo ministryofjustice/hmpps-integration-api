@@ -34,13 +34,11 @@ data class ReviewSchedule(
 )
 
 data class ActionPlanReviewsResponse(
-
   val latestReviewSchedule: ScheduledActionPlanReviewResponse? = null,
-  val completedReviews: List<CompletedActionPlanReviewResponse>
+  val completedReviews: List<CompletedActionPlanReviewResponse>,
 )
 
 data class ScheduledActionPlanReviewResponse(
-
   val reviewDateFrom: LocalDate,
   val reviewDateTo: LocalDate,
   val status: String,
@@ -54,7 +52,7 @@ data class ScheduledActionPlanReviewResponse(
   val updatedAt: java.time.OffsetDateTime,
   val updatedAtPrison: String,
   val exemptionReason: String? = null,
-  val version: Int? = null
+  val version: Int? = null,
 )
 
 data class CompletedActionPlanReviewResponse(
@@ -67,5 +65,5 @@ data class CompletedActionPlanReviewResponse(
   val createdAtPrison: String,
   val reviewScheduleReference: UUID? = null,
   val conductedBy: String? = null,
-  val conductedByRole: String? = null
+  val conductedByRole: String? = null,
 )
