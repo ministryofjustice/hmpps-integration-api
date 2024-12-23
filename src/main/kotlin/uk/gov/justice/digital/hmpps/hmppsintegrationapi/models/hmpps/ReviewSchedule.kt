@@ -29,8 +29,8 @@ data class ReviewSchedule(
   val updatedAt: Instant,
   val updatedAtPrison: String,
   val version: Int,
-  var conductedBy: String?,
-  var conductedRole: String?,
+  var completedBy: String?,
+  var completedByRole: String?,
 )
 
 data class ActionPlanReviewsResponse(
