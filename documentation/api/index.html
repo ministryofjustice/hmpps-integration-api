@@ -1043,6 +1043,17 @@
 </td>
 </tr>
 
+<tr>
+<td>statuses</td>
+<td>query</td>
+<td>array</td>
+<td>false</td>
+<td><p>Filter by review schedule statuses</p>
+
+
+</td>
+</tr>
+
 </tbody>
 </table>
 
@@ -1081,8 +1092,9 @@
         "updatedAt": "string",
         "updatedAtPrison": "string",
         "version": "integer",
-        "completedBy": "string",
-        "completedByRole": "string"
+        "reviewCompletedBy": "string",
+        "reviewCompletedByRole": "string",
+        "reviewCompletedAt": "string"
       }
     ]
   }
@@ -6051,7 +6063,7 @@
 </tr>
 
 <tr>
-<td>completedBy</td>
+<td>reviewCompletedBy</td>
 <td>string</td>
 <td>false</td>
 <td></td>
@@ -6061,9 +6073,19 @@
 </tr>
 
 <tr>
-<td>completedByRole</td>
+<td>reviewCompletedByRole</td>
 <td>string</td>
 <td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>reviewCompletedAt</td>
+<td>string</td>
+<td>true</td>
 <td></td>
 <td>
   
