@@ -42,4 +42,19 @@ class ConsumerNameExtractionFilterTest {
     // Assert
     verify(mockRequest, times(1)).setAttribute("clientName", "consumer-name")
   }
+
+  @Test
+  fun `does not set a clientName from request if it does not match the regex `() {
+    // Arrange
+    val mockRequest = mock(HttpServletRequest::class.java)
+    whenever(mockRequest.getHeader("subject-distinguished-name")).thenReturn("CN=consumer-name")
+
+    val mockResponse = mock(HttpServletResponse::class.java)
+    val mockChain = mock(FilterChain::class.java)
+    // Act
+    consumerNameExtractionFilter.doFilter(mockRequest, mockResponse, mockChain)
+
+    // Assert
+    verify(mockRequest, times(1)).setAttribute("clientName", null)
+  }
 }
