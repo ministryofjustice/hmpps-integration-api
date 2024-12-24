@@ -29,8 +29,9 @@ data class ReviewSchedule(
   val updatedAt: Instant,
   val updatedAtPrison: String,
   val version: Int,
-  var completedBy: String?,
-  var completedByRole: String?,
+  var reviewCompletedBy: String?,
+  var reviewCompletedByRole: String?,
+  var reviewCompletedAt: Instant,
 )
 
 data class ActionPlanReviewsResponse(
@@ -45,11 +46,11 @@ data class ScheduledActionPlanReviewResponse(
   val calculationRule: String,
   val createdBy: String,
   val createdByDisplayName: String,
-  val createdAt: java.time.OffsetDateTime,
+  val createdAt: Instant,
   val createdAtPrison: String,
   val updatedBy: String,
   val updatedByDisplayName: String,
-  val updatedAt: java.time.OffsetDateTime,
+  val updatedAt: Instant,
   val updatedAtPrison: String,
   val exemptionReason: String? = null,
   val version: Int? = null,
@@ -66,4 +67,7 @@ data class CompletedActionPlanReviewResponse(
   val reviewScheduleReference: UUID? = null,
   val conductedBy: String? = null,
   val conductedByRole: String? = null,
+  val updatedBy: String,
+  val updatedByDisplayName: String,
+  val updatedAt: Instant,
 )

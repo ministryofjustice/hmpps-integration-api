@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
@@ -60,14 +61,23 @@ class PLPController(
     ],
   )
   fun getReviewSchedule(
-    @Parameter(description = "A HmppsId ", example = "A123123") @PathVariable hmppsId: String,
+    @Parameter(description = "A HmppsId", example = "A123123") @PathVariable hmppsId: String,
+    @Parameter(description = "Filter by review schedule statuses", example = "[\"COMPLETED\", \"PENDING\"]")
+    @RequestParam(required = false) statuses: List<String>?,
   ): DataResponse<ReviewSchedules> {
     val response = getReviewScheduleForPersonService.execute(hmppsId)
 
     if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
       throw EntityNotFoundException("Could not find person with id: $hmppsId")
     }
+
     auditService.createEvent("GET_REVIEW_SCHEDULE", mapOf("hmppsId" to hmppsId))
-    return DataResponse(response.data)
+
+    // Filter the review schedules by statuses if the query parameter is provided
+    val filteredData =
+      response.data.reviewSchedules
+        .filter { statuses == null || it.status in statuses }
+
+    return DataResponse(ReviewSchedules(filteredData))
   }
 }
