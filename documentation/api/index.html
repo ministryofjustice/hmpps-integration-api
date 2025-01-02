@@ -166,6 +166,9 @@
         <a href="../../documentation/api/index.html#v1-persons-hmppsid-plp-induction-schedule"><span>/v1/persons/{hmppsId}/plp-induction-schedule</span></a>
       </li>
       <li>
+        <a href="../../documentation/api/index.html#v1-persons-hmppsid-plp-induction-schedule-history"><span>/v1/persons/{hmppsId}/plp-induction-schedule/history</span></a>
+      </li>
+      <li>
         <a href="../../documentation/api/index.html#v1-persons-encodedhmppsid"><span>/v1/persons/{encodedHmppsId}</span></a>
       </li>
       <li>
@@ -1020,7 +1023,7 @@
 
 <h3 id="v1-persons-hmppsid-plp-review-schedule-get">get</h3>
 
-  <p><em>Returns plp the review schedule associated with a person.</em></p>
+  <p><em>Returns the plp review schedule associated with a person.</em></p>
 
 
 
@@ -1154,7 +1157,7 @@
 
 <h3 id="v1-persons-hmppsid-plp-induction-schedule-get">get</h3>
 
-  <p><em>Returns plp the induction schedule associated with a person.</em></p>
+  <p><em>Returns plp the current induction schedule associated with a person.</em></p>
 
 
 
@@ -1206,13 +1209,131 @@
     "systemUpdatedBy": "John Smith",
     "systemUpdatedAt": "2023-06-19T09:39:44Z",
     "inductionPerformedBy": "Fred Jones",
-    "inductionPerformedAt": "2023-06-30"
+    "inductionPerformedAt": "2023-06-30",
+    "exemptionReason": "string",
+    "version": "integer"
   }
 }</code></pre>
 
 </td>
 <td>
 <a href='#schema-dataresponseinductionschedule'>DataResponseInductionSchedule</a>
+</td>
+</tr>
+
+<tr>
+<td>404</td>
+<td>
+<p>Not Found</p>
+
+
+
+<pre><code>{
+  "status": 404,
+  "userMessage": "404 Not found error: Could not find person with HMPPS id: 2003/0011991D.",
+  "developerMessage": "Could not find person with HMPPS id: 2003/0011991D."
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-personnotfound'>PersonNotFound</a>
+</td>
+</tr>
+
+<tr>
+<td>500</td>
+<td>
+<p>Internal Server Error</p>
+
+
+
+<pre><code>{
+  "status": 500,
+  "userMessage": "Internal Server Error",
+  "developerMessage": "Unable to complete request as an upstream service is not responding."
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-internalservererror'>InternalServerError</a>
+</td>
+</tr>
+
+</tbody>
+</table>
+
+
+
+
+<h2 id="v1-persons-hmppsid-plp-induction-schedule-history">/v1/persons/{hmppsId}/plp-induction-schedule/history</h2>
+
+<h3 id="v1-persons-hmppsid-plp-induction-schedule-history-get">get</h3>
+
+  <p><em>Returns the plp induction schedule history associated with a person.</em></p>
+
+
+
+
+<h4 id="v1-persons-hmppsid-plp-induction-schedule-history-get-parameters">Parameters</h4>
+<table>
+<thead>
+<tr><th>Parameter</th><th>In</th><th>Type</th><th>Required</th><th>Description</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>hmppsId</td>
+<td>path</td>
+<td>string</td>
+<td>true</td>
+<td><p>A HMPPS id</p>
+
+
+</td>
+</tr>
+
+</tbody>
+</table>
+
+
+
+
+<h4 id="v1-persons-hmppsid-plp-induction-schedule-history-get-responses">Responses</h4>
+<table>
+<thead>
+<tr><th>Status</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>200</td>
+<td>
+<p>Successfully found induction schedule history for a person with the provided HMPPS ID.</p>
+
+
+
+<pre><code>{
+  "data": {
+    "inductionSchedules": [
+      {
+        "deadlineDate": "2023-09-01",
+        "status": "SCHEDULED",
+        "calculationRule": "NEW_PRISON_ADMISSION",
+        "nomisNumber": "A1234BC",
+        "systemUpdatedBy": "John Smith",
+        "systemUpdatedAt": "2023-06-19T09:39:44Z",
+        "inductionPerformedBy": "Fred Jones",
+        "inductionPerformedAt": "2023-06-30",
+        "exemptionReason": "string",
+        "version": "integer"
+      }
+    ]
+  }
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-dataresponseinductionschedules'>DataResponseInductionSchedules</a>
 </td>
 </tr>
 
@@ -6233,6 +6354,70 @@
 </td>
 <td>
   
+</td>
+</tr>
+
+<tr>
+<td>exemptionReason</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>version</td>
+<td>integer</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+</tbody>
+</table>
+
+<h3 id="schema-dataresponseinductionschedules">DataResponseInductionSchedules</h3>
+
+
+<table class='schema-dataresponseinductionschedules'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>data</td>
+<td>object</td>
+<td>true</td>
+<td></td>
+<td>
+  <a href='#schema-inductionschedules'>InductionSchedules</a>
+</td>
+</tr>
+
+</tbody>
+</table>
+
+<h3 id="schema-inductionschedules">InductionSchedules</h3>
+
+
+<table class='schema-inductionschedules'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>inductionSchedules</td>
+<td>array</td>
+<td>true</td>
+<td></td>
+<td>
+  <a href='#schema-inductionschedule'>InductionSchedule</a>
 </td>
 </tr>
 
