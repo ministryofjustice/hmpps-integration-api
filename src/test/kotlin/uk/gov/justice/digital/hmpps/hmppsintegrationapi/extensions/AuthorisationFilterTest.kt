@@ -11,21 +11,24 @@ import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuthoriseConsumerService
 
 class AuthorisationFilterTest {
   private var authorisationConfig: AuthorisationConfig = AuthorisationConfig()
-  private var authorisationFilter: AuthorisationFilter = AuthorisationFilter(authorisationConfig)
+  private var authorisationFilter: AuthorisationFilter = AuthorisationFilter(authorisationConfig, AuthoriseConsumerService())
+  private var examplePath: String = "/v1/persons"
+  private var exampleConsumer: String = "consumer-name"
 
   @Test
   fun `calls the onward chain`() {
     // Arrange
     val mockRequest = mock(HttpServletRequest::class.java)
-    whenever(mockRequest.requestURI).thenReturn("/v1/persons")
-    whenever(mockRequest.getAttribute("clientName")).thenReturn("consumer-name")
+    whenever(mockRequest.requestURI).thenReturn(examplePath)
+    whenever(mockRequest.getAttribute("clientName")).thenReturn(exampleConsumer)
     val mockResponse = mock(HttpServletResponse::class.java)
     val mockChain = mock(FilterChain::class.java)
 
-    authorisationConfig.consumers = mapOf("consumer-name" to ConsumerConfig(include = listOf("/v1/persons"), filters = ConsumerFilters(emptyMap())))
+    authorisationConfig.consumers = mapOf(exampleConsumer to ConsumerConfig(include = listOf(examplePath), filters = ConsumerFilters(emptyMap())))
 
     // Act
     authorisationFilter.doFilter(mockRequest, mockResponse, mockChain)
@@ -37,12 +40,17 @@ class AuthorisationFilterTest {
   @Test
   fun `generates error when consumer is unauthorised for requested path`() {
     val mockRequest = mock(HttpServletRequest::class.java)
-    whenever(mockRequest.requestURI).thenReturn("/v1/persons")
-    whenever(mockRequest.getAttribute("clientName")).thenReturn("consumer-name")
+    whenever(mockRequest.requestURI).thenReturn(examplePath)
+    whenever(mockRequest.getAttribute("clientName")).thenReturn(exampleConsumer)
 
     val mockResponse = mock(HttpServletResponse::class.java)
     val mockChain = mock(FilterChain::class.java)
-    authorisationConfig.consumers = mapOf("consumer-name" to ConsumerConfig(include = null, filters = ConsumerFilters(emptyMap())))
+
+    val mockService = mock(AuthoriseConsumerService::class.java)
+    whenever(mockService.execute(exampleConsumer, authorisationConfig.consumers, examplePath))
+      .thenReturn(false)
+
+    val authorisationFilter = AuthorisationFilter(authorisationConfig, mockService)
 
     // Act
     authorisationFilter.doFilter(mockRequest, mockResponse, mockChain)
@@ -54,7 +62,7 @@ class AuthorisationFilterTest {
   @Test
   fun `generates error when subject distinguished name is null in the request`() {
     val mockRequest = mock(HttpServletRequest::class.java)
-    whenever(mockRequest.requestURI).thenReturn("/v1/persons")
+    whenever(mockRequest.requestURI).thenReturn(examplePath)
     whenever(mockRequest.getAttribute("clientName")).thenReturn(null)
     val mockResponse = mock(HttpServletResponse::class.java)
     val mockChain = mock(FilterChain::class.java)
