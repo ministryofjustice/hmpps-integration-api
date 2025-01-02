@@ -22,7 +22,6 @@ class AuthorisationFilter
   @Autowired
   constructor(
     var authorisationConfig: AuthorisationConfig,
-    var authoriseConsumerService: AuthoriseConsumerService,
   ) : Filter {
     @Throws(IOException::class, ServletException::class)
     override fun doFilter(
@@ -32,6 +31,7 @@ class AuthorisationFilter
     ) {
       val req = request as HttpServletRequest
       val res = response as HttpServletResponse
+      val authoriseConsumerService = AuthoriseConsumerService()
       val subjectDistinguishedName = req.getAttribute("clientName") as String?
       val requestedPath = req.requestURI
 

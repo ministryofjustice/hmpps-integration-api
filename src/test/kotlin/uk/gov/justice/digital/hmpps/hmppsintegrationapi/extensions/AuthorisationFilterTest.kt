@@ -11,11 +11,10 @@ import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuthoriseConsumerService
 
 class AuthorisationFilterTest {
   private var authorisationConfig: AuthorisationConfig = AuthorisationConfig()
-  private var authorisationFilter: AuthorisationFilter = AuthorisationFilter(authorisationConfig, AuthoriseConsumerService())
+  private var authorisationFilter: AuthorisationFilter = AuthorisationFilter(authorisationConfig)
   private var examplePath: String = "/v1/persons"
   private var exampleConsumer: String = "consumer-name"
 
@@ -42,15 +41,12 @@ class AuthorisationFilterTest {
     val mockRequest = mock(HttpServletRequest::class.java)
     whenever(mockRequest.requestURI).thenReturn(examplePath)
     whenever(mockRequest.getAttribute("clientName")).thenReturn(exampleConsumer)
-
     val mockResponse = mock(HttpServletResponse::class.java)
     val mockChain = mock(FilterChain::class.java)
 
-    val mockService = mock(AuthoriseConsumerService::class.java)
-    whenever(mockService.execute(exampleConsumer, authorisationConfig.consumers, examplePath))
-      .thenReturn(false)
+    authorisationConfig.consumers = mapOf(exampleConsumer to ConsumerConfig(include = emptyList(), filters = ConsumerFilters(emptyMap())))
 
-    val authorisationFilter = AuthorisationFilter(authorisationConfig, mockService)
+    val authorisationFilter = AuthorisationFilter(authorisationConfig)
 
     // Act
     authorisationFilter.doFilter(mockRequest, mockResponse, mockChain)
