@@ -52,6 +52,7 @@ authorisation:
         - "/v1/persons/.*/person-responsible-officer"
         - "/v1/persons/.*/risk-management-plan"
         - "/v1/persons/.*/plp-induction-schedule"
+        - "/v1/persons/.*/plp-induction-schedule/history"
         - "/v1/persons/.*/plp-review-schedule"
         - "/v1/hmpps/reference-data"
       filters:
@@ -138,6 +139,7 @@ authorisation:
     meganexus:
       include:
         - "/v1/persons/.*/plp-induction-schedule"
+        - "/v1/persons/.*/plp-induction-schedule/history"
         - "/v1/persons/.*/plp-review-schedule"
         - "/v1/hmpps/id/by-nomis-number/[^/]*$"
         - "/v1/hmpps/id/nomis-number/by-hmpps-id/[^/]*$"

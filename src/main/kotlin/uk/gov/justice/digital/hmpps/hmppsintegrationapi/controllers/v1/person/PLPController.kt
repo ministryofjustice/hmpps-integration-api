@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.InductionSchedule
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.InductionSchedules
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ReviewSchedules
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetInductionScheduleForPersonService
@@ -32,7 +33,7 @@ class PLPController(
 ) {
   @GetMapping("{hmppsId}/plp-induction-schedule")
   @Operation(
-    summary = "Returns plp the induction schedule associated with a person.",
+    summary = "Returns plp the current induction schedule associated with a person.",
     responses = [
       ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found induction schedule for a person with the provided HMPPS ID."),
       ApiResponse(responseCode = "404", content = [Content(schema = Schema(ref = "#/components/schemas/PersonNotFound"))]),
@@ -51,9 +52,30 @@ class PLPController(
     return DataResponse(response.data)
   }
 
+  @GetMapping("{hmppsId}/plp-induction-schedule/history")
+  @Operation(
+    summary = "Returns the plp induction schedule history associated with a person.",
+    responses = [
+      ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found induction schedule history for a person with the provided HMPPS ID."),
+      ApiResponse(responseCode = "404", content = [Content(schema = Schema(ref = "#/components/schemas/PersonNotFound"))]),
+      ApiResponse(responseCode = "500", content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]),
+    ],
+  )
+  fun getInductionScheduleHistory(
+    @Parameter(description = "A HMPPS id", example = "A123123") @PathVariable hmppsId: String,
+  ): DataResponse<InductionSchedules> {
+    val response = getInductionScheduleForPersonService.getHistory(hmppsId)
+
+    if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
+      throw EntityNotFoundException("Could not find person with id: $hmppsId")
+    }
+    auditService.createEvent("GET_INDUCTION_SCHEDULE", mapOf("hmppsId" to hmppsId))
+    return DataResponse(response.data)
+  }
+
   @GetMapping("{hmppsId}/plp-review-schedule")
   @Operation(
-    summary = "Returns plp the review schedule associated with a person.",
+    summary = "Returns the plp review schedule associated with a person.",
     responses = [
       ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found induction schedule for a person with the provided HMPPS ID."),
       ApiResponse(responseCode = "404", content = [Content(schema = Schema(ref = "#/components/schemas/PersonNotFound"))]),
@@ -71,7 +93,7 @@ class PLPController(
       throw EntityNotFoundException("Could not find person with id: $hmppsId")
     }
 
-    auditService.createEvent("GET_REVIEW_SCHEDULE", mapOf("hmppsId" to hmppsId))
+    auditService.createEvent("GET_REVIEW_SCHEDULE_HISTORY", mapOf("hmppsId" to hmppsId))
 
     // Filter the review schedules by statuses if the query parameter is provided
     val filteredData =

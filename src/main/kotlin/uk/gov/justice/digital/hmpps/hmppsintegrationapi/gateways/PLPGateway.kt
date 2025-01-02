@@ -8,6 +8,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrap
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper.WebClientWrapperResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ActionPlanReviewsResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.InductionSchedule
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.InductionSchedules
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ReviewSchedules
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
@@ -39,6 +40,30 @@ class PLPGateway(
       is WebClientWrapperResponse.Error -> {
         Response(
           data = InductionSchedule(),
+          errors = result.errors,
+        )
+      }
+    }
+  }
+
+  fun getInductionScheduleHistory(prisonerNumber: String): Response<InductionSchedules> {
+    val result =
+      webClient.request<InductionSchedules>(
+        HttpMethod.GET,
+        "/inductions/$prisonerNumber/induction-schedule/history",
+        authenticationHeader(),
+        UpstreamApi.PLP,
+      )
+
+    return when (result) {
+      is WebClientWrapperResponse.Success -> {
+        val inductionSchedule = result.data
+        Response(data = inductionSchedule)
+      }
+
+      is WebClientWrapperResponse.Error -> {
+        Response(
+          data = InductionSchedules(listOf()),
           errors = result.errors,
         )
       }
