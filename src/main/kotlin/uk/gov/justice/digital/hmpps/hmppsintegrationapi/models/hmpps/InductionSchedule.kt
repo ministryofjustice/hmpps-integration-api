@@ -11,7 +11,6 @@ import io.swagger.v3.oas.annotations.media.Schema
 import java.time.Instant
 import java.time.LocalDate
 
-
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.USE_DEFAULTS)
 data class InductionSchedules(
@@ -62,9 +61,7 @@ data class InductionSchedule(
     example = "2023-06-30",
   )
   val inductionPerformedAt: LocalDate? = null,
-
   val exemptionReason: String? = null,
-
   val version: Int? = null,
 )
 
