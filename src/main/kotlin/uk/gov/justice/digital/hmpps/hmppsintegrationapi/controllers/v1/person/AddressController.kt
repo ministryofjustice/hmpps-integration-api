@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.decodeUrlCharacters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Address
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
@@ -27,7 +26,7 @@ class AddressController(
   @Autowired val auditService: AuditService,
   @Autowired val getAddressesForPersonService: GetAddressesForPersonService,
 ) {
-  @GetMapping("{encodedHmppsId}/addresses")
+  @GetMapping("{hmppsId}/addresses")
   @Operation(
     summary = "Returns addresses associated with a person, ordered by startDate.",
     responses = [
@@ -37,9 +36,8 @@ class AddressController(
     ],
   )
   fun getPersonAddresses(
-    @Parameter(description = "A URL-encoded HMPPS identifier", example = "2008%2F0545166T") @PathVariable encodedHmppsId: String,
+    @Parameter(description = "A URL-encoded HMPPS identifier", example = "B123123") @PathVariable hmppsId: String,
   ): DataResponse<List<Address>> {
-    val hmppsId = encodedHmppsId.decodeUrlCharacters()
     val response = getAddressesForPersonService.execute(hmppsId)
 
     if (
