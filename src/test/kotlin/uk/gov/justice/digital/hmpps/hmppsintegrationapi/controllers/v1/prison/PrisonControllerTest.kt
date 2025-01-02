@@ -154,6 +154,26 @@ internal class PrisonControllerTest(
         result.response.status.shouldBe(404)
       }
 
+      it("returns 404 when NOMIS number is not found") {
+        whenever(getPersonService.getPrisoner(hmppsId)).thenReturn(
+          Response(
+            data = null,
+            errors =
+              listOf(
+                UpstreamApiError(
+                  type = ENTITY_NOT_FOUND,
+                  causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH,
+                  description = "NOMIS number not found",
+                ),
+              ),
+          ),
+        )
+
+        val result = mockMvc.performAuthorised("$basePath/prisoners/$hmppsId")
+
+        result.response.status.shouldBe(404)
+      }
+
       it("returns 500 when prison/prisoners throws an unexpected error") {
 
         whenever(getPrisonersService.execute("Barry", "Allen", "2023-03-01")).thenThrow(RuntimeException("Service error"))
