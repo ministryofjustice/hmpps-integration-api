@@ -72,6 +72,7 @@ authorisation:
         - "/v1/persons/.*/cell-location"
         - "/v1/persons/.*/status-information"
         - "/v1/persons/.*/plp-induction-schedule"
+        - "/v1/persons/.*/plp-induction-schedule/history"
         - "/v1/persons/.*/plp-review-schedule"
         - "/v1/hmpps/id/nomis-number/[^/]*$"
         - "/v1/hmpps/id/.*/nomis-number"

@@ -11,6 +11,13 @@ import io.swagger.v3.oas.annotations.media.Schema
 import java.time.Instant
 import java.time.LocalDate
 
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonInclude(JsonInclude.Include.USE_DEFAULTS)
+data class InductionSchedules(
+  val inductionSchedules: List<InductionSchedule>,
+)
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.USE_DEFAULTS)
 @JsonDeserialize(using = InductionScheduleDeserializer::class)
@@ -55,6 +62,10 @@ data class InductionSchedule(
     example = "2023-06-30",
   )
   val inductionPerformedAt: LocalDate? = null,
+
+  val exemptionReason: String? = null,
+
+  val version: Int? = null,
 )
 
 class InductionScheduleDeserializer : JsonDeserializer<InductionSchedule>() {
@@ -71,6 +82,8 @@ class InductionScheduleDeserializer : JsonDeserializer<InductionSchedule>() {
     val systemUpdatedAt = node["updatedAt"]?.asText()?.let { Instant.parse(it) }
     val inductionPerformedBy = node["inductionPerformedBy"]?.takeUnless { it.isNull }?.asText()
     val inductionPerformedAt = node["inductionPerformedAt"]?.takeUnless { it.isNull }?.asText()?.let { LocalDate.parse(it) }
+    val version = node["version"]?.asInt()
+    val exemptionReason = node["exemptionReason"]?.asText()
 
     return InductionSchedule(
       deadlineDate = deadlineDate,
@@ -81,6 +94,8 @@ class InductionScheduleDeserializer : JsonDeserializer<InductionSchedule>() {
       systemUpdatedAt = systemUpdatedAt,
       inductionPerformedBy = inductionPerformedBy,
       inductionPerformedAt = inductionPerformedAt,
+      exemptionReason = exemptionReason,
+      version = version,
     )
   }
 }
