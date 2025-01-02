@@ -18,34 +18,35 @@ import java.io.IOException
 @Component
 @Order(1)
 @EnableConfigurationProperties(AuthorisationConfig::class)
-class AuthorisationFilter : Filter {
+class AuthorisationFilter
   @Autowired
-  lateinit var authorisationConfig: AuthorisationConfig
+  constructor(
+    var authorisationConfig: AuthorisationConfig,
+  ) : Filter {
+    @Throws(IOException::class, ServletException::class)
+    override fun doFilter(
+      request: ServletRequest,
+      response: ServletResponse?,
+      chain: FilterChain,
+    ) {
+      val req = request as HttpServletRequest
+      val res = response as HttpServletResponse
+      val authoriseConsumerService = AuthoriseConsumerService()
+      val subjectDistinguishedName = req.getAttribute("clientName") as String?
+      val requestedPath = req.requestURI
 
-  @Throws(IOException::class, ServletException::class)
-  override fun doFilter(
-    request: ServletRequest,
-    response: ServletResponse?,
-    chain: FilterChain,
-  ) {
-    val req = request as HttpServletRequest
-    val res = response as HttpServletResponse
-    val authoriseConsumerService = AuthoriseConsumerService()
-    val subjectDistinguishedName = req.getAttribute("clientName") as String?
-    val requestedPath = req.requestURI
+      if (subjectDistinguishedName == null) {
+        res.sendError(HttpServletResponse.SC_FORBIDDEN, "No subject-distinguished-name header provided for authorisation")
+        return
+      }
 
-    if (subjectDistinguishedName == null) {
-      res.sendError(HttpServletResponse.SC_FORBIDDEN, "No subject-distinguished-name header provided for authorisation")
-      return
+      val result = authoriseConsumerService.execute(subjectDistinguishedName, authorisationConfig.consumers, requestedPath)
+
+      if (!result) {
+        res.sendError(HttpServletResponse.SC_FORBIDDEN, "Unable to authorise $requestedPath for $subjectDistinguishedName")
+        return
+      }
+
+      chain.doFilter(request, response)
     }
-
-    val result = authoriseConsumerService.execute(subjectDistinguishedName, authorisationConfig.consumers, requestedPath)
-
-    if (!result) {
-      res.sendError(HttpServletResponse.SC_FORBIDDEN, "Unable to authorise $requestedPath for $subjectDistinguishedName")
-      return
-    }
-
-    chain.doFilter(request, response)
   }
-}
