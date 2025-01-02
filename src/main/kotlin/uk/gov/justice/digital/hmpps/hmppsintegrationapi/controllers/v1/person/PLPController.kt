@@ -54,7 +54,7 @@ class PLPController(
 
   @GetMapping("{hmppsId}/plp-induction-schedule/history")
   @Operation(
-    summary = "Returns plp the induction schedule history associated with a person.",
+    summary = "Returns the plp induction schedule history associated with a person.",
     responses = [
       ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found induction schedule history for a person with the provided HMPPS ID."),
       ApiResponse(responseCode = "404", content = [Content(schema = Schema(ref = "#/components/schemas/PersonNotFound"))]),
@@ -75,7 +75,7 @@ class PLPController(
 
   @GetMapping("{hmppsId}/plp-review-schedule")
   @Operation(
-    summary = "Returns plp the review schedule associated with a person.",
+    summary = "Returns the plp review schedule associated with a person.",
     responses = [
       ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found induction schedule for a person with the provided HMPPS ID."),
       ApiResponse(responseCode = "404", content = [Content(schema = Schema(ref = "#/components/schemas/PersonNotFound"))]),
@@ -93,7 +93,7 @@ class PLPController(
       throw EntityNotFoundException("Could not find person with id: $hmppsId")
     }
 
-    auditService.createEvent("GET_REVIEW_SCHEDULE", mapOf("hmppsId" to hmppsId))
+    auditService.createEvent("GET_REVIEW_SCHEDULE_HISTORY", mapOf("hmppsId" to hmppsId))
 
     // Filter the review schedules by statuses if the query parameter is provided
     val filteredData =
