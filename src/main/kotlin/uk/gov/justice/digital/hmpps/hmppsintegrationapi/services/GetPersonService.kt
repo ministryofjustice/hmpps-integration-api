@@ -110,7 +110,10 @@ class GetPersonService(
 
   fun getPersonFromNomis(nomisNumber: String) = prisonerOffenderSearchGateway.getPrisonOffender(nomisNumber)
 
-  fun getPrisoner(hmppsId: String, filters: ConsumerFilters?): Response<Person?> {
+  fun getPrisoner(
+    hmppsId: String,
+    filters: ConsumerFilters?,
+  ): Response<Person?> {
     val prisonerNomisNumber = getNomisNumber(hmppsId)
 
     if (prisonerNomisNumber.errors.isNotEmpty()) {
@@ -145,17 +148,10 @@ class GetPersonService(
       )
     }
 
-
     val posPrisoner = prisonResponse.data
 
     if (
-      filters?.filters?.containsKey("prisons") == true &&
-      (
-        (
-          posPrisoner?.prisonId != null && filters.filters["prisons"]?.contains(posPrisoner.prisonId) == false
-        ) ||
-          posPrisoner?.prisonId == null
-      )
+      filters?.filters?.containsKey("prisons") == true && filters.filters["prisons"]?.contains(posPrisoner?.prisonId) == false
     ) {
       return Response(
         data = null,
