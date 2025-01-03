@@ -53,7 +53,7 @@ class PrisonController(
   fun getPerson(
     @PathVariable hmppsId: String,
   ): DataResponse<Person?> {
-    val response = getPersonService.getPrisoner(hmppsId)
+    val response = getPersonService.getPrisoner(hmppsId, null)
 
     if (response.hasErrorCausedBy(BAD_REQUEST, causedBy = UpstreamApi.NOMIS)) {
       throw ValidationException("Invalid HMPPS ID: $hmppsId")

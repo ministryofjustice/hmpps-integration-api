@@ -3,6 +3,9 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.controllers.v1.prison
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
+import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -51,7 +54,7 @@ internal class PrisonControllerTest(
       }
 
       it("returns 500 when service throws an exception") {
-        whenever(getPersonService.getPrisoner(hmppsId)).thenThrow(RuntimeException("Service error"))
+        whenever(getPersonService.getPrisoner(eq(hmppsId), anyOrNull())).thenThrow(RuntimeException("Service error"))
 
         val result = mockMvc.performAuthorised("$basePath/prisoners/$hmppsId")
 
@@ -59,7 +62,7 @@ internal class PrisonControllerTest(
       }
 
       it("returns a person with all fields populated") {
-        whenever(getPersonService.getPrisoner(hmppsId)).thenReturn(
+        whenever(getPersonService.getPrisoner(eq(hmppsId), anyOrNull())).thenReturn(
           Response(
             data =
               Person(
@@ -110,7 +113,7 @@ internal class PrisonControllerTest(
       }
 
       it("logs audit event") {
-        whenever(getPersonService.getPrisoner(hmppsId)).thenReturn(
+        whenever(getPersonService.getPrisoner(eq(hmppsId), anyOrNull())).thenReturn(
           Response(
             data =
               Person(
@@ -136,7 +139,7 @@ internal class PrisonControllerTest(
       }
 
       it("returns 404 when prisoner is not found") {
-        whenever(getPersonService.getPrisoner(hmppsId)).thenReturn(
+        whenever(getPersonService.getPrisoner(eq(hmppsId), anyOrNull())).thenReturn(
           Response(
             data = null,
             errors =
@@ -156,7 +159,7 @@ internal class PrisonControllerTest(
       }
 
       it("returns 404 when NOMIS number is not found") {
-        whenever(getPersonService.getPrisoner(hmppsId)).thenReturn(
+        whenever(getPersonService.getPrisoner(eq(hmppsId), anyOrNull())).thenReturn(
           Response(
             data = null,
             errors =
@@ -176,7 +179,7 @@ internal class PrisonControllerTest(
       }
 
       it("returns 400 when HMPPS ID does not match format") {
-        whenever(getPersonService.getPrisoner(hmppsId)).thenReturn(
+        whenever(getPersonService.getPrisoner(eq(hmppsId), anyOrNull())).thenReturn(
           Response(
             data = null,
             errors =
