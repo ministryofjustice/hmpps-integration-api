@@ -151,7 +151,7 @@ class GetPersonService(
     val posPrisoner = prisonResponse.data
 
     if (
-      filters?.filters?.containsKey("prisons") == true && filters.filters["prisons"]?.contains(posPrisoner?.prisonId) == false
+      filters != null && !filters.matchesAtKey("prisons", posPrisoner?.prisonId)
     ) {
       return Response(
         data = null,
