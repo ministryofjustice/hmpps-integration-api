@@ -255,6 +255,21 @@ internal class GetPersonServiceTest(
         result.data.shouldBe(null)
         result.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.PRISONER_OFFENDER_SEARCH, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found")))
       }
+
+      it("returns prisoner if no consumer filters present") {
+        val validHmppsId = "G2996UX"
+        val person = Person(firstName = "Sam", lastName = "Mills")
+
+        whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber = validHmppsId)).thenReturn(
+          Response(data = POSPrisoner(firstName = "Sam", lastName = "Mills")),
+        )
+
+        val result = getPersonService.getPrisoner(validHmppsId, null)
+
+        result.data.shouldBeTypeOf<Person>()
+        result.data!!.firstName.shouldBe(person.firstName)
+        result.data!!.lastName.shouldBe(person.lastName)
+        result.errors.shouldBe(emptyList())
+      }
     },
   )
-// What if whole consumer filters is null?
