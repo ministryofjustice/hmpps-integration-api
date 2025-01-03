@@ -150,8 +150,12 @@ class GetPersonService(
 
     if (
       filters?.filters?.containsKey("prisons") == true &&
-      posPrisoner?.prisonId != null &&
-      filters.filters["prisons"]?.contains(posPrisoner.prisonId) == false
+      (
+        (
+          posPrisoner?.prisonId != null && filters.filters["prisons"]?.contains(posPrisoner.prisonId) == false
+        ) ||
+          posPrisoner?.prisonId == null
+      )
     ) {
       return Response(
         data = null,

@@ -217,9 +217,44 @@ internal class GetPersonServiceTest(
         result.data!!.lastName.shouldBe(posPrisoner.lastName)
         result.errors.shouldBe(emptyList())
       }
+
+      it("returns prisoner if no prison filter present") {
+        val validHmppsId = "G2996UX"
+        val person = Person(firstName = "Sam", lastName = "Mills")
+
+        whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber = validHmppsId)).thenReturn(
+          Response(data = POSPrisoner(firstName = "Sam", lastName = "Mills")),
+        )
+
+        val result = getPersonService.getPrisoner(validHmppsId, ConsumerFilters(emptyMap()))
+
+        result.data.shouldBeTypeOf<Person>()
+        result.data!!.firstName.shouldBe(person.firstName)
+        result.data!!.lastName.shouldBe(person.lastName)
+        result.errors.shouldBe(emptyList())
+      }
+
+      it("returns null if no prisons in prison filter") {
+        val validHmppsId = "Z9999ZZ"
+        whenever(prisonerOffenderSearchGateway.getPrisonOffender(validHmppsId))
+          .thenReturn(Response(data = POSPrisoner(firstName = "Test", lastName = "Person", prisonId = "XYZ")))
+
+        val result = getPersonService.getPrisoner(validHmppsId, ConsumerFilters(mapOf("prisons" to emptyList())))
+
+        result.data.shouldBe(null)
+        result.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.PRISONER_OFFENDER_SEARCH, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found")))
+      }
+
+      it("does not return prisoners who are missing prison ID") {
+        val validHmppsId = "Z9999ZZ"
+        whenever(prisonerOffenderSearchGateway.getPrisonOffender(validHmppsId))
+          .thenReturn(Response(data = POSPrisoner(firstName = "Test", lastName = "Person")))
+
+        val result = getPersonService.getPrisoner(validHmppsId, ConsumerFilters(mapOf("prisons" to listOf("ABC"))))
+
+        result.data.shouldBe(null)
+        result.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.PRISONER_OFFENDER_SEARCH, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found")))
+      }
     },
   )
-// No prison filter
-// Prison filter but empty
-// What if prisonId is null?
 // What if whole consumer filters is null?
