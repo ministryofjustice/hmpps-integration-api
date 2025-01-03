@@ -18,6 +18,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError.Type.BAD_REQUEST
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError.Type.ENTITY_NOT_FOUND
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPrisonersService
@@ -172,6 +173,26 @@ internal class PrisonControllerTest(
         val result = mockMvc.performAuthorised("$basePath/prisoners/$hmppsId")
 
         result.response.status.shouldBe(404)
+      }
+
+      it("returns 400 when HMPPS ID does not match format") {
+        whenever(getPersonService.getPrisoner(hmppsId)).thenReturn(
+          Response(
+            data = null,
+            errors =
+              listOf(
+                UpstreamApiError(
+                  description = "Invalid HMPPS ID: $hmppsId",
+                  type = BAD_REQUEST,
+                  causedBy = UpstreamApi.NOMIS,
+                ),
+              ),
+          ),
+        )
+
+        val result = mockMvc.performAuthorised("$basePath/prisoners/$hmppsId")
+
+        result.response.status.shouldBe(400)
       }
 
       it("returns 500 when prison/prisoners throws an unexpected error") {
