@@ -10,6 +10,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 @Service
 class GetPersonService(
@@ -109,7 +110,10 @@ class GetPersonService(
 
   fun getPersonFromNomis(nomisNumber: String) = prisonerOffenderSearchGateway.getPrisonOffender(nomisNumber)
 
-  fun getPrisoner(hmppsId: String): Response<Person?> {
+  fun getPrisoner(
+    hmppsId: String,
+    filters: ConsumerFilters?,
+  ): Response<Person?> {
     val prisonerNomisNumber = getNomisNumber(hmppsId)
 
     if (prisonerNomisNumber.errors.isNotEmpty()) {
@@ -144,8 +148,19 @@ class GetPersonService(
       )
     }
 
+    val posPrisoner = prisonResponse.data
+
+    if (
+      filters != null && !filters.matchesPrison(posPrisoner?.prisonId)
+    ) {
+      return Response(
+        data = null,
+        errors = listOf(UpstreamApiError(UpstreamApi.PRISONER_OFFENDER_SEARCH, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found")),
+      )
+    }
+
     return Response(
-      data = prisonResponse.data?.toPerson(),
+      data = posPrisoner?.toPerson(),
       errors = prisonResponse.errors,
     )
   }

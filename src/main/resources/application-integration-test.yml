@@ -93,3 +93,14 @@ authorisation:
       include:
         - "/.*"
       filters:
+    limited-prisons:
+      include:
+        - "/v1/prison/prisoners/[^/]*$"
+      filters:
+        prisons:
+          - ABC
+    no-prisons:
+      include:
+        - "/v1/prison/prisoners/[^/]*$"
+      filters:
+        prisons:

@@ -23,6 +23,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSPrisoner
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import java.time.LocalDate
 
 @ContextConfiguration(
@@ -39,6 +40,7 @@ internal class GetPersonServiceTest(
 
       val nomsNumber = "N1234PS"
       val prisoner = POSPrisoner(firstName = "Jim", lastName = "Brown", dateOfBirth = LocalDate.of(1992, 12, 3), prisonerNumber = nomsNumber)
+      val blankConsumerFilters = ConsumerFilters(prisons = null)
 
       beforeEach {
         Mockito.reset(prisonerOffenderSearchGateway)
@@ -144,7 +146,7 @@ internal class GetPersonServiceTest(
           Response(data = POSPrisoner(firstName = "Sam", lastName = "Mills")),
         )
 
-        val result = getPersonService.getPrisoner(validHmppsId)
+        val result = getPersonService.getPrisoner(validHmppsId, blankConsumerFilters)
 
         result.data.shouldBeTypeOf<Person>()
         result.data!!.firstName.shouldBe(person.firstName)
@@ -157,7 +159,7 @@ internal class GetPersonServiceTest(
         val prisonResponse: Response<POSPrisoner?> = Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.PRISONER_OFFENDER_SEARCH, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found")))
 
         whenever(prisonerOffenderSearchGateway.getPrisonOffender("G2996UX")).thenReturn(Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.PRISONER_OFFENDER_SEARCH, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found"))))
-        val result = getPersonService.getPrisoner(zeroHitHmppsId)
+        val result = getPersonService.getPrisoner(zeroHitHmppsId, blankConsumerFilters)
 
         result.data.shouldBe(null)
         result.errors.shouldBe(prisonResponse.errors)
@@ -166,7 +168,7 @@ internal class GetPersonServiceTest(
       it("returns error when invalid hmppsId is provided") {
         val invalidHmppsId = "invalid_id"
         val expectedError = UpstreamApiError(UpstreamApi.NOMIS, UpstreamApiError.Type.BAD_REQUEST, "Invalid HMPPS ID: $invalidHmppsId")
-        val result = getPersonService.getPrisoner(invalidHmppsId)
+        val result = getPersonService.getPrisoner(invalidHmppsId, blankConsumerFilters)
 
         result.data.shouldBe(null)
         result.errors.shouldBe(listOf(expectedError))
@@ -184,10 +186,90 @@ internal class GetPersonServiceTest(
           Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.NOMIS, UpstreamApiError.Type.ENTITY_NOT_FOUND, "NOMIS number not found"))),
         )
 
-        val result = getPersonService.getPrisoner(hmppsIdInCrnFormat)
+        val result = getPersonService.getPrisoner(hmppsIdInCrnFormat, blankConsumerFilters)
 
         result.data.shouldBe(null)
         result.errors.shouldBe(expectedError)
+      }
+
+      it("returns null when prisoner is found but not in approved prison") {
+        val wrongPrisonHmppsId = "Z9999ZZ"
+        whenever(prisonerOffenderSearchGateway.getPrisonOffender(wrongPrisonHmppsId))
+          .thenReturn(Response(data = POSPrisoner(firstName = "Test", lastName = "Person", prisonId = "XYZ")))
+
+        val result = getPersonService.getPrisoner(wrongPrisonHmppsId, ConsumerFilters(prisons = listOf("ABC")))
+
+        result.data.shouldBe(null)
+        result.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.PRISONER_OFFENDER_SEARCH, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found")))
+      }
+
+      it("returns prisoner when in approved prison") {
+        val correctPrisonHmppsId = "Z9999ZZ"
+        val prisonId = "XYZ"
+        val posPrisoner = POSPrisoner(firstName = "Test", lastName = "Person", prisonId = prisonId)
+        whenever(prisonerOffenderSearchGateway.getPrisonOffender(correctPrisonHmppsId))
+          .thenReturn(Response(data = posPrisoner))
+
+        val result = getPersonService.getPrisoner(correctPrisonHmppsId, ConsumerFilters(prisons = listOf(prisonId)))
+
+        result.data.shouldBeTypeOf<Person>()
+        result.data!!.firstName.shouldBe(posPrisoner.firstName)
+        result.data!!.lastName.shouldBe(posPrisoner.lastName)
+        result.errors.shouldBe(emptyList())
+      }
+
+      it("returns prisoner if no prison filter present") {
+        val validHmppsId = "G2996UX"
+        val person = Person(firstName = "Sam", lastName = "Mills")
+
+        whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber = validHmppsId)).thenReturn(
+          Response(data = POSPrisoner(firstName = "Sam", lastName = "Mills")),
+        )
+
+        val result = getPersonService.getPrisoner(validHmppsId, ConsumerFilters(prisons = null))
+
+        result.data.shouldBeTypeOf<Person>()
+        result.data!!.firstName.shouldBe(person.firstName)
+        result.data!!.lastName.shouldBe(person.lastName)
+        result.errors.shouldBe(emptyList())
+      }
+
+      it("returns null if no prisons in prison filter") {
+        val validHmppsId = "Z9999ZZ"
+        whenever(prisonerOffenderSearchGateway.getPrisonOffender(validHmppsId))
+          .thenReturn(Response(data = POSPrisoner(firstName = "Test", lastName = "Person", prisonId = "XYZ")))
+
+        val result = getPersonService.getPrisoner(validHmppsId, ConsumerFilters(prisons = emptyList()))
+
+        result.data.shouldBe(null)
+        result.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.PRISONER_OFFENDER_SEARCH, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found")))
+      }
+
+      it("does not return prisoners who are missing prison ID") {
+        val validHmppsId = "Z9999ZZ"
+        whenever(prisonerOffenderSearchGateway.getPrisonOffender(validHmppsId))
+          .thenReturn(Response(data = POSPrisoner(firstName = "Test", lastName = "Person")))
+
+        val result = getPersonService.getPrisoner(validHmppsId, ConsumerFilters(prisons = listOf("ABC")))
+
+        result.data.shouldBe(null)
+        result.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.PRISONER_OFFENDER_SEARCH, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found")))
+      }
+
+      it("returns prisoner if no consumer filters present") {
+        val validHmppsId = "G2996UX"
+        val person = Person(firstName = "Sam", lastName = "Mills")
+
+        whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber = validHmppsId)).thenReturn(
+          Response(data = POSPrisoner(firstName = "Sam", lastName = "Mills")),
+        )
+
+        val result = getPersonService.getPrisoner(validHmppsId, null)
+
+        result.data.shouldBeTypeOf<Person>()
+        result.data!!.firstName.shouldBe(person.firstName)
+        result.data!!.lastName.shouldBe(person.lastName)
+        result.errors.shouldBe(emptyList())
       }
     },
   )

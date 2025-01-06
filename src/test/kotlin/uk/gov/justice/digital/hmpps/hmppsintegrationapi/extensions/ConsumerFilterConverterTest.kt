@@ -12,6 +12,6 @@ class ConsumerFilterConverterTest {
     val consumerConfig = ""
     val actual = ConsumerFilterConverter().convert(consumerConfig)
 
-    actual.shouldBe(ConsumerFilters())
+    actual.shouldBe(ConsumerFilters(prisons = null))
   }
 }
