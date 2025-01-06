@@ -93,3 +93,10 @@ authorisation:
       include:
         - "/.*"
       filters:
+    limited-prisons:
+      include:
+        - "/v1/prison/prisoners/[^/]*$"
+      filters:
+        prisons:
+          - ABC
+# TODO: Some sort of test that prisons: with no list blocks all prisons

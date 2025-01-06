@@ -1,19 +1,17 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig
 
 data class ConsumerFilters(
-  val filters: Map<String, List<String>>? = emptyMap(),
+  val prisons: List<String>?
 ) {
-  fun matchesAtKey(
-    filterKey: String,
-    value: String?,
-  ): Boolean {
-    if (filters == null) {
+  fun matchesPrison(
+    prisonId: String?,
+  ): Boolean = matchesFilterList(prisons, prisonId)
+
+  private fun matchesFilterList(filterList: List<String>?, value: String?): Boolean {
+    if (filterList == null) {
       return true
     }
-    if (!filters.containsKey(filterKey)) {
-      return true
-    }
-    if (filters.getOrDefault(filterKey, emptyList()).contains(value)) {
+    if (filterList.contains(value)) {
       return true
     }
     return false
