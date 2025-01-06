@@ -152,7 +152,7 @@ authorisation:
         - "/v1/prison/prisoners"
       filters:
         prisons:
-          - "BXI"
+          - "TRN"
     serco:
       include:
         - "/v1/persons"
