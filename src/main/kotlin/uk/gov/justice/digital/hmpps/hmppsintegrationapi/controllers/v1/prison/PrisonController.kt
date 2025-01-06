@@ -54,7 +54,7 @@ class PrisonController(
   )
   fun getPerson(
     @PathVariable hmppsId: String,
-    @RequestAttribute filters: ConsumerFilters?
+    @RequestAttribute filters: ConsumerFilters?,
   ): DataResponse<Person?> {
     val response = getPersonService.getPrisoner(hmppsId, filters)
 

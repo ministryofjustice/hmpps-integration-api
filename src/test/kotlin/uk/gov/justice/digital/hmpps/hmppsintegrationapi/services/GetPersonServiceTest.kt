@@ -40,7 +40,7 @@ internal class GetPersonServiceTest(
 
       val nomsNumber = "N1234PS"
       val prisoner = POSPrisoner(firstName = "Jim", lastName = "Brown", dateOfBirth = LocalDate.of(1992, 12, 3), prisonerNumber = nomsNumber)
-      val blankConsumerFilters = ConsumerFilters(prisons=null)
+      val blankConsumerFilters = ConsumerFilters(prisons = null)
 
       beforeEach {
         Mockito.reset(prisonerOffenderSearchGateway)
@@ -197,7 +197,7 @@ internal class GetPersonServiceTest(
         whenever(prisonerOffenderSearchGateway.getPrisonOffender(wrongPrisonHmppsId))
           .thenReturn(Response(data = POSPrisoner(firstName = "Test", lastName = "Person", prisonId = "XYZ")))
 
-        val result = getPersonService.getPrisoner(wrongPrisonHmppsId, ConsumerFilters(prisons=listOf("ABC")))
+        val result = getPersonService.getPrisoner(wrongPrisonHmppsId, ConsumerFilters(prisons = listOf("ABC")))
 
         result.data.shouldBe(null)
         result.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.PRISONER_OFFENDER_SEARCH, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found")))
@@ -210,7 +210,7 @@ internal class GetPersonServiceTest(
         whenever(prisonerOffenderSearchGateway.getPrisonOffender(correctPrisonHmppsId))
           .thenReturn(Response(data = posPrisoner))
 
-        val result = getPersonService.getPrisoner(correctPrisonHmppsId, ConsumerFilters(prisons=listOf(prisonId)))
+        val result = getPersonService.getPrisoner(correctPrisonHmppsId, ConsumerFilters(prisons = listOf(prisonId)))
 
         result.data.shouldBeTypeOf<Person>()
         result.data!!.firstName.shouldBe(posPrisoner.firstName)
@@ -226,7 +226,7 @@ internal class GetPersonServiceTest(
           Response(data = POSPrisoner(firstName = "Sam", lastName = "Mills")),
         )
 
-        val result = getPersonService.getPrisoner(validHmppsId, ConsumerFilters(prisons=null))
+        val result = getPersonService.getPrisoner(validHmppsId, ConsumerFilters(prisons = null))
 
         result.data.shouldBeTypeOf<Person>()
         result.data!!.firstName.shouldBe(person.firstName)
@@ -239,7 +239,7 @@ internal class GetPersonServiceTest(
         whenever(prisonerOffenderSearchGateway.getPrisonOffender(validHmppsId))
           .thenReturn(Response(data = POSPrisoner(firstName = "Test", lastName = "Person", prisonId = "XYZ")))
 
-        val result = getPersonService.getPrisoner(validHmppsId, ConsumerFilters(prisons=emptyList()))
+        val result = getPersonService.getPrisoner(validHmppsId, ConsumerFilters(prisons = emptyList()))
 
         result.data.shouldBe(null)
         result.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.PRISONER_OFFENDER_SEARCH, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found")))
@@ -250,7 +250,7 @@ internal class GetPersonServiceTest(
         whenever(prisonerOffenderSearchGateway.getPrisonOffender(validHmppsId))
           .thenReturn(Response(data = POSPrisoner(firstName = "Test", lastName = "Person")))
 
-        val result = getPersonService.getPrisoner(validHmppsId, ConsumerFilters(prisons=listOf("ABC")))
+        val result = getPersonService.getPrisoner(validHmppsId, ConsumerFilters(prisons = listOf("ABC")))
 
         result.data.shouldBe(null)
         result.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.PRISONER_OFFENDER_SEARCH, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found")))

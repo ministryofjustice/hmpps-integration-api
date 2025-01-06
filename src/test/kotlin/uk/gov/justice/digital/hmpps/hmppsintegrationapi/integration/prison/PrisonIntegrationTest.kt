@@ -32,6 +32,16 @@ class PrisonIntegrationTest : IntegrationTestBase() {
   }
 
   @Test
+  fun `return a 404 for if consumer has empty list of prisons`() {
+    val headers = HttpHeaders()
+    headers.set("subject-distinguished-name", "C=GB,ST=London,L=London,O=Home Office,CN=no-prisons")
+    mockMvc.perform(
+      get("$basePrisonPath/prisoners/$hmppsId").headers(headers),
+    )
+      .andExpect(status().isNotFound)
+  }
+
+  @Test
   fun `return multiple prisoners when querying by complex parameters`() {
     callApi("$basePrisonPath/prisoners?first_name=$firstName&last_name=$lastName&dateOfBirth=$dateOfBirth")
       .andExpect(status().isOk)
