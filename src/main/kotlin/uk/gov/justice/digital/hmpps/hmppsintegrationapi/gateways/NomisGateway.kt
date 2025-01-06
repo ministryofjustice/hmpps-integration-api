@@ -17,17 +17,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Sentence
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SentenceAdjustment
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SentenceKeyDates
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisAddress
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisAlert
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisBooking
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisImageDetail
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisInmateDetail
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisOffenceHistoryDetail
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisOffenderSentence
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisReasonableAdjustments
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisReferenceCode
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisSentence
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisSentenceSummary
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.*
 
 @Component
 class NomisGateway(
@@ -305,6 +295,11 @@ class NomisGateway(
     }
   }
 
+  fun getAccountsForPerson(prisonId: String, nomisNumber: String): Response<NomisAccounts> {
+    authenticationHeader()
+    return Response(data= NomisAccounts(spends = 114217, savings = 2234, cash = 1000))
+  }
+
   private fun authenticationHeader(): Map<String, String> {
     val token = hmppsAuthGateway.getClientToken("NOMIS")
 
@@ -323,3 +318,5 @@ class NomisGateway(
     )
   }
 }
+
+
