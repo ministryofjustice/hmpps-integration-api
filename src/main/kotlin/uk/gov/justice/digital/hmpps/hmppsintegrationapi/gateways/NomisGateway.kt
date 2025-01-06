@@ -17,7 +17,18 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Sentence
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SentenceAdjustment
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SentenceKeyDates
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.*
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisAccounts
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisAddress
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisAlert
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisBooking
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisImageDetail
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisInmateDetail
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisOffenceHistoryDetail
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisOffenderSentence
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisReasonableAdjustments
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisReferenceCode
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisSentence
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisSentenceSummary
 
 @Component
 class NomisGateway(
@@ -295,9 +306,29 @@ class NomisGateway(
     }
   }
 
-  fun getAccountsForPerson(prisonId: String, nomisNumber: String): Response<NomisAccounts> {
-    authenticationHeader()
-    return Response(data= NomisAccounts(spends = 114217, savings = 2234, cash = 1000))
+  fun getAccountsForPerson(
+    prisonId: String,
+    nomisNumber: String,
+  ): Response<NomisAccounts?> {
+    val result =
+      webClient.request<NomisAccounts>(
+        HttpMethod.GET,
+        "/api/v1/prison/$prisonId/offenders/$nomisNumber/accounts",
+        authenticationHeader(),
+        UpstreamApi.NOMIS,
+      )
+    return when (result) {
+      is WebClientWrapperResponse.Success -> {
+        Response(data = result.data)
+      }
+
+      is WebClientWrapperResponse.Error -> {
+        Response(
+          data = null,
+          errors = result.errors,
+        )
+      }
+    }
   }
 
   private fun authenticationHeader(): Map<String, String> {
@@ -318,5 +349,3 @@ class NomisGateway(
     )
   }
 }
-
-
