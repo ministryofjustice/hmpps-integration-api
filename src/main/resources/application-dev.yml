@@ -151,8 +151,6 @@ authorisation:
         - "/v1/prison/prisoners/[^/]*$"
         - "/v1/prison/prisoners"
       filters:
-        prisons:
-          - "TRN"
     serco:
       include:
         - "/v1/persons"
