@@ -42,7 +42,7 @@ class GetReviewScheduleForPersonService(
             reviewCompletedByRole = completed.conductedByRole ?: "CIAG",
             reviewCompletedAt = completed.updatedAt,
             reviewType = if (completed.preRelease) "PRE_RELEASE" else "REGULAR",
-            reviewReason = getReviewReason(reviewSchedule.calculationRule)
+            reviewReason = getReviewReason(reviewSchedule.calculationRule),
           )
         } else {
           reviewSchedule

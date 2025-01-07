@@ -33,7 +33,7 @@ data class ReviewSchedule(
   var reviewCompletedByRole: String?,
   var reviewCompletedAt: Instant?,
   val reviewType: String?,
-  val reviewReason: String?
+  val reviewReason: String?,
 )
 
 data class ActionPlanReviewsResponse(
