@@ -41,6 +41,7 @@ class GetReviewScheduleForPersonService(
             reviewCompletedBy = completed.conductedBy ?: completed.updatedByDisplayName,
             reviewCompletedByRole = completed.conductedByRole ?: "CIAG",
             reviewCompletedAt = completed.updatedAt,
+            preRelease = completed.preRelease,
           )
         } else {
           reviewSchedule

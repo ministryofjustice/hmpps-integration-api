@@ -32,6 +32,7 @@ data class ReviewSchedule(
   var reviewCompletedBy: String?,
   var reviewCompletedByRole: String?,
   var reviewCompletedAt: Instant?,
+  val preRelease: Boolean = false,
 )
 
 data class ActionPlanReviewsResponse(
@@ -70,4 +71,5 @@ data class CompletedActionPlanReviewResponse(
   val updatedBy: String,
   val updatedByDisplayName: String,
   val updatedAt: Instant,
+  val preRelease: Boolean,
 )
