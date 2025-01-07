@@ -1,10 +1,10 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps
 
 data class AccountBalance(
-  val accountCode: String? = null,
-  val amount: Int? = null,
+  val accountCode: String,
+  val amount: Int,
 )
 
 data class Balances(
-  val accountBalances: Array<AccountBalance> = emptyArray(),
+  val accountBalances: List<AccountBalance> = emptyList(),
 )

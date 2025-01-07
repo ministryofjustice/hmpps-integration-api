@@ -10,8 +10,9 @@ import org.springframework.boot.test.context.ConfigDataApplicationContextInitial
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NomisGateway
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Identifiers
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.AccountBalance
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Balances
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NomisNumber
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisAccounts
 
@@ -28,16 +29,9 @@ internal class GetBalancesForPersonServiceTest(
       val hmppsId = "1234/56789B"
       val prisonerId = "Z99999ZZ"
       val prisonId = "ABC"
-      val nomisSpends = 100
-      val nomisSavings = 100
-      val nomisCash = 100
-
-      val personFromPrisonOffenderSearch =
-        Person(
-          firstName = "Chandler",
-          lastName = "ProbationBing",
-          identifiers = Identifiers(nomisNumber = prisonerId),
-        )
+      val nomisSpends = 101
+      val nomisSavings = 102
+      val nomisCash = 103
 
       beforeEach {
         Mockito.reset(getPersonService)
@@ -47,9 +41,9 @@ internal class GetBalancesForPersonServiceTest(
           "Invalid Hmpps Id format: $hmppsId"
         }
 
-        whenever(getPersonService.execute(hmppsId = hmppsId)).thenReturn(
+        whenever(getPersonService.getNomisNumber(hmppsId = hmppsId)).thenReturn(
           Response(
-            data = personFromPrisonOffenderSearch,
+            data = NomisNumber(nomisNumber = prisonerId),
           ),
         )
 
@@ -60,15 +54,16 @@ internal class GetBalancesForPersonServiceTest(
           ),
         )
       }
-//    val expectedNomisAccounts = nomisGateway.getAccountsForPerson(prisonId, prisonerId).data
-//    val balance = Balances(
-//      accountBalances = arrayOf(
-//        AccountBalance(accountCode = "spends", amount = nomisSpends),
-//        AccountBalance(accountCode = "saving", amount = nomisSavings),
-//        AccountBalance(accountCode = "cash", amount = nomisCash),
-//      )
-//    )
-      val balance = arrayOf(mapOf("accountCode:" to "spends", "amount:" to nomisSpends), mapOf("accountCode:" to "savings", "amount:" to nomisSavings), mapOf("accountCode:" to "cash", "amount:" to nomisCash))
+
+      val balance =
+        Balances(
+          accountBalances =
+            listOf(
+              AccountBalance(accountCode = "spends", amount = nomisSpends),
+              AccountBalance(accountCode = "saving", amount = nomisSavings),
+              AccountBalance(accountCode = "cash", amount = nomisCash),
+            ),
+        )
 
       it("gets a person using a Hmpps ID") {
         getBalancesForPersonService.execute(prisonId, hmppsId)
@@ -85,9 +80,7 @@ internal class GetBalancesForPersonServiceTest(
       it("Returns a persons account balances given a hmppsId") {
         val result = getBalancesForPersonService.execute(prisonId, hmppsId)
 
-        result.data.shouldBe(
-          mapOf("prisonId" to prisonId, "prisonerId" to prisonerId, "balances" to balance),
-        )
+        result.data.shouldBe(balance)
       }
     },
   )
