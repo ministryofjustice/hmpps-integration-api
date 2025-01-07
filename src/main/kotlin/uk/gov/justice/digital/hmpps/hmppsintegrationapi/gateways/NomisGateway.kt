@@ -308,7 +308,7 @@ class NomisGateway(
 
   fun getAccountsForPerson(
     prisonId: String,
-    nomisNumber: String,
+    nomisNumber: String?,
   ): Response<NomisAccounts?> {
     val result =
       webClient.request<NomisAccounts>(
