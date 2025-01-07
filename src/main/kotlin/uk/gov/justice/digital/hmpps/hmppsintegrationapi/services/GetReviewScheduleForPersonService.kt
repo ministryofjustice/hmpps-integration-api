@@ -41,6 +41,8 @@ class GetReviewScheduleForPersonService(
             reviewCompletedBy = completed.conductedBy ?: completed.updatedByDisplayName,
             reviewCompletedByRole = completed.conductedByRole ?: "CIAG",
             reviewCompletedAt = completed.updatedAt,
+            reviewType = if (completed.preRelease) "PRE_RELEASE" else "REGULAR",
+            reviewReason = getReviewReason(reviewSchedule.calculationRule),
           )
         } else {
           reviewSchedule
@@ -51,5 +53,13 @@ class GetReviewScheduleForPersonService(
       ReviewSchedules(updatedReviewSchedules),
       emptyList(),
     )
+  }
+
+  private fun getReviewReason(calculationRule: String): String {
+    return when (calculationRule) {
+      "PRISONER_READMISSION" -> "REOFFENCE"
+      "PRISONER_TRANSFER" -> "TRANSFER"
+      else -> "REGULAR"
+    }
   }
 }
