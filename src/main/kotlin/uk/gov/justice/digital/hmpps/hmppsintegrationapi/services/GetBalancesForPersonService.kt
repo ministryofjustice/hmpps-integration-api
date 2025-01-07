@@ -6,6 +6,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NomisGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.AccountBalance
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Balances
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisAccounts
 
 @Service
 class GetBalancesForPersonService(
@@ -16,9 +17,14 @@ class GetBalancesForPersonService(
     prisonId: String,
     hmppsId: String,
   ): Response<Balances> {
-    val nomisNumber = getPersonService.getNomisNumber(hmppsId = hmppsId).data?.nomisNumber
+    val personResponse = getPersonService.getNomisNumber(hmppsId = hmppsId)
+    val nomisNumber = personResponse.data?.nomisNumber
+    var nomisAccounts: Response<NomisAccounts?> = Response(data = null)
 
-    val nomisAccounts = nomisGateway.getAccountsForPerson(prisonId, nomisNumber)
+    if (nomisNumber != null) {
+      nomisAccounts = nomisGateway.getAccountsForPerson(prisonId, nomisNumber)
+    }
+
     val nomisSpends = nomisAccounts.data?.spends
     val nomisSavings = nomisAccounts.data?.savings
     val nomisCash = nomisAccounts.data?.cash
@@ -35,6 +41,7 @@ class GetBalancesForPersonService(
 
     return Response(
       data = balance,
+      errors = personResponse.errors,
     )
   }
 }
