@@ -313,6 +313,11 @@
 
 <h3 id="v1-prison-prisonid-prisoners-hmppsid-balances-get">get</h3>
 
+  <p><em>Returns a all accounts for a prisoner that they have at a prison.</em></p>
+
+
+  <p><b>Applicable filters</b>: <ul><li>prisons</li></ul></p>
+
 
 
 
@@ -359,7 +364,7 @@
 <tr>
 <td>200</td>
 <td>
-<p>OK</p>
+<p>Successfully found a prisoner&rsquo;s accounts.</p>
 
 
 
@@ -371,19 +376,69 @@
         "amount": "integer"
       }
     ]
-  },
-  "errors": [
-    {
-      "causedBy": "string",
-      "type": "string",
-      "description": "string"
-    }
-  ]
+  }
 }</code></pre>
 
 </td>
 <td>
-<a href='#schema-responsebalances'>ResponseBalances</a>
+<a href='#schema-dataresponsebalances'>DataResponseBalances</a>
+</td>
+</tr>
+
+<tr>
+<td>400</td>
+<td>
+<p>The HMPPS ID provided has an invalid format or the prisoner does hot have accounts at the specified prison.</p>
+
+
+
+<pre><code>{
+  "status": 400,
+  "userMessage": "Validation failure: No query parameters specified.",
+  "developerMessage": "No query parameters specified."
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-badrequest'>BadRequest</a>
+</td>
+</tr>
+
+<tr>
+<td>404</td>
+<td>
+<p>Not Found</p>
+
+
+
+<pre><code>{
+  "status": 404,
+  "userMessage": "404 Not found error: Could not find person with HMPPS id: 2003/0011991D.",
+  "developerMessage": "Could not find person with HMPPS id: 2003/0011991D."
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-personnotfound'>PersonNotFound</a>
+</td>
+</tr>
+
+<tr>
+<td>500</td>
+<td>
+<p>Internal Server Error</p>
+
+
+
+<pre><code>{
+  "status": 500,
+  "userMessage": "Internal Server Error",
+  "developerMessage": "Unable to complete request as an upstream service is not responding."
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-internalservererror'>InternalServerError</a>
 </td>
 </tr>
 
@@ -5524,10 +5579,10 @@
 </tbody>
 </table>
 
-<h3 id="schema-responsebalances">ResponseBalances</h3>
+<h3 id="schema-dataresponsebalances">DataResponseBalances</h3>
 
 
-<table class='schema-responsebalances'>
+<table class='schema-dataresponsebalances'>
 <thead>
 <tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
 </thead>
@@ -5540,58 +5595,6 @@
 <td></td>
 <td>
   <a href='#schema-balances'>Balances</a>
-</td>
-</tr>
-
-<tr>
-<td>errors</td>
-<td>array</td>
-<td>true</td>
-<td></td>
-<td>
-  <a href='#schema-upstreamapierror'>UpstreamApiError</a>
-</td>
-</tr>
-
-</tbody>
-</table>
-
-<h3 id="schema-upstreamapierror">UpstreamApiError</h3>
-
-
-<table class='schema-upstreamapierror'>
-<thead>
-<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
-</thead>
-<tbody>
-
-<tr>
-<td>causedBy</td>
-<td>string</td>
-<td>true</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>type</td>
-<td>string</td>
-<td>true</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>description</td>
-<td>string</td>
-<td>false</td>
-<td></td>
-<td>
-  
 </td>
 </tr>
 
@@ -11489,6 +11492,48 @@
 <td></td>
 <td>
   <a href='#schema-upstreamapierror'>UpstreamApiError</a>
+</td>
+</tr>
+
+</tbody>
+</table>
+
+<h3 id="schema-upstreamapierror">UpstreamApiError</h3>
+
+
+<table class='schema-upstreamapierror'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>causedBy</td>
+<td>string</td>
+<td>true</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>type</td>
+<td>string</td>
+<td>true</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>description</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
 </td>
 </tr>
 
