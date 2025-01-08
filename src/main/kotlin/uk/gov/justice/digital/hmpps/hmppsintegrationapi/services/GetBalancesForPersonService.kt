@@ -57,7 +57,7 @@ class GetBalancesForPersonService(
 
     val balance =
       Balances(
-        accountBalances =
+        balances =
           listOf(
             AccountBalance(accountCode = "spends", amount = nomisSpends),
             AccountBalance(accountCode = "saving", amount = nomisSavings),

@@ -6,5 +6,5 @@ data class AccountBalance(
 )
 
 data class Balances(
-  val accountBalances: List<AccountBalance> = emptyList(),
+  val balances: List<AccountBalance> = emptyList(),
 )
