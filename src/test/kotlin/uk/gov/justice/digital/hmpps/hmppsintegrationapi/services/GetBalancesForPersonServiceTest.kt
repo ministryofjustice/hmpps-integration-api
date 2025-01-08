@@ -1,7 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 
 import io.kotest.core.spec.style.DescribeSpec
-import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory
@@ -121,8 +120,8 @@ internal class GetBalancesForPersonServiceTest(
         type = UpstreamApiError.Type.BAD_REQUEST,
       ).shouldBe(true)
     }
-  // Get accounts outright fails
-    it("records upstream API errors when getAccountsForPerson returns errors"){
+    // Get accounts outright fails
+    it("records upstream API errors when getAccountsForPerson returns errors") {
       whenever(nomisGateway.getAccountsForPerson(prisonId, nomisNumber)).thenReturn(
         Response(
           data = null,
@@ -141,5 +140,5 @@ internal class GetBalancesForPersonServiceTest(
         type = UpstreamApiError.Type.BAD_REQUEST,
       ).shouldBe(true)
     }
-  // Get accounts returns corrupted data
+    // Get accounts returns corrupted data
   })
