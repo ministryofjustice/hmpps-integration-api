@@ -1116,7 +1116,9 @@
         "version": "integer",
         "reviewCompletedBy": "string",
         "reviewCompletedByRole": "string",
-        "reviewCompletedAt": "string"
+        "reviewCompletedAt": "string",
+        "reviewType": "string",
+        "reviewReason": "string"
       }
     ]
   }
@@ -6054,7 +6056,11 @@
 </table>
 
 <h3 id="schema-reviewschedule">ReviewSchedule</h3>
-
+<div class="highlight"><pre class="highlight plaintext" tabindex="0"><code>   A list of review schedules for this prisoner.
+   Note that this will return multiple versions of the the same schedule.
+   This is because down stream clients need to know the previous states of the review schedules.
+   grouping by reference and then ordering by highest version number will present the review schedules with the most up to date data.
+</code></pre></div>
 
 <table class='schema-reviewschedule'>
 <thead>
@@ -6066,7 +6072,8 @@
 <td>reference</td>
 <td>string</td>
 <td>true</td>
-<td></td>
+<td><p>The UUID reference for the review schedule record.</p>
+</td>
 <td>
   
 </td>
@@ -6076,7 +6083,8 @@
 <td>reviewDateFrom</td>
 <td>string</td>
 <td>true</td>
-<td></td>
+<td><p>The earliest date that the review should be carried out.</p>
+</td>
 <td>
   
 </td>
@@ -6086,7 +6094,8 @@
 <td>reviewDateTo</td>
 <td>string</td>
 <td>true</td>
-<td></td>
+<td><p>The latest date that the review should be carried out.</p>
+</td>
 <td>
   
 </td>
@@ -6096,7 +6105,23 @@
 <td>status</td>
 <td>string</td>
 <td>true</td>
-<td></td>
+<td><div class="highlight"><pre class="highlight plaintext" tabindex="0"><code>  The status of this review schedule possible values are:
+    SCHEDULED
+    EXEMPT_PRISONER_DRUG_OR_ALCOHOL_DEPENDENCY
+    EXEMPT_PRISONER_OTHER_HEALTH_ISSUES
+    EXEMPT_PRISONER_FAILED_TO_ENGAGE
+    EXEMPT_PRISONER_ESCAPED_OR_ABSCONDED
+    EXEMPT_PRISONER_SAFETY_ISSUES
+    EXEMPT_PRISON_REGIME_CIRCUMSTANCES
+    EXEMPT_PRISON_STAFF_REDEPLOYMENT
+    EXEMPT_PRISON_OPERATION_OR_SECURITY_ISSUE
+    EXEMPT_SECURITY_ISSUE_RISK_TO_STAFF
+    EXEMPT_SYSTEM_TECHNICAL_ISSUE
+    EXEMPT_PRISONER_TRANSFER
+    EXEMPT_PRISONER_RELEASE
+    EXEMPT_PRISONER_DEATH
+    COMPLETED
+</code></pre></div></td>
 <td>
   
 </td>
@@ -6106,7 +6131,20 @@
 <td>calculationRule</td>
 <td>string</td>
 <td>true</td>
-<td></td>
+<td><div class="highlight"><pre class="highlight plaintext" tabindex="0"><code>  The calculation rule that was used to workout the review schedule window.
+  Possible values are:
+      PRISONER_READMISSION
+      PRISONER_TRANSFER
+      BETWEEN_RELEASE_AND_3_MONTHS_TO_SERVE
+      BETWEEN_3_MONTHS_AND_3_MONTHS_7_DAYS_TO_SERVE
+      BETWEEN_3_MONTHS_8_DAYS_AND_6_MONTHS_TO_SERVE
+      BETWEEN_6_AND_12_MONTHS_TO_SERVE
+      BETWEEN_12_AND_60_MONTHS_TO_SERVE
+      MORE_THAN_60_MONTHS_TO_SERVE
+      INDETERMINATE_SENTENCE
+      PRISONER_ON_REMAND
+      PRISONER_UN_SENTENCED
+</code></pre></div></td>
 <td>
   
 </td>
@@ -6196,7 +6234,12 @@
 <td>version</td>
 <td>integer</td>
 <td>true</td>
-<td></td>
+<td><div class="highlight"><pre class="highlight plaintext" tabindex="0"><code>  The review schedule can change status numerous times.
+  The version number indicates which version of the review schedule this one is, the higher the number the newer the update.
+  use the version number in conjunction with the reference UUID.
+  ie if you group the schedules by reference then the version numbers represent different versions of the same schedule.
+  The final status of each grouping is COMPLETED.
+</code></pre></div></td>
 <td>
   
 </td>
@@ -6206,7 +6249,8 @@
 <td>reviewCompletedBy</td>
 <td>string</td>
 <td>false</td>
-<td></td>
+<td><p>When the review schedule has a completed review this will be populated by the name of the person who did the review.</p>
+</td>
 <td>
   
 </td>
@@ -6216,7 +6260,8 @@
 <td>reviewCompletedByRole</td>
 <td>string</td>
 <td>false</td>
-<td></td>
+<td><p>When the review schedule has a completed review this will be populated by the role of the person who did the review.</p>
+</td>
 <td>
   
 </td>
@@ -6226,7 +6271,37 @@
 <td>reviewCompletedAt</td>
 <td>string</td>
 <td>false</td>
-<td></td>
+<td><p>When the review schedule has a completed review this will be populated with the date of the review.</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>reviewType</td>
+<td>string</td>
+<td>false</td>
+<td><div class="highlight"><pre class="highlight plaintext" tabindex="0"><code>  When the review schedule has a completed review this will be populated with the type of the review.
+  values are:
+    REGULAR,
+    PRE_RELEASE
+</code></pre></div></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>reviewReason</td>
+<td>string</td>
+<td>false</td>
+<td><div class="highlight"><pre class="highlight plaintext" tabindex="0"><code>  When the review schedule has a completed review this will be populated with the reason for the review.
+  values are:
+    REOFFENCE,
+    TRANSFER,
+    REGULAR
+</code></pre></div></td>
 <td>
   
 </td>
@@ -6248,7 +6323,11 @@
 <td>reviewSchedules</td>
 <td>array</td>
 <td>true</td>
-<td></td>
+<td><div class="highlight"><pre class="highlight plaintext" tabindex="0"><code>   A list of review schedules for this prisoner.
+   Note that this will return multiple versions of the the same schedule.
+   This is because down stream clients need to know the previous states of the review schedules.
+   grouping by reference and then ordering by highest version number will present the review schedules with the most up to date data.
+</code></pre></div></td>
 <td>
   <a href='#schema-reviewschedule'>ReviewSchedule</a>
 </td>
@@ -6303,8 +6382,26 @@
 <td>status</td>
 <td>string</td>
 <td>false</td>
-<td><p>The current status of the Induction Schedule</p>
-</td>
+<td><div class="highlight"><pre class="highlight plaintext" tabindex="0"><code>  The current status of the Induction Schedule.
+  list of values:
+      SCHEDULED
+      COMPLETED
+      EXEMPT_PRISONER_DRUG_OR_ALCOHOL_DEPENDENCY
+      EXEMPT_PRISONER_OTHER_HEALTH_ISSUES
+      EXEMPT_PRISONER_FAILED_TO_ENGAGE
+      EXEMPT_PRISONER_ESCAPED_OR_ABSCONDED
+      EXEMPT_PRISONER_SAFETY_ISSUES
+      EXEMPT_PRISON_REGIME_CIRCUMSTANCES
+      EXEMPT_PRISON_STAFF_REDEPLOYMENT
+      EXEMPT_PRISON_OPERATION_OR_SECURITY_ISSUE
+      EXEMPT_SECURITY_ISSUE_RISK_TO_STAFF
+      EXEMPT_SYSTEM_TECHNICAL_ISSUE
+      EXEMPT_PRISONER_TRANSFER
+      EXEMPT_PRISONER_RELEASE
+      EXEMPT_PRISONER_DEATH
+      EXEMPT_SCREENING_AND_ASSESSMENT_IN_PROGRESS
+      EXEMPT_SCREENING_AND_ASSESSMENT_INCOMPLETE
+</code></pre></div></td>
 <td>
   
 </td>
@@ -6314,8 +6411,16 @@
 <td>calculationRule</td>
 <td>string</td>
 <td>false</td>
-<td><p>The Induction Schedule rule used to determine deadline date.</p>
-</td>
+<td><div class="highlight"><pre class="highlight plaintext" tabindex="0"><code>    The Induction Schedule rule used to determine deadline date.
+    list of values are:
+      NEW_PRISON_ADMISSION
+      EXISTING_PRISONER_LESS_THAN_6_MONTHS_TO_SERVE
+      EXISTING_PRISONER_BETWEEN_6_AND_12_MONTHS_TO_SERVE
+      EXISTING_PRISONER_BETWEEN_12_AND_60_MONTHS_TO_SERVE
+      EXISTING_PRISONER_INDETERMINATE_SENTENCE
+      EXISTING_PRISONER_ON_REMAND
+      EXISTING_PRISONER_UN_SENTENCED
+</code></pre></div></td>
 <td>
   
 </td>
@@ -6390,7 +6495,10 @@
 <td>version</td>
 <td>integer</td>
 <td>false</td>
-<td></td>
+<td><div class="highlight"><pre class="highlight plaintext" tabindex="0"><code>  The induction schedule can change status numerous times.
+  When looking at the plp-induction-schedule/history of the inductions.
+  The version number indicates which version of the induction schedule this one is, the higher the number the newer the update.
+</code></pre></div></td>
 <td>
   
 </td>
@@ -6434,7 +6542,9 @@
 <td>inductionSchedules</td>
 <td>array</td>
 <td>true</td>
-<td></td>
+<td><div class="highlight"><pre class="highlight plaintext" tabindex="0"><code>   A list of induction schedule versions for this prisoner. The prisoner will only have one induction schedule but for various reasons the schedule can be updated.
+   This list will show each change the schedule has been through. This allows for reports to be generated.
+</code></pre></div></td>
 <td>
   <a href='#schema-inductionschedule'>InductionSchedule</a>
 </td>
