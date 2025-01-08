@@ -29,7 +29,7 @@ class BalancesController(@Autowired val getBalancesForPersonService: GetBalances
     }
 
     if (response.hasError(UpstreamApiError.Type.INTERNAL_SERVER_ERROR)) {
-      throw InternalServerErrorException("Could not find accounts for person with id: $hmppsId")
+      throw InternalServerErrorException("Error occurred while trying to get accounts for person with id: $hmppsId")
     }
     return response
   }
