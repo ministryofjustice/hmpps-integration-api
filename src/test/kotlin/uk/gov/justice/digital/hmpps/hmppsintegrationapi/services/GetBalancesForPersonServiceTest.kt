@@ -82,35 +82,64 @@ internal class GetBalancesForPersonServiceTest(
       result.data.shouldBe(balance)
     }
 
-    describe("when we can't find a nomis number for a prisoner") {
-      beforeEach {
-        whenever(getPersonService.getNomisNumber(hmppsId = hmppsId)).thenReturn(
-          Response(
-            data = null,
-            errors =
-              listOf(
-                UpstreamApiError(
-                  causedBy = UpstreamApi.PRISONER_OFFENDER_SEARCH,
-                  type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-                ),
+    it("records upstream API errors") {
+      whenever(getPersonService.getNomisNumber(hmppsId = hmppsId)).thenReturn(
+        Response(
+          data = null,
+          errors =
+            listOf(
+              UpstreamApiError(
+                causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH,
+                type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
               ),
-          ),
-        )
-      }
-
-      it("records upstream API errors") {
-        val response = getBalancesForPersonService.execute(prisonId, hmppsId)
-        response.hasErrorCausedBy(
-          causedBy = UpstreamApi.PRISONER_OFFENDER_SEARCH,
-          type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-        ).shouldBe(true)
-      }
-
-//    it("does not call NOMIS if the person is not found") {
-//      getBalancesForPersonService.execute(prisonId, hmppsId)
-//
-//      verify(nomisGateway, VerificationModeFactory.times(0)).getAccountsForPerson(prisonId, nomisNumber)
-//    }
-//      What if the HMPPS ID is invalid
+            ),
+        ),
+      )
+      val response = getBalancesForPersonService.execute(prisonId, hmppsId)
+      response.hasErrorCausedBy(
+        causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH,
+        type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+      ).shouldBe(true)
     }
+
+    it("records upstream API errors when hmppsID is invalid") {
+      whenever(getPersonService.getNomisNumber(hmppsId = hmppsId)).thenReturn(
+        Response(
+          data = null,
+          errors =
+            listOf(
+              UpstreamApiError(
+                type = UpstreamApiError.Type.BAD_REQUEST,
+                causedBy = UpstreamApi.NOMIS,
+              ),
+            ),
+        ),
+      )
+      val response = getBalancesForPersonService.execute(prisonId, hmppsId)
+      response.hasErrorCausedBy(
+        causedBy = UpstreamApi.NOMIS,
+        type = UpstreamApiError.Type.BAD_REQUEST,
+      ).shouldBe(true)
+    }
+  // Get accounts outright fails
+    it("records upstream API errors when getAccountsForPerson returns errors"){
+      whenever(nomisGateway.getAccountsForPerson(prisonId, nomisNumber)).thenReturn(
+        Response(
+          data = null,
+          errors =
+            listOf(
+              UpstreamApiError(
+                type = UpstreamApiError.Type.BAD_REQUEST,
+                causedBy = UpstreamApi.NOMIS,
+              ),
+            ),
+        ),
+      )
+      val response = getBalancesForPersonService.execute(prisonId, hmppsId)
+      response.hasErrorCausedBy(
+        causedBy = UpstreamApi.NOMIS,
+        type = UpstreamApiError.Type.BAD_REQUEST,
+      ).shouldBe(true)
+    }
+  // Get accounts returns corrupted data
   })

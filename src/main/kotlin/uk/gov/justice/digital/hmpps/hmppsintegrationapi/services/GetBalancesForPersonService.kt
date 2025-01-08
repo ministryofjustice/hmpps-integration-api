@@ -30,6 +30,13 @@ class GetBalancesForPersonService(
 
     val nomisAccounts = nomisGateway.getAccountsForPerson(prisonId, nomisNumber)
 
+    if (nomisAccounts.errors.isNotEmpty()) {
+      return Response(
+        data = null,
+        errors = nomisAccounts.errors,
+      )
+    }
+
     val nomisSpends = nomisAccounts.data?.spends
     val nomisSavings = nomisAccounts.data?.savings
     val nomisCash = nomisAccounts.data?.cash
