@@ -150,5 +150,4 @@ internal class GetBalancesForPersonServiceTest(
         type = UpstreamApiError.Type.INTERNAL_SERVER_ERROR,
       ).shouldBe(true)
     }
-    // Get accounts returns corrupted data
   })
