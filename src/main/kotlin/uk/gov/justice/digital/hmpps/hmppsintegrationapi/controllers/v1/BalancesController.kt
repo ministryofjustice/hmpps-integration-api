@@ -9,17 +9,17 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataRespons
 
 @RestController
 @RequestMapping("/v1/prison/{prisonId}/prisoners/{hmppsId}/balances")
-class BalancesController(
-) {
+class BalancesController() {
   @GetMapping()
-  fun getBalancesForPerson(): DataResponse<Balances> = DataResponse(
-    Balances(
-      accountBalances = listOf(
-        AccountBalance("spends", 101),
-        AccountBalance("saving", 102),
-        AccountBalance("cash", 103),
-      )
+  fun getBalancesForPerson(): DataResponse<Balances> =
+    DataResponse(
+      Balances(
+        accountBalances =
+          listOf(
+            AccountBalance("spends", 101),
+            AccountBalance("saving", 102),
+            AccountBalance("cash", 103),
+          ),
+      ),
     )
-  )
-
 }

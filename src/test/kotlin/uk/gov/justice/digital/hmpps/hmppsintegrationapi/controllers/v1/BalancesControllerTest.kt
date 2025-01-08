@@ -1,8 +1,8 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.controllers.v1
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.string.shouldContain
-import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.test.context.ActiveProfiles
@@ -15,23 +15,22 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonServic
 
 @WebMvcTest(controllers = [BalancesController::class])
 @ActiveProfiles("test")
-class BalancesControllerTests(
+class BalancesControllerTest(
   @Autowired var springMockMvc: MockMvc,
   @MockitoBean val getPersonService: GetPersonService,
   @MockitoBean val getBalancesForPersonService: GetBalancesForPersonService,
-) {
-  val hmppsId = "200313116M"
-  val prisonId = "ABC"
+) : DescribeSpec({
+    val hmppsId = "200313116M"
+    val prisonId = "ABC"
 
-  val basePath = "/v1/prison/$prisonId/prisoners/$hmppsId/balances"
-  val mockMvc = IntegrationAPIMockMvc(springMockMvc)
-  val objectMapper = ObjectMapper()
+    val basePath = "/v1/prison/$prisonId/prisoners/$hmppsId/balances"
+    val mockMvc = IntegrationAPIMockMvc(springMockMvc)
+    val objectMapper = ObjectMapper()
 
-  @Test
-  fun `returns the balances data`() {
-    val result = mockMvc.performAuthorised(basePath)
-    result.response.contentAsString.shouldContain(
-      """
+    it("returns the balances data") {
+      val result = mockMvc.performAuthorised(basePath)
+      result.response.contentAsString.shouldContain(
+        """
           "data": {
             "balances": [
               {
@@ -48,7 +47,7 @@ class BalancesControllerTests(
               }
             ]
           }
-        """.removeWhitespaceAndNewlines()
-    )
-  }
-}
+        """.removeWhitespaceAndNewlines(),
+      )
+    }
+  })
