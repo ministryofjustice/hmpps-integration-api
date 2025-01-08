@@ -25,7 +25,7 @@ class BalancesController(@Autowired val getBalancesForPersonService: GetBalances
     }
 
     if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
-      throw BadRequestException("Could not find account for person with id: $hmppsId")
+      throw BadRequestException("Could not find account for person with id: $hmppsId at prison: $prisonId")
     }
 
     if (response.hasError(UpstreamApiError.Type.INTERNAL_SERVER_ERROR)) {
