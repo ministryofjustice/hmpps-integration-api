@@ -25,7 +25,7 @@ class BalancesController(@Autowired val getBalancesForPersonService: GetBalances
     }
 
     if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
-      throw BadRequestException("Either invalid HMPPS ID: $hmppsId or incorrect prison: $prisonId")
+      throw BadRequestException("Either invalid HMPPS ID: $hmppsId at or incorrect prison: $prisonId")
     }
 
     if (response.hasError(UpstreamApiError.Type.INTERNAL_SERVER_ERROR)) {
