@@ -82,7 +82,7 @@ internal class GetBalancesForPersonServiceTest(
       result.data.shouldBe(balance)
     }
 
-    describe("when an upstream API returns an error when looking up a balance from a Hmpps ID") {
+    describe("when we can't find a nomis number for a prisoner") {
       beforeEach {
         whenever(getPersonService.getNomisNumber(hmppsId = hmppsId)).thenReturn(
           Response(
@@ -99,9 +99,11 @@ internal class GetBalancesForPersonServiceTest(
       }
 
       it("records upstream API errors") {
-
         val response = getBalancesForPersonService.execute(prisonId, hmppsId)
-        response.errors.shouldHaveSize(1)
+        response.hasErrorCausedBy(
+          causedBy = UpstreamApi.PRISONER_OFFENDER_SEARCH,
+          type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+        ).shouldBe(true)
       }
 
 //    it("does not call NOMIS if the person is not found") {
@@ -109,5 +111,6 @@ internal class GetBalancesForPersonServiceTest(
 //
 //      verify(nomisGateway, VerificationModeFactory.times(0)).getAccountsForPerson(prisonId, nomisNumber)
 //    }
+//      What if the HMPPS ID is invalid
     }
   })

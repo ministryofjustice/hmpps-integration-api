@@ -16,14 +16,19 @@ class GetBalancesForPersonService(
   fun execute(
     prisonId: String,
     hmppsId: String,
-  ): Response<Balances> {
+  ): Response<Balances?> {
     val personResponse = getPersonService.getNomisNumber(hmppsId = hmppsId)
     val nomisNumber = personResponse.data?.nomisNumber
-    var nomisAccounts: Response<NomisAccounts?> = Response(data = null)
 
-    if (nomisNumber != null) {
-      nomisAccounts = nomisGateway.getAccountsForPerson(prisonId, nomisNumber)
+
+    if (nomisNumber == null) {
+      return Response(
+        data = null,
+        errors = personResponse.errors,
+      )
     }
+
+    val nomisAccounts = nomisGateway.getAccountsForPerson(prisonId, nomisNumber)
 
     val nomisSpends = nomisAccounts.data?.spends
     val nomisSavings = nomisAccounts.data?.savings
