@@ -120,7 +120,7 @@ internal class GetBalancesForPersonServiceTest(
         type = UpstreamApiError.Type.BAD_REQUEST,
       ).shouldBe(true)
     }
-    // Get accounts outright fails
+
     it("records upstream API errors when getAccountsForPerson returns errors") {
       whenever(nomisGateway.getAccountsForPerson(prisonId, nomisNumber)).thenReturn(
         Response(
@@ -138,6 +138,16 @@ internal class GetBalancesForPersonServiceTest(
       response.hasErrorCausedBy(
         causedBy = UpstreamApi.NOMIS,
         type = UpstreamApiError.Type.BAD_REQUEST,
+      ).shouldBe(true)
+    }
+
+    it("records data as null and errors as null when getAccountsForPerson returns null data") {
+      whenever(nomisGateway.getAccountsForPerson(prisonId, nomisNumber)).thenReturn(Response(data = null, errors = emptyList()))
+      val response = getBalancesForPersonService.execute(prisonId, hmppsId)
+      response.data.shouldBe(null)
+      response.hasErrorCausedBy(
+        causedBy = UpstreamApi.NOMIS,
+        type = UpstreamApiError.Type.INTERNAL_SERVER_ERROR,
       ).shouldBe(true)
     }
     // Get accounts returns corrupted data

@@ -6,6 +6,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NomisGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.AccountBalance
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Balances
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 
 @Service
 class GetBalancesForPersonService(
@@ -39,19 +41,33 @@ class GetBalancesForPersonService(
     val nomisSavings = nomisAccounts.data?.savings
     val nomisCash = nomisAccounts.data?.cash
 
+    if (nomisSpends == null || nomisSavings == null || nomisCash == null) {
+      return Response(
+        data = null,
+        errors =
+          listOf(
+            UpstreamApiError(
+              type = UpstreamApiError.Type.INTERNAL_SERVER_ERROR,
+              causedBy = UpstreamApi.NOMIS,
+              description = "Server could not return accounts for $hmppsId.",
+            ),
+          ),
+      )
+    }
+
     val balance =
       Balances(
         accountBalances =
           listOf(
-            AccountBalance(accountCode = "spends", amount = nomisSpends!!),
-            AccountBalance(accountCode = "saving", amount = nomisSavings!!),
-            AccountBalance(accountCode = "cash", amount = nomisCash!!),
+            AccountBalance(accountCode = "spends", amount = nomisSpends),
+            AccountBalance(accountCode = "saving", amount = nomisSavings),
+            AccountBalance(accountCode = "cash", amount = nomisCash),
           ),
       )
 
     return Response(
       data = balance,
-      errors = personResponse.errors,
+      errors = emptyList(),
     )
   }
 }
