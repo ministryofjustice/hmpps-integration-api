@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.AuthenticationFailedException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.BadRequestException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 
 @RestControllerAdvice
@@ -40,6 +41,20 @@ class HmppsIntegrationApiExceptionHandler {
         ErrorResponse(
           status = NOT_FOUND,
           developerMessage = "404 Not found error: ${e.message}",
+          userMessage = e.message,
+        ),
+      )
+  }
+
+  @ExceptionHandler(BadRequestException::class)
+  fun handle(e: BadRequestException): ResponseEntity<ErrorResponse> {
+    logAndCapture("Bad request (400) returned with message {}", e)
+    return ResponseEntity
+      .status(BAD_REQUEST)
+      .body(
+        ErrorResponse(
+          status = BAD_REQUEST,
+          developerMessage = "400 Not found error: ${e.message}",
           userMessage = e.message,
         ),
       )

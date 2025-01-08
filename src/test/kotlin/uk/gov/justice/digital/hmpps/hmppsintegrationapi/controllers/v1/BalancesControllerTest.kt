@@ -119,6 +119,25 @@ class BalancesControllerTest(
     result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
   }
 
+  it("returns a 400 BAD REQUEST status code when account isn't found in the upstream API") {
+    whenever(getBalancesForPersonService.execute(prisonId, hmppsId)).thenReturn(
+      Response(
+        data = null,
+        errors =
+          listOf(
+            UpstreamApiError(
+              type = UpstreamApiError.Type.BAD_REQUEST,
+              causedBy = UpstreamApi.NOMIS,
+            ),
+          ),
+      ),
+    )
+
+    val result = mockMvc.performAuthorised(basePath)
+
+    result.response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
+  }
+
   it("returns a 500 INTERNAL SERVER ERROR status code when balance isn't found in the upstream API") {
     whenever(getBalancesForPersonService.execute(prisonId, hmppsId)).thenReturn(
       Response(
@@ -137,4 +156,5 @@ class BalancesControllerTest(
 
     result.response.status.shouldBe(HttpStatus.INTERNAL_SERVER_ERROR.value())
   }
+
   })
