@@ -16,7 +16,8 @@ data class ReviewSchedules(
        Note that this will return multiple versions of the the same schedule.
        This is because down stream clients need to know the previous states of the review schedules.
        grouping by reference and then ordering by highest version number will present the review schedules with the most up to date data.
-    """)
+    """,
+  )
   val reviewSchedules: List<ReviewSchedule>,
 )
 
@@ -24,13 +25,16 @@ data class ReviewSchedules(
 @JsonInclude(JsonInclude.Include.USE_DEFAULTS)
 data class ReviewSchedule(
   @Schema(
-    description = "The UUID reference for the review schedule record.")
+    description = "The UUID reference for the review schedule record.",
+  )
   val reference: UUID,
   @Schema(
-    description = "The earliest date that the review should be carried out.")
+    description = "The earliest date that the review should be carried out.",
+  )
   val reviewDateFrom: LocalDate,
   @Schema(
-    description = "The latest date that the review should be carried out.")
+    description = "The latest date that the review should be carried out.",
+  )
   val reviewDateTo: LocalDate,
   @Schema(
     description = """
@@ -50,7 +54,8 @@ data class ReviewSchedule(
         EXEMPT_PRISONER_RELEASE
         EXEMPT_PRISONER_DEATH
         COMPLETED
-      """)
+      """,
+  )
   val status: String,
   @Schema(
     description = """
@@ -67,7 +72,8 @@ data class ReviewSchedule(
           INDETERMINATE_SENTENCE
           PRISONER_ON_REMAND
           PRISONER_UN_SENTENCED
-      """)
+      """,
+  )
   val calculationRule: String,
   val createdBy: String,
   val createdByDisplayName: String,
@@ -84,16 +90,20 @@ data class ReviewSchedule(
       use the version number in conjunction with the reference UUID.
       ie if you group the schedules by reference then the version numbers represent different versions of the same schedule.
       The final status of each grouping is COMPLETED.
-    """)
+    """,
+  )
   val version: Int,
   @Schema(
-    description = "When the review schedule has a completed review this will be populated by the name of the person who did the review.")
+    description = "When the review schedule has a completed review this will be populated by the name of the person who did the review.",
+  )
   var reviewCompletedBy: String?,
   @Schema(
-    description = "When the review schedule has a completed review this will be populated by the role of the person who did the review.")
+    description = "When the review schedule has a completed review this will be populated by the role of the person who did the review.",
+  )
   var reviewCompletedByRole: String?,
   @Schema(
-    description = "When the review schedule has a completed review this will be populated with the date of the review.")
+    description = "When the review schedule has a completed review this will be populated with the date of the review.",
+  )
   var reviewCompletedAt: Instant?,
   @Schema(
     description = """
@@ -101,7 +111,8 @@ data class ReviewSchedule(
       values are:
         REGULAR,
         PRE_RELEASE
-    """)
+    """,
+  )
   val reviewType: String?,
   @Schema(
     description = """
@@ -110,7 +121,8 @@ data class ReviewSchedule(
         REOFFENCE,
         TRANSFER,
         REGULAR
-    """)
+    """,
+  )
   val reviewReason: String?,
 )
 

@@ -18,7 +18,8 @@ data class InductionSchedules(
     description = """
        A list of induction schedule versions for this prisoner. The prisoner will only have one induction schedule but for various reasons the schedule can be updated.
        This list will show each change the schedule has been through. This allows for reports to be generated.
-    """)
+    """,
+  )
   val inductionSchedules: List<InductionSchedule>,
 )
 
@@ -102,7 +103,8 @@ data class InductionSchedule(
       The induction schedule can change status numerous times.
       When looking at the plp-induction-schedule/history of the inductions.
       The version number indicates which version of the induction schedule this one is, the higher the number the newer the update.
-    """)
+    """,
+  )
   val version: Int? = null,
 )
 
