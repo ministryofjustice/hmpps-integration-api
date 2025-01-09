@@ -5,6 +5,7 @@ import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
 import org.mockito.internal.verification.VerificationModeFactory
+import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
@@ -20,8 +21,10 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Balances
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetBalancesForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 
 @WebMvcTest(controllers = [BalancesController::class])
 @ActiveProfiles("test")
@@ -29,6 +32,7 @@ class BalancesControllerTest(
   @Autowired var springMockMvc: MockMvc,
   @MockitoBean val getPersonService: GetPersonService,
   @MockitoBean val getBalancesForPersonService: GetBalancesForPersonService,
+  @MockitoBean val auditService: AuditService,
 ) : DescribeSpec({
     val hmppsId = "200313116M"
     val prisonId = "ABC"
@@ -79,6 +83,11 @@ class BalancesControllerTest(
           }
         """.removeWhitespaceAndNewlines(),
       )
+    }
+
+    it("calls the API with the correct filters") {
+      mockMvc.performAuthorisedWithCN(basePath, "limited-prisons")
+      verify(getBalancesForPersonService, times(1)).execute(prisonId, hmppsId, ConsumerFilters(prisons = listOf("XYZ")))
     }
 
     it("returns a 404 NOT FOUND status code when person isn't found in probation offender search") {

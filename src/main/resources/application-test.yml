@@ -93,3 +93,9 @@ authorisation:
     no-include:
     empty-include:
       include:
+    limited-prisons:
+      include:
+        - "/v1/prison/.*/prisoners/.*/balances$"
+      filters:
+        prisons:
+          - XYZ
