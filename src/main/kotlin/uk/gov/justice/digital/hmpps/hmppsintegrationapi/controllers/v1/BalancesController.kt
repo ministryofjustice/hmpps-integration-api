@@ -4,14 +4,13 @@ import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
+import jakarta.validation.ValidationException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.BadRequestException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.InternalServerErrorException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Balances
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
@@ -48,12 +47,9 @@ class BalancesController(
     }
 
     if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
-      throw BadRequestException("Either invalid HMPPS ID: $hmppsId at or incorrect prison: $prisonId")
+      throw ValidationException("Either invalid HMPPS ID: $hmppsId at or incorrect prison: $prisonId")
     }
 
-    if (response.hasError(UpstreamApiError.Type.INTERNAL_SERVER_ERROR)) {
-      throw InternalServerErrorException("Error occurred while trying to get accounts for person with id: $hmppsId")
-    }
     return DataResponse(response.data)
   }
 }

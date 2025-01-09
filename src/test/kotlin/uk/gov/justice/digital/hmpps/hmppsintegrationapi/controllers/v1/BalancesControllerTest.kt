@@ -139,17 +139,8 @@ class BalancesControllerTest(
     }
 
     it("returns a 500 INTERNAL SERVER ERROR status code when balance isn't found in the upstream API") {
-      whenever(getBalancesForPersonService.execute(prisonId, hmppsId)).thenReturn(
-        Response(
-          data = null,
-          errors =
-            listOf(
-              UpstreamApiError(
-                type = UpstreamApiError.Type.INTERNAL_SERVER_ERROR,
-                causedBy = UpstreamApi.NOMIS,
-              ),
-            ),
-        ),
+      whenever(getBalancesForPersonService.execute(prisonId, hmppsId)).thenThrow(
+        IllegalStateException("Error occurred while trying to get accounts for person with id: $hmppsId")
       )
 
       val result = mockMvc.performAuthorised(basePath)

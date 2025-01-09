@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
@@ -143,12 +144,10 @@ internal class GetBalancesForPersonServiceTest(
 
     it("records data as null and errors as null when getAccountsForPerson returns null data") {
       whenever(nomisGateway.getAccountsForPerson(prisonId, nomisNumber)).thenReturn(Response(data = null, errors = emptyList()))
-      val response = getBalancesForPersonService.execute(prisonId, hmppsId)
-      response.data.shouldBe(null)
-      response.hasErrorCausedBy(
-        causedBy = UpstreamApi.NOMIS,
-        type = UpstreamApiError.Type.INTERNAL_SERVER_ERROR,
-      ).shouldBe(true)
+
+      shouldThrow<IllegalStateException> {
+        getBalancesForPersonService.execute(prisonId, hmppsId)
+      }
     }
 
 //  it("returns null when prisoner is found but not in approved prison") {

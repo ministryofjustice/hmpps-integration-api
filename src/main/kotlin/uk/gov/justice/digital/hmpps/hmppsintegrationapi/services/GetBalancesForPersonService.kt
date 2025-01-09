@@ -42,17 +42,7 @@ class GetBalancesForPersonService(
     val nomisCash = nomisAccounts.data?.cash
 
     if (nomisSpends == null || nomisSavings == null || nomisCash == null) {
-      return Response(
-        data = null,
-        errors =
-          listOf(
-            UpstreamApiError(
-              type = UpstreamApiError.Type.INTERNAL_SERVER_ERROR,
-              causedBy = UpstreamApi.NOMIS,
-              description = "Server could not return accounts for $hmppsId.",
-            ),
-          ),
-      )
+      throw IllegalStateException("Error occurred while trying to get accounts for person with id: $hmppsId")
     }
 
     val balance =
