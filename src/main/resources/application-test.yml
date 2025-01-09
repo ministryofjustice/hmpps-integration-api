@@ -86,6 +86,8 @@ authorisation:
         - "/v1/hmpps/reference-data"
         - "/v1/prison/prisoners/[^/]*$"
         - "/v1/prison/prisoners"
+      filters:
+        prisons:
     config-test:
       include:
         - "/v1/config/authorisation"

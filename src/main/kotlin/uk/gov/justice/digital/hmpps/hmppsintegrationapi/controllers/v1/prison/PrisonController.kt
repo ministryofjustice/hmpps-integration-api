@@ -94,6 +94,7 @@ class PrisonController(
     @Parameter(description = "Whether to return results that match the search criteria within the aliases of a person.") @RequestParam(required = false, defaultValue = "false", name = "search_within_aliases") searchWithinAliases: Boolean,
     @Parameter(description = "The page number (starting from 1)", schema = Schema(minimum = "1")) @RequestParam(required = false, defaultValue = "1", name = "page") page: Int,
     @Parameter(description = "The maximum number of results for a page", schema = Schema(minimum = "1")) @RequestParam(required = false, defaultValue = "10", name = "perPage") perPage: Int,
+    // @Parameter(description = "An array of prison IDs to filter the results by.") @RequestParam(required = false) prisonIds: List<String>?,
   ): PaginatedResponse<Person?> {
     if (firstName == null && lastName == null && dateOfBirth == null) {
       throw ValidationException("No query parameters specified.")
