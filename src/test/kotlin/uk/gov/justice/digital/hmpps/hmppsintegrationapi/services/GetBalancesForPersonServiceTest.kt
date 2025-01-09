@@ -150,4 +150,15 @@ internal class GetBalancesForPersonServiceTest(
         type = UpstreamApiError.Type.INTERNAL_SERVER_ERROR,
       ).shouldBe(true)
     }
+
+//  it("returns null when prisoner is found but not in approved prison") {
+//    val wrongPrisonHmppsId = "Z9999ZZ"
+//    whenever(prisonerOffenderSearchGateway.getPrisonOffender(wrongPrisonHmppsId))
+//      .thenReturn(Response(data = POSPrisoner(firstName = "Test", lastName = "Person", prisonId = "XYZ")))
+//
+//    val result = getPersonService.getPrisoner(wrongPrisonHmppsId, ConsumerFilters(prisons = listOf("ABC")))
+//
+//    result.data.shouldBe(null)
+//    result.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.PRISONER_OFFENDER_SEARCH, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found")))
+//  }
   })

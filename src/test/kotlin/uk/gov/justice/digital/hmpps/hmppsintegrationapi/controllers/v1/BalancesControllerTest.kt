@@ -81,80 +81,79 @@ class BalancesControllerTest(
       )
     }
 
-  it("returns a 404 NOT FOUND status code when person isn't found in probation offender search") {
-    whenever(getBalancesForPersonService.execute(prisonId, hmppsId)).thenReturn(
-      Response(
-        data = null,
-        errors =
-          listOf(
-            UpstreamApiError(
-              causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH,
-              type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+    it("returns a 404 NOT FOUND status code when person isn't found in probation offender search") {
+      whenever(getBalancesForPersonService.execute(prisonId, hmppsId)).thenReturn(
+        Response(
+          data = null,
+          errors =
+            listOf(
+              UpstreamApiError(
+                causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH,
+                type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+              ),
             ),
-          ),
-      ),
-    )
+        ),
+      )
 
-    val result = mockMvc.performAuthorised(basePath)
+      val result = mockMvc.performAuthorised(basePath)
 
-    result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
-  }
+      result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
+    }
 
-  it("returns a 404 NOT FOUND status code when person isn't found in Nomis") {
-    whenever(getBalancesForPersonService.execute(prisonId, hmppsId)).thenReturn(
-      Response(
-        data = null,
-        errors =
-          listOf(
-            UpstreamApiError(
-              causedBy = UpstreamApi.NOMIS,
-              type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+    it("returns a 404 NOT FOUND status code when person isn't found in Nomis") {
+      whenever(getBalancesForPersonService.execute(prisonId, hmppsId)).thenReturn(
+        Response(
+          data = null,
+          errors =
+            listOf(
+              UpstreamApiError(
+                causedBy = UpstreamApi.NOMIS,
+                type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+              ),
             ),
-          ),
-      ),
-    )
+        ),
+      )
 
-    val result = mockMvc.performAuthorised(basePath)
+      val result = mockMvc.performAuthorised(basePath)
 
-    result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
-  }
+      result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
+    }
 
-  it("returns a 400 BAD REQUEST status code when account isn't found in the upstream API") {
-    whenever(getBalancesForPersonService.execute(prisonId, hmppsId)).thenReturn(
-      Response(
-        data = null,
-        errors =
-          listOf(
-            UpstreamApiError(
-              type = UpstreamApiError.Type.BAD_REQUEST,
-              causedBy = UpstreamApi.NOMIS,
+    it("returns a 400 BAD REQUEST status code when account isn't found in the upstream API") {
+      whenever(getBalancesForPersonService.execute(prisonId, hmppsId)).thenReturn(
+        Response(
+          data = null,
+          errors =
+            listOf(
+              UpstreamApiError(
+                type = UpstreamApiError.Type.BAD_REQUEST,
+                causedBy = UpstreamApi.NOMIS,
+              ),
             ),
-          ),
-      ),
-    )
+        ),
+      )
 
-    val result = mockMvc.performAuthorised(basePath)
+      val result = mockMvc.performAuthorised(basePath)
 
-    result.response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
-  }
+      result.response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
+    }
 
-  it("returns a 500 INTERNAL SERVER ERROR status code when balance isn't found in the upstream API") {
-    whenever(getBalancesForPersonService.execute(prisonId, hmppsId)).thenReturn(
-      Response(
-        data = null,
-        errors =
-          listOf(
-            UpstreamApiError(
-              type = UpstreamApiError.Type.INTERNAL_SERVER_ERROR,
-              causedBy = UpstreamApi.NOMIS,
+    it("returns a 500 INTERNAL SERVER ERROR status code when balance isn't found in the upstream API") {
+      whenever(getBalancesForPersonService.execute(prisonId, hmppsId)).thenReturn(
+        Response(
+          data = null,
+          errors =
+            listOf(
+              UpstreamApiError(
+                type = UpstreamApiError.Type.INTERNAL_SERVER_ERROR,
+                causedBy = UpstreamApi.NOMIS,
+              ),
             ),
-          ),
-      ),
-    )
+        ),
+      )
 
-    val result = mockMvc.performAuthorised(basePath)
+      val result = mockMvc.performAuthorised(basePath)
 
-    result.response.status.shouldBe(HttpStatus.INTERNAL_SERVER_ERROR.value())
-  }
-
+      result.response.status.shouldBe(HttpStatus.INTERNAL_SERVER_ERROR.value())
+    }
   })

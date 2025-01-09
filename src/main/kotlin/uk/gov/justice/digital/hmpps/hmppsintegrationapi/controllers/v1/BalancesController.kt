@@ -14,13 +14,14 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFound
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.InternalServerErrorException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Balances
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetBalancesForPersonService
 
 @RestController
 @RequestMapping("/v1/prison/{prisonId}/prisoners/{hmppsId}/balances")
-class BalancesController(@Autowired val getBalancesForPersonService: GetBalancesForPersonService,) {
+class BalancesController(
+  @Autowired val getBalancesForPersonService: GetBalancesForPersonService,
+) {
   @GetMapping()
   @Operation(
     summary = "Returns a all accounts for a prisoner that they have at a prison.",
@@ -36,7 +37,10 @@ class BalancesController(@Autowired val getBalancesForPersonService: GetBalances
       ApiResponse(responseCode = "500", content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]),
     ],
   )
-  fun getBalancesForPerson(@PathVariable hmppsId: String, @PathVariable prisonId: String): DataResponse<Balances?> {
+  fun getBalancesForPerson(
+    @PathVariable hmppsId: String,
+    @PathVariable prisonId: String,
+  ): DataResponse<Balances?> {
     val response = getBalancesForPersonService.execute(prisonId, hmppsId)
 
     if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
