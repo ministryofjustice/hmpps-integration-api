@@ -18,6 +18,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisAccounts
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
@@ -28,7 +29,6 @@ internal class GetBalancesForPersonServiceTest(
   @MockitoBean val getPersonService: GetPersonService,
   private val getBalancesForPersonService: GetBalancesForPersonService,
 ) : DescribeSpec({
-
     val hmppsId = "1234/56789B"
     val nomisNumber = "Z99999ZZ"
     val prisonId = "ABC"
@@ -150,14 +150,17 @@ internal class GetBalancesForPersonServiceTest(
       }
     }
 
-//  it("returns null when prisoner is found but not in approved prison") {
-//    val wrongPrisonHmppsId = "Z9999ZZ"
-//    whenever(prisonerOffenderSearchGateway.getPrisonOffender(wrongPrisonHmppsId))
-//      .thenReturn(Response(data = POSPrisoner(firstName = "Test", lastName = "Person", prisonId = "XYZ")))
-//
-//    val result = getPersonService.getPrisoner(wrongPrisonHmppsId, ConsumerFilters(prisons = listOf("ABC")))
-//
-//    result.data.shouldBe(null)
-//    result.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.PRISONER_OFFENDER_SEARCH, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found")))
-//  }
+    it("returns null when balances are requested from an unapproved prison") {
+      val wrongPrisonId = "XYZ"
+      val result = getBalancesForPersonService.execute(wrongPrisonId, hmppsId, ConsumerFilters(prisons = listOf("ABC")))
+
+      result.data.shouldBe(null)
+      result.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.NOMIS, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found")))
+    }
+
+    it("returns balances when requested from an approved prison") {
+      val result = getBalancesForPersonService.execute(prisonId, hmppsId, ConsumerFilters(prisons = listOf(prisonId)))
+
+      result.data.shouldBe(balance)
+    }
   })
