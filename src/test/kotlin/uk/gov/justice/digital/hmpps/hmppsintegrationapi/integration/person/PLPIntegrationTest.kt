@@ -15,7 +15,7 @@ class PLPIntegrationTest : IntegrationTestBase() {
           """
            {"data": {
             "deadlineDate":"2019-08-24",
-            "status":"SCHEDULED",
+            "status":"PENDING_INITIAL_SCREENING_AND_ASSESSMENTS_FROM_CURIOUS",
             "calculationRule": "NEW_PRISON_ADMISSION",
             "nomisNumber": "A1234BC",
             "systemUpdatedBy":"Alex Smith",
