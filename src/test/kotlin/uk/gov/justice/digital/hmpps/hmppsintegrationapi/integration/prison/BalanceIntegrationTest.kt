@@ -26,7 +26,7 @@ class BalanceIntegrationTest : IntegrationTestBase() {
                 "amount": 5678
               },
               {
-                "accountCode": "saving",
+                "accountCode": "savings",
                 "amount": 12344
               },
               {

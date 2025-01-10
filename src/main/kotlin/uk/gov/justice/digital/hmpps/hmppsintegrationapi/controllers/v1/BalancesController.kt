@@ -27,7 +27,7 @@ class BalancesController(
 ) {
   @GetMapping()
   @Operation(
-    summary = "Returns a all accounts for a prisoner that they have at a prison.",
+    summary = "Returns all accounts for a prisoner that they have at a prison.",
     description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
     responses = [
       ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found a prisoner's accounts."),
