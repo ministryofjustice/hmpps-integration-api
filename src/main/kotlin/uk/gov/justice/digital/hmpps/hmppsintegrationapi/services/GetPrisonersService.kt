@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 
-import jakarta.servlet.http.HttpServletRequest
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffenderSearchGateway
@@ -13,7 +12,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Consum
 @Service
 class GetPrisonersService(
   @Autowired val prisonerOffenderSearchGateway: PrisonerOffenderSearchGateway,
-  @Autowired val request: HttpServletRequest,
 ) {
   fun execute(
     firstName: String?,
