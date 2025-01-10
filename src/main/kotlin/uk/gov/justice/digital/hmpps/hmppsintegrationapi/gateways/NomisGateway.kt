@@ -17,6 +17,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Sentence
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SentenceAdjustment
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SentenceKeyDates
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisAccounts
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisAddress
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisAlert
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisBooking
@@ -299,6 +300,31 @@ class NomisGateway(
       is WebClientWrapperResponse.Error -> {
         Response(
           data = emptyList(),
+          errors = result.errors,
+        )
+      }
+    }
+  }
+
+  fun getAccountsForPerson(
+    prisonId: String,
+    nomisNumber: String?,
+  ): Response<NomisAccounts?> {
+    val result =
+      webClient.request<NomisAccounts>(
+        HttpMethod.GET,
+        "/api/v1/prison/$prisonId/offenders/$nomisNumber/accounts",
+        authenticationHeader(),
+        UpstreamApi.NOMIS,
+      )
+    return when (result) {
+      is WebClientWrapperResponse.Success -> {
+        Response(data = result.data)
+      }
+
+      is WebClientWrapperResponse.Error -> {
+        Response(
+          data = null,
           errors = result.errors,
         )
       }
