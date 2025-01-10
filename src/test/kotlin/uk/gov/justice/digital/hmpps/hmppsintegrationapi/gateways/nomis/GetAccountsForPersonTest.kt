@@ -82,5 +82,27 @@ class GetAccountsForPersonTest(
           response.errors.first().causedBy.shouldBe(UpstreamApi.NOMIS)
           response.errors.first().type.shouldBe(UpstreamApiError.Type.ENTITY_NOT_FOUND)
         }
+
+//          it("returns null when 400 Bad Request is returned") {
+//              nomisApiMockServer.stubNomisApiResponse(
+//                  accountsPath,
+//                  "",
+//                  HttpStatus.BAD_REQUEST,
+//              )
+//              val response =
+//                  shouldThrow<WebClientResponseException> {
+//                      nomisGateway.getAccountsForPerson(prisonId, nomisNumber)
+//                  }
+//              response.statusCode.shouldBe(HttpStatus.BAD_REQUEST)
+//          }
+        it("returns an error when 400 Bad Request is returned because of invalid ID") {
+          nomisApiMockServer.stubNomisApiResponse(accountsPath, "", HttpStatus.BAD_REQUEST)
+
+          val response = nomisGateway.getAccountsForPerson(prisonId, nomisNumber)
+
+          response.errors.shouldHaveSize(1)
+          response.errors.first().causedBy.shouldBe(UpstreamApi.NOMIS)
+          response.errors.first().type.shouldBe(UpstreamApiError.Type.BAD_REQUEST)
+        }
       },
     )

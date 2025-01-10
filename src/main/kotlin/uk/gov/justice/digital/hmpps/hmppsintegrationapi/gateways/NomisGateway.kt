@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpMethod
 import org.springframework.stereotype.Component
+import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper.WebClientWrapperResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Address
@@ -17,6 +18,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Sentence
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SentenceAdjustment
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SentenceKeyDates
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisAccounts
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisAddress
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisAlert
@@ -310,24 +312,37 @@ class NomisGateway(
     prisonId: String,
     nomisNumber: String?,
   ): Response<NomisAccounts?> {
-    val result =
-      webClient.request<NomisAccounts>(
-        HttpMethod.GET,
-        "/api/v1/prison/$prisonId/offenders/$nomisNumber/accounts",
-        authenticationHeader(),
-        UpstreamApi.NOMIS,
-      )
-    return when (result) {
-      is WebClientWrapperResponse.Success -> {
-        Response(data = result.data)
-      }
-
-      is WebClientWrapperResponse.Error -> {
-        Response(
-          data = null,
-          errors = result.errors,
+    try {
+      val result =
+        webClient.request<NomisAccounts>(
+          HttpMethod.GET,
+          "/api/v1/prison/$prisonId/offenders/$nomisNumber/accounts",
+          authenticationHeader(),
+          UpstreamApi.NOMIS,
         )
+      return when (result) {
+        is WebClientWrapperResponse.Success -> {
+          Response(data = result.data)
+        }
+
+        is WebClientWrapperResponse.Error -> {
+          Response(
+            data = null,
+            errors = result.errors,
+          )
+        }
       }
+    } catch (e: WebClientResponseException.BadRequest) {
+      return Response(
+        data = null,
+        errors =
+          listOf(
+            UpstreamApiError(
+              causedBy = UpstreamApi.NOMIS,
+              type = UpstreamApiError.Type.BAD_REQUEST,
+            ),
+          ),
+      )
     }
   }
 
