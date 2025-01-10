@@ -22,7 +22,7 @@ class GetPrisonersService(
   ): Response<List<Person>> {
     val prisonIds = filters?.prisons
     val responseFromPrisonerOffenderSearch =
-      if (prisonIds.isNullOrEmpty()) {
+      if (prisonIds != null && prisonIds.isEmpty()) {
         // Hit global-search endpoint
         prisonerOffenderSearchGateway.getPersons(
           firstName,
@@ -34,6 +34,10 @@ class GetPrisonersService(
         // Hit prisoner-details endpoint
         prisonerOffenderSearchGateway.getPrisonerByCriteria(firstName, lastName, dateOfBirth, searchWithinAliases, prisonIds)
       }
+
+    if (responseFromPrisonerOffenderSearch == null) {
+      return Response(emptyList(), listOf(UpstreamApiError(UpstreamApi.PRISONER_OFFENDER_SEARCH, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found")))
+    }
 
     if (responseFromPrisonerOffenderSearch.errors.isNotEmpty()) {
       return Response(emptyList(), responseFromPrisonerOffenderSearch.errors)

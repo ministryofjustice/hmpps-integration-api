@@ -46,7 +46,7 @@ internal class GetPrisonersServiceTest(
           ),
         )
 
-        val result = getPrisonersService.execute("Qui-gon", "Jin", "1966-10-25", false, null)
+        val result = getPrisonersService.execute("Qui-gon", "Jin", "1966-10-25", false, ConsumerFilters(emptyList()))
         result?.errors.shouldBe(
           listOf(
             UpstreamApiError(UpstreamApi.PRISONER_OFFENDER_SEARCH, UpstreamApiError.Type.ENTITY_NOT_FOUND, "MockError"),
@@ -54,7 +54,7 @@ internal class GetPrisonersServiceTest(
         )
       }
 
-      it("returns the person's data when queried aand no prisonId filter is applied") {
+      it("returns the person's data when queried and no prisonId filter is applied") {
         val people = listOf(Person(firstName = "Qui-gon", lastName = "Jin"), Person(firstName = "John", lastName = "Jin"))
         whenever(prisonerOffenderSearchGateway.getPersons("Qui-gon", "Jin", "1966-10-25")).thenReturn(
           Response(
@@ -62,9 +62,29 @@ internal class GetPrisonersServiceTest(
           ),
         )
 
-        val result = getPrisonersService.execute("Qui-gon", "Jin", "1966-10-25", false, null)
+        val result = getPrisonersService.execute("Qui-gon", "Jin", "1966-10-25", false, ConsumerFilters(emptyList()))
         result?.data?.shouldBe(
           people,
+        )
+      }
+
+      it("returns an error when theres a filter prisons property but no values") {
+        val people = listOf(Person(firstName = "Qui-gon", lastName = "Jin"), Person(firstName = "John", lastName = "Jin"))
+        whenever(prisonerOffenderSearchGateway.getPersons("Qui-gon", "Jin", "1966-10-25")).thenReturn(
+          Response(
+            errors =
+              listOf(
+                UpstreamApiError(UpstreamApi.PRISONER_OFFENDER_SEARCH, UpstreamApiError.Type.ENTITY_NOT_FOUND, "MockError"),
+              ),
+            data = emptyList(),
+          ),
+        )
+
+        val result = getPrisonersService.execute("Qui-gon", "Jin", "1966-10-25", false, ConsumerFilters(prisons = listOf("")))
+        result?.errors.shouldBe(
+          listOf(
+            UpstreamApiError(UpstreamApi.PRISONER_OFFENDER_SEARCH, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found"),
+          ),
         )
       }
 
