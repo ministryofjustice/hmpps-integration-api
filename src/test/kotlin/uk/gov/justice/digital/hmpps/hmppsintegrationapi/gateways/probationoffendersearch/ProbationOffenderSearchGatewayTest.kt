@@ -361,9 +361,6 @@ class ProbationOffenderSearchGatewayTest(
           response.statusCode.shouldBe(HttpStatus.BAD_REQUEST)
         }
 
-        // 1. Change their gateway tests to pass (but will we have still broken the endpoints)
-        // 2. Change our code to catch the exception instead
-
         it("returns null when no offenders are returned") {
           probationOffenderSearchApiMockServer.stubPostOffenderSearch(
             "{\"pncNumber\": \"$hmppsId\"}",
