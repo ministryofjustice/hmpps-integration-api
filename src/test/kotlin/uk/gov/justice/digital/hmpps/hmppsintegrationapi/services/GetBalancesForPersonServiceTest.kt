@@ -59,7 +59,7 @@ internal class GetBalancesForPersonServiceTest(
         balances =
           listOf(
             AccountBalance(accountCode = "spends", amount = nomisSpends),
-            AccountBalance(accountCode = "saving", amount = nomisSavings),
+            AccountBalance(accountCode = "savings", amount = nomisSavings),
             AccountBalance(accountCode = "cash", amount = nomisCash),
           ),
       )

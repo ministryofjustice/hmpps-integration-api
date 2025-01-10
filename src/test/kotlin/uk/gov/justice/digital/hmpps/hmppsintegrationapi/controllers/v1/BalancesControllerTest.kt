@@ -45,7 +45,7 @@ class BalancesControllerTest(
         balances =
           listOf(
             AccountBalance(accountCode = "spends", amount = 101),
-            AccountBalance(accountCode = "saving", amount = 102),
+            AccountBalance(accountCode = "savings", amount = 102),
             AccountBalance(accountCode = "cash", amount = 103),
           ),
       )
@@ -72,7 +72,7 @@ class BalancesControllerTest(
                 "amount": 101
               },
               {
-                "accountCode": "saving",
+                "accountCode": "savings",
                 "amount": 102
               },
               {
