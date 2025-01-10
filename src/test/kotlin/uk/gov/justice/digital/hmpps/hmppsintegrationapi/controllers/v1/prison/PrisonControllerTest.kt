@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.controllers.v1.prison
 
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
+import jakarta.servlet.http.HttpServletRequest
 import org.mockito.Mockito
 import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.eq
@@ -22,6 +23,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError.Type.BAD_REQUEST
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError.Type.ENTITY_NOT_FOUND
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPrisonersService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
@@ -34,6 +36,7 @@ internal class PrisonControllerTest(
   @MockitoBean val getPersonService: GetPersonService,
   @MockitoBean val auditService: AuditService,
   @MockitoBean val getPrisonersService: GetPrisonersService,
+  @Autowired val request: HttpServletRequest,
 ) : DescribeSpec(
     {
       val hmppsId = "200313116M"
@@ -42,6 +45,7 @@ internal class PrisonControllerTest(
       val firstName = "Barry"
       val lastName = "Allen"
       val dateOfBirth = "2023-03-01"
+      val emptyConsumerFilter = ConsumerFilters(emptyList())
 
       describe("GET $basePath") {
       }
@@ -76,6 +80,7 @@ internal class PrisonControllerTest(
                 exclusionMessage = "An exclusion is present",
                 currentRestriction = true,
                 restrictionMessage = "A restriction is present",
+                prisonId = "VALID_PRISON",
               ),
           ),
         )
@@ -101,6 +106,7 @@ internal class PrisonControllerTest(
                    "pncId": "PNC123456",
                    "hmppsId": null,
                    "contactDetails": null,
+                   "prisonId": "VALID_PRISON",
                    "currentRestriction": true,
                    "restrictionMessage": "A restriction is present",
                    "currentExclusion": true,
@@ -199,7 +205,7 @@ internal class PrisonControllerTest(
 
       it("returns 500 when prison/prisoners throws an unexpected error") {
 
-        whenever(getPrisonersService.execute("Barry", "Allen", "2023-03-01")).thenThrow(RuntimeException("Service error"))
+        whenever(getPrisonersService.execute("Barry", "Allen", "2023-03-01", false, emptyConsumerFilter)).thenThrow(RuntimeException("Service error"))
 
         val result = mockMvc.performAuthorised("$basePath/prisoners?first_name=$firstName&last_name=$lastName&date_of_birth=$dateOfBirth")
         result.response.status.shouldBe(500)
@@ -207,7 +213,7 @@ internal class PrisonControllerTest(
 
       it("returns 404 when prisoner query gets no result") {
 
-        whenever(getPrisonersService.execute("Barry", "Allen", "2023-03-01")).thenReturn(
+        whenever(getPrisonersService.execute("Barry", "Allen", "2023-03-01", false, emptyConsumerFilter)).thenReturn(
           Response(
             data = emptyList(),
             errors =
@@ -226,7 +232,7 @@ internal class PrisonControllerTest(
       }
 
       it("returns a 200 OK status code") {
-        whenever(getPrisonersService.execute(firstName, lastName, dateOfBirth)).thenReturn(
+        whenever(getPrisonersService.execute(firstName, lastName, dateOfBirth, false, emptyConsumerFilter)).thenReturn(
           Response(
             data =
               listOf(
@@ -245,9 +251,36 @@ internal class PrisonControllerTest(
               ),
           ),
         )
-        val result = mockMvc.performAuthorised("$basePath/prisoners?first_name=$firstName&last_name=$lastName&date_of_birth=$dateOfBirth")
+        val result = mockMvc.performAuthorised("$basePath/prisoners?first_name=$firstName&last_name=$lastName&date_of_birth=$dateOfBirth&search_within_aliases=false")
 
         result.response.status.shouldBe(HttpStatus.OK.value())
+      }
+
+      it("returns a 403 when the consumer filters prisonIds does not match the prisonId") {
+        whenever(getPrisonersService.execute(firstName, lastName, dateOfBirth, false, ConsumerFilters(prisons = listOf("NOMATCH_PRISON")))).thenReturn(
+          Response(
+            data =
+              listOf(
+                Person(
+                  firstName = "Barry",
+                  lastName = "Allen",
+                  middleName = "Jonas",
+                  dateOfBirth = LocalDate.parse("2023-03-01"),
+                  prisonId = "INVALID_PRISON",
+                ),
+                Person(
+                  firstName = "Barry",
+                  lastName = "Allen",
+                  middleName = "Rock",
+                  dateOfBirth = LocalDate.parse("2022-07-22"),
+                  prisonId = "INVALID_PRISON",
+                ),
+              ),
+          ),
+        )
+        val result = mockMvc.performAuthorisedWithCN("$basePath/prisoners?first_name=$firstName&last_name=$lastName&date_of_birth=$dateOfBirth&search_within_aliases=false", "populated-prison-filters")
+
+        result.response.status.shouldBe(HttpStatus.FORBIDDEN.value())
       }
     },
   )

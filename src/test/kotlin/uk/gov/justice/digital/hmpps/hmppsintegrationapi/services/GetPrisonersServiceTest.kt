@@ -46,7 +46,7 @@ internal class GetPrisonersServiceTest(
           ),
         )
 
-        val result = getPrisonersService.execute("Qui-gon", "Jin", "1966-10-25")
+        val result = getPrisonersService.execute("Qui-gon", "Jin", "1966-10-25", false, null)
         result?.errors.shouldBe(
           listOf(
             UpstreamApiError(UpstreamApi.PRISONER_OFFENDER_SEARCH, UpstreamApiError.Type.ENTITY_NOT_FOUND, "MockError"),
@@ -62,7 +62,7 @@ internal class GetPrisonersServiceTest(
           ),
         )
 
-        val result = getPrisonersService.execute("Qui-gon", "Jin", "1966-10-25")
+        val result = getPrisonersService.execute("Qui-gon", "Jin", "1966-10-25", false, null)
         result?.data?.shouldBe(
           people,
         )
@@ -81,7 +81,7 @@ internal class GetPrisonersServiceTest(
           ),
         )
 
-        val result = getPrisonersService.execute("Qui-gon", "Jin", "1966-10-25")
+        val result = getPrisonersService.execute("Qui-gon", "Jin", "1966-10-25", false, prisonIds)
         result?.errors.shouldBe(
           listOf(
             UpstreamApiError(UpstreamApi.PRISONER_OFFENDER_SEARCH, UpstreamApiError.Type.ENTITY_NOT_FOUND, "MockError"),
@@ -90,7 +90,7 @@ internal class GetPrisonersServiceTest(
       }
 
       it("returns the persons data when the person queried for is in a prisonId matching their config") {
-        val people = listOf(Person(firstName = "Qui-gon", lastName = "Jin"), Person(firstName = "John", lastName = "Jin", prisonId = "VALID_PRISON"))
+        val people = listOf(Person(firstName = "Qui-gon", lastName = "Jin", prisonId = "VALID_PRISON"), Person(firstName = "John", lastName = "Jin", prisonId = "VALID_PRISON"))
         val prisonIds = ConsumerFilters(prisons = listOf("VALID_PRISON"))
         whenever(request.getAttribute("filters")).thenReturn(prisonIds)
         whenever(prisonerOffenderSearchGateway.getPrisonerByCriteria("Qui-gon", "Jin", "1966-10-25", false, prisonIds.prisons)).thenReturn(
@@ -99,7 +99,7 @@ internal class GetPrisonersServiceTest(
           ),
         )
 
-        val result = getPrisonersService.execute("Qui-gon", "Jin", "1966-10-25")
+        val result = getPrisonersService.execute("Qui-gon", "Jin", "1966-10-25", false, prisonIds)
         result?.data.shouldBe(
           people,
         )

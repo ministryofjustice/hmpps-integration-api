@@ -78,7 +78,6 @@ class PrisonerOffenderSearchGateway(
         "prisonIds" to prisonIds,
         "pagination" to mapOf("page" to 0, "size" to maxNumberOfResults),
       ).filterValues { it != null }
-    // check pagination is correct
 
     val result =
       webClient.request<POSGlobalSearch>(

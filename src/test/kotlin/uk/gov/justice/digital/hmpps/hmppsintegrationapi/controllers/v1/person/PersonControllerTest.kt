@@ -325,7 +325,6 @@ internal class PersonControllerTest(
                    "gender":null,
                    "ethnicity":null,
                    "aliases":[
-
                    ],
                    "identifiers":{
                       "nomisNumber":null,
@@ -335,6 +334,7 @@ internal class PersonControllerTest(
                    "pncId":null,
                    "hmppsId":null,
                    "contactDetails":null,
+                   "prisonId": null,
                    "currentRestriction": null,
                    "restrictionMessage": null,
                    "currentExclusion": null,
@@ -358,6 +358,7 @@ internal class PersonControllerTest(
                    "pncId":null,
                    "hmppsId":null,
                    "contactDetails":null,
+                   "prisonId": null,
                    "currentRestriction": null,
                    "restrictionMessage": null,
                    "currentExclusion": null,

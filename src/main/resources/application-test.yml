@@ -94,3 +94,7 @@ authorisation:
     no-include:
     empty-include:
       include:
+    populated-prison-filters:
+      filters:
+        prisons:
+          - "NOMATCH_PRISON"

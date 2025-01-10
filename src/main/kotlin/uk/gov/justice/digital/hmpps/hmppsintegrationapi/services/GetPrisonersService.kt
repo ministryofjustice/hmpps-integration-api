@@ -6,6 +6,8 @@ import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 @Service
@@ -18,11 +20,9 @@ class GetPrisonersService(
     lastName: String?,
     dateOfBirth: String?,
     searchWithinAliases: Boolean = false,
+    filters: ConsumerFilters?,
   ): Response<List<Person>> {
-    val requestFilters = request.getAttribute("filters") as ConsumerFilters
-    // hmmm
-    val prisonIds = requestFilters.prisons
-
+    val prisonIds = filters?.prisons
     val responseFromPrisonerOffenderSearch =
       if (prisonIds.isNullOrEmpty()) {
         // Hit global-search endpoint
@@ -39,6 +39,24 @@ class GetPrisonersService(
 
     if (responseFromPrisonerOffenderSearch.errors.isNotEmpty()) {
       return Response(emptyList(), responseFromPrisonerOffenderSearch.errors)
+    }
+
+    if (responseFromPrisonerOffenderSearch.data.isEmpty()) {
+      return Response(emptyList(), listOf(UpstreamApiError(UpstreamApi.PRISONER_OFFENDER_SEARCH, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found")))
+    }
+
+    if (!prisonIds.isNullOrEmpty()) {
+      // Check each prisoner has a valid prisonId that matches the consumers filter config, if prison filter exists against the consumer
+      responseFromPrisonerOffenderSearch.data.forEach { prisoner ->
+        if (
+          !filters.matchesPrison(prisoner.prisonId)
+        ) {
+          return Response(
+            data = emptyList(),
+            errors = listOf(UpstreamApiError(UpstreamApi.PRISONER_OFFENDER_SEARCH, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found")),
+          )
+        }
+      }
     }
 
     return Response(data = responseFromPrisonerOffenderSearch.data)
