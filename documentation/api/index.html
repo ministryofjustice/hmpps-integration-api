@@ -148,6 +148,9 @@
         <a href="../../documentation/api/index.html#servers"><span>Servers</span></a>
       </li>
       <li>
+        <a href="../../documentation/api/index.html#v1-prison-prisonid-prisoners-hmppsid-balances"><span>/v1/prison/{prisonId}/prisoners/{hmppsId}/balances</span></a>
+      </li>
+      <li>
         <a href="../../documentation/api/index.html#v1-prison-prisoners"><span>/v1/prison/prisoners</span></a>
       </li>
       <li>
@@ -303,6 +306,145 @@
     <a href="https://integration-api.hmpps.service.justice.gov.uk">https://integration-api.hmpps.service.justice.gov.uk</a>
   
   </div>
+
+
+
+<h2 id="v1-prison-prisonid-prisoners-hmppsid-balances">/v1/prison/{prisonId}/prisoners/{hmppsId}/balances</h2>
+
+<h3 id="v1-prison-prisonid-prisoners-hmppsid-balances-get">get</h3>
+
+  <p><em>Returns all accounts for a prisoner that they have at a prison.</em></p>
+
+
+  <p><b>Applicable filters</b>: <ul><li>prisons</li></ul></p>
+
+
+
+
+<h4 id="v1-prison-prisonid-prisoners-hmppsid-balances-get-parameters">Parameters</h4>
+<table>
+<thead>
+<tr><th>Parameter</th><th>In</th><th>Type</th><th>Required</th><th>Description</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>hmppsId</td>
+<td>path</td>
+<td>string</td>
+<td>true</td>
+<td>
+
+</td>
+</tr>
+
+<tr>
+<td>prisonId</td>
+<td>path</td>
+<td>string</td>
+<td>true</td>
+<td>
+
+</td>
+</tr>
+
+</tbody>
+</table>
+
+
+
+
+<h4 id="v1-prison-prisonid-prisoners-hmppsid-balances-get-responses">Responses</h4>
+<table>
+<thead>
+<tr><th>Status</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>200</td>
+<td>
+<p>Successfully found a prisoner&rsquo;s accounts.</p>
+
+
+
+<pre><code>{
+  "data": {
+    "balances": [
+      {
+        "accountCode": "string",
+        "amount": "integer"
+      }
+    ]
+  }
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-dataresponsebalances'>DataResponseBalances</a>
+</td>
+</tr>
+
+<tr>
+<td>400</td>
+<td>
+<p>The HMPPS ID provided has an invalid format or the prisoner does hot have accounts at the specified prison.</p>
+
+
+
+<pre><code>{
+  "status": 400,
+  "userMessage": "Validation failure: No query parameters specified.",
+  "developerMessage": "No query parameters specified."
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-badrequest'>BadRequest</a>
+</td>
+</tr>
+
+<tr>
+<td>404</td>
+<td>
+<p>Not Found</p>
+
+
+
+<pre><code>{
+  "status": 404,
+  "userMessage": "404 Not found error: Could not find person with HMPPS id: 2003/0011991D.",
+  "developerMessage": "Could not find person with HMPPS id: 2003/0011991D."
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-personnotfound'>PersonNotFound</a>
+</td>
+</tr>
+
+<tr>
+<td>500</td>
+<td>
+<p>Internal Server Error</p>
+
+
+
+<pre><code>{
+  "status": 500,
+  "userMessage": "Internal Server Error",
+  "developerMessage": "Unable to complete request as an upstream service is not responding."
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-internalservererror'>InternalServerError</a>
+</td>
+</tr>
+
+</tbody>
+</table>
+
 
 
 
@@ -5385,6 +5527,82 @@
 
 
 <h2 id="schemas">Schemas</h2>
+<h3 id="schema-accountbalance">AccountBalance</h3>
+
+
+<table class='schema-accountbalance'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>accountCode</td>
+<td>string</td>
+<td>true</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>amount</td>
+<td>integer</td>
+<td>true</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+</tbody>
+</table>
+
+<h3 id="schema-balances">Balances</h3>
+
+
+<table class='schema-balances'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>balances</td>
+<td>array</td>
+<td>true</td>
+<td></td>
+<td>
+  <a href='#schema-accountbalance'>AccountBalance</a>
+</td>
+</tr>
+
+</tbody>
+</table>
+
+<h3 id="schema-dataresponsebalances">DataResponseBalances</h3>
+
+
+<table class='schema-dataresponsebalances'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>data</td>
+<td>object</td>
+<td>true</td>
+<td></td>
+<td>
+  <a href='#schema-balances'>Balances</a>
+</td>
+</tr>
+
+</tbody>
+</table>
+
 <h3 id="schema-alias">Alias</h3>
 
 
