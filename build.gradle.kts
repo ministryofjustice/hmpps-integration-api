@@ -30,6 +30,7 @@ dependencies {
   testImplementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.18.1")
 
   annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
+  testImplementation(kotlin("test"))
 }
 
 java {

@@ -128,6 +128,7 @@ authorisation:
         - "/v1/persons/[^/]*$"
         - "/v1/prison/prisoners/[^/]*$"
         - "/v1/prison/prisoners"
+        - "/v1/prison/.*/prisoners/.*/balances$"
       filters:
     kilco:
       include:
@@ -135,6 +136,7 @@ authorisation:
         - "/v1/persons/[^/]*$"
         - "/v1/prison/prisoners"
         - "/v1/prison/prisoners/[^/]*$"
+        - "/v1/prison/.*/prisoners/.*/balances$"
       filters:
     meganexus:
       include:
@@ -150,6 +152,7 @@ authorisation:
         - "/v1/persons/[^/]*$"
         - "/v1/prison/prisoners/[^/]*$"
         - "/v1/prison/prisoners"
+        - "/v1/prison/.*/prisoners/.*/balances$"
       filters:
     serco:
       include:
