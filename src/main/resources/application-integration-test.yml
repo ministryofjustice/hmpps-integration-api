@@ -85,6 +85,7 @@ authorisation:
         - "/v1/prison/prisoners/[^/]*$"
         - "/v1/prison/prisoners"
         - "/v1/prison/.*/prisoners/.*/balances$"
+        - "/v1/prison/.*/prisoners/.*/balances/[^/]*$"
       filters:
     config-test:
       include:

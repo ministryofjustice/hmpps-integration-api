@@ -194,6 +194,4 @@ internal class GetBalancesForPersonServiceTest(
       result.data.shouldBe(null)
       result.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.NOMIS, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found")))
     }
-    // returns 500 if account not allowed
-    // prison filter still works
   })

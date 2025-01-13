@@ -58,4 +58,29 @@ class BalancesController(
     auditService.createEvent("GET_BALANCES_FOR_PERSON", mapOf("hmppsId" to hmppsId, "prisonId" to prisonId))
     return DataResponse(response.data)
   }
+
+  @GetMapping("/{accountCode}")
+  @Operation(
+    summary = "Returns a specific account for a prisoner that they have at a prison, based on the account code provided.",
+    description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
+    responses = [
+      ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found a prisoner's account."),
+      ApiResponse(
+        responseCode = "400",
+        description = "The HMPPS ID provided has an invalid format or the prisoner does hot have accounts at the specified prison.",
+        content = [Content(schema = Schema(ref = "#/components/schemas/BadRequest"))],
+      ),
+      ApiResponse(responseCode = "404", content = [Content(schema = Schema(ref = "#/components/schemas/PersonNotFound"))]),
+      ApiResponse(responseCode = "500", content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]),
+    ],
+  )
+  fun getBalanceForPerson(
+    @PathVariable hmppsId: String,
+    @PathVariable prisonId: String,
+    @PathVariable accountCode: String,
+    @RequestAttribute filters: ConsumerFilters?,
+  ): DataResponse<Balances?> {
+    val response = getBalancesForPersonService.execute(prisonId, hmppsId, accountCode, filters = filters)
+    return DataResponse(response.data)
+  }
 }
