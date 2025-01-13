@@ -78,7 +78,7 @@ class GetBalancesForPersonService(
     accountCode: String? = null,
     filters: ConsumerFilters? = null,
   ): Response<Balances?> {
-    if (!listOf("spends", "savings", "cash").any { it.equals(accountCode) }) {
+    if (!listOf("spends", "savings", "cash").any { it == accountCode }) {
       return Response(
         data = null,
         errors = listOf(UpstreamApiError(type = UpstreamApiError.Type.BAD_REQUEST, causedBy = UpstreamApi.NOMIS)),
