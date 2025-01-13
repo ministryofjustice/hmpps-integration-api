@@ -522,18 +522,16 @@
 
 <pre><code>{
   "data": {
-    "balances": [
-      {
-        "accountCode": "string",
-        "amount": "integer"
-      }
-    ]
+    "balance": {
+      "accountCode": "string",
+      "amount": "integer"
+    }
   }
 }</code></pre>
 
 </td>
 <td>
-<a href='#schema-dataresponsebalances'>DataResponseBalances</a>
+<a href='#schema-dataresponsebalance'>DataResponseBalance</a>
 </td>
 </tr>
 
@@ -5749,6 +5747,50 @@
 <td></td>
 <td>
   <a href='#schema-balances'>Balances</a>
+</td>
+</tr>
+
+</tbody>
+</table>
+
+<h3 id="schema-balance">Balance</h3>
+
+
+<table class='schema-balance'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>balance</td>
+<td>object</td>
+<td>true</td>
+<td></td>
+<td>
+  <a href='#schema-accountbalance'>AccountBalance</a>
+</td>
+</tr>
+
+</tbody>
+</table>
+
+<h3 id="schema-dataresponsebalance">DataResponseBalance</h3>
+
+
+<table class='schema-dataresponsebalance'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>data</td>
+<td>object</td>
+<td>true</td>
+<td></td>
+<td>
+  <a href='#schema-balance'>Balance</a>
 </td>
 </tr>
 
