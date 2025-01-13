@@ -35,8 +35,7 @@ internal class GetBalancesForPersonServiceTest(
     val nomisSpends = 101
     val nomisSavings = 102
     val nomisCash = 103
-    val accountCode = "testAccount"
-    val testAccountAmount = 100
+    val accountCode = "spends"
 
     beforeEach {
       Mockito.reset(getPersonService)
@@ -70,7 +69,7 @@ internal class GetBalancesForPersonServiceTest(
       Balances(
         balances =
           listOf(
-            AccountBalance(accountCode = accountCode, amount = testAccountAmount),
+            AccountBalance(accountCode = accountCode, amount = nomisSpends),
           ),
       )
 
@@ -174,13 +173,20 @@ internal class GetBalancesForPersonServiceTest(
       result.data.shouldBe(balance)
     }
 
-    it("returns a single balance when given an account code") {
+    it("returns a balance when given a valid account code") {
       val result = getBalancesForPersonService.execute(prisonId = prisonId, hmppsId = hmppsId, accountCode = accountCode)
 
       result.data.shouldBe(singleBalance)
     }
 
-    // returns 400 if not an allowable account code
+    it("returns an error when given an invalid account code") {
+      val wrongAccountCode = "invalid_account_code"
+      val result = getBalancesForPersonService.execute(prisonId = prisonId, hmppsId = hmppsId, accountCode = wrongAccountCode)
+
+      result.data.shouldBe(null)
+      result.errors.shouldBe(listOf(UpstreamApiError(type = UpstreamApiError.Type.BAD_REQUEST, causedBy = UpstreamApi.NOMIS)))
+    }
+
     // returns 500 if account not allowed
     // prison filter still works
   })
