@@ -67,7 +67,7 @@ class BalancesController(
       ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found a prisoner's account."),
       ApiResponse(
         responseCode = "400",
-        description = "The HMPPS ID provided has an invalid format or the prisoner does hot have accounts at the specified prison.",
+        description = "The HMPPS ID provided has an invalid format, the account code is not one of the allowable accounts or the prisoner does hot have accounts at the specified prison.",
         content = [Content(schema = Schema(ref = "#/components/schemas/BadRequest"))],
       ),
       ApiResponse(responseCode = "404", content = [Content(schema = Schema(ref = "#/components/schemas/PersonNotFound"))]),
@@ -90,6 +90,7 @@ class BalancesController(
       throw ValidationException("Either invalid HMPPS ID: $hmppsId, invalid Account Code: $accountCode or incorrect prison: $prisonId")
     }
 
+    auditService.createEvent("GET_BALANCE_FOR_PERSON", mapOf("hmppsId" to hmppsId, "accountCode" to accountCode, "prisonId" to prisonId))
     return DataResponse(response.data)
   }
 }
