@@ -22,7 +22,7 @@ class GetPrisonersService(
   ): Response<List<Person>> {
     val prisonIds = filters?.prisons
     val responseFromPrisonerOffenderSearch =
-      if (prisonIds != null && prisonIds.isEmpty()) {
+      if (prisonIds == null) {
         // Hit global-search endpoint
         prisonerOffenderSearchGateway.getPersons(
           firstName,
@@ -32,12 +32,8 @@ class GetPrisonersService(
         )
       } else {
         // Hit prisoner-details endpoint
-        prisonerOffenderSearchGateway.getPrisonerByCriteria(firstName, lastName, dateOfBirth, searchWithinAliases, prisonIds)
+        prisonerOffenderSearchGateway.getPrisonerDetails(firstName, lastName, dateOfBirth, searchWithinAliases, prisonIds)
       }
-
-    if (responseFromPrisonerOffenderSearch == null) {
-      return Response(emptyList(), listOf(UpstreamApiError(UpstreamApi.PRISONER_OFFENDER_SEARCH, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found")))
-    }
 
     if (responseFromPrisonerOffenderSearch.errors.isNotEmpty()) {
       return Response(emptyList(), responseFromPrisonerOffenderSearch.errors)
@@ -45,20 +41,6 @@ class GetPrisonersService(
 
     if (responseFromPrisonerOffenderSearch.data.isEmpty()) {
       return Response(emptyList(), listOf(UpstreamApiError(UpstreamApi.PRISONER_OFFENDER_SEARCH, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found")))
-    }
-
-    if (!prisonIds.isNullOrEmpty()) {
-      // Check each prisoner has a valid prisonId that matches the consumers filter config, if prison filter exists against the consumer
-      responseFromPrisonerOffenderSearch.data.forEach { prisoner ->
-        if (
-          !filters.matchesPrison(prisoner.prisonId)
-        ) {
-          return Response(
-            data = emptyList(),
-            errors = listOf(UpstreamApiError(UpstreamApi.PRISONER_OFFENDER_SEARCH, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found")),
-          )
-        }
-      }
     }
 
     return Response(data = responseFromPrisonerOffenderSearch.data)

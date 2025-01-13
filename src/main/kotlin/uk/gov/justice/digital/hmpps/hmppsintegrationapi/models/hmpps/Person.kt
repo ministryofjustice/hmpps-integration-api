@@ -27,7 +27,6 @@ open class Person(
   @Schema(description = "HMPPS identifier", example = "2008/0545166T")
   val hmppsId: String? = null,
   val contactDetails: ContactDetailsWithEmailAndPhone? = null,
-  val prisonId: String? = null,
   val currentRestriction: Boolean? = null,
   val restrictionMessage: String? = null,
   val currentExclusion: Boolean? = null,

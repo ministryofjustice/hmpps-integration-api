@@ -60,7 +60,7 @@ class PrisonerOffenderSearchGateway(
     }
   }
 
-  fun getPrisonerByCriteria(
+  fun getPrisonerDetails(
     firstName: String?,
     lastName: String?,
     dateOfBirth: String?,
