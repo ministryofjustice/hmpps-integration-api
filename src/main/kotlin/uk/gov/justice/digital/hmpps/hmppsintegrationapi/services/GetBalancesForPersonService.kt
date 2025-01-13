@@ -75,7 +75,7 @@ class GetBalancesForPersonService(
   fun getBalance(
     prisonId: String,
     hmppsId: String,
-    accountCode: String? = null,
+    accountCode: String,
     filters: ConsumerFilters? = null,
   ): Response<Balances?> {
     if (!listOf("spends", "savings", "cash").any { it == accountCode }) {
