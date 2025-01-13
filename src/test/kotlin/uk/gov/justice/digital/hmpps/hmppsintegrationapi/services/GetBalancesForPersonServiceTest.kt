@@ -12,6 +12,7 @@ import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NomisGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.AccountBalance
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Balance
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Balances
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NomisNumber
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
@@ -66,11 +67,8 @@ internal class GetBalancesForPersonServiceTest(
       )
 
     val singleBalance =
-      Balances(
-        balances =
-          listOf(
-            AccountBalance(accountCode = accountCode, amount = nomisSpends),
-          ),
+      Balance(
+        balance = AccountBalance(accountCode = accountCode, amount = nomisSpends),
       )
 
     it("gets a person using a Hmpps ID") {

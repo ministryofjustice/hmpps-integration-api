@@ -51,12 +51,11 @@ class BalanceIntegrationTest : IntegrationTestBase() {
           """
         {
           "data": {
-            "balances": [
+            "balance":
               {
                 "accountCode": "savings",
                 "amount": 12344
               }
-            ]
           }
         }
       """,

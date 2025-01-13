@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestAttribute
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Balance
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Balances
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
@@ -79,7 +80,7 @@ class BalancesController(
     @PathVariable prisonId: String,
     @PathVariable accountCode: String,
     @RequestAttribute filters: ConsumerFilters?,
-  ): DataResponse<Balances?> {
+  ): DataResponse<Balance?> {
     val response = getBalancesForPersonService.getBalance(prisonId, hmppsId, accountCode, filters = filters)
 
     if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
