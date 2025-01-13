@@ -18,6 +18,7 @@ class GetBalancesForPersonService(
   fun execute(
     prisonId: String,
     hmppsId: String,
+    accountCode: String? = null,
     filters: ConsumerFilters? = null,
   ): Response<Balances?> {
     if (
@@ -45,6 +46,20 @@ class GetBalancesForPersonService(
       return Response(
         data = null,
         errors = nomisAccounts.errors,
+      )
+    }
+
+    if (accountCode != null) {
+      val balance =
+        Balances(
+          balances =
+            listOf(
+              AccountBalance(accountCode = accountCode, amount = 100),
+            ),
+        )
+      return Response(
+        data = balance,
+        errors = emptyList(),
       )
     }
 

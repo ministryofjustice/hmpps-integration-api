@@ -45,7 +45,7 @@ class BalancesController(
     @PathVariable prisonId: String,
     @RequestAttribute filters: ConsumerFilters?,
   ): DataResponse<Balances?> {
-    val response = getBalancesForPersonService.execute(prisonId, hmppsId, filters)
+    val response = getBalancesForPersonService.execute(prisonId, hmppsId, filters = filters)
 
     if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
       throw EntityNotFoundException("Could not find person with id: $hmppsId")

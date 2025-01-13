@@ -35,6 +35,8 @@ internal class GetBalancesForPersonServiceTest(
     val nomisSpends = 101
     val nomisSavings = 102
     val nomisCash = 103
+    val accountCode = "testAccount"
+    val testAccountAmount = 100
 
     beforeEach {
       Mockito.reset(getPersonService)
@@ -61,6 +63,14 @@ internal class GetBalancesForPersonServiceTest(
             AccountBalance(accountCode = "spends", amount = nomisSpends),
             AccountBalance(accountCode = "savings", amount = nomisSavings),
             AccountBalance(accountCode = "cash", amount = nomisCash),
+          ),
+      )
+
+    val singleBalance =
+      Balances(
+        balances =
+          listOf(
+            AccountBalance(accountCode = accountCode, amount = testAccountAmount),
           ),
       )
 
@@ -152,15 +162,25 @@ internal class GetBalancesForPersonServiceTest(
 
     it("returns null when balances are requested from an unapproved prison") {
       val wrongPrisonId = "XYZ"
-      val result = getBalancesForPersonService.execute(wrongPrisonId, hmppsId, ConsumerFilters(prisons = listOf("ABC")))
+      val result = getBalancesForPersonService.execute(wrongPrisonId, hmppsId, filters = ConsumerFilters(prisons = listOf("ABC")))
 
       result.data.shouldBe(null)
       result.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.NOMIS, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found")))
     }
 
     it("returns balances when requested from an approved prison") {
-      val result = getBalancesForPersonService.execute(prisonId, hmppsId, ConsumerFilters(prisons = listOf(prisonId)))
+      val result = getBalancesForPersonService.execute(prisonId, hmppsId, filters = ConsumerFilters(prisons = listOf(prisonId)))
 
       result.data.shouldBe(balance)
     }
+
+    it("returns a single balance when given an account code") {
+      val result = getBalancesForPersonService.execute(prisonId = prisonId, hmppsId = hmppsId, accountCode = accountCode)
+
+      result.data.shouldBe(singleBalance)
+    }
+
+    // returns 400 if not an allowable account code
+    // returns 500 if account not allowed
+    // prison filter still works
   })

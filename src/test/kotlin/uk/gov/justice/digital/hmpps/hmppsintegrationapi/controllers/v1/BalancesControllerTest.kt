@@ -87,7 +87,7 @@ class BalancesControllerTest(
 
     it("calls the API with the correct filters") {
       mockMvc.performAuthorisedWithCN(basePath, "limited-prisons")
-      verify(getBalancesForPersonService, times(1)).execute(prisonId, hmppsId, ConsumerFilters(prisons = listOf("XYZ")))
+      verify(getBalancesForPersonService, times(1)).execute(prisonId, hmppsId, filters = ConsumerFilters(prisons = listOf("XYZ")))
     }
 
     it("returns a 404 NOT FOUND status code when person isn't found in probation offender search") {
