@@ -43,7 +43,59 @@ class PrisonerOffenderSearchGateway(
 
     return when (result) {
       is WebClientWrapperResponse.Success -> {
-        Response(data = result.data.content.map { it.toPerson() }.sortedByDescending { it.dateOfBirth })
+        Response(
+          data =
+            result.data.content
+              .map { it.toPerson() }
+              .sortedByDescending { it.dateOfBirth },
+        )
+      }
+
+      is WebClientWrapperResponse.Error -> {
+        Response(
+          data = emptyList(),
+          errors = result.errors,
+        )
+      }
+    }
+  }
+
+  fun getPrisonerDetails(
+    firstName: String?,
+    lastName: String?,
+    dateOfBirth: String?,
+    searchWithinAliases: Boolean = false,
+    prisonIds: List<String?>?,
+  ): Response<List<Person>> {
+    val maxNumberOfResults = 9999
+
+    val requestBody =
+      mapOf(
+        "firstName" to firstName,
+        "lastName" to lastName,
+        "dateOfBirth" to dateOfBirth,
+        "includeAliases" to searchWithinAliases,
+        "prisonIds" to prisonIds,
+        "pagination" to mapOf("page" to 0, "size" to maxNumberOfResults),
+      ).filterValues { it != null }
+
+    val result =
+      webClient.request<POSGlobalSearch>(
+        HttpMethod.POST,
+        "/prisoner-detail",
+        authenticationHeader(),
+        UpstreamApi.PRISONER_OFFENDER_SEARCH,
+        requestBody,
+      )
+
+    return when (result) {
+      is WebClientWrapperResponse.Success -> {
+        Response(
+          data =
+            result.data.content
+              .map { it.toPerson() }
+              .sortedByDescending { it.dateOfBirth },
+        )
       }
 
       is WebClientWrapperResponse.Error -> {

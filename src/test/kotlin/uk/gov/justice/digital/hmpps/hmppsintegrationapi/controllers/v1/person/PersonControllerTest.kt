@@ -325,7 +325,6 @@ internal class PersonControllerTest(
                    "gender":null,
                    "ethnicity":null,
                    "aliases":[
-
                    ],
                    "identifiers":{
                       "nomisNumber":null,

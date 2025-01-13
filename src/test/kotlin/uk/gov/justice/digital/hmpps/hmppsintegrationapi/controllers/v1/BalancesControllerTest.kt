@@ -53,11 +53,11 @@ class BalancesControllerTest(
     it("gets the balances for a person with the matching ID") {
       mockMvc.performAuthorised(basePath)
 
-      verify(getBalancesForPersonService, VerificationModeFactory.times(1)).execute(prisonId, hmppsId)
+      verify(getBalancesForPersonService, VerificationModeFactory.times(1)).execute(prisonId, hmppsId, null)
     }
 
     it("returns the correct balances data") {
-      whenever(getBalancesForPersonService.execute(prisonId, hmppsId)).thenReturn(
+      whenever(getBalancesForPersonService.execute(prisonId, hmppsId, null)).thenReturn(
         Response(
           data = balance,
         ),
@@ -91,7 +91,7 @@ class BalancesControllerTest(
     }
 
     it("returns a 404 NOT FOUND status code when person isn't found in probation offender search") {
-      whenever(getBalancesForPersonService.execute(prisonId, hmppsId)).thenReturn(
+      whenever(getBalancesForPersonService.execute(prisonId, hmppsId, null)).thenReturn(
         Response(
           data = null,
           errors =
@@ -110,7 +110,7 @@ class BalancesControllerTest(
     }
 
     it("returns a 404 NOT FOUND status code when person isn't found in Nomis") {
-      whenever(getBalancesForPersonService.execute(prisonId, hmppsId)).thenReturn(
+      whenever(getBalancesForPersonService.execute(prisonId, hmppsId, null)).thenReturn(
         Response(
           data = null,
           errors =
@@ -129,7 +129,7 @@ class BalancesControllerTest(
     }
 
     it("returns a 400 BAD REQUEST status code when account isn't found in the upstream API") {
-      whenever(getBalancesForPersonService.execute(prisonId, hmppsId)).thenReturn(
+      whenever(getBalancesForPersonService.execute(prisonId, hmppsId, null)).thenReturn(
         Response(
           data = null,
           errors =
@@ -148,7 +148,7 @@ class BalancesControllerTest(
     }
 
     it("returns a 500 INTERNAL SERVER ERROR status code when balance isn't found in the upstream API") {
-      whenever(getBalancesForPersonService.execute(prisonId, hmppsId)).thenThrow(
+      whenever(getBalancesForPersonService.execute(prisonId, hmppsId, null)).thenThrow(
         IllegalStateException("Error occurred while trying to get accounts for person with id: $hmppsId"),
       )
 
