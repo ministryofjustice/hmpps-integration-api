@@ -52,7 +52,7 @@ class BalancesController(
     }
 
     if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
-      throw ValidationException("Either invalid HMPPS ID: $hmppsId at or incorrect prison: $prisonId")
+      throw ValidationException("Either invalid HMPPS ID: $hmppsId or incorrect prison: $prisonId")
     }
 
     auditService.createEvent("GET_BALANCES_FOR_PERSON", mapOf("hmppsId" to hmppsId, "prisonId" to prisonId))
@@ -84,6 +84,10 @@ class BalancesController(
 
     if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
       throw EntityNotFoundException("Could not find person with id: $hmppsId")
+    }
+
+    if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
+      throw ValidationException("Either invalid HMPPS ID: $hmppsId, invalid Account Code: $accountCode or incorrect prison: $prisonId")
     }
 
     return DataResponse(response.data)
