@@ -55,7 +55,7 @@ internal class GetBalancesForPersonServiceTest(
         ),
       )
     }
-    val balance =
+    val balances =
       Balances(
         balances =
           listOf(
@@ -88,7 +88,7 @@ internal class GetBalancesForPersonServiceTest(
     it("returns a person's account balances given a Hmpps ID") {
       val result = getBalancesForPersonService.execute(prisonId, hmppsId)
 
-      result.data.shouldBe(balance)
+      result.data.shouldBe(balances)
     }
 
     it("records upstream API errors") {
@@ -170,7 +170,7 @@ internal class GetBalancesForPersonServiceTest(
     it("returns balances when requested from an approved prison") {
       val result = getBalancesForPersonService.execute(prisonId, hmppsId, filters = ConsumerFilters(prisons = listOf(prisonId)))
 
-      result.data.shouldBe(balance)
+      result.data.shouldBe(balances)
     }
 
     it("returns a balance when given a valid account code") {
