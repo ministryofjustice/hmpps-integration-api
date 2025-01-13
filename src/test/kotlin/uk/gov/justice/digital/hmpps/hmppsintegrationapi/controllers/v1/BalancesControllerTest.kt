@@ -16,6 +16,7 @@ import org.springframework.test.web.servlet.MockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.AccountBalance
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Balance
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Balances
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
@@ -50,11 +51,8 @@ class BalancesControllerTest(
           ),
       )
     val singleBalance =
-      Balances(
-        balances =
-          listOf(
-            AccountBalance(accountCode = "spends", amount = 201),
-          ),
+      Balance(
+        balance = AccountBalance(accountCode = "spends", amount = 201),
       )
 
     it("gets the balances for a person with the matching ID") {
@@ -180,12 +178,12 @@ class BalancesControllerTest(
       result.response.contentAsString.shouldContain(
         """
           "data": {
-            "balances": [
+            "balance":
               {
                 "accountCode": "spends",
                 "amount": 201
               }
-            ]
+
           }
         """.removeWhitespaceAndNewlines(),
       )

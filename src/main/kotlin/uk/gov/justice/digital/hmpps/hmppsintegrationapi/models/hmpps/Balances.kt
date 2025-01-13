@@ -8,3 +8,7 @@ data class AccountBalance(
 data class Balances(
   val balances: List<AccountBalance> = emptyList(),
 )
+
+data class Balance(
+  val balance: AccountBalance,
+)

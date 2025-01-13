@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NomisGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.AccountBalance
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Balance
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Balances
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
@@ -77,7 +78,7 @@ class GetBalancesForPersonService(
     hmppsId: String,
     accountCode: String,
     filters: ConsumerFilters? = null,
-  ): Response<Balances?> {
+  ): Response<Balance?> {
     if (!listOf("spends", "savings", "cash").any { it == accountCode }) {
       return Response(
         data = null,
@@ -100,7 +101,7 @@ class GetBalancesForPersonService(
       throw IllegalStateException("Error occurred while trying to get accounts for person with id: $hmppsId")
     }
 
-    val balance = Balances(balances = listOf(accountBalance))
+    val balance = Balance(balance = accountBalance)
     return Response(data = balance, errors = emptyList())
   }
 }
