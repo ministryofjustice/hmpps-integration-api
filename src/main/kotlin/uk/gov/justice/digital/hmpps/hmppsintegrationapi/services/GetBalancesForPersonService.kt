@@ -71,4 +71,36 @@ class GetBalancesForPersonService(
       errors = emptyList(),
     )
   }
+
+  fun getBalance(
+    prisonId: String,
+    hmppsId: String,
+    accountCode: String,
+    filters: ConsumerFilters? = null,
+  ): Response<Balances?> {
+    if (!listOf("spends", "savings", "cash").any { it == accountCode }) {
+      return Response(
+        data = null,
+        errors = listOf(UpstreamApiError(type = UpstreamApiError.Type.BAD_REQUEST, causedBy = UpstreamApi.NOMIS)),
+      )
+    }
+
+    val response = execute(prisonId, hmppsId, filters)
+
+    if (response.errors.isNotEmpty()) {
+      return Response(
+        data = null,
+        errors = response.errors,
+      )
+    }
+
+    val accountBalance = response.data?.balances?.filter { it.accountCode == accountCode }?.firstOrNull()
+
+    if (accountBalance == null) {
+      throw IllegalStateException("Error occurred while trying to get accounts for person with id: $hmppsId")
+    }
+
+    val balance = Balances(balances = listOf(accountBalance))
+    return Response(data = balance, errors = emptyList())
+  }
 }

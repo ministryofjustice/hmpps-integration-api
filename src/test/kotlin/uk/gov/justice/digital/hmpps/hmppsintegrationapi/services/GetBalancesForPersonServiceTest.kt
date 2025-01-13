@@ -35,6 +35,7 @@ internal class GetBalancesForPersonServiceTest(
     val nomisSpends = 101
     val nomisSavings = 102
     val nomisCash = 103
+    val accountCode = "spends"
 
     beforeEach {
       Mockito.reset(getPersonService)
@@ -54,13 +55,21 @@ internal class GetBalancesForPersonServiceTest(
         ),
       )
     }
-    val balance =
+    val balances =
       Balances(
         balances =
           listOf(
             AccountBalance(accountCode = "spends", amount = nomisSpends),
             AccountBalance(accountCode = "savings", amount = nomisSavings),
             AccountBalance(accountCode = "cash", amount = nomisCash),
+          ),
+      )
+
+    val singleBalance =
+      Balances(
+        balances =
+          listOf(
+            AccountBalance(accountCode = accountCode, amount = nomisSpends),
           ),
       )
 
@@ -79,7 +88,7 @@ internal class GetBalancesForPersonServiceTest(
     it("returns a person's account balances given a Hmpps ID") {
       val result = getBalancesForPersonService.execute(prisonId, hmppsId)
 
-      result.data.shouldBe(balance)
+      result.data.shouldBe(balances)
     }
 
     it("records upstream API errors") {
@@ -152,15 +161,37 @@ internal class GetBalancesForPersonServiceTest(
 
     it("returns null when balances are requested from an unapproved prison") {
       val wrongPrisonId = "XYZ"
-      val result = getBalancesForPersonService.execute(wrongPrisonId, hmppsId, ConsumerFilters(prisons = listOf("ABC")))
+      val result = getBalancesForPersonService.execute(wrongPrisonId, hmppsId, filters = ConsumerFilters(prisons = listOf("ABC")))
 
       result.data.shouldBe(null)
       result.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.NOMIS, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found")))
     }
 
     it("returns balances when requested from an approved prison") {
-      val result = getBalancesForPersonService.execute(prisonId, hmppsId, ConsumerFilters(prisons = listOf(prisonId)))
+      val result = getBalancesForPersonService.execute(prisonId, hmppsId, filters = ConsumerFilters(prisons = listOf(prisonId)))
 
-      result.data.shouldBe(balance)
+      result.data.shouldBe(balances)
+    }
+
+    it("returns a balance when given a valid account code") {
+      val result = getBalancesForPersonService.getBalance(prisonId = prisonId, hmppsId = hmppsId, accountCode = accountCode)
+
+      result.data.shouldBe(singleBalance)
+    }
+
+    it("returns an error when given an invalid account code") {
+      val wrongAccountCode = "invalid_account_code"
+      val result = getBalancesForPersonService.getBalance(prisonId = prisonId, hmppsId = hmppsId, accountCode = wrongAccountCode)
+
+      result.data.shouldBe(null)
+      result.errors.shouldBe(listOf(UpstreamApiError(type = UpstreamApiError.Type.BAD_REQUEST, causedBy = UpstreamApi.NOMIS)))
+    }
+
+    it("returns null when balance is requested from an unapproved prison") {
+      val wrongPrisonId = "XYZ"
+      val result = getBalancesForPersonService.getBalance(wrongPrisonId, hmppsId, accountCode, ConsumerFilters(prisons = listOf("ABC")))
+
+      result.data.shouldBe(null)
+      result.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.NOMIS, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found")))
     }
   })
