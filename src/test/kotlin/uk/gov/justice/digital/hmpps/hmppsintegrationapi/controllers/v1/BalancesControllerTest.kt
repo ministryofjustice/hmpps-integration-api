@@ -170,77 +170,69 @@ class BalancesControllerTest(
       verify(getBalancesForPersonService, VerificationModeFactory.times(1)).execute(prisonId, hmppsId, accountCode, null)
     }
 
-//    it("returns the correct balances data") {
-//        whenever(getBalancesForPersonService.execute(prisonId, hmppsId, filters=null)).thenReturn(
-//            Response(
-//                data = balance,
-//            ),
-//        )
-//        val result = mockMvc.performAuthorised(balancesPath)
-//        result.response.contentAsString.shouldContain(
-//            """
-//          "data": {
-//            "balances": [
-//              {
-//                "accountCode": "spends",
-//                "amount": 101
-//              },
-//              {
-//                "accountCode": "savings",
-//                "amount": 102
-//              },
-//              {
-//                "accountCode": "cash",
-//                "amount": 103
-//              }
-//            ]
-//          }
-//        """.removeWhitespaceAndNewlines(),
-//        )
-//    }
-//
-//    it("calls the API with the correct filters") {
-//        mockMvc.performAuthorisedWithCN(balancesPath, "limited-prisons")
-//        verify(getBalancesForPersonService, times(1)).execute(prisonId, hmppsId, filters = ConsumerFilters(prisons = listOf("XYZ")))
-//    }
-//
-//    it("returns a 404 NOT FOUND status code when person isn't found in probation offender search") {
-//        whenever(getBalancesForPersonService.execute(prisonId, hmppsId, null)).thenReturn(
-//            Response(
-//                data = null,
-//                errors =
-//                    listOf(
-//                        UpstreamApiError(
-//                            causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH,
-//                            type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-//                        ),
-//                    ),
-//            ),
-//        )
-//
-//        val result = mockMvc.performAuthorised(balancesPath)
-//
-//        result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
-//    }
-//
-//    it("returns a 404 NOT FOUND status code when person isn't found in Nomis") {
-//        whenever(getBalancesForPersonService.execute(prisonId, hmppsId, filters=null)).thenReturn(
-//            Response(
-//                data = null,
-//                errors =
-//                    listOf(
-//                        UpstreamApiError(
-//                            causedBy = UpstreamApi.NOMIS,
-//                            type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-//                        ),
-//                    ),
-//            ),
-//        )
-//
-//        val result = mockMvc.performAuthorised(balancesPath)
-//
-//        result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
-//    }
+    it("returns the correct balance data when given an account code") {
+      whenever(getBalancesForPersonService.execute(prisonId, hmppsId, accountCode, filters = null)).thenReturn(
+        Response(
+          data = singleBalance,
+        ),
+      )
+      val result = mockMvc.performAuthorised(accountCodePath)
+      result.response.contentAsString.shouldContain(
+        """
+          "data": {
+            "balances": [
+              {
+                "accountCode": "spends",
+                "amount": 201
+              }
+            ]
+          }
+        """.removeWhitespaceAndNewlines(),
+      )
+    }
+
+    it("calls the API with the correct filters") {
+      mockMvc.performAuthorisedWithCN(accountCodePath, "limited-prisons")
+      verify(getBalancesForPersonService, times(1)).execute(prisonId, hmppsId, accountCode, filters = ConsumerFilters(prisons = listOf("XYZ")))
+    }
+
+    it("returns a 404 NOT FOUND status code when person isn't found in probation offender search") {
+      whenever(getBalancesForPersonService.execute(prisonId, hmppsId, accountCode)).thenReturn(
+        Response(
+          data = null,
+          errors =
+            listOf(
+              UpstreamApiError(
+                causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH,
+                type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+              ),
+            ),
+        ),
+      )
+
+      val result = mockMvc.performAuthorised(accountCodePath)
+
+      result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
+    }
+
+    it("returns a 404 NOT FOUND status code when person isn't found in Nomis") {
+      whenever(getBalancesForPersonService.execute(prisonId, hmppsId, accountCode, filters = null)).thenReturn(
+        Response(
+          data = null,
+          errors =
+            listOf(
+              UpstreamApiError(
+                causedBy = UpstreamApi.NOMIS,
+                type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+              ),
+            ),
+        ),
+      )
+
+      val result = mockMvc.performAuthorised(accountCodePath)
+
+      result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
+    }
 //
 //    it("returns a 400 BAD REQUEST status code when account isn't found in the upstream API") {
 //        whenever(getBalancesForPersonService.execute(prisonId, hmppsId, filters=null)).thenReturn(
