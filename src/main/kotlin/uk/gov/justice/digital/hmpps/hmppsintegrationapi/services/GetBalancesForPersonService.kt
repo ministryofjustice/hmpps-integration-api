@@ -18,7 +18,7 @@ class GetBalancesForPersonService(
   fun execute(
     prisonId: String,
     hmppsId: String,
-    accountCode: String? = null,
+    accountCode: String? = null, // TODO: Remove this
     filters: ConsumerFilters? = null,
   ): Response<Balances?> {
     if (
@@ -53,10 +53,6 @@ class GetBalancesForPersonService(
     val nomisSavings = nomisAccounts.data?.savings
     val nomisCash = nomisAccounts.data?.cash
 
-    if (accountCode != null) {
-      return getBalance(accountCode, nomisSpends, nomisSavings, nomisCash)
-    }
-
     if (nomisSpends == null || nomisSavings == null || nomisCash == null) {
       throw IllegalStateException("Error occurred while trying to get accounts for person with id: $hmppsId")
     }
@@ -77,25 +73,35 @@ class GetBalancesForPersonService(
     )
   }
 
-  private fun getBalance(
-    accountCode: String,
-    nomisSpends: Int?,
-    nomisSavings: Int?,
-    nomisCash: Int?,
+  fun getBalance(
+    prisonId: String,
+    hmppsId: String,
+    accountCode: String? = null,
+    filters: ConsumerFilters? = null,
   ): Response<Balances?> {
-    val amount =
-      when (accountCode) {
-        "spends" -> nomisSpends
-        "savings" -> nomisSavings
-        "cash" -> nomisCash
-        else -> return Response(data = null, errors = listOf(UpstreamApiError(causedBy = UpstreamApi.NOMIS, type = UpstreamApiError.Type.BAD_REQUEST)))
-      }
-
-    if (amount == null) {
-      throw IllegalStateException("Error occurred while trying to get $accountCode")
+    if (!listOf("spends", "savings", "cash").any { it.equals(accountCode) }) {
+      return Response(
+        data = null,
+        errors = listOf(UpstreamApiError(type = UpstreamApiError.Type.BAD_REQUEST, causedBy = UpstreamApi.NOMIS)),
+      )
     }
 
-    val balance = Balances(balances = listOf(AccountBalance(accountCode = accountCode, amount = amount)))
+    val response = execute(prisonId, hmppsId, accountCode, filters)
+
+    if (response.errors.isNotEmpty()) {
+      return Response(
+        data = null,
+        errors = response.errors,
+      )
+    }
+
+    val accountBalance = response.data?.balances?.filter { it.accountCode == accountCode }?.firstOrNull()
+
+    if (accountBalance == null) {
+      throw IllegalStateException("Error occurred while trying to get accounts for person with id: $hmppsId")
+    }
+
+    val balance = Balances(balances = listOf(accountBalance))
     return Response(data = balance, errors = emptyList())
   }
 }

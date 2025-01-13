@@ -174,14 +174,14 @@ internal class GetBalancesForPersonServiceTest(
     }
 
     it("returns a balance when given a valid account code") {
-      val result = getBalancesForPersonService.execute(prisonId = prisonId, hmppsId = hmppsId, accountCode = accountCode)
+      val result = getBalancesForPersonService.getBalance(prisonId = prisonId, hmppsId = hmppsId, accountCode = accountCode)
 
       result.data.shouldBe(singleBalance)
     }
 
     it("returns an error when given an invalid account code") {
       val wrongAccountCode = "invalid_account_code"
-      val result = getBalancesForPersonService.execute(prisonId = prisonId, hmppsId = hmppsId, accountCode = wrongAccountCode)
+      val result = getBalancesForPersonService.getBalance(prisonId = prisonId, hmppsId = hmppsId, accountCode = wrongAccountCode)
 
       result.data.shouldBe(null)
       result.errors.shouldBe(listOf(UpstreamApiError(type = UpstreamApiError.Type.BAD_REQUEST, causedBy = UpstreamApi.NOMIS)))
@@ -189,7 +189,7 @@ internal class GetBalancesForPersonServiceTest(
 
     it("returns null when balance is requested from an unapproved prison") {
       val wrongPrisonId = "XYZ"
-      val result = getBalancesForPersonService.execute(wrongPrisonId, hmppsId, accountCode, ConsumerFilters(prisons = listOf("ABC")))
+      val result = getBalancesForPersonService.getBalance(wrongPrisonId, hmppsId, accountCode, ConsumerFilters(prisons = listOf("ABC")))
 
       result.data.shouldBe(null)
       result.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.NOMIS, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found")))

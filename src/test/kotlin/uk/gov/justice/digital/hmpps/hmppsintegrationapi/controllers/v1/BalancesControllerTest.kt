@@ -167,11 +167,11 @@ class BalancesControllerTest(
     it("gets the balance for the relevant account code for a person with the matching ID") {
       mockMvc.performAuthorised(accountCodePath)
 
-      verify(getBalancesForPersonService, VerificationModeFactory.times(1)).execute(prisonId, hmppsId, accountCode, null)
+      verify(getBalancesForPersonService, VerificationModeFactory.times(1)).getBalance(prisonId, hmppsId, accountCode, null)
     }
 
     it("returns the correct balance data when given an account code") {
-      whenever(getBalancesForPersonService.execute(prisonId, hmppsId, accountCode, filters = null)).thenReturn(
+      whenever(getBalancesForPersonService.getBalance(prisonId, hmppsId, accountCode, filters = null)).thenReturn(
         Response(
           data = singleBalance,
         ),
@@ -193,11 +193,11 @@ class BalancesControllerTest(
 
     it("calls the API with the correct filters") {
       mockMvc.performAuthorisedWithCN(accountCodePath, "limited-prisons")
-      verify(getBalancesForPersonService, times(1)).execute(prisonId, hmppsId, accountCode, filters = ConsumerFilters(prisons = listOf("XYZ")))
+      verify(getBalancesForPersonService, times(1)).getBalance(prisonId, hmppsId, accountCode, filters = ConsumerFilters(prisons = listOf("XYZ")))
     }
 
     it("returns a 404 NOT FOUND status code when person isn't found in probation offender search") {
-      whenever(getBalancesForPersonService.execute(prisonId, hmppsId, accountCode)).thenReturn(
+      whenever(getBalancesForPersonService.getBalance(prisonId, hmppsId, accountCode)).thenReturn(
         Response(
           data = null,
           errors =
@@ -216,7 +216,7 @@ class BalancesControllerTest(
     }
 
     it("returns a 404 NOT FOUND status code when person isn't found in Nomis") {
-      whenever(getBalancesForPersonService.execute(prisonId, hmppsId, accountCode, filters = null)).thenReturn(
+      whenever(getBalancesForPersonService.getBalance(prisonId, hmppsId, accountCode, filters = null)).thenReturn(
         Response(
           data = null,
           errors =
@@ -235,7 +235,7 @@ class BalancesControllerTest(
     }
 
     it("returns a 400 BAD REQUEST status code when account isn't found in the upstream API") {
-      whenever(getBalancesForPersonService.execute(prisonId, hmppsId, accountCode, filters = null)).thenReturn(
+      whenever(getBalancesForPersonService.getBalance(prisonId, hmppsId, accountCode, filters = null)).thenReturn(
         Response(
           data = null,
           errors =
@@ -254,7 +254,7 @@ class BalancesControllerTest(
     }
 
     it("returns a 500 INTERNAL SERVER ERROR status code when balance isn't found in the upstream API") {
-      whenever(getBalancesForPersonService.execute(prisonId, hmppsId, accountCode, filters = null)).thenThrow(
+      whenever(getBalancesForPersonService.getBalance(prisonId, hmppsId, accountCode, filters = null)).thenThrow(
         IllegalStateException("Error occurred while trying to get accounts for person with id: $hmppsId"),
       )
 
