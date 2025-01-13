@@ -18,7 +18,6 @@ class GetBalancesForPersonService(
   fun execute(
     prisonId: String,
     hmppsId: String,
-    accountCode: String? = null, // TODO: Remove this
     filters: ConsumerFilters? = null,
   ): Response<Balances?> {
     if (
@@ -86,7 +85,7 @@ class GetBalancesForPersonService(
       )
     }
 
-    val response = execute(prisonId, hmppsId, accountCode, filters)
+    val response = execute(prisonId, hmppsId, filters)
 
     if (response.errors.isNotEmpty()) {
       return Response(
