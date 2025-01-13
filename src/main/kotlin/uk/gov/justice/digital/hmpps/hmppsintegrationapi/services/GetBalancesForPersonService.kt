@@ -53,12 +53,12 @@ class GetBalancesForPersonService(
     val nomisSavings = nomisAccounts.data?.savings
     val nomisCash = nomisAccounts.data?.cash
 
-    if (nomisSpends == null || nomisSavings == null || nomisCash == null) {
-      throw IllegalStateException("Error occurred while trying to get accounts for person with id: $hmppsId")
-    }
-
     if (accountCode != null) {
       return getBalance(accountCode, nomisSpends, nomisSavings, nomisCash)
+    }
+
+    if (nomisSpends == null || nomisSavings == null || nomisCash == null) {
+      throw IllegalStateException("Error occurred while trying to get accounts for person with id: $hmppsId")
     }
 
     val balance =
@@ -79,19 +79,23 @@ class GetBalancesForPersonService(
 
   private fun getBalance(
     accountCode: String,
-    nomisSpends: Int,
-    nomisSavings: Int,
-    nomisCash: Int,
+    nomisSpends: Int?,
+    nomisSavings: Int?,
+    nomisCash: Int?,
   ): Response<Balances?> {
-    val accountBalance =
+    val amount =
       when (accountCode) {
-        "spends" -> AccountBalance("spends", nomisSpends)
-        "savings" -> AccountBalance("savings", nomisSavings)
-        "cash" -> AccountBalance("cash", nomisCash)
+        "spends" -> nomisSpends
+        "savings" -> nomisSavings
+        "cash" -> nomisCash
         else -> return Response(data = null, errors = listOf(UpstreamApiError(causedBy = UpstreamApi.NOMIS, type = UpstreamApiError.Type.BAD_REQUEST)))
       }
 
-    val balance = Balances(balances = listOf(AccountBalance(accountCode = accountBalance.accountCode, amount = accountBalance.amount)))
+    if (amount == null) {
+      throw IllegalStateException("Error occurred while trying to get $accountCode")
+    }
+
+    val balance = Balances(balances = listOf(AccountBalance(accountCode = accountCode, amount = amount)))
     return Response(data = balance, errors = emptyList())
   }
 }
