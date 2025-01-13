@@ -187,6 +187,13 @@ internal class GetBalancesForPersonServiceTest(
       result.errors.shouldBe(listOf(UpstreamApiError(type = UpstreamApiError.Type.BAD_REQUEST, causedBy = UpstreamApi.NOMIS)))
     }
 
+    it("returns null when balance is requested from an unapproved prison") {
+      val wrongPrisonId = "XYZ"
+      val result = getBalancesForPersonService.execute(wrongPrisonId, hmppsId, accountCode, ConsumerFilters(prisons = listOf("ABC")))
+
+      result.data.shouldBe(null)
+      result.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.NOMIS, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found")))
+    }
     // returns 500 if account not allowed
     // prison filter still works
   })
