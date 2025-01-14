@@ -1,7 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.prison
 
 import org.junit.jupiter.api.Test
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationTestBase
@@ -9,11 +8,13 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationT
 class BalanceIntegrationTest : IntegrationTestBase() {
   private final val hmppsId = "G2996UX"
   private final val prisonId = "ABC"
-  private final val basePrisonPath = "/v1/prison/$prisonId/prisoners/$hmppsId/balances"
+  private final val accountCode = "savings"
+  private final val balancePrisonPath = "/v1/prison/$prisonId/prisoners/$hmppsId/balances"
+  private final val accountCodePrisonPath = "/v1/prison/$prisonId/prisoners/$hmppsId/balances/$accountCode"
 
   @Test
   fun `return a list of a prisoner's balances`() {
-    callApi(basePrisonPath)
+    callApi(balancePrisonPath)
       .andExpect(status().isOk)
       .andExpect(
         content().json(
@@ -34,6 +35,27 @@ class BalanceIntegrationTest : IntegrationTestBase() {
                 "amount": 13565
               }
             ]
+          }
+        }
+      """,
+        ),
+      )
+  }
+
+  @Test
+  fun `return a single balance for a prisoner given an account code`() {
+    callApi(accountCodePrisonPath)
+      .andExpect(status().isOk)
+      .andExpect(
+        content().json(
+          """
+        {
+          "data": {
+            "balance":
+              {
+                "accountCode": "savings",
+                "amount": 12344
+              }
           }
         }
       """,

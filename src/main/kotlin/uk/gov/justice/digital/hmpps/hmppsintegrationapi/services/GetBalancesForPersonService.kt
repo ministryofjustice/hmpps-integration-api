@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NomisGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.AccountBalance
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Balance
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Balances
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
@@ -70,5 +71,37 @@ class GetBalancesForPersonService(
       data = balance,
       errors = emptyList(),
     )
+  }
+
+  fun getBalance(
+    prisonId: String,
+    hmppsId: String,
+    accountCode: String,
+    filters: ConsumerFilters? = null,
+  ): Response<Balance?> {
+    if (!listOf("spends", "savings", "cash").any { it == accountCode }) {
+      return Response(
+        data = null,
+        errors = listOf(UpstreamApiError(type = UpstreamApiError.Type.BAD_REQUEST, causedBy = UpstreamApi.NOMIS)),
+      )
+    }
+
+    val response = execute(prisonId, hmppsId, filters)
+
+    if (response.errors.isNotEmpty()) {
+      return Response(
+        data = null,
+        errors = response.errors,
+      )
+    }
+
+    val accountBalance = response.data?.balances?.filter { it.accountCode == accountCode }?.firstOrNull()
+
+    if (accountBalance == null) {
+      throw IllegalStateException("Error occurred while trying to get accounts for person with id: $hmppsId")
+    }
+
+    val balance = Balance(balance = accountBalance)
+    return Response(data = balance, errors = emptyList())
   }
 }
