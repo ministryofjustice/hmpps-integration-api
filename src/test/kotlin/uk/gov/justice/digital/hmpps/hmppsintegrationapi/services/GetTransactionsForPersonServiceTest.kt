@@ -66,8 +66,8 @@ internal class GetTransactionsForPersonServiceTest(
 
     it("gets a person using a Hmpps ID") {
       getTransactionsForPersonService.execute(
-        prisonId,
         hmppsId,
+        prisonId,
         accountCode,
         startDate,
         endDate,
@@ -79,8 +79,8 @@ internal class GetTransactionsForPersonServiceTest(
 
     it("gets transactions from NOMIS using a prisoner number") {
       getTransactionsForPersonService.execute(
-        prisonId,
         hmppsId,
+        prisonId,
         accountCode,
         startDate,
         endDate,
@@ -99,8 +99,8 @@ internal class GetTransactionsForPersonServiceTest(
     it("returns a person's transactions given a Hmpps ID") {
       val result =
         getTransactionsForPersonService.execute(
-          prisonId,
           hmppsId,
+          prisonId,
           accountCode,
           startDate,
           endDate,
@@ -125,8 +125,8 @@ internal class GetTransactionsForPersonServiceTest(
       )
       val response =
         getTransactionsForPersonService.execute(
-          prisonId,
           hmppsId,
+          prisonId,
           accountCode,
           startDate,
           endDate,
@@ -154,8 +154,8 @@ internal class GetTransactionsForPersonServiceTest(
       )
       val response =
         getTransactionsForPersonService.execute(
-          prisonId,
           hmppsId,
+          prisonId,
           accountCode,
           startDate,
           endDate,
@@ -191,8 +191,8 @@ internal class GetTransactionsForPersonServiceTest(
       )
       val response =
         getTransactionsForPersonService.execute(
-          prisonId,
           hmppsId,
+          prisonId,
           accountCode,
           startDate,
           endDate,
@@ -210,8 +210,8 @@ internal class GetTransactionsForPersonServiceTest(
       val wrongPrisonId = "XYZ"
       val result =
         getTransactionsForPersonService.execute(
-          wrongPrisonId,
           hmppsId,
+          wrongPrisonId,
           accountCode,
           startDate,
           endDate,
@@ -225,8 +225,8 @@ internal class GetTransactionsForPersonServiceTest(
     it("returns transactions when requested from an approved prison") {
       val result =
         getTransactionsForPersonService.execute(
-          prisonId,
           hmppsId,
+          prisonId,
           accountCode,
           startDate,
           endDate,

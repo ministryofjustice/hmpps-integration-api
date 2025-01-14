@@ -28,13 +28,13 @@ class TransactionsController(
   @Autowired val getTransactionsForPersonService: GetTransactionsForPersonService,
 ) {
   @Operation(
-    summary = "Returns all transactions for a prisoner that they have at a prison.",
+    summary = "Returns all transactions for a prisoner associated with an account code that they have at a prison.",
     description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
     responses = [
       ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found a prisoner's transactions."),
       ApiResponse(
         responseCode = "400",
-        description = "The HMPPS ID provided has an invalid format or the prisoner does hot have transactions at the specified prison.",
+        description = "The request data has an invalid format or the prisoner does hot have transactions at the specified prison.",
         content = [
           Content(
             schema =
@@ -80,7 +80,7 @@ class TransactionsController(
     if (fromDate == null && toDate != null || toDate == null && fromDate != null) {
       throw ValidationException("Both fromDate and toDate must be supplied if one is populated")
     }
-    // catch parse failures
+
     if (fromDate != null && toDate != null) {
       startDate = fromDate
       endDate = toDate
