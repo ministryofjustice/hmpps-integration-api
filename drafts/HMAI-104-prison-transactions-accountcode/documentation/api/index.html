@@ -154,6 +154,9 @@
         <a href="../../documentation/api/index.html#v1-prison-prisonid-prisoners-hmppsid-balances"><span>/v1/prison/{prisonId}/prisoners/{hmppsId}/balances</span></a>
       </li>
       <li>
+        <a href="../../documentation/api/index.html#v1-prison-prisonid-prisoners-hmppsid-balances-accountcode"><span>/v1/prison/{prisonId}/prisoners/{hmppsId}/balances/{accountCode}</span></a>
+      </li>
+      <li>
         <a href="../../documentation/api/index.html#v1-prison-prisoners"><span>/v1/prison/prisoners</span></a>
       </li>
       <li>
@@ -569,6 +572,153 @@
 <td>400</td>
 <td>
 <p>The HMPPS ID provided has an invalid format or the prisoner does hot have accounts at the specified prison.</p>
+
+
+
+<pre><code>{
+  "status": 400,
+  "userMessage": "Validation failure: No query parameters specified.",
+  "developerMessage": "No query parameters specified."
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-badrequest'>BadRequest</a>
+</td>
+</tr>
+
+<tr>
+<td>404</td>
+<td>
+<p>Not Found</p>
+
+
+
+<pre><code>{
+  "status": 404,
+  "userMessage": "404 Not found error: Could not find person with HMPPS id: 2003/0011991D.",
+  "developerMessage": "Could not find person with HMPPS id: 2003/0011991D."
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-personnotfound'>PersonNotFound</a>
+</td>
+</tr>
+
+<tr>
+<td>500</td>
+<td>
+<p>Internal Server Error</p>
+
+
+
+<pre><code>{
+  "status": 500,
+  "userMessage": "Internal Server Error",
+  "developerMessage": "Unable to complete request as an upstream service is not responding."
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-internalservererror'>InternalServerError</a>
+</td>
+</tr>
+
+</tbody>
+</table>
+
+
+
+
+<h2 id="v1-prison-prisonid-prisoners-hmppsid-balances-accountcode">/v1/prison/{prisonId}/prisoners/{hmppsId}/balances/{accountCode}</h2>
+
+<h3 id="v1-prison-prisonid-prisoners-hmppsid-balances-accountcode-get">get</h3>
+
+  <p><em>Returns a specific account for a prisoner that they have at a prison, based on the account code provided.</em></p>
+
+
+  <p><b>Applicable filters</b>: <ul><li>prisons</li></ul></p>
+
+
+
+
+<h4 id="v1-prison-prisonid-prisoners-hmppsid-balances-accountcode-get-parameters">Parameters</h4>
+<table>
+<thead>
+<tr><th>Parameter</th><th>In</th><th>Type</th><th>Required</th><th>Description</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>hmppsId</td>
+<td>path</td>
+<td>string</td>
+<td>true</td>
+<td>
+
+</td>
+</tr>
+
+<tr>
+<td>prisonId</td>
+<td>path</td>
+<td>string</td>
+<td>true</td>
+<td>
+
+</td>
+</tr>
+
+<tr>
+<td>accountCode</td>
+<td>path</td>
+<td>string</td>
+<td>true</td>
+<td>
+
+</td>
+</tr>
+
+</tbody>
+</table>
+
+
+
+
+<h4 id="v1-prison-prisonid-prisoners-hmppsid-balances-accountcode-get-responses">Responses</h4>
+<table>
+<thead>
+<tr><th>Status</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>200</td>
+<td>
+<p>Successfully found a prisoner&rsquo;s account.</p>
+
+
+
+<pre><code>{
+  "data": {
+    "balance": {
+      "accountCode": "string",
+      "amount": "integer"
+    }
+  }
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-dataresponsebalance'>DataResponseBalance</a>
+</td>
+</tr>
+
+<tr>
+<td>400</td>
+<td>
+<p>The HMPPS ID provided has an invalid format, the account code is not one of the allowable accounts or the prisoner does hot have accounts at the specified prison.</p>
 
 
 
@@ -5915,6 +6065,50 @@
 <td></td>
 <td>
   <a href='#schema-balances'>Balances</a>
+</td>
+</tr>
+
+</tbody>
+</table>
+
+<h3 id="schema-balance">Balance</h3>
+
+
+<table class='schema-balance'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>balance</td>
+<td>object</td>
+<td>true</td>
+<td></td>
+<td>
+  <a href='#schema-accountbalance'>AccountBalance</a>
+</td>
+</tr>
+
+</tbody>
+</table>
+
+<h3 id="schema-dataresponsebalance">DataResponseBalance</h3>
+
+
+<table class='schema-dataresponsebalance'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>data</td>
+<td>object</td>
+<td>true</td>
+<td></td>
+<td>
+  <a href='#schema-balance'>Balance</a>
 </td>
 </tr>
 
