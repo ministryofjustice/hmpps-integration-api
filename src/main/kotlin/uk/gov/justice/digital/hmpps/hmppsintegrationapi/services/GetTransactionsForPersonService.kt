@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 
+import jakarta.validation.ValidationException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NomisGateway
@@ -29,6 +30,10 @@ class GetTransactionsForPersonService(
         data = null,
         errors = listOf(UpstreamApiError(UpstreamApi.NOMIS, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found")),
       )
+    }
+
+    if (accountCode !in listOf("spends", "savings", "cash")) {
+      throw ValidationException("Account code must either be 'spends', 'savings', or 'cash'")
     }
 
     val personResponse = getPersonService.getNomisNumber(hmppsId = hmppsId)

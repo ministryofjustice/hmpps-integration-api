@@ -86,10 +86,6 @@ class TransactionsController(
       endDate = toDate
     }
 
-    if (accountCode !in listOf("spends", "savings", "cash")) {
-      throw ValidationException("Account code must either be 'spends', 'savings', or 'cash'")
-    }
-
     val response = getTransactionsForPersonService.execute(hmppsId, prisonId, accountCode, startDate, endDate, filters)
 
     if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
