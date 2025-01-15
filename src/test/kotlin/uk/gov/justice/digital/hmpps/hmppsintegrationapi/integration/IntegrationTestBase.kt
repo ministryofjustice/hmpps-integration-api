@@ -55,9 +55,8 @@ abstract class IntegrationTestBase {
 
   fun getExpectedResponse(filename: String): String = File("./src/test/resources/expected-responses/$filename").readText(Charsets.UTF_8).removeWhitespaceAndNewlines()
 
-  fun callApi(path: String): ResultActions {
-    return mockMvc.perform(
+  fun callApi(path: String): ResultActions =
+    mockMvc.perform(
       get(path).headers(getAuthHeader()),
     )
-  }
 }
