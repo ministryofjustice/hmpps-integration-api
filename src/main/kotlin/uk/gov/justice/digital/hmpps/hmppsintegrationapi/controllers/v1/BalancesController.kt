@@ -21,12 +21,12 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetBalancesForP
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 
 @RestController
-@RequestMapping("/v1/prison/{prisonId}/prisoners/{hmppsId}/balances")
+@RequestMapping("/v1/prison/{prisonId}/prisoners/{hmppsId}")
 class BalancesController(
   @Autowired val auditService: AuditService,
   @Autowired val getBalancesForPersonService: GetBalancesForPersonService,
 ) {
-  @GetMapping()
+  @GetMapping("/balances")
   @Operation(
     summary = "Returns all accounts for a prisoner that they have at a prison.",
     description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
@@ -60,7 +60,7 @@ class BalancesController(
     return DataResponse(response.data)
   }
 
-  @GetMapping("/{accountCode}")
+  @GetMapping("/accounts/{accountCode}/balances")
   @Operation(
     summary = "Returns a specific account for a prisoner that they have at a prison, based on the account code provided.",
     description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",

@@ -37,9 +37,8 @@ class BalancesControllerTest(
     val hmppsId = "200313116M"
     val prisonId = "ABC"
     val accountCode = "spends"
-
     val balancesPath = "/v1/prison/$prisonId/prisoners/$hmppsId/balances"
-    val accountCodePath = "/v1/prison/$prisonId/prisoners/$hmppsId/balances/$accountCode"
+    val accountCodePath = "/v1/prison/$prisonId/prisoners/$hmppsId/accounts/$accountCode/balances"
     val mockMvc = IntegrationAPIMockMvc(springMockMvc)
     val balance =
       Balances(
