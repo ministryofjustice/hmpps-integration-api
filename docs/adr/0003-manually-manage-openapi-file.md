@@ -4,7 +4,7 @@
 
 ## Status
 
-Accepted
+Superseded by [ADR-0011](./0011-openapi-revision.md)
 
 ## Context
 
