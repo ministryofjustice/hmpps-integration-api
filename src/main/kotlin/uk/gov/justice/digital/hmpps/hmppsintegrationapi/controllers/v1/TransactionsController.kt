@@ -22,7 +22,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditS
 import java.time.LocalDate
 
 @RestController
-@RequestMapping("/v1/prison/{prisonId}/prisoners/{hmppsId}/transactions/{accountCode}")
+@RequestMapping("/v1/prison/{prisonId}/prisoners/{hmppsId}/accounts/{accountCode}/transactions")
 class TransactionsController(
   @Autowired val auditService: AuditService,
   @Autowired val getTransactionsForPersonService: GetTransactionsForPersonService,
