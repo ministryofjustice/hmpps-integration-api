@@ -22,7 +22,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditS
 import java.time.LocalDate
 
 @RestController
-@RequestMapping("/v1/prison/{prisonId}/prisoners/{hmppsId}/accounts/{accountCode}/transactions")
+@RequestMapping("/v1/prison/{prisonId}/prisoners/{hmppsId}")
 class TransactionsController(
   @Autowired val auditService: AuditService,
   @Autowired val getTransactionsForPersonService: GetTransactionsForPersonService,
@@ -65,7 +65,7 @@ class TransactionsController(
       ),
     ],
   )
-  @GetMapping()
+  @GetMapping("/accounts/{accountCode}/transactions")
   fun getTransactionsByAccountCode(
     @PathVariable hmppsId: String,
     @PathVariable prisonId: String,
@@ -99,4 +99,50 @@ class TransactionsController(
     auditService.createEvent("GET_TRANSACTIONS_FOR_PERSON", mapOf("hmppsId" to hmppsId, "prisonId" to prisonId, "fromDate" to fromDate, "toDate" to toDate))
     return DataResponse(response.data)
   }
+
+  @Operation(
+    summary = ".",
+    description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
+    responses = [
+      ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found a transaction."),
+      ApiResponse(
+        responseCode = "400",
+        description = "The request data has an invalid format or the prisoner does hot have transaction associated with the clientUniqueRef.",
+        content = [
+          Content(
+            schema =
+              io.swagger.v3.oas.annotations.media
+                .Schema(ref = "#/components/schemas/BadRequest"),
+          ),
+        ],
+      ),
+      ApiResponse(
+        responseCode = "404",
+        content = [
+          Content(
+            schema =
+              io.swagger.v3.oas.annotations.media
+                .Schema(ref = "#/components/schemas/PersonNotFound"),
+          ),
+        ],
+      ),
+      ApiResponse(
+        responseCode = "500",
+        content = [
+          Content(
+            schema =
+              io.swagger.v3.oas.annotations.media
+                .Schema(ref = "#/components/schemas/InternalServerError"),
+          ),
+        ],
+      ),
+    ],
+  )
+  @GetMapping("/accounts/{clientUniqueRef}/transactions")
+  fun getTransactionsByClientUniqueRef(
+    @PathVariable prisonId: String,
+    @PathVariable hmppsId: String,
+    @PathVariable clientUniqueRef: String,
+    @RequestAttribute filters: ConsumerFilters?,
+  ): DataResponse<Transactions?> = DataResponse(null)
 }
