@@ -16,6 +16,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.RiskCategor
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Sentence
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SentenceAdjustment
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SentenceKeyDates
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Transactions
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisAccounts
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisAddress
@@ -318,6 +319,34 @@ class NomisGateway(
       webClient.request<NomisAccounts>(
         HttpMethod.GET,
         "/api/v1/prison/$prisonId/offenders/$nomisNumber/accounts",
+        authenticationHeader(),
+        UpstreamApi.NOMIS,
+      )
+    return when (result) {
+      is WebClientWrapperResponse.Success -> {
+        Response(data = result.data)
+      }
+
+      is WebClientWrapperResponse.Error -> {
+        Response(
+          data = null,
+          errors = result.errors,
+        )
+      }
+    }
+  }
+
+  fun getTransactionsForPerson(
+    prisonId: String,
+    nomisNumber: String,
+    accountCode: String,
+    fromDate: String,
+    toDate: String,
+  ): Response<Transactions?> {
+    val result =
+      webClient.request<Transactions>(
+        HttpMethod.GET,
+        "/api/v1/prison/$prisonId/offenders/$nomisNumber/accounts/$accountCode/transactions?from_date=$fromDate&to_date=$toDate",
         authenticationHeader(),
         UpstreamApi.NOMIS,
       )

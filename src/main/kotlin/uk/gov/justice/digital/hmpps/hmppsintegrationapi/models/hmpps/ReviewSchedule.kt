@@ -53,6 +53,7 @@ data class ReviewSchedule(
         EXEMPT_PRISONER_TRANSFER
         EXEMPT_PRISONER_RELEASE
         EXEMPT_PRISONER_DEATH
+        EXEMPT_UNKNOWN
         COMPLETED
       """,
   )
