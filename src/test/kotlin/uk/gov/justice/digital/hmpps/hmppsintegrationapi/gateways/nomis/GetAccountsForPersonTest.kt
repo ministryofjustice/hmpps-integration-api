@@ -29,58 +29,63 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 class GetAccountsForPersonTest(
   @MockitoBean val hmppsAuthGateway: HmppsAuthGateway,
   val nomisGateway: NomisGateway,
-) :
-  DescribeSpec(
-      {
-        val nomisApiMockServer = NomisApiMockServer()
-        val nomisNumber = "AA1234Z"
-        val prisonId = "XYZ"
-        val accountsPath = "/api/v1/prison/$prisonId/offenders/$nomisNumber/accounts"
+) : DescribeSpec(
+    {
+      val nomisApiMockServer = NomisApiMockServer()
+      val nomisNumber = "AA1234Z"
+      val prisonId = "XYZ"
+      val accountsPath = "/api/v1/prison/$prisonId/offenders/$nomisNumber/accounts"
 
-        beforeEach {
-          nomisApiMockServer.start()
-          nomisApiMockServer.stubNomisApiResponse(
-            accountsPath,
-            """
+      beforeEach {
+        nomisApiMockServer.start()
+        nomisApiMockServer.stubNomisApiResponse(
+          accountsPath,
+          """
           {
               "spends": 114217,
               "savings": 2234,
               "cash": 1000
           }
         """.removeWhitespaceAndNewlines(),
-          )
+        )
 
-          Mockito.reset(hmppsAuthGateway)
-          whenever(hmppsAuthGateway.getClientToken("NOMIS")).thenReturn(HmppsAuthMockServer.TOKEN)
-        }
+        Mockito.reset(hmppsAuthGateway)
+        whenever(hmppsAuthGateway.getClientToken("NOMIS")).thenReturn(HmppsAuthMockServer.TOKEN)
+      }
 
-        afterTest {
-          nomisApiMockServer.stop()
-        }
+      afterTest {
+        nomisApiMockServer.stop()
+      }
 
-        it("authenticates using HMPPS Auth with credentials") {
-          nomisGateway.getAccountsForPerson(prisonId, nomisNumber)
+      it("authenticates using HMPPS Auth with credentials") {
+        nomisGateway.getAccountsForPerson(prisonId, nomisNumber)
 
-          verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("NOMIS")
-        }
+        verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("NOMIS")
+      }
 
-        it("returns account balances for the matching person ID") {
-          val response = nomisGateway.getAccountsForPerson(prisonId, nomisNumber)
+      it("returns account balances for the matching person ID") {
+        val response = nomisGateway.getAccountsForPerson(prisonId, nomisNumber)
 
-          response.errors.shouldBeEmpty()
-          response.data?.spends.shouldBe(114217)
-          response.data?.savings.shouldBe(2234)
-          response.data?.cash.shouldBe(1000)
-        }
+        response.errors.shouldBeEmpty()
+        response.data?.spends.shouldBe(114217)
+        response.data?.savings.shouldBe(2234)
+        response.data?.cash.shouldBe(1000)
+      }
 
-        it("returns an error when 404 Not Found is returned because no person is found") {
-          nomisApiMockServer.stubNomisApiResponse(accountsPath, "", HttpStatus.NOT_FOUND)
+      it("returns an error when 404 Not Found is returned because no person is found") {
+        nomisApiMockServer.stubNomisApiResponse(accountsPath, "", HttpStatus.NOT_FOUND)
 
-          val response = nomisGateway.getAccountsForPerson(prisonId, nomisNumber)
+        val response = nomisGateway.getAccountsForPerson(prisonId, nomisNumber)
 
-          response.errors.shouldHaveSize(1)
-          response.errors.first().causedBy.shouldBe(UpstreamApi.NOMIS)
-          response.errors.first().type.shouldBe(UpstreamApiError.Type.ENTITY_NOT_FOUND)
-        }
-      },
-    )
+        response.errors.shouldHaveSize(1)
+        response.errors
+          .first()
+          .causedBy
+          .shouldBe(UpstreamApi.NOMIS)
+        response.errors
+          .first()
+          .type
+          .shouldBe(UpstreamApiError.Type.ENTITY_NOT_FOUND)
+      }
+    },
+  )

@@ -25,11 +25,13 @@ class AuditService(
     detail: Map<String, String?>,
   ) {
     val username =
-      RequestContextHolder.currentRequestAttributes()
+      RequestContextHolder
+        .currentRequestAttributes()
         .getAttribute("clientName", RequestAttributes.SCOPE_REQUEST) as String
 
     auditSqsClient.sendMessage(
-      SendMessageRequest.builder()
+      SendMessageRequest
+        .builder()
         .queueUrl(auditQueueUrl)
         .messageBody(
           objectMapper.writeValueAsString(
@@ -39,8 +41,7 @@ class AuditService(
               who = username,
             ),
           ),
-        )
-        .build(),
+        ).build(),
     )
   }
 }

@@ -37,6 +37,9 @@ data class ArnRiskSummary(
   }
 
   private fun toCamelCase(personGroup: String) =
-    personGroup.split(" ").map { it.replaceFirstChar(Char::uppercaseChar) }.joinToString("")
+    personGroup
+      .split(" ")
+      .map { it.replaceFirstChar(Char::uppercaseChar) }
+      .joinToString("")
       .replaceFirstChar(Char::lowercaseChar)
 }

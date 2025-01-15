@@ -18,19 +18,23 @@ class WebClientWrapper(
       .builder()
       .baseUrl(baseUrl)
       .exchangeStrategies(
-        ExchangeStrategies.builder()
+        ExchangeStrategies
+          .builder()
           .codecs { configurer ->
-            configurer.defaultCodecs()
+            configurer
+              .defaultCodecs()
               .maxInMemorySize(-1)
-          }
-          .build(),
-      )
-      .build()
+          }.build(),
+      ).build()
 
   sealed class WebClientWrapperResponse<out T> {
-    data class Success<T>(val data: T) : WebClientWrapperResponse<T>()
+    data class Success<T>(
+      val data: T,
+    ) : WebClientWrapperResponse<T>()
 
-    data class Error(val errors: List<UpstreamApiError>) : WebClientWrapperResponse<Nothing>()
+    data class Error(
+      val errors: List<UpstreamApiError>,
+    ) : WebClientWrapperResponse<Nothing>()
   }
 
   inline fun <reified T> request(
@@ -40,10 +44,11 @@ class WebClientWrapper(
     upstreamApi: UpstreamApi,
     requestBody: Map<String, Any?>? = null,
     forbiddenAsError: Boolean = false,
-  ): WebClientWrapperResponse<T> {
-    return try {
+  ): WebClientWrapperResponse<T> =
+    try {
       val responseData =
-        getResponseBodySpec(method, uri, headers, requestBody).retrieve()
+        getResponseBodySpec(method, uri, headers, requestBody)
+          .retrieve()
           .bodyToMono(T::class.java)
           .block()!!
 
@@ -51,7 +56,6 @@ class WebClientWrapper(
     } catch (exception: WebClientResponseException) {
       getErrorType(exception, upstreamApi, forbiddenAsError)
     }
-  }
 
   inline fun <reified T> requestList(
     method: HttpMethod,
@@ -60,10 +64,11 @@ class WebClientWrapper(
     upstreamApi: UpstreamApi,
     requestBody: Map<String, Any?>? = null,
     forbiddenAsError: Boolean = false,
-  ): WebClientWrapperResponse<List<T>> {
-    return try {
+  ): WebClientWrapperResponse<List<T>> =
+    try {
       val responseData =
-        getResponseBodySpec(method, uri, headers, requestBody).retrieve()
+        getResponseBodySpec(method, uri, headers, requestBody)
+          .retrieve()
           .bodyToFlux(T::class.java)
           .collectList()
           .block() as List<T>
@@ -72,7 +77,6 @@ class WebClientWrapper(
     } catch (exception: WebClientResponseException) {
       getErrorType(exception, upstreamApi, forbiddenAsError)
     }
-  }
 
   fun getResponseBodySpec(
     method: HttpMethod,
@@ -81,7 +85,8 @@ class WebClientWrapper(
     requestBody: Map<String, Any?>? = null,
   ): WebClient.RequestBodySpec {
     val responseBodySpec =
-      client.method(method)
+      client
+        .method(method)
         .uri(uri)
         .headers { header -> headers.forEach { requestHeader -> header.set(requestHeader.key, requestHeader.value) } }
 

@@ -9,7 +9,7 @@ import java.util.stream.Collectors
 
 // Intercepts incoming requests and logs them
 @Component
-class RequestLogger() : HandlerInterceptor {
+class RequestLogger : HandlerInterceptor {
   private val log: org.slf4j.Logger = LoggerFactory.getLogger(this::class.java)
 
   override fun preHandle(

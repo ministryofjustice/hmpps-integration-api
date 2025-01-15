@@ -43,7 +43,8 @@ class ImageController(
 
     auditService.createEvent("GET_PERSON_IMAGE", mapOf("imageId" to id.toString()))
 
-    return ResponseEntity.ok()
+    return ResponseEntity
+      .ok()
       .header("content-type", "image/jpeg")
       .body(response.data)
   }

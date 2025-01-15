@@ -92,8 +92,7 @@ class ProbationOffenderSearchGateway(
         "pncNumber" to pncNumber,
         "dateOfBirth" to dateOfBirth,
         "includeAliases" to searchWithinAliases,
-      )
-        .filterValues { it != null }
+      ).filterValues { it != null }
 
     val result =
       webClient.requestList<Offender>(
@@ -131,7 +130,14 @@ class ProbationOffenderSearchGateway(
 
     return when (result) {
       is WebClientWrapperResponse.Success -> {
-        return Response(result.data.firstOrNull()?.contactDetails?.addresses.orEmpty().map { it.toAddress() })
+        return Response(
+          result.data
+            .firstOrNull()
+            ?.contactDetails
+            ?.addresses
+            .orEmpty()
+            .map { it.toAddress() },
+        )
       }
       is WebClientWrapperResponse.Error -> {
         Response(
@@ -150,11 +156,7 @@ class ProbationOffenderSearchGateway(
     )
   }
 
-  private fun isPncNumber(id: String?): Boolean {
-    return id?.matches(Regex("^[0-9]+/[0-9A-Za-z]+$")) == true
-  }
+  private fun isPncNumber(id: String?): Boolean = id?.matches(Regex("^[0-9]+/[0-9A-Za-z]+$")) == true
 
-  private fun isNomsNumber(id: String?): Boolean {
-    return id?.matches(Regex("^[A-Z]\\d{4}[A-Z]{2}+$")) == true
-  }
+  private fun isNomsNumber(id: String?): Boolean = id?.matches(Regex("^[A-Z]\\d{4}[A-Z]{2}+$")) == true
 }

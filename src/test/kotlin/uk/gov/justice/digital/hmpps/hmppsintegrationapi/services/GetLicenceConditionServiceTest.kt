@@ -63,7 +63,10 @@ internal class GetLicenceConditionServiceTest(
         )
         val result = getLicenceConditionService.execute("notfound")
         result.data.licences.shouldBe(emptyList())
-        result.errors.first().type.shouldBe(UpstreamApiError.Type.ENTITY_NOT_FOUND)
+        result.errors
+          .first()
+          .type
+          .shouldBe(UpstreamApiError.Type.ENTITY_NOT_FOUND)
       }
 
       it("should return a list of errors if create and vary licence gateway service returns error") {
@@ -81,12 +84,20 @@ internal class GetLicenceConditionServiceTest(
         )
         val result = getLicenceConditionService.execute(hmppsId = hmppsId)
         result.data.licences.shouldBe(emptyList())
-        result.errors.first().type.shouldBe(UpstreamApiError.Type.ENTITY_NOT_FOUND)
+        result.errors
+          .first()
+          .type
+          .shouldBe(UpstreamApiError.Type.ENTITY_NOT_FOUND)
       }
 
       it("should return licence condition from gateway") {
         val result = getLicenceConditionService.execute(hmppsId = hmppsId)
-        result.data.licences.first().conditions.first().condition.shouldBe("MockCondition")
+        result.data.licences
+          .first()
+          .conditions
+          .first()
+          .condition
+          .shouldBe("MockCondition")
         result.errors.count().shouldBe(0)
       }
     },

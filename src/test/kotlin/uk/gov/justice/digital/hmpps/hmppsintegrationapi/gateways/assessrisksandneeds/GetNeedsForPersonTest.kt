@@ -29,18 +29,17 @@ import java.time.LocalDateTime
 class GetNeedsForPersonTest(
   @MockitoBean val hmppsAuthGateway: HmppsAuthGateway,
   val assessRisksAndNeedsGateway: AssessRisksAndNeedsGateway,
-) :
-  DescribeSpec(
-      {
-        val assessRisksAndNeedsApiMockServer = AssessRisksAndNeedsApiMockServer()
-        val deliusCrn = "X777776"
+) : DescribeSpec(
+    {
+      val assessRisksAndNeedsApiMockServer = AssessRisksAndNeedsApiMockServer()
+      val deliusCrn = "X777776"
 
-        beforeEach {
-          assessRisksAndNeedsApiMockServer.start()
-          Mockito.reset(hmppsAuthGateway)
-          assessRisksAndNeedsApiMockServer.stubGetNeedsForPerson(
-            deliusCrn,
-            """
+      beforeEach {
+        assessRisksAndNeedsApiMockServer.start()
+        Mockito.reset(hmppsAuthGateway)
+        assessRisksAndNeedsApiMockServer.stubGetNeedsForPerson(
+          deliusCrn,
+          """
               {
                 "assessedOn": "2023-02-13T12:43:38",
                 "identifiedNeeds": [
@@ -69,51 +68,51 @@ class GetNeedsForPersonTest(
                 ]
               }
           """,
-          )
+        )
 
-          Mockito.reset(hmppsAuthGateway)
-          whenever(hmppsAuthGateway.getClientToken("ASSESS_RISKS_AND_NEEDS")).thenReturn(HmppsAuthMockServer.TOKEN)
-        }
+        Mockito.reset(hmppsAuthGateway)
+        whenever(hmppsAuthGateway.getClientToken("ASSESS_RISKS_AND_NEEDS")).thenReturn(HmppsAuthMockServer.TOKEN)
+      }
 
-        afterTest {
-          assessRisksAndNeedsApiMockServer.stop()
-        }
+      afterTest {
+        assessRisksAndNeedsApiMockServer.stop()
+      }
 
-        it("authenticates using HMPPS Auth with credentials") {
-          assessRisksAndNeedsGateway.getNeedsForPerson(deliusCrn)
+      it("authenticates using HMPPS Auth with credentials") {
+        assessRisksAndNeedsGateway.getNeedsForPerson(deliusCrn)
 
-          verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("ASSESS_RISKS_AND_NEEDS")
-        }
+        verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("ASSESS_RISKS_AND_NEEDS")
+      }
 
-        it("returns needs for the person with the matching CRN") {
-          val response = assessRisksAndNeedsGateway.getNeedsForPerson(deliusCrn)
+      it("returns needs for the person with the matching CRN") {
+        val response = assessRisksAndNeedsGateway.getNeedsForPerson(deliusCrn)
 
-          response.data.shouldBe(
-            Needs(
-              assessedOn = LocalDateTime.of(2023, 2, 13, 12, 43, 38),
-              identifiedNeeds =
-                listOf(
-                  Need(type = "EDUCATION_TRAINING_AND_EMPLOYABILITY"),
-                  Need(type = "FINANCIAL_MANAGEMENT_AND_INCOME"),
-                ),
-              notIdentifiedNeeds =
-                listOf(
-                  Need(type = "RELATIONSHIPS"),
-                ),
-              unansweredNeeds =
-                listOf(
-                  Need(type = "LIFESTYLE_AND_ASSOCIATES"),
-                  Need(type = "DRUG_MISUSE"),
-                  Need(type = "ALCOHOL_MISUSE"),
-                ),
-            ),
-          )
-        }
+        response.data.shouldBe(
+          Needs(
+            assessedOn = LocalDateTime.of(2023, 2, 13, 12, 43, 38),
+            identifiedNeeds =
+              listOf(
+                Need(type = "EDUCATION_TRAINING_AND_EMPLOYABILITY"),
+                Need(type = "FINANCIAL_MANAGEMENT_AND_INCOME"),
+              ),
+            notIdentifiedNeeds =
+              listOf(
+                Need(type = "RELATIONSHIPS"),
+              ),
+            unansweredNeeds =
+              listOf(
+                Need(type = "LIFESTYLE_AND_ASSOCIATES"),
+                Need(type = "DRUG_MISUSE"),
+                Need(type = "ALCOHOL_MISUSE"),
+              ),
+          ),
+        )
+      }
 
-        it("returns an empty list when a needs section has no data") {
-          assessRisksAndNeedsApiMockServer.stubGetNeedsForPerson(
-            deliusCrn,
-            """
+      it("returns an empty list when a needs section has no data") {
+        assessRisksAndNeedsApiMockServer.stubGetNeedsForPerson(
+          deliusCrn,
+          """
            {
               "assessedOn": "2023-02-13T12:43:38",
               "identifiedNeeds": [
@@ -128,30 +127,30 @@ class GetNeedsForPersonTest(
               "unansweredNeeds": []
            }
           """,
-          )
+        )
 
-          val response = assessRisksAndNeedsGateway.getNeedsForPerson(deliusCrn)
+        val response = assessRisksAndNeedsGateway.getNeedsForPerson(deliusCrn)
 
-          response.data.shouldBe(
-            Needs(
-              assessedOn = LocalDateTime.of(2023, 2, 13, 12, 43, 38),
-              identifiedNeeds =
-                listOf(
-                  Need(type = "EDUCATION_TRAINING_AND_EMPLOYABILITY"),
-                  Need(type = "FINANCIAL_MANAGEMENT_AND_INCOME"),
-                ),
-              notIdentifiedNeeds = emptyList(),
-              unansweredNeeds = emptyList(),
-            ),
-          )
-        }
+        response.data.shouldBe(
+          Needs(
+            assessedOn = LocalDateTime.of(2023, 2, 13, 12, 43, 38),
+            identifiedNeeds =
+              listOf(
+                Need(type = "EDUCATION_TRAINING_AND_EMPLOYABILITY"),
+                Need(type = "FINANCIAL_MANAGEMENT_AND_INCOME"),
+              ),
+            notIdentifiedNeeds = emptyList(),
+            unansweredNeeds = emptyList(),
+          ),
+        )
+      }
 
-        it("returns an error when 404 NOT FOUND is returned because no person is found") {
-          assessRisksAndNeedsApiMockServer.stubGetNeedsForPerson(deliusCrn, "", HttpStatus.NOT_FOUND)
+      it("returns an error when 404 NOT FOUND is returned because no person is found") {
+        assessRisksAndNeedsApiMockServer.stubGetNeedsForPerson(deliusCrn, "", HttpStatus.NOT_FOUND)
 
-          val response = assessRisksAndNeedsGateway.getNeedsForPerson(deliusCrn)
+        val response = assessRisksAndNeedsGateway.getNeedsForPerson(deliusCrn)
 
-          response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND).shouldBeTrue()
-        }
-      },
-    )
+        response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND).shouldBeTrue()
+      }
+    },
+  )

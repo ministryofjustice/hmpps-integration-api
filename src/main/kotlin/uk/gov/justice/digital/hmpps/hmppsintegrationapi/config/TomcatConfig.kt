@@ -11,13 +11,12 @@ import org.springframework.context.annotation.Configuration
 @Configuration
 class TomcatConfig {
   @Bean
-  fun tomcatCustomizer(): WebServerFactoryCustomizer<TomcatServletWebServerFactory> {
-    return WebServerFactoryCustomizer { factory: TomcatServletWebServerFactory ->
+  fun tomcatCustomizer(): WebServerFactoryCustomizer<TomcatServletWebServerFactory> =
+    WebServerFactoryCustomizer { factory: TomcatServletWebServerFactory ->
       factory.addConnectorCustomizers(
         TomcatConnectorCustomizer { connector: Connector ->
           connector.encodedSolidusHandling = EncodedSolidusHandling.PASS_THROUGH.value
         },
       )
     }
-  }
 }

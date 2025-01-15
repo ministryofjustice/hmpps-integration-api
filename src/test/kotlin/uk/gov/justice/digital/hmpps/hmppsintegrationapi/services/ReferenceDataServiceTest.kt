@@ -122,8 +122,12 @@ class ReferenceDataServiceTest(
 
         val response = referenceDataService.referenceData()
         response.data.shouldBe(null)
-        response.errors[0].causedBy.name.shouldBe("NDELIUS")
-        response.errors[0].type.name.shouldBe("ENTITY_NOT_FOUND")
+        response.errors[0]
+          .causedBy.name
+          .shouldBe("NDELIUS")
+        response.errors[0]
+          .type.name
+          .shouldBe("ENTITY_NOT_FOUND")
       }
 
       it("returns from function with errors on NOMIS 404") {
@@ -137,8 +141,12 @@ class ReferenceDataServiceTest(
 
         val response = referenceDataService.referenceData()
         response.data.shouldBe(null)
-        response.errors[0].causedBy.name.shouldBe("NOMIS")
-        response.errors[0].type.name.shouldBe("ENTITY_NOT_FOUND")
+        response.errors[0]
+          .causedBy.name
+          .shouldBe("NOMIS")
+        response.errors[0]
+          .type.name
+          .shouldBe("ENTITY_NOT_FOUND")
       }
 
       it("returns successfully") {

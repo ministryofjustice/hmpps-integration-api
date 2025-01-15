@@ -53,7 +53,10 @@ class GetCaseNotesForPersonServiceTest(
       it("should return case notes from gateway") {
         val result = getCaseNoteForPersonService.execute(filter)
         result.data.size.shouldBe(1)
-        result.data.first().caseNoteId.shouldBe("12345ABC")
+        result.data
+          .first()
+          .caseNoteId
+          .shouldBe("12345ABC")
         result.errors.count().shouldBe(0)
       }
     },

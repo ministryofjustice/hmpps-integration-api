@@ -11,11 +11,13 @@ class GenericApiMockServer : WireMockServer(WIREMOCK_PORT) {
 
   fun stubGetWithHeadersTest() {
     stubFor(
-      WireMock.get("/test")
+      WireMock
+        .get("/test")
         .withHeader("foo", WireMock.equalTo("bar"))
         .withHeader("bar", WireMock.equalTo("baz"))
         .willReturn(
-          WireMock.aResponse()
+          WireMock
+            .aResponse()
             .withHeader("Content-Type", "application/json")
             .withBody("""{"headers":"headers matched"}"""),
         ),
@@ -28,9 +30,11 @@ class GenericApiMockServer : WireMockServer(WIREMOCK_PORT) {
     status: HttpStatus = HttpStatus.OK,
   ) {
     stubFor(
-      WireMock.get("/test/$id")
+      WireMock
+        .get("/test/$id")
         .willReturn(
-          WireMock.aResponse()
+          WireMock
+            .aResponse()
             .withHeader("Content-Type", "application/json")
             .withStatus(status.value())
             .withBody(body.trimIndent()),
@@ -44,7 +48,8 @@ class GenericApiMockServer : WireMockServer(WIREMOCK_PORT) {
   ) {
     stubFor(
       WireMock.post("/testPost").willReturn(
-        WireMock.aResponse()
+        WireMock
+          .aResponse()
           .withHeader("Content-Type", "application/json")
           .withStatus(status.value())
           .withBody(body.trimIndent()),

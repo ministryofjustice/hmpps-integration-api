@@ -70,3 +70,8 @@ tasks {
 testlogger {
   theme = com.adarshr.gradle.testlogger.theme.ThemeType.MOCHA
 }
+
+// this is to address JLLeitschuh/ktlint-gradle#809
+ktlint {
+  version = "1.5.0"
+}

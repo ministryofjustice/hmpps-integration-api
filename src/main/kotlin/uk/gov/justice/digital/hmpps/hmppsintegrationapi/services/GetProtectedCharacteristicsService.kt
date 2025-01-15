@@ -19,7 +19,9 @@ class GetProtectedCharacteristicsService(
 
     if (probationOffender.data != null) {
       val result = probationOffender.data.toPersonProtectedCharacteristics()
-      val prisonOffender = probationOffender.data.otherIds.nomsNumber?.let { prisonerOffenderSearchGateway.getPrisonOffender(it) }
+      val prisonOffender =
+        probationOffender.data.otherIds.nomsNumber
+          ?.let { prisonerOffenderSearchGateway.getPrisonOffender(it) }
       if (prisonOffender?.data != null) {
         result.maritalStatus = prisonOffender.data.maritalStatus
 

@@ -29,55 +29,54 @@ import java.io.File
 class GetStatusInformationForPersonTest(
   @MockitoBean val hmppsAuthGateway: HmppsAuthGateway,
   val nDeliusGateway: NDeliusGateway,
-) :
-  DescribeSpec(
-      {
-        val nDeliusApiMockServer = NDeliusApiMockServer()
-        val deliusCrn = "X777776"
+) : DescribeSpec(
+    {
+      val nDeliusApiMockServer = NDeliusApiMockServer()
+      val deliusCrn = "X777776"
 
-        beforeEach {
-          nDeliusApiMockServer.start()
-          nDeliusApiMockServer.stubGetSupervisionsForPerson(
-            deliusCrn,
-            File(
-              "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/ndelius/fixtures/GetSupervisionsResponse.json",
-            ).readText(),
-          )
+      beforeEach {
+        nDeliusApiMockServer.start()
+        nDeliusApiMockServer.stubGetSupervisionsForPerson(
+          deliusCrn,
+          File(
+            "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/ndelius/fixtures/GetSupervisionsResponse.json",
+          ).readText(),
+        )
 
-          Mockito.reset(hmppsAuthGateway)
-          whenever(hmppsAuthGateway.getClientToken("nDelius")).thenReturn(HmppsAuthMockServer.TOKEN)
-        }
+        Mockito.reset(hmppsAuthGateway)
+        whenever(hmppsAuthGateway.getClientToken("nDelius")).thenReturn(HmppsAuthMockServer.TOKEN)
+      }
 
-        afterTest {
-          nDeliusApiMockServer.stop()
-        }
+      afterTest {
+        nDeliusApiMockServer.stop()
+      }
 
-        it("authenticates using HMPPS Auth with credentials") {
-          nDeliusGateway.getStatusInformationForPerson(deliusCrn)
+      it("authenticates using HMPPS Auth with credentials") {
+        nDeliusGateway.getStatusInformationForPerson(deliusCrn)
 
-          verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("nDelius")
-        }
+        verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("nDelius")
+      }
 
-        it("returns status information for the matching CRN") {
-          val response = nDeliusGateway.getStatusInformationForPerson(deliusCrn)
+      it("returns status information for the matching CRN") {
+        val response = nDeliusGateway.getStatusInformationForPerson(deliusCrn)
 
-          response.data.shouldBe(
-            listOf(
-              StatusInformation(
-                code = "ASFO",
-                description = "Serious Further Offence - Subject to SFO review/investigation",
-                startDate = "2020-12-04",
-                reviewDate = "2030-07-25",
-                notes = "No notes.",
-              ),
+        response.data.shouldBe(
+          listOf(
+            StatusInformation(
+              code = "ASFO",
+              description = "Serious Further Offence - Subject to SFO review/investigation",
+              startDate = "2020-12-04",
+              reviewDate = "2030-07-25",
+              notes = "No notes.",
             ),
-          )
-        }
+          ),
+        )
+      }
 
-        it("returns an empty list if no status information is found") {
-          nDeliusApiMockServer.stubGetSupervisionsForPerson(
-            deliusCrn,
-            """
+      it("returns an empty list if no status information is found") {
+        nDeliusApiMockServer.stubGetSupervisionsForPerson(
+          deliusCrn,
+          """
             {
               "communityManager": {},
               "mappaDetail": {},
@@ -86,21 +85,27 @@ class GetStatusInformationForPersonTest(
               "personStatus": []
             }
           """,
-          )
+        )
 
-          val response = nDeliusGateway.getStatusInformationForPerson(deliusCrn)
+        val response = nDeliusGateway.getStatusInformationForPerson(deliusCrn)
 
-          response.data.shouldBe(emptyList())
-        }
+        response.data.shouldBe(emptyList())
+      }
 
-        it("returns an error when 404 Not Found is returned because no person is found") {
-          nDeliusApiMockServer.stubGetSupervisionsForPerson(deliusCrn, "", HttpStatus.NOT_FOUND)
+      it("returns an error when 404 Not Found is returned because no person is found") {
+        nDeliusApiMockServer.stubGetSupervisionsForPerson(deliusCrn, "", HttpStatus.NOT_FOUND)
 
-          val response = nDeliusGateway.getStatusInformationForPerson(deliusCrn)
+        val response = nDeliusGateway.getStatusInformationForPerson(deliusCrn)
 
-          response.errors.shouldHaveSize(1)
-          response.errors.first().causedBy.shouldBe(UpstreamApi.NDELIUS)
-          response.errors.first().type.shouldBe(UpstreamApiError.Type.ENTITY_NOT_FOUND)
-        }
-      },
-    )
+        response.errors.shouldHaveSize(1)
+        response.errors
+          .first()
+          .causedBy
+          .shouldBe(UpstreamApi.NDELIUS)
+        response.errors
+          .first()
+          .type
+          .shouldBe(UpstreamApiError.Type.ENTITY_NOT_FOUND)
+      }
+    },
+  )

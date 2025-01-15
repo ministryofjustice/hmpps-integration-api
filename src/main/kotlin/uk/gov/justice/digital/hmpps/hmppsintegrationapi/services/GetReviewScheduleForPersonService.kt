@@ -55,11 +55,10 @@ class GetReviewScheduleForPersonService(
     )
   }
 
-  private fun getReviewReason(calculationRule: String): String {
-    return when (calculationRule) {
+  private fun getReviewReason(calculationRule: String): String =
+    when (calculationRule) {
       "PRISONER_READMISSION" -> "REOFFENCE"
       "PRISONER_TRANSFER" -> "TRANSFER"
       else -> "REGULAR"
     }
-  }
 }

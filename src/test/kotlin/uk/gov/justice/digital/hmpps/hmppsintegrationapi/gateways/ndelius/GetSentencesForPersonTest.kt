@@ -33,76 +33,75 @@ import java.time.LocalDate
 class GetSentencesForPersonTest(
   @MockitoBean val hmppsAuthGateway: HmppsAuthGateway,
   val nDeliusGateway: NDeliusGateway,
-) :
-  DescribeSpec(
-      {
-        val nDeliusApiMockServer = NDeliusApiMockServer()
-        val deliusCrn = "X777776"
+) : DescribeSpec(
+    {
+      val nDeliusApiMockServer = NDeliusApiMockServer()
+      val deliusCrn = "X777776"
 
-        beforeEach {
-          nDeliusApiMockServer.start()
-          nDeliusApiMockServer.stubGetSupervisionsForPerson(
-            deliusCrn,
-            File(
-              "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/ndelius/fixtures/GetSupervisionsResponse.json",
-            ).readText(),
-          )
+      beforeEach {
+        nDeliusApiMockServer.start()
+        nDeliusApiMockServer.stubGetSupervisionsForPerson(
+          deliusCrn,
+          File(
+            "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/ndelius/fixtures/GetSupervisionsResponse.json",
+          ).readText(),
+        )
 
-          Mockito.reset(hmppsAuthGateway)
-          whenever(hmppsAuthGateway.getClientToken("nDelius")).thenReturn(HmppsAuthMockServer.TOKEN)
-        }
+        Mockito.reset(hmppsAuthGateway)
+        whenever(hmppsAuthGateway.getClientToken("nDelius")).thenReturn(HmppsAuthMockServer.TOKEN)
+      }
 
-        afterTest {
-          nDeliusApiMockServer.stop()
-        }
+      afterTest {
+        nDeliusApiMockServer.stop()
+      }
 
-        it("authenticates using HMPPS Auth with credentials") {
-          nDeliusGateway.getSentencesForPerson(deliusCrn)
+      it("authenticates using HMPPS Auth with credentials") {
+        nDeliusGateway.getSentencesForPerson(deliusCrn)
 
-          verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("nDelius")
-        }
+        verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("nDelius")
+      }
 
-        it("returns sentences for the matching CRN") {
-          val response = nDeliusGateway.getSentencesForPerson(deliusCrn)
+      it("returns sentences for the matching CRN") {
+        val response = nDeliusGateway.getSentencesForPerson(deliusCrn)
 
-          response.data.shouldBe(
-            listOf(
-              generateTestSentence(
-                serviceSource = UpstreamApi.NDELIUS,
-                systemSource = SystemSource.PROBATION_SYSTEMS,
-                dateOfSentencing = LocalDate.parse("2009-07-07"),
-                description = "CJA - Community Order",
-                isActive = false,
-                isCustodial = false,
-                length =
-                  SentenceLength(
-                    duration = 12,
-                    units = "Months",
-                    terms = emptyList(),
-                  ),
-              ),
-              generateTestSentence(
-                serviceSource = UpstreamApi.NDELIUS,
-                systemSource = SystemSource.PROBATION_SYSTEMS,
-                dateOfSentencing = LocalDate.parse("2009-09-01"),
-                description = "CJA - Suspended Sentence Order",
-                isActive = true,
-                isCustodial = false,
-                length =
-                  SentenceLength(
-                    duration = 12,
-                    units = "Years",
-                    terms = emptyList(),
-                  ),
-              ),
+        response.data.shouldBe(
+          listOf(
+            generateTestSentence(
+              serviceSource = UpstreamApi.NDELIUS,
+              systemSource = SystemSource.PROBATION_SYSTEMS,
+              dateOfSentencing = LocalDate.parse("2009-07-07"),
+              description = "CJA - Community Order",
+              isActive = false,
+              isCustodial = false,
+              length =
+                SentenceLength(
+                  duration = 12,
+                  units = "Months",
+                  terms = emptyList(),
+                ),
             ),
-          )
-        }
+            generateTestSentence(
+              serviceSource = UpstreamApi.NDELIUS,
+              systemSource = SystemSource.PROBATION_SYSTEMS,
+              dateOfSentencing = LocalDate.parse("2009-09-01"),
+              description = "CJA - Suspended Sentence Order",
+              isActive = true,
+              isCustodial = false,
+              length =
+                SentenceLength(
+                  duration = 12,
+                  units = "Years",
+                  terms = emptyList(),
+                ),
+            ),
+          ),
+        )
+      }
 
-        it("returns an empty list if no sentences are found") {
-          nDeliusApiMockServer.stubGetSupervisionsForPerson(
-            deliusCrn,
-            """
+      it("returns an empty list if no sentences are found") {
+        nDeliusApiMockServer.stubGetSupervisionsForPerson(
+          deliusCrn,
+          """
           {
           "communityManager": {},
            "mappaDetail": {},
@@ -111,21 +110,27 @@ class GetSentencesForPersonTest(
            "personStatus": []
            }
           """,
-          )
+        )
 
-          val response = nDeliusGateway.getSentencesForPerson(deliusCrn)
+        val response = nDeliusGateway.getSentencesForPerson(deliusCrn)
 
-          response.data.shouldBeEmpty()
-        }
+        response.data.shouldBeEmpty()
+      }
 
-        it("returns an error when 404 Not Found is returned because no person is found") {
-          nDeliusApiMockServer.stubGetSupervisionsForPerson(deliusCrn, "", HttpStatus.NOT_FOUND)
+      it("returns an error when 404 Not Found is returned because no person is found") {
+        nDeliusApiMockServer.stubGetSupervisionsForPerson(deliusCrn, "", HttpStatus.NOT_FOUND)
 
-          val response = nDeliusGateway.getSentencesForPerson(deliusCrn)
+        val response = nDeliusGateway.getSentencesForPerson(deliusCrn)
 
-          response.errors.shouldHaveSize(1)
-          response.errors.first().causedBy.shouldBe(UpstreamApi.NDELIUS)
-          response.errors.first().type.shouldBe(UpstreamApiError.Type.ENTITY_NOT_FOUND)
-        }
-      },
-    )
+        response.errors.shouldHaveSize(1)
+        response.errors
+          .first()
+          .causedBy
+          .shouldBe(UpstreamApi.NDELIUS)
+        response.errors
+          .first()
+          .type
+          .shouldBe(UpstreamApiError.Type.ENTITY_NOT_FOUND)
+      }
+    },
+  )

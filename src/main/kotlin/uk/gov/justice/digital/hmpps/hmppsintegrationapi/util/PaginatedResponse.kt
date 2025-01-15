@@ -9,7 +9,9 @@ class PaginatedResponse<T>(
   val data: List<T> = pageableResponse.content
   val pagination: Pagination = Pagination(pageableResponse)
 
-  inner class Pagination(pageableResponse: Page<T>) {
+  inner class Pagination(
+    pageableResponse: Page<T>,
+  ) {
     @Schema(description = "Is the current page the last one?", example = "true")
     val isLastPage: Boolean = pageableResponse.isLast
 

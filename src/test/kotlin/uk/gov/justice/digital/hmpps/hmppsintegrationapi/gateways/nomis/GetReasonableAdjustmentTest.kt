@@ -81,11 +81,26 @@ class GetReasonableAdjustmentTest(
         val response = nomisGateway.getReasonableAdjustments(bookingId)
 
         response.data.count().shouldBe(1)
-        response.data.first().treatmentCode.shouldBe("WHEELCHR_ACC")
-        response.data.first().commentText.shouldBe("abcd")
-        response.data.first().startDate.shouldBe(LocalDate.parse("2010-06-21"))
-        response.data.first().endDate.shouldBe(LocalDate.parse("2010-06-21"))
-        response.data.first().treatmentDescription.shouldBe("Wheelchair accessibility")
+        response.data
+          .first()
+          .treatmentCode
+          .shouldBe("WHEELCHR_ACC")
+        response.data
+          .first()
+          .commentText
+          .shouldBe("abcd")
+        response.data
+          .first()
+          .startDate
+          .shouldBe(LocalDate.parse("2010-06-21"))
+        response.data
+          .first()
+          .endDate
+          .shouldBe(LocalDate.parse("2010-06-21"))
+        response.data
+          .first()
+          .treatmentDescription
+          .shouldBe("Wheelchair accessibility")
       }
 
       it("returns an empty list when no reasonable adjustment are found") {

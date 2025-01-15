@@ -9,10 +9,11 @@ data class NomisPageCaseNote(
   fun toCaseNotes(): List<CaseNote> =
     this.content.map {
       val amendments =
-        it.amendments.stream().map {
-            amendment ->
-          CaseNoteAmendment(amendment?.caseNoteAmendmentId, amendment?.creationDateTime, amendment?.additionalNoteText)
-        }.toList()
+        it.amendments
+          .stream()
+          .map { amendment ->
+            CaseNoteAmendment(amendment?.caseNoteAmendmentId, amendment?.creationDateTime, amendment?.additionalNoteText)
+          }.toList()
       CaseNote(
         it.caseNoteId,
         it.offenderIdentifier,

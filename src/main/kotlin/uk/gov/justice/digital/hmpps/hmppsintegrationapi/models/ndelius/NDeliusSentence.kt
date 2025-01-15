@@ -8,11 +8,10 @@ data class NDeliusSentence(
   val length: Int? = null,
   val lengthUnits: String? = null,
 ) {
-  fun toLength(): SentenceLength {
-    return SentenceLength(
+  fun toLength(): SentenceLength =
+    SentenceLength(
       duration = this.length,
       units = this.lengthUnits,
       terms = emptyList(),
     )
-  }
 }

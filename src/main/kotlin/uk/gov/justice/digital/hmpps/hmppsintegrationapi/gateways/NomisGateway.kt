@@ -201,7 +201,11 @@ class NomisGateway(
 
     return when (result) {
       is WebClientWrapperResponse.Success -> {
-        Response(data = result.data.latestPrisonTerm.sentenceAdjustments.toSentenceAdjustment())
+        Response(
+          data =
+            result.data.latestPrisonTerm.sentenceAdjustments
+              .toSentenceAdjustment(),
+        )
       }
 
       is WebClientWrapperResponse.Error -> {

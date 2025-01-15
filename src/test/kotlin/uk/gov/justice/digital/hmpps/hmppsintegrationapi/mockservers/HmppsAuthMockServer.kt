@@ -16,10 +16,12 @@ class HmppsAuthMockServer : WireMockServer(WIREMOCK_PORT) {
     clientSecret: String,
   ) {
     stubFor(
-      WireMock.post(authUrl)
+      WireMock
+        .post(authUrl)
         .withBasicAuth(client, clientSecret)
         .willReturn(
-          WireMock.aResponse()
+          WireMock
+            .aResponse()
             .withHeader("Content-Type", "application/json")
             .withStatus(200)
             .withBody(
@@ -35,7 +37,8 @@ class HmppsAuthMockServer : WireMockServer(WIREMOCK_PORT) {
 
   fun stubServiceUnavailableForGetOAuthToken() {
     stubFor(
-      WireMock.post(authUrl)
+      WireMock
+        .post(authUrl)
         .willReturn(
           WireMock.serviceUnavailable(),
         ),
@@ -44,7 +47,8 @@ class HmppsAuthMockServer : WireMockServer(WIREMOCK_PORT) {
 
   fun stubUnauthorizedForGetOAAuthToken() {
     stubFor(
-      WireMock.post(authUrl)
+      WireMock
+        .post(authUrl)
         .willReturn(
           WireMock.unauthorized(),
         ),

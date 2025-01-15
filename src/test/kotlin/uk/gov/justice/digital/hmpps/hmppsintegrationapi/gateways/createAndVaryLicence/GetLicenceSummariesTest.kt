@@ -60,7 +60,10 @@ class GetLicenceSummariesTest(
       it("returns licences for a person with the matching ID") {
         val response = createAndVaryLicenceGateway.getLicenceSummaries(deliusCrn)
 
-        response.data.first().offenderNumber.shouldBe("1140484")
+        response.data
+          .first()
+          .offenderNumber
+          .shouldBe("1140484")
       }
 
       it("returns an error when 404 NOT FOUND is returned") {

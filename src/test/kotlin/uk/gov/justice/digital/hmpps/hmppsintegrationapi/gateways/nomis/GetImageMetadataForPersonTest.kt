@@ -29,16 +29,15 @@ import java.time.LocalDateTime
 class GetImageMetadataForPersonTest(
   @MockitoBean val hmppsAuthGateway: HmppsAuthGateway,
   private val nomisGateway: NomisGateway,
-) :
-  DescribeSpec({
-      val nomisApiMockServer = NomisApiMockServer()
-      val offenderNo = "abc123"
-      val imagePath = "/api/images/offenders/$offenderNo"
-      beforeEach {
-        nomisApiMockServer.start()
-        nomisApiMockServer.stubNomisApiResponse(
-          imagePath,
-          """
+) : DescribeSpec({
+    val nomisApiMockServer = NomisApiMockServer()
+    val offenderNo = "abc123"
+    val imagePath = "/api/images/offenders/$offenderNo"
+    beforeEach {
+      nomisApiMockServer.start()
+      nomisApiMockServer.stubNomisApiResponse(
+        imagePath,
+        """
         [
           {
             "imageId": 24213,
@@ -58,62 +57,68 @@ class GetImageMetadataForPersonTest(
           }
         ]
       """,
-        )
+      )
 
-        Mockito.reset(hmppsAuthGateway)
-        whenever(hmppsAuthGateway.getClientToken("NOMIS")).thenReturn(HmppsAuthMockServer.TOKEN)
-      }
+      Mockito.reset(hmppsAuthGateway)
+      whenever(hmppsAuthGateway.getClientToken("NOMIS")).thenReturn(HmppsAuthMockServer.TOKEN)
+    }
 
-      afterTest {
-        nomisApiMockServer.stop()
-      }
+    afterTest {
+      nomisApiMockServer.stop()
+    }
 
-      it("authenticates using HMPPS Auth with credentials") {
-        nomisGateway.getImageMetadataForPerson(offenderNo)
+    it("authenticates using HMPPS Auth with credentials") {
+      nomisGateway.getImageMetadataForPerson(offenderNo)
 
-        verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("NOMIS")
-      }
+      verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("NOMIS")
+    }
 
-      it("returns image metadata for the matching person ID") {
-        val response = nomisGateway.getImageMetadataForPerson(offenderNo)
+    it("returns image metadata for the matching person ID") {
+      val response = nomisGateway.getImageMetadataForPerson(offenderNo)
 
-        response.data[0].id.shouldBe(24299)
-        response.data[0].active.shouldBe(true)
-        response.data[0].captureDateTime.shouldBe(LocalDateTime.parse("2010-08-27T16:35:00"))
-        response.data[0].view.shouldBe("FACE")
-        response.data[0].orientation.shouldBe("FRONT")
-        response.data[0].type.shouldBe("OFF_BKG")
+      response.data[0].id.shouldBe(24299)
+      response.data[0].active.shouldBe(true)
+      response.data[0].captureDateTime.shouldBe(LocalDateTime.parse("2010-08-27T16:35:00"))
+      response.data[0].view.shouldBe("FACE")
+      response.data[0].orientation.shouldBe("FRONT")
+      response.data[0].type.shouldBe("OFF_BKG")
 
-        response.data[1].id.shouldBe(24213)
-        response.data[1].active.shouldBe(true)
-        response.data[1].captureDateTime.shouldBe(LocalDateTime.parse("2008-08-27T16:35:00"))
-        response.data[1].view.shouldBe("FACE")
-        response.data[1].orientation.shouldBe("FRONT")
-        response.data[1].type.shouldBe("OFF_BKG")
-      }
+      response.data[1].id.shouldBe(24213)
+      response.data[1].active.shouldBe(true)
+      response.data[1].captureDateTime.shouldBe(LocalDateTime.parse("2008-08-27T16:35:00"))
+      response.data[1].view.shouldBe("FACE")
+      response.data[1].orientation.shouldBe("FRONT")
+      response.data[1].type.shouldBe("OFF_BKG")
+    }
 
-      it("returns sorted by newest date image metadata for the matching person ID") {
-        val response = nomisGateway.getImageMetadataForPerson(offenderNo)
+    it("returns sorted by newest date image metadata for the matching person ID") {
+      val response = nomisGateway.getImageMetadataForPerson(offenderNo)
 
-        response.data[0].captureDateTime.shouldBe(LocalDateTime.parse("2010-08-27T16:35:00"))
-        response.data[1].captureDateTime.shouldBe(LocalDateTime.parse("2008-08-27T16:35:00"))
-      }
+      response.data[0].captureDateTime.shouldBe(LocalDateTime.parse("2010-08-27T16:35:00"))
+      response.data[1].captureDateTime.shouldBe(LocalDateTime.parse("2008-08-27T16:35:00"))
+    }
 
-      it("returns a person without image metadata when no images are found") {
-        nomisApiMockServer.stubNomisApiResponse(imagePath, "[]")
+    it("returns a person without image metadata when no images are found") {
+      nomisApiMockServer.stubNomisApiResponse(imagePath, "[]")
 
-        val response = nomisGateway.getImageMetadataForPerson(offenderNo)
+      val response = nomisGateway.getImageMetadataForPerson(offenderNo)
 
-        response.data.shouldBeEmpty()
-      }
+      response.data.shouldBeEmpty()
+    }
 
-      it("returns an error when 404 Not Found is returned") {
-        nomisApiMockServer.stubNomisApiResponse(imagePath, "", HttpStatus.NOT_FOUND)
+    it("returns an error when 404 Not Found is returned") {
+      nomisApiMockServer.stubNomisApiResponse(imagePath, "", HttpStatus.NOT_FOUND)
 
-        val response = nomisGateway.getImageMetadataForPerson(offenderNo)
+      val response = nomisGateway.getImageMetadataForPerson(offenderNo)
 
-        response.errors.shouldHaveSize(1)
-        response.errors.first().causedBy.shouldBe(UpstreamApi.NOMIS)
-        response.errors.first().type.shouldBe(UpstreamApiError.Type.ENTITY_NOT_FOUND)
-      }
-    })
+      response.errors.shouldHaveSize(1)
+      response.errors
+        .first()
+        .causedBy
+        .shouldBe(UpstreamApi.NOMIS)
+      response.errors
+        .first()
+        .type
+        .shouldBe(UpstreamApiError.Type.ENTITY_NOT_FOUND)
+    }
+  })

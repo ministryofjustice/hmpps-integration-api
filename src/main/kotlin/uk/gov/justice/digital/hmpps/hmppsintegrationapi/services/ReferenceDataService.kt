@@ -23,33 +23,37 @@ class ReferenceDataService(
 
   fun referenceData(): Response<ReferenceData?> {
     val probationReferenceData =
-      deliusWebClient.request<ReferenceData>(
-        HttpMethod.GET,
-        "/reference-data",
-        authHeader(),
-        UpstreamApi.NDELIUS,
-      ).getOrError { (errors) -> return Response(null, errors = listOf(errors)) }.probationReferenceData
+      deliusWebClient
+        .request<ReferenceData>(
+          HttpMethod.GET,
+          "/reference-data",
+          authHeader(),
+          UpstreamApi.NDELIUS,
+        ).getOrError { (errors) -> return Response(null, errors = listOf(errors)) }
+        .probationReferenceData
 
     val prisonReferenceData =
-      NomisReferenceDataType.entries.flatMap {
-        val rd = prisonReferenceData(it.name)
-        if (rd.errors.isNotEmpty()) {
-          return Response(data = null, errors = rd.errors)
-        }
-        rd.data!!
-      }.groupByTo(LinkedHashMap(), { NomisReferenceDataType.valueOf(it.domain!!).category }, { ReferenceDataItem(it.code!!, it.description!!) })
+      NomisReferenceDataType.entries
+        .flatMap {
+          val rd = prisonReferenceData(it.name)
+          if (rd.errors.isNotEmpty()) {
+            return Response(data = null, errors = rd.errors)
+          }
+          rd.data!!
+        }.groupByTo(LinkedHashMap(), { NomisReferenceDataType.valueOf(it.domain!!).category }, { ReferenceDataItem(it.code!!, it.description!!) })
 
     return Response(data = ReferenceData(prisonReferenceData, probationReferenceData))
   }
 
   private fun prisonReferenceData(domain: String): Response<List<NomisReferenceCode>?> {
     val prisonReferenceData =
-      prisonApiWebclient.requestList<NomisReferenceCode>(
-        HttpMethod.GET,
-        "/api/reference-domains/domains/$domain",
-        prisonAuthHeader(),
-        UpstreamApi.NOMIS,
-      ).getOrError { (errors) -> return Response(null, errors = listOf(errors)) }
+      prisonApiWebclient
+        .requestList<NomisReferenceCode>(
+          HttpMethod.GET,
+          "/api/reference-domains/domains/$domain",
+          prisonAuthHeader(),
+          UpstreamApi.NOMIS,
+        ).getOrError { (errors) -> return Response(null, errors = listOf(errors)) }
     return Response(data = prisonReferenceData)
   }
 
@@ -72,7 +76,9 @@ class ReferenceDataService(
   }
 }
 
-enum class NomisReferenceDataType(val category: String) {
+enum class NomisReferenceDataType(
+  val category: String,
+) {
   PHONE_USAGE("PHONE_TYPE"),
   ALERT("ALERT_TYPE"),
   ETHNICITY("ETHNICITY"),

@@ -103,10 +103,11 @@ internal class GetBalancesForPersonServiceTest(
         ),
       )
       val response = getBalancesForPersonService.execute(prisonId, hmppsId)
-      response.hasErrorCausedBy(
-        causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH,
-        type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-      ).shouldBe(true)
+      response
+        .hasErrorCausedBy(
+          causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH,
+          type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+        ).shouldBe(true)
     }
 
     it("records upstream API errors when hmppsID is invalid") {
@@ -123,10 +124,11 @@ internal class GetBalancesForPersonServiceTest(
         ),
       )
       val response = getBalancesForPersonService.execute(prisonId, hmppsId)
-      response.hasErrorCausedBy(
-        causedBy = UpstreamApi.NOMIS,
-        type = UpstreamApiError.Type.BAD_REQUEST,
-      ).shouldBe(true)
+      response
+        .hasErrorCausedBy(
+          causedBy = UpstreamApi.NOMIS,
+          type = UpstreamApiError.Type.BAD_REQUEST,
+        ).shouldBe(true)
     }
 
     it("records upstream API errors when getAccountsForPerson returns errors") {
@@ -143,10 +145,11 @@ internal class GetBalancesForPersonServiceTest(
         ),
       )
       val response = getBalancesForPersonService.execute(prisonId, hmppsId)
-      response.hasErrorCausedBy(
-        causedBy = UpstreamApi.NOMIS,
-        type = UpstreamApiError.Type.BAD_REQUEST,
-      ).shouldBe(true)
+      response
+        .hasErrorCausedBy(
+          causedBy = UpstreamApi.NOMIS,
+          type = UpstreamApiError.Type.BAD_REQUEST,
+        ).shouldBe(true)
     }
 
     it("records data as null and errors as null when getAccountsForPerson returns null data") {

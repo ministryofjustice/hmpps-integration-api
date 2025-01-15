@@ -80,10 +80,18 @@ class PrisonerOffenderSearchGatewayTest(
           it.firstName.shouldBe(firstName)
           it.lastName.shouldBe(lastName)
         }
-        response.data[0].identifiers.nomisNumber.shouldBe("A5043DY")
-        response.data[1].identifiers.nomisNumber.shouldBe("A5083DY")
-        response.data[2].identifiers.nomisNumber.shouldBe("G9347GV")
-        response.data[3].identifiers.nomisNumber.shouldBe("A7796DY")
+        response.data[0]
+          .identifiers.nomisNumber
+          .shouldBe("A5043DY")
+        response.data[1]
+          .identifiers.nomisNumber
+          .shouldBe("A5083DY")
+        response.data[2]
+          .identifiers.nomisNumber
+          .shouldBe("G9347GV")
+        response.data[3]
+          .identifiers.nomisNumber
+          .shouldBe("A7796DY")
 
         response.data[0].pncId.shouldBeNull()
         response.data[1].pncId.shouldBe("03/11985X")
@@ -114,8 +122,14 @@ class PrisonerOffenderSearchGatewayTest(
         val response = prisonerOffenderSearchGateway.getPersons("Obi-Wan", null, null)
 
         response.data.count().shouldBe(1)
-        response.data.first().firstName.shouldBe("Obi-Wan")
-        response.data.first().lastName.shouldBe("Kenobi")
+        response.data
+          .first()
+          .firstName
+          .shouldBe("Obi-Wan")
+        response.data
+          .first()
+          .lastName
+          .shouldBe("Kenobi")
       }
 
       it("returns person(s) when searching on last name only") {
@@ -141,8 +155,14 @@ class PrisonerOffenderSearchGatewayTest(
         val response = prisonerOffenderSearchGateway.getPersons(null, "Binks", null)
 
         response.data.count().shouldBe(1)
-        response.data.first().firstName.shouldBe("Jar Jar")
-        response.data.first().lastName.shouldBe("Binks")
+        response.data
+          .first()
+          .firstName
+          .shouldBe("Jar Jar")
+        response.data
+          .first()
+          .lastName
+          .shouldBe("Binks")
       }
 
       it("returns person(s) when searching on date of birth only") {
@@ -169,9 +189,18 @@ class PrisonerOffenderSearchGatewayTest(
         val response = prisonerOffenderSearchGateway.getPersons(null, null, dateOfBirth)
 
         response.data.count().shouldBe(1)
-        response.data.first().firstName.shouldBe("Jar Jar")
-        response.data.first().lastName.shouldBe("Binks")
-        response.data.first().dateOfBirth.shouldBe(LocalDate.parse(dateOfBirth))
+        response.data
+          .first()
+          .firstName
+          .shouldBe("Jar Jar")
+        response.data
+          .first()
+          .lastName
+          .shouldBe("Binks")
+        response.data
+          .first()
+          .dateOfBirth
+          .shouldBe(LocalDate.parse(dateOfBirth))
       }
 
       it("returns person(s) when searching within aliases") {
@@ -203,8 +232,18 @@ class PrisonerOffenderSearchGatewayTest(
         val response = prisonerOffenderSearchGateway.getPersons("Geralt", null, null, true)
 
         response.data.count().shouldBe(1)
-        response.data.first().aliases.first().firstName.shouldBe("Geralt")
-        response.data.first().aliases.first().lastName.shouldBe("Eric du Haute-Bellegarde")
+        response.data
+          .first()
+          .aliases
+          .first()
+          .firstName
+          .shouldBe("Geralt")
+        response.data
+          .first()
+          .aliases
+          .first()
+          .lastName
+          .shouldBe("Eric du Haute-Bellegarde")
       }
 
       it("returns an empty list of Person if no matching person") {

@@ -30,17 +30,16 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 class GetAlertsForPersonTest(
   @MockitoBean val hmppsAuthGateway: HmppsAuthGateway,
   val nomisGateway: NomisGateway,
-) :
-  DescribeSpec(
-      {
-        val nomisApiMockServer = NomisApiMockServer()
-        val offenderNo = "zyx987"
-        val alertsPath = "/api/offenders/$offenderNo/alerts/v2"
-        beforeEach {
-          nomisApiMockServer.start()
-          nomisApiMockServer.stubNomisApiResponse(
-            alertsPath,
-            """
+) : DescribeSpec(
+    {
+      val nomisApiMockServer = NomisApiMockServer()
+      val offenderNo = "zyx987"
+      val alertsPath = "/api/offenders/$offenderNo/alerts/v2"
+      beforeEach {
+        nomisApiMockServer.start()
+        nomisApiMockServer.stubNomisApiResponse(
+          alertsPath,
+          """
             [
               {
                 "alertId": 1,
@@ -59,44 +58,50 @@ class GetAlertsForPersonTest(
               }
             ]
           """.removeWhitespaceAndNewlines(),
-          )
+        )
 
-          Mockito.reset(hmppsAuthGateway)
-          whenever(hmppsAuthGateway.getClientToken("NOMIS")).thenReturn(HmppsAuthMockServer.TOKEN)
-        }
+        Mockito.reset(hmppsAuthGateway)
+        whenever(hmppsAuthGateway.getClientToken("NOMIS")).thenReturn(HmppsAuthMockServer.TOKEN)
+      }
 
-        afterTest {
-          nomisApiMockServer.stop()
-        }
+      afterTest {
+        nomisApiMockServer.stop()
+      }
 
-        it("authenticates using HMPPS Auth with credentials") {
-          nomisGateway.getAlertsForPerson(offenderNo)
+      it("authenticates using HMPPS Auth with credentials") {
+        nomisGateway.getAlertsForPerson(offenderNo)
 
-          verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("NOMIS")
-        }
+        verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("NOMIS")
+      }
 
-        it("returns alerts for the matching person ID") {
-          val response = nomisGateway.getAlertsForPerson(offenderNo)
+      it("returns alerts for the matching person ID") {
+        val response = nomisGateway.getAlertsForPerson(offenderNo)
 
-          response.data.count().shouldBeGreaterThan(0)
-        }
+        response.data.count().shouldBeGreaterThan(0)
+      }
 
-        it("returns a person with an empty list of alerts when no alerts are found") {
-          nomisApiMockServer.stubNomisApiResponse(alertsPath, "[]")
+      it("returns a person with an empty list of alerts when no alerts are found") {
+        nomisApiMockServer.stubNomisApiResponse(alertsPath, "[]")
 
-          val response = nomisGateway.getAlertsForPerson(offenderNo)
+        val response = nomisGateway.getAlertsForPerson(offenderNo)
 
-          response.data.shouldBeEmpty()
-        }
+        response.data.shouldBeEmpty()
+      }
 
-        it("returns an error when 404 Not Found is returned because no person is found") {
-          nomisApiMockServer.stubNomisApiResponse(alertsPath, "", HttpStatus.NOT_FOUND)
+      it("returns an error when 404 Not Found is returned because no person is found") {
+        nomisApiMockServer.stubNomisApiResponse(alertsPath, "", HttpStatus.NOT_FOUND)
 
-          val response = nomisGateway.getAlertsForPerson(offenderNo)
+        val response = nomisGateway.getAlertsForPerson(offenderNo)
 
-          response.errors.shouldHaveSize(1)
-          response.errors.first().causedBy.shouldBe(UpstreamApi.NOMIS)
-          response.errors.first().type.shouldBe(UpstreamApiError.Type.ENTITY_NOT_FOUND)
-        }
-      },
-    )
+        response.errors.shouldHaveSize(1)
+        response.errors
+          .first()
+          .causedBy
+          .shouldBe(UpstreamApi.NOMIS)
+        response.errors
+          .first()
+          .type
+          .shouldBe(UpstreamApiError.Type.ENTITY_NOT_FOUND)
+      }
+    },
+  )

@@ -90,8 +90,14 @@ internal class GetImageMetadataForPersonServiceTest(
       val response = getImageMetadataForPersonService.execute(hmppsId)
 
       response.errors.shouldHaveSize(1)
-      response.errors.first().causedBy.shouldBe(UpstreamApi.PROBATION_OFFENDER_SEARCH)
-      response.errors.first().type.shouldBe(UpstreamApiError.Type.ENTITY_NOT_FOUND)
+      response.errors
+        .first()
+        .causedBy
+        .shouldBe(UpstreamApi.PROBATION_OFFENDER_SEARCH)
+      response.errors
+        .first()
+        .type
+        .shouldBe(UpstreamApiError.Type.ENTITY_NOT_FOUND)
     }
 
     it("returns the error from NOMIS when an error occurs") {
@@ -111,7 +117,13 @@ internal class GetImageMetadataForPersonServiceTest(
       val response = getImageMetadataForPersonService.execute(hmppsId)
 
       response.errors.shouldHaveSize(1)
-      response.errors.first().causedBy.shouldBe(UpstreamApi.NOMIS)
-      response.errors.first().type.shouldBe(UpstreamApiError.Type.ENTITY_NOT_FOUND)
+      response.errors
+        .first()
+        .causedBy
+        .shouldBe(UpstreamApi.NOMIS)
+      response.errors
+        .first()
+        .type
+        .shouldBe(UpstreamApiError.Type.ENTITY_NOT_FOUND)
     }
   })

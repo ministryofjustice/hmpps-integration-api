@@ -28,44 +28,49 @@ import java.io.File
 class GetImageDataTest(
   @MockitoBean val hmppsAuthGateway: HmppsAuthGateway,
   private val nomisGateway: NomisGateway,
-) :
-  DescribeSpec({
-      val nomisApiMockServer = NomisApiMockServer()
-      val imageId = 5678
+) : DescribeSpec({
+    val nomisApiMockServer = NomisApiMockServer()
+    val imageId = 5678
 
-      beforeEach {
-        nomisApiMockServer.start()
-        nomisApiMockServer.stubGetImageData(imageId)
+    beforeEach {
+      nomisApiMockServer.start()
+      nomisApiMockServer.stubGetImageData(imageId)
 
-        Mockito.reset(hmppsAuthGateway)
-        whenever(hmppsAuthGateway.getClientToken("NOMIS")).thenReturn(HmppsAuthMockServer.TOKEN)
-      }
+      Mockito.reset(hmppsAuthGateway)
+      whenever(hmppsAuthGateway.getClientToken("NOMIS")).thenReturn(HmppsAuthMockServer.TOKEN)
+    }
 
-      afterTest {
-        nomisApiMockServer.stop()
-      }
+    afterTest {
+      nomisApiMockServer.stop()
+    }
 
-      it("authenticates using HMPPS Auth with credentials") {
-        nomisGateway.getImageData(imageId)
+    it("authenticates using HMPPS Auth with credentials") {
+      nomisGateway.getImageData(imageId)
 
-        verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("NOMIS")
-      }
+      verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("NOMIS")
+    }
 
-      it("returns an image with the matching ID") {
-        val expectedImage = File("src/test/resources/__files/example.jpg").readBytes()
+    it("returns an image with the matching ID") {
+      val expectedImage = File("src/test/resources/__files/example.jpg").readBytes()
 
-        val response = nomisGateway.getImageData(imageId)
+      val response = nomisGateway.getImageData(imageId)
 
-        response.data.shouldBe(expectedImage)
-      }
+      response.data.shouldBe(expectedImage)
+    }
 
-      it("returns an error when 404 Not Found is returned") {
-        nomisApiMockServer.stubGetImageData(imageId, HttpStatus.NOT_FOUND)
+    it("returns an error when 404 Not Found is returned") {
+      nomisApiMockServer.stubGetImageData(imageId, HttpStatus.NOT_FOUND)
 
-        val response = nomisGateway.getImageData(imageId)
+      val response = nomisGateway.getImageData(imageId)
 
-        response.errors.shouldHaveSize(1)
-        response.errors.first().causedBy.shouldBe(UpstreamApi.NOMIS)
-        response.errors.first().type.shouldBe(UpstreamApiError.Type.ENTITY_NOT_FOUND)
-      }
-    })
+      response.errors.shouldHaveSize(1)
+      response.errors
+        .first()
+        .causedBy
+        .shouldBe(UpstreamApi.NOMIS)
+      response.errors
+        .first()
+        .type
+        .shouldBe(UpstreamApiError.Type.ENTITY_NOT_FOUND)
+    }
+  })

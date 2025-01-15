@@ -15,12 +15,14 @@ class ManagePOMCaseApiMockServer : WireMockServer(WIREMOCK_PORT) {
     status: HttpStatus = HttpStatus.OK,
   ) {
     stubFor(
-      WireMock.get("/api/allocation/$id/primary_pom")
+      WireMock
+        .get("/api/allocation/$id/primary_pom")
         .withHeader(
           "Authorization",
           WireMock.matching("Bearer ${HmppsAuthMockServer.TOKEN}"),
         ).willReturn(
-          WireMock.aResponse()
+          WireMock
+            .aResponse()
             .withHeader("Content-Type", "application/json")
             .withStatus(status.value())
             .withBody(body.trimIndent()),

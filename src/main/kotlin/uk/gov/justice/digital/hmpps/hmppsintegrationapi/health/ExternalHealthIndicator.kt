@@ -8,7 +8,9 @@ import java.net.http.HttpClient
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse
 
-open class ExternalHealthIndicator(url: String) : HealthIndicator {
+open class ExternalHealthIndicator(
+  url: String,
+) : HealthIndicator {
   private val healthUrl = url
   private val log = LoggerFactory.getLogger(this::class.java)
 
@@ -17,12 +19,14 @@ open class ExternalHealthIndicator(url: String) : HealthIndicator {
   // that specific component.
   override fun health(): Health {
     val healthStatus: Health.Builder =
-      Health.up()
+      Health
+        .up()
         .withDetail("healthurl", healthUrl)
 
     val client = HttpClient.newBuilder().build()
     val request =
-      HttpRequest.newBuilder()
+      HttpRequest
+        .newBuilder()
         .uri(URI.create(healthUrl))
         .build()
 
@@ -31,14 +35,16 @@ open class ExternalHealthIndicator(url: String) : HealthIndicator {
         client.send(request, HttpResponse.BodyHandlers.ofString())
       } catch (e: Exception) {
         log.error("Failed to connect to health endpoint $healthUrl are these services running?")
-        return healthStatus.up()
+        return healthStatus
+          .up()
           .withDetail("status", "This component is down")
           .withException(e)
           .build()
       }
 
     if (response.statusCode() != 200) {
-      return healthStatus.up()
+      return healthStatus
+        .up()
         .withDetail("httpStatusCode", response.statusCode())
         .build()
     }

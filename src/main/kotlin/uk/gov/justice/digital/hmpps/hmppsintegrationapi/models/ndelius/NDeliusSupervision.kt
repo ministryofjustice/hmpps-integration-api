@@ -23,8 +23,8 @@ data class NDeliusSupervision(
     return listOf(mainOffence) + additionalOffences
   }
 
-  fun toSentence(): Sentence {
-    return Sentence(
+  fun toSentence(): Sentence =
+    Sentence(
       serviceSource = UpstreamApi.NDELIUS,
       systemSource = SystemSource.PROBATION_SYSTEMS,
       dateOfSentencing = if (!this.sentence.date.isNullOrEmpty()) LocalDate.parse(this.sentence.date) else null,
@@ -34,5 +34,4 @@ data class NDeliusSupervision(
       isCustodial = this.custodial,
       length = this.sentence.toLength(),
     )
-  }
 }
