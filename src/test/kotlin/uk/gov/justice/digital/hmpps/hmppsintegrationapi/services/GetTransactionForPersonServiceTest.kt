@@ -13,7 +13,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NomisGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NomisNumber
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Transaction
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Transactions
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Type
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
@@ -26,16 +25,14 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Consum
 internal class GetTransactionForPersonServiceTest(
   @MockitoBean val nomisGateway: NomisGateway,
   @MockitoBean val getPersonService: GetPersonService,
-  private val getTransactionsForPersonService: GetTransactionsForPersonService,
+  private val getTransactionForPersonService: GetTransactionForPersonService,
 ) : DescribeSpec({
     val hmppsId = "1234/56789B"
     val nomisNumber = "Z99999ZZ"
     val prisonId = "ABC"
-    val accountCode = "spends"
-    val startDate = "2019-04-01"
-    val endDate = "2019-04-05"
+    val clientUniqueRef = "client_unique_ref"
     val filters = ConsumerFilters(null)
-    val exampleTransactions = Transactions(listOf(Transaction("204564839-3", Type(code = "spends", desc = "Spends desc"), "Spends account code", 12345, "2016-10-21")))
+    val exampleTransaction = Transaction("204564839-3", Type(code = "spends", desc = "Spends desc"), "Spends account code", 12345, "2016-10-21")
 
     beforeEach {
       Mockito.reset(getPersonService)
@@ -50,64 +47,54 @@ internal class GetTransactionForPersonServiceTest(
       )
 
       whenever(
-        nomisGateway.getTransactionsForPerson(
+        nomisGateway.getTransactionForPerson(
           prisonId,
           nomisNumber,
-          accountCode,
-          startDate,
-          endDate,
+          clientUniqueRef,
         ),
       ).thenReturn(
         Response(
-          data = exampleTransactions,
+          data = exampleTransaction,
         ),
       )
     }
 
     it("gets a person using a Hmpps ID") {
-      getTransactionsForPersonService.execute(
+      getTransactionForPersonService.execute(
         hmppsId,
         prisonId,
-        accountCode,
-        startDate,
-        endDate,
+        clientUniqueRef,
         filters,
       )
 
       verify(getPersonService, VerificationModeFactory.times(1)).getNomisNumber(hmppsId = hmppsId)
     }
 
-    it("gets transactions from NOMIS using a prisoner number") {
-      getTransactionsForPersonService.execute(
+    it("gets a transaction from NOMIS using a unique client reference number") {
+      getTransactionForPersonService.execute(
         hmppsId,
         prisonId,
-        accountCode,
-        startDate,
-        endDate,
+        clientUniqueRef,
         filters,
       )
 
-      verify(nomisGateway, VerificationModeFactory.times(1)).getTransactionsForPerson(
+      verify(nomisGateway, VerificationModeFactory.times(1)).getTransactionForPerson(
         prisonId,
         nomisNumber,
-        accountCode,
-        startDate,
-        endDate,
+        clientUniqueRef,
       )
     }
 
-    it("returns a person's transactions given a Hmpps ID") {
+    it("returns a transaction given a Hmpps ID") {
       val result =
-        getTransactionsForPersonService.execute(
+        getTransactionForPersonService.execute(
           hmppsId,
           prisonId,
-          accountCode,
-          startDate,
-          endDate,
+          clientUniqueRef,
           filters,
         )
 
-      result.data.shouldBe(exampleTransactions)
+      result.data.shouldBe(exampleTransaction)
     }
 
     it("records upstream API errors") {
@@ -124,12 +111,10 @@ internal class GetTransactionForPersonServiceTest(
         ),
       )
       val response =
-        getTransactionsForPersonService.execute(
+        getTransactionForPersonService.execute(
           hmppsId,
           prisonId,
-          accountCode,
-          startDate,
-          endDate,
+          clientUniqueRef,
           filters,
         )
       response
@@ -153,12 +138,10 @@ internal class GetTransactionForPersonServiceTest(
         ),
       )
       val response =
-        getTransactionsForPersonService.execute(
+        getTransactionForPersonService.execute(
           hmppsId,
           prisonId,
-          accountCode,
-          startDate,
-          endDate,
+          clientUniqueRef,
           filters,
         )
       response
@@ -168,14 +151,12 @@ internal class GetTransactionForPersonServiceTest(
         ).shouldBe(true)
     }
 
-    it("records upstream API errors when getTransactionsForPerson returns errors") {
+    it("records upstream API errors when getTransactionForPerson returns errors") {
       whenever(
-        nomisGateway.getTransactionsForPerson(
+        nomisGateway.getTransactionForPerson(
           prisonId,
           nomisNumber,
-          accountCode,
-          startDate,
-          endDate,
+          clientUniqueRef,
         ),
       ).thenReturn(
         Response(
@@ -190,12 +171,10 @@ internal class GetTransactionForPersonServiceTest(
         ),
       )
       val response =
-        getTransactionsForPersonService.execute(
+        getTransactionForPersonService.execute(
           hmppsId,
           prisonId,
-          accountCode,
-          startDate,
-          endDate,
+          clientUniqueRef,
           filters,
         )
       response
@@ -205,16 +184,13 @@ internal class GetTransactionForPersonServiceTest(
         ).shouldBe(true)
     }
 
-    // break this
-    it("returns null when transactions are requested from an unapproved prison") {
+    it("returns null when a transaction is requested from an unapproved prison") {
       val wrongPrisonId = "XYZ"
       val result =
-        getTransactionsForPersonService.execute(
+        getTransactionForPersonService.execute(
           hmppsId,
           wrongPrisonId,
-          accountCode,
-          startDate,
-          endDate,
+          clientUniqueRef,
           ConsumerFilters(prisons = listOf("ABC")),
         )
 
@@ -222,17 +198,15 @@ internal class GetTransactionForPersonServiceTest(
       result.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.NOMIS, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found")))
     }
 
-    it("returns transactions when requested from an approved prison") {
+    it("returns a transaction when requested from an approved prison") {
       val result =
-        getTransactionsForPersonService.execute(
+        getTransactionForPersonService.execute(
           hmppsId,
           prisonId,
-          accountCode,
-          startDate,
-          endDate,
+          clientUniqueRef,
           ConsumerFilters(prisons = listOf(prisonId)),
         )
 
-      result.data.shouldBe(exampleTransactions)
+      result.data.shouldBe(exampleTransaction)
     }
   })

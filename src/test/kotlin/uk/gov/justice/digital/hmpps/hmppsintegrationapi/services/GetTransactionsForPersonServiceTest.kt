@@ -205,7 +205,6 @@ internal class GetTransactionsForPersonServiceTest(
         ).shouldBe(true)
     }
 
-    // break this
     it("returns null when transactions are requested from an unapproved prison") {
       val wrongPrisonId = "XYZ"
       val result =

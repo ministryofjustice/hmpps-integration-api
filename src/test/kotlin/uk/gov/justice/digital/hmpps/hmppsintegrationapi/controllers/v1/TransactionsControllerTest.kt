@@ -35,7 +35,10 @@ class TransactionsControllerTest(
       val hmppsId = "200313116M"
       val prisonId = "ABC"
       val accountCode = "spends"
-      val basePath = "/v1/prison/$prisonId/prisoners/$hmppsId/accounts/$accountCode/transactions"
+      val clientUniqueRef = "client_unique_ref"
+      val basePath = "/v1/prison/$prisonId/prisoners/$hmppsId"
+      val transactionsPath = "$basePath/accounts/$accountCode/transactions"
+      val transactionPath = "$basePath/accounts/$clientUniqueRef/transactions"
       val mockMvc = IntegrationAPIMockMvc(springMockMvc)
 
       val transactions =
@@ -54,7 +57,7 @@ class TransactionsControllerTest(
 
       it("calls the service with expected parameters when supplied a date range") {
         val dateParams = "?from_date=2025-01-01&to_date=2025-01-01"
-        mockMvc.performAuthorised(basePath + dateParams)
+        mockMvc.performAuthorised(transactionsPath + dateParams)
 
         verify(getTransactionsForPersonService, VerificationModeFactory.times(1)).execute(hmppsId, prisonId, accountCode, "2025-01-01", "2025-01-01", null)
       }
@@ -63,7 +66,7 @@ class TransactionsControllerTest(
         whenever(getTransactionsForPersonService.execute(hmppsId, prisonId, accountCode, "2025-01-01", "2025-01-01", null)).thenReturn(Response(transactions))
 
         val dateParams = "?from_date=2025-01-01&to_date=2025-01-01"
-        val result = mockMvc.performAuthorised(basePath + dateParams)
+        val result = mockMvc.performAuthorised(transactionsPath + dateParams)
 
         result.response.contentAsString.shouldContain(
           """
@@ -101,7 +104,7 @@ class TransactionsControllerTest(
           ),
         )
         val dateParams = "?from_date=2025-01-01&to_date=2025-01-01"
-        val result = mockMvc.performAuthorised(basePath + dateParams)
+        val result = mockMvc.performAuthorised(transactionsPath + dateParams)
 
         result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
       }
