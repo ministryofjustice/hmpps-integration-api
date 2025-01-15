@@ -8,7 +8,7 @@ Accepted
 
 ## Context
 
-Similarly to ADR 0012, we have identified use-cases where a category of consumer needs access to a subset of the same category of data. The motivating example is private prisons, where different prison operators require access to the same data, but only for the people in their prisons. In this case we are expecting multiple operators of private prisons to need different subsets of data from the same endpoints.
+Similarly to [ADR 0012](./0012-endpoint-naming.md), we have identified use-cases where a category of consumer needs access to a subset of the same category of data. The motivating example is private prisons, where different prison operators require access to the same data, but only for the people in their prisons. In this case we are expecting multiple operators of private prisons to need different subsets of data from the same endpoints.
 
 ## Decision
 
@@ -54,8 +54,8 @@ These filters should be implemented at the service layer. They might be implemen
 
 ### Rationale
 
-- Unlike in ADR 0012, we are expecting multiple private prisons to require access to multiple endpoints. This would make it unmanageable to maintain client specific endpoints.
-- By controlling the filters at this layer, this allows us to continue managing authorisation at application level, following ADR-0009.
+- Unlike in [ADR 0012](./0012-endpoint-naming.md), we are expecting multiple private prisons to require access to multiple endpoints. This would make it unmanageable to maintain client specific endpoints.
+- By controlling the filters at this layer, this allows us to continue managing authorisation at application level, following [ADR-0009](./0009-authorisation-at-application-level.md).
 - Returning 404 responses instead of 403 responses, prevents consumers of the API for scanning for prisoners at other prisons.
 
 ## Consequences
