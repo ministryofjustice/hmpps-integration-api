@@ -128,8 +128,8 @@ authorisation:
         - "/v1/persons/[^/]*$"
         - "/v1/prison/prisoners/[^/]*$"
         - "/v1/prison/prisoners"
-        - "/v1/prison/.*/prisoners/.*/balances$"
-        - "/v1/prison/.*/prisoners/.*/balances/[^/]*$"
+        - "/v1/prison/.*/prisoners/[^/]*/balances$"
+        - "/v1/prison/.*/prisoners/.*/accounts/.*/balances"
         - "/v1/prison/.*/prisoners/.*/accounts/.*/transactions"
       filters:
     kilco:
@@ -138,8 +138,8 @@ authorisation:
         - "/v1/persons/[^/]*$"
         - "/v1/prison/prisoners"
         - "/v1/prison/prisoners/[^/]*$"
-        - "/v1/prison/.*/prisoners/.*/balances$"
-        - "/v1/prison/.*/prisoners/.*/balances/[^/]*$"
+        - "/v1/prison/.*/prisoners/[^/]*/balances$"
+        - "/v1/prison/.*/prisoners/.*/accounts/.*/balances"
         - "/v1/prison/.*/prisoners/.*/accounts/.*/transactions"
       filters:
     meganexus:
@@ -156,8 +156,8 @@ authorisation:
         - "/v1/persons/[^/]*$"
         - "/v1/prison/prisoners/[^/]*$"
         - "/v1/prison/prisoners"
-        - "/v1/prison/.*/prisoners/.*/balances$"
-        - "/v1/prison/.*/prisoners/.*/balances/[^/]*$"
+        - "/v1/prison/.*/prisoners/[^/]*/balances$"
+        - "/v1/prison/.*/prisoners/.*/accounts/.*/balances"
         - "/v1/prison/.*/prisoners/.*/accounts/.*/transactions"
       filters:
     serco:

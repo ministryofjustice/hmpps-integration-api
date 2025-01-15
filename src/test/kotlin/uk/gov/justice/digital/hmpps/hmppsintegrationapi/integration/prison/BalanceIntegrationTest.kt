@@ -10,7 +10,7 @@ class BalanceIntegrationTest : IntegrationTestBase() {
   private final val prisonId = "ABC"
   private final val accountCode = "savings"
   private final val balancePrisonPath = "/v1/prison/$prisonId/prisoners/$hmppsId/balances"
-  private final val accountCodePrisonPath = "/v1/prison/$prisonId/prisoners/$hmppsId/balances/$accountCode"
+  private final val accountCodePrisonPath = "/v1/prison/$prisonId/prisoners/$hmppsId/accounts/$accountCode/balances"
 
   @Test
   fun `return a list of a prisoner's balances`() {
