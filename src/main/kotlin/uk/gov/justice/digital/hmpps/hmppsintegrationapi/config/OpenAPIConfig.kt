@@ -59,8 +59,7 @@ class OpenAPIConfig {
                 "developerMessage" to Schema<String>().type("string").example("No query parameters specified."),
               ),
             ),
-          )
-          .addSchemas(
+          ).addSchemas(
             "PersonNotFound",
             Schema<ErrorResponse>().description("Failed to find a person with the provided HMPPS ID.").properties(
               mapOf(
@@ -69,8 +68,7 @@ class OpenAPIConfig {
                 "developerMessage" to Schema<String>().type("string").example("Could not find person with HMPPS id: 2003/0011991D."),
               ),
             ),
-          )
-          .addSchemas(
+          ).addSchemas(
             "InternalServerError",
             Schema<ErrorResponse>().description("An upstream service was not responding, so we cannot verify the accuracy of any data we did get.").properties(
               mapOf(

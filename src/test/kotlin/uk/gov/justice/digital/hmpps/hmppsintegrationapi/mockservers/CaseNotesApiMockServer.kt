@@ -16,12 +16,14 @@ class CaseNotesApiMockServer : WireMockServer(WIREMOCK_PORT) {
     status: HttpStatus = HttpStatus.OK,
   ) {
     stubFor(
-      WireMock.get("/case-notes/$id$param")
+      WireMock
+        .get("/case-notes/$id$param")
         .withHeader(
           "Authorization",
           WireMock.matching("Bearer ${HmppsAuthMockServer.TOKEN}"),
         ).willReturn(
-          WireMock.aResponse()
+          WireMock
+            .aResponse()
             .withHeader("Content-Type", "application/json")
             .withStatus(status.value())
             .withBody(body.trimIndent()),

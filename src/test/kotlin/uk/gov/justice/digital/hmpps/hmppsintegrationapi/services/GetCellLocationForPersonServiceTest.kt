@@ -73,8 +73,14 @@ internal class GetCellLocationForPersonServiceTest(
         val response = getCellLocationForPersonService.execute(hmppsId)
 
         response.errors.shouldHaveSize(1)
-        response.errors.first().causedBy.shouldBe(UpstreamApi.PROBATION_OFFENDER_SEARCH)
-        response.errors.first().type.shouldBe(UpstreamApiError.Type.ENTITY_NOT_FOUND)
+        response.errors
+          .first()
+          .causedBy
+          .shouldBe(UpstreamApi.PROBATION_OFFENDER_SEARCH)
+        response.errors
+          .first()
+          .type
+          .shouldBe(UpstreamApiError.Type.ENTITY_NOT_FOUND)
       }
 
       it("returns the upstream error when nomis id is not found") {
@@ -94,8 +100,14 @@ internal class GetCellLocationForPersonServiceTest(
         val response = getCellLocationForPersonService.execute(nomisNumber)
 
         response.errors.shouldHaveSize(1)
-        response.errors.first().causedBy.shouldBe(UpstreamApi.PRISONER_OFFENDER_SEARCH)
-        response.errors.first().type.shouldBe(UpstreamApiError.Type.ENTITY_NOT_FOUND)
+        response.errors
+          .first()
+          .causedBy
+          .shouldBe(UpstreamApi.PRISONER_OFFENDER_SEARCH)
+        response.errors
+          .first()
+          .type
+          .shouldBe(UpstreamApiError.Type.ENTITY_NOT_FOUND)
       }
     },
   )

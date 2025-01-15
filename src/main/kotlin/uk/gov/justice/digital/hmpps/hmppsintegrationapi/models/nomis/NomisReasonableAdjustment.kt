@@ -10,7 +10,5 @@ class NomisReasonableAdjustment(
   var endDate: LocalDate? = null,
   var treatmentDescription: String? = null,
 ) {
-  fun toReasonableAdjustment(): ReasonableAdjustment {
-    return ReasonableAdjustment(this.treatmentCode, this.commentText, this.startDate, this.endDate, this.treatmentDescription)
-  }
+  fun toReasonableAdjustment(): ReasonableAdjustment = ReasonableAdjustment(this.treatmentCode, this.commentText, this.startDate, this.endDate, this.treatmentDescription)
 }

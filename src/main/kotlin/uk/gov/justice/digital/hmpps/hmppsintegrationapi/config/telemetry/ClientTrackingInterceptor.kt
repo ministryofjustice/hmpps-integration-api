@@ -10,7 +10,9 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 
 @Configuration
-class ClientTrackingConfiguration(private val clientTrackingInterceptor: ClientTrackingInterceptor) : WebMvcConfigurer {
+class ClientTrackingConfiguration(
+  private val clientTrackingInterceptor: ClientTrackingInterceptor,
+) : WebMvcConfigurer {
   override fun addInterceptors(registry: InterceptorRegistry) {
     registry.addInterceptor(clientTrackingInterceptor).addPathPatterns("/**")
   }

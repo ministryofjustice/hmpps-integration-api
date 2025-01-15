@@ -8,8 +8,9 @@ data class CrnRiskManagementPlans(
   val limitedAccessOffender: String,
   val riskManagementPlan: List<CrnRiskManagementPlan>,
 ) {
-  fun toRiskManagementPlans(): List<RiskManagementPlan> {
-    return this.riskManagementPlan.stream()
+  fun toRiskManagementPlans(): List<RiskManagementPlan> =
+    this.riskManagementPlan
+      .stream()
       .map {
         RiskManagementPlan(
           assessmentId = it.assessmentId,
@@ -27,9 +28,7 @@ data class CrnRiskManagementPlans(
           latestCompleteDate = it.latestCompleteDate,
           latestSignLockDate = it.latestSignLockDate,
         )
-      }
-      .collect(Collectors.toList())
-  }
+      }.collect(Collectors.toList())
 }
 
 data class CrnRiskManagementPlan(

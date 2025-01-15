@@ -15,12 +15,14 @@ class AdjudicationsApiMockServer : WireMockServer(WIREMOCK_PORT) {
     status: HttpStatus = HttpStatus.OK,
   ) {
     stubFor(
-      WireMock.get("/reported-adjudications/prisoner/$id")
+      WireMock
+        .get("/reported-adjudications/prisoner/$id")
         .withHeader(
           "Authorization",
           WireMock.matching("Bearer ${HmppsAuthMockServer.TOKEN}"),
         ).willReturn(
-          WireMock.aResponse()
+          WireMock
+            .aResponse()
             .withHeader("Content-Type", "application/json")
             .withStatus(status.value())
             .withBody(body.trimIndent()),

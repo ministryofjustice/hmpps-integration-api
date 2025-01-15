@@ -74,7 +74,10 @@ class GetCommunityOffenderManagerForPersonServiceTest(
         )
         val result = getCommunityOffenderManagerForPersonService.execute("NOT_FOUND")
         result.data.shouldBe(CommunityOffenderManager())
-        result.errors.first().type.shouldBe(UpstreamApiError.Type.ENTITY_NOT_FOUND)
+        result.errors
+          .first()
+          .type
+          .shouldBe(UpstreamApiError.Type.ENTITY_NOT_FOUND)
       }
     },
   )

@@ -72,7 +72,10 @@ class GetPrisonOffenderManagerForPersonServiceTest(
         )
         val result = getPrisonOffenderManagerForPersonService.execute("NOT_FOUND")
         result.data.shouldBe(PrisonOffenderManager())
-        result.errors.first().type.shouldBe(UpstreamApiError.Type.ENTITY_NOT_FOUND)
+        result.errors
+          .first()
+          .type
+          .shouldBe(UpstreamApiError.Type.ENTITY_NOT_FOUND)
       }
     },
   )

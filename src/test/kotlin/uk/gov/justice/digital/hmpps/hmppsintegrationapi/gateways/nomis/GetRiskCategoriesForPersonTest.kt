@@ -28,17 +28,16 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 class GetRiskCategoriesForPersonTest(
   @MockitoBean val hmppsAuthGateway: HmppsAuthGateway,
   val nomisGateway: NomisGateway,
-) :
-  DescribeSpec(
-      {
-        val nomisApiMockServer = NomisApiMockServer()
-        val offenderNo = "A7796DY"
-        val offenderPath = "/api/offenders/$offenderNo"
-        beforeEach {
-          nomisApiMockServer.start()
-          nomisApiMockServer.stubNomisApiResponse(
-            offenderPath,
-            """
+) : DescribeSpec(
+    {
+      val nomisApiMockServer = NomisApiMockServer()
+      val offenderNo = "A7796DY"
+      val offenderPath = "/api/offenders/$offenderNo"
+      beforeEach {
+        nomisApiMockServer.start()
+        nomisApiMockServer.stubNomisApiResponse(
+          offenderPath,
+          """
             {
             "offenderNo": "A7796DY",
             "assessments": [
@@ -48,30 +47,36 @@ class GetRiskCategoriesForPersonTest(
              ]
             }
           """.removeWhitespaceAndNewlines(),
-          )
+        )
 
-          Mockito.reset(hmppsAuthGateway)
-          whenever(hmppsAuthGateway.getClientToken("NOMIS")).thenReturn(HmppsAuthMockServer.TOKEN)
-        }
+        Mockito.reset(hmppsAuthGateway)
+        whenever(hmppsAuthGateway.getClientToken("NOMIS")).thenReturn(HmppsAuthMockServer.TOKEN)
+      }
 
-        afterTest {
-          nomisApiMockServer.stop()
-        }
+      afterTest {
+        nomisApiMockServer.stop()
+      }
 
-        it("authenticates using HMPPS Auth with credentials") {
-          nomisGateway.getRiskCategoriesForPerson(offenderNo)
+      it("authenticates using HMPPS Auth with credentials") {
+        nomisGateway.getRiskCategoriesForPerson(offenderNo)
 
-          verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("NOMIS")
-        }
+        verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("NOMIS")
+      }
 
-        it("returns an error when 404 Not Found is returned because no person is found") {
-          nomisApiMockServer.stubNomisApiResponse(offenderPath, "", HttpStatus.NOT_FOUND)
+      it("returns an error when 404 Not Found is returned because no person is found") {
+        nomisApiMockServer.stubNomisApiResponse(offenderPath, "", HttpStatus.NOT_FOUND)
 
-          val response = nomisGateway.getRiskCategoriesForPerson(offenderNo)
+        val response = nomisGateway.getRiskCategoriesForPerson(offenderNo)
 
-          response.errors.shouldHaveSize(1)
-          response.errors.first().causedBy.shouldBe(UpstreamApi.NOMIS)
-          response.errors.first().type.shouldBe(UpstreamApiError.Type.ENTITY_NOT_FOUND)
-        }
-      },
-    )
+        response.errors.shouldHaveSize(1)
+        response.errors
+          .first()
+          .causedBy
+          .shouldBe(UpstreamApi.NOMIS)
+        response.errors
+          .first()
+          .type
+          .shouldBe(UpstreamApiError.Type.ENTITY_NOT_FOUND)
+      }
+    },
+  )

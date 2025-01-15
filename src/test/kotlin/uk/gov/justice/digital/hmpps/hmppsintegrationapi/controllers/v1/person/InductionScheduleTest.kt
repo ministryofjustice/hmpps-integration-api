@@ -13,7 +13,9 @@ class InductionScheduleTest {
     ObjectMapper().apply {
       // Register the custom deserializer
       registerModule(
-        com.fasterxml.jackson.module.kotlin.KotlinModule.Builder().build(),
+        com.fasterxml.jackson.module.kotlin.KotlinModule
+          .Builder()
+          .build(),
       )
     }
 

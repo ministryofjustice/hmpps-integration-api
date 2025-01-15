@@ -1,6 +1,9 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps
 
-data class Response<T>(val data: T, val errors: List<UpstreamApiError> = emptyList()) {
+data class Response<T>(
+  val data: T,
+  val errors: List<UpstreamApiError> = emptyList(),
+) {
   companion object {
     fun <T> merge(responses: List<Response<List<T>>>): Response<List<T>> = Response(data = responses.flatMap { it.data }, errors = responses.flatMap { it.errors })
   }
@@ -13,4 +16,6 @@ data class Response<T>(val data: T, val errors: List<UpstreamApiError> = emptyLi
   ): Boolean = this.errors.any { it.type == type && it.causedBy == causedBy }
 }
 
-data class DataResponse<T>(val data: T)
+data class DataResponse<T>(
+  val data: T,
+)

@@ -14,8 +14,9 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMoc
   initializers = [ConfigDataApplicationContextInitializer::class],
   classes = [(HmppsAuthGateway::class)],
 )
-class HmppsAuthGatewayTest(hmppsAuthGateway: HmppsAuthGateway) :
-  DescribeSpec({
+class HmppsAuthGatewayTest(
+  hmppsAuthGateway: HmppsAuthGateway,
+) : DescribeSpec({
     val hmppsAuthMockServer = HmppsAuthMockServer()
 
     beforeEach {

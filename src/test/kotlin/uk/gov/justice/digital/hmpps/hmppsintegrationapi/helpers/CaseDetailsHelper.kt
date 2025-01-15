@@ -7,8 +7,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CourtDetail
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Name
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ResponsibleProvider
 
-fun generateCaseDetail(): CaseDetail {
-  return CaseDetail(
+fun generateCaseDetail(): CaseDetail =
+  CaseDetail(
     nomsId = "ABC123",
     name =
       Name(
@@ -36,4 +36,3 @@ fun generateCaseDetail(): CaseDetail {
     age = 23,
     ageAtRelease = 24,
   )
-}

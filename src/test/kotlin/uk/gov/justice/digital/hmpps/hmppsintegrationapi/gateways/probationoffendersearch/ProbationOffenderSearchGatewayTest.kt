@@ -79,10 +79,22 @@ class ProbationOffenderSearchGatewayTest(
         val response = probationOffenderSearchGateway.getPersons(firstName, surname, pncNumber, dateOfBirth)
         println(response)
         response.data.count().shouldBe(1)
-        response.data.first().firstName.shouldBe(firstName)
-        response.data.first().lastName.shouldBe(surname)
-        response.data.first().pncId.shouldBe(pncNumber)
-        response.data.first().dateOfBirth.shouldBe(LocalDate.parse(dateOfBirth))
+        response.data
+          .first()
+          .firstName
+          .shouldBe(firstName)
+        response.data
+          .first()
+          .lastName
+          .shouldBe(surname)
+        response.data
+          .first()
+          .pncId
+          .shouldBe(pncNumber)
+        response.data
+          .first()
+          .dateOfBirth
+          .shouldBe(LocalDate.parse(dateOfBirth))
       }
 
       it("returns person(s) when searching on first name and last name") {
@@ -109,8 +121,14 @@ class ProbationOffenderSearchGatewayTest(
         println(response)
 
         response.data.count().shouldBe(1)
-        response.data.first().firstName.shouldBe("Ahsoka")
-        response.data.first().lastName.shouldBe("Tano")
+        response.data
+          .first()
+          .firstName
+          .shouldBe("Ahsoka")
+        response.data
+          .first()
+          .lastName
+          .shouldBe("Tano")
       }
 
       it("returns person(s) when searching on first name and last name") {
@@ -137,8 +155,14 @@ class ProbationOffenderSearchGatewayTest(
         println(response)
 
         response.data.count().shouldBe(1)
-        response.data.first().firstName.shouldBe("Ahsoka")
-        response.data.first().lastName.shouldBe("Tano")
+        response.data
+          .first()
+          .firstName
+          .shouldBe("Ahsoka")
+        response.data
+          .first()
+          .lastName
+          .shouldBe("Tano")
       }
 
       it("returns person(s) when searching on first name only") {
@@ -162,8 +186,14 @@ class ProbationOffenderSearchGatewayTest(
         val response = probationOffenderSearchGateway.getPersons("Ahsoka", null, null, null)
 
         response.data.count().shouldBe(1)
-        response.data.first().firstName.shouldBe("Ahsoka")
-        response.data.first().lastName.shouldBe("Tano")
+        response.data
+          .first()
+          .firstName
+          .shouldBe("Ahsoka")
+        response.data
+          .first()
+          .lastName
+          .shouldBe("Tano")
       }
 
       it("returns person(s) when searching on last name only") {
@@ -187,8 +217,14 @@ class ProbationOffenderSearchGatewayTest(
         val response = probationOffenderSearchGateway.getPersons(null, "Tano", null, null)
 
         response.data.count().shouldBe(1)
-        response.data.first().firstName.shouldBe("Ahsoka")
-        response.data.first().lastName.shouldBe("Tano")
+        response.data
+          .first()
+          .firstName
+          .shouldBe("Ahsoka")
+        response.data
+          .first()
+          .lastName
+          .shouldBe("Tano")
       }
 
       it("returns person(s) when searching on pnc number only") {
@@ -212,8 +248,14 @@ class ProbationOffenderSearchGatewayTest(
         val response = probationOffenderSearchGateway.getPersons(null, null, pncNumber, null)
 
         response.data.count().shouldBe(1)
-        response.data.first().firstName.shouldBe("Ahsoka")
-        response.data.first().lastName.shouldBe("Tano")
+        response.data
+          .first()
+          .firstName
+          .shouldBe("Ahsoka")
+        response.data
+          .first()
+          .lastName
+          .shouldBe("Tano")
       }
 
       it("returns person(s) when searching on date of birth only") {
@@ -237,8 +279,14 @@ class ProbationOffenderSearchGatewayTest(
         val response = probationOffenderSearchGateway.getPersons(null, null, null, dateOfBirth)
 
         response.data.count().shouldBe(1)
-        response.data.first().firstName.shouldBe("Ahsoka")
-        response.data.first().lastName.shouldBe("Tano")
+        response.data
+          .first()
+          .firstName
+          .shouldBe("Ahsoka")
+        response.data
+          .first()
+          .lastName
+          .shouldBe("Tano")
       }
 
       it("returns person(s) when searching within aliases") {
@@ -268,8 +316,18 @@ class ProbationOffenderSearchGatewayTest(
         val response = probationOffenderSearchGateway.getPersons("Fulcrum", null, null, null, searchWithinAliases = true)
 
         response.data.count().shouldBe(1)
-        response.data.first().aliases.first().firstName.shouldBe("Fulcrum")
-        response.data.first().aliases.first().lastName.shouldBe("Tano")
+        response.data
+          .first()
+          .aliases
+          .first()
+          .firstName
+          .shouldBe("Fulcrum")
+        response.data
+          .first()
+          .aliases
+          .first()
+          .lastName
+          .shouldBe("Tano")
       }
     }
 
@@ -318,10 +376,26 @@ class ProbationOffenderSearchGatewayTest(
           response.data?.middleName.shouldBe("Echo Fred")
           response.data?.lastName.shouldBe("Bravo")
           response.data?.dateOfBirth.shouldBe(LocalDate.parse("1970-02-07"))
-          response.data?.aliases?.first()?.firstName.shouldBe("John")
-          response.data?.aliases?.first()?.middleName.shouldBe("Tom")
-          response.data?.aliases?.first()?.lastName.shouldBe("Wick")
-          response.data?.aliases?.first()?.dateOfBirth.shouldBe(LocalDate.parse("2000-02-07"))
+          response.data
+            ?.aliases
+            ?.first()
+            ?.firstName
+            .shouldBe("John")
+          response.data
+            ?.aliases
+            ?.first()
+            ?.middleName
+            .shouldBe("Tom")
+          response.data
+            ?.aliases
+            ?.first()
+            ?.lastName
+            .shouldBe("Wick")
+          response.data
+            ?.aliases
+            ?.first()
+            ?.dateOfBirth
+            .shouldBe(LocalDate.parse("2000-02-07"))
         }
 
         it("returns a person without aliases when no aliases are found") {

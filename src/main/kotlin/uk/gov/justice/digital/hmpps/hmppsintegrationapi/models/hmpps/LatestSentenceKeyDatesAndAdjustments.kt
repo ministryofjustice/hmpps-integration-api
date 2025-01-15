@@ -36,8 +36,8 @@ data class KeyDatesAndAdjustmentsDTO(
   val adjustments: SentenceAdjustment? = null,
   val keyDates: SentenceKeyDates? = null,
 ) {
-  fun toLatestSentenceKeyDatesAndAdjustments(): LatestSentenceKeyDatesAndAdjustments {
-    return LatestSentenceKeyDatesAndAdjustments(
+  fun toLatestSentenceKeyDatesAndAdjustments(): LatestSentenceKeyDatesAndAdjustments =
+    LatestSentenceKeyDatesAndAdjustments(
       adjustments = this.adjustments,
       automaticRelease = this.keyDates?.automaticRelease,
       conditionalRelease = this.keyDates?.conditionalRelease,
@@ -60,5 +60,4 @@ data class KeyDatesAndAdjustmentsDTO(
       tariffDate = this.keyDates?.tariffDate,
       tariffEarlyRemovalSchemeEligibilityDate = this.keyDates?.tariffEarlyRemovalSchemeEligibilityDate,
     )
-  }
 }

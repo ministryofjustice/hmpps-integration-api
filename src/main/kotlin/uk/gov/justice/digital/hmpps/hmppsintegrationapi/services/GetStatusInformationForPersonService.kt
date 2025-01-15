@@ -23,7 +23,8 @@ class GetStatusInformationForPersonService(
         allNDeliusPersonStatus.data.filter {
           it.code in
             listOf(
-              "ASFO", "WRSM",
+              "ASFO",
+              "WRSM",
             )
         }
       nDeliusPersonStatus = Response(data = filteredNDeliusPersonStatus, errors = allNDeliusPersonStatus.errors)

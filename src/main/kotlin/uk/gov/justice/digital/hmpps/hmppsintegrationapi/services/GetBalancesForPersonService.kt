@@ -95,7 +95,11 @@ class GetBalancesForPersonService(
       )
     }
 
-    val accountBalance = response.data?.balances?.filter { it.accountCode == accountCode }?.firstOrNull()
+    val accountBalance =
+      response.data
+        ?.balances
+        ?.filter { it.accountCode == accountCode }
+        ?.firstOrNull()
 
     if (accountBalance == null) {
       throw IllegalStateException("Error occurred while trying to get accounts for person with id: $hmppsId")

@@ -210,7 +210,10 @@ class GetAddressesForPersonTest(
 
         val response = probationOffenderSearchGateway.getAddressesForPerson(hmppsId)
 
-        response.data.first().types.shouldBeEmpty()
+        response.data
+          .first()
+          .types
+          .shouldBeEmpty()
       }
     },
   )

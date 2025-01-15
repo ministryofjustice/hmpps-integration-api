@@ -104,8 +104,14 @@ class GetCommunityOffenderManagerForPersonTest(
         val response = nDeliusGateway.getCommunityOffenderManagerForPerson(deliusCrn)
 
         response.errors.shouldHaveSize(1)
-        response.errors.first().causedBy.shouldBe(UpstreamApi.NDELIUS)
-        response.errors.first().type.shouldBe(UpstreamApiError.Type.ENTITY_NOT_FOUND)
+        response.errors
+          .first()
+          .causedBy
+          .shouldBe(UpstreamApi.NDELIUS)
+        response.errors
+          .first()
+          .type
+          .shouldBe(UpstreamApiError.Type.ENTITY_NOT_FOUND)
       }
     },
   )

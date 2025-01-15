@@ -51,14 +51,13 @@ data class NomisAddress(
     return result.filter { it.code != null }
   }
 
-  private fun getAddressDescriptionFromType(addressType: String?): String? {
-    return when (addressType) {
+  private fun getAddressDescriptionFromType(addressType: String?): String? =
+    when (addressType) {
       "BUS" -> "Business Address"
       "HOME" -> "Home Address"
       "WORK" -> "Work Address"
       else -> addressType
     }
-  }
 
   data class AddressUsage(
     val addressUsage: String,

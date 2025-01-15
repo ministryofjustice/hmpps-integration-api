@@ -47,79 +47,78 @@ internal class ReferenceDataControllerTests(
     },
   )
 
-fun testData(): String {
-  return """
-    {
-        "prisonReferenceData": {
-          "PHONE_TYPE": [
-            {
-              "code": "a",
-              "description": "desc_a"
-            },
-            {
-              "code": "b",
-              "description": "desc_b"
-            },
-            {
-              "code": "c",
-              "description": "desc_c"
-            }
-          ],
-          "ALERT_TYPE": [
-            {
-              "code": "a",
-              "description": "desc_a"
-            },
-            {
-              "code": "b",
-              "description": "desc_b"
-            },
-            {
-              "code": "c",
-              "description": "desc_c"
-            }
-          ],
-          "ETHNICITY": [
-            {
-              "code": "a",
-              "description": "desc_a"
-            },
-            {
-              "code": "b",
-              "description": "desc_b"
-            },
-            {
-              "code": "c",
-              "description": "desc_c"
-            }
-          ],
-          "GENDER": [
-            {
-              "code": "a",
-              "description": "desc_a"
-            },
-            {
-              "code": "b",
-              "description": "desc_b"
-            },
-            {
-              "code": "c",
-              "description": "desc_c"
-            }
-          ]
-        },
-        "probationReferenceData": {
-          "GENDER": [
-            {
-              "code": "M",
-              "description": "Male"
-            },
-            {
-              "code": "F",
-              "description": "Female"
-            }
-          ]
-        }
-    }
-    """.trimIndent()
-}
+fun testData(): String =
+  """
+  {
+      "prisonReferenceData": {
+        "PHONE_TYPE": [
+          {
+            "code": "a",
+            "description": "desc_a"
+          },
+          {
+            "code": "b",
+            "description": "desc_b"
+          },
+          {
+            "code": "c",
+            "description": "desc_c"
+          }
+        ],
+        "ALERT_TYPE": [
+          {
+            "code": "a",
+            "description": "desc_a"
+          },
+          {
+            "code": "b",
+            "description": "desc_b"
+          },
+          {
+            "code": "c",
+            "description": "desc_c"
+          }
+        ],
+        "ETHNICITY": [
+          {
+            "code": "a",
+            "description": "desc_a"
+          },
+          {
+            "code": "b",
+            "description": "desc_b"
+          },
+          {
+            "code": "c",
+            "description": "desc_c"
+          }
+        ],
+        "GENDER": [
+          {
+            "code": "a",
+            "description": "desc_a"
+          },
+          {
+            "code": "b",
+            "description": "desc_b"
+          },
+          {
+            "code": "c",
+            "description": "desc_c"
+          }
+        ]
+      },
+      "probationReferenceData": {
+        "GENDER": [
+          {
+            "code": "M",
+            "description": "Male"
+          },
+          {
+            "code": "F",
+            "description": "Female"
+          }
+        ]
+      }
+  }
+  """.trimIndent()

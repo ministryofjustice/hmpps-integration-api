@@ -26,7 +26,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.probationoffender
 
 @ActiveProfiles("test")
 @JsonTest
-class GetProtectedCharacteristicsServiceTest() {
+class GetProtectedCharacteristicsServiceTest {
   lateinit var service: GetProtectedCharacteristicsService
   private val probationOffenderSearchGateway: ProbationOffenderSearchGateway = mock()
   private val prisonerOffenderSearchGateway: PrisonerOffenderSearchGateway = mock()
@@ -55,9 +55,18 @@ class GetProtectedCharacteristicsServiceTest() {
     verifyNoInteractions(nomisGateway)
     result.data.shouldBeNull()
     result.errors.shouldHaveSize(1)
-    result.errors.first().causedBy.shouldBe(UpstreamApi.PROBATION_OFFENDER_SEARCH)
-    result.errors.first().type.shouldBe(UpstreamApiError.Type.ENTITY_NOT_FOUND)
-    result.errors.first().description.shouldBe("MockError")
+    result.errors
+      .first()
+      .causedBy
+      .shouldBe(UpstreamApi.PROBATION_OFFENDER_SEARCH)
+    result.errors
+      .first()
+      .type
+      .shouldBe(UpstreamApiError.Type.ENTITY_NOT_FOUND)
+    result.errors
+      .first()
+      .description
+      .shouldBe("MockError")
   }
 
   @Test
@@ -124,6 +133,10 @@ class GetProtectedCharacteristicsServiceTest() {
     result.data!!.disabilities.shouldHaveSize(0)
     result.data!!.maritalStatus.shouldBe("Widowed")
     result.data!!.reasonableAdjustments.shouldHaveSize(1)
-    result.data!!.reasonableAdjustments.first().treatmentCode.shouldBe("abc")
+    result.data!!
+      .reasonableAdjustments
+      .first()
+      .treatmentCode
+      .shouldBe("abc")
   }
 }

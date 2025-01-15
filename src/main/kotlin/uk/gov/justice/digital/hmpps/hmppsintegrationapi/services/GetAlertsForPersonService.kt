@@ -36,14 +36,42 @@ class GetAlertsForPersonService(
     if (nomisNumber != null) {
       val allNomisAlerts = nomisGateway.getAlertsForPerson(nomisNumber)
       val filteredAlerts =
-        allNomisAlerts.data?.filter {
-          it.code in
-            listOf(
-              "BECTER", "HA", "XA", "XCA", "XEL", "XELH", "XER", "XHT", "XILLENT",
-              "XIS", "XR", "XRF", "XSA", "HA2", "RCS", "RDV", "RKC", "RPB", "RPC",
-              "RSS", "RST", "RDP", "REG", "RLG", "ROP", "RRV", "RTP", "RYP", "HS", "SC",
-            )
-        }.orEmpty()
+        allNomisAlerts.data
+          ?.filter {
+            it.code in
+              listOf(
+                "BECTER",
+                "HA",
+                "XA",
+                "XCA",
+                "XEL",
+                "XELH",
+                "XER",
+                "XHT",
+                "XILLENT",
+                "XIS",
+                "XR",
+                "XRF",
+                "XSA",
+                "HA2",
+                "RCS",
+                "RDV",
+                "RKC",
+                "RPB",
+                "RPC",
+                "RSS",
+                "RST",
+                "RDP",
+                "REG",
+                "RLG",
+                "ROP",
+                "RRV",
+                "RTP",
+                "RYP",
+                "HS",
+                "SC",
+              )
+          }.orEmpty()
       if (filteredAlerts.isEmpty()) {
         return Response(
           data = emptyList(),

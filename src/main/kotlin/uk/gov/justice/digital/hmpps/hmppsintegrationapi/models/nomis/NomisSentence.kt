@@ -26,10 +26,9 @@ data class NomisSentence(
     )
 }
 
-private fun sentenceStatusToBoolean(sentenceStatus: String?): Boolean? {
-  return when (sentenceStatus) {
+private fun sentenceStatusToBoolean(sentenceStatus: String?): Boolean? =
+  when (sentenceStatus) {
     "A" -> true
     "I" -> false
     else -> null
   }
-}

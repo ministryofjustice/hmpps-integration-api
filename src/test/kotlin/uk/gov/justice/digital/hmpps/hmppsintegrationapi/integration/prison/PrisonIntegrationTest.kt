@@ -25,20 +25,20 @@ class PrisonIntegrationTest : IntegrationTestBase() {
   fun `return a 404 for prisoner in wrong prison`() {
     val headers = HttpHeaders()
     headers.set("subject-distinguished-name", "C=GB,ST=London,L=London,O=Home Office,CN=limited-prisons")
-    mockMvc.perform(
-      get("$basePrisonPath/prisoners/$hmppsId").headers(headers),
-    )
-      .andExpect(status().isNotFound)
+    mockMvc
+      .perform(
+        get("$basePrisonPath/prisoners/$hmppsId").headers(headers),
+      ).andExpect(status().isNotFound)
   }
 
   @Test
   fun `return a 404 for if consumer has empty list of prisons`() {
     val headers = HttpHeaders()
     headers.set("subject-distinguished-name", "C=GB,ST=London,L=London,O=Home Office,CN=no-prisons")
-    mockMvc.perform(
-      get("$basePrisonPath/prisoners/$hmppsId").headers(headers),
-    )
-      .andExpect(status().isNotFound)
+    mockMvc
+      .perform(
+        get("$basePrisonPath/prisoners/$hmppsId").headers(headers),
+      ).andExpect(status().isNotFound)
   }
 
   @Test

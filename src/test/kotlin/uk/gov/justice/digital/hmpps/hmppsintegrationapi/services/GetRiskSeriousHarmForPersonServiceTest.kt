@@ -129,8 +129,14 @@ GetRiskSeriousHarmForPersonServiceTest(
           val response = getRiskSeriousHarmForPersonService.execute(hmppsId)
 
           response.errors.shouldHaveSize(1)
-          response.errors.first().causedBy.shouldBe(UpstreamApi.ASSESS_RISKS_AND_NEEDS)
-          response.errors.first().type.shouldBe(UpstreamApiError.Type.ENTITY_NOT_FOUND)
+          response.errors
+            .first()
+            .causedBy
+            .shouldBe(UpstreamApi.ASSESS_RISKS_AND_NEEDS)
+          response.errors
+            .first()
+            .type
+            .shouldBe(UpstreamApiError.Type.ENTITY_NOT_FOUND)
         }
       }
     },
