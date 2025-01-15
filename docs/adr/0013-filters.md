@@ -63,3 +63,4 @@ These filters should be implemented at the service layer. They might be implemen
 - When configuring a new consumer, the filters must be configured alongside the endpoints.
 - Endpoints must implement the filters that are appropriate.
 - Endpoints must document which filters they enforce (so that new consumers are only given access to endpoints that are properly restricted).
+- In the event we add caching to an endpoint, the cache must be controlled per consumer, as the response may be different for each consumer.
