@@ -154,6 +154,9 @@
         <a href="../../documentation/api/index.html#v1-prison-prisonid-prisoners-hmppsid-balances-accountcode"><span>/v1/prison/{prisonId}/prisoners/{hmppsId}/balances/{accountCode}</span></a>
       </li>
       <li>
+        <a href="../../documentation/api/index.html#v1-prison-prisonid-prisoners-hmppsid-accounts-accountcode-transactions"><span>/v1/prison/{prisonId}/prisoners/{hmppsId}/accounts/{accountCode}/transactions</span></a>
+      </li>
+      <li>
         <a href="../../documentation/api/index.html#v1-prison-prisoners"><span>/v1/prison/prisoners</span></a>
       </li>
       <li>
@@ -539,6 +542,183 @@
 <td>400</td>
 <td>
 <p>The HMPPS ID provided has an invalid format, the account code is not one of the allowable accounts or the prisoner does hot have accounts at the specified prison.</p>
+
+
+
+<pre><code>{
+  "status": 400,
+  "userMessage": "Validation failure: No query parameters specified.",
+  "developerMessage": "No query parameters specified."
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-badrequest'>BadRequest</a>
+</td>
+</tr>
+
+<tr>
+<td>404</td>
+<td>
+<p>Not Found</p>
+
+
+
+<pre><code>{
+  "status": 404,
+  "userMessage": "404 Not found error: Could not find person with HMPPS id: 2003/0011991D.",
+  "developerMessage": "Could not find person with HMPPS id: 2003/0011991D."
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-personnotfound'>PersonNotFound</a>
+</td>
+</tr>
+
+<tr>
+<td>500</td>
+<td>
+<p>Internal Server Error</p>
+
+
+
+<pre><code>{
+  "status": 500,
+  "userMessage": "Internal Server Error",
+  "developerMessage": "Unable to complete request as an upstream service is not responding."
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-internalservererror'>InternalServerError</a>
+</td>
+</tr>
+
+</tbody>
+</table>
+
+
+
+
+<h2 id="v1-prison-prisonid-prisoners-hmppsid-accounts-accountcode-transactions">/v1/prison/{prisonId}/prisoners/{hmppsId}/accounts/{accountCode}/transactions</h2>
+
+<h3 id="v1-prison-prisonid-prisoners-hmppsid-accounts-accountcode-transactions-get">get</h3>
+
+  <p><em>Returns all transactions for a prisoner associated with an account code that they have at a prison.</em></p>
+
+
+  <p><b>Applicable filters</b>: <ul><li>prisons</li></ul></p>
+
+
+
+
+<h4 id="v1-prison-prisonid-prisoners-hmppsid-accounts-accountcode-transactions-get-parameters">Parameters</h4>
+<table>
+<thead>
+<tr><th>Parameter</th><th>In</th><th>Type</th><th>Required</th><th>Description</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>hmppsId</td>
+<td>path</td>
+<td>string</td>
+<td>true</td>
+<td>
+
+</td>
+</tr>
+
+<tr>
+<td>prisonId</td>
+<td>path</td>
+<td>string</td>
+<td>true</td>
+<td>
+
+</td>
+</tr>
+
+<tr>
+<td>accountCode</td>
+<td>path</td>
+<td>string</td>
+<td>true</td>
+<td>
+
+</td>
+</tr>
+
+<tr>
+<td>from_date</td>
+<td>query</td>
+<td>string</td>
+<td>false</td>
+<td><p>Start date for transactions (defaults to today if not supplied)</p>
+
+
+</td>
+</tr>
+
+<tr>
+<td>to_date</td>
+<td>query</td>
+<td>string</td>
+<td>false</td>
+<td><p>To date for transactions (defaults to today if not supplied)</p>
+
+
+</td>
+</tr>
+
+</tbody>
+</table>
+
+
+
+
+<h4 id="v1-prison-prisonid-prisoners-hmppsid-accounts-accountcode-transactions-get-responses">Responses</h4>
+<table>
+<thead>
+<tr><th>Status</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>200</td>
+<td>
+<p>Successfully found a prisoner&rsquo;s transactions.</p>
+
+
+
+<pre><code>{
+  "data": {
+    "transactions": [
+      {
+        "id": "string",
+        "type": {
+          "code": "string",
+          "desc": "string"
+        },
+        "description": "string",
+        "amount": "integer",
+        "date": "string"
+      }
+    ]
+  }
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-dataresponsetransactions'>DataResponseTransactions</a>
+</td>
+</tr>
+
+<tr>
+<td>400</td>
+<td>
+<p>The request data has an invalid format or the prisoner does hot have transactions at the specified prison.</p>
 
 
 
@@ -4958,8 +5138,8 @@
       "town": "London",
       "types": [
         {
-          "code": "BUS",
-          "description": "Business Address"
+          "code": "string",
+          "desc": "string"
         }
       ],
       "notes": "This is their partner's address."
@@ -5791,6 +5971,144 @@
 <td></td>
 <td>
   <a href='#schema-balance'>Balance</a>
+</td>
+</tr>
+
+</tbody>
+</table>
+
+<h3 id="schema-dataresponsetransactions">DataResponseTransactions</h3>
+
+
+<table class='schema-dataresponsetransactions'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>data</td>
+<td>object</td>
+<td>true</td>
+<td></td>
+<td>
+  <a href='#schema-transactions'>Transactions</a>
+</td>
+</tr>
+
+</tbody>
+</table>
+
+<h3 id="schema-transaction">Transaction</h3>
+
+
+<table class='schema-transaction'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>id</td>
+<td>string</td>
+<td>true</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>type</td>
+<td>object</td>
+<td>true</td>
+<td></td>
+<td>
+  <a href='#schema-type'>Type</a>
+</td>
+</tr>
+
+<tr>
+<td>description</td>
+<td>string</td>
+<td>true</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>amount</td>
+<td>integer</td>
+<td>true</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>date</td>
+<td>string</td>
+<td>true</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+</tbody>
+</table>
+
+<h3 id="schema-transactions">Transactions</h3>
+
+
+<table class='schema-transactions'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>transactions</td>
+<td>array</td>
+<td>true</td>
+<td></td>
+<td>
+  <a href='#schema-transaction'>Transaction</a>
+</td>
+</tr>
+
+</tbody>
+</table>
+
+<h3 id="schema-type">Type</h3>
+
+
+<table class='schema-type'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>code</td>
+<td>string</td>
+<td>true</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>desc</td>
+<td>string</td>
+<td>true</td>
+<td></td>
+<td>
+  
 </td>
 </tr>
 
@@ -11730,41 +12048,6 @@
 <td></td>
 <td>
   <a href='#schema-address'>Address</a>
-</td>
-</tr>
-
-</tbody>
-</table>
-
-<h3 id="schema-type">Type</h3>
-<p>Type or usage of address, for example <code>Business Address</code>, <code>Home Address</code>, <code>Work Address</code>.</p>
-
-
-<table class='schema-type'>
-<thead>
-<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
-</thead>
-<tbody>
-
-<tr>
-<td>code</td>
-<td>string</td>
-<td>false</td>
-<td><p>Address type code, for example: <code>BUS</code>, <code>HOME</code>, <code>WORK</code>.</p>
-</td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>description</td>
-<td>string</td>
-<td>false</td>
-<td><p>Description of address type, for example: <code>Business Address</code>, <code>Home Address</code>, <code>Work Address</code>.</p>
-</td>
-<td>
-  
 </td>
 </tr>
 
