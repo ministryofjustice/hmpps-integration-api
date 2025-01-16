@@ -106,13 +106,13 @@ class TransactionsController(
   }
 
   @Operation(
-    summary = ".",
+    summary = "Get transaction by clientUniqueRef.",
     description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
     responses = [
       ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found a transaction."),
       ApiResponse(
         responseCode = "400",
-        description = "The request data has an invalid format or the prisoner does hot have transaction associated with the clientUniqueRef.",
+        description = "The request data has an invalid format or the prisoner does not have transaction associated with the clientUniqueRef.",
         content = [
           Content(
             schema =
