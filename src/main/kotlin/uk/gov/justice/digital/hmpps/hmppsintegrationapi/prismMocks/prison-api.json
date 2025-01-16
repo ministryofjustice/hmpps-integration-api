@@ -33,18 +33,13 @@
   ],
   "security": [
     {
-      "bearer-jwt": [
-        "read",
-        "write"
-      ]
+      "bearer-jwt": ["read", "write"]
     }
   ],
   "paths": {
     "/api/offenders/{offenderNo}": {
       "get": {
-        "tags": [
-          "offenders"
-        ],
+        "tags": ["offenders"],
         "summary": "Full details about the current state of an offender",
         "operationId": "getOffender_1",
         "parameters": [
@@ -106,9 +101,7 @@
     },
     "/api/offenders/{offenderNo}/addresses": {
       "get": {
-        "tags": [
-          "offenders"
-        ],
+        "tags": ["offenders"],
         "summary": "Return a list of addresses for a given offender, most recent first.",
         "description": "Requires offender to be in caseload, or role GLOBAL_SEARCH or VIEW_PRISONER_DATA<p>This endpoint uses the REPLICA database.</p>",
         "operationId": "getAddressesByOffenderNo",
@@ -173,9 +166,7 @@
     },
     "/api/offender-sentences": {
       "get": {
-        "tags": [
-          "offender-sentences"
-        ],
+        "tags": ["offender-sentences"],
         "summary": "List of offenders (with associated sentence detail)",
         "description": "<h3>Algorithm</h3>\n<ul>\n  <li>If there is a confirmed release date, the offender release date is the confirmed release date.</li>\n  <li>If there is no confirmed release date for the offender, the offender release date is either the actual parole date or the home detention curfew actual date.</li>\n  <li>If there is no confirmed release date, actual parole date or home detention curfew actual date for the offender, the release date is the later of the nonDtoReleaseDate or midTermDate value (if either or both are present)</li>\n</ul>\n<p>This endpoint uses the REPLICA database.</p>",
         "operationId": "getOffenderSentences",
@@ -251,9 +242,7 @@
     },
     "/api/offenders/{offenderNo}/sentences": {
       "get": {
-        "tags": [
-          "offenders"
-        ],
+        "tags": ["offenders"],
         "summary": "Offender Sentence Details",
         "description": "Retrieve an single offender sentence details. Requires offender to be in caseload or role GLOBAL_SEARCH or VIEW_PRISONER_DATA",
         "operationId": "getOffenderSentenceDetail",
@@ -284,9 +273,7 @@
     },
     "/api/offenders/{offenderNo}/booking/latest/sentence-summary": {
       "get": {
-        "tags": [
-          "offenders"
-        ],
+        "tags": ["offenders"],
         "summary": "Offender Sentence Details",
         "description": "Retrieve an single offender sentence details",
         "operationId": "getLatestSentenceSummary",
@@ -337,9 +324,7 @@
     },
     "/api/offender-sentences/booking/{bookingId}/sentences-and-offences": {
       "get": {
-        "tags": [
-          "offender-sentences"
-        ],
+        "tags": ["offender-sentences"],
         "summary": "Sentence and offence details  for a prisoner",
         "operationId": "getSentenceAndOffenceDetails",
         "parameters": [
@@ -380,9 +365,7 @@
     },
     "/api/bookings/offenderNo/{offenderNo}/offenceHistory": {
       "get": {
-        "tags": [
-          "bookings"
-        ],
+        "tags": ["bookings"],
         "summary": "Offence history.",
         "description": "All Offences recorded for this offender.<p>This endpoint uses the REPLICA database.</p>",
         "operationId": "getOffenceHistory",
@@ -456,9 +439,7 @@
     },
     "/api/offenders/{offenderNo}/alerts/v2": {
       "get": {
-        "tags": [
-          "offenders"
-        ],
+        "tags": ["offenders"],
         "summary": "Deprecated - Please use the alerts api for access to alerts (eg https://alerts-api-dev.hmpps.service.justice.gov.uk/swagger-ui/index.html)",
         "description": "Replace with https://alerts-api-dev.hmpps.service.justice.gov.uk/swagger-ui/index.html#/prisoner-alerts-controller/retrievePrisonerAlerts",
         "operationId": "getAlertsForAllBookingByOffenderNo",
@@ -554,9 +535,7 @@
     },
     "/api/images/offenders/{offenderNo}": {
       "get": {
-        "tags": [
-          "images"
-        ],
+        "tags": ["images"],
         "summary": "Image details related to offender.",
         "description": "Requires role VIEW_PRISONER_DATA.",
         "operationId": "getImagesByOffender",
@@ -609,9 +588,7 @@
     },
     "/api/images/{imageId}/data": {
       "get": {
-        "tags": [
-          "images"
-        ],
+        "tags": ["images"],
         "summary": "Image data (as bytes).",
         "description": "Requires role VIEW_PRISONER_DATA.",
         "operationId": "getImageData",
@@ -676,9 +653,7 @@
     },
     "/api/bookings/{bookingId}/reasonable-adjustments": {
       "get": {
-        "tags": [
-          "bookings"
-        ],
+        "tags": ["bookings"],
         "summary": "Reasonable Adjustment Information",
         "description": "Reasonable Adjustment Information. Requires booking access (via caseload) or GLOBAL_SEARCH or VIEW_PRISONER_DATA role.",
         "operationId": "getReasonableAdjustments",
@@ -753,9 +728,7 @@
     },
     "/api/reference-domains/domains/{domain}/codes": {
       "get": {
-        "tags": [
-          "reference-domains"
-        ],
+        "tags": ["reference-domains"],
         "summary": "List of reference codes for reference domain.",
         "description": "List of reference codes for reference domain ordered by code ascending. The list is an un-paged flat list<p>This endpoint uses the REPLICA database.</p>",
         "operationId": "getReferenceCodesByDomain_1",
@@ -821,12 +794,7 @@
   "components": {
     "schemas": {
       "CaseLoad": {
-        "required": [
-          "caseLoadId",
-          "currentlyActive",
-          "description",
-          "type"
-        ],
+        "required": ["caseLoadId", "currentlyActive", "description", "type"],
         "type": "object",
         "properties": {
           "caseLoadId": {
@@ -843,20 +811,13 @@
             "type": "string",
             "description": "Type of case load. Note: Reference Code CSLD_TYPE",
             "example": "INST",
-            "enum": [
-              "COMM",
-              "INST",
-              "APP"
-            ]
+            "enum": ["COMM", "INST", "APP"]
           },
           "caseloadFunction": {
             "type": "string",
             "description": "Functional Use of the case load",
             "example": "GENERAL",
-            "enum": [
-              "GENERAL",
-              "ADMIN"
-            ]
+            "enum": ["GENERAL", "ADMIN"]
           },
           "currentlyActive": {
             "type": "boolean",
@@ -867,10 +828,7 @@
         "description": "Case Load"
       },
       "ErrorResponse": {
-        "required": [
-          "status",
-          "userMessage"
-        ],
+        "required": ["status", "userMessage"],
         "type": "object",
         "properties": {
           "status": {
@@ -904,10 +862,7 @@
         "description": "General API Error Response"
       },
       "CaseloadUpdate": {
-        "required": [
-          "caseload",
-          "numUsersEnabled"
-        ],
+        "required": ["caseload", "numUsersEnabled"],
         "type": "object",
         "properties": {
           "caseload": {
@@ -925,10 +880,7 @@
         "description": "Caseload Update"
       },
       "ReferenceCodeInfo": {
-        "required": [
-          "activeFlag",
-          "description"
-        ],
+        "required": ["activeFlag", "description"],
         "type": "object",
         "properties": {
           "description": {
@@ -959,10 +911,7 @@
             "type": "string",
             "description": "Reference data item active indicator flag.",
             "example": "Y",
-            "enum": [
-              "Y",
-              "N"
-            ]
+            "enum": ["Y", "N"]
           },
           "listSeq": {
             "maximum": 999999,
@@ -978,10 +927,7 @@
             "type": "string",
             "description": "System Data Flag",
             "example": "Y",
-            "enum": [
-              "Y",
-              "N"
-            ]
+            "enum": ["Y", "N"]
           },
           "expiredDate": {
             "type": "string",
@@ -993,12 +939,7 @@
         "description": "Reference Information"
       },
       "ReferenceCode": {
-        "required": [
-          "activeFlag",
-          "code",
-          "description",
-          "domain"
-        ],
+        "required": ["activeFlag", "code", "description", "domain"],
         "type": "object",
         "properties": {
           "domain": {
@@ -1043,10 +984,7 @@
             "type": "string",
             "description": "Reference data item active indicator flag.",
             "example": "Y",
-            "enum": [
-              "Y",
-              "N"
-            ]
+            "enum": ["Y", "N"]
           },
           "listSeq": {
             "maximum": 999999,
@@ -1062,10 +1000,7 @@
             "type": "string",
             "description": "System Data Flag",
             "example": "Y",
-            "enum": [
-              "Y",
-              "N"
-            ]
+            "enum": ["Y", "N"]
           },
           "expiredDate": {
             "type": "string",
@@ -1084,12 +1019,7 @@
         "description": "Reference Code"
       },
       "RequestToTransferOut": {
-        "required": [
-          "escortType",
-          "movementTime",
-          "toLocation",
-          "transferReasonCode"
-        ],
+        "required": ["escortType", "movementTime", "toLocation", "transferReasonCode"],
         "type": "object",
         "properties": {
           "toLocation": {
@@ -1222,9 +1152,7 @@
         "description": "Alert"
       },
       "Alias": {
-        "required": [
-          "offenderId"
-        ],
+        "required": ["offenderId"],
         "type": "object",
         "properties": {
           "title": {
@@ -1354,11 +1282,7 @@
             "type": "string",
             "description": "The status of the assessment",
             "example": "A",
-            "enum": [
-              "P",
-              "A",
-              "I"
-            ]
+            "enum": ["P", "A", "I"]
           },
           "assessmentSeq": {
             "type": "integer",
@@ -2367,12 +2291,7 @@
             "type": "string",
             "description": "Indicates which type of non-DTO release date is the effective release date. One of 'ARD', 'CRD', 'NPD' or 'PRRD'.",
             "example": "CRD",
-            "enum": [
-              "ARD",
-              "CRD",
-              "NPD",
-              "PRRD"
-            ]
+            "enum": ["ARD", "CRD", "NPD", "PRRD"]
           },
           "confirmedReleaseDate": {
             "type": "string",
@@ -2438,9 +2357,7 @@
         "description": "Sentence Calculation Dates"
       },
       "RequestToTransferIn": {
-        "required": [
-          "receiveTime"
-        ],
+        "required": ["receiveTime"],
         "type": "object",
         "properties": {
           "receiveTime": {
@@ -2463,10 +2380,7 @@
         "description": "Represents the data required for receiving a prisoner transfer"
       },
       "RequestToTransferOutToTemporaryAbsence": {
-        "required": [
-          "escortType",
-          "transferReasonCode"
-        ],
+        "required": ["escortType", "transferReasonCode"],
         "type": "object",
         "properties": {
           "toCity": {
@@ -2512,10 +2426,7 @@
         "description": "Represents the data required for transferring a prisoner to temporary absence"
       },
       "RequestForTemporaryAbsenceArrival": {
-        "required": [
-          "agencyId",
-          "dateTime"
-        ],
+        "required": ["agencyId", "dateTime"],
         "type": "object",
         "properties": {
           "agencyId": {
@@ -2543,10 +2454,7 @@
         "description": "Represents the data required for registering temporary absence arrival"
       },
       "RequestToReleasePrisoner": {
-        "required": [
-          "movementReasonCode",
-          "releaseTime"
-        ],
+        "required": ["movementReasonCode", "releaseTime"],
         "type": "object",
         "properties": {
           "movementReasonCode": {
@@ -2616,11 +2524,7 @@
         "description": "Request release of prisoner"
       },
       "RequestToRecall": {
-        "required": [
-          "movementReasonCode",
-          "prisonId",
-          "recallTime"
-        ],
+        "required": ["movementReasonCode", "prisonId", "recallTime"],
         "type": "object",
         "properties": {
           "prisonId": {
@@ -2663,10 +2567,7 @@
         "description": "Represents the data required for recalling a prisoner"
       },
       "CellMoveResult": {
-        "required": [
-          "agencyId",
-          "bookingId"
-        ],
+        "required": ["agencyId", "bookingId"],
         "type": "object",
         "properties": {
           "bookingId": {
@@ -2701,9 +2602,7 @@
         "description": "Cell move result"
       },
       "RequestToDischargePrisoner": {
-        "required": [
-          "hospitalLocationCode"
-        ],
+        "required": ["hospitalLocationCode"],
         "type": "object",
         "properties": {
           "hospitalLocationCode": {
@@ -2731,12 +2630,7 @@
         "description": "Request release of prisoner"
       },
       "RequestToTransferOutToCourt": {
-        "required": [
-          "escortType",
-          "movementTime",
-          "toLocation",
-          "transferReasonCode"
-        ],
+        "required": ["escortType", "movementTime", "toLocation", "transferReasonCode"],
         "type": "object",
         "properties": {
           "toLocation": {
@@ -2782,10 +2676,7 @@
         "description": "Represents the data required for transferring a prisoner to a court"
       },
       "RequestForCourtTransferIn": {
-        "required": [
-          "agencyId",
-          "dateTime"
-        ],
+        "required": ["agencyId", "dateTime"],
         "type": "object",
         "properties": {
           "agencyId": {
@@ -2813,10 +2704,7 @@
         "description": "Represents the data required for registering court return"
       },
       "HdcChecks": {
-        "required": [
-          "date",
-          "passed"
-        ],
+        "required": ["date", "passed"],
         "type": "object",
         "properties": {
           "passed": {
@@ -2834,10 +2722,7 @@
         "description": "HDC Curfew Check"
       },
       "ApprovalStatus": {
-        "required": [
-          "approvalStatus",
-          "date"
-        ],
+        "required": ["approvalStatus", "date"],
         "type": "object",
         "properties": {
           "approvalStatus": {
@@ -2860,12 +2745,7 @@
         "description": "HDC Approval Status"
       },
       "CategoryRejectionDetail": {
-        "required": [
-          "assessmentSeq",
-          "bookingId",
-          "evaluationDate",
-          "reviewCommitteeCode"
-        ],
+        "required": ["assessmentSeq", "bookingId", "evaluationDate", "reviewCommitteeCode"],
         "type": "object",
         "properties": {
           "bookingId": {
@@ -2897,10 +2777,7 @@
         "description": "Rejection details"
       },
       "CategorisationUpdateDetail": {
-        "required": [
-          "assessmentSeq",
-          "bookingId"
-        ],
+        "required": ["assessmentSeq", "bookingId"],
         "type": "object",
         "properties": {
           "bookingId": {
@@ -2936,12 +2813,7 @@
         "description": "Categorisation details"
       },
       "CategoryApprovalDetail": {
-        "required": [
-          "bookingId",
-          "category",
-          "evaluationDate",
-          "reviewCommitteeCode"
-        ],
+        "required": ["bookingId", "category", "evaluationDate", "reviewCommitteeCode"],
         "type": "object",
         "properties": {
           "bookingId": {
@@ -3001,11 +2873,7 @@
         "description": "Approval details"
       },
       "OffenceActivationDto": {
-        "required": [
-          "activationFlag",
-          "offenceCode",
-          "statuteCode"
-        ],
+        "required": ["activationFlag", "offenceCode", "statuteCode"],
         "type": "object",
         "properties": {
           "offenceCode": {
@@ -3021,11 +2889,7 @@
         "description": "Used for deactivating/reactivating an offence. A deactivated offence is not selectable in NOMIS"
       },
       "HOCodeDto": {
-        "required": [
-          "activeFlag",
-          "code",
-          "description"
-        ],
+        "required": ["activeFlag", "code", "description"],
         "type": "object",
         "properties": {
           "code": {
@@ -3054,13 +2918,7 @@
         "example": "825/99"
       },
       "OffenceDto": {
-        "required": [
-          "activeFlag",
-          "code",
-          "description",
-          "severityRanking",
-          "statuteCode"
-        ],
+        "required": ["activeFlag", "code", "description", "severityRanking", "statuteCode"],
         "type": "object",
         "properties": {
           "code": {
@@ -3104,12 +2962,7 @@
         "description": "Offence"
       },
       "StatuteDto": {
-        "required": [
-          "activeFlag",
-          "code",
-          "description",
-          "legislatingBodyCode"
-        ],
+        "required": ["activeFlag", "code", "description", "legislatingBodyCode"],
         "type": "object",
         "properties": {
           "code": {
@@ -3137,9 +2990,7 @@
         "example": "RR84"
       },
       "PrisonMoveCancellation": {
-        "required": [
-          "reasonCode"
-        ],
+        "required": ["reasonCode"],
         "type": "object",
         "properties": {
           "reasonCode": {
@@ -3147,11 +2998,7 @@
             "minLength": 0,
             "type": "string",
             "description": "The reason code for cancellation of the move.",
-            "enum": [
-              "ADMI",
-              "OCI",
-              "TRANS"
-            ]
+            "enum": ["ADMI", "OCI", "TRANS"]
           }
         },
         "description": "The cancellation details."
@@ -3174,17 +3021,7 @@
         "description": "Request move offender to cell swap"
       },
       "OffenderBooking": {
-        "required": [
-          "age",
-          "agencyId",
-          "alertsCodes",
-          "alertsDetails",
-          "bookingId",
-          "dateOfBirth",
-          "firstName",
-          "lastName",
-          "offenderNo"
-        ],
+        "required": ["age", "agencyId", "alertsCodes", "alertsDetails", "bookingId", "dateOfBirth", "firstName", "lastName", "offenderNo"],
         "type": "object",
         "properties": {
           "bookingId": {
@@ -3269,23 +3106,13 @@
             "type": "string",
             "description": "The Cat A/B/C/D of the offender",
             "example": "C",
-            "enum": [
-              "A",
-              "B",
-              "C",
-              "D",
-              "I",
-              "J"
-            ]
+            "enum": ["A", "B", "C", "D", "I", "J"]
           },
           "convictedStatus": {
             "type": "string",
             "description": "Convicted Status",
             "example": "Convicted",
-            "enum": [
-              "Convicted",
-              "Remand"
-            ]
+            "enum": ["Convicted", "Remand"]
           },
           "imprisonmentStatus": {
             "type": "string",
@@ -3329,9 +3156,7 @@
         "description": "Offender Booking Summary"
       },
       "CourtHearingDateAmendment": {
-        "required": [
-          "hearingDateTime"
-        ],
+        "required": ["hearingDateTime"],
         "type": "object",
         "properties": {
           "hearingDateTime": {
@@ -3344,11 +3169,7 @@
         "description": "The amendments for the scheduled court hearing."
       },
       "AddressDto": {
-        "required": [
-          "mail",
-          "noFixedAddress",
-          "primary"
-        ],
+        "required": ["mail", "noFixedAddress", "primary"],
         "type": "object",
         "properties": {
           "addressId": {
@@ -3479,12 +3300,7 @@
         "description": "An Offender's address usage"
       },
       "Agency": {
-        "required": [
-          "active",
-          "agencyId",
-          "agencyType",
-          "description"
-        ],
+        "required": ["active", "agencyId", "agencyType", "description"],
         "type": "object",
         "properties": {
           "agencyId": {
@@ -3539,18 +3355,7 @@
             "type": "string",
             "description": "Court Type.  Reference domain is JURISDICTION",
             "example": "CC",
-            "enum": [
-              "CACD",
-              "CB",
-              "CC",
-              "CO",
-              "DCM",
-              "GCM",
-              "IMM",
-              "MC",
-              "OTHER",
-              "YC"
-            ]
+            "enum": ["CACD", "CB", "CC", "CO", "DCM", "GCM", "IMM", "MC", "OTHER", "YC"]
           },
           "deactivationDate": {
             "type": "string",
@@ -3614,10 +3419,7 @@
         "description": "An Email Address"
       },
       "Telephone": {
-        "required": [
-          "number",
-          "type"
-        ],
+        "required": ["number", "type"],
         "type": "object",
         "properties": {
           "phoneId": {
@@ -3665,9 +3467,7 @@
         "description": "Alert details"
       },
       "UpdateAttendance": {
-        "required": [
-          "eventOutcome"
-        ],
+        "required": ["eventOutcome"],
         "type": "object",
         "properties": {
           "eventOutcome": {
@@ -3676,16 +3476,7 @@
             "type": "string",
             "description": "Attendance outcome, possible values are the codes in the 'PS_PA_OC' reference domain.",
             "example": "ATT",
-            "enum": [
-              "ABS",
-              "ACCAB",
-              "ATT",
-              "CANC",
-              "NREQ",
-              "SUS",
-              "UNACAB",
-              "REST"
-            ]
+            "enum": ["ABS", "ACCAB", "ATT", "CANC", "NREQ", "SUS", "UNACAB", "REST"]
           },
           "performance": {
             "maxLength": 12,
@@ -3693,13 +3484,7 @@
             "type": "string",
             "description": "Possible values are the codes in the 'PERFORMANCE' reference domain, mandatory for eventOutcome 'ATT'.",
             "example": "ACCEPT",
-            "enum": [
-              "ACCEPT",
-              "GOOD",
-              "POOR",
-              "STANDARD",
-              "UNACCEPT"
-            ]
+            "enum": ["ACCEPT", "GOOD", "POOR", "STANDARD", "UNACCEPT"]
           },
           "outcomeComment": {
             "maxLength": 240,
@@ -3726,10 +3511,7 @@
         "description": "set of booking and activity ids"
       },
       "UpdateAttendanceBatch": {
-        "required": [
-          "bookingActivities",
-          "eventOutcome"
-        ],
+        "required": ["bookingActivities", "eventOutcome"],
         "type": "object",
         "properties": {
           "eventOutcome": {
@@ -3738,16 +3520,7 @@
             "type": "string",
             "description": "Attendance outcome, possible values are the codes in the 'PS_PA_OC' reference domain.",
             "example": "ATT",
-            "enum": [
-              "ABS",
-              "ACCAB",
-              "ATT",
-              "CANC",
-              "NREQ",
-              "SUS",
-              "UNACAB",
-              "REST"
-            ]
+            "enum": ["ABS", "ACCAB", "ATT", "CANC", "NREQ", "SUS", "UNACAB", "REST"]
           },
           "performance": {
             "maxLength": 12,
@@ -3755,13 +3528,7 @@
             "type": "string",
             "description": "Possible values are the codes in the 'PERFORMANCE' reference domain, mandatory for eventOutcome 'ATT'.",
             "example": "ACCEPT",
-            "enum": [
-              "ACCEPT",
-              "GOOD",
-              "POOR",
-              "STANDARD",
-              "UNACCEPT"
-            ]
+            "enum": ["ACCEPT", "GOOD", "POOR", "STANDARD", "UNACCEPT"]
           },
           "outcomeComment": {
             "maxLength": 240,
@@ -3794,11 +3561,7 @@
         "description": "The comment. May be empty or null"
       },
       "RequestToUpdateAgency": {
-        "required": [
-          "agencyType",
-          "courtType",
-          "description"
-        ],
+        "required": ["agencyType", "courtType", "description"],
         "type": "object",
         "properties": {
           "description": {
@@ -3850,29 +3613,13 @@
             "type": "string",
             "description": "Court Type.  Reference domain is JURISDICTION",
             "example": "CC",
-            "enum": [
-              "CACD",
-              "CB",
-              "CC",
-              "CO",
-              "DCM",
-              "GCM",
-              "IMM",
-              "MC",
-              "OTHER",
-              "YC"
-            ]
+            "enum": ["CACD", "CB", "CC", "CO", "DCM", "GCM", "IMM", "MC", "OTHER", "YC"]
           }
         },
         "description": "Update Agency Request"
       },
       "RequestToUpdateAddress": {
-        "required": [
-          "addressType",
-          "noFixedAddress",
-          "premise",
-          "primary"
-        ],
+        "required": ["addressType", "noFixedAddress", "premise", "primary"],
         "type": "object",
         "properties": {
           "addressType": {
@@ -3951,10 +3698,7 @@
         "description": "Update Address Request"
       },
       "RequestToUpdatePhone": {
-        "required": [
-          "number",
-          "type"
-        ],
+        "required": ["number", "type"],
         "type": "object",
         "properties": {
           "number": {
@@ -3973,21 +3717,14 @@
         "description": "Update Phone Request"
       },
       "CreateTransaction": {
-        "required": [
-          "amount",
-          "client_transaction_id",
-          "client_unique_ref",
-          "type"
-        ],
+        "required": ["amount", "client_transaction_id", "client_unique_ref", "type"],
         "type": "object",
         "properties": {
           "type": {
             "type": "string",
             "description": "Valid transaction type for the prison_id",
             "example": "CANT",
-            "enum": [
-              "CANT,REFND,PHONE,MRPR,MTDS,DTDS,CASHD,RELA,RELS"
-            ]
+            "enum": ["CANT,REFND,PHONE,MRPR,MTDS,DTDS,CASHD,RELA,RELS"]
           },
           "description": {
             "maxLength": 240,
@@ -4021,9 +3758,7 @@
         "description": "Transaction Details"
       },
       "Transaction": {
-        "required": [
-          "id"
-        ],
+        "required": ["id"],
         "type": "object",
         "properties": {
           "id": {
@@ -4035,20 +3770,14 @@
         "description": "Transaction Response"
       },
       "StorePaymentRequest": {
-        "required": [
-          "amount",
-          "client_transaction_id",
-          "type"
-        ],
+        "required": ["amount", "client_transaction_id", "type"],
         "type": "object",
         "properties": {
           "type": {
             "type": "string",
             "description": "Valid payment type for the prison",
             "example": "ADJ",
-            "enum": [
-              "A_EARN,ADJ"
-            ]
+            "enum": ["A_EARN,ADJ"]
           },
           "description": {
             "maxLength": 240,
@@ -4074,9 +3803,7 @@
         "description": "Transaction Details"
       },
       "PaymentResponse": {
-        "required": [
-          "message"
-        ],
+        "required": ["message"],
         "type": "object",
         "properties": {
           "message": {
@@ -4114,15 +3841,7 @@
         "description": "Transfer Response"
       },
       "UserDetail": {
-        "required": [
-          "accountStatus",
-          "active",
-          "firstName",
-          "lastName",
-          "lockDate",
-          "staffId",
-          "username"
-        ],
+        "required": ["accountStatus", "active", "firstName", "lastName", "lockDate", "staffId", "username"],
         "type": "object",
         "properties": {
           "staffId": {
@@ -4161,15 +3880,7 @@
             "type": "string",
             "description": "Status of the User Account",
             "example": "ACTIVE",
-            "enum": [
-              "ACTIVE",
-              "INACT",
-              "SUS",
-              "CAREER",
-              "MAT",
-              "SAB",
-              "SICK"
-            ]
+            "enum": ["ACTIVE", "INACT", "SUS", "CAREER", "MAT", "SAB", "SICK"]
           },
           "lockDate": {
             "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}$",
@@ -4202,10 +3913,7 @@
         "description": "User Details"
       },
       "UpdatePrisonerDetails": {
-        "required": [
-          "firstName",
-          "lastName"
-        ],
+        "required": ["firstName", "lastName"],
         "type": "object",
         "properties": {
           "firstName": {
@@ -4219,10 +3927,7 @@
         }
       },
       "PrisonDetails": {
-        "required": [
-          "prison",
-          "prisonId"
-        ],
+        "required": ["prison", "prisonId"],
         "type": "object",
         "properties": {
           "prisonId": {
@@ -4356,11 +4061,7 @@
           "timeSlot": {
             "type": "string",
             "description": "Activity time slot",
-            "enum": [
-              "AM",
-              "PM",
-              "ED"
-            ]
+            "enum": ["AM", "PM", "ED"]
           },
           "locationCode": {
             "type": "string",
@@ -4374,11 +4075,7 @@
         "description": "Prisoner Schedule"
       },
       "PrisonerActivitiesCount": {
-        "required": [
-          "notRecorded",
-          "suspended",
-          "total"
-        ],
+        "required": ["notRecorded", "suspended", "total"],
         "type": "object",
         "properties": {
           "total": {
@@ -4415,13 +4112,7 @@
             "type": "string",
             "description": "Offender's gender code (F - Female, M - Male, NK - Not Known or NS - Not Specified).",
             "example": "F",
-            "enum": [
-              "M",
-              "F",
-              "NK",
-              "NS",
-              "ALL"
-            ]
+            "enum": ["M", "F", "NK", "NS", "ALL"]
           },
           "middleNames": {
             "type": "string",
@@ -4437,11 +4128,7 @@
             "type": "string",
             "description": "Offender's location filter (IN, OUT or ALL) - defaults to ALL.",
             "example": "ALL",
-            "enum": [
-              "IN",
-              "OUT",
-              "ALL"
-            ]
+            "enum": ["IN", "OUT", "ALL"]
           },
           "pncNumber": {
             "type": "string",
@@ -4631,10 +4318,7 @@
             "type": "string",
             "description": "Status code of prisoner's latest conviction.",
             "example": "Convicted",
-            "enum": [
-              "Convicted",
-              "Remand"
-            ]
+            "enum": ["Convicted", "Remand"]
           },
           "legalStatus": {
             "type": "string",
@@ -4694,11 +4378,7 @@
         "description": "Prisoner Details"
       },
       "RequestForNewBooking": {
-        "required": [
-          "bookingInTime",
-          "movementReasonCode",
-          "prisonId"
-        ],
+        "required": ["bookingInTime", "movementReasonCode", "prisonId"],
         "type": "object",
         "properties": {
           "prisonId": {
@@ -4741,12 +4421,7 @@
         "description": "Represents the data required receiving a prisoner under a new booking"
       },
       "RequestToCreate": {
-        "required": [
-          "dateOfBirth",
-          "firstName",
-          "gender",
-          "lastName"
-        ],
+        "required": ["dateOfBirth", "firstName", "gender", "lastName"],
         "type": "object",
         "properties": {
           "pncNumber": {
@@ -4795,23 +4470,7 @@
             "type": "string",
             "description": "A code representing the offender's title (from TITLE reference domain).",
             "example": "MR",
-            "enum": [
-              "BR",
-              "DAME",
-              "DR",
-              "FR",
-              "IMAM",
-              "LADY",
-              "LORD",
-              "MISS",
-              "MR",
-              "MRS",
-              "MS",
-              "RABBI",
-              "REV",
-              "SIR",
-              "SR"
-            ]
+            "enum": ["BR", "DAME", "DR", "FR", "IMAM", "LADY", "LORD", "MISS", "MR", "MRS", "MS", "RABBI", "REV", "SIR", "SR"]
           },
           "suffix": {
             "maxLength": 12,
@@ -4819,19 +4478,7 @@
             "type": "string",
             "description": "A code representing a suffix to apply to offender's name (from SUFFIX reference domain).",
             "example": "JR",
-            "enum": [
-              "I",
-              "II",
-              "III",
-              "IV",
-              "IX",
-              "V",
-              "VI",
-              "VII",
-              "VIII",
-              "JR",
-              "SR"
-            ]
+            "enum": ["I", "II", "III", "IV", "IX", "V", "VI", "VII", "VIII", "JR", "SR"]
           },
           "dateOfBirth": {
             "type": "string",
@@ -4845,13 +4492,7 @@
             "type": "string",
             "description": "A code representing the offender's gender (from the SEX reference domain).",
             "example": "M",
-            "enum": [
-              "M",
-              "F",
-              "NK",
-              "NS",
-              "REF"
-            ]
+            "enum": ["M", "F", "NK", "NS", "REF"]
           },
           "ethnicity": {
             "maxLength": 12,
@@ -4859,25 +4500,7 @@
             "type": "string",
             "description": "A code representing the offender's ethnicity (from the ETHNICITY reference domain).",
             "example": "W1",
-            "enum": [
-              "A9",
-              "B1",
-              "B2",
-              "B9",
-              "M1",
-              "M2",
-              "M3",
-              "M9",
-              "NS",
-              "O1",
-              "O2",
-              "O9",
-              "W1",
-              "W2",
-              "W3",
-              "W8",
-              "W9"
-            ]
+            "enum": ["A9", "B1", "B2", "B9", "M1", "M2", "M3", "M9", "NS", "O1", "O2", "O9", "W1", "W2", "W3", "W8", "W9"]
           },
           "croNumber": {
             "maxLength": 20,
@@ -4892,12 +4515,7 @@
         "description": "Represents the data required for creating a new prisoner"
       },
       "OffenderAdjudicationHearing": {
-        "required": [
-          "agencyId",
-          "hearingId",
-          "internalLocationId",
-          "offenderNo"
-        ],
+        "required": ["agencyId", "hearingId", "internalLocationId", "offenderNo"],
         "type": "object",
         "properties": {
           "agencyId": {
@@ -5013,9 +4631,7 @@
         "description": "Offender Sentence Detail"
       },
       "HomeDetentionCurfew": {
-        "required": [
-          "approvalStatusDate"
-        ],
+        "required": ["approvalStatusDate"],
         "type": "object",
         "properties": {
           "passed": {
@@ -5055,10 +4671,7 @@
         "description": "Home Detention Curfew information"
       },
       "OffenderKeyDates": {
-        "required": [
-          "effectiveSentenceEndDate",
-          "sentenceLength"
-        ],
+        "required": ["effectiveSentenceEndDate", "sentenceLength"],
         "type": "object",
         "properties": {
           "homeDetentionCurfewEligibilityDate": {
@@ -5190,11 +4803,7 @@
         "description": "Offender Key Dates"
       },
       "RequestToUpdateOffenderDates": {
-        "required": [
-          "calculationUuid",
-          "keyDates",
-          "submissionUser"
-        ],
+        "required": ["calculationUuid", "keyDates", "submissionUser"],
         "type": "object",
         "properties": {
           "calculationUuid": {
@@ -5231,13 +4840,7 @@
         "description": "Update Offender Dates Request"
       },
       "OffenderCategorise": {
-        "required": [
-          "bookingId",
-          "firstName",
-          "lastName",
-          "offenderNo",
-          "status"
-        ],
+        "required": ["bookingId", "firstName", "lastName", "offenderNo", "status"],
         "type": "object",
         "properties": {
           "offenderNo": {
@@ -5279,11 +4882,7 @@
           "assessStatus": {
             "type": "string",
             "description": "Categorisation status",
-            "enum": [
-              "P",
-              "A",
-              "I"
-            ]
+            "enum": ["P", "A", "I"]
           },
           "categoriserFirstName": {
             "type": "string",
@@ -5313,21 +4912,13 @@
           "status": {
             "type": "string",
             "description": "Where in the categorisation workflow the prisoner is",
-            "enum": [
-              "UNCATEGORISED",
-              "AWAITING_APPROVAL"
-            ]
+            "enum": ["UNCATEGORISED", "AWAITING_APPROVAL"]
           }
         },
         "description": "Prisoner with categorisation data"
       },
       "CategorisationDetail": {
-        "required": [
-          "bookingId",
-          "category",
-          "committee",
-          "placementAgencyId"
-        ],
+        "required": ["bookingId", "category", "committee", "placementAgencyId"],
         "type": "object",
         "properties": {
           "bookingId": {
@@ -5364,10 +4955,7 @@
         "description": "Categorisation details"
       },
       "OffenceToScheduleMappingDto": {
-        "required": [
-          "offenceCode",
-          "schedule"
-        ],
+        "required": ["offenceCode", "schedule"],
         "type": "object",
         "properties": {
           "offenceCode": {
@@ -5395,15 +4983,7 @@
         "description": "Maps an offence to a schedule"
       },
       "CreateExternalMovement": {
-        "required": [
-          "bookingId",
-          "directionCode",
-          "fromAgencyId",
-          "movementReason",
-          "movementTime",
-          "movementType",
-          "toAgencyId"
-        ],
+        "required": ["bookingId", "directionCode", "fromAgencyId", "movementReason", "movementTime", "movementType", "toAgencyId"],
         "type": "object",
         "properties": {
           "bookingId": {
@@ -5442,10 +5022,7 @@
             "type": "string",
             "description": "Direction code",
             "example": "OUT",
-            "enum": [
-              "IN",
-              "OUT"
-            ]
+            "enum": ["IN", "OUT"]
           }
         },
         "description": "Create external movement"
@@ -5512,13 +5089,7 @@
             "type": "string",
             "description": "ADM (admission), CRT (court), REL (release), TAP (temporary absence) or TRN (transfer)",
             "example": "ADM",
-            "enum": [
-              "ADM",
-              "CRT",
-              "REL",
-              "TAP",
-              "TRN"
-            ]
+            "enum": ["ADM", "CRT", "REL", "TAP", "TRN"]
           },
           "movementTypeDescription": {
             "type": "string",
@@ -5601,13 +5172,7 @@
             "type": "string",
             "description": "ADM (admission), CRT (court), REL (release), TAP (temporary absence) or TRN (transfer)",
             "example": "ADM",
-            "enum": [
-              "ADM",
-              "CRT",
-              "REL",
-              "TAP",
-              "TRN"
-            ]
+            "enum": ["ADM", "CRT", "REL", "TAP", "TRN"]
           },
           "movementTypeDescription": {
             "type": "string",
@@ -5643,16 +5208,7 @@
         "description": "Prisoner Custody Status"
       },
       "KeyWorkerAllocationDetail": {
-        "required": [
-          "agencyId",
-          "assigned",
-          "bookingId",
-          "firstName",
-          "internalLocationDesc",
-          "lastName",
-          "offenderNo",
-          "staffId"
-        ],
+        "required": ["agencyId", "assigned", "bookingId", "firstName", "internalLocationDesc", "lastName", "offenderNo", "staffId"],
         "type": "object",
         "properties": {
           "bookingId": {
@@ -5699,16 +5255,7 @@
         "description": "Key worker allocation details"
       },
       "OffenderKeyWorker": {
-        "required": [
-          "active",
-          "agencyId",
-          "assigned",
-          "created",
-          "createdBy",
-          "offenderNo",
-          "staffId",
-          "userId"
-        ],
+        "required": ["active", "agencyId", "assigned", "created", "createdBy", "offenderNo", "staffId", "userId"],
         "type": "object",
         "properties": {
           "offenderNo": {
@@ -5768,15 +5315,7 @@
         "description": "Offender Key Worker record representation (to facilitate data migration)"
       },
       "ImageDetail": {
-        "required": [
-          "active",
-          "captureDate",
-          "captureDateTime",
-          "imageId",
-          "imageOrientation",
-          "imageType",
-          "imageView"
-        ],
+        "required": ["active", "captureDate", "captureDateTime", "imageId", "imageOrientation", "imageType", "imageView"],
         "type": "object",
         "properties": {
           "imageId": {
@@ -5806,14 +5345,7 @@
             "type": "string",
             "description": "Image view information. Actual values extracted 10/05/2023, with the majority of values being FACE. This doesn't appear to be mapped to any REFERENCE_CODE data, even though there is a domain called IMAGE_VIEW.",
             "example": "FACE",
-            "enum": [
-              "OIC",
-              "FACE",
-              "TAT",
-              "MARK",
-              "SCAR",
-              "OTH"
-            ]
+            "enum": ["OIC", "FACE", "TAT", "MARK", "SCAR", "OTH"]
           },
           "imageOrientation": {
             "type": "string",
@@ -5849,11 +5381,7 @@
             "type": "string",
             "description": "Image Type. Actual values extracted 10/05/2023, with the majority of values being OFF_BKG. This doesn't appear to be mapped to any REFERENCE_CODE data.",
             "example": "OFF_BKG",
-            "enum": [
-              "OFF_IDM",
-              "OFF_BKG",
-              "OIC"
-            ]
+            "enum": ["OFF_IDM", "OFF_BKG", "OIC"]
           },
           "objectId": {
             "type": "integer",
@@ -5864,12 +5392,7 @@
         "description": "Image Detail"
       },
       "TransferTransaction": {
-        "required": [
-          "amount",
-          "client_transaction_id",
-          "client_unique_ref",
-          "description"
-        ],
+        "required": ["amount", "client_transaction_id", "client_unique_ref", "description"],
         "type": "object",
         "properties": {
           "amount": {
@@ -5905,13 +5428,7 @@
         "description": "Transfer to Savings Transaction"
       },
       "Education": {
-        "required": [
-          "addresses",
-          "bookingId",
-          "isSpecialEducation",
-          "schedule",
-          "startDate"
-        ],
+        "required": ["addresses", "bookingId", "isSpecialEducation", "schedule", "startDate"],
         "type": "object",
         "properties": {
           "bookingId": {
@@ -5984,9 +5501,7 @@
         "description": "Offender Education"
       },
       "CaseNoteUsageRequest": {
-        "required": [
-          "offenderNos"
-        ],
+        "required": ["offenderNos"],
         "type": "object",
         "properties": {
           "fromDate": {
@@ -6040,13 +5555,7 @@
         "description": "Case Note Type Usage Request"
       },
       "CaseNoteUsage": {
-        "required": [
-          "caseNoteSubType",
-          "caseNoteType",
-          "latestCaseNote",
-          "numCaseNotes",
-          "offenderNo"
-        ],
+        "required": ["caseNoteSubType", "caseNoteType", "latestCaseNote", "numCaseNotes", "offenderNo"],
         "type": "object",
         "properties": {
           "offenderNo": {
@@ -6097,9 +5606,7 @@
         "description": "Booking Id to case note from date pair"
       },
       "CaseNoteTypeSummaryRequest": {
-        "required": [
-          "bookingFromDateSelection"
-        ],
+        "required": ["bookingFromDateSelection"],
         "type": "object",
         "properties": {
           "bookingFromDateSelection": {
@@ -6121,12 +5628,7 @@
         "description": "Case Note Type Usage Request by Date grouped by bookings"
       },
       "CaseNoteTypeCount": {
-        "required": [
-          "bookingId",
-          "caseNoteSubType",
-          "caseNoteType",
-          "numCaseNotes"
-        ],
+        "required": ["bookingId", "caseNoteSubType", "caseNoteType", "numCaseNotes"],
         "type": "object",
         "properties": {
           "bookingId": {
@@ -6155,9 +5657,7 @@
         "description": "Case Note Type Counts By Booking Id, type and sub type"
       },
       "CaseNoteStaffUsageRequest": {
-        "required": [
-          "staffIds"
-        ],
+        "required": ["staffIds"],
         "type": "object",
         "properties": {
           "staffIds": {
@@ -6196,13 +5696,7 @@
         "description": "Case Note Type Staff Usage Request"
       },
       "CaseNoteStaffUsage": {
-        "required": [
-          "caseNoteSubType",
-          "caseNoteType",
-          "latestCaseNote",
-          "numCaseNotes",
-          "staffId"
-        ],
+        "required": ["caseNoteSubType", "caseNoteType", "latestCaseNote", "numCaseNotes", "staffId"],
         "type": "object",
         "properties": {
           "staffId": {
@@ -6237,12 +5731,7 @@
         "description": "Case Note Type Staff Usage"
       },
       "SchedulePrisonToPrisonMove": {
-        "required": [
-          "escortType",
-          "fromPrisonLocation",
-          "scheduledMoveDateTime",
-          "toPrisonLocation"
-        ],
+        "required": ["escortType", "fromPrisonLocation", "scheduledMoveDateTime", "toPrisonLocation"],
         "type": "object",
         "properties": {
           "fromPrisonLocation": {
@@ -6300,11 +5789,7 @@
         "description": "Represents the data for a scheduled prison to prison move."
       },
       "PrisonToCourtHearing": {
-        "required": [
-          "courtHearingDateTime",
-          "fromPrisonLocation",
-          "toCourtLocation"
-        ],
+        "required": ["courtHearingDateTime", "fromPrisonLocation", "toCourtLocation"],
         "type": "object",
         "properties": {
           "fromPrisonLocation": {
@@ -6338,12 +5823,7 @@
         "description": "The prison to court hearing to be scheduled for the offender booking."
       },
       "CreatePersonalCareNeed": {
-        "required": [
-          "commentText",
-          "problemCode",
-          "problemStatus",
-          "startDate"
-        ],
+        "required": ["commentText", "problemCode", "problemStatus", "startDate"],
         "type": "object",
         "properties": {
           "problemCode": {
@@ -6377,11 +5857,7 @@
         "description": "Personal Care Need"
       },
       "NewAppointment": {
-        "required": [
-          "appointmentType",
-          "locationId",
-          "startTime"
-        ],
+        "required": ["appointmentType", "locationId", "startTime"],
         "type": "object",
         "properties": {
           "appointmentType": {
@@ -6540,12 +6016,7 @@
         "description": "Scheduled Event"
       },
       "CreateAlert": {
-        "required": [
-          "alertCode",
-          "alertDate",
-          "alertType",
-          "comment"
-        ],
+        "required": ["alertCode", "alertDate", "alertType", "comment"],
         "type": "object",
         "properties": {
           "alertType": {
@@ -6594,15 +6065,7 @@
         }
       },
       "InmateBasicDetails": {
-        "required": [
-          "agencyId",
-          "bookingId",
-          "bookingNo",
-          "dateOfBirth",
-          "firstName",
-          "lastName",
-          "offenderNo"
-        ],
+        "required": ["agencyId", "bookingId", "bookingNo", "dateOfBirth", "firstName", "lastName", "offenderNo"],
         "type": "object",
         "properties": {
           "bookingId": {
@@ -6673,10 +6136,7 @@
         "description": "Personal Care Needs"
       },
       "PersonalCareCounterDto": {
-        "required": [
-          "offenderNo",
-          "size"
-        ],
+        "required": ["offenderNo", "size"],
         "type": "object",
         "properties": {
           "offenderNo": {
@@ -6691,12 +6151,7 @@
         }
       },
       "OffenceDetail": {
-        "required": [
-          "bookingId",
-          "offenceCode",
-          "offenceDescription",
-          "statuteCode"
-        ],
+        "required": ["bookingId", "offenceCode", "offenceDescription", "statuteCode"],
         "type": "object",
         "properties": {
           "bookingId": {
@@ -6723,10 +6178,7 @@
         "description": "Offence Details"
       },
       "CourtEventOutcome": {
-        "required": [
-          "bookingId",
-          "eventId"
-        ],
+        "required": ["bookingId", "eventId"],
         "type": "object",
         "properties": {
           "bookingId": {
@@ -6750,11 +6202,7 @@
         "description": "Court event outcome"
       },
       "AppointmentDefaults": {
-        "required": [
-          "appointmentType",
-          "locationId",
-          "startTime"
-        ],
+        "required": ["appointmentType", "locationId", "startTime"],
         "type": "object",
         "properties": {
           "appointmentType": {
@@ -6794,9 +6242,7 @@
         "description": "Default values to be applied when creating each appointment"
       },
       "AppointmentDetails": {
-        "required": [
-          "bookingId"
-        ],
+        "required": ["bookingId"],
         "type": "object",
         "properties": {
           "bookingId": {
@@ -6828,10 +6274,7 @@
         "description": "Detail for creating an appointment for a particular bookingId where values should differ from the defaults"
       },
       "AppointmentsToCreate": {
-        "required": [
-          "appointmentDefaults",
-          "appointments"
-        ],
+        "required": ["appointmentDefaults", "appointments"],
         "type": "object",
         "properties": {
           "appointmentDefaults": {
@@ -6851,23 +6294,14 @@
         "description": "Details for creating appointments in bulk"
       },
       "Repeat": {
-        "required": [
-          "count",
-          "repeatPeriod"
-        ],
+        "required": ["count", "repeatPeriod"],
         "type": "object",
         "properties": {
           "repeatPeriod": {
             "type": "string",
             "description": "The period at which the appointment should repeat.",
             "example": "WEEKLY",
-            "enum": [
-              "DAILY",
-              "WEEKDAYS",
-              "WEEKLY",
-              "FORTNIGHTLY",
-              "MONTHLY"
-            ]
+            "enum": ["DAILY", "WEEKDAYS", "WEEKLY", "FORTNIGHTLY", "MONTHLY"]
           },
           "count": {
             "minimum": 1,
@@ -6879,10 +6313,7 @@
         "description": "If present specifies the number of times to repeat the appointments and the period of the repeat"
       },
       "CreatedAppointmentDetails": {
-        "required": [
-          "bookingId",
-          "locationId"
-        ],
+        "required": ["bookingId", "locationId"],
         "type": "object",
         "properties": {
           "bookingId": {
@@ -6922,12 +6353,7 @@
         "description": "The details of an appointment that has just been created"
       },
       "RequestToCreateAgency": {
-        "required": [
-          "agencyId",
-          "agencyType",
-          "courtType",
-          "description"
-        ],
+        "required": ["agencyId", "agencyType", "courtType", "description"],
         "type": "object",
         "properties": {
           "agencyId": {
@@ -6980,18 +6406,7 @@
             "type": "string",
             "description": "Court Type.  Reference domain is JURISDICTION",
             "example": "CC",
-            "enum": [
-              "CACD",
-              "CB",
-              "CC",
-              "CO",
-              "DCM",
-              "GCM",
-              "IMM",
-              "MC",
-              "OTHER",
-              "YC"
-            ]
+            "enum": ["CACD", "CB", "CC", "CO", "DCM", "GCM", "IMM", "MC", "OTHER", "YC"]
           },
           "active": {
             "type": "boolean",
@@ -7062,13 +6477,7 @@
         "description": "Visit slots with capacity"
       },
       "AccountTransaction": {
-        "required": [
-          "amount",
-          "date",
-          "description",
-          "id",
-          "type"
-        ],
+        "required": ["amount", "date", "description", "id", "type"],
         "type": "object",
         "properties": {
           "id": {
@@ -7481,13 +6890,7 @@
         "description": "Offender Alias"
       },
       "Event": {
-        "required": [
-          "id",
-          "noms_id",
-          "prison_id",
-          "timestamp",
-          "type"
-        ],
+        "required": ["id", "noms_id", "prison_id", "timestamp", "type"],
         "type": "object",
         "properties": {
           "type": {
@@ -7524,12 +6927,7 @@
         "description": "Offender Event"
       },
       "Location": {
-        "required": [
-          "agencyId",
-          "description",
-          "locationId",
-          "locationType"
-        ],
+        "required": ["agencyId", "description", "locationId", "locationType"],
         "type": "object",
         "properties": {
           "locationId": {
@@ -7598,11 +6996,7 @@
         "description": "Prisoner Photo"
       },
       "Booking": {
-        "required": [
-          "booking_active",
-          "booking_no",
-          "booking_started"
-        ],
+        "required": ["booking_active", "booking_no", "booking_started"],
         "type": "object",
         "properties": {
           "location": {
@@ -7739,11 +7133,7 @@
         "description": "Legal Case"
       },
       "AlertV1": {
-        "required": [
-          "alert_date",
-          "alert_sub_type",
-          "alert_type"
-        ],
+        "required": ["alert_date", "alert_sub_type", "alert_type"],
         "type": "object",
         "properties": {
           "alert_type": {
@@ -7768,9 +7158,7 @@
             "type": "string",
             "description": "ACTIVE or INACTIVE (Inactive alerts will have a expiry date of today or earlier",
             "example": "ACTIVE",
-            "enum": [
-              "ACTIVE,INACTIVE"
-            ]
+            "enum": ["ACTIVE,INACTIVE"]
           },
           "comment": {
             "type": "string",
@@ -7833,11 +7221,7 @@
         "description": "offender ID"
       },
       "UserRole": {
-        "required": [
-          "roleCode",
-          "roleId",
-          "roleName"
-        ],
+        "required": ["roleCode", "roleId", "roleName"],
         "type": "object",
         "properties": {
           "roleId": {
@@ -7865,12 +7249,7 @@
         "description": "User Role"
       },
       "StaffDetail": {
-        "required": [
-          "firstName",
-          "lastName",
-          "staffId",
-          "status"
-        ],
+        "required": ["firstName", "lastName", "staffId", "status"],
         "type": "object",
         "properties": {
           "staffId": {
@@ -7893,10 +7272,7 @@
             "type": "string",
             "description": "Status of staff member.",
             "example": "ACTIVE",
-            "enum": [
-              "ACTIVE",
-              "INACTIVE"
-            ]
+            "enum": ["ACTIVE", "INACTIVE"]
           },
           "thumbnailId": {
             "type": "integer",
@@ -7908,13 +7284,7 @@
             "type": "string",
             "description": "Gender of Staff Member",
             "example": "M",
-            "enum": [
-              "M",
-              "F",
-              "NK",
-              "NS",
-              "REF"
-            ]
+            "enum": ["M", "F", "NK", "NS", "REF"]
           },
           "dateOfBirth": {
             "type": "string",
@@ -7926,9 +7296,7 @@
         "description": "Staff Details"
       },
       "StaffRole": {
-        "required": [
-          "role"
-        ],
+        "required": ["role"],
         "type": "object",
         "properties": {
           "role": {
@@ -7943,16 +7311,7 @@
         "description": "Staff Role"
       },
       "StaffLocationRole": {
-        "required": [
-          "agencyId",
-          "firstName",
-          "fromDate",
-          "lastName",
-          "position",
-          "role",
-          "staffId",
-          "status"
-        ],
+        "required": ["agencyId", "firstName", "fromDate", "lastName", "position", "role", "staffId", "status"],
         "type": "object",
         "properties": {
           "staffId": {
@@ -7975,10 +7334,7 @@
             "type": "string",
             "description": "Status of staff member.",
             "example": "ACTIVE",
-            "enum": [
-              "ACTIVE",
-              "INACTIVE"
-            ]
+            "enum": ["ACTIVE", "INACTIVE"]
           },
           "thumbnailId": {
             "type": "integer",
@@ -7990,13 +7346,7 @@
             "type": "string",
             "description": "Gender of Staff Member",
             "example": "M",
-            "enum": [
-              "M",
-              "F",
-              "NK",
-              "NS",
-              "REF"
-            ]
+            "enum": ["M", "F", "NK", "NS", "REF"]
           },
           "dateOfBirth": {
             "type": "string",
@@ -8198,13 +7548,7 @@
         "description": "Scheduled appointment"
       },
       "ReferenceDomain": {
-        "required": [
-          "applnCode",
-          "description",
-          "domain",
-          "domainStatus",
-          "ownerCode"
-        ],
+        "required": ["applnCode", "description", "domain", "domainStatus", "ownerCode"],
         "type": "object",
         "properties": {
           "domain": {
@@ -8343,10 +7687,7 @@
             "type": "string",
             "description": "Status of prisoner in community",
             "example": "ACTIVE IN",
-            "enum": [
-              "ACTIVE IN",
-              "ACTIVE OUT"
-            ]
+            "enum": ["ACTIVE IN", "ACTIVE OUT"]
           },
           "legalStatus": {
             "type": "string",
@@ -8472,12 +7813,7 @@
         }
       },
       "PrisonerSearchDetails": {
-        "required": [
-          "dateOfBirth",
-          "firstName",
-          "lastName",
-          "offenderNo"
-        ],
+        "required": ["dateOfBirth", "firstName", "lastName", "offenderNo"],
         "type": "object",
         "properties": {
           "offenderNo": {
@@ -8747,14 +8083,7 @@
         "description": "Sentence Adjustment values"
       },
       "CalculableSentenceEnvelope": {
-        "required": [
-          "bookingAdjustments",
-          "bookingId",
-          "offenderFinePayments",
-          "person",
-          "sentenceAdjustments",
-          "sentenceAndOffences"
-        ],
+        "required": ["bookingAdjustments", "bookingId", "offenderFinePayments", "person", "sentenceAdjustments", "sentenceAndOffences"],
         "type": "object",
         "properties": {
           "person": {
@@ -9062,13 +8391,7 @@
         }
       },
       "Person": {
-        "required": [
-          "agencyId",
-          "alerts",
-          "dateOfBirth",
-          "lastName",
-          "prisonerNumber"
-        ],
+        "required": ["agencyId", "alerts", "dateOfBirth", "lastName", "prisonerNumber"],
         "type": "object",
         "properties": {
           "prisonerNumber": {
@@ -9107,13 +8430,7 @@
           "type": {
             "type": "string",
             "description": "Adjustment type",
-            "enum": [
-              "RECALL_SENTENCE_REMAND",
-              "TAGGED_BAIL",
-              "RECALL_SENTENCE_TAGGED_BAIL",
-              "REMAND",
-              "UNUSED_REMAND"
-            ]
+            "enum": ["RECALL_SENTENCE_REMAND", "TAGGED_BAIL", "RECALL_SENTENCE_TAGGED_BAIL", "REMAND", "UNUSED_REMAND"]
           },
           "numberOfDays": {
             "type": "integer",
@@ -9142,14 +8459,7 @@
         "description": "Sentence Adjustment values"
       },
       "LocationRollCount": {
-        "required": [
-          "bedsInUse",
-          "currentlyInCell",
-          "currentlyOut",
-          "netVacancies",
-          "outOfOrder",
-          "workingCapacity"
-        ],
+        "required": ["bedsInUse", "currentlyInCell", "currentlyOut", "netVacancies", "outOfOrder", "workingCapacity"],
         "type": "object",
         "properties": {
           "bedsInUse": {
@@ -9253,16 +8563,7 @@
         "description": "Establishment Roll Count"
       },
       "ResidentialLocation": {
-        "required": [
-          "certified",
-          "fullLocationPath",
-          "key",
-          "locationCode",
-          "locationId",
-          "locationType",
-          "rollCount",
-          "subLocations"
-        ],
+        "required": ["certified", "fullLocationPath", "key", "locationCode", "locationId", "locationType", "rollCount", "subLocations"],
         "type": "object",
         "properties": {
           "locationId": {
@@ -9312,13 +8613,7 @@
         "description": "Residential Roll Count Summary"
       },
       "PrisonRollSummary": {
-        "required": [
-          "numArrivedToday",
-          "numCurrentPopulation",
-          "numOutToday",
-          "numUnlockRollToday",
-          "prisonId"
-        ],
+        "required": ["numArrivedToday", "numCurrentPopulation", "numOutToday", "numUnlockRollToday", "prisonId"],
         "type": "object",
         "properties": {
           "prisonId": {
@@ -9349,10 +8644,7 @@
         "description": "Prison Roll Summary"
       },
       "PersonIdentifier": {
-        "required": [
-          "identifierType",
-          "identifierValue"
-        ],
+        "required": ["identifierType", "identifierValue"],
         "type": "object",
         "properties": {
           "identifierType": {
@@ -9367,9 +8659,7 @@
         "description": "PersonIdentifier"
       },
       "OffenderTransactionHistoryDto": {
-        "required": [
-          "currency"
-        ],
+        "required": ["currency"],
         "type": "object",
         "properties": {
           "offenderId": {
@@ -9535,14 +8825,7 @@
         "description": "Offender transaction drill down details"
       },
       "PrisonPeriod": {
-        "required": [
-          "bookNumber",
-          "bookingId",
-          "entryDate",
-          "movementDates",
-          "prisons",
-          "transfers"
-        ],
+        "required": ["bookNumber", "bookingId", "entryDate", "movementDates", "prisons", "transfers"],
         "type": "object",
         "properties": {
           "bookNumber": {
@@ -9592,9 +8875,7 @@
         "description": "A period of time in prison"
       },
       "PrisonerInPrisonSummary": {
-        "required": [
-          "prisonerNumber"
-        ],
+        "required": ["prisonerNumber"],
         "type": "object",
         "properties": {
           "prisonerNumber": {
@@ -9613,11 +8894,7 @@
         "description": "Prisoners time in prison summary"
       },
       "SignificantMovement": {
-        "required": [
-          "admittedIntoPrisonId",
-          "inwardType",
-          "reasonInToPrison"
-        ],
+        "required": ["admittedIntoPrisonId", "inwardType", "reasonInToPrison"],
         "type": "object",
         "properties": {
           "reasonInToPrison": {
@@ -9633,10 +8910,7 @@
           "inwardType": {
             "type": "string",
             "description": "Type of movement into prison",
-            "enum": [
-              "ADM",
-              "TAP"
-            ]
+            "enum": ["ADM", "TAP"]
           },
           "reasonOutOfPrison": {
             "type": "string",
@@ -9652,10 +8926,7 @@
           "outwardType": {
             "type": "string",
             "description": "Type of movement out of prison",
-            "enum": [
-              "REL",
-              "TAP"
-            ]
+            "enum": ["REL", "TAP"]
           },
           "admittedIntoPrisonId": {
             "type": "string",
@@ -9671,9 +8942,7 @@
         "description": "A movement IN and OUT range"
       },
       "TransferDetail": {
-        "required": [
-          "toPrisonId"
-        ],
+        "required": ["toPrisonId"],
         "type": "object",
         "properties": {
           "dateOutOfPrison": {
@@ -9707,13 +8976,7 @@
         "description": "A movement that is a transfer"
       },
       "OffenderRestriction": {
-        "required": [
-          "active",
-          "restrictionId",
-          "restrictionType",
-          "restrictionTypeDescription",
-          "startDate"
-        ],
+        "required": ["active", "restrictionId", "restrictionType", "restrictionTypeDescription", "startDate"],
         "type": "object",
         "properties": {
           "restrictionId": {
@@ -9771,12 +9034,7 @@
         "description": "Offender restrictions"
       },
       "MilitaryRecord": {
-        "required": [
-          "militaryBranchCode",
-          "militaryBranchDescription",
-          "selectiveServicesFlag",
-          "startDate"
-        ],
+        "required": ["militaryBranchCode", "militaryBranchDescription", "selectiveServicesFlag", "startDate"],
         "type": "object",
         "properties": {
           "warZoneCode": {
@@ -9995,16 +9253,7 @@
             "type": "string",
             "description": "Current Status of Incident.  Note:\nAWAN = Awaiting Analysis\nINAN = In Analysis\nINREQ = Information Required\nINAME =Information Amended\nCLOSE = Closed\nPIU = Post Incident Update\nIUP = Incident Updated\nDUP = Duplicate (Created In Error)",
             "example": "CLOSE",
-            "enum": [
-              "CLOSE",
-              "DUP",
-              "AWAN",
-              "INAN",
-              "INREQ",
-              "INAME",
-              "PIU",
-              "IUP"
-            ]
+            "enum": ["CLOSE", "DUP", "AWAN", "INAN", "INREQ", "INAME", "PIU", "IUP"]
           },
           "agencyId": {
             "type": "string",
@@ -10036,14 +9285,7 @@
         "description": "Incident Case"
       },
       "IncidentParty": {
-        "required": [
-          "bookingId",
-          "commentText",
-          "incidentCaseId",
-          "outcomeCode",
-          "participationRole",
-          "partySeq"
-        ],
+        "required": ["bookingId", "commentText", "incidentCaseId", "outcomeCode", "participationRole", "partySeq"],
         "type": "object",
         "properties": {
           "bookingId": {
@@ -10095,13 +9337,7 @@
         "description": "Incident Party"
       },
       "IncidentResponse": {
-        "required": [
-          "answer",
-          "question",
-          "questionSeq",
-          "questionnaireAnsId",
-          "questionnaireQueId"
-        ],
+        "required": ["answer", "question", "questionSeq", "questionnaireAnsId", "questionnaireQueId"],
         "type": "object",
         "properties": {
           "question": {
@@ -10153,11 +9389,7 @@
         "description": "Incident Reponses"
       },
       "HousingLocation": {
-        "required": [
-          "code",
-          "description",
-          "level"
-        ],
+        "required": ["code", "description", "level"],
         "type": "object",
         "properties": {
           "level": {
@@ -10177,16 +9409,7 @@
             "type": "string",
             "description": "The type of the location - from LIVING_UNIT reference code",
             "example": "WING",
-            "enum": [
-              "BED",
-              "BLK",
-              "CB",
-              "CELL",
-              "LAND",
-              "SPUR",
-              "TIER",
-              "WING"
-            ]
+            "enum": ["BED", "BLK", "CB", "CELL", "LAND", "SPUR", "TIER", "WING"]
           },
           "description": {
             "type": "string",
@@ -10216,9 +9439,7 @@
         }
       },
       "OffenderDamageObligationModel": {
-        "required": [
-          "currency"
-        ],
+        "required": ["currency"],
         "type": "object",
         "properties": {
           "id": {
@@ -10425,13 +9646,7 @@
         "description": "Offender contacts"
       },
       "VisitorRestriction": {
-        "required": [
-          "globalRestriction",
-          "restrictionId",
-          "restrictionType",
-          "restrictionTypeDescription",
-          "startDate"
-        ],
+        "required": ["globalRestriction", "restrictionId", "restrictionType", "restrictionTypeDescription", "startDate"],
         "type": "object",
         "properties": {
           "restrictionId": {
@@ -10512,11 +9727,7 @@
             "type": "string",
             "description": "The case status",
             "example": "ACTIVE",
-            "enum": [
-              "ACTIVE",
-              "CLOSED",
-              "INACTIVE"
-            ]
+            "enum": ["ACTIVE", "CLOSED", "INACTIVE"]
           },
           "sentences": {
             "type": "array",
@@ -10537,10 +9748,7 @@
         "description": "Court case details"
       },
       "KeyDates": {
-        "required": [
-          "nonDtoReleaseDateType",
-          "sentenceStartDate"
-        ],
+        "required": ["nonDtoReleaseDateType", "sentenceStartDate"],
         "type": "object",
         "properties": {
           "sentenceStartDate": {
@@ -10571,12 +9779,7 @@
             "type": "string",
             "description": "Indicates which type of non-DTO release date is the effective release date. One of 'ARD', 'CRD', 'NPD' or 'PRRD'.",
             "example": "CRD",
-            "enum": [
-              "ARD",
-              "CRD",
-              "NPD",
-              "PRRD"
-            ]
+            "enum": ["ARD", "CRD", "NPD", "PRRD"]
           },
           "confirmedReleaseDate": {
             "type": "string",
@@ -10720,10 +9923,7 @@
         "description": "Key Dates"
       },
       "PrisonTerm": {
-        "required": [
-          "bookNumber",
-          "bookingId"
-        ],
+        "required": ["bookNumber", "bookingId"],
         "type": "object",
         "properties": {
           "bookNumber": {
@@ -10826,9 +10026,7 @@
         "description": "Sentence adjustments"
       },
       "SentenceSummary": {
-        "required": [
-          "prisonerNumber"
-        ],
+        "required": ["prisonerNumber"],
         "type": "object",
         "properties": {
           "prisonerNumber": {
@@ -10843,10 +10041,7 @@
         "description": "Sentence Summary"
       },
       "SentencesOffencesTerms": {
-        "required": [
-          "fineAmount",
-          "lineSeq"
-        ],
+        "required": ["fineAmount", "lineSeq"],
         "type": "object",
         "properties": {
           "sentenceSequence": {
@@ -10914,12 +10109,7 @@
         "description": "Offender sentence and offence details"
       },
       "Terms": {
-        "required": [
-          "lifeSentence",
-          "sentenceTermCode",
-          "startDate",
-          "termSequence"
-        ],
+        "required": ["lifeSentence", "sentenceTermCode", "startDate", "termSequence"],
         "type": "object",
         "properties": {
           "termSequence": {
@@ -10983,15 +10173,7 @@
         "description": "Offender Sentence terms details for booking id"
       },
       "Belief": {
-        "required": [
-          "addedByFirstName",
-          "addedByLastName",
-          "beliefCode",
-          "beliefDescription",
-          "beliefId",
-          "bookingId",
-          "startDate"
-        ],
+        "required": ["addedByFirstName", "addedByLastName", "beliefCode", "beliefDescription", "beliefId", "bookingId", "startDate"],
         "type": "object",
         "properties": {
           "bookingId": {
@@ -11190,14 +10372,7 @@
         "description": "Base Sentence Calc Dates"
       },
       "OffenderSentenceCalcBaseSentenceCalcDates": {
-        "required": [
-          "agencyLocationId",
-          "bookingId",
-          "firstName",
-          "lastName",
-          "mostRecentActiveBooking",
-          "offenderNo"
-        ],
+        "required": ["agencyLocationId", "bookingId", "firstName", "lastName", "mostRecentActiveBooking", "offenderNo"],
         "type": "object",
         "properties": {
           "bookingId": {
@@ -11238,10 +10413,7 @@
         "description": "Offender Sentence Calculation"
       },
       "OffenderCalculatedKeyDates": {
-        "required": [
-          "effectiveSentenceEndDate",
-          "sentenceLength"
-        ],
+        "required": ["effectiveSentenceEndDate", "sentenceLength"],
         "type": "object",
         "properties": {
           "homeDetentionCurfewEligibilityDate": {
@@ -11472,14 +10644,7 @@
         "description": "Offender Sentence Calculation Summary"
       },
       "AssessmentSummary": {
-        "required": [
-          "assessmentCode",
-          "assessmentDate",
-          "assessmentSeq",
-          "bookingId",
-          "cellSharingAlertFlag",
-          "offenderNo"
-        ],
+        "required": ["assessmentCode", "assessmentDate", "assessmentSeq", "bookingId", "cellSharingAlertFlag", "offenderNo"],
         "type": "object",
         "properties": {
           "bookingId": {
@@ -11544,15 +10709,7 @@
         "description": "AssessmentSummary"
       },
       "AssessmentDetail": {
-        "required": [
-          "assessmentCode",
-          "assessmentDate",
-          "assessmentSeq",
-          "bookingId",
-          "cellSharingAlertFlag",
-          "offenderNo",
-          "questions"
-        ],
+        "required": ["assessmentCode", "assessmentDate", "assessmentSeq", "bookingId", "cellSharingAlertFlag", "offenderNo", "questions"],
         "type": "object",
         "properties": {
           "bookingId": {
@@ -11685,9 +10842,7 @@
         "description": "AssessmentDetail"
       },
       "AssessmentQuestion": {
-        "required": [
-          "question"
-        ],
+        "required": ["question"],
         "type": "object",
         "properties": {
           "question": {
@@ -11759,13 +10914,7 @@
         }
       },
       "OffenderOutTodayDto": {
-        "required": [
-          "dateOfBirth",
-          "firstName",
-          "lastName",
-          "offenderNo",
-          "timeOut"
-        ],
+        "required": ["dateOfBirth", "firstName", "lastName", "offenderNo", "timeOut"],
         "type": "object",
         "properties": {
           "offenderNo": {
@@ -11876,12 +11025,7 @@
         "description": "Summary of an offender counted as Establishment Roll - In"
       },
       "CourtEventBasic": {
-        "required": [
-          "court",
-          "eventSubType",
-          "offenderNo",
-          "startTime"
-        ],
+        "required": ["court", "eventSubType", "offenderNo", "startTime"],
         "type": "object",
         "properties": {
           "offenderNo": {
@@ -12144,13 +11288,7 @@
             "type": "string",
             "description": "ADM (admission), CRT (court), REL (release), TAP (temporary absence) or TRN (transfer)",
             "example": "ADM",
-            "enum": [
-              "ADM",
-              "CRT",
-              "REL",
-              "TAP",
-              "TRN"
-            ]
+            "enum": ["ADM", "CRT", "REL", "TAP", "TRN"]
           },
           "movementTypeDescription": {
             "type": "string",
@@ -12474,10 +11612,7 @@
         "description": "The container object for transfer and movement events"
       },
       "MovementCount": {
-        "required": [
-          "in",
-          "out"
-        ],
+        "required": ["in", "out"],
         "type": "object",
         "properties": {
           "in": {
@@ -12494,13 +11629,7 @@
         "description": "Establishment roll count in and out numbers"
       },
       "OffenderInReception": {
-        "required": [
-          "bookingId",
-          "dateOfBirth",
-          "firstName",
-          "lastName",
-          "offenderNo"
-        ],
+        "required": ["bookingId", "dateOfBirth", "firstName", "lastName", "offenderNo"],
         "type": "object",
         "properties": {
           "offenderNo": {
@@ -12526,14 +11655,7 @@
         "description": "Summary of an offender counted as Establishment Roll - Reception"
       },
       "OffenderOut": {
-        "required": [
-          "bookingId",
-          "dateOfBirth",
-          "firstName",
-          "lastName",
-          "location",
-          "offenderNo"
-        ],
+        "required": ["bookingId", "dateOfBirth", "firstName", "lastName", "location", "offenderNo"],
         "type": "object",
         "properties": {
           "offenderNo": {
@@ -12562,15 +11684,7 @@
         "description": "Summary of an offender 'currently out' according to Establishment Roll"
       },
       "OutOnTemporaryAbsenceSummary": {
-        "required": [
-          "dateOfBirth",
-          "firstName",
-          "lastName",
-          "movementReason",
-          "movementReasonCode",
-          "movementTime",
-          "offenderNo"
-        ],
+        "required": ["dateOfBirth", "firstName", "lastName", "movementReason", "movementReasonCode", "movementTime", "offenderNo"],
         "type": "object",
         "properties": {
           "offenderNo": {
@@ -12634,13 +11748,7 @@
         "description": "Summary data for a completed movement"
       },
       "Keyworker": {
-        "required": [
-          "firstName",
-          "lastName",
-          "numberAllocated",
-          "staffId",
-          "status"
-        ],
+        "required": ["firstName", "lastName", "numberAllocated", "staffId", "status"],
         "type": "object",
         "properties": {
           "staffId": {
@@ -12674,11 +11782,7 @@
         "description": "Keyworker Details"
       },
       "GangMemberDetail": {
-        "required": [
-          "firstName",
-          "lastName",
-          "offenderNo"
-        ],
+        "required": ["firstName", "lastName", "offenderNo"],
         "type": "object",
         "properties": {
           "offenderNo": {
@@ -12714,10 +11818,7 @@
         "description": "Gang Member Detail"
       },
       "GangMemberSummary": {
-        "required": [
-          "currentGangs",
-          "gangNonAssociations"
-        ],
+        "required": ["currentGangs", "gangNonAssociations"],
         "type": "object",
         "properties": {
           "member": {
@@ -12741,12 +11842,7 @@
         "description": "Summary of Gangs for a specified prisoner"
       },
       "GangNonAssociationSummary": {
-        "required": [
-          "code",
-          "members",
-          "name",
-          "reason"
-        ],
+        "required": ["code", "members", "name", "reason"],
         "type": "object",
         "properties": {
           "code": {
@@ -12775,11 +11871,7 @@
         "description": "Non associations Gang information"
       },
       "GangSummary": {
-        "required": [
-          "code",
-          "name",
-          "numberOfMembers"
-        ],
+        "required": ["code", "name", "numberOfMembers"],
         "type": "object",
         "properties": {
           "code": {
@@ -12856,12 +11948,7 @@
         }
       },
       "CourtEventDetails": {
-        "required": [
-          "courtEventType",
-          "courtLocation",
-          "eventId",
-          "startTime"
-        ],
+        "required": ["courtEventType", "courtLocation", "eventId", "startTime"],
         "type": "object",
         "properties": {
           "eventId": {
@@ -12956,12 +12043,7 @@
         "description": "A charge linked to a court date"
       },
       "CourtDateResult": {
-        "required": [
-          "bookNumber",
-          "bookingId",
-          "charge",
-          "id"
-        ],
+        "required": ["bookNumber", "bookingId", "charge", "id"],
         "type": "object",
         "properties": {
           "id": {
@@ -13002,13 +12084,7 @@
         "description": "Represents a court date and its outcome"
       },
       "CourtDateChargeAndOutcomes": {
-        "required": [
-          "active",
-          "bookNumber",
-          "bookingId",
-          "guilty",
-          "outcomes"
-        ],
+        "required": ["active", "bookNumber", "bookingId", "guilty", "outcomes"],
         "type": "object",
         "properties": {
           "chargeId": {
@@ -13093,9 +12169,7 @@
         "description": "A charge and all its court date outcomes"
       },
       "CourtDateOutcome": {
-        "required": [
-          "id"
-        ],
+        "required": ["id"],
         "type": "object",
         "properties": {
           "id": {
@@ -13254,9 +12328,7 @@
         "description": "Offender cell details"
       },
       "VisitSummary": {
-        "required": [
-          "hasVisits"
-        ],
+        "required": ["hasVisits"],
         "type": "object",
         "properties": {
           "startDateTime": {
@@ -13322,14 +12394,7 @@
         }
       },
       "VisitDetails": {
-        "required": [
-          "attended",
-          "completionStatus",
-          "eventOutcome",
-          "eventStatus",
-          "startTime",
-          "visitType"
-        ],
+        "required": ["attended", "completionStatus", "eventOutcome", "eventStatus", "startTime", "visitType"],
         "type": "object",
         "properties": {
           "relationship": {
@@ -13351,12 +12416,7 @@
           "eventStatus": {
             "type": "string",
             "description": "Status of event (EVENT_STS reference code)",
-            "enum": [
-              "EXP",
-              "SCH",
-              "COMP",
-              "CANC"
-            ]
+            "enum": ["EXP", "SCH", "COMP", "CANC"]
           },
           "eventStatusDescription": {
             "type": "string",
@@ -13365,15 +12425,7 @@
           "completionStatus": {
             "type": "string",
             "description": "Completion status of visit (VIS_COMPLETE reference code)",
-            "enum": [
-              "NORM",
-              "SCH",
-              "VDE",
-              "OFFEND",
-              "VISITOR",
-              "CANC",
-              "HMPOP"
-            ]
+            "enum": ["NORM", "SCH", "VDE", "OFFEND", "VISITOR", "CANC", "HMPOP"]
           },
           "completionStatusDescription": {
             "type": "string",
@@ -13382,18 +12434,12 @@
           "visitType": {
             "type": "string",
             "description": "Code for social (SCON) or official (OFFI) type of visit (VISIT_TYPE reference code)",
-            "enum": [
-              "OFFI",
-              "SCON"
-            ]
+            "enum": ["OFFI", "SCON"]
           },
           "visitTypeDescription": {
             "type": "string",
             "description": "Description of social or official visit",
-            "enum": [
-              "Official Visit",
-              "Social Contact"
-            ]
+            "enum": ["Official Visit", "Social Contact"]
           },
           "leadVisitor": {
             "type": "string",
@@ -13418,10 +12464,7 @@
           "eventOutcome": {
             "type": "string",
             "description": "Whether attended (ATT) or not (ABS) (OUTCOMES reference code)",
-            "enum": [
-              "ATT",
-              "ABS"
-            ]
+            "enum": ["ATT", "ABS"]
           },
           "eventOutcomeDescription": {
             "type": "string",
@@ -13455,10 +12498,7 @@
         "description": "Visit details"
       },
       "VisitWithVisitors": {
-        "required": [
-          "visitDetails",
-          "visitors"
-        ],
+        "required": ["visitDetails", "visitors"],
         "type": "object",
         "properties": {
           "visitors": {
@@ -13475,15 +12515,7 @@
         "description": "List of visitors for a visit"
       },
       "Visitor": {
-        "required": [
-          "attended",
-          "dateOfBirth",
-          "firstName",
-          "lastName",
-          "leadVisitor",
-          "personId",
-          "relationship"
-        ],
+        "required": ["attended", "dateOfBirth", "firstName", "lastName", "leadVisitor", "personId", "relationship"],
         "type": "object",
         "properties": {
           "relationship": {
@@ -13689,11 +12721,7 @@
             "type": "string",
             "description": "The case status",
             "example": "ACTIVE",
-            "enum": [
-              "ACTIVE",
-              "CLOSED",
-              "INACTIVE"
-            ]
+            "enum": ["ACTIVE", "CLOSED", "INACTIVE"]
           },
           "courtHearings": {
             "type": "array",
@@ -13832,11 +12860,7 @@
         "description": "Contact"
       },
       "ContactDetail": {
-        "required": [
-          "bookingId",
-          "nextOfKin",
-          "otherContacts"
-        ],
+        "required": ["bookingId", "nextOfKin", "otherContacts"],
         "type": "object",
         "properties": {
           "bookingId": {
@@ -13908,12 +12932,7 @@
         }
       },
       "CaseNoteCount": {
-        "required": [
-          "bookingId",
-          "count",
-          "subType",
-          "type"
-        ],
+        "required": ["bookingId", "count", "subType", "type"],
         "type": "object",
         "properties": {
           "bookingId": {
@@ -13948,13 +12967,7 @@
         "description": "Case Note Count Detail"
       },
       "Account": {
-        "required": [
-          "cash",
-          "currency",
-          "damageObligations",
-          "savings",
-          "spends"
-        ],
+        "required": ["cash", "currency", "damageObligations", "savings", "spends"],
         "type": "object",
         "properties": {
           "spends": {
@@ -14079,15 +13092,7 @@
         }
       },
       "PrisonerBookingSummary": {
-        "required": [
-          "age",
-          "agencyId",
-          "bookingId",
-          "dateOfBirth",
-          "firstName",
-          "lastName",
-          "offenderNo"
-        ],
+        "required": ["age", "agencyId", "bookingId", "dateOfBirth", "firstName", "lastName", "offenderNo"],
         "type": "object",
         "properties": {
           "bookingId": {
@@ -14176,10 +13181,7 @@
             "type": "string",
             "description": "Convicted Status",
             "example": "Convicted",
-            "enum": [
-              "Convicted",
-              "Remand"
-            ]
+            "enum": ["Convicted", "Remand"]
           },
           "assignedLivingUnitDesc": {
             "type": "string",
@@ -14190,10 +13192,7 @@
         "description": "Prisoner Booking Summary"
       },
       "VisitBalances": {
-        "required": [
-          "remainingPvo",
-          "remainingVo"
-        ],
+        "required": ["remainingPvo", "remainingVo"],
         "type": "object",
         "properties": {
           "remainingVo": {
@@ -14220,11 +13219,7 @@
         "description": "Balances of visit orders and privilege visit orders"
       },
       "AgencyPrisonerPayProfile": {
-        "required": [
-          "agencyId",
-          "autoPayFlag",
-          "startDate"
-        ],
+        "required": ["agencyId", "autoPayFlag", "startDate"],
         "type": "object",
         "properties": {
           "agencyId": {
@@ -14296,11 +13291,7 @@
         "description": "Agency prisoner pay profile"
       },
       "LocationGroup": {
-        "required": [
-          "children",
-          "key",
-          "name"
-        ],
+        "required": ["children", "key", "name"],
         "type": "object",
         "properties": {
           "name": {
@@ -14322,10 +13313,7 @@
         "description": "Cell Locations are grouped for unlock lists as a 2 level tree. The two levels are referred to as Location and Sub-Location in the digital prison services UI. Each (location/sub-location) group has a name that is understood by prison officers and also serves as a key to retrieve the corresponding Cell Locations and information about their occupants."
       },
       "LocationSummary": {
-        "required": [
-          "description",
-          "locationId"
-        ],
+        "required": ["description", "locationId"],
         "type": "object",
         "properties": {
           "locationId": {
@@ -14345,10 +13333,7 @@
         "description": "Location Summary Details"
       },
       "AgencyEstablishmentType": {
-        "required": [
-          "code",
-          "description"
-        ],
+        "required": ["code", "description"],
         "type": "object",
         "properties": {
           "code": {
@@ -14365,9 +13350,7 @@
         "description": "Agency Establishment Type"
       },
       "AgencyEstablishmentTypes": {
-        "required": [
-          "agencyId"
-        ],
+        "required": ["agencyId"],
         "type": "object",
         "properties": {
           "agencyId": {
@@ -14386,12 +13369,7 @@
         "description": "Agency Establishment Types"
       },
       "Prison": {
-        "required": [
-          "active",
-          "agencyId",
-          "agencyType",
-          "description"
-        ],
+        "required": ["active", "agencyId", "agencyType", "description"],
         "type": "object",
         "properties": {
           "agencyId": {
