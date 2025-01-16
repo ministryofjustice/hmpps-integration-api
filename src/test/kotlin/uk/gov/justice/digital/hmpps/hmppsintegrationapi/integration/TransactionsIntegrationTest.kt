@@ -11,6 +11,7 @@ class TransactionsIntegrationTest : IntegrationTestBase() {
   val accountCode = "spends"
   final val fromDate = "2024-01-01"
   final val toDate = "2024-01-14"
+  val clientUniqueRef = "ABC123456X"
   var dateQueryParams = "?from_date=$fromDate&to_date=$toDate"
 
   @Test
@@ -32,13 +33,32 @@ class TransactionsIntegrationTest : IntegrationTestBase() {
   }
 
   @Test
-  fun `returns no results`() {
+  fun `transactions returns no results`() {
     var wrongPrisonId = "XYZ"
     val headers = org.springframework.http.HttpHeaders()
     headers.set("subject-distinguished-name", "C=GB,ST=London,L=London,O=Home Office,CN=limited-prisons")
     mockMvc
       .perform(
         get("/v1/prison/$wrongPrisonId/prisoners/$hmppsId/accounts/$accountCode/transactions").headers(headers),
+      ).andExpect(status().isNotFound)
+  }
+
+  // transaction
+  @Test
+  fun `return a transaction for a prisoner`() {
+    callApi("/v1/prison/$prisonId/prisoners/$hmppsId/transactions/$clientUniqueRef")
+      .andExpect(status().isOk)
+      .andExpect(content().json(getExpectedResponse("transaction-response")))
+  }
+
+  @Test
+  fun `transaction returns no result`() {
+    var wrongPrisonId = "XYZ"
+    val headers = org.springframework.http.HttpHeaders()
+    headers.set("subject-distinguished-name", "C=GB,ST=London,L=London,O=Home Office,CN=limited-prisons")
+    mockMvc
+      .perform(
+        get("/v1/prison/$wrongPrisonId/prisoners/$hmppsId/transactions/$clientUniqueRef").headers(headers),
       ).andExpect(status().isNotFound)
   }
 }
