@@ -131,6 +131,7 @@ authorisation:
         - "/v1/prison/.*/prisoners/[^/]*/balances$"
         - "/v1/prison/.*/prisoners/.*/accounts/.*/balances"
         - "/v1/prison/.*/prisoners/.*/accounts/.*/transactions"
+        - "/v1/prison/.*/prisoners/.*/transactions/[^/]*$"
       filters:
     kilco:
       include:
@@ -141,6 +142,7 @@ authorisation:
         - "/v1/prison/.*/prisoners/[^/]*/balances$"
         - "/v1/prison/.*/prisoners/.*/accounts/.*/balances"
         - "/v1/prison/.*/prisoners/.*/accounts/.*/transactions"
+        - "/v1/prison/.*/prisoners/.*/transactions/[^/]*$"
       filters:
     meganexus:
       include:

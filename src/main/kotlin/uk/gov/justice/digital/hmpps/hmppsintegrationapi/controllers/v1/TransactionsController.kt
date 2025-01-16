@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.responses.ApiResponse
+import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.ValidationException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.GetMapping
@@ -14,18 +15,22 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Transaction
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Transactions
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetTransactionForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetTransactionsForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 import java.time.LocalDate
 
 @RestController
-@RequestMapping("/v1/prison/{prisonId}/prisoners/{hmppsId}/accounts/{accountCode}/transactions")
+@RequestMapping("/v1/prison/{prisonId}/prisoners/{hmppsId}")
+@Tag(name = "prison")
 class TransactionsController(
   @Autowired val auditService: AuditService,
   @Autowired val getTransactionsForPersonService: GetTransactionsForPersonService,
+  @Autowired val getTransactionForPersonService: GetTransactionForPersonService,
 ) {
   @Operation(
     summary = "Returns all transactions for a prisoner associated with an account code that they have at a prison.",
@@ -65,7 +70,7 @@ class TransactionsController(
       ),
     ],
   )
-  @GetMapping()
+  @GetMapping("/accounts/{accountCode}/transactions")
   fun getTransactionsByAccountCode(
     @PathVariable hmppsId: String,
     @PathVariable prisonId: String,
@@ -97,6 +102,65 @@ class TransactionsController(
     }
 
     auditService.createEvent("GET_TRANSACTIONS_FOR_PERSON", mapOf("hmppsId" to hmppsId, "prisonId" to prisonId, "fromDate" to fromDate, "toDate" to toDate))
+    return DataResponse(response.data)
+  }
+
+  @Operation(
+    summary = "Get transaction by clientUniqueRef.",
+    description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
+    responses = [
+      ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found a transaction."),
+      ApiResponse(
+        responseCode = "400",
+        description = "The request data has an invalid format or the prisoner does not have transaction associated with the clientUniqueRef.",
+        content = [
+          Content(
+            schema =
+              io.swagger.v3.oas.annotations.media
+                .Schema(ref = "#/components/schemas/BadRequest"),
+          ),
+        ],
+      ),
+      ApiResponse(
+        responseCode = "404",
+        content = [
+          Content(
+            schema =
+              io.swagger.v3.oas.annotations.media
+                .Schema(ref = "#/components/schemas/PersonNotFound"),
+          ),
+        ],
+      ),
+      ApiResponse(
+        responseCode = "500",
+        content = [
+          Content(
+            schema =
+              io.swagger.v3.oas.annotations.media
+                .Schema(ref = "#/components/schemas/InternalServerError"),
+          ),
+        ],
+      ),
+    ],
+  )
+  @GetMapping("/transactions/{clientUniqueRef}")
+  fun getTransactionsByClientUniqueRef(
+    @PathVariable prisonId: String,
+    @PathVariable hmppsId: String,
+    @PathVariable clientUniqueRef: String,
+    @RequestAttribute filters: ConsumerFilters?,
+  ): DataResponse<Transaction?> {
+    val response = getTransactionForPersonService.execute(hmppsId, prisonId, clientUniqueRef, filters)
+
+    if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
+      throw EntityNotFoundException("Could not find transaction with id: $hmppsId")
+    }
+
+    if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
+      throw ValidationException("Either invalid HMPPS ID: $hmppsId at or incorrect prison: $prisonId")
+    }
+
+    auditService.createEvent("GET_TRANSACTION_FOR_PERSON", mapOf("hmppsId" to hmppsId, "prisonId" to prisonId, "clientUniqueRef" to clientUniqueRef))
     return DataResponse(response.data)
   }
 }
