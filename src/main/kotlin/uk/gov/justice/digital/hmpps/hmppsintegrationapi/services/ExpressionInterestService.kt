@@ -1,6 +1,8 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import org.springframework.stereotype.Service
 import software.amazon.awssdk.services.sqs.model.SendMessageRequest
@@ -16,22 +18,18 @@ class ExpressionInterestService(
   private val hmppsQueueService: HmppsQueueService,
   private val objectMapper: ObjectMapper,
 ) {
+  val logger: Logger = LoggerFactory.getLogger(this::class.java)
   private val eoiQueue by lazy { hmppsQueueService.findByQueueId("eoi-queue") as HmppsQueue }
   private val eoiQueueSqsClient by lazy { eoiQueue.sqsClient }
   private val eoiQueueUrl by lazy { eoiQueue.queueUrl }
 
   fun sendExpressionOfInterest(expressionInterest: ExpressionInterest) {
-    if (expressionInterest.hmppsId == null) {
-      println("HMPPS ID is null; skipping message sending.")
-      return
-    }
-
     try {
       val messageBody =
         objectMapper.writeValueAsString(
           ExpressionOfInterestMessage(
             jobId = expressionInterest.jobId,
-            hmppsId = expressionInterest.hmppsId,
+            nomisNumber = expressionInterest.nomisNumber,
           ),
         )
 

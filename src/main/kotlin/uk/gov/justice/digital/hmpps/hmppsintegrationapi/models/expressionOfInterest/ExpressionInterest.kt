@@ -2,6 +2,5 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.expressionOfInte
 
 data class ExpressionInterest(
   val jobId: String,
-  val hmppsId: String?,
-  val eventType: String = "ExpressionOfInterest",
+  val nomisNumber: String,
 )
