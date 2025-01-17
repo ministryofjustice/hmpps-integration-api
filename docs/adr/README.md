@@ -1,7 +1,7 @@
 # Architecture Decision Records (ADRs)
 
-| Status     | ADR No. | Title                                                                                                      |
-| ---------- | ------- | ---------------------------------------------------------------------------------------------------------- |
+| Status      | ADR No. | Title                                                                                                      |
+| ----------- | ------- | ---------------------------------------------------------------------------------------------------------- |
 | ✅ Accepted | 0001    | [Use CircleCI](./0001-use-circleci.md)                                                                     |
 | ✅ Accepted | 0002    | [Use PlantUML to create diagrams](./0002-plantuml-diagrams-as-code.md)                                     |
 | ✅ Accepted | 0003    | [Manually manage OpenAPI specification file](./0003-manually-manage-openapi-file.md)                       |
