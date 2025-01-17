@@ -28,7 +28,7 @@ services:
 
 authorisation:
   consumers:
-    mapps.client.org:
+    mapps:
       include:
         - "/v1/persons"
         - "/v1/persons/[^/]*$"
