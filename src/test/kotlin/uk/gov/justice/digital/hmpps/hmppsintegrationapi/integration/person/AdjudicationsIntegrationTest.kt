@@ -10,6 +10,6 @@ class AdjudicationsIntegrationTest : IntegrationTestBase() {
   fun `returns adjudications for a person`() {
     callApi("$basePath/$nomsId/reported-adjudications")
       .andExpect(status().isOk)
-      .andExpect(content().json(getExpectedResponse("person-adjudications"), true))
+      .andExpect(content().json(getExpectedResponse("person-adjudications")))
   }
 }
