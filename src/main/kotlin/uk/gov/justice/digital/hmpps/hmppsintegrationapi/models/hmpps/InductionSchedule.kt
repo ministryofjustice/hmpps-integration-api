@@ -136,6 +136,8 @@ class InductionScheduleDeserializer : JsonDeserializer<InductionSchedule>() {
     val systemUpdatedAt = node["updatedAt"]?.asText()?.let { Instant.parse(it) }
     val inductionPerformedBy = node["inductionPerformedBy"]?.takeUnless { it.isNull }?.asText()
     val inductionPerformedAt = node["inductionPerformedAt"]?.takeUnless { it.isNull }?.asText()?.let { LocalDate.parse(it) }
+    val inductionPerformedByRole = node["inductionPerformedByRole"]?.takeUnless { it.isNull }?.asText()
+    val inductionPerformedAtPrison = node["inductionPerformedAtPrison"]?.takeUnless { it.isNull }?.asText()
     val version = node["version"]?.asInt()
     val exemptionReason = node["exemptionReason"]?.asText()
 
@@ -148,6 +150,8 @@ class InductionScheduleDeserializer : JsonDeserializer<InductionSchedule>() {
       systemUpdatedAt = systemUpdatedAt,
       inductionPerformedBy = inductionPerformedBy,
       inductionPerformedAt = inductionPerformedAt,
+      inductionPerformedByRole = inductionPerformedByRole,
+      inductionPerformedAtPrison = inductionPerformedAtPrison,
       exemptionReason = exemptionReason,
       version = version,
     )
