@@ -16,7 +16,8 @@ import java.time.LocalDate
 data class InductionSchedules(
   @Schema(
     description = """
-       A list of induction schedule versions for this prisoner. The prisoner will only have one induction schedule but for various reasons the schedule can be updated.
+       A list of induction schedule versions for this prisoner.
+       The prisoner will only have one induction schedule but for various reasons the schedule can be updated.
        This list will show each change the schedule has been through. This allows for reports to be generated.
     """,
   )
@@ -78,7 +79,8 @@ data class InductionSchedule(
   )
   val nomisNumber: String? = null,
   @Schema(
-    description = "The name of the person who used the PLP system to update the Induction Schedule, or 'system' for system generated updates.",
+    description = "The name of the person who used the PLP system to update the Induction Schedule, " +
+      "or 'system' for system generated updates.",
     example = "John Smith",
   )
   val systemUpdatedBy: String? = null,
@@ -88,17 +90,26 @@ data class InductionSchedule(
   )
   val systemUpdatedAt: Instant? = null,
   @Schema(
-    description = "The name of the person who performed the Induction with the prisoner. In the case of system generated updates or setting an exemption this field will not be present.",
+    description = """
+      The name of the person who performed the Induction with the prisoner.
+      In the case of system generated updates or setting an exemption this field will not be present.
+    """,
     example = "Fred Jones",
   )
   val inductionPerformedBy: String? = null,
   @Schema(
-    description = "An ISO-8601 date representing when the Induction was performed with the prisoner. In the case of system generated updates this field will not be present.",
+    description = """
+      An ISO-8601 date representing when the Induction was performed with the prisoner.
+      In the case of system generated updates this field will not be present.
+    """,
     example = "2023-06-30",
   )
   val inductionPerformedAt: LocalDate? = null,
   @Schema(
-    description = "The role of the person who performed the Induction with the prisoner. In the case of system generated updates or setting an exemption this field will not be present.",
+    description = """
+      The role of the person who performed the Induction with the prisoner.
+      In the case of system generated updates or setting an exemption this field will not be present.
+    """,
     example = "Peer Mentor",
   )
   val inductionPerformedByRole: String? = null,
@@ -116,7 +127,8 @@ data class InductionSchedule(
     description = """
       The induction schedule can change status numerous times.
       When looking at the plp-induction-schedule/history of the inductions.
-      The version number indicates which version of the induction schedule this one is, the higher the number the newer the update.
+      The version number indicates which version of the induction schedule this one is,
+      the higher the number the newer the update.
     """,
   )
   val version: Int? = null,
