@@ -107,13 +107,11 @@ data class InductionSchedule(
     example = "BXI",
   )
   val inductionPerformedAtPrison: String? = null,
-
   @Schema(
     description = "If reason the induction schedule was exempted.",
     example = "EXEMPT_SYSTEM_TECHNICAL_ISSUE",
   )
   val exemptionReason: String? = null,
-
   @Schema(
     description = """
       The induction schedule can change status numerous times.
