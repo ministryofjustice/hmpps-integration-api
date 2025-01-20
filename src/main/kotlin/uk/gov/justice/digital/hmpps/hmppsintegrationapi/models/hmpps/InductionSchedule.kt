@@ -79,8 +79,9 @@ data class InductionSchedule(
   )
   val nomisNumber: String? = null,
   @Schema(
-    description = "The name of the person who used the PLP system to update the Induction Schedule, " +
-      "or 'system' for system generated updates.",
+    description =
+      "The name of the person who used the PLP system to update the Induction Schedule, " +
+        "or 'system' for system generated updates.",
     example = "John Smith",
   )
   val systemUpdatedBy: String? = null,
