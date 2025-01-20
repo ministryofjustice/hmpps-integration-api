@@ -123,7 +123,7 @@ class InductionScheduleDeserializer : JsonDeserializer<InductionSchedule>() {
     val inductionPerformedBy = node["inductionPerformedBy"]?.takeUnless { it.isNull }?.asText()
     val inductionPerformedAt = node["inductionPerformedAt"]?.takeUnless { it.isNull }?.asText()?.let { LocalDate.parse(it) }
     val version = node["version"]?.asInt()
-    val exemptionReason = node["exemptionReason"]?.asText()
+    val exemptionReason = node["exemptionReason"]?.takeUnless { it.isNull }?.asText()
 
     return InductionSchedule(
       deadlineDate = deadlineDate,

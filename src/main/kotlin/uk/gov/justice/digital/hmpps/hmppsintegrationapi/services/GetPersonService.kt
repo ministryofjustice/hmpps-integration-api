@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ProbationOffenderSearchGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HmppsId
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NomisNumber
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.OffenderSearchResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
@@ -51,7 +52,14 @@ class GetPersonService(
    */
   fun getNomisNumber(hmppsId: String): Response<NomisNumber?> =
     when (identifyHmppsId(hmppsId)) {
-      IdentifierType.NOMS -> Response(data = NomisNumber(hmppsId))
+      IdentifierType.NOMS -> {
+        val prisonerResponse = getPersonFromNomis(hmppsId.uppercase())
+        val nomisNumber = prisonerResponse.data?.prisonerNumber
+        Response(
+          data = NomisNumber(nomisNumber),
+          errors = prisonerResponse.errors,
+        )
+      }
 
       IdentifierType.CRN -> {
         val personFromProbationOffenderSearch = probationOffenderSearchGateway.getPerson(id = hmppsId)
