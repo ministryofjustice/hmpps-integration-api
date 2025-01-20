@@ -93,11 +93,27 @@ data class InductionSchedule(
   )
   val inductionPerformedBy: String? = null,
   @Schema(
+    description = "The role of the person who performed the Induction with the prisoner. In the case of system generated updates or setting an exemption this field will not be present.",
+    example = "Peer Mentor",
+  )
+  val inductionPerformedByRole: String? = null,
+  @Schema(
     description = "An ISO-8601 date representing when the Induction was performed with the prisoner. In the case of system generated updates this field will not be present.",
     example = "2023-06-30",
   )
   val inductionPerformedAt: LocalDate? = null,
+  @Schema(
+    description = "The prison code that the induction was performed at.",
+    example = "BXI",
+  )
+  val inductionPerformedAtPrison: String? = null,
+
+  @Schema(
+    description = "If reason the induction schedule was exempted.",
+    example = "EXEMPT_SYSTEM_TECHNICAL_ISSUE",
+  )
   val exemptionReason: String? = null,
+
   @Schema(
     description = """
       The induction schedule can change status numerous times.
