@@ -152,7 +152,7 @@ class InductionScheduleDeserializer : JsonDeserializer<InductionSchedule>() {
     val inductionPerformedByRole = node["inductionPerformedByRole"]?.takeUnless { it.isNull }?.asText()
     val inductionPerformedAtPrison = node["inductionPerformedAtPrison"]?.takeUnless { it.isNull }?.asText()
     val version = node["version"]?.asInt()
-    val exemptionReason = node["exemptionReason"]?.asText()
+    val exemptionReason = node["exemptionReason"]?.takeUnless { it.isNull }?.asText()
 
     return InductionSchedule(
       deadlineDate = deadlineDate,
