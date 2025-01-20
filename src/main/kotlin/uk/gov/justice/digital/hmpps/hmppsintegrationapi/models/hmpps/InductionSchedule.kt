@@ -102,7 +102,8 @@ data class InductionSchedule(
     description = """
       The induction schedule can change status numerous times.
       When looking at the plp-induction-schedule/history of the inductions.
-      The version number indicates which version of the induction schedule this one is, the higher the number the newer the update.
+      The version number indicates which version of the induction schedule this one is,
+      the higher the number the newer the update.
     """,
   )
   val version: Int? = null,
