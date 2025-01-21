@@ -26,7 +26,7 @@ class ExpressionInterestService(
         objectMapper.writeValueAsString(
           ExpressionOfInterestMessage(
             jobId = expressionInterest.jobId,
-            nomisNumber = expressionInterest.nomisNumber,
+            verifiedHmppsId = expressionInterest.hmppsId,
           ),
         )
 

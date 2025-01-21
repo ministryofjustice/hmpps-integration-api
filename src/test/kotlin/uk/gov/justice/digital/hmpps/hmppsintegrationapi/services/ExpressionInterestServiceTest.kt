@@ -39,8 +39,8 @@ class ExpressionInterestServiceTest : DescribeSpec({
 
   describe("sendExpressionOfInterest") {
     it("should send a valid message successfully to SQS") {
-      val expressionInterest = ExpressionInterest(jobId = "12345", nomisNumber = "H1234")
-      val messageBody = """{"jobId":"12345","nomisNumber":"H1234"}"""
+      val expressionInterest = ExpressionInterest(jobId = "12345", hmppsId = "H1234")
+      val messageBody = """{"jobId":"12345","verifiedHmppsId":"H1234"}"""
 
       whenever(mockObjectMapper.writeValueAsString(any<ExpressionOfInterestMessage>()))
         .thenReturn(messageBody)
@@ -58,10 +58,10 @@ class ExpressionInterestServiceTest : DescribeSpec({
     }
 
     it("should throw MessageFailedException when SQS fails") {
-      val expressionInterest = ExpressionInterest(jobId = "12345", nomisNumber = "H1234")
+      val expressionInterest = ExpressionInterest(jobId = "12345", hmppsId = "H1234")
 
       whenever(mockObjectMapper.writeValueAsString(any<ExpressionOfInterestMessage>()))
-        .thenReturn("""{"jobId":"12345","nomisNumber":"H1234"}""")
+        .thenReturn("""{"jobId":"12345","verifiedHmppsId":"H1234"}""")
 
       whenever(mockSqsClient.sendMessage(any<SendMessageRequest>()))
         .thenThrow(RuntimeException("Failed to send message to SQS"))
