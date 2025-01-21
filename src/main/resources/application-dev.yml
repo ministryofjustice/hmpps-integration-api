@@ -164,6 +164,8 @@ authorisation:
       filters:
     unilink:
       include:
+        - "/v1/prison/prisoners/[^/]*$"
+        - "/v1/prison/prisoners"
         - "/v1/prison/.*/prisoners/[^/]*/balances$"
         - "/v1/prison/.*/prisoners/.*/accounts/.*/balances"
         - "/v1/prison/.*/prisoners/.*/accounts/.*/transactions"
