@@ -6,7 +6,10 @@ import org.springframework.web.reactive.function.BodyInserters
 import org.springframework.web.reactive.function.client.ExchangeStrategies
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.WebClientResponseException
+import reactor.core.publisher.Mono
+import reactor.util.retry.Retry
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ResponseException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 
@@ -51,6 +54,31 @@ class WebClientWrapper(
           .retrieve()
           .bodyToMono(T::class.java)
           .block()!!
+
+      WebClientWrapperResponse.Success(responseData)
+    } catch (exception: WebClientResponseException) {
+      getErrorType(exception, upstreamApi, forbiddenAsError)
+    }
+
+  inline fun <reified T> requestWithRetry(
+    method: HttpMethod,
+    uri: String,
+    headers: Map<String, String>,
+    upstreamApi: UpstreamApi,
+    requestBody: Map<String, Any?>? = null,
+    forbiddenAsError: Boolean = false,
+  ): WebClientWrapperResponse<T> =
+    try {
+      val responseData =
+        getResponseBodySpec(method, uri, headers, requestBody)
+          .retrieve()
+          .onStatus({ status -> status == HttpStatus.INTERNAL_SERVER_ERROR }) { response -> Mono.error(ResponseException(null, response.statusCode().value())) }
+          .bodyToMono(T::class.java)
+          .retryWhen(
+            Retry
+              .backoff(3, java.time.Duration.ofSeconds(3))
+              .filter { throwable -> throwable is ResponseException },
+          ).block()!!
 
       WebClientWrapperResponse.Success(responseData)
     } catch (exception: WebClientResponseException) {

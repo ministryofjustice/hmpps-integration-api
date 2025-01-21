@@ -9,18 +9,22 @@ import jakarta.validation.ValidationException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestAttribute
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Transaction
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.TransactionRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Transactions
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetTransactionForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetTransactionsForPersonService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.PostTransactionForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 import java.time.LocalDate
 
@@ -31,6 +35,7 @@ class TransactionsController(
   @Autowired val auditService: AuditService,
   @Autowired val getTransactionsForPersonService: GetTransactionsForPersonService,
   @Autowired val getTransactionForPersonService: GetTransactionForPersonService,
+  @Autowired val postTransactionsForPersonService: PostTransactionForPersonService,
 ) {
   @Operation(
     summary = "Returns all transactions for a prisoner associated with an account code that they have at a prison.",
@@ -162,5 +167,55 @@ class TransactionsController(
 
     auditService.createEvent("GET_TRANSACTION_FOR_PERSON", mapOf("hmppsId" to hmppsId, "prisonId" to prisonId, "clientUniqueRef" to clientUniqueRef))
     return DataResponse(response.data)
+  }
+
+  @Operation(
+    summary = "Post transaction.",
+    description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
+    responses = [
+      ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found a transaction."),
+      ApiResponse(
+        responseCode = "400",
+        description = "",
+        content = [
+          Content(
+            schema =
+              io.swagger.v3.oas.annotations.media
+                .Schema(ref = "#/components/schemas/BadRequest"),
+          ),
+        ],
+      ),
+      ApiResponse(
+        responseCode = "404",
+        content = [
+          Content(
+            schema =
+              io.swagger.v3.oas.annotations.media
+                .Schema(ref = "#/components/schemas/PersonNotFound"),
+          ),
+        ],
+      ),
+      ApiResponse(
+        responseCode = "500",
+        content = [
+          Content(
+            schema =
+              io.swagger.v3.oas.annotations.media
+                .Schema(ref = "#/components/schemas/InternalServerError"),
+          ),
+        ],
+      ),
+    ],
+  )
+  @PostMapping("/transaction")
+  fun postTransactions(
+    @PathVariable prisonId: String,
+    @PathVariable hmppsId: String,
+    @RequestAttribute filters: ConsumerFilters?,
+    @RequestBody transactionRequest: TransactionRequest,
+  ) {
+    val response = postTransactionsForPersonService.execute(prisonId, hmppsId, transactionRequest, filters)
+
+    // checks
   }
 }

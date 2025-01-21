@@ -17,6 +17,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Sentence
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SentenceAdjustment
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SentenceKeyDates
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Transaction
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.TransactionRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Transactions
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisAccounts
@@ -31,6 +32,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisReason
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisReferenceCode
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisSentence
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisSentenceSummary
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisTransactionResponse
 
 @Component
 class NomisGateway(
@@ -385,6 +387,33 @@ class NomisGateway(
       is WebClientWrapperResponse.Error -> {
         Response(
           data = null,
+          errors = result.errors,
+        )
+      }
+    }
+  }
+
+  fun postTransactionForPerson(
+    prisonId: String,
+    nomisNumber: String,
+    transactionRequest: TransactionRequest,
+  ): Response<NomisTransactionResponse> {
+    val result =
+      webClient.requestWithRetry<NomisTransactionResponse>(
+        HttpMethod.POST,
+        "/api/v1/prison/$prisonId/offenders/$nomisNumber/transactions",
+        authenticationHeader(),
+        UpstreamApi.NOMIS,
+        requestBody = transactionRequest.toMap(),
+      )
+    return when (result) {
+      is WebClientWrapperResponse.Success -> {
+        Response(data = result.data)
+      }
+      is WebClientWrapperResponse.Error,
+      -> {
+        Response(
+          data = NomisTransactionResponse(id = null, description = null),
           errors = result.errors,
         )
       }
