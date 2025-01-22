@@ -51,7 +51,14 @@ class GetPersonService(
    */
   fun getNomisNumber(hmppsId: String): Response<NomisNumber?> =
     when (identifyHmppsId(hmppsId)) {
-      IdentifierType.NOMS -> Response(data = NomisNumber(hmppsId))
+      IdentifierType.NOMS -> {
+        val prisoner = prisonerOffenderSearchGateway.getPrisonOffender(hmppsId)
+        if (prisoner.errors.isNotEmpty()) {
+          Response(data = null, errors = prisoner.errors)
+        } else {
+          Response(data = NomisNumber(hmppsId))
+        }
+      }
 
       IdentifierType.CRN -> {
         val personFromProbationOffenderSearch = probationOffenderSearchGateway.getPerson(id = hmppsId)
