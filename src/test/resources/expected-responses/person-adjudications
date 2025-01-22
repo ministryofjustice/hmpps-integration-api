@@ -2,7 +2,7 @@
  "data": [
  {
    "incidentDetails": {
-     "dateTimeOfIncident": "2021-07-05T10:35:17"
+     "dateTimeOfIncident": "2010-10-12T10:00:00"
    },
    "isYouthOffender": true,
    "incidentRole": {
@@ -24,7 +24,7 @@
    "statusDetails": "string",
    "hearings": [
      {
-       "dateTimeOfHearing": "2021-07-05T10:35:17",
+       "dateTimeOfHearing": "2010-10-12T10:00:00",
        "oicHearingType": "GOV_ADULT",
        "outcome": {
          "code": "COMPLETE",
@@ -37,7 +37,7 @@
    "outcomes": [
      {
        "hearing": {
-         "dateTimeOfHearing": "2021-07-05T10:35:17",
+         "dateTimeOfHearing": "2010-10-12T10:00:00",
          "oicHearingType": "GOV_ADULT",
          "outcome": {
            "code": "COMPLETE",
@@ -81,7 +81,7 @@
      {
        "comment": "string",
        "reasonForChange": "APPEAL",
-       "dateTime": "2021-07-05T10:35:17"
+       "dateTime": "2019-08-24T14:15:22Z"
      }
    ]
  }
