@@ -148,6 +148,9 @@
         <a href="../../documentation/api/index.html#servers"><span>Servers</span></a>
       </li>
       <li>
+        <a href="../../documentation/api/index.html#v1-prison-prisonid-prisoners-hmppsid-transactions-clientuniqueref"><span>/v1/prison/{prisonId}/prisoners/{hmppsId}/transactions/{clientUniqueRef}</span></a>
+      </li>
+      <li>
         <a href="../../documentation/api/index.html#v1-prison-prisonid-prisoners-hmppsid-balances"><span>/v1/prison/{prisonId}/prisoners/{hmppsId}/balances</span></a>
       </li>
       <li>
@@ -312,6 +315,157 @@
     <a href="https://integration-api.hmpps.service.justice.gov.uk">https://integration-api.hmpps.service.justice.gov.uk</a>
   
   </div>
+
+
+
+<h2 id="v1-prison-prisonid-prisoners-hmppsid-transactions-clientuniqueref">/v1/prison/{prisonId}/prisoners/{hmppsId}/transactions/{clientUniqueRef}</h2>
+
+<h3 id="v1-prison-prisonid-prisoners-hmppsid-transactions-clientuniqueref-get">get</h3>
+
+  <p><em>Get transaction by clientUniqueRef.</em></p>
+
+
+  <p><b>Applicable filters</b>: <ul><li>prisons</li></ul></p>
+
+
+
+
+<h4 id="v1-prison-prisonid-prisoners-hmppsid-transactions-clientuniqueref-get-parameters">Parameters</h4>
+<table>
+<thead>
+<tr><th>Parameter</th><th>In</th><th>Type</th><th>Required</th><th>Description</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>prisonId</td>
+<td>path</td>
+<td>string</td>
+<td>true</td>
+<td>
+
+</td>
+</tr>
+
+<tr>
+<td>hmppsId</td>
+<td>path</td>
+<td>string</td>
+<td>true</td>
+<td>
+
+</td>
+</tr>
+
+<tr>
+<td>clientUniqueRef</td>
+<td>path</td>
+<td>string</td>
+<td>true</td>
+<td>
+
+</td>
+</tr>
+
+</tbody>
+</table>
+
+
+
+
+<h4 id="v1-prison-prisonid-prisoners-hmppsid-transactions-clientuniqueref-get-responses">Responses</h4>
+<table>
+<thead>
+<tr><th>Status</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>200</td>
+<td>
+<p>Successfully found a transaction.</p>
+
+
+
+<pre><code>{
+  "data": {
+    "id": "string",
+    "type": {
+      "code": "string",
+      "desc": "string"
+    },
+    "description": "string",
+    "amount": "integer",
+    "date": "string"
+  }
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-dataresponsetransaction'>DataResponseTransaction</a>
+</td>
+</tr>
+
+<tr>
+<td>400</td>
+<td>
+<p>The request data has an invalid format or the prisoner does not have transaction associated with the clientUniqueRef.</p>
+
+
+
+<pre><code>{
+  "status": 400,
+  "userMessage": "Validation failure: No query parameters specified.",
+  "developerMessage": "No query parameters specified."
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-badrequest'>BadRequest</a>
+</td>
+</tr>
+
+<tr>
+<td>404</td>
+<td>
+<p>Not Found</p>
+
+
+
+<pre><code>{
+  "status": 404,
+  "userMessage": "404 Not found error: Could not find person with HMPPS id: 2003/0011991D.",
+  "developerMessage": "Could not find person with HMPPS id: 2003/0011991D."
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-personnotfound'>PersonNotFound</a>
+</td>
+</tr>
+
+<tr>
+<td>500</td>
+<td>
+<p>Internal Server Error</p>
+
+
+
+<pre><code>{
+  "status": 500,
+  "userMessage": "Internal Server Error",
+  "developerMessage": "Unable to complete request as an upstream service is not responding."
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-internalservererror'>InternalServerError</a>
+</td>
+</tr>
+
+</tbody>
+</table>
+
 
 
 
@@ -1703,7 +1857,9 @@
     "systemUpdatedAt": "2023-06-19T09:39:44Z",
     "inductionPerformedBy": "Fred Jones",
     "inductionPerformedAt": "2023-06-30",
-    "exemptionReason": "string",
+    "inductionPerformedByRole": "Peer Mentor",
+    "inductionPerformedAtPrison": "BXI",
+    "exemptionReason": "EXEMPT_SYSTEM_TECHNICAL_ISSUE",
     "version": "integer"
   }
 }</code></pre>
@@ -1817,7 +1973,9 @@
         "systemUpdatedAt": "2023-06-19T09:39:44Z",
         "inductionPerformedBy": "Fred Jones",
         "inductionPerformedAt": "2023-06-30",
-        "exemptionReason": "string",
+        "inductionPerformedByRole": "Peer Mentor",
+        "inductionPerformedAtPrison": "BXI",
+        "exemptionReason": "EXEMPT_SYSTEM_TECHNICAL_ISSUE",
         "version": "integer"
       }
     ]
@@ -5857,6 +6015,122 @@
 
 
 <h2 id="schemas">Schemas</h2>
+<h3 id="schema-dataresponsetransaction">DataResponseTransaction</h3>
+
+
+<table class='schema-dataresponsetransaction'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>data</td>
+<td>object</td>
+<td>true</td>
+<td></td>
+<td>
+  <a href='#schema-transaction'>Transaction</a>
+</td>
+</tr>
+
+</tbody>
+</table>
+
+<h3 id="schema-transaction">Transaction</h3>
+
+
+<table class='schema-transaction'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>id</td>
+<td>string</td>
+<td>true</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>type</td>
+<td>object</td>
+<td>true</td>
+<td></td>
+<td>
+  <a href='#schema-type'>Type</a>
+</td>
+</tr>
+
+<tr>
+<td>description</td>
+<td>string</td>
+<td>true</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>amount</td>
+<td>integer</td>
+<td>true</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>date</td>
+<td>string</td>
+<td>true</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+</tbody>
+</table>
+
+<h3 id="schema-type">Type</h3>
+
+
+<table class='schema-type'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>code</td>
+<td>string</td>
+<td>true</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>desc</td>
+<td>string</td>
+<td>true</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+</tbody>
+</table>
+
 <h3 id="schema-accountbalance">AccountBalance</h3>
 
 
@@ -5955,68 +6229,6 @@
 </tbody>
 </table>
 
-<h3 id="schema-transaction">Transaction</h3>
-
-
-<table class='schema-transaction'>
-<thead>
-<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
-</thead>
-<tbody>
-
-<tr>
-<td>id</td>
-<td>string</td>
-<td>true</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>type</td>
-<td>object</td>
-<td>true</td>
-<td></td>
-<td>
-  <a href='#schema-type'>Type</a>
-</td>
-</tr>
-
-<tr>
-<td>description</td>
-<td>string</td>
-<td>true</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>amount</td>
-<td>integer</td>
-<td>true</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>date</td>
-<td>string</td>
-<td>true</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-</tbody>
-</table>
-
 <h3 id="schema-transactions">Transactions</h3>
 
 
@@ -6033,38 +6245,6 @@
 <td></td>
 <td>
   <a href='#schema-transaction'>Transaction</a>
-</td>
-</tr>
-
-</tbody>
-</table>
-
-<h3 id="schema-type">Type</h3>
-
-
-<table class='schema-type'>
-<thead>
-<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
-</thead>
-<tbody>
-
-<tr>
-<td>code</td>
-<td>string</td>
-<td>true</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>desc</td>
-<td>string</td>
-<td>true</td>
-<td></td>
-<td>
-  
 </td>
 </tr>
 
@@ -7194,8 +7374,9 @@
 <td>inductionPerformedBy</td>
 <td>string</td>
 <td>false</td>
-<td><p>The name of the person who performed the Induction with the prisoner. In the case of system generated updates or setting an exemption this field will not be present.</p>
-</td>
+<td><div class="highlight"><pre class="highlight plaintext" tabindex="0"><code>  The name of the person who performed the Induction with the prisoner.
+  In the case of system generated updates or setting an exemption this field will not be present.
+</code></pre></div></td>
 <td>
   
 </td>
@@ -7205,7 +7386,31 @@
 <td>inductionPerformedAt</td>
 <td>string</td>
 <td>false</td>
-<td><p>An ISO-8601 date representing when the Induction was performed with the prisoner. In the case of system generated updates this field will not be present.</p>
+<td><div class="highlight"><pre class="highlight plaintext" tabindex="0"><code>  An ISO-8601 date representing when the Induction was performed with the prisoner.
+  In the case of system generated updates this field will not be present.
+</code></pre></div></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>inductionPerformedByRole</td>
+<td>string</td>
+<td>false</td>
+<td><div class="highlight"><pre class="highlight plaintext" tabindex="0"><code>  The role of the person who performed the Induction with the prisoner.
+  In the case of system generated updates or setting an exemption this field will not be present.
+</code></pre></div></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>inductionPerformedAtPrison</td>
+<td>string</td>
+<td>false</td>
+<td><p>The prison code that the induction was performed at.</p>
 </td>
 <td>
   
@@ -7216,7 +7421,8 @@
 <td>exemptionReason</td>
 <td>string</td>
 <td>false</td>
-<td></td>
+<td><p>If reason the induction schedule was exempted.</p>
+</td>
 <td>
   
 </td>
@@ -7228,7 +7434,8 @@
 <td>false</td>
 <td><div class="highlight"><pre class="highlight plaintext" tabindex="0"><code>  The induction schedule can change status numerous times.
   When looking at the plp-induction-schedule/history of the inductions.
-  The version number indicates which version of the induction schedule this one is, the higher the number the newer the update.
+  The version number indicates which version of the induction schedule this one is,
+  the higher the number the newer the update.
 </code></pre></div></td>
 <td>
   
@@ -7273,7 +7480,8 @@
 <td>inductionSchedules</td>
 <td>array</td>
 <td>true</td>
-<td><div class="highlight"><pre class="highlight plaintext" tabindex="0"><code>   A list of induction schedule versions for this prisoner. The prisoner will only have one induction schedule but for various reasons the schedule can be updated.
+<td><div class="highlight"><pre class="highlight plaintext" tabindex="0"><code>   A list of induction schedule versions for this prisoner.
+   The prisoner will only have one induction schedule but for various reasons the schedule can be updated.
    This list will show each change the schedule has been through. This allows for reports to be generated.
 </code></pre></div></td>
 <td>
