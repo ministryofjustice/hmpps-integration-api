@@ -20,7 +20,7 @@ dependencies {
     exclude("org.springframework.security", "spring-security-crypto")
     exclude("org.springframework.security", "spring-security-web")
   }
-  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.3")
+  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.7.0")
   testImplementation("io.kotest:kotest-assertions-json-jvm:5.9.1")
   testImplementation("io.kotest:kotest-runner-junit5-jvm:5.9.1")
   testImplementation("io.kotest:kotest-assertions-core-jvm:5.9.1")

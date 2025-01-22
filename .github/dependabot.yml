@@ -11,6 +11,10 @@ updates:
           - "patch"
         patterns:
           - "*"
+    ignore:
+      # Ignore this because updating breaks the tech-docs
+      # This is due to OpenAPI 3.1.0 being used which is not supported by other deps
+      - dependency-name: "org.springdoc:springdoc-openapi-starter-webmvc-ui"
   - package-ecosystem: "bundler"
     directory: "/tech-docs"
     schedule:
