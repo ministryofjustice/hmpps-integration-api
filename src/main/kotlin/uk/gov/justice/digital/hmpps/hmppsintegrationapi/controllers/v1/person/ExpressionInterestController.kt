@@ -14,9 +14,8 @@ import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.expressionOfInterest.ExpressionInterest
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.OffenderSearchResponse
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NomisNumber
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.ExpressionInterestService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService
@@ -44,15 +43,21 @@ class ExpressionInterestController(
     @Parameter(description = "A job identifier") @PathVariable jobid: String,
   ): ResponseEntity<Void> {
     try {
-      val hmppsIdCheck = getPersonService.getCombinedDataForPerson(hmppsId)
+      val hmppsIdCheck = getPersonService.getNomisNumber(hmppsId)
 
-      if (hmppsIdCheck.hasErrorCausedBy(UpstreamApiError.Type.ENTITY_NOT_FOUND, causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH)) {
+      if (hmppsIdCheck.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
+        logger.info("Could not find nomis number for hmppsId: $hmppsId")
         return ResponseEntity.badRequest().build()
       }
 
-      val verifiedNomisNumberId = getNomisNumber(hmppsIdCheck) ?: return ResponseEntity.badRequest().build()
+      if (hmppsIdCheck.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
+        logger.info("Invalid hmppsId: $hmppsId")
+        return ResponseEntity.badRequest().build()
+      }
 
-      expressionInterestService.sendExpressionOfInterest(ExpressionInterest(jobid, verifiedNomisNumberId))
+      val verifiedNomisNumber = getVerifiedNomisNumber(hmppsIdCheck) ?: return ResponseEntity.badRequest().build()
+      expressionInterestService.sendExpressionOfInterest(ExpressionInterest(jobid, verifiedNomisNumber))
+
       return ResponseEntity.ok().build()
     } catch (e: Exception) {
       logger.info("ExpressionInterestController: Unable to send message: ${e.message}")
@@ -60,8 +65,7 @@ class ExpressionInterestController(
     }
   }
 
-  fun getNomisNumber(offenderSearchResponse: Response<OffenderSearchResponse>?): String? {
-    return offenderSearchResponse?.data?.probationOffenderSearch?.identifiers?.nomisNumber
-      ?: offenderSearchResponse?.data?.prisonerOffenderSearch?.identifiers?.nomisNumber
+  fun getVerifiedNomisNumber(nomisNumberResponse: Response<NomisNumber?>): String? {
+    return nomisNumberResponse.data?.nomisNumber
   }
 }
