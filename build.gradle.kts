@@ -13,7 +13,7 @@ dependencies {
   implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0")
   implementation("io.sentry:sentry-spring-boot-starter-jakarta:7.20.0")
   implementation("io.sentry:sentry-logback:7.20.0")
-  implementation("org.springframework.data:spring-data-commons:3.4.1")
+  implementation("org.springframework.data:spring-data-commons:3.4.2")
   implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:5.2.2") {
     exclude("org.springframework.security", "spring-security-config")
     exclude("org.springframework.security", "spring-security-core")
