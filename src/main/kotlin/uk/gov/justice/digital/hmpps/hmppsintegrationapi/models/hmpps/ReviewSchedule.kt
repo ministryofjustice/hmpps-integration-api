@@ -25,6 +25,11 @@ data class ReviewSchedules(
 @JsonInclude(JsonInclude.Include.USE_DEFAULTS)
 data class ReviewSchedule(
   @Schema(
+    description = "The Nomis number of the person.",
+    example = "A1234BC",
+  )
+  val nomisNumber: String? = null,
+  @Schema(
     description = "The UUID reference for the review schedule record.",
   )
   val reference: UUID,
