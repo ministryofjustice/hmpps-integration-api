@@ -61,4 +61,12 @@ class TransactionsIntegrationTest : IntegrationTestBase() {
         get("/v1/prison/$wrongPrisonId/prisoners/$hmppsId/transactions/$clientUniqueRef").headers(headers),
       ).andExpect(status().isNotFound)
   }
+
+  // POST transaction
+  @Test
+  fun `return a response with a transaction ID`() {
+    callApi("/v1/prison/$prisonId/prisoners/$hmppsId/transactions")
+      .andExpect(status().isOk)
+      .andExpect(content().json(getExpectedResponse("transactions-response")))
+  }
 }

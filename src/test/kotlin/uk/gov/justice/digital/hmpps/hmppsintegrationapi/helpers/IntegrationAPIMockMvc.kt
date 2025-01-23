@@ -39,6 +39,21 @@ class IntegrationAPIMockMvc(
     return mockMvc.perform(requestBuilder).andReturn()
   }
 
+  fun <T : Any> performAuthorisedPostWithCN(
+    path: String,
+    cn: String,
+    requestBody: T,
+  ): MvcResult {
+    val subjectDistinguishedName = "C=GB,ST=London,L=London,O=Home Office,CN=$cn"
+    val requestBuilder =
+      MockMvcRequestBuilders
+        .post(path)
+        .header("subject-distinguished-name", subjectDistinguishedName)
+        .content(asJsonString(requestBody))
+        .contentType(MediaType.APPLICATION_JSON)
+    return mockMvc.perform(requestBuilder).andReturn()
+  }
+
   fun performUnAuthorised(path: String): MvcResult = mockMvc.perform(MockMvcRequestBuilders.get(path)).andReturn()
 
   private fun asJsonString(obj: Any): String = jacksonObjectMapper().writeValueAsString(obj)

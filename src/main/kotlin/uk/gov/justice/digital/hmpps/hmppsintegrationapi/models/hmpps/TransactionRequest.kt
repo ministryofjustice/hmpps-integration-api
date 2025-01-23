@@ -1,7 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps
 
 data class TransactionRequest(
-  val type: String, // reject if not in enum
+  var type: String, // reject if not in enum
   val description: String?,
   val amount: Int,
   val clientTransactionId: String,
@@ -14,5 +14,5 @@ data class TransactionRequest(
       "amount" to amount,
       "clientTransactionId" to clientTransactionId,
       "clientUniqueRef" to clientUniqueRef,
-    )
+    ).filterValues { it != null }
 }

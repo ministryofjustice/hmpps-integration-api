@@ -22,6 +22,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Transaction
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Type
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetTransactionForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetTransactionsForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.PostTransactionForPersonService
@@ -53,7 +54,7 @@ class TransactionsControllerTest(
       val amount = 1634
       val clientTransactionId = "CL123212"
       val postClientUniqueRef = "CLIENT121131-0_11"
-      val exampleTransaction = TransactionRequest(type, description, amount, clientTransactionId, postClientUniqueRef)
+      var exampleTransaction = TransactionRequest(type, description, amount, clientTransactionId, postClientUniqueRef)
 
       val transactions =
         Transactions(
@@ -217,9 +218,6 @@ class TransactionsControllerTest(
 
         val result = mockMvc.performAuthorisedPost(postTransactionPath, exampleTransaction)
 
-        result.response.contentAsString.shouldContain("transactionId")
-
-        /*
         result.response.contentAsString.shouldContain(
           """
           {
@@ -228,7 +226,7 @@ class TransactionsControllerTest(
             }
           }
           """.removeWhitespaceAndNewlines(),
-        )*/
+        )
       }
 
       it("returns a 200 status code when successful") {
@@ -237,6 +235,56 @@ class TransactionsControllerTest(
         val result = mockMvc.performAuthorisedPost(postTransactionPath, exampleTransaction)
 
         result.response.status.shouldBe(HttpStatus.OK.value())
+      }
+
+      // prison filter rejection test
+      it("returns 400 if prison filter is not matched") {
+        whenever(postTransactionForPersonService.execute(prisonId, hmppsId, exampleTransaction, ConsumerFilters(prisons = listOf("XYZ")))).thenReturn(
+          Response(
+            data = null,
+            errors =
+              listOf(
+                UpstreamApiError(
+                  causedBy = UpstreamApi.NOMIS,
+                  type = UpstreamApiError.Type.BAD_REQUEST,
+                ),
+              ),
+          ),
+        )
+
+        val result = mockMvc.performAuthorisedPostWithCN(postTransactionPath, "limited-prisons", exampleTransaction)
+
+        result.response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
+      }
+
+      it("calls the API with the correct filters") {
+        whenever(postTransactionForPersonService.execute(prisonId, hmppsId, exampleTransaction, ConsumerFilters(prisons = listOf("XYZ")))).thenReturn(Response(transactionCreateResponse))
+
+        val result = mockMvc.performAuthorisedPostWithCN(postTransactionPath, "limited-prisons", exampleTransaction)
+
+        result.response.status.shouldBe(HttpStatus.OK.value())
+      }
+
+      // bad request
+      it("returns a 400 BAD REQUEST status code when there is an invalid HMPPS ID or incorrect prison, or an invalid request body") {
+        whenever(postTransactionForPersonService.execute(prisonId, hmppsId, exampleTransaction, null)).thenReturn(
+          Response(
+            data = null,
+            errors =
+              listOf(
+                UpstreamApiError(
+                  causedBy = UpstreamApi.NOMIS,
+                  type = UpstreamApiError.Type.BAD_REQUEST,
+                ),
+              ),
+          ),
+        )
+
+        exampleTransaction.type = ""
+
+        val result = mockMvc.performAuthorisedPost(postTransactionPath, exampleTransaction)
+
+        result.response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
       }
     },
   )

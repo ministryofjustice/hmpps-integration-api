@@ -1,9 +1,9 @@
+@file:Suppress("ktlint:standard:no-wildcard-imports")
+
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers
 
 import com.github.tomakehurst.wiremock.WireMockServer
-import com.github.tomakehurst.wiremock.client.WireMock.aResponse
-import com.github.tomakehurst.wiremock.client.WireMock.get
-import com.github.tomakehurst.wiremock.client.WireMock.matching
+import com.github.tomakehurst.wiremock.client.WireMock.*
 import org.springframework.http.HttpStatus
 
 class NomisApiMockServer : WireMockServer(WIREMOCK_PORT) {
@@ -26,6 +26,30 @@ class NomisApiMockServer : WireMockServer(WIREMOCK_PORT) {
             .withHeader("Content-Type", "application/json")
             .withStatus(status.value())
             .withBody(body.trimIndent()),
+        ),
+    )
+  }
+
+  fun stubNomisApiResponseForPost(
+    prisonId: String,
+    nomisNumber: String,
+    reqBody: String,
+    resBody: String,
+    status: HttpStatus = HttpStatus.OK,
+  ) {
+    val externalUrl = urlPathTemplate("/api/v1/prison/$prisonId/offenders/$nomisNumber/transactions")
+
+    stubFor(
+      post(externalUrl)
+        .withHeader(
+          "Authorization",
+          matching("Bearer ${HmppsAuthMockServer.TOKEN}"),
+        ).withRequestBody(equalToJson(reqBody))
+        .willReturn(
+          aResponse()
+            .withHeader("Content-Type", "application/json")
+            .withStatus(status.value())
+            .withBody(resBody.trimIndent()),
         ),
     )
   }

@@ -104,7 +104,7 @@ class TransactionsController(
     }
 
     if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
-      throw ValidationException("Either invalid HMPPS ID: $hmppsId at or incorrect prison: $prisonId")
+      throw ValidationException("Either invalid HMPPS ID: $hmppsId or incorrect prison: $prisonId")
     }
 
     auditService.createEvent("GET_TRANSACTIONS_FOR_PERSON", mapOf("hmppsId" to hmppsId, "prisonId" to prisonId, "fromDate" to fromDate, "toDate" to toDate))
@@ -163,7 +163,7 @@ class TransactionsController(
     }
 
     if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
-      throw ValidationException("Either invalid HMPPS ID: $hmppsId at or incorrect prison: $prisonId")
+      throw ValidationException("Either invalid HMPPS ID: $hmppsId or incorrect prison: $prisonId")
     }
 
     auditService.createEvent("GET_TRANSACTION_FOR_PERSON", mapOf("hmppsId" to hmppsId, "prisonId" to prisonId, "clientUniqueRef" to clientUniqueRef))
@@ -218,7 +218,7 @@ class TransactionsController(
     val response = postTransactionsForPersonService.execute(prisonId, hmppsId, transactionRequest, filters)
 
     if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
-      throw ValidationException("TODO")
+      throw ValidationException("Either invalid HMPPS ID: $hmppsId or incorrect prison: $prisonId or invalid request body: ${transactionRequest.toMap()}")
     }
 
     auditService.createEvent("CREATE_TRANSACTION", mapOf("hmppsId" to hmppsId, "prisonId" to prisonId)) // add req obj
