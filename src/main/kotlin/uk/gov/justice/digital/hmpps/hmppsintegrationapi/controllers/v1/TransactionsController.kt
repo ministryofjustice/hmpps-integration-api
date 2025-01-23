@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Transaction
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.TransactionCreateResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.TransactionRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Transactions
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
@@ -173,7 +174,7 @@ class TransactionsController(
     summary = "Post transaction.",
     description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
     responses = [
-      ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found a transaction."),
+      ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully created a transaction."),
       ApiResponse(
         responseCode = "400",
         description = "",
@@ -207,15 +208,20 @@ class TransactionsController(
       ),
     ],
   )
-  @PostMapping("/transaction")
+  @PostMapping("/transactions")
   fun postTransactions(
     @PathVariable prisonId: String,
     @PathVariable hmppsId: String,
     @RequestAttribute filters: ConsumerFilters?,
     @RequestBody transactionRequest: TransactionRequest,
-  ) {
+  ): DataResponse<TransactionCreateResponse?> {
     val response = postTransactionsForPersonService.execute(prisonId, hmppsId, transactionRequest, filters)
 
-    // checks
+    if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
+      throw ValidationException("TODO")
+    }
+
+    auditService.createEvent("CREATE_TRANSACTION", mapOf("hmppsId" to hmppsId, "prisonId" to prisonId)) // add req obj
+    return DataResponse(response.data)
   }
 }

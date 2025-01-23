@@ -4,10 +4,10 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NomisGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.TransactionCreateResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.TransactionRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisTransactionResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 @Service
@@ -20,7 +20,7 @@ class PostTransactionForPersonService(
     hmppsId: String,
     transactionRequest: TransactionRequest,
     filters: ConsumerFilters? = null,
-  ): Response<NomisTransactionResponse?> {
+  ): Response<TransactionCreateResponse?> {
     if (
       filters != null && !filters.matchesPrison(prisonId)
     ) {
@@ -62,8 +62,13 @@ class PostTransactionForPersonService(
       )
     }
 
+    var transactionCreateResponse = TransactionCreateResponse()
+    if (!response.data.id.isNullOrBlank()) {
+      transactionCreateResponse.transactionId = response.data.id
+    }
+
     return Response(
-      data = response.data,
+      data = transactionCreateResponse,
       errors = emptyList(),
     )
   }
