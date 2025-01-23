@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffender
 
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Identifiers
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonInPrison
 import java.time.LocalDate
 
 data class POSPrisoner(
@@ -21,6 +22,10 @@ data class POSPrisoner(
   val prisonName: String? = null,
   val cellLocation: String? = null,
   val inOutStatus: String? = null,
+  val category: String? = null,
+  val crsa: String? = null,
+  val dateOfReception: String? = null,
+  val status: String? = null,
 ) {
   fun toPerson(): Person =
     Person(
@@ -37,5 +42,31 @@ data class POSPrisoner(
           croNumber = this.croNumber,
         ),
       pncId = this.pncNumber,
+    )
+
+  fun toPersonInPrison(): PersonInPrison =
+    PersonInPrison(
+      Person(
+        firstName = this.firstName,
+        lastName = this.lastName,
+        middleName = this.middleNames,
+        dateOfBirth = this.dateOfBirth,
+        gender = this.gender,
+        ethnicity = this.ethnicity,
+        aliases = this.aliases.map { it.toAlias() },
+        identifiers =
+          Identifiers(
+            nomisNumber = this.prisonerNumber,
+            croNumber = this.croNumber,
+          ),
+        pncId = this.pncNumber,
+      ),
+      cellLocation = this.cellLocation,
+      prisonId = this.prisonId,
+      prisonName = this.prisonName,
+      category = this.category,
+      crsa = this.crsa,
+      dateOfReception = this.dateOfReception,
+      status = this.status,
     )
 }

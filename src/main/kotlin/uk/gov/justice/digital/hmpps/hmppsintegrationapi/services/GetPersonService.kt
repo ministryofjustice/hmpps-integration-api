@@ -7,6 +7,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ProbationOffend
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NomisNumber
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.OffenderSearchResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonInPrison
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
@@ -120,7 +121,7 @@ class GetPersonService(
   fun getPrisoner(
     hmppsId: String,
     filters: ConsumerFilters?,
-  ): Response<Person?> {
+  ): Response<PersonInPrison?> {
     val prisonerNomisNumber = getNomisNumber(hmppsId)
 
     if (prisonerNomisNumber.errors.isNotEmpty()) {
@@ -167,7 +168,7 @@ class GetPersonService(
     }
 
     return Response(
-      data = posPrisoner?.toPerson(),
+      data = posPrisoner?.toPersonInPrison(),
       errors = prisonResponse.errors,
     )
   }

@@ -18,6 +18,7 @@ import org.springframework.test.web.servlet.MockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonInPrison
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
@@ -68,18 +69,27 @@ internal class PrisonControllerTest(
         whenever(getPersonService.getPrisoner(eq(hmppsId), anyOrNull())).thenReturn(
           Response(
             data =
-              Person(
-                firstName = "Barry",
-                lastName = "Allen",
-                middleName = "Jonas",
-                dateOfBirth = LocalDate.parse("2023-03-01"),
-                gender = "Male",
-                ethnicity = "Caucasian",
-                pncId = "PNC123456",
-                currentExclusion = true,
-                exclusionMessage = "An exclusion is present",
-                currentRestriction = true,
-                restrictionMessage = "A restriction is present",
+              PersonInPrison(
+                Person(
+                  firstName = "Barry",
+                  lastName = "Allen",
+                  middleName = "Jonas",
+                  dateOfBirth = LocalDate.parse("2023-03-01"),
+                  gender = "Male",
+                  ethnicity = "Caucasian",
+                  pncId = "PNC123456",
+                  currentExclusion = true,
+                  exclusionMessage = "An exclusion is present",
+                  currentRestriction = true,
+                  restrictionMessage = "A restriction is present",
+                ),
+                category = "C",
+                crsa = "HIGH",
+                dateOfReception = "2023-05-01",
+                status = "ACTIVE IN",
+                prisonId = "MDI",
+                prisonName = "HMP Leeds",
+                cellLocation = "A-1-002",
               ),
           ),
         )
@@ -90,6 +100,13 @@ internal class PrisonControllerTest(
           """
             {
              "data":{
+                   "category": "C",
+                   "crsa": "HIGH",
+                   "dateOfReception": "2023-05-01",
+                   "status": "ACTIVE IN",
+                   "prisonId": "MDI",
+                   "prisonName": "HMP Leeds",
+                   "cellLocation": "A-1-002",
                    "firstName":"Barry",
                    "lastName":"Allen",
                    "middleName":"Jonas",
@@ -119,14 +136,23 @@ internal class PrisonControllerTest(
         whenever(getPersonService.getPrisoner(eq(hmppsId), anyOrNull())).thenReturn(
           Response(
             data =
-              Person(
-                firstName = "Barry",
-                lastName = "Allen",
-                middleName = "Jonas",
-                dateOfBirth = LocalDate.parse("2023-03-01"),
-                gender = "Male",
-                ethnicity = "Caucasian",
-                pncId = "PNC123456",
+              PersonInPrison(
+                Person(
+                  firstName = "Barry",
+                  lastName = "Allen",
+                  middleName = "Jonas",
+                  dateOfBirth = LocalDate.parse("2023-03-01"),
+                  gender = "Male",
+                  ethnicity = "Caucasian",
+                  pncId = "PNC123456",
+                ),
+                category = "C",
+                crsa = "HIGH",
+                dateOfReception = "2023-05-01",
+                status = "ACTIVE IN",
+                prisonId = "MDI",
+                prisonName = "HMP Leeds",
+                cellLocation = "A-1-002",
               ),
           ),
         )
