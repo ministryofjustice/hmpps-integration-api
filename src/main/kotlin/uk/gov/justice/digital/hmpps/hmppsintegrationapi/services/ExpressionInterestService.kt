@@ -31,7 +31,8 @@ class ExpressionInterestService(
         )
 
       eoiQueueSqsClient.sendMessage(
-        SendMessageRequest.builder()
+        SendMessageRequest
+          .builder()
           .queueUrl(eoiQueueUrl)
           .messageBody(messageBody)
           .build(),

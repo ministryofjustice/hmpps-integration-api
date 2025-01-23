@@ -65,7 +65,5 @@ class ExpressionInterestController(
     }
   }
 
-  fun getVerifiedNomisNumber(nomisNumberResponse: Response<NomisNumber?>): String? {
-    return nomisNumberResponse.data?.nomisNumber
-  }
+  fun getVerifiedNomisNumber(nomisNumberResponse: Response<NomisNumber?>) = nomisNumberResponse.data?.nomisNumber
 }
