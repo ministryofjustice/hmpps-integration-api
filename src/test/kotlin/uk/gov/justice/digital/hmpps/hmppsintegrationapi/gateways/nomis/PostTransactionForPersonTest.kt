@@ -34,9 +34,6 @@ class PostTransactionForPersonTest(
     val nomisApiMockServer = NomisApiMockServer()
     val prisonId = "XYZ"
     val nomisNumber = "AA1234Z"
-    val basePath = "/api/v1/prison/$prisonId/prisoners/$nomisNumber/transactions"
-    val regexPath = "/api/v1/prison/.*/prisoners/.*/transactions"
-
     val description = "Canteen Purchase of £16.34"
     val amount = 1634
     val clientTransactionId = "CL123212"

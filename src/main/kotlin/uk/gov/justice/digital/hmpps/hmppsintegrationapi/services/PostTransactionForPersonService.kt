@@ -51,7 +51,7 @@ class PostTransactionForPersonService(
     var response =
       nomisGateway.postTransactionForPerson(
         prisonId,
-        hmppsId,
+        nomisNumber,
         transactionRequest,
       )
 
