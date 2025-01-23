@@ -16,25 +16,25 @@ Name HTTP URLs according to the following rules:
 
 1. Follow the [ADR documented](./0007-version-through-url-path.md) strategy for versioning in the URL path
 2. For client-specific endpoints use the URL path part immediately after the version part to indicate the specific client
-3. Use subsequent URL path parts to either:
+2. Use subsequent URL path parts to either:
    1. Indicate the HMPPS domain that the endpoint relates
    2. **OR** indicate the intention of a client-specific endpoints
 
 ### Rationale
 
-- The URL path should indicate the overall intention of the HTTP endpoint
-- The URL path should indicate if the endpoint is intended for a specific client immediately after the version path part, supporting grouping of domain endpoints and client-specific endpoints in the documentation
+* The URL path should indicate the overall intention of the HTTP endpoint
+* The URL path should indicate if the endpoint is intended for a specific client immediately after the version path part, supporting grouping of domain endpoints and client-specific endpoints in the documentation
 
 ## Consequences
 
-- Developers of future endpoints will have a clear guidance on naming HTTP URLs to reflect the intention of the endpoint
-- General domain-based endpoints will be named in a clear and consistent manner
-- Client-specific endpoints will be named in a clear and consistent manner, indicating the client the endpoint has been designed for
+* Developers of future endpoints will have a clear guidance on naming HTTP URLs to reflect the intention of the endpoint
+* General domain-based endpoints will be named in a clear and consistent manner
+* Client-specific endpoints will be named in a clear and consistent manner, indicating the client the endpoint has been designed for
 
 ## Examples
 
-| Type            | Description                                                                           | URL Path                                                |
-| --------------- | ------------------------------------------------------------------------------------- | ------------------------------------------------------- |
-| HMPPS Domain    | An endpoint that provides a persons cell location                                     | `/v1/persons/{encodedHmppsId}/cell-location`            |
-| HMPPS Domain    | An endpoint that provides risk assessment actuarial scores                            | `/v1/persons/{encodedHmppsId}/risks/scores`             |
+| Type            | Description                                                                                     | URL Path                                         |
+|-----------------|-------------------------------------------------------------------------------------------------|--------------------------------------------------|
+| HMPPS Domain    | An endpoint that provides a persons cell location                                                           | `/v1/persons/{encodedHmppsId}/cell-location`      |
+| HMPPS Domain    | An endpoint that provides risk assessment actuarial scores                                                           | `/v1/persons/{encodedHmppsId}/risks/scores`      |
 | Client-Specific | An endpoint to provide consolidated person details to support the EPF digital service | `/v1/epf/person-details/{encodedHmppsId}/{eventNumber}` |
