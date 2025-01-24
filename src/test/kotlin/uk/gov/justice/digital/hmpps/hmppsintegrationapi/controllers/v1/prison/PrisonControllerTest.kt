@@ -260,17 +260,21 @@ internal class PrisonControllerTest(
           Response(
             data =
               listOf(
-                Person(
-                  firstName = "Barry",
-                  lastName = "Allen",
-                  middleName = "Jonas",
-                  dateOfBirth = LocalDate.parse("2023-03-01"),
+                PersonInPrison(
+                  Person(
+                    firstName = "Barry",
+                    lastName = "Allen",
+                    middleName = "Jonas",
+                    dateOfBirth = LocalDate.parse("2023-03-01"),
+                  ),
                 ),
-                Person(
-                  firstName = "Barry",
-                  lastName = "Allen",
-                  middleName = "Rock",
-                  dateOfBirth = LocalDate.parse("2022-07-22"),
+                PersonInPrison(
+                  Person(
+                    firstName = "Barry",
+                    lastName = "Allen",
+                    middleName = "Rock",
+                    dateOfBirth = LocalDate.parse("2022-07-22"),
+                  ),
                 ),
               ),
           ),

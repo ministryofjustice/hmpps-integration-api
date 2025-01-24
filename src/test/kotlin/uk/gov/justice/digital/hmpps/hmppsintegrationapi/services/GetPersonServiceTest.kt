@@ -48,7 +48,7 @@ internal class GetPersonServiceTest(
         Mockito.reset(probationOffenderSearchGateway)
 
         whenever(prisonerOffenderSearchGateway.getPersons("Qui-gon", "Jin", "1966-10-25")).thenReturn(
-          Response(data = listOf(Person(firstName = "Qui-gon", lastName = "Jin", identifiers = Identifiers(nomisNumber = "A1234AA")))),
+          Response(data = listOf(POSPrisoner(firstName = "Qui-gon", lastName = "Jin", prisonerNumber = "A1234AA"))),
         )
         whenever(probationOffenderSearchGateway.getPerson(id = hmppsId)).thenReturn(
           Response(data = PersonOnProbation(Person(firstName = "Qui-gon", lastName = "Jin", identifiers = Identifiers(nomisNumber = "A1234AA")), underActiveSupervision = true)),

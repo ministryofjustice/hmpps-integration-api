@@ -81,22 +81,22 @@ class PrisonerOffenderSearchGatewayTest(
           it.lastName.shouldBe(lastName)
         }
         response.data[0]
-          .identifiers.nomisNumber
+          .prisonerNumber
           .shouldBe("A5043DY")
         response.data[1]
-          .identifiers.nomisNumber
+          .prisonerNumber
           .shouldBe("A5083DY")
         response.data[2]
-          .identifiers.nomisNumber
+          .prisonerNumber
           .shouldBe("G9347GV")
         response.data[3]
-          .identifiers.nomisNumber
+          .prisonerNumber
           .shouldBe("A7796DY")
 
-        response.data[0].pncId.shouldBeNull()
-        response.data[1].pncId.shouldBe("03/11985X")
-        response.data[2].pncId.shouldBe("95/289622B")
-        response.data[3].pncId.shouldBeNull()
+        response.data[0].pncNumber.shouldBeNull()
+        response.data[1].pncNumber.shouldBe("03/11985X")
+        response.data[2].pncNumber.shouldBe("95/289622B")
+        response.data[3].pncNumber.shouldBeNull()
       }
 
       it("returns person(s) when searching on first name only") {
