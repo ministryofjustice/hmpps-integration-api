@@ -18,9 +18,9 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.MessageFailedE
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.MockMvcExtensions.objectMapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ExpressionOfInterest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ExpressionOfInterestMessage
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.MessageType
 import uk.gov.justice.hmpps.sqs.HmppsQueue
 import uk.gov.justice.hmpps.sqs.HmppsQueueService
+import kotlin.test.assertEquals
 
 class PutExpressionInterestServiceTest :
   DescribeSpec({
@@ -46,9 +46,9 @@ class PutExpressionInterestServiceTest :
         val expressionOfInterest = ExpressionOfInterest(jobId = "12345", prisonNumber = "H1234")
         val expectedMessage =
           ExpressionOfInterestMessage(
+            messageId = "1",
             jobId = "12345",
             prisonNumber = "H1234",
-            eventType = MessageType.EXPRESSION_OF_INTEREST_CREATED,
           )
         val messageBody = objectMapper.writeValueAsString(expectedMessage)
 
@@ -87,16 +87,21 @@ class PutExpressionInterestServiceTest :
             messageId = "1",
             jobId = "12345",
             prisonNumber = "H1234",
-            eventType = MessageType.EXPRESSION_OF_INTEREST_CREATED,
           )
 
         val serializedJson = objectMapper.writeValueAsString(expectedMessage)
+
         val deserializedMap: Map<String, Any?> = objectMapper.readValue(serializedJson)
+        val eventType = deserializedMap["eventType"]
 
         assert(deserializedMap.containsKey("messageId"))
         assert(deserializedMap.containsKey("jobId"))
         assert(deserializedMap.containsKey("prisonNumber"))
         assert(deserializedMap.containsKey("eventType"))
+        assertEquals(
+          expected = ExpressionOfInterestMessage.EventType.EXPRESSION_OF_INTEREST_MESSAGE_CREATED.name,
+          actual = eventType,
+        )
       }
     }
   })

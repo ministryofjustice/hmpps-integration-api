@@ -8,6 +8,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ExpressionO
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ExpressionOfInterestMessage
 import uk.gov.justice.hmpps.sqs.HmppsQueue
 import uk.gov.justice.hmpps.sqs.HmppsQueueService
+import java.util.UUID
 
 @Component
 class PutExpressionInterestService(
@@ -23,6 +24,7 @@ class PutExpressionInterestService(
       val messageBody =
         objectMapper.writeValueAsString(
           ExpressionOfInterestMessage(
+            messageId = UUID.randomUUID().toString(),
             jobId = expressionOfInterest.jobId,
             prisonNumber = expressionOfInterest.prisonNumber,
           ),
