@@ -2,13 +2,13 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps
 
 class PersonInPrison(
   person: Person,
-  val category: String?,
-  val csra: String?,
-  val receptionDate: String?,
-  val status: String?,
-  val prisonId: String?,
-  val prisonName: String?,
-  val cellLocation: String?,
+  val category: String? = null,
+  val csra: String? = null,
+  val receptionDate: String? = null,
+  val status: String? = null,
+  val prisonId: String? = null,
+  val prisonName: String? = null,
+  val cellLocation: String? = null,
 ) : Person(
     firstName = person.firstName,
     lastName = person.lastName,
