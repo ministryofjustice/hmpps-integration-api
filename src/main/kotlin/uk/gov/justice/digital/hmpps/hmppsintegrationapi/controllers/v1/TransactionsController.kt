@@ -218,10 +218,18 @@ class TransactionsController(
     val response = postTransactionsForPersonService.execute(prisonId, hmppsId, transactionRequest, filters)
 
     if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
-      throw ValidationException("Either invalid HMPPS ID: $hmppsId or incorrect prison: $prisonId or invalid request body: ${transactionRequest.toMap()}")
+      throw ValidationException("Either invalid HMPPS ID: $hmppsId or incorrect prison: $prisonId or invalid request body: ${transactionRequest.toApiConformingMap()}")
     }
 
-    auditService.createEvent("CREATE_TRANSACTION", mapOf("hmppsId" to hmppsId, "prisonId" to prisonId)) // add req obj
+    if (response.hasError(UpstreamApiError.Type.FORBIDDEN)) {
+      throw ValidationException("The prisonId: $prisonId is not valid for your consumer profile. ${response.errors[0].description}")
+    }
+
+    if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
+      throw EntityNotFoundException(" ${response.errors[0].description}")
+    }
+
+    auditService.createEvent("CREATE_TRANSACTION", mapOf("hmppsId" to hmppsId, "prisonId" to prisonId, "transactionRequest" to transactionRequest.toApiConformingMap().toString())) // add req properly
     return DataResponse(response.data)
   }
 }

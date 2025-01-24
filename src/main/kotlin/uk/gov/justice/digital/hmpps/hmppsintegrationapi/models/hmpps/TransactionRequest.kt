@@ -7,12 +7,12 @@ data class TransactionRequest(
   val clientTransactionId: String,
   val clientUniqueRef: String,
 ) {
-  fun toMap(): Map<String, Any?> =
+  fun toApiConformingMap(): Map<String, Any?> =
     mapOf(
       "type" to type,
       "description" to description,
       "amount" to amount,
-      "clientTransactionId" to clientTransactionId,
-      "clientUniqueRef" to clientUniqueRef,
+      "client_transaction_id" to clientTransactionId,
+      "client_unique_ref" to clientUniqueRef,
     ).filterValues { it != null }
 }

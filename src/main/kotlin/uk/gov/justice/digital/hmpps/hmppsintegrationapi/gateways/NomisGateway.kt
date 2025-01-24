@@ -404,7 +404,7 @@ class NomisGateway(
         "/api/v1/prison/$prisonId/offenders/$nomisNumber/transactions",
         authenticationHeader(),
         UpstreamApi.NOMIS,
-        requestBody = transactionRequest.toMap(),
+        requestBody = transactionRequest.toApiConformingMap(),
       )
     return when (result) {
       is WebClientWrapperResponse.Success -> {

@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration
 
 import org.junit.jupiter.api.Test
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
@@ -64,9 +65,44 @@ class TransactionsIntegrationTest : IntegrationTestBase() {
 
   // POST transaction
   @Test
-  fun `return a response with a transaction ID`() {
-    callApi("/v1/prison/$prisonId/prisoners/$hmppsId/transactions")
-      .andExpect(status().isOk)
-      .andExpect(content().json(getExpectedResponse("transactions-response")))
+  fun `return an expected response for a successful transaction post`() {
+    val requestBody =
+      """
+      {
+        "type": "CANT",
+        "description": "Canteen Purchase of £16.34",
+        "amount": 1634,
+        "clientTransactionId": "CL123212",
+        "clientUniqueRef": "CLIENT121131-0_11"
+      }
+      """.trimIndent()
+
+    val headers = org.springframework.http.HttpHeaders()
+    headers.set("subject-distinguished-name", "C=GB,ST=London,L=London,O=Home Office,CN=automated-test-client")
+    mockMvc
+      .perform(
+        post("/v1/prison/$prisonId/prisoners/$hmppsId/transactions").headers(headers).content(requestBody).contentType(org.springframework.http.MediaType.APPLICATION_JSON),
+      ).andExpect(status().isOk)
+      .andExpect(content().json(getExpectedResponse("transaction-create-response")))
+  }
+
+  @Test
+  fun `return a 400 when request object contains invalid type`() {
+    val requestBody =
+      """
+      {
+        "type": "IS_WRONG",
+        "amount": 1634,
+        "clientTransactionId": "CL123212",
+        "clientUniqueRef": "CLIENT121131-0_11"
+      }
+      """.trimIndent()
+
+    val headers = org.springframework.http.HttpHeaders()
+    headers.set("subject-distinguished-name", "C=GB,ST=London,L=London,O=Home Office,CN=automated-test-client")
+    mockMvc
+      .perform(
+        post("/v1/prison/$prisonId/prisoners/$hmppsId/transactions").headers(headers).content(requestBody).contentType(org.springframework.http.MediaType.APPLICATION_JSON),
+      ).andExpect(status().isBadRequest)
   }
 }
