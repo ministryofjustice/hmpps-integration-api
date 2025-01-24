@@ -3,8 +3,8 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps
 class PersonInPrison(
   person: Person,
   val category: String?,
-  val crsa: String?,
-  val dateOfReception: String?,
+  val csra: String?,
+  val receptionDate: String?,
   val status: String?,
   val prisonId: String?,
   val prisonName: String?,

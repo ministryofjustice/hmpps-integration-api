@@ -23,8 +23,8 @@ data class POSPrisoner(
   val cellLocation: String? = null,
   val inOutStatus: String? = null,
   val category: String? = null,
-  val crsa: String? = null,
-  val dateOfReception: String? = null,
+  val csra: String? = null,
+  val receptionDate: String? = null,
   val status: String? = null,
 ) {
   fun toPerson(): Person =
@@ -65,8 +65,8 @@ data class POSPrisoner(
       prisonId = this.prisonId,
       prisonName = this.prisonName,
       category = this.category,
-      crsa = this.crsa,
-      dateOfReception = this.dateOfReception,
+      csra = this.csra,
+      receptionDate = this.receptionDate,
       status = this.status,
     )
 }

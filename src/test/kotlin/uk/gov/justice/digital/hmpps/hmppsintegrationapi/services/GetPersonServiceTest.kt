@@ -142,7 +142,7 @@ internal class GetPersonServiceTest(
 
       it("returns a prisoner when valid hmppsId is provided") {
         val validHmppsId = "G2996UX"
-        val person = PersonInPrison(Person(firstName = "Sam", lastName = "Mills"), category = null, crsa = null, dateOfReception = null, status = null, prisonId = null, prisonName = null, cellLocation = null)
+        val person = PersonInPrison(Person(firstName = "Sam", lastName = "Mills"), category = null, csra = null, receptionDate = null, status = null, prisonId = null, prisonName = null, cellLocation = null)
         whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber = "G2996UX")).thenReturn(
           Response(data = POSPrisoner(firstName = "Sam", lastName = "Mills")),
         )
@@ -221,7 +221,7 @@ internal class GetPersonServiceTest(
 
       it("returns prisoner if no prison filter present") {
         val validHmppsId = "G2996UX"
-        val person = PersonInPrison(Person(firstName = "Sam", lastName = "Mills"), category = null, crsa = null, dateOfReception = null, status = null, prisonId = null, prisonName = null, cellLocation = null)
+        val person = PersonInPrison(Person(firstName = "Sam", lastName = "Mills"), category = null, csra = null, receptionDate = null, status = null, prisonId = null, prisonName = null, cellLocation = null)
 
         whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber = validHmppsId)).thenReturn(
           Response(data = POSPrisoner(firstName = "Sam", lastName = "Mills")),
@@ -259,7 +259,7 @@ internal class GetPersonServiceTest(
 
       it("returns prisoner if no consumer filters present") {
         val validHmppsId = "G2996UX"
-        val person = PersonInPrison(Person(firstName = "Sam", lastName = "Mills"), category = null, crsa = null, dateOfReception = null, status = null, prisonId = null, prisonName = null, cellLocation = null)
+        val person = PersonInPrison(Person(firstName = "Sam", lastName = "Mills"), category = null, csra = null, receptionDate = null, status = null, prisonId = null, prisonName = null, cellLocation = null)
 
         whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber = validHmppsId)).thenReturn(
           Response(data = POSPrisoner(firstName = "Sam", lastName = "Mills")),
