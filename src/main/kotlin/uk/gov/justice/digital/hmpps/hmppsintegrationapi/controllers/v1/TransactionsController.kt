@@ -171,7 +171,7 @@ class TransactionsController(
   }
 
   @Operation(
-    summary = "Post transaction.",
+    summary = "Post a transaction.",
     description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
     responses = [
       ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully created a transaction."),
@@ -229,7 +229,7 @@ class TransactionsController(
       throw EntityNotFoundException(" ${response.errors[0].description}")
     }
 
-    auditService.createEvent("CREATE_TRANSACTION", mapOf("hmppsId" to hmppsId, "prisonId" to prisonId, "transactionRequest" to transactionRequest.toApiConformingMap().toString())) // add req properly
+    auditService.createEvent("CREATE_TRANSACTION", mapOf("hmppsId" to hmppsId, "prisonId" to prisonId, "transactionRequest" to transactionRequest.toApiConformingMap().toString()))
     return DataResponse(response.data)
   }
 }

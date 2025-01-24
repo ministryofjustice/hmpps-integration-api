@@ -16,6 +16,9 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 class WebClientWrapper(
   val baseUrl: String,
 ) {
+  @Suppress("ktlint:standard:property-naming")
+  val CREATE_TRANSACTION_RETRY_HTTP_CODES = listOf(500, 502, 503, 504, 522, 599, 404, 499, 408, 301)
+
   val client: WebClient =
     WebClient
       .builder()
@@ -72,7 +75,7 @@ class WebClientWrapper(
       val responseData =
         getResponseBodySpec(method, uri, headers, requestBody)
           .retrieve()
-          .onStatus({ status -> status == HttpStatus.INTERNAL_SERVER_ERROR }) { response -> Mono.error(ResponseException(null, response.statusCode().value())) }
+          .onStatus({ status -> status.value() in CREATE_TRANSACTION_RETRY_HTTP_CODES }) { response -> Mono.error(ResponseException(null, response.statusCode().value())) }
           .bodyToMono(T::class.java)
           .retryWhen(
             Retry
