@@ -11,7 +11,7 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.expressionOfInterest.ExpressionInterest
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ExpressionOfInterest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NomisNumber
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.ExpressionInterestService
@@ -61,7 +61,7 @@ class ExpressionInterestControllerTest(
 
         val result = mockMvc.performAuthorisedPut("$basePath/$validHmppsId/expression-of-interest/jobs/$jobId")
 
-        verify(expressionOfInterestService).sendExpressionOfInterest(ExpressionInterest(jobId, nomisId))
+        verify(expressionOfInterestService).sendExpressionOfInterest(ExpressionOfInterest(jobId, nomisId))
         result.response.status.shouldBe(HttpStatus.OK.value())
       }
 
