@@ -12,12 +12,15 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ResponseException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
+import java.time.Duration
 
+@Suppress("ktlint:standard:property-naming")
 class WebClientWrapper(
   val baseUrl: String,
 ) {
-  @Suppress("ktlint:standard:property-naming")
-  val CREATE_TRANSACTION_RETRY_HTTP_CODES = listOf(500, 502, 503, 504, 522, 599, 404, 499, 408, 301)
+  val CREATE_TRANSACTION_RETRY_HTTP_CODES = listOf(500, 502, 503, 504, 522, 599, 499, 408, 301)
+  val MAX_RETRY_ATTEMPTS = 3L
+  val MIN_BACKOFF_DURATION = Duration.ofSeconds(3)
 
   val client: WebClient =
     WebClient
@@ -79,8 +82,9 @@ class WebClientWrapper(
           .bodyToMono(T::class.java)
           .retryWhen(
             Retry
-              .backoff(3, java.time.Duration.ofSeconds(3))
-              .filter { throwable -> throwable is ResponseException },
+              .backoff(MAX_RETRY_ATTEMPTS, MIN_BACKOFF_DURATION)
+              .filter { throwable -> throwable is ResponseException }
+              .onRetryExhaustedThrow { _, retrySignal -> throw ResponseException("External Service failed to process after max retries", HttpStatus.SERVICE_UNAVAILABLE.value()) },
           ).block()!!
 
       WebClientWrapperResponse.Success(responseData)

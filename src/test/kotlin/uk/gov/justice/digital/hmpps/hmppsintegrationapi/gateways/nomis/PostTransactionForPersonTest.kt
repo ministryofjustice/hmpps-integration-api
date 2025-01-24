@@ -47,7 +47,7 @@ class PostTransactionForPersonTest(
       nomisApiMockServer.stubNomisApiResponseForPost(
         prisonId,
         nomisNumber,
-        asJsonString(exampleTransaction),
+        asJsonString(exampleTransaction.toApiConformingMap()),
         """
         {
           "id": "6179604-1",
