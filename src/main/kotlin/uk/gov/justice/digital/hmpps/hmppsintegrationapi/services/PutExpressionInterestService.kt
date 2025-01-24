@@ -2,7 +2,6 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.stereotype.Component
-import org.springframework.stereotype.Service
 import software.amazon.awssdk.services.sqs.model.SendMessageRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.MessageFailedException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ExpressionOfInterest
@@ -10,9 +9,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ExpressionO
 import uk.gov.justice.hmpps.sqs.HmppsQueue
 import uk.gov.justice.hmpps.sqs.HmppsQueueService
 
-@Service
 @Component
-class ExpressionInterestService(
+class PutExpressionInterestService(
   private val hmppsQueueService: HmppsQueueService,
   private val objectMapper: ObjectMapper,
 ) {

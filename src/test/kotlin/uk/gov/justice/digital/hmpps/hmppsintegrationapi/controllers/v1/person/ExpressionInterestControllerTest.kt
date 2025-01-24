@@ -14,15 +14,15 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMo
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ExpressionOfInterest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NomisNumber
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.ExpressionInterestService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.PutExpressionInterestService
 
 @WebMvcTest(controllers = [ExpressionInterestController::class])
 @ActiveProfiles("test")
 class ExpressionInterestControllerTest(
   @Autowired var springMockMvc: MockMvc,
   @MockitoBean val getPersonService: GetPersonService,
-  @MockitoBean val expressionOfInterestService: ExpressionInterestService,
+  @MockitoBean val expressionOfInterestService: PutExpressionInterestService,
 ) : DescribeSpec({
     val mockMvc = IntegrationAPIMockMvc(springMockMvc)
     val basePath = "/v1/persons"

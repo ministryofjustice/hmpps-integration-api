@@ -17,15 +17,15 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ExpressionO
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NomisNumber
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.ExpressionInterestService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.PutExpressionInterestService
 
 @RestController
 @RequestMapping("/v1/persons")
 @Tag(name = "persons")
 class ExpressionInterestController(
   @Autowired val getPersonService: GetPersonService,
-  @Autowired val expressionInterestService: ExpressionInterestService,
+  @Autowired val putExpressionInterestService: PutExpressionInterestService,
 ) {
   val logger: Logger = LoggerFactory.getLogger(this::class.java)
 
@@ -56,7 +56,7 @@ class ExpressionInterestController(
       }
 
       val verifiedNomisNumber = getVerifiedNomisNumber(hmppsIdCheck) ?: return ResponseEntity.badRequest().build()
-      expressionInterestService.sendExpressionOfInterest(ExpressionOfInterest(jobid, verifiedNomisNumber))
+      putExpressionInterestService.sendExpressionOfInterest(ExpressionOfInterest(jobid, verifiedNomisNumber))
 
       return ResponseEntity.ok().build()
     } catch (e: Exception) {

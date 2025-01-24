@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
@@ -14,12 +15,14 @@ import org.mockito.kotlin.whenever
 import software.amazon.awssdk.services.sqs.SqsAsyncClient
 import software.amazon.awssdk.services.sqs.model.SendMessageRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.MessageFailedException
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.expressionOfInterest.ExpressionInterest
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.MockMvcExtensions.objectMapper
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ExpressionOfInterest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ExpressionOfInterestMessage
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.MessageType
 import uk.gov.justice.hmpps.sqs.HmppsQueue
 import uk.gov.justice.hmpps.sqs.HmppsQueueService
 
-class ExpressionInterestServiceTest :
+class PutExpressionInterestServiceTest :
   DescribeSpec({
     val mockQueueService = mock<HmppsQueueService>()
     val mockSqsClient = mock<SqsAsyncClient>()
@@ -31,7 +34,7 @@ class ExpressionInterestServiceTest :
         on { queueUrl } doReturn "https://test-queue-url"
       }
 
-    val service = ExpressionInterestService(mockQueueService, mockObjectMapper)
+    val service = PutExpressionInterestService(mockQueueService, mockObjectMapper)
 
     beforeTest {
       reset(mockQueueService, mockSqsClient, mockObjectMapper)
@@ -40,13 +43,19 @@ class ExpressionInterestServiceTest :
 
     describe("sendExpressionOfInterest") {
       it("should send a valid message successfully to SQS") {
-        val expressionInterest = ExpressionInterest(jobId = "12345", hmppsId = "H1234")
-        val messageBody = """{"jobId":"12345","verifiedHmppsId":"H1234"}"""
+        val expressionOfInterest = ExpressionOfInterest(jobId = "12345", prisonNumber = "H1234")
+        val expectedMessage =
+          ExpressionOfInterestMessage(
+            jobId = "12345",
+            prisonNumber = "H1234",
+            eventType = MessageType.EXPRESSION_OF_INTEREST_CREATED,
+          )
+        val messageBody = objectMapper.writeValueAsString(expectedMessage)
 
         whenever(mockObjectMapper.writeValueAsString(any<ExpressionOfInterestMessage>()))
           .thenReturn(messageBody)
 
-        service.sendExpressionOfInterest(expressionInterest)
+        service.sendExpressionOfInterest(expressionOfInterest)
 
         verify(mockSqsClient).sendMessage(
           argThat<SendMessageRequest> { request: SendMessageRequest? ->
@@ -59,10 +68,7 @@ class ExpressionInterestServiceTest :
       }
 
       it("should throw MessageFailedException when SQS fails") {
-        val expressionInterest = ExpressionInterest(jobId = "12345", hmppsId = "H1234")
-
-        whenever(mockObjectMapper.writeValueAsString(any<ExpressionOfInterestMessage>()))
-          .thenReturn("""{"jobId":"12345","verifiedHmppsId":"H1234"}""")
+        val expressionInterest = ExpressionOfInterest(jobId = "12345", prisonNumber = "H1234")
 
         whenever(mockSqsClient.sendMessage(any<SendMessageRequest>()))
           .thenThrow(RuntimeException("Failed to send message to SQS"))
@@ -73,6 +79,24 @@ class ExpressionInterestServiceTest :
           }
 
         exception.message shouldBe "Failed to send message to SQS"
+      }
+
+      it("should serialize ExpressionOfInterestMessage with correct keys") {
+        val expectedMessage =
+          ExpressionOfInterestMessage(
+            messageId = "1",
+            jobId = "12345",
+            prisonNumber = "H1234",
+            eventType = MessageType.EXPRESSION_OF_INTEREST_CREATED,
+          )
+
+        val serializedJson = objectMapper.writeValueAsString(expectedMessage)
+        val deserializedMap: Map<String, Any?> = objectMapper.readValue(serializedJson)
+
+        assert(deserializedMap.containsKey("messageId"))
+        assert(deserializedMap.containsKey("jobId"))
+        assert(deserializedMap.containsKey("prisonNumber"))
+        assert(deserializedMap.containsKey("eventType"))
       }
     }
   })
