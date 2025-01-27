@@ -43,9 +43,10 @@ class GetReviewScheduleForPersonService(
             reviewCompletedAt = completed.updatedAt,
             reviewType = if (completed.preRelease) "PRE_RELEASE" else "REGULAR",
             reviewReason = getReviewReason(reviewSchedule.calculationRule),
+            nomisNumber = nomisNumber,
           )
         } else {
-          reviewSchedule
+          reviewSchedule.copy(nomisNumber = nomisNumber)
         }
       }
     // Step 5: Return the updated review schedules
