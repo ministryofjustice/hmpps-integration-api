@@ -286,5 +286,24 @@ class TransactionsControllerTest(
 
         result.response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
       }
+
+      it("returns a 409 CONFLICT status code when there is a duplicate transaction requested") {
+        whenever(postTransactionForPersonService.execute(prisonId, hmppsId, exampleTransaction, null)).thenReturn(
+          Response(
+            data = null,
+            errors =
+              listOf(
+                UpstreamApiError(
+                  causedBy = UpstreamApi.NOMIS,
+                  type = UpstreamApiError.Type.CONFLICT,
+                ),
+              ),
+          ),
+        )
+
+        val result = mockMvc.performAuthorisedPost(postTransactionPath, exampleTransaction)
+
+        result.response.status.shouldBe(HttpStatus.CONFLICT.value())
+      }
     },
   )

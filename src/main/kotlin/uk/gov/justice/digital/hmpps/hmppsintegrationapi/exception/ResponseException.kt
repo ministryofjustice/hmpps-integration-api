@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps
+package uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception
 
 data class ResponseException(
   override var message: String?,

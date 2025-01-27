@@ -34,6 +34,7 @@ class PostTransactionForPersonTest(
     val nomisApiMockServer = NomisApiMockServer()
     val prisonId = "XYZ"
     val nomisNumber = "AA1234Z"
+    val path = "/api/v1/prison/$prisonId/offenders/$nomisNumber/transactions"
     val description = "Canteen Purchase of £16.34"
     val amount = 1634
     val clientTransactionId = "CL123212"
@@ -53,8 +54,7 @@ class PostTransactionForPersonTest(
 
     it("authenticates using HMPPS Auth with credentials") {
       nomisApiMockServer.stubNomisApiResponseForPost(
-        prisonId,
-        nomisNumber,
+        path,
         asJsonString(exampleTransaction.toApiConformingMap()),
         """
         {
@@ -62,7 +62,6 @@ class PostTransactionForPersonTest(
           "description": "Transfer In Regular from caseload PVR"
         }
         """.removeWhitespaceAndNewlines(),
-        HttpStatus.OK,
       )
 
       nomisGateway.postTransactionForPerson(
@@ -76,8 +75,7 @@ class PostTransactionForPersonTest(
 
     it("returns expected response with transaction id and description when a valid request body is provided") {
       nomisApiMockServer.stubNomisApiResponseForPost(
-        prisonId,
-        nomisNumber,
+        path,
         asJsonString(exampleTransaction.toApiConformingMap()),
         """
         {
@@ -85,7 +83,6 @@ class PostTransactionForPersonTest(
           "description": "Transfer In Regular from caseload PVR"
         }
         """.removeWhitespaceAndNewlines(),
-        HttpStatus.OK,
       )
 
       val response =
@@ -97,16 +94,16 @@ class PostTransactionForPersonTest(
 
       response.errors.shouldBeEmpty()
       response.data
-        ?.id
+        .id
         .shouldBe("6179604-1")
       response.data
-        ?.description
+        .description
         .shouldBe("Transfer In Regular from caseload PVR")
     }
 
     it("return a 404 error response") {
-      var invalidTransactionRequest = TransactionRequest("invalid", "", 0, "", "")
-      nomisApiMockServer.stubNomisApiResponseForPost(prisonId, nomisNumber, asJsonString(invalidTransactionRequest), "", HttpStatus.NOT_FOUND)
+      val invalidTransactionRequest = TransactionRequest("invalid", "", 0, "", "")
+      nomisApiMockServer.stubNomisApiResponseForPost(path, asJsonString(invalidTransactionRequest), "", HttpStatus.NOT_FOUND)
 
       val response = nomisGateway.postTransactionForPerson(prisonId, nomisNumber, invalidTransactionRequest)
 
@@ -115,8 +112,7 @@ class PostTransactionForPersonTest(
 
     it("return a 409 error response") {
       nomisApiMockServer.stubNomisApiResponseForPost(
-        prisonId,
-        nomisNumber,
+        path,
         asJsonString(exampleTransaction.toApiConformingMap()),
         """
         {

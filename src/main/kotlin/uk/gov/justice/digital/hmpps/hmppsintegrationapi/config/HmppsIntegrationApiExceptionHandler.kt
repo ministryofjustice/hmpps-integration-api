@@ -5,6 +5,7 @@ import jakarta.validation.ValidationException
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.HttpStatus.BAD_REQUEST
+import org.springframework.http.HttpStatus.CONFLICT
 import org.springframework.http.HttpStatus.FORBIDDEN
 import org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR
 import org.springframework.http.HttpStatus.NOT_FOUND
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.AuthenticationFailedException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.ConflictFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 
 @RestControllerAdvice
@@ -68,6 +70,20 @@ class HmppsIntegrationApiExceptionHandler {
         ErrorResponse(
           status = INTERNAL_SERVER_ERROR,
           developerMessage = "Unexpected error: ${e.message}",
+          userMessage = e.message,
+        ),
+      )
+  }
+
+  @ExceptionHandler(ConflictFoundException::class)
+  fun handleConflictException(e: ConflictFoundException): ResponseEntity<ErrorResponse> {
+    logAndCapture("Conflict exception: {}", e)
+    return ResponseEntity
+      .status(CONFLICT)
+      .body(
+        ErrorResponse(
+          status = CONFLICT,
+          developerMessage = "Unable to complete request as this is a duplicate request",
           userMessage = e.message,
         ),
       )

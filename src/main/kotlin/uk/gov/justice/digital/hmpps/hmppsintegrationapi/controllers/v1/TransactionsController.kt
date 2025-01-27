@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.ConflictFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Transaction
@@ -197,6 +198,16 @@ class TransactionsController(
         ],
       ),
       ApiResponse(
+        responseCode = "409",
+        content = [
+          Content(
+            schema =
+              io.swagger.v3.oas.annotations.media
+                .Schema(ref = "#/components/schemas/TransactionConflict"),
+          ),
+        ],
+      ),
+      ApiResponse(
         responseCode = "500",
         content = [
           Content(
@@ -227,6 +238,10 @@ class TransactionsController(
 
     if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
       throw EntityNotFoundException(" ${response.errors[0].description}")
+    }
+
+    if (response.hasError(UpstreamApiError.Type.CONFLICT)) {
+      throw ConflictFoundException("The transaction ${transactionRequest.clientTransactionId} has not been recorded as it is a duplicate.")
     }
 
     auditService.createEvent("CREATE_TRANSACTION", mapOf("hmppsId" to hmppsId, "prisonId" to prisonId, "transactionRequest" to transactionRequest.toApiConformingMap().toString()))

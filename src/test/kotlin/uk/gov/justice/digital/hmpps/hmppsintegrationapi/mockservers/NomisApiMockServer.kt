@@ -6,7 +6,6 @@ import com.github.tomakehurst.wiremock.client.WireMock.equalToJson
 import com.github.tomakehurst.wiremock.client.WireMock.get
 import com.github.tomakehurst.wiremock.client.WireMock.matching
 import com.github.tomakehurst.wiremock.client.WireMock.post
-import com.github.tomakehurst.wiremock.client.WireMock.urlPathTemplate
 import org.springframework.http.HttpStatus
 
 class NomisApiMockServer : WireMockServer(WIREMOCK_PORT) {
@@ -34,16 +33,13 @@ class NomisApiMockServer : WireMockServer(WIREMOCK_PORT) {
   }
 
   fun stubNomisApiResponseForPost(
-    prisonId: String,
-    nomisNumber: String,
+    path: String,
     reqBody: String,
     resBody: String,
-    status: HttpStatus,
+    status: HttpStatus = HttpStatus.OK,
   ) {
-    val externalUrl = urlPathTemplate("/api/v1/prison/$prisonId/offenders/$nomisNumber/transactions")
-
     stubFor(
-      post(externalUrl)
+      post(path)
         .withHeader(
           "Authorization",
           matching("Bearer ${HmppsAuthMockServer.TOKEN}"),
