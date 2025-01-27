@@ -431,6 +431,25 @@
 </tr>
 
 <tr>
+<td>409</td>
+<td>
+<p>Conflict</p>
+
+
+
+<pre><code>{
+  "status": 409,
+  "userMessage": "Conflict",
+  "developerMessage": "Duplicate post - The client_unique_ref has been used before"
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-transactionconflict'>TransactionConflict</a>
+</td>
+</tr>
+
+<tr>
 <td>500</td>
 <td>
 <p>Internal Server Error</p>
@@ -13126,6 +13145,49 @@
 
 
 <table class='schema-internalservererror'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>status</td>
+<td>number</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>userMessage</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>developerMessage</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+</tbody>
+</table>
+
+<h3 id="schema-transactionconflict">TransactionConflict</h3>
+<p>Duplicate post - The client<em>unique</em>ref has been used before</p>
+
+
+<table class='schema-transactionconflict'>
 <thead>
 <tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
 </thead>
