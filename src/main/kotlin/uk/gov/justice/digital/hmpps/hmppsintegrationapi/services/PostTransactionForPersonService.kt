@@ -30,15 +30,7 @@ class PostTransactionForPersonService(
       )
     }
     val personResponse = getPersonService.getNomisNumber(hmppsId = hmppsId)
-
-    if (personResponse.data == null) {
-      return Response(
-        data = null,
-        errors = listOf(UpstreamApiError(UpstreamApi.NOMIS, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Nomis number not found")),
-      )
-    }
-
-    val nomisNumber = personResponse.data.nomisNumber
+    val nomisNumber = personResponse.data?.nomisNumber
 
     if (nomisNumber == null) {
       return Response(
@@ -68,7 +60,6 @@ class PostTransactionForPersonService(
       )
     }
 
-    // TODO
-    throw Exception("TODO")
+    throw IllegalStateException("No information provided by upstream system")
   }
 }
