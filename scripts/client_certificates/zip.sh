@@ -9,7 +9,7 @@ read_certificate_arguments() {
 }
 
 get_api_key() {
-  api_key=`kubectl -n hmpps-integration-api-dev get secrets consumer-api-keys -o json | jq -r .data.$client | base64 -d`
+  api_key=`kubectl -n hmpps-integration-api-$environment get secrets consumer-api-keys -o json | jq -r .data.$client | base64 -d`
   echo -n $api_key > $environment-$client-api-key
 }
 
