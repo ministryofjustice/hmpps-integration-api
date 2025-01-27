@@ -29,17 +29,16 @@ class PostTransactionForPersonService(
         errors = listOf(UpstreamApiError(UpstreamApi.NOMIS, UpstreamApiError.Type.FORBIDDEN, "Not found")),
       )
     }
-    // TODO: Fix these always false
     val personResponse = getPersonService.getNomisNumber(hmppsId = hmppsId)
 
-    if (personResponse == null) {
+    if (personResponse.data == null) {
       return Response(
         data = null,
         errors = listOf(UpstreamApiError(UpstreamApi.NOMIS, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Nomis number not found")),
       )
     }
 
-    val nomisNumber = personResponse.data?.nomisNumber
+    val nomisNumber = personResponse.data.nomisNumber
 
     if (nomisNumber == null) {
       return Response(
