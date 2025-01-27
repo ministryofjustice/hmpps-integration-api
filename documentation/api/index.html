@@ -1040,12 +1040,60 @@
 <pre><code>{
   "data": [
     {
-      "firstName": "John",
-      "lastName": "Morgan",
-      "middleName": "John",
-      "dateOfBirth": "1965-12-01",
-      "gender": "Male",
-      "ethnicity": "White: Eng./Welsh/Scot./N.Irish/British",
+      "person": {
+        "firstName": "John",
+        "lastName": "Morgan",
+        "middleName": "John",
+        "dateOfBirth": "1965-12-01",
+        "gender": "Male",
+        "ethnicity": "White: Eng./Welsh/Scot./N.Irish/British",
+        "aliases": [
+          {
+            "firstName": "John",
+            "lastName": "Marston",
+            "middleName": "Marston",
+            "dateOfBirth": "1965-12-01",
+            "gender": "Male",
+            "ethnicity": "Prefer not to say"
+          }
+        ],
+        "identifiers": {
+          "nomisNumber": "A1234AA",
+          "croNumber": "SF80/655108T",
+          "deliusCrn": "X00001"
+        },
+        "pncId": "string",
+        "hmppsId": "2008/0545166T",
+        "contactDetails": {
+          "phoneNumbers": [
+            {
+              "number": "079123456789",
+              "type": "TELEPHONE"
+            }
+          ],
+          "emails": [
+            {
+            }
+          ]
+        },
+        "currentRestriction": "boolean",
+        "restrictionMessage": "string",
+        "currentExclusion": "boolean",
+        "exclusionMessage": "string"
+      },
+      "category": "string",
+      "csra": "string",
+      "receptionDate": "string",
+      "status": "string",
+      "prisonId": "string",
+      "prisonName": "string",
+      "cellLocation": "string",
+      "firstName": "string",
+      "lastName": "string",
+      "middleName": "string",
+      "dateOfBirth": "string",
+      "gender": "string",
+      "ethnicity": "string",
       "aliases": [
         {
           "firstName": "John",
@@ -1062,7 +1110,7 @@
         "deliusCrn": "X00001"
       },
       "pncId": "string",
-      "hmppsId": "2008/0545166T",
+      "hmppsId": "string",
       "contactDetails": {
         "phoneNumbers": [
           {
@@ -1093,7 +1141,7 @@
 
 </td>
 <td>
-<a href='#schema-paginatedresponseperson'>PaginatedResponsePerson</a>
+<a href='#schema-paginatedresponsepersoninprison'>PaginatedResponsePersonInPrison</a>
 </td>
 </tr>
 
@@ -1192,12 +1240,60 @@
 
 <pre><code>{
   "data": {
-    "firstName": "John",
-    "lastName": "Morgan",
-    "middleName": "John",
-    "dateOfBirth": "1965-12-01",
-    "gender": "Male",
-    "ethnicity": "White: Eng./Welsh/Scot./N.Irish/British",
+    "person": {
+      "firstName": "John",
+      "lastName": "Morgan",
+      "middleName": "John",
+      "dateOfBirth": "1965-12-01",
+      "gender": "Male",
+      "ethnicity": "White: Eng./Welsh/Scot./N.Irish/British",
+      "aliases": [
+        {
+          "firstName": "John",
+          "lastName": "Marston",
+          "middleName": "Marston",
+          "dateOfBirth": "1965-12-01",
+          "gender": "Male",
+          "ethnicity": "Prefer not to say"
+        }
+      ],
+      "identifiers": {
+        "nomisNumber": "A1234AA",
+        "croNumber": "SF80/655108T",
+        "deliusCrn": "X00001"
+      },
+      "pncId": "string",
+      "hmppsId": "2008/0545166T",
+      "contactDetails": {
+        "phoneNumbers": [
+          {
+            "number": "079123456789",
+            "type": "TELEPHONE"
+          }
+        ],
+        "emails": [
+          {
+          }
+        ]
+      },
+      "currentRestriction": "boolean",
+      "restrictionMessage": "string",
+      "currentExclusion": "boolean",
+      "exclusionMessage": "string"
+    },
+    "category": "string",
+    "csra": "string",
+    "receptionDate": "string",
+    "status": "string",
+    "prisonId": "string",
+    "prisonName": "string",
+    "cellLocation": "string",
+    "firstName": "string",
+    "lastName": "string",
+    "middleName": "string",
+    "dateOfBirth": "string",
+    "gender": "string",
+    "ethnicity": "string",
     "aliases": [
       {
         "firstName": "John",
@@ -1214,7 +1310,7 @@
       "deliusCrn": "X00001"
     },
     "pncId": "string",
-    "hmppsId": "2008/0545166T",
+    "hmppsId": "string",
     "contactDetails": {
       "phoneNumbers": [
         {
@@ -1236,7 +1332,7 @@
 
 </td>
 <td>
-<a href='#schema-dataresponseperson'>DataResponsePerson</a>
+<a href='#schema-dataresponsepersoninprison'>DataResponsePersonInPrison</a>
 </td>
 </tr>
 
@@ -6453,10 +6549,10 @@
 </tbody>
 </table>
 
-<h3 id="schema-paginatedresponseperson">PaginatedResponsePerson</h3>
+<h3 id="schema-paginatedresponsepersoninprison">PaginatedResponsePersonInPrison</h3>
 
 
-<table class='schema-paginatedresponseperson'>
+<table class='schema-paginatedresponsepersoninprison'>
 <thead>
 <tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
 </thead>
@@ -6468,7 +6564,7 @@
 <td>true</td>
 <td></td>
 <td>
-  <a href='#schema-person'>Person</a>
+  <a href='#schema-personinprison'>PersonInPrison</a>
 </td>
 </tr>
 
@@ -6734,6 +6830,249 @@
 </tbody>
 </table>
 
+<h3 id="schema-personinprison">PersonInPrison</h3>
+
+
+<table class='schema-personinprison'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>person</td>
+<td>object</td>
+<td>false</td>
+<td></td>
+<td>
+  <a href='#schema-person'>Person</a>
+</td>
+</tr>
+
+<tr>
+<td>category</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>csra</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>receptionDate</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>status</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>prisonId</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>prisonName</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>cellLocation</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>firstName</td>
+<td>string</td>
+<td>true</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>lastName</td>
+<td>string</td>
+<td>true</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>middleName</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>dateOfBirth</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>gender</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>ethnicity</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>aliases</td>
+<td>array</td>
+<td>true</td>
+<td></td>
+<td>
+  <a href='#schema-alias'>Alias</a>
+</td>
+</tr>
+
+<tr>
+<td>identifiers</td>
+<td>object</td>
+<td>true</td>
+<td><p>Other unique identifiers for a person.</p>
+</td>
+<td>
+  <a href='#schema-identifiers'>Identifiers</a>
+</td>
+</tr>
+
+<tr>
+<td>pncId</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>hmppsId</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>contactDetails</td>
+<td>object</td>
+<td>false</td>
+<td></td>
+<td>
+  <a href='#schema-contactdetailswithemailandphone'>ContactDetailsWithEmailAndPhone</a>
+</td>
+</tr>
+
+<tr>
+<td>currentRestriction</td>
+<td>boolean</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>restrictionMessage</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>currentExclusion</td>
+<td>boolean</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>exclusionMessage</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+</tbody>
+</table>
+
 <h3 id="schema-phonenumber">PhoneNumber</h3>
 
 
@@ -6768,10 +7107,10 @@
 </tbody>
 </table>
 
-<h3 id="schema-dataresponseperson">DataResponsePerson</h3>
+<h3 id="schema-dataresponsepersoninprison">DataResponsePersonInPrison</h3>
 
 
-<table class='schema-dataresponseperson'>
+<table class='schema-dataresponsepersoninprison'>
 <thead>
 <tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
 </thead>
@@ -6783,7 +7122,7 @@
 <td>true</td>
 <td></td>
 <td>
-  <a href='#schema-person'>Person</a>
+  <a href='#schema-personinprison'>PersonInPrison</a>
 </td>
 </tr>
 
@@ -6928,6 +7267,38 @@
 <td></td>
 <td>
   <a href='#schema-alert'>Alert</a>
+</td>
+</tr>
+
+<tr>
+<td>pagination</td>
+<td>object</td>
+<td>true</td>
+<td></td>
+<td>
+  <a href='#schema-pagination'>Pagination</a>
+</td>
+</tr>
+
+</tbody>
+</table>
+
+<h3 id="schema-paginatedresponseperson">PaginatedResponsePerson</h3>
+
+
+<table class='schema-paginatedresponseperson'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>data</td>
+<td>array</td>
+<td>true</td>
+<td></td>
+<td>
+  <a href='#schema-person'>Person</a>
 </td>
 </tr>
 
