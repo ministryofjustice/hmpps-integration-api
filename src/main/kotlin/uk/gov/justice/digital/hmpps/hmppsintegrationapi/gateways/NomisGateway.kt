@@ -397,7 +397,7 @@ class NomisGateway(
     prisonId: String,
     nomisNumber: String,
     transactionRequest: TransactionRequest,
-  ): Response<NomisTransactionResponse> {
+  ): Response<NomisTransactionResponse?> {
     val result =
       webClient.requestWithRetry<NomisTransactionResponse>(
         HttpMethod.POST,
@@ -413,7 +413,7 @@ class NomisGateway(
       is WebClientWrapperResponse.Error,
       -> {
         Response(
-          data = NomisTransactionResponse(id = null, description = null),
+          data = null,
           errors = result.errors,
         )
       }

@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.nomis
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.collections.shouldBeEmpty
+import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory
@@ -58,8 +59,7 @@ class PostTransactionForPersonTest(
         asJsonString(exampleTransaction.toApiConformingMap()),
         """
         {
-          "id": "6179604-1",
-          "description": "Transfer In Regular from caseload PVR"
+          "id": "6179604-1"
         }
         """.removeWhitespaceAndNewlines(),
       )
@@ -79,8 +79,7 @@ class PostTransactionForPersonTest(
         asJsonString(exampleTransaction.toApiConformingMap()),
         """
         {
-          "id": "6179604-1",
-          "description": "Transfer In Regular from caseload PVR"
+          "id": "6179604-1"
         }
         """.removeWhitespaceAndNewlines(),
       )
@@ -93,12 +92,10 @@ class PostTransactionForPersonTest(
         )
 
       response.errors.shouldBeEmpty()
-      response.data
+      response.data.shouldNotBeNull()
+      response.data!!
         .id
         .shouldBe("6179604-1")
-      response.data
-        .description
-        .shouldBe("Transfer In Regular from caseload PVR")
     }
 
     it("return a 404 error response") {

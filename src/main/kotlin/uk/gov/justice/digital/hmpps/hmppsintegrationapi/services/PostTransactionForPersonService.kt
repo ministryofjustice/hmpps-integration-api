@@ -29,7 +29,7 @@ class PostTransactionForPersonService(
         errors = listOf(UpstreamApiError(UpstreamApi.NOMIS, UpstreamApiError.Type.FORBIDDEN, "Not found")),
       )
     }
-
+    // TODO: Fix these always false
     val personResponse = getPersonService.getNomisNumber(hmppsId = hmppsId)
 
     if (personResponse == null) {
@@ -62,14 +62,14 @@ class PostTransactionForPersonService(
       )
     }
 
-    val transactionCreateResponse = TransactionCreateResponse()
-    if (!response.data.id.isNullOrBlank()) {
-      transactionCreateResponse.transactionId = response.data.id
+    if (response.data != null) {
+      return Response(
+        data = TransactionCreateResponse(response.data.id),
+        errors = emptyList(),
+      )
     }
 
-    return Response(
-      data = transactionCreateResponse,
-      errors = emptyList(),
-    )
+    // TODO
+    throw Exception("TODO")
   }
 }
