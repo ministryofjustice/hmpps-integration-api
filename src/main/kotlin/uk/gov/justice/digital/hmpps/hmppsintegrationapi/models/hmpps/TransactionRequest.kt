@@ -16,4 +16,3 @@ data class TransactionRequest(
       "client_unique_ref" to clientUniqueRef,
     ).filterValues { it != null }
 }
-// 499, etc, loads of exceptions

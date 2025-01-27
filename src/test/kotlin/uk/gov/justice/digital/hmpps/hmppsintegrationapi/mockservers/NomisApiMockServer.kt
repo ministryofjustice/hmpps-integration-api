@@ -35,7 +35,7 @@ class NomisApiMockServer : WireMockServer(WIREMOCK_PORT) {
     nomisNumber: String,
     reqBody: String,
     resBody: String,
-    status: HttpStatus = HttpStatus.OK,
+    status: HttpStatus,
   ) {
     val externalUrl = urlPathTemplate("/api/v1/prison/$prisonId/offenders/$nomisNumber/transactions")
 

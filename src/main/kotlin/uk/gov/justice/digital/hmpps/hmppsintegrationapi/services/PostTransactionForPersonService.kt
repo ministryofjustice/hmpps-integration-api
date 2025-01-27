@@ -15,9 +15,6 @@ class PostTransactionForPersonService(
   @Autowired val nomisGateway: NomisGateway,
   @Autowired val getPersonService: GetPersonService,
 ) {
-  @Suppress("ktlint:standard:property-naming")
-  final val VALID_TRANSACTION_TYPE_CODES = listOf("CANT", "REFND", "PHONE", "MRPR", "MTDS", "DTDS", "CASHD", "RELA", "RELS")
-
   fun execute(
     prisonId: String,
     hmppsId: String,
@@ -30,13 +27,6 @@ class PostTransactionForPersonService(
       return Response(
         data = null,
         errors = listOf(UpstreamApiError(UpstreamApi.NOMIS, UpstreamApiError.Type.FORBIDDEN, "Not found")),
-      )
-    }
-
-    if (transactionRequest.type !in VALID_TRANSACTION_TYPE_CODES) {
-      return Response(
-        data = null,
-        errors = listOf(UpstreamApiError(UpstreamApi.NOMIS, UpstreamApiError.Type.BAD_REQUEST, "Invalid transaction type")),
       )
     }
 

@@ -21,6 +21,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.NomisApiMock
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.TransactionRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisTransactionResponse
 
 @ActiveProfiles("test")
 @ContextConfiguration(
@@ -43,7 +44,15 @@ class PostTransactionForPersonTest(
 
     beforeEach {
       nomisApiMockServer.start()
+      Mockito.reset(hmppsAuthGateway)
+      whenever(hmppsAuthGateway.getClientToken("NOMIS")).thenReturn(HmppsAuthMockServer.TOKEN)
+    }
 
+    afterTest {
+      nomisApiMockServer.stop()
+    }
+
+    it("authenticates using HMPPS Auth with credentials") {
       nomisApiMockServer.stubNomisApiResponseForPost(
         prisonId,
         nomisNumber,
@@ -54,17 +63,9 @@ class PostTransactionForPersonTest(
           "description": "Transfer In Regular from caseload PVR"
         }
         """.removeWhitespaceAndNewlines(),
+        HttpStatus.OK,
       )
 
-      Mockito.reset(hmppsAuthGateway)
-      whenever(hmppsAuthGateway.getClientToken("NOMIS")).thenReturn(HmppsAuthMockServer.TOKEN)
-    }
-
-    afterTest {
-      nomisApiMockServer.stop()
-    }
-
-    it("authenticates using HMPPS Auth with credentials") {
       nomisGateway.postTransactionForPerson(
         prisonId,
         nomisNumber,
@@ -75,6 +76,19 @@ class PostTransactionForPersonTest(
     }
 
     it("returns expected response with transaction id and description when a valid request body is provided") {
+      nomisApiMockServer.stubNomisApiResponseForPost(
+        prisonId,
+        nomisNumber,
+        asJsonString(exampleTransaction.toApiConformingMap()),
+        """
+        {
+          "id": "6179604-1",
+          "description": "Transfer In Regular from caseload PVR"
+        }
+        """.removeWhitespaceAndNewlines(),
+        HttpStatus.OK,
+      )
+
       val response =
         nomisGateway.postTransactionForPerson(
           prisonId,
@@ -91,13 +105,23 @@ class PostTransactionForPersonTest(
         .shouldBe("Transfer In Regular from caseload PVR")
     }
 
-    it("return a 500 error response") {
+    it("return a 404 error response") {
       var invalidTransactionRequest = TransactionRequest("invalid", "", 0, "", "")
       nomisApiMockServer.stubNomisApiResponseForPost(prisonId, nomisNumber, asJsonString(invalidTransactionRequest), "", HttpStatus.NOT_FOUND)
 
       val response = nomisGateway.postTransactionForPerson(prisonId, nomisNumber, invalidTransactionRequest)
 
       response.errors.shouldBe(arrayOf(UpstreamApiError(causedBy = UpstreamApi.NOMIS, type = UpstreamApiError.Type.ENTITY_NOT_FOUND)))
+    }
+
+    it("return a 409 error response") {
+      val nomisTransactionResponse = NomisTransactionResponse(id = "----", description = "Identical transaction already exists")
+
+      nomisApiMockServer.stubNomisApiResponseForPost(prisonId, nomisNumber, asJsonString(exampleTransaction), asJsonString(nomisTransactionResponse), HttpStatus.CONFLICT)
+
+      val response = nomisGateway.postTransactionForPerson(prisonId, nomisNumber, exampleTransaction)
+
+      response.errors.shouldBe(arrayOf(UpstreamApiError(causedBy = UpstreamApi.NOMIS, type = UpstreamApiError.Type.CONFLICT)))
     }
   })
 
