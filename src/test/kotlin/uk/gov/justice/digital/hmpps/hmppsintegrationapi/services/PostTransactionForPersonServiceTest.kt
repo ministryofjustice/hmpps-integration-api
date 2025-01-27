@@ -41,7 +41,6 @@ internal class PostTransactionForPersonServiceTest(
     val exampleTransactionResponse =
       NomisTransactionResponse(
         id = "SUCCESS",
-        description = "Transaction successful",
       )
 
     beforeEach {

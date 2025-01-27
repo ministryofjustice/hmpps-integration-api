@@ -29,16 +29,7 @@ class PostTransactionForPersonService(
         errors = listOf(UpstreamApiError(UpstreamApi.NOMIS, UpstreamApiError.Type.FORBIDDEN, "Not found")),
       )
     }
-
     val personResponse = getPersonService.getNomisNumber(hmppsId = hmppsId)
-
-    if (personResponse == null) {
-      return Response(
-        data = null,
-        errors = listOf(UpstreamApiError(UpstreamApi.NOMIS, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Nomis number not found")),
-      )
-    }
-
     val nomisNumber = personResponse.data?.nomisNumber
 
     if (nomisNumber == null) {
@@ -62,14 +53,13 @@ class PostTransactionForPersonService(
       )
     }
 
-    val transactionCreateResponse = TransactionCreateResponse()
-    if (!response.data.id.isNullOrBlank()) {
-      transactionCreateResponse.transactionId = response.data.id
+    if (response.data != null) {
+      return Response(
+        data = TransactionCreateResponse(response.data.id),
+        errors = emptyList(),
+      )
     }
 
-    return Response(
-      data = transactionCreateResponse,
-      errors = emptyList(),
-    )
+    throw IllegalStateException("No information provided by upstream system")
   }
 }
