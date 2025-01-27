@@ -148,6 +148,9 @@
         <a href="../../documentation/api/index.html#servers"><span>Servers</span></a>
       </li>
       <li>
+        <a href="../../documentation/api/index.html#v1-prison-prisonid-prisoners-hmppsid-transactions"><span>/v1/prison/{prisonId}/prisoners/{hmppsId}/transactions</span></a>
+      </li>
+      <li>
         <a href="../../documentation/api/index.html#v1-prison-prisonid-prisoners-hmppsid-transactions-clientuniqueref"><span>/v1/prison/{prisonId}/prisoners/{hmppsId}/transactions/{clientUniqueRef}</span></a>
       </li>
       <li>
@@ -315,6 +318,159 @@
     <a href="https://integration-api.hmpps.service.justice.gov.uk">https://integration-api.hmpps.service.justice.gov.uk</a>
   
   </div>
+
+
+
+<h2 id="v1-prison-prisonid-prisoners-hmppsid-transactions">/v1/prison/{prisonId}/prisoners/{hmppsId}/transactions</h2>
+
+<h3 id="v1-prison-prisonid-prisoners-hmppsid-transactions-post">post</h3>
+
+  <p><em>Post a transaction.</em></p>
+
+
+  <p><b>Applicable filters</b>: <ul><li>prisons</li></ul></p>
+
+
+
+
+<h4 id="v1-prison-prisonid-prisoners-hmppsid-transactions-post-parameters">Parameters</h4>
+<table>
+<thead>
+<tr><th>Parameter</th><th>In</th><th>Type</th><th>Required</th><th>Description</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>prisonId</td>
+<td>path</td>
+<td>string</td>
+<td>true</td>
+<td>
+
+</td>
+</tr>
+
+<tr>
+<td>hmppsId</td>
+<td>path</td>
+<td>string</td>
+<td>true</td>
+<td>
+
+</td>
+</tr>
+
+</tbody>
+</table>
+
+
+
+
+<h4 id="v1-prison-prisonid-prisoners-hmppsid-transactions-post-responses">Responses</h4>
+<table>
+<thead>
+<tr><th>Status</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>200</td>
+<td>
+<p>Successfully created a transaction.</p>
+
+
+
+<pre><code>{
+  "data": {
+    "transactionId": "string"
+  }
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-dataresponsetransactioncreateresponse'>DataResponseTransactionCreateResponse</a>
+</td>
+</tr>
+
+<tr>
+<td>400</td>
+<td>
+<p>Bad Request</p>
+
+
+
+<pre><code>{
+  "status": 400,
+  "userMessage": "Validation failure: No query parameters specified.",
+  "developerMessage": "No query parameters specified."
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-badrequest'>BadRequest</a>
+</td>
+</tr>
+
+<tr>
+<td>404</td>
+<td>
+<p>Not Found</p>
+
+
+
+<pre><code>{
+  "status": 404,
+  "userMessage": "404 Not found error: Could not find person with HMPPS id: 2003/0011991D.",
+  "developerMessage": "Could not find person with HMPPS id: 2003/0011991D."
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-personnotfound'>PersonNotFound</a>
+</td>
+</tr>
+
+<tr>
+<td>409</td>
+<td>
+<p>Conflict</p>
+
+
+
+<pre><code>{
+  "status": 409,
+  "userMessage": "Conflict",
+  "developerMessage": "Duplicate post - The client_unique_ref has been used before"
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-transactionconflict'>TransactionConflict</a>
+</td>
+</tr>
+
+<tr>
+<td>500</td>
+<td>
+<p>Internal Server Error</p>
+
+
+
+<pre><code>{
+  "status": 500,
+  "userMessage": "Internal Server Error",
+  "developerMessage": "Unable to complete request as an upstream service is not responding."
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-internalservererror'>InternalServerError</a>
+</td>
+</tr>
+
+</tbody>
+</table>
+
 
 
 
@@ -6112,6 +6268,112 @@
 
 
 <h2 id="schemas">Schemas</h2>
+<h3 id="schema-transactionrequest">TransactionRequest</h3>
+
+
+<table class='schema-transactionrequest'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>type</td>
+<td>string</td>
+<td>true</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>description</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>amount</td>
+<td>integer</td>
+<td>true</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>clientTransactionId</td>
+<td>string</td>
+<td>true</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>clientUniqueRef</td>
+<td>string</td>
+<td>true</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+</tbody>
+</table>
+
+<h3 id="schema-dataresponsetransactioncreateresponse">DataResponseTransactionCreateResponse</h3>
+
+
+<table class='schema-dataresponsetransactioncreateresponse'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>data</td>
+<td>object</td>
+<td>true</td>
+<td></td>
+<td>
+  <a href='#schema-transactioncreateresponse'>TransactionCreateResponse</a>
+</td>
+</tr>
+
+</tbody>
+</table>
+
+<h3 id="schema-transactioncreateresponse">TransactionCreateResponse</h3>
+
+
+<table class='schema-transactioncreateresponse'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>transactionId</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+</tbody>
+</table>
+
 <h3 id="schema-dataresponsetransaction">DataResponseTransaction</h3>
 
 
@@ -13254,6 +13516,49 @@
 
 
 <table class='schema-internalservererror'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>status</td>
+<td>number</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>userMessage</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>developerMessage</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+</tbody>
+</table>
+
+<h3 id="schema-transactionconflict">TransactionConflict</h3>
+<p>Duplicate post - The client<em>unique</em>ref has been used before</p>
+
+
+<table class='schema-transactionconflict'>
 <thead>
 <tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
 </thead>
