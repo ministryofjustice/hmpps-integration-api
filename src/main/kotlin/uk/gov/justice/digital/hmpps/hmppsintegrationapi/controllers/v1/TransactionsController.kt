@@ -9,18 +9,24 @@ import jakarta.validation.ValidationException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestAttribute
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.ConflictFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Transaction
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.TransactionCreateResponse
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.TransactionRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Transactions
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetTransactionForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetTransactionsForPersonService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.PostTransactionForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 import java.time.LocalDate
 
@@ -31,6 +37,7 @@ class TransactionsController(
   @Autowired val auditService: AuditService,
   @Autowired val getTransactionsForPersonService: GetTransactionsForPersonService,
   @Autowired val getTransactionForPersonService: GetTransactionForPersonService,
+  @Autowired val postTransactionsForPersonService: PostTransactionForPersonService,
 ) {
   @Operation(
     summary = "Returns all transactions for a prisoner associated with an account code that they have at a prison.",
@@ -98,7 +105,7 @@ class TransactionsController(
     }
 
     if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
-      throw ValidationException("Either invalid HMPPS ID: $hmppsId at or incorrect prison: $prisonId")
+      throw ValidationException("Either invalid HMPPS ID: $hmppsId or incorrect prison: $prisonId")
     }
 
     auditService.createEvent("GET_TRANSACTIONS_FOR_PERSON", mapOf("hmppsId" to hmppsId, "prisonId" to prisonId, "fromDate" to fromDate, "toDate" to toDate))
@@ -157,10 +164,87 @@ class TransactionsController(
     }
 
     if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
-      throw ValidationException("Either invalid HMPPS ID: $hmppsId at or incorrect prison: $prisonId")
+      throw ValidationException("Either invalid HMPPS ID: $hmppsId or incorrect prison: $prisonId")
     }
 
     auditService.createEvent("GET_TRANSACTION_FOR_PERSON", mapOf("hmppsId" to hmppsId, "prisonId" to prisonId, "clientUniqueRef" to clientUniqueRef))
+    return DataResponse(response.data)
+  }
+
+  @Operation(
+    summary = "Post a transaction.",
+    description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
+    responses = [
+      ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully created a transaction."),
+      ApiResponse(
+        responseCode = "400",
+        description = "",
+        content = [
+          Content(
+            schema =
+              io.swagger.v3.oas.annotations.media
+                .Schema(ref = "#/components/schemas/BadRequest"),
+          ),
+        ],
+      ),
+      ApiResponse(
+        responseCode = "404",
+        content = [
+          Content(
+            schema =
+              io.swagger.v3.oas.annotations.media
+                .Schema(ref = "#/components/schemas/PersonNotFound"),
+          ),
+        ],
+      ),
+      ApiResponse(
+        responseCode = "409",
+        content = [
+          Content(
+            schema =
+              io.swagger.v3.oas.annotations.media
+                .Schema(ref = "#/components/schemas/TransactionConflict"),
+          ),
+        ],
+      ),
+      ApiResponse(
+        responseCode = "500",
+        content = [
+          Content(
+            schema =
+              io.swagger.v3.oas.annotations.media
+                .Schema(ref = "#/components/schemas/InternalServerError"),
+          ),
+        ],
+      ),
+    ],
+  )
+  @PostMapping("/transactions")
+  fun postTransactions(
+    @PathVariable prisonId: String,
+    @PathVariable hmppsId: String,
+    @RequestAttribute filters: ConsumerFilters?,
+    @RequestBody transactionRequest: TransactionRequest,
+  ): DataResponse<TransactionCreateResponse?> {
+    val response = postTransactionsForPersonService.execute(prisonId, hmppsId, transactionRequest, filters)
+
+    if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
+      throw ValidationException("Either invalid HMPPS ID: $hmppsId or incorrect prison: $prisonId or invalid request body: ${transactionRequest.toApiConformingMap()}")
+    }
+
+    if (response.hasError(UpstreamApiError.Type.FORBIDDEN)) {
+      throw ValidationException("The prisonId: $prisonId is not valid for your consumer profile. ${response.errors[0].description}")
+    }
+
+    if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
+      throw EntityNotFoundException(" ${response.errors[0].description}")
+    }
+
+    if (response.hasError(UpstreamApiError.Type.CONFLICT)) {
+      throw ConflictFoundException("The transaction ${transactionRequest.clientTransactionId} has not been recorded as it is a duplicate.")
+    }
+
+    auditService.createEvent("CREATE_TRANSACTION", mapOf("hmppsId" to hmppsId, "prisonId" to prisonId, "transactionRequest" to transactionRequest.toApiConformingMap().toString()))
     return DataResponse(response.data)
   }
 }

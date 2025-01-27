@@ -6,13 +6,22 @@ import org.springframework.web.reactive.function.BodyInserters
 import org.springframework.web.reactive.function.client.ExchangeStrategies
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.WebClientResponseException
+import reactor.core.publisher.Mono
+import reactor.util.retry.Retry
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.ResponseException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
+import java.time.Duration
 
+@Suppress("ktlint:standard:property-naming")
 class WebClientWrapper(
   val baseUrl: String,
 ) {
+  val CREATE_TRANSACTION_RETRY_HTTP_CODES = listOf(500, 502, 503, 504, 522, 599, 499, 408, 301)
+  val MAX_RETRY_ATTEMPTS = 3L
+  val MIN_BACKOFF_DURATION = Duration.ofSeconds(3)
+
   val client: WebClient =
     WebClient
       .builder()
@@ -51,6 +60,32 @@ class WebClientWrapper(
           .retrieve()
           .bodyToMono(T::class.java)
           .block()!!
+
+      WebClientWrapperResponse.Success(responseData)
+    } catch (exception: WebClientResponseException) {
+      getErrorType(exception, upstreamApi, forbiddenAsError)
+    }
+
+  inline fun <reified T> requestWithRetry(
+    method: HttpMethod,
+    uri: String,
+    headers: Map<String, String>,
+    upstreamApi: UpstreamApi,
+    requestBody: Map<String, Any?>? = null,
+    forbiddenAsError: Boolean = false,
+  ): WebClientWrapperResponse<T> =
+    try {
+      val responseData =
+        getResponseBodySpec(method, uri, headers, requestBody)
+          .retrieve()
+          .onStatus({ status -> status.value() in CREATE_TRANSACTION_RETRY_HTTP_CODES }) { response -> Mono.error(ResponseException(null, response.statusCode().value())) }
+          .bodyToMono(T::class.java)
+          .retryWhen(
+            Retry
+              .backoff(MAX_RETRY_ATTEMPTS, MIN_BACKOFF_DURATION)
+              .filter { throwable -> throwable is ResponseException }
+              .onRetryExhaustedThrow { _, retrySignal -> throw ResponseException("External Service failed to process after max retries", HttpStatus.SERVICE_UNAVAILABLE.value()) },
+          ).block()!!
 
       WebClientWrapperResponse.Success(responseData)
     } catch (exception: WebClientResponseException) {
@@ -105,6 +140,7 @@ class WebClientWrapper(
     val errorType =
       when (exception.statusCode) {
         HttpStatus.NOT_FOUND -> UpstreamApiError.Type.ENTITY_NOT_FOUND
+        HttpStatus.CONFLICT -> UpstreamApiError.Type.CONFLICT
         HttpStatus.FORBIDDEN -> if (forbiddenAsError) UpstreamApiError.Type.FORBIDDEN else throw exception
         else -> throw exception
       }
