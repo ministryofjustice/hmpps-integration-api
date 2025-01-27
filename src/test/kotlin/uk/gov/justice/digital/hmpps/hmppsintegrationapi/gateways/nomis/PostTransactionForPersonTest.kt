@@ -21,7 +21,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.NomisApiMock
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.TransactionRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisTransactionResponse
 
 @ActiveProfiles("test")
 @ContextConfiguration(
@@ -115,9 +114,16 @@ class PostTransactionForPersonTest(
     }
 
     it("return a 409 error response") {
-      val nomisTransactionResponse = NomisTransactionResponse(id = "----", description = "Identical transaction already exists")
-
-      nomisApiMockServer.stubNomisApiResponseForPost(prisonId, nomisNumber, asJsonString(exampleTransaction), asJsonString(nomisTransactionResponse), HttpStatus.CONFLICT)
+      nomisApiMockServer.stubNomisApiResponseForPost(
+        prisonId,
+        nomisNumber,
+        asJsonString(exampleTransaction.toApiConformingMap()),
+        """
+        {
+        }
+        """.removeWhitespaceAndNewlines(),
+        HttpStatus.CONFLICT,
+      )
 
       val response = nomisGateway.postTransactionForPerson(prisonId, nomisNumber, exampleTransaction)
 
