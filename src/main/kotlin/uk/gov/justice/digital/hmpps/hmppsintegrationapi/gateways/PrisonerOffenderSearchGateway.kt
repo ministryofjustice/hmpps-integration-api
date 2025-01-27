@@ -6,7 +6,6 @@ import org.springframework.http.HttpMethod
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper.WebClientWrapperResponse
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSGlobalSearch
@@ -26,7 +25,7 @@ class PrisonerOffenderSearchGateway(
     lastName: String?,
     dateOfBirth: String?,
     searchWithinAliases: Boolean = false,
-  ): Response<List<Person>> {
+  ): Response<List<POSPrisoner>> {
     val maxNumberOfResults = 9999
     val requestBody =
       mapOf("firstName" to firstName, "lastName" to lastName, "includeAliases" to searchWithinAliases, "dateOfBirth" to dateOfBirth)
@@ -46,7 +45,6 @@ class PrisonerOffenderSearchGateway(
         Response(
           data =
             result.data.content
-              .map { it.toPerson() }
               .sortedByDescending { it.dateOfBirth },
         )
       }
@@ -66,7 +64,7 @@ class PrisonerOffenderSearchGateway(
     dateOfBirth: String?,
     searchWithinAliases: Boolean = false,
     prisonIds: List<String?>?,
-  ): Response<List<Person>> {
+  ): Response<List<POSPrisoner>> {
     val maxNumberOfResults = 9999
 
     val requestBody =
@@ -93,7 +91,6 @@ class PrisonerOffenderSearchGateway(
         Response(
           data =
             result.data.content
-              .map { it.toPerson() }
               .sortedByDescending { it.dateOfBirth },
         )
       }

@@ -40,7 +40,7 @@ class GetPersonsService(
           dateOfBirth,
           searchWithinAliases,
         )
-      return Response(data = responseFromPrisonerOffenderSearch.data + responseFromProbationOffenderSearch.data)
+      return Response(data = responseFromPrisonerOffenderSearch.data.map { it.toPerson() } + responseFromProbationOffenderSearch.data)
     }
 
     return Response(data = responseFromProbationOffenderSearch.data)
