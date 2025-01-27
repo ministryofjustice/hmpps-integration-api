@@ -82,7 +82,9 @@ internal class GetPersonsServiceTest(
       ).thenReturn(responseFromPrisonerOffenderSearch)
 
       val result = getPersonsService.execute(firstName, lastName, null, dateOfBirth)
-      (responseFromPrisonerOffenderSearch.data.map { it.toPerson() } + responseFromProbationOffenderSearch.data)
+      val people = (responseFromPrisonerOffenderSearch.data.map { it.toPerson() } + responseFromProbationOffenderSearch.data)
+      result.data.size.shouldBe(people.size)
+      people
         .forEachIndexed { i, person: Person ->
           result.data[i].firstName.shouldBe(person.firstName)
           result.data[i].lastName.shouldBe(person.lastName)

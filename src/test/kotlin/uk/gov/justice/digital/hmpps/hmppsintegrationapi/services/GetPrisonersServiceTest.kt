@@ -28,8 +28,6 @@ internal class GetPrisonersServiceTest(
   private val getPrisonersService: GetPrisonersService,
 ) : DescribeSpec(
     {
-
-      val nomsNumber = "N1234PS"
       // val prisoner = POSPrisoner(firstName = "Jim", lastName = "Brown", dateOfBirth = LocalDate.of(1992, 12, 3), prisonerNumber = nomsNumber)
 
       beforeEach {
@@ -48,7 +46,7 @@ internal class GetPrisonersServiceTest(
         )
 
         val result = getPrisonersService.execute("Qui-gon", "Jin", "1966-10-25", false, null)
-        result?.errors.shouldBe(
+        result.errors.shouldBe(
           listOf(
             UpstreamApiError(UpstreamApi.PRISONER_OFFENDER_SEARCH, UpstreamApiError.Type.ENTITY_NOT_FOUND, "MockError"),
           ),
@@ -68,6 +66,7 @@ internal class GetPrisonersServiceTest(
         )
 
         val result = getPrisonersService.execute("Qui-gon", "Jin", "1966-10-25", false, null)
+        result.data.size.shouldBe(people.size)
         people
           .map { it.toPersonInPrison() }
           .forEachIndexed { i, prisoner: PersonInPrison ->
@@ -89,7 +88,7 @@ internal class GetPrisonersServiceTest(
         )
 
         val result = getPrisonersService.execute("Qui-gon", "Jin", "1966-10-25", false, null)
-        result?.errors.shouldBe(
+        result.errors.shouldBe(
           listOf(
             UpstreamApiError(UpstreamApi.PRISONER_OFFENDER_SEARCH, UpstreamApiError.Type.ENTITY_NOT_FOUND, "MockError"),
           ),
@@ -110,7 +109,7 @@ internal class GetPrisonersServiceTest(
         )
 
         val result = getPrisonersService.execute("Qui-gon", "Jin", "1966-10-25", false, prisonIds)
-        result?.errors.shouldBe(
+        result.errors.shouldBe(
           listOf(
             UpstreamApiError(UpstreamApi.PRISONER_OFFENDER_SEARCH, UpstreamApiError.Type.ENTITY_NOT_FOUND, "MockError"),
           ),
@@ -132,6 +131,7 @@ internal class GetPrisonersServiceTest(
         )
 
         val result = getPrisonersService.execute("Qui-gon", "Jin", "1966-10-25", false, prisonIds)
+        result.data.size.shouldBe(people.size)
         people
           .map { it.toPersonInPrison() }
           .forEachIndexed { i, prisoner: PersonInPrison ->
