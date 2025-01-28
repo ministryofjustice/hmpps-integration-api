@@ -89,6 +89,7 @@ authorisation:
         - "/v1/prison/.*/prisoners/.*/accounts/.*/transactions"
         - "/v1/prison/.*/prisoners/.*/transactions/[^/]*$"
         - "/v1/prison/.*/prisoners/.*/transactions"
+        - "/v1/prison/.*/prisoners/.*/transactions/transfer"
       filters:
     config-test:
       include:
@@ -103,6 +104,7 @@ authorisation:
         - "/v1/prison/prisoners/[^/]*$"
         - "/v1/prison/.*/prisoners/.*/accounts/.*/transactions"
         - "/v1/prison/.*/prisoners/.*/transactions/[^/]*$"
+        - "/v1/prison/.*/prisoners/.*/transactions/transfer"
       filters:
         prisons:
           - ABC
