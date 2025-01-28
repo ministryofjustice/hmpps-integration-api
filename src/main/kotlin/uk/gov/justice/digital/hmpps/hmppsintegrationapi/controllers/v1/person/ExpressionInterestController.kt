@@ -35,6 +35,7 @@ class ExpressionInterestController(
     responses = [
       ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully submitted an expression of interest"),
       ApiResponse(responseCode = "403", useReturnTypeSchema = true, description = "Access is forbidden"),
+      ApiResponse(responseCode = "400", useReturnTypeSchema = true, description = "Bade Request"),
       ApiResponse(responseCode = "404", useReturnTypeSchema = true, description = "Not found"),
     ],
   )
@@ -47,7 +48,7 @@ class ExpressionInterestController(
 
       if (hmppsIdCheck.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
         logger.info("ExpressionInterestController: Could not find nomis number for hmppsId: $hmppsId")
-        return ResponseEntity.badRequest().build()
+        return ResponseEntity.notFound().build()
       }
 
       if (hmppsIdCheck.hasError(UpstreamApiError.Type.BAD_REQUEST)) {

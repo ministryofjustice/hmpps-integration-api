@@ -14,6 +14,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMo
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ExpressionOfInterest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NomisNumber
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.PutExpressionInterestService
 
@@ -32,17 +34,24 @@ class ExpressionInterestControllerTest(
     val jobId = "5678"
 
     describe("PUT $basePath/{hmppsId}/expression-of-interest/jobs/{jobId}") {
-      it("should return 400 Bad Request if ENTITY_NOT_FOUND error occurs") {
+      it("should return 404 Not Found if ENTITY_NOT_FOUND error occurs") {
         val notFoundResponse =
           Response<NomisNumber?>(
             data = null,
-            errors = emptyList(),
+            errors =
+              listOf(
+                UpstreamApiError(
+                  type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+                  description = "Entity not found",
+                  causedBy = UpstreamApi.PRISONER_OFFENDER_SEARCH,
+                ),
+              ),
           )
         whenever(getPersonService.getNomisNumber(validHmppsId)).thenReturn(notFoundResponse)
 
         val result = mockMvc.performAuthorisedPut("$basePath/$validHmppsId/expression-of-interest/jobs/$jobId")
 
-        result.response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
+        result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
       }
 
       it("should return 400 if an invalid hmppsId is provided") {
