@@ -18,6 +18,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SentenceAdj
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SentenceKeyDates
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Transaction
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.TransactionRequest
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.TransactionTransferRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Transactions
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisAccounts
@@ -33,6 +34,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisRefere
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisSentence
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisSentenceSummary
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisTransactionResponse
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisTransactionTransferResponse
 
 @Component
 class NomisGateway(
@@ -405,6 +407,33 @@ class NomisGateway(
         authenticationHeader(),
         UpstreamApi.NOMIS,
         requestBody = transactionRequest.toApiConformingMap(),
+      )
+    return when (result) {
+      is WebClientWrapperResponse.Success -> {
+        Response(data = result.data)
+      }
+      is WebClientWrapperResponse.Error,
+      -> {
+        Response(
+          data = null,
+          errors = result.errors,
+        )
+      }
+    }
+  }
+
+  fun postTransactionTransferForPerson(
+    prisonId: String,
+    nomisNumber: String,
+    transactionTransferRequest: TransactionTransferRequest,
+  ): Response<NomisTransactionTransferResponse?> {
+    val result =
+      webClient.requestWithRetry<NomisTransactionTransferResponse>(
+        HttpMethod.POST,
+        "/api/finance/prison/$prisonId/offenders/$nomisNumber/transfer-to-savings",
+        authenticationHeader(),
+        UpstreamApi.NOMIS,
+        requestBody = transactionTransferRequest.toApiConformingMap(),
       )
     return when (result) {
       is WebClientWrapperResponse.Success -> {
