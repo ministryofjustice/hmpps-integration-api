@@ -69,8 +69,8 @@ The API key will be automatically generated and saved as a Kubernetes secret for
 You can retrieve this API key with the following command:
 
 ```bash
-kubectl -n hmpps-integration-api-[environment] get secrets consumer-api-keys -o json | jq -r '.data.[client]'
-# E.g. kubectl -n hmpps-integration-api-dev get secrets consumer-api-keys -o json | jq -r '.data.bob'
+kubectl -n hmpps-integration-api-[environment] get secrets consumer-api-keys -o json | jq -r '.data.[client] | base64 -d'
+# E.g. kubectl -n hmpps-integration-api-dev get secrets consumer-api-keys -o json | jq -r '.data.bob | base64 -d'
 ```
 
 ### Configure allowed endpoints for the consumer
