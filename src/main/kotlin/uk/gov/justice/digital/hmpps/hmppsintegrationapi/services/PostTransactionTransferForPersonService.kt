@@ -5,12 +5,12 @@ import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.ConsumerPrisonAccessService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NomisGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.TransactionCreateResponse
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.TransactionRequest
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.TransactionTransferCreateResponse
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.TransactionTransferRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 @Service
-class PostTransactionForPersonService(
+class PostTransactionTransferForPersonService(
   @Autowired val nomisGateway: NomisGateway,
   @Autowired val getPersonService: GetPersonService,
   @Autowired val consumerPrisonAccessService: ConsumerPrisonAccessService,
@@ -18,13 +18,13 @@ class PostTransactionForPersonService(
   fun execute(
     prisonId: String,
     hmppsId: String,
-    transactionRequest: TransactionRequest,
+    transactionTransferRequest: TransactionTransferRequest,
     filters: ConsumerFilters? = null,
-  ): Response<TransactionCreateResponse?> {
+  ): Response<TransactionTransferCreateResponse?> {
     val consumerPrisonFilterCheck = consumerPrisonAccessService.checkConsumerHasPrisonAccess(prisonId, filters)
 
     if (consumerPrisonFilterCheck.errors.isNotEmpty()) {
-      return consumerPrisonFilterCheck as Response<TransactionCreateResponse?>
+      return consumerPrisonFilterCheck as Response<TransactionTransferCreateResponse?>
     }
     val personResponse = getPersonService.getNomisNumber(hmppsId = hmppsId)
     val nomisNumber = personResponse.data?.nomisNumber
@@ -37,10 +37,10 @@ class PostTransactionForPersonService(
     }
 
     val response =
-      nomisGateway.postTransactionForPerson(
+      nomisGateway.postTransactionTransferForPerson(
         prisonId,
         nomisNumber,
-        transactionRequest,
+        transactionTransferRequest,
       )
 
     if (response.errors.isNotEmpty()) {
@@ -52,7 +52,7 @@ class PostTransactionForPersonService(
 
     if (response.data != null) {
       return Response(
-        data = TransactionCreateResponse(response.data.id),
+        data = TransactionTransferCreateResponse(response.data.debitTransaction.id, response.data.creditTransaction.id, response.data.transactionId.toString()),
         errors = emptyList(),
       )
     }

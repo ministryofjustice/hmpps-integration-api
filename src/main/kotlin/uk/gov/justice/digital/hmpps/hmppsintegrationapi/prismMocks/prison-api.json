@@ -25888,7 +25888,8 @@
           "transactionId": {
             "type": "integer",
             "description": "Transaction Id",
-            "format": "int64"
+            "format": "int32",
+            "example": 6179604
           }
         },
         "description": "Detail of result of transfer transaction"
