@@ -60,7 +60,7 @@ class ExpressionInterestController(
 
       return ResponseEntity.ok().build()
     } catch (e: Exception) {
-      logger.info("ExpressionInterestController: Unable to send message: ${e.message}")
+      logger.error("ExpressionInterestController: Unable to send message: ${e.message}", e)
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).build<Void>()
     }
   }

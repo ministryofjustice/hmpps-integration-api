@@ -80,5 +80,5 @@ hmpps.sqs:
   queues:
     audit:
       queueName: "audit"
-    eoi:
-      queueName: "eoi-queue"
+    jobsboardintegration:
+      queueName: "jobsboard-integration"
