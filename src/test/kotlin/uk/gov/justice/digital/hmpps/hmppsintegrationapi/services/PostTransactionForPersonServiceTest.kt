@@ -9,6 +9,7 @@ import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.ConsumerPrisonAccessService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NomisGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NomisNumber
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
@@ -26,6 +27,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Consum
 internal class PostTransactionForPersonServiceTest(
   @MockitoBean val nomisGateway: NomisGateway,
   @MockitoBean val getPersonService: GetPersonService,
+  @MockitoBean val consumerPrisonAccessService: ConsumerPrisonAccessService,
   private val postTransactionForPersonService: PostTransactionForPersonService,
 ) : DescribeSpec({
     val hmppsId = "1234/56789B"
@@ -46,6 +48,10 @@ internal class PostTransactionForPersonServiceTest(
     beforeEach {
       Mockito.reset(getPersonService)
       Mockito.reset(nomisGateway)
+
+      whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess(prisonId, filters)).thenReturn(
+        Response(data = null),
+      )
 
       require(hmppsId.matches(Regex("^[0-9]+/[0-9A-Za-z]+$"))) {
         "Invalid Hmpps Id format: $hmppsId"
