@@ -19,6 +19,9 @@ hmpps.sqs:
   queues:
     audit:
       queueName: "audit"
+    eoi:
+      queueName: "eoi-queue"
+
 
 authorisation:
   consumers:
