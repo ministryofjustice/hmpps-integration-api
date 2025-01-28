@@ -38,7 +38,7 @@ class PutExpressionInterestServiceTest :
 
     beforeTest {
       reset(mockQueueService, mockSqsClient, mockObjectMapper)
-      whenever(mockQueueService.findByQueueId("eoi-queue")).thenReturn(eoiQueue)
+      whenever(mockQueueService.findByQueueId("jobsboardintegration")).thenReturn(eoiQueue)
     }
 
     describe("sendExpressionOfInterest") {

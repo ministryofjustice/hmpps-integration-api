@@ -19,6 +19,8 @@ hmpps.sqs:
   queues:
     audit:
       queueName: "audit"
+    jobsboardintegration:
+      queueName: "jobsboard-integration"
 
 authorisation:
   consumers:
