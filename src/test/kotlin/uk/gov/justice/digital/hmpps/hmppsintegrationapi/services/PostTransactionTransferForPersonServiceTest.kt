@@ -105,7 +105,7 @@ internal class PostTransactionTransferForPersonServiceTest(
       )
     }
 
-    it("posts a transfer and recieves expected response object") {
+    it("posts a transfer and receives expected response object") {
       val result =
         postTransactionTransferForPersonService.execute(
           prisonId,
@@ -168,6 +168,22 @@ internal class PostTransactionTransferForPersonServiceTest(
           prisonId,
           hmppsId,
           exampleTransfer,
+          filters,
+        )
+      response
+        .hasErrorCausedBy(
+          causedBy = UpstreamApi.NOMIS,
+          type = UpstreamApiError.Type.BAD_REQUEST,
+        ).shouldBe(true)
+    }
+
+    it("records upstream API errors when from and to accounts are invalid") {
+      val invalidTransfer = TransactionTransferRequest(description, amount, clientTransactionId, clientUniqueRef, "wrong", "wrong")
+      val response =
+        postTransactionTransferForPersonService.execute(
+          prisonId,
+          hmppsId,
+          invalidTransfer,
           filters,
         )
       response
