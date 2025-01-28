@@ -85,4 +85,26 @@ class TransactionsIntegrationTest : IntegrationTestBase() {
       ).andExpect(status().isOk)
       .andExpect(content().json(getExpectedResponse("transaction-create-response")))
   }
+
+  // POST transfer transaction
+  @Test
+  fun `return an expected response for a successful transaction transfer post`() {
+    val requestBody =
+      """
+      {
+        "description": "Canteen Purchase of £16.34",
+        "amount": 1634,
+        "clientTransactionId": "CL123212",
+        "clientUniqueRef": "CLIENT121131-0_11"
+      }
+      """.trimIndent()
+
+    val headers = org.springframework.http.HttpHeaders()
+    headers.set("subject-distinguished-name", "C=GB,ST=London,L=London,O=Home Office,CN=automated-test-client")
+    mockMvc
+      .perform(
+        post("/v1/prison/$prisonId/prisoners/$hmppsId/transactions/transfer").headers(headers).content(requestBody).contentType(org.springframework.http.MediaType.APPLICATION_JSON),
+      ).andExpect(status().isOk)
+      .andExpect(content().json(getExpectedResponse("transaction-transfer-create-response")))
+  }
 }
