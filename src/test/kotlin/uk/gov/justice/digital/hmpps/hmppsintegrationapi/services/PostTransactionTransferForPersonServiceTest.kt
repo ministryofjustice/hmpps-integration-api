@@ -40,7 +40,9 @@ internal class PostTransactionTransferForPersonServiceTest(
     val clientTransactionId = "CL123212"
     val clientUniqueRef = "CLIENT121131-0_11"
     val filters = ConsumerFilters(null)
-    val exampleTransfer = TransactionTransferRequest(description, amount, clientTransactionId, clientUniqueRef)
+    val fromAccount = "spends"
+    val toAccount = "savings"
+    val exampleTransfer = TransactionTransferRequest(description, amount, clientTransactionId, clientUniqueRef, fromAccount, toAccount)
     val exampleTransferResponse =
       NomisTransactionTransferResponse(
         debitTransaction = DebitTransaction(id = "2345"),

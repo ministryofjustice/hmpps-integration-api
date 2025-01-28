@@ -5,6 +5,8 @@ data class TransactionTransferRequest(
   val amount: Int,
   val clientTransactionId: String,
   val clientUniqueRef: String,
+  val fromAccount: String,
+  val toAccount: String,
 ) {
   fun toApiConformingMap(): Map<String, Any?> =
     mapOf(
