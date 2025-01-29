@@ -40,7 +40,7 @@ internal class GetTransactionForPersonServiceTest(
       Mockito.reset(getPersonService)
       Mockito.reset(nomisGateway)
 
-      whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess(prisonId, filters)).thenReturn(
+      whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<Transaction>(prisonId, filters)).thenReturn(
         Response(data = null),
       )
 
@@ -193,7 +193,7 @@ internal class GetTransactionForPersonServiceTest(
     it("returns null when a transaction is requested from an unapproved prison") {
       val consumerFillters = ConsumerFilters(prisons = listOf("ABC"))
       val wrongPrisonId = "XYZ"
-      whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess(wrongPrisonId, consumerFillters)).thenReturn(
+      whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<Transaction>(wrongPrisonId, consumerFillters)).thenReturn(
         Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.NOMIS, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found"))),
       )
 
@@ -211,7 +211,7 @@ internal class GetTransactionForPersonServiceTest(
 
     it("returns a transaction when requested from an approved prison") {
       val consumerFillters = ConsumerFilters(prisons = listOf("ABC"))
-      whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess(prisonId, consumerFillters)).thenReturn(
+      whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<Transaction>(prisonId, consumerFillters)).thenReturn(
         Response(data = null),
       )
 
