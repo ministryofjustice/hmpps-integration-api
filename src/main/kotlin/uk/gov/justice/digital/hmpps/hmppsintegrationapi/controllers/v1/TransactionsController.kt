@@ -310,7 +310,7 @@ class TransactionsController(
     val response = postTransactionTransferForPersonService.execute(prisonId, hmppsId, transactionTransferRequest, filters)
 
     if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
-      throw ValidationException("Either invalid HMPPS ID: $hmppsId or incorrect prison: $prisonId or invalid request body: ${transactionTransferRequest.toApiConformingMap()}")
+      throw ValidationException("Either invalid HMPPS ID: $hmppsId or incorrect prison: $prisonId or invalid request body: ${response.errors[0].description}")
     }
 
     if (response.hasError(UpstreamApiError.Type.FORBIDDEN)) {
@@ -325,7 +325,7 @@ class TransactionsController(
       throw ConflictFoundException("The transaction ${transactionTransferRequest.clientTransactionId} has not been recorded as it is a duplicate.")
     }
 
-    auditService.createEvent("CREATE_TRANSACTION_TRANSFER", mapOf("hmppsId" to hmppsId, "prisonId" to prisonId, "transactionTransferRequest" to transactionTransferRequest.toApiConformingMap().toString()))
+    auditService.createEvent("CREATE_TRANSACTION_TRANSFER", mapOf("hmppsId" to hmppsId, "prisonId" to prisonId, "transactionTransferRequest" to transactionTransferRequest.toString()))
     return DataResponse(response.data)
   }
 }
