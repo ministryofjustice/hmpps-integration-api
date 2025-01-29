@@ -45,7 +45,7 @@ internal class GetBalancesForPersonServiceTest(
       Mockito.reset(getPersonService)
       Mockito.reset(nomisGateway)
 
-      whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess(prisonId, null)).thenReturn(
+      whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<Balance>(prisonId, null)).thenReturn(
         Response(data = null, errors = emptyList()),
       )
 
@@ -169,7 +169,7 @@ internal class GetBalancesForPersonServiceTest(
 
     it("returns null when balances are requested from an unapproved prison") {
       val wrongPrisonId = "XYZ"
-      whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess(wrongPrisonId, filters)).thenReturn(
+      whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<Balance>(wrongPrisonId, filters)).thenReturn(
         Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.NOMIS, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found"))),
       )
       val result = getBalancesForPersonService.execute(wrongPrisonId, hmppsId, filters = filters)
@@ -179,7 +179,7 @@ internal class GetBalancesForPersonServiceTest(
     }
 
     it("returns balances when requested from an approved prison") {
-      whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess(prisonId, filters)).thenReturn(
+      whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<Balance>(prisonId, filters)).thenReturn(
         Response(data = null, errors = emptyList()),
       )
       val result = getBalancesForPersonService.execute(prisonId, hmppsId, filters = ConsumerFilters(prisons = listOf(prisonId)))
@@ -203,7 +203,7 @@ internal class GetBalancesForPersonServiceTest(
 
     it("returns null when balance is requested from an unapproved prison") {
       val wrongPrisonId = "XYZ"
-      whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess(wrongPrisonId, filters)).thenReturn(
+      whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<Balance>(wrongPrisonId, filters)).thenReturn(
         Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.NOMIS, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found"))),
       )
       val result = getBalancesForPersonService.getBalance(wrongPrisonId, hmppsId, accountCode, filters)

@@ -23,7 +23,7 @@ class PostTransactionTransferForPersonService(
     transactionTransferRequest: TransactionTransferRequest,
     filters: ConsumerFilters? = null,
   ): Response<TransactionTransferCreateResponse?> {
-    val consumerPrisonFilterCheck = consumerPrisonAccessService.checkConsumerHasPrisonAccess(prisonId, filters)
+    val consumerPrisonFilterCheck = consumerPrisonAccessService.checkConsumerHasPrisonAccess<TransactionTransferCreateResponse?>(prisonId, filters)
 
     if (!(transactionTransferRequest.fromAccount == "spends" && transactionTransferRequest.toAccount == "savings")) {
       return Response(
@@ -40,7 +40,7 @@ class PostTransactionTransferForPersonService(
     }
 
     if (consumerPrisonFilterCheck.errors.isNotEmpty()) {
-      return consumerPrisonFilterCheck as Response<TransactionTransferCreateResponse?>
+      return consumerPrisonFilterCheck
     }
     val personResponse = getPersonService.getNomisNumber(hmppsId = hmppsId)
     val nomisNumber = personResponse.data?.nomisNumber

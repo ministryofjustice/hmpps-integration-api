@@ -21,11 +21,12 @@ class PostTransactionForPersonService(
     transactionRequest: TransactionRequest,
     filters: ConsumerFilters? = null,
   ): Response<TransactionCreateResponse?> {
-    val consumerPrisonFilterCheck = consumerPrisonAccessService.checkConsumerHasPrisonAccess(prisonId, filters)
+    val consumerPrisonFilterCheck = consumerPrisonAccessService.checkConsumerHasPrisonAccess<TransactionCreateResponse>(prisonId, filters)
 
     if (consumerPrisonFilterCheck.errors.isNotEmpty()) {
-      return consumerPrisonFilterCheck as Response<TransactionCreateResponse?>
+      return consumerPrisonFilterCheck
     }
+
     val personResponse = getPersonService.getNomisNumber(hmppsId = hmppsId)
     val nomisNumber = personResponse.data?.nomisNumber
 

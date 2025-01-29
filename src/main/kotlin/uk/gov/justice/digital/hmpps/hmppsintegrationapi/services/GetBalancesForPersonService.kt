@@ -23,10 +23,10 @@ class GetBalancesForPersonService(
     hmppsId: String,
     filters: ConsumerFilters? = null,
   ): Response<Balances?> {
-    val consumerPrisonFilterCheck = consumerPrisonAccessService.checkConsumerHasPrisonAccess(prisonId, filters)
+    val consumerPrisonFilterCheck = consumerPrisonAccessService.checkConsumerHasPrisonAccess<Balances>(prisonId, filters)
 
     if (consumerPrisonFilterCheck.errors.isNotEmpty()) {
-      return consumerPrisonFilterCheck as Response<Balances?>
+      return consumerPrisonFilterCheck
     }
 
     val personResponse = getPersonService.getNomisNumber(hmppsId = hmppsId)
