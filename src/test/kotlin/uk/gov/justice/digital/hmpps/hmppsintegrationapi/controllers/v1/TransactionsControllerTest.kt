@@ -60,7 +60,9 @@ class TransactionsControllerTest(
       val clientTransactionId = "CL123212"
       val postClientUniqueRef = "CLIENT121131-0_11"
       val exampleTransaction = TransactionRequest(type, description, amount, clientTransactionId, postClientUniqueRef)
-      val exampleTransactionTransfer = TransactionTransferRequest(description, amount, clientTransactionId, postClientUniqueRef)
+      val fromAccount = "spends"
+      val toAccount = "savings"
+      val exampleTransactionTransfer = TransactionTransferRequest(description, amount, clientTransactionId, postClientUniqueRef, fromAccount, toAccount)
 
       val transactions =
         Transactions(

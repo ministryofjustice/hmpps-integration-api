@@ -7,6 +7,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NomisGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.TransactionTransferCreateResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.TransactionTransferRequest
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 @Service
@@ -22,6 +24,20 @@ class PostTransactionTransferForPersonService(
     filters: ConsumerFilters? = null,
   ): Response<TransactionTransferCreateResponse?> {
     val consumerPrisonFilterCheck = consumerPrisonAccessService.checkConsumerHasPrisonAccess(prisonId, filters)
+
+    if (!(transactionTransferRequest.fromAccount == "spends" && transactionTransferRequest.toAccount == "savings")) {
+      return Response(
+        data = null,
+        errors =
+          listOf(
+            UpstreamApiError(
+              causedBy = UpstreamApi.NOMIS,
+              type = UpstreamApiError.Type.BAD_REQUEST,
+              description = "Invalid from and/or to accounts provided",
+            ),
+          ),
+      )
+    }
 
     if (consumerPrisonFilterCheck.errors.isNotEmpty()) {
       return consumerPrisonFilterCheck as Response<TransactionTransferCreateResponse?>
