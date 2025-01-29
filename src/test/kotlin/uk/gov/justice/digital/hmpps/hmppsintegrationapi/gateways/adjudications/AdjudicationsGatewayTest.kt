@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.adjudications
 
-import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
@@ -12,11 +11,12 @@ import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
-import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.AdjudicationsGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.AdjudicationsApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 
 @ActiveProfiles("test")
 @ContextConfiguration(
@@ -47,13 +47,18 @@ class AdjudicationsGatewayTest(
         verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("Adjudications")
       }
 
-      it("upstream API returns an error, throw exception") {
+      it("returns an error when 400 Bad Request is returned because of invalid ID") {
         adjudicationsApiMockServer.stubGetReportedAdjudicationsForPerson("123", "", HttpStatus.BAD_REQUEST)
-        val response =
-          shouldThrow<WebClientResponseException> {
-            adjudicationsGateway.getReportedAdjudicationsForPerson(id = "123")
-          }
-        response.statusCode.shouldBe(HttpStatus.BAD_REQUEST)
+        val response = adjudicationsGateway.getReportedAdjudicationsForPerson(id = "123")
+
+        response.errors
+          .first()
+          .type
+          .shouldBe(UpstreamApiError.Type.BAD_REQUEST)
+        response.errors
+          .first()
+          .causedBy
+          .shouldBe(UpstreamApi.ADJUDICATIONS)
       }
 
       it("returns adjudicationResponse") {

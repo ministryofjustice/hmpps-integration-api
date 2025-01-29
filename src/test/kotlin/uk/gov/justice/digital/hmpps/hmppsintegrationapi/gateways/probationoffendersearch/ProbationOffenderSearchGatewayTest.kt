@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.probationoffendersearch
 
-import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.nulls.shouldBeNull
@@ -14,12 +13,13 @@ import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
-import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ProbationOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ProbationOffenderSearchApiMockServer
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import java.io.File
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -418,7 +418,7 @@ class ProbationOffenderSearchGatewayTest(
           response.data?.aliases.shouldBeEmpty()
         }
 
-        it("returns null when 400 Bad Request is returned") {
+        it("returns an error when 400 Bad Request is returned because of invalid ID") {
           probationOffenderSearchApiMockServer.stubPostOffenderSearch(
             "{\"pncNumber\": \"$hmppsId\"}",
             """
@@ -428,11 +428,16 @@ class ProbationOffenderSearchGatewayTest(
           """,
             HttpStatus.BAD_REQUEST,
           )
-          val response =
-            shouldThrow<WebClientResponseException> {
-              probationOffenderSearchGateway.getPerson(hmppsId)
-            }
-          response.statusCode.shouldBe(HttpStatus.BAD_REQUEST)
+          val response = probationOffenderSearchGateway.getPerson(hmppsId)
+
+          response.errors
+            .first()
+            .type
+            .shouldBe(UpstreamApiError.Type.BAD_REQUEST)
+          response.errors
+            .first()
+            .causedBy
+            .shouldBe(UpstreamApi.PROBATION_OFFENDER_SEARCH)
         }
 
         it("returns null when no offenders are returned") {
