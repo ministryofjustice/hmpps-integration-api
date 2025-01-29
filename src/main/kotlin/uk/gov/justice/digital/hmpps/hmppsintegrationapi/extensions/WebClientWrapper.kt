@@ -142,6 +142,7 @@ class WebClientWrapper(
         HttpStatus.NOT_FOUND -> UpstreamApiError.Type.ENTITY_NOT_FOUND
         HttpStatus.CONFLICT -> UpstreamApiError.Type.CONFLICT
         HttpStatus.FORBIDDEN -> if (forbiddenAsError) UpstreamApiError.Type.FORBIDDEN else throw exception
+        HttpStatus.BAD_REQUEST -> UpstreamApiError.Type.BAD_REQUEST
         else -> throw exception
       }
     return WebClientWrapperResponse.Error(
