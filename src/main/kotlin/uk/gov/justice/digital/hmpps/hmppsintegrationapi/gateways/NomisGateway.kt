@@ -326,6 +326,7 @@ class NomisGateway(
         "/api/v1/prison/$prisonId/offenders/$nomisNumber/accounts",
         authenticationHeader(),
         UpstreamApi.NOMIS,
+        badRequestAsError = true,
       )
     return when (result) {
       is WebClientWrapperResponse.Success -> {
