@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.managePOMcase
 
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
@@ -11,12 +12,11 @@ import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
+import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ManagePOMCaseGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ManagePOMCaseApiMockServer
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 
 @ActiveProfiles("test")
 @ContextConfiguration(
@@ -47,18 +47,13 @@ class ManagePOMCaseGatewayTest(
         verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("ManagePOMCase")
       }
 
-      it("returns an error when 400 Bad Request is returned because of invalid ID") {
+      it("upstream API returns an error, throw exception") {
         managePOMCaseApiMockServer.stubGetPrimaryPOMForNomisNumber("X1234YZ", "", HttpStatus.BAD_REQUEST)
-        val response = managePOMCaseGateway.getPrimaryPOMForNomisNumber(id = "X1234YZ")
-
-        response.errors
-          .first()
-          .type
-          .shouldBe(UpstreamApiError.Type.BAD_REQUEST)
-        response.errors
-          .first()
-          .causedBy
-          .shouldBe(UpstreamApi.MANAGE_POM_CASE)
+        val response =
+          shouldThrow<WebClientResponseException> {
+            managePOMCaseGateway.getPrimaryPOMForNomisNumber(id = "X1234YZ")
+          }
+        response.statusCode.shouldBe(HttpStatus.BAD_REQUEST)
       }
 
       it("returns primary offender officer") {

@@ -136,13 +136,14 @@ class WebClientWrapper(
     exception: WebClientResponseException,
     upstreamApi: UpstreamApi,
     forbiddenAsError: Boolean = false,
+    badRequestAsError: Boolean = false,
   ): WebClientWrapperResponse.Error {
     val errorType =
       when (exception.statusCode) {
         HttpStatus.NOT_FOUND -> UpstreamApiError.Type.ENTITY_NOT_FOUND
         HttpStatus.CONFLICT -> UpstreamApiError.Type.CONFLICT
         HttpStatus.FORBIDDEN -> if (forbiddenAsError) UpstreamApiError.Type.FORBIDDEN else throw exception
-        HttpStatus.BAD_REQUEST -> UpstreamApiError.Type.BAD_REQUEST
+        HttpStatus.BAD_REQUEST -> if (badRequestAsError) UpstreamApiError.Type.BAD_REQUEST else throw exception
         else -> throw exception
       }
     return WebClientWrapperResponse.Error(
