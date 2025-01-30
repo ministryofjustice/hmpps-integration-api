@@ -53,6 +53,7 @@ class WebClientWrapper(
     upstreamApi: UpstreamApi,
     requestBody: Map<String, Any?>? = null,
     forbiddenAsError: Boolean = false,
+    badRequestAsError: Boolean = false,
   ): WebClientWrapperResponse<T> =
     try {
       val responseData =
@@ -63,7 +64,7 @@ class WebClientWrapper(
 
       WebClientWrapperResponse.Success(responseData)
     } catch (exception: WebClientResponseException) {
-      getErrorType(exception, upstreamApi, forbiddenAsError)
+      getErrorType(exception, upstreamApi, forbiddenAsError, badRequestAsError)
     }
 
   inline fun <reified T> requestWithRetry(
@@ -73,6 +74,7 @@ class WebClientWrapper(
     upstreamApi: UpstreamApi,
     requestBody: Map<String, Any?>? = null,
     forbiddenAsError: Boolean = false,
+    badRequestAsError: Boolean = false,
   ): WebClientWrapperResponse<T> =
     try {
       val responseData =
@@ -89,7 +91,7 @@ class WebClientWrapper(
 
       WebClientWrapperResponse.Success(responseData)
     } catch (exception: WebClientResponseException) {
-      getErrorType(exception, upstreamApi, forbiddenAsError)
+      getErrorType(exception, upstreamApi, forbiddenAsError, badRequestAsError)
     }
 
   inline fun <reified T> requestList(
@@ -99,6 +101,7 @@ class WebClientWrapper(
     upstreamApi: UpstreamApi,
     requestBody: Map<String, Any?>? = null,
     forbiddenAsError: Boolean = false,
+    badRequestAsError: Boolean = false,
   ): WebClientWrapperResponse<List<T>> =
     try {
       val responseData =
@@ -110,7 +113,7 @@ class WebClientWrapper(
 
       WebClientWrapperResponse.Success(responseData)
     } catch (exception: WebClientResponseException) {
-      getErrorType(exception, upstreamApi, forbiddenAsError)
+      getErrorType(exception, upstreamApi, forbiddenAsError, badRequestAsError)
     }
 
   fun getResponseBodySpec(
