@@ -94,8 +94,8 @@ class OpenAPIConfig {
                 "type" to Schema<String>().type("string").example("CART"),
                 "description" to Schema<String>().type("string").example("A description of the transaction"),
                 "amount" to Schema<Int>().type("number").example(1000),
-                "client_transaction_id" to Schema<String>().type("string").example("123456"),
-                "client_unique_ref" to Schema<String>().type("string").example("123456"),
+                "clientTransactionId" to Schema<String>().type("string").example("123456"),
+                "clientUniqueRef" to Schema<String>().type("string").example("123456"),
               ),
             ),
           )
