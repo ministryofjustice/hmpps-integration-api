@@ -38,6 +38,8 @@ hmpps.sqs:
   queues:
     audit:
       queueName: "audit"
+    jobsboardintegration:
+      queueName: "jobsboard-integration"
 
 authorisation:
   consumers:
@@ -73,6 +75,7 @@ authorisation:
         - "/v1/persons/.*/plp-induction-schedule"
         - "/v1/persons/.*/plp-induction-schedule/history"
         - "/v1/persons/.*/plp-review-schedule"
+        - "/v1/persons/.*/expression-of-interest/jobs/[^/]*$"
         - "/v1/epf/person-details/.*/[^/]*$"
         - "/v1/hmpps/id/nomis-number/[^/]*$"
         - "/v1/hmpps/id/by-nomis-number/[^/]*$"
