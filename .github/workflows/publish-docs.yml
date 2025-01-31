@@ -27,6 +27,8 @@ jobs:
         run: |
           mkdir openapi
           curl -sf localhost:8080/v3/api-docs -o openapi/api-docs.json
+          mkdir openapi/api-docs
+          curl -sf localhost:8080/v3/api-docs/swagger-config -o openapi/api-docs/swagger-config
           mkdir openapi/swagger-ui
           curl -sf localhost:8080/swagger-ui/index.html -o openapi/swagger-ui/index.html
           curl -sf localhost:8080/swagger-ui/swagger-ui.css -o openapi/swagger-ui/swagger-ui.css
