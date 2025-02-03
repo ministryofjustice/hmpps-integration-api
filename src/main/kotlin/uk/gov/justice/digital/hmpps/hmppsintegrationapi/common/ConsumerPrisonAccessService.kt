@@ -12,7 +12,7 @@ class ConsumerPrisonAccessService {
     prisonId: String?,
     filters: ConsumerFilters?,
   ): Response<T?> {
-    val result = Response<T?>(data = null, errors = emptyList<UpstreamApiError>())
+    val response = Response<T?>(data = null, errors = emptyList<UpstreamApiError>())
     if (filters != null && !filters.matchesPrison(prisonId)) {
       result.errors = listOf(UpstreamApiError(UpstreamApi.NOMIS, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found"))
     }
