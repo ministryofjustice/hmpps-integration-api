@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.controllers.v1
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.media.Content
+import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.ValidationException
@@ -32,6 +33,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.PostTransaction
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.PostTransactionTransferForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 import java.time.LocalDate
+import io.swagger.v3.oas.annotations.parameters.RequestBody as SwaggerRequestBody
 
 @RestController
 @RequestMapping("/v1/prison/{prisonId}/prisoners/{hmppsId}")
@@ -177,7 +179,21 @@ class TransactionsController(
 
   @Operation(
     summary = "Post a transaction.",
-    description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
+    description = """
+      <a href="#schema-transactionrequest">Request body</a><br><br>
+      <b>Applicable filters</b>: <ul><li>prisons</li></ul>
+    """,
+    requestBody =
+      SwaggerRequestBody(
+        description = "The transaction request body.",
+        required = true,
+        content = [
+          Content(
+            schema =
+              Schema(ref = "#/components/schemas/TransactionRequest"),
+          ),
+        ],
+      ),
     responses = [
       ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully created a transaction."),
       ApiResponse(
@@ -254,7 +270,10 @@ class TransactionsController(
 
   @Operation(
     summary = "Post a transfer transaction.",
-    description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
+    description = """
+      <a href="#schema-transactiontransferrequest">Request body</a><br><br>
+      <b>Applicable filters</b>: <ul><li>prisons</li></ul>
+    """,
     responses = [
       ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully created a transaction transfer."),
       ApiResponse(
