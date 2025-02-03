@@ -9,7 +9,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Consum
 @Service
 class ConsumerPrisonAccessService {
   fun <T> checkConsumerHasPrisonAccess(
-    prisonId: String,
+    prisonId: String?,
     filters: ConsumerFilters?,
   ): Response<T?> {
     val result = Response<T?>(data = null, errors = emptyList<UpstreamApiError>())

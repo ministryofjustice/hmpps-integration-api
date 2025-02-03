@@ -36,11 +36,9 @@ class GetLatestSentenceKeyDatesAndAdjustmentsForPersonService(
     }
     val prisonId = prisonerOffender?.prisonId
 
-    if (!prisonId.isNullOrEmpty()) {
-      val consumerPrisonFilterCheck = consumerPrisonAccessService.checkConsumerHasPrisonAccess<LatestSentenceKeyDatesAndAdjustments>(prisonId, filters)
-      if (consumerPrisonFilterCheck.errors.isNotEmpty()) {
-        return consumerPrisonFilterCheck
-      }
+    val consumerPrisonFilterCheck = consumerPrisonAccessService.checkConsumerHasPrisonAccess<LatestSentenceKeyDatesAndAdjustments>(prisonId, filters)
+    if (consumerPrisonFilterCheck.errors.isNotEmpty()) {
+      return consumerPrisonFilterCheck
     }
 
     val (latestSentenceKeyDates, latestSentenceKeyDatesErrors) =
