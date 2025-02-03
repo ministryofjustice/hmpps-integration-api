@@ -179,10 +179,7 @@ class TransactionsController(
 
   @Operation(
     summary = "Post a transaction.",
-    description = """
-      <a href="#schema-transactionrequest">Request body</a><br><br>
-      <b>Applicable filters</b>: <ul><li>prisons</li></ul>
-    """,
+    description = "<a href=\"#schema-transactionrequest\">Request body</a><br><br><b>Applicable filters</b>: <ul><li>prisons</li></ul>",
     requestBody =
       SwaggerRequestBody(
         description = "The transaction request body.",
@@ -270,10 +267,7 @@ class TransactionsController(
 
   @Operation(
     summary = "Post a transfer transaction.",
-    description = """
-      <a href="#schema-transactiontransferrequest">Request body</a><br><br>
-      <b>Applicable filters</b>: <ul><li>prisons</li></ul>
-    """,
+    description = "<a href=\"#schema-transactiontransferrequest\">Request body</a><br><br><b>Applicable filters</b>: <ul><li>prisons</li></ul>",
     responses = [
       ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully created a transaction transfer."),
       ApiResponse(
