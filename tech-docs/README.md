@@ -18,6 +18,10 @@
 
 This repository is used to generate the [technical documentation website](https://ministryofjustice.github.io/hmpps-integration-api-docs) for the [HMPPS Integration API](https://github.com/ministryofjustice/hmpps-integration-api).
 
+## REQUESTS WITH REQUEST BODIES
+
+Due to limitations with the tech-docs gem, you need to add endpoints to `source/javascripts/application.js` for request bodies to be shown in the docs.
+
 ## Getting started
 
 ### Prerequisites
