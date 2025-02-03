@@ -178,7 +178,10 @@ class TransactionsController(
 
   @Operation(
     summary = "Post a transaction.",
-    description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
+    description = """"
+      <a href="https://ministryofjustice.github.io/hmpps-integration-api/documentation/api/#schema-transactionrequest">Request body</a>
+      <b>Applicable filters</b>: <ul><li>prisons</li></ul>
+    """,
     requestBody =
       RequestBody(
         description = "The transaction request body.",
