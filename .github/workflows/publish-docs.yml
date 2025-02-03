@@ -27,17 +27,6 @@ jobs:
         run: |
           mkdir openapi
           curl -sf localhost:8080/v3/api-docs -o openapi/api-docs.json
-          mkdir openapi/api-docs
-          curl -sf localhost:8080/v3/api-docs/swagger-config -o openapi/api-docs/swagger-config
-          mkdir openapi/swagger-ui
-          curl -sf localhost:8080/swagger-ui/index.html -o openapi/swagger-ui/index.html
-          curl -sf localhost:8080/swagger-ui/swagger-ui.css -o openapi/swagger-ui/swagger-ui.css
-          curl -sf localhost:8080/swagger-ui/index.css -o openapi/swagger-ui/index.css
-          curl -sf localhost:8080/swagger-ui/favicon-32x32.png -o openapi/swagger-ui/favicon-32x32.png
-          curl -sf localhost:8080/swagger-ui/favicon-16x16.png -o openapi/swagger-ui/favicon-16x16.png
-          curl -sf localhost:8080/swagger-ui/swagger-ui-bundle.js -o openapi/swagger-ui/swagger-ui-bundle.js
-          curl -sf localhost:8080/swagger-ui/swagger-ui-standalone-preset.js -o openapi/swagger-ui/swagger-ui-standalone-preset.js
-          curl -sf localhost:8080/swagger-ui/swagger-initializer.js -o openapi/swagger-ui/swagger-initializer.js
         working-directory: .
       - uses: actions/upload-artifact@v4
         with:
