@@ -331,8 +331,9 @@
   <p><em>Post a transaction.</em></p>
 
 
-  <p><b>Applicable filters</b>: <ul><li>prisons</li></ul></p>
-
+  <div class="highlight"><pre class="highlight plaintext" tabindex="0"><code>  &lt;a href="#schema-transactionrequest"&gt;Request body&lt;/a&gt;&lt;br&gt;&lt;br&gt;
+  &lt;b&gt;Applicable filters&lt;/b&gt;: &lt;ul&gt;&lt;li&gt;prisons&lt;/li&gt;&lt;/ul&gt;
+</code></pre></div>
 
 
 
@@ -484,8 +485,9 @@
   <p><em>Post a transfer transaction.</em></p>
 
 
-  <p><b>Applicable filters</b>: <ul><li>prisons</li></ul></p>
-
+  <div class="highlight"><pre class="highlight plaintext" tabindex="0"><code>  &lt;a href="#schema-transactiontransferrequest"&gt;Request body&lt;/a&gt;&lt;br&gt;&lt;br&gt;
+  &lt;b&gt;Applicable filters&lt;/b&gt;: &lt;ul&gt;&lt;li&gt;prisons&lt;/li&gt;&lt;/ul&gt;
+</code></pre></div>
 
 
 
@@ -6426,68 +6428,6 @@
 
 
 <h2 id="schemas">Schemas</h2>
-<h3 id="schema-transactionrequest">TransactionRequest</h3>
-
-
-<table class='schema-transactionrequest'>
-<thead>
-<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
-</thead>
-<tbody>
-
-<tr>
-<td>type</td>
-<td>string</td>
-<td>true</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>description</td>
-<td>string</td>
-<td>false</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>amount</td>
-<td>integer</td>
-<td>true</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>clientTransactionId</td>
-<td>string</td>
-<td>true</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>clientUniqueRef</td>
-<td>string</td>
-<td>true</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-</tbody>
-</table>
-
 <h3 id="schema-dataresponsetransactioncreateresponse">DataResponseTransactionCreateResponse</h3>
 
 
@@ -13880,6 +13820,69 @@
 
 <tr>
 <td>developerMessage</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+</tbody>
+</table>
+
+<h3 id="schema-transactionrequest">TransactionRequest</h3>
+<p>A request to create a transaction</p>
+
+
+<table class='schema-transactionrequest'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>type</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>description</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>amount</td>
+<td>number</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>clientTransactionId</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>clientUniqueRef</td>
 <td>string</td>
 <td>false</td>
 <td></td>
