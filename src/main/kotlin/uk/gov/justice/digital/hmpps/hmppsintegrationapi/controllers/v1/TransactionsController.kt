@@ -33,7 +33,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.PostTransaction
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.PostTransactionTransferForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 import java.time.LocalDate
-import io.swagger.v3.oas.annotations.parameters.RequestBody as SwaggerRequestBody
 
 @RestController
 @RequestMapping("/v1/prison/{prisonId}/prisoners/{hmppsId}")
@@ -180,17 +179,6 @@ class TransactionsController(
   @Operation(
     summary = "Post a transaction.",
     description = "<a href=\"#schema-transactionrequest\">Request body</a><br><br><b>Applicable filters</b>: <ul><li>prisons</li></ul>",
-    requestBody =
-      SwaggerRequestBody(
-        description = "The transaction request body.",
-        required = true,
-        content = [
-          Content(
-            schema =
-              Schema(ref = "#/components/schemas/TransactionRequest"),
-          ),
-        ],
-      ),
     responses = [
       ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully created a transaction."),
       ApiResponse(

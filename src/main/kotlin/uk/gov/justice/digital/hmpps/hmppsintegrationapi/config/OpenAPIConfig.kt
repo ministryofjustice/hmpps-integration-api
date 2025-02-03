@@ -14,7 +14,6 @@ import org.springdoc.core.customizers.GlobalOpenApiCustomizer
 import org.springdoc.core.customizers.OpenApiCustomizer
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.TransactionRequest
 
 @OpenAPIDefinition(
   info =
@@ -85,17 +84,6 @@ class OpenAPIConfig {
                 "status" to Schema<Int>().type("number").example(409),
                 "userMessage" to Schema<String>().type("string").example("Conflict"),
                 "developerMessage" to Schema<String>().type("string").example("Duplicate post - The client_unique_ref has been used before"),
-              ),
-            ),
-          ).addSchemas(
-            "TransactionRequest",
-            Schema<TransactionRequest>().description("A request to create a transaction").properties(
-              mapOf(
-                "type" to Schema<String>().type("string").example("CART"),
-                "description" to Schema<String>().type("string").example("A description of the transaction"),
-                "amount" to Schema<Int>().type("number").example(1000),
-                "clientTransactionId" to Schema<String>().type("string").example("123456"),
-                "clientUniqueRef" to Schema<String>().type("string").example("123456"),
               ),
             ),
           )
