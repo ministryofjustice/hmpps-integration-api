@@ -178,8 +178,8 @@ class TransactionsController(
 
   @Operation(
     summary = "Post a transaction.",
-    description = """"
-      <a href="https://ministryofjustice.github.io/hmpps-integration-api/documentation/api/#schema-transactionrequest">Request body</a>
+    description = """
+      <a href="#schema-transactionrequest">Request body</a><br><br>
       <b>Applicable filters</b>: <ul><li>prisons</li></ul>
     """,
     requestBody =
@@ -269,7 +269,10 @@ class TransactionsController(
 
   @Operation(
     summary = "Post a transfer transaction.",
-    description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
+    description = """
+      <a href="#schema-transactiontransferrequest">Request body</a><br><br>
+      <b>Applicable filters</b>: <ul><li>prisons</li></ul>
+    """,
     responses = [
       ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully created a transaction transfer."),
       ApiResponse(
