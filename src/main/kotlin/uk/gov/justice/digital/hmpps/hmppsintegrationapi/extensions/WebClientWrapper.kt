@@ -67,8 +67,10 @@ class WebClientWrapper(
       getErrorType(exception, upstreamApi, forbiddenAsError, badRequestAsError)
     }
 
-  // Warning: This function should only be used with IDEMPOTENT requests.
-  // If your POST request is not idempotent then you should not use this function.
+  /**
+   * Warning: This function should only be used with IDEMPOTENT requests.
+   * If your POST request is not idempotent then you should not use this function.
+   */
   inline fun <reified T> requestWithRetry(
     method: HttpMethod,
     uri: String,
