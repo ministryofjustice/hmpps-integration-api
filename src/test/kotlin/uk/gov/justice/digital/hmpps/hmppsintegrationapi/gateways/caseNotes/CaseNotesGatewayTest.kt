@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.caseNotes
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.collections.shouldExist
+import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
 import org.mockito.kotlin.times
@@ -19,6 +20,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGatewa
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.CaseNotesApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.filters.CaseNoteFilter
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import java.time.LocalDateTime
 
 @ActiveProfiles("test")
@@ -60,6 +63,20 @@ class CaseNotesGatewayTest(
             caseNotesGateway.getCaseNotesForPerson(id = "123", CaseNoteFilter(hmppsId = ""))
           }
         response.statusCode.shouldBe(HttpStatus.BAD_REQUEST)
+      }
+
+      it("upstream API returns an forbidden error, throw forbidden exception") {
+        caseNotesApiMockServer.stubGetCaseNotes("123", "", "", HttpStatus.FORBIDDEN)
+        val response = caseNotesGateway.getCaseNotesForPerson(id = "123", CaseNoteFilter(hmppsId = ""))
+        response.errors.shouldHaveSize(1)
+        response.errors
+          .first()
+          .type
+          .shouldBe(UpstreamApiError.Type.FORBIDDEN)
+        response.errors
+          .first()
+          .causedBy
+          .shouldBe(UpstreamApi.CASE_NOTES)
       }
 
       it("returns caseNote") {

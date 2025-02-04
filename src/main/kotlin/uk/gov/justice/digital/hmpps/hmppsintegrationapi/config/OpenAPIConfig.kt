@@ -95,6 +95,15 @@ class OpenAPIConfig {
                 "developerMessage" to Schema<String>().type("string").example("Duplicate post - The client_unique_ref has been used before"),
               ),
             ),
+          ).addSchemas(
+            "ForbiddenResponse",
+            Schema<ErrorResponse>().description("Forbidden to complete action by upstream service").properties(
+              mapOf(
+                "status" to Schema<Int>().type("number").example(403),
+                "userMessage" to Schema<String>().type("string").example("Forbidden to complete action by upstream service"),
+                "developerMessage" to Schema<String>().type("string").example("Forbidden to complete action by upstream service"),
+              ),
+            ),
           )
       }
     }
