@@ -84,9 +84,9 @@ class TransactionsController(
   )
   @GetMapping("/accounts/{accountCode}/transactions")
   fun getTransactionsByAccountCode(
-    @PathVariable hmppsId: String,
-    @PathVariable prisonId: String,
-    @PathVariable accountCode: String,
+    @Parameter(description = "The HMPPS ID of the person") @PathVariable hmppsId: String,
+    @Parameter(description = "The ID of the prison that holds the account") @PathVariable prisonId: String,
+    @Parameter(description = "The code of the account to be accessed, one of 'spends', 'savings' or 'cash'", example = "spends") @PathVariable accountCode: String,
     @RequestAttribute filters: ConsumerFilters?,
     @Parameter(description = "Start date for transactions (defaults to today if not supplied)") @RequestParam(required = false, name = "from_date") fromDate: String?,
     @Parameter(description = "To date for transactions (defaults to today if not supplied)") @RequestParam(required = false, name = "to_date") toDate: String?,
@@ -118,7 +118,7 @@ class TransactionsController(
   }
 
   @Operation(
-    summary = "Get transaction by clientUniqueRef.",
+    summary = "Returns details for a transaction by clientUniqueRef.",
     description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
     responses = [
       ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found a transaction."),
@@ -157,9 +157,9 @@ class TransactionsController(
   )
   @GetMapping("/transactions/{clientUniqueRef}")
   fun getTransactionsByClientUniqueRef(
-    @PathVariable prisonId: String,
-    @PathVariable hmppsId: String,
-    @PathVariable clientUniqueRef: String,
+    @Parameter(description = "The HMPPS ID of the person") @PathVariable prisonId: String,
+    @Parameter(description = "The ID of the prison that holds the account") @PathVariable hmppsId: String,
+    @Parameter(description = "The clientUniqueRef used when the transaction was created") @PathVariable clientUniqueRef: String,
     @RequestAttribute filters: ConsumerFilters?,
   ): DataResponse<Transaction?> {
     val response = getTransactionForPersonService.execute(hmppsId, prisonId, clientUniqueRef, filters)
@@ -177,7 +177,7 @@ class TransactionsController(
   }
 
   @Operation(
-    summary = "Post a transaction.",
+    summary = "Make a financial transaction.",
     description = "<a href=\"#schema-transactionrequest\">Request body</a><br><br><b>Applicable filters</b>: <ul><li>prisons</li></ul>",
     responses = [
       ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully created a transaction."),
@@ -226,8 +226,8 @@ class TransactionsController(
   )
   @PostMapping("/transactions")
   fun postTransactions(
-    @PathVariable prisonId: String,
-    @PathVariable hmppsId: String,
+    @Parameter(description = "The ID of the prison that holds the account") @PathVariable prisonId: String,
+    @Parameter(description = "The HMPPS ID of the person") @PathVariable hmppsId: String,
     @RequestAttribute filters: ConsumerFilters?,
     @RequestBody transactionRequest: TransactionRequest,
   ): DataResponse<TransactionCreateResponse?> {
@@ -254,8 +254,8 @@ class TransactionsController(
   }
 
   @Operation(
-    summary = "Post a transfer transaction.",
-    description = "<a href=\"#schema-transactiontransferrequest\">Request body</a><br><br><b>Applicable filters</b>: <ul><li>prisons</li></ul>",
+    summary = "Transfer funds between the accounts of a prisoner.",
+    description = "Currently only able to move from spends to savings.<br><br><a href=\"#schema-transactiontransferrequest\">Request body</a><br><br><b>Applicable filters</b>: <ul><li>prisons</li></ul>",
     responses = [
       ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully created a transaction transfer."),
       ApiResponse(
@@ -303,8 +303,8 @@ class TransactionsController(
   )
   @PostMapping("/transactions/transfer")
   fun postTransactionsTransfer(
-    @PathVariable prisonId: String,
-    @PathVariable hmppsId: String,
+    @Parameter(description = "The ID of the prison that holds the account") @PathVariable prisonId: String,
+    @Parameter(description = "The HMPPS ID of the person") @PathVariable hmppsId: String,
     @RequestAttribute filters: ConsumerFilters?,
     @RequestBody transactionTransferRequest: TransactionTransferRequest,
   ): DataResponse<TransactionTransferCreateResponse?> {
