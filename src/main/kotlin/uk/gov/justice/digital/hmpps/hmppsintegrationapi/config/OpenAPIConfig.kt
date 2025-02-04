@@ -61,11 +61,11 @@ class OpenAPIConfig {
             ),
           ).addSchemas(
             "Forbidden",
-            Schema<ErrorResponse>().description("Authorisation failed").properties(
+            Schema<ErrorResponse>().description("Forbidden").properties(
               mapOf(
                 "status" to Schema<Int>().type("number").example(403),
-                "userMessage" to Schema<String>().type("string").example("Failed to authenticate with upstream."),
-                "developerMessage" to Schema<String>().type("string").example("Failed to authenticate with upstream."),
+                "userMessage" to Schema<String>().type("string").example("Forbidden on upstream."),
+                "developerMessage" to Schema<String>().type("string").example("Forbidden on upstream."),
               ),
             ),
           ).addSchemas(
