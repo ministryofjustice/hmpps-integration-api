@@ -36,7 +36,7 @@ class RiskManagementController(
     summary = "Returns a list of Risk Management Plans created for the person with the provided HMPPS ID.",
     responses = [
       ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found risk management plans for a person with the provided HMPPS ID."),
-      ApiResponse(responseCode = "403", content = [Content(schema = Schema(ref = "#/components/schemas/Forbidden"))]),
+      ApiResponse(responseCode = "403", content = [Content(schema = Schema(ref = "#/components/schemas/ForbiddenResponse"))]),
       ApiResponse(responseCode = "404", content = [Content(schema = Schema(ref = "#/components/schemas/PersonNotFound"))]),
       ApiResponse(responseCode = "500", content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]),
     ],
@@ -54,7 +54,7 @@ class RiskManagementController(
     }
 
     if (response.hasErrorCausedBy(UpstreamApiError.Type.FORBIDDEN, causedBy = UpstreamApi.RISK_MANAGEMENT_PLAN)) {
-      throw ForbiddenByUpstreamServiceException("Forbidden on upstream")
+      throw ForbiddenByUpstreamServiceException("Upstream API service returned a forbidden error")
     }
 
     auditService.createEvent("GET_RISK_MANAGEMENT_PLANS", mapOf("hmppsId" to hmppsId))

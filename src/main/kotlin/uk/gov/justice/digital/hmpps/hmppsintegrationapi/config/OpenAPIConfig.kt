@@ -60,15 +60,6 @@ class OpenAPIConfig {
               ),
             ),
           ).addSchemas(
-            "Forbidden",
-            Schema<ErrorResponse>().description("Forbidden").properties(
-              mapOf(
-                "status" to Schema<Int>().type("number").example(403),
-                "userMessage" to Schema<String>().type("string").example("Forbidden on upstream."),
-                "developerMessage" to Schema<String>().type("string").example("Forbidden on upstream."),
-              ),
-            ),
-          ).addSchemas(
             "PersonNotFound",
             Schema<ErrorResponse>().description("Failed to find a person with the provided HMPPS ID.").properties(
               mapOf(
