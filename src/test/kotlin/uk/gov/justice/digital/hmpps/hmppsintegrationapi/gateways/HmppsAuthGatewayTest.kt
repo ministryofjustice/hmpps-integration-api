@@ -6,7 +6,7 @@ import io.kotest.matchers.shouldBe
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.AuthenticationFailedException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.HmppsAuthFailedException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
 
 @ActiveProfiles("test")
@@ -33,7 +33,7 @@ class HmppsAuthGatewayTest(
       hmppsAuthMockServer.stop()
 
       val exception =
-        shouldThrow<AuthenticationFailedException> {
+        shouldThrow<HmppsAuthFailedException> {
           hmppsAuthGateway.getClientToken("NOMIS")
         }
 
@@ -44,7 +44,7 @@ class HmppsAuthGatewayTest(
       hmppsAuthMockServer.stubServiceUnavailableForGetOAuthToken()
 
       val exception =
-        shouldThrow<AuthenticationFailedException> {
+        shouldThrow<HmppsAuthFailedException> {
           hmppsAuthGateway.getClientToken("NOMIS")
         }
 
@@ -55,7 +55,7 @@ class HmppsAuthGatewayTest(
       hmppsAuthMockServer.stubUnauthorizedForGetOAAuthToken()
 
       val exception =
-        shouldThrow<AuthenticationFailedException> {
+        shouldThrow<HmppsAuthFailedException> {
           hmppsAuthGateway.getClientToken("NOMIS")
         }
 
