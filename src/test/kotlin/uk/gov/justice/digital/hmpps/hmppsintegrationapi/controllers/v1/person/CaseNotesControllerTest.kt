@@ -22,6 +22,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMo
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.filters.CaseNoteFilter
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CaseNote
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetCaseNotesForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 import java.net.URLEncoder
@@ -68,6 +70,23 @@ class CaseNotesControllerTest(
             getCaseNotesForPersonService,
             VerificationModeFactory.times(1),
           ).execute(argThat<CaseNoteFilter> { it -> it.hmppsId == hmppsId })
+        }
+
+        it("returns a 403 when the upstream service provides a 403") {
+          whenever(getCaseNotesForPersonService.execute(any())).thenReturn(
+            Response(
+              data = emptyList(),
+              errors =
+                listOf(
+                  UpstreamApiError(
+                    type = UpstreamApiError.Type.FORBIDDEN,
+                    causedBy = UpstreamApi.CASE_NOTES,
+                  ),
+                ),
+            ),
+          )
+          val result = mockMvc.performAuthorised(path)
+          result.response.status.shouldBe(HttpStatus.FORBIDDEN.value())
         }
 
         it("returns the case notes for a person with the matching ID") {
