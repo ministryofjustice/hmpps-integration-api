@@ -49,7 +49,7 @@ class HmppsIntegrationApiExceptionHandler {
 
   @ExceptionHandler(HmppsAuthFailedException::class)
   fun handleAuthenticationFailedException(e: HmppsAuthFailedException): ResponseEntity<ErrorResponse?>? {
-    logAndCapture("Authentication error: {}", e)
+    logAndCapture("Authentication error in HMPPS Auth: {}", e)
     return ResponseEntity
       .status(BAD_GATEWAY)
       .body(
