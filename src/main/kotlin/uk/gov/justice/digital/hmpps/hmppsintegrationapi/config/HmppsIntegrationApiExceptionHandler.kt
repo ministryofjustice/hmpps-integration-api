@@ -4,6 +4,7 @@ import io.sentry.Sentry
 import jakarta.validation.ValidationException
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
+import org.springframework.http.HttpStatus.BAD_GATEWAY
 import org.springframework.http.HttpStatus.BAD_REQUEST
 import org.springframework.http.HttpStatus.CONFLICT
 import org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR
@@ -50,10 +51,10 @@ class HmppsIntegrationApiExceptionHandler {
   fun handleAuthenticationFailedException(e: HmppsAuthFailedException): ResponseEntity<ErrorResponse?>? {
     logAndCapture("Authentication error: {}", e)
     return ResponseEntity
-      .status(INTERNAL_SERVER_ERROR)
+      .status(BAD_GATEWAY)
       .body(
         ErrorResponse(
-          status = INTERNAL_SERVER_ERROR,
+          status = BAD_GATEWAY,
           developerMessage = "Authentication error: ${e.message}",
           userMessage = e.message,
         ),
