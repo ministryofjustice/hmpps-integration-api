@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.HttpStatus.BAD_GATEWAY
 import org.springframework.http.HttpStatus.BAD_REQUEST
 import org.springframework.http.HttpStatus.CONFLICT
+import org.springframework.http.HttpStatus.FORBIDDEN
 import org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR
 import org.springframework.http.HttpStatus.NOT_FOUND
 import org.springframework.http.ResponseEntity
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.ConflictFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.ForbiddenByUpstreamServiceException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.HmppsAuthFailedException
 
 @RestControllerAdvice
@@ -56,6 +58,20 @@ class HmppsIntegrationApiExceptionHandler {
         ErrorResponse(
           status = BAD_GATEWAY,
           developerMessage = "Authentication error: ${e.message}",
+          userMessage = e.message,
+        ),
+      )
+  }
+
+  @ExceptionHandler(ForbiddenByUpstreamServiceException::class)
+  fun handleAuthenticationFailedException(e: ForbiddenByUpstreamServiceException): ResponseEntity<ErrorResponse?>? {
+    logAndCapture("Forbidden to complete action by upstream service: {}", e)
+    return ResponseEntity
+      .status(FORBIDDEN)
+      .body(
+        ErrorResponse(
+          status = FORBIDDEN,
+          developerMessage = "Forbidden to complete action by upstream service: ${e.message}",
           userMessage = e.message,
         ),
       )
