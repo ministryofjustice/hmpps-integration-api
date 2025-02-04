@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.AuthenticationFailedException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.ForbiddenByUpstreamServiceException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.decodeUrlCharacters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.filters.CaseNoteFilter
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CaseNote
@@ -65,7 +65,7 @@ class CaseNotesController(
     }
 
     if (response.hasErrorCausedBy(UpstreamApiError.Type.FORBIDDEN, causedBy = UpstreamApi.CASE_NOTES)) {
-      throw AuthenticationFailedException("Upstream API Case Notes service returned a forbidden error")
+      throw ForbiddenByUpstreamServiceException("Upstream API Case Notes service returned a forbidden error")
     }
 
     auditService.createEvent("GET_CASE_NOTES", mapOf("hmppsId" to hmppsId))
