@@ -32,6 +32,7 @@ class CaseNotesGateway(
         "/case-notes/$id?$params",
         authenticationHeader(),
         UpstreamApi.CASE_NOTES,
+        forbiddenAsError = true,
       )
 
     return when (result) {

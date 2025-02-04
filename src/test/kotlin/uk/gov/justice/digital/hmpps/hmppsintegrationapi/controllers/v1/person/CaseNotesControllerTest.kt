@@ -40,7 +40,6 @@ class CaseNotesControllerTest(
       val path = "/v1/persons/$encodedHmppsId/case-notes"
       val mockMvc = IntegrationAPIMockMvc(springMockMvc)
       val pageCaseNote =
-
         listOf(
           CaseNote(caseNoteId = "abcd1234"),
         )
