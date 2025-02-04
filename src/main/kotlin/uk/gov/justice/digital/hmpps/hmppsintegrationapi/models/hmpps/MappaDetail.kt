@@ -17,4 +17,6 @@ data class MappaDetail(
   val reviewDate: String? = null,
   @Schema(example = "Mappa Detail for X00001")
   val notes: String? = null,
-)
+) {
+  fun isNotPopulated(): Boolean = level == null && levelDescription == null && category == null && categoryDescription == null && startDate == null && reviewDate == null && notes == null
+}
