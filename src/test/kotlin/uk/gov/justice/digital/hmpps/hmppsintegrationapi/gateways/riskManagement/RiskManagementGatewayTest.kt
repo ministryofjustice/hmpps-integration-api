@@ -7,6 +7,7 @@ import org.mockito.internal.verification.VerificationModeFactory
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
+import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
@@ -71,6 +72,18 @@ class RiskManagementGatewayTest(
         riskPlan.shouldBe(null)
         response.errors.size.shouldBe(1)
         response.errors[0].type.shouldBe(UpstreamApiError.Type.ENTITY_NOT_FOUND)
+      }
+
+      it("returns an error response when upstream service returns 403") {
+        riskManagementMockServer.stubGetRiskManagementPlan(
+          crn,
+          "{}",
+          HttpStatus.FORBIDDEN,
+        )
+
+        val response = riskManagementGateway.getRiskManagementPlansForCrn(crn)
+        response.errors.size.shouldBe(1)
+        response.errors[0].type.shouldBe(UpstreamApiError.Type.FORBIDDEN)
       }
     }
   })

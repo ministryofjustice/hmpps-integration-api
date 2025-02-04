@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.ForbiddenByUpstreamServiceException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.decodeUrlCharacters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.RiskManagementPlan
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
@@ -35,6 +36,7 @@ class RiskManagementController(
     summary = "Returns a list of Risk Management Plans created for the person with the provided HMPPS ID.",
     responses = [
       ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found risk management plans for a person with the provided HMPPS ID."),
+      ApiResponse(responseCode = "403", content = [Content(schema = Schema(ref = "#/components/schemas/ForbiddenResponse"))]),
       ApiResponse(responseCode = "404", content = [Content(schema = Schema(ref = "#/components/schemas/PersonNotFound"))]),
       ApiResponse(responseCode = "500", content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]),
     ],
@@ -46,14 +48,21 @@ class RiskManagementController(
   ): PaginatedResponse<RiskManagementPlan> {
     val hmppsId = encodedHmppsId.decodeUrlCharacters()
     val response = getRiskManagementPlansForCrnService.execute(hmppsId)
-    if (response.data.isNullOrEmpty()) {
-      if (response.hasErrorCausedBy(UpstreamApiError.Type.ENTITY_NOT_FOUND, causedBy = UpstreamApi.RISK_MANAGEMENT_PLAN)) {
-        throw EntityNotFoundException("Could not find person with id: $hmppsId")
-      }
-      return emptyList<RiskManagementPlan>().paginateWith(page, perPage)
+
+    if (response.hasErrorCausedBy(UpstreamApiError.Type.ENTITY_NOT_FOUND, causedBy = UpstreamApi.RISK_MANAGEMENT_PLAN)) {
+      throw EntityNotFoundException("Could not find person with id: $hmppsId")
+    }
+
+    if (response.hasErrorCausedBy(UpstreamApiError.Type.FORBIDDEN, causedBy = UpstreamApi.RISK_MANAGEMENT_PLAN)) {
+      throw ForbiddenByUpstreamServiceException("Upstream API service returned a forbidden error")
     }
 
     auditService.createEvent("GET_RISK_MANAGEMENT_PLANS", mapOf("hmppsId" to hmppsId))
+
+    if (response.data.isNullOrEmpty()) {
+      return emptyList<RiskManagementPlan>().paginateWith(page, perPage)
+    }
+
     return response.data.paginateWith(page, perPage)
   }
 }
