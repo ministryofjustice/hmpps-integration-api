@@ -6,16 +6,15 @@ import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.HttpStatus.BAD_REQUEST
 import org.springframework.http.HttpStatus.CONFLICT
-import org.springframework.http.HttpStatus.FORBIDDEN
 import org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR
 import org.springframework.http.HttpStatus.NOT_FOUND
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.reactive.function.client.WebClientResponseException
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.AuthenticationFailedException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.ConflictFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.HmppsAuthFailedException
 
 @RestControllerAdvice
 class HmppsIntegrationApiExceptionHandler {
@@ -47,14 +46,14 @@ class HmppsIntegrationApiExceptionHandler {
       )
   }
 
-  @ExceptionHandler(AuthenticationFailedException::class)
-  fun handleAuthenticationFailedException(e: AuthenticationFailedException): ResponseEntity<ErrorResponse?>? {
+  @ExceptionHandler(HmppsAuthFailedException::class)
+  fun handleAuthenticationFailedException(e: HmppsAuthFailedException): ResponseEntity<ErrorResponse?>? {
     logAndCapture("Authentication error: {}", e)
     return ResponseEntity
-      .status(FORBIDDEN)
+      .status(INTERNAL_SERVER_ERROR)
       .body(
         ErrorResponse(
-          status = FORBIDDEN,
+          status = INTERNAL_SERVER_ERROR,
           developerMessage = "Authentication error: ${e.message}",
           userMessage = e.message,
         ),
