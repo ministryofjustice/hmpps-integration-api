@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.AuthenticationFailedException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.AuthorisationFailedException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.ConflictFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 
@@ -56,6 +57,20 @@ class HmppsIntegrationApiExceptionHandler {
         ErrorResponse(
           status = FORBIDDEN,
           developerMessage = "Authentication error: ${e.message}",
+          userMessage = e.message,
+        ),
+      )
+  }
+
+  @ExceptionHandler(AuthorisationFailedException::class)
+  fun handleAuthorisationFailedException(e: AuthorisationFailedException): ResponseEntity<ErrorResponse?>? {
+    logAndCapture("Authorisation error: {}", e)
+    return ResponseEntity
+      .status(FORBIDDEN)
+      .body(
+        ErrorResponse(
+          status = FORBIDDEN,
+          developerMessage = "Authorisation error: ${e.message}",
           userMessage = e.message,
         ),
       )
