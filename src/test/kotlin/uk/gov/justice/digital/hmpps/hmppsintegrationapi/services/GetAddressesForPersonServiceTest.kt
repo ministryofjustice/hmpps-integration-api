@@ -1,18 +1,17 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 
 import io.kotest.core.spec.style.DescribeSpec
-import io.kotest.matchers.collections.shouldContain
-import io.kotest.matchers.collections.shouldHaveSize
+import io.kotest.matchers.collections.shouldBeEmpty
+import io.kotest.matchers.nulls.shouldBeNull
+import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
-import org.mockito.internal.verification.VerificationModeFactory
-import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NomisGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ProbationOffenderSearchGateway
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.generateTestAddress
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Address
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Identifiers
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
@@ -37,88 +36,218 @@ internal class GetAddressesForPersonServiceTest(
       val person =
         Person(firstName = "Qui-gon", lastName = "Jin", identifiers = Identifiers(nomisNumber = prisonerNumber, deliusCrn = deliusCrn))
 
+      val personNoNomis =
+        Person(firstName = "Qui-gon", lastName = "Jin", identifiers = Identifiers(deliusCrn = deliusCrn))
+
+      val deliusAddress =
+        Address(
+          country = "UK",
+          county = "Middlesex",
+          locality = "Some Locality",
+          name = "Delius Address",
+          noFixedAddress = false,
+          number = "123",
+          postcode = "AB1 2CD",
+          street = "Delius Street",
+          town = "Delius Town",
+          notes = "Some notes about the address",
+          startDate = null,
+          endDate = null,
+        )
+
+      val nomisAddress =
+        Address(
+          country = "UK",
+          county = "Middlesex",
+          locality = "Some Locality",
+          name = "Nomis Address",
+          noFixedAddress = false,
+          number = "123",
+          postcode = "AB1 2CD",
+          street = "Nomis Street",
+          town = "Nomis Town",
+          notes = "Some notes about the address",
+          startDate = null,
+          endDate = null,
+        )
+
       beforeEach {
         Mockito.reset(probationOffenderSearchGateway)
         Mockito.reset(nomisGateway)
         Mockito.reset(personService)
+      }
 
-        whenever(personService.execute(hmppsId = deliusCrn)).thenReturn(Response(person))
+      it("Person service error → Return person service error") {
+        val errors =
+          listOf(
+            UpstreamApiError(
+              type = UpstreamApiError.Type.INTERNAL_SERVER_ERROR,
+              causedBy = UpstreamApi.NOMIS,
+              description = "Mock error from person service",
+            ),
+          )
+        whenever(personService.execute(hmppsId)).thenReturn(
+          Response(
+            data = null,
+            errors = errors,
+          ),
+        )
+        val result = getAddressesForPersonService.execute(hmppsId)
+        result.errors.shouldBe(errors)
+      }
+
+      it("Nomis number, Delius success, Nomis success → Merge responses ") {
         whenever(personService.execute(hmppsId = hmppsId)).thenReturn(Response(person))
+        whenever(probationOffenderSearchGateway.getAddressesForPerson(hmppsId)).thenReturn(Response(data = listOf(deliusAddress)))
+        whenever(nomisGateway.getAddressesForPerson(prisonerNumber)).thenReturn(Response(data = listOf(nomisAddress)))
 
-        whenever(probationOffenderSearchGateway.getAddressesForPerson(hmppsId)).thenReturn(Response(data = emptyList()))
-        whenever(nomisGateway.getAddressesForPerson(prisonerNumber)).thenReturn(Response(data = emptyList()))
+        val result = getAddressesForPersonService.execute(hmppsId)
+        result.errors.shouldBeEmpty()
+        result.data.shouldBe(listOf(deliusAddress, nomisAddress))
       }
 
-      it("gets a person from getPersonService") {
-        getAddressesForPersonService.execute(hmppsId)
-
-        verify(personService, VerificationModeFactory.times(1)).execute(hmppsId = hmppsId)
-      }
-
-      it("gets addresses for a person from Probation Offender Search using a Hmpps Id") {
-        getAddressesForPersonService.execute(hmppsId = hmppsId)
-
-        verify(probationOffenderSearchGateway, VerificationModeFactory.times(1)).getAddressesForPerson(hmppsId)
-      }
-
-      it("gets addresses for a person from Probation Offender Search using a Delius CRN") {
-        getAddressesForPersonService.execute(hmppsId = deliusCrn)
-
-        verify(probationOffenderSearchGateway, VerificationModeFactory.times(1)).getAddressesForPerson(deliusCrn)
-      }
-
-      it("gets addresses for a person from NOMIS using prisoner number") {
-        getAddressesForPersonService.execute(hmppsId)
-
-        verify(nomisGateway, VerificationModeFactory.times(1)).getAddressesForPerson(prisonerNumber)
-      }
-
-      it("returns all addresses for a person") {
-        val addressesFromProbationOffenderSearch = generateTestAddress(name = "Probation Address")
-        val addressesFromNomis = generateTestAddress(name = "NOMIS Address")
-
-        whenever(probationOffenderSearchGateway.getAddressesForPerson(hmppsId)).thenReturn(
-          Response(data = listOf(addressesFromProbationOffenderSearch)),
-        )
+      it("Nomis number, Delius success, Nomis 404 → Ideally return just Delius response") {
+        whenever(personService.execute(hmppsId = hmppsId)).thenReturn(Response(person))
+        whenever(probationOffenderSearchGateway.getAddressesForPerson(hmppsId)).thenReturn(Response(data = listOf(deliusAddress)))
         whenever(nomisGateway.getAddressesForPerson(prisonerNumber)).thenReturn(
-          Response(data = listOf(addressesFromNomis)),
-        )
-
-        val response = getAddressesForPersonService.execute(hmppsId)
-
-        response.data.shouldContain(addressesFromProbationOffenderSearch)
-        response.data.shouldContain(addressesFromNomis)
-      }
-
-      it("returns all errors when person cannot be found in all upstream APIs") {
-        whenever(probationOffenderSearchGateway.getAddressesForPerson(hmppsId)).thenReturn(
           Response(
             data = emptyList(),
             errors =
               listOf(
                 UpstreamApiError(
-                  causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH,
                   type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-                ),
-              ),
-          ),
-        )
-        whenever(nomisGateway.getAddressesForPerson(prisonerNumber)).thenReturn(
-          Response(
-            data = emptyList(),
-            errors =
-              listOf(
-                UpstreamApiError(
                   causedBy = UpstreamApi.NOMIS,
-                  type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
                 ),
               ),
           ),
         )
 
-        val response = getAddressesForPersonService.execute(hmppsId)
+        val result = getAddressesForPersonService.execute(hmppsId)
+        result.errors.shouldBeEmpty()
+        result.data.shouldBe(listOf(deliusAddress))
+      }
 
-        response.errors.shouldHaveSize(2)
+      it("Nomis number, Delius 404, nomis success → Return just NOMIS") {
+        whenever(personService.execute(hmppsId = hmppsId)).thenReturn(Response(person))
+        whenever(probationOffenderSearchGateway.getAddressesForPerson(hmppsId)).thenReturn(
+          Response(
+            data = emptyList(),
+            errors =
+              listOf(
+                UpstreamApiError(
+                  type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+                  causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH,
+                ),
+              ),
+          ),
+        )
+        whenever(nomisGateway.getAddressesForPerson(prisonerNumber)).thenReturn(Response(data = listOf(nomisAddress)))
+
+        val result = getAddressesForPersonService.execute(hmppsId)
+        result.errors.shouldBeEmpty()
+        result.data.shouldBe(listOf(nomisAddress))
+      }
+
+      it("Nomis number, Delius success, nomis non-404 error → Return NOMIS error") {
+        whenever(personService.execute(hmppsId = hmppsId)).thenReturn(Response(person))
+        whenever(probationOffenderSearchGateway.getAddressesForPerson(hmppsId)).thenReturn(Response(listOf(deliusAddress)))
+        whenever(nomisGateway.getAddressesForPerson(prisonerNumber)).thenReturn(
+          Response(
+            data = emptyList(),
+            errors =
+              listOf(
+                UpstreamApiError(
+                  type = UpstreamApiError.Type.INTERNAL_SERVER_ERROR,
+                  causedBy = UpstreamApi.NOMIS,
+                ),
+              ),
+          ),
+        )
+
+        val result = getAddressesForPersonService.execute(hmppsId)
+        result.data.shouldBeNull()
+        result.errors.shouldBe(listOf(UpstreamApiError(type = UpstreamApiError.Type.INTERNAL_SERVER_ERROR, causedBy = UpstreamApi.NOMIS)))
+      }
+
+      it("Nomis number, Delius 404, nomis any error (incl. 404) → Return just NOMIS") {
+        whenever(personService.execute(hmppsId = hmppsId)).thenReturn(Response(person))
+        whenever(probationOffenderSearchGateway.getAddressesForPerson(hmppsId)).thenReturn(
+          Response(
+            data = emptyList(),
+            errors =
+              listOf(
+                UpstreamApiError(
+                  type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+                  causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH,
+                ),
+              ),
+          ),
+        )
+        whenever(nomisGateway.getAddressesForPerson(prisonerNumber)).thenReturn(
+          Response(
+            data = emptyList(),
+            errors =
+              listOf(
+                UpstreamApiError(
+                  type = UpstreamApiError.Type.INTERNAL_SERVER_ERROR,
+                  causedBy = UpstreamApi.NOMIS,
+                ),
+              ),
+          ),
+        )
+
+        val result = getAddressesForPersonService.execute(hmppsId)
+        result.data.shouldBeNull()
+        result.errors.shouldBe(listOf(UpstreamApiError(type = UpstreamApiError.Type.INTERNAL_SERVER_ERROR, causedBy = UpstreamApi.NOMIS)))
+      }
+
+      it("Nomis number, Delius non-404 error → Return Delius response") {
+        whenever(personService.execute(hmppsId = hmppsId)).thenReturn(Response(person))
+        whenever(probationOffenderSearchGateway.getAddressesForPerson(hmppsId)).thenReturn(
+          Response(
+            data = emptyList(),
+            errors =
+              listOf(
+                UpstreamApiError(
+                  type = UpstreamApiError.Type.INTERNAL_SERVER_ERROR,
+                  causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH,
+                ),
+              ),
+          ),
+        )
+
+        val result = getAddressesForPersonService.execute(hmppsId)
+        result.data.shouldBeNull()
+        result.errors.shouldBe(listOf(UpstreamApiError(type = UpstreamApiError.Type.INTERNAL_SERVER_ERROR, causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH)))
+      }
+
+      it("No nomis number, delius success → return Delius") {
+        whenever(personService.execute(hmppsId = hmppsId)).thenReturn(Response(personNoNomis))
+        whenever(probationOffenderSearchGateway.getAddressesForPerson(hmppsId)).thenReturn(Response(listOf(deliusAddress)))
+
+        val result = getAddressesForPersonService.execute(hmppsId)
+        result.errors.shouldBeEmpty()
+        result.data.shouldBe(listOf(deliusAddress))
+      }
+
+      it("No nomis number, delius any error → return Delius") {
+        whenever(personService.execute(hmppsId = hmppsId)).thenReturn(Response(personNoNomis))
+        whenever(probationOffenderSearchGateway.getAddressesForPerson(hmppsId)).thenReturn(
+          Response(
+            data = emptyList(),
+            errors =
+              listOf(
+                UpstreamApiError(
+                  type = UpstreamApiError.Type.INTERNAL_SERVER_ERROR,
+                  causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH,
+                ),
+              ),
+          ),
+        )
+
+        val result = getAddressesForPersonService.execute(hmppsId)
+        result.data.shouldBeNull()
+        result.errors.shouldBe(listOf(UpstreamApiError(type = UpstreamApiError.Type.INTERNAL_SERVER_ERROR, causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH)))
       }
     },
   )
