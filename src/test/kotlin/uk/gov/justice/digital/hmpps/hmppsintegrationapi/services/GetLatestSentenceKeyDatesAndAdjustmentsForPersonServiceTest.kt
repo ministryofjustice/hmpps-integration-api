@@ -19,6 +19,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffende
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ProbationOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HomeDetentionCurfewDate
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Identifiers
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.LatestSentenceKeyDatesAndAdjustments
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NonDtoDate
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonOnProbation
@@ -161,7 +162,7 @@ internal class GetLatestSentenceKeyDatesAndAdjustmentsForPersonServiceTest(
           ),
         )
 
-        // whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<LatestSentenceKeyDatesAndAdjustments>(prisonId, filters)).thenReturn(Response(data = null, errors = emptyList()))
+        whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<LatestSentenceKeyDatesAndAdjustments>(prisonId, filters)).thenReturn(Response(data = null, errors = emptyList()))
         whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomisNumber)).thenReturn(Response(data = prisoner))
       }
 
