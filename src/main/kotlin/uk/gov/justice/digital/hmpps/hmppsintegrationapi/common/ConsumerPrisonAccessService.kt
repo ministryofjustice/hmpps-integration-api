@@ -9,13 +9,13 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Consum
 @Service
 class ConsumerPrisonAccessService {
   fun <T> checkConsumerHasPrisonAccess(
-    prisonId: String,
+    prisonId: String?,
     filters: ConsumerFilters?,
   ): Response<T?> {
-    val result = Response<T?>(data = null, errors = emptyList<UpstreamApiError>())
+    val response = Response<T?>(data = null, errors = emptyList<UpstreamApiError>())
     if (filters != null && !filters.matchesPrison(prisonId)) {
-      result.errors = listOf(UpstreamApiError(UpstreamApi.NOMIS, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found"))
+      response.errors = listOf(UpstreamApiError(UpstreamApi.NOMIS, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found"))
     }
-    return result
+    return response
   }
 }
