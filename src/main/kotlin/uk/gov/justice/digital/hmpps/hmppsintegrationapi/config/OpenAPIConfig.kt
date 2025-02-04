@@ -63,8 +63,8 @@ class OpenAPIConfig {
             "Forbidden",
             Schema<ErrorResponse>().description("Authorisation failed").properties(
               mapOf(
-                "status" to Schema<Int>().type("number").example(500),
-                "userMessage" to Schema<String>().type("string").example("Authorisation failed on upstream"),
+                "status" to Schema<Int>().type("number").example(403),
+                "userMessage" to Schema<String>().type("string").example("Authorisation failed on upstream."),
                 "developerMessage" to Schema<String>().type("string").example("Authorisation failed on upstream."),
               ),
             ),
