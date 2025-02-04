@@ -4,6 +4,7 @@ import io.sentry.Sentry
 import jakarta.validation.ValidationException
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
+import org.springframework.http.HttpStatus.BAD_GATEWAY
 import org.springframework.http.HttpStatus.BAD_REQUEST
 import org.springframework.http.HttpStatus.CONFLICT
 import org.springframework.http.HttpStatus.FORBIDDEN
@@ -13,9 +14,10 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.reactive.function.client.WebClientResponseException
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.AuthenticationFailedException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.ConflictFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.ForbiddenByUpstreamServiceException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.HmppsAuthFailedException
 
 @RestControllerAdvice
 class HmppsIntegrationApiExceptionHandler {
@@ -47,15 +49,29 @@ class HmppsIntegrationApiExceptionHandler {
       )
   }
 
-  @ExceptionHandler(AuthenticationFailedException::class)
-  fun handleAuthenticationFailedException(e: AuthenticationFailedException): ResponseEntity<ErrorResponse?>? {
-    logAndCapture("Authentication error: {}", e)
+  @ExceptionHandler(HmppsAuthFailedException::class)
+  fun handleAuthenticationFailedException(e: HmppsAuthFailedException): ResponseEntity<ErrorResponse?>? {
+    logAndCapture("Authentication error in HMPPS Auth: {}", e)
+    return ResponseEntity
+      .status(BAD_GATEWAY)
+      .body(
+        ErrorResponse(
+          status = BAD_GATEWAY,
+          developerMessage = "Authentication error: ${e.message}",
+          userMessage = e.message,
+        ),
+      )
+  }
+
+  @ExceptionHandler(ForbiddenByUpstreamServiceException::class)
+  fun handleAuthenticationFailedException(e: ForbiddenByUpstreamServiceException): ResponseEntity<ErrorResponse?>? {
+    logAndCapture("Forbidden to complete action by upstream service: {}", e)
     return ResponseEntity
       .status(FORBIDDEN)
       .body(
         ErrorResponse(
           status = FORBIDDEN,
-          developerMessage = "Authentication error: ${e.message}",
+          developerMessage = "Forbidden to complete action by upstream service: ${e.message}",
           userMessage = e.message,
         ),
       )

@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.WebClientRequestException
 import org.springframework.web.reactive.function.client.WebClientResponseException
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.AuthenticationFailedException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.HmppsAuthFailedException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Credentials
 
 @Component
@@ -36,11 +36,11 @@ class HmppsAuthGateway(
 
       JSONParser(response).parseObject()["access_token"].toString()
     } catch (exception: WebClientRequestException) {
-      throw AuthenticationFailedException("Connection to ${exception.uri.authority} failed for $service.")
+      throw HmppsAuthFailedException("Connection to ${exception.uri.authority} failed for $service.")
     } catch (exception: WebClientResponseException.ServiceUnavailable) {
-      throw AuthenticationFailedException("${exception.request?.uri?.authority} is unavailable for $service.")
+      throw HmppsAuthFailedException("${exception.request?.uri?.authority} is unavailable for $service.")
     } catch (exception: WebClientResponseException.Unauthorized) {
-      throw AuthenticationFailedException("Invalid credentials used for $service.")
+      throw HmppsAuthFailedException("Invalid credentials used for $service.")
     }
   }
 }
