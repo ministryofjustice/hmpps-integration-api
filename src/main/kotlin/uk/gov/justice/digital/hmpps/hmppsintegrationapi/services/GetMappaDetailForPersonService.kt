@@ -30,7 +30,8 @@ class GetMappaDetailForPersonService(
       nDeliusMappaDetailResponse = nDeliusGateway.getMappaDetailForPerson(id = deliusCrn)
 
       if (nDeliusMappaDetailResponse.data != null) {
-        if (nDeliusMappaDetailResponse.data!!.isNotPopulated()) {
+        val mappaDetail = nDeliusMappaDetailResponse.data!!
+        if (isNotPopulated(mappaDetail)) {
           nDeliusMappaDetailResponse.errors = listOf(UpstreamApiError(causedBy = UpstreamApi.NDELIUS, type = UpstreamApiError.Type.ENTITY_NOT_FOUND))
         }
       }
@@ -41,4 +42,6 @@ class GetMappaDetailForPersonService(
       errors = nDeliusMappaDetailResponse.errors,
     )
   }
+
+  private fun isNotPopulated(ndeliusMappaData: MappaDetail?): Boolean = ndeliusMappaData?.level == null && ndeliusMappaData?.levelDescription == null && ndeliusMappaData?.category == null && ndeliusMappaData?.categoryDescription == null && ndeliusMappaData?.startDate == null && ndeliusMappaData?.reviewDate == null && ndeliusMappaData?.notes == null
 }
