@@ -168,7 +168,7 @@ internal class PrisonControllerTest(
         )
       }
 
-      it("returns 404 when prisoner is not found") {
+      it("returns 200 when prisoner is not found but successful query") {
         whenever(getPersonService.getPrisoner(eq(hmppsId), anyOrNull())).thenReturn(
           Response(
             data = null,
@@ -185,7 +185,7 @@ internal class PrisonControllerTest(
 
         val result = mockMvc.performAuthorised("$basePath/prisoners/$hmppsId")
 
-        result.response.status.shouldBe(404)
+        result.response.status.shouldBe(200)
       }
 
       it("returns 404 when NOMIS number is not found") {
