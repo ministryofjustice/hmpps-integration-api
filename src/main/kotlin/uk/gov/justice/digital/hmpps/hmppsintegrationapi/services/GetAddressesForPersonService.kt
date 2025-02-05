@@ -19,22 +19,23 @@ class GetAddressesForPersonService(
     if (personResponse.errors.isNotEmpty()) {
       return Response(data = emptyList(), errors = personResponse.errors)
     }
-    val nomisNumber = personResponse.data?.identifiers?.nomisNumber
 
-    var addressesFromNomis: Response<List<Address>> = Response(data = emptyList())
     val addressesFromDelius = probationOffenderSearchGateway.getAddressesForPerson(hmppsId = hmppsId)
     if (addressesFromDelius.errors.isNotEmpty() && addressesFromDelius.errors.none { it.type == UpstreamApiError.Type.ENTITY_NOT_FOUND }) {
       return Response(data = emptyList(), errors = addressesFromDelius.errors)
     }
 
+    val nomisNumber = personResponse.data?.identifiers?.nomisNumber
+
     if (nomisNumber == null) {
       return addressesFromDelius
     }
 
-    addressesFromNomis = nomisGateway.getAddressesForPerson(id = nomisNumber)
+    val addressesFromNomis = nomisGateway.getAddressesForPerson(id = nomisNumber)
     if (addressesFromNomis.errors.isNotEmpty() && addressesFromNomis.errors.none { it.type == UpstreamApiError.Type.ENTITY_NOT_FOUND }) {
       return Response(data = emptyList(), errors = addressesFromNomis.errors)
     }
+
     if (
       addressesFromNomis.errors.isNotEmpty() &&
       addressesFromNomis.errors.any { it.type == UpstreamApiError.Type.ENTITY_NOT_FOUND } &&
