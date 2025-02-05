@@ -108,8 +108,8 @@ internal class GetSentencesForPersonServiceTest(
             errors = probationOffenderSearch500Error,
           ),
         )
-        val result = getSentencesForPersonService.execute(hmppsId)
 
+        val result = getSentencesForPersonService.execute(hmppsId)
         result.errors.shouldBe(probationOffenderSearch500Error)
       }
 
@@ -119,21 +119,22 @@ internal class GetSentencesForPersonServiceTest(
             data = personNoIdentifiers,
           ),
         )
-        val result = getSentencesForPersonService.execute(hmppsId)
 
+        val result = getSentencesForPersonService.execute(hmppsId)
         result.errors.shouldBe(nomis404Error)
       }
 
       it("No Nomis number + Delius crn, delius success → return Delius") {
-
         whenever(getPersonService.execute(hmppsId = hmppsId)).thenReturn(
           Response(
             data = personDeliusOnly,
           ),
         )
+
         whenever(nDeliusGateway.getSentencesForPerson(nDeliusCRN)).thenReturn(
           Response(data = listOf(nDeliusSentence1, nDeliusSentence2)),
         )
+
         val result = getSentencesForPersonService.execute(hmppsId)
         result.shouldBe(Response(data = listOf(nDeliusSentence1, nDeliusSentence2)))
       }
@@ -144,9 +145,11 @@ internal class GetSentencesForPersonServiceTest(
             data = personDeliusOnly,
           ),
         )
+
         whenever(nDeliusGateway.getSentencesForPerson(nDeliusCRN)).thenReturn(
           Response(data = emptyList(), errors = nDelius500Error),
         )
+
         val result = getSentencesForPersonService.execute(hmppsId)
         result.errors.shouldBe(nDelius500Error)
       }
@@ -167,6 +170,7 @@ internal class GetSentencesForPersonServiceTest(
         whenever(nomisGateway.getSentencesForBooking(firstBookingId)).thenReturn(
           Response(data = listOf(nomisSentence1)),
         )
+
         whenever(nomisGateway.getSentencesForBooking(secondBookingId)).thenReturn(
           Response(data = listOf(nomisSentence2)),
         )
@@ -311,7 +315,6 @@ internal class GetSentencesForPersonServiceTest(
         whenever(nomisGateway.getSentencesForBooking(firstBookingId)).thenReturn(
           Response(data = emptyList(), errors = nomis404Error),
         )
-
         whenever(nomisGateway.getSentencesForBooking(secondBookingId)).thenReturn(
           Response(data = emptyList(), errors = nomis404Error),
         )
@@ -358,7 +361,6 @@ internal class GetSentencesForPersonServiceTest(
         whenever(nomisGateway.getSentencesForBooking(firstBookingId)).thenReturn(
           Response(data = emptyList(), errors = nomis500Error),
         )
-
         whenever(nomisGateway.getSentencesForBooking(secondBookingId)).thenReturn(
           Response(data = emptyList(), errors = nomis500Error),
         )
@@ -433,7 +435,6 @@ internal class GetSentencesForPersonServiceTest(
         whenever(nomisGateway.getSentencesForBooking(firstBookingId)).thenReturn(
           Response(data = emptyList(), errors = nomis404Error),
         )
-
         whenever(nomisGateway.getSentencesForBooking(secondBookingId)).thenReturn(
           Response(data = emptyList(), errors = nomis404Error),
         )
