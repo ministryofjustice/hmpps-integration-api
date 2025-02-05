@@ -50,13 +50,25 @@ class ExpressionInterestControllerTest(
         whenever(getPersonService.getNomisNumber(validHmppsId)).thenReturn(notFoundResponse)
 
         val result = mockMvc.performAuthorisedPut("$basePath/$validHmppsId/expression-of-interest/jobs/$jobId")
-
         result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
       }
 
-      it("should return 400 if an invalid hmppsId is provided") {
-        val result = mockMvc.performAuthorisedPut("$basePath/$invalidHmppsId/expression-of-interest/jobs/$jobId")
+      it("should throw ValidationException if an invalid hmppsId is provided") {
+        val invalidResponse =
+          Response<NomisNumber?>(
+            data = null,
+            errors =
+              listOf(
+                UpstreamApiError(
+                  type = UpstreamApiError.Type.BAD_REQUEST,
+                  description = "Invalid HmppsId",
+                  causedBy = UpstreamApi.NOMIS,
+                ),
+              ),
+          )
+        whenever(getPersonService.getNomisNumber(invalidHmppsId)).thenReturn(invalidResponse)
 
+        val result = mockMvc.performAuthorisedPut("$basePath/$invalidHmppsId/expression-of-interest/jobs/$jobId")
         result.response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
       }
 
@@ -74,12 +86,11 @@ class ExpressionInterestControllerTest(
         result.response.status.shouldBe(HttpStatus.OK.value())
       }
 
-      it("should return 400 Bad Request if an exception occurs") {
+      it("should return 500 Server Error if an exception occurs") {
         whenever(getPersonService.getNomisNumber(validHmppsId)).thenThrow(RuntimeException("Unexpected error"))
 
         val result = mockMvc.performAuthorisedPut("$basePath/$validHmppsId/expression-of-interest/jobs/$jobId")
-
-        result.response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
+        result.response.status.shouldBe(HttpStatus.INTERNAL_SERVER_ERROR.value())
       }
     }
   })

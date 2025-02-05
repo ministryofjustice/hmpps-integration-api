@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.AuthenticationFailedException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.MessageFailedException
 
 @RestControllerAdvice
 class HmppsIntegrationApiExceptionHandler {
@@ -82,6 +83,20 @@ class HmppsIntegrationApiExceptionHandler {
         ErrorResponse(
           status = INTERNAL_SERVER_ERROR,
           developerMessage = "Unable to complete request as an upstream service is not responding",
+          userMessage = e.message,
+        ),
+      )
+  }
+
+  @ExceptionHandler(MessageFailedException::class)
+  fun handleMessageFailedExceptionException(e: MessageFailedException): ResponseEntity<ErrorResponse?>? {
+    logAndCapture("Unable to send message to SQS: {}", e)
+    return ResponseEntity
+      .status(INTERNAL_SERVER_ERROR)
+      .body(
+        ErrorResponse(
+          status = INTERNAL_SERVER_ERROR,
+          developerMessage = "Unable to send message to SQS",
           userMessage = e.message,
         ),
       )

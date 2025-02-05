@@ -17,7 +17,8 @@ import software.amazon.awssdk.services.sqs.model.SendMessageRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.MessageFailedException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.MockMvcExtensions.objectMapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ExpressionOfInterest
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ExpressionOfInterestMessage
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HmppsMessage
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HmppsMessageEventType
 import uk.gov.justice.hmpps.sqs.HmppsQueue
 import uk.gov.justice.hmpps.sqs.HmppsQueueService
 import kotlin.test.assertEquals
@@ -25,8 +26,8 @@ import kotlin.test.assertEquals
 class PutExpressionInterestServiceTest :
   DescribeSpec({
     val mockQueueService = mock<HmppsQueueService>()
-    val mockSqsClient = mock<SqsAsyncClient>()
     val mockObjectMapper = mock<ObjectMapper>()
+    val mockSqsClient = mock<SqsAsyncClient>()
 
     val eoiQueue =
       mock<HmppsQueue> {
@@ -34,35 +35,28 @@ class PutExpressionInterestServiceTest :
         on { queueUrl } doReturn "https://test-queue-url"
       }
 
+    val queId = "jobsboardintegration"
     val service = PutExpressionInterestService(mockQueueService, mockObjectMapper)
 
     beforeTest {
       reset(mockQueueService, mockSqsClient, mockObjectMapper)
-      whenever(mockQueueService.findByQueueId("jobsboardintegration")).thenReturn(eoiQueue)
+      whenever(mockQueueService.findByQueueId(queId)).thenReturn(eoiQueue)
     }
 
     describe("sendExpressionOfInterest") {
       it("should send a valid message successfully to SQS") {
         val expressionOfInterest = ExpressionOfInterest(jobId = "12345", prisonNumber = "H1234")
-        val expectedMessage =
-          ExpressionOfInterestMessage(
-            messageId = "1",
-            jobId = "12345",
-            prisonNumber = "H1234",
-          )
-        val messageBody = objectMapper.writeValueAsString(expectedMessage)
+        val messageBody = """{"messageId":"1","eventType":"EXPRESSION_OF_INTEREST_CREATED","messageAttributes":{"jobId":"12345","prisonNumber":"H1234"}}"""
 
-        whenever(mockObjectMapper.writeValueAsString(any<ExpressionOfInterestMessage>()))
+        whenever(mockObjectMapper.writeValueAsString(any<HmppsMessage>()))
           .thenReturn(messageBody)
 
         service.sendExpressionOfInterest(expressionOfInterest)
 
         verify(mockSqsClient).sendMessage(
           argThat<SendMessageRequest> { request: SendMessageRequest? ->
-            (
-              request?.queueUrl() == "https://test-queue-url" &&
-                request.messageBody() == messageBody
-            )
+            request?.queueUrl() == "https://test-queue-url" &&
+              request.messageBody() == messageBody
           },
         )
       }
@@ -83,10 +77,45 @@ class PutExpressionInterestServiceTest :
 
       it("should serialize ExpressionOfInterestMessage with correct keys") {
         val expectedMessage =
-          ExpressionOfInterestMessage(
+          HmppsMessage(
             messageId = "1",
-            jobId = "12345",
-            prisonNumber = "H1234",
+            eventType = HmppsMessageEventType.EXPRESSION_OF_INTEREST_CREATED.name,
+            messageAttributes =
+              mapOf(
+                "jobId" to "12345",
+                "prisonNumber" to "H1234",
+              ),
+          )
+
+        val serializedJson = objectMapper.writeValueAsString(expectedMessage)
+
+        val deserializedMap: Map<String, Any?> = objectMapper.readValue(serializedJson)
+        val eventType = deserializedMap["eventType"]
+        assert(deserializedMap.containsKey("messageId"))
+        assert(deserializedMap.containsKey("messageAttributes"))
+        assert(deserializedMap.containsKey("eventType"))
+        assertEquals(
+          expected = HmppsMessageEventType.EXPRESSION_OF_INTEREST_CREATED.name,
+          actual = eventType,
+        )
+
+        val messageAttributes = deserializedMap["messageAttributes"] as? Map<String, String>
+        messageAttributes?.containsKey("jobId")?.let { assert(it) }
+        messageAttributes?.containsKey("prisonNumber")?.let { assert(it) }
+      }
+
+      it("allows messages of any type and anybody to be sent") {
+        val externalType = "externalType"
+
+        val expectedMessage =
+          HmppsMessage(
+            messageId = "1",
+            eventType = externalType,
+            messageAttributes =
+              mapOf(
+                "personId" to "12345",
+                "entityNumber" to "H1234",
+              ),
           )
 
         val serializedJson = objectMapper.writeValueAsString(expectedMessage)
@@ -94,14 +123,14 @@ class PutExpressionInterestServiceTest :
         val deserializedMap: Map<String, Any?> = objectMapper.readValue(serializedJson)
         val eventType = deserializedMap["eventType"]
 
-        assert(deserializedMap.containsKey("messageId"))
-        assert(deserializedMap.containsKey("jobId"))
-        assert(deserializedMap.containsKey("prisonNumber"))
-        assert(deserializedMap.containsKey("eventType"))
         assertEquals(
-          expected = ExpressionOfInterestMessage.EventType.EXPRESSION_OF_INTEREST_MESSAGE_CREATED.name,
+          expected = externalType,
           actual = eventType,
         )
+
+        val messageAttributes = deserializedMap["messageAttributes"] as? Map<String, String>
+        messageAttributes?.containsKey("personId")?.let { assert(it) }
+        messageAttributes?.containsKey("entityNumber")?.let { assert(it) }
       }
     }
   })

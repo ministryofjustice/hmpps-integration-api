@@ -5,7 +5,8 @@ import org.springframework.stereotype.Component
 import software.amazon.awssdk.services.sqs.model.SendMessageRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.MessageFailedException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ExpressionOfInterest
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ExpressionOfInterestMessage
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HmppsMessage
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HmppsMessageEventType
 import uk.gov.justice.hmpps.sqs.HmppsQueue
 import uk.gov.justice.hmpps.sqs.HmppsQueueService
 import uk.gov.justice.hmpps.sqs.eventTypeMessageAttributes
@@ -22,12 +23,16 @@ class PutExpressionInterestService(
 
   fun sendExpressionOfInterest(expressionOfInterest: ExpressionOfInterest) {
     try {
-      val messageBody =
+      val hmppsMessage =
         objectMapper.writeValueAsString(
-          ExpressionOfInterestMessage(
+          HmppsMessage(
             messageId = UUID.randomUUID().toString(),
-            jobId = expressionOfInterest.jobId,
-            prisonNumber = expressionOfInterest.prisonNumber,
+            eventType = HmppsMessageEventType.EXPRESSION_OF_INTEREST_CREATED.name,
+            messageAttributes =
+              mapOf(
+                "jobId" to expressionOfInterest.jobId,
+                "prisonNumber" to expressionOfInterest.prisonNumber,
+              ),
           ),
         )
 
@@ -35,7 +40,7 @@ class PutExpressionInterestService(
         SendMessageRequest
           .builder()
           .queueUrl(eoiQueueUrl)
-          .messageBody(messageBody)
+          .messageBody(hmppsMessage)
           .eventTypeMessageAttributes("mjma-jobs-board.job.expression-of-interest.created")
           .build(),
       )
