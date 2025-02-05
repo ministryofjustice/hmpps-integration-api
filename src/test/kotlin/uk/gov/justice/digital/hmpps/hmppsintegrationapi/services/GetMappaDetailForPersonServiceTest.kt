@@ -79,6 +79,32 @@ internal class GetMappaDetailForPersonServiceTest(
         verify(getPersonService, VerificationModeFactory.times(1)).execute(hmppsId = hmppsId)
       }
 
+      it("returns a 404 when Mappa Detail is null") {
+        whenever(nDeliusGateway.getMappaDetailForPerson(id = deliusCrn)).thenReturn(
+          Response(
+            data =
+              MappaDetail(
+                level = null,
+                levelDescription = null,
+                category = null,
+                categoryDescription = null,
+                startDate = null,
+                reviewDate = null,
+                notes = null,
+              ),
+          ),
+        )
+        val result = getMappaDetailForPersonService.execute(hmppsId)
+        result.errors.shouldBe(
+          listOf(
+            UpstreamApiError(
+              causedBy = UpstreamApi.NDELIUS,
+              type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+            ),
+          ),
+        )
+      }
+
       describe("when an upstream API returns an error when looking up a person from a Hmpps ID") {
         beforeEach {
           whenever(getPersonService.execute(hmppsId = hmppsId)).thenReturn(
