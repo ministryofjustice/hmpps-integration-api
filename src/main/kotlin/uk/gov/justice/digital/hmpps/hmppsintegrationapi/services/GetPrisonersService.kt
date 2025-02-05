@@ -30,6 +30,8 @@ class GetPrisonersService(
           dateOfBirth,
           searchWithinAliases,
         )
+      } else if (prisonIds.isEmpty()) {
+        return Response(emptyList(), listOf(UpstreamApiError(UpstreamApi.PRISONER_OFFENDER_SEARCH, UpstreamApiError.Type.FORBIDDEN, "Consumer configured with no access to any prisons")))
       } else {
         // Hit prisoner-details endpoint
         prisonerOffenderSearchGateway.getPrisonerDetails(firstName, lastName, dateOfBirth, searchWithinAliases, prisonIds)
