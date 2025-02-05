@@ -20,29 +20,38 @@ class GetAddressesForPersonService(
       return Response(data = emptyList(), errors = personResponse.errors)
     }
 
+    var addresses = emptyList<Address>()
+    var errors = emptyList<UpstreamApiError>()
+
     val addressesFromDelius = probationOffenderSearchGateway.getAddressesForPerson(hmppsId = hmppsId)
     if (hasErrorOtherThanEntityNotFound(addressesFromDelius)) {
       return Response(data = emptyList(), errors = addressesFromDelius.errors)
+    } else if (!addressesFromDelius.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
+      addresses = addressesFromDelius.data
+      errors = addressesFromDelius.errors
     }
 
     val nomisNumber = personResponse.data?.identifiers?.nomisNumber
     if (nomisNumber == null) {
-      return addressesFromDelius
+      return Response(data = addresses, errors = errors)
     }
 
     val addressesFromNomis = nomisGateway.getAddressesForPerson(id = nomisNumber)
     if (hasErrorOtherThanEntityNotFound(addressesFromNomis)) {
       return Response(data = emptyList(), errors = addressesFromNomis.errors)
+    } else {
+      addresses = listOf(addressesFromNomis.data, addresses).flatten()
     }
 
     if (
       addressesFromNomis.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND) &&
       !addressesFromDelius.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)
     ) {
-      return addressesFromDelius
+      return Response(data = addresses, errors = errors)
     }
 
-    return Response.merge(listOfNotNull(addressesFromNomis, Response(data = addressesFromDelius.data)))
+    return Response(data = addresses, errors = errors)
+//    return Response.merge(listOfNotNull(addressesFromNomis, Response(data = addressesFromDelius.data)))
   }
 
   private fun hasErrorOtherThanEntityNotFound(addressesResponse: Response<List<Address>>): Boolean = addressesResponse.errors.isNotEmpty() && !addressesResponse.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)
