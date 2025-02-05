@@ -34,12 +34,12 @@ class GetSentencesForPersonService(
     if (nomisNumber != null) {
       val bookingIdsResponse = nomisGateway.getBookingIdsForPerson(nomisNumber)
       if (bookingIdsResponse.errors.isNotEmpty()) {
-        if (bookingIdsResponse.errors.none { it.type == UpstreamApiError.Type.ENTITY_NOT_FOUND }) {
+        if (!bookingIdsResponse.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
           return Response(data = emptyList(), errors = bookingIdsResponse.errors)
         }
       } else {
         nomisSentenceResponse = Response.merge(bookingIdsResponse.data.map { nomisGateway.getSentencesForBooking(it.bookingId) })
-        if (nomisSentenceResponse.errors.isNotEmpty() && nomisSentenceResponse.errors.none { it.type == UpstreamApiError.Type.ENTITY_NOT_FOUND }) {
+        if (nomisSentenceResponse.errors.isNotEmpty() && !nomisSentenceResponse.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
           return Response(data = emptyList(), errors = nomisSentenceResponse.errors)
         }
       }
@@ -49,7 +49,7 @@ class GetSentencesForPersonService(
     if (deliusCrn != null) {
       nDeliusSentencesResponse = nDeliusGateway.getSentencesForPerson(deliusCrn)
       if (nDeliusSentencesResponse.errors.isNotEmpty()) {
-        if (nDeliusSentencesResponse.errors.none { it.type == UpstreamApiError.Type.ENTITY_NOT_FOUND }) {
+        if (!nDeliusSentencesResponse.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
           return Response(data = emptyList(), errors = nDeliusSentencesResponse.errors)
         } else {
           if (nomisSentenceResponse.errors.isEmpty()) {
