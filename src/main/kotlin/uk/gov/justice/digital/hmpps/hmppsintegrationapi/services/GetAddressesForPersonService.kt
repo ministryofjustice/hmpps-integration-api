@@ -38,7 +38,7 @@ class GetAddressesForPersonService(
 
     if (
       addressesFromNomis.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND) &&
-      addressesFromDelius.errors.isEmpty()
+      !addressesFromDelius.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)
     ) {
       return addressesFromDelius
     }
