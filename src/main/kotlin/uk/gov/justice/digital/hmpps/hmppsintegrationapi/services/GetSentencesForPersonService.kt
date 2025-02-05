@@ -6,7 +6,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NomisGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Sentence
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisBooking
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 
 @Service
 class GetSentencesForPersonService(
@@ -16,48 +17,50 @@ class GetSentencesForPersonService(
 ) {
   fun execute(hmppsId: String): Response<List<Sentence>> {
     val personResponse = getPersonService.execute(hmppsId = hmppsId)
+    if (personResponse.errors.isNotEmpty()) {
+      return Response(data = emptyList(), errors = personResponse.errors)
+    }
+
     val nomisNumber = personResponse.data?.identifiers?.nomisNumber
     val deliusCrn = personResponse.data?.identifiers?.deliusCrn
-    var bookingIdsResponse: Response<List<NomisBooking>> = Response(data = emptyList())
-    var nDeliusSentencesResponse: Response<List<Sentence>> = Response(data = emptyList())
-
-    if (nomisNumber != null) {
-      bookingIdsResponse = nomisGateway.getBookingIdsForPerson(nomisNumber)
+    if (nomisNumber == null && deliusCrn == null) {
+      return Response(
+        data = emptyList(),
+        errors = listOf(UpstreamApiError(causedBy = UpstreamApi.NOMIS, type = UpstreamApiError.Type.ENTITY_NOT_FOUND)),
+      )
     }
-    // only execute if bookingIdsResponse is successful?
-    val nomisSentenceResponse = Response.merge(bookingIdsResponse.data.map { nomisGateway.getSentencesForBooking(it.bookingId) })
 
+    var nomisSentenceResponse = Response<List<Sentence>>(data = emptyList())
+    if (nomisNumber != null) {
+      val bookingIdsResponse = nomisGateway.getBookingIdsForPerson(nomisNumber)
+      if (bookingIdsResponse.errors.isNotEmpty()) {
+        if (bookingIdsResponse.errors.none { it.type == UpstreamApiError.Type.ENTITY_NOT_FOUND }) {
+          return Response(data = emptyList(), errors = bookingIdsResponse.errors)
+        }
+      } else {
+        nomisSentenceResponse = Response.merge(bookingIdsResponse.data.map { nomisGateway.getSentencesForBooking(it.bookingId) })
+        if (nomisSentenceResponse.errors.isNotEmpty() && nomisSentenceResponse.errors.none { it.type == UpstreamApiError.Type.ENTITY_NOT_FOUND }) {
+          return Response(data = emptyList(), errors = nomisSentenceResponse.errors)
+        }
+      }
+    }
+
+    var nDeliusSentencesResponse: Response<List<Sentence>> = Response(data = emptyList())
     if (deliusCrn != null) {
       nDeliusSentencesResponse = nDeliusGateway.getSentencesForPerson(deliusCrn)
+      if (nDeliusSentencesResponse.errors.isNotEmpty()) {
+        if (nDeliusSentencesResponse.errors.none { it.type == UpstreamApiError.Type.ENTITY_NOT_FOUND }) {
+          return Response(data = emptyList(), errors = nDeliusSentencesResponse.errors)
+        } else {
+          if (nomisSentenceResponse.errors.isEmpty()) {
+            return nomisSentenceResponse
+          } else {
+            return nDeliusSentencesResponse
+          }
+        }
+      }
     }
 
-    return Response(
-      data = nomisSentenceResponse.data + nDeliusSentencesResponse.data,
-      errors = bookingIdsResponse.errors + nomisSentenceResponse.errors + nDeliusSentencesResponse.errors,
-    )
+    return Response.merge(listOfNotNull(Response(data = nomisSentenceResponse.data), nDeliusSentencesResponse))
   }
 }
-
-/**
-Person service error → Return person service error
-
-No Nomis number + no Delius crn -> Return entity not found response
-
-No Nomis number + Delius crn, delius success → return Delius
-No Nomis number + Delius crn, delius any error → return Delius error
-
-Nomis number + No Delius crn, Nomis success -> Return Nomis
-Nomis number + No Delius crn, Nomis any error -> Return Nomis error
-
-Nomis number + Delius crn, Nomis success, Delius success → Merge responses
-Nomis number + Delius crn, Nomis success, Delius 404 → Return Nomis
-Nomis number + Delius crn, Nomis 404 on booking ids, Delius success → Return Delius
-Nomis number + Delius crn, Nomis 404 on sentences, Delius success → Return Delius
-Nomis number + Delius crn, Nomis non 404 error on booking ids-> Return Nomis error
-Nomis number + Delius crn, Nomis non 404 error on sentences -> Return Nomis error
-Nomis number + Delius crn, Delius non 404 error -> Return Delius error
-Nomis number + Delius crn, Nomis 404 on booking ids, Delius any error -> Return Delius error
-Nomis number + Delius crn, Nomis 404 on sentences, Delius any error -> Return Delius error
-Nomis number + Delius crn, Nomis any error on booking ids, Delius 404 -> Return Nomis error
-Nomis number + Delius crn, Nomis any error on sentences, Delius 404 -> Return Nomis error
- **/

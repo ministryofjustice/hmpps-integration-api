@@ -94,6 +94,7 @@ internal class GetSentencesForPersonServiceTest(
             description = "Mock error from person service",
           ),
         )
+
       beforeEach {
         Mockito.reset(nomisGateway)
         Mockito.reset(nDeliusGateway)
@@ -120,7 +121,7 @@ internal class GetSentencesForPersonServiceTest(
         )
         val result = getSentencesForPersonService.execute(hmppsId)
 
-        result.errors.shouldBe(probationOffenderSearch500Error)
+        result.errors.shouldBe(nomis404Error)
       }
 
       it("No Nomis number + Delius crn, delius success → return Delius") {
@@ -171,7 +172,7 @@ internal class GetSentencesForPersonServiceTest(
         )
 
         val result = getSentencesForPersonService.execute(hmppsId)
-        result.shouldBe(Response(data = listOf(nomisSentence1)))
+        result.shouldBe(Response(data = listOf(nomisSentence1, nomisSentence2)))
       }
 
       it("Nomis number + No Delius crn, Nomis any error on bookings-> Return Nomis error") {
@@ -208,9 +209,12 @@ internal class GetSentencesForPersonServiceTest(
         whenever(nomisGateway.getSentencesForBooking(firstBookingId)).thenReturn(
           Response(data = emptyList(), errors = nomis500Error),
         )
+        whenever(nomisGateway.getSentencesForBooking(secondBookingId)).thenReturn(
+          Response(data = emptyList(), errors = nomis500Error),
+        )
 
         val result = getSentencesForPersonService.execute(hmppsId)
-        result.errors.shouldBe(nomis500Error)
+        result.errors.shouldBe(listOf(nomis500Error, nomis500Error).flatten())
       }
 
       it("Nomis number + Delius crn, Nomis success, Delius success → Merge responses") {
@@ -227,7 +231,7 @@ internal class GetSentencesForPersonServiceTest(
         )
 
         whenever(nomisGateway.getSentencesForBooking(firstBookingId)).thenReturn(
-          Response(data = listOf(nomisSentence2)),
+          Response(data = listOf(nomisSentence1)),
         )
         whenever(nomisGateway.getSentencesForBooking(secondBookingId)).thenReturn(
           Response(data = listOf(nomisSentence2)),
@@ -279,7 +283,7 @@ internal class GetSentencesForPersonServiceTest(
         whenever(nomisGateway.getBookingIdsForPerson(nomisNumber)).thenReturn(
           Response(
             data = emptyList(),
-            errors = nomis500Error,
+            errors = nomis404Error,
           ),
         )
 
@@ -305,7 +309,11 @@ internal class GetSentencesForPersonServiceTest(
         )
 
         whenever(nomisGateway.getSentencesForBooking(firstBookingId)).thenReturn(
-          Response(data = emptyList(), errors = nomis500Error),
+          Response(data = emptyList(), errors = nomis404Error),
+        )
+
+        whenever(nomisGateway.getSentencesForBooking(secondBookingId)).thenReturn(
+          Response(data = emptyList(), errors = nomis404Error),
         )
 
         whenever(nDeliusGateway.getSentencesForPerson(nDeliusCRN)).thenReturn(
@@ -351,8 +359,12 @@ internal class GetSentencesForPersonServiceTest(
           Response(data = emptyList(), errors = nomis500Error),
         )
 
+        whenever(nomisGateway.getSentencesForBooking(secondBookingId)).thenReturn(
+          Response(data = emptyList(), errors = nomis500Error),
+        )
+
         val result = getSentencesForPersonService.execute(hmppsId)
-        result.errors.shouldBe(nomis500Error)
+        result.errors.shouldBe(listOf(nomis500Error, nomis500Error).flatten())
       }
 
       it("Nomis number + Delius crn, Delius non 404 error -> Return Delius error") {
@@ -422,6 +434,10 @@ internal class GetSentencesForPersonServiceTest(
           Response(data = emptyList(), errors = nomis404Error),
         )
 
+        whenever(nomisGateway.getSentencesForBooking(secondBookingId)).thenReturn(
+          Response(data = emptyList(), errors = nomis404Error),
+        )
+
         whenever(nDeliusGateway.getSentencesForPerson(nDeliusCRN)).thenReturn(
           Response(data = emptyList(), errors = nDelius500Error),
         )
@@ -442,31 +458,6 @@ internal class GetSentencesForPersonServiceTest(
             data = emptyList(),
             errors = nomis500Error,
           ),
-        )
-
-        whenever(nDeliusGateway.getSentencesForPerson(nDeliusCRN)).thenReturn(
-          Response(data = emptyList(), errors = nDelius404Error),
-        )
-
-        val result = getSentencesForPersonService.execute(hmppsId)
-        result.errors.shouldBe(nomis500Error)
-      }
-
-      it("Nomis number + Delius crn, Nomis any error on sentences, Delius 404 -> Return Nomis error") {
-        whenever(getPersonService.execute(hmppsId = hmppsId)).thenReturn(
-          Response(
-            data = personFromProbationOffenderSearch,
-          ),
-        )
-
-        whenever(nomisGateway.getBookingIdsForPerson(nomisNumber)).thenReturn(
-          Response(
-            data = listOf(NomisBooking(bookingId = firstBookingId), NomisBooking(bookingId = secondBookingId)),
-          ),
-        )
-
-        whenever(nomisGateway.getSentencesForBooking(firstBookingId)).thenReturn(
-          Response(data = emptyList(), errors = nomis500Error),
         )
 
         whenever(nDeliusGateway.getSentencesForPerson(nDeliusCRN)).thenReturn(
