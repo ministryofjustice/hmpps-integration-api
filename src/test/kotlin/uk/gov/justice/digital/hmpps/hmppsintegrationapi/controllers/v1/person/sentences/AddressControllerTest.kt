@@ -101,7 +101,7 @@ internal class AddressControllerTest(
           ).createEvent("GET_PERSON_ADDRESS", mapOf("hmppsId" to hmppsId))
         }
 
-        it("returns a 404 NOT FOUND status code when person entity not found error is returns from address service") {
+        it("returns a 404 NOT FOUND status code when entity not found error is returned from address service") {
           whenever(getAddressesForPersonService.execute(hmppsId)).thenReturn(
             Response(
               data = emptyList(),
