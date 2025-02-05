@@ -77,6 +77,24 @@ class OpenAPIConfig {
                 "developerMessage" to Schema<String>().type("string").example("Unable to complete request as an upstream service is not responding."),
               ),
             ),
+          ).addSchemas(
+            "TransactionConflict",
+            Schema<ErrorResponse>().description("Duplicate post - The client_unique_ref has been used before").properties(
+              mapOf(
+                "status" to Schema<Int>().type("number").example(409),
+                "userMessage" to Schema<String>().type("string").example("Conflict"),
+                "developerMessage" to Schema<String>().type("string").example("Duplicate post - The client_unique_ref has been used before"),
+              ),
+            ),
+          ).addSchemas(
+            "ForbiddenResponse",
+            Schema<ErrorResponse>().description("Forbidden to complete action by upstream service").properties(
+              mapOf(
+                "status" to Schema<Int>().type("number").example(403),
+                "userMessage" to Schema<String>().type("string").example("Forbidden to complete action by upstream service"),
+                "developerMessage" to Schema<String>().type("string").example("Forbidden to complete action by upstream service"),
+              ),
+            ),
           )
       }
     }

@@ -13,6 +13,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffende
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ProbationOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSPrisoner
 
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
@@ -71,21 +72,29 @@ internal class GetPersonsServiceTest(
 
     it("returns person(s)") {
       val responseFromProbationOffenderSearch = Response(data = listOf(Person(firstName, lastName, middleName = "John")))
-      val responseFromPrisonerOffenderSearch = Response(data = listOf(Person(firstName, lastName, middleName = "Gary")))
+      val responseFromPrisonerOffenderSearch = Response(data = listOf(POSPrisoner(firstName, lastName, middleNames = "Gary")))
 
       whenever(
         probationOffenderSearchGateway.getPersons(firstName, lastName, null, dateOfBirth),
       ).thenReturn(responseFromProbationOffenderSearch)
-      whenever(prisonerOffenderSearchGateway.getPersons(firstName, lastName, dateOfBirth)).thenReturn(responseFromPrisonerOffenderSearch)
+      whenever(
+        prisonerOffenderSearchGateway.getPersons(firstName, lastName, dateOfBirth),
+      ).thenReturn(responseFromPrisonerOffenderSearch)
 
-      val response = getPersonsService.execute(firstName, lastName, null, dateOfBirth)
-
-      response.data.shouldBe(responseFromPrisonerOffenderSearch.data + responseFromProbationOffenderSearch.data)
+      val result = getPersonsService.execute(firstName, lastName, null, dateOfBirth)
+      val people = (responseFromPrisonerOffenderSearch.data.map { it.toPerson() } + responseFromProbationOffenderSearch.data)
+      result.data.size.shouldBe(people.size)
+      people
+        .forEachIndexed { i, person: Person ->
+          result.data[i].firstName.shouldBe(person.firstName)
+          result.data[i].lastName.shouldBe(person.lastName)
+          result.data[i].dateOfBirth.shouldBe(person.dateOfBirth)
+        }
     }
 
     it("returns only probation person(s) if searched with a PNC") {
       val responseFromProbationOffenderSearch = Response(data = listOf(Person(firstName, lastName, middleName = "John")))
-      val responseFromPrisonerOffenderSearch = Response(data = listOf(Person(firstName, lastName, middleName = "Gary")))
+      val responseFromPrisonerOffenderSearch = Response(data = listOf(POSPrisoner(firstName, lastName, middleNames = "Gary")))
 
       whenever(
         probationOffenderSearchGateway.getPersons(firstName, lastName, pncNumber, dateOfBirth),

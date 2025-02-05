@@ -11,10 +11,11 @@ import org.springframework.boot.test.context.ConfigDataApplicationContextInitial
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffenderSearchGateway
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonInPrison
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSPrisoner
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 @ContextConfiguration(
@@ -27,8 +28,6 @@ internal class GetPrisonersServiceTest(
   private val getPrisonersService: GetPrisonersService,
 ) : DescribeSpec(
     {
-
-      val nomsNumber = "N1234PS"
       // val prisoner = POSPrisoner(firstName = "Jim", lastName = "Brown", dateOfBirth = LocalDate.of(1992, 12, 3), prisonerNumber = nomsNumber)
 
       beforeEach {
@@ -47,7 +46,7 @@ internal class GetPrisonersServiceTest(
         )
 
         val result = getPrisonersService.execute("Qui-gon", "Jin", "1966-10-25", false, null)
-        result?.errors.shouldBe(
+        result.errors.shouldBe(
           listOf(
             UpstreamApiError(UpstreamApi.PRISONER_OFFENDER_SEARCH, UpstreamApiError.Type.ENTITY_NOT_FOUND, "MockError"),
           ),
@@ -55,7 +54,11 @@ internal class GetPrisonersServiceTest(
       }
 
       it("returns the person's data when queried and no prisonId filter is applied") {
-        val people = listOf(Person(firstName = "Qui-gon", lastName = "Jin"), Person(firstName = "John", lastName = "Jin"))
+        val people =
+          listOf(
+            POSPrisoner(firstName = "Qui-gon", lastName = "Jin"),
+            POSPrisoner(firstName = "John", lastName = "Jin"),
+          )
         whenever(prisonerOffenderSearchGateway.getPersons("Qui-gon", "Jin", "1966-10-25")).thenReturn(
           Response(
             data = people,
@@ -63,13 +66,17 @@ internal class GetPrisonersServiceTest(
         )
 
         val result = getPrisonersService.execute("Qui-gon", "Jin", "1966-10-25", false, null)
-        result?.data?.shouldBe(
-          people,
-        )
+        result.data.size.shouldBe(people.size)
+        people
+          .map { it.toPersonInPrison() }
+          .forEachIndexed { i, prisoner: PersonInPrison ->
+            result.data[i].firstName.shouldBe(prisoner.firstName)
+            result.data[i].lastName.shouldBe(prisoner.lastName)
+            result.data[i].dateOfBirth.shouldBe(prisoner.dateOfBirth)
+          }
       }
 
       it("returns an error when theres a filter prisons property but no values") {
-        val people = listOf(Person(firstName = "Qui-gon", lastName = "Jin"), Person(firstName = "John", lastName = "Jin"))
         whenever(prisonerOffenderSearchGateway.getPersons("Qui-gon", "Jin", "1966-10-25")).thenReturn(
           Response(
             errors =
@@ -81,7 +88,7 @@ internal class GetPrisonersServiceTest(
         )
 
         val result = getPrisonersService.execute("Qui-gon", "Jin", "1966-10-25", false, null)
-        result?.errors.shouldBe(
+        result.errors.shouldBe(
           listOf(
             UpstreamApiError(UpstreamApi.PRISONER_OFFENDER_SEARCH, UpstreamApiError.Type.ENTITY_NOT_FOUND, "MockError"),
           ),
@@ -102,7 +109,7 @@ internal class GetPrisonersServiceTest(
         )
 
         val result = getPrisonersService.execute("Qui-gon", "Jin", "1966-10-25", false, prisonIds)
-        result?.errors.shouldBe(
+        result.errors.shouldBe(
           listOf(
             UpstreamApiError(UpstreamApi.PRISONER_OFFENDER_SEARCH, UpstreamApiError.Type.ENTITY_NOT_FOUND, "MockError"),
           ),
@@ -110,7 +117,11 @@ internal class GetPrisonersServiceTest(
       }
 
       it("returns the persons data when the person queried for is in a prisonId matching their config") {
-        val people = listOf(Person(firstName = "Qui-gon", lastName = "Jin"), Person(firstName = "John", lastName = "Jin"))
+        val people =
+          listOf(
+            POSPrisoner(firstName = "Qui-gon", lastName = "Jin"),
+            POSPrisoner(firstName = "John", lastName = "Jin"),
+          )
         val prisonIds = ConsumerFilters(prisons = listOf("VALID_PRISON"))
         whenever(request.getAttribute("filters")).thenReturn(prisonIds)
         whenever(prisonerOffenderSearchGateway.getPrisonerDetails("Qui-gon", "Jin", "1966-10-25", false, prisonIds.prisons)).thenReturn(
@@ -120,9 +131,30 @@ internal class GetPrisonersServiceTest(
         )
 
         val result = getPrisonersService.execute("Qui-gon", "Jin", "1966-10-25", false, prisonIds)
-        result?.data.shouldBe(
-          people,
+        result.data.size.shouldBe(people.size)
+        people
+          .map { it.toPersonInPrison() }
+          .forEachIndexed { i, prisoner: PersonInPrison ->
+            result.data[i].firstName.shouldBe(prisoner.firstName)
+            result.data[i].lastName.shouldBe(prisoner.lastName)
+            result.data[i].dateOfBirth.shouldBe(prisoner.dateOfBirth)
+          }
+      }
+
+      it("returns the no data when the query is valid but no data is found") {
+        val people = emptyList<POSPrisoner>()
+
+        val prisonIds = ConsumerFilters(prisons = listOf("VALID_PRISON"))
+        whenever(request.getAttribute("filters")).thenReturn(prisonIds)
+        whenever(prisonerOffenderSearchGateway.getPrisonerDetails("Qui-gon", "Jin", "1966-10-25", false, prisonIds.prisons)).thenReturn(
+          Response(
+            data = people,
+          ),
         )
+
+        val result = getPrisonersService.execute("Qui-gon", "Jin", "1966-10-25", false, prisonIds)
+        result.data.size.shouldBe(0)
+        result.data.shouldBe(emptyList())
       }
     },
   )

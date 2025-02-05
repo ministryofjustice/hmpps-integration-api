@@ -63,6 +63,7 @@ authorisation:
         - "/v1/prison/.*/prisoners/.*/accounts/.*/balances"
         - "/v1/prison/.*/prisoners/.*/accounts/.*/transactions"
         - "/v1/prison/.*/prisoners/.*/transactions/[^/]*$"
+        - "/v1/prison/.*/prisoners/.*/transactions"
       filters:
     config-test:
       include:

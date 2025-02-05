@@ -35,9 +35,7 @@ class RiskManagementControllerTest(
   @MockitoBean val auditService: AuditService,
 ) : DescribeSpec({
     val hmppsId = "D1974X"
-    val badHmppsId = "Not a real CRN"
     val encodedHmppsId = URLEncoder.encode(hmppsId, StandardCharsets.UTF_8)
-    val encodedBadHmppsId = URLEncoder.encode(badHmppsId, StandardCharsets.UTF_8)
     val basePath = "/v1/persons/hmppsId/risk-management-plan"
     val mockMvc = IntegrationAPIMockMvc(springMockMvc)
 
@@ -45,6 +43,7 @@ class RiskManagementControllerTest(
       beforeTest {
         Mockito.reset(getRiskManagementService)
         Mockito.reset(auditService)
+
         whenever(getRiskManagementService.execute(hmppsId)).thenReturn(
           Response(
             data =
@@ -84,6 +83,42 @@ class RiskManagementControllerTest(
               ),
           ),
         )
+      }
+
+      it("Returns 200 OK") {
+        val result = mockMvc.performAuthorised("/v1/persons/$encodedHmppsId/risk-management-plan")
+        result.response.status.shouldBe(HttpStatus.OK.value())
+      }
+
+      it("Gets a risk management plan") {
+        mockMvc.performAuthorised("/v1/persons/$encodedHmppsId/risk-management-plan")
+        verify(getRiskManagementService, times(1)).execute(hmppsId)
+      }
+
+      it("Gets an forbidden error if service returns forbidden") {
+        whenever(getRiskManagementService.execute(hmppsId)).thenReturn(
+          Response(
+            null,
+            errors =
+              listOf(
+                UpstreamApiError(
+                  type = UpstreamApiError.Type.FORBIDDEN,
+                  causedBy = UpstreamApi.RISK_MANAGEMENT_PLAN,
+                  description = "Mock Error",
+                ),
+              ),
+          ),
+        )
+
+        val result = mockMvc.performAuthorised("/v1/persons/$hmppsId/risk-management-plan")
+        verify(getRiskManagementService, times(1)).execute(hmppsId)
+        result.response.status.shouldBe(HttpStatus.FORBIDDEN.value())
+      }
+
+      it("Gets a 404 error if provided ID has no risk management plan") {
+        val badHmppsId = "Not a real CRN"
+        val encodedBadHmppsId = URLEncoder.encode(badHmppsId, StandardCharsets.UTF_8)
+
         whenever(getRiskManagementService.execute(badHmppsId)).thenReturn(
           Response(
             null,
@@ -97,19 +132,7 @@ class RiskManagementControllerTest(
               ),
           ),
         )
-      }
 
-      it("Returns 200 OK") {
-        val result = mockMvc.performAuthorised("/v1/persons/$encodedHmppsId/risk-management-plan")
-        result.response.status.shouldBe(HttpStatus.OK.value())
-      }
-
-      it("Gets a risk management plan") {
-        mockMvc.performAuthorised("/v1/persons/$encodedHmppsId/risk-management-plan")
-        verify(getRiskManagementService, times(1)).execute(hmppsId)
-      }
-
-      it("Gets an error if provided ID has no risk management plan") {
         val result = mockMvc.performAuthorised("/v1/persons/$encodedBadHmppsId/risk-management-plan")
         verify(getRiskManagementService, times(1)).execute(badHmppsId)
         assert(result.response.status == 404)

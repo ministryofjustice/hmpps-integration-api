@@ -53,7 +53,7 @@ internal class LatestSentenceKeyDatesAndAdjustmentsControllerTest(
 
       beforeTest {
         Mockito.reset(getLatestSentenceKeyDatesAndAdjustmentsForPersonService)
-        whenever(getLatestSentenceKeyDatesAndAdjustmentsForPersonService.execute(hmppsId)).thenReturn(
+        whenever(getLatestSentenceKeyDatesAndAdjustmentsForPersonService.execute(hmppsId, null)).thenReturn(
           Response(
             data =
               LatestSentenceKeyDatesAndAdjustments(
@@ -150,7 +150,7 @@ internal class LatestSentenceKeyDatesAndAdjustmentsControllerTest(
       it("gets the latest sentence key dates and adjustments for a person with the matching ID") {
         mockMvc.performAuthorised(path)
 
-        verify(getLatestSentenceKeyDatesAndAdjustmentsForPersonService, VerificationModeFactory.times(1)).execute(hmppsId)
+        verify(getLatestSentenceKeyDatesAndAdjustmentsForPersonService, VerificationModeFactory.times(1)).execute(hmppsId, null)
       }
 
       it("returns the latest sentence key dates and adjustments for a person with the matching ID") {
@@ -269,7 +269,7 @@ internal class LatestSentenceKeyDatesAndAdjustmentsControllerTest(
       }
 
       it("returns a 404 NOT FOUND status code when person isn't found in the upstream API") {
-        whenever(getLatestSentenceKeyDatesAndAdjustmentsForPersonService.execute(hmppsId)).thenReturn(
+        whenever(getLatestSentenceKeyDatesAndAdjustmentsForPersonService.execute(hmppsId, null)).thenReturn(
           Response(
             data = null,
             errors =
@@ -289,7 +289,7 @@ internal class LatestSentenceKeyDatesAndAdjustmentsControllerTest(
 
       it("returns a 500 INTERNAL SERVER ERROR status code when upstream api return expected error") {
 
-        whenever(getLatestSentenceKeyDatesAndAdjustmentsForPersonService.execute(hmppsId)).doThrow(
+        whenever(getLatestSentenceKeyDatesAndAdjustmentsForPersonService.execute(hmppsId, null)).doThrow(
           WebClientResponseException(500, "MockError", null, null, null, null),
         )
 

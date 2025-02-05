@@ -5,7 +5,6 @@ import jakarta.servlet.http.HttpServletResponse
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.HandlerInterceptor
-import java.util.stream.Collectors
 
 // Intercepts incoming requests and logs them
 @Component
@@ -32,8 +31,9 @@ class RequestLogger : HandlerInterceptor {
     val method: String = "Method: " + request.method
     val endpoint: String = "Request URI: " + request.requestURI // Could this expose authentication credentials?
     val requestURL: String = "Full Request URL: " + request.requestURL
-    val body: String = ("Body: " + request.reader.lines().collect(Collectors.joining()))
+    // Unable to use reader here and read the request body into a controller method
+    // val body: String = ("Body: " + request.reader.lines().collect(Collectors.joining()))
 
-    return "$requestIp \n $method \n $endpoint \n $body \n $requestURL"
+    return "$requestIp \n $method \n $endpoint \n $requestURL"
   }
 }

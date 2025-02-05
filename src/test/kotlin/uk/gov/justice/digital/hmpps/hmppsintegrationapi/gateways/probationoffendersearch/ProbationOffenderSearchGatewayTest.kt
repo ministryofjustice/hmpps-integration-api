@@ -422,10 +422,10 @@ class ProbationOffenderSearchGatewayTest(
           probationOffenderSearchApiMockServer.stubPostOffenderSearch(
             "{\"pncNumber\": \"$hmppsId\"}",
             """
-          {
-            "developerMessage": "reason for bad request"
-          }
-          """,
+            {
+              "developerMessage": "reason for bad request"
+            }
+            """.trimIndent(),
             HttpStatus.BAD_REQUEST,
           )
           val response =

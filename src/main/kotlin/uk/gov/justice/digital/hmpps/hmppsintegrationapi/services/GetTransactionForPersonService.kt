@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.ConsumerPrisonAccessService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NomisGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Transaction
@@ -13,6 +14,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Consum
 class GetTransactionForPersonService(
   @Autowired val nomisGateway: NomisGateway,
   @Autowired val getPersonService: GetPersonService,
+  @Autowired val consumerPrisonAccessService: ConsumerPrisonAccessService,
 ) {
   fun execute(
     hmppsId: String,
@@ -20,13 +22,10 @@ class GetTransactionForPersonService(
     clientUniqueRef: String,
     filters: ConsumerFilters? = null,
   ): Response<Transaction?> {
-    if (
-      filters != null && !filters.matchesPrison(prisonId)
-    ) {
-      return Response(
-        data = null,
-        errors = listOf(UpstreamApiError(UpstreamApi.NOMIS, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found")),
-      )
+    val consumerPrisonFilterCheck = consumerPrisonAccessService.checkConsumerHasPrisonAccess<Transaction>(prisonId, filters)
+
+    if (consumerPrisonFilterCheck.errors.isNotEmpty()) {
+      return consumerPrisonFilterCheck
     }
 
     val personResponse = getPersonService.getNomisNumber(hmppsId = hmppsId)

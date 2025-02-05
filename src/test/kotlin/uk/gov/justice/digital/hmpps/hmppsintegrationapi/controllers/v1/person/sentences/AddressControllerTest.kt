@@ -101,7 +101,7 @@ internal class AddressControllerTest(
           ).createEvent("GET_PERSON_ADDRESS", mapOf("hmppsId" to hmppsId))
         }
 
-        it("returns a 404 NOT FOUND status code when person isn't found in all upstream APIs") {
+        it("returns a 404 NOT FOUND status code when entity not found error is returned from address service") {
           whenever(getAddressesForPersonService.execute(hmppsId)).thenReturn(
             Response(
               data = emptyList(),
@@ -109,10 +109,6 @@ internal class AddressControllerTest(
                 listOf(
                   UpstreamApiError(
                     causedBy = UpstreamApi.NOMIS,
-                    type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-                  ),
-                  UpstreamApiError(
-                    causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH,
                     type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
                   ),
                 ),
@@ -124,27 +120,7 @@ internal class AddressControllerTest(
           result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
         }
 
-        it("returns a 200 OK status code when person is found in one upstream API but not another") {
-          whenever(getAddressesForPersonService.execute(hmppsId)).thenReturn(
-            Response(
-              data = emptyList(),
-              errors =
-                listOf(
-                  UpstreamApiError(
-                    causedBy = UpstreamApi.NOMIS,
-                    type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-                  ),
-                ),
-            ),
-          )
-
-          val result = mockMvc.performAuthorised("$basePath/$encodedHmppsId/addresses")
-
-          result.response.status.shouldBe(HttpStatus.OK.value())
-        }
-
         it("returns a 500 INTERNAL SERVER ERROR status code when upstream api return expected error") {
-
           whenever(getAddressesForPersonService.execute(hmppsId)).doThrow(
             WebClientResponseException(500, "MockError", null, null, null, null),
           )

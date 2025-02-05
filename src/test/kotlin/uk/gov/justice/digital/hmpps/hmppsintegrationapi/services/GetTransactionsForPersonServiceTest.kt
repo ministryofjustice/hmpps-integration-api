@@ -9,6 +9,7 @@ import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.ConsumerPrisonAccessService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NomisGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NomisNumber
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
@@ -26,6 +27,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Consum
 internal class GetTransactionsForPersonServiceTest(
   @MockitoBean val nomisGateway: NomisGateway,
   @MockitoBean val getPersonService: GetPersonService,
+  @MockitoBean val consumerPrisonAccessService: ConsumerPrisonAccessService,
   private val getTransactionsForPersonService: GetTransactionsForPersonService,
 ) : DescribeSpec({
     val hmppsId = "1234/56789B"
@@ -40,6 +42,10 @@ internal class GetTransactionsForPersonServiceTest(
     beforeEach {
       Mockito.reset(getPersonService)
       Mockito.reset(nomisGateway)
+
+      whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<Transactions>(prisonId, filters)).thenReturn(
+        Response(data = null),
+      )
 
       require(hmppsId.matches(Regex("^[0-9]+/[0-9A-Za-z]+$"))) {
         "Invalid Hmpps Id format: $hmppsId"
@@ -206,7 +212,12 @@ internal class GetTransactionsForPersonServiceTest(
     }
 
     it("returns null when transactions are requested from an unapproved prison") {
+      val consumerFillters = ConsumerFilters(prisons = listOf("ABC"))
       val wrongPrisonId = "XYZ"
+      whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<Transactions>(wrongPrisonId, consumerFillters)).thenReturn(
+        Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.NOMIS, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found"))),
+      )
+
       val result =
         getTransactionsForPersonService.execute(
           hmppsId,
@@ -214,7 +225,7 @@ internal class GetTransactionsForPersonServiceTest(
           accountCode,
           startDate,
           endDate,
-          ConsumerFilters(prisons = listOf("ABC")),
+          consumerFillters,
         )
 
       result.data.shouldBe(null)
@@ -222,6 +233,11 @@ internal class GetTransactionsForPersonServiceTest(
     }
 
     it("returns transactions when requested from an approved prison") {
+      val consumerFillters = ConsumerFilters(prisons = listOf("ABC"))
+      whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<Transactions>(prisonId, consumerFillters)).thenReturn(
+        Response(data = null),
+      )
+
       val result =
         getTransactionsForPersonService.execute(
           hmppsId,
@@ -229,7 +245,7 @@ internal class GetTransactionsForPersonServiceTest(
           accountCode,
           startDate,
           endDate,
-          ConsumerFilters(prisons = listOf(prisonId)),
+          consumerFillters,
         )
 
       result.data.shouldBe(exampleTransactions)

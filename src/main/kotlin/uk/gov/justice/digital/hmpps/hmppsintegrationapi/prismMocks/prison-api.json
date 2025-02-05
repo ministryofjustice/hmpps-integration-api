@@ -24173,7 +24173,7 @@
             "type": "string",
             "description": "Valid transaction type for the prison_id",
             "example": "CANT",
-            "enum": ["CANT,REFND,PHONE,MRPR,MTDS,DTDS,CASHD,RELA,RELS"]
+            "enum": ["CANT", "REFND", "PHONE", "MRPR", "MTDS", "DTDS", "CASHD", "RELA", "RELS"]
           },
           "description": {
             "maxLength": 240,
@@ -25888,7 +25888,8 @@
           "transactionId": {
             "type": "integer",
             "description": "Transaction Id",
-            "format": "int64"
+            "format": "int32",
+            "example": 6179604
           }
         },
         "description": "Detail of result of transfer transaction"

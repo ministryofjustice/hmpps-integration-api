@@ -1,8 +1,10 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 
 import io.kotest.core.spec.style.DescribeSpec
+import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.nulls.shouldBeNull
+import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory
@@ -11,10 +13,13 @@ import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.ConsumerPrisonAccessService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NomisGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ProbationOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HomeDetentionCurfewDate
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Identifiers
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.LatestSentenceKeyDatesAndAdjustments
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NonDtoDate
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonOnProbation
@@ -26,8 +31,11 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SentenceKey
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SentenceKeyDateWithCalculatedDate
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SentenceKeyDates
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.TopupSupervision
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Transaction
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSPrisoner
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import java.time.LocalDate
 
 @ContextConfiguration(
@@ -36,12 +44,17 @@ import java.time.LocalDate
 )
 internal class GetLatestSentenceKeyDatesAndAdjustmentsForPersonServiceTest(
   @MockitoBean val probationOffenderSearchGateway: ProbationOffenderSearchGateway,
+  @MockitoBean val prisonerOffenderSearchGateway: PrisonerOffenderSearchGateway,
   @MockitoBean val nomisGateway: NomisGateway,
+  @MockitoBean val consumerPrisonAccessService: ConsumerPrisonAccessService,
   private val getLatestSentenceKeyDatesAndAdjustmentsForPersonService: GetLatestSentenceKeyDatesAndAdjustmentsForPersonService,
 ) : DescribeSpec(
     {
       val hmppsId = "2003/13116M"
       val nomisNumber = "abc123"
+      val prisonId = "MDI"
+      val filters = ConsumerFilters(null)
+      val prisoner = POSPrisoner(firstName = "Meatball", lastName = "Man", prisonId = prisonId)
 
       beforeEach {
         Mockito.reset(nomisGateway)
@@ -148,28 +161,31 @@ internal class GetLatestSentenceKeyDatesAndAdjustmentsForPersonServiceTest(
               ),
           ),
         )
+
+        whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<LatestSentenceKeyDatesAndAdjustments>(prisonId, filters)).thenReturn(Response(data = null, errors = emptyList()))
+        whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomisNumber)).thenReturn(Response(data = prisoner))
       }
 
       it("gets NOMIS number from Probation Offender Search") {
-        getLatestSentenceKeyDatesAndAdjustmentsForPersonService.execute(hmppsId)
+        getLatestSentenceKeyDatesAndAdjustmentsForPersonService.execute(hmppsId, filters)
 
         verify(probationOffenderSearchGateway, VerificationModeFactory.times(1)).getPerson(id = hmppsId)
       }
 
       it("gets latest sentence key dates from NOMIS") {
-        getLatestSentenceKeyDatesAndAdjustmentsForPersonService.execute(hmppsId)
+        getLatestSentenceKeyDatesAndAdjustmentsForPersonService.execute(hmppsId, filters)
 
         verify(nomisGateway, VerificationModeFactory.times(1)).getLatestSentenceKeyDatesForPerson(id = nomisNumber)
       }
 
       it("gets latest sentence adjustments from NOMIS") {
-        getLatestSentenceKeyDatesAndAdjustmentsForPersonService.execute(hmppsId)
+        getLatestSentenceKeyDatesAndAdjustmentsForPersonService.execute(hmppsId, filters)
 
         verify(nomisGateway, VerificationModeFactory.times(1)).getLatestSentenceAdjustmentsForPerson(id = nomisNumber)
       }
 
       it("returns latest sentence key dates and adjustments from NOMIS") {
-        val response = getLatestSentenceKeyDatesAndAdjustmentsForPersonService.execute(hmppsId)
+        val response = getLatestSentenceKeyDatesAndAdjustmentsForPersonService.execute(hmppsId, filters)
 
         response.data
           ?.adjustments
@@ -420,7 +436,7 @@ internal class GetLatestSentenceKeyDatesAndAdjustmentsForPersonServiceTest(
           ),
         )
 
-        val response = getLatestSentenceKeyDatesAndAdjustmentsForPersonService.execute(hmppsId)
+        val response = getLatestSentenceKeyDatesAndAdjustmentsForPersonService.execute(hmppsId, filters)
 
         response.errors.shouldHaveSize(1)
         response.errors
@@ -449,7 +465,7 @@ internal class GetLatestSentenceKeyDatesAndAdjustmentsForPersonServiceTest(
           ),
         )
 
-        val response = getLatestSentenceKeyDatesAndAdjustmentsForPersonService.execute(hmppsId)
+        val response = getLatestSentenceKeyDatesAndAdjustmentsForPersonService.execute(hmppsId, filters)
 
         response.data.shouldBeNull()
       }
@@ -480,9 +496,57 @@ internal class GetLatestSentenceKeyDatesAndAdjustmentsForPersonServiceTest(
           ),
         )
 
-        val response = getLatestSentenceKeyDatesAndAdjustmentsForPersonService.execute(hmppsId)
+        val response = getLatestSentenceKeyDatesAndAdjustmentsForPersonService.execute(hmppsId, filters)
 
         response.errors.shouldHaveSize(2)
+      }
+
+      it("returns null when latest key dates and adjustments are queried and the consumer doesnt have access to the persons prison") {
+        val consumerFilters = ConsumerFilters(prisons = listOf("XYZ"))
+        whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<Transaction>(prisonId, consumerFilters)).thenReturn(
+          Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.NOMIS, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found"))),
+        )
+        val result =
+          getLatestSentenceKeyDatesAndAdjustmentsForPersonService.execute(
+            hmppsId,
+            consumerFilters,
+          )
+
+        verify(consumerPrisonAccessService, VerificationModeFactory.times(1)).checkConsumerHasPrisonAccess<Nothing>(prisonId, consumerFilters)
+        result.data.shouldBe(null)
+        result.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.NOMIS, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found")))
+      }
+
+      it("returns latest key dates and adjustments when the consumer does have access to the persons prison") {
+        val consumerFilters = ConsumerFilters(prisons = listOf("MDI"))
+        whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<Transaction>(prisonId, consumerFilters)).thenReturn(
+          Response(data = null, errors = emptyList()),
+        )
+        val result =
+          getLatestSentenceKeyDatesAndAdjustmentsForPersonService.execute(
+            hmppsId,
+            consumerFilters,
+          )
+
+        result.data.shouldNotBeNull()
+        result.errors.shouldBeEmpty()
+        verify(consumerPrisonAccessService, VerificationModeFactory.times(1)).checkConsumerHasPrisonAccess<Nothing>(prisonId, consumerFilters)
+      }
+
+      it("Calls the consumer prisoner access service with a null prison id when POS returns a prisoner with no prison id") {
+        whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomisNumber)).thenReturn(Response(data = POSPrisoner(firstName = "Meatball", lastName = "Man")))
+        val consumerFilters = ConsumerFilters(prisons = listOf("MDI"))
+        whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<Transaction>(null, consumerFilters)).thenReturn(
+          Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.NOMIS, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found"))),
+        )
+        val result =
+          getLatestSentenceKeyDatesAndAdjustmentsForPersonService.execute(
+            hmppsId,
+            consumerFilters,
+          )
+
+        verify(consumerPrisonAccessService, VerificationModeFactory.times(1)).checkConsumerHasPrisonAccess<Nothing>(null, consumerFilters)
+        result.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.NOMIS, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found")))
       }
     },
   )

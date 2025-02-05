@@ -18,6 +18,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ProbationOffend
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Identifiers
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.OffenderSearchResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonInPrison
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonOnProbation
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
@@ -47,7 +48,7 @@ internal class GetPersonServiceTest(
         Mockito.reset(probationOffenderSearchGateway)
 
         whenever(prisonerOffenderSearchGateway.getPersons("Qui-gon", "Jin", "1966-10-25")).thenReturn(
-          Response(data = listOf(Person(firstName = "Qui-gon", lastName = "Jin", identifiers = Identifiers(nomisNumber = "A1234AA")))),
+          Response(data = listOf(POSPrisoner(firstName = "Qui-gon", lastName = "Jin", prisonerNumber = "A1234AA"))),
         )
         whenever(probationOffenderSearchGateway.getPerson(id = hmppsId)).thenReturn(
           Response(data = PersonOnProbation(Person(firstName = "Qui-gon", lastName = "Jin", identifiers = Identifiers(nomisNumber = "A1234AA")), underActiveSupervision = true)),
@@ -141,14 +142,14 @@ internal class GetPersonServiceTest(
 
       it("returns a prisoner when valid hmppsId is provided") {
         val validHmppsId = "G2996UX"
-        val person = Person(firstName = "Sam", lastName = "Mills")
+        val person = PersonInPrison(Person(firstName = "Sam", lastName = "Mills"), category = null, csra = null, receptionDate = null, status = null, prisonId = null, prisonName = null, cellLocation = null)
         whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber = "G2996UX")).thenReturn(
           Response(data = POSPrisoner(firstName = "Sam", lastName = "Mills")),
         )
 
         val result = getPersonService.getPrisoner(validHmppsId, blankConsumerFilters)
 
-        result.data.shouldBeTypeOf<Person>()
+        result.data.shouldBeTypeOf<PersonInPrison>()
         result.data!!.firstName.shouldBe(person.firstName)
         result.data!!.lastName.shouldBe(person.lastName)
         result.errors.shouldBe(emptyList())
@@ -212,7 +213,7 @@ internal class GetPersonServiceTest(
 
         val result = getPersonService.getPrisoner(correctPrisonHmppsId, ConsumerFilters(prisons = listOf(prisonId)))
 
-        result.data.shouldBeTypeOf<Person>()
+        result.data.shouldBeTypeOf<PersonInPrison>()
         result.data!!.firstName.shouldBe(posPrisoner.firstName)
         result.data!!.lastName.shouldBe(posPrisoner.lastName)
         result.errors.shouldBe(emptyList())
@@ -220,7 +221,7 @@ internal class GetPersonServiceTest(
 
       it("returns prisoner if no prison filter present") {
         val validHmppsId = "G2996UX"
-        val person = Person(firstName = "Sam", lastName = "Mills")
+        val person = PersonInPrison(Person(firstName = "Sam", lastName = "Mills"), category = null, csra = null, receptionDate = null, status = null, prisonId = null, prisonName = null, cellLocation = null)
 
         whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber = validHmppsId)).thenReturn(
           Response(data = POSPrisoner(firstName = "Sam", lastName = "Mills")),
@@ -228,7 +229,7 @@ internal class GetPersonServiceTest(
 
         val result = getPersonService.getPrisoner(validHmppsId, ConsumerFilters(prisons = null))
 
-        result.data.shouldBeTypeOf<Person>()
+        result.data.shouldBeTypeOf<PersonInPrison>()
         result.data!!.firstName.shouldBe(person.firstName)
         result.data!!.lastName.shouldBe(person.lastName)
         result.errors.shouldBe(emptyList())
@@ -258,7 +259,7 @@ internal class GetPersonServiceTest(
 
       it("returns prisoner if no consumer filters present") {
         val validHmppsId = "G2996UX"
-        val person = Person(firstName = "Sam", lastName = "Mills")
+        val person = PersonInPrison(Person(firstName = "Sam", lastName = "Mills"), category = null, csra = null, receptionDate = null, status = null, prisonId = null, prisonName = null, cellLocation = null)
 
         whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber = validHmppsId)).thenReturn(
           Response(data = POSPrisoner(firstName = "Sam", lastName = "Mills")),
@@ -266,7 +267,7 @@ internal class GetPersonServiceTest(
 
         val result = getPersonService.getPrisoner(validHmppsId, null)
 
-        result.data.shouldBeTypeOf<Person>()
+        result.data.shouldBeTypeOf<PersonInPrison>()
         result.data!!.firstName.shouldBe(person.firstName)
         result.data!!.lastName.shouldBe(person.lastName)
         result.errors.shouldBe(emptyList())

@@ -10,5 +10,6 @@ data class UpstreamApiError(
     BAD_REQUEST,
     FORBIDDEN,
     INTERNAL_SERVER_ERROR,
+    CONFLICT,
   }
 }
