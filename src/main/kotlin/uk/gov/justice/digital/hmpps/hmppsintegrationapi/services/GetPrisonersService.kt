@@ -41,10 +41,6 @@ class GetPrisonersService(
       return Response(emptyList(), responseFromPrisonerOffenderSearch.errors)
     }
 
-    if (responseFromPrisonerOffenderSearch.data.isEmpty()) {
-      return Response(emptyList(), listOf(UpstreamApiError(UpstreamApi.PRISONER_OFFENDER_SEARCH, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found")))
-    }
-
     return Response(data = responseFromPrisonerOffenderSearch.data.map { it.toPersonInPrison() })
   }
 }
