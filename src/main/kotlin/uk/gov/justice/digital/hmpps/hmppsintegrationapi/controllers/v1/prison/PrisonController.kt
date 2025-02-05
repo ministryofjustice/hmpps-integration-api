@@ -86,6 +86,7 @@ class PrisonController(
         description = "There were no query parameters passed in. At least one must be specified.",
         content = [Content(schema = Schema(ref = "#/components/schemas/BadRequest"))],
       ),
+      ApiResponse(responseCode = "404", description = "No person associated with the query was found.", content = [Content(schema = Schema(ref = "#/components/schemas/PersonNotFound"))]),
       ApiResponse(responseCode = "403", content = [Content(schema = Schema(ref = "#/components/schemas/ForbiddenResponse"))]),
       ApiResponse(responseCode = "500", content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]),
     ],
