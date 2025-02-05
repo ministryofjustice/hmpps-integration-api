@@ -6,6 +6,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NomisGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ProbationOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Address
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 
 @Service
 class GetAddressesForPersonService(
@@ -15,20 +16,33 @@ class GetAddressesForPersonService(
 ) {
   fun execute(hmppsId: String): Response<List<Address>> {
     val personResponse = getPersonService.execute(hmppsId = hmppsId)
-    // Return errors if present here
+    if (personResponse.errors.isNotEmpty()) {
+      return Response(data = emptyList(), errors = personResponse.errors)
+    }
     val nomisNumber = personResponse.data?.identifiers?.nomisNumber
 
     var addressesFromNomis: Response<List<Address>> = Response(data = emptyList())
     val addressesFromDelius = probationOffenderSearchGateway.getAddressesForPerson(hmppsId = hmppsId)
-    // If errors here other than 404, return them
-
-    // If nomis number is null return whatever you got from delius
-    if (nomisNumber != null) {
-      addressesFromNomis = nomisGateway.getAddressesForPerson(id = nomisNumber)
+    if (addressesFromDelius.errors.isNotEmpty() && addressesFromDelius.errors.none { it.type == UpstreamApiError.Type.ENTITY_NOT_FOUND }) {
+      return Response(data = emptyList(), errors = addressesFromDelius.errors)
     }
 
-    // Don't return the delius errors
-    return Response.merge(listOfNotNull(addressesFromNomis, addressesFromDelius))
-    // Controller looks for any 404
+    if (nomisNumber == null) {
+      return addressesFromDelius
+    }
+
+    addressesFromNomis = nomisGateway.getAddressesForPerson(id = nomisNumber)
+    if (addressesFromNomis.errors.isNotEmpty() && addressesFromNomis.errors.none { it.type == UpstreamApiError.Type.ENTITY_NOT_FOUND }) {
+      return Response(data = emptyList(), errors = addressesFromNomis.errors)
+    }
+    if (
+      addressesFromNomis.errors.isNotEmpty() &&
+      addressesFromNomis.errors.any { it.type == UpstreamApiError.Type.ENTITY_NOT_FOUND } &&
+      addressesFromDelius.errors.isEmpty()
+    ) {
+      return addressesFromDelius
+    }
+
+    return Response.merge(listOfNotNull(addressesFromNomis, Response(data = addressesFromDelius.data)))
   }
 }

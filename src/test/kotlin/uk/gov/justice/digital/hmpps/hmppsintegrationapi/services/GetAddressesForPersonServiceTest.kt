@@ -2,7 +2,6 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.collections.shouldBeEmpty
-import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
 import org.mockito.kotlin.whenever
@@ -103,7 +102,7 @@ internal class GetAddressesForPersonServiceTest(
 
         val result = getAddressesForPersonService.execute(hmppsId)
         result.errors.shouldBeEmpty()
-        result.data.shouldBe(listOf(deliusAddress, nomisAddress))
+        result.data.shouldBe(listOf(nomisAddress, deliusAddress))
       }
 
       it("Nomis number, Delius success, Nomis 404 → Ideally return just Delius response") {
@@ -165,7 +164,6 @@ internal class GetAddressesForPersonServiceTest(
         )
 
         val result = getAddressesForPersonService.execute(hmppsId)
-        result.data.shouldBeNull()
         result.errors.shouldBe(listOf(UpstreamApiError(type = UpstreamApiError.Type.INTERNAL_SERVER_ERROR, causedBy = UpstreamApi.NOMIS)))
       }
 
@@ -197,7 +195,6 @@ internal class GetAddressesForPersonServiceTest(
         )
 
         val result = getAddressesForPersonService.execute(hmppsId)
-        result.data.shouldBeNull()
         result.errors.shouldBe(listOf(UpstreamApiError(type = UpstreamApiError.Type.INTERNAL_SERVER_ERROR, causedBy = UpstreamApi.NOMIS)))
       }
 
@@ -217,7 +214,6 @@ internal class GetAddressesForPersonServiceTest(
         )
 
         val result = getAddressesForPersonService.execute(hmppsId)
-        result.data.shouldBeNull()
         result.errors.shouldBe(listOf(UpstreamApiError(type = UpstreamApiError.Type.INTERNAL_SERVER_ERROR, causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH)))
       }
 
@@ -246,7 +242,6 @@ internal class GetAddressesForPersonServiceTest(
         )
 
         val result = getAddressesForPersonService.execute(hmppsId)
-        result.data.shouldBeNull()
         result.errors.shouldBe(listOf(UpstreamApiError(type = UpstreamApiError.Type.INTERNAL_SERVER_ERROR, causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH)))
       }
     },
