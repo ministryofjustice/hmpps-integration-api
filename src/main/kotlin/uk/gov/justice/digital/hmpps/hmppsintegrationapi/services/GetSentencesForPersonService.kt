@@ -24,16 +24,40 @@ class GetSentencesForPersonService(
     if (nomisNumber != null) {
       bookingIdsResponse = nomisGateway.getBookingIdsForPerson(nomisNumber)
     }
+    // only execute if bookingIdsResponse is successful?
+    val nomisSentenceResponse = Response.merge(bookingIdsResponse.data.map { nomisGateway.getSentencesForBooking(it.bookingId) })
 
     if (deliusCrn != null) {
       nDeliusSentencesResponse = nDeliusGateway.getSentencesForPerson(deliusCrn)
     }
 
-    val nomisSentenceResponses = bookingIdsResponse.data.map { nomisGateway.getSentencesForBooking(it.bookingId) }
-
     return Response(
-      data = nomisSentenceResponses.map { it.data }.flatten() + nDeliusSentencesResponse.data,
-      errors = bookingIdsResponse.errors + nomisSentenceResponses.map { it.errors }.flatten() + nDeliusSentencesResponse.errors,
+      data = nomisSentenceResponse.data + nDeliusSentencesResponse.data,
+      errors = bookingIdsResponse.errors + nomisSentenceResponse.errors + nDeliusSentencesResponse.errors,
     )
   }
 }
+
+/**
+Person service error → Return person service error
+
+No Nomis number + no Delius crn -> Return entity not found response
+
+No Nomis number + Delius crn, delius success → return Delius
+No Nomis number + Delius crn, delius any error → return Delius error
+
+Nomis number + No Delius crn, Nomis success -> Return Nomis
+Nomis number + No Delius crn, Nomis any error -> Return Nomis error
+
+Nomis number + Delius crn, Nomis success, Delius success → Merge responses
+Nomis number + Delius crn, Nomis success, Delius 404 → Return Nomis
+Nomis number + Delius crn, Nomis 404 on booking ids, Delius success → Return Delius
+Nomis number + Delius crn, Nomis 404 on sentences, Delius success → Return Delius
+Nomis number + Delius crn, Nomis non 404 error on booking ids-> Return Nomis error
+Nomis number + Delius crn, Nomis non 404 error on sentences -> Return Nomis error
+Nomis number + Delius crn, Delius non 404 error -> Return Delius error
+Nomis number + Delius crn, Nomis 404 on booking ids, Delius any error -> Return Delius error
+Nomis number + Delius crn, Nomis 404 on sentences, Delius any error -> Return Delius error
+Nomis number + Delius crn, Nomis any error on booking ids, Delius 404 -> Return Nomis error
+Nomis number + Delius crn, Nomis any error on sentences, Delius 404 -> Return Nomis error
+ **/
