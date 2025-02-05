@@ -21,18 +21,17 @@ class GetAddressesForPersonService(
     }
 
     val addressesFromDelius = probationOffenderSearchGateway.getAddressesForPerson(hmppsId = hmppsId)
-    if (addressesFromDelius.errors.isNotEmpty() && addressesFromDelius.errors.none { it.type == UpstreamApiError.Type.ENTITY_NOT_FOUND }) {
+    if (hasErrorOtherThanEntityNotFound(addressesFromDelius)) {
       return Response(data = emptyList(), errors = addressesFromDelius.errors)
     }
 
     val nomisNumber = personResponse.data?.identifiers?.nomisNumber
-
     if (nomisNumber == null) {
       return addressesFromDelius
     }
 
     val addressesFromNomis = nomisGateway.getAddressesForPerson(id = nomisNumber)
-    if (addressesFromNomis.errors.isNotEmpty() && addressesFromNomis.errors.none { it.type == UpstreamApiError.Type.ENTITY_NOT_FOUND }) {
+    if (hasErrorOtherThanEntityNotFound(addressesFromNomis)) {
       return Response(data = emptyList(), errors = addressesFromNomis.errors)
     }
 
@@ -45,4 +44,6 @@ class GetAddressesForPersonService(
 
     return Response.merge(listOfNotNull(addressesFromNomis, Response(data = addressesFromDelius.data)))
   }
+
+  private fun hasErrorOtherThanEntityNotFound(addressesResponse: Response<List<Address>>): Boolean = addressesResponse.errors.isNotEmpty() && addressesResponse.errors.none { it.type == UpstreamApiError.Type.ENTITY_NOT_FOUND }
 }
