@@ -86,6 +86,27 @@ class TransactionsIntegrationTest : IntegrationTestBase() {
       .andExpect(content().json(getExpectedResponse("transaction-create-response")))
   }
 
+  @Test
+  fun `does throw 403 when empty prison field in consumer profile`() {
+    val requestBody =
+      """
+      {
+        "type": "CANT",
+        "description": "Canteen Purchase of £16.34",
+        "amount": 1634,
+        "clientTransactionId": "CL123212",
+        "clientUniqueRef": "CLIENT121131-0_11"
+      }
+      """.trimIndent()
+
+    val headers = org.springframework.http.HttpHeaders()
+    headers.set("subject-distinguished-name", "C=GB,ST=London,L=London,O=Home Office,CN=empty-prisons")
+    mockMvc
+      .perform(
+        post("/v1/prison/$prisonId/prisoners/$hmppsId/transactions").headers(headers).content(requestBody).contentType(org.springframework.http.MediaType.APPLICATION_JSON),
+      ).andExpect(status().isForbidden)
+  }
+
   // POST transaction transfer
 
   @Test

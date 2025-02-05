@@ -250,4 +250,23 @@ internal class GetTransactionsForPersonServiceTest(
 
       result.data.shouldBe(exampleTransactions)
     }
+
+    it("does throw 403 when empty prison field in consumer profile") {
+      val consumerFilters = ConsumerFilters(prisons = listOf(""))
+      whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<Transactions>(prisonId, consumerFilters)).thenReturn(
+        Response(data = null),
+      )
+
+      val result =
+        getTransactionsForPersonService.execute(
+          hmppsId,
+          prisonId,
+          accountCode,
+          startDate,
+          endDate,
+          consumerFilters,
+        )
+
+      result.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.NOMIS, UpstreamApiError.Type.FORBIDDEN)))
+    }
   })
