@@ -107,3 +107,6 @@ authorisation:
       filters:
         prisons:
           - XYZ
+    empty-prisons:
+      filters:
+        prisons:
