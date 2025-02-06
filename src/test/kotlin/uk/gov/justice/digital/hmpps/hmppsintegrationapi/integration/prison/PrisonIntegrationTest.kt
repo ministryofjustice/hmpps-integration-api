@@ -32,13 +32,10 @@ class PrisonIntegrationTest : IntegrationTestBase() {
   }
 
   @Test
-  fun `return a 404 for if consumer has empty list of prisons`() {
-    val headers = HttpHeaders()
-    headers.set("subject-distinguished-name", "C=GB,ST=London,L=London,O=Home Office,CN=no-prisons")
-    mockMvc
-      .perform(
-        get("$basePrisonPath/prisoners/$hmppsId").headers(headers),
-      ).andExpect(status().isNotFound)
+  fun `return a 200 for empty but successful upstream response`() {
+    val deliberateMissVal = "nope"
+    callApi("$basePrisonPath/prisoners?first_name=$deliberateMissVal&last_name=$lastName&dateOfBirth=$dateOfBirth")
+      .andExpect(status().isOk)
   }
 
   @Test

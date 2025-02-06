@@ -172,14 +172,7 @@ internal class PrisonControllerTest(
         whenever(getPersonService.getPrisoner(eq(hmppsId), anyOrNull())).thenReturn(
           Response(
             data = null,
-            errors =
-              listOf(
-                UpstreamApiError(
-                  type = ENTITY_NOT_FOUND,
-                  causedBy = UpstreamApi.PRISONER_OFFENDER_SEARCH,
-                  description = "Prisoner not found",
-                ),
-              ),
+            errors = emptyList(),
           ),
         )
 
@@ -196,7 +189,7 @@ internal class PrisonControllerTest(
               listOf(
                 UpstreamApiError(
                   type = ENTITY_NOT_FOUND,
-                  causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH,
+                  causedBy = UpstreamApi.PRISONER_OFFENDER_SEARCH,
                   description = "NOMIS number not found",
                 ),
               ),
