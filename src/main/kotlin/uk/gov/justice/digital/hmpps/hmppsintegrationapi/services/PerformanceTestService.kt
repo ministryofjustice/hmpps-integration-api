@@ -7,7 +7,10 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PerformanceTest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.AccountBalance
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Balances
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NomisNumber
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonInPrison
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService.IdentifierType
 
@@ -93,5 +96,36 @@ class PerformanceTestService(
       crnPattern.matches(input) -> IdentifierType.CRN
       else -> IdentifierType.UNKNOWN
     }
+  }
+
+  fun search(
+    firstName: String?,
+    lastName: String?,
+    dateOfBirth: String?,
+    searchWithinAliases: Boolean = false,
+    filters: ConsumerFilters?,
+  ): Response<List<PersonInPrison>> {
+    val prisonIds = filters?.prisons
+    val responseFromPrisonerOffenderSearch =
+      if (prisonIds == null) {
+        // Hit global-search endpoint
+        performanceTestGateway.getPersons(
+          firstName,
+          lastName,
+          dateOfBirth,
+          searchWithinAliases,
+        )
+      } else if (prisonIds.isEmpty()) {
+        return Response(emptyList(), listOf(UpstreamApiError(UpstreamApi.PRISONER_OFFENDER_SEARCH, UpstreamApiError.Type.FORBIDDEN, "Consumer configured with no access to any prisons")))
+      } else {
+        // Hit prisoner-details endpoint
+        performanceTestGateway.getPrisonerDetails(firstName, lastName, dateOfBirth, searchWithinAliases, prisonIds)
+      }
+
+    if (responseFromPrisonerOffenderSearch.errors.isNotEmpty()) {
+      return Response(emptyList(), responseFromPrisonerOffenderSearch.errors)
+    }
+
+    return Response(data = responseFromPrisonerOffenderSearch.data.map { it.toPersonInPrison() })
   }
 }

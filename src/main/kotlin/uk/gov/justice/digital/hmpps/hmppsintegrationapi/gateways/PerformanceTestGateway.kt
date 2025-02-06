@@ -20,4 +20,47 @@ class PerformanceTestGateway {
         lastName = "PERSON",
       ),
     )
+
+  fun getPersons(
+    firstName: String?,
+    lastName: String?,
+    dateOfBirth: String?,
+    searchWithinAliases: Boolean = false,
+  ): Response<List<POSPrisoner>> =
+    Response(
+      listOf(
+        POSPrisoner(
+          prisonerNumber = "A1234AA",
+          firstName = "EXAMPLE",
+          lastName = "PERSON",
+        ),
+        POSPrisoner(
+          prisonerNumber = "B5678BB",
+          firstName = "ANOTHER",
+          lastName = "PERSON",
+        ),
+      ),
+    )
+
+  fun getPrisonerDetails(
+    firstName: String?,
+    lastName: String?,
+    dateOfBirth: String?,
+    searchWithinAliases: Boolean = false,
+    prisonIds: List<String?>?,
+  ): Response<List<POSPrisoner>> =
+    Response(
+      listOf(
+        POSPrisoner(
+          prisonerNumber = "A1234AA",
+          firstName = "EXAMPLE",
+          lastName = "PERSON",
+        ),
+        POSPrisoner(
+          prisonerNumber = "B5678BB",
+          firstName = "ANOTHER",
+          lastName = "PERSON",
+        ),
+      ),
+    )
 }
