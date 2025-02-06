@@ -88,7 +88,7 @@ class PerformanceTestController(
     return response.data.paginateWith(page, perPage)
   }
 
-  @PostMapping("/test-3")
+  @PostMapping("/test-3/{prisonId}/{hmppsId}")
   fun postTransactions(
     @Parameter(description = "The ID of the prison that holds the account") @PathVariable prisonId: String,
     @Parameter(description = "The HMPPS ID of the person") @PathVariable hmppsId: String,

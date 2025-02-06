@@ -92,6 +92,6 @@ class PerformanceTestGateway {
     transactionRequest: TransactionRequest,
   ): Response<NomisTransactionResponse?> {
     addDelay()
-    return Response(data = NomisTransactionResponse(id = "123456-1"))
+    return Response(data = NomisTransactionResponse(id = "6179604-1"))
   }
 }
