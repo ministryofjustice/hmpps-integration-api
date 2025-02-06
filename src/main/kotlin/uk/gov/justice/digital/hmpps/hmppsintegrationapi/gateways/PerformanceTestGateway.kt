@@ -1,9 +1,14 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisAccounts
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSPrisoner
+import kotlin.time.Duration.Companion.milliseconds
 
 @Component
 class PerformanceTestGateway {
@@ -12,22 +17,34 @@ class PerformanceTestGateway {
     nomisNumber: String?,
   ): Response<NomisAccounts?> = Response(NomisAccounts(spends = 123, savings = 456, cash = 789))
 
-  fun getPrisonOffender(nomsNumber: String): Response<POSPrisoner?> =
-    Response(
+  fun addDelay(ms: Int = 100) {
+    runBlocking {
+      // Creates a coroutine that blocks the main thread
+      withContext(Dispatchers.IO) {
+        delay(ms.milliseconds) // Simulate API latency
+      }
+    }
+  }
+
+  fun getPrisonOffender(nomsNumber: String): Response<POSPrisoner?> {
+    addDelay()
+    return Response(
       POSPrisoner(
         prisonerNumber = "A1234AA",
         firstName = "EXAMPLE",
         lastName = "PERSON",
       ),
     )
+  }
 
   fun getPersons(
     firstName: String?,
     lastName: String?,
     dateOfBirth: String?,
     searchWithinAliases: Boolean = false,
-  ): Response<List<POSPrisoner>> =
-    Response(
+  ): Response<List<POSPrisoner>> {
+    addDelay()
+    return Response(
       listOf(
         POSPrisoner(
           prisonerNumber = "A1234AA",
@@ -41,6 +58,7 @@ class PerformanceTestGateway {
         ),
       ),
     )
+  }
 
   fun getPrisonerDetails(
     firstName: String?,
@@ -48,8 +66,9 @@ class PerformanceTestGateway {
     dateOfBirth: String?,
     searchWithinAliases: Boolean = false,
     prisonIds: List<String?>?,
-  ): Response<List<POSPrisoner>> =
-    Response(
+  ): Response<List<POSPrisoner>> {
+    addDelay()
+    return Response(
       listOf(
         POSPrisoner(
           prisonerNumber = "A1234AA",
@@ -63,4 +82,5 @@ class PerformanceTestGateway {
         ),
       ),
     )
+  }
 }
