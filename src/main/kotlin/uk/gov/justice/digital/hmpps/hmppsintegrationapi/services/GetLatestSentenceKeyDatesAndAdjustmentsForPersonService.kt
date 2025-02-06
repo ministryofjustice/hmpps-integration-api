@@ -9,6 +9,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ProbationOffend
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.KeyDatesAndAdjustmentsDTO
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.LatestSentenceKeyDatesAndAdjustments
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 @Service
@@ -54,12 +56,21 @@ class GetLatestSentenceKeyDatesAndAdjustmentsForPersonService(
       return Response(data = null, latestSentenceKeyDatesErrors + latestSentenceAdjustmentsErrors)
     }
 
+    val combinedKeyDatesAndAdjustments =
+      KeyDatesAndAdjustmentsDTO(
+        adjustments = latestSentenceAdjustments,
+        keyDates = latestSentenceKeyDates,
+      )
+
+    if (checkLatestSentencesDtoIsNotPopulated(combinedKeyDatesAndAdjustments)) {
+      return Response(data = null, errors = listOf(UpstreamApiError(causedBy = UpstreamApi.NOMIS, type = UpstreamApiError.Type.ENTITY_NOT_FOUND)))
+    }
+
     return Response(
       data =
-        KeyDatesAndAdjustmentsDTO(
-          adjustments = latestSentenceAdjustments,
-          keyDates = latestSentenceKeyDates,
-        ).toLatestSentenceKeyDatesAndAdjustments(),
+        combinedKeyDatesAndAdjustments.toLatestSentenceKeyDatesAndAdjustments(),
     )
   }
+
+  private fun checkLatestSentencesDtoIsNotPopulated(sentenceDetails: KeyDatesAndAdjustmentsDTO): Boolean = sentenceDetails.keyDates == null && sentenceDetails.adjustments == null
 }

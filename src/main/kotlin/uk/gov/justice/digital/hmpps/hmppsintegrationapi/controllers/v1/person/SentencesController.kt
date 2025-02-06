@@ -52,7 +52,7 @@ class SentencesController(
     val hmppsId = encodedHmppsId.decodeUrlCharacters()
     val response = getSentencesForPersonService.execute(hmppsId)
 
-    if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
+    if (response.hasErrorCausedBy(causedBy = UpstreamApi.NOMIS, type = UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
       throw EntityNotFoundException("Could not find person with id: $hmppsId")
     }
 
