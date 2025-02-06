@@ -40,8 +40,12 @@ class HmppsIdController(
   ): DataResponse<HmppsId?> {
     val response = getHmppsIdService.execute(nomisNumber)
 
+    if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
+      throw ValidationException("Invalid Nomis number: $nomisNumber")
+    }
+
     if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
-      throw EntityNotFoundException("Could not find HMPPS ID for nomis number: $nomisNumber")
+      throw EntityNotFoundException("Could not find HMPPS ID for Nomis number: $nomisNumber")
     }
 
     auditService.createEvent("GET_HMPPS_ID_BY_NOMIS_NUMBER", mapOf("nomisNumber" to nomisNumber))

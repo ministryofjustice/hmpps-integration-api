@@ -17,6 +17,8 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HmppsId
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetHmppsIdService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 
@@ -46,6 +48,28 @@ internal class HmppsIdControllerTest(
         val result = mockMvc.performAuthorised(path)
 
         result.response.status.shouldBe(HttpStatus.OK.value())
+      }
+
+      it("returns a 400 Bad request status code when invalid nomis number provided") {
+        whenever(getHmppsIdService.execute(nomisNumber)).thenReturn(
+          Response(
+            data = null,
+            errors = listOf(UpstreamApiError(causedBy = UpstreamApi.NOMIS, type = UpstreamApiError.Type.BAD_REQUEST)),
+          ),
+        )
+        val result = mockMvc.performAuthorised(path)
+        result.response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
+      }
+
+      it("returns a 404 Not found status code when no HMPPS ID found") {
+        whenever(getHmppsIdService.execute(nomisNumber)).thenReturn(
+          Response(
+            data = null,
+            errors = listOf(UpstreamApiError(causedBy = UpstreamApi.NOMIS, type = UpstreamApiError.Type.ENTITY_NOT_FOUND)),
+          ),
+        )
+        val result = mockMvc.performAuthorised(path)
+        result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
       }
 
       it("gets the person detail for a person with the matching ID") {
