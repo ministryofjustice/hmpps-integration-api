@@ -6,8 +6,3 @@ data class HmppsMessage(
   val description: String? = null,
   val messageAttributes: Map<String, String> = emptyMap(),
 )
-
-data class MessageAttribute(
-  val value: String,
-  val type: String,
-)

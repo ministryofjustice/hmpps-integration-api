@@ -79,7 +79,7 @@ class PutExpressionInterestServiceTest :
         val expectedMessage =
           HmppsMessage(
             messageId = "1",
-            eventType = HmppsMessageEventType.EXPRESSION_OF_INTEREST_CREATED.name,
+            eventType = HmppsMessageEventType.ExpressionOfInterestCreated.name,
             messageAttributes =
               mapOf(
                 "jobId" to "12345",
@@ -95,13 +95,48 @@ class PutExpressionInterestServiceTest :
         assert(deserializedMap.containsKey("messageAttributes"))
         assert(deserializedMap.containsKey("eventType"))
         assertEquals(
-          expected = HmppsMessageEventType.EXPRESSION_OF_INTEREST_CREATED.name,
+          expected = "ExpressionOfInterestCreated",
           actual = eventType,
         )
 
         val messageAttributes = deserializedMap["messageAttributes"] as? Map<String, String>
         messageAttributes?.containsKey("jobId")?.let { assert(it) }
         messageAttributes?.containsKey("prisonNumber")?.let { assert(it) }
+      }
+
+      it("should serialize ExpressionOfInterestMessage with ExpressionOfInterestCreated type") {
+        val expressionOfInterest = ExpressionOfInterest(jobId = "12345", prisonNumber = "H1234")
+        val expectedMessage =
+          HmppsMessage(
+            messageId = "1",
+            eventType = HmppsMessageEventType.ExpressionOfInterestCreated.name,
+            messageAttributes =
+              mapOf(
+                "jobId" to "12345",
+                "prisonNumber" to "H1234",
+              ),
+          )
+
+        val expectedMessageBody = objectMapper.writeValueAsString(expectedMessage)
+        val deserializedMap: Map<String, Any?> = objectMapper.readValue(expectedMessageBody)
+        val eventType = deserializedMap["eventType"]
+
+        assertEquals(
+          expected = "ExpressionOfInterestCreated",
+          actual = eventType,
+        )
+
+        whenever(mockObjectMapper.writeValueAsString(any<HmppsMessage>()))
+          .thenReturn(expectedMessageBody)
+
+        service.sendExpressionOfInterest(expressionOfInterest)
+
+        verify(mockSqsClient).sendMessage(
+          argThat<SendMessageRequest> { request ->
+            request?.queueUrl() == "https://test-queue-url" &&
+              objectMapper.readTree(request?.messageBody()) == objectMapper.readTree(expectedMessageBody)
+          },
+        )
       }
 
       it("allows messages of any type and anybody to be sent") {

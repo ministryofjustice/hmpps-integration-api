@@ -27,7 +27,7 @@ class PutExpressionInterestService(
         objectMapper.writeValueAsString(
           HmppsMessage(
             messageId = UUID.randomUUID().toString(),
-            eventType = HmppsMessageEventType.EXPRESSION_OF_INTEREST_CREATED.name,
+            eventType = HmppsMessageEventType.ExpressionOfInterestCreated.name,
             messageAttributes =
               mapOf(
                 "jobId" to expressionOfInterest.jobId,
