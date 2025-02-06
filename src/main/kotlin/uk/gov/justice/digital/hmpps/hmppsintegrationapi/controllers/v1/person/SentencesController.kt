@@ -52,9 +52,10 @@ class SentencesController(
     val hmppsId = encodedHmppsId.decodeUrlCharacters()
     val response = getSentencesForPersonService.execute(hmppsId)
 
-    if (response.hasErrorCausedBy(UpstreamApiError.Type.ENTITY_NOT_FOUND, causedBy = UpstreamApi.NOMIS)) {
+    if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
       throw EntityNotFoundException("Could not find person with id: $hmppsId")
     }
+
     auditService.createEvent("GET_PERSON_SENTENCES", mapOf("hmppsId" to hmppsId))
     return response.data.paginateWith(page, perPage)
   }
