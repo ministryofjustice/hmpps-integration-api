@@ -63,11 +63,8 @@ class PrisonController(
     if (response.hasErrorCausedBy(BAD_REQUEST, causedBy = UpstreamApi.NOMIS)) {
       throw ValidationException("Invalid HMPPS ID: $hmppsId")
     }
-    if (response.hasErrorCausedBy(ENTITY_NOT_FOUND, causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH)) {
-      throw EntityNotFoundException("Could not find person with hmppsId: $hmppsId")
-    }
     if (response.hasErrorCausedBy(ENTITY_NOT_FOUND, causedBy = UpstreamApi.PRISONER_OFFENDER_SEARCH)) {
-      throw EntityNotFoundException("Could not find prisoner with hmppsId: $hmppsId")
+      throw EntityNotFoundException("Could not find person with hmppsId: $hmppsId")
     }
 
     auditService.createEvent("GET_PERSON_DETAILS", mapOf("hmppsId" to hmppsId))

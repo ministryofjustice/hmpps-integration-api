@@ -3,7 +3,6 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.controllers.v1
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.media.Content
-import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.ValidationException
@@ -237,10 +236,6 @@ class TransactionsController(
       throw ValidationException("Either invalid HMPPS ID: $hmppsId or incorrect prison: $prisonId or invalid request body: ${transactionRequest.toApiConformingMap()}")
     }
 
-    if (response.hasError(UpstreamApiError.Type.FORBIDDEN)) {
-      throw ValidationException("The prisonId: $prisonId is not valid for your consumer profile. ${response.errors[0].description}")
-    }
-
     if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
       throw EntityNotFoundException(" ${response.errors[0].description}")
     }
@@ -312,10 +307,6 @@ class TransactionsController(
 
     if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
       throw ValidationException("Either invalid HMPPS ID: $hmppsId or incorrect prison: $prisonId or invalid request body: ${response.errors[0].description}")
-    }
-
-    if (response.hasError(UpstreamApiError.Type.FORBIDDEN)) {
-      throw ValidationException("The prisonId: $prisonId is not valid for your consumer profile. ${response.errors[0].description}")
     }
 
     if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
