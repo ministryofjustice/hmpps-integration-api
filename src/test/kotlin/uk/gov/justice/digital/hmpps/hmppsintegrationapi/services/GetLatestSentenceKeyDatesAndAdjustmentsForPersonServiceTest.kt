@@ -548,5 +548,26 @@ internal class GetLatestSentenceKeyDatesAndAdjustmentsForPersonServiceTest(
         verify(consumerPrisonAccessService, VerificationModeFactory.times(1)).checkConsumerHasPrisonAccess<Nothing>(null, consumerFilters)
         result.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.NOMIS, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found")))
       }
+
+      it("returns an entity not found error when key dates and adjustments are null ") {
+        whenever(nomisGateway.getLatestSentenceKeyDatesForPerson(nomisNumber)).thenReturn(
+          Response(
+            data = null,
+            errors = emptyList(),
+          ),
+        )
+
+        whenever(nomisGateway.getLatestSentenceAdjustmentsForPerson(nomisNumber)).thenReturn(
+          Response(
+            data = null,
+            errors = emptyList(),
+          ),
+        )
+
+        val response = getLatestSentenceKeyDatesAndAdjustmentsForPersonService.execute(hmppsId, filters)
+
+        response.errors.shouldHaveSize(1)
+        response.errors.shouldBe(listOf(UpstreamApiError(causedBy = UpstreamApi.NOMIS, type = UpstreamApiError.Type.ENTITY_NOT_FOUND)))
+      }
     },
   )
