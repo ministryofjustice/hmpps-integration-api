@@ -19,30 +19,31 @@ class GetAddressesForPersonService(
     if (personResponse.errors.isNotEmpty()) {
       return Response(data = emptyList(), errors = personResponse.errors)
     }
-    val nomisNumber = personResponse.data?.identifiers?.nomisNumber
 
-    var addressesFromNomis: Response<List<Address>> = Response(data = emptyList())
     val addressesFromDelius = probationOffenderSearchGateway.getAddressesForPerson(hmppsId = hmppsId)
-    if (addressesFromDelius.errors.isNotEmpty() && addressesFromDelius.errors.none { it.type == UpstreamApiError.Type.ENTITY_NOT_FOUND }) {
+    if (hasErrorOtherThanEntityNotFound(addressesFromDelius)) {
       return Response(data = emptyList(), errors = addressesFromDelius.errors)
     }
 
+    val nomisNumber = personResponse.data?.identifiers?.nomisNumber
     if (nomisNumber == null) {
       return addressesFromDelius
     }
 
-    addressesFromNomis = nomisGateway.getAddressesForPerson(id = nomisNumber)
-    if (addressesFromNomis.errors.isNotEmpty() && addressesFromNomis.errors.none { it.type == UpstreamApiError.Type.ENTITY_NOT_FOUND }) {
+    val addressesFromNomis = nomisGateway.getAddressesForPerson(id = nomisNumber)
+    if (hasErrorOtherThanEntityNotFound(addressesFromNomis)) {
       return Response(data = emptyList(), errors = addressesFromNomis.errors)
     }
+
     if (
-      addressesFromNomis.errors.isNotEmpty() &&
-      addressesFromNomis.errors.any { it.type == UpstreamApiError.Type.ENTITY_NOT_FOUND } &&
-      addressesFromDelius.errors.isEmpty()
+      addressesFromNomis.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND) &&
+      !addressesFromDelius.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)
     ) {
       return addressesFromDelius
     }
 
     return Response.merge(listOfNotNull(addressesFromNomis, Response(data = addressesFromDelius.data)))
   }
+
+  private fun hasErrorOtherThanEntityNotFound(addressesResponse: Response<List<Address>>): Boolean = addressesResponse.errors.isNotEmpty() && !addressesResponse.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)
 }
