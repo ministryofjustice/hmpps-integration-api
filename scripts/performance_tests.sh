@@ -11,8 +11,16 @@ BASE_URL="https://dev.integration-api.hmpps.service.justice.gov.uk/v1/performanc
 CERT="$HOME/client_certificates/dev-bmadley-client.pem"
 KEY="$HOME/client_certificates/dev-bmadley-client.key"
 
-REQS_PER_SECOND=5
-TEST_DURATION_SECONDS=10
+if [[ -z "${REQS_PER_SECOND}" ]]; then
+  REQS_PER_SECOND=5
+else
+  REQS_PER_SECOND=$((REQS_PER_SECOND))
+fi
+if [[ -z "${TEST_DURATION_SECONDS}" ]]; then
+  TEST_DURATION_SECONDS=300
+else
+  TEST_DURATION_SECONDS=$((TEST_DURATION_SECONDS))
+fi
 TOTAL_REQS=$((REQS_PER_SECOND * TEST_DURATION_SECONDS))
 DELAY=$((1000000 / REQS_PER_SECOND)) # In microseconds
 
@@ -34,7 +42,7 @@ for ((reqs=1; reqs <= TOTAL_REQS; reqs++)) do
   curl -s --cert "$CERT" --key "$KEY" -X POST "$BASE_URL/test-3" -H "x-api-key: $API_KEY" -H "Content-Type: application/json" -d '{"type": "CANT", "description": "Canteen Purchase of £16.34", "amount": 1634, "clientTransactionId": "CL123212", "clientUniqueRef": "CLIENT121131-0_11"}' &
 
   reqs_performed=$((reqs_performed + 1))
-  sleep $(bc <<< "scale=6; $DELAY / 1000000")
+  sleep "$(bc <<< "scale=6; $DELAY / 1000000")"
 done
 
 wait
