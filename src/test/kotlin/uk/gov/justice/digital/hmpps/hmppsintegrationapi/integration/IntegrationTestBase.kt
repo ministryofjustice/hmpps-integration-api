@@ -27,6 +27,7 @@ abstract class IntegrationTestBase {
   final val basePath = "/v1/persons"
   final val pnc = URLEncoder.encode("2004/13116M", StandardCharsets.UTF_8)
   final val nomsId = "G2996UX"
+  final val invalidNomsId = "G2996UXX"
   final val crn = "AB123123"
   final val nomsIdNotInDelius = "A1234AA"
 

@@ -19,6 +19,12 @@ class HmppsIdIntegrationTest : IntegrationTestBase() {
   }
 
   @Test
+  fun `gets a 400 if passed an invalid Nomis number`() {
+    callApi("/v1/hmpps/id/nomis-number/$invalidNomsId")
+      .andExpect(status().isBadRequest)
+  }
+
+  @Test
   fun `gets the person detail using new url`() {
     callApi("/v1/hmpps/id/by-nomis-number/$nomsId")
       .andExpect(status().isOk)
