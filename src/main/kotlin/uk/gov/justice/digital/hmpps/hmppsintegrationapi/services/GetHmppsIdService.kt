@@ -15,7 +15,7 @@ class GetHmppsIdService(
   fun execute(hmppsId: String): Response<HmppsId?> {
     val identifierType = getPersonService.identifyHmppsId(hmppsId)
     if (identifierType != GetPersonService.IdentifierType.NOMS) {
-      Response(
+      return Response(
         data = null,
         errors = listOf(UpstreamApiError(causedBy = UpstreamApi.NOMIS, type = UpstreamApiError.Type.BAD_REQUEST)),
       )
