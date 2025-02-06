@@ -43,15 +43,7 @@ class GetAddressesForPersonService(
       addresses = listOf(addressesFromNomis.data, addresses).flatten()
     }
 
-    if (
-      addressesFromNomis.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND) &&
-      !addressesFromDelius.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)
-    ) {
-      return Response(data = addresses, errors = errors)
-    }
-
     return Response(data = addresses, errors = errors)
-//    return Response.merge(listOfNotNull(addressesFromNomis, Response(data = addressesFromDelius.data)))
   }
 
   private fun hasErrorOtherThanEntityNotFound(addressesResponse: Response<List<Address>>): Boolean = addressesResponse.errors.isNotEmpty() && !addressesResponse.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)
