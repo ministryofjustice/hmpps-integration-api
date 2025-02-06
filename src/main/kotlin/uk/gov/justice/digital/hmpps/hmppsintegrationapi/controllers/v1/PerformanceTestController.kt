@@ -7,15 +7,20 @@ import jakarta.validation.ValidationException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestAttribute
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.ConflictFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.ForbiddenByUpstreamServiceException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Balances
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonInPrison
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.TransactionCreateResponse
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.TransactionRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError.Type.ENTITY_NOT_FOUND
@@ -81,6 +86,30 @@ class PerformanceTestController(
     }
 
     return response.data.paginateWith(page, perPage)
+  }
+
+  @PostMapping("/test-3")
+  fun postTransactions(
+    @Parameter(description = "The ID of the prison that holds the account") @PathVariable prisonId: String,
+    @Parameter(description = "The HMPPS ID of the person") @PathVariable hmppsId: String,
+    @RequestAttribute filters: ConsumerFilters?,
+    @RequestBody transactionRequest: TransactionRequest,
+  ): DataResponse<TransactionCreateResponse?> {
+    val response = performanceTestService.post(prisonId, hmppsId, transactionRequest, filters)
+
+    if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
+      throw ValidationException("Either invalid HMPPS ID: $hmppsId or incorrect prison: $prisonId or invalid request body: ${transactionRequest.toApiConformingMap()}")
+    }
+
+    if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
+      throw EntityNotFoundException(" ${response.errors[0].description}")
+    }
+
+    if (response.hasError(UpstreamApiError.Type.CONFLICT)) {
+      throw ConflictFoundException("The transaction ${transactionRequest.clientTransactionId} has not been recorded as it is a duplicate.")
+    }
+
+    return DataResponse(response.data)
   }
 
   private fun isValidISODateFormat(dateString: String): Boolean =

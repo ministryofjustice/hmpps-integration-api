@@ -6,7 +6,9 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.TransactionRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisAccounts
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisTransactionResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSPrisoner
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -82,5 +84,14 @@ class PerformanceTestGateway {
         ),
       ),
     )
+  }
+
+  fun postTransactionForPerson(
+    prisonId: String,
+    nomisNumber: String,
+    transactionRequest: TransactionRequest,
+  ): Response<NomisTransactionResponse?> {
+    addDelay()
+    return Response(data = NomisTransactionResponse(id = "123456-1"))
   }
 }
