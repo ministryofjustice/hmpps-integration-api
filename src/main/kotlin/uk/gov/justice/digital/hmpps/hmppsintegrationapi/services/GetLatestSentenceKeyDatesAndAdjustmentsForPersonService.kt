@@ -54,6 +54,9 @@ class GetLatestSentenceKeyDatesAndAdjustmentsForPersonService(
       return Response(data = null, latestSentenceKeyDatesErrors + latestSentenceAdjustmentsErrors)
     }
 
+    if (latestSentenceAdjustments) {
+    }
+
     return Response(
       data =
         KeyDatesAndAdjustmentsDTO(
@@ -62,4 +65,27 @@ class GetLatestSentenceKeyDatesAndAdjustmentsForPersonService(
         ).toLatestSentenceKeyDatesAndAdjustments(),
     )
   }
+
+  private fun checkisNotPopulated()
 }
+
+/**
+ * Cases:
+ *
+ * Nomis number, POS success, Nomis success →  responses
+ *
+ * Nomis number, POS success, Nomis 404 → Ideally return just POS response
+ *
+ * Nomis number, POS success, nomis non-404 error → Return NOMIS error
+ *
+ * Nomis number, POS 404, nomis success → Return just NOMIS
+ *
+ * Nomis number, POS 404, nomis any error (incl. 404) → Return just NOMIS
+ *
+ * Nomis number, POS non-404 error → Return NOMIS response
+ *
+ * Person service error → Return person service error
+ *
+ * No nomis number → return error
+
+ */
