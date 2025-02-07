@@ -41,7 +41,7 @@ reqs_performed=0
 for ((reqs=1; reqs <= TOTAL_LOOPS; reqs++)) do
   curl -s --cert "$CERT" --key "$KEY" -X GET "$BASE_URL/test-1/LEI/G6980GG" -H "x-api-key: $API_KEY" &
   curl -s --cert "$CERT" --key "$KEY" -X GET "$BASE_URL/test-2?first_name=Tom" -H "x-api-key: $API_KEY" &
-  curl -s --cert "$CERT" --key "$KEY" -X POST "$BASE_URL/test-3" -H "x-api-key: $API_KEY" -H "Content-Type: application/json" -d '{"type": "CANT", "description": "Canteen Purchase of £16.34", "amount": 1634, "clientTransactionId": "CL123212", "clientUniqueRef": "CLIENT121131-0_11"}' &
+  curl -s --cert "$CERT" --key "$KEY" -X POST "$BASE_URL/test-3/LEI/G6980GG" -H "x-api-key: $API_KEY" -H "Content-Type: application/json" -d '{"type": "CANT", "description": "Canteen Purchase of £16.34", "amount": 1634, "clientTransactionId": "CL123212", "clientUniqueRef": "CLIENT121131-0_11"}' &
 
   reqs_performed=$((reqs_performed + 1))
   sleep "$(bc <<< "scale=6; $DELAY / 1000000")"
@@ -50,7 +50,7 @@ done
 wait
 
 END_TIME=$(date +%s)
-ACTUAL_REQS_PER_SECOND=$(bc <<< "scale=2; $reqs_performed / ($END_TIME - $START_TIME)")
+ACTUAL_REQS_PER_SECOND=$(bc <<< "scale=2; $((reqs_performed * 3)) / ($END_TIME - $START_TIME)")
 
 echo "Target Rate: $REQS_PER_SECOND requests/second"
 echo "Actual Rate: $ACTUAL_REQS_PER_SECOND requests/second"
