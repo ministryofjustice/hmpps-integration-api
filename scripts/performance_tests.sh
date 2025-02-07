@@ -12,7 +12,7 @@ CERT="$HOME/client_certificates/dev-bmadley-client.pem"
 KEY="$HOME/client_certificates/dev-bmadley-client.key"
 
 if [[ -z "${REQS_PER_SECOND}" ]]; then
-  REQS_PER_SECOND=5
+  REQS_PER_SECOND=6
 else
   REQS_PER_SECOND=$((REQS_PER_SECOND))
 fi
@@ -21,8 +21,10 @@ if [[ -z "${TEST_DURATION_SECONDS}" ]]; then
 else
   TEST_DURATION_SECONDS=$((TEST_DURATION_SECONDS))
 fi
-TOTAL_REQS=$((REQS_PER_SECOND * TEST_DURATION_SECONDS))
-DELAY=$((1000000 / REQS_PER_SECOND)) # In microseconds
+
+LOOPS_PER_SECOND=$((REQS_PER_SECOND/3))
+TOTAL_LOOPS=$((LOOPS_PER_SECOND * TEST_DURATION_SECONDS))
+DELAY=$((1000000 / LOOPS_PER_SECOND)) # In microseconds
 
 START_TIME=$(date +%s)
 reqs_performed=0
@@ -36,7 +38,7 @@ reqs_performed=0
 #  sleep $(bc <<< "scale=6; $DELAY / 1000000")
 #done
 
-for ((reqs=1; reqs <= TOTAL_REQS; reqs++)) do
+for ((reqs=1; reqs <= TOTAL_LOOPS; reqs++)) do
   curl -s --cert "$CERT" --key "$KEY" -X GET "$BASE_URL/test-1/LEI/G6980GG" -H "x-api-key: $API_KEY" &
   curl -s --cert "$CERT" --key "$KEY" -X GET "$BASE_URL/test-2?first_name=Tom" -H "x-api-key: $API_KEY" &
   curl -s --cert "$CERT" --key "$KEY" -X POST "$BASE_URL/test-3" -H "x-api-key: $API_KEY" -H "Content-Type: application/json" -d '{"type": "CANT", "description": "Canteen Purchase of £16.34", "amount": 1634, "clientTransactionId": "CL123212", "clientUniqueRef": "CLIENT121131-0_11"}' &
