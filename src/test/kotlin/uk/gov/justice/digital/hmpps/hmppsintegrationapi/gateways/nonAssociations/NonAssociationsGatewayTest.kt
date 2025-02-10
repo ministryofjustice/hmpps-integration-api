@@ -20,7 +20,6 @@ class NonAssociationsGatewayTest(
   private val nonAssociationsGateway: NonAssociationsGateway,
 ) : DescribeSpec({
     it("authenticates using HMPPS Auth with credentials") {
-
       nonAssociationsGateway.getNonAssociationsForPerson()
 
       verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("NON-ASSOCIATIONS")

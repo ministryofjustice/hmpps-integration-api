@@ -13,4 +13,5 @@ enum class UpstreamApi {
   RISK_MANAGEMENT_PLAN,
   TEST,
   PLP,
+  NON_ASSOCIATIONS,
 }
