@@ -79,7 +79,7 @@ class PutExpressionInterestServiceTest :
         val expectedMessage =
           HmppsMessage(
             messageId = "1",
-            eventType = HmppsMessageEventType.ExpressionOfInterestCreated.name,
+            eventType = HmppsMessageEventType.EXPRESSION_OF_INTEREST_CREATED,
             messageAttributes =
               mapOf(
                 "jobId" to "12345",
@@ -95,7 +95,7 @@ class PutExpressionInterestServiceTest :
         assert(deserializedMap.containsKey("messageAttributes"))
         assert(deserializedMap.containsKey("eventType"))
         assertEquals(
-          expected = "ExpressionOfInterestCreated",
+          expected = "EXPRESSION_OF_INTEREST_CREATED",
           actual = eventType,
         )
 
@@ -109,7 +109,7 @@ class PutExpressionInterestServiceTest :
         val expectedMessage =
           HmppsMessage(
             messageId = "1",
-            eventType = HmppsMessageEventType.ExpressionOfInterestCreated.name,
+            eventType = HmppsMessageEventType.EXPRESSION_OF_INTEREST_CREATED,
             messageAttributes =
               mapOf(
                 "jobId" to "12345",
@@ -122,7 +122,7 @@ class PutExpressionInterestServiceTest :
         val eventType = deserializedMap["eventType"]
 
         assertEquals(
-          expected = "ExpressionOfInterestCreated",
+          expected = "EXPRESSION_OF_INTEREST_CREATED",
           actual = eventType,
         )
 
@@ -137,35 +137,6 @@ class PutExpressionInterestServiceTest :
               objectMapper.readTree(request?.messageBody()) == objectMapper.readTree(expectedMessageBody)
           },
         )
-      }
-
-      it("allows messages of any type and anybody to be sent") {
-        val externalType = "externalType"
-
-        val expectedMessage =
-          HmppsMessage(
-            messageId = "1",
-            eventType = externalType,
-            messageAttributes =
-              mapOf(
-                "personId" to "12345",
-                "entityNumber" to "H1234",
-              ),
-          )
-
-        val serializedJson = objectMapper.writeValueAsString(expectedMessage)
-
-        val deserializedMap: Map<String, Any?> = objectMapper.readValue(serializedJson)
-        val eventType = deserializedMap["eventType"]
-
-        assertEquals(
-          expected = externalType,
-          actual = eventType,
-        )
-
-        val messageAttributes = deserializedMap["messageAttributes"] as? Map<String, String>
-        messageAttributes?.containsKey("personId")?.let { assert(it) }
-        messageAttributes?.containsKey("entityNumber")?.let { assert(it) }
       }
     }
   })
