@@ -17,7 +17,6 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonInPrison
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
@@ -71,19 +70,13 @@ internal class PrisonControllerTest(
           Response(
             data =
               PersonInPrison(
-                Person(
-                  firstName = "Barry",
-                  lastName = "Allen",
-                  middleName = "Jonas",
-                  dateOfBirth = LocalDate.parse("2023-03-01"),
-                  gender = "Male",
-                  ethnicity = "Caucasian",
-                  pncId = "PNC123456",
-                  currentExclusion = true,
-                  exclusionMessage = "An exclusion is present",
-                  currentRestriction = true,
-                  restrictionMessage = "A restriction is present",
-                ),
+                firstName = "Barry",
+                lastName = "Allen",
+                middleName = "Jonas",
+                dateOfBirth = LocalDate.parse("2023-03-01"),
+                gender = "Male",
+                ethnicity = "Caucasian",
+                pncId = "PNC123456",
                 category = "C",
                 csra = "HIGH",
                 receptionDate = "2023-05-01",
@@ -101,13 +94,6 @@ internal class PrisonControllerTest(
           """
             {
              "data":{
-                   "category": "C",
-                   "csra": "HIGH",
-                   "receptionDate": "2023-05-01",
-                   "status": "ACTIVE IN",
-                   "prisonId": "MDI",
-                   "prisonName": "HMP Leeds",
-                   "cellLocation": "A-1-002",
                    "firstName":"Barry",
                    "lastName":"Allen",
                    "middleName":"Jonas",
@@ -121,12 +107,13 @@ internal class PrisonControllerTest(
                       "deliusCrn":null
                    },
                    "pncId": "PNC123456",
-                   "hmppsId": null,
-                   "contactDetails": null,
-                   "currentRestriction": true,
-                   "restrictionMessage": "A restriction is present",
-                   "currentExclusion": true,
-                   "exclusionMessage": "An exclusion is present"
+                   "category": "C",
+                   "csra": "HIGH",
+                   "receptionDate": "2023-05-01",
+                   "status": "ACTIVE IN",
+                   "prisonId": "MDI",
+                   "prisonName": "HMP Leeds",
+                   "cellLocation": "A-1-002"
                 }
              }
           """.removeWhitespaceAndNewlines(),
@@ -138,15 +125,13 @@ internal class PrisonControllerTest(
           Response(
             data =
               PersonInPrison(
-                Person(
-                  firstName = "Barry",
-                  lastName = "Allen",
-                  middleName = "Jonas",
-                  dateOfBirth = LocalDate.parse("2023-03-01"),
-                  gender = "Male",
-                  ethnicity = "Caucasian",
-                  pncId = "PNC123456",
-                ),
+                firstName = "Barry",
+                lastName = "Allen",
+                middleName = "Jonas",
+                dateOfBirth = LocalDate.parse("2023-03-01"),
+                gender = "Male",
+                ethnicity = "Caucasian",
+                pncId = "PNC123456",
                 category = "C",
                 csra = "HIGH",
                 receptionDate = "2023-05-01",
@@ -255,20 +240,16 @@ internal class PrisonControllerTest(
             data =
               listOf(
                 PersonInPrison(
-                  Person(
-                    firstName = "Barry",
-                    lastName = "Allen",
-                    middleName = "Jonas",
-                    dateOfBirth = LocalDate.parse("2023-03-01"),
-                  ),
+                  firstName = "Barry",
+                  lastName = "Allen",
+                  middleName = "Jonas",
+                  dateOfBirth = LocalDate.parse("2023-03-01"),
                 ),
                 PersonInPrison(
-                  Person(
-                    firstName = "Barry",
-                    lastName = "Allen",
-                    middleName = "Rock",
-                    dateOfBirth = LocalDate.parse("2022-07-22"),
-                  ),
+                  firstName = "Barry",
+                  lastName = "Allen",
+                  middleName = "Rock",
+                  dateOfBirth = LocalDate.parse("2022-07-22"),
                 ),
               ),
           ),
