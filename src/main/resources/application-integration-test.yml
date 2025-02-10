@@ -90,7 +90,6 @@ authorisation:
         - "/v1/prison/.*/prisoners/.*/transactions/[^/]*$"
         - "/v1/prison/.*/prisoners/.*/transactions"
         - "/v1/prison/.*/prisoners/.*/transactions/transfer"
-        - "/v1/performance-test/.*"
       filters:
     config-test:
       include:

@@ -2,7 +2,7 @@
 # Per environment values which override defaults in hmpps-integration-api/values.yaml
 
 generic-service:
-  replicaCount: 4
+  replicaCount: 2
 
   image:
     repository: 754256621582.dkr.ecr.eu-west-2.amazonaws.com/hmpps-integration-api/hmpps-integration-api-dev-ecr
