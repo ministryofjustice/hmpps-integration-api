@@ -48,12 +48,12 @@ class ExpressionInterestController(
 
     if (hmppsIdCheck.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
       logger.info("ExpressionInterestController: Could not find nomis number for hmppsId: $hmppsId")
-      throw EntityNotFoundException("")
+      throw EntityNotFoundException("Could not find person with id: $hmppsId")
     }
 
     if (hmppsIdCheck.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
       logger.info("ExpressionInterestController: Invalid hmppsId: $hmppsId")
-      throw ValidationException("")
+      throw ValidationException("Invalid HMPPS ID: $hmppsId")
     }
 
     val verifiedNomisNumber = getVerifiedNomisNumber(hmppsIdCheck) ?: return ResponseEntity.badRequest().build()
