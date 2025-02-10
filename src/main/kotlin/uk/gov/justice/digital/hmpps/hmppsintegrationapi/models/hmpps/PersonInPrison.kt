@@ -1,7 +1,29 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps
 
-class PersonInPrison(
-  person: Person,
+import com.fasterxml.jackson.annotation.JsonAlias
+import io.swagger.v3.oas.annotations.media.Schema
+import java.time.LocalDate
+
+data class PersonInPrison(
+  @Schema(description = "First name", example = "John")
+  val firstName: String,
+  @JsonAlias("surname")
+  @Schema(description = "Last name", example = "Morgan")
+  val lastName: String,
+  @JsonAlias("middleNames")
+  @Schema(description = "Middle name", example = "John")
+  val middleName: String? = null,
+  @Schema(description = "Date of birth", example = "1965-12-01")
+  val dateOfBirth: LocalDate? = null,
+  @Schema(description = "Gender", example = "Male")
+  val gender: String? = null,
+  @Schema(description = "Ethnicity", example = "White: Eng./Welsh/Scot./N.Irish/British")
+  val ethnicity: String? = null,
+  @JsonAlias("offenderAliases")
+  val aliases: List<Alias> = listOf(),
+  val identifiers: Identifiers = Identifiers(),
+  @Schema(description = "An identifier from the Police National Computer (PNC)")
+  val pncId: String? = null,
   val category: String? = null,
   val csra: String? = null,
   val receptionDate: String? = null,
@@ -9,20 +31,4 @@ class PersonInPrison(
   val prisonId: String? = null,
   val prisonName: String? = null,
   val cellLocation: String? = null,
-) : Person(
-    firstName = person.firstName,
-    lastName = person.lastName,
-    middleName = person.middleName,
-    dateOfBirth = person.dateOfBirth,
-    gender = person.gender,
-    ethnicity = person.ethnicity,
-    aliases = person.aliases,
-    identifiers = person.identifiers,
-    pncId = person.pncId,
-    hmppsId = person.hmppsId,
-    contactDetails = person.contactDetails,
-    currentExclusion = person.currentExclusion,
-    exclusionMessage = person.exclusionMessage,
-    currentRestriction = person.currentRestriction,
-    restrictionMessage = person.restrictionMessage,
-  )
+)
