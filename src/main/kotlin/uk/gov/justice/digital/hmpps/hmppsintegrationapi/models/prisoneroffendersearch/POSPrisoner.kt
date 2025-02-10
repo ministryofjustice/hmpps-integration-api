@@ -46,7 +46,19 @@ data class POSPrisoner(
 
   fun toPersonInPrison(): PersonInPrison =
     PersonInPrison(
-      toPerson(),
+      firstName = this.firstName,
+      lastName = this.lastName,
+      middleName = this.middleNames,
+      dateOfBirth = this.dateOfBirth,
+      gender = this.gender,
+      ethnicity = this.ethnicity,
+      aliases = this.aliases.map { it.toAlias() },
+      identifiers =
+        Identifiers(
+          nomisNumber = this.prisonerNumber,
+          croNumber = this.croNumber,
+        ),
+      pncId = this.pncNumber,
       cellLocation = this.cellLocation,
       prisonId = this.prisonId,
       prisonName = this.prisonName,
