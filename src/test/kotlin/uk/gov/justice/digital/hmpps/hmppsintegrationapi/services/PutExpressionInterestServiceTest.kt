@@ -46,7 +46,7 @@ class PutExpressionInterestServiceTest :
     describe("sendExpressionOfInterest") {
       it("should send a valid message successfully to SQS") {
         val expressionOfInterest = ExpressionOfInterest(jobId = "12345", prisonNumber = "H1234")
-        val messageBody = """{"messageId":"1","eventType":"EXPRESSION_OF_INTEREST_CREATED","messageAttributes":{"jobId":"12345","prisonNumber":"H1234"}}"""
+        val messageBody = """{"messageId":"1","eventType":"ExpressionOfInterestCreated","messageAttributes":{"jobId":"12345","prisonNumber":"H1234"}}"""
 
         whenever(mockObjectMapper.writeValueAsString(any<HmppsMessage>()))
           .thenReturn(messageBody)
@@ -95,11 +95,11 @@ class PutExpressionInterestServiceTest :
         assert(deserializedMap.containsKey("messageAttributes"))
         assert(deserializedMap.containsKey("eventType"))
         assertEquals(
-          expected = "EXPRESSION_OF_INTEREST_CREATED",
+          expected = "ExpressionOfInterestCreated",
           actual = eventType,
         )
 
-        val messageAttributes = deserializedMap["messageAttributes"] as? Map<String, String>
+        val messageAttributes = deserializedMap["messageAttributes"] as? Map<*, *>
         messageAttributes?.containsKey("jobId")?.let { assert(it) }
         messageAttributes?.containsKey("prisonNumber")?.let { assert(it) }
       }
@@ -122,7 +122,7 @@ class PutExpressionInterestServiceTest :
         val eventType = deserializedMap["eventType"]
 
         assertEquals(
-          expected = "EXPRESSION_OF_INTEREST_CREATED",
+          expected = "ExpressionOfInterestCreated",
           actual = eventType,
         )
 
@@ -134,7 +134,7 @@ class PutExpressionInterestServiceTest :
         verify(mockSqsClient).sendMessage(
           argThat<SendMessageRequest> { request ->
             request?.queueUrl() == "https://test-queue-url" &&
-              objectMapper.readTree(request?.messageBody()) == objectMapper.readTree(expectedMessageBody)
+              objectMapper.readTree(request.messageBody()) == objectMapper.readTree(expectedMessageBody)
           },
         )
       }

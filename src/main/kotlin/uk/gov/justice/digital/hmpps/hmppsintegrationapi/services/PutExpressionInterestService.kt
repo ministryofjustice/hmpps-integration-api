@@ -22,12 +22,13 @@ class PutExpressionInterestService(
   private val eoiQueueUrl by lazy { eoiQueue.queueUrl }
 
   fun sendExpressionOfInterest(expressionOfInterest: ExpressionOfInterest) {
+    val eventType = HmppsMessageEventType.EXPRESSION_OF_INTEREST_CREATED
     try {
       val hmppsMessage =
         objectMapper.writeValueAsString(
           HmppsMessage(
             messageId = UUID.randomUUID().toString(),
-            eventType = HmppsMessageEventType.EXPRESSION_OF_INTEREST_CREATED,
+            eventType = eventType,
             messageAttributes =
               mapOf(
                 "jobId" to expressionOfInterest.jobId,
@@ -41,7 +42,7 @@ class PutExpressionInterestService(
           .builder()
           .queueUrl(eoiQueueUrl)
           .messageBody(hmppsMessage)
-          .eventTypeMessageAttributes("mjma-jobs-board.job.expression-of-interest.created")
+          .eventTypeMessageAttributes(eventType.type)
           .build(),
       )
     } catch (e: Exception) {
