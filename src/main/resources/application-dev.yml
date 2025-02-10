@@ -28,7 +28,6 @@ services:
     username: ${CLIENT_ID}
     password: ${CLIENT_SECRET}
 
-
 authorisation:
   consumers:
     mapps:
