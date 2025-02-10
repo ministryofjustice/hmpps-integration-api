@@ -66,14 +66,7 @@ internal class GetPrisonersServiceTest(
         )
 
         val result = getPrisonersService.execute("Qui-gon", "Jin", "1966-10-25", false, null)
-        result.data.size.shouldBe(people.size)
-        people
-          .map { it.toPersonInPrison() }
-          .forEachIndexed { i, prisoner: PersonInPrison ->
-            result.data[i].firstName.shouldBe(prisoner.firstName)
-            result.data[i].lastName.shouldBe(prisoner.lastName)
-            result.data[i].dateOfBirth.shouldBe(prisoner.dateOfBirth)
-          }
+        result.data.shouldBe(people.map { it.toPersonInPrison() })
       }
 
       it("returns an error when theres a filter prisons property but no values") {
