@@ -1,6 +1,8 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.nonAssociations
 
 import io.kotest.core.spec.style.DescribeSpec
+import io.kotest.matchers.collections.shouldBeEmpty
+import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory
 import org.mockito.kotlin.verify
@@ -91,8 +93,13 @@ class NonAssociationsGatewayTest(
           }
           """.trimIndent(),
       )
-    }
 
-    it("returns 400 when quering with an invalid hmppsId") {
+      var result = nonAssociationsGateway.getNonAssociationsForPerson(prisonerNumber)
+      result.errors.shouldBeEmpty()
+      result.data?.size.shouldBe(1)
+      result.data
+        .first()
+        .id
+        .shouldBe(prisonerNumber)
     }
   })

@@ -19,11 +19,15 @@ class NonAssociationsGateway(
   @Autowired
   lateinit var hmppsAuthGateway: HmppsAuthGateway
 
-  fun getNonAssociationsForPerson(prisonerNumber: String): Response<List<NonAssociation>> {
+  fun getNonAssociationsForPerson(
+    prisonerNumber: String,
+    includeOpen: String? = "true",
+    includeClosed: String? = "false",
+  ): Response<List<NonAssociation>> {
     val result =
       webClient.request<NonAssociations>(
         HttpMethod.GET,
-        "/prisoner/$prisonerNumber/non-associations",
+        "/prisoner/$prisonerNumber/non-associations?includeOpen=$includeOpen&includeClosed=$includeClosed",
         authenticationHeader(),
         UpstreamApi.NON_ASSOCIATIONS,
       )
