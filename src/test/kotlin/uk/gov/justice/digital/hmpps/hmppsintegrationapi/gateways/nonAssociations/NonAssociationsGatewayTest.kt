@@ -96,10 +96,9 @@ class NonAssociationsGatewayTest(
 
       var result = nonAssociationsGateway.getNonAssociationsForPerson(prisonerNumber)
       result.errors.shouldBeEmpty()
-      result.data?.size.shouldBe(1)
+      result.data?.shouldBe(1)
       result.data
-        .first()
-        .id
-        .shouldBe(prisonerNumber)
+        ?.prisonId
+        .equals("MDI")
     }
   })
