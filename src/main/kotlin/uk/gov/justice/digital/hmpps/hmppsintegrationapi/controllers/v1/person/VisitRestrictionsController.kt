@@ -1,3 +1,5 @@
+package uk.gov.justice.digital.hmpps.hmppsintegrationapi.controllers.v1.person
+
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.media.Content
@@ -20,13 +22,12 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetVisitRestric
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 
 @RestController
-@RequestMapping("/v1/persons")
+@RequestMapping("/v1/persons/{hmppsId}")
 @Tag(name = "persons")
 class VisitRestrictionsController(
   @Autowired val auditService: AuditService,
   @Autowired val getVisitRestrictionsForPersonService: GetVisitRestrictionsForPersonService,
 ) {
-  @GetMapping("{hmppsId}/visit-restrictions")
   @Operation(
     summary = "Gets restrictions for latest booking.",
     description = "Returns a list of restrictions for the latest booking",
@@ -37,6 +38,7 @@ class VisitRestrictionsController(
       ApiResponse(responseCode = "500", content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]),
     ],
   )
+  @GetMapping("/visit-restrictions")
   fun getRestrictionsForPerson(
     @Parameter(description = "A HMPPS identifier") @PathVariable hmppsId: String,
     @RequestAttribute filters: ConsumerFilters?,

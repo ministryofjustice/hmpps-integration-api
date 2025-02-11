@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.controllers.v1.person
 
-import VisitRestrictionsController
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
@@ -30,14 +29,14 @@ internal class VisitRestrictionsControllerTest(
   @MockitoBean val auditService: AuditService,
 ) : DescribeSpec(
     {
-      val hmppsId = "9999/11111A"
+      val hmppsId = "A1234AA"
       val path = "/v1/persons/$hmppsId/visit-restrictions"
       val mockMvc = IntegrationAPIMockMvc(springMockMvc)
 
       beforeTest {
         Mockito.reset(getVisitRestrictionsForPersonService)
         Mockito.reset(auditService)
-        whenever(getVisitRestrictionsForPersonService.execute(hmppsId)).thenReturn(
+        whenever(getVisitRestrictionsForPersonService.execute(hmppsId, filters = null)).thenReturn(
           Response(
             data =
               listOf(
@@ -54,7 +53,7 @@ internal class VisitRestrictionsControllerTest(
         result.response.contentAsString.shouldBe(
           """
           {
-            data: [
+            "data": [
               {
                 "restrictionId" : 1,
                 "comment" : "Restriction 1",
@@ -66,7 +65,7 @@ internal class VisitRestrictionsControllerTest(
               },
               {
                 "restrictionId" : 2,
-                "comment" : "Restriction 1",
+                "comment" : "Restriction 2",
                 "restrictionType": "TYPE",
                 "restrictionTypeDescription" : "Type description",
                 "startDate" : "2025-01-01",
