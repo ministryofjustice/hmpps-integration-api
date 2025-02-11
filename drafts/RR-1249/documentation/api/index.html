@@ -2178,8 +2178,12 @@
     "status": "SCHEDULED",
     "calculationRule": "NEW_PRISON_ADMISSION",
     "nomisNumber": "A1234BC",
-    "systemUpdatedBy": "John Smith",
+    "systemCreatedBy": "John Smith",
+    "systemCreatedAt": "2023-06-19T09:39:44Z",
+    "systemCreatedAtPrison": "BXI",
+    "systemUpdatedBy": "Fred Jones",
     "systemUpdatedAt": "2023-06-19T09:39:44Z",
+    "systemUpdatedAtPrison": "BXI",
     "inductionPerformedBy": "Fred Jones",
     "inductionPerformedAt": "2023-06-30",
     "inductionPerformedByRole": "Peer Mentor",
@@ -2294,8 +2298,12 @@
         "status": "SCHEDULED",
         "calculationRule": "NEW_PRISON_ADMISSION",
         "nomisNumber": "A1234BC",
-        "systemUpdatedBy": "John Smith",
+        "systemCreatedBy": "John Smith",
+        "systemCreatedAt": "2023-06-19T09:39:44Z",
+        "systemCreatedAtPrison": "BXI",
+        "systemUpdatedBy": "Fred Jones",
         "systemUpdatedAt": "2023-06-19T09:39:44Z",
+        "systemUpdatedAtPrison": "BXI",
         "inductionPerformedBy": "Fred Jones",
         "inductionPerformedAt": "2023-06-30",
         "inductionPerformedByRole": "Peer Mentor",
@@ -8198,11 +8206,45 @@
 </tr>
 
 <tr>
+<td>systemCreatedBy</td>
+<td>string</td>
+<td>false</td>
+<td><p>The name of the person who used the PLP system to create the Induction Schedule, or &lsquo;system&rsquo; for system generated updates.</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>systemCreatedAt</td>
+<td>string</td>
+<td>false</td>
+<td><p>An ISO-8601 timestamp representing the time the PLP system was used to create the Induction Schedule.</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>systemCreatedAtPrison</td>
+<td>string</td>
+<td>false</td>
+<td><p>The code of the prison where the induction was Created</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
 <td>systemUpdatedBy</td>
 <td>string</td>
 <td>false</td>
-<td><p>The name of the person who used the PLP system to update the Induction Schedule, or &lsquo;system&rsquo; for system generated updates.</p>
-</td>
+<td><div class="highlight"><pre class="highlight plaintext" tabindex="0"><code>  The name of the person who performed the Induction with the prisoner.
+  In the case of system generated updates or setting an exemption this field will not be present.
+</code></pre></div></td>
 <td>
   
 </td>
@@ -8213,6 +8255,17 @@
 <td>string</td>
 <td>false</td>
 <td><p>An ISO-8601 timestamp representing the time the PLP system was used to update the Induction Schedule.</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>systemUpdatedAtPrison</td>
+<td>string</td>
+<td>false</td>
+<td><p>The code of the prison where the induction was updated</p>
 </td>
 <td>
   
