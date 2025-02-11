@@ -271,7 +271,6 @@ Note, this will only specifically enable the `RequestLogger`.
 | Name                                                                                                   | Purpose                                   |
 | ------------------------------------------------------------------------------------------------------ | ----------------------------------------- |
 | [HMPPS Integration API Documentation](https://github.com/ministryofjustice/hmpps-integration-api-docs) | Provides documentation for API consumers. |
-
 ## License
 
 [MIT License](LICENSE)
