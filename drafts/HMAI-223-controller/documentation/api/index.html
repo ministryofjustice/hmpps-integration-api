@@ -178,6 +178,9 @@
         <a href="../../documentation/api/index.html#v1-persons"><span>/v1/persons</span></a>
       </li>
       <li>
+        <a href="../../documentation/api/index.html#v1-persons-hmppsid-visit-restrictions"><span>/v1/persons/{hmppsId}/visit-restrictions</span></a>
+      </li>
+      <li>
         <a href="../../documentation/api/index.html#v1-persons-hmppsid-plp-review-schedule"><span>/v1/persons/{hmppsId}/plp-review-schedule</span></a>
       </li>
       <li>
@@ -1960,6 +1963,139 @@
 </td>
 <td>
 <a href='#schema-badrequest'>BadRequest</a>
+</td>
+</tr>
+
+<tr>
+<td>500</td>
+<td>
+<p>Internal Server Error</p>
+
+
+
+<pre><code>{
+  "status": 500,
+  "userMessage": "Internal Server Error",
+  "developerMessage": "Unable to complete request as an upstream service is not responding."
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-internalservererror'>InternalServerError</a>
+</td>
+</tr>
+
+</tbody>
+</table>
+
+
+
+
+<h2 id="v1-persons-hmppsid-visit-restrictions">/v1/persons/{hmppsId}/visit-restrictions</h2>
+
+<h3 id="v1-persons-hmppsid-visit-restrictions-get">get</h3>
+
+  <p><em>Gets restrictions for latest booking.</em></p>
+
+
+  <p>Returns a list of restrictions for the latest booking</p>
+
+
+
+
+<h4 id="v1-persons-hmppsid-visit-restrictions-get-parameters">Parameters</h4>
+<table>
+<thead>
+<tr><th>Parameter</th><th>In</th><th>Type</th><th>Required</th><th>Description</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>hmppsId</td>
+<td>path</td>
+<td>string</td>
+<td>true</td>
+<td><p>A HMPPS identifier</p>
+
+
+</td>
+</tr>
+
+</tbody>
+</table>
+
+
+
+
+<h4 id="v1-persons-hmppsid-visit-restrictions-get-responses">Responses</h4>
+<table>
+<thead>
+<tr><th>Status</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>200</td>
+<td>
+<p>Successfully found a person&rsquo;s visit restrictions with the provided HMPPS ID.</p>
+
+
+
+<pre><code>{
+  "data": [
+    {
+      "restrictionId": "integer",
+      "comment": "string",
+      "restrictionType": "string",
+      "restrictionTypeDescription": "string",
+      "startDate": "string",
+      "expiryDate": "string",
+      "active": "boolean"
+    }
+  ]
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-dataresponselistpersonvisitrestriction'>DataResponseListPersonVisitRestriction</a>
+</td>
+</tr>
+
+<tr>
+<td>400</td>
+<td>
+<p>Bad Request</p>
+
+
+
+<pre><code>{
+  "status": 400,
+  "userMessage": "Validation failure: No query parameters specified.",
+  "developerMessage": "No query parameters specified."
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-badrequest'>BadRequest</a>
+</td>
+</tr>
+
+<tr>
+<td>404</td>
+<td>
+<p>Not Found</p>
+
+
+
+<pre><code>{
+  "status": 404,
+  "userMessage": "404 Not found error: Could not find person with HMPPS id: 2003/0011991D.",
+  "developerMessage": "Could not find person with HMPPS id: 2003/0011991D."
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-personnotfound'>PersonNotFound</a>
 </td>
 </tr>
 
@@ -7781,6 +7917,110 @@
 <td>false</td>
 <td><p>The type of number</p>
 </td>
+<td>
+  
+</td>
+</tr>
+
+</tbody>
+</table>
+
+<h3 id="schema-dataresponselistpersonvisitrestriction">DataResponseListPersonVisitRestriction</h3>
+
+
+<table class='schema-dataresponselistpersonvisitrestriction'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>data</td>
+<td>array</td>
+<td>true</td>
+<td></td>
+<td>
+  <a href='#schema-personvisitrestriction'>PersonVisitRestriction</a>
+</td>
+</tr>
+
+</tbody>
+</table>
+
+<h3 id="schema-personvisitrestriction">PersonVisitRestriction</h3>
+
+
+<table class='schema-personvisitrestriction'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>restrictionId</td>
+<td>integer</td>
+<td>true</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>comment</td>
+<td>string</td>
+<td>true</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>restrictionType</td>
+<td>string</td>
+<td>true</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>restrictionTypeDescription</td>
+<td>string</td>
+<td>true</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>startDate</td>
+<td>string</td>
+<td>true</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>expiryDate</td>
+<td>string</td>
+<td>true</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>active</td>
+<td>boolean</td>
+<td>true</td>
+<td></td>
 <td>
   
 </td>
