@@ -92,7 +92,7 @@ data class InductionSchedule(
   val systemCreatedAt: Instant? = null,
   @Schema(
     description =
-    "The code of the prison where the induction was Created",
+      "The code of the prison where the induction was Created",
     example = "BXI",
   )
   val systemCreatedAtPrison: String? = null,
@@ -111,7 +111,7 @@ data class InductionSchedule(
   val systemUpdatedAt: Instant? = null,
   @Schema(
     description =
-    "The code of the prison where the induction was updated",
+      "The code of the prison where the induction was updated",
     example = "BXI",
   )
   val systemUpdatedAtPrison: String? = null,
@@ -182,7 +182,6 @@ class InductionScheduleDeserializer : JsonDeserializer<InductionSchedule>() {
     val inductionPerformedAtPrison = node["inductionPerformedAtPrison"]?.takeUnless { it.isNull }?.asText()
     val version = node["version"]?.asInt()
     val exemptionReason = node["exemptionReason"]?.takeUnless { it.isNull }?.asText()
-
 
     return InductionSchedule(
       deadlineDate = deadlineDate,
