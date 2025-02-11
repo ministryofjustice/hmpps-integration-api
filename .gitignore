@@ -87,6 +87,7 @@ __pycache__/
 *.csr
 *.pem
 *.enc
+*.p12
 
 # Localstack
 localstack/cache
