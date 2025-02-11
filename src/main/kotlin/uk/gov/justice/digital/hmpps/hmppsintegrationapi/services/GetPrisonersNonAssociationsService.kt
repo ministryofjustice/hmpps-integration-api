@@ -16,29 +16,28 @@ class GetPrisonersNonAssociationsService(
   @Autowired val consumerPrisonAccessService: ConsumerPrisonAccessService,
 ) {
   fun execute(
-    prisonerNumber: String,
+    hmppsId: String,
+    prisonId: String,
     includeOpen: String? = "true",
     includeClosed: String? = "false",
     filters: ConsumerFilters?,
   ): Response<NonAssociations?> {
-    val responseFromNonAssociationsGateway = nonAssociationsGateway.getNonAssociationsForPerson(prisonerNumber, includeOpen, includeClosed)
-
-    if (responseFromNonAssociationsGateway.errors.isNotEmpty()) {
-      return Response(data = null, responseFromNonAssociationsGateway.errors)
-    }
-    // revise to use path parameter instead
-    val prisonId = responseFromNonAssociationsGateway.data?.prisonId
-
-    if (prisonId == null) {
-      return Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.NON_ASSOCIATIONS, UpstreamApiError.Type.ENTITY_NOT_FOUND, "No prison associated with prisoner")))
-    }
-
-    val unpackedResponse = NonAssociations(responseFromNonAssociationsGateway.data.nonAssociations?.nonAssociations ?: emptyList())
     val consumerPrisonFilterCheck = consumerPrisonAccessService.checkConsumerHasPrisonAccess<NonAssociations?>(prisonId, filters, upstreamServiceType = UpstreamApi.NON_ASSOCIATIONS)
 
     if (consumerPrisonFilterCheck.errors.isNotEmpty()) {
       return consumerPrisonFilterCheck
     }
+
+    val responseFromNonAssociationsGateway = nonAssociationsGateway.getNonAssociationsForPerson(hmppsId, includeOpen, includeClosed)
+
+    if (responseFromNonAssociationsGateway.errors.isNotEmpty()) {
+      return Response(data = null, responseFromNonAssociationsGateway.errors)
+    }
+    if (responseFromNonAssociationsGateway.data?.nonAssociations == null) {
+      return Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.NON_ASSOCIATIONS, UpstreamApiError.Type.ENTITY_NOT_FOUND, "No non associates found with prisoner")))
+    }
+
+    val unpackedResponse = NonAssociations(responseFromNonAssociationsGateway.data.nonAssociations?.nonAssociations ?: emptyList())
 
     if (unpackedResponse.nonAssociations.isEmpty()) {
       return Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.NON_ASSOCIATIONS, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found")))

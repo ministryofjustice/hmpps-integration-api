@@ -11,6 +11,7 @@ ADD https://dev.moic.service.justice.gov.uk/v3/api-docs.json /prismMocks/manage-
 ADD https://ministryofjustice.github.io/hmpps-probation-integration-services/tech-docs/projects/external-api-and-delius/api-docs.json /prismMocks/ndelius.json
 ADD https://ministryofjustice.github.io/hmpps-probation-integration-services/tech-docs/projects/effective-proposal-framework-and-delius/api-docs.json /prismMocks/probation-integration-epf.json
 ADD https://prisoner-search-dev.prison.service.justice.gov.uk/v3/api-docs /tmp/prisoner-offender-search-tmp.json
+ADD https://non-associations-api-dev.hmpps.service.justice.gov.uk/v3/api-docs /prismMocks/non-associations.json
 
 RUN jq 'del(.components.schemas.Query.properties.subQueries)' /tmp/prisoner-offender-search-tmp.json > /tmp/prisoner-offender-search-tmp1.json
 RUN swagger-cli bundle -r -o /prismMocks/prisoner-offender-search.json /tmp/prisoner-offender-search-tmp1.json
@@ -20,6 +21,7 @@ RUN sed -i 's/\*\/\*/application\/json/g' /prismMocks/adjudications.json
 RUN sed -i 's/\*\/\*/application\/json/g' /prismMocks/assess-risks-and-needs.json
 RUN sed -i 's/\*\/\*/application\/json/g' /prismMocks/case-notes.json
 RUN sed -i 's/\*\/\*/application\/json/g' /prismMocks/prisoner-offender-search.json
+RUN sed -i 's/\*\/\*/application\/json/g' /prismMocks/non-associations.json
 
 # new files from this point on need to start with an x- followed by the port number:
 ADD https://learningandworkprogress-api-dev.hmpps.service.justice.gov.uk/v3/api-docs /prismMocks/x4020-plp-api.json

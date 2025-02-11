@@ -50,11 +50,12 @@ class OffenderRestrictionsController(
     @Parameter(description = "") @RequestParam(required = false, name = "includeClosed", defaultValue = "false") includeClosed: Boolean?,
     @RequestAttribute filters: ConsumerFilters?,
   ): DataResponse<NonAssociations?> {
+    // ROLE: READ_NON_ASSOCIATIONS
     if (includeOpen == null && includeClosed == null || includeOpen == false && includeClosed == false) {
       throw ValidationException("includeOpen or includeClosed must be provided.")
     }
 
-    val response = getPrisonersNonAssociationsService.execute(hmppsId, includeOpen.toString(), includeClosed.toString(), filters)
+    val response = getPrisonersNonAssociationsService.execute(hmppsId, prisonId, includeOpen.toString(), includeClosed.toString(), filters)
 
     if (response.hasErrorCausedBy(ENTITY_NOT_FOUND, causedBy = UpstreamApi.NON_ASSOCIATIONS)) {
       throw EntityNotFoundException("Could not find prisoner with hmppsId: $hmppsId")

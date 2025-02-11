@@ -92,6 +92,7 @@ authorisation:
         - "/v1/prison/.*/prisoners/.*/transactions/[^/]*$"
         - "/v1/prison/.*/prisoners/.*/transactions"
         - "/v1/prison/.*/prisoners/.*/transactions/transfer"
+        - "/v1/prison/.*/prisoners/.*/non-associations"
       filters:
     config-test:
       include:
@@ -108,6 +109,7 @@ authorisation:
         - "/v1/prison/.*/prisoners/.*/transactions/[^/]*$"
         - "/v1/prison/.*/prisoners/.*/transactions/transfer"
         - "/v1/persons/.*/sentences/latest-key-dates-and-adjustments"
+        - "/v1/prison/.*/prisoners/.*/non-associations"
       filters:
         prisons:
           - ABC
