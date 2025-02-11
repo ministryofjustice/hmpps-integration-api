@@ -10,6 +10,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Address
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Alert
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ImageMetadata
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Offence
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonVisitRestriction
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ReasonableAdjustment
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.RiskCategory
@@ -29,6 +30,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisImageD
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisInmateDetail
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisOffenceHistoryDetail
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisOffenderSentence
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisOffenderVisitRestrictions
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisReasonableAdjustments
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisReferenceCode
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisSentence
@@ -442,6 +444,29 @@ class NomisGateway(
       }
       is WebClientWrapperResponse.Error,
       -> {
+        Response(
+          data = null,
+          errors = result.errors,
+        )
+      }
+    }
+  }
+
+  fun getOffenderVisitRestrictions(offenderNumber: String): Response<List<PersonVisitRestriction>?> {
+    val result =
+      webClient.request<NomisOffenderVisitRestrictions>(
+        HttpMethod.GET,
+        "/api/offenders/$offenderNumber/offender-restrictions",
+        authenticationHeader(),
+        UpstreamApi.NOMIS,
+        badRequestAsError = true,
+      )
+    return when (result) {
+      is WebClientWrapperResponse.Success -> {
+        Response(data = result.data.offenderRestrictions.map { it.toPersonVisitRestriction() })
+      }
+
+      is WebClientWrapperResponse.Error -> {
         Response(
           data = null,
           errors = result.errors,
