@@ -7,9 +7,9 @@ data class PersonVisitRestriction(
   val restrictionId: Long,
   @Schema(description = "Restriction comment text")
   val comment: String,
-  @Schema(description = "Code of restriction type")
+  @Schema(description = "Code of restriction type", examples = ["ACC", "BAN", "CCTV", "CHILD"])
   val restrictionType: String,
-  @Schema(description = "Description of restriction type")
+  @Schema(description = "Description of restriction type", examples = ["Access Requirements", "Banned", "CCTV", "Child Visitors to be Vetted"])
   val restrictionTypeDescription: String,
   @Schema(description = "Date from which the restrictions applies", example = "1980-01-01")
   val startDate: String,
