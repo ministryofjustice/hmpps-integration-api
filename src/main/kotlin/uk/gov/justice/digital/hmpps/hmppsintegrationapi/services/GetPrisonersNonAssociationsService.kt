@@ -26,11 +26,11 @@ class GetPrisonersNonAssociationsService(
     if (responseFromNonAssociationsGateway.errors.isNotEmpty()) {
       return Response(data = null, responseFromNonAssociationsGateway.errors)
     }
-
+    // revise to use path parameter instead
     val prisonId = responseFromNonAssociationsGateway.data?.prisonId
 
     if (prisonId == null) {
-      return Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.NON_ASSOCIATIONS, UpstreamApiError.Type.BAD_REQUEST, "No prison associated with prisoner")))
+      return Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.NON_ASSOCIATIONS, UpstreamApiError.Type.ENTITY_NOT_FOUND, "No prison associated with prisoner")))
     }
 
     val unpackedResponse = NonAssociations(responseFromNonAssociationsGateway.data.nonAssociations?.nonAssociations ?: emptyList())

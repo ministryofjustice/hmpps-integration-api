@@ -12,6 +12,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.ConsumerPrisonAcc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NonAssociationsGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nonAssociation.NonAssociation
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nonAssociation.NonAssociationPrisonerDetails
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nonAssociation.NonAssociations
@@ -87,9 +88,41 @@ internal class GetPrisonersNonAssociationsServiceTest(
       }
 
       it("return a 404 when prisoner not in prison ") {
+        val wrongPrisonId = "XYZ"
+        val errors =
+          listOf(
+            UpstreamApiError(
+              type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+              causedBy = UpstreamApi.NON_ASSOCIATIONS,
+              description = "No prison associated with prisoner",
+            ),
+          )
+
+        whenever(nonAssociationsGateway.getNonAssociationsForPerson(prisonerNumber = "ABC1234")).thenReturn(Response(data = null))
+        whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<NonAssociations?>(wrongPrisonId, ConsumerFilters(listOf("MDI")), upstreamServiceType = UpstreamApi.NON_ASSOCIATIONS)).thenReturn(
+          Response(data = null, errors = errors),
+        )
+
+        val response = getPrisonersNonAssociationsService.execute("ABC1234", filters = ConsumerFilters(listOf("MDI")))
+        response.errors.shouldBe(errors)
+        response.data.shouldBe(null)
       }
 
       it("return a 404 when prisoner not found") {
+        val errors =
+          listOf(
+            UpstreamApiError(
+              type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+              causedBy = UpstreamApi.NON_ASSOCIATIONS,
+              description = "Not found",
+            ),
+          )
+
+        whenever(nonAssociationsGateway.getNonAssociationsForPerson(prisonerNumber = "ABC1234")).thenReturn(Response(data = null, errors = errors))
+
+        val response = getPrisonersNonAssociationsService.execute("ABC1234", filters = ConsumerFilters(null))
+        response.errors.shouldBe(errors)
+        response.data.shouldBe(null)
       }
     },
   )
