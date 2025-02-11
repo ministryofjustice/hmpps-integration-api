@@ -5,6 +5,7 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
+import jakarta.validation.ValidationException
 import org.mockito.kotlin.any
 import org.mockito.kotlin.argThat
 import org.mockito.kotlin.doReturn
@@ -14,17 +15,22 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import software.amazon.awssdk.services.sqs.SqsAsyncClient
 import software.amazon.awssdk.services.sqs.model.SendMessageRequest
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.MessageFailedException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.MockMvcExtensions.objectMapper
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ExpressionOfInterest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HmppsMessage
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HmppsMessageEventType
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NomisNumber
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.hmpps.sqs.HmppsQueue
 import uk.gov.justice.hmpps.sqs.HmppsQueueService
 import kotlin.test.assertEquals
 
 class PutExpressionInterestServiceTest :
   DescribeSpec({
+    val mockGetPersonService = mock<GetPersonService>()
     val mockQueueService = mock<HmppsQueueService>()
     val mockObjectMapper = mock<ObjectMapper>()
     val mockSqsClient = mock<SqsAsyncClient>()
@@ -36,7 +42,7 @@ class PutExpressionInterestServiceTest :
       }
 
     val queId = "jobsboardintegration"
-    val service = PutExpressionInterestService(mockQueueService, mockObjectMapper)
+    val service = PutExpressionInterestService(mockGetPersonService, mockQueueService, mockObjectMapper)
 
     beforeTest {
       reset(mockQueueService, mockSqsClient, mockObjectMapper)
@@ -44,14 +50,19 @@ class PutExpressionInterestServiceTest :
     }
 
     describe("sendExpressionOfInterest") {
+      beforeTest {
+        "H1234".let { whenever(mockGetPersonService.getNomisNumber(it)).thenReturn(Response(NomisNumber(it))) }
+      }
+
       it("should send a valid message successfully to SQS") {
-        val expressionOfInterest = ExpressionOfInterest(jobId = "12345", prisonNumber = "H1234")
+        val jobId = "12345"
+        val hmppsId = "H1234"
         val messageBody = """{"messageId":"1","eventType":"ExpressionOfInterestCreated","messageAttributes":{"jobId":"12345","prisonNumber":"H1234"}}"""
 
         whenever(mockObjectMapper.writeValueAsString(any<HmppsMessage>()))
           .thenReturn(messageBody)
 
-        service.sendExpressionOfInterest(expressionOfInterest)
+        service.sendExpressionOfInterest(hmppsId, jobId)
 
         verify(mockSqsClient).sendMessage(
           argThat<SendMessageRequest> { request: SendMessageRequest? ->
@@ -62,14 +73,15 @@ class PutExpressionInterestServiceTest :
       }
 
       it("should throw MessageFailedException when SQS fails") {
-        val expressionInterest = ExpressionOfInterest(jobId = "12345", prisonNumber = "H1234")
+        val jobId = "12345"
+        val hmppsId = "H1234"
 
         whenever(mockSqsClient.sendMessage(any<SendMessageRequest>()))
           .thenThrow(RuntimeException("Failed to send message to SQS"))
 
         val exception =
           shouldThrow<MessageFailedException> {
-            service.sendExpressionOfInterest(expressionInterest)
+            service.sendExpressionOfInterest(hmppsId, jobId)
           }
 
         exception.message shouldBe "Failed to send message to SQS"
@@ -105,7 +117,8 @@ class PutExpressionInterestServiceTest :
       }
 
       it("should serialize ExpressionOfInterestMessage with ExpressionOfInterestCreated type") {
-        val expressionOfInterest = ExpressionOfInterest(jobId = "12345", prisonNumber = "H1234")
+        val jobId = "12345"
+        val hmppsId = "H1234"
         val expectedMessage =
           HmppsMessage(
             messageId = "1",
@@ -129,7 +142,7 @@ class PutExpressionInterestServiceTest :
         whenever(mockObjectMapper.writeValueAsString(any<HmppsMessage>()))
           .thenReturn(expectedMessageBody)
 
-        service.sendExpressionOfInterest(expressionOfInterest)
+        service.sendExpressionOfInterest(hmppsId, jobId)
 
         verify(mockSqsClient).sendMessage(
           argThat<SendMessageRequest> { request ->
@@ -139,4 +152,38 @@ class PutExpressionInterestServiceTest :
         )
       }
     }
+
+    describe("sendExpressionOfInterest, with errors at HMPPS ID translation") {
+      val validHmppsId = "AABCD1ABC"
+      val invalidHmppsId = "INVALID_ID"
+      val jobId = "5678"
+
+      it("should throw EntityNotFoundException. if ENTITY_NOT_FOUND error occurs") {
+        val hmppsId = validHmppsId
+        val notFoundResponse = errorResponseNomisNumber(UpstreamApiError.Type.ENTITY_NOT_FOUND, "Entity not found")
+        whenever(mockGetPersonService.getNomisNumber(hmppsId)).thenReturn(notFoundResponse)
+
+        val exception = shouldThrow<EntityNotFoundException> { service.sendExpressionOfInterest(hmppsId, jobId) }
+
+        assertEquals("Could not find person with id: $hmppsId", exception.message)
+      }
+
+      it("should throw ValidationException if an invalid hmppsId is provided") {
+        val hmppsId = invalidHmppsId
+        val invalidIdBadRequestResponse = errorResponseNomisNumber(UpstreamApiError.Type.BAD_REQUEST, "Invalid HMPPS ID")
+        whenever(mockGetPersonService.getNomisNumber(hmppsId)).thenReturn(invalidIdBadRequestResponse)
+
+        val exception = shouldThrow<ValidationException> { service.sendExpressionOfInterest(hmppsId, jobId) }
+
+        assertEquals("Invalid HMPPS ID: $hmppsId", exception.message)
+      }
+    }
   })
+
+private fun errorResponseNomisNumber(
+  errorType: UpstreamApiError.Type,
+  errorDescription: String,
+) = Response<NomisNumber?>(
+  data = null,
+  errors = listOf(UpstreamApiError(type = errorType, description = errorDescription, causedBy = UpstreamApi.PRISONER_OFFENDER_SEARCH)),
+)
