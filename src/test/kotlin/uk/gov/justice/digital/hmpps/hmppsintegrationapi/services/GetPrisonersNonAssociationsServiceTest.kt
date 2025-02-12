@@ -16,7 +16,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nonAssociation.NonAssociation
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nonAssociation.NonAssociationPrisonerDetails
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nonAssociation.NonAssociations
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nonAssociation.NonAssociationsResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 @ContextConfiguration(
@@ -66,7 +65,6 @@ internal class GetPrisonersNonAssociationsServiceTest(
               ),
             ),
         )
-      val nonAssociationsResponse = NonAssociationsResponse(nonAssociations = nonAssociations, prisonId = "MDI")
 
       beforeEach {
         Mockito.reset(nonAssociationsGateway)
@@ -81,7 +79,7 @@ internal class GetPrisonersNonAssociationsServiceTest(
       }
 
       it("returns a valid response when provided a valid prisoner number") {
-        whenever(nonAssociationsGateway.getNonAssociationsForPerson(prisonerNumber = "ABC1234")).thenReturn(Response(data = nonAssociationsResponse))
+        whenever(nonAssociationsGateway.getNonAssociationsForPerson(prisonerNumber = "ABC1234")).thenReturn(Response(data = nonAssociations))
 
         val response = getPrisonersNonAssociationsService.execute("ABC1234", prisonId, filters = ConsumerFilters(null))
         response.errors.shouldBeEmpty()
@@ -104,7 +102,7 @@ internal class GetPrisonersNonAssociationsServiceTest(
           Response(data = null, errors = errors),
         )
 
-        val response = getPrisonersNonAssociationsService.execute("ABC1234", prisonId, filters = ConsumerFilters(listOf("MDI")))
+        val response = getPrisonersNonAssociationsService.execute("ABC1234", wrongPrisonId, filters = ConsumerFilters(listOf("MDI")))
         response.errors.shouldBe(errors)
         response.data.shouldBe(null)
       }

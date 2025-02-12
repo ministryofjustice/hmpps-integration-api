@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nonAssociation.NonAssociationsResponse
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nonAssociation.NonAssociations
 
 @Component
 class NonAssociationsGateway(
@@ -22,9 +22,9 @@ class NonAssociationsGateway(
     prisonerNumber: String,
     includeOpen: String? = "true",
     includeClosed: String? = "false",
-  ): Response<NonAssociationsResponse?> {
+  ): Response<NonAssociations?> {
     val result =
-      webClient.request<NonAssociationsResponse>(
+      webClient.request<NonAssociations>(
         HttpMethod.GET,
         "/prisoner/$prisonerNumber/non-associations?includeOpen=$includeOpen&includeClosed=$includeClosed",
         authenticationHeader(),

@@ -96,9 +96,10 @@ class NonAssociationsGatewayTest(
 
       var result = nonAssociationsGateway.getNonAssociationsForPerson(prisonerNumber)
       result.errors.shouldBeEmpty()
-      result.data?.shouldBe(1)
-      result.data
-        ?.prisonId
-        .equals("MDI")
+      val firstDataSet = result.data!!.nonAssociations.first()
+      firstDataSet.otherPrisonerDetails.prisonId
+        .shouldBe("MDI")
+      firstDataSet.reason
+        .shouldBe("BULLYING")
     }
   })
