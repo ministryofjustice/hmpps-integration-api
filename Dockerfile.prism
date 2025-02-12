@@ -18,7 +18,6 @@ RUN swagger-cli bundle -r -o /prismMocks/adjudications.json /tmp/adjudications.j
 
 # new files from this point on need to start with an x- followed by the port number:
 ADD https://learningandworkprogress-api-dev.hmpps.service.justice.gov.uk/v3/api-docs /prismMocks/x4020-plp-api.json
-ADD https://personal-relationships-api-dev.hmpps.service.justice.gov.uk/v3/api-docs /prismMocks/x4022-personal-relationships.json
 RUN sed -i 's/\*\/\*/application\/json/g' /prismMocks/x4021-non-associations.json
 RUN sed -i 's/\*\/\*/application\/json/g' /prismMocks/adjudications.json
 RUN sed -i 's/\*\/\*/application\/json/g' /prismMocks/assess-risks-and-needs.json
