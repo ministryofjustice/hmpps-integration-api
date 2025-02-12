@@ -29427,19 +29427,23 @@
           "restrictionId": {
             "type": "integer",
             "description": "restriction id",
-            "format": "int64"
+            "format": "int64",
+            "example": 1234
           },
           "comment": {
             "type": "string",
-            "description": "Restriction comment text"
+            "description": "Restriction comment text",
+            "example": "Restriction comment text"
           },
           "restrictionType": {
             "type": "string",
-            "description": "code of restriction type"
+            "description": "code of restriction type",
+            "example": "ACC"
           },
           "restrictionTypeDescription": {
             "type": "string",
-            "description": "description of restriction type"
+            "description": "description of restriction type",
+            "example": "Access Requirements"
           },
           "startDate": {
             "type": "string",

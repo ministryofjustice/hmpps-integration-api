@@ -1,0 +1,13 @@
+{
+  "data": [
+      {
+        "restrictionId": 1234,
+        "comment": "Restriction comment text",
+        "restrictionType": "ACC",
+        "restrictionTypeDescription": "Access Requirements",
+        "startDate": "1980-01-01",
+        "expiryDate": "1980-01-01",
+        "active": true
+      }
+  ]
+}
