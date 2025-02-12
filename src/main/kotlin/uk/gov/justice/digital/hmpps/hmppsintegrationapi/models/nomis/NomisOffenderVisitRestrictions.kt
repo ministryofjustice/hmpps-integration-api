@@ -13,7 +13,7 @@ data class OffenderRestriction(
   val restrictionType: String,
   val restrictionTypeDescription: String,
   val startDate: String,
-  val expiryDate: String,
+  val expiryDate: String? = null,
   val active: Boolean,
 ) {
   fun toPersonVisitRestriction() =
