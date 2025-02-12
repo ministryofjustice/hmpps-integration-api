@@ -1,8 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.prison
 
 import org.junit.jupiter.api.Test
-import org.springframework.http.HttpHeaders
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationTestBase
@@ -23,12 +21,14 @@ class PrisonIntegrationTest : IntegrationTestBase() {
 
   @Test
   fun `return a 404 for prisoner in wrong prison`() {
-    val headers = HttpHeaders()
-    headers.set("subject-distinguished-name", "C=GB,ST=London,L=London,O=Home Office,CN=limited-prisons")
-    mockMvc
-      .perform(
-        get("$basePrisonPath/prisoners/$hmppsId").headers(headers),
-      ).andExpect(status().isNotFound)
+    callApiWithCN("$basePrisonPath/prisoners/$hmppsId", limitedPrisonsCn)
+      .andExpect(status().isNotFound)
+  }
+
+  @Test
+  fun `return a 404 no prisons in filter`() {
+    callApiWithCN("$basePrisonPath/prisoners/$hmppsId", noPrisonsCn)
+      .andExpect(status().isNotFound)
   }
 
   @Test
