@@ -13,6 +13,7 @@ services:
   probation-offender-search.base-url: http://prism:4019
   plp.base-url: http://prism:4020
   non-associations.base-url: http://prism:4021
+  personal-relationships.base-url: http://localhost:4022
 
 authorisation:
   consumers:
