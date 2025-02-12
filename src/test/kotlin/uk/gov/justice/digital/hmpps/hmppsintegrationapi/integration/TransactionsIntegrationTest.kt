@@ -1,8 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration
 
 import org.junit.jupiter.api.Test
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
@@ -65,12 +63,8 @@ class TransactionsIntegrationTest : IntegrationTestBase() {
       }
       """.trimIndent()
 
-    val headers = org.springframework.http.HttpHeaders()
-    headers.set("subject-distinguished-name", "C=GB,ST=London,L=London,O=Home Office,CN=automated-test-client")
-    mockMvc
-      .perform(
-        post("/v1/prison/$prisonId/prisoners/$hmppsId/transactions").headers(headers).content(requestBody).contentType(org.springframework.http.MediaType.APPLICATION_JSON),
-      ).andExpect(status().isOk)
+    postToApi("/v1/prison/$prisonId/prisoners/$hmppsId/transactions", requestBody)
+      .andExpect(status().isOk)
       .andExpect(content().json(getExpectedResponse("transaction-create-response")))
   }
 
@@ -87,12 +81,8 @@ class TransactionsIntegrationTest : IntegrationTestBase() {
       }
       """.trimIndent()
 
-    val headers = org.springframework.http.HttpHeaders()
-    headers.set("subject-distinguished-name", "C=GB,ST=London,L=London,O=Home Office,CN=empty-prisons")
-    mockMvc
-      .perform(
-        post("/v1/prison/$prisonId/prisoners/$hmppsId/transactions").headers(headers).content(requestBody).contentType(org.springframework.http.MediaType.APPLICATION_JSON),
-      ).andExpect(status().isForbidden)
+    postToApiWithCN("/v1/prison/$prisonId/prisoners/$hmppsId/transactions", requestBody, emptyPrisonsCn)
+      .andExpect(status().isForbidden)
   }
 
   // POST transaction transfer
@@ -111,12 +101,8 @@ class TransactionsIntegrationTest : IntegrationTestBase() {
       }
       """.trimIndent()
 
-    val headers = org.springframework.http.HttpHeaders()
-    headers.set("subject-distinguished-name", "C=GB,ST=London,L=London,O=Home Office,CN=automated-test-client")
-    mockMvc
-      .perform(
-        post("/v1/prison/$prisonId/prisoners/$hmppsId/transactions/transfer").headers(headers).content(requestBody).contentType(org.springframework.http.MediaType.APPLICATION_JSON),
-      ).andExpect(status().isOk)
+    postToApi("/v1/prison/$prisonId/prisoners/$hmppsId/transactions/transfer", requestBody)
+      .andExpect(status().isOk)
       .andExpect(content().json(getExpectedResponse("transaction-transfer-create-response")))
   }
 
@@ -134,11 +120,7 @@ class TransactionsIntegrationTest : IntegrationTestBase() {
       }
       """.trimIndent()
 
-    val headers = org.springframework.http.HttpHeaders()
-    headers.set("subject-distinguished-name", "C=GB,ST=London,L=London,O=Home Office,CN=automated-test-client")
-    mockMvc
-      .perform(
-        post("/v1/prison/$prisonId/prisoners/$hmppsId/transactions/transfer").headers(headers).content(requestBody).contentType(org.springframework.http.MediaType.APPLICATION_JSON),
-      ).andExpect(status().isBadRequest)
+    postToApi("/v1/prison/$prisonId/prisoners/$hmppsId/transactions/transfer", requestBody)
+      .andExpect(status().isBadRequest)
   }
 }
