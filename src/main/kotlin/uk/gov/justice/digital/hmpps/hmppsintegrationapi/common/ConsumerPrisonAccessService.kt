@@ -11,10 +11,11 @@ class ConsumerPrisonAccessService {
   fun <T> checkConsumerHasPrisonAccess(
     prisonId: String?,
     filters: ConsumerFilters?,
+    upstreamServiceType: UpstreamApi = UpstreamApi.NOMIS,
   ): Response<T?> {
     val response = Response<T?>(data = null, errors = emptyList<UpstreamApiError>())
     if (filters != null && !filters.matchesPrison(prisonId)) {
-      response.errors = listOf(UpstreamApiError(UpstreamApi.NOMIS, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found"))
+      response.errors = listOf(UpstreamApiError(upstreamServiceType, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found"))
     }
     return response
   }

@@ -21,6 +21,8 @@ services:
     base-url: https://dev.moic.service.justice.gov.uk
   plp:
     base-url: https://learningandworkprogress-api-dev.hmpps.service.justice.gov.uk
+  non-associations:
+    base-url: https://non-associations-api-dev.hmpps.service.justice.gov.uk
   hmpps-auth:
     base-url: https://sign-in-dev.hmpps.service.justice.gov.uk
     username: ${CLIENT_ID}

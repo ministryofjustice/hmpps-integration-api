@@ -32,6 +32,8 @@ services:
     base-url: http://localhost:4009
   plp:
     base-url: http://localhost:4010
+  non-associations:
+    base-url: http://localhost:4005
 
 hmpps.sqs:
   provider: localstack
@@ -94,6 +96,7 @@ authorisation:
         - "/v1/prison/.*/prisoners/.*/transactions/[^/]*$"
         - "/v1/prison/.*/prisoners/.*/transactions"
         - "/v1/prison/.*/prisoners/.*/transactions/transfer"
+        - "/v1/prison/.*/prisoners/.*/non-associations"
     config-test:
       include:
         - "/v1/config/authorisation"
@@ -106,6 +109,7 @@ authorisation:
         - "/v1/prison/.*/prisoners/.*/accounts/.*/balances"
         - "/v1/prison/.*/prisoners/.*/transactions"
         - "/v1/prison/.*/prisoners/.*/transactions/transfer"
+        - "/v1/prison/.*/prisoners/.*/non-associations"
       filters:
         prisons:
           - XYZ
