@@ -24,24 +24,16 @@ class TransactionsIntegrationTest : IntegrationTestBase() {
 
   @Test
   fun `return a list of transactions when the dates are supplied in the request`() {
-    val headers = org.springframework.http.HttpHeaders()
-    headers.set("subject-distinguished-name", "C=GB,ST=London,L=London,O=Home Office,CN=automated-test-client")
-    mockMvc
-      .perform(
-        get("/v1/prison/$prisonId/prisoners/$hmppsId/accounts/$accountCode/transactions$dateQueryParams").headers(headers),
-      ).andExpect(status().isOk)
+    callApi("/v1/prison/$prisonId/prisoners/$hmppsId/accounts/$accountCode/transactions$dateQueryParams")
+      .andExpect(status().isOk)
       .andExpect(content().json(getExpectedResponse("transactions-response")))
   }
 
   @Test
-  fun `transactions returns no results`() {
+  fun `transactions returns 404`() {
     val wrongPrisonId = "XYZ"
-    val headers = org.springframework.http.HttpHeaders()
-    headers.set("subject-distinguished-name", "C=GB,ST=London,L=London,O=Home Office,CN=limited-prisons")
-    mockMvc
-      .perform(
-        get("/v1/prison/$wrongPrisonId/prisoners/$hmppsId/accounts/$accountCode/transactions").headers(headers),
-      ).andExpect(status().isNotFound)
+    callApiWithCN("/v1/prison/$wrongPrisonId/prisoners/$hmppsId/accounts/$accountCode/transactions", limitedPrisonsCn)
+      .andExpect(status().isNotFound)
   }
 
   // transaction
@@ -53,14 +45,10 @@ class TransactionsIntegrationTest : IntegrationTestBase() {
   }
 
   @Test
-  fun `transaction returns no result`() {
+  fun `transaction returns 404`() {
     val wrongPrisonId = "XYZ"
-    val headers = org.springframework.http.HttpHeaders()
-    headers.set("subject-distinguished-name", "C=GB,ST=London,L=London,O=Home Office,CN=limited-prisons")
-    mockMvc
-      .perform(
-        get("/v1/prison/$wrongPrisonId/prisoners/$hmppsId/transactions/$clientUniqueRef").headers(headers),
-      ).andExpect(status().isNotFound)
+    callApiWithCN("/v1/prison/$wrongPrisonId/prisoners/$hmppsId/transactions/$clientUniqueRef", limitedPrisonsCn)
+      .andExpect(status().isNotFound)
   }
 
   // POST transaction

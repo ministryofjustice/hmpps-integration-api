@@ -19,22 +19,20 @@ class OffenderRestrictionsIntegrationTest : IntegrationTestBase() {
 
   @Test
   fun `return a 404 when prison id is not authorised for the consumer when getting a prisoners non assocs`() {
-    val headers = org.springframework.http.HttpHeaders()
-    headers.set("subject-distinguished-name", "C=GB,ST=London,L=London,O=Home Office,CN=limited-prisons")
-    mockMvc
-      .perform(
-        get(nonAssocPrisonerPath).headers(headers),
-      ).andExpect(status().isNotFound)
+    callApiWithCN(nonAssocPrisonerPath, limitedPrisonsCn)
+      .andExpect(status().isNotFound)
   }
 
   @Test
   fun `return a 400 BAD REQUEST when invalid params are supplied to non assoc prisoner endpoint`() {
     val incorrectParams = "?includeOpen=false&includeClosed=false"
-    val headers = org.springframework.http.HttpHeaders()
-    headers.set("subject-distinguished-name", "C=GB,ST=London,L=London,O=Home Office,CN=limited-prisons")
-    mockMvc
-      .perform(
-        get(nonAssocPrisonerPath + incorrectParams).headers(headers),
-      ).andExpect(status().isBadRequest)
+    callApi(nonAssocPrisonerPath + incorrectParams)
+      .andExpect(status().isBadRequest)
+  }
+
+  @Test
+  fun `return a 404 when no prisons in filter`() {
+    callApiWithCN(nonAssocPrisonerPath, noPrisonsCn)
+      .andExpect(status().isNotFound)
   }
 }
