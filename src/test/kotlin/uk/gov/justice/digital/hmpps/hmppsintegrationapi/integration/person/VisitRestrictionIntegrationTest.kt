@@ -15,13 +15,13 @@ class VisitRestrictionIntegrationTest : IntegrationTestBase() {
 
   @Test
   fun `return a 404 for person in wrong prison`() {
-    callApiWithCN("$basePath/$nomsId/visit-restrictions", limitedPrisonsCrn)
+    callApiWithCN("$basePath/$nomsId/visit-restrictions", limitedPrisonsCn)
       .andExpect(status().isNotFound)
   }
 
   @Test
   fun `return a 404 when no prisons in filter`() {
-    callApiWithCN("$basePath/$nomsId/visit-restrictions", noPrisonsCrn)
+    callApiWithCN("$basePath/$nomsId/visit-restrictions", noPrisonsCn)
       .andExpect(status().isNotFound)
   }
 
