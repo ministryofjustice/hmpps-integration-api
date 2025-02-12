@@ -31,7 +31,7 @@ class OffenderRestrictionsController(
   @GetMapping("/v1/prison/{prisonId}/prisoners/{hmppsId}/non-associations")
   @Operation(
     summary = "Returns a single prisoners list of non associates.",
-    description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul> <br> includeOpen is true by default, includeClosed is false by default. At least one must be true.",
+    description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul> <br> includeOpen is true by default, includeClosed is false by default. At least one must be true. The role READ_NON_ASSOCIATIONS is required for this endpoint.",
     responses = [
       ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found prisoners non associates."),
       ApiResponse(
@@ -50,7 +50,6 @@ class OffenderRestrictionsController(
     @Parameter(description = "") @RequestParam(required = false, name = "includeClosed", defaultValue = "false") includeClosed: Boolean?,
     @RequestAttribute filters: ConsumerFilters?,
   ): DataResponse<NonAssociations?> {
-    // ROLE: READ_NON_ASSOCIATIONS
     if (includeOpen == null && includeClosed == null || includeOpen == false && includeClosed == false) {
       throw ValidationException("includeOpen or includeClosed must be provided.")
     }

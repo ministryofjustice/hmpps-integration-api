@@ -33,7 +33,7 @@ services:
   plp:
     base-url: http://localhost:4020
   non-associations:
-    base-url: http://localhost:4016
+    base-url: http://localhost:4021
 
 hmpps.sqs:
   provider: localstack

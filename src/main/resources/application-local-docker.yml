@@ -12,6 +12,7 @@ services:
   probation-integration-epf.base-url: http://prism:4018
   probation-offender-search.base-url: http://prism:4019
   plp.base-url: http://prism:4020
+  non-associations.base-url: http://prism:4021
 
 authorisation:
   consumers:
@@ -63,6 +64,7 @@ authorisation:
         - "/v1/prison/.*/prisoners/.*/accounts/.*/transactions"
         - "/v1/prison/.*/prisoners/.*/transactions/[^/]*$"
         - "/v1/prison/.*/prisoners/.*/transactions"
+        - "/v1/prison/.*/prisoners/.*/non-associations"
       filters:
     config-test:
       include:
