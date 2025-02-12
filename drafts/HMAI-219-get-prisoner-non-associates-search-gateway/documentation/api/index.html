@@ -148,6 +148,18 @@
         <a href="../../documentation/api/index.html#servers"><span>Servers</span></a>
       </li>
       <li>
+        <a href="../../documentation/api/index.html#v1-persons-hmppsid-expression-of-interest-jobs-jobid"><span>/v1/persons/{hmppsId}/expression-of-interest/jobs/{jobid}</span></a>
+      </li>
+      <li>
+        <a href="../../documentation/api/index.html#queue-admin-retry-dlq-dlqname"><span>/queue-admin/retry-dlq/{dlqName}</span></a>
+      </li>
+      <li>
+        <a href="../../documentation/api/index.html#queue-admin-retry-all-dlqs"><span>/queue-admin/retry-all-dlqs</span></a>
+      </li>
+      <li>
+        <a href="../../documentation/api/index.html#queue-admin-purge-queue-queuename"><span>/queue-admin/purge-queue/{queueName}</span></a>
+      </li>
+      <li>
         <a href="../../documentation/api/index.html#v1-prison-prisonid-prisoners-hmppsid-transactions"><span>/v1/prison/{prisonId}/prisoners/{hmppsId}/transactions</span></a>
       </li>
       <li>
@@ -179,6 +191,9 @@
       </li>
       <li>
         <a href="../../documentation/api/index.html#v1-persons"><span>/v1/persons</span></a>
+      </li>
+      <li>
+        <a href="../../documentation/api/index.html#v1-persons-hmppsid-visit-restrictions"><span>/v1/persons/{hmppsId}/visit-restrictions</span></a>
       </li>
       <li>
         <a href="../../documentation/api/index.html#v1-persons-hmppsid-plp-review-schedule"><span>/v1/persons/{hmppsId}/plp-review-schedule</span></a>
@@ -277,6 +292,9 @@
         <a href="../../documentation/api/index.html#v1-epf-person-details-hmppsid-eventnumber"><span>/v1/epf/person-details/{hmppsId}/{eventNumber}</span></a>
       </li>
       <li>
+        <a href="../../documentation/api/index.html#queue-admin-get-dlq-messages-dlqname"><span>/queue-admin/get-dlq-messages/{dlqName}</span></a>
+      </li>
+      <li>
         <a href="../../documentation/api/index.html#schemas"><span>Schemas</span></a>
       </li>
       <li>
@@ -324,6 +342,304 @@
     <a href="https://integration-api.hmpps.service.justice.gov.uk">https://integration-api.hmpps.service.justice.gov.uk</a>
   
   </div>
+
+
+
+<h2 id="v1-persons-hmppsid-expression-of-interest-jobs-jobid">/v1/persons/{hmppsId}/expression-of-interest/jobs/{jobid}</h2>
+
+<h3 id="v1-persons-hmppsid-expression-of-interest-jobs-jobid-put">put</h3>
+
+  <p><em>Returns completed response</em></p>
+
+
+
+
+<h4 id="v1-persons-hmppsid-expression-of-interest-jobs-jobid-put-parameters">Parameters</h4>
+<table>
+<thead>
+<tr><th>Parameter</th><th>In</th><th>Type</th><th>Required</th><th>Description</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>hmppsId</td>
+<td>path</td>
+<td>string</td>
+<td>true</td>
+<td><p>A HMPPS identifier</p>
+
+
+</td>
+</tr>
+
+<tr>
+<td>jobid</td>
+<td>path</td>
+<td>string</td>
+<td>true</td>
+<td><p>A job identifier</p>
+
+
+</td>
+</tr>
+
+</tbody>
+</table>
+
+
+
+
+<h4 id="v1-persons-hmppsid-expression-of-interest-jobs-jobid-put-responses">Responses</h4>
+<table>
+<thead>
+<tr><th>Status</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>200</td>
+<td>
+<p>Successfully submitted an expression of interest</p>
+
+
+
+<pre><code>{
+  "data": {
+  },
+  "errors": [
+    {
+      "causedBy": "string",
+      "type": "string",
+      "description": "string"
+    }
+  ]
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-responseunit'>ResponseUnit</a>
+</td>
+</tr>
+
+<tr>
+<td>400</td>
+<td>
+<p>Bad Request</p>
+
+
+
+<pre><code>{
+  "status": 400,
+  "userMessage": "Validation failure: No query parameters specified.",
+  "developerMessage": "No query parameters specified."
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-badrequest'>BadRequest</a>
+</td>
+</tr>
+
+<tr>
+<td>403</td>
+<td>
+<p>Access is forbidden</p>
+
+
+
+<pre><code>{
+  "status": 403,
+  "userMessage": "Forbidden to complete action by upstream service",
+  "developerMessage": "Forbidden to complete action by upstream service"
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-forbiddenresponse'>ForbiddenResponse</a>
+</td>
+</tr>
+
+<tr>
+<td>404</td>
+<td>
+<p>Not Found</p>
+
+
+
+<pre><code>{
+  "status": 404,
+  "userMessage": "404 Not found error: Could not find person with HMPPS id: 2003/0011991D.",
+  "developerMessage": "Could not find person with HMPPS id: 2003/0011991D."
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-personnotfound'>PersonNotFound</a>
+</td>
+</tr>
+
+</tbody>
+</table>
+
+
+
+
+<h2 id="queue-admin-retry-dlq-dlqname">/queue-admin/retry-dlq/{dlqName}</h2>
+
+<h3 id="queue-admin-retry-dlq-dlqname-put">put</h3>
+
+
+
+
+<h4 id="queue-admin-retry-dlq-dlqname-put-parameters">Parameters</h4>
+<table>
+<thead>
+<tr><th>Parameter</th><th>In</th><th>Type</th><th>Required</th><th>Description</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>dlqName</td>
+<td>path</td>
+<td>string</td>
+<td>true</td>
+<td>
+
+</td>
+</tr>
+
+</tbody>
+</table>
+
+
+
+
+<h4 id="queue-admin-retry-dlq-dlqname-put-responses">Responses</h4>
+<table>
+<thead>
+<tr><th>Status</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>200</td>
+<td>
+<p>OK</p>
+
+
+
+<pre><code>{
+  "messagesFoundCount": "integer"
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-retrydlqresult'>RetryDlqResult</a>
+</td>
+</tr>
+
+</tbody>
+</table>
+
+
+
+
+<h2 id="queue-admin-retry-all-dlqs">/queue-admin/retry-all-dlqs</h2>
+
+<h3 id="queue-admin-retry-all-dlqs-put">put</h3>
+
+
+
+
+
+
+
+<h4 id="queue-admin-retry-all-dlqs-put-responses">Responses</h4>
+<table>
+<thead>
+<tr><th>Status</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>200</td>
+<td>
+<p>OK</p>
+
+
+
+<pre><code>{
+}</code></pre>
+
+</td>
+<td>
+
+</td>
+</tr>
+
+</tbody>
+</table>
+
+
+
+
+<h2 id="queue-admin-purge-queue-queuename">/queue-admin/purge-queue/{queueName}</h2>
+
+<h3 id="queue-admin-purge-queue-queuename-put">put</h3>
+
+
+
+
+<h4 id="queue-admin-purge-queue-queuename-put-parameters">Parameters</h4>
+<table>
+<thead>
+<tr><th>Parameter</th><th>In</th><th>Type</th><th>Required</th><th>Description</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>queueName</td>
+<td>path</td>
+<td>string</td>
+<td>true</td>
+<td>
+
+</td>
+</tr>
+
+</tbody>
+</table>
+
+
+
+
+<h4 id="queue-admin-purge-queue-queuename-put-responses">Responses</h4>
+<table>
+<thead>
+<tr><th>Status</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>200</td>
+<td>
+<p>OK</p>
+
+
+
+<pre><code>{
+  "messagesFoundCount": "integer"
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-purgequeueresult'>PurgeQueueResult</a>
+</td>
+</tr>
+
+</tbody>
+</table>
+
 
 
 
@@ -2177,6 +2493,139 @@
 
 
 
+<h2 id="v1-persons-hmppsid-visit-restrictions">/v1/persons/{hmppsId}/visit-restrictions</h2>
+
+<h3 id="v1-persons-hmppsid-visit-restrictions-get">get</h3>
+
+  <p><em>Gets restrictions for latest booking.</em></p>
+
+
+  <p>Returns a list of restrictions for the latest booking</p>
+
+
+
+
+<h4 id="v1-persons-hmppsid-visit-restrictions-get-parameters">Parameters</h4>
+<table>
+<thead>
+<tr><th>Parameter</th><th>In</th><th>Type</th><th>Required</th><th>Description</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>hmppsId</td>
+<td>path</td>
+<td>string</td>
+<td>true</td>
+<td><p>A HMPPS identifier</p>
+
+
+</td>
+</tr>
+
+</tbody>
+</table>
+
+
+
+
+<h4 id="v1-persons-hmppsid-visit-restrictions-get-responses">Responses</h4>
+<table>
+<thead>
+<tr><th>Status</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>200</td>
+<td>
+<p>Successfully found a person&rsquo;s visit restrictions with the provided HMPPS ID.</p>
+
+
+
+<pre><code>{
+  "data": [
+    {
+      "restrictionId": "integer",
+      "comment": "string",
+      "restrictionType": "string",
+      "restrictionTypeDescription": "string",
+      "startDate": "1980-01-01",
+      "expiryDate": "1980-01-01",
+      "active": "boolean"
+    }
+  ]
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-dataresponselistpersonvisitrestriction'>DataResponseListPersonVisitRestriction</a>
+</td>
+</tr>
+
+<tr>
+<td>400</td>
+<td>
+<p>Bad Request</p>
+
+
+
+<pre><code>{
+  "status": 400,
+  "userMessage": "Validation failure: No query parameters specified.",
+  "developerMessage": "No query parameters specified."
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-badrequest'>BadRequest</a>
+</td>
+</tr>
+
+<tr>
+<td>404</td>
+<td>
+<p>Not Found</p>
+
+
+
+<pre><code>{
+  "status": 404,
+  "userMessage": "404 Not found error: Could not find person with HMPPS id: 2003/0011991D.",
+  "developerMessage": "Could not find person with HMPPS id: 2003/0011991D."
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-personnotfound'>PersonNotFound</a>
+</td>
+</tr>
+
+<tr>
+<td>500</td>
+<td>
+<p>Internal Server Error</p>
+
+
+
+<pre><code>{
+  "status": 500,
+  "userMessage": "Internal Server Error",
+  "developerMessage": "Unable to complete request as an upstream service is not responding."
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-internalservererror'>InternalServerError</a>
+</td>
+</tr>
+
+</tbody>
+</table>
+
+
+
+
 <h2 id="v1-persons-hmppsid-plp-review-schedule">/v1/persons/{hmppsId}/plp-review-schedule</h2>
 
 <h3 id="v1-persons-hmppsid-plp-review-schedule-get">get</h3>
@@ -2367,8 +2816,12 @@
     "status": "SCHEDULED",
     "calculationRule": "NEW_PRISON_ADMISSION",
     "nomisNumber": "A1234BC",
-    "systemUpdatedBy": "John Smith",
+    "systemCreatedBy": "John Smith",
+    "systemCreatedAt": "2023-06-19T09:39:44Z",
+    "systemCreatedAtPrison": "BXI",
+    "systemUpdatedBy": "Fred Jones",
     "systemUpdatedAt": "2023-06-19T09:39:44Z",
+    "systemUpdatedAtPrison": "BXI",
     "inductionPerformedBy": "Fred Jones",
     "inductionPerformedAt": "2023-06-30",
     "inductionPerformedByRole": "Peer Mentor",
@@ -2483,8 +2936,12 @@
         "status": "SCHEDULED",
         "calculationRule": "NEW_PRISON_ADMISSION",
         "nomisNumber": "A1234BC",
-        "systemUpdatedBy": "John Smith",
+        "systemCreatedBy": "John Smith",
+        "systemCreatedAt": "2023-06-19T09:39:44Z",
+        "systemCreatedAtPrison": "BXI",
+        "systemUpdatedBy": "Fred Jones",
         "systemUpdatedAt": "2023-06-19T09:39:44Z",
+        "systemUpdatedAtPrison": "BXI",
         "inductionPerformedBy": "Fred Jones",
         "inductionPerformedAt": "2023-06-30",
         "inductionPerformedByRole": "Peer Mentor",
@@ -6565,8 +7022,207 @@
 
 
 
+<h2 id="queue-admin-get-dlq-messages-dlqname">/queue-admin/get-dlq-messages/{dlqName}</h2>
+
+<h3 id="queue-admin-get-dlq-messages-dlqname-get">get</h3>
+
+
+
+
+<h4 id="queue-admin-get-dlq-messages-dlqname-get-parameters">Parameters</h4>
+<table>
+<thead>
+<tr><th>Parameter</th><th>In</th><th>Type</th><th>Required</th><th>Description</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>dlqName</td>
+<td>path</td>
+<td>string</td>
+<td>true</td>
+<td>
+
+</td>
+</tr>
+
+<tr>
+<td>maxMessages</td>
+<td>query</td>
+<td>integer</td>
+<td>false</td>
+<td>
+
+</td>
+</tr>
+
+</tbody>
+</table>
+
+
+
+
+<h4 id="queue-admin-get-dlq-messages-dlqname-get-responses">Responses</h4>
+<table>
+<thead>
+<tr><th>Status</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>200</td>
+<td>
+<p>OK</p>
+
+
+
+<pre><code>{
+  "messagesFoundCount": "integer",
+  "messagesReturnedCount": "integer",
+  "messages": [
+    {
+      "body": {
+      },
+      "messageId": "string"
+    }
+  ]
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-getdlqresult'>GetDlqResult</a>
+</td>
+</tr>
+
+</tbody>
+</table>
+
+
+
+
 
 <h2 id="schemas">Schemas</h2>
+<h3 id="schema-responseunit">ResponseUnit</h3>
+
+
+<table class='schema-responseunit'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>data</td>
+<td>object</td>
+<td>true</td>
+<td></td>
+<td>
+  <a href='#schema-unit'>Unit</a>
+</td>
+</tr>
+
+<tr>
+<td>errors</td>
+<td>array</td>
+<td>true</td>
+<td></td>
+<td>
+  <a href='#schema-upstreamapierror'>UpstreamApiError</a>
+</td>
+</tr>
+
+</tbody>
+</table>
+
+<h3 id="schema-unit">Unit</h3>
+
+
+<h3 id="schema-upstreamapierror">UpstreamApiError</h3>
+
+
+<table class='schema-upstreamapierror'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>causedBy</td>
+<td>string</td>
+<td>true</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>type</td>
+<td>string</td>
+<td>true</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>description</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+</tbody>
+</table>
+
+<h3 id="schema-retrydlqresult">RetryDlqResult</h3>
+
+
+<table class='schema-retrydlqresult'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>messagesFoundCount</td>
+<td>integer</td>
+<td>true</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+</tbody>
+</table>
+
+<h3 id="schema-purgequeueresult">PurgeQueueResult</h3>
+
+
+<table class='schema-purgequeueresult'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>messagesFoundCount</td>
+<td>integer</td>
+<td>true</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+</tbody>
+</table>
+
 <h3 id="schema-transactionrequest">TransactionRequest</h3>
 
 
@@ -8327,6 +8983,117 @@
 </tbody>
 </table>
 
+<h3 id="schema-dataresponselistpersonvisitrestriction">DataResponseListPersonVisitRestriction</h3>
+
+
+<table class='schema-dataresponselistpersonvisitrestriction'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>data</td>
+<td>array</td>
+<td>true</td>
+<td></td>
+<td>
+  <a href='#schema-personvisitrestriction'>PersonVisitRestriction</a>
+</td>
+</tr>
+
+</tbody>
+</table>
+
+<h3 id="schema-personvisitrestriction">PersonVisitRestriction</h3>
+
+
+<table class='schema-personvisitrestriction'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>restrictionId</td>
+<td>integer</td>
+<td>true</td>
+<td><p>Restriction ID</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>comment</td>
+<td>string</td>
+<td>true</td>
+<td><p>Restriction comment text</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>restrictionType</td>
+<td>string</td>
+<td>true</td>
+<td><p>Code of restriction type</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>restrictionTypeDescription</td>
+<td>string</td>
+<td>true</td>
+<td><p>Description of restriction type</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>startDate</td>
+<td>string</td>
+<td>true</td>
+<td><p>Date from which the restrictions applies</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>expiryDate</td>
+<td>string</td>
+<td>false</td>
+<td><p>Date restriction applies to, or indefinitely if null</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>active</td>
+<td>boolean</td>
+<td>true</td>
+<td><p>True if restriction is within the start date and optional expiry date range</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+</tbody>
+</table>
+
 <h3 id="schema-dataresponsereviewschedules">DataResponseReviewSchedules</h3>
 
 
@@ -8744,11 +9511,45 @@
 </tr>
 
 <tr>
+<td>systemCreatedBy</td>
+<td>string</td>
+<td>false</td>
+<td><p>The name of the person who used the PLP system to create the Induction Schedule, or &lsquo;system&rsquo; for system generated updates.</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>systemCreatedAt</td>
+<td>string</td>
+<td>false</td>
+<td><p>An ISO-8601 timestamp representing the time the PLP system was used to create the Induction Schedule.</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>systemCreatedAtPrison</td>
+<td>string</td>
+<td>false</td>
+<td><p>The code of the prison where the induction was Created</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
 <td>systemUpdatedBy</td>
 <td>string</td>
 <td>false</td>
-<td><p>The name of the person who used the PLP system to update the Induction Schedule, or &lsquo;system&rsquo; for system generated updates.</p>
-</td>
+<td><div class="highlight"><pre class="highlight plaintext" tabindex="0"><code>  The name of the person who performed the Induction with the prisoner.
+  In the case of system generated updates or setting an exemption this field will not be present.
+</code></pre></div></td>
 <td>
   
 </td>
@@ -8759,6 +9560,17 @@
 <td>string</td>
 <td>false</td>
 <td><p>An ISO-8601 timestamp representing the time the PLP system was used to update the Induction Schedule.</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>systemUpdatedAtPrison</td>
+<td>string</td>
+<td>false</td>
+<td><p>The code of the prison where the induction was updated</p>
 </td>
 <td>
   
@@ -13689,48 +14501,6 @@
 </tbody>
 </table>
 
-<h3 id="schema-upstreamapierror">UpstreamApiError</h3>
-
-
-<table class='schema-upstreamapierror'>
-<thead>
-<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
-</thead>
-<tbody>
-
-<tr>
-<td>causedBy</td>
-<td>string</td>
-<td>true</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>type</td>
-<td>string</td>
-<td>true</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>description</td>
-<td>string</td>
-<td>false</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-</tbody>
-</table>
-
 <h3 id="schema-dataresponsenomisnumber">DataResponseNomisNumber</h3>
 
 
@@ -14170,6 +14940,80 @@
 <td></td>
 <td>
   
+</td>
+</tr>
+
+</tbody>
+</table>
+
+<h3 id="schema-dlqmessage">DlqMessage</h3>
+
+
+<table class='schema-dlqmessage'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>body</td>
+<td>object</td>
+<td>true</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>messageId</td>
+<td>string</td>
+<td>true</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+</tbody>
+</table>
+
+<h3 id="schema-getdlqresult">GetDlqResult</h3>
+
+
+<table class='schema-getdlqresult'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>messagesFoundCount</td>
+<td>integer</td>
+<td>true</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>messagesReturnedCount</td>
+<td>integer</td>
+<td>true</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>messages</td>
+<td>array</td>
+<td>true</td>
+<td></td>
+<td>
+  <a href='#schema-dlqmessage'>DlqMessage</a>
 </td>
 </tr>
 
