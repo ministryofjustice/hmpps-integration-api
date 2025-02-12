@@ -70,7 +70,7 @@ class OffenderRestrictionsControllerTest(
             ),
           ),
       )
-    // returns the correct non associations data
+
     it("returns the correct non associations data") {
       whenever(getPrisonersNonAssociationsService.execute(hmppsId, prisonId, includeOpen = "true", includeClosed = "false", filters = null)).thenReturn(
         Response(
@@ -119,7 +119,7 @@ class OffenderRestrictionsControllerTest(
         """.removeWhitespaceAndNewlines(),
       )
     }
-    // throws bad request error if includeOpen or includeClosed not provided
+
     it("throws bad request error if includeOpen or includeClosed not provided") {
       val errors = listOf(UpstreamApiError(type = UpstreamApiError.Type.BAD_REQUEST, causedBy = UpstreamApi.NON_ASSOCIATIONS, description = "includeOpen or includeClosed must be provided."))
       whenever(getPrisonersNonAssociationsService.execute(hmppsId, prisonId, includeOpen = "false", includeClosed = "false", filters = null)).thenReturn(

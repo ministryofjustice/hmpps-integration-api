@@ -36,7 +36,7 @@ class GetPrisonersNonAssociationsService(
     if (responseFromNonAssociationsGateway.data?.nonAssociations == null) {
       return Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.NON_ASSOCIATIONS, UpstreamApiError.Type.ENTITY_NOT_FOUND, "No non associates found with prisoner")))
     }
-    // revise
+
     val unpackedResponse = NonAssociations(responseFromNonAssociationsGateway.data.nonAssociations ?: emptyList())
 
     if (unpackedResponse.nonAssociations.isEmpty()) {

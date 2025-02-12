@@ -16,13 +16,12 @@ RUN jq 'del(.components.schemas.Query.properties.subQueries)' /tmp/prisoner-offe
 RUN swagger-cli bundle -r -o /prismMocks/prisoner-offender-search.json /tmp/prisoner-offender-search-tmp1.json
 RUN swagger-cli bundle -r -o /prismMocks/adjudications.json /tmp/adjudications.json
 
+# new files from this point on need to start with an x- followed by the port number:
+ADD https://learningandworkprogress-api-dev.hmpps.service.justice.gov.uk/v3/api-docs /prismMocks/x4020-plp-api.json
+RUN sed -i 's/\*\/\*/application\/json/g' /prismMocks/x4021-non-associations.json
 RUN sed -i 's/\*\/\*/application\/json/g' /prismMocks/adjudications.json
 RUN sed -i 's/\*\/\*/application\/json/g' /prismMocks/assess-risks-and-needs.json
 RUN sed -i 's/\*\/\*/application\/json/g' /prismMocks/case-notes.json
 RUN sed -i 's/\*\/\*/application\/json/g' /prismMocks/prisoner-offender-search.json
-
-# new files from this point on need to start with an x- followed by the port number:
-ADD https://learningandworkprogress-api-dev.hmpps.service.justice.gov.uk/v3/api-docs /prismMocks/x4020-plp-api.json
-RUN sed -i 's/\*\/\*/application\/json/g' /prismMocks/x4021-non-associations.json
 
 ENTRYPOINT sh -c 'port=4010; for file in $(ls /prismMocks/*.json | sort); do node dist/index.js mock -p $port -h 0.0.0.0 $file & port=$((port + 1)); done; wait'
