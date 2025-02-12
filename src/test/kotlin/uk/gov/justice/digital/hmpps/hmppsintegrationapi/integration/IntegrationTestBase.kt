@@ -30,6 +30,8 @@ abstract class IntegrationTestBase {
   final val invalidNomsId = "G2996UXX"
   final val crn = "AB123123"
   final val nomsIdNotInDelius = "A1234AA"
+  final val limitedPrisonsCn = "limited-prisons"
+  final val noPrisonsCn = "no-prisons"
 
   companion object {
     private val hmppsAuthMockServer = HmppsAuthMockServer()
@@ -60,4 +62,13 @@ abstract class IntegrationTestBase {
     mockMvc.perform(
       get(path).headers(getAuthHeader()),
     )
+
+  fun callApiWithCN(
+    path: String,
+    cn: String,
+  ): ResultActions {
+    val headers = HttpHeaders()
+    headers.set("subject-distinguished-name", "C=GB,ST=London,L=London,O=Home Office,CN=$cn")
+    return mockMvc.perform(get(path).headers(headers))
+  }
 }
