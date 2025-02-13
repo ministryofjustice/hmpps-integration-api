@@ -7,12 +7,9 @@ data class LinkedPrisoner(
   val lastName: String,
   val firstName: String,
   val middleNames: String?,
-  val relationships: Relationship?,
+  val relationships: List<Relationship>?,
 ) {
-  fun toPrisonerContactId() =
-    PrisonerContactId(
-      prisonerContactId = this.relationships?.prisonerContactId,
-    )
+  fun toPrisonerContactId(): List<PrisonerContactId> = relationships?.map { relationship -> PrisonerContactId(relationship.prisonerContactId) } ?: emptyList()
 }
 
 data class Relationship(

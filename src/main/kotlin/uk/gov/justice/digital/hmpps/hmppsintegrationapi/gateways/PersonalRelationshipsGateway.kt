@@ -27,11 +27,15 @@ class PersonalRelationshipsGateway(
         authenticationHeader(),
         UpstreamApi.PERSONAL_RELATIONSHIPS,
       )
-
     return when (result) {
       is WebClientWrapper.WebClientWrapperResponse.Success -> {
-        Response(
-          data = result.data.map { it.toPrisonerContactId() },
+        val transformedResult = mutableListOf<PrisonerContactId>()
+        for (element in result.data) {
+          transformedResult.add(element.toPrisonerContactId())
+        }
+
+        return Response(
+          data = transformedResult,
         )
       }
 

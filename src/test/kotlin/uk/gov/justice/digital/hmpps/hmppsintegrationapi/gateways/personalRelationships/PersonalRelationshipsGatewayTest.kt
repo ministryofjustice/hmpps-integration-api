@@ -2,8 +2,8 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.personalRelati
 
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.collections.shouldBeEmpty
-import io.kotest.matchers.ints.shouldBeGreaterThan
 import io.kotest.matchers.nulls.shouldNotBeNull
+import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory
 import org.mockito.kotlin.verify
@@ -66,7 +66,10 @@ class PersonalRelationshipsGatewayTest(
       val response = personalRelationshipsGateway.getPrisonerContactId(contactId)
       response.errors.shouldBeEmpty()
       response.data.shouldNotBeNull()
-      response.data.count().shouldBeGreaterThan(1)
+      response.data
+        .first()
+        .prisonerContactId
+        .shouldBe(123456)
     }
 
     // "Get a list of prisoner contact ids"
