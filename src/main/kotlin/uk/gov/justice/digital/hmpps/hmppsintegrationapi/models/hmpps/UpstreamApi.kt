@@ -14,4 +14,5 @@ enum class UpstreamApi {
   TEST,
   PLP,
   NON_ASSOCIATIONS,
+  PERSONAL_RELATIONSHIPS,
 }
