@@ -3,7 +3,6 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.ConsumerPrisonAccessService
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HmppsId
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NomisNumber
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
@@ -15,7 +14,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Consum
 class GetHmppsIdService(
   @Autowired val getPersonService: GetPersonService,
   @Autowired val consumerPrisonAccessService: ConsumerPrisonAccessService,
-  @Autowired val prisonerOffenderSearchGateway: PrisonerOffenderSearchGateway,
 ) {
   fun execute(
     nomisNumber: String,
@@ -36,34 +34,28 @@ class GetHmppsIdService(
         errors = personResponse.errors,
       )
     }
-
     var hmppsId = personResponse.data?.hmppsId
-    var prisonId: String? = null
-    if (hmppsId != null) {
-      val (prisonerOffender, prisonOffenderErrors) = prisonerOffenderSearchGateway.getPrisonOffender(nomisNumber)
-      if (prisonOffenderErrors.isNotEmpty()) {
-        return Response(data = null, prisonOffenderErrors)
-      }
-      prisonId = prisonerOffender?.prisonId
-    } else {
-      val (prisoner, prisonerErrors) = getPersonService.getPersonFromNomis(nomisNumber.uppercase())
-      if (prisonerErrors.isNotEmpty()) {
-        return Response(
-          data = null,
-          errors = prisonerErrors,
-        )
-      }
-      hmppsId = prisoner?.prisonerNumber
-      if (hmppsId == null) {
-        return Response(
-          data = null,
-          errors = listOf(UpstreamApiError(causedBy = UpstreamApi.NOMIS, type = UpstreamApiError.Type.ENTITY_NOT_FOUND)),
-        )
-      }
-      prisonId = prisoner?.prisonId
+
+    val (prisoner, prisonerErrors) = getPersonService.getPersonFromNomis(nomisNumber.uppercase())
+    if (prisonerErrors.isNotEmpty()) {
+      return Response(
+        data = null,
+        errors = prisonerErrors,
+      )
     }
 
-    val consumerPrisonFilterCheck = consumerPrisonAccessService.checkConsumerHasPrisonAccess<HmppsId>(prisonId, filters)
+    if (hmppsId == null) {
+      hmppsId = prisoner?.prisonerNumber
+    }
+
+    if (hmppsId == null) {
+      return Response(
+        data = null,
+        errors = listOf(UpstreamApiError(causedBy = UpstreamApi.NOMIS, type = UpstreamApiError.Type.ENTITY_NOT_FOUND)),
+      )
+    }
+
+    val consumerPrisonFilterCheck = consumerPrisonAccessService.checkConsumerHasPrisonAccess<HmppsId>(prisoner?.prisonId, filters)
     if (consumerPrisonFilterCheck.errors.isNotEmpty()) {
       return consumerPrisonFilterCheck
     }
