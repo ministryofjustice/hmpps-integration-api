@@ -34,6 +34,7 @@ abstract class IntegrationTestBase {
   final val limitedPrisonsCn = "limited-prisons"
   final val noPrisonsCn = "no-prisons"
   final val emptyPrisonsCn = "empty-prisons"
+  final val contactId = 123456L
 
   companion object {
     private val hmppsAuthMockServer = HmppsAuthMockServer()

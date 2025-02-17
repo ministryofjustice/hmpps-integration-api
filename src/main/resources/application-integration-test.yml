@@ -99,6 +99,7 @@ authorisation:
         - "/v1/prison/.*/prisoners/.*/transactions"
         - "/v1/prison/.*/prisoners/.*/transactions/transfer"
         - "/v1/prison/.*/prisoners/.*/non-associations"
+        - "/v1/persons/.*/visitor/.*/restrictions"
       filters:
     config-test:
       include:
@@ -117,6 +118,7 @@ authorisation:
         - "/v1/persons/.*/sentences/latest-key-dates-and-adjustments"
         - "/v1/prison/.*/prisoners/.*/non-associations"
         - "/v1/persons/.*/visit-restrictions"
+        - "/v1/persons/.*/visitor/.*/restrictions"
       filters:
         prisons:
           - ABC
