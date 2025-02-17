@@ -25,6 +25,18 @@ class HmppsIdIntegrationTest : IntegrationTestBase() {
   }
 
   @Test
+  fun `return a 404 when prison id is not authorised for the consumer`() {
+    callApiWithCN("/v1/hmpps/id/nomis-number/$nomsId", limitedPrisonsCn)
+      .andExpect(status().isNotFound)
+  }
+
+  @Test
+  fun `return a 404 when no prisons in filter`() {
+    callApiWithCN("/v1/hmpps/id/nomis-number/$nomsId", noPrisonsCn)
+      .andExpect(status().isNotFound)
+  }
+
+  @Test
   fun `gets the person detail using new url`() {
     callApi("/v1/hmpps/id/by-nomis-number/$nomsId")
       .andExpect(status().isOk)
