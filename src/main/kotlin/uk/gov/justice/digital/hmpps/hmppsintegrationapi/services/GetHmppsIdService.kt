@@ -60,7 +60,7 @@ class GetHmppsIdService(
           errors = listOf(UpstreamApiError(causedBy = UpstreamApi.NOMIS, type = UpstreamApiError.Type.ENTITY_NOT_FOUND)),
         )
       }
-      prisonId = prisoner.prisonId
+      prisonId = prisoner?.prisonId
     }
 
     val consumerPrisonFilterCheck = consumerPrisonAccessService.checkConsumerHasPrisonAccess<HmppsId>(prisonId, filters)
