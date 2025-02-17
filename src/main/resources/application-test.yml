@@ -99,6 +99,7 @@ authorisation:
         - "/v1/prison/.*/prisoners/.*/transactions"
         - "/v1/prison/.*/prisoners/.*/transactions/transfer"
         - "/v1/prison/.*/prisoners/.*/non-associations"
+        - "/v1/persons/.*/visitor/.*/restrictions"
     config-test:
       include:
         - "/v1/config/authorisation"
@@ -112,6 +113,7 @@ authorisation:
         - "/v1/prison/.*/prisoners/.*/transactions"
         - "/v1/prison/.*/prisoners/.*/transactions/transfer"
         - "/v1/prison/.*/prisoners/.*/non-associations"
+        - "/v1/persons/.*/visitor/.*/restrictions"
       filters:
         prisons:
           - XYZ

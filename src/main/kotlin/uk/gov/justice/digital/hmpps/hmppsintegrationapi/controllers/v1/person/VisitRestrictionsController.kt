@@ -17,8 +17,10 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFound
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonVisitRestriction
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PrisonerContactRestrictions
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetVisitRestrictionsForPersonService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetVisitorRestrictionsService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 
 @RestController
@@ -27,6 +29,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditS
 class VisitRestrictionsController(
   @Autowired val auditService: AuditService,
   @Autowired val getVisitRestrictionsForPersonService: GetVisitRestrictionsForPersonService,
+  @Autowired val getVisitorRestrictionsService: GetVisitorRestrictionsService,
 ) {
   @Operation(
     summary = "Gets restrictions for latest booking.",
@@ -53,6 +56,36 @@ class VisitRestrictionsController(
     }
 
     auditService.createEvent("GET_PERSON_VISIT_RESTRICTIONS", mapOf("hmppsId" to hmppsId))
+    return DataResponse(response.data)
+  }
+
+  @Operation(
+    summary = "Gets visitor restrictions.",
+    description = "Returns visitor restrictions for a prisoner",
+    responses = [
+      ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found a prisoners vistor restrictions with the provided HMPPS ID and contact ID."),
+      ApiResponse(responseCode = "400", content = [Content(schema = Schema(ref = "#/components/schemas/BadRequest"))]),
+      ApiResponse(responseCode = "404", content = [Content(schema = Schema(ref = "#/components/schemas/PersonNotFound"))]),
+      ApiResponse(responseCode = "500", content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]),
+    ],
+  )
+  @GetMapping("/visitor/{contactId}/restrictions")
+  fun getVisitorRestrictions(
+    @Parameter(description = "A HMPPS identifier") @PathVariable hmppsId: String,
+    @Parameter(description = "A contact ID") @PathVariable contactId: String,
+    @RequestAttribute filters: ConsumerFilters?,
+  ): DataResponse<List<PrisonerContactRestrictions>?> {
+    val stringifiedContactId = contactId.toLongOrNull() ?: throw ValidationException("Invalid contact ID")
+    val response = getVisitorRestrictionsService.execute(hmppsId, stringifiedContactId, filters)
+
+    if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
+      throw ValidationException("Bad request from upstream ${response.errors.first().description}")
+    }
+    if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
+      throw EntityNotFoundException("Could not find prisoner with visitor restrictions(hmmpsId, contactId): $hmppsId $contactId")
+    }
+
+    auditService.createEvent("GET_VISITOR_RESTRICTIONS", mapOf("hmppsId" to hmppsId, "contactId" to contactId))
     return DataResponse(response.data)
   }
 }
