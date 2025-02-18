@@ -35,6 +35,10 @@ class GetHmppsIdService(
       )
     }
     var hmppsId = personResponse.data?.hmppsId
+    // If no filters passed in, then we don't need to get the prison ID
+    if (hmppsId != null && filters == null) {
+      return Response(data = HmppsId(hmppsId))
+    }
 
     val (prisoner, prisonerErrors) = getPersonService.getPersonFromNomis(nomisNumber.uppercase())
     if (prisonerErrors.isNotEmpty()) {

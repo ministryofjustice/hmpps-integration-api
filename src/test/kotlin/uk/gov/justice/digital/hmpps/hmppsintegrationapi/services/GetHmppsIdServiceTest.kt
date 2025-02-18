@@ -3,6 +3,8 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
+import org.mockito.kotlin.never
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
 import org.springframework.test.context.ContextConfiguration
@@ -121,13 +123,19 @@ internal class GetHmppsIdServiceTest(
         result.shouldBe(Response(data = hmppsId))
       }
 
-      it("Returns a 200 when no hmppsid returned from getPersonService.execute but found in getPersonService.getPersonFromNomis") {
+      it("Returns a 200 when no hmppsId returned from getPersonService.execute but found in getPersonService.getPersonFromNomis") {
         whenever(getPersonService.execute(id)).thenReturn(
           Response(
             data = Person(firstName = "Qui-gon", lastName = "Jin"),
           ),
         )
         val result = getHmppsIdService.execute(id, filters)
+        result.shouldBe(Response(data = hmppsId))
+      }
+
+      it("Returns a 200 when hmppsId returned from getPersonService.execute and no filters passed in") {
+        val result = getHmppsIdService.execute(id, null)
+        verify(getPersonService, never()).getNomisNumber(id)
         result.shouldBe(Response(data = hmppsId))
       }
 
