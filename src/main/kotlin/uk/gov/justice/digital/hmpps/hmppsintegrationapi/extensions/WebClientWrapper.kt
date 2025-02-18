@@ -151,6 +151,8 @@ class WebClientWrapper(
         HttpStatus.CONFLICT -> UpstreamApiError.Type.CONFLICT
         HttpStatus.FORBIDDEN -> if (forbiddenAsError) UpstreamApiError.Type.FORBIDDEN else throw exception
         HttpStatus.BAD_REQUEST -> if (badRequestAsError) UpstreamApiError.Type.BAD_REQUEST else throw exception
+        // Manage prison visits does not support 400s, returns bad reqs as 500s
+        HttpStatus.INTERNAL_SERVER_ERROR -> if (upstreamApi == UpstreamApi.MANAGE_PRISON_VISITS) UpstreamApiError.Type.INTERNAL_SERVER_ERROR else throw exception
         else -> throw exception
       }
     return WebClientWrapperResponse.Error(
