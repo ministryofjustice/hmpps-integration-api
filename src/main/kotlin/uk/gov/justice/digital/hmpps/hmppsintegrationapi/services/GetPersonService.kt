@@ -50,7 +50,6 @@ class GetPersonService(
     }
 
     var prisoner: POSPrisoner? = null
-    var prisonerOffenderGatewayCalled = false
 
     // 3. If filters get the prison id from a prison search and filter based on it
     if (filters != null) {
@@ -62,7 +61,6 @@ class GetPersonService(
         )
       }
       prisoner = prisonerResponse.data
-      prisonerOffenderGatewayCalled = true
       val consumerPrisonFilterCheck = consumerPrisonAccessService.checkConsumerHasPrisonAccess<Person>(prisoner?.prisonId, filters)
       if (consumerPrisonFilterCheck.errors.isNotEmpty()) {
         return consumerPrisonFilterCheck
@@ -83,7 +81,7 @@ class GetPersonService(
 
     // 2a. If they don't have one, use prison search to verify that they exist
     // 3a. If we already did a search can we avoid calling prison search again?
-    if (!prisonerOffenderGatewayCalled) {
+    if (prisoner == null) {
       val prisonerResponse = prisonerOffenderSearchGateway.getPrisonOffender(nomisNumber)
       if (prisonerResponse.errors.isNotEmpty()) {
         return Response(
