@@ -36,12 +36,6 @@ class GetPersonService(
     filters: ConsumerFilters?,
   ): Response<Person?> {
     // 1. Is it NOMIS No. shaped
-    // 2. Go to probation offender search to try and find the hmppsId
-    // 2a. If they don't have one, use prison search to verify that they exist
-    // 3. If filters get the prison id from a prison search and filter based on it
-    // 3a. If we already did a search can we avoid calling prison search again?
-
-    // 1. Is it NOMIS No. shaped
     if (identifyHmppsId(nomisNumber) !== IdentifierType.NOMS) {
       return Response(
         data = null,
@@ -52,7 +46,7 @@ class GetPersonService(
     var prisoner: POSPrisoner? = null
 
     // 3. If filters get the prison id from a prison search and filter based on it
-    if (filters != null) {
+    if (filters?.prisons != null) {
       val prisonerResponse = prisonerOffenderSearchGateway.getPrisonOffender(nomisNumber)
       if (prisonerResponse.errors.isNotEmpty()) {
         return Response(
