@@ -13,6 +13,9 @@ build:
 serve-dependencies:
 	docker compose up prism local-stack-aws --build -d
 
+analyse-dependencies:
+	./gradlew dependencyCheckAnalyze --info
+
 serve: build-dev
 	docker compose up -d --wait
 
