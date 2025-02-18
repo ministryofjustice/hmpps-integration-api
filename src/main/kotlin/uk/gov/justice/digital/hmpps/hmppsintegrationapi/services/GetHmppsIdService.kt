@@ -46,13 +46,12 @@ class GetHmppsIdService(
 
     if (hmppsId == null) {
       hmppsId = prisoner?.prisonerNumber
-    }
-
-    if (hmppsId == null) {
-      return Response(
-        data = null,
-        errors = listOf(UpstreamApiError(causedBy = UpstreamApi.NOMIS, type = UpstreamApiError.Type.ENTITY_NOT_FOUND)),
-      )
+      if (hmppsId == null) {
+        return Response(
+          data = null,
+          errors = listOf(UpstreamApiError(causedBy = UpstreamApi.NOMIS, type = UpstreamApiError.Type.ENTITY_NOT_FOUND)),
+        )
+      }
     }
 
     val consumerPrisonFilterCheck = consumerPrisonAccessService.checkConsumerHasPrisonAccess<HmppsId>(prisoner?.prisonId, filters)
