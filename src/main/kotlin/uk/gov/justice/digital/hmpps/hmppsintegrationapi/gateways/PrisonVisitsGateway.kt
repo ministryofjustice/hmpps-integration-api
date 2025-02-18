@@ -21,7 +21,7 @@ class PrisonVisitsGateway(
 
   fun getVisitByReference(visitReference: String): Response<Visit?> {
     val result =
-      webClient.request<Visit>(
+      webClient.request<Visit?>(
         HttpMethod.GET,
         "/visits/$visitReference",
         authenticationHeader(),
