@@ -33,6 +33,7 @@ services:
       - "4020:4020"
       - "4021:4021"
       - "4022:4022"
+      - "4023:4023"
 
   local-stack-aws:
     image: localstack/localstack:3.0
