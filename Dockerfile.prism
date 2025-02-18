@@ -11,7 +11,6 @@ ADD https://dev.moic.service.justice.gov.uk/v3/api-docs.json /prismMocks/manage-
 ADD https://ministryofjustice.github.io/hmpps-probation-integration-services/tech-docs/projects/external-api-and-delius/api-docs.json /prismMocks/ndelius.json
 ADD https://ministryofjustice.github.io/hmpps-probation-integration-services/tech-docs/projects/effective-proposal-framework-and-delius/api-docs.json /prismMocks/probation-integration-epf.json
 ADD https://prisoner-search-dev.prison.service.justice.gov.uk/v3/api-docs /tmp/prisoner-offender-search-tmp.json
-ADD https://hmpps-manage-prison-visits-orchestration-dev.prison.service.justice.gov.uk/v3/api-docs /prismMocks/manage-prison-visits.json
 
 RUN jq 'del(.components.schemas.Query.properties.subQueries)' /tmp/prisoner-offender-search-tmp.json > /tmp/prisoner-offender-search-tmp1.json
 RUN swagger-cli bundle -r -o /prismMocks/prisoner-offender-search.json /tmp/prisoner-offender-search-tmp1.json
@@ -25,6 +24,6 @@ RUN sed -i 's/\*\/\*/application\/json/g' /prismMocks/assess-risks-and-needs.jso
 RUN sed -i 's/\*\/\*/application\/json/g' /prismMocks/case-notes.json
 RUN sed -i 's/\*\/\*/application\/json/g' /prismMocks/prisoner-offender-search.json
 RUN sed -i 's/\*\/\*/application\/json/g' /prismMocks/x4022-personal-relationships.json
-RUN sed -i 's/\*\/\*/application\/json/g' /prismMocks/manage-prison-visits.json
+RUN sed -i 's/\*\/\*/application\/json/g' /prismMocks/x4023-manage-prison-visits.json
 
 ENTRYPOINT sh -c 'port=4010; for file in $(ls /prismMocks/*.json | sort); do node dist/index.js mock -p $port -h 0.0.0.0 $file & port=$((port + 1)); done; wait'
