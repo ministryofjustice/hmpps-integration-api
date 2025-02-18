@@ -19,15 +19,15 @@ class GetVisitorRestrictionsService(
     hmppsId: String,
     contactId: Long,
     filters: ConsumerFilters?,
-  ): Response<List<PrisonerContactRestrictions>?> {
+  ): Response<PrisonerContactRestrictions?> {
     val personResponse = getPersonService.getPrisoner(hmppsId, filters)
 
     if (personResponse.errors.isNotEmpty()) {
-      return Response(emptyList(), personResponse.errors)
+      return Response(null, personResponse.errors)
     }
     val prisonId = personResponse.data?.prisonId
 
-    val consumerPrisonFilterCheck = consumerPrisonAccessService.checkConsumerHasPrisonAccess<List<PrisonerContactRestrictions>>(prisonId, filters)
+    val consumerPrisonFilterCheck = consumerPrisonAccessService.checkConsumerHasPrisonAccess<PrisonerContactRestrictions>(prisonId, filters)
     if (consumerPrisonFilterCheck.errors.isNotEmpty()) {
       return consumerPrisonFilterCheck
     }
@@ -35,20 +35,24 @@ class GetVisitorRestrictionsService(
     val (linkedPrisoners, linkedPrisonersErrors) = personalRelationshipsGateway.getLinkedPrisoner(contactId)
 
     if (linkedPrisonersErrors.isNotEmpty()) {
-      return Response(emptyList(), linkedPrisonersErrors)
+      return Response(null, linkedPrisonersErrors)
     }
 
-    val linkedPrisonerIds = linkedPrisoners.map { it.relationships?.map { it.prisonerContactId } }.flatMap { it ?: emptyList() }
+    val linkedPrisonerIds = linkedPrisoners.map { linkedPrisoner -> linkedPrisoner.relationships?.map { it.prisonerContactId } }.flatMap { it ?: emptyList() }
 
-    val restrictionsResult = mutableListOf<PrisonerContactRestrictions>()
+    val restrictionsResult = PrisonerContactRestrictions()
     for (prisonerContactId in linkedPrisonerIds) {
       val gatewayResult = personalRelationshipsGateway.getPrisonerContactRestrictions(prisonerContactId!!)
       if (gatewayResult.errors.isEmpty() && gatewayResult.data != null) {
-        restrictionsResult.add(gatewayResult.data)
+        gatewayResult.data.prisonerContactRestrictions?.let { restrictionsResult.prisonerContactRestrictions?.addAll(it) }
+        if (prisonerContactId == linkedPrisonerIds.first()) {
+          restrictionsResult.contactGlobalRestrictions = gatewayResult.data.contactGlobalRestrictions?.first()
+        }
       }
+
       // Continue to loop through ids and call gateway in the case the error is 404
       if (gatewayResult.errors.isNotEmpty() && !gatewayResult.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
-        return Response(emptyList(), gatewayResult.errors)
+        return Response(null, gatewayResult.errors)
       }
     }
 

@@ -10,7 +10,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrap
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.LinkedPrisoner
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PrisonerContactRestrictions
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PrisonerContactRestrictionsResponse
 
 @Component
 class PersonalRelationshipsGateway(
@@ -45,9 +45,9 @@ class PersonalRelationshipsGateway(
     }
   }
 
-  fun getPrisonerContactRestrictions(prisonerContactId: Long): Response<PrisonerContactRestrictions?> {
+  fun getPrisonerContactRestrictions(prisonerContactId: Long): Response<PrisonerContactRestrictionsResponse?> {
     val result =
-      webClient.request<PrisonerContactRestrictions>(
+      webClient.request<PrisonerContactRestrictionsResponse>(
         HttpMethod.GET,
         "/prisoner-contact/$prisonerContactId/restriction",
         authenticationHeader(),

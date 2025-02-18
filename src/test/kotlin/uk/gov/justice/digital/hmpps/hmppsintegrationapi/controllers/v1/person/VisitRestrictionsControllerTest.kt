@@ -42,7 +42,7 @@ internal class VisitRestrictionsControllerTest(
       val visitRestrictionsPath = "/v1/persons/$hmppsId/visit-restrictions"
       val restrictionsPath = "/v1/persons/$hmppsId/visitor/$contactId/restrictions"
       val prisonerContactRestrictionsResponse =
-        listOf(
+        mutableListOf(
           PrisonerContactRestriction(
             prisonerContactRestrictionId = 123456L,
             prisonerContactId = 123456L,
@@ -63,22 +63,20 @@ internal class VisitRestrictionsControllerTest(
         )
 
       val contactGlobalRestrictionsResponse =
-        listOf(
-          ContactGlobalRestriction(
-            contactRestrictionId = 1L,
-            contactId = 123L,
-            restrictionType = "BAN",
-            restrictionTypeDescription = "Banned",
-            startDate = "2024-01-01",
-            expiryDate = "2024-01-01",
-            comments = "N/A",
-            enteredByUsername = "user123",
-            enteredByDisplayName = "User Name",
-            createdBy = "admin",
-            createdTime = "2024-01-01T12:00:00Z",
-            updatedBy = "admin",
-            updatedTime = "2024-01-02T12:00:00Z",
-          ),
+        ContactGlobalRestriction(
+          contactRestrictionId = 1L,
+          contactId = 123L,
+          restrictionType = "BAN",
+          restrictionTypeDescription = "Banned",
+          startDate = "2024-01-01",
+          expiryDate = "2024-01-01",
+          comments = "N/A",
+          enteredByUsername = "user123",
+          enteredByDisplayName = "User Name",
+          createdBy = "admin",
+          createdTime = "2024-01-01T12:00:00Z",
+          updatedBy = "admin",
+          updatedTime = "2024-01-02T12:00:00Z",
         )
 
       val prisonerContactRestrictions = PrisonerContactRestrictions(prisonerContactRestrictionsResponse, contactGlobalRestrictionsResponse)
@@ -101,7 +99,7 @@ internal class VisitRestrictionsControllerTest(
 
         whenever(getVisitorRestrictionsService.execute(hmppsId, contactId, filters = null)).thenReturn(
           Response(
-            data = listOf(prisonerContactRestrictions),
+            data = prisonerContactRestrictions,
           ),
         )
       }
@@ -187,7 +185,7 @@ internal class VisitRestrictionsControllerTest(
         result.response.contentAsString.shouldBe(
           """
         {
-          "data": [
+          "data":
             {
               "prisonerContactRestrictions": [
                 {
@@ -208,8 +206,7 @@ internal class VisitRestrictionsControllerTest(
                   "updatedTime": "2024-01-02T12:00:00Z"
                 }
               ],
-              "contactGlobalRestrictions": [
-                {
+              "contactGlobalRestrictions": {
                   "contactRestrictionId": 1,
                   "contactId": 123,
                   "restrictionType": "BAN",
@@ -224,11 +221,8 @@ internal class VisitRestrictionsControllerTest(
                   "updatedBy": "admin",
                   "updatedTime": "2024-01-02T12:00:00Z"
                 }
-              ]
             }
-          ]
         }
-
         """.removeWhitespaceAndNewlines(),
         )
       }
@@ -236,7 +230,7 @@ internal class VisitRestrictionsControllerTest(
       it("returned 404 when GetVisitorRestrictionsService returns entity not found") {
         whenever(getVisitorRestrictionsService.execute(hmppsId, contactId, filters = null)).thenReturn(
           Response(
-            data = emptyList(),
+            data = null,
             errors =
               listOf(
                 UpstreamApiError(
@@ -253,7 +247,7 @@ internal class VisitRestrictionsControllerTest(
       it("returned 404 when consumerPrisonAccessService returns entity not found") {
         whenever(getVisitorRestrictionsService.execute(hmppsId, contactId, filters = ConsumerFilters(listOf("XYZ")))).thenReturn(
           Response(
-            data = emptyList(),
+            data = null,
             errors =
               listOf(
                 UpstreamApiError(
@@ -271,7 +265,7 @@ internal class VisitRestrictionsControllerTest(
       it("returned 400 when GetVisitorRestrictionsService returns bad request") {
         whenever(getVisitorRestrictionsService.execute(hmppsId, contactId, filters = null)).thenReturn(
           Response(
-            data = emptyList(),
+            data = null,
             errors =
               listOf(
                 UpstreamApiError(

@@ -18,6 +18,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelations
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.LinkedPrisoner
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PrisonerContactRestriction
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PrisonerContactRestrictions
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PrisonerContactRestrictionsResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.Relationship
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSPrisoner
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
@@ -41,7 +42,7 @@ class GetVisitorRestrictionsServiceTest(
       val listOfRelationships = listOf(Relationship(prisonerContactId = contactId, relationshipType = "FAM", relationshipTypeDescription = "Family", relationshipToPrisoner = "SON", relationshipToPrisonerDescription = "Son"))
       val listOfLinkedPrisoners = listOf(LinkedPrisoner(prisonerNumber = "1234567", relationships = listOfRelationships, firstName = "Test", lastName = "Person", middleNames = null))
       val prisonerContactRestrictionsResponse =
-        listOf(
+        mutableListOf(
           PrisonerContactRestriction(
             prisonerContactRestrictionId = 1L,
             prisonerContactId = contactId,
@@ -79,39 +80,23 @@ class GetVisitorRestrictionsServiceTest(
         )
 
       val contactGlobalRestrictionsResponse =
-        listOf(
-          ContactGlobalRestriction(
-            contactRestrictionId = 1L,
-            contactId = contactId,
-            restrictionType = "Restriction 1",
-            restrictionTypeDescription = "Description for Restriction 1",
-            startDate = "2024-01-01",
-            expiryDate = "2025-01-01",
-            comments = "Some comments",
-            enteredByUsername = "user123",
-            enteredByDisplayName = "User Name",
-            createdBy = "admin",
-            createdTime = "2024-01-01T12:00:00Z",
-            updatedBy = "admin",
-            updatedTime = "2024-01-02T12:00:00Z",
-          ),
-          ContactGlobalRestriction(
-            contactRestrictionId = 2L,
-            contactId = contactId,
-            restrictionType = "Restriction 2",
-            restrictionTypeDescription = "Description for Restriction 2",
-            startDate = "2024-02-01",
-            expiryDate = "2025-02-01",
-            comments = "Some other comments",
-            enteredByUsername = "user123",
-            enteredByDisplayName = "User Name",
-            createdBy = "admin",
-            createdTime = "2024-02-01T12:00:00Z",
-            updatedBy = "admin",
-            updatedTime = "2024-02-02T12:00:00Z",
-          ),
+        ContactGlobalRestriction(
+          contactRestrictionId = 1L,
+          contactId = contactId,
+          restrictionType = "Restriction 1",
+          restrictionTypeDescription = "Description for Restriction 1",
+          startDate = "2024-01-01",
+          expiryDate = "2025-01-01",
+          comments = "Some comments",
+          enteredByUsername = "user123",
+          enteredByDisplayName = "User Name",
+          createdBy = "admin",
+          createdTime = "2024-01-01T12:00:00Z",
+          updatedBy = "admin",
+          updatedTime = "2024-01-02T12:00:00Z",
         )
-      val prisonerContactRestrictions = PrisonerContactRestrictions(prisonerContactRestrictionsResponse, contactGlobalRestrictionsResponse)
+
+      val prisonerContactRestrictions = PrisonerContactRestrictionsResponse(prisonerContactRestrictionsResponse, listOf(contactGlobalRestrictionsResponse))
       beforeEach {
         Mockito.reset(personalRelationshipsGateway)
         Mockito.reset(getPersonService)
@@ -136,7 +121,7 @@ class GetVisitorRestrictionsServiceTest(
         whenever(getPersonService.getPrisoner(hmppsId, filters)).thenReturn(Response(data = null, errors = errors))
 
         val result = getVisitorRestrictionsService.execute(hmppsId, contactId, filters)
-        result.data.shouldBe(emptyList())
+        result.data.shouldBe(null)
         result.errors.shouldBe(errors)
       }
 
@@ -163,7 +148,7 @@ class GetVisitorRestrictionsServiceTest(
 
         val response = getVisitorRestrictionsService.execute(hmppsId, contactId, filters)
 
-        response.data.shouldBe(emptyList())
+        response.data.shouldBe(null)
         response.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.PERSONAL_RELATIONSHIPS, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found")))
       }
 
@@ -171,9 +156,15 @@ class GetVisitorRestrictionsServiceTest(
         whenever(personalRelationshipsGateway.getLinkedPrisoner(contactId)).thenReturn(Response(data = listOfLinkedPrisoners, errors = emptyList()))
         whenever(personalRelationshipsGateway.getPrisonerContactRestrictions(contactId)).thenReturn(Response(data = prisonerContactRestrictions, errors = emptyList()))
 
+        val expectedMappedResponse =
+          PrisonerContactRestrictions(
+            prisonerContactRestrictions = prisonerContactRestrictionsResponse,
+            contactGlobalRestrictions = contactGlobalRestrictionsResponse,
+          )
+
         val response = getVisitorRestrictionsService.execute(hmppsId, contactId, filters)
 
-        response.data.shouldBe(listOf(prisonerContactRestrictions))
+        response.data.shouldBe(expectedMappedResponse)
       }
 
       it("returns multiple relationships and queries getPrisonerContactRestrictions accordingly") {

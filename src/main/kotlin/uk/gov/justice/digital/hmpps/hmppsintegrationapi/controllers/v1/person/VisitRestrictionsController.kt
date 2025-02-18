@@ -74,7 +74,7 @@ class VisitRestrictionsController(
     @Parameter(description = "A HMPPS identifier") @PathVariable hmppsId: String,
     @Parameter(description = "A contact ID") @PathVariable contactId: String,
     @RequestAttribute filters: ConsumerFilters?,
-  ): DataResponse<List<PrisonerContactRestrictions>?> {
+  ): DataResponse<PrisonerContactRestrictions?> {
     val stringifiedContactId = contactId.toLongOrNull() ?: throw ValidationException("Invalid contact ID")
     val response = getVisitorRestrictionsService.execute(hmppsId, stringifiedContactId, filters)
 
