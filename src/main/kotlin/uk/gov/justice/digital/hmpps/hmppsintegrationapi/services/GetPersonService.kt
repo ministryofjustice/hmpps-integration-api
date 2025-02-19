@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.ConsumerPrisonAccessService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ProbationOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NomisNumber
@@ -11,12 +12,14 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonInPri
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSPrisoner
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 @Service
 class GetPersonService(
   @Autowired val probationOffenderSearchGateway: ProbationOffenderSearchGateway,
   @Autowired val prisonerOffenderSearchGateway: PrisonerOffenderSearchGateway,
+  @Autowired val consumerPrisonAccessService: ConsumerPrisonAccessService,
 ) {
   fun execute(hmppsId: String): Response<Person?> {
     val probationResponse = probationOffenderSearchGateway.getPerson(id = hmppsId)
@@ -26,6 +29,67 @@ class GetPersonService(
     } else {
       return Response(data = probationResponse.data, errors = probationResponse.errors)
     }
+  }
+
+  fun getPersonWithPrisonFilter(
+    nomisNumber: String,
+    filters: ConsumerFilters?,
+  ): Response<Person?> {
+    // 1. Is it NOMIS No. shaped
+    if (identifyHmppsId(nomisNumber) !== IdentifierType.NOMS) {
+      return Response(
+        data = null,
+        errors = listOf(UpstreamApiError(causedBy = UpstreamApi.NOMIS, type = UpstreamApiError.Type.BAD_REQUEST)),
+      )
+    }
+
+    var prisoner: POSPrisoner? = null
+
+    // 3. If filters get the prison id from a prison search and filter based on it
+    if (filters?.prisons != null) {
+      val prisonerResponse = prisonerOffenderSearchGateway.getPrisonOffender(nomisNumber)
+      if (prisonerResponse.errors.isNotEmpty()) {
+        return Response(
+          data = null,
+          errors = prisonerResponse.errors,
+        )
+      }
+      prisoner = prisonerResponse.data
+      val consumerPrisonFilterCheck = consumerPrisonAccessService.checkConsumerHasPrisonAccess<Person>(prisoner?.prisonId, filters)
+      if (consumerPrisonFilterCheck.errors.isNotEmpty()) {
+        return consumerPrisonFilterCheck
+      }
+    }
+
+    // 2. Go to probation offender search to try and find the hmppsId
+    val probationResponse = probationOffenderSearchGateway.getPerson(id = nomisNumber)
+    if (probationResponse.errors.isNotEmpty() && !probationResponse.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
+      return Response(
+        data = null,
+        errors = probationResponse.errors,
+      )
+    }
+    if (probationResponse.data != null) {
+      return Response(data = probationResponse.data)
+    }
+
+    // 2a. If they don't have one, use prison search to verify that they exist
+    // 3a. If we already did a search can we avoid calling prison search again?
+    if (prisoner == null) {
+      val prisonerResponse = prisonerOffenderSearchGateway.getPrisonOffender(nomisNumber)
+      if (prisonerResponse.errors.isNotEmpty()) {
+        return Response(
+          data = null,
+          errors = prisonerResponse.errors,
+        )
+      }
+      prisoner = prisonerResponse.data
+    }
+    if (prisoner != null) {
+      return Response(data = prisoner.toPerson())
+    }
+
+    return Response(data = null, errors = listOf(UpstreamApiError(causedBy = UpstreamApi.NOMIS, type = UpstreamApiError.Type.ENTITY_NOT_FOUND)))
   }
 
   enum class IdentifierType {

@@ -14,6 +14,7 @@ services:
   plp.base-url: http://prism:4020
   non-associations.base-url: http://prism:4021
   personal-relationships.base-url: http://localhost:4022
+  manage-prison-visits.base-url: http://localhost:4023
 
 authorisation:
   consumers:

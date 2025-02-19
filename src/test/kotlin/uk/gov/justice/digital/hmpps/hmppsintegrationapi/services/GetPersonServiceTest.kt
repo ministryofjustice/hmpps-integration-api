@@ -3,6 +3,7 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 
 import io.kotest.core.spec.style.DescribeSpec
+import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeTypeOf
 import org.assertj.core.api.Assertions.assertThat
@@ -13,6 +14,7 @@ import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.ConsumerPrisonAccessService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ProbationOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Identifiers
@@ -34,14 +36,21 @@ import java.time.LocalDate
 internal class GetPersonServiceTest(
   @MockitoBean val prisonerOffenderSearchGateway: PrisonerOffenderSearchGateway,
   @MockitoBean val probationOffenderSearchGateway: ProbationOffenderSearchGateway,
+  @MockitoBean val consumerPrisonAccessService: ConsumerPrisonAccessService,
   private val getPersonService: GetPersonService,
 ) : DescribeSpec(
     {
       val hmppsId = "2003/13116M"
 
       val nomsNumber = "N1234PS"
+      val invalidNomsNumber = "N1234PSX"
       val prisoner = POSPrisoner(firstName = "Jim", lastName = "Brown", dateOfBirth = LocalDate.of(1992, 12, 3), prisonerNumber = nomsNumber)
-      val blankConsumerFilters = ConsumerFilters(prisons = null)
+      val wrongPrisonId = "XYZ"
+      val prisonId = "ABC"
+      val filters = ConsumerFilters(listOf(prisonId))
+      val blankConsumerFilters = ConsumerFilters(null)
+      val personOnProbation = PersonOnProbation(Person(firstName = "Sam", lastName = "Person", identifiers = Identifiers(nomisNumber = nomsNumber)), underActiveSupervision = true)
+      val prisonerWithPrisonId = POSPrisoner(firstName = "Sam", lastName = "Person", prisonId = prisonId)
 
       beforeEach {
         Mockito.reset(prisonerOffenderSearchGateway)
@@ -270,6 +279,103 @@ internal class GetPersonServiceTest(
         result.data.shouldBeTypeOf<PersonInPrison>()
         result.data.shouldBe(person)
         result.errors.shouldBe(emptyList())
+      }
+
+      it("if not a nomis number then return a bad request") {
+        val result = getPersonService.getPersonWithPrisonFilter(invalidNomsNumber, blankConsumerFilters)
+
+        result.data.shouldBe(null)
+        result.errors.shouldBe(listOf(UpstreamApiError(causedBy = UpstreamApi.NOMIS, type = UpstreamApiError.Type.BAD_REQUEST)))
+      }
+
+      it("if filters are present, consumer filter check fails, return 404") {
+        val errors = listOf(UpstreamApiError(causedBy = UpstreamApi.NOMIS, type = UpstreamApiError.Type.ENTITY_NOT_FOUND))
+        whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber)).thenReturn(Response(data = POSPrisoner(firstName = "Sam", lastName = "Person", prisonId = wrongPrisonId)))
+        whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<Person>(wrongPrisonId, filters)).thenReturn(Response(data = null, errors = errors))
+
+        val result = getPersonService.getPersonWithPrisonFilter(nomsNumber, filters)
+
+        result.data.shouldBe(null)
+        result.errors.shouldBe(errors)
+      }
+
+      it("if filters are present, we get data from probation offender search") {
+
+        whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber)).thenReturn(Response(data = prisonerWithPrisonId))
+        whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<Person>(prisonId, filters)).thenReturn(Response(data = null))
+        whenever(probationOffenderSearchGateway.getPerson(id = nomsNumber)).thenReturn(
+          Response(data = personOnProbation),
+        )
+
+        val result = getPersonService.getPersonWithPrisonFilter(nomsNumber, filters)
+
+        result.data.shouldBe(personOnProbation)
+      }
+
+      it("if filters are present, probation offender search returns 404, get data from POS gateway") {
+        val errors = listOf(UpstreamApiError(causedBy = UpstreamApi.NOMIS, type = UpstreamApiError.Type.ENTITY_NOT_FOUND))
+        whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber)).thenReturn(Response(data = prisonerWithPrisonId))
+        whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<Person>(prisonId, filters)).thenReturn(Response(data = null))
+        whenever(probationOffenderSearchGateway.getPerson(id = nomsNumber)).thenReturn(
+          Response(data = null, errors = errors),
+        )
+
+        val result = getPersonService.getPersonWithPrisonFilter(nomsNumber, filters)
+
+        val person = prisonerWithPrisonId.toPerson()
+        result.data.shouldNotBeNull()
+        result.data!!.firstName.shouldBe(person.firstName)
+        result.data!!.lastName.shouldBe(person.lastName)
+        verify(prisonerOffenderSearchGateway, VerificationModeFactory.times(1)).getPrisonOffender(nomsNumber)
+      }
+
+      it("if filters are present, POS gateway returns 404") {
+        val errors = listOf(UpstreamApiError(causedBy = UpstreamApi.NOMIS, type = UpstreamApiError.Type.ENTITY_NOT_FOUND))
+        whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber)).thenReturn(Response(data = null, errors = errors))
+
+        val result = getPersonService.getPersonWithPrisonFilter(nomsNumber, filters)
+
+        result.data.shouldBe(null)
+        result.errors.shouldBe(errors)
+      }
+
+      it("if filters are null, we get data from probation offender search") {
+        whenever(probationOffenderSearchGateway.getPerson(id = nomsNumber)).thenReturn(
+          Response(data = personOnProbation),
+        )
+
+        val result = getPersonService.getPersonWithPrisonFilter(nomsNumber, blankConsumerFilters)
+
+        result.data.shouldBe(personOnProbation)
+      }
+
+      it("if filters are null, probation offender search returns 404, get data from POS gateway") {
+        val errors = listOf(UpstreamApiError(causedBy = UpstreamApi.NOMIS, type = UpstreamApiError.Type.ENTITY_NOT_FOUND))
+        whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber)).thenReturn(Response(data = prisonerWithPrisonId))
+        whenever(probationOffenderSearchGateway.getPerson(id = nomsNumber)).thenReturn(
+          Response(data = null, errors = errors),
+        )
+
+        val result = getPersonService.getPersonWithPrisonFilter(nomsNumber, blankConsumerFilters)
+        val person = prisonerWithPrisonId.toPerson()
+
+        result.data.shouldNotBeNull()
+        result.data!!.firstName.shouldBe(person.firstName)
+        result.data!!.lastName.shouldBe(person.lastName)
+        verify(prisonerOffenderSearchGateway, VerificationModeFactory.times(1)).getPrisonOffender(nomsNumber)
+      }
+
+      it("if filters are null, probation offender search returns 404, POS gateway returns 404") {
+        val errors = listOf(UpstreamApiError(causedBy = UpstreamApi.NOMIS, type = UpstreamApiError.Type.ENTITY_NOT_FOUND))
+        whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber)).thenReturn(Response(data = null, errors = errors))
+        whenever(probationOffenderSearchGateway.getPerson(id = nomsNumber)).thenReturn(
+          Response(data = null, errors = errors),
+        )
+
+        val result = getPersonService.getPersonWithPrisonFilter(nomsNumber, blankConsumerFilters)
+
+        result.data.shouldBe(null)
+        result.errors.shouldBe(errors)
       }
     },
   )
