@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.ConsumerPrisonAccessService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PersonalRelationshipsGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PrisonerContactRestrictions
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
@@ -38,21 +39,29 @@ class GetVisitorRestrictionsService(
       return Response(null, linkedPrisonersErrors)
     }
 
-    val linkedPrisonerIds = linkedPrisoners.map { linkedPrisoner -> linkedPrisoner.relationships?.map { it.prisonerContactId } }.flatMap { it ?: emptyList() }
+    val linkedPrisoner = linkedPrisoners.firstOrNull { it.prisonerNumber == personResponse.data?.identifiers?.nomisNumber }
+
+    if (linkedPrisoner == null) {
+      return Response(null, listOf(UpstreamApiError(UpstreamApi.PERSONAL_RELATIONSHIPS, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Prisoner not found")))
+    }
+
+    val linkedPrisonerIds = linkedPrisoner.relationships?.map { it.prisonerContactId }
 
     val restrictionsResult = PrisonerContactRestrictions()
-    for (prisonerContactId in linkedPrisonerIds) {
-      val gatewayResult = personalRelationshipsGateway.getPrisonerContactRestrictions(prisonerContactId!!)
-      if (gatewayResult.errors.isEmpty() && gatewayResult.data != null) {
-        gatewayResult.data.prisonerContactRestrictions?.let { restrictionsResult.prisonerContactRestrictions?.addAll(it) }
-        if (prisonerContactId == linkedPrisonerIds.first()) {
-          restrictionsResult.contactGlobalRestrictions = gatewayResult.data.contactGlobalRestrictions?.first()
+    if (linkedPrisonerIds != null) {
+      for (prisonerContactId in linkedPrisonerIds) {
+        val gatewayResult = personalRelationshipsGateway.getPrisonerContactRestrictions(prisonerContactId!!)
+        if (gatewayResult.errors.isEmpty() && gatewayResult.data != null) {
+          gatewayResult.data.prisonerContactRestrictions?.let { restrictionsResult.prisonerContactRestrictions?.addAll(it) }
+          if (prisonerContactId == linkedPrisonerIds.first()) {
+            restrictionsResult.contactGlobalRestrictions = gatewayResult.data.contactGlobalRestrictions?.first()
+          }
         }
-      }
 
-      // Continue to loop through ids and call gateway in the case the error is 404
-      if (gatewayResult.errors.isNotEmpty() && !gatewayResult.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
-        return Response(null, gatewayResult.errors)
+        // Continue to loop through ids and call gateway in the case the error is 404
+        if (gatewayResult.errors.isNotEmpty() && !gatewayResult.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
+          return Response(null, gatewayResult.errors)
+        }
       }
     }
 
