@@ -1,14 +1,20 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.controllers.v1
 
 import io.kotest.core.spec.style.DescribeSpec
+import io.kotest.matchers.shouldBe
 import org.mockito.internal.verification.VerificationModeFactory
 import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
+import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.Visit
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.VisitContact
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.VisitorSupport
@@ -24,7 +30,7 @@ class VisitsControllerTest(
 ) : DescribeSpec(
     {
       val visitReference = "1234567"
-      val path = "/v1/visits/$visitReference"
+      val path = "/v1/visit/$visitReference"
       val mockMvc = IntegrationAPIMockMvc(springMockMvc)
       val visitResponse = Visit(prisonerId = "PrisonerId", prisonId = "MDI", prisonName = "Some Prison", visitRoom = "Room", visitType = "Type", visitStatus = "Status", outcomeStatus = "Outcome", visitRestriction = "Restriction", startTimestamp = "Start", endTimestamp = "End", createdTimestamp = "Created", modifiedTimestamp = "Modified", firstBookedDateTime = "First", visitors = emptyList(), visitNotes = emptyList(), visitContact = VisitContact(name = "Name", telephone = "Telephone", email = "Email"), visitorSupport = VisitorSupport(description = "Description"))
 
@@ -32,6 +38,17 @@ class VisitsControllerTest(
         mockMvc.performAuthorised(path)
 
         verify(getVisitInformationByReferenceService, VerificationModeFactory.times(1)).execute(visitReference, filters = null)
+      }
+
+      it("gets a 404 when visit not found by reference") {
+        whenever(getVisitInformationByReferenceService.execute("33333")).thenReturn(Response(data = null, errors = listOf(UpstreamApiError(causedBy = UpstreamApi.MANAGE_PRISON_VISITS, type = UpstreamApiError.Type.ENTITY_NOT_FOUND))))
+
+        val path404 = "/v1/visit/33333"
+        var result = mockMvc.performAuthorised(path404)
+        result.response.status.shouldBe(HttpStatus.NOT_FOUND)
+      }
+
+      it("gets a 500 when visit service responds") {
       }
     },
   )
