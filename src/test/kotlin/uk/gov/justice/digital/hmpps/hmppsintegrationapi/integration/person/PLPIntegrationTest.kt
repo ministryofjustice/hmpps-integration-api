@@ -1,11 +1,13 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.person
 
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationTestBase
 
 class PLPIntegrationTest : IntegrationTestBase() {
+  @Disabled("Prism generated mock API is returning bad data due to generated schema from other project")
   @Test
   fun `returns a persons integration schedule`() {
     callApi("$basePath/K5995YZ/plp-induction-schedule")
