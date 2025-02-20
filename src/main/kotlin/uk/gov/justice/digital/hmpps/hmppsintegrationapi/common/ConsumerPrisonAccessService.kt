@@ -8,14 +8,15 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Consum
 
 @Service
 class ConsumerPrisonAccessService {
-  fun checkConsumerHasPrisonAccess(
-    prisonId: String,
+  fun <T> checkConsumerHasPrisonAccess(
+    prisonId: String?,
     filters: ConsumerFilters?,
-  ): Response<Any?> {
-    var result = Response<Any?>(data = null, errors = emptyList<UpstreamApiError>())
+    upstreamServiceType: UpstreamApi = UpstreamApi.NOMIS,
+  ): Response<T?> {
+    val response = Response<T?>(data = null, errors = emptyList<UpstreamApiError>())
     if (filters != null && !filters.matchesPrison(prisonId)) {
-      result.errors = listOf(UpstreamApiError(UpstreamApi.NOMIS, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found"))
+      response.errors = listOf(UpstreamApiError(upstreamServiceType, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found"))
     }
-    return result
+    return response
   }
 }

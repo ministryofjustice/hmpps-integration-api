@@ -1,8 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration
 
 import org.junit.jupiter.api.Test
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
@@ -24,24 +22,16 @@ class TransactionsIntegrationTest : IntegrationTestBase() {
 
   @Test
   fun `return a list of transactions when the dates are supplied in the request`() {
-    val headers = org.springframework.http.HttpHeaders()
-    headers.set("subject-distinguished-name", "C=GB,ST=London,L=London,O=Home Office,CN=automated-test-client")
-    mockMvc
-      .perform(
-        get("/v1/prison/$prisonId/prisoners/$hmppsId/accounts/$accountCode/transactions$dateQueryParams").headers(headers),
-      ).andExpect(status().isOk)
+    callApi("/v1/prison/$prisonId/prisoners/$hmppsId/accounts/$accountCode/transactions$dateQueryParams")
+      .andExpect(status().isOk)
       .andExpect(content().json(getExpectedResponse("transactions-response")))
   }
 
   @Test
-  fun `transactions returns no results`() {
-    var wrongPrisonId = "XYZ"
-    val headers = org.springframework.http.HttpHeaders()
-    headers.set("subject-distinguished-name", "C=GB,ST=London,L=London,O=Home Office,CN=limited-prisons")
-    mockMvc
-      .perform(
-        get("/v1/prison/$wrongPrisonId/prisoners/$hmppsId/accounts/$accountCode/transactions").headers(headers),
-      ).andExpect(status().isNotFound)
+  fun `transactions returns 404`() {
+    val wrongPrisonId = "XYZ"
+    callApiWithCN("/v1/prison/$wrongPrisonId/prisoners/$hmppsId/accounts/$accountCode/transactions", limitedPrisonsCn)
+      .andExpect(status().isNotFound)
   }
 
   // transaction
@@ -53,14 +43,10 @@ class TransactionsIntegrationTest : IntegrationTestBase() {
   }
 
   @Test
-  fun `transaction returns no result`() {
-    var wrongPrisonId = "XYZ"
-    val headers = org.springframework.http.HttpHeaders()
-    headers.set("subject-distinguished-name", "C=GB,ST=London,L=London,O=Home Office,CN=limited-prisons")
-    mockMvc
-      .perform(
-        get("/v1/prison/$wrongPrisonId/prisoners/$hmppsId/transactions/$clientUniqueRef").headers(headers),
-      ).andExpect(status().isNotFound)
+  fun `transaction returns 404`() {
+    val wrongPrisonId = "XYZ"
+    callApiWithCN("/v1/prison/$wrongPrisonId/prisoners/$hmppsId/transactions/$clientUniqueRef", limitedPrisonsCn)
+      .andExpect(status().isNotFound)
   }
 
   // POST transaction
@@ -77,12 +63,64 @@ class TransactionsIntegrationTest : IntegrationTestBase() {
       }
       """.trimIndent()
 
-    val headers = org.springframework.http.HttpHeaders()
-    headers.set("subject-distinguished-name", "C=GB,ST=London,L=London,O=Home Office,CN=automated-test-client")
-    mockMvc
-      .perform(
-        post("/v1/prison/$prisonId/prisoners/$hmppsId/transactions").headers(headers).content(requestBody).contentType(org.springframework.http.MediaType.APPLICATION_JSON),
-      ).andExpect(status().isOk)
+    postToApi("/v1/prison/$prisonId/prisoners/$hmppsId/transactions", requestBody)
+      .andExpect(status().isOk)
       .andExpect(content().json(getExpectedResponse("transaction-create-response")))
+  }
+
+  @Test
+  fun `does throw 403 when empty prison field in consumer profile`() {
+    val requestBody =
+      """
+      {
+        "type": "CANT",
+        "description": "Canteen Purchase of £16.34",
+        "amount": 1634,
+        "clientTransactionId": "CL123212",
+        "clientUniqueRef": "CLIENT121131-0_11"
+      }
+      """.trimIndent()
+
+    postToApiWithCN("/v1/prison/$prisonId/prisoners/$hmppsId/transactions", requestBody, emptyPrisonsCn)
+      .andExpect(status().isForbidden)
+  }
+
+  // POST transaction transfer
+
+  @Test
+  fun `return an expected response for a successful transaction transfer post`() {
+    val requestBody =
+      """
+      {
+        "description": "Canteen Purchase of £16.34",
+        "amount": 1634,
+        "clientTransactionId": "CL123212",
+        "clientUniqueRef": "CLIENT121131-0_11",
+        "fromAccount": "spends",
+        "toAccount": "savings"
+      }
+      """.trimIndent()
+
+    postToApi("/v1/prison/$prisonId/prisoners/$hmppsId/transactions/transfer", requestBody)
+      .andExpect(status().isOk)
+      .andExpect(content().json(getExpectedResponse("transaction-transfer-create-response")))
+  }
+
+  @Test
+  fun `return a bad request for a transaction transfer post with invalid from or to accounts`() {
+    val requestBody =
+      """
+      {
+        "description": "Canteen Purchase of £16.34",
+        "amount": 1634,
+        "clientTransactionId": "CL123212",
+        "clientUniqueRef": "CLIENT121131-0_11",
+        "fromAccount": "wrong",
+        "toAccount": "wrong"
+      }
+      """.trimIndent()
+
+    postToApi("/v1/prison/$prisonId/prisoners/$hmppsId/transactions/transfer", requestBody)
+      .andExpect(status().isBadRequest)
   }
 }

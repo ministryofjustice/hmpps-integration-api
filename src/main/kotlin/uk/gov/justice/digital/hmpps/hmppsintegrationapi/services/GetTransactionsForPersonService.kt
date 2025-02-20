@@ -25,10 +25,10 @@ class GetTransactionsForPersonService(
     endDate: String,
     filters: ConsumerFilters? = null,
   ): Response<Transactions?> {
-    val consumerPrisonFilterCheck = consumerPrisonAccessService.checkConsumerHasPrisonAccess(prisonId, filters)
+    val consumerPrisonFilterCheck = consumerPrisonAccessService.checkConsumerHasPrisonAccess<Transactions>(prisonId, filters)
 
     if (consumerPrisonFilterCheck.errors.isNotEmpty()) {
-      return consumerPrisonFilterCheck as Response<Transactions?>
+      return consumerPrisonFilterCheck
     }
 
     if (accountCode !in listOf("spends", "savings", "cash")) {

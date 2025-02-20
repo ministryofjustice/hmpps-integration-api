@@ -22,10 +22,10 @@ class GetTransactionForPersonService(
     clientUniqueRef: String,
     filters: ConsumerFilters? = null,
   ): Response<Transaction?> {
-    val consumerPrisonFilterCheck = consumerPrisonAccessService.checkConsumerHasPrisonAccess(prisonId, filters)
+    val consumerPrisonFilterCheck = consumerPrisonAccessService.checkConsumerHasPrisonAccess<Transaction>(prisonId, filters)
 
     if (consumerPrisonFilterCheck.errors.isNotEmpty()) {
-      return consumerPrisonFilterCheck as Response<Transaction?>
+      return consumerPrisonFilterCheck
     }
 
     val personResponse = getPersonService.getNomisNumber(hmppsId = hmppsId)

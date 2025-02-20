@@ -21,4 +21,16 @@ class SentencesIntegrationTest : IntegrationTestBase() {
       .andExpect(status().isOk)
       .andExpect(content().json(getExpectedResponse("person-sentence-key-dates")))
   }
+
+  @Test
+  fun `return a 404 for if consumer has empty list of prisons on latest sentence key dates and adjustments `() {
+    callApiWithCN("$path/latest-key-dates-and-adjustments", noPrisonsCn)
+      .andExpect(status().isNotFound)
+  }
+
+  @Test
+  fun `return a 404 for prisoner in wrong prison on latest sentence key dates and adjustments`() {
+    callApiWithCN("$path/latest-key-dates-and-adjustments", limitedPrisonsCn)
+      .andExpect(status().isNotFound)
+  }
 }

@@ -21,6 +21,10 @@ services:
     base-url: https://moic.service.justice.gov.uk
   plp:
     base-url: https://learningandworkprogress-api.hmpps.service.justice.gov.uk
+  non-associations:
+    base-url: https://non-associations-api.hmpps.service.justice.gov.uk
+  manage-prison-visits:
+    base-url: https://hmpps-manage-prison-visits-orchestration-dev.prison.service.justice.gov.uk
   hmpps-auth:
     base-url: https://sign-in.hmpps.service.justice.gov.uk
     username: ${CLIENT_ID}
@@ -54,5 +58,6 @@ authorisation:
         - "/v1/persons/.*/plp-induction-schedule"
         - "/v1/persons/.*/plp-induction-schedule/history"
         - "/v1/persons/.*/plp-review-schedule"
+        - "/v1/persons/[^/]+/expression-of-interest/jobs/[^/]+$"
         - "/v1/hmpps/id/by-nomis-number/[^/]*$"
         - "/v1/hmpps/id/nomis-number/by-hmpps-id/[^/]*$"

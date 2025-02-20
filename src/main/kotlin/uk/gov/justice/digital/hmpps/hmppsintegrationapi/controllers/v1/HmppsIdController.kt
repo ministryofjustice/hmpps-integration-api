@@ -7,6 +7,7 @@ import jakarta.validation.ValidationException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.RequestAttribute
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
@@ -14,6 +15,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataRespons
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HmppsId
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NomisNumber
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetHmppsIdService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 
@@ -37,11 +39,16 @@ class HmppsIdController(
   )
   fun getHmppsIdByNomisNumber(
     @PathVariable nomisNumber: String,
+    @RequestAttribute filters: ConsumerFilters?,
   ): DataResponse<HmppsId?> {
-    val response = getHmppsIdService.execute(nomisNumber)
+    val response = getHmppsIdService.execute(nomisNumber, filters)
+
+    if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
+      throw ValidationException("Invalid Nomis number: $nomisNumber")
+    }
 
     if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
-      throw EntityNotFoundException("Could not find HMPPS ID for nomis number: $nomisNumber")
+      throw EntityNotFoundException("Could not find HMPPS ID for Nomis number: $nomisNumber")
     }
 
     auditService.createEvent("GET_HMPPS_ID_BY_NOMIS_NUMBER", mapOf("nomisNumber" to nomisNumber))

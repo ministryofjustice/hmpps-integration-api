@@ -49,7 +49,7 @@ internal class PostTransactionForPersonServiceTest(
       Mockito.reset(getPersonService)
       Mockito.reset(nomisGateway)
 
-      whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess(prisonId, filters)).thenReturn(
+      whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<TransactionCreateResponse>(prisonId, filters)).thenReturn(
         Response(data = null),
       )
 

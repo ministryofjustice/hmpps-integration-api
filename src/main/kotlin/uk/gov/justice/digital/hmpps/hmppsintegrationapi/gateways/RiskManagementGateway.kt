@@ -25,6 +25,7 @@ class RiskManagementGateway(
         "/risks/crn/$crn/risk-management-plan",
         authenticationHeader(),
         UpstreamApi.RISK_MANAGEMENT_PLAN,
+        forbiddenAsError = true,
       )
     return when (result) {
       is WebClientWrapper.WebClientWrapperResponse.Success -> {

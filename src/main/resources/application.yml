@@ -80,6 +80,12 @@ services:
     base-url: http://localhost:4090
   plp:
     base-url: http://localhost:4100
+  non-associations:
+    base-url: http://localhost:4021
+  personal-relationships:
+    base-url: http://localhost:4022
+  manage-prison-visits:
+    base-url: http://localhost:4023
 
 sentry:
   traces-sample-rate: "0.05"

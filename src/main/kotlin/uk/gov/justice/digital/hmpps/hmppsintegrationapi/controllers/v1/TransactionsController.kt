@@ -21,12 +21,15 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataRespons
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Transaction
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.TransactionCreateResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.TransactionRequest
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.TransactionTransferCreateResponse
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.TransactionTransferRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Transactions
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetTransactionForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetTransactionsForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.PostTransactionForPersonService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.PostTransactionTransferForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 import java.time.LocalDate
 
@@ -38,6 +41,7 @@ class TransactionsController(
   @Autowired val getTransactionsForPersonService: GetTransactionsForPersonService,
   @Autowired val getTransactionForPersonService: GetTransactionForPersonService,
   @Autowired val postTransactionsForPersonService: PostTransactionForPersonService,
+  @Autowired val postTransactionTransferForPersonService: PostTransactionTransferForPersonService,
 ) {
   @Operation(
     summary = "Returns all transactions for a prisoner associated with an account code that they have at a prison.",
@@ -79,9 +83,9 @@ class TransactionsController(
   )
   @GetMapping("/accounts/{accountCode}/transactions")
   fun getTransactionsByAccountCode(
-    @PathVariable hmppsId: String,
-    @PathVariable prisonId: String,
-    @PathVariable accountCode: String,
+    @Parameter(description = "The HMPPS ID of the person") @PathVariable hmppsId: String,
+    @Parameter(description = "The ID of the prison that holds the account") @PathVariable prisonId: String,
+    @Parameter(description = "The code of the account to be accessed, one of 'spends', 'savings' or 'cash'", example = "spends") @PathVariable accountCode: String,
     @RequestAttribute filters: ConsumerFilters?,
     @Parameter(description = "Start date for transactions (defaults to today if not supplied)") @RequestParam(required = false, name = "from_date") fromDate: String?,
     @Parameter(description = "To date for transactions (defaults to today if not supplied)") @RequestParam(required = false, name = "to_date") toDate: String?,
@@ -113,7 +117,7 @@ class TransactionsController(
   }
 
   @Operation(
-    summary = "Get transaction by clientUniqueRef.",
+    summary = "Returns details for a transaction by clientUniqueRef.",
     description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
     responses = [
       ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found a transaction."),
@@ -152,9 +156,9 @@ class TransactionsController(
   )
   @GetMapping("/transactions/{clientUniqueRef}")
   fun getTransactionsByClientUniqueRef(
-    @PathVariable prisonId: String,
-    @PathVariable hmppsId: String,
-    @PathVariable clientUniqueRef: String,
+    @Parameter(description = "The HMPPS ID of the person") @PathVariable prisonId: String,
+    @Parameter(description = "The ID of the prison that holds the account") @PathVariable hmppsId: String,
+    @Parameter(description = "The clientUniqueRef used when the transaction was created") @PathVariable clientUniqueRef: String,
     @RequestAttribute filters: ConsumerFilters?,
   ): DataResponse<Transaction?> {
     val response = getTransactionForPersonService.execute(hmppsId, prisonId, clientUniqueRef, filters)
@@ -172,8 +176,8 @@ class TransactionsController(
   }
 
   @Operation(
-    summary = "Post a transaction.",
-    description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
+    summary = "Make a financial transaction.",
+    description = "<a href=\"#schema-transactionrequest\">Request body</a><br><br><b>Applicable filters</b>: <ul><li>prisons</li></ul>",
     responses = [
       ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully created a transaction."),
       ApiResponse(
@@ -221,8 +225,8 @@ class TransactionsController(
   )
   @PostMapping("/transactions")
   fun postTransactions(
-    @PathVariable prisonId: String,
-    @PathVariable hmppsId: String,
+    @Parameter(description = "The ID of the prison that holds the account") @PathVariable prisonId: String,
+    @Parameter(description = "The HMPPS ID of the person") @PathVariable hmppsId: String,
     @RequestAttribute filters: ConsumerFilters?,
     @RequestBody transactionRequest: TransactionRequest,
   ): DataResponse<TransactionCreateResponse?> {
@@ -230,10 +234,6 @@ class TransactionsController(
 
     if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
       throw ValidationException("Either invalid HMPPS ID: $hmppsId or incorrect prison: $prisonId or invalid request body: ${transactionRequest.toApiConformingMap()}")
-    }
-
-    if (response.hasError(UpstreamApiError.Type.FORBIDDEN)) {
-      throw ValidationException("The prisonId: $prisonId is not valid for your consumer profile. ${response.errors[0].description}")
     }
 
     if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
@@ -245,6 +245,79 @@ class TransactionsController(
     }
 
     auditService.createEvent("CREATE_TRANSACTION", mapOf("hmppsId" to hmppsId, "prisonId" to prisonId, "transactionRequest" to transactionRequest.toApiConformingMap().toString()))
+    return DataResponse(response.data)
+  }
+
+  @Operation(
+    summary = "Transfer funds between the accounts of a prisoner.",
+    description = "Currently only able to move from spends to savings.<br><br><a href=\"#schema-transactiontransferrequest\">Request body</a><br><br><b>Applicable filters</b>: <ul><li>prisons</li></ul>",
+    responses = [
+      ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully created a transaction transfer."),
+      ApiResponse(
+        responseCode = "400",
+        description = "",
+        content = [
+          Content(
+            schema =
+              io.swagger.v3.oas.annotations.media
+                .Schema(ref = "#/components/schemas/BadRequest"),
+          ),
+        ],
+      ),
+      ApiResponse(
+        responseCode = "404",
+        content = [
+          Content(
+            schema =
+              io.swagger.v3.oas.annotations.media
+                .Schema(ref = "#/components/schemas/PersonNotFound"),
+          ),
+        ],
+      ),
+      ApiResponse(
+        responseCode = "409",
+        content = [
+          Content(
+            schema =
+              io.swagger.v3.oas.annotations.media
+                .Schema(ref = "#/components/schemas/TransactionConflict"),
+          ),
+        ],
+      ),
+      ApiResponse(
+        responseCode = "500",
+        content = [
+          Content(
+            schema =
+              io.swagger.v3.oas.annotations.media
+                .Schema(ref = "#/components/schemas/InternalServerError"),
+          ),
+        ],
+      ),
+    ],
+  )
+  @PostMapping("/transactions/transfer")
+  fun postTransactionsTransfer(
+    @Parameter(description = "The ID of the prison that holds the account") @PathVariable prisonId: String,
+    @Parameter(description = "The HMPPS ID of the person") @PathVariable hmppsId: String,
+    @RequestAttribute filters: ConsumerFilters?,
+    @RequestBody transactionTransferRequest: TransactionTransferRequest,
+  ): DataResponse<TransactionTransferCreateResponse?> {
+    val response = postTransactionTransferForPersonService.execute(prisonId, hmppsId, transactionTransferRequest, filters)
+
+    if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
+      throw ValidationException("Either invalid HMPPS ID: $hmppsId or incorrect prison: $prisonId or invalid request body: ${response.errors[0].description}")
+    }
+
+    if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
+      throw EntityNotFoundException(" ${response.errors[0].description}")
+    }
+
+    if (response.hasError(UpstreamApiError.Type.CONFLICT)) {
+      throw ConflictFoundException("The transaction ${transactionTransferRequest.clientTransactionId} has not been recorded as it is a duplicate.")
+    }
+
+    auditService.createEvent("CREATE_TRANSACTION_TRANSFER", mapOf("hmppsId" to hmppsId, "prisonId" to prisonId, "transactionTransferRequest" to transactionTransferRequest.toString()))
     return DataResponse(response.data)
   }
 }

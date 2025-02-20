@@ -1,8 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.prison
 
 import org.junit.jupiter.api.Test
-import org.springframework.http.HttpHeaders
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationTestBase
@@ -23,22 +21,21 @@ class PrisonIntegrationTest : IntegrationTestBase() {
 
   @Test
   fun `return a 404 for prisoner in wrong prison`() {
-    val headers = HttpHeaders()
-    headers.set("subject-distinguished-name", "C=GB,ST=London,L=London,O=Home Office,CN=limited-prisons")
-    mockMvc
-      .perform(
-        get("$basePrisonPath/prisoners/$hmppsId").headers(headers),
-      ).andExpect(status().isNotFound)
+    callApiWithCN("$basePrisonPath/prisoners/$hmppsId", limitedPrisonsCn)
+      .andExpect(status().isNotFound)
   }
 
   @Test
-  fun `return a 404 for if consumer has empty list of prisons`() {
-    val headers = HttpHeaders()
-    headers.set("subject-distinguished-name", "C=GB,ST=London,L=London,O=Home Office,CN=no-prisons")
-    mockMvc
-      .perform(
-        get("$basePrisonPath/prisoners/$hmppsId").headers(headers),
-      ).andExpect(status().isNotFound)
+  fun `return a 404 no prisons in filter`() {
+    callApiWithCN("$basePrisonPath/prisoners/$hmppsId", noPrisonsCn)
+      .andExpect(status().isNotFound)
+  }
+
+  @Test
+  fun `return a 200 for empty but successful upstream response`() {
+    val deliberateMissVal = "nope"
+    callApi("$basePrisonPath/prisoners?first_name=$deliberateMissVal&last_name=$lastName&dateOfBirth=$dateOfBirth")
+      .andExpect(status().isOk)
   }
 
   @Test

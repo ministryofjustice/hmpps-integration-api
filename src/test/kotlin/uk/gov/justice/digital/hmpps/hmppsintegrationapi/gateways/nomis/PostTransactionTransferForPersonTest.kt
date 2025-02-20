@@ -40,7 +40,9 @@ class PostTransactionTransferForPersonTest(
     val amount = 1634
     val clientTransactionId = "CL123212"
     val clientUniqueRef = "CLIENT121131-0_11"
-    val exampleTransfer = TransactionTransferRequest(description, amount, clientTransactionId, clientUniqueRef)
+    val fromAccount = "spends"
+    val toAccount = "savings"
+    val exampleTransfer = TransactionTransferRequest(description, amount, clientTransactionId, clientUniqueRef, fromAccount, toAccount)
 
     beforeEach {
       nomisApiMockServer.start()
@@ -116,7 +118,7 @@ class PostTransactionTransferForPersonTest(
     }
 
     it("return a 404 error response") {
-      val invalidTransferRequest = TransactionTransferRequest("", 0, "", "")
+      val invalidTransferRequest = TransactionTransferRequest("", 0, "", "", "", "")
       nomisApiMockServer.stubNomisApiResponseForPost(
         path,
         asJsonString(invalidTransferRequest),

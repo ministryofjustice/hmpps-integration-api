@@ -54,6 +54,7 @@ data class InductionSchedule(
           EXEMPT_PRISONER_DEATH
           EXEMPT_SCREENING_AND_ASSESSMENT_IN_PROGRESS
           EXEMPT_SCREENING_AND_ASSESSMENT_INCOMPLETE
+          EXEMPT_PRISONER_MERGE
     """,
     example = "SCHEDULED",
   )
@@ -80,9 +81,28 @@ data class InductionSchedule(
   val nomisNumber: String? = null,
   @Schema(
     description =
-      "The name of the person who used the PLP system to update the Induction Schedule, " +
+      "The name of the person who used the PLP system to create the Induction Schedule, " +
         "or 'system' for system generated updates.",
     example = "John Smith",
+  )
+  val systemCreatedBy: String? = null,
+  @Schema(
+    description = "An ISO-8601 timestamp representing the time the PLP system was used to create the Induction Schedule.",
+    example = "2023-06-19T09:39:44Z",
+  )
+  val systemCreatedAt: Instant? = null,
+  @Schema(
+    description =
+      "The code of the prison where the induction was Created",
+    example = "BXI",
+  )
+  val systemCreatedAtPrison: String? = null,
+  @Schema(
+    description = """
+      The name of the person who performed the Induction with the prisoner.
+      In the case of system generated updates or setting an exemption this field will not be present.
+    """,
+    example = "Fred Jones",
   )
   val systemUpdatedBy: String? = null,
   @Schema(
@@ -90,6 +110,12 @@ data class InductionSchedule(
     example = "2023-06-19T09:39:44Z",
   )
   val systemUpdatedAt: Instant? = null,
+  @Schema(
+    description =
+      "The code of the prison where the induction was updated",
+    example = "BXI",
+  )
+  val systemUpdatedAtPrison: String? = null,
   @Schema(
     description = """
       The name of the person who performed the Induction with the prisoner.
@@ -147,6 +173,10 @@ class InductionScheduleDeserializer : JsonDeserializer<InductionSchedule>() {
     val scheduleCalculationRule = node["scheduleCalculationRule"]?.asText()
     val systemUpdatedBy = node["updatedByDisplayName"]?.asText()
     val systemUpdatedAt = node["updatedAt"]?.asText()?.let { Instant.parse(it) }
+    val systemUpdatedAtPrison = node["updatedAtPrison"]?.asText()
+    val systemCreatedBy = node["createdByDisplayName"]?.asText()
+    val systemCreatedAt = node["createdAt"]?.asText()?.let { Instant.parse(it) }
+    val systemCreatedAtPrison = node["createdAtPrison"]?.asText()
     val inductionPerformedBy = node["inductionPerformedBy"]?.takeUnless { it.isNull }?.asText()
     val inductionPerformedAt = node["inductionPerformedAt"]?.takeUnless { it.isNull }?.asText()?.let { LocalDate.parse(it) }
     val inductionPerformedByRole = node["inductionPerformedByRole"]?.takeUnless { it.isNull }?.asText()
@@ -159,8 +189,12 @@ class InductionScheduleDeserializer : JsonDeserializer<InductionSchedule>() {
       status = scheduleStatus,
       calculationRule = scheduleCalculationRule,
       nomisNumber = nomisNumber,
+      systemCreatedBy = systemCreatedBy,
+      systemCreatedAt = systemCreatedAt,
+      systemCreatedAtPrison = systemCreatedAtPrison,
       systemUpdatedBy = systemUpdatedBy,
       systemUpdatedAt = systemUpdatedAt,
+      systemUpdatedAtPrison = systemUpdatedAtPrison,
       inductionPerformedBy = inductionPerformedBy,
       inductionPerformedAt = inductionPerformedAt,
       inductionPerformedByRole = inductionPerformedByRole,

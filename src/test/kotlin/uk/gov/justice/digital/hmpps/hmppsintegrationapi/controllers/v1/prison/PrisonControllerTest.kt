@@ -17,13 +17,13 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonInPrison
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError.Type.BAD_REQUEST
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError.Type.ENTITY_NOT_FOUND
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError.Type.FORBIDDEN
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPrisonersService
@@ -70,19 +70,13 @@ internal class PrisonControllerTest(
           Response(
             data =
               PersonInPrison(
-                Person(
-                  firstName = "Barry",
-                  lastName = "Allen",
-                  middleName = "Jonas",
-                  dateOfBirth = LocalDate.parse("2023-03-01"),
-                  gender = "Male",
-                  ethnicity = "Caucasian",
-                  pncId = "PNC123456",
-                  currentExclusion = true,
-                  exclusionMessage = "An exclusion is present",
-                  currentRestriction = true,
-                  restrictionMessage = "A restriction is present",
-                ),
+                firstName = "Barry",
+                lastName = "Allen",
+                middleName = "Jonas",
+                dateOfBirth = LocalDate.parse("2023-03-01"),
+                gender = "Male",
+                ethnicity = "Caucasian",
+                pncId = "PNC123456",
                 category = "C",
                 csra = "HIGH",
                 receptionDate = "2023-05-01",
@@ -100,13 +94,6 @@ internal class PrisonControllerTest(
           """
             {
              "data":{
-                   "category": "C",
-                   "csra": "HIGH",
-                   "receptionDate": "2023-05-01",
-                   "status": "ACTIVE IN",
-                   "prisonId": "MDI",
-                   "prisonName": "HMP Leeds",
-                   "cellLocation": "A-1-002",
                    "firstName":"Barry",
                    "lastName":"Allen",
                    "middleName":"Jonas",
@@ -120,12 +107,13 @@ internal class PrisonControllerTest(
                       "deliusCrn":null
                    },
                    "pncId": "PNC123456",
-                   "hmppsId": null,
-                   "contactDetails": null,
-                   "currentRestriction": true,
-                   "restrictionMessage": "A restriction is present",
-                   "currentExclusion": true,
-                   "exclusionMessage": "An exclusion is present"
+                   "category": "C",
+                   "csra": "HIGH",
+                   "receptionDate": "2023-05-01",
+                   "status": "ACTIVE IN",
+                   "prisonId": "MDI",
+                   "prisonName": "HMP Leeds",
+                   "cellLocation": "A-1-002"
                 }
              }
           """.removeWhitespaceAndNewlines(),
@@ -137,15 +125,13 @@ internal class PrisonControllerTest(
           Response(
             data =
               PersonInPrison(
-                Person(
-                  firstName = "Barry",
-                  lastName = "Allen",
-                  middleName = "Jonas",
-                  dateOfBirth = LocalDate.parse("2023-03-01"),
-                  gender = "Male",
-                  ethnicity = "Caucasian",
-                  pncId = "PNC123456",
-                ),
+                firstName = "Barry",
+                lastName = "Allen",
+                middleName = "Jonas",
+                dateOfBirth = LocalDate.parse("2023-03-01"),
+                gender = "Male",
+                ethnicity = "Caucasian",
+                pncId = "PNC123456",
                 category = "C",
                 csra = "HIGH",
                 receptionDate = "2023-05-01",
@@ -167,24 +153,17 @@ internal class PrisonControllerTest(
         )
       }
 
-      it("returns 404 when prisoner is not found") {
+      it("returns 200 when prisoner is not found but successful query") {
         whenever(getPersonService.getPrisoner(eq(hmppsId), anyOrNull())).thenReturn(
           Response(
             data = null,
-            errors =
-              listOf(
-                UpstreamApiError(
-                  type = ENTITY_NOT_FOUND,
-                  causedBy = UpstreamApi.PRISONER_OFFENDER_SEARCH,
-                  description = "Prisoner not found",
-                ),
-              ),
+            errors = emptyList(),
           ),
         )
 
         val result = mockMvc.performAuthorised("$basePath/prisoners/$hmppsId")
 
-        result.response.status.shouldBe(404)
+        result.response.status.shouldBe(200)
       }
 
       it("returns 404 when NOMIS number is not found") {
@@ -195,7 +174,7 @@ internal class PrisonControllerTest(
               listOf(
                 UpstreamApiError(
                   type = ENTITY_NOT_FOUND,
-                  causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH,
+                  causedBy = UpstreamApi.PRISONER_OFFENDER_SEARCH,
                   description = "NOMIS number not found",
                 ),
               ),
@@ -261,20 +240,16 @@ internal class PrisonControllerTest(
             data =
               listOf(
                 PersonInPrison(
-                  Person(
-                    firstName = "Barry",
-                    lastName = "Allen",
-                    middleName = "Jonas",
-                    dateOfBirth = LocalDate.parse("2023-03-01"),
-                  ),
+                  firstName = "Barry",
+                  lastName = "Allen",
+                  middleName = "Jonas",
+                  dateOfBirth = LocalDate.parse("2023-03-01"),
                 ),
                 PersonInPrison(
-                  Person(
-                    firstName = "Barry",
-                    lastName = "Allen",
-                    middleName = "Rock",
-                    dateOfBirth = LocalDate.parse("2022-07-22"),
-                  ),
+                  firstName = "Barry",
+                  lastName = "Allen",
+                  middleName = "Rock",
+                  dateOfBirth = LocalDate.parse("2022-07-22"),
                 ),
               ),
           ),
@@ -282,6 +257,26 @@ internal class PrisonControllerTest(
         val result = mockMvc.performAuthorised("$basePath/prisoners?first_name=$firstName&last_name=$lastName&date_of_birth=$dateOfBirth&search_within_aliases=false")
 
         result.response.status.shouldBe(HttpStatus.OK.value())
+      }
+
+      it("returns 403 when consumer config includes an empty prison filter field") {
+        whenever(getPrisonersService.execute(firstName, lastName, dateOfBirth, false, ConsumerFilters(prisons = emptyList()))).thenReturn(
+          Response(
+            data = emptyList(),
+            errors =
+              listOf(
+                UpstreamApiError(
+                  type = FORBIDDEN,
+                  causedBy = UpstreamApi.PRISONER_OFFENDER_SEARCH,
+                  description = "Consumer configured with no access to any prisons",
+                ),
+              ),
+          ),
+        )
+
+        val result = mockMvc.performAuthorisedWithCN("$basePath/prisoners?first_name=$firstName&last_name=$lastName&date_of_birth=$dateOfBirth&search_within_aliases=false", "empty-prisons")
+
+        result.response.status.shouldBe(403)
       }
     },
   )

@@ -1,6 +1,6 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "6.1.2"
-  kotlin("plugin.spring") version "2.1.0"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "7.1.2"
+  kotlin("plugin.spring") version "2.1.10"
 }
 
 configurations {
@@ -9,22 +9,23 @@ configurations {
 
 dependencies {
   runtimeOnly("org.flywaydb:flyway-database-postgresql")
-  implementation("org.springframework.boot:spring-boot-starter-webflux:3.4.1")
+  implementation("org.springframework.boot:spring-boot-starter-webflux:3.4.2")
   implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0")
   implementation("io.sentry:sentry-spring-boot-starter-jakarta:7.20.0")
   implementation("io.sentry:sentry-logback:7.20.0")
   implementation("org.springframework.data:spring-data-commons:3.4.2")
-  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:5.2.2") {
+  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:5.3.0") {
     exclude("org.springframework.security", "spring-security-config")
     exclude("org.springframework.security", "spring-security-core")
     exclude("org.springframework.security", "spring-security-crypto")
     exclude("org.springframework.security", "spring-security-web")
   }
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.7.0")
+  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.1")
   testImplementation("io.kotest:kotest-assertions-json-jvm:5.9.1")
   testImplementation("io.kotest:kotest-runner-junit5-jvm:5.9.1")
   testImplementation("io.kotest:kotest-assertions-core-jvm:5.9.1")
-  testImplementation("org.wiremock:wiremock-standalone:3.10.0")
+  testImplementation("org.wiremock:wiremock-standalone:3.11.0")
   testImplementation("io.kotest.extensions:kotest-extensions-spring:1.3.0")
   testImplementation("org.mockito:mockito-core:5.15.2")
   testImplementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.18.2")

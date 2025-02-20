@@ -196,6 +196,7 @@ internal class SentencesControllerTest(
         result.response.contentAsString.shouldContainJsonKeyValue("$.pagination.page", 1)
         result.response.contentAsString.shouldContainJsonKeyValue("$.pagination.totalPages", 2)
       }
+
       it("logs audit") {
         whenever(getSentencesForPersonService.execute(hmppsId)).thenReturn(
           Response(

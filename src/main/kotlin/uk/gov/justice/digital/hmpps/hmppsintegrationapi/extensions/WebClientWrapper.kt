@@ -18,7 +18,7 @@ import java.time.Duration
 class WebClientWrapper(
   val baseUrl: String,
 ) {
-  val CREATE_TRANSACTION_RETRY_HTTP_CODES = listOf(500, 502, 503, 504, 522, 599, 499, 408, 301)
+  val CREATE_TRANSACTION_RETRY_HTTP_CODES = listOf(500, 502, 503, 504, 522, 599, 499, 408)
   val MAX_RETRY_ATTEMPTS = 3L
   val MIN_BACKOFF_DURATION = Duration.ofSeconds(3)
 
@@ -53,6 +53,7 @@ class WebClientWrapper(
     upstreamApi: UpstreamApi,
     requestBody: Map<String, Any?>? = null,
     forbiddenAsError: Boolean = false,
+    badRequestAsError: Boolean = false,
   ): WebClientWrapperResponse<T> =
     try {
       val responseData =
@@ -63,9 +64,13 @@ class WebClientWrapper(
 
       WebClientWrapperResponse.Success(responseData)
     } catch (exception: WebClientResponseException) {
-      getErrorType(exception, upstreamApi, forbiddenAsError)
+      getErrorType(exception, upstreamApi, forbiddenAsError, badRequestAsError)
     }
 
+  /**
+   * Warning: This function should only be used with IDEMPOTENT requests.
+   * If your POST request is not idempotent then you should not use this function.
+   */
   inline fun <reified T> requestWithRetry(
     method: HttpMethod,
     uri: String,
@@ -73,6 +78,7 @@ class WebClientWrapper(
     upstreamApi: UpstreamApi,
     requestBody: Map<String, Any?>? = null,
     forbiddenAsError: Boolean = false,
+    badRequestAsError: Boolean = false,
   ): WebClientWrapperResponse<T> =
     try {
       val responseData =
@@ -89,7 +95,7 @@ class WebClientWrapper(
 
       WebClientWrapperResponse.Success(responseData)
     } catch (exception: WebClientResponseException) {
-      getErrorType(exception, upstreamApi, forbiddenAsError)
+      getErrorType(exception, upstreamApi, forbiddenAsError, badRequestAsError)
     }
 
   inline fun <reified T> requestList(
@@ -99,6 +105,7 @@ class WebClientWrapper(
     upstreamApi: UpstreamApi,
     requestBody: Map<String, Any?>? = null,
     forbiddenAsError: Boolean = false,
+    badRequestAsError: Boolean = false,
   ): WebClientWrapperResponse<List<T>> =
     try {
       val responseData =
@@ -110,7 +117,7 @@ class WebClientWrapper(
 
       WebClientWrapperResponse.Success(responseData)
     } catch (exception: WebClientResponseException) {
-      getErrorType(exception, upstreamApi, forbiddenAsError)
+      getErrorType(exception, upstreamApi, forbiddenAsError, badRequestAsError)
     }
 
   fun getResponseBodySpec(
@@ -136,12 +143,16 @@ class WebClientWrapper(
     exception: WebClientResponseException,
     upstreamApi: UpstreamApi,
     forbiddenAsError: Boolean = false,
+    badRequestAsError: Boolean = false,
   ): WebClientWrapperResponse.Error {
     val errorType =
       when (exception.statusCode) {
         HttpStatus.NOT_FOUND -> UpstreamApiError.Type.ENTITY_NOT_FOUND
         HttpStatus.CONFLICT -> UpstreamApiError.Type.CONFLICT
         HttpStatus.FORBIDDEN -> if (forbiddenAsError) UpstreamApiError.Type.FORBIDDEN else throw exception
+        HttpStatus.BAD_REQUEST -> if (badRequestAsError) UpstreamApiError.Type.BAD_REQUEST else throw exception
+        // Manage prison visits does not support 400s, returns bad reqs as 500s
+        HttpStatus.INTERNAL_SERVER_ERROR -> if (upstreamApi == UpstreamApi.MANAGE_PRISON_VISITS) UpstreamApiError.Type.INTERNAL_SERVER_ERROR else throw exception
         else -> throw exception
       }
     return WebClientWrapperResponse.Error(

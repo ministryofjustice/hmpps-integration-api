@@ -1,0 +1,38 @@
+{
+  "data": {
+    "prisonerContactRestrictions": [
+      {
+        "prisonerContactRestrictionId": 123456,
+        "prisonerContactId": 123456,
+        "contactId": 123456,
+        "prisonerNumber": "A1234BC",
+        "restrictionType": "BAN",
+        "restrictionTypeDescription": "Banned",
+        "startDate": "2024-01-01",
+        "expiryDate": "2024-01-01",
+        "comments": "N/A",
+        "enteredByUsername": "admin",
+        "enteredByDisplayName": "John Smith",
+        "createdBy": "admin",
+        "createdTime": "2023-09-23T10:15:30",
+        "updatedBy": "admin2",
+        "updatedTime": "2023-09-24T12:00:00"
+      }
+    ],
+    "contactGlobalRestrictions": {
+      "contactRestrictionId": 1,
+      "contactId": 123,
+      "restrictionType": "BAN",
+      "restrictionTypeDescription": "Banned",
+      "startDate": "2024-01-01",
+      "expiryDate": "2024-01-01",
+      "comments": "N/A",
+      "enteredByUsername": "admin",
+      "enteredByDisplayName": "John Smith",
+      "createdBy": "admin",
+      "createdTime": "2023-09-23T10:15:30",
+      "updatedBy": "admin2",
+      "updatedTime": "2023-09-24T12:00:00"
+    }
+}
+}

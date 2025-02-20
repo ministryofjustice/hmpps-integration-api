@@ -30,6 +30,8 @@ class GetPrisonersService(
           dateOfBirth,
           searchWithinAliases,
         )
+      } else if (prisonIds.isEmpty()) {
+        return Response(emptyList(), listOf(UpstreamApiError(UpstreamApi.PRISONER_OFFENDER_SEARCH, UpstreamApiError.Type.FORBIDDEN, "Consumer configured with no access to any prisons")))
       } else {
         // Hit prisoner-details endpoint
         prisonerOffenderSearchGateway.getPrisonerDetails(firstName, lastName, dateOfBirth, searchWithinAliases, prisonIds)
@@ -37,10 +39,6 @@ class GetPrisonersService(
 
     if (responseFromPrisonerOffenderSearch.errors.isNotEmpty()) {
       return Response(emptyList(), responseFromPrisonerOffenderSearch.errors)
-    }
-
-    if (responseFromPrisonerOffenderSearch.data.isEmpty()) {
-      return Response(emptyList(), listOf(UpstreamApiError(UpstreamApi.PRISONER_OFFENDER_SEARCH, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found")))
     }
 
     return Response(data = responseFromPrisonerOffenderSearch.data.map { it.toPersonInPrison() })
