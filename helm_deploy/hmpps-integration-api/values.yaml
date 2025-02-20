@@ -8,7 +8,7 @@ generic-service:
 
   image:
     repository: quay.io/hmpps/hmpps-integration-api
-    tag: app_version    # override at deployment time
+    tag: app_version # override at deployment time
     port: 8080
 
   livenessProbe:
@@ -29,7 +29,7 @@ generic-service:
     enabled: true
     v1_2_enabled: true
     v0_47_enabled: false
-    host: app-hostname.local    # override per environment
+    host: app-hostname.local # override per environment
     tlsSecretName: ""
     annotations:
       nginx.ingress.kubernetes.io/auth-tls-verify-client: "on"
