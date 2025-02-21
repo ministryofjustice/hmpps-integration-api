@@ -30,4 +30,25 @@ class VisitRestrictionIntegrationTest : IntegrationTestBase() {
     callApi("$basePath/$invalidNomsId/visit-restrictions")
       .andExpect(status().isBadRequest)
   }
+
+  // Visitor restriction endpoint
+  @Test
+  fun `returns visitor restrictions for a prisoner`() {
+    callApi("$basePath/$nomsId/visitor/$contactId/restrictions")
+      .andExpect(status().isOk)
+      .andExpect(content().json(getExpectedResponse("visitor-restrictions")))
+  }
+
+  @Test
+  fun `return a 404 for a failed prison consumer profile check`() {
+    callApiWithCN("$basePath/$nomsId/visitor/$contactId/restrictions", limitedPrisonsCn)
+      .andExpect(status().isNotFound)
+  }
+
+  @Test
+  fun `return a 400 when an invalid consumerId is submitted`() {
+    val invalidContactIdString = "invalid"
+    callApi("$basePath/$nomsId/visitor/$invalidContactIdString/restrictions")
+      .andExpect(status().isBadRequest)
+  }
 }

@@ -159,6 +159,12 @@ authorisation:
         - "/v1/hmpps/id/by-nomis-number/[^/]*$"
         - "/v1/hmpps/id/nomis-number/by-hmpps-id/[^/]*$"
       filters:
+    moj-esw:
+      include:
+        - "/v1/persons/[^/]+/expression-of-interest/jobs/[^/]+$"
+        - "/v1/hmpps/id/by-nomis-number/[^/]*$"
+        - "/v1/hmpps/id/nomis-number/by-hmpps-id/[^/]*$"
+      filters:
     bmadley:
       include:
         - "/.*"

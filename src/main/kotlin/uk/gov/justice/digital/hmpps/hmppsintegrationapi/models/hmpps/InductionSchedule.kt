@@ -54,6 +54,7 @@ data class InductionSchedule(
           EXEMPT_PRISONER_DEATH
           EXEMPT_SCREENING_AND_ASSESSMENT_IN_PROGRESS
           EXEMPT_SCREENING_AND_ASSESSMENT_INCOMPLETE
+          EXEMPT_PRISONER_MERGE
     """,
     example = "SCHEDULED",
   )
