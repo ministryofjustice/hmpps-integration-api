@@ -102,6 +102,7 @@ authorisation:
         - "/v1/prison/.*/prisoners/.*/transactions/transfer"
         - "/v1/prison/.*/prisoners/.*/non-associations"
         - "/v1/persons/.*/visitor/.*/restrictions"
+        - "/v1/visit/[^/]*$"
       filters:
     config-test:
       include:
@@ -122,6 +123,7 @@ authorisation:
         - "/v1/persons/.*/visit-restrictions"
         - "/v1/persons/.*/visitor/.*/restrictions"
         - "/v1/hmpps/id/nomis-number/[^/]*$"
+        - "/v1/visit/[^/]*$"
       filters:
         prisons:
           - ABC
@@ -132,5 +134,6 @@ authorisation:
         - "/v1/prison/.*/prisoners/.*/non-associations"
         - "/v1/persons/.*/visit-restrictions"
         - "/v1/hmpps/id/nomis-number/[^/]*$"
+        - "/v1/visit/[^/]*$"
       filters:
         prisons:
