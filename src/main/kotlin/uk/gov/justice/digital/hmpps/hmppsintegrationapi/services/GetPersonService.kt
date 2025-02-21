@@ -36,11 +36,19 @@ class GetPersonService(
     hmppsId: String,
     filters: ConsumerFilters?,
   ): Response<Person?> {
+    val hmppsIdType = identifyHmppsId(hmppsId)
+    if (hmppsIdType == IdentifierType.UNKNOWN) {
+      return Response(
+        data = null,
+        errors = listOf(UpstreamApiError(causedBy = UpstreamApi.NOMIS, type = UpstreamApiError.Type.BAD_REQUEST)),
+      )
+    }
+
     var personOnProbation: PersonOnProbation? = null
 
     // 1. Is it NOMIS No. shaped
-    var nomisNumber: String?
-    if (identifyHmppsId(hmppsId) == IdentifierType.NOMS) {
+    var nomisNumber: String? = null
+    if (hmppsIdType == IdentifierType.NOMS) {
       nomisNumber = hmppsId
     } else {
       val probationResponse = probationOffenderSearchGateway.getPerson(id = hmppsId)
@@ -61,7 +69,7 @@ class GetPersonService(
       if (nomisNumber == null) {
         return Response(
           data = null,
-          errors = listOf(UpstreamApiError(causedBy = UpstreamApi.NOMIS, type = UpstreamApiError.Type.BAD_REQUEST)),
+          errors = listOf(UpstreamApiError(causedBy = UpstreamApi.NOMIS, type = UpstreamApiError.Type.ENTITY_NOT_FOUND)),
         )
       }
       val prisonerResponse = prisonerOffenderSearchGateway.getPrisonOffender(nomisNumber)
@@ -88,7 +96,7 @@ class GetPersonService(
         )
       }
       personOnProbation = probationResponse.data
-      nomisNumber = personOnProbation?.identifiers?.nomisNumber
+      nomisNumber = nomisNumber ?: personOnProbation?.identifiers?.nomisNumber
     }
     if (personOnProbation != null) {
       return Response(data = personOnProbation)
@@ -100,7 +108,7 @@ class GetPersonService(
       if (nomisNumber == null) {
         return Response(
           data = null,
-          errors = listOf(UpstreamApiError(causedBy = UpstreamApi.NOMIS, type = UpstreamApiError.Type.BAD_REQUEST)),
+          errors = listOf(UpstreamApiError(causedBy = UpstreamApi.NOMIS, type = UpstreamApiError.Type.ENTITY_NOT_FOUND)),
         )
       }
       val prisonerResponse = prisonerOffenderSearchGateway.getPrisonOffender(nomisNumber)
