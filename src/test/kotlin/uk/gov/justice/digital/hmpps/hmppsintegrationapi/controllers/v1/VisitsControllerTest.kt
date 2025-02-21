@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
@@ -35,20 +36,50 @@ class VisitsControllerTest(
       val visitResponse = Visit(prisonerId = "PrisonerId", prisonId = "MDI", prisonName = "Some Prison", visitRoom = "Room", visitType = "Type", visitStatus = "Status", outcomeStatus = "Outcome", visitRestriction = "Restriction", startTimestamp = "Start", endTimestamp = "End", createdTimestamp = "Created", modifiedTimestamp = "Modified", firstBookedDateTime = "First", visitors = emptyList(), visitNotes = emptyList(), visitContact = VisitContact(name = "Name", telephone = "Telephone", email = "Email"), visitorSupport = VisitorSupport(description = "Description"))
 
       it("calls the visit information service and successfully retrieves the visit information") {
-        mockMvc.performAuthorised(path)
+        whenever(getVisitInformationByReferenceService.execute(visitReference)).thenReturn(Response(data = visitResponse))
 
-        verify(getVisitInformationByReferenceService, VerificationModeFactory.times(1)).execute(visitReference, filters = null)
+        val result = mockMvc.performAuthorised(path)
+        result.response.status.shouldBe(HttpStatus.OK.value())
+        result.response.contentAsString shouldBe (
+          """
+            {
+              "data": {
+                  "prisonerId": "PrisonerId",
+                  "prisonId": "MDI",
+                  "prisonName": "Some Prison",
+                  "visitRoom": "Room",
+                  "visitType": "Type",
+                  "visitStatus": "Status",
+                  "outcomeStatus": "Outcome",
+                  "visitRestriction": "Restriction",
+                  "startTimestamp": "Start",
+                  "endTimestamp": "End",
+                  "createdTimestamp": "Created",
+                  "modifiedTimestamp": "Modified",
+                  "firstBookedDateTime": "First",
+                  "visitors": [],
+                  "visitNotes": [],
+                  "visitContact": {"name": "Name", "telephone": "Telephone", "email": "Email"},
+                  "visitorSupport": {"description": "Description"}
+              }
+            }
+          """.removeWhitespaceAndNewlines()
+        )
+        verify(getVisitInformationByReferenceService, VerificationModeFactory.times(1)).execute(visitReference)
       }
 
       it("gets a 404 when visit not found by reference") {
-        whenever(getVisitInformationByReferenceService.execute("33333")).thenReturn(Response(data = null, errors = listOf(UpstreamApiError(causedBy = UpstreamApi.MANAGE_PRISON_VISITS, type = UpstreamApiError.Type.ENTITY_NOT_FOUND))))
+        whenever(getVisitInformationByReferenceService.execute(visitReference)).thenReturn(Response(data = null, errors = listOf(UpstreamApiError(causedBy = UpstreamApi.MANAGE_PRISON_VISITS, type = UpstreamApiError.Type.ENTITY_NOT_FOUND))))
 
-        val path404 = "/v1/visit/33333"
-        var result = mockMvc.performAuthorised(path404)
-        result.response.status.shouldBe(HttpStatus.NOT_FOUND)
+        val result = mockMvc.performAuthorised(path)
+        result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
       }
 
       it("gets a 500 when visit service responds") {
+        whenever(getVisitInformationByReferenceService.execute(visitReference)).thenReturn(Response(data = null, errors = listOf(UpstreamApiError(causedBy = UpstreamApi.MANAGE_PRISON_VISITS, type = UpstreamApiError.Type.INTERNAL_SERVER_ERROR))))
+
+        val result = mockMvc.performAuthorised(path)
+        result.response.status.shouldBe(HttpStatus.INTERNAL_SERVER_ERROR.value())
       }
     },
   )
