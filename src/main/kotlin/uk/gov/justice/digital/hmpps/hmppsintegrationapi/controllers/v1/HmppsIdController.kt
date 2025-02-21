@@ -37,7 +37,7 @@ class HmppsIdController(
       ApiResponse(responseCode = "400", description = "Invalid hmppsId."),
     ],
   )
-  fun getHmppsIdByNomisNumber(
+  suspend fun getHmppsIdByNomisNumber(
     @PathVariable nomisNumber: String,
     @RequestAttribute filters: ConsumerFilters?,
   ): DataResponse<HmppsId?> {
@@ -67,7 +67,7 @@ class HmppsIdController(
       ApiResponse(responseCode = "400", description = "Invalid hmppsId."),
     ],
   )
-  fun getNomisNumberByHMPPSID(
+  suspend fun getNomisNumberByHMPPSID(
     @PathVariable hmppsId: String,
   ): DataResponse<NomisNumber?> {
     val response = getHmppsIdService.getNomisNumber(hmppsId)
