@@ -29,8 +29,7 @@ class HmppsIdController(
   @GetMapping("nomis-number/{nomisNumber}", "by-nomis-number/{nomisNumber}")
   @Operation(
     summary = "Return a HMPPS id for a given nomis number",
-    description = """Accepts a nomis number and looks up the corresponding HMPPS Id (hmppsId).
-    """,
+    description = "Accepts a nomis number and looks up the corresponding HMPPS Id (hmppsId).<br><br><b>Applicable filters</b>: <ul><li>prisons</li></ul>",
     responses = [
       ApiResponse(responseCode = "200", useReturnTypeSchema = true),
       ApiResponse(responseCode = "404", description = "Nomis number could not be found."),
