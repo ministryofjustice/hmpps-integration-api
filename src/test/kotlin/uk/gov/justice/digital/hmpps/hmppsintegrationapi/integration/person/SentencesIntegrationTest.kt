@@ -6,7 +6,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationTestBase
 
 class SentencesIntegrationTest : IntegrationTestBase() {
-  final var path = "$basePath/$pnc/sentences"
+  final var path = "$basePath/$nomsId/sentences"
   final var invalidHmppsIdPath = "$basePath/INVALID/sentences"
 
   @Test
