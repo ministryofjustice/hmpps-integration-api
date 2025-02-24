@@ -48,13 +48,21 @@ class PrisonVisitsGateway(
 
   fun getVisits(
     prisonId: String,
-    hmppsId: String,
-    fromDate: String,
-    toDate: String,
+    hmppsId: String?,
+    fromDate: String?,
+    toDate: String?,
     visitStatus: String,
     page: Int,
-    perPage: Int,
+    size: Int,
   ): Response<PaginatedVisit?> {
+    val queryParamBuilder
+    if (prisonId.isNullOrBlank()) {
+      queryParamBuilder + "prisonId=$prisonId"
+    }
+    if (hmppsId.isNullOrBlank()) {
+      queryParamBuilder + "prisonerId=$hmppsId"
+    }
+
     val result =
       webClient.request<PaginatedVisit?>(
         HttpMethod.GET,
