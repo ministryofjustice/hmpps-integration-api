@@ -45,6 +45,8 @@ class PrisonVisitsGateway(
     }
   }
 
+  fun getFutureVisits(prisonerId: String): Response<List<Visit>?> = Response(data = null)
+
   private fun authenticationHeader(): Map<String, String> {
     val token = hmppsAuthGateway.getClientToken("MANAGE-PRISON-VISITS")
 
