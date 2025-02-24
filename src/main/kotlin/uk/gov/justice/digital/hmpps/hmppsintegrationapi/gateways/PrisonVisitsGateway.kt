@@ -8,6 +8,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrap
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper.WebClientWrapperResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.PaginatedVisit
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.Visit
 
 @Component
@@ -24,6 +25,40 @@ class PrisonVisitsGateway(
       webClient.request<Visit?>(
         HttpMethod.GET,
         "/visits/$visitReference",
+        authenticationHeader(),
+        UpstreamApi.MANAGE_PRISON_VISITS,
+      )
+
+    return when (result) {
+      is WebClientWrapperResponse.Success -> {
+        Response(
+          data =
+            result.data,
+        )
+      }
+
+      is WebClientWrapperResponse.Error -> {
+        Response(
+          data = null,
+          errors = result.errors,
+        )
+      }
+    }
+  }
+
+  fun getVisits(
+    prisonId: String,
+    hmppsId: String,
+    fromDate: String,
+    toDate: String,
+    visitStatus: String,
+    page: Int,
+    perPage: Int,
+  ): Response<PaginatedVisit?> {
+    val result =
+      webClient.request<PaginatedVisit?>(
+        HttpMethod.GET,
+        "/visits/search?prisonerId=$hmppsId&prisonId=$prisonId&visitStartDate=$fromDate&visitEndDate=$toDate&visitStatus=$visitStatus&page=$page&size=$perPage",
         authenticationHeader(),
         UpstreamApi.MANAGE_PRISON_VISITS,
       )
