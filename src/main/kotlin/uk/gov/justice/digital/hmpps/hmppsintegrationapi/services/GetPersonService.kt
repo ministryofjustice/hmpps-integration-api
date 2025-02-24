@@ -12,7 +12,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonInPri
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSPrisoner
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 @Service
@@ -32,64 +31,57 @@ class GetPersonService(
   }
 
   fun getPersonWithPrisonFilter(
-    nomisNumber: String,
+    hmppsId: String,
     filters: ConsumerFilters?,
   ): Response<Person?> {
-    // 1. Is it NOMIS No. shaped
-    if (identifyHmppsId(nomisNumber) !== IdentifierType.NOMS) {
+    // Error if not a valid id
+    val hmppsIdType = identifyHmppsId(hmppsId)
+    if (hmppsIdType == IdentifierType.UNKNOWN) {
       return Response(
         data = null,
         errors = listOf(UpstreamApiError(causedBy = UpstreamApi.NOMIS, type = UpstreamApiError.Type.BAD_REQUEST)),
       )
     }
 
-    var prisoner: POSPrisoner? = null
-
-    // 3. If filters get the prison id from a prison search and filter based on it
-    if (filters?.prisons != null) {
-      val prisonerResponse = prisonerOffenderSearchGateway.getPrisonOffender(nomisNumber)
-      if (prisonerResponse.errors.isNotEmpty()) {
-        return Response(
-          data = null,
-          errors = prisonerResponse.errors,
-        )
-      }
-      prisoner = prisonerResponse.data
-      val consumerPrisonFilterCheck = consumerPrisonAccessService.checkConsumerHasPrisonAccess<Person>(prisoner?.prisonId, filters)
-      if (consumerPrisonFilterCheck.errors.isNotEmpty()) {
-        return consumerPrisonFilterCheck
-      }
-    }
-
-    // 2. Go to probation offender search to try and find the hmppsId
-    val probationResponse = probationOffenderSearchGateway.getPerson(id = nomisNumber)
+    // Get a delius person, to get NOMIS number and for response
+    val probationResponse = probationOffenderSearchGateway.getPerson(id = hmppsId)
     if (probationResponse.errors.isNotEmpty() && !probationResponse.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
       return Response(
         data = null,
         errors = probationResponse.errors,
       )
     }
-    if (probationResponse.data != null) {
-      return Response(data = probationResponse.data)
-    }
-
-    // 2a. If they don't have one, use prison search to verify that they exist
-    // 3a. If we already did a search can we avoid calling prison search again?
-    if (prisoner == null) {
-      val prisonerResponse = prisonerOffenderSearchGateway.getPrisonOffender(nomisNumber)
-      if (prisonerResponse.errors.isNotEmpty()) {
+    val personOnProbation = probationResponse.data
+    val nomisNumber =
+      if (personOnProbation?.identifiers?.nomisNumber != null) {
+        personOnProbation.identifiers.nomisNumber
+      } else if (hmppsIdType == IdentifierType.NOMS) {
+        hmppsId
+      } else {
         return Response(
           data = null,
-          errors = prisonerResponse.errors,
+          errors = listOf(UpstreamApiError(causedBy = UpstreamApi.NOMIS, type = UpstreamApiError.Type.ENTITY_NOT_FOUND)),
         )
       }
-      prisoner = prisonerResponse.data
-    }
-    if (prisoner != null) {
-      return Response(data = prisoner.toPerson())
+
+    // Get the NOMIS person for prison ID and for verifying exist in NOMIS
+    val prisonerResponse = prisonerOffenderSearchGateway.getPrisonOffender(nomisNumber)
+    if (prisonerResponse.errors.isNotEmpty()) {
+      return Response(
+        data = null,
+        errors = prisonerResponse.errors,
+      )
     }
 
-    return Response(data = null, errors = listOf(UpstreamApiError(causedBy = UpstreamApi.NOMIS, type = UpstreamApiError.Type.ENTITY_NOT_FOUND)))
+    // Filter on Prison
+    if (filters?.prisons != null) {
+      val consumerPrisonFilterCheck = consumerPrisonAccessService.checkConsumerHasPrisonAccess<Person>(prisonerResponse.data?.prisonId, filters)
+      if (consumerPrisonFilterCheck.errors.isNotEmpty()) {
+        return consumerPrisonFilterCheck
+      }
+    }
+
+    return Response(data = personOnProbation ?: prisonerResponse.data?.toPerson())
   }
 
   enum class IdentifierType {
