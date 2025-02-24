@@ -7,6 +7,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationT
 
 class SentencesIntegrationTest : IntegrationTestBase() {
   final var path = "$basePath/$pnc/sentences"
+  final var invalidHmppsIdPath = "$basePath/INVALID/sentences"
 
   @Test
   fun `returns sentences for a person`() {
@@ -20,6 +21,12 @@ class SentencesIntegrationTest : IntegrationTestBase() {
     callApi("$path/latest-key-dates-and-adjustments")
       .andExpect(status().isOk)
       .andExpect(content().json(getExpectedResponse("person-sentence-key-dates")))
+  }
+
+  @Test
+  fun `returns a 404 if the hmppsId is invalid`() {
+    callApi("$invalidHmppsIdPath/latest-key-dates-and-adjustments")
+      .andExpect(status().isBadRequest)
   }
 
   @Test
