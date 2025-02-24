@@ -10,6 +10,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrap
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper.WebClientWrapperResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.FutureVisit
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.Visit
 
 @Component
@@ -48,9 +49,9 @@ class PrisonVisitsGateway(
     }
   }
 
-  fun getFutureVisits(prisonerId: String): Response<List<Visit>?> {
+  fun getFutureVisits(prisonerId: String): Response<List<FutureVisit>?> {
     val result =
-      webClient.request<List<Visit>?>(
+      webClient.request<List<FutureVisit>?>(
         HttpMethod.GET,
         "/visits/search/future/$prisonerId",
         authenticationHeader(),
@@ -62,7 +63,7 @@ class PrisonVisitsGateway(
       is WebClientWrapperResponse.Success -> {
         Response(
           data =
-            mapToVisits(result),
+            mapToFutureVisits(result),
         )
       }
 
@@ -83,8 +84,8 @@ class PrisonVisitsGateway(
     )
   }
 
-  fun mapToVisits(result: WebClientWrapper.WebClientWrapperResponse.Success<List<Visit>?>): List<Visit> {
-    val mappedResult: List<Visit> = mapper.convertValue(result.data, object : TypeReference<List<Visit>>() {})
+  fun mapToFutureVisits(result: WebClientWrapper.WebClientWrapperResponse.Success<List<FutureVisit>?>): List<FutureVisit> {
+    val mappedResult: List<FutureVisit> = mapper.convertValue(result.data, object : TypeReference<List<FutureVisit>>() {})
     return mappedResult
   }
 }
