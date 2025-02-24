@@ -45,20 +45,24 @@ class GetPersonService(
 
     // Get a delius person, to get NOMIS number and for response
     val probationResponse = probationOffenderSearchGateway.getPerson(id = hmppsId)
-    if (probationResponse.errors.isNotEmpty()) {
+    if (probationResponse.errors.isNotEmpty() && !probationResponse.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
       return Response(
         data = null,
         errors = probationResponse.errors,
       )
     }
     val personOnProbation = probationResponse.data
-    val nomisNumber = personOnProbation?.identifiers?.nomisNumber
-    if (nomisNumber == null) {
-      return Response(
-        data = null,
-        errors = listOf(UpstreamApiError(causedBy = UpstreamApi.NOMIS, type = UpstreamApiError.Type.ENTITY_NOT_FOUND)),
-      )
-    }
+    val nomisNumber =
+      if (personOnProbation?.identifiers?.nomisNumber != null) {
+        personOnProbation.identifiers.nomisNumber
+      } else if (hmppsIdType == IdentifierType.NOMS) {
+        hmppsId
+      } else {
+        return Response(
+          data = null,
+          errors = listOf(UpstreamApiError(causedBy = UpstreamApi.NOMIS, type = UpstreamApiError.Type.ENTITY_NOT_FOUND)),
+        )
+      }
 
     // Get the NOMIS person for prison ID and for verifying exist in NOMIS
     val prisonerResponse = prisonerOffenderSearchGateway.getPrisonOffender(nomisNumber)
@@ -70,16 +74,14 @@ class GetPersonService(
     }
 
     // Filter on Prison
-    if (filters?.prisons == null) {
-      return Response(data = personOnProbation)
+    if (filters?.prisons != null) {
+      val consumerPrisonFilterCheck = consumerPrisonAccessService.checkConsumerHasPrisonAccess<Person>(prisonerResponse.data?.prisonId, filters)
+      if (consumerPrisonFilterCheck.errors.isNotEmpty()) {
+        return consumerPrisonFilterCheck
+      }
     }
-    val prisoner = prisonerResponse.data
-    val consumerPrisonFilterCheck = consumerPrisonAccessService.checkConsumerHasPrisonAccess<Person>(prisoner?.prisonId, filters)
-    if (consumerPrisonFilterCheck.errors.isNotEmpty()) {
-      return consumerPrisonFilterCheck
-    } else {
-      return Response(data = personOnProbation)
-    }
+
+    return Response(data = personOnProbation ?: prisonerResponse.data?.toPerson())
   }
 
   enum class IdentifierType {
