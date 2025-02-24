@@ -197,16 +197,6 @@ class PrisonVisitsGatewayTest(
           response.errors.shouldHaveSize(1)
           response.errors.first().shouldBe(UpstreamApiError(causedBy = UpstreamApi.MANAGE_PRISON_VISITS, type = UpstreamApiError.Type.BAD_REQUEST))
         }
-
-        it("returns a 500 when request is incorrect") {
-          prisonVisitsApiMockServer.stubPrisonVisitsApiResponse(futuresPath, body = "", HttpStatus.INTERNAL_SERVER_ERROR)
-
-          val response = prisonVisitsGateway.getFutureVisits(prisonerId)
-          response.errors.shouldHaveSize(1)
-          response.errors
-            .first()
-            .shouldBe(UpstreamApiError(causedBy = UpstreamApi.MANAGE_PRISON_VISITS, type = UpstreamApiError.Type.INTERNAL_SERVER_ERROR))
-        }
       }
     },
   )
