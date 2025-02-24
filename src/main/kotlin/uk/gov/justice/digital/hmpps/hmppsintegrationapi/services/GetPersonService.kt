@@ -9,11 +9,9 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NomisNumber
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.OffenderSearchResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonInPrison
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonOnProbation
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSPrisoner
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 @Service
@@ -36,6 +34,7 @@ class GetPersonService(
     hmppsId: String,
     filters: ConsumerFilters?,
   ): Response<Person?> {
+    // Error if not a valid id
     val hmppsIdType = identifyHmppsId(hmppsId)
     if (hmppsIdType == IdentifierType.UNKNOWN) {
       return Response(
@@ -44,87 +43,43 @@ class GetPersonService(
       )
     }
 
-    var personOnProbation: PersonOnProbation? = null
-
-    // 1. Is it NOMIS No. shaped
-    var nomisNumber: String? = null
-    if (hmppsIdType == IdentifierType.NOMS) {
-      nomisNumber = hmppsId
-    } else {
-      val probationResponse = probationOffenderSearchGateway.getPerson(id = hmppsId)
-      if (probationResponse.errors.isNotEmpty() && !probationResponse.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
-        return Response(
-          data = null,
-          errors = probationResponse.errors,
-        )
-      }
-      personOnProbation = probationResponse.data
-      nomisNumber = personOnProbation?.identifiers?.nomisNumber
+    // Get a delius person, to get NOMIS number and for response
+    val probationResponse = probationOffenderSearchGateway.getPerson(id = hmppsId)
+    if (probationResponse.errors.isNotEmpty()) {
+      return Response(
+        data = null,
+        errors = probationResponse.errors,
+      )
+    }
+    val personOnProbation = probationResponse.data
+    val nomisNumber = personOnProbation?.identifiers?.nomisNumber
+    if (nomisNumber == null) {
+      return Response(
+        data = null,
+        errors = listOf(UpstreamApiError(causedBy = UpstreamApi.NOMIS, type = UpstreamApiError.Type.ENTITY_NOT_FOUND)),
+      )
     }
 
-    var prisoner: POSPrisoner? = null
-
-    // 3. If filters get the prison id from a prison search and filter based on it
-    if (filters?.prisons != null) {
-      if (nomisNumber == null) {
-        return Response(
-          data = null,
-          errors = listOf(UpstreamApiError(causedBy = UpstreamApi.NOMIS, type = UpstreamApiError.Type.ENTITY_NOT_FOUND)),
-        )
-      }
-      val prisonerResponse = prisonerOffenderSearchGateway.getPrisonOffender(nomisNumber)
-      if (prisonerResponse.errors.isNotEmpty()) {
-        return Response(
-          data = null,
-          errors = prisonerResponse.errors,
-        )
-      }
-      prisoner = prisonerResponse.data
-      val consumerPrisonFilterCheck = consumerPrisonAccessService.checkConsumerHasPrisonAccess<Person>(prisoner?.prisonId, filters)
-      if (consumerPrisonFilterCheck.errors.isNotEmpty()) {
-        return consumerPrisonFilterCheck
-      }
+    // Get the NOMIS person for prison ID and for verifying exist in NOMIS
+    val prisonerResponse = prisonerOffenderSearchGateway.getPrisonOffender(nomisNumber)
+    if (prisonerResponse.errors.isNotEmpty()) {
+      return Response(
+        data = null,
+        errors = prisonerResponse.errors,
+      )
     }
 
-    // 2. Go to probation offender search to try and find the hmppsId
-    if (personOnProbation == null) {
-      val probationResponse = probationOffenderSearchGateway.getPerson(id = hmppsId)
-      if (probationResponse.errors.isNotEmpty() && !probationResponse.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
-        return Response(
-          data = null,
-          errors = probationResponse.errors,
-        )
-      }
-      personOnProbation = probationResponse.data
-      nomisNumber = nomisNumber ?: personOnProbation?.identifiers?.nomisNumber
-    }
-    if (personOnProbation != null) {
+    // Filter on Prison
+    if (filters?.prisons == null) {
       return Response(data = personOnProbation)
     }
-
-    // 2a. If they don't have one, use prison search to verify that they exist
-    // 3a. If we already did a search can we avoid calling prison search again?
-    if (prisoner == null) {
-      if (nomisNumber == null) {
-        return Response(
-          data = null,
-          errors = listOf(UpstreamApiError(causedBy = UpstreamApi.NOMIS, type = UpstreamApiError.Type.ENTITY_NOT_FOUND)),
-        )
-      }
-      val prisonerResponse = prisonerOffenderSearchGateway.getPrisonOffender(nomisNumber)
-      if (prisonerResponse.errors.isNotEmpty()) {
-        return Response(
-          data = null,
-          errors = prisonerResponse.errors,
-        )
-      }
-      prisoner = prisonerResponse.data
+    val prisoner = prisonerResponse.data
+    val consumerPrisonFilterCheck = consumerPrisonAccessService.checkConsumerHasPrisonAccess<Person>(prisoner?.prisonId, filters)
+    if (consumerPrisonFilterCheck.errors.isNotEmpty()) {
+      return consumerPrisonFilterCheck
+    } else {
+      return Response(data = personOnProbation)
     }
-    if (prisoner != null) {
-      return Response(data = prisoner.toPerson())
-    }
-
-    return Response(data = null, errors = listOf(UpstreamApiError(causedBy = UpstreamApi.NOMIS, type = UpstreamApiError.Type.ENTITY_NOT_FOUND)))
   }
 
   enum class IdentifierType {
