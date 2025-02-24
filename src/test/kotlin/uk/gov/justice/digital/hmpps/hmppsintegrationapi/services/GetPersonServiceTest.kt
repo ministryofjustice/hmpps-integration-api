@@ -62,11 +62,14 @@ internal class GetPersonServiceTest(
         whenever(probationOffenderSearchGateway.getPerson(id = hmppsId)).thenReturn(
           Response(data = PersonOnProbation(Person(firstName = "Qui-gon", lastName = "Jin", identifiers = Identifiers(nomisNumber = "A1234AA")), underActiveSupervision = true)),
         )
+        whenever(probationOffenderSearchGateway.getPerson(id = nomsNumber))
+          .thenReturn(Response(data = null, errors = listOf(UpstreamApiError(causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH, UpstreamApiError.Type.ENTITY_NOT_FOUND))))
+        whenever(probationOffenderSearchGateway.getPerson(id = invalidNomsNumber)).thenReturn(
+          Response(data = PersonOnProbation(Person(firstName = "Sam", lastName = "Person", identifiers = Identifiers(nomisNumber = null)), underActiveSupervision = true)),
+        )
         whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber = "A1234AA")).thenReturn(
           Response(data = POSPrisoner(firstName = "Sam", lastName = "Mills")),
         )
-        whenever(probationOffenderSearchGateway.getPerson(id = nomsNumber))
-          .thenReturn(Response(data = null, errors = listOf(UpstreamApiError(causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH, UpstreamApiError.Type.ENTITY_NOT_FOUND))))
         whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber = nomsNumber)).thenReturn(Response(data = prisoner))
       }
 
@@ -281,8 +284,8 @@ internal class GetPersonServiceTest(
         result.errors.shouldBe(emptyList())
       }
 
-      it("if not a nomis number then return a bad request") {
-        val result = getPersonService.getPersonWithPrisonFilter(invalidNomsNumber, blankConsumerFilters)
+      it("if not a hmpps is not a nomis number or crn then return a bad request") {
+        val result = getPersonService.getPersonWithPrisonFilter(invalidNomsNumber, filters)
 
         result.data.shouldBe(null)
         result.errors.shouldBe(listOf(UpstreamApiError(causedBy = UpstreamApi.NOMIS, type = UpstreamApiError.Type.BAD_REQUEST)))

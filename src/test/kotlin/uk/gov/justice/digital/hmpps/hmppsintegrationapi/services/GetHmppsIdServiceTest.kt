@@ -8,6 +8,7 @@ import org.springframework.boot.test.context.ConfigDataApplicationContextInitial
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HmppsId
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Identifiers
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
@@ -24,6 +25,7 @@ internal class GetHmppsIdServiceTest(
 ) : DescribeSpec(
     {
       val id = "A7777ZZ"
+      val nomisNumber = "A6666ZZ"
       val hmppsId = HmppsId(hmppsId = id)
       val filters = ConsumerFilters(listOf("ABC"))
 
@@ -32,7 +34,7 @@ internal class GetHmppsIdServiceTest(
       }
 
       it("Returns a hmpps id for the given id") {
-        val person = Person(firstName = "Qui-gon", lastName = "Jin", hmppsId = id)
+        val person = Person(firstName = "Qui-gon", lastName = "Jin", hmppsId = id, identifiers = Identifiers(nomisNumber = nomisNumber))
         whenever(getPersonService.getPersonWithPrisonFilter(id, filters)).thenReturn(
           Response(
             data = person,
@@ -40,6 +42,17 @@ internal class GetHmppsIdServiceTest(
         )
         val result = getHmppsIdService.execute(id, filters)
         result.shouldBe(Response(data = hmppsId))
+      }
+
+      it("Returns a hmpps id when hmpps id is null but a nomis number is present") {
+        val person = Person(firstName = "Qui-gon", lastName = "Jin", identifiers = Identifiers(nomisNumber = nomisNumber))
+        whenever(getPersonService.getPersonWithPrisonFilter(id, filters)).thenReturn(
+          Response(
+            data = person,
+          ),
+        )
+        val result = getHmppsIdService.execute(id, filters)
+        result.shouldBe(Response(data = HmppsId(nomisNumber)))
       }
 
       it("Returns an error if getPersonWithPrisonFilter() returns an error") {
