@@ -66,6 +66,9 @@ class VisitsControllerTest(
           """
             {
               "data": {
+                  "applicationReference":"dfs-wjs-abc",
+                  "reference":"dfs-wjs-abc",
+                  "sessionTemplateReference":"dfs-wjs-xyz",
                   "prisonerId": "PrisonerId",
                   "prisonId": "MDI",
                   "prisonName": "Some Prison",
