@@ -1,6 +1,9 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits
 
 data class Visit(
+  val applicationReference: String?,
+  val reference: String?,
+  val sessionTemplateReference: String?,
   val prisonerId: String,
   val prisonId: String,
   val prisonName: String?,
