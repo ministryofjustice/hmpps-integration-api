@@ -74,7 +74,7 @@ class GetVisitsTest(
           .type
           .shouldBe(UpstreamApiError.Type.BAD_REQUEST)
       }
-// do with multi visits
+
       it("returns a 200 when visit is found") {
         val exampleData =
           """
@@ -156,6 +156,131 @@ class GetVisitsTest(
           .first()
           ?.visitStatus
           .shouldBe("RESERVED")
+      }
+
+      it("returns a 200 when multiple visits are found") {
+        val exampleData =
+          """
+                   {
+             "totalElements":1,
+             "totalPages":1,
+             "first":true,
+             "last":true,
+             "size":1,
+             "number":1,
+             "sort":{
+                "empty":false,
+                "sorted":false,
+                "unsorted":true
+             },
+             "numberOfElements":1,
+             "pageable":{
+                "offset":0,
+                "sort":{
+                   "empty":false,
+                   "sorted":false,
+                   "unsorted":true
+                },
+                "pageSize":1,
+                "paged":true,
+                "pageNumber":1,
+                "unpaged":false
+             },
+             "empty":false,
+             "content":[
+                {
+                   "applicationReference":"dfs-wjs-eqr",
+                   "reference":"dfs-wjs-abc",
+                   "prisonerId":"AF34567G",
+                   "prisonId":"MDI",
+                   "prisonName":"Moorland (HMP & YOI)",
+                   "sessionTemplateReference":"v9d.7ed.7u",
+                   "visitRoom":"Visits Main Hall",
+                   "visitType":"SOCIAL",
+                   "visitStatus":"RESERVED",
+                   "outcomeStatus":"VISITOR_CANCELLED",
+                   "visitRestriction":"OPEN",
+                   "startTimestamp":"2018-12-01T13:45:00",
+                   "endTimestamp":"2018-12-01T13:45:00",
+                   "visitNotes":[
+                      {
+                         "type":"VISITOR_CONCERN",
+                         "text":"Visitor is concerned that his mother in-law is coming!"
+                      }
+                   ],
+                   "visitContact":{
+                      "name":"John Smith",
+                      "telephone":"01234 567890",
+                      "email":"email@example.com"
+                   },
+                   "visitors":[
+                      {
+                         "nomisPersonId":1234,
+                         "visitContact":true
+                      }
+                   ],
+                   "visitorSupport":{
+                      "description":"visually impaired assistance"
+                   },
+                   "createdTimestamp":"2018-12-01T13:45:00",
+                   "modifiedTimestamp":"2018-12-01T13:45:00",
+                   "firstBookedDateTime":"2018-12-01T13:45:00"
+                },
+                {
+                   "applicationReference":"abc-wjs-eqr",
+                   "reference":"abc-wjs-abc",
+                   "prisonerId":"AB1234G",
+                   "prisonId":"MDI",
+                   "prisonName":"Moorland (HMP & YOI)",
+                   "sessionTemplateReference":"v9d.7ed.7u",
+                   "visitRoom":"Visits Main Hall",
+                   "visitType":"SOCIAL",
+                   "visitStatus":"BOOKED",
+                   "outcomeStatus":"VISITOR_CANCELLED",
+                   "visitRestriction":"OPEN",
+                   "startTimestamp":"2018-12-01T13:45:00",
+                   "endTimestamp":"2018-12-01T13:45:00",
+                   "visitNotes":[
+                      {
+                         "type":"VISITOR_CONCERN",
+                         "text":"Visitor is concerned that his mother in-law is coming!"
+                      }
+                   ],
+                   "visitContact":{
+                      "name":"John Smith",
+                      "telephone":"01234 567890",
+                      "email":"email@example.com"
+                   },
+                   "visitors":[
+                      {
+                         "nomisPersonId":1234,
+                         "visitContact":true
+                      }
+                   ],
+                   "visitorSupport":{
+                      "description":"visually impaired assistance"
+                   },
+                   "createdTimestamp":"2018-12-01T13:45:00",
+                   "modifiedTimestamp":"2018-12-01T13:45:00",
+                   "firstBookedDateTime":"2018-12-01T13:45:00"
+                }
+             ]
+          }
+          """.trimIndent()
+
+        prisonVisitsApiMockServer.stubPrisonVisitsApiResponse(pathWithQueryParams, body = exampleData, HttpStatus.OK)
+
+        val response = prisonVisitsGateway.getVisits(prisonId, hmppsId, fromDate, toDate, visitStatus, page, perPage)
+        response.data.shouldNotBeNull()
+        response.data!!
+          .visits
+          .first()
+          ?.visitStatus
+          .shouldBe("RESERVED")
+        response.data!!
+          .visits[1]
+          ?.visitStatus
+          .shouldBe("BOOKED")
       }
     },
   )
