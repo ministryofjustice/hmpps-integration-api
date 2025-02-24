@@ -84,7 +84,7 @@ class PrisonVisitsGateway(
       }
     }
   }
-  
+
   fun getFutureVisits(prisonerId: String): Response<List<FutureVisit>?> {
     val result =
       webClient.request<List<FutureVisit>?>(
