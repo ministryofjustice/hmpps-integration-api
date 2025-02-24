@@ -61,6 +61,7 @@ class PrisonVisitsGateway(
         "/visits/search?prisonerId=$hmppsId&prisonId=$prisonId&visitStartDate=$fromDate&visitEndDate=$toDate&visitStatus=$visitStatus&page=$page&size=$perPage",
         authenticationHeader(),
         UpstreamApi.MANAGE_PRISON_VISITS,
+        badRequestAsError = true,
       )
 
     return when (result) {

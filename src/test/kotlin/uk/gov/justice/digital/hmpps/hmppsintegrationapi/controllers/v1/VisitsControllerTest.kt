@@ -33,7 +33,29 @@ class VisitsControllerTest(
       val visitReference = "1234567"
       val path = "/v1/visit/$visitReference"
       val mockMvc = IntegrationAPIMockMvc(springMockMvc)
-      val visitResponse = Visit(prisonerId = "PrisonerId", prisonId = "MDI", prisonName = "Some Prison", visitRoom = "Room", visitType = "Type", visitStatus = "Status", outcomeStatus = "Outcome", visitRestriction = "Restriction", startTimestamp = "Start", endTimestamp = "End", createdTimestamp = "Created", modifiedTimestamp = "Modified", firstBookedDateTime = "First", visitors = emptyList(), visitNotes = emptyList(), visitContact = VisitContact(name = "Name", telephone = "Telephone", email = "Email"), visitorSupport = VisitorSupport(description = "Description"))
+      val visitResponse =
+        Visit(
+          prisonerId = "PrisonerId",
+          prisonId = "MDI",
+          prisonName = "Some Prison",
+          visitRoom = "Room",
+          visitType = "Type",
+          visitStatus = "Status",
+          outcomeStatus = "Outcome",
+          visitRestriction = "Restriction",
+          startTimestamp = "Start",
+          endTimestamp = "End",
+          createdTimestamp = "Created",
+          modifiedTimestamp = "Modified",
+          firstBookedDateTime = "First",
+          visitors = emptyList(),
+          visitNotes = emptyList(),
+          visitContact = VisitContact(name = "Name", telephone = "Telephone", email = "Email"),
+          applicationReference = "dfs-wjs-abc",
+          reference = "dfs-wjs-abc",
+          sessionTemplateReference = "dfs-wjs-xyz",
+          visitorSupport = VisitorSupport(description = "Description"),
+        )
 
       it("calls the visit information service and successfully retrieves the visit information") {
         whenever(getVisitInformationByReferenceService.execute(visitReference)).thenReturn(Response(data = visitResponse))
