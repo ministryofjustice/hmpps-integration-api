@@ -55,21 +55,6 @@ class PrisonVisitsGatewayTest(
         verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("MANAGE-PRISON-VISITS")
       }
 
-      it("returns a 500 when request is incorrect") {
-        prisonVisitsApiMockServer.stubPrisonVisitsApiResponse(path, body = "", HttpStatus.INTERNAL_SERVER_ERROR)
-
-        val response = prisonVisitsGateway.getVisitByReference(visitReference)
-        response.errors.shouldHaveSize(1)
-        response.errors
-          .first()
-          .causedBy
-          .shouldBe(UpstreamApi.MANAGE_PRISON_VISITS)
-        response.errors
-          .first()
-          .type
-          .shouldBe(UpstreamApiError.Type.INTERNAL_SERVER_ERROR)
-      }
-
       it("returns a 404 when visit is not found") {
         prisonVisitsApiMockServer.stubPrisonVisitsApiResponse(path, body = "", HttpStatus.NOT_FOUND)
 

@@ -28,7 +28,29 @@ class GetVisitInformationByReferenceServiceTest(
   @MockitoBean val prisonVisitsGateway: PrisonVisitsGateway,
 ) : DescribeSpec({
     val visitReference = "123456"
-    val visitResponse = Visit(prisonerId = "PrisonerId", prisonId = "MDI", prisonName = "Some Prison", visitRoom = "Room", visitType = "Type", visitStatus = "Status", outcomeStatus = "Outcome", visitRestriction = "Restriction", startTimestamp = "Start", endTimestamp = "End", createdTimestamp = "Created", modifiedTimestamp = "Modified", firstBookedDateTime = "First", visitors = emptyList(), visitNotes = emptyList(), visitContact = VisitContact(name = "Name", telephone = "Telephone", email = "Email"), visitorSupport = VisitorSupport(description = "Description"))
+    val visitResponse =
+      Visit(
+        prisonerId = "PrisonerId",
+        prisonId = "MDI",
+        prisonName = "Some Prison",
+        visitRoom = "Room",
+        visitType = "Type",
+        visitStatus = "Status",
+        outcomeStatus = "Outcome",
+        visitRestriction = "Restriction",
+        startTimestamp = "Start",
+        endTimestamp = "End",
+        createdTimestamp = "Created",
+        modifiedTimestamp = "Modified",
+        firstBookedDateTime = "First",
+        visitors = emptyList(),
+        visitNotes = emptyList(),
+        visitContact = VisitContact(name = "Name", telephone = "Telephone", email = "Email"),
+        visitorSupport = VisitorSupport(description = "Description"),
+        applicationReference = "dfs-wjs-abc",
+        reference = "dfs-wjs-abc",
+        sessionTemplateReference = "dfs-wjs-xyz",
+      )
 
     beforeEach {
       Mockito.reset(consumerPrisonAccessService)
