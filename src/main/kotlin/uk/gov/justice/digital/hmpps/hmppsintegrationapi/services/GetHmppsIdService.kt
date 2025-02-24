@@ -26,7 +26,7 @@ class GetHmppsIdService(
     }
 
     val hmppsId =
-      person?.hmppsId ?: return Response(
+      person?.hmppsId ?: person?.identifiers?.nomisNumber ?: return Response(
         data = null,
         errors = listOf(UpstreamApiError(causedBy = UpstreamApi.NOMIS, type = UpstreamApiError.Type.ENTITY_NOT_FOUND)),
       )
