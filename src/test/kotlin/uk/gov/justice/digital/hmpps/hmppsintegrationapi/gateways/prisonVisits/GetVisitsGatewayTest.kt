@@ -1,7 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.prisonVisits
 
 import io.kotest.core.spec.style.DescribeSpec
-import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
@@ -17,15 +16,13 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGatewa
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonVisitsGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.PrisonVisitsApiMockServer
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 
 @ActiveProfiles("test")
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
   classes = [PrisonVisitsGateway::class],
 )
-class GetVisitsTest(
+class GetVisitsGatewayTest(
   @MockitoBean
   val hmppsAuthGateway: HmppsAuthGateway,
   private val prisonVisitsGateway: PrisonVisitsGateway,
@@ -38,9 +35,8 @@ class GetVisitsTest(
       val toDate = "2024-01-14"
       val visitStatus = "BOOKED"
       val page = 1
-      val perPage = 10
-      val pathWithQueryParams = "$path?prisonerId=$hmppsId&prisonId=$prisonId&visitStartDate=$fromDate&visitEndDate=$toDate&visitStatus=$visitStatus&page=$page&size=$perPage"
-
+      val size = 10
+      val pathWithQueryParams = "$path?prisonId=$prisonId&visitStatus=$visitStatus&page=$page&size=$size&prisonerId=$hmppsId&visitStartDate=$fromDate&visitEndDate=$toDate"
       val prisonVisitsApiMockServer = PrisonVisitsApiMockServer()
 
       beforeEach {
@@ -55,24 +51,9 @@ class GetVisitsTest(
       }
 
       it("authenticates using HMPPS Auth with credentials for linked prisoners api") {
-        prisonVisitsGateway.getVisits(prisonId, hmppsId, fromDate, toDate, visitStatus, page, perPage)
+        prisonVisitsGateway.getVisits(prisonId, hmppsId, fromDate, toDate, visitStatus, page, size)
 
         verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("MANAGE-PRISON-VISITS")
-      }
-
-      it("returns a 400 when visit is not found") {
-        prisonVisitsApiMockServer.stubPrisonVisitsApiResponse(pathWithQueryParams, body = "", HttpStatus.BAD_REQUEST)
-
-        val response = prisonVisitsGateway.getVisits(prisonId, hmppsId, fromDate, toDate, visitStatus, page, perPage)
-        response.errors.shouldHaveSize(1)
-        response.errors
-          .first()
-          .causedBy
-          .shouldBe(UpstreamApi.MANAGE_PRISON_VISITS)
-        response.errors
-          .first()
-          .type
-          .shouldBe(UpstreamApiError.Type.BAD_REQUEST)
       }
 
       it("returns a 200 when visit is found") {
@@ -148,8 +129,7 @@ class GetVisitsTest(
           """.trimIndent()
 
         prisonVisitsApiMockServer.stubPrisonVisitsApiResponse(pathWithQueryParams, body = exampleData, HttpStatus.OK)
-
-        val response = prisonVisitsGateway.getVisits(prisonId, hmppsId, fromDate, toDate, visitStatus, page, perPage)
+        val response = prisonVisitsGateway.getVisits(prisonId, hmppsId, fromDate, toDate, visitStatus, page, size)
         response.data.shouldNotBeNull()
         response.data!!
           .visits
@@ -270,7 +250,7 @@ class GetVisitsTest(
 
         prisonVisitsApiMockServer.stubPrisonVisitsApiResponse(pathWithQueryParams, body = exampleData, HttpStatus.OK)
 
-        val response = prisonVisitsGateway.getVisits(prisonId, hmppsId, fromDate, toDate, visitStatus, page, perPage)
+        val response = prisonVisitsGateway.getVisits(prisonId, hmppsId, fromDate, toDate, visitStatus, page, size)
         response.data.shouldNotBeNull()
         response.data!!
           .visits

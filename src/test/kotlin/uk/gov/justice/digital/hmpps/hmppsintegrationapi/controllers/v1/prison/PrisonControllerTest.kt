@@ -328,14 +328,14 @@ internal class PrisonControllerTest(
 
       describe("GET visit/search") {
         val prisonId = "ABC"
-        val path = "$prisonId/visits/search"
+        val path = "$basePath/$prisonId/visit/search"
         val hmppsId = "A1234AA"
         val fromDate = "2024-01-01"
         val toDate = "2024-01-14"
         val visitStatus = "BOOKED"
         val page = 1
-        val perPage = 10
-        val pathWithQueryParams = "$path?prisonerId=$hmppsId&prisonId=$prisonId&fromDate=$fromDate&toDate=$toDate&visitStatus=$visitStatus&page=$page&size=$perPage"
+        val size = 10
+        val pathWithQueryParams = "$path?prisonId=$prisonId&visitStatus=$visitStatus&page=$page&size=$size&prisonerId=$hmppsId&fromDate=$fromDate&toDate=$toDate"
 
         it("returns 200 when no errors received and with valid data") {
           whenever(getVisitsService.execute(anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull())).thenReturn(
@@ -344,13 +344,57 @@ internal class PrisonControllerTest(
             ),
           )
 
-          val result = mockMvc.performAuthorised("$basePath$pathWithQueryParams")
+          val result = mockMvc.performAuthorised(pathWithQueryParams)
 
           result.response.status.shouldBe(200)
         }
         it("returns 200 when no errors but empty body") {
+          whenever(getVisitsService.execute(anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull())).thenReturn(
+            Response(
+              data = null,
+            ),
+          )
+
+          val result = mockMvc.performAuthorised(pathWithQueryParams)
+
+          result.response.status.shouldBe(200)
         }
         it("returns 404 when prisonId not in consumer profile") {
+          whenever(getVisitsService.execute(anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull())).thenReturn(
+            Response(
+              data = null,
+              errors =
+                listOf(
+                  UpstreamApiError(
+                    type = ENTITY_NOT_FOUND,
+                    causedBy = UpstreamApi.MANAGE_PRISON_VISITS,
+                  ),
+                ),
+            ),
+          )
+
+          val result = mockMvc.performAuthorised(pathWithQueryParams)
+
+          result.response.status.shouldBe(404)
+        }
+
+        it("returns 400 when invalid query parameters supplied") {
+          whenever(getVisitsService.execute(anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull())).thenReturn(
+            Response(
+              data = null,
+              errors =
+                listOf(
+                  UpstreamApiError(
+                    type = BAD_REQUEST,
+                    causedBy = UpstreamApi.MANAGE_PRISON_VISITS,
+                  ),
+                ),
+            ),
+          )
+
+          val result = mockMvc.performAuthorised(pathWithQueryParams)
+
+          result.response.status.shouldBe(400)
         }
       }
     },

@@ -58,16 +58,16 @@ class PrisonVisitsGateway(
     page: Int,
     size: Int,
   ): Response<PaginatedVisit?> {
-    val queryString = "?prisonId=$prisonId&visitStatus=$visitStatus&page=$page&size=$size&"
+    var queryString = "?prisonId=$prisonId&visitStatus=$visitStatus&page=$page&size=$size&"
 
     if (!hmppsId.isNullOrBlank()) {
-      queryString + "prisonerId=$hmppsId&"
+      queryString += "prisonerId=$hmppsId&"
     }
     if (!fromDate.isNullOrBlank()) {
-      queryString + "visitStartDate=$fromDate&"
+      queryString += "visitStartDate=$fromDate&"
     }
     if (!toDate.isNullOrBlank()) {
-      queryString + "visitEndDate=$toDate"
+      queryString += "visitEndDate=$toDate"
     }
 
     val result =

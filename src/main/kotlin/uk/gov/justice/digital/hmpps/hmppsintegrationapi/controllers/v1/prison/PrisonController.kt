@@ -126,6 +126,7 @@ class PrisonController(
   }
 
   @GetMapping("/{prisonId}/visit/search")
+  @Tag(name = "visits")
   @Operation(
     summary = "Searches for visits by prisonId and criteria.",
     description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
@@ -148,8 +149,9 @@ class PrisonController(
     @Parameter(description = "The status of the visit. (BOOKING or CANCELLED)") @RequestParam visitStatus: String,
     @Parameter(description = "The page number", schema = Schema(minimum = "1")) @RequestParam(required = true, defaultValue = "1") page: Int,
     @Parameter(description = "The maximum number of results for a page", schema = Schema(minimum = "1")) @RequestParam(required = true, defaultValue = "10") size: Int,
+    @RequestAttribute filters: ConsumerFilters?,
   ): DataResponse<PaginatedVisit?> {
-    val response = getVisitsService.execute(hmppsId, prisonId, fromDate, toDate, visitStatus, page, size)
+    val response = getVisitsService.execute(hmppsId, prisonId, fromDate, toDate, visitStatus, page, size, filters)
 
     if (response.hasErrorCausedBy(BAD_REQUEST, causedBy = UpstreamApi.MANAGE_PRISON_VISITS)) {
       throw ValidationException("Invalid query parameters.")
@@ -158,9 +160,7 @@ class PrisonController(
     if (response.hasErrorCausedBy(ENTITY_NOT_FOUND, causedBy = UpstreamApi.MANAGE_PRISON_VISITS)) {
       throw EntityNotFoundException("Could not find visits with supplied query parameters.")
     }
-    // 400
-    // 404
-    //
+
     auditService.createEvent(
       "SEARCH_VISITS",
       mapOf("prisonId" to prisonId, "hmppsId" to hmppsId, "fromDate" to fromDate, "toDate" to toDate, "visitStatus" to visitStatus),
