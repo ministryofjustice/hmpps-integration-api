@@ -111,7 +111,7 @@ data class ReviewSchedule(
   @Schema(
     description = "When the review schedule has a completed review this will be populated with the date of the review.",
   )
-  var reviewCompletedAt: Instant?,
+  var reviewCompletedAt: LocalDate?,
   @Schema(
     description = """
       When the review schedule has a completed review this will be populated with the type of the review.
