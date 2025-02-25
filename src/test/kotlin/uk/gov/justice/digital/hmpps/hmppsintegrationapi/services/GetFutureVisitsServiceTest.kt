@@ -14,7 +14,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.FutureVisit
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.Visit
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.VisitContact
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.VisitorSupport
 
@@ -33,7 +33,7 @@ class GetFutureVisitsServiceTest(
     val personWithoutNomisNumber = Person(firstName = "Qui-gon", lastName = "Jin", hmppsId = hmppsId)
     val futureVisitResponse =
       listOf(
-        FutureVisit(
+        Visit(
           prisonerId = "PrisonerId",
           prisonId = "MDI",
           prisonName = "Some Prison",

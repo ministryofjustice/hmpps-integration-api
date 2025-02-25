@@ -6,7 +6,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonVisitsGat
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.FutureVisit
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.Visit
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 @Service
@@ -17,7 +17,7 @@ class GetFutureVisitsService(
   fun execute(
     hmppsId: String,
     filters: ConsumerFilters?,
-  ): Response<List<FutureVisit>?> {
+  ): Response<List<Visit>?> {
     val (person, personErrors) = getPersonService.getPersonWithPrisonFilter(hmppsId, filters)
     if (personErrors.isNotEmpty()) {
       return Response(data = null, errors = personErrors)

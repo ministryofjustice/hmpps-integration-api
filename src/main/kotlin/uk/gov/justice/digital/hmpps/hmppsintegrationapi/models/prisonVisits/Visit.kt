@@ -3,41 +3,18 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits
 import com.fasterxml.jackson.annotation.JsonProperty
 
 data class Visit(
-  val applicationReference: String?,
-  val reference: String?,
-  val sessionTemplateReference: String?,
-  val prisonerId: String,
-  val prisonId: String,
-  val prisonName: String?,
-  val visitRoom: String,
-  val visitType: String,
-  val visitStatus: String,
-  val outcomeStatus: String?,
-  val visitRestriction: String,
-  val startTimestamp: String,
-  val endTimestamp: String,
-  val createdTimestamp: String,
-  val modifiedTimestamp: String,
-  val firstBookedDateTime: String,
-  val visitors: List<Visitors>,
-  val visitNotes: List<VisitNotes>,
-  val visitContact: VisitContact,
-  val visitorSupport: VisitorSupport,
-)
-
-data class FutureVisit(
   @JsonProperty("applicationReference")
-  val applicationReference: String,
+  val applicationReference: String?,
   @JsonProperty("reference")
-  val reference: String,
+  val reference: String?,
+  @JsonProperty("sessionTemplateReference")
+  val sessionTemplateReference: String?,
   @JsonProperty("prisonerId")
   val prisonerId: String,
   @JsonProperty("prisonId")
   val prisonId: String,
   @JsonProperty("prisonName")
   val prisonName: String,
-  @JsonProperty("sessionTemplateReference")
-  val sessionTemplateReference: String,
   @JsonProperty("visitRoom")
   val visitRoom: String,
   @JsonProperty("visitType")
@@ -45,27 +22,27 @@ data class FutureVisit(
   @JsonProperty("visitStatus")
   val visitStatus: String,
   @JsonProperty("outcomeStatus")
-  val outcomeStatus: String,
+  val outcomeStatus: String?,
   @JsonProperty("visitRestriction")
   val visitRestriction: String,
   @JsonProperty("startTimestamp")
   val startTimestamp: String,
   @JsonProperty("endTimestamp")
   val endTimestamp: String,
+  @JsonProperty("visitors")
+  val visitors: List<Visitors>,
+  @JsonProperty("visitNotes")
+  val visitNotes: List<VisitNotes>,
+  @JsonProperty("visitContact")
+  val visitContact: VisitContact,
+  @JsonProperty("visitorSupport")
+  val visitorSupport: VisitorSupport,
   @JsonProperty("createdTimestamp")
   val createdTimestamp: String,
   @JsonProperty("modifiedTimestamp")
   val modifiedTimestamp: String,
   @JsonProperty("firstBookedDateTime")
   val firstBookedDateTime: String,
-  @JsonProperty("visitNotes")
-  val visitNotes: List<VisitNotes>,
-  @JsonProperty("visitContact")
-  val visitContact: VisitContact,
-  @JsonProperty("visitors")
-  val visitors: List<Visitors>,
-  @JsonProperty("visitorSupport")
-  val visitorSupport: VisitorSupport,
 )
 
 data class VisitNotes(

@@ -17,7 +17,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMo
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.FutureVisit
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.Visit
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.VisitContact
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.VisitorSupport
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetFutureVisitsService
@@ -37,7 +37,7 @@ class FutureVisitsControllerTest(
     val path = "/v1/persons/$hmppsId/visit/future"
     val futureVisits =
       listOf(
-        FutureVisit(
+        Visit(
           prisonerId = "PrisonerId",
           prisonId = "MDI",
           prisonName = "Some Prison",
