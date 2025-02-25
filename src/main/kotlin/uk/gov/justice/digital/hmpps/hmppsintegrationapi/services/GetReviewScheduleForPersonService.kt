@@ -40,7 +40,7 @@ class GetReviewScheduleForPersonService(
           reviewSchedule.copy(
             reviewCompletedBy = completed.conductedBy ?: completed.updatedByDisplayName,
             reviewCompletedByRole = completed.conductedByRole ?: "CIAG",
-            reviewCompletedAt = completed.updatedAt,
+            reviewCompletedAt = completed.completedDate,
             reviewType = if (completed.preRelease) "PRE_RELEASE" else "REGULAR",
             reviewReason = getReviewReason(reviewSchedule.calculationRule),
             nomisNumber = nomisNumber,

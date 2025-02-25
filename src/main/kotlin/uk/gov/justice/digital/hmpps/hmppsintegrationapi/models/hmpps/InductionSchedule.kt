@@ -126,8 +126,7 @@ data class InductionSchedule(
   val inductionPerformedBy: String? = null,
   @Schema(
     description = """
-      An ISO-8601 date representing when the Induction was performed with the prisoner.
-      In the case of system generated updates this field will not be present.
+      When the induction schedule has a completed induction this will be populated with the date that the CIAG entered into the system when completing the Induction. It is the date that the user did the Induction in person, rather than the date that it was entered into the system.
     """,
     example = "2023-06-30",
   )
