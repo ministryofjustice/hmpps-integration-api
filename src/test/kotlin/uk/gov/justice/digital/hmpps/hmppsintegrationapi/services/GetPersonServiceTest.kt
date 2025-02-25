@@ -3,7 +3,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 
 import io.kotest.core.spec.style.DescribeSpec
-import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeTypeOf
@@ -434,10 +433,10 @@ internal class GetPersonServiceTest(
         }
 
         it("Crn number passed in - person from probation returns error - return error from probation") {
-          val error = UpstreamApiError(causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH, type = UpstreamApiError.Type.INTERNAL_SERVER_ERROR)
-          whenever(probationOffenderSearchGateway.getPerson(crnNumber)).thenReturn(Response(data = null, errors = listOf(error)))
+          val errors = listOf(UpstreamApiError(causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH, type = UpstreamApiError.Type.INTERNAL_SERVER_ERROR))
+          whenever(probationOffenderSearchGateway.getPerson(crnNumber)).thenReturn(Response(data = null, errors = errors))
           val result = getPersonService.getNomisNumber(crnNumber)
-          result.errors.shouldContain(error)
+          result.errors.shouldBe(errors)
         }
 
         it("Crn number passed in, filters present - POS returns prison id, return nomis number from probation") {
