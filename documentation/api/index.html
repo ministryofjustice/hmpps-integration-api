@@ -199,6 +199,9 @@
         <a href="../../documentation/api/index.html#v1-persons-hmppsid-visitor-contactid-restrictions"><span>/v1/persons/{hmppsId}/visitor/{contactId}/restrictions</span></a>
       </li>
       <li>
+        <a href="../../documentation/api/index.html#v1-persons-hmppsid-visit-future"><span>/v1/persons/{hmppsId}/visit/future</span></a>
+      </li>
+      <li>
         <a href="../../documentation/api/index.html#v1-persons-hmppsid-visit-restrictions"><span>/v1/persons/{hmppsId}/visit-restrictions</span></a>
       </li>
       <li>
@@ -2740,6 +2743,168 @@
 </td>
 <td>
 <a href='#schema-dataresponseprisonercontactrestrictions'>DataResponsePrisonerContactRestrictions</a>
+</td>
+</tr>
+
+<tr>
+<td>400</td>
+<td>
+<p>Bad Request</p>
+
+
+
+<pre><code>{
+  "status": 400,
+  "userMessage": "Validation failure: No query parameters specified.",
+  "developerMessage": "No query parameters specified."
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-badrequest'>BadRequest</a>
+</td>
+</tr>
+
+<tr>
+<td>404</td>
+<td>
+<p>Not Found</p>
+
+
+
+<pre><code>{
+  "status": 404,
+  "userMessage": "404 Not found error: Could not find person with HMPPS id: 2003/0011991D.",
+  "developerMessage": "Could not find person with HMPPS id: 2003/0011991D."
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-personnotfound'>PersonNotFound</a>
+</td>
+</tr>
+
+<tr>
+<td>500</td>
+<td>
+<p>Internal Server Error</p>
+
+
+
+<pre><code>{
+  "status": 500,
+  "userMessage": "Internal Server Error",
+  "developerMessage": "Unable to complete request as an upstream service is not responding."
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-internalservererror'>InternalServerError</a>
+</td>
+</tr>
+
+</tbody>
+</table>
+
+
+
+
+<h2 id="v1-persons-hmppsid-visit-future">/v1/persons/{hmppsId}/visit/future</h2>
+
+<h3 id="v1-persons-hmppsid-visit-future-get">get</h3>
+
+  <p><em>Get Future Visit Information.</em></p>
+
+
+  <p><b>Applicable filters</b>: <ul><li>prisons</li></ul></p>
+
+
+
+
+<h4 id="v1-persons-hmppsid-visit-future-get-parameters">Parameters</h4>
+<table>
+<thead>
+<tr><th>Parameter</th><th>In</th><th>Type</th><th>Required</th><th>Description</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>hmppsId</td>
+<td>path</td>
+<td>string</td>
+<td>true</td>
+<td><p>A HMPPS identifier</p>
+
+
+</td>
+</tr>
+
+</tbody>
+</table>
+
+
+
+
+<h4 id="v1-persons-hmppsid-visit-future-get-responses">Responses</h4>
+<table>
+<thead>
+<tr><th>Status</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>200</td>
+<td>
+<p>Successfully found a person&rsquo;s future visits with the provided HMPPS ID.</p>
+
+
+
+<pre><code>{
+  "data": [
+    {
+      "applicationReference": "string",
+      "reference": "string",
+      "prisonerId": "string",
+      "prisonId": "string",
+      "prisonName": "string",
+      "sessionTemplateReference": "string",
+      "visitRoom": "string",
+      "visitType": "string",
+      "visitStatus": "string",
+      "outcomeStatus": "string",
+      "visitRestriction": "string",
+      "startTimestamp": "string",
+      "endTimestamp": "string",
+      "createdTimestamp": "string",
+      "modifiedTimestamp": "string",
+      "firstBookedDateTime": "string",
+      "visitNotes": [
+        {
+          "type": "string",
+          "text": "string"
+        }
+      ],
+      "visitContact": {
+        "name": "string",
+        "telephone": "string",
+        "email": "string"
+      },
+      "visitors": [
+        {
+          "nomisPersonId": "integer",
+          "visitContact": "boolean"
+        }
+      ],
+      "visitorSupport": {
+        "description": "string"
+      }
+    }
+  ]
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-dataresponselistfuturevisit'>DataResponseListFutureVisit</a>
 </td>
 </tr>
 
@@ -10032,6 +10197,240 @@
 <td></td>
 <td>
   <a href='#schema-contactglobalrestriction'>ContactGlobalRestriction</a>
+</td>
+</tr>
+
+</tbody>
+</table>
+
+<h3 id="schema-dataresponselistfuturevisit">DataResponseListFutureVisit</h3>
+
+
+<table class='schema-dataresponselistfuturevisit'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>data</td>
+<td>array</td>
+<td>true</td>
+<td></td>
+<td>
+  <a href='#schema-futurevisit'>FutureVisit</a>
+</td>
+</tr>
+
+</tbody>
+</table>
+
+<h3 id="schema-futurevisit">FutureVisit</h3>
+
+
+<table class='schema-futurevisit'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>applicationReference</td>
+<td>string</td>
+<td>true</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>reference</td>
+<td>string</td>
+<td>true</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>prisonerId</td>
+<td>string</td>
+<td>true</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>prisonId</td>
+<td>string</td>
+<td>true</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>prisonName</td>
+<td>string</td>
+<td>true</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>sessionTemplateReference</td>
+<td>string</td>
+<td>true</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>visitRoom</td>
+<td>string</td>
+<td>true</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>visitType</td>
+<td>string</td>
+<td>true</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>visitStatus</td>
+<td>string</td>
+<td>true</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>outcomeStatus</td>
+<td>string</td>
+<td>true</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>visitRestriction</td>
+<td>string</td>
+<td>true</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>startTimestamp</td>
+<td>string</td>
+<td>true</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>endTimestamp</td>
+<td>string</td>
+<td>true</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>createdTimestamp</td>
+<td>string</td>
+<td>true</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>modifiedTimestamp</td>
+<td>string</td>
+<td>true</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>firstBookedDateTime</td>
+<td>string</td>
+<td>true</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>visitNotes</td>
+<td>array</td>
+<td>true</td>
+<td></td>
+<td>
+  <a href='#schema-visitnotes'>VisitNotes</a>
+</td>
+</tr>
+
+<tr>
+<td>visitContact</td>
+<td>object</td>
+<td>true</td>
+<td></td>
+<td>
+  <a href='#schema-visitcontact'>VisitContact</a>
+</td>
+</tr>
+
+<tr>
+<td>visitors</td>
+<td>array</td>
+<td>true</td>
+<td></td>
+<td>
+  <a href='#schema-visitors'>Visitors</a>
+</td>
+</tr>
+
+<tr>
+<td>visitorSupport</td>
+<td>object</td>
+<td>true</td>
+<td></td>
+<td>
+  <a href='#schema-visitorsupport'>VisitorSupport</a>
 </td>
 </tr>
 
