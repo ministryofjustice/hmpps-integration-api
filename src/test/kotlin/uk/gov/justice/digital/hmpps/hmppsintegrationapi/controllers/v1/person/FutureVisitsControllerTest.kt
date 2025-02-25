@@ -71,7 +71,7 @@ class FutureVisitsControllerTest(
     it("Returns a 200 response with data") {
       val result = mockMvc.performAuthorised(path)
       result.response.status.shouldBe(HttpStatus.OK.value())
-      result.response.contentAsString.shouldContainJsonKeyValue("$.data.[0].applicationReference", "dfs-wjs-abc")
+      result.response.contentAsString.shouldContainJsonKeyValue("$.data.[0].applicationReference", futureVisits[0].applicationReference)
     }
 
     it("Calls audit service") {
