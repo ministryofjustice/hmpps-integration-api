@@ -64,6 +64,7 @@ class SentencesController(
   @GetMapping("{encodedHmppsId}/sentences/latest-key-dates-and-adjustments")
   @Operation(
     summary = "Returns the key dates and adjustments about a person's release from prison for their latest sentence.",
+    description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
     responses = [
       ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found latest sentence key dates and adjustments for a person with the provided HMPPS ID."),
       ApiResponse(responseCode = "400", content = [Content(schema = Schema(ref = "#/components/schemas/BadRequest"))]),
