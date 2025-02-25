@@ -106,13 +106,17 @@ class GetPersonService(
    * When it is a noms number then return it.
    * When it is a CRN look up the prisoner in probation offender search and then return it
    */
-  fun getNomisNumber(hmppsId: String): Response<NomisNumber?> =
+  fun getNomisNumber(
+    hmppsId: String,
+    filters: ConsumerFilters? = null,
+  ): Response<NomisNumber?> =
     when (identifyHmppsId(hmppsId)) {
       IdentifierType.NOMS -> {
         val prisoner = prisonerOffenderSearchGateway.getPrisonOffender(hmppsId)
         if (prisoner.errors.isNotEmpty()) {
           Response(data = null, errors = prisoner.errors)
         } else {
+          // Add prison filter check
           Response(data = NomisNumber(hmppsId))
         }
       }
