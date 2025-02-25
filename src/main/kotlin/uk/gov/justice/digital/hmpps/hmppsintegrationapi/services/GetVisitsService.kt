@@ -14,6 +14,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Consum
 class GetVisitsService(
   @Autowired val consumerPrisonAccessService: ConsumerPrisonAccessService,
   @Autowired val prisonVisitsGateway: PrisonVisitsGateway,
+  @Autowired val getPersonService: GetPersonService,
 ) {
   fun execute(
     hmppsId: String? = null,
@@ -35,7 +36,16 @@ class GetVisitsService(
       return Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.MANAGE_PRISON_VISITS, UpstreamApiError.Type.BAD_REQUEST, "Invalid visit status")))
     }
 
-    val response = prisonVisitsGateway.getVisits(prisonId, hmppsId, fromDate, toDate, visitStatus, page, size)
+    var prisonerId = hmppsId
+    if (!prisonerId.isNullOrBlank()) {
+      val (personServiceResponse, personServiceResponseErrors) = getPersonService.getNomisNumber(prisonerId)
+      if (personServiceResponse == null || personServiceResponseErrors.isNotEmpty()) {
+        return Response(data = null, errors = personServiceResponseErrors)
+      }
+      prisonerId = personServiceResponse.nomisNumber
+    }
+
+    val response = prisonVisitsGateway.getVisits(prisonId, prisonerId, fromDate, toDate, visitStatus, page, size)
 
     return response
   }
