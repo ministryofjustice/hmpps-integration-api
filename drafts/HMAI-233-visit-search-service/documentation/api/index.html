@@ -202,6 +202,9 @@
         <a href="../../documentation/api/index.html#v1-persons-hmppsid-visitor-contactid-restrictions"><span>/v1/persons/{hmppsId}/visitor/{contactId}/restrictions</span></a>
       </li>
       <li>
+        <a href="../../documentation/api/index.html#v1-persons-hmppsid-visit-future"><span>/v1/persons/{hmppsId}/visit/future</span></a>
+      </li>
+      <li>
         <a href="../../documentation/api/index.html#v1-persons-hmppsid-visit-restrictions"><span>/v1/persons/{hmppsId}/visit-restrictions</span></a>
       </li>
       <li>
@@ -1013,42 +1016,42 @@
 
 <pre><code>{
   "data": {
-    "applicationReference": "string",
-    "reference": "string",
-    "sessionTemplateReference": "string",
-    "prisonerId": "string",
-    "prisonId": "string",
-    "prisonName": "string",
-    "visitRoom": "string",
-    "visitType": "string",
-    "visitStatus": "string",
-    "outcomeStatus": "string",
-    "visitRestriction": "string",
+    "applicationReference": "dfs-wjs-eqr",
+    "reference": "v9-d7-ed-7u",
+    "sessionTemplateReference": "v9d.7ed.7u",
+    "prisonerId": "AF34567G",
+    "prisonId": "MDI",
+    "prisonName": "Moorland (HMP & YOI)",
+    "visitRoom": "Visits Main Hall",
+    "visitType": "SOCIAL",
+    "visitStatus": "BOOKED",
+    "outcomeStatus": "ADMINISTRATIVE_CANCELLATION",
+    "visitRestriction": "OPEN",
     "startTimestamp": "string",
     "endTimestamp": "string",
-    "createdTimestamp": "string",
-    "modifiedTimestamp": "string",
-    "firstBookedDateTime": "string",
     "visitors": [
       {
-        "nomisPersonId": "integer",
-        "visitContact": "boolean"
+        "nomisPersonId": 1234,
+        "visitContact": true
       }
     ],
     "visitNotes": [
       {
-        "type": "string",
-        "text": "string"
+        "type": "VISITOR_CONCERN",
+        "text": "Visitor is concerned that his mother in-law is coming!"
       }
     ],
     "visitContact": {
-      "name": "string",
-      "telephone": "string",
-      "email": "string"
+      "name": "John Smith",
+      "telephone": "01234 567890",
+      "email": "email@example.com"
     },
     "visitorSupport": {
-      "description": "string"
-    }
+      "description": "Visually impaired assistance"
+    },
+    "createdTimestamp": "string",
+    "modifiedTimestamp": "string",
+    "firstBookedDateTime": "string"
   }
 }</code></pre>
 
@@ -1247,42 +1250,42 @@
     "empty": "boolean",
     "content": [
       {
-        "applicationReference": "string",
-        "reference": "string",
-        "sessionTemplateReference": "string",
-        "prisonerId": "string",
-        "prisonId": "string",
-        "prisonName": "string",
-        "visitRoom": "string",
-        "visitType": "string",
-        "visitStatus": "string",
-        "outcomeStatus": "string",
-        "visitRestriction": "string",
+        "applicationReference": "dfs-wjs-eqr",
+        "reference": "v9-d7-ed-7u",
+        "sessionTemplateReference": "v9d.7ed.7u",
+        "prisonerId": "AF34567G",
+        "prisonId": "MDI",
+        "prisonName": "Moorland (HMP & YOI)",
+        "visitRoom": "Visits Main Hall",
+        "visitType": "SOCIAL",
+        "visitStatus": "BOOKED",
+        "outcomeStatus": "ADMINISTRATIVE_CANCELLATION",
+        "visitRestriction": "OPEN",
         "startTimestamp": "string",
         "endTimestamp": "string",
-        "createdTimestamp": "string",
-        "modifiedTimestamp": "string",
-        "firstBookedDateTime": "string",
         "visitors": [
           {
-            "nomisPersonId": "integer",
-            "visitContact": "boolean"
+            "nomisPersonId": 1234,
+            "visitContact": true
           }
         ],
         "visitNotes": [
           {
-            "type": "string",
-            "text": "string"
+            "type": "VISITOR_CONCERN",
+            "text": "Visitor is concerned that his mother in-law is coming!"
           }
         ],
         "visitContact": {
-          "name": "string",
-          "telephone": "string",
-          "email": "string"
+          "name": "John Smith",
+          "telephone": "01234 567890",
+          "email": "email@example.com"
         },
         "visitorSupport": {
-          "description": "string"
-        }
+          "description": "Visually impaired assistance"
+        },
+        "createdTimestamp": "string",
+        "modifiedTimestamp": "string",
+        "firstBookedDateTime": "string"
       }
     ]
   }
@@ -3064,6 +3067,168 @@
 
 
 
+<h2 id="v1-persons-hmppsid-visit-future">/v1/persons/{hmppsId}/visit/future</h2>
+
+<h3 id="v1-persons-hmppsid-visit-future-get">get</h3>
+
+  <p><em>Get Future Visit Information.</em></p>
+
+
+  <p><b>Applicable filters</b>: <ul><li>prisons</li></ul></p>
+
+
+
+
+<h4 id="v1-persons-hmppsid-visit-future-get-parameters">Parameters</h4>
+<table>
+<thead>
+<tr><th>Parameter</th><th>In</th><th>Type</th><th>Required</th><th>Description</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>hmppsId</td>
+<td>path</td>
+<td>string</td>
+<td>true</td>
+<td><p>A HMPPS identifier</p>
+
+
+</td>
+</tr>
+
+</tbody>
+</table>
+
+
+
+
+<h4 id="v1-persons-hmppsid-visit-future-get-responses">Responses</h4>
+<table>
+<thead>
+<tr><th>Status</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>200</td>
+<td>
+<p>Successfully found a person&rsquo;s future visits with the provided HMPPS ID.</p>
+
+
+
+<pre><code>{
+  "data": [
+    {
+      "applicationReference": "dfs-wjs-eqr",
+      "reference": "v9-d7-ed-7u",
+      "sessionTemplateReference": "v9d.7ed.7u",
+      "prisonerId": "AF34567G",
+      "prisonId": "MDI",
+      "prisonName": "Moorland (HMP & YOI)",
+      "visitRoom": "Visits Main Hall",
+      "visitType": "SOCIAL",
+      "visitStatus": "BOOKED",
+      "outcomeStatus": "ADMINISTRATIVE_CANCELLATION",
+      "visitRestriction": "OPEN",
+      "startTimestamp": "string",
+      "endTimestamp": "string",
+      "visitors": [
+        {
+          "nomisPersonId": 1234,
+          "visitContact": true
+        }
+      ],
+      "visitNotes": [
+        {
+          "type": "VISITOR_CONCERN",
+          "text": "Visitor is concerned that his mother in-law is coming!"
+        }
+      ],
+      "visitContact": {
+        "name": "John Smith",
+        "telephone": "01234 567890",
+        "email": "email@example.com"
+      },
+      "visitorSupport": {
+        "description": "Visually impaired assistance"
+      },
+      "createdTimestamp": "string",
+      "modifiedTimestamp": "string",
+      "firstBookedDateTime": "string"
+    }
+  ]
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-dataresponselistvisit'>DataResponseListVisit</a>
+</td>
+</tr>
+
+<tr>
+<td>400</td>
+<td>
+<p>Bad Request</p>
+
+
+
+<pre><code>{
+  "status": 400,
+  "userMessage": "Validation failure: No query parameters specified.",
+  "developerMessage": "No query parameters specified."
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-badrequest'>BadRequest</a>
+</td>
+</tr>
+
+<tr>
+<td>404</td>
+<td>
+<p>Not Found</p>
+
+
+
+<pre><code>{
+  "status": 404,
+  "userMessage": "404 Not found error: Could not find person with HMPPS id: 2003/0011991D.",
+  "developerMessage": "Could not find person with HMPPS id: 2003/0011991D."
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-personnotfound'>PersonNotFound</a>
+</td>
+</tr>
+
+<tr>
+<td>500</td>
+<td>
+<p>Internal Server Error</p>
+
+
+
+<pre><code>{
+  "status": 500,
+  "userMessage": "Internal Server Error",
+  "developerMessage": "Unable to complete request as an upstream service is not responding."
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-internalservererror'>InternalServerError</a>
+</td>
+</tr>
+
+</tbody>
+</table>
+
+
+
+
 <h2 id="v1-persons-hmppsid-visit-restrictions">/v1/persons/{hmppsId}/visit-restrictions</h2>
 
 <h3 id="v1-persons-hmppsid-visit-restrictions-get">get</h3>
@@ -4101,6 +4266,9 @@
   <p><em>Returns the key dates and adjustments about a person&rsquo;s release from prison for their latest sentence.</em></p>
 
 
+  <p><b>Applicable filters</b>: <ul><li>prisons</li></ul></p>
+
+
 
 
 <h4 id="v1-persons-encodedhmppsid-sentences-latest-key-dates-and-adjustments-get-parameters">Parameters</h4>
@@ -4239,6 +4407,25 @@
 </td>
 <td>
 <a href='#schema-dataresponselatestsentencekeydatesandadjustments'>DataResponseLatestSentenceKeyDatesAndAdjustments</a>
+</td>
+</tr>
+
+<tr>
+<td>400</td>
+<td>
+<p>Bad Request</p>
+
+
+
+<pre><code>{
+  "status": 400,
+  "userMessage": "Validation failure: No query parameters specified.",
+  "developerMessage": "No query parameters specified."
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-badrequest'>BadRequest</a>
 </td>
 </tr>
 
@@ -8085,7 +8272,8 @@
 <td>applicationReference</td>
 <td>string</td>
 <td>false</td>
-<td></td>
+<td><p>Application Reference</p>
+</td>
 <td>
   
 </td>
@@ -8095,7 +8283,8 @@
 <td>reference</td>
 <td>string</td>
 <td>false</td>
-<td></td>
+<td><p>Visit Reference</p>
+</td>
 <td>
   
 </td>
@@ -8105,7 +8294,8 @@
 <td>sessionTemplateReference</td>
 <td>string</td>
 <td>false</td>
-<td></td>
+<td><p>Session Template Reference</p>
+</td>
 <td>
   
 </td>
@@ -8115,7 +8305,8 @@
 <td>prisonerId</td>
 <td>string</td>
 <td>true</td>
-<td></td>
+<td><p>Prisoner Id</p>
+</td>
 <td>
   
 </td>
@@ -8125,7 +8316,8 @@
 <td>prisonId</td>
 <td>string</td>
 <td>true</td>
-<td></td>
+<td><p>Prison Id</p>
+</td>
 <td>
   
 </td>
@@ -8134,8 +8326,9 @@
 <tr>
 <td>prisonName</td>
 <td>string</td>
-<td>false</td>
-<td></td>
+<td>true</td>
+<td><p>Prison Name</p>
+</td>
 <td>
   
 </td>
@@ -8145,7 +8338,8 @@
 <td>visitRoom</td>
 <td>string</td>
 <td>true</td>
-<td></td>
+<td><p>Location of Visit</p>
+</td>
 <td>
   
 </td>
@@ -8155,7 +8349,8 @@
 <td>visitType</td>
 <td>string</td>
 <td>true</td>
-<td></td>
+<td><p>Type of Visit</p>
+</td>
 <td>
   
 </td>
@@ -8165,7 +8360,8 @@
 <td>visitStatus</td>
 <td>string</td>
 <td>true</td>
-<td></td>
+<td><p>Visit Status</p>
+</td>
 <td>
   
 </td>
@@ -8175,7 +8371,8 @@
 <td>outcomeStatus</td>
 <td>string</td>
 <td>false</td>
-<td></td>
+<td><p>Outcome Status of Visit</p>
+</td>
 <td>
   
 </td>
@@ -8185,7 +8382,8 @@
 <td>visitRestriction</td>
 <td>string</td>
 <td>true</td>
-<td></td>
+<td><p>Visit Restriction</p>
+</td>
 <td>
   
 </td>
@@ -8195,7 +8393,8 @@
 <td>startTimestamp</td>
 <td>string</td>
 <td>true</td>
-<td></td>
+<td><p>The date and time of the visit</p>
+</td>
 <td>
   
 </td>
@@ -8205,37 +8404,8 @@
 <td>endTimestamp</td>
 <td>string</td>
 <td>true</td>
-<td></td>
-<td>
-  
+<td><p>The finishing date and time of the visit</p>
 </td>
-</tr>
-
-<tr>
-<td>createdTimestamp</td>
-<td>string</td>
-<td>true</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>modifiedTimestamp</td>
-<td>string</td>
-<td>true</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>firstBookedDateTime</td>
-<td>string</td>
-<td>true</td>
-<td></td>
 <td>
   
 </td>
@@ -8245,7 +8415,8 @@
 <td>visitors</td>
 <td>array</td>
 <td>true</td>
-<td></td>
+<td><p>List of visitors associated with the visit</p>
+</td>
 <td>
   <a href='#schema-visitors'>Visitors</a>
 </td>
@@ -8255,7 +8426,8 @@
 <td>visitNotes</td>
 <td>array</td>
 <td>true</td>
-<td></td>
+<td><p>Visit Notes</p>
+</td>
 <td>
   <a href='#schema-visitnotes'>VisitNotes</a>
 </td>
@@ -8265,7 +8437,8 @@
 <td>visitContact</td>
 <td>object</td>
 <td>true</td>
-<td></td>
+<td><p>Contact associated with the visit</p>
+</td>
 <td>
   <a href='#schema-visitcontact'>VisitContact</a>
 </td>
@@ -8275,9 +8448,43 @@
 <td>visitorSupport</td>
 <td>object</td>
 <td>true</td>
-<td></td>
+<td><p>Additional support associated with the visit</p>
+</td>
 <td>
   <a href='#schema-visitorsupport'>VisitorSupport</a>
+</td>
+</tr>
+
+<tr>
+<td>createdTimestamp</td>
+<td>string</td>
+<td>true</td>
+<td><p>The visit created date and time</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>modifiedTimestamp</td>
+<td>string</td>
+<td>true</td>
+<td><p>The visit modified date and time</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>firstBookedDateTime</td>
+<td>string</td>
+<td>true</td>
+<td><p>Date the visit was first booked or migrated</p>
+</td>
+<td>
+  
 </td>
 </tr>
 
@@ -8285,6 +8492,7 @@
 </table>
 
 <h3 id="schema-visitcontact">VisitContact</h3>
+<p>Contact associated with the visit</p>
 
 
 <table class='schema-visitcontact'>
@@ -8297,7 +8505,8 @@
 <td>name</td>
 <td>string</td>
 <td>true</td>
-<td></td>
+<td><p>Contact name</p>
+</td>
 <td>
   
 </td>
@@ -8307,7 +8516,8 @@
 <td>telephone</td>
 <td>string</td>
 <td>true</td>
-<td></td>
+<td><p>Contact Phone Number</p>
+</td>
 <td>
   
 </td>
@@ -8317,7 +8527,8 @@
 <td>email</td>
 <td>string</td>
 <td>true</td>
-<td></td>
+<td><p>Contact Email Address</p>
+</td>
 <td>
   
 </td>
@@ -8327,6 +8538,7 @@
 </table>
 
 <h3 id="schema-visitnotes">VisitNotes</h3>
+<p>Visit Notes</p>
 
 
 <table class='schema-visitnotes'>
@@ -8339,7 +8551,8 @@
 <td>type</td>
 <td>string</td>
 <td>true</td>
-<td></td>
+<td><p>Note type</p>
+</td>
 <td>
   
 </td>
@@ -8349,7 +8562,8 @@
 <td>text</td>
 <td>string</td>
 <td>true</td>
-<td></td>
+<td><p>Note Text</p>
+</td>
 <td>
   
 </td>
@@ -8359,6 +8573,7 @@
 </table>
 
 <h3 id="schema-visitorsupport">VisitorSupport</h3>
+<p>Additional support associated with the visit</p>
 
 
 <table class='schema-visitorsupport'>
@@ -8371,7 +8586,8 @@
 <td>description</td>
 <td>string</td>
 <td>true</td>
-<td></td>
+<td><p>Support text description</p>
+</td>
 <td>
   
 </td>
@@ -8381,6 +8597,7 @@
 </table>
 
 <h3 id="schema-visitors">Visitors</h3>
+<p>List of visitors associated with the visit</p>
 
 
 <table class='schema-visitors'>
@@ -8393,7 +8610,8 @@
 <td>nomisPersonId</td>
 <td>integer</td>
 <td>true</td>
-<td></td>
+<td><p>Person ID (nomis) of the visitor</p>
+</td>
 <td>
   
 </td>
@@ -8403,7 +8621,8 @@
 <td>visitContact</td>
 <td>boolean</td>
 <td>false</td>
-<td></td>
+<td><p>true if visitor is the contact for the visit otherwise false</p>
+</td>
 <td>
   
 </td>
@@ -10532,6 +10751,28 @@
 </tbody>
 </table>
 
+<h3 id="schema-dataresponselistvisit">DataResponseListVisit</h3>
+
+
+<table class='schema-dataresponselistvisit'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>data</td>
+<td>array</td>
+<td>true</td>
+<td></td>
+<td>
+  <a href='#schema-visit'>Visit</a>
+</td>
+</tr>
+
+</tbody>
+</table>
+
 <h3 id="schema-dataresponselistpersonvisitrestriction">DataResponseListPersonVisitRestriction</h3>
 
 
@@ -10894,7 +11135,7 @@
 <td>reviewCompletedAt</td>
 <td>string</td>
 <td>false</td>
-<td><p>When the review schedule has a completed review this will be populated with the date of the review.</p>
+<td><p>When the review schedule has a completed review this will be populated with the date that the CIAG entered into the system when completing the Review. It is the date that the user did the Review in person, rather than the date that it was entered into the system..</p>
 </td>
 <td>
   
@@ -11144,8 +11385,7 @@
 <td>inductionPerformedAt</td>
 <td>string</td>
 <td>false</td>
-<td><div class="highlight"><pre class="highlight plaintext" tabindex="0"><code>  An ISO-8601 date representing when the Induction was performed with the prisoner.
-  In the case of system generated updates this field will not be present.
+<td><div class="highlight"><pre class="highlight plaintext" tabindex="0"><code>  When the induction schedule has a completed induction this will be populated with the date that the CIAG entered into the system when completing the Induction. It is the date that the user did the Induction in person, rather than the date that it was entered into the system.
 </code></pre></div></td>
 <td>
   
