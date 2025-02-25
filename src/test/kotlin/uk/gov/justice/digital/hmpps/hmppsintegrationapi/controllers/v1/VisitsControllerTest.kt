@@ -79,13 +79,13 @@ class VisitsControllerTest(
                   "visitRestriction": "Restriction",
                   "startTimestamp": "Start",
                   "endTimestamp": "End",
-                  "createdTimestamp": "Created",
-                  "modifiedTimestamp": "Modified",
-                  "firstBookedDateTime": "First",
                   "visitors": [],
                   "visitNotes": [],
                   "visitContact": {"name": "Name", "telephone": "Telephone", "email": "Email"},
-                  "visitorSupport": {"description": "Description"}
+                  "visitorSupport": {"description": "Description"},
+                  "createdTimestamp": "Created",
+                  "modifiedTimestamp": "Modified",
+                  "firstBookedDateTime": "First"
               }
             }
           """.removeWhitespaceAndNewlines()
