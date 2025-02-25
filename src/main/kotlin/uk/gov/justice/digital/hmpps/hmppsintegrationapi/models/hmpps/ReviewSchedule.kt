@@ -109,7 +109,7 @@ data class ReviewSchedule(
   )
   var reviewCompletedByRole: String?,
   @Schema(
-    description = "When the review schedule has a completed review this will be populated with the date of the review.",
+    description = "When the review schedule has a completed review this will be populated with the date that the CIAG entered into the system when completing the Review. It is the date that the user did the Review in person, rather than the date that it was entered into the system..",
   )
   var reviewCompletedAt: LocalDate?,
   @Schema(
