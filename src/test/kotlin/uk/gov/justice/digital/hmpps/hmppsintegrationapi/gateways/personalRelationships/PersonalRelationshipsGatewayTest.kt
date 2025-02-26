@@ -148,4 +148,172 @@ class PersonalRelationshipsGatewayTest(
         .prisonerContactRestrictionId
         .shouldBe(123456)
     }
+
+    describe("GET /contact/{contactId}") {
+
+      it("authenticates using HMPPS Auth with credentials for linked prisoners api") {
+
+        personalRelationshipsGateway.getContactByContactId(contactId)
+
+        verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("PERSONAL-RELATIONSHIPS")
+      }
+
+      it("Gets a contact by id successfully") {
+        val path = "/contact/$contactId"
+        personalRelationshipsApiMockServer.stubPersonalRelationshipsApiResponse(
+          path,
+          body =
+            """
+            {
+              "id": 123456,
+              "title": "MR",
+              "titleDescription": "Mr",
+              "lastName": "Doe",
+              "firstName": "John",
+              "middleNames": "William",
+              "dateOfBirth": "1980-01-01",
+              "isStaff": false,
+              "deceasedDate": "1980-01-01",
+              "languageCode": "ENG",
+              "languageDescription": "English",
+              "interpreterRequired": true,
+              "addresses": [
+                {
+                  "contactAddressId": 123456,
+                  "contactId": 123456,
+                  "addressType": "HOME",
+                  "addressTypeDescription": "HOME",
+                  "primaryAddress": true,
+                  "flat": "Flat 2B",
+                  "property": "Mansion House",
+                  "street": "Acacia Avenue",
+                  "area": "Morton Heights",
+                  "cityCode": "25343",
+                  "cityDescription": "Sheffield",
+                  "countyCode": "S.YORKSHIRE",
+                  "countyDescription": "South Yorkshire",
+                  "postcode": "S13 4FH",
+                  "countryCode": "ENG",
+                  "countryDescription": "England",
+                  "verified": false,
+                  "verifiedBy": "NJKG44D",
+                  "verifiedTime": "2024-01-01T00:00:00Z",
+                  "mailFlag": false,
+                  "startDate": "2024-01-01",
+                  "endDate": "2024-01-01",
+                  "noFixedAddress": false,
+                  "comments": "Some additional information",
+                  "phoneNumbers": [
+                    {
+                      "contactAddressPhoneId": 1,
+                      "contactPhoneId": 1,
+                      "contactAddressId": 1,
+                      "contactId": 123,
+                      "phoneType": "MOB",
+                      "phoneTypeDescription": "Mobile phone",
+                      "phoneNumber": "+1234567890",
+                      "extNumber": "123",
+                      "createdBy": "admin",
+                      "createdTime": "2023-09-23T10:15:30",
+                      "updatedBy": "admin2",
+                      "updatedTime": "2023-09-24T12:00:00"
+                    }
+                  ],
+                  "createdBy": "JD000001",
+                  "createdTime": "2024-01-01T00:00:00Z",
+                  "updatedBy": "JD000001",
+                  "updatedTime": "2024-01-01T00:00:00Z"
+                }
+              ],
+              "phoneNumbers": [
+                {
+                  "contactPhoneId": 1,
+                  "contactId": 123,
+                  "phoneType": "MOB",
+                  "phoneTypeDescription": "Mobile",
+                  "phoneNumber": "+1234567890",
+                  "extNumber": "123",
+                  "createdBy": "admin",
+                  "createdTime": "2023-09-23T10:15:30",
+                  "updatedBy": "admin2",
+                  "updatedTime": "2023-09-24T12:00:00"
+                }
+              ],
+              "emailAddresses": [
+                {
+                  "contactEmailId": 1,
+                  "contactId": 123,
+                  "emailAddress": "test@example.com",
+                  "createdBy": "admin",
+                  "createdTime": "2023-09-23T10:15:30",
+                  "updatedBy": "admin2",
+                  "updatedTime": "2023-09-24T12:00:00"
+                }
+              ],
+              "identities": [
+                {
+                  "contactIdentityId": 1,
+                  "contactId": 123,
+                  "identityType": "PASS",
+                  "identityTypeDescription": "Passport number",
+                  "identityTypeIsActive": true,
+                  "identityValue": "GB123456789",
+                  "issuingAuthority": "UK Passport Office",
+                  "createdBy": "admin",
+                  "createdTime": "2023-09-23T10:15:30",
+                  "updatedBy": "admin2",
+                  "updatedTime": "2023-09-24T12:00:00"
+                }
+              ],
+              "employments": [
+                {
+                  "employmentId": 123456,
+                  "contactId": 654321,
+                  "employer": {
+                    "organisationId": 9007199254740991,
+                    "organisationName": "string",
+                    "organisationActive": true,
+                    "flat": "string",
+                    "property": "string",
+                    "street": "string",
+                    "area": "string",
+                    "cityCode": "string",
+                    "cityDescription": "string",
+                    "countyCode": "string",
+                    "countyDescription": "string",
+                    "postcode": "string",
+                    "countryCode": "string",
+                    "countryDescription": "string",
+                    "businessPhoneNumber": "string",
+                    "businessPhoneNumberExtension": "string"
+                  },
+                  "isActive": true,
+                  "createdBy": "admin",
+                  "createdTime": "2023-09-23T10:15:30",
+                  "updatedBy": "admin2",
+                  "updatedTime": "2023-09-24T12:00:00"
+                }
+              ],
+              "domesticStatusCode": "S",
+              "domesticStatusDescription": "Single",
+              "gender": "M",
+              "genderDescription": "Male",
+              "createdBy": "JD000001",
+              "createdTime": "2024-01-01T00:00:00Z"
+            }
+            """.trimIndent(),
+        )
+
+        val response = personalRelationshipsGateway.getContactByContactId(contactId)
+
+        response.errors.shouldBeEmpty()
+        response.data.shouldNotBeNull()
+        response.data!!
+          .addresses
+          .first()
+          .contactId
+          .shouldBe(123456)
+        response.data!!.gender.shouldBe("M")
+      }
+    }
   })
