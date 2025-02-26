@@ -18,6 +18,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.ConsumerPrisonAcc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ProbationOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Identifiers
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NomisNumber
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.OffenderSearchResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonInPrison
@@ -44,13 +45,16 @@ internal class GetPersonServiceTest(
 
       val nomsNumber = "N1234PS"
       val invalidNomsNumber = "N1234PSX"
+      val crnNumber = "AA123456"
       val prisoner = POSPrisoner(firstName = "Jim", lastName = "Brown", dateOfBirth = LocalDate.of(1992, 12, 3), prisonerNumber = nomsNumber)
       val wrongPrisonId = "XYZ"
       val prisonId = "ABC"
       val filters = ConsumerFilters(listOf(prisonId))
       val blankConsumerFilters = ConsumerFilters(null)
       val personOnProbation = PersonOnProbation(Person(firstName = "Sam", lastName = "Person", identifiers = Identifiers(nomisNumber = nomsNumber)), underActiveSupervision = true)
+      val personOnProbationMissingNomisNumber = PersonOnProbation(Person(firstName = "Sam", lastName = "Person"), underActiveSupervision = true)
       val prisonerWithPrisonId = POSPrisoner(firstName = "Sam", lastName = "Person", prisonId = prisonId)
+      val prisonerWithWrongPrisonId = POSPrisoner(firstName = "Sam", lastName = "Person", prisonId = wrongPrisonId)
 
       beforeEach {
         Mockito.reset(prisonerOffenderSearchGateway)
@@ -71,6 +75,8 @@ internal class GetPersonServiceTest(
           Response(data = POSPrisoner(firstName = "Sam", lastName = "Mills")),
         )
         whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber = nomsNumber)).thenReturn(Response(data = prisoner))
+
+        whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<Person>(prisonId, null)).thenReturn(Response(data = null))
       }
 
       it("gets a person from Probation Offender Search") {
@@ -191,12 +197,11 @@ internal class GetPersonServiceTest(
         val hmppsIdInCrnFormat = "AB123123"
         val expectedError =
           listOf(
-            UpstreamApiError(UpstreamApi.NOMIS, UpstreamApiError.Type.ENTITY_NOT_FOUND, "NOMIS number not found"),
             UpstreamApiError(causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH, type = UpstreamApiError.Type.ENTITY_NOT_FOUND, description = "NOMIS number not found"),
           )
 
         whenever(probationOffenderSearchGateway.getPerson(id = hmppsIdInCrnFormat)).thenReturn(
-          Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.NOMIS, UpstreamApiError.Type.ENTITY_NOT_FOUND, "NOMIS number not found"))),
+          Response(data = null, errors = expectedError),
         )
 
         val result = getPersonService.getPrisoner(hmppsIdInCrnFormat, blankConsumerFilters)
@@ -379,6 +384,124 @@ internal class GetPersonServiceTest(
 
         result.data.shouldBe(null)
         result.errors.shouldBe(errors)
+      }
+
+      describe("getNomisNumber") {
+        it("Invalid hmppsId (not nomis or crn) passed in, return bad request") {
+          val result = getPersonService.getNomisNumber(invalidNomsNumber)
+          result.errors.shouldBe(listOf(UpstreamApiError(causedBy = UpstreamApi.NOMIS, type = UpstreamApiError.Type.BAD_REQUEST, description = "Invalid HMPPS ID: $invalidNomsNumber")))
+        }
+
+        it("Nomis number passed in, return nomis number from POS") {
+          whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber)).thenReturn(Response(data = prisonerWithPrisonId, errors = emptyList()))
+          val result = getPersonService.getNomisNumber(nomsNumber)
+          result.data.shouldBe(NomisNumber(nomsNumber))
+        }
+
+        it("Nomis number passed in, POS returns error, return error") {
+          val errors = listOf(UpstreamApiError(causedBy = UpstreamApi.NOMIS, type = UpstreamApiError.Type.INTERNAL_SERVER_ERROR))
+          whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber)).thenReturn(Response(data = null, errors = errors))
+          val result = getPersonService.getNomisNumber(nomsNumber)
+          result.errors.shouldBe(errors)
+        }
+
+        it("Crn number passed in, return nomis number from probation") {
+          whenever(probationOffenderSearchGateway.getPerson(crnNumber)).thenReturn(Response(data = personOnProbation, errors = emptyList()))
+          val result = getPersonService.getNomisNumber(crnNumber)
+          result.data.shouldBe(NomisNumber(nomsNumber))
+        }
+
+        it("Crn number passed in - person from probation missing nomis number - return 404") {
+          whenever(probationOffenderSearchGateway.getPerson(crnNumber)).thenReturn(Response(data = personOnProbationMissingNomisNumber, errors = emptyList()))
+          val result = getPersonService.getNomisNumber(crnNumber)
+          result.errors.shouldBe(listOf(UpstreamApiError(causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH, type = UpstreamApiError.Type.ENTITY_NOT_FOUND, "NOMIS number not found")))
+        }
+
+        it("Crn number passed in - person from probation returns error - return error from probation") {
+          val errors = listOf(UpstreamApiError(causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH, type = UpstreamApiError.Type.INTERNAL_SERVER_ERROR))
+          whenever(probationOffenderSearchGateway.getPerson(crnNumber)).thenReturn(Response(data = null, errors = errors))
+          val result = getPersonService.getNomisNumber(crnNumber)
+          result.errors.shouldBe(errors)
+        }
+      }
+
+      describe("getNomisNumberWithPrisonFilter") {
+        it("Invalid hmppsId (not nomis or crn) passed in, return bad request") {
+          val result = getPersonService.getNomisNumberWithPrisonFilter(invalidNomsNumber, filters = null)
+          result.errors.shouldBe(listOf(UpstreamApiError(causedBy = UpstreamApi.NOMIS, type = UpstreamApiError.Type.BAD_REQUEST, description = "Invalid HMPPS ID: $invalidNomsNumber")))
+        }
+
+        it("Nomis number passed in, filters null - return nomis number from POS") {
+          whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber)).thenReturn(Response(data = prisonerWithPrisonId, errors = emptyList()))
+          val result = getPersonService.getNomisNumberWithPrisonFilter(nomsNumber, filters = null)
+          result.data.shouldBe(NomisNumber(nomsNumber))
+        }
+
+        it("Nomis number passed in, POS returns error, return error") {
+          val errors = listOf(UpstreamApiError(causedBy = UpstreamApi.NOMIS, type = UpstreamApiError.Type.INTERNAL_SERVER_ERROR))
+          whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber)).thenReturn(Response(data = null, errors = errors))
+          val result = getPersonService.getNomisNumberWithPrisonFilter(nomsNumber, filters = null)
+          result.errors.shouldBe(errors)
+        }
+
+        it("Nomis number passed in, filters present - return nomis number from POS") {
+          whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber)).thenReturn(Response(data = prisonerWithPrisonId, errors = emptyList()))
+          whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<Person>(prisonId, filters)).thenReturn(Response(data = null))
+          val result = getPersonService.getNomisNumberWithPrisonFilter(nomsNumber, filters)
+          result.data.shouldBe(NomisNumber(nomsNumber))
+        }
+
+        it("Nomis number passed in, filters present, filter check failed - return 404") {
+          val errors = listOf(UpstreamApiError(causedBy = UpstreamApi.NOMIS, type = UpstreamApiError.Type.ENTITY_NOT_FOUND))
+          whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber)).thenReturn(Response(data = prisonerWithWrongPrisonId, errors = emptyList()))
+          whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<Person>(wrongPrisonId, filters)).thenReturn(Response(data = null, errors = errors))
+          val result = getPersonService.getNomisNumberWithPrisonFilter(nomsNumber, filters)
+          result.errors.shouldBe(errors)
+        }
+
+        it("Crn number passed in, filters null - return nomis number from probation") {
+          whenever(probationOffenderSearchGateway.getPerson(crnNumber)).thenReturn(Response(data = personOnProbation, errors = emptyList()))
+          val result = getPersonService.getNomisNumberWithPrisonFilter(crnNumber, filters = null)
+          result.data.shouldBe(NomisNumber(nomsNumber))
+        }
+
+        it("Crn number passed in - person from probation missing nomis number - return 404") {
+          whenever(probationOffenderSearchGateway.getPerson(crnNumber)).thenReturn(Response(data = personOnProbationMissingNomisNumber, errors = emptyList()))
+          val result = getPersonService.getNomisNumberWithPrisonFilter(crnNumber, filters = null)
+          result.errors.shouldBe(listOf(UpstreamApiError(causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH, type = UpstreamApiError.Type.ENTITY_NOT_FOUND, "NOMIS number not found")))
+        }
+
+        it("Crn number passed in - person from probation returns error - return error from probation") {
+          val errors = listOf(UpstreamApiError(causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH, type = UpstreamApiError.Type.INTERNAL_SERVER_ERROR))
+          whenever(probationOffenderSearchGateway.getPerson(crnNumber)).thenReturn(Response(data = null, errors = errors))
+          val result = getPersonService.getNomisNumberWithPrisonFilter(crnNumber, filters = null)
+          result.errors.shouldBe(errors)
+        }
+
+        it("Crn number passed in, filters present - POS returns prison id, return nomis number from probation") {
+          whenever(probationOffenderSearchGateway.getPerson(crnNumber)).thenReturn(Response(data = personOnProbation, errors = emptyList()))
+          whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber)).thenReturn(Response(data = prisonerWithPrisonId, errors = emptyList()))
+          whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<Person>(prisonId, filters)).thenReturn(Response(data = null))
+          val result = getPersonService.getNomisNumberWithPrisonFilter(crnNumber, filters)
+          result.data.shouldBe(NomisNumber(nomsNumber))
+        }
+
+        it("Crn number passed in, filters present - POS returns error, return error from POS") {
+          val errors = listOf(UpstreamApiError(causedBy = UpstreamApi.NOMIS, type = UpstreamApiError.Type.INTERNAL_SERVER_ERROR))
+          whenever(probationOffenderSearchGateway.getPerson(crnNumber)).thenReturn(Response(data = personOnProbation, errors = emptyList()))
+          whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber)).thenReturn(Response(data = null, errors = errors))
+          val result = getPersonService.getNomisNumberWithPrisonFilter(crnNumber, filters)
+          result.errors.shouldBe(errors)
+        }
+
+        it("Crn number passed in, filters present - POS returns prison id, filter check failed - return 404") {
+          val errors = listOf(UpstreamApiError(causedBy = UpstreamApi.NOMIS, type = UpstreamApiError.Type.ENTITY_NOT_FOUND))
+          whenever(probationOffenderSearchGateway.getPerson(crnNumber)).thenReturn(Response(data = personOnProbation, errors = emptyList()))
+          whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber)).thenReturn(Response(data = prisonerWithPrisonId, errors = emptyList()))
+          whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<Nothing>(prisonId, filters)).thenReturn(Response(data = null, errors = errors))
+          val result = getPersonService.getNomisNumberWithPrisonFilter(crnNumber, filters)
+          result.errors.shouldBe(errors)
+        }
       }
     },
   )

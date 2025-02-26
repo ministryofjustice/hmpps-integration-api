@@ -102,44 +102,77 @@ class GetPersonService(
   }
 
   /**
-   * Identify whether the hmppsId is a noms number or a crn
-   * When it is a noms number then return it.
-   * When it is a CRN look up the prisoner in probation offender search and then return it
+   * Returns a Nomis number from a HMPPS ID
    */
-  fun getNomisNumber(hmppsId: String): Response<NomisNumber?> =
+  fun getNomisNumber(hmppsId: String): Response<NomisNumber?> = getNomisNumberWithPrisonFilter(hmppsId, filters = null)
+
+  /**
+   * Returns a Nomis number from a HMPPS ID, taking into account prison filters
+   */
+  fun getNomisNumberWithPrisonFilter(
+    hmppsId: String,
+    filters: ConsumerFilters?,
+  ): Response<NomisNumber?> {
     when (identifyHmppsId(hmppsId)) {
       IdentifierType.NOMS -> {
         val prisoner = prisonerOffenderSearchGateway.getPrisonOffender(hmppsId)
         if (prisoner.errors.isNotEmpty()) {
-          Response(data = null, errors = prisoner.errors)
-        } else {
-          Response(data = NomisNumber(hmppsId))
+          return Response(data = null, errors = prisoner.errors)
         }
+
+        if (filters?.prisons != null) {
+          val consumerPrisonFilterCheck = consumerPrisonAccessService.checkConsumerHasPrisonAccess<NomisNumber>(prisoner.data?.prisonId, filters)
+          if (consumerPrisonFilterCheck.errors.isNotEmpty()) {
+            return consumerPrisonFilterCheck
+          }
+        }
+
+        return Response(data = NomisNumber(hmppsId))
       }
 
       IdentifierType.CRN -> {
         val personFromProbationOffenderSearch = probationOffenderSearchGateway.getPerson(id = hmppsId)
-        val nomisNumber = personFromProbationOffenderSearch.data?.identifiers?.nomisNumber
-        val errors = personFromProbationOffenderSearch.errors.toMutableList()
-
-        if (nomisNumber == null) {
-          errors.add(
-            UpstreamApiError(
-              description = "NOMIS number not found",
-              type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-              causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH,
-            ),
+        if (personFromProbationOffenderSearch.errors.isNotEmpty()) {
+          return Response(
+            data = null,
+            errors = personFromProbationOffenderSearch.errors,
           )
         }
 
-        Response(
-          data = nomisNumber?.let { NomisNumber(it) },
-          errors = errors,
+        val nomisNumber = personFromProbationOffenderSearch.data?.identifiers?.nomisNumber
+        if (nomisNumber == null) {
+          return Response(
+            data = null,
+            errors =
+              listOf(
+                UpstreamApiError(
+                  description = "NOMIS number not found",
+                  type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+                  causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH,
+                ),
+              ),
+          )
+        }
+
+        if (filters?.prisons != null) {
+          val prisoner = prisonerOffenderSearchGateway.getPrisonOffender(nomisNumber)
+          if (prisoner.errors.isNotEmpty()) {
+            return Response(data = null, errors = prisoner.errors)
+          }
+
+          val consumerPrisonFilterCheck = consumerPrisonAccessService.checkConsumerHasPrisonAccess<NomisNumber>(prisoner.data?.prisonId, filters)
+          if (consumerPrisonFilterCheck.errors.isNotEmpty()) {
+            return consumerPrisonFilterCheck
+          }
+        }
+
+        return Response(
+          data = NomisNumber(nomisNumber),
         )
       }
 
       IdentifierType.UNKNOWN ->
-        Response(
+        return Response(
           data = null,
           errors =
             listOf(
@@ -151,6 +184,7 @@ class GetPersonService(
             ),
         )
     }
+  }
 
   fun getCombinedDataForPerson(hmppsId: String): Response<OffenderSearchResponse> {
     val probationResponse = probationOffenderSearchGateway.getPerson(id = hmppsId)
