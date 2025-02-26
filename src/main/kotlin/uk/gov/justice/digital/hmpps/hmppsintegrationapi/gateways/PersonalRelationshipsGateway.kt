@@ -17,7 +17,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelations
 
 @Component
 class PersonalRelationshipsGateway(
-  @Value("http://localhost:4022") baseUrl: String,
+  @Value("\${services.personal-relationships.base-url}") baseUrl: String,
 ) {
   private val webClient = WebClientWrapper(baseUrl)
   private val mapper: ObjectMapper = ObjectMapper()
