@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.Contact
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.LinkedPrisoner
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PrisonerContactRestrictionsResponse
 
@@ -60,6 +61,31 @@ class PersonalRelationshipsGateway(
           data = result.data,
         )
       }
+      is WebClientWrapper.WebClientWrapperResponse.Error -> {
+        Response(
+          data = null,
+          errors = result.errors,
+        )
+      }
+    }
+  }
+
+  fun getContactByContactId(contactId: Long): Response<Contact?> {
+    val result =
+      webClient.request<Contact>(
+        HttpMethod.GET,
+        "/contact/$contactId",
+        authenticationHeader(),
+        UpstreamApi.PERSONAL_RELATIONSHIPS,
+      )
+
+    return when (result) {
+      is WebClientWrapper.WebClientWrapperResponse.Success -> {
+        return Response(
+          data = result.data,
+        )
+      }
+
       is WebClientWrapper.WebClientWrapperResponse.Error -> {
         Response(
           data = null,
