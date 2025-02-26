@@ -1,8 +1,8 @@
-package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.contacts
+package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships
 
 import com.fasterxml.jackson.annotation.JsonProperty
 
-data class Contact(
+data class PRContact(
   @JsonProperty("prisonerContactId")
   val prisonerContactId: Long,
   @JsonProperty("contactId")

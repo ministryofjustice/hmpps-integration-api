@@ -8,10 +8,10 @@ import org.springframework.http.HttpMethod
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper.WebClientWrapperResponse
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.contacts.PaginatedContacts
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.LinkedPrisoner
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PRPaginatedContacts
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PrisonerContactRestrictionsResponse
 
 @Component
@@ -88,9 +88,9 @@ class PersonalRelationshipsGateway(
     prisonerId: String,
     page: Int,
     size: Int,
-  ): Response<PaginatedContacts?> {
+  ): Response<PRPaginatedContacts?> {
     val result =
-      webClient.request<PaginatedContacts?>(
+      webClient.request<PRPaginatedContacts?>(
         HttpMethod.GET,
         "/prisoner/$prisonerId/contact?page=$page&size=$size",
         authenticationHeader(),
