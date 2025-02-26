@@ -98,9 +98,18 @@ class PostTransactionForPersonTest(
         .shouldBe("6179604-1")
     }
 
+    it("return a 400 error response") {
+      val invalidTransactionRequest = TransactionRequest("invalid", "", 0, "", "")
+      nomisApiMockServer.stubNomisApiResponseForPost(path, asJsonString(invalidTransactionRequest.toApiConformingMap()), "", HttpStatus.BAD_REQUEST)
+
+      val response = nomisGateway.postTransactionForPerson(prisonId, nomisNumber, invalidTransactionRequest)
+
+      response.errors.shouldBe(arrayOf(UpstreamApiError(causedBy = UpstreamApi.NOMIS, type = UpstreamApiError.Type.BAD_REQUEST)))
+    }
+
     it("return a 404 error response") {
       val invalidTransactionRequest = TransactionRequest("invalid", "", 0, "", "")
-      nomisApiMockServer.stubNomisApiResponseForPost(path, asJsonString(invalidTransactionRequest), "", HttpStatus.NOT_FOUND)
+      nomisApiMockServer.stubNomisApiResponseForPost(path, asJsonString(invalidTransactionRequest.toApiConformingMap()), "", HttpStatus.NOT_FOUND)
 
       val response = nomisGateway.postTransactionForPerson(prisonId, nomisNumber, invalidTransactionRequest)
 
