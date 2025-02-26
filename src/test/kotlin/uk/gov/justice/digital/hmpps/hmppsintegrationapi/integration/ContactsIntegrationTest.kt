@@ -1,0 +1,83 @@
+package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration
+
+import org.junit.jupiter.api.Test
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
+
+class ContactsIntegrationTest : IntegrationTestBase() {
+  @Test
+  fun `gets contact by contact id`() {
+    callApi("/v1/contacts/$contactId")
+      .andExpect(status().isOk)
+      .andExpect(
+        content().json(
+          """
+          {
+            "data": {
+              "id":123456,
+              "title":"MR",
+              "titleDescription":"Mr",
+              "lastName":"Doe",
+              "firstName":"John",
+              "middleNames":"William",
+              "dateOfBirth":"1980-01-01",
+              "isStaff":false,
+              "deceasedDate":"1980-01-01",
+              "languageCode":"ENG",
+              "languageDescription":"English",
+              "interpreterRequired":true,
+              "addresses":[{
+                  "contactAddressId":123456,
+                  "contactId":123456,
+                  "addressType":"HOME",
+                  "addressTypeDescription":"HOME",
+                  "primaryAddress":true,
+                  "flat":"Flat 2B",
+                  "property":"Mansion House",
+                  "street":"Acacia Avenue",
+                  "area":"Morton Heights",
+                  "cityCode":"25343",
+                  "cityDescription":"Sheffield",
+                  "countyCode":"S.YORKSHIRE",
+                  "countyDescription":"South Yorkshire",
+                  "postcode":"S13 4FH",
+                  "countryCode":"ENG",
+                  "countryDescription":"England",
+                  "verified":false,
+                  "verifiedBy":"NJKG44D",
+                  "verifiedTime":"2024-01-01T00:00:00Z",
+                  "mailFlag":false,
+                  "startDate":"2024-01-01",
+                  "endDate":"2024-01-01",
+                  "noFixedAddress":false,
+                  "comments":"Some additional information",
+                  "phoneNumbers":[{
+                      "contactPhoneId":1,
+                      "contactId":123,
+                      "phoneType":"MOB",
+                      "phoneTypeDescription":"Mobile phone",
+                      "phoneNumber":"+1234567890",
+                      "extNumber":"123"}],
+                  "createdBy":"JD000001",
+                  "createdTime":"2024-01-01T00:00:00Z",
+                  "updatedBy":"JD000001",
+                  "updatedTime":"2024-01-01T00:00:00Z"}],
+                  "phoneNumbers":[{
+                      "contactPhoneId":1,
+                      "contactId":123,
+                      "phoneType":"MOB",
+                      "phoneTypeDescription":"Mobile",
+                      "phoneNumber":"+1234567890",
+                      "extNumber":"123"}],
+                  "emailAddresses":[{
+                      "contactEmailId":1,
+                      "contactId":123,
+                      "emailAddress":"test@example.com"}],
+                  "gender":"M",
+                  "genderDescription":"Male"},
+                "errors":[]}
+          """.trimIndent(),
+        ),
+      )
+  }
+}
