@@ -24,9 +24,16 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError.Type.BAD_REQUEST
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError.Type.ENTITY_NOT_FOUND
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError.Type.FORBIDDEN
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.Pageable
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.PaginatedVisit
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.Sort
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.Visit
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.VisitContact
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.VisitorSupport
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPrisonersService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetVisitsService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 import java.time.LocalDate
 
@@ -37,6 +44,7 @@ internal class PrisonControllerTest(
   @MockitoBean val getPersonService: GetPersonService,
   @MockitoBean val auditService: AuditService,
   @MockitoBean val getPrisonersService: GetPrisonersService,
+  @MockitoBean val getVisitsService: GetVisitsService,
   @Autowired val request: HttpServletRequest,
 ) : DescribeSpec(
     {
@@ -47,6 +55,45 @@ internal class PrisonControllerTest(
       val lastName = "Allen"
       val dateOfBirth = "2023-03-01"
       val emptyConsumerFilter = null
+
+      // Search visit props
+      val visitResponse =
+        Visit(
+          prisonerId = "PrisonerId",
+          prisonId = "MDI",
+          prisonName = "Some Prison",
+          visitRoom = "Room",
+          visitType = "Type",
+          visitStatus = "Status",
+          outcomeStatus = "Outcome",
+          visitRestriction = "Restriction",
+          startTimestamp = "Start",
+          endTimestamp = "End",
+          createdTimestamp = "Created",
+          modifiedTimestamp = "Modified",
+          firstBookedDateTime = "First",
+          visitors = emptyList(),
+          visitNotes = emptyList(),
+          visitContact = VisitContact(name = "Name", telephone = "Telephone", email = "Email"),
+          applicationReference = "dfs-wjs-abc",
+          reference = "dfs-wjs-abc",
+          sessionTemplateReference = "dfs-wjs-xyz",
+          visitorSupport = VisitorSupport(description = "Description"),
+        )
+      val paginatedVisitsData =
+        PaginatedVisit(
+          totalElements = 1,
+          totalPages = 1,
+          first = true,
+          last = true,
+          number = 1,
+          size = 1,
+          numberOfElements = 1,
+          empty = false,
+          pageable = Pageable(offset = 1, sort = Sort(empty = false, sorted = false, unsorted = true), pageSize = 1, paged = true, pageNumber = 1, unpaged = true),
+          sort = Sort(empty = false, sorted = false, unsorted = true),
+          visits = listOf(visitResponse),
+        )
 
       describe("GET $basePath") {
       }
@@ -222,7 +269,7 @@ internal class PrisonControllerTest(
             errors =
               listOf(
                 UpstreamApiError(
-                  type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+                  type = ENTITY_NOT_FOUND,
                   causedBy = UpstreamApi.PRISONER_OFFENDER_SEARCH,
                   description = "Service error",
                 ),
@@ -277,6 +324,78 @@ internal class PrisonControllerTest(
         val result = mockMvc.performAuthorisedWithCN("$basePath/prisoners?first_name=$firstName&last_name=$lastName&date_of_birth=$dateOfBirth&search_within_aliases=false", "empty-prisons")
 
         result.response.status.shouldBe(403)
+      }
+
+      describe("GET visit/search") {
+        val prisonId = "ABC"
+        val path = "$basePath/$prisonId/visit/search"
+        val hmppsId = "A1234AA"
+        val fromDate = "2024-01-01"
+        val toDate = "2024-01-14"
+        val visitStatus = "BOOKED"
+        val page = 1
+        val size = 10
+        val pathWithQueryParams = "$path?prisonId=$prisonId&visitStatus=$visitStatus&page=$page&size=$size&prisonerId=$hmppsId&fromDate=$fromDate&toDate=$toDate"
+
+        it("returns 200 when no errors received and with valid data") {
+          whenever(getVisitsService.execute(anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull())).thenReturn(
+            Response(
+              data = paginatedVisitsData,
+            ),
+          )
+
+          val result = mockMvc.performAuthorised(pathWithQueryParams)
+
+          result.response.status.shouldBe(200)
+        }
+        it("returns 200 when no errors but empty body") {
+          whenever(getVisitsService.execute(anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull())).thenReturn(
+            Response(
+              data = null,
+            ),
+          )
+
+          val result = mockMvc.performAuthorised(pathWithQueryParams)
+
+          result.response.status.shouldBe(200)
+        }
+        it("returns 404 when prisonId not in consumer profile") {
+          whenever(getVisitsService.execute(anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull())).thenReturn(
+            Response(
+              data = null,
+              errors =
+                listOf(
+                  UpstreamApiError(
+                    type = ENTITY_NOT_FOUND,
+                    causedBy = UpstreamApi.MANAGE_PRISON_VISITS,
+                  ),
+                ),
+            ),
+          )
+
+          val result = mockMvc.performAuthorised(pathWithQueryParams)
+
+          result.response.status.shouldBe(404)
+        }
+
+        it("returns 400 when invalid query parameters supplied") {
+          whenever(getVisitsService.execute(anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull())).thenReturn(
+            Response(
+              data = null,
+              errors =
+                listOf(
+                  UpstreamApiError(
+                    type = BAD_REQUEST,
+                    causedBy = UpstreamApi.MANAGE_PRISON_VISITS,
+                  ),
+                ),
+            ),
+          )
+
+          val result = mockMvc.performAuthorised(pathWithQueryParams)
+
+          result.response.status.shouldBe(400)
+        }
       }
     },
   )

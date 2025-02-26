@@ -22,9 +22,11 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError.Type.BAD_REQUEST
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError.Type.ENTITY_NOT_FOUND
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError.Type.FORBIDDEN
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.PaginatedVisit
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPrisonersService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetVisitsService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.PaginatedResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.paginateWith
@@ -37,6 +39,7 @@ import java.time.format.DateTimeFormatter
 class PrisonController(
   @Autowired val getPrisonersService: GetPrisonersService,
   @Autowired val getPersonService: GetPersonService,
+  @Autowired val getVisitsService: GetVisitsService,
   @Autowired val auditService: AuditService,
 ) {
   @GetMapping("/prisoners/{hmppsId}")
@@ -120,6 +123,51 @@ class PrisonController(
     }
 
     return response.data.paginateWith(page, perPage)
+  }
+
+  @GetMapping("/{prisonId}/visit/search")
+  @Tag(name = "visits")
+  @Operation(
+    summary = "Searches for visits by prisonId and criteria.",
+    description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
+    responses = [
+      ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully performed the query on upstream APIs. An empty list is returned when no results are found."),
+      ApiResponse(
+        responseCode = "400",
+        description = "",
+        content = [Content(schema = Schema(ref = "#/components/schemas/BadRequest"))],
+      ),
+      ApiResponse(responseCode = "403", content = [Content(schema = Schema(ref = "#/components/schemas/ForbiddenResponse"))]),
+      ApiResponse(responseCode = "404", content = [Content(schema = Schema(ref = "#/components/schemas/PersonNotFound"))]),
+      ApiResponse(responseCode = "500", content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]),
+    ],
+  )
+  fun getVisits(
+    @Parameter(description = "The ID of the prison to be queried against") @PathVariable prisonId: String,
+    @Parameter(description = "The HMPPS ID of the person") @RequestParam(required = false) hmppsId: String?,
+    @Parameter(description = "The start date of the visit") @RequestParam(required = false) fromDate: String?,
+    @Parameter(description = "The end date of the visit") @RequestParam(required = false) toDate: String?,
+    @Parameter(description = "The status of the visit. (BOOKING or CANCELLED)") @RequestParam visitStatus: String,
+    @Parameter(description = "The page number", schema = Schema(minimum = "1")) @RequestParam(required = true, defaultValue = "1") page: Int,
+    @Parameter(description = "The maximum number of results for a page", schema = Schema(minimum = "1")) @RequestParam(required = true, defaultValue = "10") size: Int,
+    @RequestAttribute filters: ConsumerFilters?,
+  ): DataResponse<PaginatedVisit?> {
+    val response = getVisitsService.execute(hmppsId, prisonId, fromDate, toDate, visitStatus, page, size, filters)
+
+    if (response.hasErrorCausedBy(BAD_REQUEST, causedBy = UpstreamApi.MANAGE_PRISON_VISITS)) {
+      throw ValidationException("Invalid query parameters.")
+    }
+
+    if (response.hasErrorCausedBy(ENTITY_NOT_FOUND, causedBy = UpstreamApi.MANAGE_PRISON_VISITS)) {
+      throw EntityNotFoundException("Could not find visits with supplied query parameters.")
+    }
+
+    auditService.createEvent(
+      "SEARCH_VISITS",
+      mapOf("prisonId" to prisonId, "hmppsId" to hmppsId, "fromDate" to fromDate, "toDate" to toDate, "visitStatus" to visitStatus),
+    )
+
+    return DataResponse(response.data)
   }
 
   private fun isValidISODateFormat(dateString: String): Boolean =

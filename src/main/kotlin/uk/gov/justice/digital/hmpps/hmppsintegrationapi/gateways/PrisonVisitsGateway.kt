@@ -51,17 +51,29 @@ class PrisonVisitsGateway(
 
   fun getVisits(
     prisonId: String,
-    hmppsId: String,
-    fromDate: String,
-    toDate: String,
+    hmppsId: String?,
+    fromDate: String?,
+    toDate: String?,
     visitStatus: String,
     page: Int,
-    perPage: Int,
+    size: Int,
   ): Response<PaginatedVisit?> {
+    var queryString = "?prisonId=$prisonId&visitStatus=$visitStatus&page=$page&size=$size&"
+
+    if (!hmppsId.isNullOrBlank()) {
+      queryString += "prisonerId=$hmppsId&"
+    }
+    if (!fromDate.isNullOrBlank()) {
+      queryString += "visitStartDate=$fromDate&"
+    }
+    if (!toDate.isNullOrBlank()) {
+      queryString += "visitEndDate=$toDate"
+    }
+
     val result =
       webClient.request<PaginatedVisit?>(
         HttpMethod.GET,
-        "/visits/search?prisonerId=$hmppsId&prisonId=$prisonId&visitStartDate=$fromDate&visitEndDate=$toDate&visitStatus=$visitStatus&page=$page&size=$perPage",
+        "/visits/search$queryString",
         authenticationHeader(),
         UpstreamApi.MANAGE_PRISON_VISITS,
         badRequestAsError = true,

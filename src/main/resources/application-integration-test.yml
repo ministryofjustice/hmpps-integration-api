@@ -104,6 +104,7 @@ authorisation:
         - "/v1/prison/.*/prisoners/.*/non-associations"
         - "/v1/persons/.*/visitor/.*/restrictions"
         - "/v1/visit/[^/]*$"
+        - "/v1/prison/.*/visit/search[^/]*$"
       filters:
     config-test:
       include:
@@ -125,6 +126,7 @@ authorisation:
         - "/v1/persons/.*/visitor/.*/restrictions"
         - "/v1/persons/.*/visit/future"
         - "/v1/hmpps/id/nomis-number/[^/]*$"
+        - "/v1/prison/.*/visit/search[^/]*$"
         - "/v1/visit/[^/]*$"
       filters:
         prisons:
