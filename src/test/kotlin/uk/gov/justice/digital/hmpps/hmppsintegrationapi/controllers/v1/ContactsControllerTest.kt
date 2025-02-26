@@ -1,15 +1,16 @@
-package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
+package uk.gov.justice.digital.hmpps.hmppsintegrationapi.controllers.v1
 
 import io.kotest.core.spec.style.DescribeSpec
-import io.kotest.matchers.collections.shouldBeEmpty
-import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
 import org.mockito.kotlin.whenever
-import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
-import org.springframework.test.context.ContextConfiguration
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
+import org.springframework.http.HttpStatus
+import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.bean.override.mockito.MockitoBean
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PersonalRelationshipsGateway
+import org.springframework.test.web.servlet.MockMvc
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
@@ -17,17 +18,19 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelations
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.Contact
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.EmailAddress
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PhoneNumber
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetContactService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 
-@ContextConfiguration(
-  initializers = [ConfigDataApplicationContextInitializer::class],
-  classes = [(GetVisitorService::class)],
-)
-internal class GetVisitorServiceTest(
-  private val getVisitorService: GetVisitorService,
-  @MockitoBean val personalRelationshipsGateway: PersonalRelationshipsGateway,
+@WebMvcTest(controllers = [ContactsController::class])
+@ActiveProfiles("test")
+internal class ContactsControllerTest(
+  @Autowired var springMockMvc: MockMvc,
+  @MockitoBean val auditService: AuditService,
+  @MockitoBean val getContactService: GetContactService,
 ) : DescribeSpec({
-
-    val contactId = "123456"
+    val mockMvc = IntegrationAPIMockMvc(springMockMvc)
+    val path = "/v1/contacts/"
+    val defaultContactId = "12345"
     val contactResponse =
       Contact(
         id = 123456L,
@@ -155,31 +158,35 @@ internal class GetVisitorServiceTest(
         genderDescription = "Male",
       )
 
-    beforeEach {
-      Mockito.reset(personalRelationshipsGateway)
-    }
+    describe("GET Contacts") {
+      beforeTest {
+        Mockito.reset(getContactService)
+        whenever(getContactService.execute(defaultContactId)).thenReturn(
+          Response(
+            data = contactResponse,
+          ),
+        )
+        Mockito.reset(auditService)
+      }
 
-    it("will return 200 and a contact for the contactId provided") {
-      val contactIdLongified = contactId.toLong()
-      whenever(personalRelationshipsGateway.getContactByContactId(contactIdLongified)).thenReturn(Response(data = contactResponse))
-      val response = getVisitorService.execute(contactId = contactId)
-      response.data!!.id.shouldBe(contactIdLongified)
-      response.errors.shouldBeEmpty()
-    }
+      it("returns a 200 OK status code") {
+        val result = mockMvc.performAuthorised("$path$defaultContactId")
 
-    it("will return 404 when no data response for contactId") {
-      whenever(personalRelationshipsGateway.getContactByContactId(contactId.toLong())).thenReturn(Response(data = null))
-      val response = getVisitorService.execute(contactId = contactId)
-      response.errors.shouldContain(
-        UpstreamApiError(
-          UpstreamApi.PERSONAL_RELATIONSHIPS,
-          type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-        ),
-      )
-    }
+        result.response.status.shouldBe(HttpStatus.OK.value())
+      }
 
-    it("will return 400 when invalid contactId") {
-      val response = getVisitorService.execute(contactId = "THIS_ISNT_A_LONG!")
-      response.errors.shouldContain(UpstreamApiError(UpstreamApi.PERSONAL_RELATIONSHIPS, UpstreamApiError.Type.BAD_REQUEST))
+      it("returns a 404 status code when no data found") {
+        whenever(getContactService.execute(defaultContactId)).thenReturn(Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.PERSONAL_RELATIONSHIPS, UpstreamApiError.Type.ENTITY_NOT_FOUND))))
+
+        val result = mockMvc.performAuthorised("$path$defaultContactId")
+        result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
+      }
+
+      it("returns a 400 status code when invalid contactId supplied") {
+        whenever(getContactService.execute(defaultContactId)).thenReturn(Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.PERSONAL_RELATIONSHIPS, UpstreamApiError.Type.BAD_REQUEST))))
+
+        val result = mockMvc.performAuthorised("$path$defaultContactId")
+        result.response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
+      }
     }
   })
