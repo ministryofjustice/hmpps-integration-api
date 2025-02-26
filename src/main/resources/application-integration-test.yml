@@ -127,6 +127,7 @@ authorisation:
         - "/v1/persons/.*/visit/future"
         - "/v1/hmpps/id/nomis-number/[^/]*$"
         - "/v1/prison/.*/visit/search[^/]*$"
+        - "/v1/visit/[^/]*$"
       filters:
         prisons:
           - ABC
