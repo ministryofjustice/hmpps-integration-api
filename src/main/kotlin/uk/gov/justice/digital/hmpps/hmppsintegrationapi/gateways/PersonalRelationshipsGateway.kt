@@ -7,10 +7,12 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpMethod
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper.WebClientWrapperResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.Contact
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.LinkedPrisoner
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PRPaginatedContacts
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PrisonerContactRestrictionsResponse
 
 @Component
@@ -106,5 +108,37 @@ class PersonalRelationshipsGateway(
     return mapOf(
       "Authorization" to "Bearer $token",
     )
+  }
+
+  fun getContacts(
+    prisonerId: String,
+    page: Int,
+    size: Int,
+  ): Response<PRPaginatedContacts?> {
+    val result =
+      webClient.request<PRPaginatedContacts?>(
+        HttpMethod.GET,
+        "/prisoner/$prisonerId/contact?page=$page&size=$size",
+        authenticationHeader(),
+        UpstreamApi.PERSONAL_RELATIONSHIPS,
+        badRequestAsError = true,
+      )
+
+    return when (result) {
+      is WebClientWrapperResponse.Success -> {
+        Response(
+          data =
+            result.data,
+        )
+      }
+
+      is WebClientWrapperResponse.Error -> {
+        println(result.errors)
+        Response(
+          data = null,
+          errors = result.errors,
+        )
+      }
+    }
   }
 }
