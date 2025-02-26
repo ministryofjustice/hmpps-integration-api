@@ -304,6 +304,9 @@
         <a href="../../documentation/api/index.html#v1-epf-person-details-hmppsid-eventnumber"><span>/v1/epf/person-details/{hmppsId}/{eventNumber}</span></a>
       </li>
       <li>
+        <a href="../../documentation/api/index.html#v1-contacts-contactid"><span>/v1/contacts/{contactId}</span></a>
+      </li>
+      <li>
         <a href="../../documentation/api/index.html#queue-admin-get-dlq-messages-dlqname"><span>/queue-admin/get-dlq-messages/{dlqName}</span></a>
       </li>
       <li>
@@ -7752,6 +7755,182 @@
 </td>
 <td>
 <a href='#schema-responsecasedetail'>ResponseCaseDetail</a>
+</td>
+</tr>
+
+<tr>
+<td>404</td>
+<td>
+<p>Not Found</p>
+
+
+
+<pre><code>{
+  "status": 404,
+  "userMessage": "404 Not found error: Could not find person with HMPPS id: 2003/0011991D.",
+  "developerMessage": "Could not find person with HMPPS id: 2003/0011991D."
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-personnotfound'>PersonNotFound</a>
+</td>
+</tr>
+
+<tr>
+<td>500</td>
+<td>
+<p>Internal Server Error</p>
+
+
+
+<pre><code>{
+  "status": 500,
+  "userMessage": "Internal Server Error",
+  "developerMessage": "Unable to complete request as an upstream service is not responding."
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-internalservererror'>InternalServerError</a>
+</td>
+</tr>
+
+</tbody>
+</table>
+
+
+
+
+<h2 id="v1-contacts-contactid">/v1/contacts/{contactId}</h2>
+
+<h3 id="v1-contacts-contactid-get">get</h3>
+
+  <p><em>Returns a contact by ID.</em></p>
+
+
+
+
+<h4 id="v1-contacts-contactid-get-parameters">Parameters</h4>
+<table>
+<thead>
+<tr><th>Parameter</th><th>In</th><th>Type</th><th>Required</th><th>Description</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>contactId</td>
+<td>path</td>
+<td>string</td>
+<td>true</td>
+<td>
+
+</td>
+</tr>
+
+</tbody>
+</table>
+
+
+
+
+<h4 id="v1-contacts-contactid-get-responses">Responses</h4>
+<table>
+<thead>
+<tr><th>Status</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>200</td>
+<td>
+<p>Successfully found contact by contact ID.</p>
+
+
+
+<pre><code>{
+  "data": {
+    "id": "integer",
+    "title": "string",
+    "titleDescription": "string",
+    "lastName": "string",
+    "firstName": "string",
+    "middleNames": "string",
+    "dateOfBirth": "string",
+    "isStaff": "boolean",
+    "deceasedDate": "string",
+    "languageCode": "string",
+    "languageDescription": "string",
+    "interpreterRequired": "boolean",
+    "addresses": [
+      {
+        "country": "England",
+        "county": "Greater London",
+        "endDate": "string",
+        "locality": "London Bridge",
+        "name": "Name of the building of residence",
+        "noFixedAddress": true,
+        "number": "1",
+        "postcode": "SE1 1TE",
+        "startDate": "string",
+        "street": "O'Meara Street",
+        "town": "London",
+        "types": [
+          {
+            "code": "string",
+            "desc": "string"
+          }
+        ],
+        "notes": "This is their partner's address."
+      }
+    ],
+    "phoneNumbers": [
+      {
+        "number": "079123456789",
+        "type": "TELEPHONE"
+      }
+    ],
+    "emailAddresses": [
+      {
+        "contactEmailId": "integer",
+        "contactId": "integer",
+        "emailAddress": "string"
+      }
+    ],
+    "gender": "string",
+    "genderDescription": "string"
+  },
+  "errors": [
+    {
+      "causedBy": "string",
+      "type": "string",
+      "description": "string"
+    }
+  ]
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-responsecontact'>ResponseContact</a>
+</td>
+</tr>
+
+<tr>
+<td>400</td>
+<td>
+<p>The contact is in invalid format.</p>
+
+
+
+<pre><code>{
+  "status": 400,
+  "userMessage": "Validation failure: No query parameters specified.",
+  "developerMessage": "No query parameters specified."
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-badrequest'>BadRequest</a>
 </td>
 </tr>
 
@@ -16750,6 +16929,262 @@
 <td></td>
 <td>
   
+</td>
+</tr>
+
+</tbody>
+</table>
+
+<h3 id="schema-contact">Contact</h3>
+
+
+<table class='schema-contact'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>id</td>
+<td>integer</td>
+<td>true</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>title</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>titleDescription</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>lastName</td>
+<td>string</td>
+<td>true</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>firstName</td>
+<td>string</td>
+<td>true</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>middleNames</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>dateOfBirth</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>isStaff</td>
+<td>boolean</td>
+<td>true</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>deceasedDate</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>languageCode</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>languageDescription</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>interpreterRequired</td>
+<td>boolean</td>
+<td>true</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>addresses</td>
+<td>array</td>
+<td>true</td>
+<td></td>
+<td>
+  <a href='#schema-address'>Address</a>
+</td>
+</tr>
+
+<tr>
+<td>phoneNumbers</td>
+<td>array</td>
+<td>true</td>
+<td></td>
+<td>
+  <a href='#schema-phonenumber'>PhoneNumber</a>
+</td>
+</tr>
+
+<tr>
+<td>emailAddresses</td>
+<td>array</td>
+<td>true</td>
+<td></td>
+<td>
+  <a href='#schema-emailaddress'>EmailAddress</a>
+</td>
+</tr>
+
+<tr>
+<td>gender</td>
+<td>string</td>
+<td>true</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>genderDescription</td>
+<td>string</td>
+<td>true</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+</tbody>
+</table>
+
+<h3 id="schema-emailaddress">EmailAddress</h3>
+
+
+<table class='schema-emailaddress'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>contactEmailId</td>
+<td>integer</td>
+<td>true</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>contactId</td>
+<td>integer</td>
+<td>true</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>emailAddress</td>
+<td>string</td>
+<td>true</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+</tbody>
+</table>
+
+<h3 id="schema-responsecontact">ResponseContact</h3>
+
+
+<table class='schema-responsecontact'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>data</td>
+<td>object</td>
+<td>true</td>
+<td></td>
+<td>
+  <a href='#schema-contact'>Contact</a>
+</td>
+</tr>
+
+<tr>
+<td>errors</td>
+<td>array</td>
+<td>true</td>
+<td></td>
+<td>
+  <a href='#schema-upstreamapierror'>UpstreamApiError</a>
 </td>
 </tr>
 
