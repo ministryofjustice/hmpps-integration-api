@@ -23,13 +23,11 @@ class GetVisitRestrictionsForPersonService(
       return Response(data = null, errors = personResponse.errors)
     }
 
-    val nomisNumber = personResponse.data?.nomisNumber
-    if (nomisNumber == null) {
-      return Response(
+    val nomisNumber =
+      personResponse.data?.nomisNumber ?: return Response(
         data = null,
         errors = listOf(UpstreamApiError(causedBy = UpstreamApi.NOMIS, type = UpstreamApiError.Type.ENTITY_NOT_FOUND)),
       )
-    }
 
     val visitRestrictionResponse = nomisGateway.getOffenderVisitRestrictions(nomisNumber)
     return visitRestrictionResponse
