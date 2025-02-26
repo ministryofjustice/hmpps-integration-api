@@ -410,6 +410,7 @@ class NomisGateway(
         authenticationHeader(),
         UpstreamApi.NOMIS,
         requestBody = transactionRequest.toApiConformingMap(),
+        badRequestAsError = true,
       )
     return when (result) {
       is WebClientWrapperResponse.Success -> {
@@ -437,6 +438,7 @@ class NomisGateway(
         authenticationHeader(),
         UpstreamApi.NOMIS,
         requestBody = transactionTransferRequest.toApiConformingMap(),
+        badRequestAsError = true,
       )
     return when (result) {
       is WebClientWrapperResponse.Success -> {

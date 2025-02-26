@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema
 
 data class TransactionTransferRequest(
   @Schema(description = "Description of the transaction.")
-  val description: String?,
+  val description: String,
   @Schema(
     description = "Amount of money in pence, must be positive.",
     example = "1234",
@@ -25,5 +25,5 @@ data class TransactionTransferRequest(
       "amount" to amount,
       "client_transaction_id" to clientTransactionId,
       "client_unique_ref" to clientUniqueRef,
-    ).filterValues { it != null }
+    )
 }
