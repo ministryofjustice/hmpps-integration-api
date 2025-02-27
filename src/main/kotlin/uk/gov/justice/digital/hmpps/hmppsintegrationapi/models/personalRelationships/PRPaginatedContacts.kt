@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 
 data class PRPaginatedContacts(
   @JsonProperty("content")
-  val contacts: List<PRContact?>,
+  val contacts: List<PersonalRelationshipsContactResponse>,
   val pageable: Pageable,
   val totalElements: Long,
   val totalPages: Long,
@@ -15,7 +15,9 @@ data class PRPaginatedContacts(
   val sort: Sort,
   val numberOfElements: Long,
   val empty: Boolean,
-)
+) {
+  fun toPaginatedContactDetails(): PaginatedContactDetails = PaginatedContactDetails(isLast = this.last, numberOfElements = this.numberOfElements.toInt(), number = this.number.toInt(), size = this.size.toInt(), totalElements = this.totalElements, totalPages = this.totalPages.toInt())
+}
 
 data class Sort(
   val empty: Boolean,

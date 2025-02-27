@@ -97,19 +97,6 @@ class PersonalRelationshipsGateway(
     }
   }
 
-  fun mapToLinkedPrisoner(result: WebClientWrapper.WebClientWrapperResponse.Success<List<LinkedPrisoner>>): List<LinkedPrisoner> {
-    val mappedResult: List<LinkedPrisoner> = mapper.convertValue(result.data, object : TypeReference<List<LinkedPrisoner>>() {})
-    return mappedResult
-  }
-
-  private fun authenticationHeader(): Map<String, String> {
-    val token = hmppsAuthGateway.getClientToken("PERSONAL-RELATIONSHIPS")
-
-    return mapOf(
-      "Authorization" to "Bearer $token",
-    )
-  }
-
   fun getContacts(
     prisonerId: String,
     page: Int,
@@ -140,5 +127,18 @@ class PersonalRelationshipsGateway(
         )
       }
     }
+  }
+
+  fun mapToLinkedPrisoner(result: WebClientWrapper.WebClientWrapperResponse.Success<List<LinkedPrisoner>>): List<LinkedPrisoner> {
+    val mappedResult: List<LinkedPrisoner> = mapper.convertValue(result.data, object : TypeReference<List<LinkedPrisoner>>() {})
+    return mappedResult
+  }
+
+  private fun authenticationHeader(): Map<String, String> {
+    val token = hmppsAuthGateway.getClientToken("PERSONAL-RELATIONSHIPS")
+
+    return mapOf(
+      "Authorization" to "Bearer $token",
+    )
   }
 }
