@@ -1,6 +1,6 @@
+# Use ports >= 4010
 services:
   hmpps-auth.base-url: http://localhost:9090
-
   adjudications.base-url: http://localhost:4010
   assess-risks-and-needs.base-url: http://localhost:4011
   case-notes.base-url: http://localhost:4012
