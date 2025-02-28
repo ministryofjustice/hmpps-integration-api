@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.Contact
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PRDetailedContact
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetContactService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 
@@ -40,7 +40,7 @@ class ContactsController(
   )
   fun getContactById(
     @PathVariable contactId: String,
-  ): Response<Contact?> {
+  ): Response<PRDetailedContact?> {
     val response = getVisitorService.execute(contactId)
 
     if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {

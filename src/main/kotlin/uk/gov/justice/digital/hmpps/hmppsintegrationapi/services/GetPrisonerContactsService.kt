@@ -5,9 +5,9 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PersonalRelationshipsGateway
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.ContactDetails
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerContact
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PRPrisonerContact
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PaginatedContactDetails
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PersonalRelationshipsContactResponse
 
 @Service
 class GetPrisonerContactsService(
@@ -36,8 +36,8 @@ class GetPrisonerContactsService(
     return paginatedResponse
   }
 
-  fun mapToContactDetails(result: List<PersonalRelationshipsContactResponse>): List<ContactDetails> {
-    val mappedResult: List<ContactDetails> = mapper.convertValue(result, object : TypeReference<List<ContactDetails>>() {})
+  fun mapToContactDetails(result: List<PRPrisonerContact>): List<PrisonerContact> {
+    val mappedResult: List<PrisonerContact> = mapper.convertValue(result, object : TypeReference<List<PrisonerContact>>() {})
     return mappedResult
   }
 }

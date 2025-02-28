@@ -1,6 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships
 
-data class Contact(
+data class PRDetailedContact(
   val id: Long,
   val title: String?,
   val titleDescription: String?,

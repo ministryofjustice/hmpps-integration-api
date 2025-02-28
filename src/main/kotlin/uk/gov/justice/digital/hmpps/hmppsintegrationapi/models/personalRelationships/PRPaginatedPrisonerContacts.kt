@@ -2,9 +2,9 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelation
 
 import com.fasterxml.jackson.annotation.JsonProperty
 
-data class PRPaginatedContacts(
+data class PRPaginatedPrisonerContacts(
   @JsonProperty("content")
-  val contacts: List<PersonalRelationshipsContactResponse>,
+  val contacts: List<PRPrisonerContact>,
   val pageable: Pageable,
   val totalElements: Long,
   val totalPages: Long,

@@ -11,13 +11,13 @@ import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.ConsumerPrisonAccessService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PersonalRelationshipsGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Contact
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerContact
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerContactRelationship
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.ContactDetails
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.ContactInformation
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PRPaginatedContacts
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PRPaginatedPrisonerContacts
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PRPrisonerContact
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.Pageable
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PersonalRelationshipsContactResponse
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.Relationship
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.Sort
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
@@ -38,7 +38,7 @@ internal class GetPrisonerContactsServiceTest(
     val page = 1
     val size = 10
     val relationship =
-      Relationship(
+      PrisonerContactRelationship(
         relationshipType = "FRIEND",
         relationshipTypeDescription = "Friend",
         relationshipToPrisoner = "FRI",
@@ -51,7 +51,7 @@ internal class GetPrisonerContactsServiceTest(
         comments = "Close family friend",
       )
     val contact =
-      ContactInformation(
+      Contact(
         contactId = "654321",
         lastName = "Doe",
         firstName = "John",
@@ -76,12 +76,12 @@ internal class GetPrisonerContactsServiceTest(
         extNumber = "123",
       )
     val contactDetails =
-      ContactDetails(
+      PrisonerContact(
         contact = contact,
         relationship = relationship,
       )
     val personalRelationshipsContactResponseInstance =
-      PersonalRelationshipsContactResponse(
+      PRPrisonerContact(
         prisonerContactId = 123456,
         contactId = 654321,
         prisonerNumber = "A1234BC",
@@ -133,7 +133,7 @@ internal class GetPrisonerContactsServiceTest(
         unpaged = true,
       )
     val prPaginatedContactsInstance =
-      PRPaginatedContacts(
+      PRPaginatedPrisonerContacts(
         contacts = listOf(personalRelationshipsContactResponseInstance),
         pageable = pageableInstance,
         totalElements = 9007199254740991,
