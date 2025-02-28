@@ -14,8 +14,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.Address
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.Contact
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.EmailAddress
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PRDetailedContact
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PhoneNumber
 
 @ContextConfiguration(
@@ -29,7 +29,7 @@ internal class GetContactServiceTest(
 
     val contactId = "123456"
     val contactResponse =
-      Contact(
+      PRDetailedContact(
         id = 123456L,
         title = "MR",
         titleDescription = "Mister",

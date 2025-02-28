@@ -6,13 +6,13 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PersonalRelatio
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.Contact
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PRDetailedContact
 
 @Service
 class GetContactService(
   @Autowired val personalRelationshipsGateway: PersonalRelationshipsGateway,
 ) {
-  fun execute(contactId: String): Response<Contact?> {
+  fun execute(contactId: String): Response<PRDetailedContact?> {
     val validatedContactId: Long
     try {
       validatedContactId = contactId.toLong()

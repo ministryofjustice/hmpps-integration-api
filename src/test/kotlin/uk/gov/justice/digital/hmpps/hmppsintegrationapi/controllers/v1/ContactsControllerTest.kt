@@ -15,8 +15,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.Address
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.Contact
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.EmailAddress
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PRDetailedContact
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PhoneNumber
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetContactService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
@@ -32,7 +32,7 @@ internal class ContactsControllerTest(
     val path = "/v1/contacts/"
     val defaultContactId = "12345"
     val contactResponse =
-      Contact(
+      PRDetailedContact(
         id = 123456L,
         title = "MR",
         titleDescription = "Mister",

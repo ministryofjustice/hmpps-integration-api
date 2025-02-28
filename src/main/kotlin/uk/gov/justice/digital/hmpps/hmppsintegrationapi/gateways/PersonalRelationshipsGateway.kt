@@ -10,9 +10,9 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrap
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper.WebClientWrapperResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.Contact
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.LinkedPrisoner
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PRPaginatedContacts
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PRDetailedContact
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PRPaginatedPrisonerContacts
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PrisonerContactRestrictionsResponse
 
 @Component
@@ -72,9 +72,9 @@ class PersonalRelationshipsGateway(
     }
   }
 
-  fun getContactByContactId(contactId: Long): Response<Contact?> {
+  fun getContactByContactId(contactId: Long): Response<PRDetailedContact?> {
     val result =
-      webClient.request<Contact>(
+      webClient.request<PRDetailedContact>(
         HttpMethod.GET,
         "/contact/$contactId",
         authenticationHeader(),
@@ -97,26 +97,13 @@ class PersonalRelationshipsGateway(
     }
   }
 
-  fun mapToLinkedPrisoner(result: WebClientWrapper.WebClientWrapperResponse.Success<List<LinkedPrisoner>>): List<LinkedPrisoner> {
-    val mappedResult: List<LinkedPrisoner> = mapper.convertValue(result.data, object : TypeReference<List<LinkedPrisoner>>() {})
-    return mappedResult
-  }
-
-  private fun authenticationHeader(): Map<String, String> {
-    val token = hmppsAuthGateway.getClientToken("PERSONAL-RELATIONSHIPS")
-
-    return mapOf(
-      "Authorization" to "Bearer $token",
-    )
-  }
-
   fun getContacts(
     prisonerId: String,
     page: Int,
     size: Int,
-  ): Response<PRPaginatedContacts?> {
+  ): Response<PRPaginatedPrisonerContacts?> {
     val result =
-      webClient.request<PRPaginatedContacts?>(
+      webClient.request<PRPaginatedPrisonerContacts?>(
         HttpMethod.GET,
         "/prisoner/$prisonerId/contact?page=$page&size=$size",
         authenticationHeader(),
@@ -140,5 +127,18 @@ class PersonalRelationshipsGateway(
         )
       }
     }
+  }
+
+  fun mapToLinkedPrisoner(result: WebClientWrapper.WebClientWrapperResponse.Success<List<LinkedPrisoner>>): List<LinkedPrisoner> {
+    val mappedResult: List<LinkedPrisoner> = mapper.convertValue(result.data, object : TypeReference<List<LinkedPrisoner>>() {})
+    return mappedResult
+  }
+
+  private fun authenticationHeader(): Map<String, String> {
+    val token = hmppsAuthGateway.getClientToken("PERSONAL-RELATIONSHIPS")
+
+    return mapOf(
+      "Authorization" to "Bearer $token",
+    )
   }
 }

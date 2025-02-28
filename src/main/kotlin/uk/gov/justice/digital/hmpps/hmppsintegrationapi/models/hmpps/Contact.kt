@@ -1,0 +1,26 @@
+package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps
+
+data class Contact(
+  val contactId: Long,
+  val lastName: String,
+  val firstName: String,
+  val middleNames: String?,
+  val dateOfBirth: String,
+  val flat: String?,
+  val property: String?,
+  val street: String?,
+  val area: String?,
+  val cityCode: String?,
+  val cityDescription: String?,
+  val countyCode: String?,
+  val countyDescription: String?,
+  val postCode: String?,
+  val countryCode: String?,
+  val countryDescription: String?,
+  val primaryAddress: Boolean?,
+  val mailAddress: Boolean?,
+  val phoneType: String?,
+  val phoneTypeDescription: String?,
+  val phoneNumber: String?,
+  val extNumber: String?,
+)
