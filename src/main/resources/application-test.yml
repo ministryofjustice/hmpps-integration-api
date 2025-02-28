@@ -5,6 +5,7 @@ management.endpoint:
   health.cache.time-to-live: 0
   info.cache.time-to-live: 0
 
+# Use ports <4010, reuse if required
 services:
   prison-api:
     base-url: http://localhost:4000
@@ -31,13 +32,13 @@ services:
   manage-pom-case-api:
     base-url: http://localhost:4009
   plp:
-    base-url: http://localhost:4010
+    base-url: http://localhost:4004
   non-associations:
     base-url: http://localhost:4005
   personal-relationships:
-    base-url: http://localhost:4022
+    base-url: http://localhost:4006
   manage-prison-visits:
-    base-url: http://localhost:4023
+    base-url: http://localhost:4007
 
 hmpps.sqs:
   provider: localstack

@@ -8,7 +8,7 @@ import org.springframework.http.HttpStatus
 
 class PersonalRelationshipsApiMockServer : WireMockServer(WIREMOCK_PORT) {
   companion object {
-    private const val WIREMOCK_PORT = 4022
+    private const val WIREMOCK_PORT = 4006
   }
 
   fun stubPersonalRelationshipsApiResponse(
