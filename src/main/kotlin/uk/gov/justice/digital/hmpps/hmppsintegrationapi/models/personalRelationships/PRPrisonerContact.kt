@@ -1,6 +1,9 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Contact
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerContact
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerContactRelationship
 
 data class PRPrisonerContact(
   @JsonProperty("prisonerContactId")
@@ -71,4 +74,46 @@ data class PRPrisonerContact(
   val currentTerm: Boolean,
   @JsonProperty("comments")
   val comments: String?,
-)
+) {
+  fun toPrisonerContact(): PrisonerContact =
+    PrisonerContact(
+      contact =
+        Contact(
+          contactId = this.contactId,
+          firstName = this.firstName,
+          lastName = this.lastName,
+          middleNames = this.middleNames,
+          dateOfBirth = this.dateOfBirth,
+          flat = this.flat,
+          property = this.property,
+          street = this.street,
+          area = this.area,
+          cityCode = this.cityCode,
+          cityDescription = this.cityDescription,
+          countyCode = this.countyCode,
+          countyDescription = this.countyDescription,
+          postCode = this.postCode,
+          countryCode = this.countryCode,
+          countryDescription = this.countryDescription,
+          primaryAddress = this.primaryAddress,
+          mailAddress = this.mailAddress,
+          phoneType = this.phoneType,
+          phoneTypeDescription = this.phoneTypeDescription,
+          phoneNumber = this.phoneNumber,
+          extNumber = this.extNumber,
+        ),
+      relationship =
+        PrisonerContactRelationship(
+          relationshipType = this.relationshipType,
+          relationshipTypeDescription = this.relationshipTypeDescription,
+          relationshipToPrisoner = this.relationshipToPrisoner,
+          relationshipToPrisonerDescription = this.relationshipToPrisonerDescription,
+          approvedVisitor = this.approvedVisitor,
+          nextOfKin = this.nextOfKin,
+          emergencyContact = this.emergencyContact,
+          isRelationshipActive = this.isRelationshipActive,
+          currentTerm = this.currentTerm,
+          comments = this.comments,
+        ),
+    )
+}

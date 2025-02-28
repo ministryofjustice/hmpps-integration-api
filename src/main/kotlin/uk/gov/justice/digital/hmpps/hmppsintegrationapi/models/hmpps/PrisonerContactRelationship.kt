@@ -5,7 +5,7 @@ data class PrisonerContactRelationship(
   val relationshipTypeDescription: String?,
   val relationshipToPrisoner: String?,
   val relationshipToPrisonerDescription: String?,
-  val approvedPrisoner: Boolean?,
+  val approvedVisitor: Boolean?,
   val nextOfKin: Boolean?,
   val emergencyContact: Boolean?,
   val isRelationshipActive: Boolean?,

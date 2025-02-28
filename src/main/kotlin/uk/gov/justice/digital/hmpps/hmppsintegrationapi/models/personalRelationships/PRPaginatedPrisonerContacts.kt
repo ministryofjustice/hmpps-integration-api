@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PaginatedPrisonerContacts
 
 data class PRPaginatedPrisonerContacts(
   @JsonProperty("content")
@@ -16,7 +17,16 @@ data class PRPaginatedPrisonerContacts(
   val numberOfElements: Long,
   val empty: Boolean,
 ) {
-  fun toPaginatedContactDetails(): PaginatedContactDetails = PaginatedContactDetails(isLast = this.last, numberOfElements = this.numberOfElements.toInt(), number = this.number.toInt(), size = this.size.toInt(), totalElements = this.totalElements, totalPages = this.totalPages.toInt())
+  fun toPaginatedPrisonerContacts(): PaginatedPrisonerContacts =
+    PaginatedPrisonerContacts(
+      contacts = this.contacts.map { it.toPrisonerContact() },
+      isLast = this.last,
+      numberOfElements = this.numberOfElements.toInt(),
+      number = this.number.toInt(),
+      size = this.size.toInt(),
+      totalElements = this.totalElements,
+      totalPages = this.totalPages.toInt(),
+    )
 }
 
 data class Sort(

@@ -1,7 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps
 
 data class Contact(
-  val contactId: String,
+  val contactId: Long,
   val lastName: String,
   val firstName: String,
   val middleNames: String?,
