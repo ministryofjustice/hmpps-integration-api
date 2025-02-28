@@ -24,9 +24,21 @@ class GetContactService(
     if (response.errors.isNotEmpty()) {
       return Response(data = null, errors = response.errors)
     }
+    if (response.data == null) {
+      return Response(
+        data = null,
+        errors =
+          listOf(
+            UpstreamApiError(
+              UpstreamApi.PERSONAL_RELATIONSHIPS,
+              type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+            ),
+          ),
+      )
+    }
 
     return Response(
-      data = response.data?.toDetailedContact(),
+      data = response.data.toDetailedContact(),
     )
   }
 }
