@@ -1,20 +1,20 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.nulls.shouldNotBeNull
+import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
 import org.mockito.kotlin.whenever
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.ConsumerPrisonAccessService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PersonalRelationshipsGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Contact
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerContact
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NomisNumber
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerContactRelationship
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PRPaginatedPrisonerContacts
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PRPrisonerContact
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.Pageable
@@ -27,13 +27,10 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Consum
 )
 internal class GetPrisonerContactsServiceTest(
   @MockitoBean val personalRelationshipsGateway: PersonalRelationshipsGateway,
-  @MockitoBean val consumerPrisonAccessService: ConsumerPrisonAccessService,
-  @Autowired val objectMapper: ObjectMapper,
+  @MockitoBean val getPersonService: GetPersonService,
   private val getPrisonerContactsService: GetPrisonerContactsService,
 ) : DescribeSpec({
     val hmppsId = "A1234AA"
-    val prisonId = "ABC"
-    val contactId = 123456L
     val filters = ConsumerFilters(null)
     val page = 1
     val size = 10
@@ -43,7 +40,7 @@ internal class GetPrisonerContactsServiceTest(
         relationshipTypeDescription = "Friend",
         relationshipToPrisoner = "FRI",
         relationshipToPrisonerDescription = "Friend of",
-        approvedPrisoner = true,
+        approvedVisitor = true,
         nextOfKin = false,
         emergencyContact = true,
         isRelationshipActive = true,
@@ -52,7 +49,7 @@ internal class GetPrisonerContactsServiceTest(
       )
     val contact =
       Contact(
-        contactId = "654321",
+        contactId = 654321L,
         lastName = "Doe",
         firstName = "John",
         middleNames = "William",
@@ -74,11 +71,6 @@ internal class GetPrisonerContactsServiceTest(
         phoneTypeDescription = "Mobile",
         phoneNumber = "+1234567890",
         extNumber = "123",
-      )
-    val contactDetails =
-      PrisonerContact(
-        contact = contact,
-        relationship = relationship,
       )
     val personalRelationshipsContactResponseInstance =
       PRPrisonerContact(
@@ -146,21 +138,39 @@ internal class GetPrisonerContactsServiceTest(
         numberOfElements = 1073741824,
         empty = true,
       )
+
     beforeEach {
       Mockito.reset(personalRelationshipsGateway)
-
-      whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<Any>(prisonId, filters)).thenReturn(
-        Response(data = null),
-      )
+      whenever(getPersonService.getNomisNumberWithPrisonFilter(hmppsId, filters)).thenReturn(Response(data = NomisNumber(hmppsId)))
     }
 
     it("returns a list of contacts with pagination details") {
       whenever(personalRelationshipsGateway.getContacts(hmppsId, page, size)).thenReturn(Response(data = prPaginatedContactsInstance, errors = emptyList()))
 
-//      val data: PaginatedResponse<ContactDetails> = PaginatedResponse(contactDetails)
-
-      val result = getPrisonerContactsService.execute(hmppsId, page, size)
+      val result = getPrisonerContactsService.execute(hmppsId, page, size, filters)
 
       result.shouldNotBeNull()
+      result.shouldBe(Response(data = prPaginatedContactsInstance.toPaginatedPrisonerContacts()))
+    }
+
+    it("failed personal relationship call") {
+      val err = listOf(UpstreamApiError(UpstreamApi.PERSONAL_RELATIONSHIPS, UpstreamApiError.Type.INTERNAL_SERVER_ERROR))
+      whenever(personalRelationshipsGateway.getContacts(hmppsId, page, size)).thenReturn(Response(data = null, errors = err))
+      val result = getPrisonerContactsService.execute(hmppsId, page, size, filters)
+      result.errors.shouldBe(err)
+    }
+
+    it("failed prison check call") {
+      val err = listOf(UpstreamApiError(UpstreamApi.NOMIS, UpstreamApiError.Type.ENTITY_NOT_FOUND, description = "NOMIS number not found"))
+      whenever(getPersonService.getNomisNumberWithPrisonFilter(hmppsId, filters)).thenReturn(Response(data = null, errors = err))
+      val result = getPrisonerContactsService.execute(hmppsId, page, size, filters)
+      result.errors.shouldBe(err)
+    }
+
+    it("failed to get prisoners nomis number") {
+      val err = listOf(UpstreamApiError(UpstreamApi.NOMIS, UpstreamApiError.Type.ENTITY_NOT_FOUND))
+      whenever(getPersonService.getNomisNumberWithPrisonFilter(hmppsId, filters)).thenReturn(Response(data = NomisNumber(), errors = emptyList()))
+      val result = getPrisonerContactsService.execute(hmppsId, page, size, filters)
+      result.errors.shouldBe(err)
     }
   })
