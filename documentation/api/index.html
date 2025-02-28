@@ -7911,7 +7911,7 @@
 
 </td>
 <td>
-<a href='#schema-responsecontact'>ResponseContact</a>
+<a href='#schema-responseprdetailedcontact'>ResponsePRDetailedContact</a>
 </td>
 </tr>
 
@@ -16935,10 +16935,52 @@
 </tbody>
 </table>
 
-<h3 id="schema-contact">Contact</h3>
+<h3 id="schema-emailaddress">EmailAddress</h3>
 
 
-<table class='schema-contact'>
+<table class='schema-emailaddress'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>contactEmailId</td>
+<td>integer</td>
+<td>true</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>contactId</td>
+<td>integer</td>
+<td>true</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>emailAddress</td>
+<td>string</td>
+<td>true</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+</tbody>
+</table>
+
+<h3 id="schema-prdetailedcontact">PRDetailedContact</h3>
+
+
+<table class='schema-prdetailedcontact'>
 <thead>
 <tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
 </thead>
@@ -17117,52 +17159,10 @@
 </tbody>
 </table>
 
-<h3 id="schema-emailaddress">EmailAddress</h3>
+<h3 id="schema-responseprdetailedcontact">ResponsePRDetailedContact</h3>
 
 
-<table class='schema-emailaddress'>
-<thead>
-<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
-</thead>
-<tbody>
-
-<tr>
-<td>contactEmailId</td>
-<td>integer</td>
-<td>true</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>contactId</td>
-<td>integer</td>
-<td>true</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>emailAddress</td>
-<td>string</td>
-<td>true</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-</tbody>
-</table>
-
-<h3 id="schema-responsecontact">ResponseContact</h3>
-
-
-<table class='schema-responsecontact'>
+<table class='schema-responseprdetailedcontact'>
 <thead>
 <tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
 </thead>
@@ -17174,7 +17174,7 @@
 <td>true</td>
 <td></td>
 <td>
-  <a href='#schema-contact'>Contact</a>
+  <a href='#schema-prdetailedcontact'>PRDetailedContact</a>
 </td>
 </tr>
 
