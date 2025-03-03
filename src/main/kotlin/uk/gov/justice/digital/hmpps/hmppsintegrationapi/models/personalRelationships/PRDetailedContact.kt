@@ -1,5 +1,10 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships
 
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ContactAddress
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ContactEmailAddress
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ContactPhoneNumber
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DetailedContact
+
 data class PRDetailedContact(
   val id: Long,
   val title: String?,
@@ -18,7 +23,28 @@ data class PRDetailedContact(
   val emailAddresses: List<EmailAddress>,
   val gender: String,
   val genderDescription: String,
-)
+) {
+  fun toDetailedContact(): DetailedContact =
+    DetailedContact(
+      contactId = this.id,
+      title = this.title,
+      titleDescription = this.titleDescription,
+      firstName = this.firstName,
+      lastName = this.lastName,
+      middleNames = this.middleNames,
+      dateOfBirth = this.dateOfBirth,
+      isStaff = this.isStaff,
+      deceasedDate = this.deceasedDate,
+      languageCode = this.languageCode,
+      languageDescription = this.languageDescription,
+      interpreterRequired = this.interpreterRequired,
+      addresses = this.addresses.map { it.toContactAddress() },
+      phoneNumbers = this.phoneNumbers.map { it.toContactPhoneNumber() },
+      emailAddresses = this.emailAddresses.map { it.toContactEmailAddress() },
+      gender = this.gender,
+      genderDescription = this.genderDescription,
+    )
+}
 
 data class Address(
   val contactAddressId: Long,
@@ -50,7 +76,38 @@ data class Address(
   val createdTime: String,
   val updatedBy: String?,
   val updatedTime: String?,
-)
+) {
+  fun toContactAddress(): ContactAddress =
+    ContactAddress(
+      addressType = this.addressType,
+      addressTypeDescription = this.addressTypeDescription,
+      primaryAddress = this.primaryAddress,
+      flat = this.flat,
+      property = this.property,
+      street = this.street,
+      area = this.area,
+      cityCode = this.cityCode,
+      cityDescription = this.cityDescription,
+      countryCode = this.countryCode,
+      countryDescription = this.countryDescription,
+      countyCode = this.countyCode,
+      countyDescription = this.countyDescription,
+      postcode = this.postcode,
+      verified = this.verified,
+      verifiedBy = this.verifiedBy,
+      verifiedTime = this.createdTime,
+      mailFlag = this.mailFlag,
+      startDate = this.startDate,
+      endDate = this.endDate,
+      noFixedAddress = this.noFixedAddress,
+      comments = this.comments,
+      phoneNumbers = this.phoneNumbers.map { it.toContactPhoneNumber() },
+      createdBy = this.createdBy,
+      createdTime = this.createdTime,
+      updatedBy = this.updatedBy,
+      updatedTime = this.updatedTime,
+    )
+}
 
 data class PhoneNumber(
   val contactPhoneId: Long,
@@ -59,10 +116,20 @@ data class PhoneNumber(
   val phoneTypeDescription: String,
   val phoneNumber: String,
   val extNumber: String?,
-)
+) {
+  fun toContactPhoneNumber(): ContactPhoneNumber =
+    ContactPhoneNumber(
+      phoneType = this.phoneType,
+      phoneTypeDescription = this.phoneTypeDescription,
+      phoneNumber = this.phoneNumber,
+      extNumber = this.extNumber,
+    )
+}
 
 data class EmailAddress(
   val contactEmailId: Long,
   val contactId: Long,
   val emailAddress: String,
-)
+) {
+  fun toContactEmailAddress(): ContactEmailAddress = ContactEmailAddress(emailAddress = this.emailAddress)
+}

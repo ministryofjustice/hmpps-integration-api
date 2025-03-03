@@ -160,13 +160,14 @@ internal class ContactsControllerTest(
 
     describe("GET Contacts") {
       beforeTest {
+        Mockito.reset(auditService)
         Mockito.reset(getContactService)
+
         whenever(getContactService.execute(defaultContactId)).thenReturn(
           Response(
-            data = contactResponse,
+            data = contactResponse.toDetailedContact(),
           ),
         )
-        Mockito.reset(auditService)
       }
 
       it("returns a 200 OK status code") {

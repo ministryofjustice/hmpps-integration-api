@@ -163,7 +163,7 @@ internal class GetContactServiceTest(
       val contactIdLongified = contactId.toLong()
       whenever(personalRelationshipsGateway.getContactByContactId(contactIdLongified)).thenReturn(Response(data = contactResponse))
       val response = getVisitorService.execute(contactId = contactId)
-      response.data!!.id.shouldBe(contactIdLongified)
+      response.data.shouldBe(contactResponse.toDetailedContact())
       response.errors.shouldBeEmpty()
     }
 
