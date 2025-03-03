@@ -9,10 +9,10 @@ data class DetailedContact(
   val titleCode: String?,
   @Schema(description = "The description of the title code, if present", example = "Mr")
   val titleDescription: String?,
-  @Schema(description = "The first name of the contact", example = "John")
-  val firstName: String,
   @Schema(description = "The last name of the contact", example = "Doe")
   val lastName: String,
+  @Schema(description = "The first name of the contact", example = "John")
+  val firstName: String,
   @Schema(description = "The middle names of the contact, if any", example = "William")
   val middleNames: String?,
   @Schema(description = "The date of birth of the contact, if known", example = "1980-01-01")
