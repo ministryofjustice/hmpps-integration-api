@@ -1,8 +1,8 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.interfaces
 
 interface IRelationship {
-  val relationshipType: String?
+  val relationshipTypeCode: String?
   val relationshipTypeDescription: String?
-  val relationshipToPrisoner: String?
+  val relationshipToPrisonerCode: String?
   val relationshipToPrisonerDescription: String?
 }
