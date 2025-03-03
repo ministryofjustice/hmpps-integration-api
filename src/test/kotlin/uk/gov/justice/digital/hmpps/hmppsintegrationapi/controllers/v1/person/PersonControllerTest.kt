@@ -550,7 +550,7 @@ internal class PersonControllerTest(
             Response(
               data =
                 PaginatedPrisonerContacts(
-                  contacts =
+                  content =
                     listOf(
                       PrisonerContact(
                         contact =
@@ -593,6 +593,12 @@ internal class PersonControllerTest(
                           ),
                       ),
                     ),
+                  isLastPage = true,
+                  count = 1,
+                  page = 1,
+                  perPage = 10,
+                  totalCount = 1,
+                  totalPages = 1,
                 ),
             ),
           )
@@ -692,7 +698,7 @@ internal class PersonControllerTest(
           Response(
             data =
               PaginatedPrisonerContacts(
-                contacts =
+                content =
                   listOf(
                     PrisonerContact(
                       contact =
@@ -775,6 +781,12 @@ internal class PersonControllerTest(
                         ),
                     ),
                   ),
+                isLastPage = true,
+                count = 2,
+                page = 1,
+                perPage = 10,
+                totalCount = 2,
+                totalPages = 1,
               ),
           ),
         )

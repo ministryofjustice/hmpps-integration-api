@@ -127,6 +127,16 @@ internal class GetPrisonerContactsServiceTest(
     val prPaginatedContactsInstance =
       PRPaginatedPrisonerContacts(
         contacts = listOf(personalRelationshipsContactResponseInstance),
+        pageable = pageableInstance,
+        totalElements = 9007199254740991,
+        totalPages = 1073741824,
+        first = true,
+        last = true,
+        size = 1073741824,
+        number = 1073741824,
+        sort = sortInstance,
+        numberOfElements = 1073741824,
+        empty = true,
       )
 
     beforeEach {
