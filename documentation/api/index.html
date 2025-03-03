@@ -7850,11 +7850,11 @@
 
 <pre><code>{
   "data": {
-    "id": "integer",
+    "contactId": "integer",
     "title": "string",
     "titleDescription": "string",
-    "lastName": "string",
     "firstName": "string",
+    "lastName": "string",
     "middleNames": "string",
     "dateOfBirth": "string",
     "isStaff": "boolean",
@@ -7864,36 +7864,52 @@
     "interpreterRequired": "boolean",
     "addresses": [
       {
-        "country": "England",
-        "county": "Greater London",
-        "endDate": "string",
-        "locality": "London Bridge",
-        "name": "Name of the building of residence",
-        "noFixedAddress": true,
-        "number": "1",
-        "postcode": "SE1 1TE",
+        "addressType": "string",
+        "addressTypeDescription": "string",
+        "primaryAddress": "boolean",
+        "flat": "string",
+        "property": "string",
+        "street": "string",
+        "area": "string",
+        "cityCode": "string",
+        "cityDescription": "string",
+        "countyCode": "string",
+        "countyDescription": "string",
+        "postcode": "string",
+        "countryCode": "string",
+        "countryDescription": "string",
+        "verified": "boolean",
+        "verifiedBy": "string",
+        "verifiedTime": "string",
+        "mailFlag": "boolean",
         "startDate": "string",
-        "street": "O'Meara Street",
-        "town": "London",
-        "types": [
+        "endDate": "string",
+        "noFixedAddress": "boolean",
+        "comments": "string",
+        "phoneNumbers": [
           {
-            "code": "string",
-            "desc": "string"
+            "phoneType": "string",
+            "phoneTypeDescription": "string",
+            "phoneNumber": "string",
+            "extNumber": "string"
           }
         ],
-        "notes": "This is their partner's address."
+        "createdBy": "string",
+        "createdTime": "string",
+        "updatedBy": "string",
+        "updatedTime": "string"
       }
     ],
     "phoneNumbers": [
       {
-        "number": "079123456789",
-        "type": "TELEPHONE"
+        "phoneType": "string",
+        "phoneTypeDescription": "string",
+        "phoneNumber": "string",
+        "extNumber": "string"
       }
     ],
     "emailAddresses": [
       {
-        "contactEmailId": "integer",
-        "contactId": "integer",
         "emailAddress": "string"
       }
     ],
@@ -7911,7 +7927,7 @@
 
 </td>
 <td>
-<a href='#schema-responseprdetailedcontact'>ResponsePRDetailedContact</a>
+<a href='#schema-responsedetailedcontact'>ResponseDetailedContact</a>
 </td>
 </tr>
 
@@ -16935,18 +16951,38 @@
 </tbody>
 </table>
 
-<h3 id="schema-emailaddress">EmailAddress</h3>
+<h3 id="schema-contactaddress">ContactAddress</h3>
 
 
-<table class='schema-emailaddress'>
+<table class='schema-contactaddress'>
 <thead>
 <tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
 </thead>
 <tbody>
 
 <tr>
-<td>contactEmailId</td>
-<td>integer</td>
+<td>addressType</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>addressTypeDescription</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>primaryAddress</td>
+<td>boolean</td>
 <td>true</td>
 <td></td>
 <td>
@@ -16955,14 +16991,256 @@
 </tr>
 
 <tr>
-<td>contactId</td>
-<td>integer</td>
+<td>flat</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>property</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>street</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>area</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>cityCode</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>cityDescription</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>countyCode</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>countyDescription</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>postcode</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>countryCode</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>countryDescription</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>verified</td>
+<td>boolean</td>
 <td>true</td>
 <td></td>
 <td>
   
 </td>
 </tr>
+
+<tr>
+<td>verifiedBy</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>verifiedTime</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>mailFlag</td>
+<td>boolean</td>
+<td>true</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>startDate</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>endDate</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>noFixedAddress</td>
+<td>boolean</td>
+<td>true</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>comments</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>phoneNumbers</td>
+<td>array</td>
+<td>true</td>
+<td></td>
+<td>
+  <a href='#schema-contactphonenumber'>ContactPhoneNumber</a>
+</td>
+</tr>
+
+<tr>
+<td>createdBy</td>
+<td>string</td>
+<td>true</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>createdTime</td>
+<td>string</td>
+<td>true</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>updatedBy</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>updatedTime</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+</tbody>
+</table>
+
+<h3 id="schema-contactemailaddress">ContactEmailAddress</h3>
+
+
+<table class='schema-contactemailaddress'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
 
 <tr>
 <td>emailAddress</td>
@@ -16977,17 +17255,69 @@
 </tbody>
 </table>
 
-<h3 id="schema-prdetailedcontact">PRDetailedContact</h3>
+<h3 id="schema-contactphonenumber">ContactPhoneNumber</h3>
 
 
-<table class='schema-prdetailedcontact'>
+<table class='schema-contactphonenumber'>
 <thead>
 <tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
 </thead>
 <tbody>
 
 <tr>
-<td>id</td>
+<td>phoneType</td>
+<td>string</td>
+<td>true</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>phoneTypeDescription</td>
+<td>string</td>
+<td>true</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>phoneNumber</td>
+<td>string</td>
+<td>true</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>extNumber</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+</tbody>
+</table>
+
+<h3 id="schema-detailedcontact">DetailedContact</h3>
+
+
+<table class='schema-detailedcontact'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>contactId</td>
 <td>integer</td>
 <td>true</td>
 <td></td>
@@ -17017,7 +17347,7 @@
 </tr>
 
 <tr>
-<td>lastName</td>
+<td>firstName</td>
 <td>string</td>
 <td>true</td>
 <td></td>
@@ -17027,7 +17357,7 @@
 </tr>
 
 <tr>
-<td>firstName</td>
+<td>lastName</td>
 <td>string</td>
 <td>true</td>
 <td></td>
@@ -17112,7 +17442,7 @@
 <td>true</td>
 <td></td>
 <td>
-  <a href='#schema-address'>Address</a>
+  <a href='#schema-contactaddress'>ContactAddress</a>
 </td>
 </tr>
 
@@ -17122,7 +17452,7 @@
 <td>true</td>
 <td></td>
 <td>
-  <a href='#schema-phonenumber'>PhoneNumber</a>
+  <a href='#schema-contactphonenumber'>ContactPhoneNumber</a>
 </td>
 </tr>
 
@@ -17132,7 +17462,7 @@
 <td>true</td>
 <td></td>
 <td>
-  <a href='#schema-emailaddress'>EmailAddress</a>
+  <a href='#schema-contactemailaddress'>ContactEmailAddress</a>
 </td>
 </tr>
 
@@ -17159,10 +17489,10 @@
 </tbody>
 </table>
 
-<h3 id="schema-responseprdetailedcontact">ResponsePRDetailedContact</h3>
+<h3 id="schema-responsedetailedcontact">ResponseDetailedContact</h3>
 
 
-<table class='schema-responseprdetailedcontact'>
+<table class='schema-responsedetailedcontact'>
 <thead>
 <tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
 </thead>
@@ -17174,7 +17504,7 @@
 <td>true</td>
 <td></td>
 <td>
-  <a href='#schema-prdetailedcontact'>PRDetailedContact</a>
+  <a href='#schema-detailedcontact'>DetailedContact</a>
 </td>
 </tr>
 
