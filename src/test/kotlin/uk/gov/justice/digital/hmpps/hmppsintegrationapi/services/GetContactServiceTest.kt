@@ -31,7 +31,7 @@ internal class GetContactServiceTest(
     val contactResponse =
       PRDetailedContact(
         id = 123456L,
-        title = "MR",
+        titleCode = "MR",
         titleDescription = "Mister",
         lastName = "Smith",
         firstName = "John",
@@ -151,7 +151,7 @@ internal class GetContactServiceTest(
               emailAddress = "john.smith.work@example.com",
             ),
           ),
-        gender = "M",
+        genderCode = "M",
         genderDescription = "Male",
       )
 

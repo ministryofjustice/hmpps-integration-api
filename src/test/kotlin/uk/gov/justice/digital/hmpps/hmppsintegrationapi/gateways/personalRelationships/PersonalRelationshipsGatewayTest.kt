@@ -313,7 +313,7 @@ class PersonalRelationshipsGatewayTest(
           .first()
           .contactId
           .shouldBe(123456)
-        response.data!!.gender.shouldBe("M")
+        response.data!!.genderCode.shouldBe("M")
       }
     }
   })
