@@ -15,7 +15,7 @@ class ContactsIntegrationTest : IntegrationTestBase() {
           {
             "data": {
               "contactId": 123456,
-              "title": "MR",
+              "titleCode": "MR",
               "titleDescription": "Mr",
               "lastName": "Doe",
               "firstName": "John",
@@ -77,7 +77,7 @@ class ContactsIntegrationTest : IntegrationTestBase() {
                   "emailAddress": "test@example.com"
                 }
               ],
-              "gender": "M",
+              "genderCode": "M",
               "genderDescription": "Male"
             },
             "errors": []

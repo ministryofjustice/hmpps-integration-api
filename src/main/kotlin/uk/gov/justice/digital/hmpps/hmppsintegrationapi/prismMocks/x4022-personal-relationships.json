@@ -7,7 +7,7 @@
       "name": "HMPPS Digital Studio",
       "email": "feedback@digital.justice.gov.uk"
     },
-    "version": "2025-02-11.127.3b96874"
+    "version": "2025-03-03.420.5153119"
   },
   "servers": [
     {
@@ -55,6 +55,252 @@
     }
   ],
   "paths": {
+    "/sync/{prisonerNumber}/number-of-children": {
+      "get": {
+        "tags": ["Sync & Migrate"],
+        "summary": "Returns the number of children for a prisoner by prisonerNumber",
+        "description": "\n      Requires role: PERSONAL_RELATIONSHIPS_MIGRATION.\n      Used to get the number of children for one prisoner.\n      ",
+        "operationId": "syncGetNumberOfChildrenByPrisonerNumber",
+        "parameters": [
+          {
+            "name": "prisonerNumber",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "404": {
+            "description": "No number of children for that prisoner could be found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Found the number of children",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SyncPrisonerNumberOfChildrenResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": ["Sync & Migrate"],
+        "summary": "Create or Updates the number of children for a prisoner",
+        "description": "\n      Requires role: PERSONAL_RELATIONSHIPS_MIGRATION.\n      Used to update a prisoner's number of children.\n      ",
+        "operationId": "syncUpdateNumberOfChildren",
+        "parameters": [
+          {
+            "name": "prisonerNumber",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SyncUpdatePrisonerNumberOfChildrenRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "404": {
+            "description": "Prisoner's number of children not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Successfully created/updated Prisoner's number of children",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SyncPrisonerNumberOfChildrenResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorised, requires a valid Oauth2 token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden, requires an appropriate role",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sync/{prisonerNumber}/domestic-status": {
+      "get": {
+        "tags": ["Sync & Migrate"],
+        "summary": "Returns the domestic status for a prisoner by prisonerNumber",
+        "description": "\n      Requires role: PERSONAL_RELATIONSHIPS_MIGRATION.\n      Used to get the domestic status for one prisoner.\n      ",
+        "operationId": "syncGetDomesticStatusByPrisonerNumber",
+        "parameters": [
+          {
+            "name": "prisonerNumber",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "404": {
+            "description": "No active domestic status found for the requested prisoner.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Found the domestic status",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SyncPrisonerDomesticStatusResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": ["Sync & Migrate"],
+        "summary": "Create or Updates the domestic status for a prisoner",
+        "description": "\n      Requires role: PERSONAL_RELATIONSHIPS_MIGRATION.\n      Used to update a prisoner's domestic status.\n      ",
+        "operationId": "syncUpdateDomesticStatus",
+        "parameters": [
+          {
+            "name": "prisonerNumber",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SyncUpdatePrisonerDomesticStatusRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "404": {
+            "description": "Domestic status not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid data provided in the request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Successfully created/updated domestic status for the requested prisoner",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SyncPrisonerDomesticStatusResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorised, requires a valid Oauth2 token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden, requires an appropriate role",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/sync/prisoner-contact/{prisonerContactId}": {
       "get": {
         "tags": ["Sync & Migrate"],
@@ -276,8 +522,8 @@
           }
         ],
         "responses": {
-          "404": {
-            "description": "No prisoner contact restriction reference with that id could be found",
+          "200": {
+            "description": "Found the prisoner contact restriction",
             "content": {
               "application/json": {
                 "schema": {
@@ -286,8 +532,8 @@
               }
             }
           },
-          "200": {
-            "description": "Found the prisoner contact restriction",
+          "404": {
+            "description": "No prisoner contact restriction reference with that id could be found",
             "content": {
               "application/json": {
                 "schema": {
@@ -346,8 +592,8 @@
           "required": true
         },
         "responses": {
-          "400": {
-            "description": "Invalid input data",
+          "200": {
+            "description": "Successfully updated prisoner contact restriction",
             "content": {
               "application/json": {
                 "schema": {
@@ -356,8 +602,8 @@
               }
             }
           },
-          "200": {
-            "description": "Successfully updated prisoner contact restriction",
+          "400": {
+            "description": "Invalid input data",
             "content": {
               "application/json": {
                 "schema": {
@@ -477,22 +723,22 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "The details of the employment record",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/EmploymentEntity"
-                }
-              }
-            }
-          },
           "404": {
             "description": "No employment record with this ID could be found",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/SyncEmployment"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "The details of the employment record",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmploymentEntity"
                 }
               }
             }
@@ -546,22 +792,22 @@
           "required": true
         },
         "responses": {
-          "400": {
-            "description": "Invalid data provided in the request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
           "200": {
             "description": "Successfully updated an employment record",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/SyncEmployment"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid data provided in the request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -1053,8 +1299,8 @@
               }
             }
           },
-          "400": {
-            "description": "Invalid input data",
+          "200": {
+            "description": "Successfully updated contact phone",
             "content": {
               "application/json": {
                 "schema": {
@@ -1063,8 +1309,8 @@
               }
             }
           },
-          "200": {
-            "description": "Successfully updated contact phone",
+          "400": {
+            "description": "Invalid input data",
             "content": {
               "application/json": {
                 "schema": {
@@ -1135,8 +1381,8 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "Found the contact identity",
+          "404": {
+            "description": "No contact identity with that id could be found",
             "content": {
               "application/json": {
                 "schema": {
@@ -1145,8 +1391,8 @@
               }
             }
           },
-          "404": {
-            "description": "No contact identity with that id could be found",
+          "200": {
+            "description": "Found the contact identity",
             "content": {
               "application/json": {
                 "schema": {
@@ -1419,8 +1665,8 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "Found the contact address",
+          "404": {
+            "description": "No contact address reference with that id could be found",
             "content": {
               "application/json": {
                 "schema": {
@@ -1429,8 +1675,8 @@
               }
             }
           },
-          "404": {
-            "description": "No contact address reference with that id could be found",
+          "200": {
+            "description": "Found the contact address",
             "content": {
               "application/json": {
                 "schema": {
@@ -1725,16 +1971,6 @@
           "required": true
         },
         "responses": {
-          "200": {
-            "description": "Updated the prisoner contact restriction successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/PrisonerContactRestrictionDetails"
-                }
-              }
-            }
-          },
           "400": {
             "description": "The request has invalid or missing fields",
             "content": {
@@ -1751,6 +1987,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Updated the prisoner contact restriction successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PrisonerContactRestrictionDetails"
                 }
               }
             }
@@ -1829,8 +2075,8 @@
               }
             }
           },
-          "404": {
-            "description": "Could not find the the contact or global restriction",
+          "400": {
+            "description": "The request has invalid or missing fields",
             "content": {
               "application/json": {
                 "schema": {
@@ -1839,8 +2085,8 @@
               }
             }
           },
-          "400": {
-            "description": "The request has invalid or missing fields",
+          "404": {
+            "description": "Could not find the the contact or global restriction",
             "content": {
               "application/json": {
                 "schema": {
@@ -1985,16 +2231,6 @@
           "required": true
         },
         "responses": {
-          "200": {
-            "description": "Updated the contact phone successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ContactPhoneDetails"
-                }
-              }
-            }
-          },
           "400": {
             "description": "The request has invalid or missing fields",
             "content": {
@@ -2011,6 +2247,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Updated the contact phone successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContactPhoneDetails"
                 }
               }
             }
@@ -2067,22 +2313,22 @@
           }
         ],
         "responses": {
-          "404": {
-            "description": "Could not find the the contact or phone by their ids",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
           "204": {
             "description": "Deleted the contact phone successfully",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ContactPhoneDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Could not find the the contact or phone by their ids",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -2223,6 +2469,16 @@
           "required": true
         },
         "responses": {
+          "400": {
+            "description": "The request has invalid or missing fields",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "200": {
             "description": "Updated the contact identity successfully",
             "content": {
@@ -2235,16 +2491,6 @@
           },
           "404": {
             "description": "Could not find the the contact or identity by their ids",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "The request has invalid or missing fields",
             "content": {
               "application/json": {
                 "schema": {
@@ -2305,22 +2551,22 @@
           }
         ],
         "responses": {
-          "404": {
-            "description": "Could not find the the contact or identity by their ids",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
           "204": {
             "description": "Deleted the contact identity successfully",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ContactIdentityDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Could not find the the contact or identity by their ids",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -2379,22 +2625,22 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "The employment was found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/EmploymentDetails"
-                }
-              }
-            }
-          },
           "404": {
             "description": "No contact or employment with that id could be found.",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "The employment was found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmploymentDetails"
                 }
               }
             }
@@ -2461,8 +2707,8 @@
           "required": true
         },
         "responses": {
-          "400": {
-            "description": "Invalid request",
+          "404": {
+            "description": "No contact or employment with that id could be found.",
             "content": {
               "application/json": {
                 "schema": {
@@ -2481,8 +2727,8 @@
               }
             }
           },
-          "404": {
-            "description": "No contact or employment with that id could be found.",
+          "400": {
+            "description": "Invalid request",
             "content": {
               "application/json": {
                 "schema": {
@@ -2774,22 +3020,22 @@
           }
         ],
         "responses": {
-          "204": {
-            "description": "Deleted the contact email successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ContactEmailDetails"
-                }
-              }
-            }
-          },
           "404": {
             "description": "Could not find the the contact or email by their ids",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "204": {
+            "description": "Deleted the contact email successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContactEmailDetails"
                 }
               }
             }
@@ -2848,22 +3094,22 @@
           }
         ],
         "responses": {
-          "404": {
-            "description": "Could not find the the contact or address by their IDs",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
           "200": {
             "description": "Found the address successfully",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ContactAddressResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Could not find the the contact or address by their IDs",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -2930,6 +3176,16 @@
           "required": true
         },
         "responses": {
+          "400": {
+            "description": "The request has invalid or missing fields",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "200": {
             "description": "Updated the contact address successfully",
             "content": {
@@ -2942,16 +3198,6 @@
           },
           "404": {
             "description": "Could not find the the contact or address by ID",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "The request has invalid or missing fields",
             "content": {
               "application/json": {
                 "schema": {
@@ -3012,22 +3258,22 @@
           }
         ],
         "responses": {
-          "204": {
-            "description": "Deleted the contact address successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ContactAddressResponse"
-                }
-              }
-            }
-          },
           "404": {
             "description": "Could not find the the contact or address by the provided IDs",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "204": {
+            "description": "Deleted the contact address successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContactAddressResponse"
                 }
               }
             }
@@ -3094,6 +3340,16 @@
           "required": true
         },
         "responses": {
+          "400": {
+            "description": "The request has invalid or missing fields",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "200": {
             "description": "Patched the contact address successfully",
             "content": {
@@ -3106,16 +3362,6 @@
           },
           "404": {
             "description": "Could not find the the contact or address by ID",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "The request has invalid or missing fields",
             "content": {
               "application/json": {
                 "schema": {
@@ -3189,22 +3435,22 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "Found the address-specific phone number successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ContactAddressPhoneDetails"
-                }
-              }
-            }
-          },
           "404": {
             "description": "Could not find the the contact, address or phone number by ID",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Found the address-specific phone number successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContactAddressPhoneDetails"
                 }
               }
             }
@@ -3282,16 +3528,6 @@
           "required": true
         },
         "responses": {
-          "404": {
-            "description": "Could not find the the contact, address or phone number by ID",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
           "400": {
             "description": "The request has invalid or missing fields",
             "content": {
@@ -3308,6 +3544,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ContactAddressPhoneDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Could not find the the contact, address or phone number by ID",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -3435,22 +3681,22 @@
           "required": true
         },
         "responses": {
-          "201": {
-            "description": "Successfully created prisoner contact",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SyncPrisonerContact"
-                }
-              }
-            }
-          },
           "400": {
             "description": "The request has invalid or missing fields",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Successfully created prisoner contact",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SyncPrisonerContact"
                 }
               }
             }
@@ -3495,22 +3741,22 @@
           "required": true
         },
         "responses": {
-          "201": {
-            "description": "Successfully created prisoner contact restriction",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SyncPrisonerContactRestriction"
-                }
-              }
-            }
-          },
           "400": {
             "description": "The request has invalid or missing fields",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Successfully created prisoner contact restriction",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SyncPrisonerContactRestriction"
                 }
               }
             }
@@ -3625,22 +3871,22 @@
               }
             }
           },
-          "201": {
-            "description": "Successfully created contact",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SyncContact"
-                }
-              }
-            }
-          },
           "400": {
             "description": "The request has invalid or missing fields",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Successfully created contact",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SyncContact"
                 }
               }
             }
@@ -3685,22 +3931,22 @@
           "required": true
         },
         "responses": {
-          "201": {
-            "description": "Successfully created contact restriction",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SyncContactRestriction"
-                }
-              }
-            }
-          },
           "400": {
             "description": "The request has invalid or missing fields",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Successfully created contact restriction",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SyncContactRestriction"
                 }
               }
             }
@@ -3765,22 +4011,22 @@
           "required": true
         },
         "responses": {
-          "201": {
-            "description": "Successfully created contact identity",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SyncContactIdentity"
-                }
-              }
-            }
-          },
           "400": {
             "description": "The request has invalid or missing fields",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Successfully created contact identity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SyncContactIdentity"
                 }
               }
             }
@@ -3805,22 +4051,22 @@
           "required": true
         },
         "responses": {
-          "201": {
-            "description": "Successfully created contact email",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SyncContactEmail"
-                }
-              }
-            }
-          },
           "400": {
             "description": "The request has invalid or missing fields",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Successfully created contact email",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SyncContactEmail"
                 }
               }
             }
@@ -3885,16 +4131,6 @@
           "required": true
         },
         "responses": {
-          "201": {
-            "description": "Successfully created an address-specific phone number",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SyncContactAddressPhone"
-                }
-              }
-            }
-          },
           "404": {
             "description": "The contact address phone number was not found for the provided ID",
             "content": {
@@ -3911,6 +4147,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Successfully created an address-specific phone number",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SyncContactAddressPhone"
                 }
               }
             }
@@ -3935,16 +4181,6 @@
           "required": true
         },
         "responses": {
-          "201": {
-            "description": "Created the relationship successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/PrisonerContactRelationshipDetails"
-                }
-              }
-            }
-          },
           "404": {
             "description": "Could not find the prisoner or contact that this relationship relates to",
             "content": {
@@ -3961,6 +4197,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Created the relationship successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PrisonerContactRelationshipDetails"
                 }
               }
             }
@@ -4089,6 +4335,16 @@
               }
             }
           },
+          "400": {
+            "description": "The request has invalid or missing fields",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "201": {
             "description": "Created the prisoner contact restriction successfully",
             "content": {
@@ -4099,8 +4355,108 @@
               }
             }
           },
+          "401": {
+            "description": "Unauthorised, requires a valid Oauth2 token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden, requires an appropriate role",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/migrate/number-of-children": {
+      "post": {
+        "tags": ["Sync & Migrate"],
+        "summary": "Migrate number of children for prisoner",
+        "description": "Migrate a prisoner's number of children from NOMIS.",
+        "operationId": "migrateNumberOfChildren",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MigratePrisonerNumberOfChildrenRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "The prisoner's number of children was migrated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PrisonerNumberOfChildrenMigrationResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorised, requires a valid Oauth2 token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden, requires an appropriate role",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/migrate/domestic-status": {
+      "post": {
+        "tags": ["Sync & Migrate"],
+        "summary": "Migrate domestic status for prisoner",
+        "description": "Migrate a prisoner's domestic status from NOMIS.",
+        "operationId": "migrateDomesticStatus",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MigratePrisonerDomesticStatusRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "The domestic status was migrated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PrisonerDomesticStatusMigrationResponse"
+                }
+              }
+            }
+          },
           "400": {
-            "description": "The request has invalid or missing fields",
+            "description": "The request failed validation with invalid or missing data supplied",
             "content": {
               "application/json": {
                 "schema": {
@@ -4149,16 +4505,6 @@
           "required": true
         },
         "responses": {
-          "400": {
-            "description": "The request failed validation with invalid or missing data supplied",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
           "409": {
             "description": "Conflict. The request contained a personId which already exists",
             "content": {
@@ -4175,6 +4521,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/MigrateContactResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The request failed validation with invalid or missing data supplied",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -4219,8 +4575,8 @@
           "required": true
         },
         "responses": {
-          "404": {
-            "description": "Could not find the prisoner that this contact has a relationship to",
+          "400": {
+            "description": "The request has invalid or missing fields",
             "content": {
               "application/json": {
                 "schema": {
@@ -4246,8 +4602,8 @@
               }
             }
           },
-          "400": {
-            "description": "The request has invalid or missing fields",
+          "404": {
+            "description": "Could not find the prisoner that this contact has a relationship to",
             "content": {
               "application/json": {
                 "schema": {
@@ -4299,16 +4655,6 @@
           }
         ],
         "responses": {
-          "404": {
-            "description": "No contact with that id could be found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
           "200": {
             "description": "Found the contact and their restrictions",
             "content": {
@@ -4318,6 +4664,16 @@
                   "items": {
                     "$ref": "#/components/schemas/ContactRestrictionDetails"
                   }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No contact with that id could be found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -4383,6 +4739,16 @@
               }
             }
           },
+          "400": {
+            "description": "The request has invalid or missing fields",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "404": {
             "description": "Could not find the the contact this global restriction is for",
             "content": {
@@ -4393,8 +4759,84 @@
               }
             }
           },
+          "401": {
+            "description": "Unauthorised, requires a valid Oauth2 token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden, requires an appropriate role",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/contact/{contactId}/phones": {
+      "post": {
+        "tags": ["Contacts"],
+        "summary": "Create multiple new contact phone numbers",
+        "description": "Creates one or more phone numbers for the specified contact",
+        "operationId": "createMultipleContactPhoneNumber",
+        "parameters": [
+          {
+            "name": "contactId",
+            "in": "path",
+            "description": "The id of the contact",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "example": 123456
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateMultiplePhoneNumbersRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created all the contact phone numbers successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ContactPhoneDetails"
+                  }
+                }
+              }
+            }
+          },
           "400": {
             "description": "The request has invalid or missing fields",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Could not find the the contact this phone is for",
             "content": {
               "application/json": {
                 "schema": {
@@ -4456,6 +4898,16 @@
           "required": true
         },
         "responses": {
+          "400": {
+            "description": "The request has invalid or missing fields",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "404": {
             "description": "Could not find the the contact this phone is for",
             "content": {
@@ -4472,16 +4924,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ContactPhoneDetails"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "The request has invalid or missing fields",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -4539,12 +4981,98 @@
           "required": true
         },
         "responses": {
+          "400": {
+            "description": "The request has invalid or missing fields",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Could not find the the contact this identity is for",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "201": {
             "description": "Created the contact identity successfully",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ContactIdentityDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorised, requires a valid Oauth2 token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden, requires an appropriate role",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/contact/{contactId}/identities": {
+      "post": {
+        "tags": ["Contacts"],
+        "summary": "Create multiple contact identities",
+        "description": "Creates one or more new identities for the specified contact",
+        "operationId": "createMultipleIdentities",
+        "parameters": [
+          {
+            "name": "contactId",
+            "in": "path",
+            "description": "The id of the contact",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "example": 123456
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateMultipleIdentitiesRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created all identities successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ContactIdentityDetails"
+                  }
                 }
               }
             }
@@ -4622,6 +5150,16 @@
           "required": true
         },
         "responses": {
+          "404": {
+            "description": "No contact with that id could be found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "201": {
             "description": "The employment was created successfully",
             "content": {
@@ -4634,16 +5172,6 @@
           },
           "400": {
             "description": "Invalid request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "No contact with that id could be found.",
             "content": {
               "application/json": {
                 "schema": {
@@ -4716,6 +5244,16 @@
               }
             }
           },
+          "404": {
+            "description": "No contact with that id could be found or employments for update or delete could not be found or an organisation could not be found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "400": {
             "description": "Invalid request",
             "content": {
@@ -4726,12 +5264,88 @@
               }
             }
           },
-          "404": {
-            "description": "No contact with that id could be found or employments for update or delete could not be found or an organisation could not be found.",
+          "401": {
+            "description": "Unauthorised, requires a valid Oauth2 token",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden, requires an appropriate role",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/contact/{contactId}/emails": {
+      "post": {
+        "tags": ["Contacts"],
+        "summary": "Create multiple contact email addresses",
+        "description": "Creates one or more new email addresses for the specified contact",
+        "operationId": "createMultipleEmailAddresses",
+        "parameters": [
+          {
+            "name": "contactId",
+            "in": "path",
+            "description": "The id of the contact",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "example": 123456
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateMultipleEmailsRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "404": {
+            "description": "Could not find the the contact this email is for",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The request has invalid or missing fields",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Created all the contact email addresses successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ContactEmailDetails"
+                  }
                 }
               }
             }
@@ -4789,16 +5403,6 @@
           "required": true
         },
         "responses": {
-          "201": {
-            "description": "Created the contact email successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ContactEmailDetails"
-                }
-              }
-            }
-          },
           "404": {
             "description": "Could not find the the contact this email is for",
             "content": {
@@ -4815,6 +5419,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Created the contact email successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContactEmailDetails"
                 }
               }
             }
@@ -4872,6 +5486,26 @@
           "required": true
         },
         "responses": {
+          "400": {
+            "description": "The request has invalid or missing fields",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Could not find the the address",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "201": {
             "description": "Created the contact address successfully",
             "content": {
@@ -4882,8 +5516,85 @@
               }
             }
           },
+          "401": {
+            "description": "Unauthorised, requires a valid Oauth2 token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden, requires an appropriate role",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/contact/{contactId}/address/{contactAddressId}/phones": {
+      "post": {
+        "tags": ["Contacts"],
+        "summary": "Create multiple address-specific phone numbers",
+        "description": "Creates one or more address-specific phone numbers",
+        "operationId": "createMultipleContactAddressPhones",
+        "parameters": [
+          {
+            "name": "contactId",
+            "in": "path",
+            "description": "The id of the contact",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "example": 111
+          },
+          {
+            "name": "contactAddressId",
+            "in": "path",
+            "description": "The id of the address",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "example": 222
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateMultiplePhoneNumbersRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created all the address-specific phone numbers successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ContactAddressPhoneDetails"
+                  }
+                }
+              }
+            }
+          },
           "404": {
-            "description": "Could not find the the address",
+            "description": "Could not find the the contact or address provided",
             "content": {
               "application/json": {
                 "schema": {
@@ -4966,16 +5677,6 @@
           "required": true
         },
         "responses": {
-          "201": {
-            "description": "Created the address-specific phone number successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ContactAddressPhoneDetails"
-                }
-              }
-            }
-          },
           "404": {
             "description": "Could not find the the contact or address provided",
             "content": {
@@ -4992,6 +5693,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Created the address-specific phone number successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContactAddressPhoneDetails"
                 }
               }
             }
@@ -5038,22 +5749,22 @@
           }
         ],
         "responses": {
-          "404": {
-            "description": "The Prisoner contact relationship was not found.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
           "200": {
             "description": "Prisoner Contact relationship",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/PrisonerContactRelationshipDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The Prisoner contact relationship was not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -5102,7 +5813,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/UpdateRelationshipRequest"
+                "$ref": "#/components/schemas/PatchRelationshipRequest"
               }
             }
           },
@@ -5650,8 +6361,8 @@
           }
         ],
         "responses": {
-          "404": {
-            "description": "No language reference with that ISO Alpha 3 code could be found",
+          "200": {
+            "description": "Found the language reference",
             "content": {
               "application/json": {
                 "schema": {
@@ -5660,8 +6371,8 @@
               }
             }
           },
-          "200": {
-            "description": "Found the language reference",
+          "404": {
+            "description": "No language reference with that ISO Alpha 3 code could be found",
             "content": {
               "application/json": {
                 "schema": {
@@ -5711,8 +6422,8 @@
           }
         ],
         "responses": {
-          "404": {
-            "description": "No language reference with that ISO Alpha 2 code could be found",
+          "200": {
+            "description": "Found the language reference",
             "content": {
               "application/json": {
                 "schema": {
@@ -5721,8 +6432,8 @@
               }
             }
           },
-          "200": {
-            "description": "Found the language reference",
+          "404": {
+            "description": "No language reference with that ISO Alpha 2 code could be found",
             "content": {
               "application/json": {
                 "schema": {
@@ -5814,8 +6525,8 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "Found the county reference",
+          "404": {
+            "description": "No county reference with that id could be found",
             "content": {
               "application/json": {
                 "schema": {
@@ -5824,8 +6535,8 @@
               }
             }
           },
-          "404": {
-            "description": "No county reference with that id could be found",
+          "200": {
+            "description": "Found the county reference",
             "content": {
               "application/json": {
                 "schema": {
@@ -5978,8 +6689,8 @@
           }
         ],
         "responses": {
-          "404": {
-            "description": "No country reference with that id could be found",
+          "200": {
+            "description": "Found the country reference",
             "content": {
               "application/json": {
                 "schema": {
@@ -5988,8 +6699,8 @@
               }
             }
           },
-          "200": {
-            "description": "Found the country reference",
+          "404": {
+            "description": "No country reference with that id could be found",
             "content": {
               "application/json": {
                 "schema": {
@@ -6039,8 +6750,8 @@
           }
         ],
         "responses": {
-          "404": {
-            "description": "No country reference with that nomis code could be found",
+          "200": {
+            "description": "Found the country reference",
             "content": {
               "application/json": {
                 "schema": {
@@ -6049,8 +6760,8 @@
               }
             }
           },
-          "200": {
-            "description": "Found the country reference",
+          "404": {
+            "description": "No country reference with that nomis code could be found",
             "content": {
               "application/json": {
                 "schema": {
@@ -6161,8 +6872,8 @@
           }
         ],
         "responses": {
-          "404": {
-            "description": "No country reference with that ISO Alpha 2 code could be found",
+          "200": {
+            "description": "Found the country reference",
             "content": {
               "application/json": {
                 "schema": {
@@ -6171,8 +6882,8 @@
               }
             }
           },
-          "200": {
-            "description": "Found the country reference",
+          "404": {
+            "description": "No country reference with that ISO Alpha 2 code could be found",
             "content": {
               "application/json": {
                 "schema": {
@@ -6205,6 +6916,69 @@
         "deprecated": true
       }
     },
+    "/contact/{contactId}/name": {
+      "get": {
+        "tags": ["Contacts"],
+        "summary": "Get contact name",
+        "description": "Gets a contacts name details by their id. Includes title code, description, first name, middle names and last name.",
+        "operationId": "getContactName",
+        "parameters": [
+          {
+            "name": "contactId",
+            "in": "path",
+            "description": "The id of the contact",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "example": 123456
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Found the contact",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContactNameDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No contact with that id could be found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorised, requires a valid Oauth2 token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden, requires an appropriate role",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/contact/{contactId}/linked-prisoners": {
       "get": {
         "tags": ["Contacts"],
@@ -6225,16 +6999,6 @@
           }
         ],
         "responses": {
-          "404": {
-            "description": "Could not find the the contact",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
           "200": {
             "description": "Found the the linked prisoners successfully. Can be an empty list.",
             "content": {
@@ -6244,6 +7008,16 @@
                   "items": {
                     "$ref": "#/components/schemas/LinkedPrisonerDetails"
                   }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Could not find the the contact",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -6298,22 +7072,22 @@
           }
         ],
         "responses": {
-          "400": {
-            "description": "Invalid request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
           "200": {
             "description": "Found contacts",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ContactSearchResultItemPage"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -6461,8 +7235,8 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "Found the city reference",
+          "404": {
+            "description": "No city reference with that nomis code could be found",
             "content": {
               "application/json": {
                 "schema": {
@@ -6471,8 +7245,8 @@
               }
             }
           },
-          "404": {
-            "description": "No city reference with that nomis code could be found",
+          "200": {
+            "description": "Found the city reference",
             "content": {
               "application/json": {
                 "schema": {
@@ -6508,6 +7282,134 @@
   },
   "components": {
     "schemas": {
+      "SyncUpdatePrisonerNumberOfChildrenRequest": {
+        "type": "object",
+        "description": "Request to update a prisoner's number of children",
+        "properties": {
+          "numberOfChildren": {
+            "type": "string",
+            "description": "The number of children",
+            "example": 1,
+            "maxLength": 50,
+            "minLength": 0
+          },
+          "createdBy": {
+            "type": "string",
+            "description": "Username of the person who created the record",
+            "example": "JSMITH_ADM"
+          },
+          "createdTime": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp when the record was created"
+          }
+        },
+        "required": ["createdBy", "createdTime"]
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "errorCode": {
+            "type": "string"
+          },
+          "userMessage": {
+            "type": "string"
+          },
+          "developerMessage": {
+            "type": "string"
+          },
+          "moreInfo": {
+            "type": "string"
+          }
+        },
+        "required": ["status"]
+      },
+      "SyncPrisonerNumberOfChildrenResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "The unique identifier of the prisoner's number of children",
+            "example": 1
+          },
+          "numberOfChildren": {
+            "type": "string",
+            "description": "The number of children of the prisoner"
+          },
+          "active": {
+            "type": "boolean",
+            "description": "Is this the active number of children of the prisoner"
+          },
+          "createdTime": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Creation date and time"
+          },
+          "createdBy": {
+            "type": "string",
+            "description": "Username of the creator"
+          }
+        },
+        "required": ["active", "id"]
+      },
+      "SyncUpdatePrisonerDomesticStatusRequest": {
+        "type": "object",
+        "description": "Request to update a prisoner's domestic status",
+        "properties": {
+          "domesticStatusCode": {
+            "type": "string",
+            "description": "The domestic status code value",
+            "example": 1,
+            "maxLength": 12,
+            "minLength": 0
+          },
+          "createdBy": {
+            "type": "string",
+            "description": "Username of the person who created the record",
+            "example": "JSMITH_ADM"
+          },
+          "createdTime": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp when the record was created"
+          }
+        },
+        "required": ["createdBy", "createdTime"]
+      },
+      "SyncPrisonerDomesticStatusResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "The unique identifier of the prisoner's domestic status",
+            "example": 1
+          },
+          "domesticStatusCode": {
+            "type": "string",
+            "description": "The domestic status value of the prisoner"
+          },
+          "active": {
+            "type": "boolean",
+            "description": "Is this the active domestic status code of the prisoner"
+          },
+          "createdTime": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Creation date and time"
+          },
+          "createdBy": {
+            "type": "string",
+            "description": "Username of the creator"
+          }
+        },
+        "required": ["active", "id"]
+      },
       "SyncUpdatePrisonerContactRequest": {
         "type": "object",
         "description": "Request object to update prisoner contact details",
@@ -6708,28 +7610,6 @@
           "prisonerNumber",
           "relationshipType"
         ]
-      },
-      "ErrorResponse": {
-        "type": "object",
-        "properties": {
-          "status": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "errorCode": {
-            "type": "string"
-          },
-          "userMessage": {
-            "type": "string"
-          },
-          "developerMessage": {
-            "type": "string"
-          },
-          "moreInfo": {
-            "type": "string"
-          }
-        },
-        "required": ["status"]
       },
       "SyncUpdatePrisonerContactRestrictionRequest": {
         "type": "object",
@@ -8130,7 +9010,7 @@
             "type": "string",
             "description": "Phone number",
             "example": "+1234567890",
-            "maxLength": 240,
+            "maxLength": 40,
             "minLength": 0
           },
           "extNumber": {
@@ -8219,7 +9099,7 @@
             "type": "string",
             "description": "Type of identity",
             "example": "DL",
-            "maxLength": 20,
+            "maxLength": 12,
             "minLength": 0
           },
           "identityValue": {
@@ -8526,22 +9406,30 @@
           "flat": {
             "type": "string",
             "description": "Flat number or name",
-            "example": "Flat 2B"
+            "example": "Flat 2B",
+            "maxLength": 30,
+            "minLength": 0
           },
           "property": {
             "type": "string",
             "description": "Building or house number or name",
-            "example": "Mansion House"
+            "example": "Mansion House",
+            "maxLength": 50,
+            "minLength": 0
           },
           "street": {
             "type": "string",
             "description": "Street or road name",
-            "example": "Acacia Avenue"
+            "example": "Acacia Avenue",
+            "maxLength": 160,
+            "minLength": 0
           },
           "area": {
             "type": "string",
             "description": "Area",
-            "example": "Morton Heights"
+            "example": "Morton Heights",
+            "maxLength": 70,
+            "minLength": 0
           },
           "cityCode": {
             "type": "string",
@@ -8560,7 +9448,9 @@
           "postcode": {
             "type": "string",
             "description": "Postcode",
-            "example": "S13 4FH"
+            "example": "S13 4FH",
+            "maxLength": 12,
+            "minLength": 0
           },
           "countryCode": {
             "type": "string",
@@ -8599,7 +9489,9 @@
           "comments": {
             "type": "string",
             "description": "Any additional information or comments about the address",
-            "example": "Some additional information"
+            "example": "Some additional information",
+            "maxLength": 240,
+            "minLength": 0
           },
           "updatedBy": {
             "type": "string",
@@ -8760,7 +9652,7 @@
             "type": "string",
             "description": "Phone number",
             "example": "+1234567890",
-            "maxLength": 240,
+            "maxLength": 40,
             "minLength": 0
           },
           "extNumber": {
@@ -9032,12 +9924,12 @@
             "description": "Prisoner number (NOMS ID)",
             "example": "A1234BC"
           },
-          "relationshipType": {
+          "relationshipTypeCode": {
             "type": "string",
             "description": "The relationship between the prisoner and the contact - for social(S) or official(O)",
             "example": "S"
           },
-          "relationshipToPrisoner": {
+          "relationshipToPrisonerCode": {
             "type": "string",
             "description": "The relationship to the prisoner. A code from SOCIAL_RELATIONSHIP or OFFICIAL_RELATIONSHIP reference data groups depending on the relationship type.",
             "example": "FRI"
@@ -9052,13 +9944,20 @@
             "description": "Whether they are the emergency contact for the prisoner",
             "example": true
           },
+          "isApprovedVisitor": {
+            "type": "boolean",
+            "description": "Is this a approved visitor for the prisoner?",
+            "example": true
+          },
           "comments": {
             "type": "string",
             "description": "Comments about the contacts relationship with the prisoner",
-            "example": "Some additional information"
+            "example": "Some additional information",
+            "maxLength": 240,
+            "minLength": 0
           }
         },
-        "required": ["isEmergencyContact", "isNextOfKin", "prisonerNumber", "relationshipToPrisoner", "relationshipType"]
+        "required": ["isApprovedVisitor", "isEmergencyContact", "isNextOfKin", "prisonerNumber", "relationshipToPrisonerCode", "relationshipTypeCode"]
       },
       "SyncCreateContactRequest": {
         "type": "object",
@@ -9506,7 +10405,7 @@
             "description": "Prisoner number (NOMS ID)",
             "example": "A1234BC"
           },
-          "relationshipType": {
+          "relationshipTypeCode": {
             "type": "string",
             "description": "\n      Coded value indicating either a social or official contact (mandatory).\n      This is a coded value from the group code CONTACT_TYPE in reference data.\n      Known values are (S) Social or (O) official.\n      ",
             "example": "S"
@@ -9526,12 +10425,12 @@
             "description": "The description of the relationship",
             "example": "Friend"
           },
-          "emergencyContact": {
+          "isEmergencyContact": {
             "type": "boolean",
             "description": "Is this contact the prisoner's emergency contact?",
             "example": true
           },
-          "nextOfKin": {
+          "isNextOfKin": {
             "type": "boolean",
             "description": "Is this contact the prisoner's next of kin?",
             "example": false
@@ -9554,15 +10453,15 @@
         },
         "required": [
           "contactId",
-          "emergencyContact",
           "isApprovedVisitor",
+          "isEmergencyContact",
+          "isNextOfKin",
           "isRelationshipActive",
-          "nextOfKin",
           "prisonerContactId",
           "prisonerNumber",
           "relationshipToPrisonerCode",
           "relationshipToPrisonerDescription",
-          "relationshipType",
+          "relationshipTypeCode",
           "relationshipTypeDescription"
         ]
       },
@@ -9603,6 +10502,150 @@
           }
         },
         "required": ["createdBy", "restrictionType", "startDate"]
+      },
+      "MigratePrisonerNumberOfChildrenRequest": {
+        "type": "object",
+        "description": "Request to migrate a prisoner's number of children",
+        "properties": {
+          "prisonerNumber": {
+            "type": "string",
+            "description": "The prisoner number",
+            "example": "A1234BC"
+          },
+          "current": {
+            "$ref": "#/components/schemas/NumberOfChildrenDetailsRequest",
+            "description": "Current number of children details"
+          },
+          "history": {
+            "type": "array",
+            "description": "Historical number of children records",
+            "items": {
+              "$ref": "#/components/schemas/NumberOfChildrenDetailsRequest"
+            }
+          }
+        },
+        "required": ["history", "prisonerNumber"]
+      },
+      "NumberOfChildrenDetailsRequest": {
+        "type": "object",
+        "description": "Details of a number of children record",
+        "properties": {
+          "numberOfChildren": {
+            "type": "string",
+            "description": "The number of children",
+            "example": 1,
+            "maxLength": 50,
+            "minLength": 0
+          },
+          "createdBy": {
+            "type": "string",
+            "description": "Username of the person who created the record",
+            "example": "JSMITH_ADM"
+          },
+          "createdTime": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp when the record was created"
+          }
+        },
+        "required": ["createdBy", "createdTime"]
+      },
+      "PrisonerNumberOfChildrenMigrationResponse": {
+        "type": "object",
+        "description": "Response object for prisoner's number of children migration",
+        "properties": {
+          "prisonerNumber": {
+            "type": "string",
+            "description": "The prisoner number",
+            "example": "A1234BC"
+          },
+          "current": {
+            "type": "integer",
+            "format": "int64",
+            "description": "The current number of children"
+          },
+          "history": {
+            "type": "array",
+            "description": "Historical number of children records",
+            "items": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        },
+        "required": ["history", "prisonerNumber"]
+      },
+      "DomesticStatusDetailsRequest": {
+        "type": "object",
+        "description": "Details of a domestic status record",
+        "properties": {
+          "domesticStatusCode": {
+            "type": "string",
+            "description": "The domestic status code",
+            "example": "M",
+            "maxLength": 12,
+            "minLength": 0
+          },
+          "createdBy": {
+            "type": "string",
+            "description": "Username of the person who created the record",
+            "example": "JSMITH_ADM"
+          },
+          "createdTime": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp when the record was created"
+          }
+        },
+        "required": ["createdBy", "createdTime"]
+      },
+      "MigratePrisonerDomesticStatusRequest": {
+        "type": "object",
+        "description": "Request to migrate a prisoner's domestic status",
+        "properties": {
+          "prisonerNumber": {
+            "type": "string",
+            "description": "The prisoner number",
+            "example": "A1234BC"
+          },
+          "current": {
+            "$ref": "#/components/schemas/DomesticStatusDetailsRequest",
+            "description": "Current domestic status details"
+          },
+          "history": {
+            "type": "array",
+            "description": "Historical domestic status records",
+            "items": {
+              "$ref": "#/components/schemas/DomesticStatusDetailsRequest"
+            }
+          }
+        },
+        "required": ["history", "prisonerNumber"]
+      },
+      "PrisonerDomesticStatusMigrationResponse": {
+        "type": "object",
+        "description": "Response object for prisoner's domestic status migration",
+        "properties": {
+          "prisonerNumber": {
+            "type": "string",
+            "description": "The prisoner number",
+            "example": "A1234BC"
+          },
+          "current": {
+            "type": "integer",
+            "format": "int64",
+            "description": "The current domestic status"
+          },
+          "history": {
+            "type": "array",
+            "description": "Historical domestic status records",
+            "items": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        },
+        "required": ["history", "prisonerNumber"]
       },
       "CodedValue": {
         "type": "object",
@@ -10376,7 +11419,7 @@
         "type": "object",
         "description": "Request to create a new contact",
         "properties": {
-          "title": {
+          "titleCode": {
             "type": "string",
             "description": "\n      The title code for the contact.\n      This is a coded value (from the group code TITLE in reference data).\n      Known values are MR, MRS, MISS, DR, MS, REV, SIR, BR, SR.\n      ",
             "example": "MR",
@@ -10410,6 +11453,37 @@
             "description": "The date of birth of the contact, if known",
             "example": "1980-01-01"
           },
+          "isStaff": {
+            "type": "boolean",
+            "description": "Whether the contact is a staff member",
+            "example": false
+          },
+          "languageCode": {
+            "type": "string",
+            "description": "\n      The primary language of the contact.\n      This is a coded value (from the group code LANGUAGE in reference data).\n      ",
+            "example": "ENG",
+            "maxLength": 12,
+            "minLength": 0
+          },
+          "interpreterRequired": {
+            "type": "boolean",
+            "description": "Whether an interpreter is required for this contact",
+            "example": true
+          },
+          "domesticStatusCode": {
+            "type": "string",
+            "description": "\n      The domestic status of the contact.\n      This is a coded value (from the group code DOMESTIC_STS in reference data).\n      ",
+            "example": "S",
+            "maxLength": 12,
+            "minLength": 0
+          },
+          "genderCode": {
+            "type": "string",
+            "description": "\n      The domestic status of the contact.\n      This is a coded value (from the group code GENDER in reference data).\n      ",
+            "examples": ["M", "F"],
+            "maxLength": 12,
+            "minLength": 0
+          },
           "relationship": {
             "$ref": "#/components/schemas/ContactRelationship",
             "description": "A description of the relationship if the contact should be linked to a prisoner"
@@ -10420,9 +11494,13 @@
             "example": "JD000001",
             "maxLength": 100,
             "minLength": 0
+          },
+          "staff": {
+            "type": "boolean",
+            "writeOnly": true
           }
         },
-        "required": ["createdBy", "firstName", "lastName"]
+        "required": ["createdBy", "firstName", "interpreterRequired", "isStaff", "lastName"]
       },
       "ContactAddressDetails": {
         "type": "object",
@@ -10620,7 +11698,7 @@
             "description": "The id of the contact",
             "example": 123456
           },
-          "title": {
+          "titleCode": {
             "type": "string",
             "description": "\n      The title code for the contact.\n      This is a coded value (from the group code TITLE in reference data).\n      Known values are MR, MRS, MISS, DR, MS, REV, SIR, BR, SR.\n      ",
             "example": "MR"
@@ -10655,11 +11733,6 @@
             "type": "boolean",
             "description": "Whether the contact is a staff member",
             "example": false
-          },
-          "isDeceased": {
-            "type": "boolean",
-            "description": "The date the contact deceased, if known",
-            "example": "1980-01-01"
           },
           "deceasedDate": {
             "type": "string",
@@ -10727,7 +11800,7 @@
             "description": "The description of the domestic status code",
             "example": "Single"
           },
-          "gender": {
+          "genderCode": {
             "type": "string",
             "description": "The NOMIS code for the contacts gender. See reference data with group code 'GENDER'",
             "examples": ["M", "F"]
@@ -10763,7 +11836,6 @@
           "id",
           "identities",
           "interpreterRequired",
-          "isDeceased",
           "isStaff",
           "lastName",
           "phoneNumbers"
@@ -10807,6 +11879,57 @@
         },
         "required": ["createdBy", "restrictionType", "startDate"]
       },
+      "CreateMultiplePhoneNumbersRequest": {
+        "type": "object",
+        "description": "Request to create multiple phone numbers for a contact or an address",
+        "properties": {
+          "phoneNumbers": {
+            "type": "array",
+            "description": "Phone numbers",
+            "items": {
+              "$ref": "#/components/schemas/PhoneNumber"
+            },
+            "maxItems": 2147483647,
+            "minItems": 1
+          },
+          "createdBy": {
+            "type": "string",
+            "description": "User who created the entry",
+            "example": "admin",
+            "maxLength": 100,
+            "minLength": 0
+          }
+        },
+        "required": ["createdBy", "phoneNumbers"]
+      },
+      "PhoneNumber": {
+        "type": "object",
+        "description": "A single contact or address phone number",
+        "properties": {
+          "phoneType": {
+            "type": "string",
+            "description": "Type of phone",
+            "example": "MOB",
+            "maxLength": 12,
+            "minLength": 0
+          },
+          "phoneNumber": {
+            "type": "string",
+            "description": "Phone number",
+            "example": "+1234567890",
+            "maxLength": 40,
+            "minLength": 0
+          },
+          "extNumber": {
+            "type": "string",
+            "description": "Extension number",
+            "example": 123,
+            "maxLength": 7,
+            "minLength": 0
+          }
+        },
+        "required": ["phoneNumber", "phoneType"]
+      },
       "CreatePhoneRequest": {
         "type": "object",
         "description": "Request to create a new phone number",
@@ -10822,7 +11945,7 @@
             "type": "string",
             "description": "Phone number",
             "example": "+1234567890",
-            "maxLength": 240,
+            "maxLength": 40,
             "minLength": 0
           },
           "extNumber": {
@@ -10850,7 +11973,7 @@
             "type": "string",
             "description": "Type of identity",
             "example": "DL",
-            "maxLength": 20,
+            "maxLength": 12,
             "minLength": 0
           },
           "identityValue": {
@@ -10877,6 +12000,57 @@
         },
         "required": ["createdBy", "identityType", "identityValue"]
       },
+      "CreateMultipleIdentitiesRequest": {
+        "type": "object",
+        "description": "Request to create multiple contact identity documents",
+        "properties": {
+          "identities": {
+            "type": "array",
+            "description": "Identity documents",
+            "items": {
+              "$ref": "#/components/schemas/IdentityDocument"
+            },
+            "maxItems": 2147483647,
+            "minItems": 1
+          },
+          "createdBy": {
+            "type": "string",
+            "description": "User who created the entry",
+            "example": "admin",
+            "maxLength": 100,
+            "minLength": 0
+          }
+        },
+        "required": ["createdBy", "identities"]
+      },
+      "IdentityDocument": {
+        "type": "object",
+        "description": "An identity document",
+        "properties": {
+          "identityType": {
+            "type": "string",
+            "description": "Type of identity",
+            "example": "DL",
+            "maxLength": 12,
+            "minLength": 0
+          },
+          "identityValue": {
+            "type": "string",
+            "description": "The identity value such as driving licence number",
+            "example": "DL123456789",
+            "maxLength": 20,
+            "minLength": 0
+          },
+          "issuingAuthority": {
+            "type": "string",
+            "description": "The authority who issued the identity",
+            "example": "DVLA",
+            "maxLength": 40,
+            "minLength": 0
+          }
+        },
+        "required": ["identityType", "identityValue"]
+      },
       "CreateEmploymentRequest": {
         "type": "object",
         "description": "Request to create a new employment with an employer and whether it is active or inactive",
@@ -10900,6 +12074,41 @@
           }
         },
         "required": ["createdBy", "isActive", "organisationId"]
+      },
+      "CreateMultipleEmailsRequest": {
+        "type": "object",
+        "description": "Request to create a new email address",
+        "properties": {
+          "emailAddresses": {
+            "type": "array",
+            "description": "Email addresses",
+            "items": {
+              "$ref": "#/components/schemas/EmailAddress"
+            },
+            "maxItems": 2147483647,
+            "minItems": 1
+          },
+          "createdBy": {
+            "type": "string",
+            "description": "User who created the entry",
+            "example": "admin",
+            "maxLength": 100,
+            "minLength": 0
+          }
+        },
+        "required": ["createdBy", "emailAddresses"]
+      },
+      "EmailAddress": {
+        "type": "object",
+        "description": "A single email address",
+        "properties": {
+          "emailAddress": {
+            "type": "string",
+            "maxLength": 240,
+            "minLength": 0
+          }
+        },
+        "required": ["emailAddress"]
       },
       "CreateEmailRequest": {
         "type": "object",
@@ -10941,22 +12150,30 @@
           "flat": {
             "type": "string",
             "description": "Flat number or name",
-            "example": "Flat 2B"
+            "example": "Flat 2B",
+            "maxLength": 30,
+            "minLength": 0
           },
           "property": {
             "type": "string",
             "description": "Building or house number or name",
-            "example": "Mansion House"
+            "example": "Mansion House",
+            "maxLength": 50,
+            "minLength": 0
           },
           "street": {
             "type": "string",
             "description": "Street or road name",
-            "example": "Acacia Avenue"
+            "example": "Acacia Avenue",
+            "maxLength": 160,
+            "minLength": 0
           },
           "area": {
             "type": "string",
             "description": "Area",
-            "example": "Morton Heights"
+            "example": "Morton Heights",
+            "maxLength": 70,
+            "minLength": 0
           },
           "cityCode": {
             "type": "string",
@@ -10975,7 +12192,9 @@
           "postcode": {
             "type": "string",
             "description": "Postcode",
-            "example": "S13 4FH"
+            "example": "S13 4FH",
+            "maxLength": 12,
+            "minLength": 0
           },
           "countryCode": {
             "type": "string",
@@ -11014,7 +12233,9 @@
           "comments": {
             "type": "string",
             "description": "Any additional information or comments about the address",
-            "example": "Some additional information"
+            "example": "Some additional information",
+            "maxLength": 240,
+            "minLength": 0
           },
           "createdBy": {
             "type": "string",
@@ -11047,7 +12268,7 @@
             "type": "string",
             "description": "Phone number",
             "example": "+1234567890",
-            "maxLength": 240,
+            "maxLength": 40,
             "minLength": 0
           },
           "extNumber": {
@@ -11067,16 +12288,16 @@
         },
         "required": ["contactAddressId", "createdBy", "phoneNumber", "phoneType"]
       },
-      "UpdateRelationshipRequest": {
+      "PatchRelationshipRequest": {
         "type": "object",
         "description": "Request to update an existing relationship details",
         "properties": {
-          "relationshipType": {
+          "relationshipTypeCode": {
             "type": "string",
             "description": "The code representing the relationship type as social or official",
             "example": "S"
           },
-          "relationshipToPrisoner": {
+          "relationshipToPrisonerCode": {
             "type": "string",
             "description": "The relationship reference code between the prisoner and the contact",
             "example": "FRI"
@@ -11104,12 +12325,16 @@
           "comments": {
             "type": "string",
             "description": "Comments about the contacts relationship with the prisoner",
-            "example": "Some additional information"
+            "example": "Some additional information",
+            "maxLength": 240,
+            "minLength": 0
           },
           "updatedBy": {
             "type": "string",
             "description": "The id of the user who updated the contact",
-            "example": "JD000001"
+            "example": "JD000001",
+            "maxLength": 100,
+            "minLength": 0
           }
         },
         "required": ["updatedBy"]
@@ -11123,7 +12348,7 @@
             "description": "Whether the contact is a staff member",
             "example": false
           },
-          "domesticStatus": {
+          "domesticStatusCode": {
             "type": "string",
             "description": "The domestic status code of the contact",
             "example": "S"
@@ -11143,7 +12368,7 @@
             "description": "The date of birth of the contact, if known",
             "example": "1980-01-01"
           },
-          "title": {
+          "titleCode": {
             "type": "string",
             "description": "The title code for the contact, if any",
             "example": "MR",
@@ -11157,10 +12382,15 @@
             "maxLength": 35,
             "minLength": 0
           },
-          "gender": {
+          "genderCode": {
             "type": "string",
             "description": "\n    The optional gender code for the contact.\n    This is a coded value (from the group code GENDER in reference data).\n    Known values are (M) Male, (F) Female, (NK) Not Known, (NS) Not Specified.\n    ",
             "example": "M"
+          },
+          "deceasedDate": {
+            "type": "string",
+            "description": "The date the contact deceased, if known",
+            "example": "1980-01-01"
           },
           "updatedBy": {
             "type": "string",
@@ -11180,7 +12410,7 @@
             "description": "The id of the contact",
             "example": 123456
           },
-          "title": {
+          "titleCode": {
             "type": "string",
             "description": "\n    The title code for the contact.\n    This is a coded value (from the group code TITLE in reference data).\n    Known values are MR, MRS, MISS, DR, MS, REV, SIR, BR, SR.\n    ",
             "example": "MR"
@@ -11211,23 +12441,18 @@
             "description": "Whether the contact is a staff member",
             "example": false
           },
-          "deceasedFlag": {
-            "type": "boolean",
-            "description": "Whether the contact is deceased",
-            "example": false
-          },
           "deceasedDate": {
             "type": "string",
             "format": "date",
             "description": "The date the contact was deceased, if applicable",
             "example": "2023-05-01"
           },
-          "gender": {
+          "genderCode": {
             "type": "string",
             "description": "\n    The gender code for the contact.\n    This is a coded value (from the group code GENDER in reference data).\n    Known values are (M) Male, (F) Female, (NK) Not Known, (NS) Not Specified.\n    ",
             "example": "M"
           },
-          "domesticStatus": {
+          "domesticStatusCode": {
             "type": "string",
             "description": "The domestic status code of the contact",
             "example": "S"
@@ -11372,22 +12597,30 @@
           "flat": {
             "type": "string",
             "description": "Flat number or name",
-            "example": "Flat 2B"
+            "example": "Flat 2B",
+            "maxLength": 30,
+            "minLength": 0
           },
           "property": {
             "type": "string",
             "description": "Building or house number or name",
-            "example": "Mansion House"
+            "example": "Mansion House",
+            "maxLength": 50,
+            "minLength": 0
           },
           "street": {
             "type": "string",
             "description": "Street or road name",
-            "example": "Acacia Avenue"
+            "example": "Acacia Avenue",
+            "maxLength": 160,
+            "minLength": 0
           },
           "area": {
             "type": "string",
             "description": "Area",
-            "example": "Morton Heights"
+            "example": "Morton Heights",
+            "maxLength": 70,
+            "minLength": 0
           },
           "cityCode": {
             "type": "string",
@@ -11406,7 +12639,9 @@
           "postcode": {
             "type": "string",
             "description": "Postcode",
-            "example": "S13 4FH"
+            "example": "S13 4FH",
+            "maxLength": 12,
+            "minLength": 0
           },
           "countryCode": {
             "type": "string",
@@ -11443,7 +12678,9 @@
           "comments": {
             "type": "string",
             "description": "Any additional information or comments about the address",
-            "example": "Some additional information"
+            "example": "Some additional information",
+            "maxLength": 240,
+            "minLength": 0
           },
           "updatedBy": {
             "type": "string",
@@ -11595,15 +12832,15 @@
             "type": "integer",
             "format": "int32"
           },
+          "unpaged": {
+            "type": "boolean"
+          },
           "paged": {
             "type": "boolean"
           },
           "pageNumber": {
             "type": "integer",
             "format": "int32"
-          },
-          "unpaged": {
-            "type": "boolean"
           }
         }
       },
@@ -11649,7 +12886,7 @@
             "description": "The date of birth of the contact",
             "example": "1980-01-01"
           },
-          "relationshipType": {
+          "relationshipTypeCode": {
             "type": "string",
             "description": "\n      Coded value indicating either a social or official contact (mandatory).\n      This is a coded value from the group code CONTACT_TYPE in reference data.\n      Known values are (S) Social or (O) official.\n      ",
             "example": "S"
@@ -11659,7 +12896,7 @@
             "description": "The description of the relationship type",
             "example": "Friend"
           },
-          "relationshipToPrisoner": {
+          "relationshipToPrisonerCode": {
             "type": "string",
             "description": "The relationship to the prisoner. A code from SOCIAL_RELATIONSHIP or OFFICIAL_RELATIONSHIP reference data groups depending on the relationship type.",
             "example": "FRI"
@@ -11754,17 +12991,17 @@
             "description": "The extension number of the latest phone number",
             "example": 123
           },
-          "approvedVisitor": {
+          "isApprovedVisitor": {
             "type": "boolean",
             "description": "Indicates whether the contact is an approved visitor",
             "example": true
           },
-          "nextOfKin": {
+          "isNextOfKin": {
             "type": "boolean",
             "description": "Is this contact the prisoner's next of kin?",
             "example": false
           },
-          "emergencyContact": {
+          "isEmergencyContact": {
             "type": "boolean",
             "description": "Is this contact the prisoner's emergency contact?",
             "example": true
@@ -11786,19 +13023,19 @@
           }
         },
         "required": [
-          "approvedVisitor",
           "contactId",
           "currentTerm",
-          "emergencyContact",
           "firstName",
+          "isApprovedVisitor",
+          "isEmergencyContact",
+          "isNextOfKin",
           "isRelationshipActive",
           "lastName",
-          "nextOfKin",
           "prisonerContactId",
           "prisonerNumber",
-          "relationshipToPrisoner",
+          "relationshipToPrisonerCode",
           "relationshipToPrisonerDescription",
-          "relationshipType",
+          "relationshipTypeCode",
           "relationshipTypeDescription"
         ]
       },
@@ -12011,6 +13248,37 @@
         },
         "required": ["countryId", "displaySequence", "isoAlpha2", "isoAlpha3", "isoCountryDesc", "isoNumeric", "nomisCode", "nomisDescription"]
       },
+      "ContactNameDetails": {
+        "type": "object",
+        "properties": {
+          "titleCode": {
+            "type": "string",
+            "description": "\n      The title code for the contact.\n      This is a coded value (from the group code TITLE in reference data).\n      Known values are MR, MRS, MISS, DR, MS, REV, SIR, BR, SR.\n      ",
+            "example": "MR"
+          },
+          "titleDescription": {
+            "type": "string",
+            "description": "The description of the title code, if present",
+            "example": "Mr"
+          },
+          "lastName": {
+            "type": "string",
+            "description": "The last name of the contact",
+            "example": "Doe"
+          },
+          "firstName": {
+            "type": "string",
+            "description": "The first name of the contact",
+            "example": "John"
+          },
+          "middleNames": {
+            "type": "string",
+            "description": "The middle name of the contact, if any",
+            "example": "William"
+          }
+        },
+        "required": ["firstName", "lastName"]
+      },
       "LinkedPrisonerDetails": {
         "type": "object",
         "description": "The details of a prisoner linked to a contact including one or more relationships",
@@ -12055,7 +13323,7 @@
             "description": "The unique identifier for the prisoner contact relationship",
             "example": 123456
           },
-          "relationshipType": {
+          "relationshipTypeCode": {
             "type": "string",
             "description": "\n      Coded value indicating either a social or official contact (mandatory).\n      This is a coded value from the group code CONTACT_TYPE in reference data.\n      Known values are (S) Social or (O) official.\n      ",
             "example": "S"
@@ -12065,7 +13333,7 @@
             "description": "The description of the contact relationship type. Description from reference data Official or Social",
             "example": "Official"
           },
-          "relationshipToPrisoner": {
+          "relationshipToPrisonerCode": {
             "type": "string",
             "description": "The relationship to the prisoner. A code from SOCIAL_RELATIONSHIP or OFFICIAL_RELATIONSHIP reference data groups depending on the relationship type.",
             "example": "FRI"
@@ -12076,7 +13344,7 @@
             "example": "Friend"
           }
         },
-        "required": ["prisonerContactId", "relationshipToPrisoner", "relationshipType", "relationshipTypeDescription"]
+        "required": ["prisonerContactId", "relationshipToPrisonerCode", "relationshipTypeCode", "relationshipTypeDescription"]
       },
       "ContactSearchRequest": {
         "type": "object",

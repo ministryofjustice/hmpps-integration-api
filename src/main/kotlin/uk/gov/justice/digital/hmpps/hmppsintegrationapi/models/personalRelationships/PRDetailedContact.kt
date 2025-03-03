@@ -7,7 +7,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DetailedCon
 
 data class PRDetailedContact(
   val id: Long,
-  val title: String?,
+  val titleCode: String?,
   val titleDescription: String?,
   val lastName: String,
   val firstName: String,
@@ -21,13 +21,13 @@ data class PRDetailedContact(
   val addresses: List<Address>,
   val phoneNumbers: List<PhoneNumber>,
   val emailAddresses: List<EmailAddress>,
-  val gender: String,
+  val genderCode: String,
   val genderDescription: String,
 ) {
   fun toDetailedContact(): DetailedContact =
     DetailedContact(
       contactId = this.id,
-      title = this.title,
+      titleCode = this.titleCode,
       titleDescription = this.titleDescription,
       firstName = this.firstName,
       lastName = this.lastName,
@@ -41,7 +41,7 @@ data class PRDetailedContact(
       addresses = this.addresses.map { it.toContactAddress() },
       phoneNumbers = this.phoneNumbers.map { it.toContactPhoneNumber() },
       emailAddresses = this.emailAddresses.map { it.toContactEmailAddress() },
-      gender = this.gender,
+      genderCode = this.genderCode,
       genderDescription = this.genderDescription,
     )
 }

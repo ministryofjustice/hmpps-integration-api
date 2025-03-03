@@ -34,7 +34,7 @@ internal class ContactsControllerTest(
     val contactResponse =
       PRDetailedContact(
         id = 123456L,
-        title = "MR",
+        titleCode = "MR",
         titleDescription = "Mister",
         lastName = "Smith",
         firstName = "John",
@@ -154,7 +154,7 @@ internal class ContactsControllerTest(
               emailAddress = "john.smith.work@example.com",
             ),
           ),
-        gender = "M",
+        genderCode = "M",
         genderDescription = "Male",
       )
 
