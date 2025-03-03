@@ -4,12 +4,12 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.interfaces.IRelationship
 
 data class Relationship(
-  @JsonProperty("relationshipType")
-  override val relationshipType: String?,
+  @JsonProperty("relationshipTypeCode")
+  override val relationshipTypeCode: String?,
   @JsonProperty("relationshipTypeDescription")
   override val relationshipTypeDescription: String?,
-  @JsonProperty("relationshipToPrisoner")
-  override val relationshipToPrisoner: String?,
+  @JsonProperty("relationshipToPrisonerCode")
+  override val relationshipToPrisonerCode: String?,
   @JsonProperty("relationshipToPrisonerDescription")
   override val relationshipToPrisonerDescription: String?,
   @JsonProperty("approvedVisitor")

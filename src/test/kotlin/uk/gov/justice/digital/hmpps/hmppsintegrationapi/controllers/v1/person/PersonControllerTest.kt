@@ -580,9 +580,9 @@ internal class PersonControllerTest(
                           ),
                         relationship =
                           PrisonerContactRelationship(
-                            relationshipType = "FRIEND",
+                            relationshipTypeCode = "FRIEND",
                             relationshipTypeDescription = "Friend",
-                            relationshipToPrisoner = "FRI",
+                            relationshipToPrisonerCode = "FRI",
                             relationshipToPrisonerDescription = "Friend of",
                             approvedVisitor = true,
                             nextOfKin = false,
@@ -722,9 +722,9 @@ internal class PersonControllerTest(
                         ),
                       relationship =
                         PrisonerContactRelationship(
-                          relationshipType = "FRIEND",
+                          relationshipTypeCode = "FRIEND",
                           relationshipTypeDescription = "Friend",
-                          relationshipToPrisoner = "FRI",
+                          relationshipToPrisonerCode = "FRI",
                           relationshipToPrisonerDescription = "Friend of",
                           approvedVisitor = true,
                           nextOfKin = false,
@@ -762,9 +762,9 @@ internal class PersonControllerTest(
                         ),
                       relationship =
                         PrisonerContactRelationship(
-                          relationshipType = "ROOMMATE",
+                          relationshipTypeCode = "ROOMMATE",
                           relationshipTypeDescription = "Friend",
-                          relationshipToPrisoner = "FRI",
+                          relationshipToPrisonerCode = "FRI",
                           relationshipToPrisonerDescription = "Friend of",
                           approvedVisitor = true,
                           nextOfKin = false,
