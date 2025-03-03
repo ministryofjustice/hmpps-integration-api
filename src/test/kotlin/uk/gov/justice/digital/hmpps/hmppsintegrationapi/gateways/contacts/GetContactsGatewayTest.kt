@@ -128,7 +128,12 @@ class GetContactsGatewayTest(
 
         val response = personalRelationshipsGateway.getContacts(prisonerId, page, size)
         response.data.shouldNotBeNull()
-        response.data!!.size.shouldBe(1073741824)
+        response.data!!.contacts.shouldHaveSize(1)
+        response.data!!
+          .contacts
+          .first()
+          .firstName
+          .shouldBe("John")
       }
 
       it("returns a 404 when visit is not found") {

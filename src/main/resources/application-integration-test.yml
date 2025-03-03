@@ -106,6 +106,7 @@ authorisation:
         - "/v1/visit/[^/]*$"
         - "/v1/prison/.*/visit/search[^/]*$"
         - "/v1/contacts/[^/]*$"
+        - "/v1/persons/.*/contacts[^/]*$"
       filters:
     config-test:
       include:
