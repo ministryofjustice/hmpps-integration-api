@@ -29,10 +29,7 @@
   ],
   "security": [
     {
-      "bearer-jwt": [
-        "read",
-        "write"
-      ]
+      "bearer-jwt": ["read", "write"]
     }
   ],
   "tags": [
@@ -60,9 +57,7 @@
   "paths": {
     "/sync/{prisonerNumber}/number-of-children": {
       "get": {
-        "tags": [
-          "Sync & Migrate"
-        ],
+        "tags": ["Sync & Migrate"],
         "summary": "Returns the number of children for a prisoner by prisonerNumber",
         "description": "\n      Requires role: PERSONAL_RELATIONSHIPS_MIGRATION.\n      Used to get the number of children for one prisoner.\n      ",
         "operationId": "syncGetNumberOfChildrenByPrisonerNumber",
@@ -110,9 +105,7 @@
         }
       },
       "put": {
-        "tags": [
-          "Sync & Migrate"
-        ],
+        "tags": ["Sync & Migrate"],
         "summary": "Create or Updates the number of children for a prisoner",
         "description": "\n      Requires role: PERSONAL_RELATIONSHIPS_MIGRATION.\n      Used to update a prisoner's number of children.\n      ",
         "operationId": "syncUpdateNumberOfChildren",
@@ -192,9 +185,7 @@
     },
     "/sync/{prisonerNumber}/domestic-status": {
       "get": {
-        "tags": [
-          "Sync & Migrate"
-        ],
+        "tags": ["Sync & Migrate"],
         "summary": "Returns the domestic status for a prisoner by prisonerNumber",
         "description": "\n      Requires role: PERSONAL_RELATIONSHIPS_MIGRATION.\n      Used to get the domestic status for one prisoner.\n      ",
         "operationId": "syncGetDomesticStatusByPrisonerNumber",
@@ -232,9 +223,7 @@
         }
       },
       "put": {
-        "tags": [
-          "Sync & Migrate"
-        ],
+        "tags": ["Sync & Migrate"],
         "summary": "Create or Updates the domestic status for a prisoner",
         "description": "\n      Requires role: PERSONAL_RELATIONSHIPS_MIGRATION.\n      Used to update a prisoner's domestic status.\n      ",
         "operationId": "syncUpdateDomesticStatus",
@@ -314,9 +303,7 @@
     },
     "/sync/prisoner-contact/{prisonerContactId}": {
       "get": {
-        "tags": [
-          "Sync & Migrate"
-        ],
+        "tags": ["Sync & Migrate"],
         "summary": "Returns the data for a prisoner contact by prisonerContactId",
         "description": "\n      Requires role: PERSONAL_RELATIONSHIPS_MIGRATION.\n      Used to get the details for one prisoner contact.\n      ",
         "operationId": "syncGetPrisonerContactById",
@@ -376,9 +363,7 @@
         }
       },
       "put": {
-        "tags": [
-          "Sync & Migrate"
-        ],
+        "tags": ["Sync & Migrate"],
         "summary": "Updates a prisoner contact with new or extra detail",
         "description": "\n      Requires role: PERSONAL_RELATIONSHIPS_MIGRATION.\n      Used to update a prisoner contact.\n      ",
         "operationId": "syncUpdatePrisonerContact",
@@ -458,9 +443,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "Sync & Migrate"
-        ],
+        "tags": ["Sync & Migrate"],
         "summary": "Deletes one prisoner contact by internal ID",
         "description": "\n      Requires role: PERSONAL_RELATIONSHIPS_MIGRATION.\n      Used to delete a prisoner contact.\n      ",
         "operationId": "syncDeletePrisonerContactById",
@@ -522,9 +505,7 @@
     },
     "/sync/prisoner-contact-restriction/{prisonerContactRestrictionId}": {
       "get": {
-        "tags": [
-          "Sync & Migrate"
-        ],
+        "tags": ["Sync & Migrate"],
         "summary": "Returns the data for a prisoner contact restriction by id",
         "description": "\n      Requires role: PERSONAL_RELATIONSHIPS_MIGRATION.\n      Used to get the details for one prisoner contact restriction.\n      ",
         "operationId": "syncGetPrisonerContactRestrictionById",
@@ -584,9 +565,7 @@
         }
       },
       "put": {
-        "tags": [
-          "Sync & Migrate"
-        ],
+        "tags": ["Sync & Migrate"],
         "summary": "Updates a prisoner contact restriction with new or extra detail",
         "description": "\n      Requires role: PERSONAL_RELATIONSHIPS_MIGRATION.\n      Used to update a prisoner contact restriction.\n      ",
         "operationId": "syncUpdatePrisonerContactRestriction",
@@ -666,9 +645,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "Sync & Migrate"
-        ],
+        "tags": ["Sync & Migrate"],
         "summary": "Deletes one prisoner contact restriction by internal ID",
         "description": "\n      Requires role: PERSONAL_RELATIONSHIPS_MIGRATION.\n      Used to delete a prisoner contact restriction.\n      ",
         "operationId": "syncDeletePrisonerContactRestrictionById",
@@ -730,9 +707,7 @@
     },
     "/sync/employment/{employmentId}": {
       "get": {
-        "tags": [
-          "Sync & Migrate"
-        ],
+        "tags": ["Sync & Migrate"],
         "summary": "Returns the data for an employment record by employmentId",
         "description": "Requires role: PERSONAL_RELATIONSHIPS_MIGRATION. Used to get the details for one employment record.",
         "operationId": "syncGetEmploymentById",
@@ -791,9 +766,7 @@
         }
       },
       "put": {
-        "tags": [
-          "Sync & Migrate"
-        ],
+        "tags": ["Sync & Migrate"],
         "summary": "Updates an employment record",
         "description": "Requires role: PERSONAL_RELATIONSHIPS_MIGRATION. Used to update an employment record.",
         "operationId": "syncUpdateEmployment",
@@ -872,9 +845,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "Sync & Migrate"
-        ],
+        "tags": ["Sync & Migrate"],
         "summary": "Deletes an employment record by internal ID",
         "description": "Requires role: PERSONAL_RELATIONSHIPS_MIGRATION. Delete an employment record by internal ID.",
         "operationId": "syncDeleteEmploymentById",
@@ -921,9 +892,7 @@
     },
     "/sync/contact/{contactId}": {
       "get": {
-        "tags": [
-          "Sync & Migrate"
-        ],
+        "tags": ["Sync & Migrate"],
         "summary": "Returns the data for a contact by contactId",
         "description": "\n      Requires role: PERSONAL_RELATIONSHIPS_MIGRATION.\n      Used to get the details for one contact.\n      ",
         "operationId": "syncGetContactById",
@@ -983,9 +952,7 @@
         }
       },
       "put": {
-        "tags": [
-          "Sync & Migrate"
-        ],
+        "tags": ["Sync & Migrate"],
         "summary": "Updates a contact with new or extra detail",
         "description": "\n      Requires role: PERSONAL_RELATIONSHIPS_MIGRATION.\n      Used to update a contact.\n      ",
         "operationId": "syncUpdateContact",
@@ -1065,9 +1032,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "Sync & Migrate"
-        ],
+        "tags": ["Sync & Migrate"],
         "summary": "Deletes one contact by internal ID",
         "description": "\n      Requires role: PERSONAL_RELATIONSHIPS_MIGRATION.\n      Used to delete a contact.\n      ",
         "operationId": "syncDeleteContactById",
@@ -1115,9 +1080,7 @@
     },
     "/sync/contact-restriction/{contactRestrictionId}": {
       "get": {
-        "tags": [
-          "Sync & Migrate"
-        ],
+        "tags": ["Sync & Migrate"],
         "summary": "Returns the data for a contact restriction by contactRestrictionId",
         "description": "\n      Requires role: PERSONAL_RELATIONSHIPS_MIGRATION.\n      Used to get the details for one contact restriction.\n      ",
         "operationId": "syncGetContactRestrictionById",
@@ -1157,9 +1120,7 @@
         }
       },
       "put": {
-        "tags": [
-          "Sync & Migrate"
-        ],
+        "tags": ["Sync & Migrate"],
         "summary": "Updates a contact restriction with new or extra detail",
         "description": "\n      Requires role: PERSONAL_RELATIONSHIPS_MIGRATION.\n      Used to update a contact restriction.\n      ",
         "operationId": "syncUpdateContactRestriction",
@@ -1219,9 +1180,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "Sync & Migrate"
-        ],
+        "tags": ["Sync & Migrate"],
         "summary": "Deletes one contact restriction by internal ID",
         "description": "\n      Requires role: PERSONAL_RELATIONSHIPS_MIGRATION.\n      Used to delete a contact restriction.\n      ",
         "operationId": "syncDeleteContactRestrictionById",
@@ -1263,9 +1222,7 @@
     },
     "/sync/contact-phone/{contactPhoneId}": {
       "get": {
-        "tags": [
-          "Sync & Migrate"
-        ],
+        "tags": ["Sync & Migrate"],
         "summary": "Returns the data for a contact phone by contactPhoneId",
         "description": "\n      Requires role: PERSONAL_RELATIONSHIPS_MIGRATION.\n      Used to get the details for one contact phone.\n      ",
         "operationId": "syncGetContactPhoneById",
@@ -1305,9 +1262,7 @@
         }
       },
       "put": {
-        "tags": [
-          "Sync & Migrate"
-        ],
+        "tags": ["Sync & Migrate"],
         "summary": "Updates a phone number for a contact",
         "description": "\n      Requires role: PERSONAL_RELATIONSHIPS_MIGRATION.\n      Used to update a contact's phone number.\n      ",
         "operationId": "syncUpdateContactPhone",
@@ -1367,9 +1322,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "Sync & Migrate"
-        ],
+        "tags": ["Sync & Migrate"],
         "summary": "Deletes one contact phone by internal ID",
         "description": "\n      Requires role: PERSONAL_RELATIONSHIPS_MIGRATION.\n      Used to delete a contact phone.\n      ",
         "operationId": "syncDeleteContactPhoneById",
@@ -1411,9 +1364,7 @@
     },
     "/sync/contact-identity/{contactIdentityId}": {
       "get": {
-        "tags": [
-          "Sync & Migrate"
-        ],
+        "tags": ["Sync & Migrate"],
         "summary": "Returns the data for a contact identity by contactIdentityId",
         "description": "\n      Requires role: PERSONAL_RELATIONSHIPS_MIGRATION.\n      Used to get the details for one contact identity.\n      ",
         "operationId": "syncGetContactIdentityById",
@@ -1453,9 +1404,7 @@
         }
       },
       "put": {
-        "tags": [
-          "Sync & Migrate"
-        ],
+        "tags": ["Sync & Migrate"],
         "summary": "Updates a contact identity with new or extra detail",
         "description": "\n      Requires role: PERSONAL_RELATIONSHIPS_MIGRATION.\n      Used to update a contact identity.\n      ",
         "operationId": "syncUpdateContactIdentity",
@@ -1515,9 +1464,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "Sync & Migrate"
-        ],
+        "tags": ["Sync & Migrate"],
         "summary": "Deletes one contact identity by internal ID",
         "description": "\n      Requires role: PERSONAL_RELATIONSHIPS_MIGRATION.\n      Used to delete a contact identity.\n      ",
         "operationId": "syncDeleteContactIdentityById",
@@ -1559,9 +1506,7 @@
     },
     "/sync/contact-email/{contactEmailId}": {
       "get": {
-        "tags": [
-          "Sync & Migrate"
-        ],
+        "tags": ["Sync & Migrate"],
         "summary": "Returns the data for a contact email by contactEmailId",
         "description": "\n      Requires role: PERSONAL_RELATIONSHIPS_MIGRATION.\n      Used to get the details for one contact email.\n      ",
         "operationId": "syncGetContactEmailById",
@@ -1601,9 +1546,7 @@
         }
       },
       "put": {
-        "tags": [
-          "Sync & Migrate"
-        ],
+        "tags": ["Sync & Migrate"],
         "summary": "Updates a contact email with new or extra detail",
         "description": "\n      Requires role: PERSONAL_RELATIONSHIPS_MIGRATION.\n      Used to update a contact email.\n      ",
         "operationId": "syncUpdateContactEmail",
@@ -1663,9 +1606,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "Sync & Migrate"
-        ],
+        "tags": ["Sync & Migrate"],
         "summary": "Deletes one contact email by internal ID",
         "description": "\n      Requires role: PERSONAL_RELATIONSHIPS_MIGRATION.\n      Used to delete a contact email.\n      ",
         "operationId": "syncDeleteContactEmailById",
@@ -1707,9 +1648,7 @@
     },
     "/sync/contact-address/{contactAddressId}": {
       "get": {
-        "tags": [
-          "Sync & Migrate"
-        ],
+        "tags": ["Sync & Migrate"],
         "summary": "Returns the data for a contact address by contactAddressId",
         "description": "\n      Requires role: PERSONAL_RELATIONSHIPS_MIGRATION.\n      Used to get the details for one contact address.\n      ",
         "operationId": "syncGetContactAddressById",
@@ -1749,9 +1688,7 @@
         }
       },
       "put": {
-        "tags": [
-          "Sync & Migrate"
-        ],
+        "tags": ["Sync & Migrate"],
         "summary": "Updates a contact address with new or extra detail",
         "description": "\n      Requires role: PERSONAL_RELATIONSHIPS_MIGRATION.\n      Used to update a contact address.\n      ",
         "operationId": "syncUpdateContactAddress",
@@ -1811,9 +1748,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "Sync & Migrate"
-        ],
+        "tags": ["Sync & Migrate"],
         "summary": "Deletes a contact address by internal ID",
         "description": "\n      Requires role: PERSONAL_RELATIONSHIPS_MIGRATION.\n      Used to delete a contact address.\n      ",
         "operationId": "syncDeleteContactAddressById",
@@ -1855,9 +1790,7 @@
     },
     "/sync/contact-address-phone/{contactAddressPhoneId}": {
       "get": {
-        "tags": [
-          "Sync & Migrate"
-        ],
+        "tags": ["Sync & Migrate"],
         "summary": "Returns the data for an address-soecific phone number by contactAddressPhoneId",
         "description": "\n      Requires role: PERSONAL_RELATIONSHIPS_MIGRATION.\n      Used to get the details for one address-specific phone number.\n      ",
         "operationId": "syncGetContactPhoneById_1",
@@ -1897,9 +1830,7 @@
         }
       },
       "put": {
-        "tags": [
-          "Sync & Migrate"
-        ],
+        "tags": ["Sync & Migrate"],
         "summary": "Updates an address-specific phone number",
         "description": "\n      Requires role: PERSONAL_RELATIONSHIPS_MIGRATION.\n      Used to update an address-specific phone number for a contact.\n      ",
         "operationId": "syncUpdateContactAddressPhone",
@@ -1959,9 +1890,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "Sync & Migrate"
-        ],
+        "tags": ["Sync & Migrate"],
         "summary": "Deletes an addres-specific phone number by internal ID",
         "description": "\n      Requires role: PERSONAL_RELATIONSHIPS_MIGRATION.\n      Delete an address-specific phone number by internal ID.\n      ",
         "operationId": "syncDeleteContactAddressPhoneById",
@@ -2003,9 +1932,7 @@
     },
     "/prisoner-contact/{prisonerContactId}/restriction/{prisonerContactRestrictionId}": {
       "put": {
-        "tags": [
-          "Restrictions"
-        ],
+        "tags": ["Restrictions"],
         "summary": "Update prisoner contact restriction",
         "description": "Updates a prisoner contact restriction for the specified prisoner contact relationship and restriction ids",
         "operationId": "updatePrisonerContactRestriction",
@@ -2099,9 +2026,7 @@
     },
     "/contact/{contactId}/restriction/{contactRestrictionId}": {
       "put": {
-        "tags": [
-          "Restrictions"
-        ],
+        "tags": ["Restrictions"],
         "summary": "Update global restriction for a contact",
         "description": "Updates a global (estate-wide) restriction for the specified contact and restriction id",
         "operationId": "updateContactGlobalRestriction",
@@ -2195,9 +2120,7 @@
     },
     "/contact/{contactId}/phone/{contactPhoneId}": {
       "get": {
-        "tags": [
-          "Contacts"
-        ],
+        "tags": ["Contacts"],
         "summary": "Get a phone number",
         "description": "Gets a contacts phone number by id",
         "operationId": "getPhone",
@@ -2269,9 +2192,7 @@
         }
       },
       "put": {
-        "tags": [
-          "Contacts"
-        ],
+        "tags": ["Contacts"],
         "summary": "Update contact phone number",
         "description": "Updates an existing contact phone by id",
         "operationId": "updatePhone",
@@ -2363,9 +2284,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "Contacts"
-        ],
+        "tags": ["Contacts"],
         "summary": "Delete contact phone number",
         "description": "Deletes an existing contact phone by id",
         "operationId": "deletePhone",
@@ -2439,9 +2358,7 @@
     },
     "/contact/{contactId}/identity/{contactIdentityId}": {
       "get": {
-        "tags": [
-          "Contacts"
-        ],
+        "tags": ["Contacts"],
         "summary": "Get an identity",
         "description": "Gets a contacts identity by id",
         "operationId": "getIdentityNumber",
@@ -2513,9 +2430,7 @@
         }
       },
       "put": {
-        "tags": [
-          "Contacts"
-        ],
+        "tags": ["Contacts"],
         "summary": "Update contact identity",
         "description": "Updates an existing contact identity by id",
         "operationId": "updateIdentityNumber",
@@ -2607,9 +2522,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "Contacts"
-        ],
+        "tags": ["Contacts"],
         "summary": "Delete contact identity",
         "description": "Deletes an existing contact identity by id",
         "operationId": "deleteIdentityNumber",
@@ -2683,9 +2596,7 @@
     },
     "/contact/{contactId}/employment/{employmentId}": {
       "get": {
-        "tags": [
-          "Contacts"
-        ],
+        "tags": ["Contacts"],
         "summary": "Get an employment",
         "description": "Get a single employment by id",
         "operationId": "getEmployment",
@@ -2757,9 +2668,7 @@
         }
       },
       "put": {
-        "tags": [
-          "Contacts"
-        ],
+        "tags": ["Contacts"],
         "summary": "Update employment",
         "description": "Update a single employment for a contact",
         "operationId": "updateEmployment",
@@ -2851,9 +2760,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "Contacts"
-        ],
+        "tags": ["Contacts"],
         "summary": "Delete employment",
         "description": "Delete a single employment for a contact",
         "operationId": "deleteEmployment",
@@ -2920,9 +2827,7 @@
     },
     "/contact/{contactId}/email/{contactEmailId}": {
       "get": {
-        "tags": [
-          "Contacts"
-        ],
+        "tags": ["Contacts"],
         "summary": "Get an email",
         "description": "Gets a contacts email by id",
         "operationId": "getEmailAddress",
@@ -2994,9 +2899,7 @@
         }
       },
       "put": {
-        "tags": [
-          "Contacts"
-        ],
+        "tags": ["Contacts"],
         "summary": "Update contact email",
         "description": "Updates an existing contact email by id",
         "operationId": "updateEmailAddress",
@@ -3088,9 +2991,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "Contacts"
-        ],
+        "tags": ["Contacts"],
         "summary": "Delete contact email",
         "description": "Deletes an existing contact email by id",
         "operationId": "deleteEmailAddress",
@@ -3164,9 +3065,7 @@
     },
     "/contact/{contactId}/address/{contactAddressId}": {
       "get": {
-        "tags": [
-          "Contacts"
-        ],
+        "tags": ["Contacts"],
         "summary": "Get a contact address",
         "description": "Get a contact address by its ID",
         "operationId": "getContactAddress",
@@ -3238,9 +3137,7 @@
         }
       },
       "put": {
-        "tags": [
-          "Contacts"
-        ],
+        "tags": ["Contacts"],
         "summary": "Update a contact address",
         "description": "Updates an existing contact address by its ID",
         "operationId": "updateContactAddress",
@@ -3332,9 +3229,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "Contacts"
-        ],
+        "tags": ["Contacts"],
         "summary": "Delete contact address",
         "description": "Deletes a contact address by its ID",
         "operationId": "deleteContactAddress",
@@ -3406,9 +3301,7 @@
         }
       },
       "patch": {
-        "tags": [
-          "Contacts"
-        ],
+        "tags": ["Contacts"],
         "summary": "Patch a contact address individual fields as a patch",
         "description": "Patches an existing contact address by its ID",
         "operationId": "patchContactAddress",
@@ -3502,9 +3395,7 @@
     },
     "/contact/{contactId}/address/{contactAddressId}/phone/{contactAddressPhoneId}": {
       "get": {
-        "tags": [
-          "Contacts"
-        ],
+        "tags": ["Contacts"],
         "summary": "Get an address-specific phone number",
         "description": "Get an address-specific phone number by its ID",
         "operationId": "getContactAddressPhone",
@@ -3587,9 +3478,7 @@
         }
       },
       "put": {
-        "tags": [
-          "Contacts"
-        ],
+        "tags": ["Contacts"],
         "summary": "Update an address-specific phone number",
         "description": "Updates an address-specific phone number by its ID",
         "operationId": "updateContactAddressPhone",
@@ -3692,9 +3581,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "Contacts"
-        ],
+        "tags": ["Contacts"],
         "summary": "Delete an address-specific phone number",
         "description": "Deletes an address-specific phone number by its ID",
         "operationId": "deleteContactAddress_1",
@@ -3779,9 +3666,7 @@
     },
     "/sync/prisoner-contact": {
       "post": {
-        "tags": [
-          "Sync & Migrate"
-        ],
+        "tags": ["Sync & Migrate"],
         "summary": "Creates a new prisoner contact",
         "description": "\n      Requires role: PERSONAL_RELATIONSHIPS_MIGRATION.\n      Used to create a prisoner contact.\n      ",
         "operationId": "syncCreatePrisonerContact",
@@ -3841,9 +3726,7 @@
     },
     "/sync/prisoner-contact-restriction": {
       "post": {
-        "tags": [
-          "Sync & Migrate"
-        ],
+        "tags": ["Sync & Migrate"],
         "summary": "Creates a new prisoner contact restriction",
         "description": "\n      Requires role: PERSONAL_RELATIONSHIPS_MIGRATION.\n      Used to create a prisoner contact restriction.\n      ",
         "operationId": "syncCreatePrisonerContactRestriction",
@@ -3903,9 +3786,7 @@
     },
     "/sync/employment": {
       "post": {
-        "tags": [
-          "Sync & Migrate"
-        ],
+        "tags": ["Sync & Migrate"],
         "summary": "Creates a new employment record",
         "description": "Requires role: PERSONAL_RELATIONSHIPS_MIGRATION. Used to create a new employment record.",
         "operationId": "syncCreateEmployment",
@@ -3965,9 +3846,7 @@
     },
     "/sync/contact": {
       "post": {
-        "tags": [
-          "Sync & Migrate"
-        ],
+        "tags": ["Sync & Migrate"],
         "summary": "Creates a new contact",
         "description": "\n      Requires role: PERSONAL_RELATIONSHIPS_MIGRATION.\n      Used to create a contact and associate it with a contact.\n      ",
         "operationId": "syncCreateContact",
@@ -4037,9 +3916,7 @@
     },
     "/sync/contact-restriction": {
       "post": {
-        "tags": [
-          "Sync & Migrate"
-        ],
+        "tags": ["Sync & Migrate"],
         "summary": "Creates a new contact restriction",
         "description": "\n      Requires role: PERSONAL_RELATIONSHIPS_MIGRATION.\n      Used to create a contact restriction and associate it with a contact.\n      ",
         "operationId": "syncCreateContactRestriction",
@@ -4079,9 +3956,7 @@
     },
     "/sync/contact-phone": {
       "post": {
-        "tags": [
-          "Sync & Migrate"
-        ],
+        "tags": ["Sync & Migrate"],
         "summary": "Creates a new contact phone",
         "description": "\n      Requires role: PERSONAL_RELATIONSHIPS_MIGRATION.\n      Used to create a contact phone and associate it with a contact.\n      ",
         "operationId": "syncCreateContactPhone",
@@ -4121,9 +3996,7 @@
     },
     "/sync/contact-identity": {
       "post": {
-        "tags": [
-          "Sync & Migrate"
-        ],
+        "tags": ["Sync & Migrate"],
         "summary": "Creates a new contact identity",
         "description": "\n      Requires role: PERSONAL_RELATIONSHIPS_MIGRATION.\n      Used to create a contact identity and associate it with a contact.\n      ",
         "operationId": "syncCreateContactIdentity",
@@ -4163,9 +4036,7 @@
     },
     "/sync/contact-email": {
       "post": {
-        "tags": [
-          "Sync & Migrate"
-        ],
+        "tags": ["Sync & Migrate"],
         "summary": "Creates a new contact email",
         "description": "\n      Requires role: PERSONAL_RELATIONSHIPS_MIGRATION.\n      Used to create a contact email and associate it with a contact.\n      ",
         "operationId": "syncCreateContactEmail",
@@ -4205,9 +4076,7 @@
     },
     "/sync/contact-address": {
       "post": {
-        "tags": [
-          "Sync & Migrate"
-        ],
+        "tags": ["Sync & Migrate"],
         "summary": "Creates a new contact address",
         "description": "\n      Requires role: PERSONAL_RELATIONSHIPS_MIGRATION.\n      Used to create a contact address and associate it with a contact.\n      ",
         "operationId": "syncCreateContactAddress",
@@ -4247,9 +4116,7 @@
     },
     "/sync/contact-address-phone": {
       "post": {
-        "tags": [
-          "Sync & Migrate"
-        ],
+        "tags": ["Sync & Migrate"],
         "summary": "Creates a new address-specific phone number",
         "description": "\n      Requires role: PERSONAL_RELATIONSHIPS_MIGRATION.\n      Used to create an address-specific phone number.\n      ",
         "operationId": "syncCreateContactAddressPhone",
@@ -4299,9 +4166,7 @@
     },
     "/prisoner-contact": {
       "post": {
-        "tags": [
-          "Prisoner Contact Relationship"
-        ],
+        "tags": ["Prisoner Contact Relationship"],
         "summary": "Add a new prisoner contact relationship",
         "description": "Creates a new relationship between the contact and a prisoner.",
         "operationId": "addContactRelationship",
@@ -4371,9 +4236,7 @@
     },
     "/prisoner-contact/{prisonerContactId}/restriction": {
       "get": {
-        "tags": [
-          "Restrictions"
-        ],
+        "tags": ["Restrictions"],
         "summary": "Get the prisoner contact restrictions",
         "description": "\n      Get the restrictions that apply for this relationship.\n      \n      This includes prisoner-contact restrictions for this specific relationship only and any global (estate-wide) restrictions for the contact.\n      \n      If the prisoner and contact have multiple relationships, the prisoner-contact restrictions for the other relationships will not be returned. \n    ",
         "operationId": "getPrisonerContactRestrictionsByPrisonerContactId",
@@ -4434,9 +4297,7 @@
         }
       },
       "post": {
-        "tags": [
-          "Restrictions"
-        ],
+        "tags": ["Restrictions"],
         "summary": "Create new prisoner contact restriction",
         "description": "Creates a new prisoner contact restriction for the specified prisoner contact relationship",
         "operationId": "createPrisonerContactRestriction",
@@ -4519,9 +4380,7 @@
     },
     "/migrate/number-of-children": {
       "post": {
-        "tags": [
-          "Sync & Migrate"
-        ],
+        "tags": ["Sync & Migrate"],
         "summary": "Migrate number of children for prisoner",
         "description": "Migrate a prisoner's number of children from NOMIS.",
         "operationId": "migrateNumberOfChildren",
@@ -4571,9 +4430,7 @@
     },
     "/migrate/domestic-status": {
       "post": {
-        "tags": [
-          "Sync & Migrate"
-        ],
+        "tags": ["Sync & Migrate"],
         "summary": "Migrate domestic status for prisoner",
         "description": "Migrate a prisoner's domestic status from NOMIS.",
         "operationId": "migrateDomesticStatus",
@@ -4633,9 +4490,7 @@
     },
     "/migrate/contact": {
       "post": {
-        "tags": [
-          "Sync & Migrate"
-        ],
+        "tags": ["Sync & Migrate"],
         "summary": "Migrate a contact",
         "description": "Migrate a contact from NOMIS with all of its associated data.",
         "operationId": "migrateContact",
@@ -4705,9 +4560,7 @@
     },
     "/contact": {
       "post": {
-        "tags": [
-          "Contacts"
-        ],
+        "tags": ["Contacts"],
         "summary": "Create a new contact",
         "description": "Creates a new contact that is not yet associated with any prisoner.",
         "operationId": "createContact",
@@ -4784,9 +4637,7 @@
     },
     "/contact/{contactId}/restriction": {
       "get": {
-        "tags": [
-          "Restrictions"
-        ],
+        "tags": ["Restrictions"],
         "summary": "Get a contacts global restrictions",
         "description": "\n      Get a contacts global restrictions only. Global restrictions apply to all of a contacts relationships and are known as estate-wide restrictions in NOMIS.\n\n      Additional restrictions between the contact and specific prisoners may also apply.\n      ",
         "operationId": "getContactGlobalRestrictions",
@@ -4850,9 +4701,7 @@
         }
       },
       "post": {
-        "tags": [
-          "Restrictions"
-        ],
+        "tags": ["Restrictions"],
         "summary": "Create new global restriction",
         "description": "Creates a new global (estate-wide) restriction for the specified contact",
         "operationId": "createContactGlobalRestriction",
@@ -4935,9 +4784,7 @@
     },
     "/contact/{contactId}/phones": {
       "post": {
-        "tags": [
-          "Contacts"
-        ],
+        "tags": ["Contacts"],
         "summary": "Create multiple new contact phone numbers",
         "description": "Creates one or more phone numbers for the specified contact",
         "operationId": "createMultipleContactPhoneNumber",
@@ -5023,9 +4870,7 @@
     },
     "/contact/{contactId}/phone": {
       "post": {
-        "tags": [
-          "Contacts"
-        ],
+        "tags": ["Contacts"],
         "summary": "Create new contact phone number",
         "description": "Creates a new phone number for the specified contact",
         "operationId": "createPhone",
@@ -5108,9 +4953,7 @@
     },
     "/contact/{contactId}/identity": {
       "post": {
-        "tags": [
-          "Contacts"
-        ],
+        "tags": ["Contacts"],
         "summary": "Create new contact identity",
         "description": "Creates a new identity for the specified contact",
         "operationId": "createIdentityNumber",
@@ -5193,9 +5036,7 @@
     },
     "/contact/{contactId}/identities": {
       "post": {
-        "tags": [
-          "Contacts"
-        ],
+        "tags": ["Contacts"],
         "summary": "Create multiple contact identities",
         "description": "Creates one or more new identities for the specified contact",
         "operationId": "createMultipleIdentities",
@@ -5281,9 +5122,7 @@
     },
     "/contact/{contactId}/employment": {
       "post": {
-        "tags": [
-          "Contacts"
-        ],
+        "tags": ["Contacts"],
         "summary": "Create employment",
         "description": "Create a single employment for a contact",
         "operationId": "createEmployment",
@@ -5364,9 +5203,7 @@
         }
       },
       "patch": {
-        "tags": [
-          "Contacts"
-        ],
+        "tags": ["Contacts"],
         "summary": "Patch employments",
         "description": "Allows several updates to employments in one go. Includes creating new employments, updating existing employments and removing existing employments.",
         "operationId": "patchEmployment",
@@ -5452,9 +5289,7 @@
     },
     "/contact/{contactId}/emails": {
       "post": {
-        "tags": [
-          "Contacts"
-        ],
+        "tags": ["Contacts"],
         "summary": "Create multiple contact email addresses",
         "description": "Creates one or more new email addresses for the specified contact",
         "operationId": "createMultipleEmailAddresses",
@@ -5540,9 +5375,7 @@
     },
     "/contact/{contactId}/email": {
       "post": {
-        "tags": [
-          "Contacts"
-        ],
+        "tags": ["Contacts"],
         "summary": "Create new contact email",
         "description": "Creates a new email for the specified contact",
         "operationId": "createEmailAddress",
@@ -5625,9 +5458,7 @@
     },
     "/contact/{contactId}/address": {
       "post": {
-        "tags": [
-          "Contacts"
-        ],
+        "tags": ["Contacts"],
         "summary": "Create new contact address",
         "description": "Creates a new address for the specified contact",
         "operationId": "createContactAddress",
@@ -5710,9 +5541,7 @@
     },
     "/contact/{contactId}/address/{contactAddressId}/phones": {
       "post": {
-        "tags": [
-          "Contacts"
-        ],
+        "tags": ["Contacts"],
         "summary": "Create multiple address-specific phone numbers",
         "description": "Creates one or more address-specific phone numbers",
         "operationId": "createMultipleContactAddressPhones",
@@ -5809,9 +5638,7 @@
     },
     "/contact/{contactId}/address/{contactAddressId}/phone": {
       "post": {
-        "tags": [
-          "Contacts"
-        ],
+        "tags": ["Contacts"],
         "summary": "Create new address-specific phone number",
         "description": "Creates a new address-specific phone number",
         "operationId": "createContactAddressPhone",
@@ -5905,9 +5732,7 @@
     },
     "/prisoner-contact/{prisonerContactId}": {
       "get": {
-        "tags": [
-          "Prisoner Contact Relationship"
-        ],
+        "tags": ["Prisoner Contact Relationship"],
         "summary": "Endpoint to get a prisoner contact relationship by relationship id",
         "operationId": "getPrisonerContactById",
         "parameters": [
@@ -5967,9 +5792,7 @@
         }
       },
       "patch": {
-        "tags": [
-          "Prisoner Contact Relationship"
-        ],
+        "tags": ["Prisoner Contact Relationship"],
         "summary": "Update prisoner contact relationship",
         "description": "Update the relationship between the contact and a prisoner.",
         "operationId": "patchContactRelationship",
@@ -6062,9 +5885,7 @@
     },
     "/contact/{contactId}": {
       "get": {
-        "tags": [
-          "Contacts"
-        ],
+        "tags": ["Contacts"],
         "summary": "Get contact",
         "description": "Gets a contact by their id",
         "operationId": "getContact",
@@ -6125,9 +5946,7 @@
         }
       },
       "patch": {
-        "tags": [
-          "Contacts"
-        ],
+        "tags": ["Contacts"],
         "summary": "Update a contact",
         "description": "Update a contact",
         "operationId": "patchContact",
@@ -6210,9 +6029,7 @@
     },
     "/reference-codes/group/{groupCode}": {
       "get": {
-        "tags": [
-          "Reference Data"
-        ],
+        "tags": ["Reference Data"],
         "summary": "Endpoint to return reference data for a provided group key. Sorted by display order then description by default.",
         "operationId": "getReferenceDataByGroup",
         "parameters": [
@@ -6285,9 +6102,7 @@
     },
     "/prisoner/{prisonNumber}/contact": {
       "get": {
-        "tags": [
-          "Prisoner Contact Relationship"
-        ],
+        "tags": ["Prisoner Contact Relationship"],
         "summary": "Endpoint to fetch all contacts for a specific prisoner by prisoner number and active status",
         "operationId": "getAllContacts",
         "parameters": [
@@ -6367,9 +6182,7 @@
     },
     "/language-reference": {
       "get": {
-        "tags": [
-          "Reference Data"
-        ],
+        "tags": ["Reference Data"],
         "summary": "Get language reference",
         "description": "Gets all language references",
         "operationId": "getAllLanguages",
@@ -6410,9 +6223,7 @@
     },
     "/language-reference/{id}": {
       "get": {
-        "tags": [
-          "Reference Data"
-        ],
+        "tags": ["Reference Data"],
         "summary": "Get language reference",
         "description": "Gets a language reference by their id",
         "operationId": "getLanguageById",
@@ -6474,9 +6285,7 @@
     },
     "/language-reference/nomis-code/{code}": {
       "get": {
-        "tags": [
-          "Reference Data"
-        ],
+        "tags": ["Reference Data"],
         "summary": "Get language reference",
         "description": "Gets a language reference by their nomis code",
         "operationId": "getLanguageByNomisCode",
@@ -6537,9 +6346,7 @@
     },
     "/language-reference/iso-alpha3/{code}": {
       "get": {
-        "tags": [
-          "Reference Data"
-        ],
+        "tags": ["Reference Data"],
         "summary": "Get language reference",
         "description": "Gets a language reference by their by ISO Alpha 3 code",
         "operationId": "getLanguageByIsoAlpha3",
@@ -6600,9 +6407,7 @@
     },
     "/language-reference/iso-alpha2/{code}": {
       "get": {
-        "tags": [
-          "Reference Data"
-        ],
+        "tags": ["Reference Data"],
         "summary": "Get language reference",
         "description": "Gets a language reference by their ISO Alpha 2 code",
         "operationId": "getLanguageByIsoAlpha2",
@@ -6663,9 +6468,7 @@
     },
     "/county-reference": {
       "get": {
-        "tags": [
-          "Reference Data"
-        ],
+        "tags": ["Reference Data"],
         "summary": "Get county reference",
         "description": "Gets all county references",
         "operationId": "getAllCounties",
@@ -6706,9 +6509,7 @@
     },
     "/county-reference/{id}": {
       "get": {
-        "tags": [
-          "Reference Data"
-        ],
+        "tags": ["Reference Data"],
         "summary": "Get county reference",
         "description": "Gets a county reference by their id",
         "operationId": "getCountyById",
@@ -6770,9 +6571,7 @@
     },
     "/county-reference/nomis-code/{code}": {
       "get": {
-        "tags": [
-          "Reference Data"
-        ],
+        "tags": ["Reference Data"],
         "summary": "Get county reference",
         "description": "Gets a county reference by their nomis code",
         "operationId": "getCountyByNomisCode",
@@ -6833,9 +6632,7 @@
     },
     "/country-reference": {
       "get": {
-        "tags": [
-          "Reference Data"
-        ],
+        "tags": ["Reference Data"],
         "summary": "Get country reference",
         "description": "Gets all country references",
         "operationId": "getAllCountries",
@@ -6876,9 +6673,7 @@
     },
     "/country-reference/{id}": {
       "get": {
-        "tags": [
-          "Reference Data"
-        ],
+        "tags": ["Reference Data"],
         "summary": "Get country reference",
         "description": "Gets a country reference by their id",
         "operationId": "getCountryById",
@@ -6940,9 +6735,7 @@
     },
     "/country-reference/nomis-code/{code}": {
       "get": {
-        "tags": [
-          "Reference Data"
-        ],
+        "tags": ["Reference Data"],
         "summary": "Get country reference",
         "description": "Gets a country reference by their nomis code",
         "operationId": "getCountryByNomisCode",
@@ -7003,9 +6796,7 @@
     },
     "/country-reference/iso-alpha3/{code}": {
       "get": {
-        "tags": [
-          "Reference Data"
-        ],
+        "tags": ["Reference Data"],
         "summary": "Get country reference",
         "description": "Gets a country reference by their by ISO Alpha 3 code",
         "operationId": "getCountryByIsoAlpha3",
@@ -7066,9 +6857,7 @@
     },
     "/country-reference/iso-alpha2/{code}": {
       "get": {
-        "tags": [
-          "Reference Data"
-        ],
+        "tags": ["Reference Data"],
         "summary": "Get country reference",
         "description": "Gets a country reference by their ISO Alpha 2 code",
         "operationId": "getCountryByIsoAlpha2",
@@ -7129,9 +6918,7 @@
     },
     "/contact/{contactId}/name": {
       "get": {
-        "tags": [
-          "Contacts"
-        ],
+        "tags": ["Contacts"],
         "summary": "Get contact name",
         "description": "Gets a contacts name details by their id. Includes title code, description, first name, middle names and last name.",
         "operationId": "getContactName",
@@ -7194,9 +6981,7 @@
     },
     "/contact/{contactId}/linked-prisoners": {
       "get": {
-        "tags": [
-          "Contacts"
-        ],
+        "tags": ["Contacts"],
         "summary": "Get linked prisoners",
         "description": "Gets a list of prisoners that have an active relationship with the contact",
         "operationId": "getContactLinkedPrisoners",
@@ -7262,9 +7047,7 @@
     },
     "/contact/search": {
       "get": {
-        "tags": [
-          "Contacts"
-        ],
+        "tags": ["Contacts"],
         "summary": "Search contacts",
         "description": "Search all contacts by their last name or first name or middle name or date of birth",
         "operationId": "searchContacts",
@@ -7334,9 +7117,7 @@
     },
     "/city-reference": {
       "get": {
-        "tags": [
-          "Reference Data"
-        ],
+        "tags": ["Reference Data"],
         "summary": "Get city reference",
         "description": "Gets all city references",
         "operationId": "getAllCities",
@@ -7377,9 +7158,7 @@
     },
     "/city-reference/{id}": {
       "get": {
-        "tags": [
-          "Reference Data"
-        ],
+        "tags": ["Reference Data"],
         "summary": "Get city reference",
         "description": "Gets a city reference by their id",
         "operationId": "getCityById",
@@ -7441,9 +7220,7 @@
     },
     "/city-reference/nomis-code/{code}": {
       "get": {
-        "tags": [
-          "Reference Data"
-        ],
+        "tags": ["Reference Data"],
         "summary": "Get city reference",
         "description": "Gets a city reference by their nomis code",
         "operationId": "getCityByNomisCode",
@@ -7527,10 +7304,7 @@
             "description": "Timestamp when the record was created"
           }
         },
-        "required": [
-          "createdBy",
-          "createdTime"
-        ]
+        "required": ["createdBy", "createdTime"]
       },
       "ErrorResponse": {
         "type": "object",
@@ -7552,9 +7326,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "status"
-        ]
+        "required": ["status"]
       },
       "SyncPrisonerNumberOfChildrenResponse": {
         "type": "object",
@@ -7583,10 +7355,7 @@
             "description": "Username of the creator"
           }
         },
-        "required": [
-          "active",
-          "id"
-        ]
+        "required": ["active", "id"]
       },
       "SyncUpdatePrisonerDomesticStatusRequest": {
         "type": "object",
@@ -7610,10 +7379,7 @@
             "description": "Timestamp when the record was created"
           }
         },
-        "required": [
-          "createdBy",
-          "createdTime"
-        ]
+        "required": ["createdBy", "createdTime"]
       },
       "SyncPrisonerDomesticStatusResponse": {
         "type": "object",
@@ -7642,10 +7408,7 @@
             "description": "Username of the creator"
           }
         },
-        "required": [
-          "active",
-          "id"
-        ]
+        "required": ["active", "id"]
       },
       "SyncUpdatePrisonerContactRequest": {
         "type": "object",
@@ -7886,9 +7649,7 @@
             "example": "2024-10-02T15:30:00Z"
           }
         },
-        "required": [
-          "restrictionType"
-        ]
+        "required": ["restrictionType"]
       },
       "SyncPrisonerContactRestriction": {
         "type": "object",
@@ -7962,12 +7723,7 @@
             "example": "2024-10-02T15:30:00Z"
           }
         },
-        "required": [
-          "contactId",
-          "prisonerContactId",
-          "prisonerContactRestrictionId",
-          "prisonerNumber"
-        ]
+        "required": ["contactId", "prisonerContactId", "prisonerContactRestrictionId", "prisonerNumber"]
       },
       "SyncUpdateEmploymentRequest": {
         "type": "object",
@@ -8002,13 +7758,7 @@
             "example": "2024-01-01T00:00:00Z"
           }
         },
-        "required": [
-          "active",
-          "contactId",
-          "organisationId",
-          "updatedBy",
-          "updatedTime"
-        ]
+        "required": ["active", "contactId", "organisationId", "updatedBy", "updatedTime"]
       },
       "SyncEmployment": {
         "type": "object",
@@ -8060,12 +7810,7 @@
             "example": "2024-10-02T15:30:00Z"
           }
         },
-        "required": [
-          "active",
-          "contactId",
-          "employmentId",
-          "organisationId"
-        ]
+        "required": ["active", "contactId", "employmentId", "organisationId"]
       },
       "SyncUpdateContactRequest": {
         "type": "object",
@@ -8154,14 +7899,7 @@
             "writeOnly": true
           }
         },
-        "required": [
-          "firstName",
-          "isStaff",
-          "lastName",
-          "remitter",
-          "updatedBy",
-          "updatedTime"
-        ]
+        "required": ["firstName", "isStaff", "lastName", "remitter", "updatedBy", "updatedTime"]
       },
       "SyncContact": {
         "type": "object",
@@ -8267,15 +8005,7 @@
             "writeOnly": true
           }
         },
-        "required": [
-          "createdBy",
-          "createdTime",
-          "firstName",
-          "id",
-          "isStaff",
-          "lastName",
-          "remitter"
-        ]
+        "required": ["createdBy", "createdTime", "firstName", "id", "isStaff", "lastName", "remitter"]
       },
       "SyncUpdateContactRestrictionRequest": {
         "type": "object",
@@ -8321,12 +8051,7 @@
             "example": "2024-01-01T00:00:00Z"
           }
         },
-        "required": [
-          "contactId",
-          "restrictionType",
-          "updatedBy",
-          "updatedTime"
-        ]
+        "required": ["contactId", "restrictionType", "updatedBy", "updatedTime"]
       },
       "SyncContactRestriction": {
         "type": "object",
@@ -8389,13 +8114,7 @@
             "example": "2023-09-24T12:00:00"
           }
         },
-        "required": [
-          "contactId",
-          "contactRestrictionId",
-          "createdBy",
-          "createdTime",
-          "restrictionType"
-        ]
+        "required": ["contactId", "contactRestrictionId", "createdBy", "createdTime", "restrictionType"]
       },
       "SyncUpdateContactPhoneRequest": {
         "type": "object",
@@ -8434,13 +8153,7 @@
             "example": "2024-01-01T00:00:00Z"
           }
         },
-        "required": [
-          "contactId",
-          "phoneNumber",
-          "phoneType",
-          "updatedBy",
-          "updatedTime"
-        ]
+        "required": ["contactId", "phoneNumber", "phoneType", "updatedBy", "updatedTime"]
       },
       "SyncContactPhone": {
         "type": "object",
@@ -8496,14 +8209,7 @@
             "example": "2023-09-24T12:00:00"
           }
         },
-        "required": [
-          "contactId",
-          "contactPhoneId",
-          "createdBy",
-          "createdTime",
-          "phoneNumber",
-          "phoneType"
-        ]
+        "required": ["contactId", "contactPhoneId", "createdBy", "createdTime", "phoneNumber", "phoneType"]
       },
       "SyncUpdateContactIdentityRequest": {
         "type": "object",
@@ -8543,13 +8249,7 @@
             "example": "2024-01-01T00:00:00Z"
           }
         },
-        "required": [
-          "contactId",
-          "identityType",
-          "identityValue",
-          "updatedBy",
-          "updatedTime"
-        ]
+        "required": ["contactId", "identityType", "identityValue", "updatedBy", "updatedTime"]
       },
       "SyncContactIdentity": {
         "type": "object",
@@ -8605,14 +8305,7 @@
             "example": "2023-09-24T12:00:00"
           }
         },
-        "required": [
-          "contactId",
-          "contactIdentityId",
-          "createdBy",
-          "createdTime",
-          "identityType",
-          "identityValue"
-        ]
+        "required": ["contactId", "contactIdentityId", "createdBy", "createdTime", "identityType", "identityValue"]
       },
       "SyncUpdateContactEmailRequest": {
         "type": "object",
@@ -8641,12 +8334,7 @@
             "example": "2024-01-01T00:00:00Z"
           }
         },
-        "required": [
-          "contactId",
-          "emailAddress",
-          "updatedBy",
-          "updatedTime"
-        ]
+        "required": ["contactId", "emailAddress", "updatedBy", "updatedTime"]
       },
       "SyncContactEmail": {
         "type": "object",
@@ -8692,13 +8380,7 @@
             "example": "2023-09-24T12:00:00"
           }
         },
-        "required": [
-          "contactEmailId",
-          "contactId",
-          "createdBy",
-          "createdTime",
-          "emailAddress"
-        ]
+        "required": ["contactEmailId", "contactId", "createdBy", "createdTime", "emailAddress"]
       },
       "SyncUpdateContactAddressRequest": {
         "type": "object",
@@ -8804,13 +8486,7 @@
             "example": "2024-01-01T00:00:00Z"
           }
         },
-        "required": [
-          "contactId",
-          "primaryAddress",
-          "updatedBy",
-          "updatedTime",
-          "verified"
-        ]
+        "required": ["contactId", "primaryAddress", "updatedBy", "updatedTime", "verified"]
       },
       "SyncContactAddress": {
         "type": "object",
@@ -8944,16 +8620,7 @@
             "example": "2024-01-01T00:00:00Z"
           }
         },
-        "required": [
-          "contactAddressId",
-          "contactId",
-          "createdBy",
-          "createdTime",
-          "mailFlag",
-          "noFixedAddress",
-          "primaryAddress",
-          "verified"
-        ]
+        "required": ["contactAddressId", "contactId", "createdBy", "createdTime", "mailFlag", "noFixedAddress", "primaryAddress", "verified"]
       },
       "SyncUpdateContactAddressPhoneRequest": {
         "type": "object",
@@ -8986,12 +8653,7 @@
             "example": "2024-01-01T00:00:00Z"
           }
         },
-        "required": [
-          "phoneNumber",
-          "phoneType",
-          "updatedBy",
-          "updatedTime"
-        ]
+        "required": ["phoneNumber", "phoneType", "updatedBy", "updatedTime"]
       },
       "SyncContactAddressPhone": {
         "type": "object",
@@ -9106,11 +8768,7 @@
             "minLength": 0
           }
         },
-        "required": [
-          "restrictionType",
-          "startDate",
-          "updatedBy"
-        ]
+        "required": ["restrictionType", "startDate", "updatedBy"]
       },
       "PrisonerContactRestrictionDetails": {
         "type": "object",
@@ -9248,11 +8906,7 @@
             "minLength": 0
           }
         },
-        "required": [
-          "restrictionType",
-          "startDate",
-          "updatedBy"
-        ]
+        "required": ["restrictionType", "startDate", "updatedBy"]
       },
       "ContactRestrictionDetails": {
         "type": "object",
@@ -9374,11 +9028,7 @@
             "minLength": 0
           }
         },
-        "required": [
-          "phoneNumber",
-          "phoneType",
-          "updatedBy"
-        ]
+        "required": ["phoneNumber", "phoneType", "updatedBy"]
       },
       "ContactPhoneDetails": {
         "type": "object",
@@ -9439,15 +9089,7 @@
             "example": "2023-09-24T12:00:00"
           }
         },
-        "required": [
-          "contactId",
-          "contactPhoneId",
-          "createdBy",
-          "createdTime",
-          "phoneNumber",
-          "phoneType",
-          "phoneTypeDescription"
-        ]
+        "required": ["contactId", "contactPhoneId", "createdBy", "createdTime", "phoneNumber", "phoneType", "phoneTypeDescription"]
       },
       "UpdateIdentityRequest": {
         "type": "object",
@@ -9482,11 +9124,7 @@
             "minLength": 0
           }
         },
-        "required": [
-          "identityType",
-          "identityValue",
-          "updatedBy"
-        ]
+        "required": ["identityType", "identityValue", "updatedBy"]
       },
       "ContactIdentityDetails": {
         "type": "object",
@@ -9552,13 +9190,7 @@
             "example": "2023-09-24T12:00:00"
           }
         },
-        "required": [
-          "contactId",
-          "contactIdentityId",
-          "createdBy",
-          "createdTime",
-          "identityTypeIsActive"
-        ]
+        "required": ["contactId", "contactIdentityId", "createdBy", "createdTime", "identityTypeIsActive"]
       },
       "UpdateEmploymentRequest": {
         "type": "object",
@@ -9582,11 +9214,7 @@
             "minLength": 0
           }
         },
-        "required": [
-          "isActive",
-          "organisationId",
-          "updatedBy"
-        ]
+        "required": ["isActive", "organisationId", "updatedBy"]
       },
       "EmploymentDetails": {
         "type": "object",
@@ -9635,14 +9263,7 @@
             "example": "2023-09-24T12:00:00"
           }
         },
-        "required": [
-          "contactId",
-          "createdBy",
-          "createdTime",
-          "employer",
-          "employmentId",
-          "isActive"
-        ]
+        "required": ["contactId", "createdBy", "createdTime", "employer", "employmentId", "isActive"]
       },
       "OrganisationSummary": {
         "type": "object",
@@ -9697,11 +9318,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "organisationActive",
-          "organisationId",
-          "organisationName"
-        ]
+        "required": ["organisationActive", "organisationId", "organisationName"]
       },
       "UpdateEmailRequest": {
         "type": "object",
@@ -9722,10 +9339,7 @@
             "minLength": 0
           }
         },
-        "required": [
-          "emailAddress",
-          "updatedBy"
-        ]
+        "required": ["emailAddress", "updatedBy"]
       },
       "ContactEmailDetails": {
         "type": "object",
@@ -9771,13 +9385,7 @@
             "example": "2023-09-24T12:00:00"
           }
         },
-        "required": [
-          "contactEmailId",
-          "contactId",
-          "createdBy",
-          "createdTime",
-          "emailAddress"
-        ]
+        "required": ["contactEmailId", "contactId", "createdBy", "createdTime", "emailAddress"]
       },
       "UpdateContactAddressRequest": {
         "type": "object",
@@ -9893,11 +9501,7 @@
             "minLength": 0
           }
         },
-        "required": [
-          "primaryAddress",
-          "updatedBy",
-          "verified"
-        ]
+        "required": ["primaryAddress", "updatedBy", "verified"]
       },
       "ContactAddressResponse": {
         "type": "object",
@@ -10031,16 +9635,7 @@
             "example": "2024-01-01T00:00:00Z"
           }
         },
-        "required": [
-          "contactAddressId",
-          "contactId",
-          "createdBy",
-          "createdTime",
-          "mailFlag",
-          "noFixedAddress",
-          "primaryAddress",
-          "verified"
-        ]
+        "required": ["contactAddressId", "contactId", "createdBy", "createdTime", "mailFlag", "noFixedAddress", "primaryAddress", "verified"]
       },
       "UpdateContactAddressPhoneRequest": {
         "type": "object",
@@ -10075,11 +9670,7 @@
             "minLength": 0
           }
         },
-        "required": [
-          "phoneNumber",
-          "phoneType",
-          "updatedBy"
-        ]
+        "required": ["phoneNumber", "phoneType", "updatedBy"]
       },
       "ContactAddressPhoneDetails": {
         "type": "object",
@@ -10242,16 +9833,7 @@
             "example": "HMP Belmarsh"
           }
         },
-        "required": [
-          "contactId",
-          "contactType",
-          "createdBy",
-          "createdTime",
-          "emergencyContact",
-          "nextOfKin",
-          "prisonerNumber",
-          "relationshipType"
-        ]
+        "required": ["contactId", "contactType", "createdBy", "createdTime", "emergencyContact", "nextOfKin", "prisonerNumber", "relationshipType"]
       },
       "SyncCreatePrisonerContactRestrictionRequest": {
         "type": "object",
@@ -10297,12 +9879,7 @@
             "example": "2024-10-01T12:00:00Z"
           }
         },
-        "required": [
-          "createdBy",
-          "createdTime",
-          "prisonerContactId",
-          "restrictionType"
-        ]
+        "required": ["createdBy", "createdTime", "prisonerContactId", "restrictionType"]
       },
       "SyncCreateEmploymentRequest": {
         "type": "object",
@@ -10337,13 +9914,7 @@
             "example": "2023-09-23T10:15:30"
           }
         },
-        "required": [
-          "active",
-          "contactId",
-          "createdBy",
-          "createdTime",
-          "organisationId"
-        ]
+        "required": ["active", "contactId", "createdBy", "createdTime", "organisationId"]
       },
       "ContactRelationship": {
         "type": "object",
@@ -10386,14 +9957,7 @@
             "minLength": 0
           }
         },
-        "required": [
-          "isApprovedVisitor",
-          "isEmergencyContact",
-          "isNextOfKin",
-          "prisonerNumber",
-          "relationshipToPrisonerCode",
-          "relationshipTypeCode"
-        ]
+        "required": ["isApprovedVisitor", "isEmergencyContact", "isNextOfKin", "prisonerNumber", "relationshipToPrisonerCode", "relationshipTypeCode"]
       },
       "SyncCreateContactRequest": {
         "type": "object",
@@ -10497,15 +10061,7 @@
             "writeOnly": true
           }
         },
-        "required": [
-          "createdBy",
-          "createdTime",
-          "firstName",
-          "isStaff",
-          "lastName",
-          "personId",
-          "remitter"
-        ]
+        "required": ["createdBy", "createdTime", "firstName", "isStaff", "lastName", "personId", "remitter"]
       },
       "SyncCreateContactRestrictionRequest": {
         "type": "object",
@@ -10551,12 +10107,7 @@
             "example": "2024-01-01T00:00:00Z"
           }
         },
-        "required": [
-          "contactId",
-          "createdBy",
-          "createdTime",
-          "restrictionType"
-        ]
+        "required": ["contactId", "createdBy", "createdTime", "restrictionType"]
       },
       "SyncCreateContactPhoneRequest": {
         "type": "object",
@@ -10595,13 +10146,7 @@
             "example": "2024-01-01T00:00:00Z"
           }
         },
-        "required": [
-          "contactId",
-          "createdBy",
-          "createdTime",
-          "phoneNumber",
-          "phoneType"
-        ]
+        "required": ["contactId", "createdBy", "createdTime", "phoneNumber", "phoneType"]
       },
       "SyncCreateContactIdentityRequest": {
         "type": "object",
@@ -10640,13 +10185,7 @@
             "example": "2024-01-01T00:00:00Z"
           }
         },
-        "required": [
-          "contactId",
-          "createdBy",
-          "createdTime",
-          "identityType",
-          "identityValue"
-        ]
+        "required": ["contactId", "createdBy", "createdTime", "identityType", "identityValue"]
       },
       "SyncCreateContactEmailRequest": {
         "type": "object",
@@ -10675,12 +10214,7 @@
             "example": "2024-01-01T00:00:00Z"
           }
         },
-        "required": [
-          "contactId",
-          "createdBy",
-          "createdTime",
-          "emailAddress"
-        ]
+        "required": ["contactId", "createdBy", "createdTime", "emailAddress"]
       },
       "SyncCreateContactAddressRequest": {
         "type": "object",
@@ -10786,12 +10320,7 @@
             "example": "2024-01-01T00:00:00Z"
           }
         },
-        "required": [
-          "contactId",
-          "createdBy",
-          "createdTime",
-          "primaryAddress"
-        ]
+        "required": ["contactId", "createdBy", "createdTime", "primaryAddress"]
       },
       "SyncCreateContactAddressPhoneRequest": {
         "type": "object",
@@ -10830,13 +10359,7 @@
             "example": "2024-01-01T00:00:00Z"
           }
         },
-        "required": [
-          "contactAddressId",
-          "createdBy",
-          "createdTime",
-          "phoneNumber",
-          "phoneType"
-        ]
+        "required": ["contactAddressId", "createdBy", "createdTime", "phoneNumber", "phoneType"]
       },
       "AddContactRelationshipRequest": {
         "type": "object",
@@ -10859,11 +10382,7 @@
             "minLength": 0
           }
         },
-        "required": [
-          "contactId",
-          "createdBy",
-          "relationship"
-        ]
+        "required": ["contactId", "createdBy", "relationship"]
       },
       "PrisonerContactRelationshipDetails": {
         "type": "object",
@@ -10982,11 +10501,7 @@
             "minLength": 0
           }
         },
-        "required": [
-          "createdBy",
-          "restrictionType",
-          "startDate"
-        ]
+        "required": ["createdBy", "restrictionType", "startDate"]
       },
       "MigratePrisonerNumberOfChildrenRequest": {
         "type": "object",
@@ -11009,10 +10524,7 @@
             }
           }
         },
-        "required": [
-          "history",
-          "prisonerNumber"
-        ]
+        "required": ["history", "prisonerNumber"]
       },
       "NumberOfChildrenDetailsRequest": {
         "type": "object",
@@ -11036,10 +10548,7 @@
             "description": "Timestamp when the record was created"
           }
         },
-        "required": [
-          "createdBy",
-          "createdTime"
-        ]
+        "required": ["createdBy", "createdTime"]
       },
       "PrisonerNumberOfChildrenMigrationResponse": {
         "type": "object",
@@ -11064,10 +10573,7 @@
             }
           }
         },
-        "required": [
-          "history",
-          "prisonerNumber"
-        ]
+        "required": ["history", "prisonerNumber"]
       },
       "DomesticStatusDetailsRequest": {
         "type": "object",
@@ -11091,10 +10597,7 @@
             "description": "Timestamp when the record was created"
           }
         },
-        "required": [
-          "createdBy",
-          "createdTime"
-        ]
+        "required": ["createdBy", "createdTime"]
       },
       "MigratePrisonerDomesticStatusRequest": {
         "type": "object",
@@ -11117,10 +10620,7 @@
             }
           }
         },
-        "required": [
-          "history",
-          "prisonerNumber"
-        ]
+        "required": ["history", "prisonerNumber"]
       },
       "PrisonerDomesticStatusMigrationResponse": {
         "type": "object",
@@ -11145,10 +10645,7 @@
             }
           }
         },
-        "required": [
-          "history",
-          "prisonerNumber"
-        ]
+        "required": ["history", "prisonerNumber"]
       },
       "CodedValue": {
         "type": "object",
@@ -11166,10 +10663,7 @@
             "example": "Description"
           }
         },
-        "required": [
-          "code",
-          "description"
-        ]
+        "required": ["code", "description"]
       },
       "Corporate": {
         "type": "object",
@@ -11181,9 +10675,7 @@
             "example": 123
           }
         },
-        "required": [
-          "id"
-        ]
+        "required": ["id"]
       },
       "MigrateAddress": {
         "type": "object",
@@ -11294,14 +10786,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "addressId",
-          "mailAddress",
-          "noFixedAddress",
-          "phoneNumbers",
-          "primaryAddress",
-          "validatedPAF"
-        ]
+        "required": ["addressId", "mailAddress", "noFixedAddress", "phoneNumbers", "primaryAddress", "validatedPAF"]
       },
       "MigrateContactRequest": {
         "type": "object",
@@ -11482,10 +10967,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "email",
-          "emailAddressId"
-        ]
+        "required": ["email", "emailAddressId"]
       },
       "MigrateEmployment": {
         "type": "object",
@@ -11520,11 +11002,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "active",
-          "corporate",
-          "sequence"
-        ]
+        "required": ["active", "corporate", "sequence"]
       },
       "MigrateIdentifier": {
         "type": "object",
@@ -11564,11 +11042,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "identifier",
-          "sequence",
-          "type"
-        ]
+        "required": ["identifier", "sequence", "type"]
       },
       "MigratePhoneNumber": {
         "type": "object",
@@ -11608,11 +11082,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "number",
-          "phoneId",
-          "type"
-        ]
+        "required": ["number", "phoneId", "type"]
       },
       "MigratePrisonerContactRestriction": {
         "type": "object",
@@ -11659,11 +11129,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "id",
-          "restrictionType",
-          "startDate"
-        ]
+        "required": ["id", "restrictionType", "startDate"]
       },
       "MigrateRelationship": {
         "type": "object",
@@ -11804,11 +11270,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "effectiveDate",
-          "id",
-          "type"
-        ]
+        "required": ["effectiveDate", "id", "type"]
       },
       "AddressAndPhones": {
         "type": "object",
@@ -11825,10 +11287,7 @@
             }
           }
         },
-        "required": [
-          "address",
-          "phones"
-        ]
+        "required": ["address", "phones"]
       },
       "ContactsAndRestrictions": {
         "type": "object",
@@ -11845,10 +11304,7 @@
             }
           }
         },
-        "required": [
-          "relationship",
-          "restrictions"
-        ]
+        "required": ["relationship", "restrictions"]
       },
       "IdPair": {
         "type": "object",
@@ -11885,11 +11341,7 @@
             "example": 1234
           }
         },
-        "required": [
-          "dpsId",
-          "elementType",
-          "nomisId"
-        ]
+        "required": ["dpsId", "elementType", "nomisId"]
       },
       "MigrateContactResponse": {
         "type": "object",
@@ -11961,16 +11413,7 @@
             }
           }
         },
-        "required": [
-          "addresses",
-          "contact",
-          "emailAddresses",
-          "identities",
-          "lastName",
-          "phoneNumbers",
-          "relationships",
-          "restrictions"
-        ]
+        "required": ["addresses", "contact", "emailAddresses", "identities", "lastName", "phoneNumbers", "relationships", "restrictions"]
       },
       "CreateContactRequest": {
         "type": "object",
@@ -12037,10 +11480,7 @@
           "genderCode": {
             "type": "string",
             "description": "\n      The domestic status of the contact.\n      This is a coded value (from the group code GENDER in reference data).\n      ",
-            "examples": [
-              "M",
-              "F"
-            ],
+            "examples": ["M", "F"],
             "maxLength": 12,
             "minLength": 0
           },
@@ -12060,13 +11500,7 @@
             "writeOnly": true
           }
         },
-        "required": [
-          "createdBy",
-          "firstName",
-          "interpreterRequired",
-          "isStaff",
-          "lastName"
-        ]
+        "required": ["createdBy", "firstName", "interpreterRequired", "isStaff", "lastName"]
       },
       "ContactAddressDetails": {
         "type": "object",
@@ -12252,9 +11686,7 @@
             "description": "Describes the prisoner contact relationship if one was created with the contact"
           }
         },
-        "required": [
-          "createdContact"
-        ]
+        "required": ["createdContact"]
       },
       "ContactDetails": {
         "type": "object",
@@ -12371,18 +11803,12 @@
           "genderCode": {
             "type": "string",
             "description": "The NOMIS code for the contacts gender. See reference data with group code 'GENDER'",
-            "examples": [
-              "M",
-              "F"
-            ]
+            "examples": ["M", "F"]
           },
           "genderDescription": {
             "type": "string",
             "description": "The description of gender code. See reference data with group code 'GENDER'",
-            "examples": [
-              "Male",
-              "Female"
-            ]
+            "examples": ["Male", "Female"]
           },
           "createdBy": {
             "type": "string",
@@ -12451,11 +11877,7 @@
             "minLength": 0
           }
         },
-        "required": [
-          "createdBy",
-          "restrictionType",
-          "startDate"
-        ]
+        "required": ["createdBy", "restrictionType", "startDate"]
       },
       "CreateMultiplePhoneNumbersRequest": {
         "type": "object",
@@ -12478,10 +11900,7 @@
             "minLength": 0
           }
         },
-        "required": [
-          "createdBy",
-          "phoneNumbers"
-        ]
+        "required": ["createdBy", "phoneNumbers"]
       },
       "PhoneNumber": {
         "type": "object",
@@ -12509,10 +11928,7 @@
             "minLength": 0
           }
         },
-        "required": [
-          "phoneNumber",
-          "phoneType"
-        ]
+        "required": ["phoneNumber", "phoneType"]
       },
       "CreatePhoneRequest": {
         "type": "object",
@@ -12547,11 +11963,7 @@
             "minLength": 0
           }
         },
-        "required": [
-          "createdBy",
-          "phoneNumber",
-          "phoneType"
-        ]
+        "required": ["createdBy", "phoneNumber", "phoneType"]
       },
       "CreateIdentityRequest": {
         "type": "object",
@@ -12586,11 +11998,7 @@
             "minLength": 0
           }
         },
-        "required": [
-          "createdBy",
-          "identityType",
-          "identityValue"
-        ]
+        "required": ["createdBy", "identityType", "identityValue"]
       },
       "CreateMultipleIdentitiesRequest": {
         "type": "object",
@@ -12613,10 +12021,7 @@
             "minLength": 0
           }
         },
-        "required": [
-          "createdBy",
-          "identities"
-        ]
+        "required": ["createdBy", "identities"]
       },
       "IdentityDocument": {
         "type": "object",
@@ -12644,10 +12049,7 @@
             "minLength": 0
           }
         },
-        "required": [
-          "identityType",
-          "identityValue"
-        ]
+        "required": ["identityType", "identityValue"]
       },
       "CreateEmploymentRequest": {
         "type": "object",
@@ -12671,11 +12073,7 @@
             "minLength": 0
           }
         },
-        "required": [
-          "createdBy",
-          "isActive",
-          "organisationId"
-        ]
+        "required": ["createdBy", "isActive", "organisationId"]
       },
       "CreateMultipleEmailsRequest": {
         "type": "object",
@@ -12698,10 +12096,7 @@
             "minLength": 0
           }
         },
-        "required": [
-          "createdBy",
-          "emailAddresses"
-        ]
+        "required": ["createdBy", "emailAddresses"]
       },
       "EmailAddress": {
         "type": "object",
@@ -12713,9 +12108,7 @@
             "minLength": 0
           }
         },
-        "required": [
-          "emailAddress"
-        ]
+        "required": ["emailAddress"]
       },
       "CreateEmailRequest": {
         "type": "object",
@@ -12736,10 +12129,7 @@
             "minLength": 0
           }
         },
-        "required": [
-          "createdBy",
-          "emailAddress"
-        ]
+        "required": ["createdBy", "emailAddress"]
       },
       "CreateContactAddressRequest": {
         "type": "object",
@@ -12855,10 +12245,7 @@
             "minLength": 0
           }
         },
-        "required": [
-          "createdBy",
-          "primaryAddress"
-        ]
+        "required": ["createdBy", "primaryAddress"]
       },
       "CreateContactAddressPhoneRequest": {
         "type": "object",
@@ -12899,12 +12286,7 @@
             "minLength": 0
           }
         },
-        "required": [
-          "contactAddressId",
-          "createdBy",
-          "phoneNumber",
-          "phoneType"
-        ]
+        "required": ["contactAddressId", "createdBy", "phoneNumber", "phoneType"]
       },
       "PatchRelationshipRequest": {
         "type": "object",
@@ -12955,9 +12337,7 @@
             "minLength": 0
           }
         },
-        "required": [
-          "updatedBy"
-        ]
+        "required": ["updatedBy"]
       },
       "PatchContactRequest": {
         "type": "object",
@@ -13018,9 +12398,7 @@
             "example": "JD000001"
           }
         },
-        "required": [
-          "updatedBy"
-        ]
+        "required": ["updatedBy"]
       },
       "PatchContactResponse": {
         "type": "object",
@@ -13116,14 +12494,7 @@
             "writeOnly": true
           }
         },
-        "required": [
-          "createdBy",
-          "createdTime",
-          "firstName",
-          "id",
-          "isStaff",
-          "lastName"
-        ]
+        "required": ["createdBy", "createdTime", "firstName", "id", "isStaff", "lastName"]
       },
       "PatchEmploymentsNewEmployment": {
         "type": "object",
@@ -13140,10 +12511,7 @@
             "description": "Whether this is a current employment or not"
           }
         },
-        "required": [
-          "isActive",
-          "organisationId"
-        ]
+        "required": ["isActive", "organisationId"]
       },
       "PatchEmploymentsRequest": {
         "type": "object",
@@ -13178,12 +12546,7 @@
             "minLength": 0
           }
         },
-        "required": [
-          "createEmployments",
-          "deleteEmployments",
-          "requestedBy",
-          "updateEmployments"
-        ]
+        "required": ["createEmployments", "deleteEmployments", "requestedBy", "updateEmployments"]
       },
       "PatchEmploymentsUpdateEmployment": {
         "type": "object",
@@ -13206,11 +12569,7 @@
             "description": "Whether this is a current employment or not"
           }
         },
-        "required": [
-          "employmentId",
-          "isActive",
-          "organisationId"
-        ]
+        "required": ["employmentId", "isActive", "organisationId"]
       },
       "JsonNullableString": {
         "type": "object",
@@ -13331,9 +12690,7 @@
             "minLength": 0
           }
         },
-        "required": [
-          "updatedBy"
-        ]
+        "required": ["updatedBy"]
       },
       "EmploymentEntity": {
         "type": "object",
@@ -13368,14 +12725,7 @@
             "format": "date-time"
           }
         },
-        "required": [
-          "active",
-          "contactId",
-          "createdBy",
-          "createdTime",
-          "employmentId",
-          "organisationId"
-        ]
+        "required": ["active", "contactId", "createdBy", "createdTime", "employmentId", "organisationId"]
       },
       "ReferenceCodeGroup": {
         "type": "string",
@@ -13445,14 +12795,7 @@
             "example": true
           }
         },
-        "required": [
-          "code",
-          "description",
-          "displayOrder",
-          "groupCode",
-          "isActive",
-          "referenceCodeId"
-        ]
+        "required": ["code", "description", "displayOrder", "groupCode", "isActive", "referenceCodeId"]
       },
       "Pageable": {
         "type": "object",
@@ -13780,10 +13123,7 @@
             }
           }
         },
-        "required": [
-          "contactGlobalRestrictions",
-          "prisonerContactRestrictions"
-        ]
+        "required": ["contactGlobalRestrictions", "prisonerContactRestrictions"]
       },
       "Language": {
         "type": "object",
@@ -13827,15 +13167,7 @@
             "example": 1
           }
         },
-        "required": [
-          "displaySequence",
-          "isoAlpha2",
-          "isoAlpha3",
-          "isoLanguageDesc",
-          "languageId",
-          "nomisCode",
-          "nomisDescription"
-        ]
+        "required": ["displaySequence", "isoAlpha2", "isoAlpha3", "isoLanguageDesc", "languageId", "nomisCode", "nomisDescription"]
       },
       "County": {
         "type": "object",
@@ -13864,12 +13196,7 @@
             "example": 1
           }
         },
-        "required": [
-          "countyId",
-          "displaySequence",
-          "nomisCode",
-          "nomisDescription"
-        ]
+        "required": ["countyId", "displaySequence", "nomisCode", "nomisDescription"]
       },
       "Country": {
         "type": "object",
@@ -13919,16 +13246,7 @@
             "example": 1
           }
         },
-        "required": [
-          "countryId",
-          "displaySequence",
-          "isoAlpha2",
-          "isoAlpha3",
-          "isoCountryDesc",
-          "isoNumeric",
-          "nomisCode",
-          "nomisDescription"
-        ]
+        "required": ["countryId", "displaySequence", "isoAlpha2", "isoAlpha3", "isoCountryDesc", "isoNumeric", "nomisCode", "nomisDescription"]
       },
       "ContactNameDetails": {
         "type": "object",
@@ -13959,10 +13277,7 @@
             "example": "William"
           }
         },
-        "required": [
-          "firstName",
-          "lastName"
-        ]
+        "required": ["firstName", "lastName"]
       },
       "LinkedPrisonerDetails": {
         "type": "object",
@@ -13996,12 +13311,7 @@
             }
           }
         },
-        "required": [
-          "firstName",
-          "lastName",
-          "prisonerNumber",
-          "relationships"
-        ]
+        "required": ["firstName", "lastName", "prisonerNumber", "relationships"]
       },
       "LinkedPrisonerRelationshipDetails": {
         "type": "object",
@@ -14034,12 +13344,7 @@
             "example": "Friend"
           }
         },
-        "required": [
-          "prisonerContactId",
-          "relationshipToPrisonerCode",
-          "relationshipTypeCode",
-          "relationshipTypeDescription"
-        ]
+        "required": ["prisonerContactId", "relationshipToPrisonerCode", "relationshipTypeCode", "relationshipTypeDescription"]
       },
       "ContactSearchRequest": {
         "type": "object",
@@ -14070,9 +13375,7 @@
             "example": "30/12/2010"
           }
         },
-        "required": [
-          "lastName"
-        ]
+        "required": ["lastName"]
       },
       "ContactSearchResultItem": {
         "type": "object",
@@ -14199,11 +13502,7 @@
             "example": "Some additional information"
           }
         },
-        "required": [
-          "firstName",
-          "id",
-          "lastName"
-        ]
+        "required": ["firstName", "id", "lastName"]
       },
       "ContactSearchResultItemPage": {
         "type": "object",
@@ -14283,12 +13582,7 @@
             "example": 1
           }
         },
-        "required": [
-          "cityId",
-          "displaySequence",
-          "nomisCode",
-          "nomisDescription"
-        ]
+        "required": ["cityId", "displaySequence", "nomisCode", "nomisDescription"]
       }
     },
     "securitySchemes": {
