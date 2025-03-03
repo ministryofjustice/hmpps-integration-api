@@ -69,9 +69,9 @@ class PersonalRelationshipsGatewayTest(
               "relationships": [
                 {
                   "prisonerContactId": 123456,
-                  "relationshipType": "S",
+                  "relationshipTypeCode": "S",
                   "relationshipTypeDescription": "Official",
-                  "relationshipToPrisoner": "FRI",
+                  "relationshipToPrisonerCode": "FRI",
                   "relationshipToPrisonerDescription": "Friend"
                 }
               ]
@@ -166,7 +166,7 @@ class PersonalRelationshipsGatewayTest(
             """
             {
               "id": 123456,
-              "title": "MR",
+              "titleCode": "MR",
               "titleDescription": "Mr",
               "lastName": "Doe",
               "firstName": "John",
@@ -296,7 +296,7 @@ class PersonalRelationshipsGatewayTest(
               ],
               "domesticStatusCode": "S",
               "domesticStatusDescription": "Single",
-              "gender": "M",
+              "genderCode": "M",
               "genderDescription": "Male",
               "createdBy": "JD000001",
               "createdTime": "2024-01-01T00:00:00Z"
@@ -305,7 +305,6 @@ class PersonalRelationshipsGatewayTest(
         )
 
         val response = personalRelationshipsGateway.getContactByContactId(contactId)
-
         response.errors.shouldBeEmpty()
         response.data.shouldNotBeNull()
         response.data!!
