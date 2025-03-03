@@ -12,8 +12,8 @@ fun <T> List<T>.paginateWith(
   val end = (start + paginationOptions.pageSize).coerceAtMost(this.size)
 
   if (start > end) {
-    return PaginatedResponse(PageImpl(listOf<T>(), paginationOptions, this.size.toLong()))
+    return PaginatedResponse.fromPageableResponse(PageImpl(listOf<T>(), paginationOptions, this.size.toLong()))
   }
 
-  return PaginatedResponse(PageImpl(this.subList(start, end), paginationOptions, this.count().toLong()))
+  return PaginatedResponse.fromPageableResponse(PageImpl(this.subList(start, end), paginationOptions, this.count().toLong()))
 }

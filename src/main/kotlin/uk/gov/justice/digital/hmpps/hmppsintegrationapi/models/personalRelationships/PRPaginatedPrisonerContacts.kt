@@ -6,10 +6,26 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PaginatedPr
 data class PRPaginatedPrisonerContacts(
   @JsonProperty("content")
   val contacts: List<PRPrisonerContact>,
+  val pageable: Pageable,
+  val totalElements: Long,
+  val totalPages: Long,
+  val first: Boolean,
+  val last: Boolean,
+  val size: Long,
+  val number: Long,
+  val sort: Sort,
+  val numberOfElements: Long,
+  val empty: Boolean,
 ) {
   fun toPaginatedPrisonerContacts(): PaginatedPrisonerContacts =
     PaginatedPrisonerContacts(
-      contacts = this.contacts.map { it.toPrisonerContact() },
+      content = this.contacts.map { it.toPrisonerContact() },
+      isLastPage = this.last,
+      count = this.numberOfElements.toInt(),
+      page = this.number.toInt(),
+      perPage = this.size.toInt(),
+      totalCount = this.totalElements,
+      totalPages = this.totalPages.toInt(),
     )
 }
 

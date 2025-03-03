@@ -8,7 +8,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.ValidationException
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.data.domain.Page
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestAttribute
@@ -188,10 +187,9 @@ class PersonController(
       throw ValidationException("Invalid HMPPS ID: $hmppsId")
     }
 
-    val paginatedResponse: PaginatedResponse<PrisonerContact> = PaginatedResponse(Page<PrisonerContact>(response.data!!.contacts))
-
     auditService.createEvent("GET_PRISONER_CONTACTS", mapOf("hmppsId" to hmppsId))
-    // return response.data!!.contacts.paginateWith(page, perPage)
+
+    return PaginatedResponse.fromPaginatedObject(response.data)
   }
 
   private fun isValidISODateFormat(dateString: String): Boolean =
