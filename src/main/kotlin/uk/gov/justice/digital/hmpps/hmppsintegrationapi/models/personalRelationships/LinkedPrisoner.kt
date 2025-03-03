@@ -17,12 +17,12 @@ data class LinkedPrisoner(
 )
 
 data class LinkedPrisonerRelationship(
-  @JsonProperty("relationshipType")
-  override val relationshipType: String?,
+  @JsonProperty("relationshipTypeCode")
+  override val relationshipTypeCode: String?,
   @JsonProperty("relationshipTypeDescription")
   override val relationshipTypeDescription: String?,
-  @JsonProperty("relationshipToPrisoner")
-  override val relationshipToPrisoner: String?,
+  @JsonProperty("relationshipToPrisonerCode")
+  override val relationshipToPrisonerCode: String?,
   @JsonProperty("relationshipToPrisonerDescription")
   override val relationshipToPrisonerDescription: String?,
   @JsonProperty("prisonerContactId")

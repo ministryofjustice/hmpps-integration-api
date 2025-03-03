@@ -39,7 +39,7 @@ class GetVisitorRestrictionsServiceTest(
       val contactId = 123456L
       val filters = ConsumerFilters(null)
       val posPrisoner = POSPrisoner(firstName = "Test", lastName = "Person", prisonId = prisonId, prisonerNumber = hmppsId)
-      val listOfRelationships = listOf(LinkedPrisonerRelationship(prisonerContactId = contactId, relationshipType = "FAM", relationshipTypeDescription = "Family", relationshipToPrisoner = "SON", relationshipToPrisonerDescription = "Son"))
+      val listOfRelationships = listOf(LinkedPrisonerRelationship(prisonerContactId = contactId, relationshipTypeCode = "FAM", relationshipTypeDescription = "Family", relationshipToPrisonerCode = "SON", relationshipToPrisonerDescription = "Son"))
       val listOfLinkedPrisoners = listOf(LinkedPrisoner(prisonerNumber = hmppsId, relationships = listOfRelationships, firstName = "Test", lastName = "Person", middleNames = null))
       val prisonerContactRestrictionsResponse =
         mutableListOf(
@@ -169,7 +169,7 @@ class GetVisitorRestrictionsServiceTest(
 
       it("returns multiple relationships and queries getPrisonerContactRestrictions accordingly") {
         val scopedPrisonerContactId = 123457L
-        val listOfManyRelationships = listOf(LinkedPrisonerRelationship(prisonerContactId = contactId, relationshipType = "FAM", relationshipTypeDescription = "Family", relationshipToPrisoner = "SON", relationshipToPrisonerDescription = "Son"), LinkedPrisonerRelationship(prisonerContactId = scopedPrisonerContactId, relationshipType = "FAM", relationshipTypeDescription = "Family", relationshipToPrisoner = "BRO", relationshipToPrisonerDescription = "Brother"))
+        val listOfManyRelationships = listOf(LinkedPrisonerRelationship(prisonerContactId = contactId, relationshipTypeCode = "FAM", relationshipTypeDescription = "Family", relationshipToPrisonerCode = "SON", relationshipToPrisonerDescription = "Son"), LinkedPrisonerRelationship(prisonerContactId = scopedPrisonerContactId, relationshipTypeCode = "FAM", relationshipTypeDescription = "Family", relationshipToPrisonerCode = "BRO", relationshipToPrisonerDescription = "Brother"))
         val listOfLinkedPrisonerWithManyRelationships = listOf(LinkedPrisoner(prisonerNumber = "A1234AA", relationships = listOfManyRelationships, firstName = "Test", lastName = "Person", middleNames = null))
 
         whenever(personalRelationshipsGateway.getLinkedPrisoner(contactId)).thenReturn(Response(data = listOfLinkedPrisonerWithManyRelationships, errors = emptyList()))
@@ -177,7 +177,6 @@ class GetVisitorRestrictionsServiceTest(
         whenever(personalRelationshipsGateway.getPrisonerContactRestrictions(scopedPrisonerContactId)).thenReturn(Response(data = prisonerContactRestrictions, errors = emptyList()))
 
         getVisitorRestrictionsService.execute(hmppsId, contactId, filters)
-
         verify(personalRelationshipsGateway, VerificationModeFactory.times(2)).getPrisonerContactRestrictions(Mockito.anyLong())
       }
     },
