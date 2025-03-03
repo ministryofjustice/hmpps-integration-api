@@ -13971,7 +13971,7 @@
           "prisonerNumber": {
             "type": "string",
             "description": "Prisoner number (NOMS ID)",
-            "example": "A1234BC"
+            "example": "A1234AA"
           },
           "lastName": {
             "type": "string",
