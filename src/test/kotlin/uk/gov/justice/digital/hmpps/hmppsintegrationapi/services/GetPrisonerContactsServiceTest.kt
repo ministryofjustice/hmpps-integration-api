@@ -36,9 +36,9 @@ internal class GetPrisonerContactsServiceTest(
     val size = 10
     val relationship =
       PrisonerContactRelationship(
-        relationshipType = "FRIEND",
+        relationshipTypeCode = "FRIEND",
         relationshipTypeDescription = "Friend",
-        relationshipToPrisoner = "FRI",
+        relationshipToPrisonerCode = "FRI",
         relationshipToPrisonerDescription = "Friend of",
         approvedVisitor = true,
         nextOfKin = false,
@@ -81,9 +81,9 @@ internal class GetPrisonerContactsServiceTest(
         firstName = "John",
         middleNames = "William",
         dateOfBirth = "1980-01-01",
-        relationshipType = "S",
+        relationshipTypeCode = "S",
         relationshipTypeDescription = "Friend",
-        relationshipToPrisoner = "FRI",
+        relationshipToPrisonerCode = "FRI",
         relationshipToPrisonerDescription = "Friend",
         flat = "Flat 1",
         property = "123",
