@@ -23,7 +23,7 @@ class PaginatedResponse<T>(
       return PaginatedResponse(data, pagination)
     }
 
-    fun <T> fromPaginatedObject(paginatedObject: IPaginatedObject<T>?): PaginatedResponse<T?> {
+    fun <T> fromPaginatedObject(paginatedObject: IPaginatedObject<T>?): PaginatedResponse<T> {
       if (paginatedObject == null) {
         return PaginatedResponse(
           emptyList(),
