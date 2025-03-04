@@ -7850,67 +7850,67 @@
 
 <pre><code>{
   "data": {
-    "contactId": "integer",
-    "titleCode": "string",
-    "titleDescription": "string",
-    "firstName": "string",
-    "lastName": "string",
-    "middleNames": "string",
-    "dateOfBirth": "string",
+    "contactId": 123456,
+    "titleCode": "MR",
+    "titleDescription": "Mr",
+    "lastName": "Doe",
+    "firstName": "John",
+    "middleNames": "William",
+    "dateOfBirth": "1980-01-01",
     "isStaff": "boolean",
-    "deceasedDate": "string",
-    "languageCode": "string",
-    "languageDescription": "string",
-    "interpreterRequired": "boolean",
+    "deceasedDate": "1980-01-01",
+    "languageCode": "ENG",
+    "languageDescription": "English",
+    "interpreterRequired": true,
     "addresses": [
       {
-        "addressType": "string",
+        "addressType": "HOME",
         "addressTypeDescription": "string",
-        "primaryAddress": "boolean",
-        "flat": "string",
-        "property": "string",
-        "street": "string",
-        "area": "string",
-        "cityCode": "string",
-        "cityDescription": "string",
-        "countyCode": "string",
-        "countyDescription": "string",
-        "postcode": "string",
-        "countryCode": "string",
-        "countryDescription": "string",
+        "primaryAddress": true,
+        "flat": "Flat 2B",
+        "property": "Mansion House",
+        "street": "Acacia Avenue",
+        "area": "Morton Heights",
+        "cityCode": "25343",
+        "cityDescription": "Sheffield",
+        "countyCode": "S.YORKSHIRE",
+        "countyDescription": "South Yorkshire",
+        "postcode": "S13 4FH",
+        "countryCode": "ENG",
+        "countryDescription": "England",
         "verified": "boolean",
-        "verifiedBy": "string",
-        "verifiedTime": "string",
+        "verifiedBy": "NJKG44D",
+        "verifiedTime": "2024-01-01T00:00:00Z",
         "mailFlag": "boolean",
-        "startDate": "string",
-        "endDate": "string",
+        "startDate": "2024-01-01",
+        "endDate": "2024-01-01",
         "noFixedAddress": "boolean",
-        "comments": "string",
+        "comments": "Some additional information",
         "phoneNumbers": [
           {
-            "phoneType": "string",
-            "phoneTypeDescription": "string",
-            "phoneNumber": "string",
-            "extNumber": "string"
+            "phoneType": "MOB",
+            "phoneTypeDescription": "Mobile",
+            "phoneNumber": "+1234567890",
+            "extNumber": "123"
           }
         ],
-        "createdBy": "string",
-        "createdTime": "string",
-        "updatedBy": "string",
-        "updatedTime": "string"
+        "createdBy": "JD000001",
+        "createdTime": "2024-01-01T00:00:00Z",
+        "updatedBy": "JD000001",
+        "updatedTime": "2024-01-01T00:00:00Z"
       }
     ],
     "phoneNumbers": [
       {
-        "phoneType": "string",
-        "phoneTypeDescription": "string",
-        "phoneNumber": "string",
-        "extNumber": "string"
+        "phoneType": "MOB",
+        "phoneTypeDescription": "Mobile",
+        "phoneNumber": "+1234567890",
+        "extNumber": "123"
       }
     ],
     "emailAddresses": [
       {
-        "emailAddress": "string"
+        "emailAddress": "test@example.com"
       }
     ],
     "genderCode": "string",
@@ -16952,6 +16952,7 @@
 </table>
 
 <h3 id="schema-contactaddress">ContactAddress</h3>
+<p>All addresses for the contact</p>
 
 
 <table class='schema-contactaddress'>
@@ -16964,7 +16965,8 @@
 <td>addressType</td>
 <td>string</td>
 <td>false</td>
-<td></td>
+<td><p>The type of the address</p>
+</td>
 <td>
   
 </td>
@@ -16974,7 +16976,8 @@
 <td>addressTypeDescription</td>
 <td>string</td>
 <td>false</td>
-<td></td>
+<td><p>The description of the address type</p>
+</td>
 <td>
   
 </td>
@@ -16984,7 +16987,8 @@
 <td>primaryAddress</td>
 <td>boolean</td>
 <td>true</td>
-<td></td>
+<td><p>True if this is the primary address otherwise false</p>
+</td>
 <td>
   
 </td>
@@ -16994,7 +16998,8 @@
 <td>flat</td>
 <td>string</td>
 <td>false</td>
-<td></td>
+<td><p>Flat number or name</p>
+</td>
 <td>
   
 </td>
@@ -17004,7 +17009,8 @@
 <td>property</td>
 <td>string</td>
 <td>false</td>
-<td></td>
+<td><p>Building or house number or name</p>
+</td>
 <td>
   
 </td>
@@ -17014,7 +17020,8 @@
 <td>street</td>
 <td>string</td>
 <td>false</td>
-<td></td>
+<td><p>Street or road name</p>
+</td>
 <td>
   
 </td>
@@ -17024,7 +17031,8 @@
 <td>area</td>
 <td>string</td>
 <td>false</td>
-<td></td>
+<td><p>Area</p>
+</td>
 <td>
   
 </td>
@@ -17034,7 +17042,8 @@
 <td>cityCode</td>
 <td>string</td>
 <td>false</td>
-<td></td>
+<td><p>City code</p>
+</td>
 <td>
   
 </td>
@@ -17044,7 +17053,8 @@
 <td>cityDescription</td>
 <td>string</td>
 <td>false</td>
-<td></td>
+<td><p>The description of the city code</p>
+</td>
 <td>
   
 </td>
@@ -17054,7 +17064,8 @@
 <td>countyCode</td>
 <td>string</td>
 <td>false</td>
-<td></td>
+<td><p>County code</p>
+</td>
 <td>
   
 </td>
@@ -17064,7 +17075,8 @@
 <td>countyDescription</td>
 <td>string</td>
 <td>false</td>
-<td></td>
+<td><p>The description of county code</p>
+</td>
 <td>
   
 </td>
@@ -17074,7 +17086,8 @@
 <td>postcode</td>
 <td>string</td>
 <td>false</td>
-<td></td>
+<td><p>Postcode</p>
+</td>
 <td>
   
 </td>
@@ -17084,7 +17097,8 @@
 <td>countryCode</td>
 <td>string</td>
 <td>false</td>
-<td></td>
+<td><p>Country code</p>
+</td>
 <td>
   
 </td>
@@ -17094,7 +17108,8 @@
 <td>countryDescription</td>
 <td>string</td>
 <td>false</td>
-<td></td>
+<td><p>The description of country code</p>
+</td>
 <td>
   
 </td>
@@ -17104,7 +17119,8 @@
 <td>verified</td>
 <td>boolean</td>
 <td>true</td>
-<td></td>
+<td><p>Whether the address has been verified by postcode lookup</p>
+</td>
 <td>
   
 </td>
@@ -17114,7 +17130,8 @@
 <td>verifiedBy</td>
 <td>string</td>
 <td>false</td>
-<td></td>
+<td><p>Which username ran the postcode lookup check</p>
+</td>
 <td>
   
 </td>
@@ -17124,7 +17141,8 @@
 <td>verifiedTime</td>
 <td>string</td>
 <td>false</td>
-<td></td>
+<td><p>The timestamp of when the postcode lookup was done</p>
+</td>
 <td>
   
 </td>
@@ -17134,7 +17152,8 @@
 <td>mailFlag</td>
 <td>boolean</td>
 <td>true</td>
-<td></td>
+<td><p>Flag to indicate whether mail is allowed to be sent to this address</p>
+</td>
 <td>
   
 </td>
@@ -17144,7 +17163,8 @@
 <td>startDate</td>
 <td>string</td>
 <td>false</td>
-<td></td>
+<td><p>The start date when this address is to be considered active from</p>
+</td>
 <td>
   
 </td>
@@ -17154,7 +17174,8 @@
 <td>endDate</td>
 <td>string</td>
 <td>false</td>
-<td></td>
+<td><p>The end date when this address is to be considered active from</p>
+</td>
 <td>
   
 </td>
@@ -17164,7 +17185,8 @@
 <td>noFixedAddress</td>
 <td>boolean</td>
 <td>true</td>
-<td></td>
+<td><p>Flag to indicate whether this address indicates no fixed address</p>
+</td>
 <td>
   
 </td>
@@ -17174,7 +17196,8 @@
 <td>comments</td>
 <td>string</td>
 <td>false</td>
-<td></td>
+<td><p>Any additional information or comments about the address</p>
+</td>
 <td>
   
 </td>
@@ -17184,7 +17207,8 @@
 <td>phoneNumbers</td>
 <td>array</td>
 <td>true</td>
-<td></td>
+<td><p>Phone numbers that are related to this address</p>
+</td>
 <td>
   <a href='#schema-contactphonenumber'>ContactPhoneNumber</a>
 </td>
@@ -17194,7 +17218,8 @@
 <td>createdBy</td>
 <td>string</td>
 <td>true</td>
-<td></td>
+<td><p>The id of the user who created the contact</p>
+</td>
 <td>
   
 </td>
@@ -17204,7 +17229,8 @@
 <td>createdTime</td>
 <td>string</td>
 <td>true</td>
-<td></td>
+<td><p>The timestamp of when the contact was created</p>
+</td>
 <td>
   
 </td>
@@ -17214,7 +17240,8 @@
 <td>updatedBy</td>
 <td>string</td>
 <td>false</td>
-<td></td>
+<td><p>The id of the user who created the contact address</p>
+</td>
 <td>
   
 </td>
@@ -17224,7 +17251,8 @@
 <td>updatedTime</td>
 <td>string</td>
 <td>false</td>
-<td></td>
+<td><p>The timestamp of when the contact address was last updated</p>
+</td>
 <td>
   
 </td>
@@ -17234,6 +17262,7 @@
 </table>
 
 <h3 id="schema-contactemailaddress">ContactEmailAddress</h3>
+<p>All email addresses for the contact</p>
 
 
 <table class='schema-contactemailaddress'>
@@ -17246,7 +17275,8 @@
 <td>emailAddress</td>
 <td>string</td>
 <td>true</td>
-<td></td>
+<td><p>Email address</p>
+</td>
 <td>
   
 </td>
@@ -17256,6 +17286,7 @@
 </table>
 
 <h3 id="schema-contactphonenumber">ContactPhoneNumber</h3>
+<p>All phone numbers for the contact</p>
 
 
 <table class='schema-contactphonenumber'>
@@ -17268,7 +17299,8 @@
 <td>phoneType</td>
 <td>string</td>
 <td>true</td>
-<td></td>
+<td><p>Type of phone</p>
+</td>
 <td>
   
 </td>
@@ -17278,7 +17310,8 @@
 <td>phoneTypeDescription</td>
 <td>string</td>
 <td>true</td>
-<td></td>
+<td><p>Description of the type of phone</p>
+</td>
 <td>
   
 </td>
@@ -17288,7 +17321,8 @@
 <td>phoneNumber</td>
 <td>string</td>
 <td>true</td>
-<td></td>
+<td><p>Phone number</p>
+</td>
 <td>
   
 </td>
@@ -17298,7 +17332,8 @@
 <td>extNumber</td>
 <td>string</td>
 <td>false</td>
-<td></td>
+<td><p>Extension number</p>
+</td>
 <td>
   
 </td>
@@ -17320,7 +17355,8 @@
 <td>contactId</td>
 <td>integer</td>
 <td>true</td>
-<td></td>
+<td><p>The ID of the contact</p>
+</td>
 <td>
   
 </td>
@@ -17330,7 +17366,8 @@
 <td>titleCode</td>
 <td>string</td>
 <td>false</td>
-<td></td>
+<td><p>The title code for the contact</p>
+</td>
 <td>
   
 </td>
@@ -17340,17 +17377,8 @@
 <td>titleDescription</td>
 <td>string</td>
 <td>false</td>
-<td></td>
-<td>
-  
+<td><p>The description of the title code, if present</p>
 </td>
-</tr>
-
-<tr>
-<td>firstName</td>
-<td>string</td>
-<td>true</td>
-<td></td>
 <td>
   
 </td>
@@ -17360,7 +17388,19 @@
 <td>lastName</td>
 <td>string</td>
 <td>true</td>
-<td></td>
+<td><p>The last name of the contact</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>firstName</td>
+<td>string</td>
+<td>true</td>
+<td><p>The first name of the contact</p>
+</td>
 <td>
   
 </td>
@@ -17370,7 +17410,8 @@
 <td>middleNames</td>
 <td>string</td>
 <td>false</td>
-<td></td>
+<td><p>The middle names of the contact, if any</p>
+</td>
 <td>
   
 </td>
@@ -17380,7 +17421,8 @@
 <td>dateOfBirth</td>
 <td>string</td>
 <td>false</td>
-<td></td>
+<td><p>The date of birth of the contact, if known</p>
+</td>
 <td>
   
 </td>
@@ -17390,7 +17432,8 @@
 <td>isStaff</td>
 <td>boolean</td>
 <td>true</td>
-<td></td>
+<td><p>Whether the contact is a staff member</p>
+</td>
 <td>
   
 </td>
@@ -17400,7 +17443,8 @@
 <td>deceasedDate</td>
 <td>string</td>
 <td>false</td>
-<td></td>
+<td><p>The date the contact deceased, if known</p>
+</td>
 <td>
   
 </td>
@@ -17410,7 +17454,8 @@
 <td>languageCode</td>
 <td>string</td>
 <td>false</td>
-<td></td>
+<td><p>The NOMIS code for the contacts language</p>
+</td>
 <td>
   
 </td>
@@ -17420,7 +17465,8 @@
 <td>languageDescription</td>
 <td>string</td>
 <td>false</td>
-<td></td>
+<td><p>The description of the language code</p>
+</td>
 <td>
   
 </td>
@@ -17430,7 +17476,8 @@
 <td>interpreterRequired</td>
 <td>boolean</td>
 <td>true</td>
-<td></td>
+<td><p>Whether an interpreter is required for this contact</p>
+</td>
 <td>
   
 </td>
@@ -17440,7 +17487,8 @@
 <td>addresses</td>
 <td>array</td>
 <td>true</td>
-<td></td>
+<td><p>All addresses for the contact</p>
+</td>
 <td>
   <a href='#schema-contactaddress'>ContactAddress</a>
 </td>
@@ -17450,7 +17498,8 @@
 <td>phoneNumbers</td>
 <td>array</td>
 <td>true</td>
-<td></td>
+<td><p>All phone numbers for the contact</p>
+</td>
 <td>
   <a href='#schema-contactphonenumber'>ContactPhoneNumber</a>
 </td>
@@ -17460,7 +17509,8 @@
 <td>emailAddresses</td>
 <td>array</td>
 <td>true</td>
-<td></td>
+<td><p>All email addresses for the contact</p>
+</td>
 <td>
   <a href='#schema-contactemailaddress'>ContactEmailAddress</a>
 </td>
@@ -17470,7 +17520,8 @@
 <td>genderCode</td>
 <td>string</td>
 <td>true</td>
-<td></td>
+<td><p>The NOMIS code for the contacts gender. See reference data with group code &lsquo;GENDER&rsquo;</p>
+</td>
 <td>
   
 </td>
@@ -17480,7 +17531,8 @@
 <td>genderDescription</td>
 <td>string</td>
 <td>true</td>
-<td></td>
+<td><p>The description of gender code. See reference data with group code &lsquo;GENDER&rsquo;</p>
+</td>
 <td>
   
 </td>
