@@ -20,12 +20,12 @@ data class PRPrisonerContact(
   val middleNames: String?,
   @JsonProperty("dateOfBirth")
   val dateOfBirth: String,
-  @JsonProperty("relationshipType")
-  val relationshipType: String,
+  @JsonProperty("relationshipTypeCode")
+  val relationshipTypeCode: String,
   @JsonProperty("relationshipTypeDescription")
   val relationshipTypeDescription: String,
-  @JsonProperty("relationshipToPrisoner")
-  val relationshipToPrisoner: String,
+  @JsonProperty("relationshipToPrisonerCode")
+  val relationshipToPrisonerCode: String,
   @JsonProperty("relationshipToPrisonerDescription")
   val relationshipToPrisonerDescription: String,
   @JsonProperty("flat")
@@ -104,9 +104,9 @@ data class PRPrisonerContact(
         ),
       relationship =
         PrisonerContactRelationship(
-          relationshipType = this.relationshipType,
+          relationshipTypeCode = this.relationshipTypeCode,
           relationshipTypeDescription = this.relationshipTypeDescription,
-          relationshipToPrisoner = this.relationshipToPrisoner,
+          relationshipToPrisonerCode = this.relationshipToPrisonerCode,
           relationshipToPrisonerDescription = this.relationshipToPrisonerDescription,
           approvedVisitor = this.approvedVisitor,
           nextOfKin = this.nextOfKin,
