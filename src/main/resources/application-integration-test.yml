@@ -86,6 +86,7 @@ authorisation:
         - "/v1/persons/.*/visit-restrictions"
         - "/v1/persons/.*/expression-of-interest/jobs/[^/]*$"
         - "/v1/persons/.*/visit/future"
+        - "/v1/persons/.*/iep-level"
         - "/v1/epf/person-details/.*/[^/]*$"
         - "/v1/hmpps/id/nomis-number/[^/]*$"
         - "/v1/hmpps/id/by-nomis-number/[^/]*$"
@@ -128,6 +129,7 @@ authorisation:
         - "/v1/prison/.*/prisoners/.*/non-associations"
         - "/v1/persons/.*/visit-restrictions"
         - "/v1/persons/.*/visitor/.*/restrictions"
+        - "/v1/persons/.*/iep-level"
         - "/v1/persons/.*/visit/future"
         - "/v1/hmpps/id/nomis-number/[^/]*$"
         - "/v1/prison/.*/visit/search[^/]*$"
@@ -142,6 +144,7 @@ authorisation:
         - "/v1/prison/.*/prisoners/.*/non-associations"
         - "/v1/persons/.*/visit-restrictions"
         - "/v1/persons/.*/visit/future"
+        - "/v1/persons/.*/iep-level"
         - "/v1/hmpps/id/nomis-number/[^/]*$"
         - "/v1/visit/[^/]*$"
       filters:

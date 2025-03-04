@@ -21,6 +21,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitesp
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Contact
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ContactDetailsWithEmailAndPhone
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.IEPLevel
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Identifiers
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ImageMetadata
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.OffenderSearchResponse
@@ -35,6 +36,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSPrisoner
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetIEPLevelService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetImageMetadataForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetNameForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService
@@ -57,6 +59,7 @@ internal class PersonControllerTest(
   @MockitoBean val getImageMetadataForPersonService: GetImageMetadataForPersonService,
   @MockitoBean val auditService: AuditService,
   @MockitoBean val getPrisonerContactsService: GetPrisonerContactsService,
+  @MockitoBean val getIEPLevelService: GetIEPLevelService,
 ) : DescribeSpec(
     {
       val hmppsId = "2003/13116M"
@@ -813,6 +816,76 @@ internal class PersonControllerTest(
             {"data":[{"contact":{"contactId":654321,"lastName":"Doe","firstName":"John","middleNames":"William","dateOfBirth":"1980-01-01","flat":"Flat 1","property":"123","street":"Baker Street","area":"Marylebone","cityCode":"25343","cityDescription":"Sheffield","countyCode":"S.YORKSHIRE","countyDescription":"South Yorkshire","postCode":"NW1 6XE","countryCode":"ENG","countryDescription":"England","primaryAddress":true,"mailAddress":true,"phoneType":"MOB","phoneTypeDescription":"Mobile","phoneNumber":"+1234567890","extNumber":"123"},"relationship":{"relationshipTypeCode":"FRIEND","relationshipTypeDescription":"Friend","relationshipToPrisonerCode":"FRI","relationshipToPrisonerDescription":"Friend of","approvedVisitor":true,"nextOfKin":false,"emergencyContact":true,"isRelationshipActive":true,"currentTerm":true,"comments":"Close family friend"}},{"contact":{"contactId":1234667,"lastName":"Doe","firstName":"BOB","middleNames":"William","dateOfBirth":"1980-01-01","flat":"Flat 1","property":"123","street":"Baker Street","area":"Marylebone","cityCode":"25343","cityDescription":"Sheffield","countyCode":"S.YORKSHIRE","countyDescription":"South Yorkshire","postCode":"NW1 6XE","countryCode":"ENG","countryDescription":"England","primaryAddress":true,"mailAddress":true,"phoneType":"MOB","phoneTypeDescription":"Mobile","phoneNumber":"+1234567890","extNumber":"123"},"relationship":{"relationshipTypeCode":"ROOMMATE","relationshipTypeDescription":"Friend","relationshipToPrisonerCode":"FRI","relationshipToPrisonerDescription":"Friend of","approvedVisitor":true,"nextOfKin":false,"emergencyContact":true,"isRelationshipActive":true,"currentTerm":true,"comments":"Close family friend"}}],"pagination":{"isLastPage":true,"count":2,"page":1,"perPage":10,"totalCount":2,"totalPages":1}}
         """.removeWhitespaceAndNewlines(),
           )
+        }
+      }
+
+      describe("/v1/persons/{hmppsId}/iep-level") {
+        val path = "$basePath/$sanitisedHmppsId/iep-level"
+        val iepLevel = IEPLevel(iepCode = "STD", iepLevel = "Standard")
+
+        beforeTest {
+          Mockito.reset(getPrisonerContactsService)
+          Mockito.reset(auditService)
+
+          whenever(getIEPLevelService.execute(sanitisedHmppsId, filter = null)).thenReturn(
+            Response(
+              data = iepLevel,
+            ),
+          )
+        }
+
+        it("logs audit") {
+          mockMvc.performAuthorised(path)
+          verify(auditService, times(1)).createEvent("GET_PRISONER_IEP_LEVEL", mapOf("hmppsId" to sanitisedHmppsId))
+        }
+
+        it("returns a 200 OK status code with data") {
+          val result = mockMvc.performAuthorised(path)
+          result.response.status.shouldBe(HttpStatus.OK.value())
+          result.response.contentAsString.shouldBe(
+            """
+            {
+              "data": {
+                "iepCode": "STD",
+                "iepLevel": "Standard"
+              }
+            }
+          """.removeWhitespaceAndNewlines(),
+          )
+        }
+
+        it("returns a 400 bad request") {
+          whenever(getIEPLevelService.execute(sanitisedHmppsId, filter = null)).thenReturn(
+            Response(
+              data = null,
+              errors =
+                listOf(
+                  UpstreamApiError(
+                    causedBy = UpstreamApi.NOMIS,
+                    type = UpstreamApiError.Type.BAD_REQUEST,
+                  ),
+                ),
+            ),
+          )
+          val result = mockMvc.performAuthorised(path)
+          result.response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
+        }
+
+        it("returns a 404 not found") {
+          whenever(getIEPLevelService.execute(sanitisedHmppsId, filter = null)).thenReturn(
+            Response(
+              data = null,
+              errors =
+                listOf(
+                  UpstreamApiError(
+                    causedBy = UpstreamApi.NOMIS,
+                    type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+                  ),
+                ),
+            ),
+          )
+          val result = mockMvc.performAuthorised(path)
+          result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
         }
       }
     },
