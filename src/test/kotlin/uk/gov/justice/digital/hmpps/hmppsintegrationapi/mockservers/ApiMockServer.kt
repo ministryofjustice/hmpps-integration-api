@@ -6,12 +6,10 @@ import com.github.tomakehurst.wiremock.client.WireMock.get
 import com.github.tomakehurst.wiremock.client.WireMock.matching
 import org.springframework.http.HttpStatus
 
-class IncentivesApiMockServer : WireMockServer(WIREMOCK_PORT) {
-  companion object {
-    private const val WIREMOCK_PORT = 4008
-  }
-
-  fun stubIncentivesApiResponse(
+class ApiMockServer(
+  private val port: Int,
+) : WireMockServer(port) {
+  fun stubForGet(
     path: String,
     body: String,
     status: HttpStatus = HttpStatus.OK,
