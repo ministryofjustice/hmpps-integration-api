@@ -17,12 +17,12 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Consum
 
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
-  classes = [GetVisitBalancesForPersonService::class],
+  classes = [GetVisitOrdersForPersonService::class],
 )
-class GetVisitBalancesForPersonServiceTest(
+class GetVisitOrdersForPersonServiceTest(
   @MockitoBean val nomisGateway: NomisGateway,
   @MockitoBean val getPersonService: GetPersonService,
-  private val getVisitBalancesForPersonService: GetVisitBalancesForPersonService,
+  private val getVisitOrdersForPersonService: GetVisitOrdersForPersonService,
 ) : DescribeSpec({
     val hmppsId = "1234/56789B"
     val nomisNumber = "Z99999ZZ"
@@ -45,7 +45,7 @@ class GetVisitBalancesForPersonServiceTest(
     }
 
     it("returns visitor balances for a valid HMPPS ID") {
-      val response = getVisitBalancesForPersonService.execute(hmppsId, filters)
+      val response = getVisitOrdersForPersonService.execute(hmppsId, filters)
       response.data shouldBe (exampleVisitBalances)
     }
 
@@ -63,7 +63,7 @@ class GetVisitBalancesForPersonServiceTest(
         ),
       )
 
-      val response = getVisitBalancesForPersonService.execute(hmppsId, filters)
+      val response = getVisitOrdersForPersonService.execute(hmppsId, filters)
       response
         .hasErrorCausedBy(
           causedBy = UpstreamApi.NOMIS,
@@ -78,7 +78,7 @@ class GetVisitBalancesForPersonServiceTest(
         ),
       )
 
-      val response = getVisitBalancesForPersonService.execute(hmppsId, filters)
+      val response = getVisitOrdersForPersonService.execute(hmppsId, filters)
       response
         .hasErrorCausedBy(
           causedBy = UpstreamApi.NOMIS,
@@ -100,7 +100,7 @@ class GetVisitBalancesForPersonServiceTest(
         ),
       )
 
-      val response = getVisitBalancesForPersonService.execute(hmppsId, filters)
+      val response = getVisitOrdersForPersonService.execute(hmppsId, filters)
       response
         .hasErrorCausedBy(
           causedBy = UpstreamApi.NOMIS,

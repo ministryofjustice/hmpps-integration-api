@@ -23,6 +23,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Contact
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ContactDetailsWithEmailAndPhone
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Identifiers
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ImageMetadata
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NomisNumber
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.OffenderSearchResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PaginatedPrisonerContacts
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
@@ -34,12 +35,15 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerCon
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitOrders
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSPrisoner
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetImageMetadataForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetNameForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonsService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPrisonerContactsService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetVisitOrdersForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
@@ -57,6 +61,7 @@ internal class PersonControllerTest(
   @MockitoBean val getImageMetadataForPersonService: GetImageMetadataForPersonService,
   @MockitoBean val auditService: AuditService,
   @MockitoBean val getPrisonerContactsService: GetPrisonerContactsService,
+  @MockitoBean val getVisitOrdersForPersonService: GetVisitOrdersForPersonService,
 ) : DescribeSpec(
     {
       val hmppsId = "2003/13116M"
@@ -813,6 +818,58 @@ internal class PersonControllerTest(
             {"data":[{"contact":{"contactId":654321,"lastName":"Doe","firstName":"John","middleNames":"William","dateOfBirth":"1980-01-01","flat":"Flat 1","property":"123","street":"Baker Street","area":"Marylebone","cityCode":"25343","cityDescription":"Sheffield","countyCode":"S.YORKSHIRE","countyDescription":"South Yorkshire","postCode":"NW1 6XE","countryCode":"ENG","countryDescription":"England","primaryAddress":true,"mailAddress":true,"phoneType":"MOB","phoneTypeDescription":"Mobile","phoneNumber":"+1234567890","extNumber":"123"},"relationship":{"relationshipTypeCode":"FRIEND","relationshipTypeDescription":"Friend","relationshipToPrisonerCode":"FRI","relationshipToPrisonerDescription":"Friend of","approvedVisitor":true,"nextOfKin":false,"emergencyContact":true,"isRelationshipActive":true,"currentTerm":true,"comments":"Close family friend"}},{"contact":{"contactId":1234667,"lastName":"Doe","firstName":"BOB","middleNames":"William","dateOfBirth":"1980-01-01","flat":"Flat 1","property":"123","street":"Baker Street","area":"Marylebone","cityCode":"25343","cityDescription":"Sheffield","countyCode":"S.YORKSHIRE","countyDescription":"South Yorkshire","postCode":"NW1 6XE","countryCode":"ENG","countryDescription":"England","primaryAddress":true,"mailAddress":true,"phoneType":"MOB","phoneTypeDescription":"Mobile","phoneNumber":"+1234567890","extNumber":"123"},"relationship":{"relationshipTypeCode":"ROOMMATE","relationshipTypeDescription":"Friend","relationshipToPrisonerCode":"FRI","relationshipToPrisonerDescription":"Friend of","approvedVisitor":true,"nextOfKin":false,"emergencyContact":true,"isRelationshipActive":true,"currentTerm":true,"comments":"Close family friend"}}],"pagination":{"isLastPage":true,"count":2,"page":1,"perPage":10,"totalCount":2,"totalPages":1}}
         """.removeWhitespaceAndNewlines(),
           )
+        }
+      }
+
+      describe("GET $basePath/$hmppsId/visit-orders") {
+        beforeTest {
+          Mockito.reset(getPersonsService)
+          Mockito.reset(auditService)
+          val filters = ConsumerFilters(prisons = emptyList())
+          whenever(getPersonService.getNomisNumberWithPrisonFilter(hmppsId, filters)).thenReturn(Response(NomisNumber("A1234AA")))
+        }
+
+        it("returns a prisoners visit orders") {
+          whenever(getVisitOrdersForPersonService.execute(hmppsId)).thenReturn(
+            Response(
+              data =
+                VisitOrders(
+                  remainingVisitOrders = 10,
+                  remainingPrivilegeVisitOrders = 5,
+                ),
+            ),
+          )
+
+          val result = mockMvc.performAuthorised("$basePath/$hmppsId/visit-orders")
+          result.response.contentAsString.shouldBe("""{"data":{"remainingVisitOrders":10,"remainingPrivilegeVisitOrders":5}}""")
+        }
+
+        it("returns a 404 when no prisoner visit orders found") {
+          whenever(getVisitOrdersForPersonService.execute(hmppsId)).thenReturn(
+            Response(
+              data = null,
+            ),
+          )
+          val result = mockMvc.performAuthorised("$basePath/$hmppsId/visit-orders")
+          result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
+        }
+
+        it("returns a 400 when invalid hmppsid") {
+          whenever(getVisitOrdersForPersonService.execute(hmppsId)).thenReturn(
+            Response(
+              data = null,
+              errors =
+                listOf(
+                  UpstreamApiError(
+                    causedBy = UpstreamApi.NOMIS,
+                    type = UpstreamApiError.Type.BAD_REQUEST,
+                  ),
+                ),
+            ),
+          )
+
+          val result = mockMvc.performAuthorised("$basePath/$hmppsId/visit-orders")
+          result.response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
         }
       }
     },
