@@ -26,6 +26,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerCon
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError.Type.ENTITY_NOT_FOUND
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitOrders
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.interfaces.toPaginatedResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetIEPLevelService
@@ -34,6 +35,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetNameForPerso
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonsService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPrisonerContactsService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetVisitOrdersForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.PaginatedResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.paginateWith
@@ -50,6 +52,7 @@ class PersonController(
   @Autowired val getImageMetadataForPersonService: GetImageMetadataForPersonService,
   @Autowired val getPrisonerContactsService: GetPrisonerContactsService,
   @Autowired val getIEPLevelService: GetIEPLevelService,
+  @Autowired val getVisitOrdersForPersonService: GetVisitOrdersForPersonService,
   @Autowired val auditService: AuditService,
 ) {
   @GetMapping
@@ -225,6 +228,34 @@ class PersonController(
     auditService.createEvent("GET_PRISONER_IEP_LEVEL", mapOf("hmppsId" to hmppsId))
 
     return DataResponse(data = response.data)
+  }
+
+  @GetMapping("{hmppsId}/visit-orders")
+  @Operation(
+    summary = "Returns visit orders.",
+    responses = [
+      ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found a prisoners visit orders."),
+      ApiResponse(responseCode = "404", content = [Content(schema = Schema(ref = "#/components/schemas/PersonNotFound"))]),
+      ApiResponse(responseCode = "500", content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]),
+    ],
+  )
+  fun getPrisonersVisitOrders(
+    @Parameter(description = "The HMPPS ID of the prisoner") @PathVariable hmppsId: String,
+    @RequestAttribute filters: ConsumerFilters?,
+  ): DataResponse<VisitOrders?> {
+    val response = getVisitOrdersForPersonService.execute(hmppsId, filters)
+
+    if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
+      throw EntityNotFoundException("Could not find person with id: $hmppsId")
+    }
+
+    if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
+      throw ValidationException("Invalid HMPPS ID: $hmppsId")
+    }
+
+    auditService.createEvent("GET_PRISONER_VISIT_ORDERS", mapOf("hmppsId" to hmppsId))
+
+    return DataResponse(response.data)
   }
 
   private fun isValidISODateFormat(dateString: String): Boolean =

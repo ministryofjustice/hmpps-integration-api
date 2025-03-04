@@ -24,6 +24,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ContactDeta
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.IEPLevel
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Identifiers
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ImageMetadata
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NomisNumber
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.OffenderSearchResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PaginatedPrisonerContacts
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
@@ -35,13 +36,16 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerCon
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitOrders
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSPrisoner
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetIEPLevelService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetImageMetadataForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetNameForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonsService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPrisonerContactsService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetVisitOrdersForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
@@ -60,6 +64,7 @@ internal class PersonControllerTest(
   @MockitoBean val auditService: AuditService,
   @MockitoBean val getPrisonerContactsService: GetPrisonerContactsService,
   @MockitoBean val getIEPLevelService: GetIEPLevelService,
+  @MockitoBean val getVisitOrdersForPersonService: GetVisitOrdersForPersonService,
 ) : DescribeSpec(
     {
       val hmppsId = "2003/13116M"
@@ -886,6 +891,65 @@ internal class PersonControllerTest(
           )
           val result = mockMvc.performAuthorised(path)
           result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
+        }
+      }
+
+      describe("GET $basePath/$sanitisedHmppsId/visit-orders") {
+        beforeTest {
+          Mockito.reset(getPersonsService)
+          Mockito.reset(auditService)
+          val filters = ConsumerFilters(prisons = emptyList())
+          whenever(getPersonService.getNomisNumberWithPrisonFilter(sanitisedHmppsId, filters)).thenReturn(Response(NomisNumber("A1234AA")))
+        }
+
+        it("returns a prisoners visit orders") {
+          whenever(getVisitOrdersForPersonService.execute(sanitisedHmppsId)).thenReturn(
+            Response(
+              data =
+                VisitOrders(
+                  remainingVisitOrders = 10,
+                  remainingPrivilegeVisitOrders = 5,
+                ),
+            ),
+          )
+
+          val result = mockMvc.performAuthorised("$basePath/$sanitisedHmppsId/visit-orders")
+          result.response.contentAsString.shouldBe("""{"data":{"remainingVisitOrders":10,"remainingPrivilegeVisitOrders":5}}""")
+        }
+
+        it("returns a 404 when no prisoner visit orders found") {
+          whenever(getVisitOrdersForPersonService.execute(sanitisedHmppsId)).thenReturn(
+            Response(
+              data = null,
+              errors =
+                listOf(
+                  UpstreamApiError(
+                    causedBy = UpstreamApi.NOMIS,
+                    type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+                  ),
+                ),
+            ),
+          )
+          val result = mockMvc.performAuthorised("$basePath/$sanitisedHmppsId/visit-orders")
+          result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
+        }
+
+        it("returns a 400 when invalid hmppsid") {
+          whenever(getVisitOrdersForPersonService.execute(sanitisedHmppsId)).thenReturn(
+            Response(
+              data = null,
+              errors =
+                listOf(
+                  UpstreamApiError(
+                    causedBy = UpstreamApi.NOMIS,
+                    type = UpstreamApiError.Type.BAD_REQUEST,
+                  ),
+                ),
+            ),
+          )
+
+          val result = mockMvc.performAuthorised("$basePath/$sanitisedHmppsId/visit-orders")
+          result.response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
         }
       }
     },

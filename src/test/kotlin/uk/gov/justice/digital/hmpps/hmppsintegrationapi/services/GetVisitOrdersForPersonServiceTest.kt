@@ -12,22 +12,24 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NomisNumber
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitOrders
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.visits.VisitBalances
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
-  classes = [GetVisitBalancesForPersonService::class],
+  classes = [GetVisitOrdersForPersonService::class],
 )
-class GetVisitBalancesForPersonServiceTest(
+class GetVisitOrdersForPersonServiceTest(
   @MockitoBean val nomisGateway: NomisGateway,
   @MockitoBean val getPersonService: GetPersonService,
-  private val getVisitBalancesForPersonService: GetVisitBalancesForPersonService,
+  private val getVisitOrdersForPersonService: GetVisitOrdersForPersonService,
 ) : DescribeSpec({
     val hmppsId = "1234/56789B"
     val nomisNumber = "Z99999ZZ"
     val filters = ConsumerFilters(null)
-    val exampleVisitBalances = VisitBalances(remainingPvo = 1073741824, remainingVo = 1073741824)
+    val exampleVisitBalances = VisitBalances(remainingVo = 1073741824, remainingPvo = 1073741824)
+    val exampleVisitOrders = VisitOrders(remainingVisitOrders = 1073741824, remainingPrivilegeVisitOrders = 1073741824)
 
     beforeEach {
       Mockito.reset(nomisGateway)
@@ -44,9 +46,9 @@ class GetVisitBalancesForPersonServiceTest(
       whenever(nomisGateway.getVisitBalances(nomisNumber)).thenReturn(Response(data = exampleVisitBalances))
     }
 
-    it("returns visitor balances for a valid HMPPS ID") {
-      val response = getVisitBalancesForPersonService.execute(hmppsId, filters)
-      response.data shouldBe (exampleVisitBalances)
+    it("returns a prisoners visit balances for a valid HMPPS ID") {
+      val response = getVisitOrdersForPersonService.execute(hmppsId, filters)
+      response.data shouldBe (exampleVisitOrders)
     }
 
     it("returns an error when getNomisNumberWithPrisonFilter returns an error") {
@@ -63,7 +65,7 @@ class GetVisitBalancesForPersonServiceTest(
         ),
       )
 
-      val response = getVisitBalancesForPersonService.execute(hmppsId, filters)
+      val response = getVisitOrdersForPersonService.execute(hmppsId, filters)
       response
         .hasErrorCausedBy(
           causedBy = UpstreamApi.NOMIS,
@@ -78,7 +80,7 @@ class GetVisitBalancesForPersonServiceTest(
         ),
       )
 
-      val response = getVisitBalancesForPersonService.execute(hmppsId, filters)
+      val response = getVisitOrdersForPersonService.execute(hmppsId, filters)
       response
         .hasErrorCausedBy(
           causedBy = UpstreamApi.NOMIS,
@@ -100,7 +102,7 @@ class GetVisitBalancesForPersonServiceTest(
         ),
       )
 
-      val response = getVisitBalancesForPersonService.execute(hmppsId, filters)
+      val response = getVisitOrdersForPersonService.execute(hmppsId, filters)
       response
         .hasErrorCausedBy(
           causedBy = UpstreamApi.NOMIS,
