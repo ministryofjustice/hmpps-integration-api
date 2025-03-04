@@ -1,5 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.incentives
 
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.IEPLevel
+
 data class IncIEPReviewHistory(
   val id: Int,
   val iepCode: String,
@@ -11,7 +13,9 @@ data class IncIEPReviewHistory(
   val iepDetails: List<IncIEPDetails>,
   val nextReviewDate: String,
   val daysSinceReview: Int,
-)
+) {
+  fun toIEPLevel(): IEPLevel = IEPLevel(iepCode = this.iepCode, iepLevel = this.iepLevel)
+}
 
 data class IncIEPDetails(
   val id: Int,
