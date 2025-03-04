@@ -37,6 +37,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisSenten
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisSentenceSummary
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisTransactionResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisTransactionTransferResponse
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.visits.VisitBalances
 
 @Component
 class NomisGateway(
@@ -466,6 +467,30 @@ class NomisGateway(
     return when (result) {
       is WebClientWrapperResponse.Success -> {
         Response(data = result.data.offenderRestrictions.map { it.toPersonVisitRestriction() })
+      }
+
+      is WebClientWrapperResponse.Error -> {
+        Response(
+          data = null,
+          errors = result.errors,
+        )
+      }
+    }
+  }
+
+  fun getVisitBalances(offenderNumber: String): Response<VisitBalances?> {
+    val result =
+      webClient.request<VisitBalances>(
+        HttpMethod.GET,
+        "/api/bookings/offenderNo/$offenderNumber/visit/balances",
+        authenticationHeader(),
+        UpstreamApi.NOMIS,
+        badRequestAsError = true,
+      )
+
+    return when (result) {
+      is WebClientWrapperResponse.Success -> {
+        Response(data = result.data)
       }
 
       is WebClientWrapperResponse.Error -> {
