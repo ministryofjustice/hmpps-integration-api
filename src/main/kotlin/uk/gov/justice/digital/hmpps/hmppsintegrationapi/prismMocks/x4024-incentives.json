@@ -21,10 +21,7 @@
   ],
   "security": [
     {
-      "bearer-jwt": [
-        "read",
-        "write"
-      ]
+      "bearer-jwt": ["read", "write"]
     },
     {
       "hmpps-auth": []
@@ -51,9 +48,7 @@
   "paths": {
     "/queue-admin/retry-dlq/{dlqName}": {
       "put": {
-        "tags": [
-          "hmpps-reactive-queue-resource"
-        ],
+        "tags": ["hmpps-reactive-queue-resource"],
         "operationId": "retryDlq",
         "parameters": [
           {
@@ -81,9 +76,7 @@
     },
     "/queue-admin/retry-all-dlqs": {
       "put": {
-        "tags": [
-          "hmpps-reactive-queue-resource"
-        ],
+        "tags": ["hmpps-reactive-queue-resource"],
         "operationId": "retryAllDlqs",
         "responses": {
           "200": {
@@ -104,9 +97,7 @@
     },
     "/queue-admin/purge-queue/{queueName}": {
       "put": {
-        "tags": [
-          "hmpps-reactive-queue-resource"
-        ],
+        "tags": ["hmpps-reactive-queue-resource"],
         "operationId": "purgeQueue",
         "parameters": [
           {
@@ -134,9 +125,7 @@
     },
     "/incentive/prison-levels/{prisonId}/reset": {
       "put": {
-        "tags": [
-          "Prison incentive levels"
-        ],
+        "tags": ["Prison incentive levels"],
         "summary": "Reset all incentive levels for a prison",
         "description": "Activates the required set of levels, ensuring that Standard is the default level for admission. This can be used when a new prison is opened. Any levels that are already active will remain active and associated information remains unchanged. Returns all incentive levels in this prison including those that were already active. \n\nRequires role: MAINTAIN_PRISON_IEP_LEVELS with write scope\n\nRaises HMPPS domain events: \"incentives.prison-level.changed\"",
         "operationId": "resetPrisonIncentiveLevels",
@@ -201,9 +190,7 @@
     },
     "/incentive/prison-levels/{prisonId}/level/{levelCode}": {
       "get": {
-        "tags": [
-          "Prison incentive levels"
-        ],
+        "tags": ["Prison incentive levels"],
         "summary": "Returns an incentive level in this prison along with associated information",
         "description": "Note that it may be inactive in the prison. For the majority of use cases, inactive levels in a prison should be ignored.",
         "operationId": "getPrisonIncentiveLevel",
@@ -281,9 +268,7 @@
         }
       },
       "put": {
-        "tags": [
-          "Prison incentive levels"
-        ],
+        "tags": ["Prison incentive levels"],
         "summary": "Updates prison incentive level information",
         "description": "Payload must include all required fields. Deactivating a level is only possible if there are no prisoners currently on it.\n\nRequires role: MAINTAIN_PRISON_IEP_LEVELS with write scope\n\nRaises HMPPS domain event: \"incentives.prison-level.changed\"",
         "operationId": "updatePrisonIncentiveLevel",
@@ -381,9 +366,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "Prison incentive levels"
-        ],
+        "tags": ["Prison incentive levels"],
         "summary": "Deactivate an incentive level for a prison",
         "description": "Deactivating a level is only possible if there are no prisoners currently on it.\n\nRequires role: MAINTAIN_PRISON_IEP_LEVELS with write scope\n\nRaises HMPPS domain event: \"incentives.prison-level.changed\"",
         "operationId": "deactivatePrisonIncentiveLevel",
@@ -471,9 +454,7 @@
         }
       },
       "patch": {
-        "tags": [
-          "Prison incentive levels"
-        ],
+        "tags": ["Prison incentive levels"],
         "summary": "Updates prison incentive level information",
         "description": "Partial updates are allowed. Deactivating a level is only possible if there are no prisoners currently on it.\n\nRequires role: MAINTAIN_PRISON_IEP_LEVELS with write scope\n\nRaises HMPPS domain event: \"incentives.prison-level.changed\"",
         "operationId": "partiallyUpdatePrisonIncentiveLevel",
@@ -573,9 +554,7 @@
     },
     "/incentive/levels/{code}": {
       "get": {
-        "tags": [
-          "Incentive levels"
-        ],
+        "tags": ["Incentive levels"],
         "summary": "Returns an incentive level by code",
         "description": "Note that it may be inactive. For the majority of use cases, inactive levels in a prison should be ignored.",
         "operationId": "getIncentiveLevel",
@@ -639,9 +618,7 @@
         }
       },
       "put": {
-        "tags": [
-          "Incentive levels"
-        ],
+        "tags": ["Incentive levels"],
         "summary": "Updates an incentive level",
         "description": "Payload must include all required fields. A level marked as required must also be active. Deactivating a level is only possible if it is not active in any prison (moreInfo field will contain comma-separated prison ids). Deactivated incentive levels remain in the same position with respect to the others.\n\nRequires role: MAINTAIN_INCENTIVE_LEVELS with write scope\n\nRaises HMPPS domain event: \"incentives.level.changed\"",
         "operationId": "updateIncentiveLevel",
@@ -725,9 +702,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "Incentive levels"
-        ],
+        "tags": ["Incentive levels"],
         "summary": "Deactivates an incentive level",
         "description": "A required level cannot be deactivated, needs to be updated first to be not required. Deactivating a level is only possible if it is not active in any prison (moreInfo field will contain comma-separated prison ids). Deactivated incentive levels remain in the same position with respect to the others.\n\nRequires role: MAINTAIN_INCENTIVE_LEVELS with write scope\n\nRaises HMPPS domain event: \"incentives.level.changed\"",
         "operationId": "deactivateIncentiveLevel",
@@ -801,9 +776,7 @@
         }
       },
       "patch": {
-        "tags": [
-          "Incentive levels"
-        ],
+        "tags": ["Incentive levels"],
         "summary": "Updates an incentive level",
         "description": "Partial updates are allowed. A level marked as required must also be active. Deactivating a level is only possible if it is not active in any prison (moreInfo field will contain comma-separated prison ids). Deactivated incentive levels remain in the same position with respect to the others.\n\nRequires role: MAINTAIN_INCENTIVE_LEVELS with write scope\n\nRaises HMPPS domain event: \"incentives.level.changed\"",
         "operationId": "partiallyUpdateIncentiveLevel",
@@ -889,9 +862,7 @@
     },
     "/incentive/levels": {
       "get": {
-        "tags": [
-          "Incentive levels"
-        ],
+        "tags": ["Incentive levels"],
         "summary": "Lists all incentive levels, optionally including inactive ones",
         "description": "For the majority of use cases, inactive levels in a prison should be ignored.",
         "operationId": "getIncentiveLevels",
@@ -948,9 +919,7 @@
         }
       },
       "post": {
-        "tags": [
-          "Incentive levels"
-        ],
+        "tags": ["Incentive levels"],
         "summary": "Creates a new incentive level",
         "description": "New incentive levels are added to the end of the list.\n\nRequires role: MAINTAIN_INCENTIVE_LEVELS with write scope\n\nRaises HMPPS domain event: \"incentives.level.changed\"",
         "operationId": "createIncentiveLevel",
@@ -1010,9 +979,7 @@
     },
     "/incentive-reviews/prisoner/{prisonerNumber}": {
       "get": {
-        "tags": [
-          "Maintain incentive reviews"
-        ],
+        "tags": ["Maintain incentive reviews"],
         "summary": "Returns a history of incentive reviews for a prisoner, Requires INCENTIVE_REVIEWS role and read scope",
         "description": "Prisoner Number is an unique reference for a prisoner in NOMIS",
         "operationId": "getPrisonerIncentiveReviewHistory",
@@ -1075,9 +1042,7 @@
         }
       },
       "post": {
-        "tags": [
-          "Maintain incentive reviews"
-        ],
+        "tags": ["Maintain incentive reviews"],
         "summary": "Adds a new Incentive Review for this specific prisoner by prisoner number",
         "description": "Prisoner Number is an unique reference for a prisoner in NOMIS, requires INCENTIVE_REVIEWS role and write scope",
         "operationId": "addIncentiveReview",
@@ -1153,9 +1118,7 @@
     },
     "/incentive-reviews/bookings": {
       "post": {
-        "tags": [
-          "Maintain incentive reviews"
-        ],
+        "tags": ["Maintain incentive reviews"],
         "summary": "Returns a history of incentive reviews for a list of prisoners, Requires INCENTIVE_REVIEWS role and read scope",
         "operationId": "getCurrentIncentiveLevelForPrisoner",
         "requestBody": {
@@ -1224,9 +1187,7 @@
     },
     "/incentive-reviews/booking/{bookingId}": {
       "get": {
-        "tags": [
-          "Maintain incentive reviews"
-        ],
+        "tags": ["Maintain incentive reviews"],
         "summary": "Returns a history of incentive reviews for a prisoner, Requires INCENTIVE_REVIEWS role and read scope",
         "description": "Booking ID is an internal ID for a prisoner in NOMIS",
         "operationId": "getPrisonerIncentiveLevelHistory",
@@ -1304,9 +1265,7 @@
         }
       },
       "post": {
-        "tags": [
-          "Maintain incentive reviews"
-        ],
+        "tags": ["Maintain incentive reviews"],
         "summary": "Adds a new incentive review for this specific prisoner by booking Id",
         "description": "Booking ID is an internal ID for a prisoner in NOMIS, requires INCENTIVE_REVIEWS role and write scope",
         "operationId": "addIncentiveReview_1",
@@ -1383,9 +1342,7 @@
     },
     "/incentive/level-order": {
       "patch": {
-        "tags": [
-          "Incentive levels"
-        ],
+        "tags": ["Incentive levels"],
         "summary": "Sets the order of incentive levels",
         "description": "All existing incentive level codes must be provided.\n\nRequires role: MAINTAIN_INCENTIVE_LEVELS with write scope\n\nRaises HMPPS domain event: \"incentives.levels.reordered\"",
         "operationId": "setOrderOfIncentiveLevels",
@@ -1461,9 +1418,7 @@
     },
     "/subject-access-request": {
       "get": {
-        "tags": [
-          "Subject Access Request"
-        ],
+        "tags": ["Subject Access Request"],
         "summary": "Provides content for a prisoner to satisfy the needs of a subject access request on their behalf",
         "description": "Requires role SAR_DATA_ACCESS or additional role as specified by hmpps.sar.additionalAccessRole configuration.",
         "operationId": "getSarContentByReference",
@@ -1573,9 +1528,7 @@
     },
     "/queue-admin/get-dlq-messages/{dlqName}": {
       "get": {
-        "tags": [
-          "hmpps-reactive-queue-resource"
-        ],
+        "tags": ["hmpps-reactive-queue-resource"],
         "operationId": "getDlqMessages",
         "parameters": [
           {
@@ -1613,9 +1566,7 @@
     },
     "/incentives-reviews/prison/{prisonId}/location/{cellLocationPrefix}/level/{levelCode}": {
       "get": {
-        "tags": [
-          "Incentive review summary"
-        ],
+        "tags": ["Incentive review summary"],
         "summary": "List of incentive review information for a given location within a prison and on a given level",
         "description": "Location should be a cell ID prefix like `MDI-1`",
         "operationId": "getReviews",
@@ -1693,10 +1644,7 @@
               "type": "string",
               "default": "ASC",
               "description": "Sort direction",
-              "enum": [
-                "ASC",
-                "DESC"
-              ],
+              "enum": ["ASC", "DESC"],
               "example": "ASC"
             },
             "example": "ASC"
@@ -1779,9 +1727,7 @@
     },
     "/incentive/prison-levels/{prisonId}": {
       "get": {
-        "tags": [
-          "Prison incentive levels"
-        ],
+        "tags": ["Prison incentive levels"],
         "summary": "Lists incentive levels in this prison along with associated information, optionally including inactive ones",
         "description": "Inactive incentive levels in the prison were previously active at some point. Not all global inactive incentive levels are necessarily included. For the majority of use cases, inactive levels in a prison should be ignored.",
         "operationId": "getPrisonIncentiveLevels",
@@ -1862,9 +1808,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "Prison incentive levels"
-        ],
+        "tags": ["Prison incentive levels"],
         "summary": "Deactivate all incentive levels for a prison",
         "description": "This can be used when a prison closes. Returns all incentive levels in this prison including those that were already inactive. Deactivating a level is only possible if there are no prisoners currently on it.\n\nRequires role: MAINTAIN_PRISON_IEP_LEVELS with write scope\n\nRaises HMPPS domain events: \"incentives.prison-level.changed\"",
         "operationId": "deactivateAllPrisonIncentiveLevels",
@@ -1933,9 +1877,7 @@
     },
     "/incentive-reviews/id/{id}": {
       "get": {
-        "tags": [
-          "Maintain incentive reviews"
-        ],
+        "tags": ["Maintain incentive reviews"],
         "summary": "Returns a specified Incentive Review, Requires INCENTIVE_REVIEWS role and read scope",
         "operationId": "getIncentiveReviewById",
         "parameters": [
@@ -2009,9 +1951,7 @@
             "format": "int32"
           }
         },
-        "required": [
-          "messagesFoundCount"
-        ]
+        "required": ["messagesFoundCount"]
       },
       "PurgeQueueResult": {
         "type": "object",
@@ -2021,9 +1961,7 @@
             "format": "int32"
           }
         },
-        "required": [
-          "messagesFoundCount"
-        ]
+        "required": ["messagesFoundCount"]
       },
       "ErrorResponse": {
         "type": "object",
@@ -2057,9 +1995,7 @@
             "example": "[Rarely used, error-specific]"
           }
         },
-        "required": [
-          "status"
-        ]
+        "required": ["status"]
       },
       "PrisonIncentiveLevel": {
         "type": "object",
@@ -2176,12 +2112,7 @@
             "example": false
           }
         },
-        "required": [
-          "active",
-          "code",
-          "name",
-          "required"
-        ]
+        "required": ["active", "code", "name", "required"]
       },
       "CreateIncentiveReviewRequest": {
         "type": "object",
@@ -2190,13 +2121,7 @@
           "iepLevel": {
             "type": "string",
             "description": "Incentive Level",
-            "enum": [
-              "BAS",
-              "STD",
-              "ENH",
-              "EN2",
-              "EN3"
-            ],
+            "enum": ["BAS", "STD", "ENH", "EN2", "EN3"],
             "example": "STD",
             "maxLength": 6,
             "minLength": 2
@@ -2211,13 +2136,7 @@
             "type": "string",
             "default": "REVIEW",
             "description": "Review Type",
-            "enum": [
-              "INITIAL",
-              "REVIEW",
-              "TRANSFER",
-              "MIGRATED",
-              "READMISSION"
-            ],
+            "enum": ["INITIAL", "REVIEW", "TRANSFER", "MIGRATED", "READMISSION"],
             "example": "REVIEW"
           },
           "reviewTime": {
@@ -2234,10 +2153,7 @@
             "minLength": 1
           }
         },
-        "required": [
-          "comment",
-          "iepLevel"
-        ]
+        "required": ["comment", "iepLevel"]
       },
       "IncentiveReviewDetail": {
         "type": "object",
@@ -2306,13 +2222,7 @@
           "reviewType": {
             "type": "string",
             "description": "Type of Incentive Level change",
-            "enum": [
-              "INITIAL",
-              "REVIEW",
-              "TRANSFER",
-              "MIGRATED",
-              "READMISSION"
-            ],
+            "enum": ["INITIAL", "REVIEW", "TRANSFER", "MIGRATED", "READMISSION"],
             "example": "REVIEW"
           },
           "auditModuleName": {
@@ -2355,10 +2265,7 @@
             "example": "Standard"
           }
         },
-        "required": [
-          "bookingId",
-          "iepLevel"
-        ]
+        "required": ["bookingId", "iepLevel"]
       },
       "PrisonIncentiveLevelUpdate": {
         "type": "object",
@@ -2447,9 +2354,7 @@
             "description": "The content of the subject access request response"
           }
         },
-        "required": [
-          "content"
-        ]
+        "required": ["content"]
       },
       "DlqMessage": {
         "type": "object",
@@ -2464,10 +2369,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "body",
-          "messageId"
-        ]
+        "required": ["body", "messageId"]
       },
       "GetDlqResult": {
         "type": "object",
@@ -2487,11 +2389,7 @@
             }
           }
         },
-        "required": [
-          "messages",
-          "messagesFoundCount",
-          "messagesReturnedCount"
-        ]
+        "required": ["messages", "messagesFoundCount", "messagesReturnedCount"]
       },
       "IncentiveReview": {
         "type": "object",
@@ -2598,12 +2496,7 @@
             "example": 10
           }
         },
-        "required": [
-          "levelCode",
-          "levelName",
-          "overdueCount",
-          "reviewCount"
-        ]
+        "required": ["levelCode", "levelName", "overdueCount", "reviewCount"]
       },
       "IncentiveReviewResponse": {
         "type": "object",
@@ -2629,11 +2522,7 @@
             "example": "Houseblock 1"
           }
         },
-        "required": [
-          "levels",
-          "locationDescription",
-          "reviews"
-        ]
+        "required": ["levels", "locationDescription", "reviews"]
       },
       "IncentiveReviewSummary": {
         "type": "object",
