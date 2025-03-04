@@ -21,7 +21,7 @@ data class IncIEPDetails(
   val id: Int,
   val iepCode: String,
   val iepLevel: String,
-  val comments: String?,
+  val comments: String? = null,
   val prisonerNumber: String,
   val bookingId: Long,
   val iepDate: String,
