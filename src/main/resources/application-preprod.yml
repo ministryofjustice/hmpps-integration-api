@@ -24,7 +24,9 @@ services:
   non-associations:
     base-url: https://non-associations-api-preprod.hmpps.service.justice.gov.uk
   manage-prison-visits:
-    base-url: https://hmpps-manage-prison-visits-orchestration-dev.prison.service.justice.gov.uk
+    base-url: https://hmpps-manage-prison-visits-orchestration-preprod.prison.service.justice.gov.uk
+  incentives:
+    base-url: https://incentives-api-preprod.hmpps.service.justice.gov.uk
   hmpps-auth:
     base-url: https://sign-in-preprod.hmpps.service.justice.gov.uk
     username: ${CLIENT_ID}
