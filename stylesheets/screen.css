@@ -4352,6 +4352,12 @@
     margin-left: 330px;
   }
 }
+.app-pane__content:focus-visible,
+.app-pane__content:has(main:focus-visible) {
+  outline: 3px solid transparent;
+  box-shadow: 0 0 0 4px #ffdd00, 0 0 0 8px #0b0c0c;
+}
+
 .app-footer {
   padding-left: 15px;
   padding-right: 15px;
