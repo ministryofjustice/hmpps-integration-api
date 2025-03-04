@@ -821,16 +821,16 @@ internal class PersonControllerTest(
         }
       }
 
-      describe("GET $basePath/$hmppsId/visit-orders") {
+      describe("GET $basePath/$sanitisedHmppsId/visit-orders") {
         beforeTest {
           Mockito.reset(getPersonsService)
           Mockito.reset(auditService)
           val filters = ConsumerFilters(prisons = emptyList())
-          whenever(getPersonService.getNomisNumberWithPrisonFilter(hmppsId, filters)).thenReturn(Response(NomisNumber("A1234AA")))
+          whenever(getPersonService.getNomisNumberWithPrisonFilter(sanitisedHmppsId, filters)).thenReturn(Response(NomisNumber("A1234AA")))
         }
 
         it("returns a prisoners visit orders") {
-          whenever(getVisitOrdersForPersonService.execute(hmppsId)).thenReturn(
+          whenever(getVisitOrdersForPersonService.execute(sanitisedHmppsId)).thenReturn(
             Response(
               data =
                 VisitOrders(
@@ -840,22 +840,29 @@ internal class PersonControllerTest(
             ),
           )
 
-          val result = mockMvc.performAuthorised("$basePath/$hmppsId/visit-orders")
+          val result = mockMvc.performAuthorised("$basePath/$sanitisedHmppsId/visit-orders")
           result.response.contentAsString.shouldBe("""{"data":{"remainingVisitOrders":10,"remainingPrivilegeVisitOrders":5}}""")
         }
 
         it("returns a 404 when no prisoner visit orders found") {
-          whenever(getVisitOrdersForPersonService.execute(hmppsId)).thenReturn(
+          whenever(getVisitOrdersForPersonService.execute(sanitisedHmppsId)).thenReturn(
             Response(
               data = null,
+              errors =
+                listOf(
+                  UpstreamApiError(
+                    causedBy = UpstreamApi.NOMIS,
+                    type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+                  ),
+                ),
             ),
           )
-          val result = mockMvc.performAuthorised("$basePath/$hmppsId/visit-orders")
+          val result = mockMvc.performAuthorised("$basePath/$sanitisedHmppsId/visit-orders")
           result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
         }
 
         it("returns a 400 when invalid hmppsid") {
-          whenever(getVisitOrdersForPersonService.execute(hmppsId)).thenReturn(
+          whenever(getVisitOrdersForPersonService.execute(sanitisedHmppsId)).thenReturn(
             Response(
               data = null,
               errors =
@@ -868,7 +875,7 @@ internal class PersonControllerTest(
             ),
           )
 
-          val result = mockMvc.performAuthorised("$basePath/$hmppsId/visit-orders")
+          val result = mockMvc.performAuthorised("$basePath/$sanitisedHmppsId/visit-orders")
           result.response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
         }
       }

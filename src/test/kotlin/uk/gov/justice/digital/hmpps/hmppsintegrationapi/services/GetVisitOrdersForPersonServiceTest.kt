@@ -12,6 +12,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NomisNumber
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitOrders
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.visits.VisitBalances
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
@@ -27,7 +28,8 @@ class GetVisitOrdersForPersonServiceTest(
     val hmppsId = "1234/56789B"
     val nomisNumber = "Z99999ZZ"
     val filters = ConsumerFilters(null)
-    val exampleVisitBalances = VisitBalances(remainingPvo = 1073741824, remainingVo = 1073741824)
+    val exampleVisitBalances = VisitBalances(remainingVo = 1073741824, remainingPvo = 1073741824)
+    val exampleVisitOrders = VisitOrders(remainingVisitOrders = 1073741824, remainingPrivilegeVisitOrders = 1073741824)
 
     beforeEach {
       Mockito.reset(nomisGateway)
@@ -44,9 +46,9 @@ class GetVisitOrdersForPersonServiceTest(
       whenever(nomisGateway.getVisitBalances(nomisNumber)).thenReturn(Response(data = exampleVisitBalances))
     }
 
-    it("returns visitor balances for a valid HMPPS ID") {
+    it("returns a prisoners visit balances for a valid HMPPS ID") {
       val response = getVisitOrdersForPersonService.execute(hmppsId, filters)
-      response.data shouldBe (exampleVisitBalances)
+      response.data shouldBe (exampleVisitOrders)
     }
 
     it("returns an error when getNomisNumberWithPrisonFilter returns an error") {
