@@ -110,6 +110,7 @@ authorisation:
         - "/v1/prison/.*/visit/search[^/]*$"
         - "/v1/contacts/[^/]*$"
         - "/v1/persons/.*/contacts[^/]*$"
+        - "/v1/persons/.*/visit-orders"
     config-test:
       include:
         - "/v1/config/authorisation"
