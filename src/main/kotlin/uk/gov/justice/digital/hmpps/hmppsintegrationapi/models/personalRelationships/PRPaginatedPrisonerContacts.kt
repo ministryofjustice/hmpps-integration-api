@@ -19,12 +19,12 @@ data class PRPaginatedPrisonerContacts(
 ) {
   fun toPaginatedPrisonerContacts(): PaginatedPrisonerContacts =
     PaginatedPrisonerContacts(
-      contacts = this.contacts.map { it.toPrisonerContact() },
-      isLast = this.last,
-      numberOfElements = this.numberOfElements.toInt(),
-      number = this.number.toInt(),
-      size = this.size.toInt(),
-      totalElements = this.totalElements,
+      content = this.contacts.map { it.toPrisonerContact() },
+      isLastPage = this.last,
+      count = this.numberOfElements.toInt(),
+      page = this.number.toInt(),
+      perPage = this.size.toInt(),
+      totalCount = this.totalElements,
       totalPages = this.totalPages.toInt(),
     )
 }

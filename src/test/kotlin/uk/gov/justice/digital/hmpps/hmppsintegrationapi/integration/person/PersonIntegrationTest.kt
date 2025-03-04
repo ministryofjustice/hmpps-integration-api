@@ -59,4 +59,12 @@ class PersonIntegrationTest : IntegrationTestBase() {
         ),
       )
   }
+
+  @Test
+  fun `returns a prisoners contacts`() {
+    val params = "?page=1&size=10"
+    callApi("$basePath/$nomsId/contacts$params")
+      .andExpect(status().isOk)
+      .andExpect(content().json(getExpectedResponse("prisoners-contacts")))
+  }
 }

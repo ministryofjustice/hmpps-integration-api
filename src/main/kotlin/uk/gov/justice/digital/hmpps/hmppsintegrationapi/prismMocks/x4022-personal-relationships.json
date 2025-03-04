@@ -12803,7 +12803,8 @@
           "page": {
             "type": "integer",
             "format": "int32",
-            "minimum": 0
+            "minimum": 0,
+            "example": 1
           },
           "size": {
             "type": "integer",
@@ -12830,7 +12831,8 @@
           },
           "pageSize": {
             "type": "integer",
-            "format": "int32"
+            "format": "int32",
+            "example": 10
           },
           "unpaged": {
             "type": "boolean"
@@ -12840,7 +12842,8 @@
           },
           "pageNumber": {
             "type": "integer",
-            "format": "int32"
+            "format": "int32",
+            "example": 1
           }
         }
       },
@@ -13061,29 +13064,34 @@
           },
           "totalElements": {
             "type": "integer",
-            "format": "int64"
+            "format": "int64",
+            "example": 1
           },
           "totalPages": {
             "type": "integer",
-            "format": "int32"
+            "format": "int32",
+            "example": 1
           },
           "first": {
             "type": "boolean"
           },
           "size": {
             "type": "integer",
-            "format": "int32"
+            "format": "int32",
+            "example": 10
           },
           "number": {
             "type": "integer",
-            "format": "int32"
+            "format": "int32",
+            "example": 1
           },
           "sort": {
             "$ref": "#/components/schemas/SortObject"
           },
           "numberOfElements": {
             "type": "integer",
-            "format": "int32"
+            "format": "int32",
+            "example": 1
           },
           "empty": {
             "type": "boolean"
