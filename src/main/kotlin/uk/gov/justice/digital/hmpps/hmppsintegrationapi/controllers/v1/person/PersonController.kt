@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.decodeUrlCharacters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.IEPLevel
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ImageMetadata
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.OffenderSearchResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
@@ -28,6 +29,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitOrders
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.interfaces.toPaginatedResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetIEPLevelService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetImageMetadataForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetNameForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService
@@ -49,6 +51,7 @@ class PersonController(
   @Autowired val getNameForPersonService: GetNameForPersonService,
   @Autowired val getImageMetadataForPersonService: GetImageMetadataForPersonService,
   @Autowired val getPrisonerContactsService: GetPrisonerContactsService,
+  @Autowired val getIEPLevelService: GetIEPLevelService,
   @Autowired val getVisitOrdersForPersonService: GetVisitOrdersForPersonService,
   @Autowired val auditService: AuditService,
 ) {
@@ -169,6 +172,7 @@ class PersonController(
   @GetMapping("{hmppsId}/contacts")
   @Operation(
     summary = "Returns a prisoners contacts.",
+    description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
     responses = [
       ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found a prisoners contacts."),
       ApiResponse(responseCode = "404", content = [Content(schema = Schema(ref = "#/components/schemas/PersonNotFound"))]),
@@ -194,6 +198,36 @@ class PersonController(
     auditService.createEvent("GET_PRISONER_CONTACTS", mapOf("hmppsId" to hmppsId))
 
     return response.data.toPaginatedResponse()
+  }
+
+  @GetMapping("{hmppsId}/iep-level")
+  @Operation(
+    summary = "Returns a prisoners IEP level.",
+    description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
+    responses = [
+      ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found a prisoners contacts."),
+      ApiResponse(responseCode = "400", content = [Content(schema = Schema(ref = "#/components/schemas/BadRequest"))]),
+      ApiResponse(responseCode = "404", content = [Content(schema = Schema(ref = "#/components/schemas/PersonNotFound"))]),
+      ApiResponse(responseCode = "500", content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]),
+    ],
+  )
+  fun getPrisonersIEPLevel(
+    @Parameter(description = "The HMPPS ID of the prisoner") @PathVariable hmppsId: String,
+    @RequestAttribute filters: ConsumerFilters?,
+  ): DataResponse<IEPLevel?> {
+    val response = getIEPLevelService.execute(hmppsId, filters)
+
+    if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
+      throw EntityNotFoundException("Could not find person with id: $hmppsId")
+    }
+
+    if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
+      throw ValidationException("Invalid HMPPS ID: $hmppsId")
+    }
+
+    auditService.createEvent("GET_PRISONER_IEP_LEVEL", mapOf("hmppsId" to hmppsId))
+
+    return DataResponse(data = response.data)
   }
 
   @GetMapping("{hmppsId}/visit-orders")

@@ -1,0 +1,2638 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "HMPPS Incentives API",
+    "description": "API for viewing and managing incentive levels and reviews for prisoners",
+    "contact": {
+      "name": "HMPPS Digital Studio",
+      "email": "feedback@digital.justice.gov.uk"
+    },
+    "license": {
+      "name": "MIT",
+      "identifier": "MIT"
+    },
+    "version": "2025-02-27.12938.282fb3d"
+  },
+  "servers": [
+    {
+      "url": "/",
+      "description": "Current url"
+    }
+  ],
+  "security": [
+    {
+      "bearer-jwt": ["read", "write"]
+    },
+    {
+      "hmpps-auth": []
+    }
+  ],
+  "tags": [
+    {
+      "name": "Incentive review summary",
+      "description": "List of incentive review information for a given location within a prison and on a given level"
+    },
+    {
+      "name": "Incentive levels",
+      "description": "Incentive levels and their global associated information"
+    },
+    {
+      "name": "Maintain incentive reviews",
+      "description": "Retrieve and add incentive review records. Requires INCENTIVE_REVIEWS role and read scope"
+    },
+    {
+      "name": "Prison incentive levels",
+      "description": "Incentive levels and their per-prison associated information"
+    }
+  ],
+  "paths": {
+    "/queue-admin/retry-dlq/{dlqName}": {
+      "put": {
+        "tags": ["hmpps-reactive-queue-resource"],
+        "operationId": "retryDlq",
+        "parameters": [
+          {
+            "name": "dlqName",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/RetryDlqResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/queue-admin/retry-all-dlqs": {
+      "put": {
+        "tags": ["hmpps-reactive-queue-resource"],
+        "operationId": "retryAllDlqs",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RetryDlqResult"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/queue-admin/purge-queue/{queueName}": {
+      "put": {
+        "tags": ["hmpps-reactive-queue-resource"],
+        "operationId": "purgeQueue",
+        "parameters": [
+          {
+            "name": "queueName",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/PurgeQueueResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/incentive/prison-levels/{prisonId}/reset": {
+      "put": {
+        "tags": ["Prison incentive levels"],
+        "summary": "Reset all incentive levels for a prison",
+        "description": "Activates the required set of levels, ensuring that Standard is the default level for admission. This can be used when a new prison is opened. Any levels that are already active will remain active and associated information remains unchanged. Returns all incentive levels in this prison including those that were already active. \n\nRequires role: MAINTAIN_PRISON_IEP_LEVELS with write scope\n\nRaises HMPPS domain events: \"incentives.prison-level.changed\"",
+        "operationId": "resetPrisonIncentiveLevels",
+        "parameters": [
+          {
+            "name": "prisonId",
+            "in": "path",
+            "description": "Prison id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Prison id",
+              "example": "MDI",
+              "maxLength": 6,
+              "minLength": 3
+            },
+            "example": "MDI"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {}
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Prison incentive levels reset",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PrisonIncentiveLevel"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized to access this endpoint",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Incorrect permissions to use this endpoint",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/incentive/prison-levels/{prisonId}/level/{levelCode}": {
+      "get": {
+        "tags": ["Prison incentive levels"],
+        "summary": "Returns an incentive level in this prison along with associated information",
+        "description": "Note that it may be inactive in the prison. For the majority of use cases, inactive levels in a prison should be ignored.",
+        "operationId": "getPrisonIncentiveLevel",
+        "parameters": [
+          {
+            "name": "prisonId",
+            "in": "path",
+            "description": "Prison id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Prison id",
+              "example": "MDI",
+              "maxLength": 6,
+              "minLength": 3
+            },
+            "example": "MDI"
+          },
+          {
+            "name": "levelCode",
+            "in": "path",
+            "description": "Incentive level code",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Incentive level code",
+              "example": "STD",
+              "maxLength": 6,
+              "minLength": 3
+            },
+            "example": "STD"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Prison incentive level returned",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PrisonIncentiveLevel"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized to access this endpoint",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Incorrect permissions to use this endpoint",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Prison incentive level not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": ["Prison incentive levels"],
+        "summary": "Updates prison incentive level information",
+        "description": "Payload must include all required fields. Deactivating a level is only possible if there are no prisoners currently on it.\n\nRequires role: MAINTAIN_PRISON_IEP_LEVELS with write scope\n\nRaises HMPPS domain event: \"incentives.prison-level.changed\"",
+        "operationId": "updatePrisonIncentiveLevel",
+        "parameters": [
+          {
+            "name": "prisonId",
+            "in": "path",
+            "description": "Prison id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Prison id",
+              "example": "MDI",
+              "maxLength": 6,
+              "minLength": 3
+            },
+            "example": "MDI"
+          },
+          {
+            "name": "levelCode",
+            "in": "path",
+            "description": "Incentive level code",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Incentive level code",
+              "example": "STD",
+              "maxLength": 6,
+              "minLength": 3
+            },
+            "example": "STD"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PrisonIncentiveLevel"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Prison incentive level updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PrisonIncentiveLevel"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid payload or level is being deactivated despite having prisoners on it",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized to access this endpoint",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Incorrect permissions to use this endpoint",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Incentive level not found globally",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Prison incentive levels"],
+        "summary": "Deactivate an incentive level for a prison",
+        "description": "Deactivating a level is only possible if there are no prisoners currently on it.\n\nRequires role: MAINTAIN_PRISON_IEP_LEVELS with write scope\n\nRaises HMPPS domain event: \"incentives.prison-level.changed\"",
+        "operationId": "deactivatePrisonIncentiveLevel",
+        "parameters": [
+          {
+            "name": "prisonId",
+            "in": "path",
+            "description": "Prison id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Prison id",
+              "example": "MDI",
+              "maxLength": 6,
+              "minLength": 3
+            },
+            "example": "MDI"
+          },
+          {
+            "name": "levelCode",
+            "in": "path",
+            "description": "Incentive level code",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Incentive level code",
+              "example": "STD",
+              "maxLength": 6,
+              "minLength": 3
+            },
+            "example": "STD"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Prison incentive level deactivated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PrisonIncentiveLevel"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Incentive level is globally required or there are prisoners on this incentive level at this prison",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized to access this endpoint",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Incorrect permissions to use this endpoint",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Incentive level not found globally",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": ["Prison incentive levels"],
+        "summary": "Updates prison incentive level information",
+        "description": "Partial updates are allowed. Deactivating a level is only possible if there are no prisoners currently on it.\n\nRequires role: MAINTAIN_PRISON_IEP_LEVELS with write scope\n\nRaises HMPPS domain event: \"incentives.prison-level.changed\"",
+        "operationId": "partiallyUpdatePrisonIncentiveLevel",
+        "parameters": [
+          {
+            "name": "prisonId",
+            "in": "path",
+            "description": "Prison id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Prison id",
+              "example": "MDI",
+              "maxLength": 6,
+              "minLength": 3
+            },
+            "example": "MDI"
+          },
+          {
+            "name": "levelCode",
+            "in": "path",
+            "description": "Incentive level code",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Incentive level code",
+              "example": "STD",
+              "maxLength": 6,
+              "minLength": 3
+            },
+            "example": "STD"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PrisonIncentiveLevelUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Prison incentive level updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PrisonIncentiveLevel"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid payload or level is being deactivated despite having prisoners on it",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized to access this endpoint",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Incorrect permissions to use this endpoint",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Incentive level not found globally",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/incentive/levels/{code}": {
+      "get": {
+        "tags": ["Incentive levels"],
+        "summary": "Returns an incentive level by code",
+        "description": "Note that it may be inactive. For the majority of use cases, inactive levels in a prison should be ignored.",
+        "operationId": "getIncentiveLevel",
+        "parameters": [
+          {
+            "name": "code",
+            "in": "path",
+            "description": "Incentive level code",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Incentive level code",
+              "example": "STD",
+              "maxLength": 6,
+              "minLength": 3
+            },
+            "example": "STD"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Incentive level returned",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IncentiveLevel"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized to access this endpoint",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Incorrect permissions to use this endpoint",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Incentive level with this code not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": ["Incentive levels"],
+        "summary": "Updates an incentive level",
+        "description": "Payload must include all required fields. A level marked as required must also be active. Deactivating a level is only possible if it is not active in any prison (moreInfo field will contain comma-separated prison ids). Deactivated incentive levels remain in the same position with respect to the others.\n\nRequires role: MAINTAIN_INCENTIVE_LEVELS with write scope\n\nRaises HMPPS domain event: \"incentives.level.changed\"",
+        "operationId": "updateIncentiveLevel",
+        "parameters": [
+          {
+            "name": "code",
+            "in": "path",
+            "description": "Incentive level code",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Incentive level code",
+              "example": "STD",
+              "maxLength": 6,
+              "minLength": 3
+            },
+            "example": "STD"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IncentiveLevel"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Incentive level updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IncentiveLevel"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid payload or level is being deactivated despite being active in some prison",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized to access this endpoint",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Incorrect permissions to use this endpoint",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Incentive level not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Incentive levels"],
+        "summary": "Deactivates an incentive level",
+        "description": "A required level cannot be deactivated, needs to be updated first to be not required. Deactivating a level is only possible if it is not active in any prison (moreInfo field will contain comma-separated prison ids). Deactivated incentive levels remain in the same position with respect to the others.\n\nRequires role: MAINTAIN_INCENTIVE_LEVELS with write scope\n\nRaises HMPPS domain event: \"incentives.level.changed\"",
+        "operationId": "deactivateIncentiveLevel",
+        "parameters": [
+          {
+            "name": "code",
+            "in": "path",
+            "description": "Incentive level code",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Incentive level code",
+              "example": "STD",
+              "maxLength": 6,
+              "minLength": 3
+            },
+            "example": "STD"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Incentive level deactivated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IncentiveLevel"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Incentive level is marked as required or is active in some prison",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized to access this endpoint",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Incorrect permissions to use this endpoint",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Incentive level not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": ["Incentive levels"],
+        "summary": "Updates an incentive level",
+        "description": "Partial updates are allowed. A level marked as required must also be active. Deactivating a level is only possible if it is not active in any prison (moreInfo field will contain comma-separated prison ids). Deactivated incentive levels remain in the same position with respect to the others.\n\nRequires role: MAINTAIN_INCENTIVE_LEVELS with write scope\n\nRaises HMPPS domain event: \"incentives.level.changed\"",
+        "operationId": "partiallyUpdateIncentiveLevel",
+        "parameters": [
+          {
+            "name": "code",
+            "in": "path",
+            "description": "Incentive level code",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Incentive level code",
+              "example": "STD",
+              "maxLength": 6,
+              "minLength": 3
+            },
+            "example": "STD"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IncentiveLevelUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Incentive level updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IncentiveLevel"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid payload or level is being deactivated despite being active in some prison",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized to access this endpoint",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Incorrect permissions to use this endpoint",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Incentive level not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/incentive/levels": {
+      "get": {
+        "tags": ["Incentive levels"],
+        "summary": "Lists all incentive levels, optionally including inactive ones",
+        "description": "For the majority of use cases, inactive levels in a prison should be ignored.",
+        "operationId": "getIncentiveLevels",
+        "parameters": [
+          {
+            "name": "with-inactive",
+            "in": "query",
+            "description": "Include inactive incentive levels",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false,
+              "description": "Include inactive incentive levels",
+              "example": true,
+              "pattern": "^true|false$"
+            },
+            "example": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Incentive levels returned",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/IncentiveLevel"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized to access this endpoint",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Incorrect permissions to use this endpoint",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Incentive levels"],
+        "summary": "Creates a new incentive level",
+        "description": "New incentive levels are added to the end of the list.\n\nRequires role: MAINTAIN_INCENTIVE_LEVELS with write scope\n\nRaises HMPPS domain event: \"incentives.level.changed\"",
+        "operationId": "createIncentiveLevel",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IncentiveLevel"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Incentive level created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IncentiveLevel"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid payload",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized to access this endpoint",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Incorrect permissions to use this endpoint",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/incentive-reviews/prisoner/{prisonerNumber}": {
+      "get": {
+        "tags": ["Maintain incentive reviews"],
+        "summary": "Returns a history of incentive reviews for a prisoner, Requires INCENTIVE_REVIEWS role and read scope",
+        "description": "Prisoner Number is an unique reference for a prisoner in NOMIS",
+        "operationId": "getPrisonerIncentiveReviewHistory",
+        "parameters": [
+          {
+            "name": "prisonerNumber",
+            "in": "path",
+            "description": "Prisoner Number",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Prisoner Number",
+              "example": "A1234AB",
+              "pattern": "^[A-Z0-9]{7}$"
+            },
+            "example": "A1234AB"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Incentive review history information returned",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IncentiveReviewSummary"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Incorrect data specified to return incentive history",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized to access this endpoint",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Incorrect permissions to use this endpoint",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Maintain incentive reviews"],
+        "summary": "Adds a new Incentive Review for this specific prisoner by prisoner number",
+        "description": "Prisoner Number is an unique reference for a prisoner in NOMIS, requires INCENTIVE_REVIEWS role and write scope",
+        "operationId": "addIncentiveReview",
+        "parameters": [
+          {
+            "name": "prisonerNumber",
+            "in": "path",
+            "description": "Prisoner Number",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Prisoner Number",
+              "example": "A1234AB",
+              "pattern": "^[A-Z0-9]{1,20}$"
+            },
+            "example": "A1234AB"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateIncentiveReviewRequest",
+                "description": "Incentive Review"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Incentive Review Added",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IncentiveReviewDetail"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Incorrect data specified to add new incentive review",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized to access this endpoint",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Incorrect permissions to use this endpoint",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/incentive-reviews/bookings": {
+      "post": {
+        "tags": ["Maintain incentive reviews"],
+        "summary": "Returns a history of incentive reviews for a list of prisoners, Requires INCENTIVE_REVIEWS role and read scope",
+        "operationId": "getCurrentIncentiveLevelForPrisoner",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "format": "int64",
+                "items": {
+                  "type": "integer",
+                  "format": "int64",
+                  "description": "List of booking Ids"
+                },
+                "pattern": "^[0-9]{1,20}$"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Incentive review level information returned per prisoner",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CurrentIncentiveLevel"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Incorrect data specified to return incentive review Level History",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized to access this endpoint",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Incorrect permissions to use this endpoint",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/incentive-reviews/booking/{bookingId}": {
+      "get": {
+        "tags": ["Maintain incentive reviews"],
+        "summary": "Returns a history of incentive reviews for a prisoner, Requires INCENTIVE_REVIEWS role and read scope",
+        "description": "Booking ID is an internal ID for a prisoner in NOMIS",
+        "operationId": "getPrisonerIncentiveLevelHistory",
+        "parameters": [
+          {
+            "name": "bookingId",
+            "in": "path",
+            "description": "Booking Id",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "description": "Booking Id",
+              "example": 3000002,
+              "pattern": "^[0-9]{1,20}$"
+            },
+            "example": 3000002
+          },
+          {
+            "name": "with-details",
+            "in": "query",
+            "description": "Toggle to return incentive reviews detail entries in response (or not)",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": true,
+              "description": "Toggle to return incentive reviews detail entries in response (or not)",
+              "example": true,
+              "pattern": "^true|false$"
+            },
+            "example": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Incentive review Level history information returned",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IncentiveReviewSummary"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Incorrect data specified to return incentive review level history",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized to access this endpoint",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Incorrect permissions to use this endpoint",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Maintain incentive reviews"],
+        "summary": "Adds a new incentive review for this specific prisoner by booking Id",
+        "description": "Booking ID is an internal ID for a prisoner in NOMIS, requires INCENTIVE_REVIEWS role and write scope",
+        "operationId": "addIncentiveReview_1",
+        "parameters": [
+          {
+            "name": "bookingId",
+            "in": "path",
+            "description": "Booking Id",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "description": "Booking Id",
+              "example": 3000002,
+              "pattern": "^[0-9]{1,20}$"
+            },
+            "example": 3000002
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateIncentiveReviewRequest",
+                "description": "Incentive Review"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Incentive Review Added",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IncentiveReviewDetail"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Incorrect data specified to add new incentive review",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized to access this endpoint",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Incorrect permissions to use this endpoint",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/incentive/level-order": {
+      "patch": {
+        "tags": ["Incentive levels"],
+        "summary": "Sets the order of incentive levels",
+        "description": "All existing incentive level codes must be provided.\n\nRequires role: MAINTAIN_INCENTIVE_LEVELS with write scope\n\nRaises HMPPS domain event: \"incentives.levels.reordered\"",
+        "operationId": "setOrderOfIncentiveLevels",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Incentive levels reordered",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/IncentiveLevel"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Not enough level codes provided",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized to access this endpoint",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Incorrect permissions to use this endpoint",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Incentive level with this code not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/subject-access-request": {
+      "get": {
+        "tags": ["Subject Access Request"],
+        "summary": "Provides content for a prisoner to satisfy the needs of a subject access request on their behalf",
+        "description": "Requires role SAR_DATA_ACCESS or additional role as specified by hmpps.sar.additionalAccessRole configuration.",
+        "operationId": "getSarContentByReference",
+        "parameters": [
+          {
+            "name": "prn",
+            "in": "query",
+            "description": "NOMIS Prison Reference Number",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "crn",
+            "in": "query",
+            "description": "nDelius Case Reference Number",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "fromDate",
+            "in": "query",
+            "description": "Optional parameter denoting minimum date of event occurrence which should be returned in the response",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "toDate",
+            "in": "query",
+            "description": "Optional parameter denoting maximum date of event occurrence which should be returned in the response",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Request successfully processed - content found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HmppsSubjectAccessRequestContent"
+                }
+              }
+            }
+          },
+          "204": {
+            "description": "Request successfully processed - no content found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "209": {
+            "description": "Subject Identifier is not recognised by this service",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "The client does not have authorisation to make this request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden, requires an appropriate role",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unexpected error occurred",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/queue-admin/get-dlq-messages/{dlqName}": {
+      "get": {
+        "tags": ["hmpps-reactive-queue-resource"],
+        "operationId": "getDlqMessages",
+        "parameters": [
+          {
+            "name": "dlqName",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "maxMessages",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 100
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetDlqResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/incentives-reviews/prison/{prisonId}/location/{cellLocationPrefix}/level/{levelCode}": {
+      "get": {
+        "tags": ["Incentive review summary"],
+        "summary": "List of incentive review information for a given location within a prison and on a given level",
+        "description": "Location should be a cell ID prefix like `MDI-1`",
+        "operationId": "getReviews",
+        "parameters": [
+          {
+            "name": "prisonId",
+            "in": "path",
+            "description": "Prison ID",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Prison ID",
+              "example": "MDI",
+              "maxLength": 5,
+              "minLength": 3
+            },
+            "example": "MDI"
+          },
+          {
+            "name": "cellLocationPrefix",
+            "in": "path",
+            "description": "Cell location ID prefix",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Cell location ID prefix",
+              "example": "MDI-1",
+              "minLength": 5
+            },
+            "example": "MDI-1"
+          },
+          {
+            "name": "levelCode",
+            "in": "path",
+            "description": "Incentive level code",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Incentive level code",
+              "example": "STD",
+              "minLength": 2
+            },
+            "example": "STD"
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "description": "Sort reviews by",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "NEXT_REVIEW_DATE",
+              "description": "Sort reviews by",
+              "enum": [
+                "NEXT_REVIEW_DATE",
+                "DAYS_SINCE_LAST_REVIEW",
+                "FIRST_NAME",
+                "LAST_NAME",
+                "PRISONER_NUMBER",
+                "POSITIVE_BEHAVIOURS",
+                "NEGATIVE_BEHAVIOURS",
+                "HAS_ACCT_OPEN",
+                "IS_NEW_TO_PRISON"
+              ],
+              "example": "PRISONER_NUMBER"
+            },
+            "example": "PRISONER_NUMBER"
+          },
+          {
+            "name": "order",
+            "in": "query",
+            "description": "Sort direction",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "ASC",
+              "description": "Sort direction",
+              "enum": ["ASC", "DESC"],
+              "example": "ASC"
+            },
+            "example": "ASC"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Page (starts at 0)",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0,
+              "description": "Page (starts at 0)",
+              "example": 2,
+              "minimum": 0
+            },
+            "example": 2
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "description": "Page size",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 20,
+              "description": "Page size",
+              "example": 20,
+              "maximum": 100,
+              "minimum": 1
+            },
+            "example": 20
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Reviews information returned",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IncentiveReviewResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorised request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Request does not have necessary permissions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/incentive/prison-levels/{prisonId}": {
+      "get": {
+        "tags": ["Prison incentive levels"],
+        "summary": "Lists incentive levels in this prison along with associated information, optionally including inactive ones",
+        "description": "Inactive incentive levels in the prison were previously active at some point. Not all global inactive incentive levels are necessarily included. For the majority of use cases, inactive levels in a prison should be ignored.",
+        "operationId": "getPrisonIncentiveLevels",
+        "parameters": [
+          {
+            "name": "prisonId",
+            "in": "path",
+            "description": "Prison id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Prison id",
+              "example": "MDI",
+              "maxLength": 6,
+              "minLength": 3
+            },
+            "example": "MDI"
+          },
+          {
+            "name": "with-inactive",
+            "in": "query",
+            "description": "Include inactive prison incentive levels",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false,
+              "description": "Include inactive prison incentive levels",
+              "example": true,
+              "pattern": "^true|false$"
+            },
+            "example": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Prison incentive levels returned",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PrisonIncentiveLevel"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized to access this endpoint",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Incorrect permissions to use this endpoint",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Prison incentive level not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Prison incentive levels"],
+        "summary": "Deactivate all incentive levels for a prison",
+        "description": "This can be used when a prison closes. Returns all incentive levels in this prison including those that were already inactive. Deactivating a level is only possible if there are no prisoners currently on it.\n\nRequires role: MAINTAIN_PRISON_IEP_LEVELS with write scope\n\nRaises HMPPS domain events: \"incentives.prison-level.changed\"",
+        "operationId": "deactivateAllPrisonIncentiveLevels",
+        "parameters": [
+          {
+            "name": "prisonId",
+            "in": "path",
+            "description": "Prison id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Prison id",
+              "example": "MDI",
+              "maxLength": 6,
+              "minLength": 3
+            },
+            "example": "MDI"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Prison incentive levels deactivated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PrisonIncentiveLevel"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "There are prisoners on some incentive level at this prison",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized to access this endpoint",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Incorrect permissions to use this endpoint",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/incentive-reviews/id/{id}": {
+      "get": {
+        "tags": ["Maintain incentive reviews"],
+        "summary": "Returns a specified Incentive Review, Requires INCENTIVE_REVIEWS role and read scope",
+        "operationId": "getIncentiveReviewById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Review ID (internal)",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "description": "Review ID (internal)",
+              "example": 1000,
+              "pattern": "^[0-9]{1,20}$"
+            },
+            "example": 1000
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Incentive Review Level Information returned",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IncentiveReviewDetail"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Incorrect data specified to return incentive review level history",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized to access this endpoint",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Incorrect permissions to use this endpoint",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "RetryDlqResult": {
+        "type": "object",
+        "properties": {
+          "messagesFoundCount": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "required": ["messagesFoundCount"]
+      },
+      "PurgeQueueResult": {
+        "type": "object",
+        "properties": {
+          "messagesFoundCount": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "required": ["messagesFoundCount"]
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "description": "Error response",
+        "properties": {
+          "status": {
+            "type": "integer",
+            "format": "int32",
+            "description": "HTTP status code",
+            "example": 500
+          },
+          "errorCode": {
+            "type": "integer",
+            "format": "int32",
+            "description": "When present, uniquely identifies the type of error making it easier for clients to discriminate without relying on error description; see `uk.gov.justice.digital.hmpps.incentivesapi.config.ErrorResponse` enumeration in hmpps-incentives-api",
+            "example": 123
+          },
+          "userMessage": {
+            "type": "string",
+            "description": "User message for the error",
+            "example": "No incentive level found for code `ABC`"
+          },
+          "developerMessage": {
+            "type": "string",
+            "description": "More detailed error message",
+            "example": "[Details, sometimes a stack trace]"
+          },
+          "moreInfo": {
+            "type": "string",
+            "description": "More information about the error",
+            "example": "[Rarely used, error-specific]"
+          }
+        },
+        "required": ["status"]
+      },
+      "PrisonIncentiveLevel": {
+        "type": "object",
+        "properties": {
+          "levelCode": {
+            "type": "string",
+            "description": "The incentive level code this refers to",
+            "example": "STD",
+            "maxLength": 6,
+            "minLength": 1
+          },
+          "levelName": {
+            "type": "string"
+          },
+          "prisonId": {
+            "type": "string",
+            "description": "The prison this refers to",
+            "example": "MDI",
+            "maxLength": 6,
+            "minLength": 1
+          },
+          "active": {
+            "type": "boolean",
+            "description": "Indicates that this incentive level is enabled in this prison (true if not supplied)",
+            "example": true
+          },
+          "defaultOnAdmission": {
+            "type": "boolean",
+            "description": "Indicates that this incentive level is the default for new admissions (false if not supplied)",
+            "example": false
+          },
+          "remandTransferLimitInPence": {
+            "type": "integer",
+            "format": "int32",
+            "description": "The amount transferred weekly from the private cash account to the spends account for a remand prisoner to use",
+            "example": 5500,
+            "minimum": 0
+          },
+          "remandSpendLimitInPence": {
+            "type": "integer",
+            "format": "int32",
+            "description": "The maximum amount allowed in the spends account for a remand prisoner",
+            "example": 55000,
+            "minimum": 0
+          },
+          "convictedTransferLimitInPence": {
+            "type": "integer",
+            "format": "int32",
+            "description": "The amount transferred weekly from the private cash account to the spends account for a convicted prisoner to use",
+            "example": 1800,
+            "minimum": 0
+          },
+          "convictedSpendLimitInPence": {
+            "type": "integer",
+            "format": "int32",
+            "description": "The maximum amount allowed in the spends account for a convicted prisoner",
+            "example": 18000,
+            "minimum": 0
+          },
+          "visitOrders": {
+            "type": "integer",
+            "format": "int32",
+            "description": "The number of weekday visits for a convicted prisoner per fortnight",
+            "example": 2,
+            "minimum": 0
+          },
+          "privilegedVisitOrders": {
+            "type": "integer",
+            "format": "int32",
+            "description": "The number of privileged/weekend visits for a convicted prisoner per 4 weeks",
+            "example": 1,
+            "minimum": 0
+          }
+        },
+        "required": [
+          "active",
+          "convictedSpendLimitInPence",
+          "convictedTransferLimitInPence",
+          "defaultOnAdmission",
+          "levelCode",
+          "levelName",
+          "prisonId",
+          "privilegedVisitOrders",
+          "remandSpendLimitInPence",
+          "remandTransferLimitInPence",
+          "visitOrders"
+        ]
+      },
+      "IncentiveLevel": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "description": "Unique id for the incentive level",
+            "example": "STD",
+            "maxLength": 6,
+            "minLength": 1
+          },
+          "name": {
+            "type": "string",
+            "description": "Name of the incentive level",
+            "example": "Standard",
+            "maxLength": 30,
+            "minLength": 1
+          },
+          "active": {
+            "type": "boolean",
+            "description": "Indicates that the incentive level is active (true if not supplied); inactive levels are historic levels no longer in use",
+            "example": true
+          },
+          "required": {
+            "type": "boolean",
+            "description": "Indicates that all prisons must have this level active (false if not supplied)",
+            "example": false
+          }
+        },
+        "required": ["active", "code", "name", "required"]
+      },
+      "CreateIncentiveReviewRequest": {
+        "type": "object",
+        "description": "Request to add a new incentive review",
+        "properties": {
+          "iepLevel": {
+            "type": "string",
+            "description": "Incentive Level",
+            "enum": ["BAS", "STD", "ENH", "EN2", "EN3"],
+            "example": "STD",
+            "maxLength": 6,
+            "minLength": 2
+          },
+          "comment": {
+            "type": "string",
+            "description": "Comment about review",
+            "example": "A review took place",
+            "minLength": 1
+          },
+          "reviewType": {
+            "type": "string",
+            "default": "REVIEW",
+            "description": "Review Type",
+            "enum": ["INITIAL", "REVIEW", "TRANSFER", "MIGRATED", "READMISSION"],
+            "example": "REVIEW"
+          },
+          "reviewTime": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Date and time of the review, if not provided will default to now",
+            "example": "2023-06-07T13:05:46"
+          },
+          "reviewedBy": {
+            "type": "string",
+            "description": "The username of the member of staff undertaking the review, if not provided will use the user in the JWT access token",
+            "example": "ASMITH",
+            "maxLength": 30,
+            "minLength": 1
+          }
+        },
+        "required": ["comment", "iepLevel"]
+      },
+      "IncentiveReviewDetail": {
+        "type": "object",
+        "description": "Detailed incentive review details",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Unique ID for this review (new Incentives data model only)",
+            "example": 12345
+          },
+          "iepLevel": {
+            "type": "string",
+            "description": "Incentive Level",
+            "example": "Standard"
+          },
+          "iepCode": {
+            "type": "string",
+            "description": "Incentive Level Code",
+            "example": "STD"
+          },
+          "comments": {
+            "type": "string",
+            "description": "Review comments",
+            "example": "A review took place"
+          },
+          "prisonerNumber": {
+            "type": "string",
+            "description": "Prisoner number (NOMS)",
+            "example": "A1234BC"
+          },
+          "bookingId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Booking ID",
+            "example": 1234567
+          },
+          "iepDate": {
+            "type": "string",
+            "format": "date",
+            "description": "Date when last review took place",
+            "example": "2021-12-31"
+          },
+          "iepTime": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Date and time when last review took place",
+            "example": "2021-12-31T12:34:56.789012"
+          },
+          "agencyId": {
+            "type": "string",
+            "description": "Prison ID",
+            "example": "MDI"
+          },
+          "locationId": {
+            "type": "string",
+            "deprecated": true,
+            "description": "DEPRECATED - Location of prisoner at the time when review was created in Incentives service (i.e. their cell)",
+            "example": "1-2-003"
+          },
+          "userId": {
+            "type": "string",
+            "description": "Username of the reviewer",
+            "example": "USER_1_GEN"
+          },
+          "reviewType": {
+            "type": "string",
+            "description": "Type of Incentive Level change",
+            "enum": ["INITIAL", "REVIEW", "TRANSFER", "MIGRATED", "READMISSION"],
+            "example": "REVIEW"
+          },
+          "auditModuleName": {
+            "type": "string",
+            "description": "Internal audit field holding which system/screen recorded the review",
+            "example": "INCENTIVES_API"
+          },
+          "isRealReview": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "agencyId",
+          "auditModuleName",
+          "bookingId",
+          "id",
+          "iepCode",
+          "iepDate",
+          "iepLevel",
+          "iepTime",
+          "isRealReview",
+          "prisonerNumber",
+          "reviewType",
+          "userId"
+        ]
+      },
+      "CurrentIncentiveLevel": {
+        "type": "object",
+        "description": "Current Incentive Level",
+        "properties": {
+          "bookingId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Booking ID",
+            "example": 1234567
+          },
+          "iepLevel": {
+            "type": "string",
+            "description": "Incentive Level",
+            "example": "Standard"
+          }
+        },
+        "required": ["bookingId", "iepLevel"]
+      },
+      "PrisonIncentiveLevelUpdate": {
+        "type": "object",
+        "properties": {
+          "active": {
+            "type": "boolean",
+            "description": "Indicates that this incentive level is enabled in this prison",
+            "example": true
+          },
+          "defaultOnAdmission": {
+            "type": "boolean",
+            "description": "Indicates that this incentive level is the default for new admissions",
+            "example": true
+          },
+          "remandTransferLimitInPence": {
+            "type": "integer",
+            "format": "int32",
+            "description": "The amount transferred weekly from the private cash account to the spends account for a remand prisoner to use",
+            "example": 5500,
+            "minimum": 0
+          },
+          "remandSpendLimitInPence": {
+            "type": "integer",
+            "format": "int32",
+            "description": "The maximum amount allowed in the spends account for a remand prisoner",
+            "example": 55000,
+            "minimum": 0
+          },
+          "convictedTransferLimitInPence": {
+            "type": "integer",
+            "format": "int32",
+            "description": "The amount transferred weekly from the private cash account to the spends account for a convicted prisoner to use",
+            "example": 1800,
+            "minimum": 0
+          },
+          "convictedSpendLimitInPence": {
+            "type": "integer",
+            "format": "int32",
+            "description": "The maximum amount allowed in the spends account for a convicted prisoner",
+            "example": 18000,
+            "minimum": 0
+          },
+          "visitOrders": {
+            "type": "integer",
+            "format": "int32",
+            "description": "The number of weekday visits for a convicted prisoner per fortnight",
+            "example": 2,
+            "minimum": 0
+          },
+          "privilegedVisitOrders": {
+            "type": "integer",
+            "format": "int32",
+            "description": "The number of privileged/weekend visits for a convicted prisoner per 4 weeks",
+            "example": 1,
+            "minimum": 0
+          }
+        }
+      },
+      "IncentiveLevelUpdate": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Name of the incentive level",
+            "example": "Standard",
+            "maxLength": 30,
+            "minLength": 1
+          },
+          "active": {
+            "type": "boolean",
+            "description": "Indicates that the incentive level is active; inactive levels are historic levels no longer in use",
+            "example": true
+          },
+          "required": {
+            "type": "boolean",
+            "description": "Indicates that all prisons must have this level active",
+            "example": true
+          }
+        }
+      },
+      "HmppsSubjectAccessRequestContent": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "object",
+            "description": "The content of the subject access request response"
+          }
+        },
+        "required": ["content"]
+      },
+      "DlqMessage": {
+        "type": "object",
+        "properties": {
+          "body": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "object"
+            }
+          },
+          "messageId": {
+            "type": "string"
+          }
+        },
+        "required": ["body", "messageId"]
+      },
+      "GetDlqResult": {
+        "type": "object",
+        "properties": {
+          "messagesFoundCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "messagesReturnedCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "messages": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DlqMessage"
+            }
+          }
+        },
+        "required": ["messages", "messagesFoundCount", "messagesReturnedCount"]
+      },
+      "IncentiveReview": {
+        "type": "object",
+        "description": "Incentive review information for a prisoner",
+        "properties": {
+          "prisonerNumber": {
+            "type": "string",
+            "description": "Prisoner number",
+            "example": "A1234BC"
+          },
+          "bookingId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Internal reference for a period in prison",
+            "example": 1234567
+          },
+          "firstName": {
+            "type": "string",
+            "description": "Prisoner’s first name",
+            "example": "John"
+          },
+          "lastName": {
+            "type": "string",
+            "description": "Prisoner’s last name",
+            "example": "Smith"
+          },
+          "levelCode": {
+            "type": "string",
+            "description": "Prisoner’s incentive level code",
+            "example": "STD"
+          },
+          "positiveBehaviours": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Count of all the positive case note behaviour entries recorded in the last 3 months",
+            "example": 7
+          },
+          "negativeBehaviours": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Count of all the negative case note behaviour entries recorded in the last 3 months",
+            "example": 7
+          },
+          "hasAcctOpen": {
+            "type": "boolean",
+            "description": "Whether the prisoner has an ACCT open alert",
+            "example": true
+          },
+          "isNewToPrison": {
+            "type": "boolean",
+            "description": "Whether the prisoner is new to prison, i.e. has never had an incentive review in person",
+            "example": false
+          },
+          "daysSinceLastReview": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Days since last review, null when no real review has taken place",
+            "example": 45
+          },
+          "nextReviewDate": {
+            "type": "string",
+            "format": "date",
+            "description": "Date of next review",
+            "example": "2022-12-31"
+          }
+        },
+        "required": [
+          "bookingId",
+          "firstName",
+          "hasAcctOpen",
+          "isNewToPrison",
+          "lastName",
+          "levelCode",
+          "negativeBehaviours",
+          "nextReviewDate",
+          "positiveBehaviours",
+          "prisonerNumber"
+        ]
+      },
+      "IncentiveReviewLevel": {
+        "type": "object",
+        "description": "An Incentive level available at the given location, with the total and overdue number of prisoners at this level",
+        "properties": {
+          "levelCode": {
+            "type": "string",
+            "description": "Level code",
+            "example": "STD"
+          },
+          "levelName": {
+            "type": "string",
+            "description": "Level name",
+            "example": "Standard"
+          },
+          "reviewCount": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Number of prisoners at this level",
+            "example": 72
+          },
+          "overdueCount": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Number of overdue prisoners at this level",
+            "example": 10
+          }
+        },
+        "required": ["levelCode", "levelName", "overdueCount", "reviewCount"]
+      },
+      "IncentiveReviewResponse": {
+        "type": "object",
+        "description": "Incentive reviews list for prisoners at a given location",
+        "properties": {
+          "levels": {
+            "type": "array",
+            "description": "List of levels available at the given location, with the total and overdue number of prisoners at each level",
+            "items": {
+              "$ref": "#/components/schemas/IncentiveReviewLevel"
+            }
+          },
+          "reviews": {
+            "type": "array",
+            "description": "Prisoner incentive reviews",
+            "items": {
+              "$ref": "#/components/schemas/IncentiveReview"
+            }
+          },
+          "locationDescription": {
+            "type": "string",
+            "description": "Description of given location",
+            "example": "Houseblock 1"
+          }
+        },
+        "required": ["levels", "locationDescription", "reviews"]
+      },
+      "IncentiveReviewSummary": {
+        "type": "object",
+        "description": "Incentive Review Summary for Prisoner",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Unique ID for this review (new Incentives data model only)",
+            "example": 12345
+          },
+          "iepCode": {
+            "type": "string",
+            "description": "Incentive Level Code",
+            "example": "STD"
+          },
+          "iepLevel": {
+            "type": "string",
+            "description": "Incentive Level",
+            "example": "Standard"
+          },
+          "prisonerNumber": {
+            "type": "string",
+            "description": "Prisoner number (NOMS)",
+            "example": "A1234BC"
+          },
+          "bookingId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Booking ID",
+            "example": 1234567
+          },
+          "iepDate": {
+            "type": "string",
+            "format": "date",
+            "description": "Date when last review took place",
+            "example": "2021-12-31"
+          },
+          "iepTime": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Date and time when last review took place",
+            "example": "2021-12-31T12:34:56.789012"
+          },
+          "locationId": {
+            "type": "string",
+            "deprecated": true,
+            "description": "DEPRECATED - Location of prisoner at the time when review was created in Incentives service (i.e. their cell)",
+            "example": "1-2-003"
+          },
+          "iepDetails": {
+            "type": "array",
+            "description": "Incentive Review History (descending in time)",
+            "items": {
+              "$ref": "#/components/schemas/IncentiveReviewDetail"
+            }
+          },
+          "nextReviewDate": {
+            "type": "string",
+            "format": "date",
+            "description": "Date of next review",
+            "example": "2022-12-31"
+          },
+          "daysSinceReview": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Days since last review",
+            "example": 23
+          }
+        },
+        "required": [
+          "bookingId",
+          "daysSinceReview",
+          "id",
+          "iepCode",
+          "iepDate",
+          "iepDetails",
+          "iepLevel",
+          "iepTime",
+          "nextReviewDate",
+          "prisonerNumber"
+        ]
+      }
+    },
+    "securitySchemes": {
+      "bearer-jwt": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      },
+      "hmpps-auth": {
+        "type": "oauth2",
+        "flows": {
+          "clientCredentials": {
+            "tokenUrl": "https://sign-in-dev.hmpps.service.justice.gov.uk/auth/oauth/token",
+            "scopes": {
+              "read": "Allows read of data",
+              "write": "Allows write of data"
+            }
+          },
+          "authorizationCode": {
+            "authorizationUrl": "https://sign-in-dev.hmpps.service.justice.gov.uk/auth/oauth/authorize",
+            "tokenUrl": "https://sign-in-dev.hmpps.service.justice.gov.uk/auth/oauth/token",
+            "scopes": {
+              "read": "Allows read of data",
+              "write": "Allows write of data"
+            }
+          }
+        }
+      }
+    }
+  }
+}
