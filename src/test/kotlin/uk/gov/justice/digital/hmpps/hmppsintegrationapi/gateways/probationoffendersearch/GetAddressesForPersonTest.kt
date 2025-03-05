@@ -14,9 +14,10 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ProbationOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.generateTestAddress
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ProbationOffenderSearchApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Address
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 
 @ActiveProfiles("test")
 @ContextConfiguration(
@@ -28,12 +29,14 @@ class GetAddressesForPersonTest(
   private val probationOffenderSearchGateway: ProbationOffenderSearchGateway,
 ) : DescribeSpec(
     {
-      val probationOffenderSearchApiMockServer = ProbationOffenderSearchApiMockServer()
+      val probationOffenderSearchApiMockServer = ApiMockServer.create(UpstreamApi.PROBATION_OFFENDER_SEARCH)
+      val path = "/search"
       val hmppsId = "X777776"
 
       beforeEach {
         probationOffenderSearchApiMockServer.start()
-        probationOffenderSearchApiMockServer.stubPostOffenderSearch(
+        probationOffenderSearchApiMockServer.stubForPost(
+          path,
           "{\"crn\": \"$hmppsId\"}",
           """
         [
@@ -99,7 +102,8 @@ class GetAddressesForPersonTest(
       }
 
       it("returns an empty list when no addresses are found") {
-        probationOffenderSearchApiMockServer.stubPostOffenderSearch(
+        probationOffenderSearchApiMockServer.stubForPost(
+          path,
           "{\"crn\": \"$hmppsId\"}",
           """
         [
@@ -120,7 +124,8 @@ class GetAddressesForPersonTest(
       }
 
       it("returns an error when no results are returned") {
-        probationOffenderSearchApiMockServer.stubPostOffenderSearch(
+        probationOffenderSearchApiMockServer.stubForPost(
+          path,
           "{\"crn\": \"$hmppsId\"}",
           "[]",
         )
@@ -131,7 +136,8 @@ class GetAddressesForPersonTest(
       }
 
       it("returns an empty list when there is no contactDetails field") {
-        probationOffenderSearchApiMockServer.stubPostOffenderSearch(
+        probationOffenderSearchApiMockServer.stubForPost(
+          path,
           "{\"crn\": \"$hmppsId\"}",
           """
         [
@@ -149,7 +155,8 @@ class GetAddressesForPersonTest(
       }
 
       it("returns an empty list when contactDetails field is null") {
-        probationOffenderSearchApiMockServer.stubPostOffenderSearch(
+        probationOffenderSearchApiMockServer.stubForPost(
+          path,
           "{\"crn\": \"$hmppsId\"}",
           """
         [
@@ -168,7 +175,8 @@ class GetAddressesForPersonTest(
       }
 
       it("returns an empty list when contactDetails.addresses field is null") {
-        probationOffenderSearchApiMockServer.stubPostOffenderSearch(
+        probationOffenderSearchApiMockServer.stubForPost(
+          path,
           "{\"crn\": \"$hmppsId\"}",
           """
         [
@@ -189,7 +197,8 @@ class GetAddressesForPersonTest(
       }
 
       it("returns an empty list when the type is an empty object") {
-        probationOffenderSearchApiMockServer.stubPostOffenderSearch(
+        probationOffenderSearchApiMockServer.stubForPost(
+          path,
           "{\"crn\": \"$hmppsId\"}",
           """
         [
