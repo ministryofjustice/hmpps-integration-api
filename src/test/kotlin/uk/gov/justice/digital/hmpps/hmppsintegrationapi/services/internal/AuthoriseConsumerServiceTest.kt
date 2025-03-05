@@ -15,11 +15,12 @@ internal class AuthoriseConsumerServiceTest(
   private val authoriseConsumerService: AuthoriseConsumerService,
 ) : DescribeSpec(
     {
-      val consumerConfig = ConsumerConfig(listOf("/persons/.*"), listOf(), null)
       val requestedPath = "/persons/123"
 
-      describe("Access is allowed") {
-        it("when the path is listed under that consumer") {
+      describe("doesConsumerHaveIncludesAccess") {
+        val consumerConfig = ConsumerConfig(listOf("/persons/.*"), listOf(), null)
+
+        it("access is allowed when the path is listed under that consumer") {
           val authResult =
             authoriseConsumerService.doesConsumerHaveIncludesAccess(
               consumerConfig,
@@ -27,10 +28,8 @@ internal class AuthoriseConsumerServiceTest(
             )
           authResult.shouldBeTrue()
         }
-      }
 
-      describe("Access is denied") {
-        it("when the extracted consumer is null") {
+        it("access is denied when the extracted consumer is null") {
           val result = authoriseConsumerService.doesConsumerHaveIncludesAccess(null, "")
           result.shouldBeFalse()
         }
@@ -38,6 +37,30 @@ internal class AuthoriseConsumerServiceTest(
         it("when the path isn't listed as allowed on the consumer") {
           val invalidPath = "/some-other-path/123"
           val result = authoriseConsumerService.doesConsumerHaveIncludesAccess(consumerConfig, invalidPath)
+          result.shouldBeFalse()
+        }
+      }
+
+      describe("doesConsumerHaveRoleAccess") {
+        val consumerRolesConfigPaths = listOf("/persons/.*")
+
+        it("access is allowed when the path is listed in the role included paths") {
+          val authResult =
+            authoriseConsumerService.doesConsumerHaveRoleAccess(
+              consumerRolesConfigPaths,
+              requestedPath,
+            )
+          authResult.shouldBeTrue()
+        }
+
+        it("access is denied when the role has no included paths") {
+          val result = authoriseConsumerService.doesConsumerHaveRoleAccess(emptyList(), requestedPath)
+          result.shouldBeFalse()
+        }
+
+        it("when the path isn't listed as allowed on the consumer") {
+          val invalidPath = "/some-other-path/123"
+          val result = authoriseConsumerService.doesConsumerHaveRoleAccess(consumerRolesConfigPaths, invalidPath)
           result.shouldBeFalse()
         }
       }
