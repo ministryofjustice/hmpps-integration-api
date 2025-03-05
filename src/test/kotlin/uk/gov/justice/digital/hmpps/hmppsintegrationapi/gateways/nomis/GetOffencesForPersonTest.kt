@@ -17,8 +17,8 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NomisGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.NomisApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 
@@ -32,12 +32,12 @@ class GetOffencesForPersonTest(
   val nomisGateway: NomisGateway,
 ) : DescribeSpec(
     {
-      val nomisApiMockServer = NomisApiMockServer()
+      val nomisApiMockServer = ApiMockServer.create(UpstreamApi.NOMIS)
       val offenderNo = "zyx987"
       val offenceHistoryPath = "/api/bookings/offenderNo/$offenderNo/offenceHistory"
       beforeEach {
         nomisApiMockServer.start()
-        nomisApiMockServer.stubNomisApiResponse(
+        nomisApiMockServer.stubForGet(
           offenceHistoryPath,
           """
           [
@@ -83,7 +83,7 @@ class GetOffencesForPersonTest(
       }
 
       it("returns a person with an empty list of offences when no offences are found") {
-        nomisApiMockServer.stubNomisApiResponse(offenceHistoryPath, "[]")
+        nomisApiMockServer.stubForGet(offenceHistoryPath, "[]")
 
         val response = nomisGateway.getOffencesForPerson(offenderNo)
 
@@ -91,7 +91,7 @@ class GetOffencesForPersonTest(
       }
 
       it("returns an error when 404 Not Found is returned because no person is found") {
-        nomisApiMockServer.stubNomisApiResponse(offenceHistoryPath, "", HttpStatus.NOT_FOUND)
+        nomisApiMockServer.stubForGet(offenceHistoryPath, "", HttpStatus.NOT_FOUND)
 
         val response = nomisGateway.getOffencesForPerson(offenderNo)
 

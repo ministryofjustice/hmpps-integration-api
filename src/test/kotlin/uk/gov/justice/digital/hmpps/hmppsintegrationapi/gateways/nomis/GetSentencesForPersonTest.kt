@@ -17,8 +17,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitesp
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NomisGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.generateTestSentence
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.NomisApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SentenceLength
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SentenceTerm
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
@@ -35,14 +35,14 @@ class GetSentencesForPersonTest(
   val nomisGateway: NomisGateway,
 ) : DescribeSpec(
     {
-      val nomisApiMockServer = NomisApiMockServer()
+      val nomisApiMockServer = ApiMockServer.create(UpstreamApi.NOMIS)
       val offenderNo = "zyx987"
       val someBookingId = 1
       val sentecesAndOffencesPath = "/api/offender-sentences/booking/$someBookingId/sentences-and-offences"
       var sentencesPath = "/api/offender-sentences?offenderNo=$offenderNo"
       beforeEach {
         nomisApiMockServer.start()
-        nomisApiMockServer.stubNomisApiResponse(
+        nomisApiMockServer.stubForGet(
           sentencesPath,
           """
           [
@@ -56,7 +56,7 @@ class GetSentencesForPersonTest(
         """.removeWhitespaceAndNewlines(),
         )
 
-        nomisApiMockServer.stubNomisApiResponse(
+        nomisApiMockServer.stubForGet(
           sentecesAndOffencesPath,
           """
           {
@@ -119,7 +119,7 @@ class GetSentencesForPersonTest(
       }
 
       it("returns an error when 404 Not Found is returned because no person is found") {
-        nomisApiMockServer.stubNomisApiResponse(sentencesPath, "", HttpStatus.NOT_FOUND)
+        nomisApiMockServer.stubForGet(sentencesPath, "", HttpStatus.NOT_FOUND)
 
         val response = nomisGateway.getBookingIdsForPerson(offenderNo)
 
@@ -135,7 +135,7 @@ class GetSentencesForPersonTest(
       }
 
       it("returns an error when no sentence is found") {
-        nomisApiMockServer.stubNomisApiResponse(sentecesAndOffencesPath, "", HttpStatus.NOT_FOUND)
+        nomisApiMockServer.stubForGet(sentecesAndOffencesPath, "", HttpStatus.NOT_FOUND)
 
         val response = nomisGateway.getSentencesForBooking(someBookingId)
 

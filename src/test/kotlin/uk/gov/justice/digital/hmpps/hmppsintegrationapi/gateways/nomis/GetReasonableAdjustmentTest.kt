@@ -15,8 +15,9 @@ import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NomisGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.NomisApiMockServer
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import java.time.LocalDate
 
@@ -30,13 +31,13 @@ class GetReasonableAdjustmentTest(
   private val nomisGateway: NomisGateway,
 ) : DescribeSpec(
     {
-      val nomisApiMockServer = NomisApiMockServer()
+      val nomisApiMockServer = ApiMockServer.create(UpstreamApi.NOMIS)
       val bookingId = "mockBooking"
       val domainPath = "/api/reference-domains/domains/HEALTH_TREAT/codes"
       var reasonableAdjustmentPath = "/api/bookings/$bookingId/reasonable-adjustments?type=a&type=b&type=c"
       beforeEach {
         nomisApiMockServer.start()
-        nomisApiMockServer.stubNomisApiResponse(
+        nomisApiMockServer.stubForGet(
           domainPath,
           """
           [
@@ -47,7 +48,7 @@ class GetReasonableAdjustmentTest(
         """,
         )
 
-        nomisApiMockServer.stubNomisApiResponse(
+        nomisApiMockServer.stubForGet(
           reasonableAdjustmentPath,
           """
             { "reasonableAdjustments":[
@@ -104,7 +105,7 @@ class GetReasonableAdjustmentTest(
       }
 
       it("returns an empty list when no reasonable adjustment are found") {
-        nomisApiMockServer.stubNomisApiResponse(domainPath, "[]")
+        nomisApiMockServer.stubForGet(domainPath, "[]")
 
         val response = nomisGateway.getReasonableAdjustments(bookingId)
 
@@ -112,7 +113,7 @@ class GetReasonableAdjustmentTest(
       }
 
       it("returns an error when 404 NOT FOUND is returned") {
-        nomisApiMockServer.stubNomisApiResponse(
+        nomisApiMockServer.stubForGet(
           domainPath,
           """
         {

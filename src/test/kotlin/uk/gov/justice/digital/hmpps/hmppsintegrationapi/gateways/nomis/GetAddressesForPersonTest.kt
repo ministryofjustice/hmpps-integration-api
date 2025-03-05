@@ -15,8 +15,9 @@ import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NomisGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.NomisApiMockServer
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 
 @ActiveProfiles("test")
@@ -29,12 +30,12 @@ class GetAddressesForPersonTest(
   private val nomisGateway: NomisGateway,
 ) : DescribeSpec(
     {
-      val nomisApiMockServer = NomisApiMockServer()
+      val nomisApiMockServer = ApiMockServer.create(UpstreamApi.NOMIS)
       val offenderNo = "abc123"
       val addressPath = "/api/offenders/$offenderNo/addresses"
       beforeEach {
         nomisApiMockServer.start()
-        nomisApiMockServer.stubNomisApiResponse(
+        nomisApiMockServer.stubForGet(
           addressPath,
           """
           [
@@ -95,7 +96,7 @@ class GetAddressesForPersonTest(
       }
 
       it("returns an empty list when no addresses are found") {
-        nomisApiMockServer.stubNomisApiResponse(addressPath, "[]")
+        nomisApiMockServer.stubForGet(addressPath, "[]")
 
         val response = nomisGateway.getAddressesForPerson(offenderNo)
 
@@ -103,7 +104,7 @@ class GetAddressesForPersonTest(
       }
 
       it("returns an error when 404 NOT FOUND is returned") {
-        nomisApiMockServer.stubNomisApiResponse(
+        nomisApiMockServer.stubForGet(
           addressPath,
           """
         {

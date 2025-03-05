@@ -16,8 +16,8 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NomisGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.NomisApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 
@@ -31,7 +31,7 @@ class GetTransactionsForPersonTest(
   val nomisGateway: NomisGateway,
 ) : DescribeSpec(
     {
-      val nomisApiMockServer = NomisApiMockServer()
+      val nomisApiMockServer = ApiMockServer.create(UpstreamApi.NOMIS)
       val nomisNumber = "AA1234Z"
       val prisonId = "XYZ"
       val accountCode = "spends"
@@ -41,7 +41,7 @@ class GetTransactionsForPersonTest(
 
       beforeEach {
         nomisApiMockServer.start()
-        nomisApiMockServer.stubNomisApiResponse(
+        nomisApiMockServer.stubForGet(
           transactionsPath,
           """
         {
@@ -128,7 +128,7 @@ class GetTransactionsForPersonTest(
       }
 
       it("returns an error when 404 Not Found is returned because no person is found") {
-        nomisApiMockServer.stubNomisApiResponse(transactionsPath, "", HttpStatus.NOT_FOUND)
+        nomisApiMockServer.stubForGet(transactionsPath, "", HttpStatus.NOT_FOUND)
 
         val response = nomisGateway.getAccountsForPerson(prisonId, nomisNumber)
 

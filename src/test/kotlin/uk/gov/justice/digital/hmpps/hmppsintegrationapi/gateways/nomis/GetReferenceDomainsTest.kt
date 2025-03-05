@@ -15,8 +15,9 @@ import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NomisGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.NomisApiMockServer
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 
 @ActiveProfiles("test")
@@ -29,12 +30,12 @@ class GetReferenceDomainsTest(
   private val nomisGateway: NomisGateway,
 ) : DescribeSpec(
     {
-      val nomisApiMockServer = NomisApiMockServer()
+      val nomisApiMockServer = ApiMockServer.create(UpstreamApi.NOMIS)
       val testDomain = "abc"
       val domainPath = "/api/reference-domains/domains/$testDomain/codes"
       beforeEach {
         nomisApiMockServer.start()
-        nomisApiMockServer.stubNomisApiResponse(
+        nomisApiMockServer.stubForGet(
           domainPath,
           """
           [
@@ -69,7 +70,7 @@ class GetReferenceDomainsTest(
       }
 
       it("returns an empty list when no domains are found") {
-        nomisApiMockServer.stubNomisApiResponse(domainPath, "[]")
+        nomisApiMockServer.stubForGet(domainPath, "[]")
 
         val response = nomisGateway.getReferenceDomains(testDomain)
 
@@ -77,7 +78,7 @@ class GetReferenceDomainsTest(
       }
 
       it("returns an error when 404 NOT FOUND is returned") {
-        nomisApiMockServer.stubNomisApiResponse(
+        nomisApiMockServer.stubForGet(
           domainPath,
           """
         {
