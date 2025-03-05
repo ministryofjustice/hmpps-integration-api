@@ -6,17 +6,13 @@ import org.springframework.context.annotation.PropertySource
 import org.springframework.core.env.PropertiesPropertySource
 import org.springframework.core.io.support.EncodedResource
 import org.springframework.core.io.support.PropertySourceFactory
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Role
 import java.io.IOException
 
 @Configuration
 @PropertySource(value = ["classpath:/roles.yml"], factory = MultipleYamlPropertySourceFactory::class)
 class RolesConfig(
   val roles: List<Role>,
-)
-
-data class Role(
-  val name: String,
-  val endpoints: List<String>,
 )
 
 class MultipleYamlPropertySourceFactory : PropertySourceFactory {
