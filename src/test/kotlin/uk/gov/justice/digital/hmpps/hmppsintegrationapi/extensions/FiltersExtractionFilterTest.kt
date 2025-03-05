@@ -25,7 +25,7 @@ class FiltersExtractionFilterTest {
     val mockResponse = mock(HttpServletResponse::class.java)
     val mockChain = mock(FilterChain::class.java)
 
-    authorisationConfig.consumers = mapOf("consumer-name" to ConsumerConfig(include = null, filters = ConsumerFilters(prisons = null)))
+    authorisationConfig.consumers = mapOf("consumer-name" to ConsumerConfig(include = null, filters = ConsumerFilters(prisons = null), roles = emptyList()))
 
     // Act
     filtersExtractionFilter.doFilter(mockRequest, mockResponse, mockChain)
@@ -44,7 +44,15 @@ class FiltersExtractionFilterTest {
     val mockChain = mock(FilterChain::class.java)
 
     val expectedFilters = ConsumerFilters(prisons = listOf("filter-1", "filter-2"))
-    authorisationConfig.consumers = mapOf("consumer-name" to ConsumerConfig(include = null, filters = expectedFilters))
+    authorisationConfig.consumers =
+      mapOf(
+        "consumer-name" to
+          ConsumerConfig(
+            include = null,
+            filters = expectedFilters,
+            roles = emptyList(),
+          ),
+      )
 
     // Act
     filtersExtractionFilter.doFilter(mockRequest, mockResponse, mockChain)
@@ -63,7 +71,7 @@ class FiltersExtractionFilterTest {
     val mockChain = mock(FilterChain::class.java)
 
     val expectedFilters = ConsumerFilters(prisons = listOf("filter-1", "filter-2"))
-    authorisationConfig.consumers = mapOf("consumer-name" to ConsumerConfig(include = null, filters = expectedFilters))
+    authorisationConfig.consumers = mapOf("consumer-name" to ConsumerConfig(include = null, filters = expectedFilters, roles = emptyList()))
 
     // Act
     filtersExtractionFilter.doFilter(mockRequest, mockResponse, mockChain)

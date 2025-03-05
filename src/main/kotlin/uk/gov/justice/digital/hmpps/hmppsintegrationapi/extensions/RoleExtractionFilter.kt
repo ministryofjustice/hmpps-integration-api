@@ -41,6 +41,8 @@ class RoleExtractionFilter
           }
         }
 
+      // maybe reject here based off this, do we need the attributes
+
       request.setAttribute("roles", consumersRoles)
       request.setAttribute("roleEndpoints", roleEndpoints)
       chain.doFilter(request, response)
