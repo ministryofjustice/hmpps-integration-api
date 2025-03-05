@@ -2,10 +2,8 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions
 
 import jakarta.servlet.Filter
 import jakarta.servlet.FilterChain
-import jakarta.servlet.ServletException
 import jakarta.servlet.ServletRequest
 import jakarta.servlet.ServletResponse
-import jakarta.servlet.http.HttpServletResponse
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.core.annotation.Order
@@ -13,19 +11,16 @@ import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.RolesConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
-import java.io.IOException
 
 @Component
-@Order(2)
+@Order(3)
 @EnableConfigurationProperties(AuthorisationConfig::class)
-class FiltersExtractionFilter
+class RoleExtractionFilter
   @Autowired
   constructor(
     var authorisationConfig: AuthorisationConfig,
     var roles: RolesConfig,
   ) : Filter {
-    @Throws(IOException::class, ServletException::class)
     override fun doFilter(
       request: ServletRequest,
       response: ServletResponse,
@@ -46,14 +41,7 @@ class FiltersExtractionFilter
           }
         }
 
-      if (consumerConfig == null) {
-        (response as HttpServletResponse).sendError(HttpServletResponse.SC_FORBIDDEN, "No consumer authorisation config found for $subjectDistinguishedName")
-        return
-      }
-
-      val requestingConsumersFilters: ConsumerFilters? = consumerConfig.filters
-
-      request.setAttribute("filters", requestingConsumersFilters)
+      request.setAttribute("rolesEndpoints", roleEndpoints)
       chain.doFilter(request, response)
     }
   }
