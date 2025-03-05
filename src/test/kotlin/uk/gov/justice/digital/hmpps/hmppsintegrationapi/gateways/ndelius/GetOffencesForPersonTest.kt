@@ -16,8 +16,8 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.generateTestOffence
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.NDeliusApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import java.io.File
@@ -33,13 +33,14 @@ class GetOffencesForPersonTest(
   val nDeliusGateway: NDeliusGateway,
 ) : DescribeSpec(
     {
-      val nDeliusApiMockServer = NDeliusApiMockServer()
       val deliusCrn = "X777776"
+      val path = "/case/$deliusCrn/supervisions"
+      val nDeliusApiMockServer = ApiMockServer.create(UpstreamApi.NDELIUS)
 
       beforeEach {
         nDeliusApiMockServer.start()
-        nDeliusApiMockServer.stubGetSupervisionsForPerson(
-          deliusCrn,
+        nDeliusApiMockServer.stubForGet(
+          path,
           File(
             "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/ndelius/fixtures/GetSupervisionsResponse.json",
           ).readText(),
@@ -139,8 +140,8 @@ class GetOffencesForPersonTest(
       }
 
       it("returns an empty list if no offences are found") {
-        nDeliusApiMockServer.stubGetSupervisionsForPerson(
-          deliusCrn,
+        nDeliusApiMockServer.stubForGet(
+          path,
           """
           {
           "communityManager": {},
@@ -158,7 +159,7 @@ class GetOffencesForPersonTest(
       }
 
       it("returns an error when 404 Not Found is returned because no person is found") {
-        nDeliusApiMockServer.stubGetSupervisionsForPerson(deliusCrn, "", HttpStatus.NOT_FOUND)
+        nDeliusApiMockServer.stubForGet(path, "", HttpStatus.NOT_FOUND)
 
         val response = nDeliusGateway.getOffencesForPerson(deliusCrn)
 

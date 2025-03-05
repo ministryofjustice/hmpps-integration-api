@@ -13,9 +13,10 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.NDeliusApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.NomisApiMockServer
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 
 @ActiveProfiles("test")
 @ContextConfiguration(
@@ -29,12 +30,12 @@ class ReferenceDataServiceTest(
 ) : DescribeSpec(
     {
       val nomisApiMockServer = NomisApiMockServer()
-      val ndeliusApiMockServer = NDeliusApiMockServer()
+      val ndeliusApiMockServer = ApiMockServer.create(UpstreamApi.NDELIUS)
 
       beforeEach {
         // Delius endpoint
         ndeliusApiMockServer.start()
-        ndeliusApiMockServer.stubDeliusApiResponse(
+        ndeliusApiMockServer.stubForGet(
           "/reference-data",
           """
             {
@@ -112,7 +113,7 @@ class ReferenceDataServiceTest(
       }
 
       it("returns from function with errors on NDelius 404") {
-        ndeliusApiMockServer.stubDeliusApiResponse(
+        ndeliusApiMockServer.stubForGet(
           "/reference-data",
           """
             {"message":"There is an error"}

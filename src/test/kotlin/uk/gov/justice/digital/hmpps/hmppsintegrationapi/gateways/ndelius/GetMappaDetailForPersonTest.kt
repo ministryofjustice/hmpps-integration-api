@@ -14,8 +14,8 @@ import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.NDeliusApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.MappaDetail
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
@@ -31,13 +31,14 @@ class GetMappaDetailForPersonTest(
   val nDeliusGateway: NDeliusGateway,
 ) : DescribeSpec(
     {
-      val nDeliusApiMockServer = NDeliusApiMockServer()
       val deliusCrn = "X777776"
+      val path = "/case/$deliusCrn/supervisions"
+      val nDeliusApiMockServer = ApiMockServer.create(UpstreamApi.NDELIUS)
 
       beforeEach {
         nDeliusApiMockServer.start()
-        nDeliusApiMockServer.stubGetSupervisionsForPerson(
-          deliusCrn,
+        nDeliusApiMockServer.stubForGet(
+          path,
           File(
             "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/ndelius/fixtures/GetSupervisionsResponse.json",
           ).readText(),
@@ -74,8 +75,8 @@ class GetMappaDetailForPersonTest(
       }
 
       it("returns an empty list if no mappa detail is found") {
-        nDeliusApiMockServer.stubGetSupervisionsForPerson(
-          deliusCrn,
+        nDeliusApiMockServer.stubForGet(
+          path,
           """
             {
               "communityManager": {},
@@ -93,7 +94,7 @@ class GetMappaDetailForPersonTest(
       }
 
       it("returns an error when 404 Not Found is returned because no person is found") {
-        nDeliusApiMockServer.stubGetSupervisionsForPerson(deliusCrn, "", HttpStatus.NOT_FOUND)
+        nDeliusApiMockServer.stubForGet(path, "", HttpStatus.NOT_FOUND)
 
         val response = nDeliusGateway.getMappaDetailForPerson(deliusCrn)
 
