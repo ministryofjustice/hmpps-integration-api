@@ -14,8 +14,9 @@ import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.CreateAndVaryLicenceGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.CreateAndVaryLicenceApiMockServer
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 
 @ActiveProfiles("test")
@@ -28,13 +29,15 @@ class GetLicenceSummariesTest(
   private val createAndVaryLicenceGateway: CreateAndVaryLicenceGateway,
 ) : DescribeSpec(
     {
-      val createAndVaryLicenceApiMockServer = CreateAndVaryLicenceApiMockServer()
+
       val deliusCrn = "X777776"
+      val path = "/public/licence-summaries/crn/$deliusCrn"
+      val createAndVaryLicenceApiMockServer = ApiMockServer.create(UpstreamApi.CVL)
 
       beforeEach {
         createAndVaryLicenceApiMockServer.start()
-        createAndVaryLicenceApiMockServer.stubGetLicenceSummaries(
-          deliusCrn,
+        createAndVaryLicenceApiMockServer.stubForGet(
+          path,
           """
           [{
           "id":"A1234AA",
@@ -67,8 +70,8 @@ class GetLicenceSummariesTest(
       }
 
       it("returns an error when 404 NOT FOUND is returned") {
-        createAndVaryLicenceApiMockServer.stubGetLicenceSummaries(
-          deliusCrn,
+        createAndVaryLicenceApiMockServer.stubForGet(
+          path,
           """
         [{
           "developerMessage": "cannot find person"

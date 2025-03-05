@@ -14,8 +14,9 @@ import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.CreateAndVaryLicenceGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.CreateAndVaryLicenceApiMockServer
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 
 @ActiveProfiles("test")
@@ -28,13 +29,14 @@ class GetLicenceConditionsTests(
   private val createAndVaryLicenceGateway: CreateAndVaryLicenceGateway,
 ) : DescribeSpec(
     {
-      val createAndVaryLicenceApiMockServer = CreateAndVaryLicenceApiMockServer()
       val conditionId = 12345
+      val path = "/public/licences/id/$conditionId"
+      val createAndVaryLicenceApiMockServer = ApiMockServer.create(UpstreamApi.CVL)
 
       beforeEach {
         createAndVaryLicenceApiMockServer.start()
-        createAndVaryLicenceApiMockServer.stubGetLicenceConditions(
-          conditionId,
+        createAndVaryLicenceApiMockServer.stubForGet(
+          path,
           """
           {
           "conditions":
@@ -77,8 +79,8 @@ class GetLicenceConditionsTests(
       }
 
       it("returns an error when 404 NOT FOUND is returned") {
-        createAndVaryLicenceApiMockServer.stubGetLicenceConditions(
-          conditionId,
+        createAndVaryLicenceApiMockServer.stubForGet(
+          path,
           """
         [{
           "developerMessage": "cannot find person"
