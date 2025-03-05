@@ -29,10 +29,10 @@ class RoleExtractionFilter
       val subjectDistinguishedName = request.getAttribute("clientName") as String?
       val consumerConfig: ConsumerConfig? = authorisationConfig.consumers[subjectDistinguishedName]
 
-      val consumersRoles = consumerConfig?.roles
+      val consumersRoles = consumerConfig?.roles.orEmpty()
       val roleEndpoints =
         buildList {
-          for (consumerRole in consumersRoles.orEmpty()) {
+          for (consumerRole in consumersRoles) {
             for (role in roles.roles) {
               if (role.name == consumerRole) {
                 addAll(role.endpoints)
@@ -41,7 +41,8 @@ class RoleExtractionFilter
           }
         }
 
-      request.setAttribute("rolesEndpoints", roleEndpoints)
+      request.setAttribute("roles", consumersRoles)
+      request.setAttribute("roleEndpoints", roleEndpoints)
       chain.doFilter(request, response)
     }
   }
