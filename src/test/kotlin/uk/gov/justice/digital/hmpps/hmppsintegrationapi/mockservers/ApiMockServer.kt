@@ -20,6 +20,7 @@ class ApiMockServer(
         UpstreamApi.PROBATION_OFFENDER_SEARCH -> ApiMockServer(4002)
         UpstreamApi.NDELIUS -> ApiMockServer(4003)
         UpstreamApi.ASSESS_RISKS_AND_NEEDS -> ApiMockServer(4004)
+        UpstreamApi.EFFECTIVE_PROPOSAL_FRAMEWORK -> ApiMockServer(4005)
         UpstreamApi.ADJUDICATIONS -> ApiMockServer(4006)
         UpstreamApi.CVL -> ApiMockServer(4007)
         UpstreamApi.CASE_NOTES -> ApiMockServer(4008)

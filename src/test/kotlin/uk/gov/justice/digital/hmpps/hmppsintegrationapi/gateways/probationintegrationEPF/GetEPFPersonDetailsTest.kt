@@ -13,8 +13,9 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ProbationIntegrationEPFGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.generateCaseDetail
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.EffectiveProposalFrameworkAndDeliusMockServer
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import java.io.File
 
 @ActiveProfiles("test")
@@ -27,15 +28,15 @@ class GetEPFPersonDetailsTest(
   val probationIntegrationEPFGateway: ProbationIntegrationEPFGateway,
 ) : DescribeSpec(
     {
-      val effectiveProposalFrameworkAndDeliusMockServer = EffectiveProposalFrameworkAndDeliusMockServer()
+      val effectiveProposalFrameworkAndDeliusMockServer = ApiMockServer.create(UpstreamApi.EFFECTIVE_PROPOSAL_FRAMEWORK)
       val hmppsId = "X777776"
       val eventNumber = 1234
+      val path = "/case-details/$hmppsId/$eventNumber"
 
       beforeEach {
         effectiveProposalFrameworkAndDeliusMockServer.start()
-        effectiveProposalFrameworkAndDeliusMockServer.stubGetCaseDetailForPerson(
-          hmppsId,
-          1234,
+        effectiveProposalFrameworkAndDeliusMockServer.stubForGet(
+          path,
           File(
             "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/probationintegrationEPF/fixtures/GetEPFPersonDetailsResponse.json",
           ).readText(),
