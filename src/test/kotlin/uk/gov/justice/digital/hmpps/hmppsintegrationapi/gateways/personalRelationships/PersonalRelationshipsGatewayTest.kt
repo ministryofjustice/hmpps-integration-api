@@ -14,8 +14,9 @@ import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PersonalRelationshipsGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.PersonalRelationshipsApiMockServer
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 
 @ActiveProfiles("test")
 @ContextConfiguration(
@@ -29,7 +30,7 @@ class PersonalRelationshipsGatewayTest(
     val contactId: Long = 123456
     val prisonerContactId: Long = 234561
 
-    val personalRelationshipsApiMockServer = PersonalRelationshipsApiMockServer()
+    val personalRelationshipsApiMockServer = ApiMockServer.create(UpstreamApi.PERSONAL_RELATIONSHIPS)
 
     beforeEach {
       personalRelationshipsApiMockServer.start()
@@ -56,7 +57,7 @@ class PersonalRelationshipsGatewayTest(
 
     it("gets a list of prisoner contact ids") {
       val path = "/contact/$contactId/linked-prisoners"
-      personalRelationshipsApiMockServer.stubPersonalRelationshipsApiResponse(
+      personalRelationshipsApiMockServer.stubForGet(
         path,
         body =
           """
@@ -94,7 +95,7 @@ class PersonalRelationshipsGatewayTest(
     it("Get the restrictions that apply for a particular relationship") {
       val path = "/prisoner-contact/$prisonerContactId/restriction"
 
-      personalRelationshipsApiMockServer.stubPersonalRelationshipsApiResponse(
+      personalRelationshipsApiMockServer.stubForGet(
         path,
         body =
           """
@@ -160,7 +161,7 @@ class PersonalRelationshipsGatewayTest(
 
       it("Gets a contact by id successfully") {
         val path = "/contact/$contactId"
-        personalRelationshipsApiMockServer.stubPersonalRelationshipsApiResponse(
+        personalRelationshipsApiMockServer.stubForGet(
           path,
           body =
             """
