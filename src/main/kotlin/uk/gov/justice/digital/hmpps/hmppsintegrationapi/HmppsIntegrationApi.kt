@@ -6,7 +6,7 @@ import org.springframework.context.annotation.PropertySource
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.YamlPropertySourceFactory
 
 @SpringBootApplication
-@PropertySource("classpath:roles.yml", factory = YamlPropertySourceFactory::class)
+@PropertySource("classpath:globals.yml", factory = YamlPropertySourceFactory::class)
 class HmppsIntegrationApi
 
 fun main(args: Array<String>) {

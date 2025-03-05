@@ -5,7 +5,7 @@ import org.springframework.context.annotation.Configuration
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Role
 
 @Configuration
-@ConfigurationProperties(prefix = "data")
-data class RolesConfig(
+@ConfigurationProperties(prefix = "globals")
+data class GlobalsConfig(
   val roles: List<Role>,
 )

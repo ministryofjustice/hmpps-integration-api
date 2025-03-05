@@ -1,4 +1,4 @@
-data:
+globals:
   roles:
     - name: "private-prison"
       includes:

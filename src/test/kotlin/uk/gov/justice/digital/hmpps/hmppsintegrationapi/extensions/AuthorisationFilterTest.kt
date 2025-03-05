@@ -11,7 +11,7 @@ import org.mockito.Mockito.verify
 import org.mockito.kotlin.reset
 import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConfig
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.RolesConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.GlobalsConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Role
@@ -19,7 +19,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Role
 class AuthorisationFilterTest {
   private val examplePath: String = "/v1/persons"
   private val roleName = "private-prison"
-  private val exampleRoleConfig = RolesConfig(listOf(Role(roleName, listOf(examplePath))))
+  private val exampleGlobalsConfig = GlobalsConfig(listOf(Role(roleName, listOf(examplePath))))
   private val exampleConsumer: String = "consumer-name"
   private val exampleRoles: List<String> = listOf(roleName)
 
@@ -41,7 +41,7 @@ class AuthorisationFilterTest {
   fun `calls the onward chain when path found in either`() {
     val authorisationConfig = AuthorisationConfig()
     authorisationConfig.consumers = mapOf(exampleConsumer to ConsumerConfig(include = listOf(examplePath), filters = ConsumerFilters(prisons = null), roles = listOf()))
-    val authorisationFilter = AuthorisationFilter(authorisationConfig, exampleRoleConfig)
+    val authorisationFilter = AuthorisationFilter(authorisationConfig, exampleGlobalsConfig)
     authorisationFilter.doFilter(mockRequest, mockResponse, mockChain)
 
     verify(mockChain, times(1)).doFilter(mockRequest, mockResponse)
@@ -51,7 +51,7 @@ class AuthorisationFilterTest {
   fun `calls the onward chain when path found in roles (but not in includes)`() {
     val authorisationConfig = AuthorisationConfig()
     authorisationConfig.consumers = mapOf(exampleConsumer to ConsumerConfig(include = emptyList(), filters = ConsumerFilters(prisons = null), roles = exampleRoles))
-    val authorisationFilter = AuthorisationFilter(authorisationConfig, exampleRoleConfig)
+    val authorisationFilter = AuthorisationFilter(authorisationConfig, exampleGlobalsConfig)
     authorisationFilter.doFilter(mockRequest, mockResponse, mockChain)
 
     verify(mockChain, times(1)).doFilter(mockRequest, mockResponse)
@@ -61,7 +61,7 @@ class AuthorisationFilterTest {
   fun `calls the onward chain when path not found in roles, but found in includes`() {
     val authorisationConfig = AuthorisationConfig()
     authorisationConfig.consumers = mapOf(exampleConsumer to ConsumerConfig(include = listOf(examplePath), filters = ConsumerFilters(prisons = null), roles = listOf()))
-    val invalidRoleConfig = RolesConfig(listOf(Role("private-prison", emptyList())))
+    val invalidRoleConfig = GlobalsConfig(listOf(Role("private-prison", emptyList())))
     val authorisationFilter = AuthorisationFilter(authorisationConfig, invalidRoleConfig)
     authorisationFilter.doFilter(mockRequest, mockResponse, mockChain)
 
@@ -75,7 +75,7 @@ class AuthorisationFilterTest {
 
     val authorisationConfig = AuthorisationConfig()
     authorisationConfig.consumers = mapOf(exampleConsumer to ConsumerConfig(include = listOf(examplePath), filters = ConsumerFilters(prisons = null), roles = exampleRoles))
-    val authorisationFilter = AuthorisationFilter(authorisationConfig = authorisationConfig, rolesConfig = exampleRoleConfig)
+    val authorisationFilter = AuthorisationFilter(authorisationConfig = authorisationConfig, globalsConfig = exampleGlobalsConfig)
     authorisationFilter.doFilter(mockRequest, mockResponse, mockChain)
 
     verify(mockResponse, times(1)).sendError(403, "Unable to authorise $invalidPath for $exampleConsumer")
@@ -86,7 +86,7 @@ class AuthorisationFilterTest {
     whenever(mockRequest.getAttribute("clientName")).thenReturn(null)
 
     val authorisationConfig = AuthorisationConfig()
-    val authorisationFilter = AuthorisationFilter(authorisationConfig, exampleRoleConfig)
+    val authorisationFilter = AuthorisationFilter(authorisationConfig, exampleGlobalsConfig)
     authorisationFilter.doFilter(mockRequest, mockResponse, mockChain)
 
     verify(mockResponse, times(1)).sendError(403, "No subject-distinguished-name header provided for authorisation")

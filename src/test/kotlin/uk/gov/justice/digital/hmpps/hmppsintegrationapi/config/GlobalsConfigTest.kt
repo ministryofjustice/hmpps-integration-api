@@ -9,12 +9,12 @@ import org.springframework.test.context.ActiveProfiles
 
 @ActiveProfiles("test")
 @SpringBootTest
-class RoleConfigTest {
-  @Autowired lateinit var rolesConfig: RolesConfig
+class GlobalsConfigTest {
+  @Autowired lateinit var globalsConfig: GlobalsConfig
 
   @Test
-  fun `get values from roles config yml`() {
-    rolesConfig.roles.size.shouldBeGreaterThan(0)
-    rolesConfig.roles[0].name.shouldBe("private-prison")
+  fun `globals should contain roles`() {
+    globalsConfig.roles.size.shouldBeGreaterThan(0)
+    globalsConfig.roles[0].name.shouldBe("private-prison")
   }
 }
