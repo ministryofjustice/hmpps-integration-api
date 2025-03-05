@@ -11,7 +11,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.core.annotation.Order
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConfig
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.RolesConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import java.io.IOException
@@ -23,7 +22,6 @@ class FiltersExtractionFilter
   @Autowired
   constructor(
     var authorisationConfig: AuthorisationConfig,
-    var roles: RolesConfig,
   ) : Filter {
     @Throws(IOException::class, ServletException::class)
     override fun doFilter(
@@ -33,18 +31,6 @@ class FiltersExtractionFilter
     ) {
       val subjectDistinguishedName = request.getAttribute("clientName") as String?
       val consumerConfig: ConsumerConfig? = authorisationConfig.consumers[subjectDistinguishedName]
-
-      val consumersRoles = consumerConfig?.roles
-      val roleEndpoints =
-        buildList {
-          for (consumerRole in consumersRoles.orEmpty()) {
-            for (role in roles.roles) {
-              if (role.name == consumerRole) {
-                addAll(role.endpoints)
-              }
-            }
-          }
-        }
 
       if (consumerConfig == null) {
         (response as HttpServletResponse).sendError(HttpServletResponse.SC_FORBIDDEN, "No consumer authorisation config found for $subjectDistinguishedName")
