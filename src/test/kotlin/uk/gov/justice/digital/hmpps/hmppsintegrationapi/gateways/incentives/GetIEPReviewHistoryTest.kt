@@ -31,7 +31,7 @@ class GetIEPReviewHistoryTest(
 ) : DescribeSpec({
     val hmppsId = "A1234AA"
     val path = "/incentive-reviews/prisoner/$hmppsId"
-    val incentivesApiMockServer = ApiMockServer(4008)
+    val incentivesApiMockServer = ApiMockServer.create(UpstreamApi.INCENTIVES)
 
     beforeEach {
       incentivesApiMockServer.start()

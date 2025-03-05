@@ -16,6 +16,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGatewa
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonVisitsGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 
 @ActiveProfiles("test")
 @ContextConfiguration(
@@ -37,7 +38,7 @@ class GetVisitsGatewayTest(
       val page = 1
       val size = 10
       val pathWithQueryParams = "$path?prisonId=$prisonId&visitStatus=$visitStatus&page=$page&size=$size&prisonerId=$hmppsId&visitStartDate=$fromDate&visitEndDate=$toDate"
-      val prisonVisitsApiMockServer = ApiMockServer(4007)
+      val prisonVisitsApiMockServer = ApiMockServer.create(UpstreamApi.MANAGE_PRISON_VISITS)
 
       beforeEach {
         prisonVisitsApiMockServer.start()

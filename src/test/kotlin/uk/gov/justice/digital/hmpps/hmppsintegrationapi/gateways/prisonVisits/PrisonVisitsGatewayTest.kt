@@ -36,7 +36,7 @@ class PrisonVisitsGatewayTest(
       val prisonerId = "AF34567G"
       val futuresPath = "/visits/search/future/$prisonerId"
 
-      val prisonVisitsApiMockServer = ApiMockServer(4007)
+      val prisonVisitsApiMockServer = ApiMockServer.create(UpstreamApi.MANAGE_PRISON_VISITS)
 
       beforeEach {
         prisonVisitsApiMockServer.start()
