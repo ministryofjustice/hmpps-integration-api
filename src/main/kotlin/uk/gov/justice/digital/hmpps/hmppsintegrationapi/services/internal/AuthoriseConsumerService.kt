@@ -7,16 +7,24 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Consum
 @Component
 @Service
 class AuthoriseConsumerService {
-  fun execute(
-    consumer: String,
-    consumerPathConfig: Map<String, ConsumerConfig?>,
+  fun doesConsumerHaveIncludesAccess(
+    consumerConfig: ConsumerConfig?,
     requestedPath: String,
   ): Boolean {
-    println("consumer: $consumer")
-    println("requestedPath: $requestedPath")
-
-    consumerPathConfig[consumer]?.include?.forEach {
+    consumerConfig?.include?.forEach {
       if (Regex(it).matches(requestedPath)) {
+        return true
+      }
+    }
+    return false
+  }
+
+  fun doesConsumerHaveRoleAccess(
+    consumerRolesConfigPaths: List<String>?,
+    requestPath: String,
+  ): Boolean {
+    consumerRolesConfigPaths?.forEach {
+      if (Regex(it).matches(requestPath)) {
         return true
       }
     }

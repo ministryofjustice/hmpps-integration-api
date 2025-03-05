@@ -12,24 +12,17 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Consum
   classes = [AuthoriseConsumerService::class],
 )
 internal class AuthoriseConsumerServiceTest(
-  private val clientName: String = "automated-test-client",
   private val authoriseConsumerService: AuthoriseConsumerService,
 ) : DescribeSpec(
     {
-
-      val consumerPathConfig =
-        mapOf(
-          "automated-test-client" to ConsumerConfig(listOf("/persons/.*"), listOf(), null),
-        )
-
-      var requestedPath = "/persons/123"
+      val consumerConfig = ConsumerConfig(listOf("/persons/.*"), listOf(), null)
+      val requestedPath = "/persons/123"
 
       describe("Access is allowed") {
         it("when the path is listed under that consumer") {
           val authResult =
-            authoriseConsumerService.execute(
-              clientName,
-              consumerPathConfig,
+            authoriseConsumerService.doesConsumerHaveIncludesAccess(
+              consumerConfig,
               requestedPath,
             )
           authResult.shouldBeTrue()
@@ -38,16 +31,13 @@ internal class AuthoriseConsumerServiceTest(
 
       describe("Access is denied") {
         it("when the extracted consumer is null") {
-          val result = authoriseConsumerService.execute("", emptyMap(), "")
-
+          val result = authoriseConsumerService.doesConsumerHaveIncludesAccess(null, "")
           result.shouldBeFalse()
         }
 
         it("when the path isn't listed as allowed on the consumer") {
-          requestedPath = "/some-other-path/123"
-
-          val result = authoriseConsumerService.execute(clientName, consumerPathConfig, requestedPath)
-
+          val invalidPath = "/some-other-path/123"
+          val result = authoriseConsumerService.doesConsumerHaveIncludesAccess(consumerConfig, invalidPath)
           result.shouldBeFalse()
         }
       }

@@ -40,7 +40,7 @@ class AuthorisationFilter
         return
       }
 
-      val result = authoriseConsumerService.execute(subjectDistinguishedName, authorisationConfig.consumers, requestedPath)
+      val result = authoriseConsumerService.doesConsumerHaveIncludesAccess(authorisationConfig.consumers[subjectDistinguishedName], requestedPath)
 
       if (!result) {
         res.sendError(HttpServletResponse.SC_FORBIDDEN, "Unable to authorise $requestedPath for $subjectDistinguishedName")
