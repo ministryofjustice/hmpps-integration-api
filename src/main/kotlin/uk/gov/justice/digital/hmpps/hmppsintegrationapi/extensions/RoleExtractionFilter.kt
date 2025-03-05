@@ -5,6 +5,7 @@ import jakarta.servlet.FilterChain
 import jakarta.servlet.ServletRequest
 import jakarta.servlet.ServletResponse
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.core.annotation.Order
 import org.springframework.stereotype.Component
@@ -14,12 +15,12 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Consum
 
 @Component
 @Order(3)
-@EnableConfigurationProperties(AuthorisationConfig::class)
+@EnableConfigurationProperties(AuthorisationConfig::class, RolesConfig::class)
 class RoleExtractionFilter
   @Autowired
   constructor(
     var authorisationConfig: AuthorisationConfig,
-    var roles: RolesConfig,
+    @Qualifier("data-uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.RolesConfig") var roles: RolesConfig,
   ) : Filter {
     override fun doFilter(
       request: ServletRequest,
@@ -41,7 +42,7 @@ class RoleExtractionFilter
           }
         }
 
-      request.setAttribute("rolesEndpoints", roleEndpoints)
+      request.setAttribute("roleEndpoints", roleEndpoints)
       chain.doFilter(request, response)
     }
   }

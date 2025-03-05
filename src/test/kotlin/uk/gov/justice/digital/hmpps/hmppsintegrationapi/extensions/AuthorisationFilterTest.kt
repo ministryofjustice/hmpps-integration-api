@@ -27,7 +27,7 @@ class AuthorisationFilterTest {
     val mockResponse = mock(HttpServletResponse::class.java)
     val mockChain = mock(FilterChain::class.java)
 
-    authorisationConfig.consumers = mapOf(exampleConsumer to ConsumerConfig(include = listOf(examplePath), filters = ConsumerFilters(prisons = null)))
+    authorisationConfig.consumers = mapOf(exampleConsumer to ConsumerConfig(include = listOf(examplePath), filters = ConsumerFilters(prisons = null), roles = listOf()))
 
     // Act
     authorisationFilter.doFilter(mockRequest, mockResponse, mockChain)
@@ -44,7 +44,7 @@ class AuthorisationFilterTest {
     val mockResponse = mock(HttpServletResponse::class.java)
     val mockChain = mock(FilterChain::class.java)
 
-    authorisationConfig.consumers = mapOf(exampleConsumer to ConsumerConfig(include = emptyList(), filters = ConsumerFilters(prisons = null)))
+    authorisationConfig.consumers = mapOf(exampleConsumer to ConsumerConfig(include = emptyList(), filters = ConsumerFilters(prisons = null), roles = emptyList()))
 
     val authorisationFilter = AuthorisationFilter(authorisationConfig)
 

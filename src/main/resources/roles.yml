@@ -1,4 +1,5 @@
-roles:
-  - name: "private-prison"
-    endpoints:
-      - "/v1/persons/[^/]*$"
+data:
+  roles:
+    - name: "private-prison"
+      endpoints:
+        - "/v1/persons/[^/]*$"
