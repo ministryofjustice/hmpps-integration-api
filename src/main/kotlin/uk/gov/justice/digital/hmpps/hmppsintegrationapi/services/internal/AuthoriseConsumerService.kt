@@ -20,10 +20,10 @@ class AuthoriseConsumerService {
   }
 
   fun doesConsumerHaveRoleAccess(
-    consumerRolesConfigPaths: List<String>?,
+    consumerRolesInclude: List<String>,
     requestPath: String,
   ): Boolean {
-    consumerRolesConfigPaths?.forEach {
+    consumerRolesInclude.forEach {
       if (Regex(it).matches(requestPath)) {
         return true
       }

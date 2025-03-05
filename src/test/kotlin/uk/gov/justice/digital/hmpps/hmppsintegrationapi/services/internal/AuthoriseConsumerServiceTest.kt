@@ -42,12 +42,12 @@ internal class AuthoriseConsumerServiceTest(
       }
 
       describe("doesConsumerHaveRoleAccess") {
-        val consumerRolesConfigPaths = listOf("/persons/.*")
+        val consumerRolesInclude = listOf("/persons/.*")
 
         it("access is allowed when the path is listed in the role included paths") {
           val authResult =
             authoriseConsumerService.doesConsumerHaveRoleAccess(
-              consumerRolesConfigPaths,
+              consumerRolesInclude,
               requestedPath,
             )
           authResult.shouldBeTrue()
@@ -60,7 +60,7 @@ internal class AuthoriseConsumerServiceTest(
 
         it("when the path isn't listed as allowed on the consumer") {
           val invalidPath = "/some-other-path/123"
-          val result = authoriseConsumerService.doesConsumerHaveRoleAccess(consumerRolesConfigPaths, invalidPath)
+          val result = authoriseConsumerService.doesConsumerHaveRoleAccess(consumerRolesInclude, invalidPath)
           result.shouldBeFalse()
         }
       }

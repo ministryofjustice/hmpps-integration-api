@@ -52,19 +52,19 @@ class AuthorisationFilter
       }
 
       val consumersRoles = consumerConfig?.roles
-      val roleEndpoints =
+      val roleIncludes =
         buildList {
           for (consumerRole in consumersRoles.orEmpty()) {
             for (role in rolesConfig.roles) {
               if (role.name == consumerRole) {
-                addAll(role.endpoints)
+                addAll(role.includes)
               }
             }
           }
         }
 
       val roleResult =
-        authoriseConsumerService.doesConsumerHaveRoleAccess(roleEndpoints, requestedPath)
+        authoriseConsumerService.doesConsumerHaveRoleAccess(roleIncludes, requestedPath)
       if (!roleResult) {
         res.sendError(HttpServletResponse.SC_FORBIDDEN, "Unable to authorise $requestedPath for $subjectDistinguishedName")
         return

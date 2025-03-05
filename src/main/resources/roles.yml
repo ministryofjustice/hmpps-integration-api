@@ -1,5 +1,5 @@
 data:
   roles:
     - name: "private-prison"
-      endpoints:
+      includes:
         - "/v1/persons/[^/]*$"
