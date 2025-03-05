@@ -8,7 +8,7 @@ import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper.WebClientWrapperResponse
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.GenericApiMockServer
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.TestApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import java.io.File
@@ -35,7 +35,7 @@ data class TestDomainModel(
 
 class WebClientWrapperTest :
   DescribeSpec({
-    val mockServer = GenericApiMockServer()
+    val mockServer = TestApiMockServer()
     val id = "ABC1234"
     val headers = mapOf("foo" to "bar")
 
@@ -125,7 +125,7 @@ class WebClientWrapperTest :
           {
             "sourceName": "Paul"
           },
-          {     
+          {
             "sourceName": "Paul"
           }
         ]
@@ -154,7 +154,7 @@ class WebClientWrapperTest :
           {
             "sourceName": "Paul"
           },
-          {     
+          {
             "sourceName": "Paul"
           }
         ]
