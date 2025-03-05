@@ -13,6 +13,7 @@ class ApiMockServer(
   private val port: Int,
 ) : WireMockServer(port) {
   companion object {
+    // These ports must match the config in the yaml files
     fun create(upstreamApi: UpstreamApi): ApiMockServer =
       when (upstreamApi) {
         UpstreamApi.NOMIS -> ApiMockServer(4000)
