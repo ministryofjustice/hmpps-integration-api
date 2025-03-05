@@ -67,4 +67,30 @@ class PersonIntegrationTest : IntegrationTestBase() {
       .andExpect(status().isOk)
       .andExpect(content().json(getExpectedResponse("prisoners-contacts")))
   }
+
+  // IEP Level tests
+  @Test
+  fun `returns a prisoners iep level`() {
+    callApi("$basePath/$nomsId/iep-level")
+      .andExpect(status().isOk)
+      .andExpect(content().json("""{"data":{"iepCode": "STD", "iepLevel": "Standard"}}"""))
+  }
+
+  @Test
+  fun `return a 404 for person in wrong prison`() {
+    callApiWithCN("$basePath/$nomsId/iep-level", limitedPrisonsCn)
+      .andExpect(status().isNotFound)
+  }
+
+  @Test
+  fun `return a 404 when no prisons in filter`() {
+    callApiWithCN("$basePath/$nomsId/iep-level", noPrisonsCn)
+      .andExpect(status().isNotFound)
+  }
+
+  @Test
+  fun `return a 400 when invalid noms passed in`() {
+    callApi("$basePath/$invalidNomsId/iep-level")
+      .andExpect(status().isBadRequest)
+  }
 }

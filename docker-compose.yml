@@ -17,7 +17,8 @@ services:
         curl -H "Authorization: Bearer abc" -f http://0.0.0.0:4019/search?crn=sit &&
         curl -H "Authorization: Bearer abc" -f http://0.0.0.0:4020/inductions/K5995YZ/induction-schedule &&
         curl -H "Authorization: Bearer abc" -f http://0.0.0.0:4021/prisoner/A1234AL/non-associations &&
-        curl -H "Authorization: Bearer abc" -f http://0.0.0.0:4022/contact/123456789/linked-prisoners'
+        curl -H "Authorization: Bearer abc" -f http://0.0.0.0:4022/contact/123456789/linked-prisoners &&
+        curl -H "Authorization: Bearer abc" -f http://0.0.0.0:4024/incentive-reviews/prisoner/A1234AA'
 
     ports:
       - "4010:4010"
@@ -34,6 +35,7 @@ services:
       - "4021:4021"
       - "4022:4022"
       - "4023:4023"
+      - "4024:4024"
 
   local-stack-aws:
     image: localstack/localstack:3.0
