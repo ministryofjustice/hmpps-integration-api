@@ -14,7 +14,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Consum
 
 @Component
 @Order(3)
-@EnableConfigurationProperties(AuthorisationConfig::class)
+@EnableConfigurationProperties(AuthorisationConfig::class, RolesConfig::class)
 class RoleExtractionFilter
   @Autowired
   constructor(
