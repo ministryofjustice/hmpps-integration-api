@@ -15,8 +15,8 @@ import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonVisitsGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.PrisonVisitsApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 
@@ -36,7 +36,7 @@ class PrisonVisitsGatewayTest(
       val prisonerId = "AF34567G"
       val futuresPath = "/visits/search/future/$prisonerId"
 
-      val prisonVisitsApiMockServer = PrisonVisitsApiMockServer()
+      val prisonVisitsApiMockServer = ApiMockServer.create(UpstreamApi.MANAGE_PRISON_VISITS)
 
       beforeEach {
         prisonVisitsApiMockServer.start()
@@ -56,7 +56,7 @@ class PrisonVisitsGatewayTest(
       }
 
       it("returns a 404 when visit is not found") {
-        prisonVisitsApiMockServer.stubPrisonVisitsApiResponse(path, body = "", HttpStatus.NOT_FOUND)
+        prisonVisitsApiMockServer.stubForGet(path, body = "", HttpStatus.NOT_FOUND)
 
         val response = prisonVisitsGateway.getVisitByReference(visitReference)
         response.errors.shouldHaveSize(1)
@@ -111,7 +111,7 @@ class PrisonVisitsGatewayTest(
           }
           """.trimIndent()
 
-        prisonVisitsApiMockServer.stubPrisonVisitsApiResponse(path, body = exampleData, HttpStatus.OK)
+        prisonVisitsApiMockServer.stubForGet(path, body = exampleData, HttpStatus.OK)
 
         val response = prisonVisitsGateway.getVisitByReference(visitReference)
         response.data.shouldNotBeNull()
@@ -170,7 +170,7 @@ class PrisonVisitsGatewayTest(
             ]
             """.trimIndent()
 
-          prisonVisitsApiMockServer.stubPrisonVisitsApiResponse(futuresPath, body = exampleData, HttpStatus.OK)
+          prisonVisitsApiMockServer.stubForGet(futuresPath, body = exampleData, HttpStatus.OK)
 
           val response = prisonVisitsGateway.getFutureVisits(prisonerId)
           response.data.shouldNotBeNull()
@@ -182,7 +182,7 @@ class PrisonVisitsGatewayTest(
         }
 
         it("returns an empty list when no future visits found") {
-          prisonVisitsApiMockServer.stubPrisonVisitsApiResponse(futuresPath, body = "[]", HttpStatus.OK)
+          prisonVisitsApiMockServer.stubForGet(futuresPath, body = "[]", HttpStatus.OK)
 
           val response = prisonVisitsGateway.getFutureVisits(prisonerId)
           response.data.shouldNotBeNull()
@@ -190,7 +190,7 @@ class PrisonVisitsGatewayTest(
         }
 
         it("returns a 400 response when prisoner Id is invalid") {
-          prisonVisitsApiMockServer.stubPrisonVisitsApiResponse(futuresPath, body = "", HttpStatus.BAD_REQUEST)
+          prisonVisitsApiMockServer.stubForGet(futuresPath, body = "", HttpStatus.BAD_REQUEST)
 
           val response = prisonVisitsGateway.getFutureVisits(prisonerId)
           response.data.shouldBe(null)

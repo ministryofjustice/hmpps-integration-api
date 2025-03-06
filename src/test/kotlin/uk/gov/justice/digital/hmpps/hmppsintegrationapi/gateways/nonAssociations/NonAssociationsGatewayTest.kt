@@ -13,8 +13,9 @@ import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NonAssociationsGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.NonAssociationsApiMockServer
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 
 @ActiveProfiles("test")
 @ContextConfiguration(
@@ -26,7 +27,8 @@ class NonAssociationsGatewayTest(
   private val nonAssociationsGateway: NonAssociationsGateway,
 ) : DescribeSpec({
     val prisonerNumber = "ASDP211"
-    val nonAssociationsApiMockServer = NonAssociationsApiMockServer()
+    val path = "/prisoner/$prisonerNumber/non-associations?includeOpen=true&includeClosed=false"
+    val nonAssociationsApiMockServer = ApiMockServer.create(UpstreamApi.NON_ASSOCIATIONS)
 
     beforeEach {
       nonAssociationsApiMockServer.start()
@@ -46,8 +48,8 @@ class NonAssociationsGatewayTest(
     }
 
     it("get non associates when quering with a valid hmppsId") {
-      nonAssociationsApiMockServer.stubNonAssociationsGet(
-        prisonerNumber = prisonerNumber,
+      nonAssociationsApiMockServer.stubForGet(
+        path,
         body =
           """
           {

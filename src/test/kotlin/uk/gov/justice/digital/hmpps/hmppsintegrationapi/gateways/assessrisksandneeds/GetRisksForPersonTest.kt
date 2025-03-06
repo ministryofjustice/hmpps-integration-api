@@ -14,13 +14,14 @@ import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.AssessRisksAndNeedsGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.AssessRisksAndNeedsApiMockServer
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.OtherRisks
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Risk
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.RiskSummary
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.RiskToSelf
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Risks
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import java.io.File
 import java.time.LocalDateTime
@@ -35,14 +36,15 @@ class GetRisksForPersonTest(
   val assessRisksAndNeedsGateway: AssessRisksAndNeedsGateway,
 ) : DescribeSpec(
     {
-      val assessRisksAndNeedsApiMockServer = AssessRisksAndNeedsApiMockServer()
       val deliusCrn = "X777776"
+      val path = "/risks/crn/$deliusCrn"
+      val assessRisksAndNeedsApiMockServer = ApiMockServer.create(UpstreamApi.ASSESS_RISKS_AND_NEEDS)
 
       beforeEach {
         assessRisksAndNeedsApiMockServer.start()
         Mockito.reset(hmppsAuthGateway)
-        assessRisksAndNeedsApiMockServer.stubGetRisksForPerson(
-          deliusCrn,
+        assessRisksAndNeedsApiMockServer.stubForGet(
+          path,
           File(
             "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/assessrisksandneeds/fixtures/GetRisksResponse.json",
           ).readText(),
@@ -148,7 +150,7 @@ class GetRisksForPersonTest(
       }
 
       it("returns a 404 NOT FOUND status code when no person is found") {
-        assessRisksAndNeedsApiMockServer.stubGetRisksForPerson(deliusCrn, "", HttpStatus.NOT_FOUND)
+        assessRisksAndNeedsApiMockServer.stubForGet(path, "", HttpStatus.NOT_FOUND)
 
         val response = assessRisksAndNeedsGateway.getRiskSeriousHarmForPerson(deliusCrn)
 

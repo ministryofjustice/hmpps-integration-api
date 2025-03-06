@@ -14,10 +14,11 @@ import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.AssessRisksAndNeedsGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.AssessRisksAndNeedsApiMockServer
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Need
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Needs
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import java.time.LocalDateTime
 
@@ -31,14 +32,15 @@ class GetNeedsForPersonTest(
   val assessRisksAndNeedsGateway: AssessRisksAndNeedsGateway,
 ) : DescribeSpec(
     {
-      val assessRisksAndNeedsApiMockServer = AssessRisksAndNeedsApiMockServer()
       val deliusCrn = "X777776"
+      val path = "/needs/crn/$deliusCrn"
+      val assessRisksAndNeedsApiMockServer = ApiMockServer.create(UpstreamApi.ASSESS_RISKS_AND_NEEDS)
 
       beforeEach {
         assessRisksAndNeedsApiMockServer.start()
         Mockito.reset(hmppsAuthGateway)
-        assessRisksAndNeedsApiMockServer.stubGetNeedsForPerson(
-          deliusCrn,
+        assessRisksAndNeedsApiMockServer.stubForGet(
+          path,
           """
               {
                 "assessedOn": "2023-02-13T12:43:38",
@@ -110,8 +112,8 @@ class GetNeedsForPersonTest(
       }
 
       it("returns an empty list when a needs section has no data") {
-        assessRisksAndNeedsApiMockServer.stubGetNeedsForPerson(
-          deliusCrn,
+        assessRisksAndNeedsApiMockServer.stubForGet(
+          path,
           """
            {
               "assessedOn": "2023-02-13T12:43:38",
@@ -146,7 +148,7 @@ class GetNeedsForPersonTest(
       }
 
       it("returns an error when 404 NOT FOUND is returned because no person is found") {
-        assessRisksAndNeedsApiMockServer.stubGetNeedsForPerson(deliusCrn, "", HttpStatus.NOT_FOUND)
+        assessRisksAndNeedsApiMockServer.stubForGet(path, "", HttpStatus.NOT_FOUND)
 
         val response = assessRisksAndNeedsGateway.getNeedsForPerson(deliusCrn)
 

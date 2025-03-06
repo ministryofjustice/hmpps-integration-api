@@ -15,8 +15,8 @@ import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.IncentivesGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.IncentivesApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 
@@ -31,7 +31,7 @@ class GetIEPReviewHistoryTest(
 ) : DescribeSpec({
     val hmppsId = "A1234AA"
     val path = "/incentive-reviews/prisoner/$hmppsId"
-    val incentivesApiMockServer = IncentivesApiMockServer()
+    val incentivesApiMockServer = ApiMockServer.create(UpstreamApi.INCENTIVES)
 
     beforeEach {
       incentivesApiMockServer.start()
@@ -51,7 +51,7 @@ class GetIEPReviewHistoryTest(
     }
 
     it("gets the data from the gateway") {
-      incentivesApiMockServer.stubIncentivesApiResponse(
+      incentivesApiMockServer.stubForGet(
         path = path,
         body =
           """
@@ -95,7 +95,7 @@ class GetIEPReviewHistoryTest(
     }
 
     it("should return error when bad request is returned") {
-      incentivesApiMockServer.stubIncentivesApiResponse(path, "", HttpStatus.BAD_REQUEST)
+      incentivesApiMockServer.stubForGet(path, "", HttpStatus.BAD_REQUEST)
       val response = incentivesGateway.getIEPReviewHistory(hmppsId)
       response.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.INCENTIVES, UpstreamApiError.Type.BAD_REQUEST)))
     }

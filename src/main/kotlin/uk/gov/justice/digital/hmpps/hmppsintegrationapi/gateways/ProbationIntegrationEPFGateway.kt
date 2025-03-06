@@ -29,7 +29,7 @@ class ProbationIntegrationEPFGateway(
         HttpMethod.GET,
         "/case-details/$id/$eventNumber",
         authenticationHeader(),
-        UpstreamApi.NDELIUS,
+        UpstreamApi.EFFECTIVE_PROPOSAL_FRAMEWORK,
       )
 
     return when (result) {

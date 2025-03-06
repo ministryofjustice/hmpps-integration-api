@@ -16,8 +16,8 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NomisGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.NomisApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 
@@ -31,14 +31,14 @@ class GetAccountsForPersonTest(
   val nomisGateway: NomisGateway,
 ) : DescribeSpec(
     {
-      val nomisApiMockServer = NomisApiMockServer()
+      val nomisApiMockServer = ApiMockServer.create(UpstreamApi.NOMIS)
       val nomisNumber = "AA1234Z"
       val prisonId = "XYZ"
       val accountsPath = "/api/v1/prison/$prisonId/offenders/$nomisNumber/accounts"
 
       beforeEach {
         nomisApiMockServer.start()
-        nomisApiMockServer.stubNomisApiResponse(
+        nomisApiMockServer.stubForGet(
           accountsPath,
           """
           {
@@ -73,7 +73,7 @@ class GetAccountsForPersonTest(
       }
 
       it("returns an error when 404 Not Found is returned because no person is found") {
-        nomisApiMockServer.stubNomisApiResponse(accountsPath, "", HttpStatus.NOT_FOUND)
+        nomisApiMockServer.stubForGet(accountsPath, "", HttpStatus.NOT_FOUND)
 
         val response = nomisGateway.getAccountsForPerson(prisonId, nomisNumber)
 
@@ -89,7 +89,7 @@ class GetAccountsForPersonTest(
       }
 
       it("returns an error when 400 Bad Request is returned because of invalid ID") {
-        nomisApiMockServer.stubNomisApiResponse(accountsPath, "", HttpStatus.BAD_REQUEST)
+        nomisApiMockServer.stubForGet(accountsPath, "", HttpStatus.BAD_REQUEST)
 
         val response = nomisGateway.getAccountsForPerson(prisonId, nomisNumber)
 

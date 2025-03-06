@@ -13,9 +13,9 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.NDeliusApiMockServer
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.NomisApiMockServer
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 
 @ActiveProfiles("test")
 @ContextConfiguration(
@@ -28,13 +28,13 @@ class ReferenceDataServiceTest(
   private val objectMapper: ObjectMapper = ObjectMapper().registerKotlinModule(),
 ) : DescribeSpec(
     {
-      val nomisApiMockServer = NomisApiMockServer()
-      val ndeliusApiMockServer = NDeliusApiMockServer()
+      val nomisApiMockServer = ApiMockServer.create(UpstreamApi.NOMIS)
+      val ndeliusApiMockServer = ApiMockServer.create(UpstreamApi.NDELIUS)
 
       beforeEach {
         // Delius endpoint
         ndeliusApiMockServer.start()
-        ndeliusApiMockServer.stubDeliusApiResponse(
+        ndeliusApiMockServer.stubForGet(
           "/reference-data",
           """
             {
@@ -57,7 +57,7 @@ class ReferenceDataServiceTest(
         // Nomis endpoints
         //  PHONE_USAGE("PHONE_TYPE"), ALERT("ALERT_TYPE"), ETHNICITY("ETHNICITY"), SEX("GENDER")
         nomisApiMockServer.start()
-        nomisApiMockServer.stubNomisApiResponse(
+        nomisApiMockServer.stubForGet(
           "/api/reference-domains/domains/PHONE_USAGE",
           """
           [
@@ -68,7 +68,7 @@ class ReferenceDataServiceTest(
         """,
         )
 
-        nomisApiMockServer.stubNomisApiResponse(
+        nomisApiMockServer.stubForGet(
           "/api/reference-domains/domains/ALERT",
           """
           [
@@ -79,7 +79,7 @@ class ReferenceDataServiceTest(
         """,
         )
 
-        nomisApiMockServer.stubNomisApiResponse(
+        nomisApiMockServer.stubForGet(
           "/api/reference-domains/domains/ETHNICITY",
           """
           [
@@ -90,7 +90,7 @@ class ReferenceDataServiceTest(
         """,
         )
 
-        nomisApiMockServer.stubNomisApiResponse(
+        nomisApiMockServer.stubForGet(
           "/api/reference-domains/domains/SEX",
           """
           [
@@ -112,7 +112,7 @@ class ReferenceDataServiceTest(
       }
 
       it("returns from function with errors on NDelius 404") {
-        ndeliusApiMockServer.stubDeliusApiResponse(
+        ndeliusApiMockServer.stubForGet(
           "/reference-data",
           """
             {"message":"There is an error"}
@@ -131,7 +131,7 @@ class ReferenceDataServiceTest(
       }
 
       it("returns from function with errors on NOMIS 404") {
-        nomisApiMockServer.stubNomisApiResponse(
+        nomisApiMockServer.stubForGet(
           "/api/reference-domains/domains/SEX",
           """
             {"message":"There is an error"}

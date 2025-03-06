@@ -18,8 +18,9 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ProbationOffenderSearchGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ProbationOffenderSearchApiMockServer
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import java.io.File
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -33,7 +34,8 @@ class ProbationOffenderSearchGatewayTest(
   @MockitoBean val hmppsAuthGateway: HmppsAuthGateway,
   private val probationOffenderSearchGateway: ProbationOffenderSearchGateway,
 ) : DescribeSpec({
-    val probationOffenderSearchApiMockServer = ProbationOffenderSearchApiMockServer()
+    val probationOffenderSearchApiMockServer = ApiMockServer.create(UpstreamApi.PROBATION_OFFENDER_SEARCH)
+    val path = "/search"
 
     beforeEach {
       probationOffenderSearchApiMockServer.start()
@@ -54,7 +56,8 @@ class ProbationOffenderSearchGatewayTest(
       val dateOfBirthString = dateOfBirth.format(DateTimeFormatter.ISO_DATE)
 
       beforeEach {
-        probationOffenderSearchApiMockServer.stubPostOffenderSearch(
+        probationOffenderSearchApiMockServer.stubForPost(
+          path,
           """
             {
               "firstName": "$firstName",
@@ -98,7 +101,8 @@ class ProbationOffenderSearchGatewayTest(
       }
 
       it("returns person(s) when searching on first name and last name") {
-        probationOffenderSearchApiMockServer.stubPostOffenderSearch(
+        probationOffenderSearchApiMockServer.stubForPost(
+          path,
           """
         {
           "firstName": "Ahsoka",
@@ -132,7 +136,8 @@ class ProbationOffenderSearchGatewayTest(
       }
 
       it("returns person(s) when searching on first name and last name") {
-        probationOffenderSearchApiMockServer.stubPostOffenderSearch(
+        probationOffenderSearchApiMockServer.stubForPost(
+          path,
           """
         {
           "firstName": "Ahsoka",
@@ -166,7 +171,8 @@ class ProbationOffenderSearchGatewayTest(
       }
 
       it("returns person(s) when searching on first name only") {
-        probationOffenderSearchApiMockServer.stubPostOffenderSearch(
+        probationOffenderSearchApiMockServer.stubForPost(
+          path,
           """
         {
           "firstName": "Ahsoka",
@@ -197,7 +203,8 @@ class ProbationOffenderSearchGatewayTest(
       }
 
       it("returns person(s) when searching on last name only") {
-        probationOffenderSearchApiMockServer.stubPostOffenderSearch(
+        probationOffenderSearchApiMockServer.stubForPost(
+          path,
           """
         {
           "surname": "Tano",
@@ -228,7 +235,8 @@ class ProbationOffenderSearchGatewayTest(
       }
 
       it("returns person(s) when searching on pnc number only") {
-        probationOffenderSearchApiMockServer.stubPostOffenderSearch(
+        probationOffenderSearchApiMockServer.stubForPost(
+          path,
           """
         {
           "pncNumber": "2018/0123456X",
@@ -259,7 +267,8 @@ class ProbationOffenderSearchGatewayTest(
       }
 
       it("returns person(s) when searching on date of birth only") {
-        probationOffenderSearchApiMockServer.stubPostOffenderSearch(
+        probationOffenderSearchApiMockServer.stubForPost(
+          path,
           """
         {
           "dateOfBirth": "1966-10-25",
@@ -290,7 +299,8 @@ class ProbationOffenderSearchGatewayTest(
       }
 
       it("returns person(s) when searching within aliases") {
-        probationOffenderSearchApiMockServer.stubPostOffenderSearch(
+        probationOffenderSearchApiMockServer.stubForPost(
+          path,
           """
         {
           "firstName": "Fulcrum",
@@ -335,7 +345,8 @@ class ProbationOffenderSearchGatewayTest(
       describe("when PNC id is used to make requests") {
         val hmppsId = "2002/1121M"
         beforeEach {
-          probationOffenderSearchApiMockServer.stubPostOffenderSearch(
+          probationOffenderSearchApiMockServer.stubForPost(
+            path,
             "{\"pncNumber\": \"$hmppsId\"}",
             """
         [
@@ -399,7 +410,8 @@ class ProbationOffenderSearchGatewayTest(
         }
 
         it("returns a person without aliases when no aliases are found") {
-          probationOffenderSearchApiMockServer.stubPostOffenderSearch(
+          probationOffenderSearchApiMockServer.stubForPost(
+            path,
             "{\"pncNumber\": \"$hmppsId\"}",
             """
           [
@@ -419,7 +431,8 @@ class ProbationOffenderSearchGatewayTest(
         }
 
         it("returns null when 400 Bad Request is returned") {
-          probationOffenderSearchApiMockServer.stubPostOffenderSearch(
+          probationOffenderSearchApiMockServer.stubForPost(
+            path,
             "{\"pncNumber\": \"$hmppsId\"}",
             """
             {
@@ -436,7 +449,8 @@ class ProbationOffenderSearchGatewayTest(
         }
 
         it("returns null when no offenders are returned") {
-          probationOffenderSearchApiMockServer.stubPostOffenderSearch(
+          probationOffenderSearchApiMockServer.stubForPost(
+            path,
             "{\"pncNumber\": \"$hmppsId\"}",
             "[]",
           )
@@ -451,7 +465,8 @@ class ProbationOffenderSearchGatewayTest(
         val hmppsId = "X777776"
 
         beforeEach {
-          probationOffenderSearchApiMockServer.stubPostOffenderSearch(
+          probationOffenderSearchApiMockServer.stubForPost(
+            path,
             "{\"crn\": \"$hmppsId\"}",
             """
         [
@@ -470,7 +485,8 @@ class ProbationOffenderSearchGatewayTest(
         }
 
         it("calls the Probation API service with a Delius CRN") {
-          probationOffenderSearchApiMockServer.stubPostOffenderSearch(
+          probationOffenderSearchApiMockServer.stubForPost(
+            path,
             "{\"crn\": \"$hmppsId\"}",
             """
           [
@@ -492,7 +508,8 @@ class ProbationOffenderSearchGatewayTest(
         val hmppsId = "A7777ZZ"
 
         it("calls the Probation API service with a Nomis number") {
-          probationOffenderSearchApiMockServer.stubPostOffenderSearch(
+          probationOffenderSearchApiMockServer.stubForPost(
+            path,
             "{\"nomsNumber\": \"$hmppsId\"}",
             """
           [

@@ -17,8 +17,8 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NomisGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.NomisApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.TransactionTransferRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
@@ -32,7 +32,7 @@ class PostTransactionTransferForPersonTest(
   @MockitoBean val hmppsAuthGateway: HmppsAuthGateway,
   val nomisGateway: NomisGateway,
 ) : DescribeSpec({
-    val nomisApiMockServer = NomisApiMockServer()
+    val nomisApiMockServer = ApiMockServer.create(UpstreamApi.NOMIS)
     val prisonId = "XYZ"
     val nomisNumber = "AA1234Z"
     val path = "/api/finance/prison/$prisonId/offenders/$nomisNumber/transfer-to-savings"
@@ -55,7 +55,7 @@ class PostTransactionTransferForPersonTest(
     }
 
     it("authenticates using HMPPS Auth with credentials") {
-      nomisApiMockServer.stubNomisApiResponseForPost(
+      nomisApiMockServer.stubForPost(
         path,
         asJsonString(exampleTransfer.toApiConformingMap()),
         """
@@ -81,7 +81,7 @@ class PostTransactionTransferForPersonTest(
     }
 
     it("returns expected response with transaction id and debit and credit transactions when a valid request body is provided") {
-      nomisApiMockServer.stubNomisApiResponseForPost(
+      nomisApiMockServer.stubForPost(
         path,
         asJsonString(exampleTransfer.toApiConformingMap()),
         """
@@ -119,7 +119,7 @@ class PostTransactionTransferForPersonTest(
 
     it("return a 400 error response") {
       val invalidTransferRequest = TransactionTransferRequest("", 0, "", "", "", "")
-      nomisApiMockServer.stubNomisApiResponseForPost(
+      nomisApiMockServer.stubForPost(
         path,
         asJsonString(invalidTransferRequest.toApiConformingMap()),
         "",
@@ -140,7 +140,7 @@ class PostTransactionTransferForPersonTest(
 
     it("return a 404 error response") {
       val invalidTransferRequest = TransactionTransferRequest("", 0, "", "", "", "")
-      nomisApiMockServer.stubNomisApiResponseForPost(
+      nomisApiMockServer.stubForPost(
         path,
         asJsonString(invalidTransferRequest.toApiConformingMap()),
         "",
@@ -160,7 +160,7 @@ class PostTransactionTransferForPersonTest(
     }
 
     it("return a 409 error response") {
-      nomisApiMockServer.stubNomisApiResponseForPost(
+      nomisApiMockServer.stubForPost(
         path,
         asJsonString(exampleTransfer.toApiConformingMap()),
         """

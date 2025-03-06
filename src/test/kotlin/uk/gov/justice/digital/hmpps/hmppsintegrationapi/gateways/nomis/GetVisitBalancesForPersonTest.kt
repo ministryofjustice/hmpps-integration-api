@@ -16,8 +16,8 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NomisGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.NomisApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 
@@ -30,13 +30,13 @@ class GetVisitBalancesForPersonTest(
   @MockitoBean val hmppsAuthGateway: HmppsAuthGateway,
   val nomisGateway: NomisGateway,
 ) : DescribeSpec({
-    val nomisApiMockServer = NomisApiMockServer()
+    val nomisApiMockServer = ApiMockServer.create(UpstreamApi.NOMIS)
     val offenderNumber = "A7777ZZ"
     val visitBalancesPath = "/api/bookings/offenderNo/$offenderNumber/visit/balances"
 
     beforeEach {
       nomisApiMockServer.start()
-      nomisApiMockServer.stubNomisApiResponse(
+      nomisApiMockServer.stubForGet(
         visitBalancesPath,
         """
         {
@@ -70,7 +70,7 @@ class GetVisitBalancesForPersonTest(
     }
 
     it("returns an error when 400 Bad Request is returned because of an invalid request") {
-      nomisApiMockServer.stubNomisApiResponse(visitBalancesPath, "", HttpStatus.BAD_REQUEST)
+      nomisApiMockServer.stubForGet(visitBalancesPath, "", HttpStatus.BAD_REQUEST)
 
       val response = nomisGateway.getVisitBalances(offenderNumber)
 
@@ -86,7 +86,7 @@ class GetVisitBalancesForPersonTest(
     }
 
     it("returns an error when 404 Not Found is returned because no person is found") {
-      nomisApiMockServer.stubNomisApiResponse(visitBalancesPath, "", HttpStatus.NOT_FOUND)
+      nomisApiMockServer.stubForGet(visitBalancesPath, "", HttpStatus.NOT_FOUND)
 
       val response = nomisGateway.getVisitBalances(offenderNumber)
 

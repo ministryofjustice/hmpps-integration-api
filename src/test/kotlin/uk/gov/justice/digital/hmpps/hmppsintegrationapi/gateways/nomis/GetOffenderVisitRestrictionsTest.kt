@@ -18,8 +18,8 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NomisGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.NomisApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 
@@ -33,13 +33,13 @@ class GetOffenderVisitRestrictionsTest(
   val nomisGateway: NomisGateway,
 ) : DescribeSpec(
     {
-      val nomisApiMockServer = NomisApiMockServer()
+      val nomisApiMockServer = ApiMockServer.create(UpstreamApi.NOMIS)
       val offenderNo = "zyx987"
       val offenderRestrictionsPath = "/api/offenders/$offenderNo/offender-restrictions"
 
       beforeEach {
         nomisApiMockServer.start()
-        nomisApiMockServer.stubNomisApiResponse(
+        nomisApiMockServer.stubForGet(
           offenderRestrictionsPath,
           """
             {
@@ -81,7 +81,7 @@ class GetOffenderVisitRestrictionsTest(
       }
 
       it("returns a person with an empty list of restrictions when no restrictions are found") {
-        nomisApiMockServer.stubNomisApiResponse(
+        nomisApiMockServer.stubForGet(
           offenderRestrictionsPath,
           """
             {
@@ -97,7 +97,7 @@ class GetOffenderVisitRestrictionsTest(
       }
 
       it("returns an error when 404 Not Found is returned because no person is found") {
-        nomisApiMockServer.stubNomisApiResponse(offenderRestrictionsPath, "", HttpStatus.NOT_FOUND)
+        nomisApiMockServer.stubForGet(offenderRestrictionsPath, "", HttpStatus.NOT_FOUND)
 
         val response = nomisGateway.getOffenderVisitRestrictions(offenderNo)
 
@@ -113,7 +113,7 @@ class GetOffenderVisitRestrictionsTest(
       }
 
       it("returns an error when 400 Bad Request is returned because of an invalid request") {
-        nomisApiMockServer.stubNomisApiResponse(offenderRestrictionsPath, "", HttpStatus.BAD_REQUEST)
+        nomisApiMockServer.stubForGet(offenderRestrictionsPath, "", HttpStatus.BAD_REQUEST)
 
         val response = nomisGateway.getOffenderVisitRestrictions(offenderNo)
 

@@ -17,8 +17,8 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NomisGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.NomisApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 
@@ -32,12 +32,12 @@ class GetAlertsForPersonTest(
   val nomisGateway: NomisGateway,
 ) : DescribeSpec(
     {
-      val nomisApiMockServer = NomisApiMockServer()
+      val nomisApiMockServer = ApiMockServer.create(UpstreamApi.NOMIS)
       val offenderNo = "zyx987"
       val alertsPath = "/api/offenders/$offenderNo/alerts/v2"
       beforeEach {
         nomisApiMockServer.start()
-        nomisApiMockServer.stubNomisApiResponse(
+        nomisApiMockServer.stubForGet(
           alertsPath,
           """
             [
@@ -81,7 +81,7 @@ class GetAlertsForPersonTest(
       }
 
       it("returns a person with an empty list of alerts when no alerts are found") {
-        nomisApiMockServer.stubNomisApiResponse(alertsPath, "[]")
+        nomisApiMockServer.stubForGet(alertsPath, "[]")
 
         val response = nomisGateway.getAlertsForPerson(offenderNo)
 
@@ -89,7 +89,7 @@ class GetAlertsForPersonTest(
       }
 
       it("returns an error when 404 Not Found is returned because no person is found") {
-        nomisApiMockServer.stubNomisApiResponse(alertsPath, "", HttpStatus.NOT_FOUND)
+        nomisApiMockServer.stubForGet(alertsPath, "", HttpStatus.NOT_FOUND)
 
         val response = nomisGateway.getAlertsForPerson(offenderNo)
 

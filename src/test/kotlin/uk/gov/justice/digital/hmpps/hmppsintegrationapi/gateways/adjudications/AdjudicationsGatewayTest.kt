@@ -15,8 +15,9 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.AdjudicationsGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.AdjudicationsApiMockServer
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 
 @ActiveProfiles("test")
 @ContextConfiguration(
@@ -28,7 +29,9 @@ class AdjudicationsGatewayTest(
   val adjudicationsGateway: AdjudicationsGateway,
 ) : DescribeSpec(
     {
-      val adjudicationsApiMockServer = AdjudicationsApiMockServer()
+      val id = "123"
+      val path = "/reported-adjudications/prisoner/$id"
+      val adjudicationsApiMockServer = ApiMockServer.create(UpstreamApi.ADJUDICATIONS)
       beforeEach {
         adjudicationsApiMockServer.start()
 
@@ -48,7 +51,7 @@ class AdjudicationsGatewayTest(
       }
 
       it("upstream API returns an error, throw exception") {
-        adjudicationsApiMockServer.stubGetReportedAdjudicationsForPerson("123", "", HttpStatus.BAD_REQUEST)
+        adjudicationsApiMockServer.stubForGet(path, "", HttpStatus.BAD_REQUEST)
         val response =
           shouldThrow<WebClientResponseException> {
             adjudicationsGateway.getReportedAdjudicationsForPerson(id = "123")
@@ -57,8 +60,8 @@ class AdjudicationsGatewayTest(
       }
 
       it("returns adjudicationResponse") {
-        adjudicationsApiMockServer.stubGetReportedAdjudicationsForPerson(
-          "123",
+        adjudicationsApiMockServer.stubForGet(
+          path,
           """
         [
           {

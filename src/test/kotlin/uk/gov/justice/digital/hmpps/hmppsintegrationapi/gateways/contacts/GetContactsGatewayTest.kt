@@ -15,8 +15,8 @@ import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PersonalRelationshipsGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.PersonalRelationshipsApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 
@@ -35,7 +35,7 @@ class GetContactsGatewayTest(
       val page = 1
       val size = 10
       val pathWithQueryParams = "$getContactsPath?page=$page&size=$size"
-      val personalRelationshipsApiMockServer = PersonalRelationshipsApiMockServer()
+      val personalRelationshipsApiMockServer = ApiMockServer.create(UpstreamApi.PERSONAL_RELATIONSHIPS)
 
       beforeEach {
         personalRelationshipsApiMockServer.start()
@@ -124,7 +124,7 @@ class GetContactsGatewayTest(
           }
           """.trimIndent()
 
-        personalRelationshipsApiMockServer.stubPersonalRelationshipsApiResponse(pathWithQueryParams, body = exampleData, HttpStatus.OK)
+        personalRelationshipsApiMockServer.stubForGet(pathWithQueryParams, body = exampleData, HttpStatus.OK)
 
         val response = personalRelationshipsGateway.getContacts(prisonerId, page, size)
         response.data.shouldNotBeNull()
@@ -137,7 +137,7 @@ class GetContactsGatewayTest(
       }
 
       it("returns a 404 when visit is not found") {
-        personalRelationshipsApiMockServer.stubPersonalRelationshipsApiResponse(pathWithQueryParams, body = "", HttpStatus.NOT_FOUND)
+        personalRelationshipsApiMockServer.stubForGet(pathWithQueryParams, body = "", HttpStatus.NOT_FOUND)
 
         val response = personalRelationshipsGateway.getContacts(prisonerId, page, size)
         response.errors.shouldHaveSize(1)

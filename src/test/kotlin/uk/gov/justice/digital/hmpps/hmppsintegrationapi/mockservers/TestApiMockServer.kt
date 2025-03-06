@@ -4,7 +4,7 @@ import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock
 import org.springframework.http.HttpStatus
 
-class GenericApiMockServer : WireMockServer(WIREMOCK_PORT) {
+class TestApiMockServer : WireMockServer(WIREMOCK_PORT) {
   companion object {
     private const val WIREMOCK_PORT = 4000
   }

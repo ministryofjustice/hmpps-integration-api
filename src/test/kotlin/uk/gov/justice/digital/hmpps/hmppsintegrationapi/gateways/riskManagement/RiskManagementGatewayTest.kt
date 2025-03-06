@@ -13,8 +13,9 @@ import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.RiskManagementGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.RiskManagementApiMockServer
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import java.io.File
 
@@ -28,7 +29,7 @@ class RiskManagementGatewayTest(
   private val riskManagementGateway: RiskManagementGateway,
 ) : DescribeSpec({
 
-    val riskManagementMockServer = RiskManagementApiMockServer()
+    val riskManagementMockServer = ApiMockServer.create(UpstreamApi.RISK_MANAGEMENT_PLAN)
 
     beforeEach {
       riskManagementMockServer.start()
@@ -43,10 +44,11 @@ class RiskManagementGatewayTest(
 
     describe("Get risks for given CRN") {
       val crn = "D1974X"
+      val path = "/risks/crn/$crn/risk-management-plan"
 
       beforeEach {
-        riskManagementMockServer.stubGetRiskManagementPlan(
-          crn,
+        riskManagementMockServer.stubForGet(
+          path,
           File(
             "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/riskManagement/fixtures/GetRiskManagementPlanResponse.json",
           ).readText(),
@@ -75,8 +77,8 @@ class RiskManagementGatewayTest(
       }
 
       it("returns an error response when upstream service returns 403") {
-        riskManagementMockServer.stubGetRiskManagementPlan(
-          crn,
+        riskManagementMockServer.stubForGet(
+          path,
           "{}",
           HttpStatus.FORBIDDEN,
         )

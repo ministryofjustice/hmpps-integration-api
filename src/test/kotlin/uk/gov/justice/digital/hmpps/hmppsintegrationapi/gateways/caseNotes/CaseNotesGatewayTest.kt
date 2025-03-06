@@ -17,7 +17,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.CaseNotesGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.CaseNotesApiMockServer
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.filters.CaseNoteFilter
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
@@ -34,8 +34,10 @@ class CaseNotesGatewayTest(
   private val caseNotesGateway: CaseNotesGateway,
 ) : DescribeSpec(
     {
+      val id = "123"
+      val pathNoParams = "/case-notes/$id"
+      val caseNotesApiMockServer = ApiMockServer.create(UpstreamApi.CASE_NOTES)
 
-      val caseNotesApiMockServer = CaseNotesApiMockServer()
       beforeEach {
         caseNotesApiMockServer.start()
 
@@ -57,7 +59,7 @@ class CaseNotesGatewayTest(
       }
 
       it("upstream API returns an error, throw exception") {
-        caseNotesApiMockServer.stubGetCaseNotes("123", "", "", HttpStatus.BAD_REQUEST)
+        caseNotesApiMockServer.stubForGet(pathNoParams, "", HttpStatus.BAD_REQUEST)
         val response =
           shouldThrow<WebClientResponseException> {
             caseNotesGateway.getCaseNotesForPerson(id = "123", CaseNoteFilter(hmppsId = ""))
@@ -66,7 +68,7 @@ class CaseNotesGatewayTest(
       }
 
       it("upstream API returns an forbidden error, throw forbidden exception") {
-        caseNotesApiMockServer.stubGetCaseNotes("123", "", "", HttpStatus.FORBIDDEN)
+        caseNotesApiMockServer.stubForGet(pathNoParams, "", HttpStatus.FORBIDDEN)
         val response = caseNotesGateway.getCaseNotesForPerson(id = "123", CaseNoteFilter(hmppsId = ""))
         response.errors.shouldHaveSize(1)
         response.errors
@@ -144,7 +146,7 @@ class CaseNotesGatewayTest(
   "empty": false
        }
         """
-        caseNotesApiMockServer.stubGetCaseNotes("123", "", responseJson, HttpStatus.OK)
+        caseNotesApiMockServer.stubForGet(pathNoParams, responseJson, HttpStatus.OK)
         val response = caseNotesGateway.getCaseNotesForPerson(id = "123", CaseNoteFilter(hmppsId = ""))
         response.data.count().shouldBe(2)
         response.data.shouldExist { it -> it.caseNoteId == "131231" }
@@ -217,8 +219,8 @@ class CaseNotesGatewayTest(
   "empty": false
        }
         """
-        val params = "?locationId=mockLocation&startDate=2024-01-02&endDate=2024-01-03"
-        caseNotesApiMockServer.stubGetCaseNotes("123", params, responseJson, HttpStatus.OK)
+        val pathWithParams = "/case-notes/$id?locationId=mockLocation&startDate=2024-01-02&endDate=2024-01-03"
+        caseNotesApiMockServer.stubForGet(pathWithParams, responseJson, HttpStatus.OK)
         val response = caseNotesGateway.getCaseNotesForPerson(id = "123", filter)
         response.data.count().shouldBe(2)
         response.data.shouldExist { it -> it.caseNoteId == "131231" }
