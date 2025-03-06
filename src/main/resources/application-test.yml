@@ -112,8 +112,6 @@ authorisation:
         - "/v1/contacts/[^/]*$"
         - "/v1/persons/.*/contacts[^/]*$"
         - "/v1/persons/.*/visit-orders"
-      roles:
-        - private-prison
     config-test:
       include:
         - "/v1/config/authorisation"
@@ -122,12 +120,12 @@ authorisation:
       include:
     limited-prisons:
       roles:
-        - private-prison
+        - "private-prison"
       filters:
         prisons:
           - XYZ
     empty-prisons:
       roles:
-        - private-prison
+        - "private-prison"
       filters:
         prisons:
