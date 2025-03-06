@@ -121,17 +121,13 @@ authorisation:
     empty-include:
       include:
     limited-prisons:
-      include:
-        - "/v1/prison/.*/prisoners/[^/]*/balances$"
-        - "/v1/prison/.*/prisoners/.*/accounts/.*/balances"
-        - "/v1/prison/.*/prisoners/.*/transactions"
-        - "/v1/prison/.*/prisoners/.*/transactions/transfer"
-        - "/v1/prison/.*/prisoners/.*/non-associations"
-        - "/v1/persons/.*/visitor/.*/restrictions"
-        - "/v1/prison/.*/visit/search[^/]*$"
+      roles:
+        - private-prison
       filters:
         prisons:
           - XYZ
     empty-prisons:
+      roles:
+        - private-prison
       filters:
         prisons:
