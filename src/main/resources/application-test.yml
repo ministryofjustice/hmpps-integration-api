@@ -115,9 +115,11 @@ authorisation:
     config-test:
       include:
         - "/v1/config/authorisation"
-    no-include:
+    no-include-or-roles:
     empty-include:
       include:
+    empty-roles:
+      roles:
     limited-prisons:
       roles:
         - "private-prison"
