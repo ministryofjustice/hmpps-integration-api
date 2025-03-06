@@ -6,49 +6,61 @@ import io.kotest.matchers.booleans.shouldBeTrue
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
 import org.springframework.test.context.ContextConfiguration
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
   classes = [AuthoriseConsumerService::class],
 )
 internal class AuthoriseConsumerServiceTest(
-  private val clientName: String = "automated-test-client",
   private val authoriseConsumerService: AuthoriseConsumerService,
 ) : DescribeSpec(
     {
+      val requestedPath = "/persons/123"
 
-      val consumerPathConfig =
-        mapOf(
-          "automated-test-client" to ConsumerConfig(listOf("/persons/.*"), ConsumerFilters(prisons = null)),
-        )
+      describe("doesConsumerHaveIncludesAccess") {
+        val consumerConfig = ConsumerConfig(listOf("/persons/.*"), listOf(), null)
 
-      var requestedPath = "/persons/123"
-
-      describe("Access is allowed") {
-        it("when the path is listed under that consumer") {
+        it("access is allowed when the path is listed under that consumer") {
           val authResult =
-            authoriseConsumerService.execute(
-              clientName,
-              consumerPathConfig,
+            authoriseConsumerService.doesConsumerHaveIncludesAccess(
+              consumerConfig,
               requestedPath,
             )
           authResult.shouldBeTrue()
         }
-      }
 
-      describe("Access is denied") {
-        it("when the extracted consumer is null") {
-          val result = authoriseConsumerService.execute("", emptyMap(), "")
-
+        it("access is denied when the extracted consumer is null") {
+          val result = authoriseConsumerService.doesConsumerHaveIncludesAccess(null, "")
           result.shouldBeFalse()
         }
 
         it("when the path isn't listed as allowed on the consumer") {
-          requestedPath = "/some-other-path/123"
+          val invalidPath = "/some-other-path/123"
+          val result = authoriseConsumerService.doesConsumerHaveIncludesAccess(consumerConfig, invalidPath)
+          result.shouldBeFalse()
+        }
+      }
 
-          val result = authoriseConsumerService.execute(clientName, consumerPathConfig, requestedPath)
+      describe("doesConsumerHaveRoleAccess") {
+        val consumerRolesInclude = listOf("/persons/.*")
 
+        it("access is allowed when the path is listed in the role included paths") {
+          val authResult =
+            authoriseConsumerService.doesConsumerHaveRoleAccess(
+              consumerRolesInclude,
+              requestedPath,
+            )
+          authResult.shouldBeTrue()
+        }
+
+        it("access is denied when the role has no included paths") {
+          val result = authoriseConsumerService.doesConsumerHaveRoleAccess(emptyList(), requestedPath)
+          result.shouldBeFalse()
+        }
+
+        it("when the path isn't listed as allowed on the consumer") {
+          val invalidPath = "/some-other-path/123"
+          val result = authoriseConsumerService.doesConsumerHaveRoleAccess(consumerRolesInclude, invalidPath)
           result.shouldBeFalse()
         }
       }

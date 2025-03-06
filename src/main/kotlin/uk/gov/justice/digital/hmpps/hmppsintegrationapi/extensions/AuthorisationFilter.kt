@@ -12,41 +12,57 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.core.annotation.Order
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.GlobalsConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuthoriseConsumerService
 import java.io.IOException
 
 @Component
 @Order(1)
-@EnableConfigurationProperties(AuthorisationConfig::class)
-class AuthorisationFilter
-  @Autowired
-  constructor(
-    var authorisationConfig: AuthorisationConfig,
-  ) : Filter {
-    @Throws(IOException::class, ServletException::class)
-    override fun doFilter(
-      request: ServletRequest,
-      response: ServletResponse?,
-      chain: FilterChain,
-    ) {
-      val req = request as HttpServletRequest
-      val res = response as HttpServletResponse
-      val authoriseConsumerService = AuthoriseConsumerService()
-      val subjectDistinguishedName = req.getAttribute("clientName") as String?
-      val requestedPath = req.requestURI
+@EnableConfigurationProperties(AuthorisationConfig::class, GlobalsConfig::class)
+class AuthorisationFilter(
+  @Autowired val authorisationConfig: AuthorisationConfig,
+  @Autowired val globalsConfig: GlobalsConfig,
+) : Filter {
+  @Throws(IOException::class, ServletException::class)
+  override fun doFilter(
+    request: ServletRequest,
+    response: ServletResponse?,
+    chain: FilterChain,
+  ) {
+    val req = request as HttpServletRequest
+    val res = response as HttpServletResponse
 
-      if (subjectDistinguishedName == null) {
-        res.sendError(HttpServletResponse.SC_FORBIDDEN, "No subject-distinguished-name header provided for authorisation")
-        return
-      }
-
-      val result = authoriseConsumerService.execute(subjectDistinguishedName, authorisationConfig.consumers, requestedPath)
-
-      if (!result) {
-        res.sendError(HttpServletResponse.SC_FORBIDDEN, "Unable to authorise $requestedPath for $subjectDistinguishedName")
-        return
-      }
-
-      chain.doFilter(request, response)
+    val subjectDistinguishedName = req.getAttribute("clientName") as String?
+    if (subjectDistinguishedName == null) {
+      res.sendError(HttpServletResponse.SC_FORBIDDEN, "No subject-distinguished-name header provided for authorisation")
+      return
     }
+
+    val authoriseConsumerService = AuthoriseConsumerService()
+    val requestedPath = req.requestURI
+
+    val includesResult = authoriseConsumerService.doesConsumerHaveIncludesAccess(authorisationConfig.consumers[subjectDistinguishedName], requestedPath)
+    if (includesResult) {
+      chain.doFilter(request, response)
+      return
+    }
+
+    val consumerConfig: ConsumerConfig? = authorisationConfig.consumers[subjectDistinguishedName]
+    val consumersRoles = consumerConfig?.roles
+    val rolesInclude =
+      buildList {
+        for (consumerRole in consumersRoles.orEmpty()) {
+          addAll(globalsConfig.roles[consumerRole]?.include.orEmpty())
+        }
+      }
+    val roleResult =
+      authoriseConsumerService.doesConsumerHaveRoleAccess(rolesInclude, requestedPath)
+    if (!roleResult) {
+      res.sendError(HttpServletResponse.SC_FORBIDDEN, "Unable to authorise $requestedPath for $subjectDistinguishedName")
+      return
+    }
+
+    chain.doFilter(request, response)
   }
+}
