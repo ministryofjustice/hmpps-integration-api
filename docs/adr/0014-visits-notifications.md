@@ -45,6 +45,8 @@ writes policy. This would be a new integration pattern for HMPPS.
 It is anticipated that in the long run both #1 and #2 will be supported, with option #1 being
 the HMPPS preferred approach.
 
+Option 2 also offers the most flexibility for API clients, particularly if option 1 is added later.
+
 ## Consequences
 
 * DPS will have to accept whatever visit information is sent, as long as it passes the initial
@@ -52,8 +54,8 @@ the HMPPS preferred approach.
 * The prison provider system must not book the visit if the initial synchronous validation fails.
 * Any problems encountered when processing the notification after the initial synchronous 
   validation and response will be the responsibility of HMPPS and not the prison provider.
-* Neither the private prison system nor HMPPS will be able guarantee capacity and lack of  
-  conflicts due visits being booked in multiple systems.
+* It will be significantly harder for the private prison system and HMPPS to provide guarantees of 
+  capacity and lack of conflicts due visits being booked in multiple systems.
 * Does not stop private prisons implementing visits that go against national policy. 
   
 ## Supporting Documentation
