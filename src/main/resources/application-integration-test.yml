@@ -121,33 +121,19 @@ authorisation:
         - "/.*"
       filters:
     limited-prisons:
+      roles:
+        - private-prison
       include:
-        - "/v1/prison/prisoners/[^/]*$"
-        - "/v1/prison/.*/prisoners/.*/accounts/.*/transactions"
-        - "/v1/prison/.*/prisoners/.*/transactions/[^/]*$"
-        - "/v1/prison/.*/prisoners/.*/transactions/transfer"
-        - "/v1/persons/.*/sentences/latest-key-dates-and-adjustments"
-        - "/v1/prison/.*/prisoners/.*/non-associations"
-        - "/v1/persons/.*/visit-restrictions"
-        - "/v1/persons/.*/visitor/.*/restrictions"
-        - "/v1/persons/.*/iep-level"
-        - "/v1/persons/.*/visit/future"
         - "/v1/hmpps/id/nomis-number/[^/]*$"
-        - "/v1/prison/.*/visit/search[^/]*$"
-        - "/v1/visit/[^/]*$"
-        - "/v1/persons/.*/visit-orders"
+        - "/v1/persons/.*/sentences/latest-key-dates-and-adjustments"
       filters:
         prisons:
           - ABC
     no-prisons:
+      roles:
+        - private-prison
       include:
-        - "/v1/prison/prisoners/[^/]*$"
-        - "/v1/persons/.*/sentences/latest-key-dates-and-adjustments"
-        - "/v1/prison/.*/prisoners/.*/non-associations"
-        - "/v1/persons/.*/visit-restrictions"
-        - "/v1/persons/.*/visit/future"
-        - "/v1/persons/.*/iep-level"
         - "/v1/hmpps/id/nomis-number/[^/]*$"
-        - "/v1/visit/[^/]*$"
+        - "/v1/persons/.*/sentences/latest-key-dates-and-adjustments"
       filters:
         prisons:
