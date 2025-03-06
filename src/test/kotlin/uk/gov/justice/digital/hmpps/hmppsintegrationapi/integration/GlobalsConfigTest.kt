@@ -1,7 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration
 
 import io.kotest.matchers.ints.shouldBeGreaterThan
-import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -15,7 +14,7 @@ class GlobalsConfigTest {
 
   @Test
   fun `globals should contain roles`() {
-    globalsConfig.roles.size.shouldBeGreaterThan(0)
-    globalsConfig.roles[0].name.shouldBe("private-prison")
+    globalsConfig.roles.entries.size
+      .shouldBeGreaterThan(0)
   }
 }

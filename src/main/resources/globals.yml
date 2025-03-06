@@ -1,5 +1,0 @@
-globals:
-  roles:
-    - name: "private-prison"
-      include:
-        - "/v1/persons/[^/]*$"

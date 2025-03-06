@@ -19,7 +19,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Role
 class AuthorisationFilterTest {
   private val examplePath: String = "/v1/persons"
   private val roleName = "private-prison"
-  private val exampleGlobalsConfig = GlobalsConfig(listOf(Role(roleName, listOf(examplePath))))
+  private val exampleGlobalsConfig = GlobalsConfig(roles = mapOf(roleName to Role(include = listOf(examplePath))))
   private val exampleConsumer: String = "consumer-name"
   private val exampleRoles: List<String> = listOf(roleName)
 
@@ -61,7 +61,7 @@ class AuthorisationFilterTest {
   fun `calls the onward chain when path not found in roles, but found in includes`() {
     val authorisationConfig = AuthorisationConfig()
     authorisationConfig.consumers = mapOf(exampleConsumer to ConsumerConfig(include = listOf(examplePath), filters = ConsumerFilters(prisons = null), roles = listOf()))
-    val invalidRoleConfig = GlobalsConfig(listOf(Role("private-prison", emptyList())))
+    val invalidRoleConfig = GlobalsConfig(roles = mapOf(roleName to Role(include = emptyList())))
     val authorisationFilter = AuthorisationFilter(authorisationConfig, invalidRoleConfig)
     authorisationFilter.doFilter(mockRequest, mockResponse, mockChain)
 

@@ -7,5 +7,5 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Role
 @Configuration
 @ConfigurationProperties(prefix = "globals")
 data class GlobalsConfig(
-  val roles: List<Role>,
+  var roles: Map<String, Role> = emptyMap(),
 )
