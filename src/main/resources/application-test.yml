@@ -131,3 +131,8 @@ authorisation:
         - "private-prison"
       filters:
         prisons:
+    private-prison-only:
+      roles:
+        - "private-prison"
+      include:
+      filters:
