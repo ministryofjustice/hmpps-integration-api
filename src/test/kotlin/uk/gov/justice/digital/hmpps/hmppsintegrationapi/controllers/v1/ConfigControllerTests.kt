@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.controllers.v1
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import io.kotest.matchers.collections.shouldContainOnly
+import io.kotest.matchers.collections.shouldNotBeEmpty
 import io.kotest.matchers.maps.shouldHaveKeys
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
@@ -29,6 +30,7 @@ class ConfigControllerTests(
     actualConfig.shouldHaveKeys("automated-test-client")
     actualConfig.shouldHaveKeys("config-test")
     actualConfig["config-test"].shouldContainOnly("/v1/config/authorisation")
+    actualConfig["private-prison-only"].shouldNotBeEmpty()
   }
 
   @Test
