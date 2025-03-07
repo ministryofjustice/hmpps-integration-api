@@ -1231,78 +1231,59 @@
 
 
 <pre><code>{
-  "data": {
-    "totalElements": "integer",
-    "totalPages": "integer",
-    "first": "boolean",
-    "last": "boolean",
-    "size": "integer",
-    "number": "integer",
-    "sort": {
-      "empty": "boolean",
-      "sorted": "boolean",
-      "unsorted": "boolean"
-    },
-    "numberOfElements": "integer",
-    "pageable": {
-      "offset": "integer",
-      "sort": {
-        "empty": "boolean",
-        "sorted": "boolean",
-        "unsorted": "boolean"
+  "data": [
+    {
+      "applicationReference": "dfs-wjs-eqr",
+      "reference": "v9-d7-ed-7u",
+      "sessionTemplateReference": "v9d.7ed.7u",
+      "prisonerId": "AF34567G",
+      "prisonId": "MDI",
+      "prisonName": "Moorland (HMP & YOI)",
+      "visitRoom": "Visits Main Hall",
+      "visitType": "SOCIAL",
+      "visitStatus": "BOOKED",
+      "outcomeStatus": "ADMINISTRATIVE_CANCELLATION",
+      "visitRestriction": "OPEN",
+      "startTimestamp": "string",
+      "endTimestamp": "string",
+      "visitors": [
+        {
+          "nomisPersonId": 1234,
+          "visitContact": true
+        }
+      ],
+      "visitNotes": [
+        {
+          "type": "VISITOR_CONCERN",
+          "text": "Visitor is concerned that his mother in-law is coming!"
+        }
+      ],
+      "visitContact": {
+        "name": "John Smith",
+        "telephone": "01234 567890",
+        "email": "email@example.com"
       },
-      "pageSize": "integer",
-      "paged": "boolean",
-      "pageNumber": "integer",
-      "unpaged": "boolean"
-    },
-    "empty": "boolean",
-    "content": [
-      {
-        "applicationReference": "dfs-wjs-eqr",
-        "reference": "v9-d7-ed-7u",
-        "sessionTemplateReference": "v9d.7ed.7u",
-        "prisonerId": "AF34567G",
-        "prisonId": "MDI",
-        "prisonName": "Moorland (HMP & YOI)",
-        "visitRoom": "Visits Main Hall",
-        "visitType": "SOCIAL",
-        "visitStatus": "BOOKED",
-        "outcomeStatus": "ADMINISTRATIVE_CANCELLATION",
-        "visitRestriction": "OPEN",
-        "startTimestamp": "string",
-        "endTimestamp": "string",
-        "visitors": [
-          {
-            "nomisPersonId": 1234,
-            "visitContact": true
-          }
-        ],
-        "visitNotes": [
-          {
-            "type": "VISITOR_CONCERN",
-            "text": "Visitor is concerned that his mother in-law is coming!"
-          }
-        ],
-        "visitContact": {
-          "name": "John Smith",
-          "telephone": "01234 567890",
-          "email": "email@example.com"
-        },
-        "visitorSupport": {
-          "description": "Visually impaired assistance"
-        },
-        "createdTimestamp": "string",
-        "modifiedTimestamp": "string",
-        "firstBookedDateTime": "string"
-      }
-    ]
+      "visitorSupport": {
+        "description": "Visually impaired assistance"
+      },
+      "createdTimestamp": "string",
+      "modifiedTimestamp": "string",
+      "firstBookedDateTime": "string"
+    }
+  ],
+  "pagination": {
+    "isLastPage": true,
+    "count": 1,
+    "page": 1,
+    "perPage": 10,
+    "totalCount": 1,
+    "totalPages": 1
   }
 }</code></pre>
 
 </td>
 <td>
-<a href='#schema-dataresponsepaginatedvisit'>DataResponsePaginatedVisit</a>
+<a href='#schema-paginatedresponsevisit'>PaginatedResponseVisit</a>
 </td>
 </tr>
 
@@ -9254,10 +9235,10 @@
 </tbody>
 </table>
 
-<h3 id="schema-dataresponsepaginatedvisit">DataResponsePaginatedVisit</h3>
+<h3 id="schema-paginatedresponsevisit">PaginatedResponseVisit</h3>
 
 
-<table class='schema-dataresponsepaginatedvisit'>
+<table class='schema-paginatedresponsevisit'>
 <thead>
 <tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
 </thead>
@@ -9265,103 +9246,86 @@
 
 <tr>
 <td>data</td>
+<td>array</td>
+<td>true</td>
+<td></td>
+<td>
+  <a href='#schema-visit'>Visit</a>
+</td>
+</tr>
+
+<tr>
+<td>pagination</td>
 <td>object</td>
 <td>true</td>
 <td></td>
 <td>
-  <a href='#schema-paginatedvisit'>PaginatedVisit</a>
+  <a href='#schema-pagination'>Pagination</a>
 </td>
 </tr>
 
 </tbody>
 </table>
 
-<h3 id="schema-pageable">Pageable</h3>
+<h3 id="schema-pagination">Pagination</h3>
 
 
-<table class='schema-pageable'>
+<table class='schema-pagination'>
 <thead>
 <tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
 </thead>
 <tbody>
 
 <tr>
-<td>offset</td>
-<td>integer</td>
-<td>true</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>sort</td>
-<td>object</td>
-<td>true</td>
-<td></td>
-<td>
-  <a href='#schema-sort'>Sort</a>
-</td>
-</tr>
-
-<tr>
-<td>pageSize</td>
-<td>integer</td>
-<td>true</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>paged</td>
+<td>isLastPage</td>
 <td>boolean</td>
 <td>true</td>
-<td></td>
+<td><p>Is the current page the last one?</p>
+</td>
 <td>
   
 </td>
 </tr>
 
 <tr>
-<td>pageNumber</td>
+<td>count</td>
 <td>integer</td>
 <td>true</td>
-<td></td>
+<td><p>The number of results in <code>data</code> for the current page</p>
+</td>
 <td>
   
 </td>
 </tr>
 
 <tr>
-<td>unpaged</td>
-<td>boolean</td>
-<td>true</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-</tbody>
-</table>
-
-<h3 id="schema-paginatedvisit">PaginatedVisit</h3>
-
-
-<table class='schema-paginatedvisit'>
-<thead>
-<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
-</thead>
-<tbody>
-
-<tr>
-<td>totalElements</td>
+<td>page</td>
 <td>integer</td>
 <td>true</td>
-<td></td>
+<td><p>The current page number</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>perPage</td>
+<td>integer</td>
+<td>true</td>
+<td><p>The maximum number of results in <code>data</code> for a page</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>totalCount</td>
+<td>integer</td>
+<td>true</td>
+<td><p>The total number of results in <code>data</code> across all pages</p>
+</td>
 <td>
   
 </td>
@@ -9371,139 +9335,8 @@
 <td>totalPages</td>
 <td>integer</td>
 <td>true</td>
-<td></td>
-<td>
-  
+<td><p>The total number of pages</p>
 </td>
-</tr>
-
-<tr>
-<td>first</td>
-<td>boolean</td>
-<td>true</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>last</td>
-<td>boolean</td>
-<td>true</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>size</td>
-<td>integer</td>
-<td>true</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>number</td>
-<td>integer</td>
-<td>true</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>sort</td>
-<td>object</td>
-<td>true</td>
-<td></td>
-<td>
-  <a href='#schema-sort'>Sort</a>
-</td>
-</tr>
-
-<tr>
-<td>numberOfElements</td>
-<td>integer</td>
-<td>true</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>pageable</td>
-<td>object</td>
-<td>true</td>
-<td></td>
-<td>
-  <a href='#schema-pageable'>Pageable</a>
-</td>
-</tr>
-
-<tr>
-<td>empty</td>
-<td>boolean</td>
-<td>true</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>content</td>
-<td>array</td>
-<td>true</td>
-<td></td>
-<td>
-  <a href='#schema-visit'>Visit</a>
-</td>
-</tr>
-
-</tbody>
-</table>
-
-<h3 id="schema-sort">Sort</h3>
-
-
-<table class='schema-sort'>
-<thead>
-<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
-</thead>
-<tbody>
-
-<tr>
-<td>empty</td>
-<td>boolean</td>
-<td>true</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>sorted</td>
-<td>boolean</td>
-<td>true</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>unsorted</td>
-<td>boolean</td>
-<td>true</td>
-<td></td>
 <td>
   
 </td>
@@ -10299,84 +10132,6 @@
 <td></td>
 <td>
   <a href='#schema-pagination'>Pagination</a>
-</td>
-</tr>
-
-</tbody>
-</table>
-
-<h3 id="schema-pagination">Pagination</h3>
-
-
-<table class='schema-pagination'>
-<thead>
-<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
-</thead>
-<tbody>
-
-<tr>
-<td>isLastPage</td>
-<td>boolean</td>
-<td>true</td>
-<td><p>Is the current page the last one?</p>
-</td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>count</td>
-<td>integer</td>
-<td>true</td>
-<td><p>The number of results in <code>data</code> for the current page</p>
-</td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>page</td>
-<td>integer</td>
-<td>true</td>
-<td><p>The current page number</p>
-</td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>perPage</td>
-<td>integer</td>
-<td>true</td>
-<td><p>The maximum number of results in <code>data</code> for a page</p>
-</td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>totalCount</td>
-<td>integer</td>
-<td>true</td>
-<td><p>The total number of results in <code>data</code> across all pages</p>
-</td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>totalPages</td>
-<td>integer</td>
-<td>true</td>
-<td><p>The total number of pages</p>
-</td>
-<td>
-  
 </td>
 </tr>
 
