@@ -133,7 +133,7 @@ class GetVisitsGatewayTest(
         val response = prisonVisitsGateway.getVisits(prisonId, hmppsId, fromDate, toDate, visitStatus, page, size)
         response.data.shouldNotBeNull()
         response.data!!
-          .visits
+          .content
           .first()
           ?.visitStatus
           .shouldBe("RESERVED")
@@ -254,12 +254,12 @@ class GetVisitsGatewayTest(
         val response = prisonVisitsGateway.getVisits(prisonId, hmppsId, fromDate, toDate, visitStatus, page, size)
         response.data.shouldNotBeNull()
         response.data!!
-          .visits
+          .content
           .first()
           ?.visitStatus
           .shouldBe("RESERVED")
         response.data!!
-          .visits[1]
+          .content[1]
           ?.visitStatus
           .shouldBe("BOOKED")
       }
