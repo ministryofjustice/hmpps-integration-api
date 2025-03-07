@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.controllers.v1
 
 import io.kotest.core.spec.style.DescribeSpec
+import io.kotest.matchers.collections.shouldContainAll
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
 import org.mockito.internal.verification.VerificationModeFactory
@@ -12,6 +13,8 @@ import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.ValidationErrorResponse
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.MockMvcExtensions.contentAsJson
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
@@ -268,11 +271,14 @@ class TransactionsControllerTest(
         }
 
         it("returns 400 if request body validation does not succeed") {
-          val invalidTransaction = TransactionRequest(type = "", description, amount, clientTransactionId, postClientUniqueRef)
+          val invalidTransaction = TransactionRequest(type = "", description, amount, clientTransactionId = "", clientUniqueRef = "")
           whenever(postTransactionForPersonService.execute(prisonId, hmppsId, invalidTransaction, null)).thenReturn(Response(transactionCreateResponse))
 
           val result = mockMvc.performAuthorisedPost(postTransactionPath, invalidTransaction)
-          result.response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
+          result.response.run {
+            status.shouldBe(HttpStatus.BAD_REQUEST.value())
+            contentAsJson<ValidationErrorResponse>().validationErrors.shouldContainAll("Transaction type must not be blank", "Client transaction ID must not be blank", "Client unique ref must not be blank")
+          }
         }
 
         it("calls the API with the correct filters") {
@@ -296,8 +302,6 @@ class TransactionsControllerTest(
                 ),
             ),
           )
-
-          exampleTransaction.type = ""
 
           val result = mockMvc.performAuthorisedPost(postTransactionPath, exampleTransaction)
 
