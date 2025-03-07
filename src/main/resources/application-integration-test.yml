@@ -122,7 +122,7 @@ authorisation:
       filters:
     limited-prisons:
       roles:
-        - private-prison
+        - "private-prison"
       include:
         - "/v1/hmpps/id/nomis-number/[^/]*$"
         - "/v1/persons/.*/sentences/latest-key-dates-and-adjustments"
@@ -131,9 +131,14 @@ authorisation:
           - ABC
     no-prisons:
       roles:
-        - private-prison
+        - "private-prison"
       include:
         - "/v1/hmpps/id/nomis-number/[^/]*$"
         - "/v1/persons/.*/sentences/latest-key-dates-and-adjustments"
       filters:
         prisons:
+    private-prison-only:
+      roles:
+        - "private-prison"
+      include:
+      filters:
