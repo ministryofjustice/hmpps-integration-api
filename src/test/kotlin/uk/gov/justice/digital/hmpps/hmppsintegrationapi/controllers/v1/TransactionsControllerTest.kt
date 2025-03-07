@@ -53,8 +53,6 @@ class TransactionsControllerTest(
       val basePath = "/v1/prison/$prisonId/prisoners/$hmppsId"
       val transactionsPath = "$basePath/accounts/$accountCode/transactions"
       val transactionPath = "$basePath/transactions/$clientUniqueRef"
-      val postTransactionPath = "$basePath/transactions"
-      val postTransactionTransferPath = "$postTransactionPath/transfer"
       val mockMvc = IntegrationAPIMockMvc(springMockMvc)
 
       val type = "CANT"
@@ -64,7 +62,6 @@ class TransactionsControllerTest(
       val postClientUniqueRef = "CLIENT121131-0_11"
       val fromAccount = "spends"
       val toAccount = "savings"
-      val exampleTransactionTransfer = TransactionTransferRequest(description, amount, clientTransactionId, postClientUniqueRef, fromAccount, toAccount)
 
       val transactions =
         Transactions(
@@ -225,6 +222,7 @@ class TransactionsControllerTest(
       }
 
       describe("POST transaction") {
+        val postTransactionPath = "$basePath/transactions"
         val exampleTransaction = TransactionRequest(type, description, amount, clientTransactionId, postClientUniqueRef)
 
         it("returns a response with a transaction ID") {
@@ -327,117 +325,133 @@ class TransactionsControllerTest(
         }
       }
 
-      // Post transaction transfer
+      describe("POST transaction/transfer") {
+        val postTransactionTransferPath = "$basePath/transactions/transfer"
+        val exampleTransactionTransfer = TransactionTransferRequest(description, amount, clientTransactionId, postClientUniqueRef, fromAccount, toAccount)
 
-      it("returns a response with a transaction ID, debit and credit transaction IDs") {
-        whenever(
-          postTransactionTransferForPersonService.execute(prisonId, hmppsId, exampleTransactionTransfer, null),
-        ).thenReturn(
-          Response(transactionTransferCreateResponse),
-        )
+        it("returns a response with a transaction ID, debit and credit transaction IDs") {
+          whenever(
+            postTransactionTransferForPersonService.execute(prisonId, hmppsId, exampleTransactionTransfer, null),
+          ).thenReturn(
+            Response(transactionTransferCreateResponse),
+          )
 
-        val result = mockMvc.performAuthorisedPost(postTransactionTransferPath, exampleTransactionTransfer)
+          val result = mockMvc.performAuthorisedPost(postTransactionTransferPath, exampleTransactionTransfer)
 
-        result.response.contentAsString.shouldContain(
-          """
-          {
-            "data": {
-               "debitTransactionId": "6179604-1",
-               "creditTransactionId": "6179604-1",
-               "transactionId": "6179604"
+          result.response.contentAsString.shouldContain(
+            """
+            {
+              "data": {
+                 "debitTransactionId": "6179604-1",
+                 "creditTransactionId": "6179604-1",
+                 "transactionId": "6179604"
+              }
             }
+            """.removeWhitespaceAndNewlines(),
+          )
+        }
+
+        it("returns a 200 status code when successful") {
+          whenever(
+            postTransactionTransferForPersonService.execute(prisonId, hmppsId, exampleTransactionTransfer, null),
+          ).thenReturn(
+            Response(transactionTransferCreateResponse),
+          )
+
+          val result = mockMvc.performAuthorisedPost(postTransactionTransferPath, exampleTransactionTransfer)
+
+          result.response.status.shouldBe(HttpStatus.OK.value())
+        }
+
+        it("returns 400 if prison filter is not matched") {
+          whenever(
+            postTransactionTransferForPersonService.execute(prisonId, hmppsId, exampleTransactionTransfer, ConsumerFilters(prisons = listOf("XYZ"))),
+          ).thenReturn(
+            Response(
+              data = null,
+              errors =
+                listOf(
+                  UpstreamApiError(
+                    causedBy = UpstreamApi.NOMIS,
+                    type = UpstreamApiError.Type.BAD_REQUEST,
+                  ),
+                ),
+            ),
+          )
+
+          val result = mockMvc.performAuthorisedPostWithCN(postTransactionTransferPath, "limited-prisons", exampleTransactionTransfer)
+
+          result.response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
+        }
+
+        it("returns 400 if request body validation does not succeed") {
+          val invalidTransactionTransfer = TransactionTransferRequest(description = "", amount, clientTransactionId = "", clientUniqueRef = "", fromAccount = "", toAccount = "")
+          whenever(
+            postTransactionTransferForPersonService.execute(prisonId, hmppsId, exampleTransactionTransfer, null),
+          ).thenReturn(
+            Response(transactionTransferCreateResponse),
+          )
+
+          val result = mockMvc.performAuthorisedPost(postTransactionTransferPath, invalidTransactionTransfer)
+          result.response.run {
+            status.shouldBe(HttpStatus.BAD_REQUEST.value())
+            contentAsJson<ValidationErrorResponse>().validationErrors.shouldContainAll("Description must not be blank", "Client transaction ID must not be blank", "Client unique ref must not be blank", "From account must not be blank", "To account must not be blank")
           }
-          """.removeWhitespaceAndNewlines(),
-        )
-      }
+        }
 
-      it("POST transfer - returns a 200 status code when successful") {
-        whenever(
-          postTransactionTransferForPersonService.execute(prisonId, hmppsId, exampleTransactionTransfer, null),
-        ).thenReturn(
-          Response(transactionTransferCreateResponse),
-        )
+        it("calls the API with the correct filters") {
+          whenever(
+            postTransactionTransferForPersonService.execute(prisonId, hmppsId, exampleTransactionTransfer, ConsumerFilters(prisons = listOf("XYZ"))),
+          ).thenReturn(
+            Response(transactionTransferCreateResponse),
+          )
 
-        val result = mockMvc.performAuthorisedPost(postTransactionTransferPath, exampleTransactionTransfer)
+          val result = mockMvc.performAuthorisedPostWithCN(postTransactionTransferPath, "limited-prisons", exampleTransactionTransfer)
 
-        result.response.status.shouldBe(HttpStatus.OK.value())
-      }
+          result.response.status.shouldBe(HttpStatus.OK.value())
+        }
 
-      // Prison filter rejection test
-      it("POST transfer - returns 400 if prison filter is not matched") {
-        whenever(
-          postTransactionTransferForPersonService.execute(prisonId, hmppsId, exampleTransactionTransfer, ConsumerFilters(prisons = listOf("XYZ"))),
-        ).thenReturn(
-          Response(
-            data = null,
-            errors =
-              listOf(
-                UpstreamApiError(
-                  causedBy = UpstreamApi.NOMIS,
-                  type = UpstreamApiError.Type.BAD_REQUEST,
+        it("returns a 400 BAD REQUEST status code when there is an invalid HMPPS ID or incorrect prison, or an invalid request body") {
+          whenever(
+            postTransactionTransferForPersonService.execute(prisonId, hmppsId, exampleTransactionTransfer, null),
+          ).thenReturn(
+            Response(
+              data = null,
+              errors =
+                listOf(
+                  UpstreamApiError(
+                    causedBy = UpstreamApi.NOMIS,
+                    type = UpstreamApiError.Type.BAD_REQUEST,
+                  ),
                 ),
-              ),
-          ),
-        )
+            ),
+          )
 
-        val result = mockMvc.performAuthorisedPostWithCN(postTransactionTransferPath, "limited-prisons", exampleTransactionTransfer)
+          val result = mockMvc.performAuthorisedPost(postTransactionTransferPath, exampleTransactionTransfer)
 
-        result.response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
-      }
+          result.response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
+        }
 
-      it("POST transfers - calls the API with the correct filters") {
-        whenever(
-          postTransactionTransferForPersonService.execute(prisonId, hmppsId, exampleTransactionTransfer, ConsumerFilters(prisons = listOf("XYZ"))),
-        ).thenReturn(
-          Response(transactionTransferCreateResponse),
-        )
-
-        val result = mockMvc.performAuthorisedPostWithCN(postTransactionTransferPath, "limited-prisons", exampleTransactionTransfer)
-
-        result.response.status.shouldBe(HttpStatus.OK.value())
-      }
-
-      // bad request
-      it("POST transfer - returns a 400 BAD REQUEST status code when there is an invalid HMPPS ID or incorrect prison, or an invalid request body") {
-        whenever(
-          postTransactionTransferForPersonService.execute(prisonId, hmppsId, exampleTransactionTransfer, null),
-        ).thenReturn(
-          Response(
-            data = null,
-            errors =
-              listOf(
-                UpstreamApiError(
-                  causedBy = UpstreamApi.NOMIS,
-                  type = UpstreamApiError.Type.BAD_REQUEST,
+        it("returns a 409 CONFLICT status code when there is a duplicate transaction requested") {
+          whenever(
+            postTransactionTransferForPersonService.execute(prisonId, hmppsId, exampleTransactionTransfer, null),
+          ).thenReturn(
+            Response(
+              data = null,
+              errors =
+                listOf(
+                  UpstreamApiError(
+                    causedBy = UpstreamApi.NOMIS,
+                    type = UpstreamApiError.Type.CONFLICT,
+                  ),
                 ),
-              ),
-          ),
-        )
+            ),
+          )
 
-        val result = mockMvc.performAuthorisedPost(postTransactionTransferPath, exampleTransactionTransfer)
+          val result = mockMvc.performAuthorisedPost(postTransactionTransferPath, exampleTransactionTransfer)
 
-        result.response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
-      }
-
-      it("POST transfer - returns a 409 CONFLICT status code when there is a duplicate transaction requested") {
-        whenever(
-          postTransactionTransferForPersonService.execute(prisonId, hmppsId, exampleTransactionTransfer, null),
-        ).thenReturn(
-          Response(
-            data = null,
-            errors =
-              listOf(
-                UpstreamApiError(
-                  causedBy = UpstreamApi.NOMIS,
-                  type = UpstreamApiError.Type.CONFLICT,
-                ),
-              ),
-          ),
-        )
-
-        val result = mockMvc.performAuthorisedPost(postTransactionTransferPath, exampleTransactionTransfer)
-
-        result.response.status.shouldBe(HttpStatus.CONFLICT.value())
+          result.response.status.shouldBe(HttpStatus.CONFLICT.value())
+        }
       }
     },
   )
