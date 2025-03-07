@@ -1,8 +1,10 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps
 
 import io.swagger.v3.oas.annotations.media.Schema
+import jakarta.validation.constraints.NotBlank
 
 data class TransactionRequest(
+  @field:NotBlank(message = "Transaction type must not be blank")
   @Schema(description = "Transaction type. Determines which accounts will be debited and credited.", example = "CANT")
   var type: String,
   @Schema(description = "Description of the transaction.")

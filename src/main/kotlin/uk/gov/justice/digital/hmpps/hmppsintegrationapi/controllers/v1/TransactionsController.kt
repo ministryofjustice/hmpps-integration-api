@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.tags.Tag
+import jakarta.validation.Valid
 import jakarta.validation.ValidationException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.GetMapping
@@ -228,7 +229,7 @@ class TransactionsController(
     @Parameter(description = "The ID of the prison that holds the account") @PathVariable prisonId: String,
     @Parameter(description = "The HMPPS ID of the person") @PathVariable hmppsId: String,
     @RequestAttribute filters: ConsumerFilters?,
-    @RequestBody transactionRequest: TransactionRequest,
+    @Valid @RequestBody transactionRequest: TransactionRequest,
   ): DataResponse<TransactionCreateResponse?> {
     val response = postTransactionsForPersonService.execute(prisonId, hmppsId, transactionRequest, filters)
 
