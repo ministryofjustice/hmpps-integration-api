@@ -302,7 +302,7 @@ class TransactionsController(
     @Parameter(description = "The ID of the prison that holds the account") @PathVariable prisonId: String,
     @Parameter(description = "The HMPPS ID of the person") @PathVariable hmppsId: String,
     @RequestAttribute filters: ConsumerFilters?,
-    @RequestBody transactionTransferRequest: TransactionTransferRequest,
+    @Valid @RequestBody transactionTransferRequest: TransactionTransferRequest,
   ): DataResponse<TransactionTransferCreateResponse?> {
     val response = postTransactionTransferForPersonService.execute(prisonId, hmppsId, transactionTransferRequest, filters)
 
