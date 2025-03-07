@@ -10,8 +10,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrap
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper.WebClientWrapperResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.LinkedPrisoner
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PRDetailedContact
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PRLinkedPrisoner
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PRPaginatedPrisonerContacts
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PRPrisonerContactRestrictionsResponse
 
@@ -25,9 +25,9 @@ class PersonalRelationshipsGateway(
   @Autowired
   lateinit var hmppsAuthGateway: HmppsAuthGateway
 
-  fun getLinkedPrisoner(contactId: Long): Response<List<LinkedPrisoner>> {
+  fun getLinkedPrisoner(contactId: Long): Response<List<PRLinkedPrisoner>> {
     val result =
-      webClient.request<List<LinkedPrisoner>>(
+      webClient.request<List<PRLinkedPrisoner>>(
         HttpMethod.GET,
         "/contact/$contactId/linked-prisoners",
         authenticationHeader(),
@@ -129,8 +129,8 @@ class PersonalRelationshipsGateway(
     }
   }
 
-  fun mapToLinkedPrisoner(result: WebClientWrapper.WebClientWrapperResponse.Success<List<LinkedPrisoner>>): List<LinkedPrisoner> {
-    val mappedResult: List<LinkedPrisoner> = mapper.convertValue(result.data, object : TypeReference<List<LinkedPrisoner>>() {})
+  fun mapToLinkedPrisoner(result: WebClientWrapper.WebClientWrapperResponse.Success<List<PRLinkedPrisoner>>): List<PRLinkedPrisoner> {
+    val mappedResult: List<PRLinkedPrisoner> = mapper.convertValue(result.data, object : TypeReference<List<PRLinkedPrisoner>>() {})
     return mappedResult
   }
 

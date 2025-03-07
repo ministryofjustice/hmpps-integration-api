@@ -19,9 +19,9 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonVisit
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.ContactGlobalRestriction
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PrisonerContactRestriction
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PrisonerContactRestrictions
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PRContactGlobalRestriction
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PRPrisonerContactRestriction
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PRPrisonerContactRestrictions
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetVisitRestrictionsForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetVisitorRestrictionsService
@@ -43,7 +43,7 @@ internal class VisitRestrictionsControllerTest(
       val restrictionsPath = "/v1/persons/$hmppsId/visitor/$contactId/restrictions"
       val prisonerContactRestrictionsResponse =
         mutableListOf(
-          PrisonerContactRestriction(
+          PRPrisonerContactRestriction(
             prisonerContactRestrictionId = 123456L,
             prisonerContactId = 123456L,
             contactId = 123456L,
@@ -63,7 +63,7 @@ internal class VisitRestrictionsControllerTest(
         )
 
       val contactGlobalRestrictionsResponse =
-        ContactGlobalRestriction(
+        PRContactGlobalRestriction(
           contactRestrictionId = 1L,
           contactId = 123L,
           restrictionType = "BAN",
@@ -79,7 +79,7 @@ internal class VisitRestrictionsControllerTest(
           updatedTime = "2024-01-02T12:00:00Z",
         )
 
-      val prisonerContactRestrictions = PrisonerContactRestrictions(prisonerContactRestrictionsResponse, contactGlobalRestrictionsResponse)
+      val prisonerContactRestrictions = PRPrisonerContactRestrictions(prisonerContactRestrictionsResponse, contactGlobalRestrictionsResponse)
 
       val mockMvc = IntegrationAPIMockMvc(springMockMvc)
 
