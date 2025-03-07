@@ -14,9 +14,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NomisNumber
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.Pageable
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.PaginatedVisit
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.Sort
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.Visit
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.VisitContact
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.VisitorSupport
@@ -60,17 +58,13 @@ internal class GetVisitsServiceTest(
       )
     val paginatedVisitsData =
       PaginatedVisit(
-        totalElements = 1,
+        content = listOf(visitResponse),
+        totalCount = 1L,
+        isLastPage = true,
+        count = 1,
+        page = 1,
+        perPage = 1,
         totalPages = 1,
-        first = true,
-        last = true,
-        number = 1,
-        size = 1,
-        numberOfElements = 1,
-        empty = false,
-        pageable = Pageable(offset = 1, sort = Sort(empty = false, sorted = false, unsorted = true), pageSize = 1, paged = true, pageNumber = 1, unpaged = true),
-        sort = Sort(empty = false, sorted = false, unsorted = true),
-        visits = listOf(visitResponse),
       )
 
     beforeEach {
