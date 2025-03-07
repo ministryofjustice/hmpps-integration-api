@@ -22,7 +22,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.HmppsAuthFaile
 
 @RestControllerAdvice
 class HmppsIntegrationApiExceptionHandler {
-  @ExceptionHandler(ValidationException::class, MethodArgumentNotValidException::class)
+  @ExceptionHandler(ValidationException::class)
   fun handleValidationException(e: Exception): ResponseEntity<ErrorResponse> {
     logAndCapture("Validation exception: {}", e)
     return ResponseEntity
@@ -32,6 +32,21 @@ class HmppsIntegrationApiExceptionHandler {
           status = BAD_REQUEST,
           developerMessage = "Validation failure: ${e.message}",
           userMessage = e.message,
+        ),
+      )
+  }
+
+  // Exceptions thrown by the @Valid annotation on request body
+  @ExceptionHandler(MethodArgumentNotValidException::class)
+  fun handleMethodArgumentNotValidException(e: MethodArgumentNotValidException): ResponseEntity<ValidationErrorResponse> {
+    logAndCapture("Validation issues in request body: {}", e)
+    return ResponseEntity
+      .status(BAD_REQUEST)
+      .body(
+        ValidationErrorResponse(
+          developerMessage = "Validation issues in request body",
+          userMessage = "Validation issues in request body",
+          validationErrors = e.allErrors.mapNotNull { it.defaultMessage },
         ),
       )
   }
@@ -148,4 +163,18 @@ data class ErrorResponse(
     moreInfo: String? = null,
   ) :
     this(status.value(), errorCode, userMessage, developerMessage, moreInfo)
+}
+
+data class ValidationErrorResponse(
+  val status: Int,
+  val userMessage: String? = null,
+  val developerMessage: String? = null,
+  val validationErrors: List<String>,
+) {
+  constructor(
+    userMessage: String? = null,
+    developerMessage: String? = null,
+    validationErrors: List<String>,
+  ) :
+    this(BAD_REQUEST.value(), userMessage, developerMessage, validationErrors)
 }
