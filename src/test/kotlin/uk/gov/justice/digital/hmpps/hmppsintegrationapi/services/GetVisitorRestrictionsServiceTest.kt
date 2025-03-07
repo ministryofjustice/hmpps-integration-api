@@ -17,9 +17,9 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.ContactGlobalRestriction
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.LinkedPrisoner
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.LinkedPrisonerRelationship
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PRPrisonerContactRestrictionsResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PrisonerContactRestriction
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PrisonerContactRestrictions
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PrisonerContactRestrictionsResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSPrisoner
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
@@ -96,7 +96,7 @@ class GetVisitorRestrictionsServiceTest(
           updatedTime = "2024-01-02T12:00:00Z",
         )
 
-      val prisonerContactRestrictions = PrisonerContactRestrictionsResponse(prisonerContactRestrictionsResponse, listOf(contactGlobalRestrictionsResponse))
+      val prisonerContactRestrictions = PRPrisonerContactRestrictionsResponse(prisonerContactRestrictionsResponse, listOf(contactGlobalRestrictionsResponse))
       beforeEach {
         Mockito.reset(personalRelationshipsGateway)
         Mockito.reset(getPersonService)
