@@ -3028,7 +3028,7 @@
 
 </td>
 <td>
-<a href='#schema-dataresponseprisonercontactrestrictions'>DataResponsePrisonerContactRestrictions</a>
+<a href='#schema-dataresponseprprisonercontactrestrictions'>DataResponsePRPrisonerContactRestrictions</a>
 </td>
 </tr>
 
@@ -11016,10 +11016,32 @@
 </tbody>
 </table>
 
-<h3 id="schema-contactglobalrestriction">ContactGlobalRestriction</h3>
+<h3 id="schema-dataresponseprprisonercontactrestrictions">DataResponsePRPrisonerContactRestrictions</h3>
 
 
-<table class='schema-contactglobalrestriction'>
+<table class='schema-dataresponseprprisonercontactrestrictions'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>data</td>
+<td>object</td>
+<td>true</td>
+<td></td>
+<td>
+  <a href='#schema-prprisonercontactrestrictions'>PRPrisonerContactRestrictions</a>
+</td>
+</tr>
+
+</tbody>
+</table>
+
+<h3 id="schema-prcontactglobalrestriction">PRContactGlobalRestriction</h3>
+
+
+<table class='schema-prcontactglobalrestriction'>
 <thead>
 <tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
 </thead>
@@ -11158,32 +11180,10 @@
 </tbody>
 </table>
 
-<h3 id="schema-dataresponseprisonercontactrestrictions">DataResponsePrisonerContactRestrictions</h3>
+<h3 id="schema-prprisonercontactrestriction">PRPrisonerContactRestriction</h3>
 
 
-<table class='schema-dataresponseprisonercontactrestrictions'>
-<thead>
-<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
-</thead>
-<tbody>
-
-<tr>
-<td>data</td>
-<td>object</td>
-<td>true</td>
-<td></td>
-<td>
-  <a href='#schema-prisonercontactrestrictions'>PrisonerContactRestrictions</a>
-</td>
-</tr>
-
-</tbody>
-</table>
-
-<h3 id="schema-prisonercontactrestriction">PrisonerContactRestriction</h3>
-
-
-<table class='schema-prisonercontactrestriction'>
+<table class='schema-prprisonercontactrestriction'>
 <thead>
 <tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
 </thead>
@@ -11342,10 +11342,10 @@
 </tbody>
 </table>
 
-<h3 id="schema-prisonercontactrestrictions">PrisonerContactRestrictions</h3>
+<h3 id="schema-prprisonercontactrestrictions">PRPrisonerContactRestrictions</h3>
 
 
-<table class='schema-prisonercontactrestrictions'>
+<table class='schema-prprisonercontactrestrictions'>
 <thead>
 <tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
 </thead>
@@ -11357,7 +11357,7 @@
 <td>false</td>
 <td></td>
 <td>
-  <a href='#schema-prisonercontactrestriction'>PrisonerContactRestriction</a>
+  <a href='#schema-prprisonercontactrestriction'>PRPrisonerContactRestriction</a>
 </td>
 </tr>
 
@@ -11367,7 +11367,7 @@
 <td>false</td>
 <td></td>
 <td>
-  <a href='#schema-contactglobalrestriction'>ContactGlobalRestriction</a>
+  <a href='#schema-prcontactglobalrestriction'>PRContactGlobalRestriction</a>
 </td>
 </tr>
 
