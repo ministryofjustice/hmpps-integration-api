@@ -18,7 +18,7 @@ import java.time.Duration
 class WebClientWrapper(
   val baseUrl: String,
 ) {
-  val CREATE_TRANSACTION_RETRY_HTTP_CODES = listOf(500, 502, 503, 504, 522, 599, 499, 408)
+  val CREATE_TRANSACTION_RETRY_HTTP_CODES = listOf(502, 503, 504, 522, 599, 499, 408)
   val MAX_RETRY_ATTEMPTS = 3L
   val MIN_BACKOFF_DURATION = Duration.ofSeconds(3)
 
