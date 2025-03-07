@@ -2,12 +2,12 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelation
 
 import com.fasterxml.jackson.annotation.JsonProperty
 
-data class PrisonerContactRestrictions(
-  var prisonerContactRestrictions: MutableList<PrisonerContactRestriction>? = mutableListOf(),
-  var contactGlobalRestrictions: ContactGlobalRestriction? = null,
+data class PRPrisonerContactRestrictions(
+  var prisonerContactRestrictions: MutableList<PRPrisonerContactRestriction>? = mutableListOf(),
+  var contactGlobalRestrictions: PRContactGlobalRestriction? = null,
 )
 
-data class PrisonerContactRestriction(
+data class PRPrisonerContactRestriction(
   val prisonerContactRestrictionId: Long,
   val prisonerContactId: Long,
   val contactId: Long,
@@ -25,7 +25,7 @@ data class PrisonerContactRestriction(
   val updatedTime: String,
 )
 
-data class ContactGlobalRestriction(
+data class PRContactGlobalRestriction(
   @JsonProperty("contactRestrictionId")
   val contactRestrictionId: Long,
   @JsonProperty("contactId")
