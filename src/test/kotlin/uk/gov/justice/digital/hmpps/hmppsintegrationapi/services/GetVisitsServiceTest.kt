@@ -11,13 +11,14 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.ConsumerPrisonAccessService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonVisitsGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NomisNumber
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PaginatedVisits
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.PaginatedVisit
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.Visit
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.VisitContact
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.VisitorSupport
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.PVPaginatedVisits
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.PVVisit
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.PVVisitContact
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.PVVisitorSupport
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 @ContextConfiguration(
@@ -34,7 +35,7 @@ internal class GetVisitsServiceTest(
     val prisonId = "ABC"
     val filters = ConsumerFilters(null)
     val visitResponse =
-      Visit(
+      PVVisit(
         prisonerId = "PrisonerId",
         prisonId = "MDI",
         prisonName = "Some Prison",
@@ -50,14 +51,14 @@ internal class GetVisitsServiceTest(
         firstBookedDateTime = "First",
         visitors = emptyList(),
         visitNotes = emptyList(),
-        visitContact = VisitContact(name = "Name", telephone = "Telephone", email = "Email"),
+        visitContact = PVVisitContact(name = "Name", telephone = "Telephone", email = "Email"),
         applicationReference = "dfs-wjs-abc",
         reference = "dfs-wjs-abc",
         sessionTemplateReference = "dfs-wjs-xyz",
-        visitorSupport = VisitorSupport(description = "Description"),
+        visitorSupport = PVVisitorSupport(description = "Description"),
       )
     val paginatedVisitsData =
-      PaginatedVisit(
+      PVPaginatedVisits(
         content = listOf(visitResponse),
         totalCount = 1L,
         isLastPage = true,
@@ -70,7 +71,7 @@ internal class GetVisitsServiceTest(
     beforeEach {
       Mockito.reset(prisonVisitsGateway)
 
-      whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<PaginatedVisit>(prisonId, filters, upstreamServiceType = UpstreamApi.MANAGE_PRISON_VISITS)).thenReturn(
+      whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<PaginatedVisits>(prisonId, filters, upstreamServiceType = UpstreamApi.MANAGE_PRISON_VISITS)).thenReturn(
         Response(data = null),
       )
       whenever(getPersonService.getNomisNumber(hmppsId)).thenReturn(
@@ -88,7 +89,7 @@ internal class GetVisitsServiceTest(
 
     it("will return 404 when prison filter not in consumer profile") {
       val wrongPrisonId = "LCK"
-      whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<PaginatedVisit>(wrongPrisonId, filters, upstreamServiceType = UpstreamApi.MANAGE_PRISON_VISITS)).thenReturn(
+      whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<PVPaginatedVisits>(wrongPrisonId, filters, upstreamServiceType = UpstreamApi.MANAGE_PRISON_VISITS)).thenReturn(
         Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.MANAGE_PRISON_VISITS, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found"))),
       )
       val response = getVisitsService.execute(hmppsId, wrongPrisonId, "2021-01-01", "2021-01-02", "BOOKED", 1, 10, filters)

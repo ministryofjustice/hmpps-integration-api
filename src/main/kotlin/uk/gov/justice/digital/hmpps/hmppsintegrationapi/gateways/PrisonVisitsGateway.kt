@@ -10,8 +10,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrap
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper.WebClientWrapperResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.PaginatedVisit
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.Visit
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.PVPaginatedVisits
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.PVVisit
 
 @Component
 class PrisonVisitsGateway(
@@ -23,9 +23,9 @@ class PrisonVisitsGateway(
   @Autowired
   lateinit var hmppsAuthGateway: HmppsAuthGateway
 
-  fun getVisitByReference(visitReference: String): Response<Visit?> {
+  fun getVisitByReference(visitReference: String): Response<PVVisit?> {
     val result =
-      webClient.request<Visit?>(
+      webClient.request<PVVisit?>(
         HttpMethod.GET,
         "/visits/$visitReference",
         authenticationHeader(),
@@ -57,7 +57,7 @@ class PrisonVisitsGateway(
     visitStatus: String,
     page: Int,
     size: Int,
-  ): Response<PaginatedVisit?> {
+  ): Response<PVPaginatedVisits?> {
     var queryString = "?prisonId=$prisonId&visitStatus=$visitStatus&page=$page&size=$size&"
 
     if (!hmppsId.isNullOrBlank()) {
@@ -71,7 +71,7 @@ class PrisonVisitsGateway(
     }
 
     val result =
-      webClient.request<PaginatedVisit?>(
+      webClient.request<PVPaginatedVisits?>(
         HttpMethod.GET,
         "/visits/search$queryString",
         authenticationHeader(),
@@ -96,9 +96,9 @@ class PrisonVisitsGateway(
     }
   }
 
-  fun getFutureVisits(prisonerId: String): Response<List<Visit>?> {
+  fun getFutureVisits(prisonerId: String): Response<List<PVVisit>?> {
     val result =
-      webClient.request<List<Visit>?>(
+      webClient.request<List<PVVisit>?>(
         HttpMethod.GET,
         "/visits/search/future/$prisonerId",
         authenticationHeader(),
@@ -130,8 +130,8 @@ class PrisonVisitsGateway(
     )
   }
 
-  fun mapToVisits(result: WebClientWrapperResponse.Success<List<Visit>?>): List<Visit> {
-    val mappedResult: List<Visit> = mapper.convertValue(result.data, object : TypeReference<List<Visit>>() {})
+  fun mapToVisits(result: WebClientWrapperResponse.Success<List<PVVisit>?>): List<PVVisit> {
+    val mappedResult: List<PVVisit> = mapper.convertValue(result.data, object : TypeReference<List<PVVisit>>() {})
     return mappedResult
   }
 }

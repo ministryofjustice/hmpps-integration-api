@@ -32,7 +32,7 @@ class FutureVisitsIntegrationTest : IntegrationTestBase() {
                   "createdTimestamp": "2018-12-01T13:45:00",
                   "modifiedTimestamp": "2018-12-01T13:45:00",
                   "firstBookedDateTime": "2018-12-01T13:45:00",
-                  "visitors": [{ "nomisPersonId": 1234, "visitContact": true}],
+                  "visitors": [{ "contactId": 1234, "visitContact": true}],
                   "visitNotes": [{ "type": "VISITOR_CONCERN", "text": "Visitor is concerned that his mother in-law is coming!"}],
                   "visitContact": {"name": "John Smith", "telephone": "01234 567890", "email": "email@example.com"},
                   "visitorSupport": {"description": "visually impaired assistance"}

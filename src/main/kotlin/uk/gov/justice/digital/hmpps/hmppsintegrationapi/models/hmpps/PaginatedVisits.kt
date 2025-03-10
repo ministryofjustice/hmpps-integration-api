@@ -1,8 +1,8 @@
-package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits
+package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps
 
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.interfaces.IPaginatedObject
 
-data class PaginatedVisit(
+data class PaginatedVisits(
   override val content: List<Visit>,
   override val totalPages: Int,
   override val totalCount: Long,

@@ -14,9 +14,12 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.Visit
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.VisitContact
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.VisitorSupport
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Visit
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitContact
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitorSupport
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.PVVisit
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.PVVisitContact
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.PVVisitorSupport
 
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
@@ -31,7 +34,32 @@ class GetFutureVisitsServiceTest(
     val nomisNumber = "F6980FF"
     val person = Person(firstName = "Qui-gon", lastName = "Jin", hmppsId = hmppsId, identifiers = Identifiers(nomisNumber = nomisNumber))
     val personWithoutNomisNumber = Person(firstName = "Qui-gon", lastName = "Jin", hmppsId = hmppsId)
-    val futureVisitResponse =
+    val futureVisitGatewayResponse =
+      listOf(
+        PVVisit(
+          prisonerId = "PrisonerId",
+          prisonId = "MDI",
+          prisonName = "Some Prison",
+          visitRoom = "Room",
+          visitType = "Type",
+          visitStatus = "Status",
+          outcomeStatus = "Outcome",
+          visitRestriction = "Restriction",
+          startTimestamp = "Start",
+          endTimestamp = "End",
+          createdTimestamp = "Created",
+          modifiedTimestamp = "Modified",
+          firstBookedDateTime = "First",
+          visitors = emptyList(),
+          visitNotes = emptyList(),
+          visitContact = PVVisitContact(name = "Name", telephone = "Telephone", email = "Email"),
+          visitorSupport = PVVisitorSupport(description = "Description"),
+          applicationReference = "dfs-wjs-abc",
+          reference = "dfs-wjs-abc",
+          sessionTemplateReference = "dfs-wjs-xyz",
+        ),
+      )
+    val futureVisitServiceResponse =
       listOf(
         Visit(
           prisonerId = "PrisonerId",
@@ -66,13 +94,13 @@ class GetFutureVisitsServiceTest(
       )
 
       whenever(prisonVisitsGateway.getFutureVisits(nomisNumber)).thenReturn(
-        Response(data = futureVisitResponse),
+        Response(data = futureVisitGatewayResponse),
       )
     }
 
     it("returns a 200 status in the case of a successful query") {
       val response = getFutureVisitsService.execute(hmppsId, filters = null)
-      response.data.shouldBe(futureVisitResponse)
+      response.data.shouldBe(futureVisitServiceResponse)
       response.errors.shouldBeEmpty()
     }
 

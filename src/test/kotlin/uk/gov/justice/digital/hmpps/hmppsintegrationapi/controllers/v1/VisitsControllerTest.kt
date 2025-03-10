@@ -16,9 +16,9 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMo
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.Visit
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.VisitContact
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.VisitorSupport
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Visit
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitContact
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitorSupport
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetVisitInformationByReferenceService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 
@@ -68,10 +68,10 @@ class VisitsControllerTest(
               "data": {
                   "applicationReference":"dfs-wjs-abc",
                   "reference":"dfs-wjs-abc",
-                  "sessionTemplateReference":"dfs-wjs-xyz",
                   "prisonerId": "PrisonerId",
                   "prisonId": "MDI",
                   "prisonName": "Some Prison",
+                  "sessionTemplateReference":"dfs-wjs-xyz",
                   "visitRoom": "Room",
                   "visitType": "Type",
                   "visitStatus": "Status",
@@ -79,9 +79,9 @@ class VisitsControllerTest(
                   "visitRestriction": "Restriction",
                   "startTimestamp": "Start",
                   "endTimestamp": "End",
-                  "visitors": [],
                   "visitNotes": [],
                   "visitContact": {"name": "Name", "telephone": "Telephone", "email": "Email"},
+                  "visitors": [],
                   "visitorSupport": {"description": "Description"},
                   "createdTimestamp": "Created",
                   "modifiedTimestamp": "Modified",
