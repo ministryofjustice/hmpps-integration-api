@@ -31,6 +31,10 @@ class GetAlertsForPersonService(
 
     val nomisAlerts = nomisGateway.getAlertsForPerson(nomisNumber)
 
+    if (nomisAlerts.errors.isNotEmpty()) {
+      return Response(data = null, errors = nomisAlerts.errors)
+    }
+
     return Response(
       data = nomisAlerts.data,
       errors = nomisAlerts.errors + personResponse.errors,
