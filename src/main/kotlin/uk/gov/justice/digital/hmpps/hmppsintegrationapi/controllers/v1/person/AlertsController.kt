@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.tags.Tags
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.RequestAttribute
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
@@ -17,6 +18,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFound
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.decodeUrlCharacters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Alert
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetAlertsForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.PaginatedResponse
@@ -42,14 +44,20 @@ class AlertsController(
     @Parameter(description = "A URL-encoded HMPPS identifier", example = "2008%2F0545166T") @PathVariable encodedHmppsId: String,
     @Parameter(description = "The page number (starting from 1)", schema = Schema(minimum = "1")) @RequestParam(required = false, defaultValue = "1", name = "page") page: Int,
     @Parameter(description = "The maximum number of results for a page", schema = Schema(minimum = "1")) @RequestParam(required = false, defaultValue = "10", name = "perPage") perPage: Int,
+    @RequestAttribute filters: ConsumerFilters?,
   ): PaginatedResponse<Alert> {
     val hmppsId = encodedHmppsId.decodeUrlCharacters()
-    val response = getAlertsForPersonService.execute(hmppsId)
+    val response = getAlertsForPersonService.execute(hmppsId, filters)
 
     if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
       throw EntityNotFoundException("Could not find person with id: $hmppsId")
     }
     auditService.createEvent("GET_PERSON_ALERTS", mapOf("hmppsId" to hmppsId))
+
+    if (response.data.isNullOrEmpty()) {
+      return emptyList<Alert>().paginateWith(page, perPage)
+    }
+
     return response.data.paginateWith(page, perPage)
   }
 

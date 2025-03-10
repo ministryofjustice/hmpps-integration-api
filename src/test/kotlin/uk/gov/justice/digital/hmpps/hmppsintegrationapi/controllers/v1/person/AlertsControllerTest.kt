@@ -23,6 +23,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetAlertsForPersonService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
@@ -32,12 +33,14 @@ import java.time.LocalDate
 @ActiveProfiles("test")
 internal class AlertsControllerTest(
   @Autowired var springMockMvc: MockMvc,
+  @MockitoBean val getPersonService: GetPersonService,
   @MockitoBean val getAlertsForPersonService: GetAlertsForPersonService,
   @MockitoBean val auditService: AuditService,
 ) : DescribeSpec(
     {
-      val hmppsId = "9999/11111A"
+      val hmppsId = "A1234AA"
       val encodedHmppsId = URLEncoder.encode(hmppsId, StandardCharsets.UTF_8)
+      val filters = null
       val path = "/v1/persons/$encodedHmppsId/alerts"
       val pndPath = "/v1/pnd/persons/$encodedHmppsId/alerts"
       val mockMvc = IntegrationAPIMockMvc(springMockMvc)
@@ -46,7 +49,7 @@ internal class AlertsControllerTest(
         beforeTest {
           Mockito.reset(getAlertsForPersonService)
           Mockito.reset(auditService)
-          whenever(getAlertsForPersonService.execute(hmppsId)).thenReturn(
+          whenever(getAlertsForPersonService.execute(hmppsId, filters)).thenReturn(
             Response(
               data =
                 listOf(
@@ -85,7 +88,7 @@ internal class AlertsControllerTest(
         it("gets the alerts for a person with the matching ID") {
           mockMvc.performAuthorised(path)
 
-          verify(getAlertsForPersonService, VerificationModeFactory.times(1)).execute(hmppsId)
+          verify(getAlertsForPersonService, VerificationModeFactory.times(1)).execute(hmppsId, filters)
         }
 
         it("returns the alerts for a person with the matching ID") {
@@ -117,7 +120,7 @@ internal class AlertsControllerTest(
             URLEncoder.encode(hmppsIdForPersonWithNoAlerts, StandardCharsets.UTF_8)
           val alertPath = "/v1/persons/$encodedHmppsIdForPersonWithNoAlerts/alerts"
 
-          whenever(getAlertsForPersonService.execute(hmppsIdForPersonWithNoAlerts)).thenReturn(
+          whenever(getAlertsForPersonService.execute(hmppsIdForPersonWithNoAlerts, filters)).thenReturn(
             Response(
               data = emptyList(),
             ),
@@ -129,7 +132,7 @@ internal class AlertsControllerTest(
         }
 
         it("returns a 404 NOT FOUND status code when person isn't found in the upstream API") {
-          whenever(getAlertsForPersonService.execute(hmppsId)).thenReturn(
+          whenever(getAlertsForPersonService.execute(hmppsId, filters)).thenReturn(
             Response(
               data = emptyList(),
               errors =
@@ -148,7 +151,7 @@ internal class AlertsControllerTest(
         }
 
         it("returns paginated results") {
-          whenever(getAlertsForPersonService.execute(hmppsId)).thenReturn(
+          whenever(getAlertsForPersonService.execute(hmppsId, filters)).thenReturn(
             Response(
               data =
                 List(20) {
@@ -175,7 +178,7 @@ internal class AlertsControllerTest(
         }
 
         it("fails with the appropriate error when an upstream service is down") {
-          whenever(getAlertsForPersonService.execute(hmppsId)).doThrow(
+          whenever(getAlertsForPersonService.execute(hmppsId, filters)).doThrow(
             WebClientResponseException(500, "MockError", null, null, null, null),
           )
 

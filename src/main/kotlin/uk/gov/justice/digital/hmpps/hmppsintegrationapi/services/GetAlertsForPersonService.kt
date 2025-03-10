@@ -7,20 +7,29 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Alert
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 @Service
 class GetAlertsForPersonService(
   @Autowired val nomisGateway: NomisGateway,
   @Autowired val getPersonService: GetPersonService,
 ) {
-  fun execute(hmppsId: String): Response<List<Alert>> {
-    val personResponse = getPersonService.execute(hmppsId = hmppsId)
-    val nomisNumber = personResponse.data?.identifiers?.nomisNumber
-    var nomisAlerts: Response<List<Alert>> = Response(data = emptyList())
-
-    if (nomisNumber != null) {
-      nomisAlerts = nomisGateway.getAlertsForPerson(nomisNumber)
+  fun execute(
+    hmppsId: String,
+    filter: ConsumerFilters?,
+  ): Response<List<Alert>?> {
+    val personResponse = getPersonService.getNomisNumberWithPrisonFilter(hmppsId, filter)
+    if (personResponse.errors.isNotEmpty()) {
+      return Response(data = null, errors = personResponse.errors)
     }
+
+    val nomisNumber =
+      personResponse.data?.nomisNumber ?: return Response(
+        data = null,
+        errors = listOf(UpstreamApiError(UpstreamApi.NOMIS, UpstreamApiError.Type.ENTITY_NOT_FOUND)),
+      )
+
+    val nomisAlerts = nomisGateway.getAlertsForPerson(nomisNumber)
 
     return Response(
       data = nomisAlerts.data,
