@@ -16,7 +16,7 @@ data class PRLinkedPrisoner(
   val relationships: List<LinkedPrisonerRelationship>?,
 )
 
-data class LinkedPrisonerRelationship(
+data class PRLinkedPrisonerRelationship(
   @JsonProperty("relationshipTypeCode")
   override val relationshipTypeCode: String?,
   @JsonProperty("relationshipTypeDescription")
