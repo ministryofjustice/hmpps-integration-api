@@ -3,7 +3,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelation
 import com.fasterxml.jackson.annotation.JsonProperty
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.interfaces.IRelationship
 
-data class LinkedPrisoner(
+data class PRLinkedPrisoner(
   @JsonProperty("prisonerNumber")
   val prisonerNumber: String,
   @JsonProperty("lastName")
@@ -13,10 +13,10 @@ data class LinkedPrisoner(
   @JsonProperty("middleNames")
   val middleNames: String?,
   @JsonProperty("relationships")
-  val relationships: List<LinkedPrisonerRelationship>?,
+  val relationships: List<PRLinkedPrisonerRelationship>?,
 )
 
-data class LinkedPrisonerRelationship(
+data class PRLinkedPrisonerRelationship(
   @JsonProperty("relationshipTypeCode")
   override val relationshipTypeCode: String?,
   @JsonProperty("relationshipTypeDescription")

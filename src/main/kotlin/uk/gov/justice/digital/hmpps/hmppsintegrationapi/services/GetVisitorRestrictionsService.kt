@@ -7,7 +7,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PersonalRelatio
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PrisonerContactRestrictions
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PRPrisonerContactRestrictions
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 @Service
@@ -20,7 +20,7 @@ class GetVisitorRestrictionsService(
     hmppsId: String,
     contactId: Long,
     filters: ConsumerFilters?,
-  ): Response<PrisonerContactRestrictions?> {
+  ): Response<PRPrisonerContactRestrictions?> {
     val personResponse = getPersonService.getPrisoner(hmppsId, filters)
 
     if (personResponse.errors.isNotEmpty()) {
@@ -28,7 +28,7 @@ class GetVisitorRestrictionsService(
     }
     val prisonId = personResponse.data?.prisonId
 
-    val consumerPrisonFilterCheck = consumerPrisonAccessService.checkConsumerHasPrisonAccess<PrisonerContactRestrictions>(prisonId, filters)
+    val consumerPrisonFilterCheck = consumerPrisonAccessService.checkConsumerHasPrisonAccess<PRPrisonerContactRestrictions>(prisonId, filters)
     if (consumerPrisonFilterCheck.errors.isNotEmpty()) {
       return consumerPrisonFilterCheck
     }
@@ -47,7 +47,7 @@ class GetVisitorRestrictionsService(
 
     val linkedPrisonerIds = linkedPrisoner.relationships?.map { it.prisonerContactId }
 
-    val restrictionsResult = PrisonerContactRestrictions()
+    val restrictionsResult = PRPrisonerContactRestrictions()
     if (linkedPrisonerIds != null) {
       for (prisonerContactId in linkedPrisonerIds) {
         val gatewayResult = personalRelationshipsGateway.getPrisonerContactRestrictions(prisonerContactId!!)
