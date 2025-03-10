@@ -13,7 +13,7 @@ data class PRLinkedPrisoner(
   @JsonProperty("middleNames")
   val middleNames: String?,
   @JsonProperty("relationships")
-  val relationships: List<LinkedPrisonerRelationship>?,
+  val relationships: List<PRLinkedPrisonerRelationship>?,
 )
 
 data class PRLinkedPrisonerRelationship(
