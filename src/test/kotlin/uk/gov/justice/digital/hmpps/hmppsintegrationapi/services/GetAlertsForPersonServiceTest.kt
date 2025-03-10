@@ -12,7 +12,9 @@ import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NomisGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Alert
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Identifiers
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NomisNumber
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
@@ -35,7 +37,6 @@ internal class GetAlertsForPersonServiceTest(
 
       beforeEach {
         Mockito.reset(nomisGateway)
-        Mockito.reset(personService)
 
         whenever(personService.getNomisNumberWithPrisonFilter(hmppsId, filters)).thenReturn(Response(data = NomisNumber(hmppsId)))
         whenever(nomisGateway.getAlertsForPerson(hmppsId)).thenReturn(
@@ -85,6 +86,7 @@ internal class GetAlertsForPersonServiceTest(
         }
 
         it("does not get alerts from Nomis") {
+          whenever(personService.getNomisNumberWithPrisonFilter(hmppsId, filters)).thenReturn(Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.NOMIS, UpstreamApiError.Type.ENTITY_NOT_FOUND, description = "NOMIS number not found"))))
           getAlertsForPersonService.execute(hmppsId, filters)
           verify(nomisGateway, VerificationModeFactory.times(0)).getAlertsForPerson(id = hmppsId)
         }
@@ -108,43 +110,54 @@ internal class GetAlertsForPersonServiceTest(
         response.errors.shouldHaveSize(1)
       }
 
-      it("records errors when it cannot find PND alerts for a person") {
-        whenever(nomisGateway.getAlertsForPerson(id = hmppsId)).thenReturn(
-          Response(
-            data = emptyList(),
-            errors =
-              listOf(
-                UpstreamApiError(
-                  causedBy = UpstreamApi.NOMIS,
-                  type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+      describe("getAlertsForPnd") {
+        beforeEach {
+          val deliusCrn = "X777776"
+          val person =
+            Person(firstName = "Qui-gon", lastName = "Jin", identifiers = Identifiers(nomisNumber = hmppsId, deliusCrn = deliusCrn))
+
+          whenever(personService.execute(hmppsId = deliusCrn)).thenReturn(Response(person))
+          whenever(personService.execute(hmppsId = hmppsId)).thenReturn(Response(person))
+        }
+
+        it("records errors when it cannot find PND alerts for a person") {
+          whenever(nomisGateway.getAlertsForPerson(id = hmppsId)).thenReturn(
+            Response(
+              data = emptyList(),
+              errors =
+                listOf(
+                  UpstreamApiError(
+                    causedBy = UpstreamApi.NOMIS,
+                    type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+                  ),
                 ),
-              ),
-          ),
-        )
+            ),
+          )
 
-        val response = getAlertsForPersonService.getAlertsForPnd(hmppsId)
-        response.errors.shouldHaveSize(1)
-      }
+          val response = getAlertsForPersonService.getAlertsForPnd(hmppsId)
+          response.errors.shouldHaveSize(1)
+        }
 
-      it("returns PND filtered data") {
-        val response = getAlertsForPersonService.getAlertsForPnd(hmppsId)
+        it("returns PND filtered data") {
+          val response = getAlertsForPersonService.getAlertsForPnd(hmppsId)
 
-        response.data.shouldHaveSize(1)
-        response.data[0].code shouldBe "XA"
-        response.data[0].codeDescription shouldBe "Test Alert XA"
-      }
+          response.data.shouldHaveSize(1)
+          response.data[0].code shouldBe "XA"
+          response.data[0].codeDescription shouldBe "Test Alert XA"
+        }
 
-      it("returns an error when the alert code is not in the allowed list") {
-        whenever(nomisGateway.getAlertsForPerson(hmppsId)).thenReturn(
-          Response(
-            data = listOf(nonMatchingAlert),
-          ),
-        )
+        it("returns an error when the alert code is not in the allowed list") {
+          whenever(nomisGateway.getAlertsForPerson(hmppsId)).thenReturn(
+            Response(
+              data = listOf(nonMatchingAlert),
+            ),
+          )
 
-        val response = getAlertsForPersonService.getAlertsForPnd(hmppsId)
+          val response = getAlertsForPersonService.getAlertsForPnd(hmppsId)
 
-        response.errors.shouldHaveSize(1)
-        response.data.shouldHaveSize(0)
+          response.errors.shouldHaveSize(1)
+          response.data.shouldHaveSize(0)
+        }
       }
     },
   )
