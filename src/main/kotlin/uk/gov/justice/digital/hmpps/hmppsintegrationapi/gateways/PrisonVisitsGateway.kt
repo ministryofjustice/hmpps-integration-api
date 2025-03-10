@@ -10,8 +10,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrap
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper.WebClientWrapperResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.PVPaginatedVisits
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.PVVisit
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.PaginatedVisit
 
 @Component
 class PrisonVisitsGateway(
@@ -57,7 +57,7 @@ class PrisonVisitsGateway(
     visitStatus: String,
     page: Int,
     size: Int,
-  ): Response<PaginatedVisit?> {
+  ): Response<PVPaginatedVisits?> {
     var queryString = "?prisonId=$prisonId&visitStatus=$visitStatus&page=$page&size=$size&"
 
     if (!hmppsId.isNullOrBlank()) {
@@ -71,7 +71,7 @@ class PrisonVisitsGateway(
     }
 
     val result =
-      webClient.request<PaginatedVisit?>(
+      webClient.request<PVPaginatedVisits?>(
         HttpMethod.GET,
         "/visits/search$queryString",
         authenticationHeader(),

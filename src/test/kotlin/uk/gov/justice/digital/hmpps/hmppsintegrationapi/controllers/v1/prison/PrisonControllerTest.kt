@@ -17,6 +17,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PaginatedVisits
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonInPrison
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
@@ -24,10 +25,9 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError.Type.BAD_REQUEST
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError.Type.ENTITY_NOT_FOUND
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError.Type.FORBIDDEN
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.PVVisit
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.PVVisitContact
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.PVVisitorSupport
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.PaginatedVisit
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Visit
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitContact
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitorSupport
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPrisonersService
@@ -56,7 +56,7 @@ internal class PrisonControllerTest(
 
       // Search visit props
       val visitResponse =
-        PVVisit(
+        Visit(
           prisonerId = "PrisonerId",
           prisonId = "MDI",
           prisonName = "Some Prison",
@@ -72,14 +72,14 @@ internal class PrisonControllerTest(
           firstBookedDateTime = "First",
           visitors = emptyList(),
           visitNotes = emptyList(),
-          visitContact = PVVisitContact(name = "Name", telephone = "Telephone", email = "Email"),
+          visitContact = VisitContact(name = "Name", telephone = "Telephone", email = "Email"),
           applicationReference = "dfs-wjs-abc",
           reference = "dfs-wjs-abc",
           sessionTemplateReference = "dfs-wjs-xyz",
-          visitorSupport = PVVisitorSupport(description = "Description"),
+          visitorSupport = VisitorSupport(description = "Description"),
         )
       val paginatedVisitsData =
-        PaginatedVisit(
+        PaginatedVisits(
           content = listOf(visitResponse),
           totalCount = 1L,
           isLastPage = true,
