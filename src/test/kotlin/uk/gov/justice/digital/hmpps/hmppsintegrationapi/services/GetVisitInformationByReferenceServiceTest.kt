@@ -13,9 +13,10 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonVisitsGat
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.Visit
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.VisitContact
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.VisitorSupport
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Visit
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.PVVisit
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.PVVisitContact
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.PVVisitorSupport
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 @ContextConfiguration(
@@ -29,7 +30,7 @@ class GetVisitInformationByReferenceServiceTest(
 ) : DescribeSpec({
     val visitReference = "123456"
     val visitResponse =
-      Visit(
+      PVVisit(
         prisonerId = "PrisonerId",
         prisonId = "MDI",
         prisonName = "Some Prison",
@@ -45,8 +46,8 @@ class GetVisitInformationByReferenceServiceTest(
         firstBookedDateTime = "First",
         visitors = emptyList(),
         visitNotes = emptyList(),
-        visitContact = VisitContact(name = "Name", telephone = "Telephone", email = "Email"),
-        visitorSupport = VisitorSupport(description = "Description"),
+        visitContact = PVVisitContact(name = "Name", telephone = "Telephone", email = "Email"),
+        visitorSupport = PVVisitorSupport(description = "Description"),
         applicationReference = "dfs-wjs-abc",
         reference = "dfs-wjs-abc",
         sessionTemplateReference = "dfs-wjs-xyz",
@@ -99,6 +100,6 @@ class GetVisitInformationByReferenceServiceTest(
     it("returns a 200 status in the case of a successful visit query") {
       val response = getVisitInformationByReferenceService.execute(visitReference)
 
-      response.data.shouldBe(visitResponse)
+      response.data.shouldBe(visitResponse.toVisit())
     }
   })

@@ -6,7 +6,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonVisitsGat
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.Visit
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Visit
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 @Service
@@ -30,6 +30,6 @@ class GetFutureVisitsService(
 
     val response = prisonVisitsGateway.getFutureVisits(nomisNumber)
 
-    return response
+    return Response(data = response.data?.map { it.toVisit() }, errors = response.errors)
   }
 }

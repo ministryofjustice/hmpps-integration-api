@@ -24,10 +24,10 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError.Type.BAD_REQUEST
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError.Type.ENTITY_NOT_FOUND
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError.Type.FORBIDDEN
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.PVVisit
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.PVVisitContact
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.PVVisitorSupport
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.PaginatedVisit
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.Visit
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.VisitContact
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.VisitorSupport
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPrisonersService
@@ -56,7 +56,7 @@ internal class PrisonControllerTest(
 
       // Search visit props
       val visitResponse =
-        Visit(
+        PVVisit(
           prisonerId = "PrisonerId",
           prisonId = "MDI",
           prisonName = "Some Prison",
@@ -72,11 +72,11 @@ internal class PrisonControllerTest(
           firstBookedDateTime = "First",
           visitors = emptyList(),
           visitNotes = emptyList(),
-          visitContact = VisitContact(name = "Name", telephone = "Telephone", email = "Email"),
+          visitContact = PVVisitContact(name = "Name", telephone = "Telephone", email = "Email"),
           applicationReference = "dfs-wjs-abc",
           reference = "dfs-wjs-abc",
           sessionTemplateReference = "dfs-wjs-xyz",
-          visitorSupport = VisitorSupport(description = "Description"),
+          visitorSupport = PVVisitorSupport(description = "Description"),
         )
       val paginatedVisitsData =
         PaginatedVisit(

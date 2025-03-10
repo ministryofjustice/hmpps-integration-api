@@ -14,10 +14,10 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NomisNumber
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.PVVisit
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.PVVisitContact
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.PVVisitorSupport
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.PaginatedVisit
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.Visit
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.VisitContact
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.VisitorSupport
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 @ContextConfiguration(
@@ -34,7 +34,7 @@ internal class GetVisitsServiceTest(
     val prisonId = "ABC"
     val filters = ConsumerFilters(null)
     val visitResponse =
-      Visit(
+      PVVisit(
         prisonerId = "PrisonerId",
         prisonId = "MDI",
         prisonName = "Some Prison",
@@ -50,11 +50,11 @@ internal class GetVisitsServiceTest(
         firstBookedDateTime = "First",
         visitors = emptyList(),
         visitNotes = emptyList(),
-        visitContact = VisitContact(name = "Name", telephone = "Telephone", email = "Email"),
+        visitContact = PVVisitContact(name = "Name", telephone = "Telephone", email = "Email"),
         applicationReference = "dfs-wjs-abc",
         reference = "dfs-wjs-abc",
         sessionTemplateReference = "dfs-wjs-xyz",
-        visitorSupport = VisitorSupport(description = "Description"),
+        visitorSupport = PVVisitorSupport(description = "Description"),
       )
     val paginatedVisitsData =
       PaginatedVisit(

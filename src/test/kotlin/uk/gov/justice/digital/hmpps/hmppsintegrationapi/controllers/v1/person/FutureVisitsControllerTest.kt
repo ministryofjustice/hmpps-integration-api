@@ -17,9 +17,9 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMo
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.Visit
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.VisitContact
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.VisitorSupport
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Visit
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitContact
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitorSupport
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetFutureVisitsService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
