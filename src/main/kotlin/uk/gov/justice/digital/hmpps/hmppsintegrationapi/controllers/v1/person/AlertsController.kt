@@ -54,10 +54,6 @@ class AlertsController(
     }
     auditService.createEvent("GET_PERSON_ALERTS", mapOf("hmppsId" to hmppsId))
 
-    if (response.data.isNullOrEmpty()) {
-      return emptyList<Alert>().paginateWith(page, perPage)
-    }
-
     return response.data.paginateWith(page, perPage)
   }
 

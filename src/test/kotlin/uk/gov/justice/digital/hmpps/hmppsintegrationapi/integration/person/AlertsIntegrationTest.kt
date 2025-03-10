@@ -6,7 +6,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationTestBase
 
 class AlertsIntegrationTest : IntegrationTestBase() {
-  final var path = "$basePath/$pnc/alerts"
+  final var path = "$basePath/$nomsId/alerts"
 
   @Test
   fun `returns alerts for a person`() {

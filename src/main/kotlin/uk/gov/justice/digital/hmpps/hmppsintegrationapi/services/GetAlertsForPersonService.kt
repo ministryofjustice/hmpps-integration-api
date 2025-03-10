@@ -17,22 +17,22 @@ class GetAlertsForPersonService(
   fun execute(
     hmppsId: String,
     filter: ConsumerFilters?,
-  ): Response<List<Alert>?> {
+  ): Response<List<Alert>> {
     val personResponse = getPersonService.getNomisNumberWithPrisonFilter(hmppsId, filter)
     if (personResponse.errors.isNotEmpty()) {
-      return Response(data = null, errors = personResponse.errors)
+      return Response(data = emptyList(), errors = personResponse.errors)
     }
 
     val nomisNumber =
       personResponse.data?.nomisNumber ?: return Response(
-        data = null,
+        data = emptyList(),
         errors = listOf(UpstreamApiError(UpstreamApi.NOMIS, UpstreamApiError.Type.ENTITY_NOT_FOUND)),
       )
 
     val nomisAlerts = nomisGateway.getAlertsForPerson(nomisNumber)
 
     if (nomisAlerts.errors.isNotEmpty()) {
-      return Response(data = null, errors = nomisAlerts.errors)
+      return Response(data = emptyList(), errors = nomisAlerts.errors)
     }
 
     return Response(
