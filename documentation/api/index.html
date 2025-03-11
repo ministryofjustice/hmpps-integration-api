@@ -223,6 +223,9 @@
         <a href="../../documentation/api/index.html#v1-persons-hmppsid-contacts"><span>/v1/persons/{hmppsId}/contacts</span></a>
       </li>
       <li>
+        <a href="../../documentation/api/index.html#v1-persons-hmppsid-cell-location"><span>/v1/persons/{hmppsId}/cell-location</span></a>
+      </li>
+      <li>
         <a href="../../documentation/api/index.html#v1-persons-hmppsid-alerts"><span>/v1/persons/{hmppsId}/alerts</span></a>
       </li>
       <li>
@@ -278,9 +281,6 @@
       </li>
       <li>
         <a href="../../documentation/api/index.html#v1-persons-encodedhmppsid-images"><span>/v1/persons/{encodedHmppsId}/images</span></a>
-      </li>
-      <li>
-        <a href="../../documentation/api/index.html#v1-persons-encodedhmppsid-cell-location"><span>/v1/persons/{encodedHmppsId}/cell-location</span></a>
       </li>
       <li>
         <a href="../../documentation/api/index.html#v1-persons-encodedhmppsid-case-notes"><span>/v1/persons/{encodedHmppsId}/case-notes</span></a>
@@ -4153,6 +4153,133 @@
 
 
 
+<h2 id="v1-persons-hmppsid-cell-location">/v1/persons/{hmppsId}/cell-location</h2>
+
+<h3 id="v1-persons-hmppsid-cell-location-get">get</h3>
+
+  <p><em>Returns the cell location of a person.</em></p>
+
+
+  <p><b>Applicable filters</b>: <ul><li>prisons</li></ul></p>
+
+
+
+
+<h4 id="v1-persons-hmppsid-cell-location-get-parameters">Parameters</h4>
+<table>
+<thead>
+<tr><th>Parameter</th><th>In</th><th>Type</th><th>Required</th><th>Description</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>hmppsId</td>
+<td>path</td>
+<td>string</td>
+<td>true</td>
+<td><p>The HMPPS ID of the person</p>
+
+
+</td>
+</tr>
+
+</tbody>
+</table>
+
+
+
+
+<h4 id="v1-persons-hmppsid-cell-location-get-responses">Responses</h4>
+<table>
+<thead>
+<tr><th>Status</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>200</td>
+<td>
+<p>Successfully found a persons cell location.</p>
+
+
+
+<pre><code>{
+  "data": {
+    "prisonCode": "string",
+    "prisonName": "string",
+    "cell": "string"
+  }
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-dataresponsecelllocation'>DataResponseCellLocation</a>
+</td>
+</tr>
+
+<tr>
+<td>400</td>
+<td>
+<p>The HMPPS ID provided has an invalid format.</p>
+
+
+
+<pre><code>{
+  "status": 400,
+  "userMessage": "Validation failure: No query parameters specified.",
+  "developerMessage": "No query parameters specified."
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-badrequest'>BadRequest</a>
+</td>
+</tr>
+
+<tr>
+<td>404</td>
+<td>
+<p>Not Found</p>
+
+
+
+<pre><code>{
+  "status": 404,
+  "userMessage": "404 Not found error: Could not find person with HMPPS id: 2003/0011991D.",
+  "developerMessage": "Could not find person with HMPPS id: 2003/0011991D."
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-personnotfound'>PersonNotFound</a>
+</td>
+</tr>
+
+<tr>
+<td>500</td>
+<td>
+<p>Internal Server Error</p>
+
+
+
+<pre><code>{
+  "status": 500,
+  "userMessage": "Internal Server Error",
+  "developerMessage": "Unable to complete request as an upstream service is not responding."
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-internalservererror'>InternalServerError</a>
+</td>
+</tr>
+
+</tbody>
+</table>
+
+
+
+
 <h2 id="v1-persons-hmppsid-alerts">/v1/persons/{hmppsId}/alerts</h2>
 
 <h3 id="v1-persons-hmppsid-alerts-get">get</h3>
@@ -7013,71 +7140,6 @@
 </td>
 <td>
 <a href='#schema-internalservererror'>InternalServerError</a>
-</td>
-</tr>
-
-</tbody>
-</table>
-
-
-
-
-<h2 id="v1-persons-encodedhmppsid-cell-location">/v1/persons/{encodedHmppsId}/cell-location</h2>
-
-<h3 id="v1-persons-encodedhmppsid-cell-location-get">get</h3>
-
-
-
-
-<h4 id="v1-persons-encodedhmppsid-cell-location-get-parameters">Parameters</h4>
-<table>
-<thead>
-<tr><th>Parameter</th><th>In</th><th>Type</th><th>Required</th><th>Description</th></tr>
-</thead>
-<tbody>
-
-<tr>
-<td>encodedHmppsId</td>
-<td>path</td>
-<td>string</td>
-<td>true</td>
-<td><p>A URL-encoded HMPPS identifier</p>
-
-
-</td>
-</tr>
-
-</tbody>
-</table>
-
-
-
-
-<h4 id="v1-persons-encodedhmppsid-cell-location-get-responses">Responses</h4>
-<table>
-<thead>
-<tr><th>Status</th><th>Description</th><th>Schema</th></tr>
-</thead>
-<tbody>
-
-<tr>
-<td>200</td>
-<td>
-<p>OK</p>
-
-
-
-<pre><code>{
-  "data": {
-    "prisonCode": "string",
-    "prisonName": "string",
-    "cell": "string"
-  }
-}</code></pre>
-
-</td>
-<td>
-<a href='#schema-dataresponsecelllocation'>DataResponseCellLocation</a>
 </td>
 </tr>
 
@@ -12445,6 +12507,70 @@
 </tbody>
 </table>
 
+<h3 id="schema-celllocation">CellLocation</h3>
+
+
+<table class='schema-celllocation'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>prisonCode</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>prisonName</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>cell</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+</tbody>
+</table>
+
+<h3 id="schema-dataresponsecelllocation">DataResponseCellLocation</h3>
+
+
+<table class='schema-dataresponsecelllocation'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>data</td>
+<td>object</td>
+<td>true</td>
+<td></td>
+<td>
+  <a href='#schema-celllocation'>CellLocation</a>
+</td>
+</tr>
+
+</tbody>
+</table>
+
 <h3 id="schema-dataresponseoffendersearchresponse">DataResponseOffenderSearchResponse</h3>
 
 
@@ -16769,70 +16895,6 @@
 <td></td>
 <td>
   <a href='#schema-pagination'>Pagination</a>
-</td>
-</tr>
-
-</tbody>
-</table>
-
-<h3 id="schema-celllocation">CellLocation</h3>
-
-
-<table class='schema-celllocation'>
-<thead>
-<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
-</thead>
-<tbody>
-
-<tr>
-<td>prisonCode</td>
-<td>string</td>
-<td>false</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>prisonName</td>
-<td>string</td>
-<td>false</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>cell</td>
-<td>string</td>
-<td>false</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-</tbody>
-</table>
-
-<h3 id="schema-dataresponsecelllocation">DataResponseCellLocation</h3>
-
-
-<table class='schema-dataresponsecelllocation'>
-<thead>
-<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
-</thead>
-<tbody>
-
-<tr>
-<td>data</td>
-<td>object</td>
-<td>true</td>
-<td></td>
-<td>
-  <a href='#schema-celllocation'>CellLocation</a>
 </td>
 </tr>
 
