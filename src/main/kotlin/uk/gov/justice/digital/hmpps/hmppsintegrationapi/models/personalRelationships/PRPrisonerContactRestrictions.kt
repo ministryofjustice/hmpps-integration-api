@@ -1,10 +1,12 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ContactGlobalRestriction
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerContactRestriction
 
 data class PRPrisonerContactRestrictions(
   var prisonerContactRestrictions: MutableList<PRPrisonerContactRestriction>? = mutableListOf(),
-  var contactGlobalRestrictions: PRContactGlobalRestriction? = null,
+  var contactGlobalRestrictions: List<PRContactGlobalRestriction>? = listOf(),
 )
 
 data class PRPrisonerContactRestriction(
@@ -23,7 +25,26 @@ data class PRPrisonerContactRestriction(
   val createdTime: String,
   val updatedBy: String,
   val updatedTime: String,
-)
+) {
+  fun toPrisonerContactRestriction() =
+    PrisonerContactRestriction(
+      prisonerContactRestrictionId = this.prisonerContactRestrictionId,
+      prisonerContactId = this.prisonerContactId,
+      contactId = this.contactId,
+      prisonerNumber = this.prisonerNumber,
+      restrictionType = this.restrictionType,
+      restrictionTypeDescription = this.restrictionTypeDescription,
+      startDate = this.startDate,
+      expiryDate = this.expiryDate,
+      comments = this.comments,
+      enteredByUsername = this.enteredByUsername,
+      enteredByDisplayName = this.enteredByDisplayName,
+      createdBy = this.createdBy,
+      createdTime = this.createdTime,
+      updatedBy = this.updatedBy,
+      updatedTime = this.updatedTime,
+    )
+}
 
 data class PRContactGlobalRestriction(
   @JsonProperty("contactRestrictionId")
@@ -52,4 +73,21 @@ data class PRContactGlobalRestriction(
   val updatedBy: String,
   @JsonProperty("updatedTime")
   val updatedTime: String,
-)
+) {
+  fun toContactGlobalRestriction() =
+    ContactGlobalRestriction(
+      contactRestrictionId = this.contactRestrictionId,
+      contactId = this.contactId,
+      restrictionType = this.restrictionType,
+      restrictionTypeDescription = this.restrictionTypeDescription,
+      startDate = this.startDate,
+      expiryDate = this.expiryDate,
+      comments = this.comments,
+      enteredByUsername = this.enteredByUsername,
+      enteredByDisplayName = this.enteredByDisplayName,
+      createdBy = this.createdBy,
+      createdTime = this.createdTime,
+      updatedBy = this.updatedBy,
+      updatedTime = this.updatedTime,
+    )
+}

@@ -16,8 +16,8 @@ import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonVisitRestriction
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerContactRestrictions
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PRPrisonerContactRestrictions
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetVisitRestrictionsForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetVisitorRestrictionsService
@@ -74,7 +74,7 @@ class VisitRestrictionsController(
     @Parameter(description = "A HMPPS identifier") @PathVariable hmppsId: String,
     @Parameter(description = "A contact ID") @PathVariable contactId: String,
     @RequestAttribute filters: ConsumerFilters?,
-  ): DataResponse<PRPrisonerContactRestrictions?> {
+  ): DataResponse<PrisonerContactRestrictions?> {
     val stringifiedContactId = contactId.toLongOrNull() ?: throw ValidationException("Invalid contact ID")
     val response = getVisitorRestrictionsService.execute(hmppsId, stringifiedContactId, filters)
 
