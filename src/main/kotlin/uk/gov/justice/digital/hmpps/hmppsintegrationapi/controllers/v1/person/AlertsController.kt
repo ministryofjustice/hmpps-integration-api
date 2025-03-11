@@ -32,7 +32,7 @@ class AlertsController(
   @Autowired val getAlertsForPersonService: GetAlertsForPersonService,
   @Autowired val auditService: AuditService,
 ) {
-  @GetMapping("/persons/{encodedHmppsId}/alerts")
+  @GetMapping("/persons/{hmppsId}/alerts")
   @Operation(
     summary = "Returns alerts associated with a person, sorted by dateCreated (newest first).",
     responses = [
@@ -43,12 +43,11 @@ class AlertsController(
     ],
   )
   fun getPersonAlerts(
-    @Parameter(description = "A URL-encoded HMPPS identifier", example = "2008%2F0545166T") @PathVariable encodedHmppsId: String,
+    @Parameter(description = "The HMPPS ID of the person") @PathVariable hmppsId: String,
     @Parameter(description = "The page number (starting from 1)", schema = Schema(minimum = "1")) @RequestParam(required = false, defaultValue = "1", name = "page") page: Int,
     @Parameter(description = "The maximum number of results for a page", schema = Schema(minimum = "1")) @RequestParam(required = false, defaultValue = "10", name = "perPage") perPage: Int,
     @RequestAttribute filters: ConsumerFilters?,
   ): PaginatedResponse<Alert> {
-    val hmppsId = encodedHmppsId.decodeUrlCharacters()
     val response = getAlertsForPersonService.execute(hmppsId, filters)
 
     if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {

@@ -25,8 +25,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetAlertsForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
-import java.net.URLEncoder
-import java.nio.charset.StandardCharsets
 import java.time.LocalDate
 
 @WebMvcTest(controllers = [AlertsController::class])
@@ -39,10 +37,9 @@ internal class AlertsControllerTest(
 ) : DescribeSpec(
     {
       val hmppsId = "A1234AA"
-      val encodedHmppsId = URLEncoder.encode(hmppsId, StandardCharsets.UTF_8)
       val filters = null
-      val path = "/v1/persons/$encodedHmppsId/alerts"
-      val pndPath = "/v1/pnd/persons/$encodedHmppsId/alerts"
+      val path = "/v1/persons/$hmppsId/alerts"
+      val pndPath = "/v1/pnd/persons/$hmppsId/alerts"
       val mockMvc = IntegrationAPIMockMvc(springMockMvc)
 
       describe("GET $path") {
@@ -115,10 +112,8 @@ internal class AlertsControllerTest(
         }
 
         it("returns an empty list embedded in a JSON object when no alerts are found") {
-          val hmppsIdForPersonWithNoAlerts = "0000/11111A"
-          val encodedHmppsIdForPersonWithNoAlerts =
-            URLEncoder.encode(hmppsIdForPersonWithNoAlerts, StandardCharsets.UTF_8)
-          val alertPath = "/v1/persons/$encodedHmppsIdForPersonWithNoAlerts/alerts"
+          val hmppsIdForPersonWithNoAlerts = "B5678BB"
+          val alertPath = "/v1/persons/$hmppsIdForPersonWithNoAlerts/alerts"
 
           whenever(getAlertsForPersonService.execute(hmppsIdForPersonWithNoAlerts, filters)).thenReturn(
             Response(
@@ -269,10 +264,8 @@ internal class AlertsControllerTest(
         }
 
         it("returns an empty list embedded in a JSON object when no alerts are found for PND") {
-          val hmppsIdForPersonWithNoAlerts = "1111/22334A"
-          val encodedHmppsIdForPersonWithNoAlerts =
-            URLEncoder.encode(hmppsIdForPersonWithNoAlerts, StandardCharsets.UTF_8)
-          val alertPath = "/v1/pnd/persons/$encodedHmppsIdForPersonWithNoAlerts/alerts"
+          val hmppsIdForPersonWithNoAlerts = "B5679BB"
+          val alertPath = "/v1/pnd/persons/$hmppsIdForPersonWithNoAlerts/alerts"
 
           whenever(getAlertsForPersonService.getAlertsForPnd(hmppsIdForPersonWithNoAlerts)).thenReturn(
             Response(
