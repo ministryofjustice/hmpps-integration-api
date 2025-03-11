@@ -68,7 +68,7 @@ internal class SentencesControllerTest(
         it("gets the sentences for a person with the matching ID") {
           mockMvc.performAuthorised(path)
 
-          verify(getSentencesForPersonService, VerificationModeFactory.times(1)).execute(hmppsId)
+          verify(getSentencesForPersonService, VerificationModeFactory.times(1)).execute(hmppsId, filters)
         }
 
         it("returns the sentences for a person with the matching ID") {

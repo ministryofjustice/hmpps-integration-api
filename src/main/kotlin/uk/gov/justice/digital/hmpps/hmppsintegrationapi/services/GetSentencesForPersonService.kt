@@ -18,9 +18,9 @@ class GetSentencesForPersonService(
 ) {
   fun execute(
     hmppsId: String,
-    filters: ConsumerFilters? = null,
+    filters: ConsumerFilters?,
   ): Response<List<Sentence>> {
-    val personResponse = getPersonService.execute(hmppsId = hmppsId)
+    val personResponse = getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, filters = filters)
     if (personResponse.errors.isNotEmpty()) {
       return Response(data = emptyList(), errors = personResponse.errors)
     }
