@@ -1,8 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.person
 
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.params.ParameterizedTest
-import org.junit.jupiter.params.provider.ValueSource
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationTestBase
@@ -65,20 +63,39 @@ class PersonIntegrationTest : IntegrationTestBase() {
       .andExpect(status().isBadRequest)
   }
 
-  @ParameterizedTest
-  @ValueSource(strings = ["2004%2F13116M", "G2996UX"])
-  fun `returns person cell location if in prison`(hmppsId: String) {
-    callApi("$basePath/$hmppsId/cell-location")
+  // Cell Location tests
+  @Test
+  fun `returns person cell location if in prison`() {
+    callApi("$basePath/$nomsId/cell-location")
       .andExpect(status().isOk)
       .andExpect(
         content().json(
           """
-        {"data":{"prisonCode":"MDI","prisonName":"HMP Leeds","cell":"A-1-002"}}
-      """,
+    {"data":{"prisonCode":"MDI","prisonName":"HMP Leeds","cell":"A-1-002"}}
+  """,
         ),
       )
   }
 
+  @Test
+  fun `cell location return a 404 for person in wrong prison`() {
+    callApiWithCN("$basePath/$nomsId/cell-location", limitedPrisonsCn)
+      .andExpect(status().isNotFound)
+  }
+
+  @Test
+  fun `cell location return a 404 when no prisons in filter`() {
+    callApiWithCN("$basePath/$nomsId/cell-location", noPrisonsCn)
+      .andExpect(status().isNotFound)
+  }
+
+  @Test
+  fun `cell location return a 400 when invalid noms passed in`() {
+    callApi("$basePath/$invalidNomsId/cell-location")
+      .andExpect(status().isBadRequest)
+  }
+
+  // Prisoner Contacts
   @Test
   fun `returns a prisoners contacts`() {
     val params = "?page=1&size=10"

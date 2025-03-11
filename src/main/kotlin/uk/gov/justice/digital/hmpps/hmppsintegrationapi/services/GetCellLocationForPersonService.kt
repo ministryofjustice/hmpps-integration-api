@@ -5,34 +5,33 @@ import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CellLocation
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 @Service
 class GetCellLocationForPersonService(
   @Autowired val getPersonService: GetPersonService,
   @Autowired val prisonerOffenderSearchGateway: PrisonerOffenderSearchGateway,
 ) {
-  fun execute(hmppsId: String): Response<CellLocation?> {
-    val prisonResponse =
-      when (isNomsNumber(hmppsId)) {
-        true -> prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber = hmppsId)
-        else -> {
-          val personResponse = getPersonService.execute(hmppsId = hmppsId)
+  fun execute(
+    hmppsId: String,
+    filters: ConsumerFilters?,
+  ): Response<CellLocation?> {
+    val personResponse = getPersonService.getNomisNumberWithPrisonFilter(hmppsId, filters)
+    if (personResponse.errors.isNotEmpty()) {
+      return Response(data = CellLocation(), errors = personResponse.errors)
+    }
 
-          if (personResponse.data == null) {
-            return Response(
-              data = CellLocation(),
-              errors = personResponse.errors,
-            )
-          }
+    val nomisNumber =
+      personResponse.data?.nomisNumber ?: return Response(
+        data = CellLocation(),
+        errors = listOf(UpstreamApiError(UpstreamApi.NOMIS, UpstreamApiError.Type.ENTITY_NOT_FOUND)),
+      )
 
-          personResponse.data.identifiers.nomisNumber?.let {
-            prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber = it)
-          }
-        }
-      }
-
+    val prisonResponse = prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber = nomisNumber)
     val cellLocation =
-      if (prisonResponse?.data?.inOutStatus == "IN") {
+      if (prisonResponse.data?.inOutStatus == "IN") {
         CellLocation(prisonCode = prisonResponse.data.prisonId, prisonName = prisonResponse.data.prisonName, cell = prisonResponse.data.cellLocation)
       } else {
         CellLocation()
@@ -40,7 +39,7 @@ class GetCellLocationForPersonService(
 
     return Response(
       data = cellLocation,
-      errors = prisonResponse?.errors ?: emptyList(),
+      errors = prisonResponse.errors,
     )
   }
 }
