@@ -35,12 +35,13 @@ internal class CellLocationControllerTest(
       val hmppsId = "A1234AA"
       val path = "/v1/persons/$hmppsId/cell-location"
       val mockMvc = IntegrationAPIMockMvc(springMockMvc)
+      val filters = null
 
       describe("GET $path") {
         beforeTest {
           Mockito.reset(getCellLocationForPersonService)
           Mockito.reset(auditService)
-          whenever(getCellLocationForPersonService.execute(hmppsId)).thenReturn(
+          whenever(getCellLocationForPersonService.execute(hmppsId, filters)).thenReturn(
             Response(
               data =
                 CellLocation(
@@ -91,7 +92,7 @@ internal class CellLocationControllerTest(
           val hmppsIdForPersonNotInPrison = "A1234AA"
           val needsPath = "/v1/persons/$hmppsIdForPersonNotInPrison/cell-location"
 
-          whenever(getCellLocationForPersonService.execute(hmppsIdForPersonNotInPrison)).thenReturn(Response(data = null))
+          whenever(getCellLocationForPersonService.execute(hmppsIdForPersonNotInPrison, filters)).thenReturn(Response(data = null))
 
           val result = mockMvc.performAuthorised(needsPath)
 
@@ -99,7 +100,7 @@ internal class CellLocationControllerTest(
         }
 
         it("returns a 404 NOT FOUND status code when person isn't found in the upstream API") {
-          whenever(getCellLocationForPersonService.execute(hmppsId)).thenReturn(
+          whenever(getCellLocationForPersonService.execute(hmppsId, filters)).thenReturn(
             Response(
               data = null,
               errors =
@@ -118,7 +119,7 @@ internal class CellLocationControllerTest(
         }
 
         it("fails with the appropriate error when an upstream service is down") {
-          whenever(getCellLocationForPersonService.execute(hmppsId)).doThrow(
+          whenever(getCellLocationForPersonService.execute(hmppsId, filters)).doThrow(
             WebClientResponseException(500, "MockError", null, null, null, null),
           )
 

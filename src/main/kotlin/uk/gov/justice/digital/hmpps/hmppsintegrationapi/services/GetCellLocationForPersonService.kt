@@ -5,13 +5,17 @@ import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CellLocation
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 @Service
 class GetCellLocationForPersonService(
   @Autowired val getPersonService: GetPersonService,
   @Autowired val prisonerOffenderSearchGateway: PrisonerOffenderSearchGateway,
 ) {
-  fun execute(hmppsId: String): Response<CellLocation?> {
+  fun execute(
+    hmppsId: String,
+    filters: ConsumerFilters? = null,
+  ): Response<CellLocation?> {
     val prisonResponse =
       when (isNomsNumber(hmppsId)) {
         true -> prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber = hmppsId)
