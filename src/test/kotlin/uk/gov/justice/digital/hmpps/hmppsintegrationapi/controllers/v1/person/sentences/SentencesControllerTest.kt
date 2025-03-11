@@ -27,8 +27,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetLatestSentenceKeyDatesAndAdjustmentsForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetSentencesForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
-import java.net.URLEncoder
-import java.nio.charset.StandardCharsets
 import java.time.LocalDate
 
 @WebMvcTest(controllers = [SentencesController::class])
@@ -43,13 +41,13 @@ internal class SentencesControllerTest(
       val mockMvc = IntegrationAPIMockMvc(springMockMvc)
 
       describe("/sentences") {
-        val hmppsId = "9999/11111A"
-        val encodedHmppsId = URLEncoder.encode(hmppsId, StandardCharsets.UTF_8)
-        val path = "/v1/persons/$encodedHmppsId/sentences"
+        val hmppsId = "A1234AA"
+        val path = "/v1/persons/$hmppsId/sentences"
+        val filters = null
 
         beforeTest {
           Mockito.reset(getSentencesForPersonService)
-          whenever(getSentencesForPersonService.execute(hmppsId)).thenReturn(
+          whenever(getSentencesForPersonService.execute(hmppsId, filters)).thenReturn(
             Response(
               data =
                 listOf(
@@ -147,12 +145,10 @@ internal class SentencesControllerTest(
         }
 
         it("returns an empty list embedded in a JSON object when no sentences are found") {
-          val hmppsIdForPersonWithNoSentences = "0000/11111A"
-          val encodedHmppsIdForPersonWithNoSentences =
-            URLEncoder.encode(hmppsIdForPersonWithNoSentences, StandardCharsets.UTF_8)
-          val sentencesPath = "/v1/persons/$encodedHmppsIdForPersonWithNoSentences/sentences"
+          val hmppsIdForPersonWithNoSentences = "A1234AA"
+          val sentencesPath = "/v1/persons/$hmppsIdForPersonWithNoSentences/sentences"
 
-          whenever(getSentencesForPersonService.execute(hmppsIdForPersonWithNoSentences)).thenReturn(
+          whenever(getSentencesForPersonService.execute(hmppsIdForPersonWithNoSentences, filters)).thenReturn(
             Response(
               data = emptyList(),
             ),
@@ -164,7 +160,7 @@ internal class SentencesControllerTest(
         }
 
         it("returns a 404 NOT FOUND status code when person isn't found in the upstream API") {
-          whenever(getSentencesForPersonService.execute(hmppsId)).thenReturn(
+          whenever(getSentencesForPersonService.execute(hmppsId, filters)).thenReturn(
             Response(
               data = emptyList(),
               errors =
@@ -183,7 +179,7 @@ internal class SentencesControllerTest(
         }
 
         it("returns paginated results") {
-          whenever(getSentencesForPersonService.execute(hmppsId)).thenReturn(
+          whenever(getSentencesForPersonService.execute(hmppsId, filters)).thenReturn(
             Response(
               data =
                 List(20) {
@@ -201,7 +197,7 @@ internal class SentencesControllerTest(
         }
 
         it("logs audit") {
-          whenever(getSentencesForPersonService.execute(hmppsId)).thenReturn(
+          whenever(getSentencesForPersonService.execute(hmppsId, filters)).thenReturn(
             Response(
               data =
                 List(20) {
@@ -221,7 +217,7 @@ internal class SentencesControllerTest(
         }
 
         it("returns a 500 INTERNAL SERVER ERROR status code when upstream api return expected error") {
-          whenever(getSentencesForPersonService.execute(hmppsId)).doThrow(
+          whenever(getSentencesForPersonService.execute(hmppsId, filters)).doThrow(
             WebClientResponseException(500, "MockError", null, null, null, null),
           )
 

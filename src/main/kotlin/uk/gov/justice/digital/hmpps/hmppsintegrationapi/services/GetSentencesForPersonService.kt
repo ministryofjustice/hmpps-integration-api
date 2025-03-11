@@ -8,6 +8,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Sentence
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 @Service
 class GetSentencesForPersonService(
@@ -15,7 +16,10 @@ class GetSentencesForPersonService(
   @Autowired val getPersonService: GetPersonService,
   @Autowired val nDeliusGateway: NDeliusGateway,
 ) {
-  fun execute(hmppsId: String): Response<List<Sentence>> {
+  fun execute(
+    hmppsId: String,
+    filters: ConsumerFilters? = null,
+  ): Response<List<Sentence>> {
     val personResponse = getPersonService.execute(hmppsId = hmppsId)
     if (personResponse.errors.isNotEmpty()) {
       return Response(data = emptyList(), errors = personResponse.errors)
