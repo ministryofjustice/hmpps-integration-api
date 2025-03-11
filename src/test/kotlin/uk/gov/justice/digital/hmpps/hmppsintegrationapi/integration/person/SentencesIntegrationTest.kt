@@ -17,6 +17,24 @@ class SentencesIntegrationTest : IntegrationTestBase() {
   }
 
   @Test
+  fun `sentences returns a 400 if the hmppsId is invalid`() {
+    callApi(invalidHmppsIdPath)
+      .andExpect(status().isBadRequest)
+  }
+
+  @Test
+  fun `sentences returns a 404 for if consumer has empty list of prisons on latest sentence key dates and adjustments `() {
+    callApiWithCN(path, noPrisonsCn)
+      .andExpect(status().isNotFound)
+  }
+
+  @Test
+  fun `sentences returns a 404 for prisoner in wrong prison on latest sentence key dates and adjustments`() {
+    callApiWithCN(path, limitedPrisonsCn)
+      .andExpect(status().isNotFound)
+  }
+
+  @Test
   fun `returns latest sentence key dates and adjustments for a person`() {
     callApi("$path/latest-key-dates-and-adjustments")
       .andExpect(status().isOk)
@@ -24,7 +42,7 @@ class SentencesIntegrationTest : IntegrationTestBase() {
   }
 
   @Test
-  fun `returns a 404 if the hmppsId is invalid`() {
+  fun `returns a 400 if the hmppsId is invalid`() {
     callApi("$invalidHmppsIdPath/latest-key-dates-and-adjustments")
       .andExpect(status().isBadRequest)
   }
