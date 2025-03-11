@@ -208,6 +208,9 @@
         <a href="../../documentation/api/index.html#v1-persons-hmppsid-visit-orders"><span>/v1/persons/{hmppsId}/visit-orders</span></a>
       </li>
       <li>
+        <a href="../../documentation/api/index.html#v1-persons-hmppsid-sentences"><span>/v1/persons/{hmppsId}/sentences</span></a>
+      </li>
+      <li>
         <a href="../../documentation/api/index.html#v1-persons-hmppsid-plp-review-schedule"><span>/v1/persons/{hmppsId}/plp-review-schedule</span></a>
       </li>
       <li>
@@ -236,9 +239,6 @@
       </li>
       <li>
         <a href="../../documentation/api/index.html#v1-persons-encodedhmppsid-status-information"><span>/v1/persons/{encodedHmppsId}/status-information</span></a>
-      </li>
-      <li>
-        <a href="../../documentation/api/index.html#v1-persons-encodedhmppsid-sentences"><span>/v1/persons/{encodedHmppsId}/sentences</span></a>
       </li>
       <li>
         <a href="../../documentation/api/index.html#v1-persons-encodedhmppsid-sentences-latest-key-dates-and-adjustments"><span>/v1/persons/{encodedHmppsId}/sentences/latest-key-dates-and-adjustments</span></a>
@@ -3477,6 +3477,183 @@
 
 
 
+<h2 id="v1-persons-hmppsid-sentences">/v1/persons/{hmppsId}/sentences</h2>
+
+<h3 id="v1-persons-hmppsid-sentences-get">get</h3>
+
+  <p><em>Returns sentences associated with a person, sorted by dateOfSentencing (newest first).</em></p>
+
+
+  <p><b>Applicable filters</b>: <ul><li>prisons</li></ul></p>
+
+
+
+
+<h4 id="v1-persons-hmppsid-sentences-get-parameters">Parameters</h4>
+<table>
+<thead>
+<tr><th>Parameter</th><th>In</th><th>Type</th><th>Required</th><th>Description</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>hmppsId</td>
+<td>path</td>
+<td>string</td>
+<td>true</td>
+<td><p>The HMPPS ID of the person</p>
+
+
+</td>
+</tr>
+
+<tr>
+<td>page</td>
+<td>query</td>
+<td>string</td>
+<td>false</td>
+<td><p>The page number (starting from 1)</p>
+
+
+</td>
+</tr>
+
+<tr>
+<td>perPage</td>
+<td>query</td>
+<td>string</td>
+<td>false</td>
+<td><p>The maximum number of results for a page</p>
+
+
+</td>
+</tr>
+
+</tbody>
+</table>
+
+
+
+
+<h4 id="v1-persons-hmppsid-sentences-get-responses">Responses</h4>
+<table>
+<thead>
+<tr><th>Status</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>200</td>
+<td>
+<p>Successfully found sentences for a person with the provided HMPPS ID.</p>
+
+
+
+<pre><code>{
+  "data": [
+    {
+      "serviceSource": "NOMIS",
+      "systemSource": "PROBATION_SYSTEMS",
+      "dateOfSentencing": "2009-09-09",
+      "description": "Young Offender Inst - >=12 mths",
+      "isActive": true,
+      "isCustodial": true,
+      "fineAmount": 480.59,
+      "length": {
+        "duration": 10,
+        "units": "Hours",
+        "terms": [
+          {
+            "years": 5,
+            "months": 4,
+            "weeks": 3,
+            "days": 2,
+            "hours": 1,
+            "prisonTermCode": "IMP"
+          }
+        ]
+      }
+    }
+  ],
+  "pagination": {
+    "isLastPage": true,
+    "count": 1,
+    "page": 1,
+    "perPage": 10,
+    "totalCount": 1,
+    "totalPages": 1
+  }
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-paginatedresponsesentence'>PaginatedResponseSentence</a>
+</td>
+</tr>
+
+<tr>
+<td>400</td>
+<td>
+<p>Bad Request</p>
+
+
+
+<pre><code>{
+  "status": 400,
+  "userMessage": "Validation failure: No query parameters specified.",
+  "developerMessage": "No query parameters specified."
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-badrequest'>BadRequest</a>
+</td>
+</tr>
+
+<tr>
+<td>404</td>
+<td>
+<p>Not Found</p>
+
+
+
+<pre><code>{
+  "status": 404,
+  "userMessage": "404 Not found error: Could not find person with HMPPS id: 2003/0011991D.",
+  "developerMessage": "Could not find person with HMPPS id: 2003/0011991D."
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-personnotfound'>PersonNotFound</a>
+</td>
+</tr>
+
+<tr>
+<td>500</td>
+<td>
+<p>Internal Server Error</p>
+
+
+
+<pre><code>{
+  "status": 500,
+  "userMessage": "Internal Server Error",
+  "developerMessage": "Unable to complete request as an upstream service is not responding."
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-internalservererror'>InternalServerError</a>
+</td>
+</tr>
+
+</tbody>
+</table>
+
+
+
+
 <h2 id="v1-persons-hmppsid-plp-review-schedule">/v1/persons/{hmppsId}/plp-review-schedule</h2>
 
 <h3 id="v1-persons-hmppsid-plp-review-schedule-get">get</h3>
@@ -3859,6 +4036,9 @@
 <h3 id="v1-persons-hmppsid-name-get">get</h3>
 
   <p><em>Returns a person&rsquo;s name</em></p>
+
+
+  <p><b>Applicable filters</b>: <ul><li>prisons</li></ul></p>
 
 
 
@@ -4410,6 +4590,9 @@
   <p><em>Returns alerts associated with a person, sorted by dateCreated (newest first).</em></p>
 
 
+  <p><b>Applicable filters</b>: <ul><li>prisons</li></ul></p>
+
+
 
 
 <h4 id="v1-persons-hmppsid-alerts-get-parameters">Parameters</h4>
@@ -4884,161 +5067,6 @@
 </td>
 <td>
 <a href='#schema-paginatedresponsestatusinformation'>PaginatedResponseStatusInformation</a>
-</td>
-</tr>
-
-<tr>
-<td>404</td>
-<td>
-<p>Not Found</p>
-
-
-
-<pre><code>{
-  "status": 404,
-  "userMessage": "404 Not found error: Could not find person with HMPPS id: 2003/0011991D.",
-  "developerMessage": "Could not find person with HMPPS id: 2003/0011991D."
-}</code></pre>
-
-</td>
-<td>
-<a href='#schema-personnotfound'>PersonNotFound</a>
-</td>
-</tr>
-
-<tr>
-<td>500</td>
-<td>
-<p>Internal Server Error</p>
-
-
-
-<pre><code>{
-  "status": 500,
-  "userMessage": "Internal Server Error",
-  "developerMessage": "Unable to complete request as an upstream service is not responding."
-}</code></pre>
-
-</td>
-<td>
-<a href='#schema-internalservererror'>InternalServerError</a>
-</td>
-</tr>
-
-</tbody>
-</table>
-
-
-
-
-<h2 id="v1-persons-encodedhmppsid-sentences">/v1/persons/{encodedHmppsId}/sentences</h2>
-
-<h3 id="v1-persons-encodedhmppsid-sentences-get">get</h3>
-
-  <p><em>Returns sentences associated with a person, sorted by dateOfSentencing (newest first).</em></p>
-
-
-
-
-<h4 id="v1-persons-encodedhmppsid-sentences-get-parameters">Parameters</h4>
-<table>
-<thead>
-<tr><th>Parameter</th><th>In</th><th>Type</th><th>Required</th><th>Description</th></tr>
-</thead>
-<tbody>
-
-<tr>
-<td>encodedHmppsId</td>
-<td>path</td>
-<td>string</td>
-<td>true</td>
-<td><p>A URL-encoded HMPPS identifier</p>
-
-
-</td>
-</tr>
-
-<tr>
-<td>page</td>
-<td>query</td>
-<td>string</td>
-<td>false</td>
-<td><p>The page number (starting from 1)</p>
-
-
-</td>
-</tr>
-
-<tr>
-<td>perPage</td>
-<td>query</td>
-<td>string</td>
-<td>false</td>
-<td><p>The maximum number of results for a page</p>
-
-
-</td>
-</tr>
-
-</tbody>
-</table>
-
-
-
-
-<h4 id="v1-persons-encodedhmppsid-sentences-get-responses">Responses</h4>
-<table>
-<thead>
-<tr><th>Status</th><th>Description</th><th>Schema</th></tr>
-</thead>
-<tbody>
-
-<tr>
-<td>200</td>
-<td>
-<p>Successfully found sentences for a person with the provided HMPPS ID.</p>
-
-
-
-<pre><code>{
-  "data": [
-    {
-      "serviceSource": "NOMIS",
-      "systemSource": "PROBATION_SYSTEMS",
-      "dateOfSentencing": "2009-09-09",
-      "description": "Young Offender Inst - >=12 mths",
-      "isActive": true,
-      "isCustodial": true,
-      "fineAmount": 480.59,
-      "length": {
-        "duration": 10,
-        "units": "Hours",
-        "terms": [
-          {
-            "years": 5,
-            "months": 4,
-            "weeks": 3,
-            "days": 2,
-            "hours": 1,
-            "prisonTermCode": "IMP"
-          }
-        ]
-      }
-    }
-  ],
-  "pagination": {
-    "isLastPage": true,
-    "count": 1,
-    "page": 1,
-    "perPage": 10,
-    "totalCount": 1,
-    "totalPages": 1
-  }
-}</code></pre>
-
-</td>
-<td>
-<a href='#schema-paginatedresponsesentence'>PaginatedResponseSentence</a>
 </td>
 </tr>
 
@@ -11420,6 +11448,282 @@
 </tbody>
 </table>
 
+<h3 id="schema-paginatedresponsesentence">PaginatedResponseSentence</h3>
+
+
+<table class='schema-paginatedresponsesentence'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>data</td>
+<td>array</td>
+<td>true</td>
+<td></td>
+<td>
+  <a href='#schema-sentence'>Sentence</a>
+</td>
+</tr>
+
+<tr>
+<td>pagination</td>
+<td>object</td>
+<td>true</td>
+<td></td>
+<td>
+  <a href='#schema-pagination'>Pagination</a>
+</td>
+</tr>
+
+</tbody>
+</table>
+
+<h3 id="schema-sentence">Sentence</h3>
+
+
+<table class='schema-sentence'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>serviceSource</td>
+<td>string</td>
+<td>true</td>
+<td><div class="highlight"><pre class="highlight plaintext" tabindex="0"><code>  Which upstream API service the sentence originates from. Possible values are:
+  `NOMIS`,
+  `NDELIUS`
+</code></pre></div></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>systemSource</td>
+<td>string</td>
+<td>true</td>
+<td><div class="highlight"><pre class="highlight plaintext" tabindex="0"><code>  Which upstream API system the sentence originates from. Possible values are:
+  `PRISON_SYSTEMS`,
+  `PROBATION_SYSTEMS`
+</code></pre></div></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>dateOfSentencing</td>
+<td>string</td>
+<td>false</td>
+<td><p>Date of sentencing</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>description</td>
+<td>string</td>
+<td>false</td>
+<td><p>Description of the sentence</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>isActive</td>
+<td>boolean</td>
+<td>false</td>
+<td><p>Whether the sentence is active</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>isCustodial</td>
+<td>boolean</td>
+<td>true</td>
+<td><p>Whether the sentence is custodial</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>fineAmount</td>
+<td>number</td>
+<td>false</td>
+<td><p>The amount of fine related to the sentence and offence</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>length</td>
+<td>object</td>
+<td>true</td>
+<td></td>
+<td>
+  <a href='#schema-sentencelength'>SentenceLength</a>
+</td>
+</tr>
+
+</tbody>
+</table>
+
+<h3 id="schema-sentencelength">SentenceLength</h3>
+
+
+<table class='schema-sentencelength'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>duration</td>
+<td>integer</td>
+<td>false</td>
+<td><p>Duration of the sentence</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>units</td>
+<td>string</td>
+<td>false</td>
+<td><div class="highlight"><pre class="highlight plaintext" tabindex="0"><code>  Time unit that is used in combination with the duration field. Possible values are:
+  `Hours`,
+  `Days`,
+  `Weeks`,
+  `Months`,
+  `Years`
+</code></pre></div></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>terms</td>
+<td>array</td>
+<td>true</td>
+<td></td>
+<td>
+  <a href='#schema-sentenceterm'>SentenceTerm</a>
+</td>
+</tr>
+
+</tbody>
+</table>
+
+<h3 id="schema-sentenceterm">SentenceTerm</h3>
+
+
+<table class='schema-sentenceterm'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>years</td>
+<td>integer</td>
+<td>false</td>
+<td><p>Number of years in the term</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>months</td>
+<td>integer</td>
+<td>false</td>
+<td><p>Number of months in the term</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>weeks</td>
+<td>integer</td>
+<td>false</td>
+<td><p>Number of weeks in the term</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>days</td>
+<td>integer</td>
+<td>false</td>
+<td><p>Number of days in the term</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>hours</td>
+<td>integer</td>
+<td>false</td>
+<td><p>Number of hours in the term</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>prisonTermCode</td>
+<td>string</td>
+<td>false</td>
+<td><div class="highlight"><pre class="highlight plaintext" tabindex="0"><code>  The sentence term code
+  Possible values are:
+  `CUR` - Curfew Period,
+  `DEF` - Deferment Period,
+  `DET` - Detention,
+  `HOURS` - Hours Ordered,
+  `IMP` - Imprisonment,
+  `LIC` - Licence,
+  `PSYCH` - Psychiatric Hospital,
+  `SCUS` - Custodial Period,
+  `SEC104` - Breach of supervision requirements,
+  `SEC105` - Breach due to imprisonable offence,
+  `SEC86` - Section 86 of 2000 Act,
+  `SUP` - Sentence Length,
+  `SUSP` - Suspension Period
+</code></pre></div></td>
+<td>
+  
+</td>
+</tr>
+
+</tbody>
+</table>
+
 <h3 id="schema-dataresponsereviewschedules">DataResponseReviewSchedules</h3>
 
 
@@ -12967,282 +13271,6 @@
 <td>string</td>
 <td>false</td>
 <td></td>
-<td>
-  
-</td>
-</tr>
-
-</tbody>
-</table>
-
-<h3 id="schema-paginatedresponsesentence">PaginatedResponseSentence</h3>
-
-
-<table class='schema-paginatedresponsesentence'>
-<thead>
-<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
-</thead>
-<tbody>
-
-<tr>
-<td>data</td>
-<td>array</td>
-<td>true</td>
-<td></td>
-<td>
-  <a href='#schema-sentence'>Sentence</a>
-</td>
-</tr>
-
-<tr>
-<td>pagination</td>
-<td>object</td>
-<td>true</td>
-<td></td>
-<td>
-  <a href='#schema-pagination'>Pagination</a>
-</td>
-</tr>
-
-</tbody>
-</table>
-
-<h3 id="schema-sentence">Sentence</h3>
-
-
-<table class='schema-sentence'>
-<thead>
-<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
-</thead>
-<tbody>
-
-<tr>
-<td>serviceSource</td>
-<td>string</td>
-<td>true</td>
-<td><div class="highlight"><pre class="highlight plaintext" tabindex="0"><code>  Which upstream API service the sentence originates from. Possible values are:
-  `NOMIS`,
-  `NDELIUS`
-</code></pre></div></td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>systemSource</td>
-<td>string</td>
-<td>true</td>
-<td><div class="highlight"><pre class="highlight plaintext" tabindex="0"><code>  Which upstream API system the sentence originates from. Possible values are:
-  `PRISON_SYSTEMS`,
-  `PROBATION_SYSTEMS`
-</code></pre></div></td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>dateOfSentencing</td>
-<td>string</td>
-<td>false</td>
-<td><p>Date of sentencing</p>
-</td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>description</td>
-<td>string</td>
-<td>false</td>
-<td><p>Description of the sentence</p>
-</td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>isActive</td>
-<td>boolean</td>
-<td>false</td>
-<td><p>Whether the sentence is active</p>
-</td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>isCustodial</td>
-<td>boolean</td>
-<td>true</td>
-<td><p>Whether the sentence is custodial</p>
-</td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>fineAmount</td>
-<td>number</td>
-<td>false</td>
-<td><p>The amount of fine related to the sentence and offence</p>
-</td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>length</td>
-<td>object</td>
-<td>true</td>
-<td></td>
-<td>
-  <a href='#schema-sentencelength'>SentenceLength</a>
-</td>
-</tr>
-
-</tbody>
-</table>
-
-<h3 id="schema-sentencelength">SentenceLength</h3>
-
-
-<table class='schema-sentencelength'>
-<thead>
-<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
-</thead>
-<tbody>
-
-<tr>
-<td>duration</td>
-<td>integer</td>
-<td>false</td>
-<td><p>Duration of the sentence</p>
-</td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>units</td>
-<td>string</td>
-<td>false</td>
-<td><div class="highlight"><pre class="highlight plaintext" tabindex="0"><code>  Time unit that is used in combination with the duration field. Possible values are:
-  `Hours`,
-  `Days`,
-  `Weeks`,
-  `Months`,
-  `Years`
-</code></pre></div></td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>terms</td>
-<td>array</td>
-<td>true</td>
-<td></td>
-<td>
-  <a href='#schema-sentenceterm'>SentenceTerm</a>
-</td>
-</tr>
-
-</tbody>
-</table>
-
-<h3 id="schema-sentenceterm">SentenceTerm</h3>
-
-
-<table class='schema-sentenceterm'>
-<thead>
-<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
-</thead>
-<tbody>
-
-<tr>
-<td>years</td>
-<td>integer</td>
-<td>false</td>
-<td><p>Number of years in the term</p>
-</td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>months</td>
-<td>integer</td>
-<td>false</td>
-<td><p>Number of months in the term</p>
-</td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>weeks</td>
-<td>integer</td>
-<td>false</td>
-<td><p>Number of weeks in the term</p>
-</td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>days</td>
-<td>integer</td>
-<td>false</td>
-<td><p>Number of days in the term</p>
-</td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>hours</td>
-<td>integer</td>
-<td>false</td>
-<td><p>Number of hours in the term</p>
-</td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>prisonTermCode</td>
-<td>string</td>
-<td>false</td>
-<td><div class="highlight"><pre class="highlight plaintext" tabindex="0"><code>  The sentence term code
-  Possible values are:
-  `CUR` - Curfew Period,
-  `DEF` - Deferment Period,
-  `DET` - Detention,
-  `HOURS` - Hours Ordered,
-  `IMP` - Imprisonment,
-  `LIC` - Licence,
-  `PSYCH` - Psychiatric Hospital,
-  `SCUS` - Custodial Period,
-  `SEC104` - Breach of supervision requirements,
-  `SEC105` - Breach due to imprisonable offence,
-  `SEC86` - Section 86 of 2000 Act,
-  `SUP` - Sentence Length,
-  `SUSP` - Suspension Period
-</code></pre></div></td>
 <td>
   
 </td>
