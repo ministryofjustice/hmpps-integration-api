@@ -31,6 +31,7 @@ internal class GetAddressesForPersonServiceTest(
       val hmppsId = "2003/13116M"
       val prisonerNumber = "A5553AA"
       val deliusCrn = "X777776"
+      val filters = null
 
       val person =
         Person(firstName = "Qui-gon", lastName = "Jin", identifiers = Identifiers(nomisNumber = prisonerNumber, deliusCrn = deliusCrn))
@@ -91,7 +92,7 @@ internal class GetAddressesForPersonServiceTest(
             errors = errors,
           ),
         )
-        val result = getAddressesForPersonService.execute(hmppsId)
+        val result = getAddressesForPersonService.execute(hmppsId, filters)
         result.errors.shouldBe(errors)
       }
 
@@ -100,7 +101,7 @@ internal class GetAddressesForPersonServiceTest(
         whenever(probationOffenderSearchGateway.getAddressesForPerson(hmppsId)).thenReturn(Response(data = listOf(deliusAddress)))
         whenever(nomisGateway.getAddressesForPerson(prisonerNumber)).thenReturn(Response(data = listOf(nomisAddress)))
 
-        val result = getAddressesForPersonService.execute(hmppsId)
+        val result = getAddressesForPersonService.execute(hmppsId, filters)
         result.errors.shouldBeEmpty()
         result.data.shouldBe(listOf(nomisAddress, deliusAddress))
       }
@@ -121,7 +122,7 @@ internal class GetAddressesForPersonServiceTest(
           ),
         )
 
-        val result = getAddressesForPersonService.execute(hmppsId)
+        val result = getAddressesForPersonService.execute(hmppsId, filters)
         result.errors.shouldBeEmpty()
         result.data.shouldBe(listOf(deliusAddress))
       }
@@ -142,7 +143,7 @@ internal class GetAddressesForPersonServiceTest(
         )
         whenever(nomisGateway.getAddressesForPerson(prisonerNumber)).thenReturn(Response(data = listOf(nomisAddress)))
 
-        val result = getAddressesForPersonService.execute(hmppsId)
+        val result = getAddressesForPersonService.execute(hmppsId, filters)
         result.errors.shouldBeEmpty()
         result.data.shouldBe(listOf(nomisAddress))
       }
@@ -163,7 +164,7 @@ internal class GetAddressesForPersonServiceTest(
           ),
         )
 
-        val result = getAddressesForPersonService.execute(hmppsId)
+        val result = getAddressesForPersonService.execute(hmppsId, filters)
         result.errors.shouldBe(listOf(UpstreamApiError(type = UpstreamApiError.Type.INTERNAL_SERVER_ERROR, causedBy = UpstreamApi.NOMIS)))
       }
 
@@ -194,7 +195,7 @@ internal class GetAddressesForPersonServiceTest(
           ),
         )
 
-        val result = getAddressesForPersonService.execute(hmppsId)
+        val result = getAddressesForPersonService.execute(hmppsId, filters)
         result.errors.shouldBe(listOf(UpstreamApiError(type = UpstreamApiError.Type.INTERNAL_SERVER_ERROR, causedBy = UpstreamApi.NOMIS)))
       }
 
@@ -213,7 +214,7 @@ internal class GetAddressesForPersonServiceTest(
           ),
         )
 
-        val result = getAddressesForPersonService.execute(hmppsId)
+        val result = getAddressesForPersonService.execute(hmppsId, filters)
         result.errors.shouldBe(listOf(UpstreamApiError(type = UpstreamApiError.Type.INTERNAL_SERVER_ERROR, causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH)))
       }
 
@@ -221,7 +222,7 @@ internal class GetAddressesForPersonServiceTest(
         whenever(personService.execute(hmppsId = hmppsId)).thenReturn(Response(personNoNomis))
         whenever(probationOffenderSearchGateway.getAddressesForPerson(hmppsId)).thenReturn(Response(listOf(deliusAddress)))
 
-        val result = getAddressesForPersonService.execute(hmppsId)
+        val result = getAddressesForPersonService.execute(hmppsId, filters)
         result.errors.shouldBeEmpty()
         result.data.shouldBe(listOf(deliusAddress))
       }
@@ -241,7 +242,7 @@ internal class GetAddressesForPersonServiceTest(
           ),
         )
 
-        val result = getAddressesForPersonService.execute(hmppsId)
+        val result = getAddressesForPersonService.execute(hmppsId, filters)
         result.errors.shouldBe(listOf(UpstreamApiError(type = UpstreamApiError.Type.INTERNAL_SERVER_ERROR, causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH)))
       }
     },

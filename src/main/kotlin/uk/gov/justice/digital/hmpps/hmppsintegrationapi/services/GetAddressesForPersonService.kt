@@ -7,6 +7,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ProbationOffend
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Address
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 @Service
 class GetAddressesForPersonService(
@@ -14,7 +15,10 @@ class GetAddressesForPersonService(
   @Autowired val getPersonService: GetPersonService,
   @Autowired val probationOffenderSearchGateway: ProbationOffenderSearchGateway,
 ) {
-  fun execute(hmppsId: String): Response<List<Address>> {
+  fun execute(
+    hmppsId: String,
+    filters: ConsumerFilters?,
+  ): Response<List<Address>> {
     val personResponse = getPersonService.execute(hmppsId = hmppsId)
     if (personResponse.errors.isNotEmpty()) {
       return Response(data = emptyList(), errors = personResponse.errors)
