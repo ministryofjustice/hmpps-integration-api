@@ -19,7 +19,7 @@ class GetAddressesForPersonService(
     hmppsId: String,
     filters: ConsumerFilters?,
   ): Response<List<Address>> {
-    val personResponse = getPersonService.execute(hmppsId = hmppsId)
+    val personResponse = getPersonService.getNomisNumberWithPrisonFilter(hmppsId = hmppsId, filters)
     if (personResponse.errors.isNotEmpty()) {
       return Response(data = emptyList(), errors = personResponse.errors)
     }
@@ -29,10 +29,7 @@ class GetAddressesForPersonService(
       return Response(data = emptyList(), errors = addressesFromDelius.errors)
     }
 
-    val nomisNumber = personResponse.data?.identifiers?.nomisNumber
-    if (nomisNumber == null) {
-      return addressesFromDelius
-    }
+    val nomisNumber = personResponse.data?.nomisNumber ?: return addressesFromDelius
 
     val addressesFromNomis = nomisGateway.getAddressesForPerson(id = nomisNumber)
     if (hasErrorOtherThanEntityNotFound(addressesFromNomis)) {
