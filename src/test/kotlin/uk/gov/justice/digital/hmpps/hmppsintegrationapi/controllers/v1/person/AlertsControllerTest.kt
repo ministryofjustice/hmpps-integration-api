@@ -150,6 +150,25 @@ internal class AlertsControllerTest(
           result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
         }
 
+        it("returns a 400 Bad request status code when nomis id is invalid in the upstream API") {
+          whenever(getAlertsForPersonService.execute(hmppsId, filters)).thenReturn(
+            Response(
+              data = emptyList(),
+              errors =
+                listOf(
+                  UpstreamApiError(
+                    causedBy = UpstreamApi.NOMIS,
+                    type = UpstreamApiError.Type.BAD_REQUEST,
+                  ),
+                ),
+            ),
+          )
+
+          val result = mockMvc.performAuthorised(path)
+
+          result.response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
+        }
+
         it("returns paginated results") {
           whenever(getAlertsForPersonService.execute(hmppsId, filters)).thenReturn(
             Response(
