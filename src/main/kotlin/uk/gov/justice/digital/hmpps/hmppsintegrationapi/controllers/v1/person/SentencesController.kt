@@ -59,7 +59,7 @@ class SentencesController(
       throw EntityNotFoundException("Could not find person with id: $hmppsId")
     }
     if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
-      throw ValidationException("Invalid or missing HMPPS ID")
+      throw ValidationException("Invalid HMPPS ID: $hmppsId")
     }
 
     auditService.createEvent("GET_PERSON_SENTENCES", mapOf("hmppsId" to hmppsId))
