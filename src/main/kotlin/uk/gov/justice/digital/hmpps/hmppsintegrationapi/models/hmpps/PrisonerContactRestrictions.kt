@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships
+package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps
 
 import com.fasterxml.jackson.annotation.JsonProperty
 

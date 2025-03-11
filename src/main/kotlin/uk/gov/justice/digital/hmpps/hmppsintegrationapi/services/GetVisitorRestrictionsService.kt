@@ -4,10 +4,10 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.ConsumerPrisonAccessService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PersonalRelationshipsGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerContactRestrictions
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PrisonerContactRestrictions
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 @Service
@@ -52,9 +52,12 @@ class GetVisitorRestrictionsService(
       for (prisonerContactId in linkedPrisonerIds) {
         val gatewayResult = personalRelationshipsGateway.getPrisonerContactRestrictions(prisonerContactId!!)
         if (gatewayResult.errors.isEmpty() && gatewayResult.data != null) {
-          gatewayResult.data.prisonerContactRestrictions?.let { restrictionsResult.prisonerContactRestrictions?.addAll(it) }
+          gatewayResult.data.prisonerContactRestrictions?.let { it -> restrictionsResult.prisonerContactRestrictions?.addAll(it.map { it.toPrisonerContactRestriction() }) }
           if (prisonerContactId == linkedPrisonerIds.first()) {
-            restrictionsResult.contactGlobalRestrictions = gatewayResult.data.contactGlobalRestrictions?.first()
+            restrictionsResult.contactGlobalRestrictions =
+              gatewayResult.data.contactGlobalRestrictions
+                ?.first()
+                ?.toContactGlobalRestriction()
           }
         }
 

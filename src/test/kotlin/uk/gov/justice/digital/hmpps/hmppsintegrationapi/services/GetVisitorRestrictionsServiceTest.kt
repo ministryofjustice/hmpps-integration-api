@@ -11,15 +11,16 @@ import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.ConsumerPrisonAccessService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PersonalRelationshipsGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerContactRestriction
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerContactRestrictions
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.ContactGlobalRestriction
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.LinkedPrisoner
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.LinkedPrisonerRelationship
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PrisonerContactRestriction
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PrisonerContactRestrictions
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PrisonerContactRestrictionsResponse
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PRContactGlobalRestriction
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PRLinkedPrisoner
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PRLinkedPrisonerRelationship
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PRPrisonerContactRestriction
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PRPrisonerContactRestrictions
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSPrisoner
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
@@ -39,11 +40,11 @@ class GetVisitorRestrictionsServiceTest(
       val contactId = 123456L
       val filters = ConsumerFilters(null)
       val posPrisoner = POSPrisoner(firstName = "Test", lastName = "Person", prisonId = prisonId, prisonerNumber = hmppsId)
-      val listOfRelationships = listOf(LinkedPrisonerRelationship(prisonerContactId = contactId, relationshipTypeCode = "FAM", relationshipTypeDescription = "Family", relationshipToPrisonerCode = "SON", relationshipToPrisonerDescription = "Son"))
-      val listOfLinkedPrisoners = listOf(LinkedPrisoner(prisonerNumber = hmppsId, relationships = listOfRelationships, firstName = "Test", lastName = "Person", middleNames = null))
+      val listOfRelationships = listOf(PRLinkedPrisonerRelationship(prisonerContactId = contactId, relationshipTypeCode = "FAM", relationshipTypeDescription = "Family", relationshipToPrisonerCode = "SON", relationshipToPrisonerDescription = "Son"))
+      val listOfLinkedPrisoners = listOf(PRLinkedPrisoner(prisonerNumber = hmppsId, relationships = listOfRelationships, firstName = "Test", lastName = "Person", middleNames = null))
       val prisonerContactRestrictionsResponse =
         mutableListOf(
-          PrisonerContactRestriction(
+          PRPrisonerContactRestriction(
             prisonerContactRestrictionId = 1L,
             prisonerContactId = contactId,
             contactId = contactId,
@@ -60,7 +61,7 @@ class GetVisitorRestrictionsServiceTest(
             updatedBy = "admin",
             updatedTime = "2024-01-02T12:00:00Z",
           ),
-          PrisonerContactRestriction(
+          PRPrisonerContactRestriction(
             prisonerContactRestrictionId = 2L,
             prisonerContactId = contactId,
             contactId = contactId,
@@ -80,23 +81,26 @@ class GetVisitorRestrictionsServiceTest(
         )
 
       val contactGlobalRestrictionsResponse =
-        ContactGlobalRestriction(
-          contactRestrictionId = 1L,
-          contactId = contactId,
-          restrictionType = "Restriction 1",
-          restrictionTypeDescription = "Description for Restriction 1",
-          startDate = "2024-01-01",
-          expiryDate = "2025-01-01",
-          comments = "Some comments",
-          enteredByUsername = "user123",
-          enteredByDisplayName = "User Name",
-          createdBy = "admin",
-          createdTime = "2024-01-01T12:00:00Z",
-          updatedBy = "admin",
-          updatedTime = "2024-01-02T12:00:00Z",
+        listOf(
+          PRContactGlobalRestriction(
+            contactRestrictionId = 1L,
+            contactId = contactId,
+            restrictionType = "Restriction 1",
+            restrictionTypeDescription = "Description for Restriction 1",
+            startDate = "2024-01-01",
+            expiryDate = "2025-01-01",
+            comments = "Some comments",
+            enteredByUsername = "user123",
+            enteredByDisplayName = "User Name",
+            createdBy = "admin",
+            createdTime = "2024-01-01T12:00:00Z",
+            updatedBy = "admin",
+            updatedTime = "2024-01-02T12:00:00Z",
+          ),
         )
 
-      val prisonerContactRestrictions = PrisonerContactRestrictionsResponse(prisonerContactRestrictionsResponse, listOf(contactGlobalRestrictionsResponse))
+      val prisonerContactRestrictions = PRPrisonerContactRestrictions(prisonerContactRestrictionsResponse, contactGlobalRestrictionsResponse)
+
       beforeEach {
         Mockito.reset(personalRelationshipsGateway)
         Mockito.reset(getPersonService)
@@ -156,10 +160,13 @@ class GetVisitorRestrictionsServiceTest(
         whenever(personalRelationshipsGateway.getLinkedPrisoner(contactId)).thenReturn(Response(data = listOfLinkedPrisoners, errors = emptyList()))
         whenever(personalRelationshipsGateway.getPrisonerContactRestrictions(contactId)).thenReturn(Response(data = prisonerContactRestrictions, errors = emptyList()))
 
+        val prisonerContactRestrictionsList = mutableListOf<PrisonerContactRestriction>()
+        prisonerContactRestrictionsList.addAll(prisonerContactRestrictionsResponse.map { it.toPrisonerContactRestriction() })
+
         val expectedMappedResponse =
           PrisonerContactRestrictions(
-            prisonerContactRestrictions = prisonerContactRestrictionsResponse,
-            contactGlobalRestrictions = contactGlobalRestrictionsResponse,
+            prisonerContactRestrictions = prisonerContactRestrictionsList,
+            contactGlobalRestrictions = contactGlobalRestrictionsResponse.first().toContactGlobalRestriction(),
           )
 
         val response = getVisitorRestrictionsService.execute(hmppsId, contactId, filters)
@@ -169,8 +176,8 @@ class GetVisitorRestrictionsServiceTest(
 
       it("returns multiple relationships and queries getPrisonerContactRestrictions accordingly") {
         val scopedPrisonerContactId = 123457L
-        val listOfManyRelationships = listOf(LinkedPrisonerRelationship(prisonerContactId = contactId, relationshipTypeCode = "FAM", relationshipTypeDescription = "Family", relationshipToPrisonerCode = "SON", relationshipToPrisonerDescription = "Son"), LinkedPrisonerRelationship(prisonerContactId = scopedPrisonerContactId, relationshipTypeCode = "FAM", relationshipTypeDescription = "Family", relationshipToPrisonerCode = "BRO", relationshipToPrisonerDescription = "Brother"))
-        val listOfLinkedPrisonerWithManyRelationships = listOf(LinkedPrisoner(prisonerNumber = "A1234AA", relationships = listOfManyRelationships, firstName = "Test", lastName = "Person", middleNames = null))
+        val listOfManyRelationships = listOf(PRLinkedPrisonerRelationship(prisonerContactId = contactId, relationshipTypeCode = "FAM", relationshipTypeDescription = "Family", relationshipToPrisonerCode = "SON", relationshipToPrisonerDescription = "Son"), PRLinkedPrisonerRelationship(prisonerContactId = scopedPrisonerContactId, relationshipTypeCode = "FAM", relationshipTypeDescription = "Family", relationshipToPrisonerCode = "BRO", relationshipToPrisonerDescription = "Brother"))
+        val listOfLinkedPrisonerWithManyRelationships = listOf(PRLinkedPrisoner(prisonerNumber = "A1234AA", relationships = listOfManyRelationships, firstName = "Test", lastName = "Person", middleNames = null))
 
         whenever(personalRelationshipsGateway.getLinkedPrisoner(contactId)).thenReturn(Response(data = listOfLinkedPrisonerWithManyRelationships, errors = emptyList()))
         whenever(personalRelationshipsGateway.getPrisonerContactRestrictions(contactId)).thenReturn(Response(data = prisonerContactRestrictions, errors = emptyList()))
