@@ -217,6 +217,9 @@
         <a href="../../documentation/api/index.html#v1-persons-hmppsid-plp-induction-schedule-history"><span>/v1/persons/{hmppsId}/plp-induction-schedule/history</span></a>
       </li>
       <li>
+        <a href="../../documentation/api/index.html#v1-persons-hmppsid-name"><span>/v1/persons/{hmppsId}/name</span></a>
+      </li>
+      <li>
         <a href="../../documentation/api/index.html#v1-persons-hmppsid-iep-level"><span>/v1/persons/{hmppsId}/iep-level</span></a>
       </li>
       <li>
@@ -272,9 +275,6 @@
       </li>
       <li>
         <a href="../../documentation/api/index.html#v1-persons-encodedhmppsid-needs"><span>/v1/persons/{encodedHmppsId}/needs</span></a>
-      </li>
-      <li>
-        <a href="../../documentation/api/index.html#v1-persons-encodedhmppsid-name"><span>/v1/persons/{encodedHmppsId}/name</span></a>
       </li>
       <li>
         <a href="../../documentation/api/index.html#v1-persons-encodedhmppsid-licences-conditions"><span>/v1/persons/{encodedHmppsId}/licences/conditions</span></a>
@@ -3854,6 +3854,129 @@
 
 
 
+<h2 id="v1-persons-hmppsid-name">/v1/persons/{hmppsId}/name</h2>
+
+<h3 id="v1-persons-hmppsid-name-get">get</h3>
+
+  <p><em>Returns a person&rsquo;s name</em></p>
+
+
+
+
+<h4 id="v1-persons-hmppsid-name-get-parameters">Parameters</h4>
+<table>
+<thead>
+<tr><th>Parameter</th><th>In</th><th>Type</th><th>Required</th><th>Description</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>hmppsId</td>
+<td>path</td>
+<td>string</td>
+<td>true</td>
+<td><p>The HMPPS ID of the person</p>
+
+
+</td>
+</tr>
+
+</tbody>
+</table>
+
+
+
+
+<h4 id="v1-persons-hmppsid-name-get-responses">Responses</h4>
+<table>
+<thead>
+<tr><th>Status</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>200</td>
+<td>
+<p>Successfully found a person with the provided HMPPS ID.</p>
+
+
+
+<pre><code>{
+  "data": {
+    "firstName": "string",
+    "lastName": "string"
+  }
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-dataresponsepersonname'>DataResponsePersonName</a>
+</td>
+</tr>
+
+<tr>
+<td>400</td>
+<td>
+<p>Bad Request</p>
+
+
+
+<pre><code>{
+  "status": 400,
+  "userMessage": "Validation failure: No query parameters specified.",
+  "developerMessage": "No query parameters specified."
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-badrequest'>BadRequest</a>
+</td>
+</tr>
+
+<tr>
+<td>404</td>
+<td>
+<p>Not Found</p>
+
+
+
+<pre><code>{
+  "status": 404,
+  "userMessage": "404 Not found error: Could not find person with HMPPS id: 2003/0011991D.",
+  "developerMessage": "Could not find person with HMPPS id: 2003/0011991D."
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-personnotfound'>PersonNotFound</a>
+</td>
+</tr>
+
+<tr>
+<td>500</td>
+<td>
+<p>Internal Server Error</p>
+
+
+
+<pre><code>{
+  "status": 500,
+  "userMessage": "Internal Server Error",
+  "developerMessage": "Unable to complete request as an upstream service is not responding."
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-internalservererror'>InternalServerError</a>
+</td>
+</tr>
+
+</tbody>
+</table>
+
+
+
+
 <h2 id="v1-persons-hmppsid-iep-level">/v1/persons/{hmppsId}/iep-level</h2>
 
 <h3 id="v1-persons-hmppsid-iep-level-get">get</h3>
@@ -6737,110 +6860,6 @@
 </td>
 <td>
 <a href='#schema-dataresponseneeds'>DataResponseNeeds</a>
-</td>
-</tr>
-
-<tr>
-<td>404</td>
-<td>
-<p>Not Found</p>
-
-
-
-<pre><code>{
-  "status": 404,
-  "userMessage": "404 Not found error: Could not find person with HMPPS id: 2003/0011991D.",
-  "developerMessage": "Could not find person with HMPPS id: 2003/0011991D."
-}</code></pre>
-
-</td>
-<td>
-<a href='#schema-personnotfound'>PersonNotFound</a>
-</td>
-</tr>
-
-<tr>
-<td>500</td>
-<td>
-<p>Internal Server Error</p>
-
-
-
-<pre><code>{
-  "status": 500,
-  "userMessage": "Internal Server Error",
-  "developerMessage": "Unable to complete request as an upstream service is not responding."
-}</code></pre>
-
-</td>
-<td>
-<a href='#schema-internalservererror'>InternalServerError</a>
-</td>
-</tr>
-
-</tbody>
-</table>
-
-
-
-
-<h2 id="v1-persons-encodedhmppsid-name">/v1/persons/{encodedHmppsId}/name</h2>
-
-<h3 id="v1-persons-encodedhmppsid-name-get">get</h3>
-
-  <p><em>Returns a person&rsquo;s name</em></p>
-
-
-
-
-<h4 id="v1-persons-encodedhmppsid-name-get-parameters">Parameters</h4>
-<table>
-<thead>
-<tr><th>Parameter</th><th>In</th><th>Type</th><th>Required</th><th>Description</th></tr>
-</thead>
-<tbody>
-
-<tr>
-<td>encodedHmppsId</td>
-<td>path</td>
-<td>string</td>
-<td>true</td>
-<td><p>A URL-encoded HMPPS identifier</p>
-
-
-</td>
-</tr>
-
-</tbody>
-</table>
-
-
-
-
-<h4 id="v1-persons-encodedhmppsid-name-get-responses">Responses</h4>
-<table>
-<thead>
-<tr><th>Status</th><th>Description</th><th>Schema</th></tr>
-</thead>
-<tbody>
-
-<tr>
-<td>200</td>
-<td>
-<p>Successfully found a person with the provided HMPPS ID.</p>
-
-
-
-<pre><code>{
-  "data": {
-    "firstName": "string",
-    "lastName": "string"
-  }
-}</code></pre>
-
-</td>
-<td>
-<a href='#schema-dataresponsepersonname'>DataResponsePersonName</a>
 </td>
 </tr>
 
@@ -12007,6 +12026,60 @@
 </tbody>
 </table>
 
+<h3 id="schema-dataresponsepersonname">DataResponsePersonName</h3>
+
+
+<table class='schema-dataresponsepersonname'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>data</td>
+<td>object</td>
+<td>true</td>
+<td></td>
+<td>
+  <a href='#schema-personname'>PersonName</a>
+</td>
+</tr>
+
+</tbody>
+</table>
+
+<h3 id="schema-personname">PersonName</h3>
+
+
+<table class='schema-personname'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>firstName</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>lastName</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+</tbody>
+</table>
+
 <h3 id="schema-dataresponseieplevel">DataResponseIEPLevel</h3>
 
 
@@ -16507,60 +16580,6 @@
 <td></td>
 <td>
   <a href='#schema-need'>Need</a>
-</td>
-</tr>
-
-</tbody>
-</table>
-
-<h3 id="schema-dataresponsepersonname">DataResponsePersonName</h3>
-
-
-<table class='schema-dataresponsepersonname'>
-<thead>
-<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
-</thead>
-<tbody>
-
-<tr>
-<td>data</td>
-<td>object</td>
-<td>true</td>
-<td></td>
-<td>
-  <a href='#schema-personname'>PersonName</a>
-</td>
-</tr>
-
-</tbody>
-</table>
-
-<h3 id="schema-personname">PersonName</h3>
-
-
-<table class='schema-personname'>
-<thead>
-<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
-</thead>
-<tbody>
-
-<tr>
-<td>firstName</td>
-<td>string</td>
-<td>false</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>lastName</td>
-<td>string</td>
-<td>false</td>
-<td></td>
-<td>
-  
 </td>
 </tr>
 
