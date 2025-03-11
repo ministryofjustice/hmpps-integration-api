@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.decodeUrlCharacters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CellLocation
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
@@ -22,12 +21,10 @@ class CellLocationController(
   @Autowired val auditService: AuditService,
   @Autowired val getCellLocationForPersonService: GetCellLocationForPersonService,
 ) {
-  @GetMapping("{encodedHmppsId}/cell-location")
+  @GetMapping("{hmppsId}/cell-location")
   fun getPersonCellLocation(
-    @Parameter(description = "A URL-encoded HMPPS identifier", example = "2008%2F0545166T") @PathVariable encodedHmppsId: String,
+    @Parameter(description = "The HMPPS ID of the person") @PathVariable hmppsId: String,
   ): DataResponse<CellLocation?> {
-    val hmppsId = encodedHmppsId.decodeUrlCharacters()
-
     val response = getCellLocationForPersonService.execute(hmppsId)
 
     if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
