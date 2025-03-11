@@ -68,10 +68,11 @@ internal class PersonControllerTest(
 ) : DescribeSpec(
     {
       val hmppsId = "2003/13116M"
-      val sanitisedHmppsId = "200313116M"
+      val sanitisedHmppsId = "A1234AA"
       val pncNumber = "2003/13116M"
       val encodedHmppsId = URLEncoder.encode(hmppsId, StandardCharsets.UTF_8)
       val basePath = "/v1/persons"
+      val filters = null
       val firstName = "Barry"
       val lastName = "Allen"
       val dateOfBirth = "2023-03-01"
@@ -384,11 +385,11 @@ internal class PersonControllerTest(
         }
       }
 
-      describe("GET $basePath/$encodedHmppsId/name") {
+      describe("GET $basePath/$sanitisedHmppsId/name") {
 
         beforeTest {
           Mockito.reset(getNameForPersonService)
-          whenever(getNameForPersonService.execute(hmppsId)).thenReturn(
+          whenever(getNameForPersonService.execute(sanitisedHmppsId, filters)).thenReturn(
             Response(
               data = PersonName(firstName = "Sam", lastName = "Smith"),
             ),
@@ -397,24 +398,24 @@ internal class PersonControllerTest(
         }
 
         it("returns a 200 OK status code") {
-          val result = mockMvc.performAuthorised("$basePath/$encodedHmppsId/name")
+          val result = mockMvc.performAuthorised("$basePath/$sanitisedHmppsId/name")
 
           result.response.status.shouldBe(HttpStatus.OK.value())
         }
 
         it("logs audit") {
-          mockMvc.performAuthorised("$basePath/$encodedHmppsId/name")
-          verify(auditService, times(1)).createEvent("GET_PERSON_NAME", mapOf("hmppsId" to hmppsId))
+          mockMvc.performAuthorised("$basePath/$sanitisedHmppsId/name")
+          verify(auditService, times(1)).createEvent("GET_PERSON_NAME", mapOf("hmppsId" to sanitisedHmppsId))
         }
 
         describe("404 Not found") {
           beforeTest {
             Mockito.reset(auditService)
           }
-          val idThatDoesNotExist = "9999/11111Z"
+          val idThatDoesNotExist = "B5678BB"
 
           it("returns a 404 status code when a person cannot be found in both upstream APIs") {
-            whenever(getNameForPersonService.execute(idThatDoesNotExist)).thenReturn(
+            whenever(getNameForPersonService.execute(idThatDoesNotExist, filters)).thenReturn(
               Response(
                 data = null,
                 errors =
@@ -427,21 +428,39 @@ internal class PersonControllerTest(
               ),
             )
 
-            val encodedIdThatDoesNotExist = URLEncoder.encode(idThatDoesNotExist, StandardCharsets.UTF_8)
-            val result = mockMvc.performAuthorised("$basePath/$encodedIdThatDoesNotExist/name")
+            val result = mockMvc.performAuthorised("$basePath/$idThatDoesNotExist/name")
 
             result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
           }
         }
 
-        it("gets a person name details with the matching ID") {
-          mockMvc.performAuthorised("$basePath/$encodedHmppsId/name")
+        it("returns a 400 status code when bad request in upstream APIs") {
+          whenever(getNameForPersonService.execute(sanitisedHmppsId, filters)).thenReturn(
+            Response(
+              data = null,
+              errors =
+                listOf(
+                  UpstreamApiError(
+                    causedBy = UpstreamApi.NOMIS,
+                    type = UpstreamApiError.Type.BAD_REQUEST,
+                  ),
+                ),
+            ),
+          )
 
-          verify(getNameForPersonService, times(1)).execute(hmppsId)
+          val result = mockMvc.performAuthorised("$basePath/$sanitisedHmppsId/name")
+
+          result.response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
+        }
+
+        it("gets a person name details with the matching ID") {
+          mockMvc.performAuthorised("$basePath/$sanitisedHmppsId/name")
+
+          verify(getNameForPersonService, times(1)).execute(sanitisedHmppsId, filters)
         }
 
         it("returns person name with the matching ID") {
-          val result = mockMvc.performAuthorised("$basePath/$encodedHmppsId/name")
+          val result = mockMvc.performAuthorised("$basePath/$sanitisedHmppsId/name")
 
           result.response.contentAsString.shouldBe(
             """

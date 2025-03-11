@@ -15,6 +15,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonName
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
@@ -26,29 +27,30 @@ internal class GetPersonNameServiceTest(
 ) : DescribeSpec(
     {
       val hmppsId = "A1234AA"
+      val filters = ConsumerFilters(null)
 
       beforeEach {
         Mockito.reset(getPersonService)
 
-        whenever(getPersonService.execute(hmppsId)).thenReturn(
+        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId, filters)).thenReturn(
           Response(data = Person(firstName = "Qui-gon", lastName = "Jin")),
         )
       }
 
-      it("gets person name for hmpps Id") {
-        getNameForPersonService.execute(hmppsId)
+      it("gets person name for hmpps Id calls getPersonWithPrisonFilter") {
+        getNameForPersonService.execute(hmppsId, filters)
 
-        verify(getPersonService, VerificationModeFactory.times(1)).execute(hmppsId)
+        verify(getPersonService, VerificationModeFactory.times(1)).getPersonWithPrisonFilter(hmppsId, filters)
       }
 
       it("returns a person name") {
-        val response = getNameForPersonService.execute(hmppsId)
+        val response = getNameForPersonService.execute(hmppsId, filters)
 
         response.data.shouldBe(PersonName(firstName = "Qui-gon", lastName = "Jin"))
       }
 
       it("returns the upstream error when an error occurs") {
-        whenever(getPersonService.execute(hmppsId)).thenReturn(
+        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId, filters)).thenReturn(
           Response(
             data = null,
             errors =
@@ -61,7 +63,7 @@ internal class GetPersonNameServiceTest(
           ),
         )
 
-        val response = getNameForPersonService.execute(hmppsId)
+        val response = getNameForPersonService.execute(hmppsId, filters)
 
         response.errors.shouldHaveSize(1)
         response.errors

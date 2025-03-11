@@ -144,7 +144,7 @@ class PersonController(
     return response.data.paginateWith(page, perPage)
   }
 
-  @GetMapping("{encodedHmppsId}/name")
+  @GetMapping("{hmppsId}/name")
   @Operation(
     summary = "Returns a person's name",
     responses = [
@@ -154,18 +154,19 @@ class PersonController(
     ],
   )
   fun getPersonName(
-    @Parameter(description = "A URL-encoded HMPPS identifier", example = "2008%2F0545166T") @PathVariable encodedHmppsId: String,
+    @Parameter(description = "The HMPPS ID of the person") @PathVariable hmppsId: String,
+    @RequestAttribute filters: ConsumerFilters?,
   ): DataResponse<PersonName?> {
-    val hmppsId = encodedHmppsId.decodeUrlCharacters()
-
-    val response = getNameForPersonService.execute(hmppsId)
+    val response = getNameForPersonService.execute(hmppsId, filters)
 
     if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
       throw EntityNotFoundException("Could not find person with id: $hmppsId")
     }
+    if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
+      throw ValidationException("Invalid HMPPS ID: $hmppsId")
+    }
 
     auditService.createEvent("GET_PERSON_NAME", mapOf("hmppsId" to hmppsId))
-
     return DataResponse(response.data)
   }
 
