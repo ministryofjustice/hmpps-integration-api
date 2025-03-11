@@ -16,6 +16,18 @@ class AlertsIntegrationTest : IntegrationTestBase() {
   }
 
   @Test
+  fun `return a 404 for person in wrong prison`() {
+    callApiWithCN(path, limitedPrisonsCn)
+      .andExpect(status().isNotFound)
+  }
+
+  @Test
+  fun `return a 404 when no prisons in filter`() {
+    callApiWithCN(path, noPrisonsCn)
+      .andExpect(status().isNotFound)
+  }
+
+  @Test
   fun `returns PND alerts for a person`() {
     callApi("$path/pnd")
       .andExpect(status().isOk)

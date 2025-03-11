@@ -11,6 +11,7 @@ globals:
         - "/v1/persons/.*/visit-restrictions"
         - "/v1/persons/.*/visit-orders"
         - "/v1/persons/.*/visit/future"
+        - "/v1/persons/.*/alerts"
         - "/v1/prison/prisoners"
         - "/v1/prison/prisoners/[^/]*$"
         - "/v1/prison/.*/prisoners/[^/]*/balances$"
@@ -22,3 +23,4 @@ globals:
         - "/v1/prison/.*/visit/search[^/]*$"
         - "/v1/visit/[^/]*$"
         - "/v1/contacts/[^/]*$"
+
