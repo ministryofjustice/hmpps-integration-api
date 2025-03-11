@@ -17,6 +17,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NomisNumber
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetHmppsIdService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 
 @RestController
@@ -25,6 +26,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditS
 class HmppsIdController(
   @Autowired val getHmppsIdService: GetHmppsIdService,
   @Autowired val auditService: AuditService,
+  @Autowired val getPersonService: GetPersonService,
 ) {
   @GetMapping("nomis-number/{nomisNumber}", "by-nomis-number/{nomisNumber}")
   @Operation(
@@ -58,7 +60,9 @@ class HmppsIdController(
   @GetMapping("nomis-number/by-hmpps-id/{hmppsId}")
   @Operation(
     summary = "Return nomis number for a given HMPPS Id",
-    description = """Accepts a HMPPS Id (hmppsId) and looks up the corresponding nomis number.
+    description = """
+      Accepts a HMPPS Id (hmppsId) and looks up the corresponding nomis number.<br>
+      <b>Applicable filters</b>: <ul><li>prisons</li></ul>
     """,
     responses = [
       ApiResponse(responseCode = "200", useReturnTypeSchema = true),
@@ -68,8 +72,9 @@ class HmppsIdController(
   )
   fun getNomisNumberByHMPPSID(
     @PathVariable hmppsId: String,
+    @RequestAttribute filters: ConsumerFilters?,
   ): DataResponse<NomisNumber?> {
-    val response = getHmppsIdService.getNomisNumber(hmppsId)
+    val response = getPersonService.getNomisNumberWithPrisonFilter(hmppsId, filters)
     if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
       throw EntityNotFoundException("Could not find nomis number for HMPPS ID: $hmppsId")
     }
