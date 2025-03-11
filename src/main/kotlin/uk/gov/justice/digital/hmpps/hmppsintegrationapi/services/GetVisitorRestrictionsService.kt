@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.ConsumerPrisonAccessService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PersonalRelationshipsGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ContactGlobalRestriction
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerContactRestriction
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerContactRestrictions
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
@@ -45,28 +47,30 @@ class GetVisitorRestrictionsService(
       return Response(null, listOf(UpstreamApiError(UpstreamApi.PERSONAL_RELATIONSHIPS, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Prisoner not found")))
     }
 
-    val linkedPrisonerIds = linkedPrisoner.relationships?.map { it.prisonerContactId }
+    val prisonerContactRestrictions = mutableListOf<PrisonerContactRestriction>()
+    var contactGlobalRestrictions = listOf<ContactGlobalRestriction>()
 
-    val restrictionsResult = PrisonerContactRestrictions()
-    if (linkedPrisonerIds != null) {
-      for (prisonerContactId in linkedPrisonerIds) {
-        val gatewayResult = personalRelationshipsGateway.getPrisonerContactRestrictions(prisonerContactId!!)
-        if (gatewayResult.errors.isEmpty() && gatewayResult.data != null) {
-          gatewayResult.data.prisonerContactRestrictions?.let { it -> restrictionsResult.prisonerContactRestrictions?.addAll(it.map { it.toPrisonerContactRestriction() }) }
-          if (prisonerContactId == linkedPrisonerIds.first()) {
-            restrictionsResult.contactGlobalRestrictions =
-              gatewayResult.data.contactGlobalRestrictions
-                ?.first()
-                ?.toContactGlobalRestriction()
-          }
-        }
-
-        // Continue to loop through ids and call gateway in the case the error is 404
-        if (gatewayResult.errors.isNotEmpty() && !gatewayResult.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
-          return Response(null, gatewayResult.errors)
+    val linkedPrisonerIds = linkedPrisoner.relationships?.map { it.prisonerContactId }.orEmpty()
+    for (prisonerContactId in linkedPrisonerIds) {
+      val gatewayResult = personalRelationshipsGateway.getPrisonerContactRestrictions(prisonerContactId!!)
+      if (gatewayResult.errors.isEmpty() && gatewayResult.data != null) {
+        gatewayResult.data.prisonerContactRestrictions?.let { prPrisonerContactRestrictions -> prisonerContactRestrictions.addAll(prPrisonerContactRestrictions.map { it.toPrisonerContactRestriction() }) }
+        if (prisonerContactId == linkedPrisonerIds.first()) {
+          gatewayResult.data.contactGlobalRestrictions?.let { prContactGlobalRestrictions -> contactGlobalRestrictions = prContactGlobalRestrictions.map { it.toContactGlobalRestriction() } }
         }
       }
+
+      // Continue to loop through ids and call gateway in the case the error is 404
+      if (gatewayResult.errors.isNotEmpty() && !gatewayResult.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
+        return Response(null, gatewayResult.errors)
+      }
     }
+
+    val restrictionsResult =
+      PrisonerContactRestrictions(
+        prisonerContactRestrictions = prisonerContactRestrictions,
+        contactGlobalRestrictions = contactGlobalRestrictions,
+      )
 
     return Response(data = restrictionsResult)
   }

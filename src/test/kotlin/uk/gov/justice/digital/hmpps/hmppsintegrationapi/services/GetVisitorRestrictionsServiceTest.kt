@@ -11,7 +11,6 @@ import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.ConsumerPrisonAccessService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PersonalRelationshipsGateway
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerContactRestriction
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerContactRestrictions
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
@@ -43,7 +42,7 @@ class GetVisitorRestrictionsServiceTest(
       val listOfRelationships = listOf(PRLinkedPrisonerRelationship(prisonerContactId = contactId, relationshipTypeCode = "FAM", relationshipTypeDescription = "Family", relationshipToPrisonerCode = "SON", relationshipToPrisonerDescription = "Son"))
       val listOfLinkedPrisoners = listOf(PRLinkedPrisoner(prisonerNumber = hmppsId, relationships = listOfRelationships, firstName = "Test", lastName = "Person", middleNames = null))
       val prisonerContactRestrictionsResponse =
-        mutableListOf(
+        listOf(
           PRPrisonerContactRestriction(
             prisonerContactRestrictionId = 1L,
             prisonerContactId = contactId,
@@ -160,13 +159,10 @@ class GetVisitorRestrictionsServiceTest(
         whenever(personalRelationshipsGateway.getLinkedPrisoner(contactId)).thenReturn(Response(data = listOfLinkedPrisoners, errors = emptyList()))
         whenever(personalRelationshipsGateway.getPrisonerContactRestrictions(contactId)).thenReturn(Response(data = prisonerContactRestrictions, errors = emptyList()))
 
-        val prisonerContactRestrictionsList = mutableListOf<PrisonerContactRestriction>()
-        prisonerContactRestrictionsList.addAll(prisonerContactRestrictionsResponse.map { it.toPrisonerContactRestriction() })
-
         val expectedMappedResponse =
           PrisonerContactRestrictions(
-            prisonerContactRestrictions = prisonerContactRestrictionsList,
-            contactGlobalRestrictions = contactGlobalRestrictionsResponse.first().toContactGlobalRestriction(),
+            prisonerContactRestrictions = prisonerContactRestrictionsResponse.map { it.toPrisonerContactRestriction() },
+            contactGlobalRestrictions = contactGlobalRestrictionsResponse.map { it.toContactGlobalRestriction() },
           )
 
         val response = getVisitorRestrictionsService.execute(hmppsId, contactId, filters)
