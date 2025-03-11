@@ -58,6 +58,9 @@ class SentencesController(
     if (response.hasErrorCausedBy(causedBy = UpstreamApi.NOMIS, type = UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
       throw EntityNotFoundException("Could not find person with id: $hmppsId")
     }
+    if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
+      throw ValidationException("Invalid or missing HMPPS ID")
+    }
 
     auditService.createEvent("GET_PERSON_SENTENCES", mapOf("hmppsId" to hmppsId))
     return response.data.paginateWith(page, perPage)
