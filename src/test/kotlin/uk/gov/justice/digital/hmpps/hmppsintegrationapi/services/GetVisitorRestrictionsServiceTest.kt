@@ -166,7 +166,7 @@ class GetVisitorRestrictionsServiceTest(
         val expectedMappedResponse =
           PrisonerContactRestrictions(
             prisonerContactRestrictions = prisonerContactRestrictionsList,
-            contactGlobalRestrictions = contactGlobalRestrictionsResponse.first().toContactGlobalRestriction(),
+            contactGlobalRestrictions = contactGlobalRestrictionsResponse.map { it.toContactGlobalRestriction() },
           )
 
         val response = getVisitorRestrictionsService.execute(hmppsId, contactId, filters)

@@ -63,20 +63,22 @@ internal class VisitRestrictionsControllerTest(
         )
 
       val contactGlobalRestrictionsResponse =
-        ContactGlobalRestriction(
-          contactRestrictionId = 1L,
-          contactId = 123L,
-          restrictionType = "BAN",
-          restrictionTypeDescription = "Banned",
-          startDate = "2024-01-01",
-          expiryDate = "2024-01-01",
-          comments = "N/A",
-          enteredByUsername = "user123",
-          enteredByDisplayName = "User Name",
-          createdBy = "admin",
-          createdTime = "2024-01-01T12:00:00Z",
-          updatedBy = "admin",
-          updatedTime = "2024-01-02T12:00:00Z",
+        listOf(
+          ContactGlobalRestriction(
+            contactRestrictionId = 1L,
+            contactId = 123L,
+            restrictionType = "BAN",
+            restrictionTypeDescription = "Banned",
+            startDate = "2024-01-01",
+            expiryDate = "2024-01-01",
+            comments = "N/A",
+            enteredByUsername = "user123",
+            enteredByDisplayName = "User Name",
+            createdBy = "admin",
+            createdTime = "2024-01-01T12:00:00Z",
+            updatedBy = "admin",
+            updatedTime = "2024-01-02T12:00:00Z",
+          ),
         )
 
       val prisonerContactRestrictions = PrisonerContactRestrictions(prisonerContactRestrictionsResponse, contactGlobalRestrictionsResponse)
@@ -206,7 +208,8 @@ internal class VisitRestrictionsControllerTest(
                   "updatedTime": "2024-01-02T12:00:00Z"
                 }
               ],
-              "contactGlobalRestrictions": {
+              "contactGlobalRestrictions": [
+                {
                   "contactRestrictionId": 1,
                   "contactId": 123,
                   "restrictionType": "BAN",
@@ -221,6 +224,7 @@ internal class VisitRestrictionsControllerTest(
                   "updatedBy": "admin",
                   "updatedTime": "2024-01-02T12:00:00Z"
                 }
+              ]
             }
         }
         """.removeWhitespaceAndNewlines(),

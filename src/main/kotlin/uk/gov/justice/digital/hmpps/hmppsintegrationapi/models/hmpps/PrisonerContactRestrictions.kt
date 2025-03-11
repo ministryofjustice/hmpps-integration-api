@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 
 data class PrisonerContactRestrictions(
   var prisonerContactRestrictions: MutableList<PrisonerContactRestriction>? = mutableListOf(),
-  var contactGlobalRestrictions: ContactGlobalRestriction? = null,
+  var contactGlobalRestrictions: List<ContactGlobalRestriction>? = emptyList(),
 )
 
 data class PrisonerContactRestriction(

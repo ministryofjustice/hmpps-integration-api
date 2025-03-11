@@ -55,9 +55,7 @@ class GetVisitorRestrictionsService(
           gatewayResult.data.prisonerContactRestrictions?.let { it -> restrictionsResult.prisonerContactRestrictions?.addAll(it.map { it.toPrisonerContactRestriction() }) }
           if (prisonerContactId == linkedPrisonerIds.first()) {
             restrictionsResult.contactGlobalRestrictions =
-              gatewayResult.data.contactGlobalRestrictions
-                ?.first()
-                ?.toContactGlobalRestriction()
+              gatewayResult.data.contactGlobalRestrictions?.map { it.toContactGlobalRestriction() }
           }
         }
 
