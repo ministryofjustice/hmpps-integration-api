@@ -15,9 +15,8 @@ import org.springframework.test.web.servlet.MockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.ConsumerPrisonAccessService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ContactGlobalRestriction
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ContactRestriction
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonVisitRestriction
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerContactRestriction
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerContactRestrictions
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
@@ -43,11 +42,7 @@ internal class VisitRestrictionsControllerTest(
       val restrictionsPath = "/v1/persons/$hmppsId/visitor/$contactId/restrictions"
       val prisonerContactRestrictionsResponse =
         mutableListOf(
-          PrisonerContactRestriction(
-            prisonerContactRestrictionId = 123456L,
-            prisonerContactId = 123456L,
-            contactId = 123456L,
-            prisonerNumber = "A1234BC",
+          ContactRestriction(
             restrictionType = "BAN",
             restrictionTypeDescription = "Banned",
             startDate = "2024-01-01",
@@ -64,9 +59,7 @@ internal class VisitRestrictionsControllerTest(
 
       val contactGlobalRestrictionsResponse =
         listOf(
-          ContactGlobalRestriction(
-            contactRestrictionId = 1L,
-            contactId = 123L,
+          ContactRestriction(
             restrictionType = "BAN",
             restrictionTypeDescription = "Banned",
             startDate = "2024-01-01",
@@ -191,10 +184,6 @@ internal class VisitRestrictionsControllerTest(
             {
               "prisonerContactRestrictions": [
                 {
-                  "prisonerContactRestrictionId": 123456,
-                  "prisonerContactId": 123456,
-                  "contactId": 123456,
-                  "prisonerNumber": "A1234BC",
                   "restrictionType": "BAN",
                   "restrictionTypeDescription": "Banned",
                   "startDate": "2024-01-01",
@@ -210,8 +199,6 @@ internal class VisitRestrictionsControllerTest(
               ],
               "contactGlobalRestrictions": [
                 {
-                  "contactRestrictionId": 1,
-                  "contactId": 123,
                   "restrictionType": "BAN",
                   "restrictionTypeDescription": "Banned",
                   "startDate": "2024-01-01",

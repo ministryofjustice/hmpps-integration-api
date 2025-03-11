@@ -4,8 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.ConsumerPrisonAccessService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PersonalRelationshipsGateway
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ContactGlobalRestriction
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerContactRestriction
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ContactRestriction
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerContactRestrictions
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
@@ -47,18 +46,18 @@ class GetVisitorRestrictionsService(
       return Response(null, listOf(UpstreamApiError(UpstreamApi.PERSONAL_RELATIONSHIPS, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Prisoner not found")))
     }
 
-    val prisonerContactRestrictions = mutableListOf<PrisonerContactRestriction>()
-    var contactGlobalRestrictions = listOf<ContactGlobalRestriction>()
+    val prisonerContactRestrictions = mutableListOf<ContactRestriction>()
+    var contactGlobalRestrictions = listOf<ContactRestriction>()
 
     val prisonerContactIds = linkedPrisoner.relationships?.map { it.prisonerContactId }.orEmpty()
     for (prisonerContactId in prisonerContactIds) {
       val gatewayResult = personalRelationshipsGateway.getPrisonerContactRestrictions(prisonerContactId!!)
       if (gatewayResult.errors.isEmpty() && gatewayResult.data != null) {
         if (gatewayResult.data.prisonerContactRestrictions != null) {
-          prisonerContactRestrictions.addAll(gatewayResult.data.prisonerContactRestrictions.map { it.toPrisonerContactRestriction() })
+          prisonerContactRestrictions.addAll(gatewayResult.data.prisonerContactRestrictions.map { it.toContactRestriction() })
         }
         if (prisonerContactId == prisonerContactIds.first() && gatewayResult.data.contactGlobalRestrictions != null) {
-          contactGlobalRestrictions = gatewayResult.data.contactGlobalRestrictions.map { it.toContactGlobalRestriction() }
+          contactGlobalRestrictions = gatewayResult.data.contactGlobalRestrictions.map { it.toContactRestriction() }
         }
       }
 
