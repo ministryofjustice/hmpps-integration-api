@@ -12,12 +12,14 @@ import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NomisGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Identifiers
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NomisNumber
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.RiskAssessment
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.RiskCategory
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
@@ -29,8 +31,9 @@ internal class GetRiskCategoriesForPersonServiceTest(
   private val getRiskCategoriesForPersonService: GetRiskCategoriesForPersonService,
 ) : DescribeSpec(
     {
-      val hmppsId = "1234/56789B"
+      val hmppsId = "A56789B"
       val nomisNumber = "A7796DY"
+      val filters = ConsumerFilters(null)
 
       val personFromProbationOffenderSearch =
         Person(firstName = "Phoebe", lastName = "Buffay", identifiers = Identifiers(nomisNumber = nomisNumber))
@@ -39,23 +42,19 @@ internal class GetRiskCategoriesForPersonServiceTest(
         Mockito.reset(getPersonService)
         Mockito.reset(nomisGateway)
 
-        whenever(getPersonService.execute(hmppsId = hmppsId)).thenReturn(
-          Response(
-            data = personFromProbationOffenderSearch,
-          ),
-        )
+        whenever(getPersonService.getNomisNumberWithPrisonFilter(hmppsId, filters)).thenReturn(Response(data = NomisNumber(personFromProbationOffenderSearch.identifiers.nomisNumber)))
 
         whenever(nomisGateway.getRiskCategoriesForPerson(nomisNumber)).thenReturn(Response(data = RiskCategory()))
       }
 
       it("gets a person from getPersonService") {
-        getRiskCategoriesForPersonService.execute(hmppsId)
+        getRiskCategoriesForPersonService.execute(hmppsId, filters)
 
-        verify(getPersonService, VerificationModeFactory.times(1)).execute(hmppsId = hmppsId)
+        verify(getPersonService, VerificationModeFactory.times(1)).getNomisNumberWithPrisonFilter(hmppsId, filters)
       }
 
       it("gets a risk category for a person from ARN API using Nomis") {
-        getRiskCategoriesForPersonService.execute(hmppsId)
+        getRiskCategoriesForPersonService.execute(hmppsId, filters)
 
         verify(nomisGateway, VerificationModeFactory.times(1)).getRiskCategoriesForPerson(nomisNumber)
       }
@@ -67,7 +66,7 @@ internal class GetRiskCategoriesForPersonServiceTest(
           Response(data = riskCategory),
         )
 
-        val response = getRiskCategoriesForPersonService.execute(hmppsId)
+        val response = getRiskCategoriesForPersonService.execute(hmppsId, filters)
 
         response.data.shouldBe(riskCategory)
       }
@@ -89,7 +88,7 @@ internal class GetRiskCategoriesForPersonServiceTest(
             ),
           )
 
-          val response = getRiskCategoriesForPersonService.execute(hmppsId)
+          val response = getRiskCategoriesForPersonService.execute(hmppsId, filters)
 
           response.errors.shouldHaveSize(1)
           response.errors

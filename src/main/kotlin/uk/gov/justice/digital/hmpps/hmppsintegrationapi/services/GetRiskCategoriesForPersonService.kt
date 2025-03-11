@@ -5,20 +5,23 @@ import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NomisGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.RiskCategory
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 @Service
 class GetRiskCategoriesForPersonService(
   @Autowired val nomisGateway: NomisGateway,
   @Autowired val getPersonService: GetPersonService,
 ) {
-  fun execute(hmppsId: String): Response<RiskCategory?> {
-    val personResponse = getPersonService.execute(hmppsId = hmppsId)
-    val nomisNumber = personResponse.data?.identifiers?.nomisNumber
+  fun execute(
+    hmppsId: String,
+    filters: ConsumerFilters?,
+  ): Response<RiskCategory?> {
+    val personResponse = getPersonService.getNomisNumberWithPrisonFilter(hmppsId, filters)
 
     var personRiskCategories: Response<RiskCategory?> = Response(data = RiskCategory())
 
-    if (nomisNumber != null) {
-      personRiskCategories = nomisGateway.getRiskCategoriesForPerson(id = nomisNumber)
+    if (personResponse.data?.nomisNumber != null) {
+      personRiskCategories = nomisGateway.getRiskCategoriesForPerson(id = personResponse.data.nomisNumber)
     }
 
     return Response(
