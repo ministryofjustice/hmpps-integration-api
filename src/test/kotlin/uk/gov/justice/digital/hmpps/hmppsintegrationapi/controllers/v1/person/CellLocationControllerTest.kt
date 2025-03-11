@@ -118,6 +118,25 @@ internal class CellLocationControllerTest(
           result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
         }
 
+        it("returns a 400 BAD Request status code when an invalid hmpps id is found in the upstream API") {
+          whenever(getCellLocationForPersonService.execute(hmppsId, filters)).thenReturn(
+            Response(
+              data = null,
+              errors =
+                listOf(
+                  UpstreamApiError(
+                    causedBy = UpstreamApi.NOMIS,
+                    type = UpstreamApiError.Type.BAD_REQUEST,
+                  ),
+                ),
+            ),
+          )
+
+          val result = mockMvc.performAuthorised(path)
+
+          result.response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
+        }
+
         it("fails with the appropriate error when an upstream service is down") {
           whenever(getCellLocationForPersonService.execute(hmppsId, filters)).doThrow(
             WebClientResponseException(500, "MockError", null, null, null, null),
