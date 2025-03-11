@@ -62,7 +62,7 @@ internal class CellLocationControllerTest(
         it("gets the cell location for a person with the matching ID") {
           mockMvc.performAuthorised(path)
 
-          verify(getCellLocationForPersonService, VerificationModeFactory.times(1)).execute(hmppsId)
+          verify(getCellLocationForPersonService, VerificationModeFactory.times(1)).execute(hmppsId, filters)
         }
 
         it("logs audit") {
