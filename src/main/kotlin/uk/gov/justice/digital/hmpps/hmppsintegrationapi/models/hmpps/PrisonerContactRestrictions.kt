@@ -3,7 +3,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps
 import com.fasterxml.jackson.annotation.JsonProperty
 
 data class PrisonerContactRestrictions(
-  var prisonerContactRestrictions: MutableList<PrisonerContactRestriction>? = mutableListOf(),
+  var prisonerContactRestrictions: List<PrisonerContactRestriction>? = emptyList(),
   var contactGlobalRestrictions: List<ContactGlobalRestriction>? = emptyList(),
 )
 
