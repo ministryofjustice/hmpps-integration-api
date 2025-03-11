@@ -50,13 +50,15 @@ class GetVisitorRestrictionsService(
     val prisonerContactRestrictions = mutableListOf<PrisonerContactRestriction>()
     var contactGlobalRestrictions = listOf<ContactGlobalRestriction>()
 
-    val linkedPrisonerIds = linkedPrisoner.relationships?.map { it.prisonerContactId }.orEmpty()
-    for (prisonerContactId in linkedPrisonerIds) {
+    val prisonerContactIds = linkedPrisoner.relationships?.map { it.prisonerContactId }.orEmpty()
+    for (prisonerContactId in prisonerContactIds) {
       val gatewayResult = personalRelationshipsGateway.getPrisonerContactRestrictions(prisonerContactId!!)
       if (gatewayResult.errors.isEmpty() && gatewayResult.data != null) {
-        gatewayResult.data.prisonerContactRestrictions?.let { prPrisonerContactRestrictions -> prisonerContactRestrictions.addAll(prPrisonerContactRestrictions.map { it.toPrisonerContactRestriction() }) }
-        if (prisonerContactId == linkedPrisonerIds.first()) {
-          gatewayResult.data.contactGlobalRestrictions?.let { prContactGlobalRestrictions -> contactGlobalRestrictions = prContactGlobalRestrictions.map { it.toContactGlobalRestriction() } }
+        if (gatewayResult.data.prisonerContactRestrictions != null) {
+          prisonerContactRestrictions.addAll(gatewayResult.data.prisonerContactRestrictions.map { it.toPrisonerContactRestriction() })
+        }
+        if (prisonerContactId == prisonerContactIds.first() && gatewayResult.data.contactGlobalRestrictions != null) {
+          contactGlobalRestrictions = gatewayResult.data.contactGlobalRestrictions.map { it.toContactGlobalRestriction() }
         }
       }
 

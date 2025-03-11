@@ -5,8 +5,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ContactGlob
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerContactRestriction
 
 data class PRPrisonerContactRestrictions(
-  var prisonerContactRestrictions: List<PRPrisonerContactRestriction>? = emptyList(),
-  var contactGlobalRestrictions: List<PRContactGlobalRestriction>? = emptyList(),
+  val prisonerContactRestrictions: List<PRPrisonerContactRestriction>? = emptyList(),
+  val contactGlobalRestrictions: List<PRContactGlobalRestriction>? = emptyList(),
 )
 
 data class PRPrisonerContactRestriction(
