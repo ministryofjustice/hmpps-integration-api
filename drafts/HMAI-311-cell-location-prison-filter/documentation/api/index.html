@@ -4155,6 +4155,11 @@
 
 <h3 id="v1-persons-hmppsid-cell-location-get">get</h3>
 
+  <p><em>Returns the cell location of a person.</em></p>
+
+
+  <p><b>Applicable filters</b>: <ul><li>prisons</li></ul></p>
+
 
 
 
@@ -4192,7 +4197,7 @@
 <tr>
 <td>200</td>
 <td>
-<p>OK</p>
+<p>Successfully found a persons cell location.</p>
 
 
 
@@ -4207,6 +4212,63 @@
 </td>
 <td>
 <a href='#schema-dataresponsecelllocation'>DataResponseCellLocation</a>
+</td>
+</tr>
+
+<tr>
+<td>400</td>
+<td>
+<p>The HMPPS ID provided has an invalid format.</p>
+
+
+
+<pre><code>{
+  "status": 400,
+  "userMessage": "Validation failure: No query parameters specified.",
+  "developerMessage": "No query parameters specified."
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-badrequest'>BadRequest</a>
+</td>
+</tr>
+
+<tr>
+<td>404</td>
+<td>
+<p>Not Found</p>
+
+
+
+<pre><code>{
+  "status": 404,
+  "userMessage": "404 Not found error: Could not find person with HMPPS id: 2003/0011991D.",
+  "developerMessage": "Could not find person with HMPPS id: 2003/0011991D."
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-personnotfound'>PersonNotFound</a>
+</td>
+</tr>
+
+<tr>
+<td>500</td>
+<td>
+<p>Internal Server Error</p>
+
+
+
+<pre><code>{
+  "status": 500,
+  "userMessage": "Internal Server Error",
+  "developerMessage": "Unable to complete request as an upstream service is not responding."
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-internalservererror'>InternalServerError</a>
 </td>
 </tr>
 
