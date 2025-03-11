@@ -2989,21 +2989,23 @@
         "updatedTime": "string"
       }
     ],
-    "contactGlobalRestrictions": {
-      "contactRestrictionId": "integer",
-      "contactId": "integer",
-      "restrictionType": "string",
-      "restrictionTypeDescription": "string",
-      "startDate": "string",
-      "expiryDate": "string",
-      "comments": "string",
-      "enteredByUsername": "string",
-      "enteredByDisplayName": "string",
-      "createdBy": "string",
-      "createdTime": "string",
-      "updatedBy": "string",
-      "updatedTime": "string"
-    }
+    "contactGlobalRestrictions": [
+      {
+        "contactRestrictionId": "integer",
+        "contactId": "integer",
+        "restrictionType": "string",
+        "restrictionTypeDescription": "string",
+        "startDate": "string",
+        "expiryDate": "string",
+        "comments": "string",
+        "enteredByUsername": "string",
+        "enteredByDisplayName": "string",
+        "createdBy": "string",
+        "createdTime": "string",
+        "updatedBy": "string",
+        "updatedTime": "string"
+      }
+    ]
   }
 }</code></pre>
 
@@ -11137,7 +11139,7 @@
 
 <tr>
 <td>contactGlobalRestrictions</td>
-<td>object</td>
+<td>array</td>
 <td>false</td>
 <td></td>
 <td>
