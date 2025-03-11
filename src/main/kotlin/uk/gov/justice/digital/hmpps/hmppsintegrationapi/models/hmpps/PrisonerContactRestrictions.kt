@@ -4,9 +4,9 @@ import io.swagger.v3.oas.annotations.media.Schema
 
 data class PrisonerContactRestrictions(
   @Schema(description = "Relationship specific restrictions")
-  var prisonerContactRestrictions: List<ContactRestriction>? = emptyList(),
+  var prisonerContactRestrictions: List<ContactRestriction>,
   @Schema(description = "Global (estate-wide) restrictions for the contact")
-  var contactGlobalRestrictions: List<ContactRestriction>? = emptyList(),
+  var contactGlobalRestrictions: List<ContactRestriction>,
 )
 
 data class ContactRestriction(
