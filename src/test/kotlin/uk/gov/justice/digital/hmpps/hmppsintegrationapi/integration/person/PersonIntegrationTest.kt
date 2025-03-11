@@ -33,9 +33,10 @@ class PersonIntegrationTest : IntegrationTestBase() {
       .andExpect(content().json(getExpectedResponse("person-image-meta-data")))
   }
 
+  // Get persons name tests
   @Test
   fun `returns person name details for a person`() {
-    callApi("$basePath/$pnc/name")
+    callApi("$basePath/$nomsId/name")
       .andExpect(status().isOk)
       .andExpect(
         content().json(
@@ -44,6 +45,24 @@ class PersonIntegrationTest : IntegrationTestBase() {
       """,
         ),
       )
+  }
+
+  @Test
+  fun `persons name endpoint return a 404 for person in wrong prison`() {
+    callApiWithCN("$basePath/$nomsId/name", limitedPrisonsCn)
+      .andExpect(status().isNotFound)
+  }
+
+  @Test
+  fun `persons name endpoint return a 404 when no prisons in filter`() {
+    callApiWithCN("$basePath/$nomsId/name", noPrisonsCn)
+      .andExpect(status().isNotFound)
+  }
+
+  @Test
+  fun `persons name endpoint return a 400 when invalid noms passed in`() {
+    callApi("$basePath/$invalidNomsId/name")
+      .andExpect(status().isBadRequest)
   }
 
   @ParameterizedTest
