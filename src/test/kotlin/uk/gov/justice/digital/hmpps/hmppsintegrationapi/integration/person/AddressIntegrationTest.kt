@@ -16,19 +16,19 @@ class AddressIntegrationTest : IntegrationTestBase() {
   }
 
   @Test
-  fun `sentences returns a 400 if the hmppsId is invalid`() {
+  fun `returns a 400 if the hmppsId is invalid`() {
     callApi("$basePath/$invalidNomsId/addresses")
       .andExpect(status().isBadRequest)
   }
 
   @Test
-  fun `sentences returns a 404 for if consumer has empty list of prisons`() {
+  fun `returns a 404 for if consumer has empty list of prisons`() {
     callApiWithCN(path, noPrisonsCn)
       .andExpect(status().isNotFound)
   }
 
   @Test
-  fun `sentences returns a 404 for prisoner in wrong prison`() {
+  fun `returns a 404 for prisoner in wrong prison`() {
     callApiWithCN(path, limitedPrisonsCn)
       .andExpect(status().isNotFound)
   }
