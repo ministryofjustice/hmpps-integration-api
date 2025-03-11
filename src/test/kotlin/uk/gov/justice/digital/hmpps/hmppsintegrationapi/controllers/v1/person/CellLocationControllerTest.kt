@@ -23,8 +23,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetCellLocationForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
-import java.net.URLEncoder
-import java.nio.charset.StandardCharsets
 
 @WebMvcTest(controllers = [CellLocationController::class])
 @ActiveProfiles("test")
@@ -34,16 +32,16 @@ internal class CellLocationControllerTest(
   @MockitoBean val auditService: AuditService,
 ) : DescribeSpec(
     {
-      val hmppsId = "9999/11111A"
-      val encodedHmppsId = URLEncoder.encode(hmppsId, StandardCharsets.UTF_8)
-      val path = "/v1/persons/$encodedHmppsId/cell-location"
+      val hmppsId = "A1234AA"
+      val path = "/v1/persons/$hmppsId/cell-location"
       val mockMvc = IntegrationAPIMockMvc(springMockMvc)
+      val filters = null
 
       describe("GET $path") {
         beforeTest {
           Mockito.reset(getCellLocationForPersonService)
           Mockito.reset(auditService)
-          whenever(getCellLocationForPersonService.execute(hmppsId)).thenReturn(
+          whenever(getCellLocationForPersonService.execute(hmppsId, filters)).thenReturn(
             Response(
               data =
                 CellLocation(
@@ -64,7 +62,7 @@ internal class CellLocationControllerTest(
         it("gets the cell location for a person with the matching ID") {
           mockMvc.performAuthorised(path)
 
-          verify(getCellLocationForPersonService, VerificationModeFactory.times(1)).execute(hmppsId)
+          verify(getCellLocationForPersonService, VerificationModeFactory.times(1)).execute(hmppsId, filters)
         }
 
         it("logs audit") {
@@ -91,12 +89,10 @@ internal class CellLocationControllerTest(
         }
 
         it("returns null embedded in a JSON object when no cell location is found") {
-          val hmppsIdForPersonNotInPrison = "0000/11111A"
-          val encodedHmppsIdForPersoNotInPrison =
-            URLEncoder.encode(hmppsIdForPersonNotInPrison, StandardCharsets.UTF_8)
-          val needsPath = "/v1/persons/$encodedHmppsIdForPersoNotInPrison/cell-location"
+          val hmppsIdForPersonNotInPrison = "A1234AA"
+          val needsPath = "/v1/persons/$hmppsIdForPersonNotInPrison/cell-location"
 
-          whenever(getCellLocationForPersonService.execute(hmppsIdForPersonNotInPrison)).thenReturn(Response(data = null))
+          whenever(getCellLocationForPersonService.execute(hmppsIdForPersonNotInPrison, filters)).thenReturn(Response(data = null))
 
           val result = mockMvc.performAuthorised(needsPath)
 
@@ -104,7 +100,7 @@ internal class CellLocationControllerTest(
         }
 
         it("returns a 404 NOT FOUND status code when person isn't found in the upstream API") {
-          whenever(getCellLocationForPersonService.execute(hmppsId)).thenReturn(
+          whenever(getCellLocationForPersonService.execute(hmppsId, filters)).thenReturn(
             Response(
               data = null,
               errors =
@@ -122,8 +118,27 @@ internal class CellLocationControllerTest(
           result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
         }
 
+        it("returns a 400 BAD Request status code when an invalid hmpps id is found in the upstream API") {
+          whenever(getCellLocationForPersonService.execute(hmppsId, filters)).thenReturn(
+            Response(
+              data = null,
+              errors =
+                listOf(
+                  UpstreamApiError(
+                    causedBy = UpstreamApi.NOMIS,
+                    type = UpstreamApiError.Type.BAD_REQUEST,
+                  ),
+                ),
+            ),
+          )
+
+          val result = mockMvc.performAuthorised(path)
+
+          result.response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
+        }
+
         it("fails with the appropriate error when an upstream service is down") {
-          whenever(getCellLocationForPersonService.execute(hmppsId)).doThrow(
+          whenever(getCellLocationForPersonService.execute(hmppsId, filters)).doThrow(
             WebClientResponseException(500, "MockError", null, null, null, null),
           )
 
