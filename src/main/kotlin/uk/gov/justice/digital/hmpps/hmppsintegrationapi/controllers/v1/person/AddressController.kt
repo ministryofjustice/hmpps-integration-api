@@ -31,6 +31,7 @@ class AddressController(
   @GetMapping("{hmppsId}/addresses")
   @Operation(
     summary = "Returns addresses associated with a person, ordered by startDate.",
+    description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
     responses = [
       ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found a person with the provided HMPPS ID."),
       ApiResponse(responseCode = "400", content = [Content(schema = Schema(ref = "#/components/schemas/BadRequest"))]),
