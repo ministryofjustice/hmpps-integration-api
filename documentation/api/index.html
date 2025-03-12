@@ -217,6 +217,9 @@
         <a href="../../documentation/api/index.html#v1-persons-hmppsid-reported-adjudications"><span>/v1/persons/{hmppsId}/reported-adjudications</span></a>
       </li>
       <li>
+        <a href="../../documentation/api/index.html#v1-persons-hmppsid-protected-characteristics"><span>/v1/persons/{hmppsId}/protected-characteristics</span></a>
+      </li>
+      <li>
         <a href="../../documentation/api/index.html#v1-persons-hmppsid-plp-review-schedule"><span>/v1/persons/{hmppsId}/plp-review-schedule</span></a>
       </li>
       <li>
@@ -266,9 +269,6 @@
       </li>
       <li>
         <a href="../../documentation/api/index.html#v1-persons-encodedhmppsid-risk-management-plan"><span>/v1/persons/{encodedHmppsId}/risk-management-plan</span></a>
-      </li>
-      <li>
-        <a href="../../documentation/api/index.html#v1-persons-encodedhmppsid-protected-characteristics"><span>/v1/persons/{encodedHmppsId}/protected-characteristics</span></a>
       </li>
       <li>
         <a href="../../documentation/api/index.html#v1-persons-encodedhmppsid-person-responsible-officer"><span>/v1/persons/{encodedHmppsId}/person-responsible-officer</span></a>
@@ -4027,6 +4027,161 @@
 
 
 
+<h2 id="v1-persons-hmppsid-protected-characteristics">/v1/persons/{hmppsId}/protected-characteristics</h2>
+
+<h3 id="v1-persons-hmppsid-protected-characteristics-get">get</h3>
+
+  <p><em>Returns protected characteristics of a person.</em></p>
+
+
+  <p><b>Applicable filters</b>: <ul><li>prisons</li></ul></p>
+
+
+
+
+<h4 id="v1-persons-hmppsid-protected-characteristics-get-parameters">Parameters</h4>
+<table>
+<thead>
+<tr><th>Parameter</th><th>In</th><th>Type</th><th>Required</th><th>Description</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>hmppsId</td>
+<td>path</td>
+<td>string</td>
+<td>true</td>
+<td><p>The HMPPS ID of the person</p>
+
+
+</td>
+</tr>
+
+</tbody>
+</table>
+
+
+
+
+<h4 id="v1-persons-hmppsid-protected-characteristics-get-responses">Responses</h4>
+<table>
+<thead>
+<tr><th>Status</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>200</td>
+<td>
+<p>OK</p>
+
+
+
+<pre><code>{
+  "data": {
+    "age": 35,
+    "gender": "Female",
+    "sexualOrientation": "Unknown",
+    "ethnicity": "White: Eng./Welsh/Scot./N.Irish/British",
+    "nationality": "Egyptian",
+    "religion": "Church of England (Anglican)",
+    "disabilities": [
+      {
+        "disabilityType": {
+          "code": "string",
+          "description": "string"
+        },
+        "condition": {
+          "code": "string",
+          "description": "string"
+        },
+        "startDate": "string",
+        "endDate": "string",
+        "notes": "Walking issue"
+      }
+    ],
+    "maritalStatus": "Widowed",
+    "reasonableAdjustments": [
+      {
+        "treatmentCode": "WHEELCHR_ACC",
+        "commentText": "abcd",
+        "startDate": "2013-04-11",
+        "endDate": "2023-04-11",
+        "treatmentDescription": "Wheelchair accessibility"
+      }
+    ]
+  }
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-dataresponsepersonprotectedcharacteristics'>DataResponsePersonProtectedCharacteristics</a>
+</td>
+</tr>
+
+<tr>
+<td>400</td>
+<td>
+<p>Bad Request</p>
+
+
+
+<pre><code>{
+  "status": 400,
+  "userMessage": "Validation failure: No query parameters specified.",
+  "developerMessage": "No query parameters specified."
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-badrequest'>BadRequest</a>
+</td>
+</tr>
+
+<tr>
+<td>404</td>
+<td>
+<p>Not Found</p>
+
+
+
+<pre><code>{
+  "status": 404,
+  "userMessage": "404 Not found error: Could not find person with HMPPS id: 2003/0011991D.",
+  "developerMessage": "Could not find person with HMPPS id: 2003/0011991D."
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-personnotfound'>PersonNotFound</a>
+</td>
+</tr>
+
+<tr>
+<td>500</td>
+<td>
+<p>Internal Server Error</p>
+
+
+
+<pre><code>{
+  "status": 500,
+  "userMessage": "Internal Server Error",
+  "developerMessage": "Unable to complete request as an upstream service is not responding."
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-internalservererror'>InternalServerError</a>
+</td>
+</tr>
+
+</tbody>
+</table>
+
+
+
+
 <h2 id="v1-persons-hmppsid-plp-review-schedule">/v1/persons/{hmppsId}/plp-review-schedule</h2>
 
 <h3 id="v1-persons-hmppsid-plp-review-schedule-get">get</h3>
@@ -6523,139 +6678,6 @@
 </td>
 <td>
 <a href='#schema-forbiddenresponse'>ForbiddenResponse</a>
-</td>
-</tr>
-
-<tr>
-<td>404</td>
-<td>
-<p>Not Found</p>
-
-
-
-<pre><code>{
-  "status": 404,
-  "userMessage": "404 Not found error: Could not find person with HMPPS id: 2003/0011991D.",
-  "developerMessage": "Could not find person with HMPPS id: 2003/0011991D."
-}</code></pre>
-
-</td>
-<td>
-<a href='#schema-personnotfound'>PersonNotFound</a>
-</td>
-</tr>
-
-<tr>
-<td>500</td>
-<td>
-<p>Internal Server Error</p>
-
-
-
-<pre><code>{
-  "status": 500,
-  "userMessage": "Internal Server Error",
-  "developerMessage": "Unable to complete request as an upstream service is not responding."
-}</code></pre>
-
-</td>
-<td>
-<a href='#schema-internalservererror'>InternalServerError</a>
-</td>
-</tr>
-
-</tbody>
-</table>
-
-
-
-
-<h2 id="v1-persons-encodedhmppsid-protected-characteristics">/v1/persons/{encodedHmppsId}/protected-characteristics</h2>
-
-<h3 id="v1-persons-encodedhmppsid-protected-characteristics-get">get</h3>
-
-  <p><em>Returns protected characteristics of a person.</em></p>
-
-
-
-
-<h4 id="v1-persons-encodedhmppsid-protected-characteristics-get-parameters">Parameters</h4>
-<table>
-<thead>
-<tr><th>Parameter</th><th>In</th><th>Type</th><th>Required</th><th>Description</th></tr>
-</thead>
-<tbody>
-
-<tr>
-<td>encodedHmppsId</td>
-<td>path</td>
-<td>string</td>
-<td>true</td>
-<td><p>A URL-encoded HMPPS identifier</p>
-
-
-</td>
-</tr>
-
-</tbody>
-</table>
-
-
-
-
-<h4 id="v1-persons-encodedhmppsid-protected-characteristics-get-responses">Responses</h4>
-<table>
-<thead>
-<tr><th>Status</th><th>Description</th><th>Schema</th></tr>
-</thead>
-<tbody>
-
-<tr>
-<td>200</td>
-<td>
-<p>OK</p>
-
-
-
-<pre><code>{
-  "data": {
-    "age": 35,
-    "gender": "Female",
-    "sexualOrientation": "Unknown",
-    "ethnicity": "White: Eng./Welsh/Scot./N.Irish/British",
-    "nationality": "Egyptian",
-    "religion": "Church of England (Anglican)",
-    "disabilities": [
-      {
-        "disabilityType": {
-          "code": "string",
-          "description": "string"
-        },
-        "condition": {
-          "code": "string",
-          "description": "string"
-        },
-        "startDate": "string",
-        "endDate": "string",
-        "notes": "Walking issue"
-      }
-    ],
-    "maritalStatus": "Widowed",
-    "reasonableAdjustments": [
-      {
-        "treatmentCode": "WHEELCHR_ACC",
-        "commentText": "abcd",
-        "startDate": "2013-04-11",
-        "endDate": "2023-04-11",
-        "treatmentDescription": "Wheelchair accessibility"
-      }
-    ]
-  }
-}</code></pre>
-
-</td>
-<td>
-<a href='#schema-dataresponsepersonprotectedcharacteristics'>DataResponsePersonProtectedCharacteristics</a>
 </td>
 </tr>
 
@@ -12472,6 +12494,298 @@
 </tbody>
 </table>
 
+<h3 id="schema-dataresponsepersonprotectedcharacteristics">DataResponsePersonProtectedCharacteristics</h3>
+
+
+<table class='schema-dataresponsepersonprotectedcharacteristics'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>data</td>
+<td>object</td>
+<td>true</td>
+<td></td>
+<td>
+  <a href='#schema-personprotectedcharacteristics'>PersonProtectedCharacteristics</a>
+</td>
+</tr>
+
+</tbody>
+</table>
+
+<h3 id="schema-disability">Disability</h3>
+
+
+<table class='schema-disability'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>disabilityType</td>
+<td>object</td>
+<td>false</td>
+<td></td>
+<td>
+  <a href='#schema-keyvalue'>KeyValue</a>
+</td>
+</tr>
+
+<tr>
+<td>condition</td>
+<td>object</td>
+<td>false</td>
+<td></td>
+<td>
+  <a href='#schema-keyvalue'>KeyValue</a>
+</td>
+</tr>
+
+<tr>
+<td>startDate</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>endDate</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>notes</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+</tbody>
+</table>
+
+<h3 id="schema-keyvalue">KeyValue</h3>
+
+
+<table class='schema-keyvalue'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>code</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>description</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+</tbody>
+</table>
+
+<h3 id="schema-personprotectedcharacteristics">PersonProtectedCharacteristics</h3>
+
+
+<table class='schema-personprotectedcharacteristics'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>age</td>
+<td>number</td>
+<td>true</td>
+<td><p>Age of the person</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>gender</td>
+<td>string</td>
+<td>false</td>
+<td><p>Gender of the person</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>sexualOrientation</td>
+<td>string</td>
+<td>false</td>
+<td><p>Sexual orientation of the person</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>ethnicity</td>
+<td>string</td>
+<td>false</td>
+<td><p>Ethnicity of the person</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>nationality</td>
+<td>string</td>
+<td>false</td>
+<td><p>Nationality of the person</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>religion</td>
+<td>string</td>
+<td>false</td>
+<td><p>Religion of the person</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>disabilities</td>
+<td>array</td>
+<td>true</td>
+<td></td>
+<td>
+  <a href='#schema-disability'>Disability</a>
+</td>
+</tr>
+
+<tr>
+<td>maritalStatus</td>
+<td>string</td>
+<td>false</td>
+<td><p>Marital status of the person</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>reasonableAdjustments</td>
+<td>array</td>
+<td>true</td>
+<td></td>
+<td>
+  <a href='#schema-reasonableadjustment'>ReasonableAdjustment</a>
+</td>
+</tr>
+
+</tbody>
+</table>
+
+<h3 id="schema-reasonableadjustment">ReasonableAdjustment</h3>
+
+
+<table class='schema-reasonableadjustment'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>treatmentCode</td>
+<td>string</td>
+<td>false</td>
+<td><p>Treatment code</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>commentText</td>
+<td>string</td>
+<td>false</td>
+<td><p>Comment text</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>startDate</td>
+<td>string</td>
+<td>false</td>
+<td><p>Start date</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>endDate</td>
+<td>string</td>
+<td>false</td>
+<td><p>End date</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>treatmentDescription</td>
+<td>string</td>
+<td>false</td>
+<td><p>Treatment description</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+</tbody>
+</table>
+
 <h3 id="schema-dataresponsereviewschedules">DataResponseReviewSchedules</h3>
 
 
@@ -15953,298 +16267,6 @@
 <td>string</td>
 <td>true</td>
 <td><p>Once a countersignature has been applied to the plan, the plan is considered complete. This is the date the plan has been countersigned.</p>
-</td>
-<td>
-  
-</td>
-</tr>
-
-</tbody>
-</table>
-
-<h3 id="schema-dataresponsepersonprotectedcharacteristics">DataResponsePersonProtectedCharacteristics</h3>
-
-
-<table class='schema-dataresponsepersonprotectedcharacteristics'>
-<thead>
-<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
-</thead>
-<tbody>
-
-<tr>
-<td>data</td>
-<td>object</td>
-<td>true</td>
-<td></td>
-<td>
-  <a href='#schema-personprotectedcharacteristics'>PersonProtectedCharacteristics</a>
-</td>
-</tr>
-
-</tbody>
-</table>
-
-<h3 id="schema-disability">Disability</h3>
-
-
-<table class='schema-disability'>
-<thead>
-<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
-</thead>
-<tbody>
-
-<tr>
-<td>disabilityType</td>
-<td>object</td>
-<td>false</td>
-<td></td>
-<td>
-  <a href='#schema-keyvalue'>KeyValue</a>
-</td>
-</tr>
-
-<tr>
-<td>condition</td>
-<td>object</td>
-<td>false</td>
-<td></td>
-<td>
-  <a href='#schema-keyvalue'>KeyValue</a>
-</td>
-</tr>
-
-<tr>
-<td>startDate</td>
-<td>string</td>
-<td>false</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>endDate</td>
-<td>string</td>
-<td>false</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>notes</td>
-<td>string</td>
-<td>false</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-</tbody>
-</table>
-
-<h3 id="schema-keyvalue">KeyValue</h3>
-
-
-<table class='schema-keyvalue'>
-<thead>
-<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
-</thead>
-<tbody>
-
-<tr>
-<td>code</td>
-<td>string</td>
-<td>false</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>description</td>
-<td>string</td>
-<td>false</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-</tbody>
-</table>
-
-<h3 id="schema-personprotectedcharacteristics">PersonProtectedCharacteristics</h3>
-
-
-<table class='schema-personprotectedcharacteristics'>
-<thead>
-<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
-</thead>
-<tbody>
-
-<tr>
-<td>age</td>
-<td>number</td>
-<td>true</td>
-<td><p>Age of the person</p>
-</td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>gender</td>
-<td>string</td>
-<td>false</td>
-<td><p>Gender of the person</p>
-</td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>sexualOrientation</td>
-<td>string</td>
-<td>false</td>
-<td><p>Sexual orientation of the person</p>
-</td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>ethnicity</td>
-<td>string</td>
-<td>false</td>
-<td><p>Ethnicity of the person</p>
-</td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>nationality</td>
-<td>string</td>
-<td>false</td>
-<td><p>Nationality of the person</p>
-</td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>religion</td>
-<td>string</td>
-<td>false</td>
-<td><p>Religion of the person</p>
-</td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>disabilities</td>
-<td>array</td>
-<td>true</td>
-<td></td>
-<td>
-  <a href='#schema-disability'>Disability</a>
-</td>
-</tr>
-
-<tr>
-<td>maritalStatus</td>
-<td>string</td>
-<td>false</td>
-<td><p>Marital status of the person</p>
-</td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>reasonableAdjustments</td>
-<td>array</td>
-<td>true</td>
-<td></td>
-<td>
-  <a href='#schema-reasonableadjustment'>ReasonableAdjustment</a>
-</td>
-</tr>
-
-</tbody>
-</table>
-
-<h3 id="schema-reasonableadjustment">ReasonableAdjustment</h3>
-
-
-<table class='schema-reasonableadjustment'>
-<thead>
-<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
-</thead>
-<tbody>
-
-<tr>
-<td>treatmentCode</td>
-<td>string</td>
-<td>false</td>
-<td><p>Treatment code</p>
-</td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>commentText</td>
-<td>string</td>
-<td>false</td>
-<td><p>Comment text</p>
-</td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>startDate</td>
-<td>string</td>
-<td>false</td>
-<td><p>Start date</p>
-</td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>endDate</td>
-<td>string</td>
-<td>false</td>
-<td><p>End date</p>
-</td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>treatmentDescription</td>
-<td>string</td>
-<td>false</td>
-<td><p>Treatment description</p>
 </td>
 <td>
   
