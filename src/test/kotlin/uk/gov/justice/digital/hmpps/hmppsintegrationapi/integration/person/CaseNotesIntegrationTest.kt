@@ -12,4 +12,22 @@ class CaseNotesIntegrationTest : IntegrationTestBase() {
       .andExpect(status().isOk)
       .andExpect(content().json(getExpectedResponse("person-case-notes")))
   }
+
+  @Test
+  fun `returns a 400 if the hmppsId is invalid`() {
+    callApi("$basePath/$invalidNomsId/case-notes")
+      .andExpect(status().isBadRequest)
+  }
+
+  @Test
+  fun `returns a 404 for if consumer has empty list of prisons`() {
+    callApiWithCN("$basePath/$crn/case-notes", noPrisonsCn)
+      .andExpect(status().isNotFound)
+  }
+
+  @Test
+  fun `returns a 404 for prisoner in wrong prison`() {
+    callApiWithCN("$basePath/$crn/case-notes", limitedPrisonsCn)
+      .andExpect(status().isNotFound)
+  }
 }
