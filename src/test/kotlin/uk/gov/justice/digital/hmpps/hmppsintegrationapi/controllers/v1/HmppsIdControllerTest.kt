@@ -16,10 +16,12 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HmppsId
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NomisNumber
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetHmppsIdService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 
 @WebMvcTest(controllers = [HmppsIdController::class])
@@ -28,12 +30,14 @@ internal class HmppsIdControllerTest(
   @Autowired var springMockMvc: MockMvc,
   @MockitoBean val getHmppsIdService: GetHmppsIdService,
   @MockitoBean val auditService: AuditService,
+  @MockitoBean val getPersonService: GetPersonService,
 ) : DescribeSpec({
     val nomisNumber = "A1234AA"
-    val path = "/v1/hmpps/id/nomis-number/$nomisNumber"
     val mockMvc = IntegrationAPIMockMvc(springMockMvc)
 
-    describe("GET $path") {
+    describe("GET /v1/hmpps/id/nomis-number/$nomisNumber") {
+      val path = "/v1/hmpps/id/nomis-number/$nomisNumber"
+
       beforeTest {
         Mockito.reset(getHmppsIdService)
         whenever(getHmppsIdService.execute(nomisNumber)).thenReturn(
@@ -92,6 +96,76 @@ internal class HmppsIdControllerTest(
       it("returns a 500 INTERNAL SERVER ERROR status code when upstream api return expected error") {
 
         whenever(getHmppsIdService.execute(nomisNumber)).doThrow(
+          WebClientResponseException(500, "MockError", null, null, null, null),
+        )
+
+        val result = mockMvc.performAuthorised(path)
+        assert(result.response.status == 500)
+        assert(
+          result.response.contentAsString.equals(
+            "{\"status\":500,\"errorCode\":null,\"userMessage\":\"500 MockError\",\"developerMessage\":\"Unable to complete request as an upstream service is not responding\",\"moreInfo\":null}",
+          ),
+        )
+      }
+    }
+
+    describe("GET /v1/hmpps/id/nomis-number/by-hmpps-id/$nomisNumber") {
+      val path = "/v1/hmpps/id/nomis-number/by-hmpps-id/$nomisNumber"
+      val consumerFilters = null
+
+      beforeTest {
+        Mockito.reset(getPersonService)
+        Mockito.reset(auditService)
+
+        whenever(getPersonService.getNomisNumberWithPrisonFilter(nomisNumber, consumerFilters)).thenReturn(
+          Response(
+            data = NomisNumber(nomisNumber),
+          ),
+        )
+      }
+
+      it("returns a 200 OK status code") {
+        val result = mockMvc.performAuthorised(path)
+
+        result.response.status.shouldBe(HttpStatus.OK.value())
+        result.response.contentAsString.shouldBe("""{"data":{"nomisNumber":"$nomisNumber"}}""")
+      }
+
+      it("returns a 400 Bad request status code when invalid Hmpps ID provided") {
+        whenever(getPersonService.getNomisNumberWithPrisonFilter(nomisNumber, consumerFilters)).thenReturn(
+          Response(
+            data = null,
+            errors = listOf(UpstreamApiError(causedBy = UpstreamApi.NOMIS, type = UpstreamApiError.Type.BAD_REQUEST)),
+          ),
+        )
+        val result = mockMvc.performAuthorised(path)
+        result.response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
+      }
+
+      it("returns a 404 Not found status code when no nomis number found") {
+        whenever(getPersonService.getNomisNumberWithPrisonFilter(nomisNumber, consumerFilters)).thenReturn(
+          Response(
+            data = null,
+            errors = listOf(UpstreamApiError(causedBy = UpstreamApi.NOMIS, type = UpstreamApiError.Type.ENTITY_NOT_FOUND)),
+          ),
+        )
+        val result = mockMvc.performAuthorised(path)
+        result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
+      }
+
+      it("logs audit") {
+        mockMvc.performAuthorised(path)
+        verify(
+          auditService,
+          VerificationModeFactory.times(1),
+        ).createEvent(
+          "GET_NOMIS_NUMBER_BY_HMPPS_ID",
+          mapOf("hmppsId" to nomisNumber),
+        )
+      }
+
+      it("returns a 500 INTERNAL SERVER ERROR status code when upstream api return expected error") {
+        whenever(getPersonService.getNomisNumberWithPrisonFilter(nomisNumber, consumerFilters)).doThrow(
           WebClientResponseException(500, "MockError", null, null, null, null),
         )
 

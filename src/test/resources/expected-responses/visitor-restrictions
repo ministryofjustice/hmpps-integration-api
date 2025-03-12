@@ -2,10 +2,6 @@
   "data": {
     "prisonerContactRestrictions": [
       {
-        "prisonerContactRestrictionId": 123456,
-        "prisonerContactId": 123456,
-        "contactId": 123456,
-        "prisonerNumber": "A1234BC",
         "restrictionType": "BAN",
         "restrictionTypeDescription": "Banned",
         "startDate": "2024-01-01",
@@ -21,8 +17,6 @@
     ],
     "contactGlobalRestrictions": [
       {
-        "contactRestrictionId": 1,
-        "contactId": 123,
         "restrictionType": "BAN",
         "restrictionTypeDescription": "Banned",
         "startDate": "2024-01-01",

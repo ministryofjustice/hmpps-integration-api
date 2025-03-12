@@ -113,4 +113,22 @@ class HmppsIdIntegrationTest : IntegrationTestBase() {
         ),
       )
   }
+
+  @Test
+  fun `gets the nomis id, return a 404 for person in wrong prison`() {
+    callApiWithCN("/v1/hmpps/id/nomis-number/by-hmpps-id/$nomsId", limitedPrisonsCn)
+      .andExpect(status().isNotFound)
+  }
+
+  @Test
+  fun `gets the nomis, return a 404 when no prisons in filter`() {
+    callApiWithCN("/v1/hmpps/id/nomis-number/by-hmpps-id/$nomsId", noPrisonsCn)
+      .andExpect(status().isNotFound)
+  }
+
+  @Test
+  fun `gets the nomis, return a 400 when invalid noms passed in`() {
+    callApi("/v1/hmpps/id/nomis-number/by-hmpps-id/$invalidNomsId")
+      .andExpect(status().isBadRequest)
+  }
 }

@@ -1,12 +1,11 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ContactGlobalRestriction
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerContactRestriction
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ContactRestriction
 
 data class PRPrisonerContactRestrictions(
-  var prisonerContactRestrictions: List<PRPrisonerContactRestriction>? = emptyList(),
-  var contactGlobalRestrictions: List<PRContactGlobalRestriction>? = emptyList(),
+  val prisonerContactRestrictions: List<PRPrisonerContactRestriction>? = emptyList(),
+  val contactGlobalRestrictions: List<PRContactGlobalRestriction>? = emptyList(),
 )
 
 data class PRPrisonerContactRestriction(
@@ -26,12 +25,8 @@ data class PRPrisonerContactRestriction(
   val updatedBy: String,
   val updatedTime: String,
 ) {
-  fun toPrisonerContactRestriction() =
-    PrisonerContactRestriction(
-      prisonerContactRestrictionId = this.prisonerContactRestrictionId,
-      prisonerContactId = this.prisonerContactId,
-      contactId = this.contactId,
-      prisonerNumber = this.prisonerNumber,
+  fun toContactRestriction() =
+    ContactRestriction(
       restrictionType = this.restrictionType,
       restrictionTypeDescription = this.restrictionTypeDescription,
       startDate = this.startDate,
@@ -74,10 +69,8 @@ data class PRContactGlobalRestriction(
   @JsonProperty("updatedTime")
   val updatedTime: String,
 ) {
-  fun toContactGlobalRestriction() =
-    ContactGlobalRestriction(
-      contactRestrictionId = this.contactRestrictionId,
-      contactId = this.contactId,
+  fun toContactRestriction() =
+    ContactRestriction(
       restrictionType = this.restrictionType,
       restrictionTypeDescription = this.restrictionTypeDescription,
       startDate = this.startDate,

@@ -33,7 +33,7 @@ class VisitRestrictionIntegrationTest : IntegrationTestBase() {
 
   // Visitor restriction endpoint
   @Test
-  fun `returns visitor restrictions for a prisoner`() {
+  fun `returns visitor contact restrictions for a prisoner`() {
     callApi("$basePath/$nomsId/visitor/$contactId/restrictions")
       .andExpect(status().isOk)
       .andExpect(content().json(getExpectedResponse("visitor-restrictions")))

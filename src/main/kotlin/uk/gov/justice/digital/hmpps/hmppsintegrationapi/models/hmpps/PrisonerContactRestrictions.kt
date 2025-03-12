@@ -1,55 +1,35 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps
 
-import com.fasterxml.jackson.annotation.JsonProperty
+import io.swagger.v3.oas.annotations.media.Schema
 
 data class PrisonerContactRestrictions(
-  var prisonerContactRestrictions: List<PrisonerContactRestriction>? = emptyList(),
-  var contactGlobalRestrictions: List<ContactGlobalRestriction>? = emptyList(),
+  @Schema(description = "Relationship specific restrictions")
+  var prisonerContactRestrictions: List<ContactRestriction>,
+  @Schema(description = "Global (estate-wide) restrictions for the contact")
+  var contactGlobalRestrictions: List<ContactRestriction>,
 )
 
-data class PrisonerContactRestriction(
-  val prisonerContactRestrictionId: Long,
-  val prisonerContactId: Long,
-  val contactId: Long,
-  val prisonerNumber: String,
+data class ContactRestriction(
+  @Schema(description = "The restriction code", examples = ["CC", "BAN", "CHILD", "CLOSED", "RESTRICTED", "DIHCON", "NONCON"])
   val restrictionType: String,
+  @Schema(description = "The description of the restriction type", example = "Banned")
   val restrictionTypeDescription: String,
+  @Schema(description = "Restriction created date", example = "2024-01-01")
   val startDate: String,
+  @Schema(description = "Restriction expiry date", example = "2024-01-01")
   val expiryDate: String,
+  @Schema(description = "Comments for the restriction", example = "N/A")
   val comments: String,
+  @Schema(description = "The username of either the person who created the restriction or the last person to update it if it has been modified", example = "admin")
   val enteredByUsername: String,
+  @Schema(description = "The display name of either the person who created the restriction or the last person to update it if it has been modified", example = "John Smith")
   val enteredByDisplayName: String,
+  @Schema(description = "User who created the entry", example = "admin")
   val createdBy: String,
+  @Schema(description = "Timestamp when the entry was created", example = "2023-09-23T10:15:30")
   val createdTime: String,
+  @Schema(description = "User who updated the entry", example = "admin")
   val updatedBy: String,
-  val updatedTime: String,
-)
-
-data class ContactGlobalRestriction(
-  @JsonProperty("contactRestrictionId")
-  val contactRestrictionId: Long,
-  @JsonProperty("contactId")
-  val contactId: Long,
-  @JsonProperty("restrictionType")
-  val restrictionType: String,
-  @JsonProperty("restrictionTypeDescription")
-  val restrictionTypeDescription: String,
-  @JsonProperty("startDate")
-  val startDate: String,
-  @JsonProperty("expiryDate")
-  val expiryDate: String,
-  @JsonProperty("comments")
-  val comments: String,
-  @JsonProperty("enteredByUsername")
-  val enteredByUsername: String,
-  @JsonProperty("enteredByDisplayName")
-  val enteredByDisplayName: String,
-  @JsonProperty("createdBy")
-  val createdBy: String,
-  @JsonProperty("createdTime")
-  val createdTime: String,
-  @JsonProperty("updatedBy")
-  val updatedBy: String,
-  @JsonProperty("updatedTime")
+  @Schema(description = "Timestamp when the entry was updated", example = "2023-09-23T10:15:30")
   val updatedTime: String,
 )

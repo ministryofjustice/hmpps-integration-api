@@ -3,8 +3,10 @@ globals:
     private-prison:
       include:
         - "/v1/hmpps/id/by-nomis-number/[^/]*$"
+        - "/v1/hmpps/id/nomis-number/by-hmpps-id/[^/]*$"
         - "/v1/persons"
         - "/v1/persons/[^/]*$"
+        - "/v1/persons/.*/addresses"
         - "/v1/persons/.*/contacts[^/]*$"
         - "/v1/persons/.*/iep-level"
         - "/v1/persons/.*/visitor/.*/restrictions"
@@ -15,6 +17,8 @@ globals:
         - "/v1/persons/.*/name"
         - "/v1/persons/.*/cell-location"
         - "/v1/persons/.*/risks/categories"
+        - "/v1/persons/.*/sentences"
+        - "/v1/persons/.*/reported-adjudications"
         - "/v1/prison/prisoners"
         - "/v1/prison/prisoners/[^/]*$"
         - "/v1/prison/.*/prisoners/[^/]*/balances$"
