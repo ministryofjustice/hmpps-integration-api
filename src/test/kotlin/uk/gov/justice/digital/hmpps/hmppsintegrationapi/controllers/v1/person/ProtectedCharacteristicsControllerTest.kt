@@ -58,7 +58,7 @@ internal class ProtectedCharacteristicsControllerTest(
         it("gets the offences for a person with the matching ID") {
           mockMvc.performAuthorised(path)
 
-          verify(getProtectedCharacteristicsService, VerificationModeFactory.times(1)).execute(hmppsId)
+          verify(getProtectedCharacteristicsService, VerificationModeFactory.times(1)).execute(hmppsId, filters)
         }
 
         it("returns the offences for a person with the matching ID") {
