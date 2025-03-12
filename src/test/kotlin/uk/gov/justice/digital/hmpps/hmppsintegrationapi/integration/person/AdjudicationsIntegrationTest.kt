@@ -13,4 +13,22 @@ class AdjudicationsIntegrationTest : IntegrationTestBase() {
       .andExpect(status().isOk)
       .andExpect(content().json(getExpectedResponse("person-adjudications"), JsonCompareMode.STRICT))
   }
+
+  @Test
+  fun `adjudications returns a 400 if the hmppsId is invalid`() {
+    callApi("$basePath/$invalidNomsId/reported-adjudications")
+      .andExpect(status().isBadRequest)
+  }
+
+  @Test
+  fun `return a 404 for person in wrong prison`() {
+    callApiWithCN("$basePath/$nomsId/reported-adjudications", limitedPrisonsCn)
+      .andExpect(status().isNotFound)
+  }
+
+  @Test
+  fun `return a 404 when no prisons in filter`() {
+    callApiWithCN("$basePath/$nomsId/reported-adjudications", noPrisonsCn)
+      .andExpect(status().isNotFound)
+  }
 }

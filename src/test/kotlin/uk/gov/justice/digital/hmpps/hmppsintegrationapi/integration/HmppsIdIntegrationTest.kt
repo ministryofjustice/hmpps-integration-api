@@ -122,7 +122,7 @@ class HmppsIdIntegrationTest : IntegrationTestBase() {
 
   @Test
   fun `gets the nomis, return a 404 when no prisons in filter`() {
-    callApiWithCN("/v1/hmpps/id/nomis-number/by-hmpps-id/$nomsId", limitedPrisonsCn)
+    callApiWithCN("/v1/hmpps/id/nomis-number/by-hmpps-id/$nomsId", noPrisonsCn)
       .andExpect(status().isNotFound)
   }
 

@@ -20,10 +20,9 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.RiskAssessm
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.RiskCategory
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetRiskCategoriesForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
-import java.net.URLEncoder
-import java.nio.charset.StandardCharsets
 
 @WebMvcTest(controllers = [RiskCategoriesController::class])
 @ActiveProfiles("test")
@@ -33,15 +32,15 @@ internal class RiskCategoriesControllerTest(
   @MockitoBean val auditService: AuditService,
 ) : DescribeSpec(
     {
-      val hmppsId = "9999/11111A"
-      val encodedHmppsId = URLEncoder.encode(hmppsId, StandardCharsets.UTF_8)
-      val path = "/v1/persons/$encodedHmppsId/risks/categories"
+      val hmppsId = "AA11111A"
+      val path = "/v1/persons/$hmppsId/risks/categories"
       val mockMvc = IntegrationAPIMockMvc(springMockMvc)
+      val filters = null
 
       describe("GET $path") {
         beforeTest {
           Mockito.reset(getRiskCategoriesForPersonService)
-          whenever(getRiskCategoriesForPersonService.execute(hmppsId)).thenReturn(
+          whenever(getRiskCategoriesForPersonService.execute(hmppsId, filters)).thenReturn(
             Response(
               data =
                 RiskCategory(
@@ -77,7 +76,7 @@ internal class RiskCategoriesControllerTest(
 
         it("gets the risk categories for a person with the matching ID") {
           mockMvc.performAuthorised(path)
-          verify(getRiskCategoriesForPersonService, VerificationModeFactory.times(1)).execute(hmppsId)
+          verify(getRiskCategoriesForPersonService, VerificationModeFactory.times(1)).execute(hmppsId, filters)
         }
 
         it("logs audit") {
@@ -117,7 +116,7 @@ internal class RiskCategoriesControllerTest(
         }
 
         it("returns a 404 NOT FOUND status code when person isn't found in the upstream API") {
-          whenever(getRiskCategoriesForPersonService.execute(hmppsId)).thenReturn(
+          whenever(getRiskCategoriesForPersonService.execute(hmppsId, filters)).thenReturn(
             Response(
               data = RiskCategory(),
               errors =
@@ -131,6 +130,25 @@ internal class RiskCategoriesControllerTest(
           )
 
           val result = mockMvc.performAuthorised(path)
+
+          result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
+        }
+
+        it("returns a 404 NOT FOUND status code consumer not in allowed for endpoint") {
+          whenever(getRiskCategoriesForPersonService.execute(hmppsId, ConsumerFilters(prisons = listOf("XYZ")))).thenReturn(
+            Response(
+              data = RiskCategory(),
+              errors =
+                listOf(
+                  UpstreamApiError(
+                    causedBy = UpstreamApi.NOMIS,
+                    type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+                  ),
+                ),
+            ),
+          )
+
+          val result = mockMvc.performAuthorisedWithCN(path, "limited-prisons")
 
           result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
         }
