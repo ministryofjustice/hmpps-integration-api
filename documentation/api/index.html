@@ -2972,38 +2972,32 @@
   "data": {
     "prisonerContactRestrictions": [
       {
-        "prisonerContactRestrictionId": "integer",
-        "prisonerContactId": "integer",
-        "contactId": "integer",
-        "prisonerNumber": "string",
         "restrictionType": "string",
-        "restrictionTypeDescription": "string",
-        "startDate": "string",
-        "expiryDate": "string",
-        "comments": "string",
-        "enteredByUsername": "string",
-        "enteredByDisplayName": "string",
-        "createdBy": "string",
-        "createdTime": "string",
-        "updatedBy": "string",
-        "updatedTime": "string"
+        "restrictionTypeDescription": "Banned",
+        "startDate": "2024-01-01",
+        "expiryDate": "2024-01-01",
+        "comments": "N/A",
+        "enteredByUsername": "admin",
+        "enteredByDisplayName": "John Smith",
+        "createdBy": "admin",
+        "createdTime": "2023-09-23T10:15:30",
+        "updatedBy": "admin",
+        "updatedTime": "2023-09-23T10:15:30"
       }
     ],
     "contactGlobalRestrictions": [
       {
-        "contactRestrictionId": "integer",
-        "contactId": "integer",
         "restrictionType": "string",
-        "restrictionTypeDescription": "string",
-        "startDate": "string",
-        "expiryDate": "string",
-        "comments": "string",
-        "enteredByUsername": "string",
-        "enteredByDisplayName": "string",
-        "createdBy": "string",
-        "createdTime": "string",
-        "updatedBy": "string",
-        "updatedTime": "string"
+        "restrictionTypeDescription": "Banned",
+        "startDate": "2024-01-01",
+        "expiryDate": "2024-01-01",
+        "comments": "N/A",
+        "enteredByUsername": "admin",
+        "enteredByDisplayName": "John Smith",
+        "createdBy": "admin",
+        "createdTime": "2023-09-23T10:15:30",
+        "updatedBy": "admin",
+        "updatedTime": "2023-09-23T10:15:30"
       }
     ]
   }
@@ -10902,40 +10896,22 @@
 </tbody>
 </table>
 
-<h3 id="schema-contactglobalrestriction">ContactGlobalRestriction</h3>
+<h3 id="schema-contactrestriction">ContactRestriction</h3>
+<p>Global (estate-wide) restrictions for the contact</p>
 
 
-<table class='schema-contactglobalrestriction'>
+<table class='schema-contactrestriction'>
 <thead>
 <tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
 </thead>
 <tbody>
 
 <tr>
-<td>contactRestrictionId</td>
-<td>integer</td>
-<td>true</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>contactId</td>
-<td>integer</td>
-<td>true</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
 <td>restrictionType</td>
 <td>string</td>
 <td>true</td>
-<td></td>
+<td><p>The restriction code</p>
+</td>
 <td>
   
 </td>
@@ -10945,7 +10921,8 @@
 <td>restrictionTypeDescription</td>
 <td>string</td>
 <td>true</td>
-<td></td>
+<td><p>The description of the restriction type</p>
+</td>
 <td>
   
 </td>
@@ -10955,7 +10932,8 @@
 <td>startDate</td>
 <td>string</td>
 <td>true</td>
-<td></td>
+<td><p>Restriction created date</p>
+</td>
 <td>
   
 </td>
@@ -10965,7 +10943,8 @@
 <td>expiryDate</td>
 <td>string</td>
 <td>true</td>
-<td></td>
+<td><p>Restriction expiry date</p>
+</td>
 <td>
   
 </td>
@@ -10975,7 +10954,8 @@
 <td>comments</td>
 <td>string</td>
 <td>true</td>
-<td></td>
+<td><p>Comments for the restriction</p>
+</td>
 <td>
   
 </td>
@@ -10985,7 +10965,8 @@
 <td>enteredByUsername</td>
 <td>string</td>
 <td>true</td>
-<td></td>
+<td><p>The username of either the person who created the restriction or the last person to update it if it has been modified</p>
+</td>
 <td>
   
 </td>
@@ -10995,7 +10976,8 @@
 <td>enteredByDisplayName</td>
 <td>string</td>
 <td>true</td>
-<td></td>
+<td><p>The display name of either the person who created the restriction or the last person to update it if it has been modified</p>
+</td>
 <td>
   
 </td>
@@ -11005,7 +10987,8 @@
 <td>createdBy</td>
 <td>string</td>
 <td>true</td>
-<td></td>
+<td><p>User who created the entry</p>
+</td>
 <td>
   
 </td>
@@ -11015,7 +10998,8 @@
 <td>createdTime</td>
 <td>string</td>
 <td>true</td>
-<td></td>
+<td><p>Timestamp when the entry was created</p>
+</td>
 <td>
   
 </td>
@@ -11025,7 +11009,8 @@
 <td>updatedBy</td>
 <td>string</td>
 <td>true</td>
-<td></td>
+<td><p>User who updated the entry</p>
+</td>
 <td>
   
 </td>
@@ -11035,7 +11020,8 @@
 <td>updatedTime</td>
 <td>string</td>
 <td>true</td>
-<td></td>
+<td><p>Timestamp when the entry was updated</p>
+</td>
 <td>
   
 </td>
@@ -11066,168 +11052,6 @@
 </tbody>
 </table>
 
-<h3 id="schema-prisonercontactrestriction">PrisonerContactRestriction</h3>
-
-
-<table class='schema-prisonercontactrestriction'>
-<thead>
-<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
-</thead>
-<tbody>
-
-<tr>
-<td>prisonerContactRestrictionId</td>
-<td>integer</td>
-<td>true</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>prisonerContactId</td>
-<td>integer</td>
-<td>true</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>contactId</td>
-<td>integer</td>
-<td>true</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>prisonerNumber</td>
-<td>string</td>
-<td>true</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>restrictionType</td>
-<td>string</td>
-<td>true</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>restrictionTypeDescription</td>
-<td>string</td>
-<td>true</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>startDate</td>
-<td>string</td>
-<td>true</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>expiryDate</td>
-<td>string</td>
-<td>true</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>comments</td>
-<td>string</td>
-<td>true</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>enteredByUsername</td>
-<td>string</td>
-<td>true</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>enteredByDisplayName</td>
-<td>string</td>
-<td>true</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>createdBy</td>
-<td>string</td>
-<td>true</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>createdTime</td>
-<td>string</td>
-<td>true</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>updatedBy</td>
-<td>string</td>
-<td>true</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>updatedTime</td>
-<td>string</td>
-<td>true</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-</tbody>
-</table>
-
 <h3 id="schema-prisonercontactrestrictions">PrisonerContactRestrictions</h3>
 
 
@@ -11240,20 +11064,22 @@
 <tr>
 <td>prisonerContactRestrictions</td>
 <td>array</td>
-<td>false</td>
-<td></td>
+<td>true</td>
+<td><p>Relationship specific restrictions</p>
+</td>
 <td>
-  <a href='#schema-prisonercontactrestriction'>PrisonerContactRestriction</a>
+  <a href='#schema-contactrestriction'>ContactRestriction</a>
 </td>
 </tr>
 
 <tr>
 <td>contactGlobalRestrictions</td>
 <td>array</td>
-<td>false</td>
-<td></td>
+<td>true</td>
+<td><p>Global (estate-wide) restrictions for the contact</p>
+</td>
 <td>
-  <a href='#schema-contactglobalrestriction'>ContactGlobalRestriction</a>
+  <a href='#schema-contactrestriction'>ContactRestriction</a>
 </td>
 </tr>
 
