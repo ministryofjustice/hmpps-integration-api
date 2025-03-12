@@ -39,8 +39,8 @@ class CaseNotesControllerTest(
       val locationId = "MDI"
       val startDate: LocalDateTime = LocalDateTime.now()
       val endDate: LocalDateTime = LocalDateTime.now()
-      val caseNoteFilter = CaseNoteFilter(hmppsId, startDate, endDate, locationId)
       val path = "/v1/persons/$hmppsId/case-notes?startDate=$startDate&endDate=$endDate&locationId=$locationId"
+      val caseNoteFilter = CaseNoteFilter(hmppsId, startDate, endDate, locationId)
       val mockMvc = IntegrationAPIMockMvc(springMockMvc)
       val pageCaseNote =
         listOf(
