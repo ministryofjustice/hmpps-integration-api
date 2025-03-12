@@ -23,8 +23,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetProtectedCharacteristicsService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
-import java.net.URLEncoder
-import java.nio.charset.StandardCharsets
 
 @WebMvcTest(controllers = [ProtectedCharacteristicsController::class])
 @ActiveProfiles("test")
@@ -34,16 +32,16 @@ internal class ProtectedCharacteristicsControllerTest(
   @MockitoBean val auditService: AuditService,
 ) : DescribeSpec(
     {
-      val hmppsId = "9999/11111A"
-      val encodedHmppsId = URLEncoder.encode(hmppsId, StandardCharsets.UTF_8)
-      val path = "/v1/persons/$encodedHmppsId/protected-characteristics"
+      val hmppsId = "A1234AA"
+      val filters = null
+      val path = "/v1/persons/$hmppsId/protected-characteristics"
       val mockMvc = IntegrationAPIMockMvc(springMockMvc)
 
       describe("GET $path") {
         beforeTest {
           Mockito.reset(getProtectedCharacteristicsService)
           Mockito.reset(auditService)
-          whenever(getProtectedCharacteristicsService.execute(hmppsId)).thenReturn(
+          whenever(getProtectedCharacteristicsService.execute(hmppsId, filters)).thenReturn(
             Response(
               data =
                 PersonProtectedCharacteristics(35, "Female", "Unknown", "British", "British", "None", emptyList()),
@@ -95,12 +93,10 @@ internal class ProtectedCharacteristicsControllerTest(
         }
 
         it("returns an empty list embedded in a JSON object when no offences are found") {
-          val hmppsIdForPersonWithNoOffences = "0000/11111A"
-          val encodedHmppsIdForPersonWithNoOffences =
-            URLEncoder.encode(hmppsIdForPersonWithNoOffences, StandardCharsets.UTF_8)
-          val offencesPath = "/v1/persons/$encodedHmppsIdForPersonWithNoOffences/protected-characteristics"
+          val hmppsIdForPersonWithNoOffences = "A1234AA"
+          val offencesPath = "/v1/persons/$hmppsIdForPersonWithNoOffences/protected-characteristics"
 
-          whenever(getProtectedCharacteristicsService.execute(hmppsIdForPersonWithNoOffences)).thenReturn(
+          whenever(getProtectedCharacteristicsService.execute(hmppsIdForPersonWithNoOffences, filters)).thenReturn(
             Response(
               data = null,
             ),
@@ -112,7 +108,7 @@ internal class ProtectedCharacteristicsControllerTest(
         }
 
         it("returns a 404 NOT FOUND status code when person isn't found in the upstream API") {
-          whenever(getProtectedCharacteristicsService.execute(hmppsId)).thenReturn(
+          whenever(getProtectedCharacteristicsService.execute(hmppsId, filters)).thenReturn(
             Response(
               data = null,
               errors =
@@ -131,7 +127,7 @@ internal class ProtectedCharacteristicsControllerTest(
         }
 
         it("fails with the appropriate error when an upstream service is down") {
-          whenever(getProtectedCharacteristicsService.execute(hmppsId)).doThrow(
+          whenever(getProtectedCharacteristicsService.execute(hmppsId, filters)).doThrow(
             WebClientResponseException(500, "MockError", null, null, null, null),
           )
 

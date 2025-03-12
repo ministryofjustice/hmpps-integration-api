@@ -7,6 +7,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffende
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ProbationOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonProtectedCharacteristics
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 @Service
 class GetProtectedCharacteristicsService(
@@ -14,7 +15,10 @@ class GetProtectedCharacteristicsService(
   @Autowired val prisonerOffenderSearchGateway: PrisonerOffenderSearchGateway,
   @Autowired val nomisGateway: NomisGateway,
 ) {
-  fun execute(hmppsId: String): Response<PersonProtectedCharacteristics?> {
+  fun execute(
+    hmppsId: String,
+    filters: ConsumerFilters? = null,
+  ): Response<PersonProtectedCharacteristics?> {
     val probationOffender = probationOffenderSearchGateway.getOffender(hmppsId)
 
     if (probationOffender.data != null) {
