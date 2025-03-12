@@ -28,10 +28,11 @@ internal class GetAdjudicationsForPersonServiceTest(
   private val getAdjudicationsForPersonService: GetAdjudicationsForPersonService,
 ) : DescribeSpec(
     {
-      val hmppsId = "1234/56789B"
+      val hmppsId = "A1234AA"
       val prisonerNumber = "Z99999ZZ"
       val person = Person(firstName = "Qui-gon", lastName = "Jin", identifiers = Identifiers(nomisNumber = prisonerNumber))
       val adjudications = listOf(Adjudication(incidentDetails = IncidentDetailsDto(dateTimeOfIncident = "MockDate")))
+      val filters = null
 
       beforeEach {
         Mockito.reset(getPersonService)

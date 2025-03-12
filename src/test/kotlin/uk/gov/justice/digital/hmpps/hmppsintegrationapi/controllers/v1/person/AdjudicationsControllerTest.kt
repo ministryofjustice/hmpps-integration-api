@@ -17,14 +17,15 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Adjudication
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Identifiers
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.IncidentDetailsDto
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetAdjudicationsForPersonService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
-import java.net.URLEncoder
-import java.nio.charset.StandardCharsets
 
 @WebMvcTest(controllers = [AdjudicationsController::class])
 @ActiveProfiles("test")
@@ -32,17 +33,20 @@ internal class AdjudicationsControllerTest(
   @Autowired var springMockMvc: MockMvc,
   @MockitoBean val getAdjudicationsForPersonService: GetAdjudicationsForPersonService,
   @MockitoBean val auditService: AuditService,
+  @MockitoBean val getPersonService: GetPersonService,
 ) : DescribeSpec(
     {
-      val hmppsId = "9999/11111A"
-      val encodedHmppsId = URLEncoder.encode(hmppsId, StandardCharsets.UTF_8)
-      val path = "/v1/persons/$encodedHmppsId/reported-adjudications"
+      val hmppsId = "A1234AA"
+      val path = "/v1/persons/$hmppsId/reported-adjudications"
       val mockMvc = IntegrationAPIMockMvc(springMockMvc)
+      val filters = null
+      val person = Person(firstName = "Qui-gon", lastName = "Jin", identifiers = Identifiers(nomisNumber = hmppsId))
 
       describe("GET $path") {
         beforeTest {
           Mockito.reset(getAdjudicationsForPersonService)
           Mockito.reset(auditService)
+          Mockito.reset(getPersonService)
           whenever(getAdjudicationsForPersonService.execute(hmppsId)).thenReturn(
             Response(
               data =
@@ -54,6 +58,13 @@ internal class AdjudicationsControllerTest(
                       ),
                   ),
                 ),
+            ),
+          )
+
+          whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, filters = filters)).thenReturn(
+            Response(
+              data = person,
+              errors = emptyList(),
             ),
           )
         }
