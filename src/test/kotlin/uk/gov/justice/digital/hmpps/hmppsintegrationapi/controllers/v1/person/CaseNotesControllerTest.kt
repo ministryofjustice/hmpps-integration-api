@@ -4,8 +4,8 @@ import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
 import org.mockito.Mockito
-import org.mockito.internal.verification.VerificationModeFactory
 import org.mockito.kotlin.doThrow
+import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
@@ -22,6 +22,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CaseNote
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetCaseNotesForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 import java.time.LocalDateTime
@@ -65,8 +66,20 @@ class CaseNotesControllerTest(
 
           verify(
             auditService,
-            VerificationModeFactory.times(1),
+            times(1),
           ).createEvent("GET_CASE_NOTES", mapOf("hmppsId" to hmppsId))
+        }
+
+        it("passes filters into service") {
+          mockMvc.performAuthorisedWithCN(path, "limited-prisons")
+
+          verify(
+            getCaseNotesForPersonService,
+            times(1),
+          ).execute(
+            caseNoteFilter,
+            ConsumerFilters(prisons = listOf("XYZ")),
+          )
         }
 
         it("returns the case notes for a person with the matching ID with a 200 status code") {
