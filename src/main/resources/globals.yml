@@ -17,6 +17,7 @@ globals:
         - "/v1/persons/.*/name"
         - "/v1/persons/.*/cell-location"
         - "/v1/persons/.*/sentences"
+        - "/v1/persons/.*/protected-characteristics"
         - "/v1/prison/prisoners"
         - "/v1/prison/prisoners/[^/]*$"
         - "/v1/prison/.*/prisoners/[^/]*/balances$"

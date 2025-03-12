@@ -8,7 +8,10 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffende
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ProbationOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonProtectedCharacteristics
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService.IdentifierType
 
 @Service
 class GetProtectedCharacteristicsService(
@@ -16,11 +19,20 @@ class GetProtectedCharacteristicsService(
   @Autowired val prisonerOffenderSearchGateway: PrisonerOffenderSearchGateway,
   @Autowired val nomisGateway: NomisGateway,
   @Autowired val consumerPrisonAccessService: ConsumerPrisonAccessService,
+  @Autowired val getPersonService: GetPersonService,
 ) {
   fun execute(
     hmppsId: String,
     filters: ConsumerFilters?,
   ): Response<PersonProtectedCharacteristics?> {
+    val hmppsIdType = getPersonService.identifyHmppsId(hmppsId)
+    if (hmppsIdType == IdentifierType.UNKNOWN) {
+      return Response(
+        data = null,
+        errors = listOf(UpstreamApiError(causedBy = UpstreamApi.NOMIS, type = UpstreamApiError.Type.BAD_REQUEST)),
+      )
+    }
+
     val probationOffender = probationOffenderSearchGateway.getOffender(hmppsId)
 
     if (probationOffender.data != null) {

@@ -36,6 +36,7 @@ class GetProtectedCharacteristicsServiceTest {
   private val probationOffenderSearchGateway: ProbationOffenderSearchGateway = mock()
   private val prisonerOffenderSearchGateway: PrisonerOffenderSearchGateway = mock()
   private val consumerPrisonAccessService: ConsumerPrisonAccessService = mock()
+  private val getPersonService: GetPersonService = mock()
   val nomisGateway: NomisGateway = mock()
   val hmppsId: String = "A1234AA"
   val filters = null
@@ -50,7 +51,21 @@ class GetProtectedCharacteristicsServiceTest {
     Mockito.reset(prisonerOffenderSearchGateway)
     Mockito.reset(nomisGateway)
     Mockito.reset(consumerPrisonAccessService)
-    service = GetProtectedCharacteristicsService(probationOffenderSearchGateway, prisonerOffenderSearchGateway, nomisGateway, consumerPrisonAccessService)
+    service = GetProtectedCharacteristicsService(probationOffenderSearchGateway, prisonerOffenderSearchGateway, nomisGateway, consumerPrisonAccessService, getPersonService)
+
+    whenever(getPersonService.identifyHmppsId(hmppsId)).thenReturn(GetPersonService.IdentifierType.NOMS)
+  }
+
+  @Test
+  fun `invalid hmpps id return bad request`() {
+    whenever(getPersonService.identifyHmppsId(hmppsId)).thenReturn(GetPersonService.IdentifierType.UNKNOWN)
+    val result = service.execute(hmppsId, filters)
+
+    result.errors.shouldHaveSize(1)
+    result.errors
+      .first()
+      .type
+      .shouldBe(UpstreamApiError.Type.BAD_REQUEST)
   }
 
   @Test
