@@ -47,7 +47,7 @@ internal class AdjudicationsControllerTest(
           Mockito.reset(getAdjudicationsForPersonService)
           Mockito.reset(auditService)
           Mockito.reset(getPersonService)
-          whenever(getAdjudicationsForPersonService.execute(hmppsId)).thenReturn(
+          whenever(getAdjudicationsForPersonService.execute(hmppsId, filters)).thenReturn(
             Response(
               data =
                 listOf(
@@ -70,7 +70,7 @@ internal class AdjudicationsControllerTest(
         }
 
         it("throws exception when no person found") {
-          whenever(getAdjudicationsForPersonService.execute(hmppsId = "notfound")).thenReturn(
+          whenever(getAdjudicationsForPersonService.execute(hmppsId = "notfound", filters)).thenReturn(
             Response(
               data = emptyList(),
               errors =
@@ -97,7 +97,7 @@ internal class AdjudicationsControllerTest(
         }
 
         it("returns paginated adjudication results") {
-          whenever(getAdjudicationsForPersonService.execute(hmppsId)).thenReturn(
+          whenever(getAdjudicationsForPersonService.execute(hmppsId, filters)).thenReturn(
             Response(
               data =
                 List(20) {
@@ -122,7 +122,7 @@ internal class AdjudicationsControllerTest(
         }
 
         it("fails with the appropriate error when an upstream service is down") {
-          whenever(getAdjudicationsForPersonService.execute(hmppsId)).doThrow(
+          whenever(getAdjudicationsForPersonService.execute(hmppsId, filters)).doThrow(
             WebClientResponseException(500, "MockError", null, null, null, null),
           )
 
@@ -134,6 +134,25 @@ internal class AdjudicationsControllerTest(
               "{\"status\":500,\"errorCode\":null,\"userMessage\":\"500 MockError\",\"developerMessage\":\"Unable to complete request as an upstream service is not responding\",\"moreInfo\":null}",
             ),
           )
+        }
+
+        it("returns a 400 Bad request status code when hmpps id invalid in the upstream API") {
+          whenever(getAdjudicationsForPersonService.execute(hmppsId, filters)).thenReturn(
+            Response(
+              data = emptyList(),
+              errors =
+                listOf(
+                  UpstreamApiError(
+                    causedBy = UpstreamApi.ADJUDICATIONS,
+                    type = UpstreamApiError.Type.BAD_REQUEST,
+                  ),
+                ),
+            ),
+          )
+
+          val result = mockMvc.performAuthorised(path)
+
+          result.response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
         }
       }
     },

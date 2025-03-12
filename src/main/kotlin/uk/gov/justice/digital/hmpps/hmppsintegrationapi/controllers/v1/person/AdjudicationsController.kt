@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.tags.Tag
+import jakarta.validation.ValidationException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -36,6 +37,7 @@ class AdjudicationsController(
     responses = [
       ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "OK"),
       ApiResponse(responseCode = "404", description = "Failed to find adjudications for the person with the provided hmppsId.", content = [Content(schema = Schema(ref = "#/components/schemas/PersonNotFound"))]),
+      ApiResponse(responseCode = "400", description = "Malformed hmppsId.", content = [Content(schema = Schema(ref = "#/components/schemas/BadRequest"))]),
       ApiResponse(responseCode = "500", content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]),
     ],
   )
@@ -49,6 +51,10 @@ class AdjudicationsController(
 
     if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
       throw EntityNotFoundException("Could not find person with id: $hmppsId")
+    }
+
+    if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
+      throw ValidationException("Invalid or missing HMPPS ID: $hmppsId")
     }
     auditService.createEvent("GET_PERSON_ADJUDICATIONS", mapOf("hmppsId" to hmppsId))
     return response.data.paginateWith(page, perPage)
