@@ -6,6 +6,7 @@ globals:
         - "/v1/hmpps/id/nomis-number/by-hmpps-id/[^/]*$"
         - "/v1/persons"
         - "/v1/persons/[^/]*$"
+        - "/v1/persons/.*/addresses"
         - "/v1/persons/.*/contacts[^/]*$"
         - "/v1/persons/.*/iep-level"
         - "/v1/persons/.*/visitor/.*/restrictions"

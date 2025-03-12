@@ -7,6 +7,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ProbationOffend
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Address
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 @Service
 class GetAddressesForPersonService(
@@ -14,8 +15,11 @@ class GetAddressesForPersonService(
   @Autowired val getPersonService: GetPersonService,
   @Autowired val probationOffenderSearchGateway: ProbationOffenderSearchGateway,
 ) {
-  fun execute(hmppsId: String): Response<List<Address>> {
-    val personResponse = getPersonService.execute(hmppsId = hmppsId)
+  fun execute(
+    hmppsId: String,
+    filters: ConsumerFilters?,
+  ): Response<List<Address>> {
+    val personResponse = getPersonService.getNomisNumberWithPrisonFilter(hmppsId = hmppsId, filters)
     if (personResponse.errors.isNotEmpty()) {
       return Response(data = emptyList(), errors = personResponse.errors)
     }
@@ -25,10 +29,7 @@ class GetAddressesForPersonService(
       return Response(data = emptyList(), errors = addressesFromDelius.errors)
     }
 
-    val nomisNumber = personResponse.data?.identifiers?.nomisNumber
-    if (nomisNumber == null) {
-      return addressesFromDelius
-    }
+    val nomisNumber = personResponse.data?.nomisNumber ?: return addressesFromDelius
 
     val addressesFromNomis = nomisGateway.getAddressesForPerson(id = nomisNumber)
     if (hasErrorOtherThanEntityNotFound(addressesFromNomis)) {
