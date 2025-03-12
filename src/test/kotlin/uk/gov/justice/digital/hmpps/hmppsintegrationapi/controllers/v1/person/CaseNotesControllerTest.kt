@@ -45,11 +45,13 @@ class CaseNotesControllerTest(
         listOf(
           CaseNote(caseNoteId = "abcd1234"),
         )
+      val filters = null
+
       describe("GET $path") {
         beforeTest {
           Mockito.reset(getCaseNotesForPersonService)
           Mockito.reset(auditService)
-          whenever(getCaseNotesForPersonService.execute(any())).thenReturn(
+          whenever(getCaseNotesForPersonService.execute(any(), filters)).thenReturn(
             Response(
               data = pageCaseNote,
               errors = emptyList(),
@@ -69,11 +71,11 @@ class CaseNotesControllerTest(
           verify(
             getCaseNotesForPersonService,
             VerificationModeFactory.times(1),
-          ).execute(argThat<CaseNoteFilter> { it -> it.hmppsId == hmppsId })
+          ).execute(argThat<CaseNoteFilter> { it -> it.hmppsId == hmppsId }, filters)
         }
 
         it("returns a 403 when the upstream service provides a 403") {
-          whenever(getCaseNotesForPersonService.execute(any())).thenReturn(
+          whenever(getCaseNotesForPersonService.execute(any(), filters)).thenReturn(
             Response(
               data = emptyList(),
               errors =
@@ -85,6 +87,7 @@ class CaseNotesControllerTest(
                 ),
             ),
           )
+
           val result = mockMvc.performAuthorised(path)
           result.response.status.shouldBe(HttpStatus.FORBIDDEN.value())
         }
@@ -134,7 +137,7 @@ class CaseNotesControllerTest(
         }
 
         it("fails with the appropriate error when an upstream service is down") {
-          whenever(getCaseNotesForPersonService.execute(any())).doThrow(
+          whenever(getCaseNotesForPersonService.execute(any(), filters)).doThrow(
             WebClientResponseException(500, "MockError", null, null, null, null),
           )
 
