@@ -20,7 +20,11 @@ dependencies {
     exclude("org.springframework.security", "spring-security-crypto")
     exclude("org.springframework.security", "spring-security-web")
   }
-  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.7.0")
+  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.7.0") {
+    constraints {
+      implementation("org.webjars:swagger-ui:5.20.0") // Fix security build HMAI-317
+    }
+  }
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.1")
   testImplementation("io.kotest:kotest-assertions-json-jvm:5.9.1")
   testImplementation("io.kotest:kotest-runner-junit5-jvm:5.9.1")
