@@ -36,6 +36,7 @@ class PersonResponsibleOfficerController(
     responses = [
       ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found the person responsible officer for a person with the provided HMPPS ID."),
       ApiResponse(responseCode = "404", content = [Content(schema = Schema(ref = "#/components/schemas/PersonNotFound"))]),
+      ApiResponse(responseCode = "400", content = [Content(schema = Schema(ref = "#/components/schemas/BadRequest"))]),
       ApiResponse(responseCode = "500", content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]),
     ],
   )
