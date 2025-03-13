@@ -232,6 +232,9 @@
         <a href="../../documentation/api/index.html#v1-persons-hmppsid-person-responsible-officer"><span>/v1/persons/{hmppsId}/person-responsible-officer</span></a>
       </li>
       <li>
+        <a href="../../documentation/api/index.html#v1-persons-hmppsid-offences"><span>/v1/persons/{hmppsId}/offences</span></a>
+      </li>
+      <li>
         <a href="../../documentation/api/index.html#v1-persons-hmppsid-name"><span>/v1/persons/{hmppsId}/name</span></a>
       </li>
       <li>
@@ -275,9 +278,6 @@
       </li>
       <li>
         <a href="../../documentation/api/index.html#v1-persons-encodedhmppsid-risk-management-plan"><span>/v1/persons/{encodedHmppsId}/risk-management-plan</span></a>
-      </li>
-      <li>
-        <a href="../../documentation/api/index.html#v1-persons-encodedhmppsid-offences"><span>/v1/persons/{encodedHmppsId}/offences</span></a>
       </li>
       <li>
         <a href="../../documentation/api/index.html#v1-persons-encodedhmppsid-needs"><span>/v1/persons/{encodedHmppsId}/needs</span></a>
@@ -4704,6 +4704,187 @@
 
 
 
+<h2 id="v1-persons-hmppsid-offences">/v1/persons/{hmppsId}/offences</h2>
+
+<h3 id="v1-persons-hmppsid-offences-get">get</h3>
+
+  <p><em>
+      Returns offences associated with a person, ordered by startDate (newest first).
+      > Note: This API does not contain the complete list of offences for a person.
+      > Offences are retrieved from Prison and Probation systems exclusively.
+      > Prison systems record only custodial sentences, while Probation systems record only the main offence and some additional offences for case management purposes. Other offences recorded by HMCTS and police may not be included.
+    </em></p>
+
+
+  <p><b>Applicable filters</b>: <ul><li>prisons</li></ul></p>
+
+
+
+
+<h4 id="v1-persons-hmppsid-offences-get-parameters">Parameters</h4>
+<table>
+<thead>
+<tr><th>Parameter</th><th>In</th><th>Type</th><th>Required</th><th>Description</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>hmppsId</td>
+<td>path</td>
+<td>string</td>
+<td>true</td>
+<td><p>The HMPPS ID of the person</p>
+
+
+</td>
+</tr>
+
+<tr>
+<td>page</td>
+<td>query</td>
+<td>string</td>
+<td>false</td>
+<td><p>The page number (starting from 1)</p>
+
+
+</td>
+</tr>
+
+<tr>
+<td>perPage</td>
+<td>query</td>
+<td>string</td>
+<td>false</td>
+<td><p>The maximum number of results for a page</p>
+
+
+</td>
+</tr>
+
+</tbody>
+</table>
+
+
+
+
+<h4 id="v1-persons-hmppsid-offences-get-responses">Responses</h4>
+<table>
+<thead>
+<tr><th>Status</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>200</td>
+<td>
+<p>Successfully found offences for a person with the provided HMPPS ID.</p>
+
+
+
+<pre><code>{
+  "data": [
+    {
+      "serviceSource": "NOMIS",
+      "systemSource": "PRISON_SYSTEMS",
+      "cjsCode": "RR84170",
+      "courtDates": [
+        "2018-02-10",
+        "2019-02-10"
+      ],
+      "courtName": "London Magistrates Court",
+      "description": "Commit an act / series of acts with intent to pervert the course of public justice",
+      "endDate": "2018-03-10",
+      "hoCode": 3457,
+      "startDate": "1965-12-01",
+      "statuteCode": "RR84"
+    },
+    {
+      "serviceSource": "NDELIUS",
+      "systemSource": "PROBATION_SYSTEMS",
+      "cjsCode": "RR12345",
+      "courtDates": [
+        "2020-05-15",
+        "2021-05-15"
+      ],
+      "courtName": "Manchester Crown Court",
+      "description": "Assault causing grievous bodily harm",
+      "endDate": "2020-06-20",
+      "hoCode": 3458,
+      "startDate": "2020-05-10",
+      "statuteCode": "RR85"
+    }
+  ]
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-paginatedresponse'>PaginatedResponse</a>
+</td>
+</tr>
+
+<tr>
+<td>400</td>
+<td>
+<p>Bad Request</p>
+
+
+
+<pre><code>{
+  "status": 400,
+  "userMessage": "Validation failure: No query parameters specified.",
+  "developerMessage": "No query parameters specified."
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-badrequest'>BadRequest</a>
+</td>
+</tr>
+
+<tr>
+<td>404</td>
+<td>
+<p>Not Found</p>
+
+
+
+<pre><code>{
+  "status": 404,
+  "userMessage": "404 Not found error: Could not find person with HMPPS id: 2003/0011991D.",
+  "developerMessage": "Could not find person with HMPPS id: 2003/0011991D."
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-personnotfound'>PersonNotFound</a>
+</td>
+</tr>
+
+<tr>
+<td>500</td>
+<td>
+<p>Internal Server Error</p>
+
+
+
+<pre><code>{
+  "status": 500,
+  "userMessage": "Internal Server Error",
+  "developerMessage": "Unable to complete request as an upstream service is not responding."
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-internalservererror'>InternalServerError</a>
+</td>
+</tr>
+
+</tbody>
+</table>
+
+
+
+
 <h2 id="v1-persons-hmppsid-name">/v1/persons/{hmppsId}/name</h2>
 
 <h3 id="v1-persons-hmppsid-name-get">get</h3>
@@ -7047,165 +7228,6 @@
 </td>
 <td>
 <a href='#schema-forbiddenresponse'>ForbiddenResponse</a>
-</td>
-</tr>
-
-<tr>
-<td>404</td>
-<td>
-<p>Not Found</p>
-
-
-
-<pre><code>{
-  "status": 404,
-  "userMessage": "404 Not found error: Could not find person with HMPPS id: 2003/0011991D.",
-  "developerMessage": "Could not find person with HMPPS id: 2003/0011991D."
-}</code></pre>
-
-</td>
-<td>
-<a href='#schema-personnotfound'>PersonNotFound</a>
-</td>
-</tr>
-
-<tr>
-<td>500</td>
-<td>
-<p>Internal Server Error</p>
-
-
-
-<pre><code>{
-  "status": 500,
-  "userMessage": "Internal Server Error",
-  "developerMessage": "Unable to complete request as an upstream service is not responding."
-}</code></pre>
-
-</td>
-<td>
-<a href='#schema-internalservererror'>InternalServerError</a>
-</td>
-</tr>
-
-</tbody>
-</table>
-
-
-
-
-<h2 id="v1-persons-encodedhmppsid-offences">/v1/persons/{encodedHmppsId}/offences</h2>
-
-<h3 id="v1-persons-encodedhmppsid-offences-get">get</h3>
-
-  <p><em>
-      Returns offences associated with a person, ordered by startDate (newest first).
-      > Note: This API does not contain the complete list of offences for a person.
-      > Offences are retrieved from Prison and Probation systems exclusively.
-      > Prison systems record only custodial sentences, while Probation systems record only the main offence and some additional offences for case management purposes. Other offences recorded by HMCTS and police may not be included.
-    </em></p>
-
-
-
-
-<h4 id="v1-persons-encodedhmppsid-offences-get-parameters">Parameters</h4>
-<table>
-<thead>
-<tr><th>Parameter</th><th>In</th><th>Type</th><th>Required</th><th>Description</th></tr>
-</thead>
-<tbody>
-
-<tr>
-<td>encodedHmppsId</td>
-<td>path</td>
-<td>string</td>
-<td>true</td>
-<td><p>A URL-encoded HMPPS identifier</p>
-
-
-</td>
-</tr>
-
-<tr>
-<td>page</td>
-<td>query</td>
-<td>string</td>
-<td>false</td>
-<td><p>The page number (starting from 1)</p>
-
-
-</td>
-</tr>
-
-<tr>
-<td>perPage</td>
-<td>query</td>
-<td>string</td>
-<td>false</td>
-<td><p>The maximum number of results for a page</p>
-
-
-</td>
-</tr>
-
-</tbody>
-</table>
-
-
-
-
-<h4 id="v1-persons-encodedhmppsid-offences-get-responses">Responses</h4>
-<table>
-<thead>
-<tr><th>Status</th><th>Description</th><th>Schema</th></tr>
-</thead>
-<tbody>
-
-<tr>
-<td>200</td>
-<td>
-<p>Successfully found offences for a person with the provided HMPPS ID.</p>
-
-
-
-<pre><code>{
-  "data": [
-    {
-      "serviceSource": "NOMIS",
-      "systemSource": "PRISON_SYSTEMS",
-      "cjsCode": "RR84170",
-      "courtDates": [
-        "2018-02-10",
-        "2019-02-10"
-      ],
-      "courtName": "London Magistrates Court",
-      "description": "Commit an act / series of acts with intent to pervert the course of public justice",
-      "endDate": "2018-03-10",
-      "hoCode": 3457,
-      "startDate": "1965-12-01",
-      "statuteCode": "RR84"
-    },
-    {
-      "serviceSource": "NDELIUS",
-      "systemSource": "PROBATION_SYSTEMS",
-      "cjsCode": "RR12345",
-      "courtDates": [
-        "2020-05-15",
-        "2021-05-15"
-      ],
-      "courtName": "Manchester Crown Court",
-      "description": "Assault causing grievous bodily harm",
-      "endDate": "2020-06-20",
-      "hoCode": 3458,
-      "startDate": "2020-05-10",
-      "statuteCode": "RR85"
-    }
-  ]
-}</code></pre>
-
-</td>
-<td>
-<a href='#schema-paginatedresponse'>PaginatedResponse</a>
 </td>
 </tr>
 
@@ -13691,6 +13713,38 @@
 </tbody>
 </table>
 
+<h3 id="schema-paginatedresponse">PaginatedResponse</h3>
+
+
+<table class='schema-paginatedresponse'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>data</td>
+<td>array</td>
+<td>true</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>pagination</td>
+<td>object</td>
+<td>true</td>
+<td></td>
+<td>
+  <a href='#schema-pagination'>Pagination</a>
+</td>
+</tr>
+
+</tbody>
+</table>
+
 <h3 id="schema-dataresponsepersonname">DataResponsePersonName</h3>
 
 
@@ -16780,38 +16834,6 @@
 </td>
 <td>
   
-</td>
-</tr>
-
-</tbody>
-</table>
-
-<h3 id="schema-paginatedresponse">PaginatedResponse</h3>
-
-
-<table class='schema-paginatedresponse'>
-<thead>
-<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
-</thead>
-<tbody>
-
-<tr>
-<td>data</td>
-<td>array</td>
-<td>true</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>pagination</td>
-<td>object</td>
-<td>true</td>
-<td></td>
-<td>
-  <a href='#schema-pagination'>Pagination</a>
 </td>
 </tr>
 
