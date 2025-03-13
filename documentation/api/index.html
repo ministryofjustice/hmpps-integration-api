@@ -241,6 +241,9 @@
         <a href="../../documentation/api/index.html#v1-persons-hmppsid-cell-location"><span>/v1/persons/{hmppsId}/cell-location</span></a>
       </li>
       <li>
+        <a href="../../documentation/api/index.html#v1-persons-hmppsid-case-notes"><span>/v1/persons/{hmppsId}/case-notes</span></a>
+      </li>
+      <li>
         <a href="../../documentation/api/index.html#v1-persons-hmppsid-alerts"><span>/v1/persons/{hmppsId}/alerts</span></a>
       </li>
       <li>
@@ -284,9 +287,6 @@
       </li>
       <li>
         <a href="../../documentation/api/index.html#v1-persons-encodedhmppsid-images"><span>/v1/persons/{encodedHmppsId}/images</span></a>
-      </li>
-      <li>
-        <a href="../../documentation/api/index.html#v1-persons-encodedhmppsid-case-notes"><span>/v1/persons/{encodedHmppsId}/case-notes</span></a>
       </li>
       <li>
         <a href="../../documentation/api/index.html#v1-persons-encodedhmppsid-alerts-pnd"><span>/v1/persons/{encodedHmppsId}/alerts/pnd</span></a>
@@ -5111,6 +5111,230 @@
 
 
 
+<h2 id="v1-persons-hmppsid-case-notes">/v1/persons/{hmppsId}/case-notes</h2>
+
+<h3 id="v1-persons-hmppsid-case-notes-get">get</h3>
+
+  <p><em>Returns case notes associated with a person.</em></p>
+
+
+  <p><b>Applicable filters</b>: <ul><li>prisons</li></ul></p>
+
+
+
+
+<h4 id="v1-persons-hmppsid-case-notes-get-parameters">Parameters</h4>
+<table>
+<thead>
+<tr><th>Parameter</th><th>In</th><th>Type</th><th>Required</th><th>Description</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>hmppsId</td>
+<td>path</td>
+<td>string</td>
+<td>true</td>
+<td><p>The HMPPS ID of the person</p>
+
+
+</td>
+</tr>
+
+<tr>
+<td>startDate</td>
+<td>query</td>
+<td>string</td>
+<td>false</td>
+<td><p>Filter case notes from this date</p>
+
+
+</td>
+</tr>
+
+<tr>
+<td>endDate</td>
+<td>query</td>
+<td>string</td>
+<td>false</td>
+<td><p>Filter case notes up to this date</p>
+
+
+</td>
+</tr>
+
+<tr>
+<td>locationId</td>
+<td>query</td>
+<td>string</td>
+<td>false</td>
+<td><p>Filter by the location. example MDI</p>
+
+
+</td>
+</tr>
+
+<tr>
+<td>page</td>
+<td>query</td>
+<td>integer</td>
+<td>false</td>
+<td>
+
+</td>
+</tr>
+
+<tr>
+<td>perPage</td>
+<td>query</td>
+<td>integer</td>
+<td>false</td>
+<td>
+
+</td>
+</tr>
+
+</tbody>
+</table>
+
+
+
+
+<h4 id="v1-persons-hmppsid-case-notes-get-responses">Responses</h4>
+<table>
+<thead>
+<tr><th>Status</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>200</td>
+<td>
+<p>Successfully found case notes for a person with the provided HMPPS ID.</p>
+
+
+
+<pre><code>{
+  "data": [
+    {
+      "caseNoteId": "1234",
+      "offenderIdentifier": "A1234AA",
+      "type": "KA",
+      "typeDescription": "Key Worker",
+      "subType": "KS",
+      "subTypeDescription": "Key Worker Session",
+      "creationDateTime": "string",
+      "occurrenceDateTime": "string",
+      "text": "This is some text",
+      "locationId": "MDI",
+      "sensitive": "boolean",
+      "amendments": [
+        {
+          "caseNoteAmendmentId": 123232,
+          "creationDateTime": "string",
+          "additionalNoteText": "Some Additional Text"
+        }
+      ]
+    }
+  ],
+  "pagination": {
+    "isLastPage": true,
+    "count": 1,
+    "page": 1,
+    "perPage": 10,
+    "totalCount": 1,
+    "totalPages": 1
+  }
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-paginatedresponsecasenote'>PaginatedResponseCaseNote</a>
+</td>
+</tr>
+
+<tr>
+<td>400</td>
+<td>
+<p>Bad Request</p>
+
+
+
+<pre><code>{
+  "status": 400,
+  "userMessage": "Validation failure: No query parameters specified.",
+  "developerMessage": "No query parameters specified."
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-badrequest'>BadRequest</a>
+</td>
+</tr>
+
+<tr>
+<td>403</td>
+<td>
+<p>Forbidden</p>
+
+
+
+<pre><code>{
+  "status": 403,
+  "userMessage": "Forbidden to complete action by upstream service",
+  "developerMessage": "Forbidden to complete action by upstream service"
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-forbiddenresponse'>ForbiddenResponse</a>
+</td>
+</tr>
+
+<tr>
+<td>404</td>
+<td>
+<p>Not Found</p>
+
+
+
+<pre><code>{
+  "status": 404,
+  "userMessage": "404 Not found error: Could not find person with HMPPS id: 2003/0011991D.",
+  "developerMessage": "Could not find person with HMPPS id: 2003/0011991D."
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-personnotfound'>PersonNotFound</a>
+</td>
+</tr>
+
+<tr>
+<td>500</td>
+<td>
+<p>Internal Server Error</p>
+
+
+
+<pre><code>{
+  "status": 500,
+  "userMessage": "Internal Server Error",
+  "developerMessage": "Unable to complete request as an upstream service is not responding."
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-internalservererror'>InternalServerError</a>
+</td>
+</tr>
+
+</tbody>
+</table>
+
+
+
+
 <h2 id="v1-persons-hmppsid-alerts">/v1/persons/{hmppsId}/alerts</h2>
 
 <h3 id="v1-persons-hmppsid-alerts-get">get</h3>
@@ -7372,208 +7596,6 @@
 </td>
 <td>
 <a href='#schema-personnotfound'>PersonNotFound</a>
-</td>
-</tr>
-
-<tr>
-<td>500</td>
-<td>
-<p>Internal Server Error</p>
-
-
-
-<pre><code>{
-  "status": 500,
-  "userMessage": "Internal Server Error",
-  "developerMessage": "Unable to complete request as an upstream service is not responding."
-}</code></pre>
-
-</td>
-<td>
-<a href='#schema-internalservererror'>InternalServerError</a>
-</td>
-</tr>
-
-</tbody>
-</table>
-
-
-
-
-<h2 id="v1-persons-encodedhmppsid-case-notes">/v1/persons/{encodedHmppsId}/case-notes</h2>
-
-<h3 id="v1-persons-encodedhmppsid-case-notes-get">get</h3>
-
-  <p><em>Returns case notes associated with a person.</em></p>
-
-
-
-
-<h4 id="v1-persons-encodedhmppsid-case-notes-get-parameters">Parameters</h4>
-<table>
-<thead>
-<tr><th>Parameter</th><th>In</th><th>Type</th><th>Required</th><th>Description</th></tr>
-</thead>
-<tbody>
-
-<tr>
-<td>encodedHmppsId</td>
-<td>path</td>
-<td>string</td>
-<td>true</td>
-<td><p>A URL-encoded HMPPS identifier</p>
-
-
-</td>
-</tr>
-
-<tr>
-<td>startDate</td>
-<td>query</td>
-<td>string</td>
-<td>false</td>
-<td><p>Filter case notes from this date</p>
-
-
-</td>
-</tr>
-
-<tr>
-<td>endDate</td>
-<td>query</td>
-<td>string</td>
-<td>false</td>
-<td><p>Filter case notes up to this date</p>
-
-
-</td>
-</tr>
-
-<tr>
-<td>locationId</td>
-<td>query</td>
-<td>string</td>
-<td>false</td>
-<td><p>Filter by the location. example MDI</p>
-
-
-</td>
-</tr>
-
-<tr>
-<td>page</td>
-<td>query</td>
-<td>integer</td>
-<td>false</td>
-<td>
-
-</td>
-</tr>
-
-<tr>
-<td>perPage</td>
-<td>query</td>
-<td>integer</td>
-<td>false</td>
-<td>
-
-</td>
-</tr>
-
-</tbody>
-</table>
-
-
-
-
-<h4 id="v1-persons-encodedhmppsid-case-notes-get-responses">Responses</h4>
-<table>
-<thead>
-<tr><th>Status</th><th>Description</th><th>Schema</th></tr>
-</thead>
-<tbody>
-
-<tr>
-<td>200</td>
-<td>
-<p>Successfully found case notes for a person with the provided HMPPS ID.</p>
-
-
-
-<pre><code>{
-  "data": [
-    {
-      "caseNoteId": "1234",
-      "offenderIdentifier": "A1234AA",
-      "type": "KA",
-      "typeDescription": "Key Worker",
-      "subType": "KS",
-      "subTypeDescription": "Key Worker Session",
-      "creationDateTime": "string",
-      "occurrenceDateTime": "string",
-      "text": "This is some text",
-      "locationId": "MDI",
-      "sensitive": "boolean",
-      "amendments": [
-        {
-          "caseNoteAmendmentId": 123232,
-          "creationDateTime": "string",
-          "additionalNoteText": "Some Additional Text"
-        }
-      ]
-    }
-  ],
-  "pagination": {
-    "isLastPage": true,
-    "count": 1,
-    "page": 1,
-    "perPage": 10,
-    "totalCount": 1,
-    "totalPages": 1
-  }
-}</code></pre>
-
-</td>
-<td>
-<a href='#schema-paginatedresponsecasenote'>PaginatedResponseCaseNote</a>
-</td>
-</tr>
-
-<tr>
-<td>404</td>
-<td>
-<p>Not Found</p>
-
-
-
-<pre><code>{
-  "status": 404,
-  "userMessage": "404 Not found error: Could not find person with HMPPS id: 2003/0011991D.",
-  "developerMessage": "Could not find person with HMPPS id: 2003/0011991D."
-}</code></pre>
-
-</td>
-<td>
-<a href='#schema-personnotfound'>PersonNotFound</a>
-</td>
-</tr>
-
-<tr>
-<td>403</td>
-<td>
-<p>Forbidden</p>
-
-
-
-<pre><code>{
-  "status": 403,
-  "userMessage": "Forbidden to complete action by upstream service",
-  "developerMessage": "Forbidden to complete action by upstream service"
-}</code></pre>
-
-</td>
-<td>
-<a href='#schema-forbiddenresponse'>ForbiddenResponse</a>
 </td>
 </tr>
 
@@ -14010,6 +14032,217 @@
 </tbody>
 </table>
 
+<h3 id="schema-casenote">CaseNote</h3>
+
+
+<table class='schema-casenote'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>caseNoteId</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>offenderIdentifier</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>type</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>typeDescription</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>subType</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>subTypeDescription</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>creationDateTime</td>
+<td>string</td>
+<td>false</td>
+<td><p>Date and Time of Case Note creation</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>occurrenceDateTime</td>
+<td>string</td>
+<td>false</td>
+<td><p>Date and Time of when case note contact with offender was made</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>text</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>locationId</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>sensitive</td>
+<td>boolean</td>
+<td>true</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>amendments</td>
+<td>array</td>
+<td>true</td>
+<td><p>List of amendments to the case note</p>
+</td>
+<td>
+  <a href='#schema-casenoteamendment'>CaseNoteAmendment</a>
+</td>
+</tr>
+
+</tbody>
+</table>
+
+<h3 id="schema-casenoteamendment">CaseNoteAmendment</h3>
+<p>List of amendments to the case note</p>
+
+
+<table class='schema-casenoteamendment'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>caseNoteAmendmentId</td>
+<td>integer</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>creationDateTime</td>
+<td>string</td>
+<td>false</td>
+<td><p>Date and Time of Case Note creation</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>additionalNoteText</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+</tbody>
+</table>
+
+<h3 id="schema-paginatedresponsecasenote">PaginatedResponseCaseNote</h3>
+
+
+<table class='schema-paginatedresponsecasenote'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>data</td>
+<td>array</td>
+<td>true</td>
+<td></td>
+<td>
+  <a href='#schema-casenote'>CaseNote</a>
+</td>
+</tr>
+
+<tr>
+<td>pagination</td>
+<td>object</td>
+<td>true</td>
+<td></td>
+<td>
+  <a href='#schema-pagination'>Pagination</a>
+</td>
+</tr>
+
+</tbody>
+</table>
+
 <h3 id="schema-address">Address</h3>
 
 
@@ -17012,217 +17245,6 @@
 <td></td>
 <td>
   <a href='#schema-imagemetadata'>ImageMetadata</a>
-</td>
-</tr>
-
-<tr>
-<td>pagination</td>
-<td>object</td>
-<td>true</td>
-<td></td>
-<td>
-  <a href='#schema-pagination'>Pagination</a>
-</td>
-</tr>
-
-</tbody>
-</table>
-
-<h3 id="schema-casenote">CaseNote</h3>
-
-
-<table class='schema-casenote'>
-<thead>
-<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
-</thead>
-<tbody>
-
-<tr>
-<td>caseNoteId</td>
-<td>string</td>
-<td>false</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>offenderIdentifier</td>
-<td>string</td>
-<td>false</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>type</td>
-<td>string</td>
-<td>false</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>typeDescription</td>
-<td>string</td>
-<td>false</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>subType</td>
-<td>string</td>
-<td>false</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>subTypeDescription</td>
-<td>string</td>
-<td>false</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>creationDateTime</td>
-<td>string</td>
-<td>false</td>
-<td><p>Date and Time of Case Note creation</p>
-</td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>occurrenceDateTime</td>
-<td>string</td>
-<td>false</td>
-<td><p>Date and Time of when case note contact with offender was made</p>
-</td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>text</td>
-<td>string</td>
-<td>false</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>locationId</td>
-<td>string</td>
-<td>false</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>sensitive</td>
-<td>boolean</td>
-<td>true</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>amendments</td>
-<td>array</td>
-<td>true</td>
-<td><p>List of amendments to the case note</p>
-</td>
-<td>
-  <a href='#schema-casenoteamendment'>CaseNoteAmendment</a>
-</td>
-</tr>
-
-</tbody>
-</table>
-
-<h3 id="schema-casenoteamendment">CaseNoteAmendment</h3>
-<p>List of amendments to the case note</p>
-
-
-<table class='schema-casenoteamendment'>
-<thead>
-<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
-</thead>
-<tbody>
-
-<tr>
-<td>caseNoteAmendmentId</td>
-<td>integer</td>
-<td>false</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>creationDateTime</td>
-<td>string</td>
-<td>false</td>
-<td><p>Date and Time of Case Note creation</p>
-</td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>additionalNoteText</td>
-<td>string</td>
-<td>false</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-</tbody>
-</table>
-
-<h3 id="schema-paginatedresponsecasenote">PaginatedResponseCaseNote</h3>
-
-
-<table class='schema-paginatedresponsecasenote'>
-<thead>
-<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
-</thead>
-<tbody>
-
-<tr>
-<td>data</td>
-<td>array</td>
-<td>true</td>
-<td></td>
-<td>
-  <a href='#schema-casenote'>CaseNote</a>
 </td>
 </tr>
 
