@@ -34,7 +34,7 @@ internal class GetOffencesForPersonServiceTest(
       val hmppsId = "A1234AA"
       val prisonerNumber = "Z99999ZZ"
       val nDeliusCRN = "X123456"
-      val filters = ConsumerFilters(null)
+      val filters = null
       val prisonOffence1 = generateTestOffence(description = "Prison offence 1")
       val prisonOffence2 = generateTestOffence(description = "Prison offence 2")
       val prisonOffence3 = generateTestOffence(description = "Prison offence 3")
@@ -54,6 +54,11 @@ internal class GetOffencesForPersonServiceTest(
         Mockito.reset(nDeliusGateway)
 
         whenever(getPersonService.execute(hmppsId = hmppsId)).thenReturn(
+          Response(
+            data = personFromProbationOffenderSearch,
+          ),
+        )
+        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, filters)).thenReturn(
           Response(
             data = personFromProbationOffenderSearch,
           ),
@@ -82,7 +87,7 @@ internal class GetOffencesForPersonServiceTest(
         )
       }
 
-      it("Returns prison and probation offences given a hmppsId") {
+      it("Returns prison and probation offences given a hmppsId and no filters") {
         whenever(getPersonService.execute(hmppsId = hmppsId)).thenReturn(
           Response(
             data = personFromProbationOffenderSearch,
@@ -125,6 +130,24 @@ internal class GetOffencesForPersonServiceTest(
             probationOffence1,
             probationOffence2,
             probationOffence3,
+          ),
+        )
+      }
+
+      it("returns only offences from Nomis when prison filters present ") {
+        val populatedFilters = ConsumerFilters(listOf("ABC"))
+        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, populatedFilters)).thenReturn(
+          Response(
+            data = personFromProbationOffenderSearch,
+          ),
+        )
+        val response = getOffencesForPersonService.execute(hmppsId, populatedFilters)
+
+        response.data.shouldBe(
+          listOf(
+            prisonOffence1,
+            prisonOffence2,
+            prisonOffence3,
           ),
         )
       }
