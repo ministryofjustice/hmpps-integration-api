@@ -17,9 +17,7 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Adjudication
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Identifiers
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.IncidentDetailsDto
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
@@ -40,7 +38,6 @@ internal class AdjudicationsControllerTest(
       val path = "/v1/persons/$hmppsId/reported-adjudications"
       val mockMvc = IntegrationAPIMockMvc(springMockMvc)
       val filters = null
-      val person = Person(firstName = "Qui-gon", lastName = "Jin", identifiers = Identifiers(nomisNumber = hmppsId))
 
       describe("GET $path") {
         beforeTest {
@@ -58,13 +55,6 @@ internal class AdjudicationsControllerTest(
                       ),
                   ),
                 ),
-            ),
-          )
-
-          whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, filters = filters)).thenReturn(
-            Response(
-              data = person,
-              errors = emptyList(),
             ),
           )
         }
