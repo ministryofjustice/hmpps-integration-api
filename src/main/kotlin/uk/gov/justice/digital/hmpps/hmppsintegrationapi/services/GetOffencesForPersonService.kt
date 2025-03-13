@@ -6,6 +6,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NomisGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Offence
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 @Service
 class GetOffencesForPersonService(
@@ -13,7 +14,10 @@ class GetOffencesForPersonService(
   @Autowired val nDeliusGateway: NDeliusGateway,
   @Autowired val getPersonService: GetPersonService,
 ) {
-  fun execute(hmppsId: String): Response<List<Offence>> {
+  fun execute(
+    hmppsId: String,
+    filters: ConsumerFilters?,
+  ): Response<List<Offence>> {
     val personResponse = getPersonService.execute(hmppsId = hmppsId)
     val deliusCrn = personResponse.data?.identifiers?.deliusCrn
     val nomisNumber = personResponse.data?.identifiers?.nomisNumber

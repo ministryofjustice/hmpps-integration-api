@@ -25,8 +25,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetOffencesForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
-import java.net.URLEncoder
-import java.nio.charset.StandardCharsets
 import java.time.LocalDate
 
 @WebMvcTest(controllers = [OffencesController::class])
@@ -37,16 +35,16 @@ internal class OffencesControllerTest(
   @MockitoBean val auditService: AuditService,
 ) : DescribeSpec(
     {
-      val hmppsId = "9999/11111A"
-      val encodedHmppsId = URLEncoder.encode(hmppsId, StandardCharsets.UTF_8)
-      val path = "/v1/persons/$encodedHmppsId/offences"
+      val hmppsId = "A1234AA"
+      val path = "/v1/persons/$hmppsId/offences"
+      val filters = null
       val mockMvc = IntegrationAPIMockMvc(springMockMvc)
 
       describe("GET $path") {
         beforeTest {
           Mockito.reset(getOffencesForPersonService)
           Mockito.reset(auditService)
-          whenever(getOffencesForPersonService.execute(hmppsId)).thenReturn(
+          whenever(getOffencesForPersonService.execute(hmppsId, filters)).thenReturn(
             Response(
               data =
                 listOf(
@@ -76,7 +74,7 @@ internal class OffencesControllerTest(
         it("gets the offences for a person with the matching ID") {
           mockMvc.performAuthorised(path)
 
-          verify(getOffencesForPersonService, VerificationModeFactory.times(1)).execute(hmppsId)
+          verify(getOffencesForPersonService, VerificationModeFactory.times(1)).execute(hmppsId, filters)
         }
 
         it("returns the offences for a person with the matching ID") {
@@ -111,12 +109,10 @@ internal class OffencesControllerTest(
         }
 
         it("returns an empty list embedded in a JSON object when no offences are found") {
-          val hmppsIdForPersonWithNoOffences = "0000/11111A"
-          val encodedHmppsIdForPersonWithNoOffences =
-            URLEncoder.encode(hmppsIdForPersonWithNoOffences, StandardCharsets.UTF_8)
-          val offencesPath = "/v1/persons/$encodedHmppsIdForPersonWithNoOffences/offences"
+          val hmppsIdForPersonWithNoOffences = "B5678BB"
+          val offencesPath = "/v1/persons/$hmppsIdForPersonWithNoOffences/offences"
 
-          whenever(getOffencesForPersonService.execute(hmppsIdForPersonWithNoOffences)).thenReturn(
+          whenever(getOffencesForPersonService.execute(hmppsIdForPersonWithNoOffences, filters)).thenReturn(
             Response(
               data = emptyList(),
             ),
@@ -128,7 +124,7 @@ internal class OffencesControllerTest(
         }
 
         it("returns a 404 NOT FOUND status code when person isn't found in the upstream API") {
-          whenever(getOffencesForPersonService.execute(hmppsId)).thenReturn(
+          whenever(getOffencesForPersonService.execute(hmppsId, filters)).thenReturn(
             Response(
               data = emptyList(),
               errors =
@@ -147,7 +143,7 @@ internal class OffencesControllerTest(
         }
 
         it("returns paginated results") {
-          whenever(getOffencesForPersonService.execute(hmppsId)).thenReturn(
+          whenever(getOffencesForPersonService.execute(hmppsId, filters)).thenReturn(
             Response(
               data =
                 List(20) {
@@ -173,7 +169,7 @@ internal class OffencesControllerTest(
         }
 
         it("fails with the appropriate error when an upstream service is down") {
-          whenever(getOffencesForPersonService.execute(hmppsId)).doThrow(
+          whenever(getOffencesForPersonService.execute(hmppsId, filters)).doThrow(
             WebClientResponseException(500, "MockError", null, null, null, null),
           )
 
