@@ -6,25 +6,31 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.CaseNotesGatewa
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.filters.CaseNoteFilter
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CaseNote
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 @Service
 class GetCaseNotesForPersonService(
   @Autowired val caseNotesGateway: CaseNotesGateway,
   @Autowired val getPersonService: GetPersonService,
 ) {
-  fun execute(filter: CaseNoteFilter): Response<List<CaseNote>> {
-    val personResponse = getPersonService.execute(hmppsId = filter.hmppsId)
-    val nomisNumber = personResponse.data?.identifiers?.nomisNumber
-
-    var caseNotes: Response<List<CaseNote>> = Response(data = emptyList())
-
-    if (nomisNumber != null) {
-      caseNotes = caseNotesGateway.getCaseNotesForPerson(id = nomisNumber, filter)
+  fun execute(
+    filter: CaseNoteFilter,
+    filters: ConsumerFilters?,
+  ): Response<List<CaseNote>?> {
+    val personResponse = getPersonService.getNomisNumberWithPrisonFilter(filter.hmppsId, filters)
+    if (personResponse.errors.isNotEmpty()) {
+      return Response(data = emptyList(), errors = personResponse.errors)
     }
+
+    val nomisNumber = personResponse.data?.nomisNumber ?: return Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.NOMIS, UpstreamApiError.Type.ENTITY_NOT_FOUND)))
+
+    val caseNotes = caseNotesGateway.getCaseNotesForPerson(id = nomisNumber, filter)
 
     return Response(
       data = caseNotes.data,
-      errors = personResponse.errors + caseNotes.errors,
+      errors = caseNotes.errors,
     )
   }
 }
