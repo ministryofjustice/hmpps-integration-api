@@ -20,7 +20,7 @@ class PrisonerAlertsGateway(
   lateinit var hmppsAuthGateway: HmppsAuthGateway
 
   private fun authenticationHeader(): Map<String, String> {
-    val token = hmppsAuthGateway.getClientToken("ALERTS")
+    val token = hmppsAuthGateway.getClientToken("PRISONER_ALERTS")
     return mapOf(
       "Authorization" to "Bearer $token",
     )
@@ -36,7 +36,7 @@ class PrisonerAlertsGateway(
         HttpMethod.GET,
         "/prisoners/$prisonerNumber/alerts?isActive=true&page=$page&size=$size",
         authenticationHeader(),
-        UpstreamApi.ALERTS,
+        UpstreamApi.PRISONER_ALERTS,
         badRequestAsError = true,
       )
 

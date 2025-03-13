@@ -4,7 +4,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PaginatedAl
 
 data class PAPaginatedAlerts(
   val content: List<PAAlert>,
-  val totalElements: Int,
+  val totalElements: Long,
   val totalPages: Int,
   val first: Boolean,
   val last: Boolean,
@@ -19,7 +19,7 @@ data class PAPaginatedAlerts(
     PaginatedAlerts(
       content = this.content.map { it.toAlert() },
       totalPages = this.totalPages,
-      totalCount = this.totalElements.toLong(),
+      totalCount = this.totalElements,
       isLastPage = this.last,
       count = this.numberOfElements,
       page = this.number,

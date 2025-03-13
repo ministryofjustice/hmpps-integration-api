@@ -5,7 +5,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 
 data class PAAlert(
-  val alertUid: String,
+  val alertUuid: String,
   val prisonNumber: String,
   val alertCode: PAAlertCode,
   val description: String? = null,
