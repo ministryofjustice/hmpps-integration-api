@@ -41,6 +41,8 @@ services:
     base-url: http://localhost:4007
   incentives:
     base-url: http://localhost:4008
+  alerts:
+    base-url: http://localhost:4009
 
 hmpps.sqs:
   provider: localstack
