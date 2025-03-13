@@ -20,6 +20,7 @@ globals:
         - "/v1/persons/.*/risks/categories"
         - "/v1/persons/.*/sentences"
         - "/v1/persons/.*/offences"
+        - "/v1/persons/.*/person-responsible-officer"
         - "/v1/persons/.*/protected-characteristics"
         - "/v1/persons/.*/reported-adjudications"
         - "/v1/prison/prisoners"

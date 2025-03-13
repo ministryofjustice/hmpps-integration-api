@@ -24,8 +24,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetCommunityOffenderManagerForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPrisonOffenderManagerForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
-import java.net.URLEncoder
-import java.nio.charset.StandardCharsets
 
 @WebMvcTest(controllers = [PersonResponsibleOfficerController::class])
 @ActiveProfiles("test")
@@ -36,16 +34,16 @@ internal class PersonResponsibleOfficerControllerTest(
   @MockitoBean val getPrisonOffenderManagerForPersonService: GetPrisonOffenderManagerForPersonService,
 ) : DescribeSpec() {
   init {
-    val hmppsId = "9999/11111A"
-    val encodedHmppsId = URLEncoder.encode(hmppsId, StandardCharsets.UTF_8)
-    val path = "/v1/persons/$encodedHmppsId/person-responsible-officer"
+    val hmppsId = "11111A"
+    val path = "/v1/persons/$hmppsId/person-responsible-officer"
     val mockMvc = IntegrationAPIMockMvc(springMockMvc)
+    val filters = null
 
     describe("GET $path") {
       beforeTest {
         Mockito.reset(getPrisonOffenderManagerForPersonService)
         Mockito.reset(getCommunityOffenderManagerForPersonService)
-        whenever(getPrisonOffenderManagerForPersonService.execute(hmppsId)).thenReturn(
+        whenever(getPrisonOffenderManagerForPersonService.execute(hmppsId, filters)).thenReturn(
           Response(
             PrisonOffenderManager(
               forename = "Paul",
@@ -55,7 +53,7 @@ internal class PersonResponsibleOfficerControllerTest(
           ),
         )
 
-        whenever(getCommunityOffenderManagerForPersonService.execute(hmppsId)).thenReturn(
+        whenever(getCommunityOffenderManagerForPersonService.execute(hmppsId, filters)).thenReturn(
           Response(
             CommunityOffenderManager(
               name = PersonResponsibleOfficerName("Helen", surname = "Miller"),
@@ -82,7 +80,7 @@ internal class PersonResponsibleOfficerControllerTest(
 
       it("gets the person responsible officer for a person with the matching ID") {
         mockMvc.performAuthorised(path)
-        verify(getCommunityOffenderManagerForPersonService, VerificationModeFactory.times(1)).execute(hmppsId)
+        verify(getCommunityOffenderManagerForPersonService, VerificationModeFactory.times(1)).execute(hmppsId, filters)
       }
 
       it("logs audit") {
