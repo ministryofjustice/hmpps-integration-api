@@ -26,13 +26,17 @@ class AlertsGateway(
     )
   }
 
-  fun getPrisonerAlerts(prisonerNumber: String): Response<AlertsPaginatedAlerts?> {
+  fun getPrisonerAlerts(
+    prisonerNumber: String,
+    page: Int,
+    size: Int,
+  ): Response<AlertsPaginatedAlerts?> {
     val result =
       webClient.request<AlertsPaginatedAlerts>(
         HttpMethod.GET,
-        "/prisoners/$prisonerNumber/alerts",
+        "/prisoners/$prisonerNumber/alerts?isActive=true&page=$page&size=$size",
         authenticationHeader(),
-        UpstreamApi.INCENTIVES,
+        UpstreamApi.ALERTS,
         badRequestAsError = true,
       )
 
