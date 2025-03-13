@@ -211,6 +211,15 @@
         <a href="../../documentation/api/index.html#v1-persons-hmppsid-sentences"><span>/v1/persons/{hmppsId}/sentences</span></a>
       </li>
       <li>
+        <a href="../../documentation/api/index.html#v1-persons-hmppsid-risks-categories"><span>/v1/persons/{hmppsId}/risks/categories</span></a>
+      </li>
+      <li>
+        <a href="../../documentation/api/index.html#v1-persons-hmppsid-reported-adjudications"><span>/v1/persons/{hmppsId}/reported-adjudications</span></a>
+      </li>
+      <li>
+        <a href="../../documentation/api/index.html#v1-persons-hmppsid-protected-characteristics"><span>/v1/persons/{hmppsId}/protected-characteristics</span></a>
+      </li>
+      <li>
         <a href="../../documentation/api/index.html#v1-persons-hmppsid-plp-review-schedule"><span>/v1/persons/{hmppsId}/plp-review-schedule</span></a>
       </li>
       <li>
@@ -233,6 +242,9 @@
       </li>
       <li>
         <a href="../../documentation/api/index.html#v1-persons-hmppsid-cell-location"><span>/v1/persons/{hmppsId}/cell-location</span></a>
+      </li>
+      <li>
+        <a href="../../documentation/api/index.html#v1-persons-hmppsid-case-notes"><span>/v1/persons/{hmppsId}/case-notes</span></a>
       </li>
       <li>
         <a href="../../documentation/api/index.html#v1-persons-hmppsid-alerts"><span>/v1/persons/{hmppsId}/alerts</span></a>
@@ -262,16 +274,7 @@
         <a href="../../documentation/api/index.html#v1-persons-encodedhmppsid-risks-dynamic"><span>/v1/persons/{encodedHmppsId}/risks/dynamic</span></a>
       </li>
       <li>
-        <a href="../../documentation/api/index.html#v1-persons-encodedhmppsid-risks-categories"><span>/v1/persons/{encodedHmppsId}/risks/categories</span></a>
-      </li>
-      <li>
         <a href="../../documentation/api/index.html#v1-persons-encodedhmppsid-risk-management-plan"><span>/v1/persons/{encodedHmppsId}/risk-management-plan</span></a>
-      </li>
-      <li>
-        <a href="../../documentation/api/index.html#v1-persons-encodedhmppsid-reported-adjudications"><span>/v1/persons/{encodedHmppsId}/reported-adjudications</span></a>
-      </li>
-      <li>
-        <a href="../../documentation/api/index.html#v1-persons-encodedhmppsid-protected-characteristics"><span>/v1/persons/{encodedHmppsId}/protected-characteristics</span></a>
       </li>
       <li>
         <a href="../../documentation/api/index.html#v1-persons-encodedhmppsid-offences"><span>/v1/persons/{encodedHmppsId}/offences</span></a>
@@ -284,9 +287,6 @@
       </li>
       <li>
         <a href="../../documentation/api/index.html#v1-persons-encodedhmppsid-images"><span>/v1/persons/{encodedHmppsId}/images</span></a>
-      </li>
-      <li>
-        <a href="../../documentation/api/index.html#v1-persons-encodedhmppsid-case-notes"><span>/v1/persons/{encodedHmppsId}/case-notes</span></a>
       </li>
       <li>
         <a href="../../documentation/api/index.html#v1-persons-encodedhmppsid-alerts-pnd"><span>/v1/persons/{encodedHmppsId}/alerts/pnd</span></a>
@@ -3648,6 +3648,540 @@
 
 
 
+<h2 id="v1-persons-hmppsid-risks-categories">/v1/persons/{hmppsId}/risks/categories</h2>
+
+<h3 id="v1-persons-hmppsid-risks-categories-get">get</h3>
+
+  <p><em>Returns the categories related to an offender.</em></p>
+
+
+  <p><b>Applicable filters</b>: <ul><li>prisons</li></ul></p>
+
+
+
+
+<h4 id="v1-persons-hmppsid-risks-categories-get-parameters">Parameters</h4>
+<table>
+<thead>
+<tr><th>Parameter</th><th>In</th><th>Type</th><th>Required</th><th>Description</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>hmppsId</td>
+<td>path</td>
+<td>string</td>
+<td>true</td>
+<td><p>The HMPPS ID of the person</p>
+
+
+</td>
+</tr>
+
+</tbody>
+</table>
+
+
+
+
+<h4 id="v1-persons-hmppsid-risks-categories-get-responses">Responses</h4>
+<table>
+<thead>
+<tr><th>Status</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>200</td>
+<td>
+<p>Successfully found risk categories for a person with the provided HMPPS ID.</p>
+
+
+
+<pre><code>{
+  "data": {
+    "offenderNo": "string",
+    "assessments": [
+      {
+        "classificationCode": "C",
+        "classification": "Cat C",
+        "assessmentCode": "CATEGORY",
+        "assessmentDescription": "Categorisation",
+        "assessmentDate": "2018-02-11",
+        "nextReviewDate": "2018-02-11",
+        "assessmentAgencyId": "MDI",
+        "assessmentStatus": "P",
+        "assessmentComment": "Comment details"
+      }
+    ],
+    "category": "string",
+    "categoryCode": "string"
+  }
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-dataresponseriskcategory'>DataResponseRiskCategory</a>
+</td>
+</tr>
+
+<tr>
+<td>404</td>
+<td>
+<p>Not Found</p>
+
+
+
+<pre><code>{
+  "status": 404,
+  "userMessage": "404 Not found error: Could not find person with HMPPS id: 2003/0011991D.",
+  "developerMessage": "Could not find person with HMPPS id: 2003/0011991D."
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-personnotfound'>PersonNotFound</a>
+</td>
+</tr>
+
+<tr>
+<td>400</td>
+<td>
+<p>Bad Request</p>
+
+
+
+<pre><code>{
+  "status": 400,
+  "userMessage": "Validation failure: No query parameters specified.",
+  "developerMessage": "No query parameters specified."
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-badrequest'>BadRequest</a>
+</td>
+</tr>
+
+<tr>
+<td>500</td>
+<td>
+<p>Internal Server Error</p>
+
+
+
+<pre><code>{
+  "status": 500,
+  "userMessage": "Internal Server Error",
+  "developerMessage": "Unable to complete request as an upstream service is not responding."
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-internalservererror'>InternalServerError</a>
+</td>
+</tr>
+
+</tbody>
+</table>
+
+
+
+
+<h2 id="v1-persons-hmppsid-reported-adjudications">/v1/persons/{hmppsId}/reported-adjudications</h2>
+
+<h3 id="v1-persons-hmppsid-reported-adjudications-get">get</h3>
+
+  <p><em>Returns adjudications associated with a person, sorted by dateTimeOfIncident (newest first).</em></p>
+
+
+  <p><b>Applicable filters</b>: <ul><li>prisons</li></ul></p>
+
+
+
+
+<h4 id="v1-persons-hmppsid-reported-adjudications-get-parameters">Parameters</h4>
+<table>
+<thead>
+<tr><th>Parameter</th><th>In</th><th>Type</th><th>Required</th><th>Description</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>hmppsId</td>
+<td>path</td>
+<td>string</td>
+<td>true</td>
+<td><p>The HMPPS ID of the person</p>
+
+
+</td>
+</tr>
+
+<tr>
+<td>page</td>
+<td>query</td>
+<td>string</td>
+<td>false</td>
+<td><p>The page number (starting from 1)</p>
+
+
+</td>
+</tr>
+
+<tr>
+<td>perPage</td>
+<td>query</td>
+<td>string</td>
+<td>false</td>
+<td><p>The maximum number of results for a page</p>
+
+
+</td>
+</tr>
+
+</tbody>
+</table>
+
+
+
+
+<h4 id="v1-persons-hmppsid-reported-adjudications-get-responses">Responses</h4>
+<table>
+<thead>
+<tr><th>Status</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>200</td>
+<td>
+<p>OK</p>
+
+
+
+<pre><code>{
+  "data": [
+    {
+      "incidentDetails": {
+        "dateTimeOfIncident": "string"
+      },
+      "isYouthOffender": "boolean",
+      "incidentRole": {
+        "roleCode": "string",
+        "offenceRule": {
+          "paragraphNumber": "string",
+          "paragraphDescription": "string"
+        }
+      },
+      "offenceDetails": {
+        "offenceCode": "number",
+        "offenceRule": {
+          "paragraphNumber": "string",
+          "paragraphDescription": "string"
+        }
+      },
+      "status": "string",
+      "statusReason": "string",
+      "statusDetails": "string",
+      "hearings": [
+        {
+          "dateTimeOfHearing": "string",
+          "oicHearingType": "string",
+          "outcome": {
+            "code": "string",
+            "reason": "string",
+            "details": "string",
+            "plea": "string"
+          }
+        }
+      ],
+      "outcomes": [
+        {
+          "hearing": {
+            "dateTimeOfHearing": "string",
+            "oicHearingType": "string",
+            "outcome": {
+              "code": "string",
+              "reason": "string",
+              "details": "string",
+              "plea": "string"
+            }
+          },
+          "outcome": {
+            "outcome": {
+              "code": "string",
+              "details": "string",
+              "reason": "string",
+              "quashedReason": "string",
+              "canRemove": "boolean"
+            },
+            "referralOutcome": {
+              "code": "string",
+              "details": "string",
+              "reason": "string",
+              "quashedReason": "string",
+              "canRemove": "boolean"
+            }
+          }
+        }
+      ],
+      "punishments": [
+        {
+          "type": "string",
+          "privilegeType": "string",
+          "otherPrivilege": "string",
+          "schedule": {
+            "days": "number",
+            "startDate": "string",
+            "endDate": "string",
+            "suspendedUntil": "string"
+          }
+        }
+      ],
+      "punishmentComments": [
+        {
+          "comment": "string",
+          "reasonForChange": "string",
+          "dateTime": "string"
+        }
+      ]
+    }
+  ],
+  "pagination": {
+    "isLastPage": true,
+    "count": 1,
+    "page": 1,
+    "perPage": 10,
+    "totalCount": 1,
+    "totalPages": 1
+  }
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-paginatedresponseadjudication'>PaginatedResponseAdjudication</a>
+</td>
+</tr>
+
+<tr>
+<td>404</td>
+<td>
+<p>Failed to find adjudications for the person with the provided hmppsId.</p>
+
+
+
+<pre><code>{
+  "status": 404,
+  "userMessage": "404 Not found error: Could not find person with HMPPS id: 2003/0011991D.",
+  "developerMessage": "Could not find person with HMPPS id: 2003/0011991D."
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-personnotfound'>PersonNotFound</a>
+</td>
+</tr>
+
+<tr>
+<td>400</td>
+<td>
+<p>Malformed hmppsId.</p>
+
+
+
+<pre><code>{
+  "status": 400,
+  "userMessage": "Validation failure: No query parameters specified.",
+  "developerMessage": "No query parameters specified."
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-badrequest'>BadRequest</a>
+</td>
+</tr>
+
+<tr>
+<td>500</td>
+<td>
+<p>Internal Server Error</p>
+
+
+
+<pre><code>{
+  "status": 500,
+  "userMessage": "Internal Server Error",
+  "developerMessage": "Unable to complete request as an upstream service is not responding."
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-internalservererror'>InternalServerError</a>
+</td>
+</tr>
+
+</tbody>
+</table>
+
+
+
+
+<h2 id="v1-persons-hmppsid-protected-characteristics">/v1/persons/{hmppsId}/protected-characteristics</h2>
+
+<h3 id="v1-persons-hmppsid-protected-characteristics-get">get</h3>
+
+  <p><em>Returns protected characteristics of a person.</em></p>
+
+
+  <p><b>Applicable filters</b>: <ul><li>prisons</li></ul></p>
+
+
+
+
+<h4 id="v1-persons-hmppsid-protected-characteristics-get-parameters">Parameters</h4>
+<table>
+<thead>
+<tr><th>Parameter</th><th>In</th><th>Type</th><th>Required</th><th>Description</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>hmppsId</td>
+<td>path</td>
+<td>string</td>
+<td>true</td>
+<td><p>The HMPPS ID of the person</p>
+
+
+</td>
+</tr>
+
+</tbody>
+</table>
+
+
+
+
+<h4 id="v1-persons-hmppsid-protected-characteristics-get-responses">Responses</h4>
+<table>
+<thead>
+<tr><th>Status</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>200</td>
+<td>
+<p>OK</p>
+
+
+
+<pre><code>{
+  "data": {
+    "age": 35,
+    "gender": "Female",
+    "sexualOrientation": "Unknown",
+    "ethnicity": "White: Eng./Welsh/Scot./N.Irish/British",
+    "nationality": "Egyptian",
+    "religion": "Church of England (Anglican)",
+    "disabilities": [
+      {
+        "disabilityType": {
+          "code": "string",
+          "description": "string"
+        },
+        "condition": {
+          "code": "string",
+          "description": "string"
+        },
+        "startDate": "string",
+        "endDate": "string",
+        "notes": "Walking issue"
+      }
+    ],
+    "maritalStatus": "Widowed",
+    "reasonableAdjustments": [
+      {
+        "treatmentCode": "WHEELCHR_ACC",
+        "commentText": "abcd",
+        "startDate": "2013-04-11",
+        "endDate": "2023-04-11",
+        "treatmentDescription": "Wheelchair accessibility"
+      }
+    ]
+  }
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-dataresponsepersonprotectedcharacteristics'>DataResponsePersonProtectedCharacteristics</a>
+</td>
+</tr>
+
+<tr>
+<td>400</td>
+<td>
+<p>Bad Request</p>
+
+
+
+<pre><code>{
+  "status": 400,
+  "userMessage": "Validation failure: No query parameters specified.",
+  "developerMessage": "No query parameters specified."
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-badrequest'>BadRequest</a>
+</td>
+</tr>
+
+<tr>
+<td>404</td>
+<td>
+<p>Not Found</p>
+
+
+
+<pre><code>{
+  "status": 404,
+  "userMessage": "404 Not found error: Could not find person with HMPPS id: 2003/0011991D.",
+  "developerMessage": "Could not find person with HMPPS id: 2003/0011991D."
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-personnotfound'>PersonNotFound</a>
+</td>
+</tr>
+
+<tr>
+<td>500</td>
+<td>
+<p>Internal Server Error</p>
+
+
+
+<pre><code>{
+  "status": 500,
+  "userMessage": "Internal Server Error",
+  "developerMessage": "Unable to complete request as an upstream service is not responding."
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-internalservererror'>InternalServerError</a>
+</td>
+</tr>
+
+</tbody>
+</table>
+
+
+
+
 <h2 id="v1-persons-hmppsid-plp-review-schedule">/v1/persons/{hmppsId}/plp-review-schedule</h2>
 
 <h3 id="v1-persons-hmppsid-plp-review-schedule-get">get</h3>
@@ -4672,6 +5206,230 @@
 </td>
 <td>
 <a href='#schema-badrequest'>BadRequest</a>
+</td>
+</tr>
+
+<tr>
+<td>404</td>
+<td>
+<p>Not Found</p>
+
+
+
+<pre><code>{
+  "status": 404,
+  "userMessage": "404 Not found error: Could not find person with HMPPS id: 2003/0011991D.",
+  "developerMessage": "Could not find person with HMPPS id: 2003/0011991D."
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-personnotfound'>PersonNotFound</a>
+</td>
+</tr>
+
+<tr>
+<td>500</td>
+<td>
+<p>Internal Server Error</p>
+
+
+
+<pre><code>{
+  "status": 500,
+  "userMessage": "Internal Server Error",
+  "developerMessage": "Unable to complete request as an upstream service is not responding."
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-internalservererror'>InternalServerError</a>
+</td>
+</tr>
+
+</tbody>
+</table>
+
+
+
+
+<h2 id="v1-persons-hmppsid-case-notes">/v1/persons/{hmppsId}/case-notes</h2>
+
+<h3 id="v1-persons-hmppsid-case-notes-get">get</h3>
+
+  <p><em>Returns case notes associated with a person.</em></p>
+
+
+  <p><b>Applicable filters</b>: <ul><li>prisons</li></ul></p>
+
+
+
+
+<h4 id="v1-persons-hmppsid-case-notes-get-parameters">Parameters</h4>
+<table>
+<thead>
+<tr><th>Parameter</th><th>In</th><th>Type</th><th>Required</th><th>Description</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>hmppsId</td>
+<td>path</td>
+<td>string</td>
+<td>true</td>
+<td><p>The HMPPS ID of the person</p>
+
+
+</td>
+</tr>
+
+<tr>
+<td>startDate</td>
+<td>query</td>
+<td>string</td>
+<td>false</td>
+<td><p>Filter case notes from this date</p>
+
+
+</td>
+</tr>
+
+<tr>
+<td>endDate</td>
+<td>query</td>
+<td>string</td>
+<td>false</td>
+<td><p>Filter case notes up to this date</p>
+
+
+</td>
+</tr>
+
+<tr>
+<td>locationId</td>
+<td>query</td>
+<td>string</td>
+<td>false</td>
+<td><p>Filter by the location. example MDI</p>
+
+
+</td>
+</tr>
+
+<tr>
+<td>page</td>
+<td>query</td>
+<td>integer</td>
+<td>false</td>
+<td>
+
+</td>
+</tr>
+
+<tr>
+<td>perPage</td>
+<td>query</td>
+<td>integer</td>
+<td>false</td>
+<td>
+
+</td>
+</tr>
+
+</tbody>
+</table>
+
+
+
+
+<h4 id="v1-persons-hmppsid-case-notes-get-responses">Responses</h4>
+<table>
+<thead>
+<tr><th>Status</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>200</td>
+<td>
+<p>Successfully found case notes for a person with the provided HMPPS ID.</p>
+
+
+
+<pre><code>{
+  "data": [
+    {
+      "caseNoteId": "1234",
+      "offenderIdentifier": "A1234AA",
+      "type": "KA",
+      "typeDescription": "Key Worker",
+      "subType": "KS",
+      "subTypeDescription": "Key Worker Session",
+      "creationDateTime": "string",
+      "occurrenceDateTime": "string",
+      "text": "This is some text",
+      "locationId": "MDI",
+      "sensitive": "boolean",
+      "amendments": [
+        {
+          "caseNoteAmendmentId": 123232,
+          "creationDateTime": "string",
+          "additionalNoteText": "Some Additional Text"
+        }
+      ]
+    }
+  ],
+  "pagination": {
+    "isLastPage": true,
+    "count": 1,
+    "page": 1,
+    "perPage": 10,
+    "totalCount": 1,
+    "totalPages": 1
+  }
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-paginatedresponsecasenote'>PaginatedResponseCaseNote</a>
+</td>
+</tr>
+
+<tr>
+<td>400</td>
+<td>
+<p>Bad Request</p>
+
+
+
+<pre><code>{
+  "status": 400,
+  "userMessage": "Validation failure: No query parameters specified.",
+  "developerMessage": "No query parameters specified."
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-badrequest'>BadRequest</a>
+</td>
+</tr>
+
+<tr>
+<td>403</td>
+<td>
+<p>Forbidden</p>
+
+
+
+<pre><code>{
+  "status": 403,
+  "userMessage": "Forbidden to complete action by upstream service",
+  "developerMessage": "Forbidden to complete action by upstream service"
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-forbiddenresponse'>ForbiddenResponse</a>
 </td>
 </tr>
 
@@ -6166,124 +6924,6 @@
 
 
 
-<h2 id="v1-persons-encodedhmppsid-risks-categories">/v1/persons/{encodedHmppsId}/risks/categories</h2>
-
-<h3 id="v1-persons-encodedhmppsid-risks-categories-get">get</h3>
-
-  <p><em>Returns the categories related to an offender.</em></p>
-
-
-
-
-<h4 id="v1-persons-encodedhmppsid-risks-categories-get-parameters">Parameters</h4>
-<table>
-<thead>
-<tr><th>Parameter</th><th>In</th><th>Type</th><th>Required</th><th>Description</th></tr>
-</thead>
-<tbody>
-
-<tr>
-<td>encodedHmppsId</td>
-<td>path</td>
-<td>string</td>
-<td>true</td>
-<td><p>A URL-encoded HMPPS identifier</p>
-
-
-</td>
-</tr>
-
-</tbody>
-</table>
-
-
-
-
-<h4 id="v1-persons-encodedhmppsid-risks-categories-get-responses">Responses</h4>
-<table>
-<thead>
-<tr><th>Status</th><th>Description</th><th>Schema</th></tr>
-</thead>
-<tbody>
-
-<tr>
-<td>200</td>
-<td>
-<p>Successfully found risk categories for a person with the provided HMPPS ID.</p>
-
-
-
-<pre><code>{
-  "data": {
-    "offenderNo": "string",
-    "assessments": [
-      {
-        "classificationCode": "C",
-        "classification": "Cat C",
-        "assessmentCode": "CATEGORY",
-        "assessmentDescription": "Categorisation",
-        "assessmentDate": "2018-02-11",
-        "nextReviewDate": "2018-02-11",
-        "assessmentAgencyId": "MDI",
-        "assessmentStatus": "P",
-        "assessmentComment": "Comment details"
-      }
-    ],
-    "category": "string",
-    "categoryCode": "string"
-  }
-}</code></pre>
-
-</td>
-<td>
-<a href='#schema-dataresponseriskcategory'>DataResponseRiskCategory</a>
-</td>
-</tr>
-
-<tr>
-<td>404</td>
-<td>
-<p>Not Found</p>
-
-
-
-<pre><code>{
-  "status": 404,
-  "userMessage": "404 Not found error: Could not find person with HMPPS id: 2003/0011991D.",
-  "developerMessage": "Could not find person with HMPPS id: 2003/0011991D."
-}</code></pre>
-
-</td>
-<td>
-<a href='#schema-personnotfound'>PersonNotFound</a>
-</td>
-</tr>
-
-<tr>
-<td>500</td>
-<td>
-<p>Internal Server Error</p>
-
-
-
-<pre><code>{
-  "status": 500,
-  "userMessage": "Internal Server Error",
-  "developerMessage": "Unable to complete request as an upstream service is not responding."
-}</code></pre>
-
-</td>
-<td>
-<a href='#schema-internalservererror'>InternalServerError</a>
-</td>
-</tr>
-
-</tbody>
-</table>
-
-
-
-
 <h2 id="v1-persons-encodedhmppsid-risk-management-plan">/v1/persons/{encodedHmppsId}/risk-management-plan</h2>
 
 <h3 id="v1-persons-encodedhmppsid-risk-management-plan-get">get</h3>
@@ -6404,356 +7044,6 @@
 </td>
 <td>
 <a href='#schema-forbiddenresponse'>ForbiddenResponse</a>
-</td>
-</tr>
-
-<tr>
-<td>404</td>
-<td>
-<p>Not Found</p>
-
-
-
-<pre><code>{
-  "status": 404,
-  "userMessage": "404 Not found error: Could not find person with HMPPS id: 2003/0011991D.",
-  "developerMessage": "Could not find person with HMPPS id: 2003/0011991D."
-}</code></pre>
-
-</td>
-<td>
-<a href='#schema-personnotfound'>PersonNotFound</a>
-</td>
-</tr>
-
-<tr>
-<td>500</td>
-<td>
-<p>Internal Server Error</p>
-
-
-
-<pre><code>{
-  "status": 500,
-  "userMessage": "Internal Server Error",
-  "developerMessage": "Unable to complete request as an upstream service is not responding."
-}</code></pre>
-
-</td>
-<td>
-<a href='#schema-internalservererror'>InternalServerError</a>
-</td>
-</tr>
-
-</tbody>
-</table>
-
-
-
-
-<h2 id="v1-persons-encodedhmppsid-reported-adjudications">/v1/persons/{encodedHmppsId}/reported-adjudications</h2>
-
-<h3 id="v1-persons-encodedhmppsid-reported-adjudications-get">get</h3>
-
-  <p><em>Returns adjudications associated with a person, sorted by dateTimeOfIncident (newest first).</em></p>
-
-
-
-
-<h4 id="v1-persons-encodedhmppsid-reported-adjudications-get-parameters">Parameters</h4>
-<table>
-<thead>
-<tr><th>Parameter</th><th>In</th><th>Type</th><th>Required</th><th>Description</th></tr>
-</thead>
-<tbody>
-
-<tr>
-<td>encodedHmppsId</td>
-<td>path</td>
-<td>string</td>
-<td>true</td>
-<td><p>A URL-encoded HMPPS identifier</p>
-
-
-</td>
-</tr>
-
-<tr>
-<td>page</td>
-<td>query</td>
-<td>string</td>
-<td>false</td>
-<td><p>The page number (starting from 1)</p>
-
-
-</td>
-</tr>
-
-<tr>
-<td>perPage</td>
-<td>query</td>
-<td>string</td>
-<td>false</td>
-<td><p>The maximum number of results for a page</p>
-
-
-</td>
-</tr>
-
-</tbody>
-</table>
-
-
-
-
-<h4 id="v1-persons-encodedhmppsid-reported-adjudications-get-responses">Responses</h4>
-<table>
-<thead>
-<tr><th>Status</th><th>Description</th><th>Schema</th></tr>
-</thead>
-<tbody>
-
-<tr>
-<td>200</td>
-<td>
-<p>OK</p>
-
-
-
-<pre><code>{
-  "data": [
-    {
-      "incidentDetails": {
-        "dateTimeOfIncident": "string"
-      },
-      "isYouthOffender": "boolean",
-      "incidentRole": {
-        "roleCode": "string",
-        "offenceRule": {
-          "paragraphNumber": "string",
-          "paragraphDescription": "string"
-        }
-      },
-      "offenceDetails": {
-        "offenceCode": "number",
-        "offenceRule": {
-          "paragraphNumber": "string",
-          "paragraphDescription": "string"
-        }
-      },
-      "status": "string",
-      "statusReason": "string",
-      "statusDetails": "string",
-      "hearings": [
-        {
-          "dateTimeOfHearing": "string",
-          "oicHearingType": "string",
-          "outcome": {
-            "code": "string",
-            "reason": "string",
-            "details": "string",
-            "plea": "string"
-          }
-        }
-      ],
-      "outcomes": [
-        {
-          "hearing": {
-            "dateTimeOfHearing": "string",
-            "oicHearingType": "string",
-            "outcome": {
-              "code": "string",
-              "reason": "string",
-              "details": "string",
-              "plea": "string"
-            }
-          },
-          "outcome": {
-            "outcome": {
-              "code": "string",
-              "details": "string",
-              "reason": "string",
-              "quashedReason": "string",
-              "canRemove": "boolean"
-            },
-            "referralOutcome": {
-              "code": "string",
-              "details": "string",
-              "reason": "string",
-              "quashedReason": "string",
-              "canRemove": "boolean"
-            }
-          }
-        }
-      ],
-      "punishments": [
-        {
-          "type": "string",
-          "privilegeType": "string",
-          "otherPrivilege": "string",
-          "schedule": {
-            "days": "number",
-            "startDate": "string",
-            "endDate": "string",
-            "suspendedUntil": "string"
-          }
-        }
-      ],
-      "punishmentComments": [
-        {
-          "comment": "string",
-          "reasonForChange": "string",
-          "dateTime": "string"
-        }
-      ]
-    }
-  ],
-  "pagination": {
-    "isLastPage": true,
-    "count": 1,
-    "page": 1,
-    "perPage": 10,
-    "totalCount": 1,
-    "totalPages": 1
-  }
-}</code></pre>
-
-</td>
-<td>
-<a href='#schema-paginatedresponseadjudication'>PaginatedResponseAdjudication</a>
-</td>
-</tr>
-
-<tr>
-<td>404</td>
-<td>
-<p>Failed to find adjudications for the person with the provided hmppsId.</p>
-
-
-
-<pre><code>{
-  "status": 404,
-  "userMessage": "404 Not found error: Could not find person with HMPPS id: 2003/0011991D.",
-  "developerMessage": "Could not find person with HMPPS id: 2003/0011991D."
-}</code></pre>
-
-</td>
-<td>
-<a href='#schema-personnotfound'>PersonNotFound</a>
-</td>
-</tr>
-
-<tr>
-<td>500</td>
-<td>
-<p>Internal Server Error</p>
-
-
-
-<pre><code>{
-  "status": 500,
-  "userMessage": "Internal Server Error",
-  "developerMessage": "Unable to complete request as an upstream service is not responding."
-}</code></pre>
-
-</td>
-<td>
-<a href='#schema-internalservererror'>InternalServerError</a>
-</td>
-</tr>
-
-</tbody>
-</table>
-
-
-
-
-<h2 id="v1-persons-encodedhmppsid-protected-characteristics">/v1/persons/{encodedHmppsId}/protected-characteristics</h2>
-
-<h3 id="v1-persons-encodedhmppsid-protected-characteristics-get">get</h3>
-
-  <p><em>Returns protected characteristics of a person.</em></p>
-
-
-
-
-<h4 id="v1-persons-encodedhmppsid-protected-characteristics-get-parameters">Parameters</h4>
-<table>
-<thead>
-<tr><th>Parameter</th><th>In</th><th>Type</th><th>Required</th><th>Description</th></tr>
-</thead>
-<tbody>
-
-<tr>
-<td>encodedHmppsId</td>
-<td>path</td>
-<td>string</td>
-<td>true</td>
-<td><p>A URL-encoded HMPPS identifier</p>
-
-
-</td>
-</tr>
-
-</tbody>
-</table>
-
-
-
-
-<h4 id="v1-persons-encodedhmppsid-protected-characteristics-get-responses">Responses</h4>
-<table>
-<thead>
-<tr><th>Status</th><th>Description</th><th>Schema</th></tr>
-</thead>
-<tbody>
-
-<tr>
-<td>200</td>
-<td>
-<p>OK</p>
-
-
-
-<pre><code>{
-  "data": {
-    "age": 35,
-    "gender": "Female",
-    "sexualOrientation": "Unknown",
-    "ethnicity": "White: Eng./Welsh/Scot./N.Irish/British",
-    "nationality": "Egyptian",
-    "religion": "Church of England (Anglican)",
-    "disabilities": [
-      {
-        "disabilityType": {
-          "code": "string",
-          "description": "string"
-        },
-        "condition": {
-          "code": "string",
-          "description": "string"
-        },
-        "startDate": "string",
-        "endDate": "string",
-        "notes": "Walking issue"
-      }
-    ],
-    "maritalStatus": "Widowed",
-    "reasonableAdjustments": [
-      {
-        "treatmentCode": "WHEELCHR_ACC",
-        "commentText": "abcd",
-        "startDate": "2013-04-11",
-        "endDate": "2023-04-11",
-        "treatmentDescription": "Wheelchair accessibility"
-      }
-    ]
-  }
-}</code></pre>
-
-</td>
-<td>
-<a href='#schema-dataresponsepersonprotectedcharacteristics'>DataResponsePersonProtectedCharacteristics</a>
 </td>
 </tr>
 
@@ -7325,208 +7615,6 @@
 </td>
 <td>
 <a href='#schema-personnotfound'>PersonNotFound</a>
-</td>
-</tr>
-
-<tr>
-<td>500</td>
-<td>
-<p>Internal Server Error</p>
-
-
-
-<pre><code>{
-  "status": 500,
-  "userMessage": "Internal Server Error",
-  "developerMessage": "Unable to complete request as an upstream service is not responding."
-}</code></pre>
-
-</td>
-<td>
-<a href='#schema-internalservererror'>InternalServerError</a>
-</td>
-</tr>
-
-</tbody>
-</table>
-
-
-
-
-<h2 id="v1-persons-encodedhmppsid-case-notes">/v1/persons/{encodedHmppsId}/case-notes</h2>
-
-<h3 id="v1-persons-encodedhmppsid-case-notes-get">get</h3>
-
-  <p><em>Returns case notes associated with a person.</em></p>
-
-
-
-
-<h4 id="v1-persons-encodedhmppsid-case-notes-get-parameters">Parameters</h4>
-<table>
-<thead>
-<tr><th>Parameter</th><th>In</th><th>Type</th><th>Required</th><th>Description</th></tr>
-</thead>
-<tbody>
-
-<tr>
-<td>encodedHmppsId</td>
-<td>path</td>
-<td>string</td>
-<td>true</td>
-<td><p>A URL-encoded HMPPS identifier</p>
-
-
-</td>
-</tr>
-
-<tr>
-<td>startDate</td>
-<td>query</td>
-<td>string</td>
-<td>false</td>
-<td><p>Filter case notes from this date</p>
-
-
-</td>
-</tr>
-
-<tr>
-<td>endDate</td>
-<td>query</td>
-<td>string</td>
-<td>false</td>
-<td><p>Filter case notes up to this date</p>
-
-
-</td>
-</tr>
-
-<tr>
-<td>locationId</td>
-<td>query</td>
-<td>string</td>
-<td>false</td>
-<td><p>Filter by the location. example MDI</p>
-
-
-</td>
-</tr>
-
-<tr>
-<td>page</td>
-<td>query</td>
-<td>integer</td>
-<td>false</td>
-<td>
-
-</td>
-</tr>
-
-<tr>
-<td>perPage</td>
-<td>query</td>
-<td>integer</td>
-<td>false</td>
-<td>
-
-</td>
-</tr>
-
-</tbody>
-</table>
-
-
-
-
-<h4 id="v1-persons-encodedhmppsid-case-notes-get-responses">Responses</h4>
-<table>
-<thead>
-<tr><th>Status</th><th>Description</th><th>Schema</th></tr>
-</thead>
-<tbody>
-
-<tr>
-<td>200</td>
-<td>
-<p>Successfully found case notes for a person with the provided HMPPS ID.</p>
-
-
-
-<pre><code>{
-  "data": [
-    {
-      "caseNoteId": "1234",
-      "offenderIdentifier": "A1234AA",
-      "type": "KA",
-      "typeDescription": "Key Worker",
-      "subType": "KS",
-      "subTypeDescription": "Key Worker Session",
-      "creationDateTime": "string",
-      "occurrenceDateTime": "string",
-      "text": "This is some text",
-      "locationId": "MDI",
-      "sensitive": "boolean",
-      "amendments": [
-        {
-          "caseNoteAmendmentId": 123232,
-          "creationDateTime": "string",
-          "additionalNoteText": "Some Additional Text"
-        }
-      ]
-    }
-  ],
-  "pagination": {
-    "isLastPage": true,
-    "count": 1,
-    "page": 1,
-    "perPage": 10,
-    "totalCount": 1,
-    "totalPages": 1
-  }
-}</code></pre>
-
-</td>
-<td>
-<a href='#schema-paginatedresponsecasenote'>PaginatedResponseCaseNote</a>
-</td>
-</tr>
-
-<tr>
-<td>404</td>
-<td>
-<p>Not Found</p>
-
-
-
-<pre><code>{
-  "status": 404,
-  "userMessage": "404 Not found error: Could not find person with HMPPS id: 2003/0011991D.",
-  "developerMessage": "Could not find person with HMPPS id: 2003/0011991D."
-}</code></pre>
-
-</td>
-<td>
-<a href='#schema-personnotfound'>PersonNotFound</a>
-</td>
-</tr>
-
-<tr>
-<td>403</td>
-<td>
-<p>Forbidden</p>
-
-
-
-<pre><code>{
-  "status": 403,
-  "userMessage": "Forbidden to complete action by upstream service",
-  "developerMessage": "Forbidden to complete action by upstream service"
-}</code></pre>
-
-</td>
-<td>
-<a href='#schema-forbiddenresponse'>ForbiddenResponse</a>
 </td>
 </tr>
 
@@ -11592,6 +11680,1153 @@
 </tbody>
 </table>
 
+<h3 id="schema-dataresponseriskcategory">DataResponseRiskCategory</h3>
+
+
+<table class='schema-dataresponseriskcategory'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>data</td>
+<td>object</td>
+<td>true</td>
+<td></td>
+<td>
+  <a href='#schema-riskcategory'>RiskCategory</a>
+</td>
+</tr>
+
+</tbody>
+</table>
+
+<h3 id="schema-riskassessment">RiskAssessment</h3>
+
+
+<table class='schema-riskassessment'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>classificationCode</td>
+<td>string</td>
+<td>false</td>
+<td><p>The classification code of the risk</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>classification</td>
+<td>string</td>
+<td>false</td>
+<td><p>The classification of the code</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>assessmentCode</td>
+<td>string</td>
+<td>false</td>
+<td><p>The assessment code</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>assessmentDescription</td>
+<td>string</td>
+<td>false</td>
+<td><p>The description of the assessment</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>assessmentDate</td>
+<td>string</td>
+<td>false</td>
+<td><p>The date of the assessment</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>nextReviewDate</td>
+<td>string</td>
+<td>false</td>
+<td><p>Next review date</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>assessmentAgencyId</td>
+<td>string</td>
+<td>false</td>
+<td><p>Agency ID of the assessment</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>assessmentStatus</td>
+<td>string</td>
+<td>false</td>
+<td><p>The status of the assessment</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>assessmentComment</td>
+<td>string</td>
+<td>false</td>
+<td><p>Comments regarding the assessment</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+</tbody>
+</table>
+
+<h3 id="schema-riskcategory">RiskCategory</h3>
+
+
+<table class='schema-riskcategory'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>offenderNo</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>assessments</td>
+<td>array</td>
+<td>true</td>
+<td></td>
+<td>
+  <a href='#schema-riskassessment'>RiskAssessment</a>
+</td>
+</tr>
+
+<tr>
+<td>category</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>categoryCode</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+</tbody>
+</table>
+
+<h3 id="schema-adjudication">Adjudication</h3>
+
+
+<table class='schema-adjudication'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>incidentDetails</td>
+<td>object</td>
+<td>false</td>
+<td></td>
+<td>
+  <a href='#schema-incidentdetailsdto'>IncidentDetailsDto</a>
+</td>
+</tr>
+
+<tr>
+<td>isYouthOffender</td>
+<td>boolean</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>incidentRole</td>
+<td>object</td>
+<td>false</td>
+<td></td>
+<td>
+  <a href='#schema-incidentroledto'>IncidentRoleDto</a>
+</td>
+</tr>
+
+<tr>
+<td>offenceDetails</td>
+<td>object</td>
+<td>false</td>
+<td></td>
+<td>
+  <a href='#schema-offencedto'>OffenceDto</a>
+</td>
+</tr>
+
+<tr>
+<td>status</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>statusReason</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>statusDetails</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>hearings</td>
+<td>array</td>
+<td>false</td>
+<td></td>
+<td>
+  <a href='#schema-hearingdto'>HearingDto</a>
+</td>
+</tr>
+
+<tr>
+<td>outcomes</td>
+<td>array</td>
+<td>false</td>
+<td></td>
+<td>
+  <a href='#schema-outcomehistorydto'>OutcomeHistoryDto</a>
+</td>
+</tr>
+
+<tr>
+<td>punishments</td>
+<td>array</td>
+<td>false</td>
+<td></td>
+<td>
+  <a href='#schema-punishmentdto'>PunishmentDto</a>
+</td>
+</tr>
+
+<tr>
+<td>punishmentComments</td>
+<td>array</td>
+<td>false</td>
+<td></td>
+<td>
+  <a href='#schema-punishmentcommentdto'>PunishmentCommentDto</a>
+</td>
+</tr>
+
+</tbody>
+</table>
+
+<h3 id="schema-combinedoutcomedto">CombinedOutcomeDto</h3>
+
+
+<table class='schema-combinedoutcomedto'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>outcome</td>
+<td>object</td>
+<td>false</td>
+<td></td>
+<td>
+  <a href='#schema-outcomedto'>OutcomeDto</a>
+</td>
+</tr>
+
+<tr>
+<td>referralOutcome</td>
+<td>object</td>
+<td>false</td>
+<td></td>
+<td>
+  <a href='#schema-outcomedto'>OutcomeDto</a>
+</td>
+</tr>
+
+</tbody>
+</table>
+
+<h3 id="schema-hearingdto">HearingDto</h3>
+
+
+<table class='schema-hearingdto'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>dateTimeOfHearing</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>oicHearingType</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>outcome</td>
+<td>object</td>
+<td>false</td>
+<td></td>
+<td>
+  <a href='#schema-hearingoutcomedto'>HearingOutcomeDto</a>
+</td>
+</tr>
+
+</tbody>
+</table>
+
+<h3 id="schema-hearingoutcomedto">HearingOutcomeDto</h3>
+
+
+<table class='schema-hearingoutcomedto'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>code</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>reason</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>details</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>plea</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+</tbody>
+</table>
+
+<h3 id="schema-incidentdetailsdto">IncidentDetailsDto</h3>
+
+
+<table class='schema-incidentdetailsdto'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>dateTimeOfIncident</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+</tbody>
+</table>
+
+<h3 id="schema-incidentroledto">IncidentRoleDto</h3>
+
+
+<table class='schema-incidentroledto'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>roleCode</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>offenceRule</td>
+<td>object</td>
+<td>false</td>
+<td></td>
+<td>
+  <a href='#schema-offenceruledetailsdto'>OffenceRuleDetailsDto</a>
+</td>
+</tr>
+
+</tbody>
+</table>
+
+<h3 id="schema-offencedto">OffenceDto</h3>
+
+
+<table class='schema-offencedto'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>offenceCode</td>
+<td>number</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>offenceRule</td>
+<td>object</td>
+<td>false</td>
+<td></td>
+<td>
+  <a href='#schema-offenceruledto'>OffenceRuleDto</a>
+</td>
+</tr>
+
+</tbody>
+</table>
+
+<h3 id="schema-offenceruledetailsdto">OffenceRuleDetailsDto</h3>
+
+
+<table class='schema-offenceruledetailsdto'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>paragraphNumber</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>paragraphDescription</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+</tbody>
+</table>
+
+<h3 id="schema-offenceruledto">OffenceRuleDto</h3>
+
+
+<table class='schema-offenceruledto'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>paragraphNumber</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>paragraphDescription</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+</tbody>
+</table>
+
+<h3 id="schema-outcomedto">OutcomeDto</h3>
+
+
+<table class='schema-outcomedto'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>code</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>details</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>reason</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>quashedReason</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>canRemove</td>
+<td>boolean</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+</tbody>
+</table>
+
+<h3 id="schema-outcomehistorydto">OutcomeHistoryDto</h3>
+
+
+<table class='schema-outcomehistorydto'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>hearing</td>
+<td>object</td>
+<td>false</td>
+<td></td>
+<td>
+  <a href='#schema-hearingdto'>HearingDto</a>
+</td>
+</tr>
+
+<tr>
+<td>outcome</td>
+<td>object</td>
+<td>false</td>
+<td></td>
+<td>
+  <a href='#schema-combinedoutcomedto'>CombinedOutcomeDto</a>
+</td>
+</tr>
+
+</tbody>
+</table>
+
+<h3 id="schema-paginatedresponseadjudication">PaginatedResponseAdjudication</h3>
+
+
+<table class='schema-paginatedresponseadjudication'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>data</td>
+<td>array</td>
+<td>true</td>
+<td></td>
+<td>
+  <a href='#schema-adjudication'>Adjudication</a>
+</td>
+</tr>
+
+<tr>
+<td>pagination</td>
+<td>object</td>
+<td>true</td>
+<td></td>
+<td>
+  <a href='#schema-pagination'>Pagination</a>
+</td>
+</tr>
+
+</tbody>
+</table>
+
+<h3 id="schema-punishmentcommentdto">PunishmentCommentDto</h3>
+
+
+<table class='schema-punishmentcommentdto'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>comment</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>reasonForChange</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>dateTime</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+</tbody>
+</table>
+
+<h3 id="schema-punishmentdto">PunishmentDto</h3>
+
+
+<table class='schema-punishmentdto'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>type</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>privilegeType</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>otherPrivilege</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>schedule</td>
+<td>object</td>
+<td>false</td>
+<td></td>
+<td>
+  <a href='#schema-punishmentscheduledto'>PunishmentScheduleDto</a>
+</td>
+</tr>
+
+</tbody>
+</table>
+
+<h3 id="schema-punishmentscheduledto">PunishmentScheduleDto</h3>
+
+
+<table class='schema-punishmentscheduledto'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>days</td>
+<td>number</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>startDate</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>endDate</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>suspendedUntil</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+</tbody>
+</table>
+
+<h3 id="schema-dataresponsepersonprotectedcharacteristics">DataResponsePersonProtectedCharacteristics</h3>
+
+
+<table class='schema-dataresponsepersonprotectedcharacteristics'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>data</td>
+<td>object</td>
+<td>true</td>
+<td></td>
+<td>
+  <a href='#schema-personprotectedcharacteristics'>PersonProtectedCharacteristics</a>
+</td>
+</tr>
+
+</tbody>
+</table>
+
+<h3 id="schema-disability">Disability</h3>
+
+
+<table class='schema-disability'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>disabilityType</td>
+<td>object</td>
+<td>false</td>
+<td></td>
+<td>
+  <a href='#schema-keyvalue'>KeyValue</a>
+</td>
+</tr>
+
+<tr>
+<td>condition</td>
+<td>object</td>
+<td>false</td>
+<td></td>
+<td>
+  <a href='#schema-keyvalue'>KeyValue</a>
+</td>
+</tr>
+
+<tr>
+<td>startDate</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>endDate</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>notes</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+</tbody>
+</table>
+
+<h3 id="schema-keyvalue">KeyValue</h3>
+
+
+<table class='schema-keyvalue'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>code</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>description</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+</tbody>
+</table>
+
+<h3 id="schema-personprotectedcharacteristics">PersonProtectedCharacteristics</h3>
+
+
+<table class='schema-personprotectedcharacteristics'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>age</td>
+<td>number</td>
+<td>true</td>
+<td><p>Age of the person</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>gender</td>
+<td>string</td>
+<td>false</td>
+<td><p>Gender of the person</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>sexualOrientation</td>
+<td>string</td>
+<td>false</td>
+<td><p>Sexual orientation of the person</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>ethnicity</td>
+<td>string</td>
+<td>false</td>
+<td><p>Ethnicity of the person</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>nationality</td>
+<td>string</td>
+<td>false</td>
+<td><p>Nationality of the person</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>religion</td>
+<td>string</td>
+<td>false</td>
+<td><p>Religion of the person</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>disabilities</td>
+<td>array</td>
+<td>true</td>
+<td></td>
+<td>
+  <a href='#schema-disability'>Disability</a>
+</td>
+</tr>
+
+<tr>
+<td>maritalStatus</td>
+<td>string</td>
+<td>false</td>
+<td><p>Marital status of the person</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>reasonableAdjustments</td>
+<td>array</td>
+<td>true</td>
+<td></td>
+<td>
+  <a href='#schema-reasonableadjustment'>ReasonableAdjustment</a>
+</td>
+</tr>
+
+</tbody>
+</table>
+
+<h3 id="schema-reasonableadjustment">ReasonableAdjustment</h3>
+
+
+<table class='schema-reasonableadjustment'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>treatmentCode</td>
+<td>string</td>
+<td>false</td>
+<td><p>Treatment code</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>commentText</td>
+<td>string</td>
+<td>false</td>
+<td><p>Comment text</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>startDate</td>
+<td>string</td>
+<td>false</td>
+<td><p>Start date</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>endDate</td>
+<td>string</td>
+<td>false</td>
+<td><p>End date</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>treatmentDescription</td>
+<td>string</td>
+<td>false</td>
+<td><p>Treatment description</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+</tbody>
+</table>
+
 <h3 id="schema-dataresponsereviewschedules">DataResponseReviewSchedules</h3>
 
 
@@ -13065,6 +14300,217 @@
 <td></td>
 <td>
   <a href='#schema-celllocation'>CellLocation</a>
+</td>
+</tr>
+
+</tbody>
+</table>
+
+<h3 id="schema-casenote">CaseNote</h3>
+
+
+<table class='schema-casenote'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>caseNoteId</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>offenderIdentifier</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>type</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>typeDescription</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>subType</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>subTypeDescription</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>creationDateTime</td>
+<td>string</td>
+<td>false</td>
+<td><p>Date and Time of Case Note creation</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>occurrenceDateTime</td>
+<td>string</td>
+<td>false</td>
+<td><p>Date and Time of when case note contact with offender was made</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>text</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>locationId</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>sensitive</td>
+<td>boolean</td>
+<td>true</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>amendments</td>
+<td>array</td>
+<td>true</td>
+<td><p>List of amendments to the case note</p>
+</td>
+<td>
+  <a href='#schema-casenoteamendment'>CaseNoteAmendment</a>
+</td>
+</tr>
+
+</tbody>
+</table>
+
+<h3 id="schema-casenoteamendment">CaseNoteAmendment</h3>
+<p>List of amendments to the case note</p>
+
+
+<table class='schema-casenoteamendment'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>caseNoteAmendmentId</td>
+<td>integer</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>creationDateTime</td>
+<td>string</td>
+<td>false</td>
+<td><p>Date and Time of Case Note creation</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>additionalNoteText</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+</tbody>
+</table>
+
+<h3 id="schema-paginatedresponsecasenote">PaginatedResponseCaseNote</h3>
+
+
+<table class='schema-paginatedresponsecasenote'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>data</td>
+<td>array</td>
+<td>true</td>
+<td></td>
+<td>
+  <a href='#schema-casenote'>CaseNote</a>
+</td>
+</tr>
+
+<tr>
+<td>pagination</td>
+<td>object</td>
+<td>true</td>
+<td></td>
+<td>
+  <a href='#schema-pagination'>Pagination</a>
 </td>
 </tr>
 
@@ -15139,191 +16585,6 @@
 </tbody>
 </table>
 
-<h3 id="schema-dataresponseriskcategory">DataResponseRiskCategory</h3>
-
-
-<table class='schema-dataresponseriskcategory'>
-<thead>
-<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
-</thead>
-<tbody>
-
-<tr>
-<td>data</td>
-<td>object</td>
-<td>true</td>
-<td></td>
-<td>
-  <a href='#schema-riskcategory'>RiskCategory</a>
-</td>
-</tr>
-
-</tbody>
-</table>
-
-<h3 id="schema-riskassessment">RiskAssessment</h3>
-
-
-<table class='schema-riskassessment'>
-<thead>
-<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
-</thead>
-<tbody>
-
-<tr>
-<td>classificationCode</td>
-<td>string</td>
-<td>false</td>
-<td><p>The classification code of the risk</p>
-</td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>classification</td>
-<td>string</td>
-<td>false</td>
-<td><p>The classification of the code</p>
-</td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>assessmentCode</td>
-<td>string</td>
-<td>false</td>
-<td><p>The assessment code</p>
-</td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>assessmentDescription</td>
-<td>string</td>
-<td>false</td>
-<td><p>The description of the assessment</p>
-</td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>assessmentDate</td>
-<td>string</td>
-<td>false</td>
-<td><p>The date of the assessment</p>
-</td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>nextReviewDate</td>
-<td>string</td>
-<td>false</td>
-<td><p>Next review date</p>
-</td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>assessmentAgencyId</td>
-<td>string</td>
-<td>false</td>
-<td><p>Agency ID of the assessment</p>
-</td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>assessmentStatus</td>
-<td>string</td>
-<td>false</td>
-<td><p>The status of the assessment</p>
-</td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>assessmentComment</td>
-<td>string</td>
-<td>false</td>
-<td><p>Comments regarding the assessment</p>
-</td>
-<td>
-  
-</td>
-</tr>
-
-</tbody>
-</table>
-
-<h3 id="schema-riskcategory">RiskCategory</h3>
-
-
-<table class='schema-riskcategory'>
-<thead>
-<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
-</thead>
-<tbody>
-
-<tr>
-<td>offenderNo</td>
-<td>string</td>
-<td>false</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>assessments</td>
-<td>array</td>
-<td>true</td>
-<td></td>
-<td>
-  <a href='#schema-riskassessment'>RiskAssessment</a>
-</td>
-</tr>
-
-<tr>
-<td>category</td>
-<td>string</td>
-<td>false</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>categoryCode</td>
-<td>string</td>
-<td>false</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-</tbody>
-</table>
-
 <h3 id="schema-paginatedresponseriskmanagementplan">PaginatedResponseRiskManagementPlan</h3>
 
 
@@ -15513,968 +16774,6 @@
 <td>string</td>
 <td>true</td>
 <td><p>Once a countersignature has been applied to the plan, the plan is considered complete. This is the date the plan has been countersigned.</p>
-</td>
-<td>
-  
-</td>
-</tr>
-
-</tbody>
-</table>
-
-<h3 id="schema-adjudication">Adjudication</h3>
-
-
-<table class='schema-adjudication'>
-<thead>
-<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
-</thead>
-<tbody>
-
-<tr>
-<td>incidentDetails</td>
-<td>object</td>
-<td>false</td>
-<td></td>
-<td>
-  <a href='#schema-incidentdetailsdto'>IncidentDetailsDto</a>
-</td>
-</tr>
-
-<tr>
-<td>isYouthOffender</td>
-<td>boolean</td>
-<td>false</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>incidentRole</td>
-<td>object</td>
-<td>false</td>
-<td></td>
-<td>
-  <a href='#schema-incidentroledto'>IncidentRoleDto</a>
-</td>
-</tr>
-
-<tr>
-<td>offenceDetails</td>
-<td>object</td>
-<td>false</td>
-<td></td>
-<td>
-  <a href='#schema-offencedto'>OffenceDto</a>
-</td>
-</tr>
-
-<tr>
-<td>status</td>
-<td>string</td>
-<td>false</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>statusReason</td>
-<td>string</td>
-<td>false</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>statusDetails</td>
-<td>string</td>
-<td>false</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>hearings</td>
-<td>array</td>
-<td>false</td>
-<td></td>
-<td>
-  <a href='#schema-hearingdto'>HearingDto</a>
-</td>
-</tr>
-
-<tr>
-<td>outcomes</td>
-<td>array</td>
-<td>false</td>
-<td></td>
-<td>
-  <a href='#schema-outcomehistorydto'>OutcomeHistoryDto</a>
-</td>
-</tr>
-
-<tr>
-<td>punishments</td>
-<td>array</td>
-<td>false</td>
-<td></td>
-<td>
-  <a href='#schema-punishmentdto'>PunishmentDto</a>
-</td>
-</tr>
-
-<tr>
-<td>punishmentComments</td>
-<td>array</td>
-<td>false</td>
-<td></td>
-<td>
-  <a href='#schema-punishmentcommentdto'>PunishmentCommentDto</a>
-</td>
-</tr>
-
-</tbody>
-</table>
-
-<h3 id="schema-combinedoutcomedto">CombinedOutcomeDto</h3>
-
-
-<table class='schema-combinedoutcomedto'>
-<thead>
-<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
-</thead>
-<tbody>
-
-<tr>
-<td>outcome</td>
-<td>object</td>
-<td>false</td>
-<td></td>
-<td>
-  <a href='#schema-outcomedto'>OutcomeDto</a>
-</td>
-</tr>
-
-<tr>
-<td>referralOutcome</td>
-<td>object</td>
-<td>false</td>
-<td></td>
-<td>
-  <a href='#schema-outcomedto'>OutcomeDto</a>
-</td>
-</tr>
-
-</tbody>
-</table>
-
-<h3 id="schema-hearingdto">HearingDto</h3>
-
-
-<table class='schema-hearingdto'>
-<thead>
-<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
-</thead>
-<tbody>
-
-<tr>
-<td>dateTimeOfHearing</td>
-<td>string</td>
-<td>false</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>oicHearingType</td>
-<td>string</td>
-<td>false</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>outcome</td>
-<td>object</td>
-<td>false</td>
-<td></td>
-<td>
-  <a href='#schema-hearingoutcomedto'>HearingOutcomeDto</a>
-</td>
-</tr>
-
-</tbody>
-</table>
-
-<h3 id="schema-hearingoutcomedto">HearingOutcomeDto</h3>
-
-
-<table class='schema-hearingoutcomedto'>
-<thead>
-<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
-</thead>
-<tbody>
-
-<tr>
-<td>code</td>
-<td>string</td>
-<td>false</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>reason</td>
-<td>string</td>
-<td>false</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>details</td>
-<td>string</td>
-<td>false</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>plea</td>
-<td>string</td>
-<td>false</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-</tbody>
-</table>
-
-<h3 id="schema-incidentdetailsdto">IncidentDetailsDto</h3>
-
-
-<table class='schema-incidentdetailsdto'>
-<thead>
-<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
-</thead>
-<tbody>
-
-<tr>
-<td>dateTimeOfIncident</td>
-<td>string</td>
-<td>false</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-</tbody>
-</table>
-
-<h3 id="schema-incidentroledto">IncidentRoleDto</h3>
-
-
-<table class='schema-incidentroledto'>
-<thead>
-<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
-</thead>
-<tbody>
-
-<tr>
-<td>roleCode</td>
-<td>string</td>
-<td>false</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>offenceRule</td>
-<td>object</td>
-<td>false</td>
-<td></td>
-<td>
-  <a href='#schema-offenceruledetailsdto'>OffenceRuleDetailsDto</a>
-</td>
-</tr>
-
-</tbody>
-</table>
-
-<h3 id="schema-offencedto">OffenceDto</h3>
-
-
-<table class='schema-offencedto'>
-<thead>
-<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
-</thead>
-<tbody>
-
-<tr>
-<td>offenceCode</td>
-<td>number</td>
-<td>false</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>offenceRule</td>
-<td>object</td>
-<td>false</td>
-<td></td>
-<td>
-  <a href='#schema-offenceruledto'>OffenceRuleDto</a>
-</td>
-</tr>
-
-</tbody>
-</table>
-
-<h3 id="schema-offenceruledetailsdto">OffenceRuleDetailsDto</h3>
-
-
-<table class='schema-offenceruledetailsdto'>
-<thead>
-<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
-</thead>
-<tbody>
-
-<tr>
-<td>paragraphNumber</td>
-<td>string</td>
-<td>false</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>paragraphDescription</td>
-<td>string</td>
-<td>false</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-</tbody>
-</table>
-
-<h3 id="schema-offenceruledto">OffenceRuleDto</h3>
-
-
-<table class='schema-offenceruledto'>
-<thead>
-<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
-</thead>
-<tbody>
-
-<tr>
-<td>paragraphNumber</td>
-<td>string</td>
-<td>false</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>paragraphDescription</td>
-<td>string</td>
-<td>false</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-</tbody>
-</table>
-
-<h3 id="schema-outcomedto">OutcomeDto</h3>
-
-
-<table class='schema-outcomedto'>
-<thead>
-<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
-</thead>
-<tbody>
-
-<tr>
-<td>code</td>
-<td>string</td>
-<td>false</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>details</td>
-<td>string</td>
-<td>false</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>reason</td>
-<td>string</td>
-<td>false</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>quashedReason</td>
-<td>string</td>
-<td>false</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>canRemove</td>
-<td>boolean</td>
-<td>false</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-</tbody>
-</table>
-
-<h3 id="schema-outcomehistorydto">OutcomeHistoryDto</h3>
-
-
-<table class='schema-outcomehistorydto'>
-<thead>
-<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
-</thead>
-<tbody>
-
-<tr>
-<td>hearing</td>
-<td>object</td>
-<td>false</td>
-<td></td>
-<td>
-  <a href='#schema-hearingdto'>HearingDto</a>
-</td>
-</tr>
-
-<tr>
-<td>outcome</td>
-<td>object</td>
-<td>false</td>
-<td></td>
-<td>
-  <a href='#schema-combinedoutcomedto'>CombinedOutcomeDto</a>
-</td>
-</tr>
-
-</tbody>
-</table>
-
-<h3 id="schema-paginatedresponseadjudication">PaginatedResponseAdjudication</h3>
-
-
-<table class='schema-paginatedresponseadjudication'>
-<thead>
-<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
-</thead>
-<tbody>
-
-<tr>
-<td>data</td>
-<td>array</td>
-<td>true</td>
-<td></td>
-<td>
-  <a href='#schema-adjudication'>Adjudication</a>
-</td>
-</tr>
-
-<tr>
-<td>pagination</td>
-<td>object</td>
-<td>true</td>
-<td></td>
-<td>
-  <a href='#schema-pagination'>Pagination</a>
-</td>
-</tr>
-
-</tbody>
-</table>
-
-<h3 id="schema-punishmentcommentdto">PunishmentCommentDto</h3>
-
-
-<table class='schema-punishmentcommentdto'>
-<thead>
-<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
-</thead>
-<tbody>
-
-<tr>
-<td>comment</td>
-<td>string</td>
-<td>false</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>reasonForChange</td>
-<td>string</td>
-<td>false</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>dateTime</td>
-<td>string</td>
-<td>false</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-</tbody>
-</table>
-
-<h3 id="schema-punishmentdto">PunishmentDto</h3>
-
-
-<table class='schema-punishmentdto'>
-<thead>
-<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
-</thead>
-<tbody>
-
-<tr>
-<td>type</td>
-<td>string</td>
-<td>false</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>privilegeType</td>
-<td>string</td>
-<td>false</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>otherPrivilege</td>
-<td>string</td>
-<td>false</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>schedule</td>
-<td>object</td>
-<td>false</td>
-<td></td>
-<td>
-  <a href='#schema-punishmentscheduledto'>PunishmentScheduleDto</a>
-</td>
-</tr>
-
-</tbody>
-</table>
-
-<h3 id="schema-punishmentscheduledto">PunishmentScheduleDto</h3>
-
-
-<table class='schema-punishmentscheduledto'>
-<thead>
-<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
-</thead>
-<tbody>
-
-<tr>
-<td>days</td>
-<td>number</td>
-<td>false</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>startDate</td>
-<td>string</td>
-<td>false</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>endDate</td>
-<td>string</td>
-<td>false</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>suspendedUntil</td>
-<td>string</td>
-<td>false</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-</tbody>
-</table>
-
-<h3 id="schema-dataresponsepersonprotectedcharacteristics">DataResponsePersonProtectedCharacteristics</h3>
-
-
-<table class='schema-dataresponsepersonprotectedcharacteristics'>
-<thead>
-<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
-</thead>
-<tbody>
-
-<tr>
-<td>data</td>
-<td>object</td>
-<td>true</td>
-<td></td>
-<td>
-  <a href='#schema-personprotectedcharacteristics'>PersonProtectedCharacteristics</a>
-</td>
-</tr>
-
-</tbody>
-</table>
-
-<h3 id="schema-disability">Disability</h3>
-
-
-<table class='schema-disability'>
-<thead>
-<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
-</thead>
-<tbody>
-
-<tr>
-<td>disabilityType</td>
-<td>object</td>
-<td>false</td>
-<td></td>
-<td>
-  <a href='#schema-keyvalue'>KeyValue</a>
-</td>
-</tr>
-
-<tr>
-<td>condition</td>
-<td>object</td>
-<td>false</td>
-<td></td>
-<td>
-  <a href='#schema-keyvalue'>KeyValue</a>
-</td>
-</tr>
-
-<tr>
-<td>startDate</td>
-<td>string</td>
-<td>false</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>endDate</td>
-<td>string</td>
-<td>false</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>notes</td>
-<td>string</td>
-<td>false</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-</tbody>
-</table>
-
-<h3 id="schema-keyvalue">KeyValue</h3>
-
-
-<table class='schema-keyvalue'>
-<thead>
-<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
-</thead>
-<tbody>
-
-<tr>
-<td>code</td>
-<td>string</td>
-<td>false</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>description</td>
-<td>string</td>
-<td>false</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-</tbody>
-</table>
-
-<h3 id="schema-personprotectedcharacteristics">PersonProtectedCharacteristics</h3>
-
-
-<table class='schema-personprotectedcharacteristics'>
-<thead>
-<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
-</thead>
-<tbody>
-
-<tr>
-<td>age</td>
-<td>number</td>
-<td>true</td>
-<td><p>Age of the person</p>
-</td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>gender</td>
-<td>string</td>
-<td>false</td>
-<td><p>Gender of the person</p>
-</td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>sexualOrientation</td>
-<td>string</td>
-<td>false</td>
-<td><p>Sexual orientation of the person</p>
-</td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>ethnicity</td>
-<td>string</td>
-<td>false</td>
-<td><p>Ethnicity of the person</p>
-</td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>nationality</td>
-<td>string</td>
-<td>false</td>
-<td><p>Nationality of the person</p>
-</td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>religion</td>
-<td>string</td>
-<td>false</td>
-<td><p>Religion of the person</p>
-</td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>disabilities</td>
-<td>array</td>
-<td>true</td>
-<td></td>
-<td>
-  <a href='#schema-disability'>Disability</a>
-</td>
-</tr>
-
-<tr>
-<td>maritalStatus</td>
-<td>string</td>
-<td>false</td>
-<td><p>Marital status of the person</p>
-</td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>reasonableAdjustments</td>
-<td>array</td>
-<td>true</td>
-<td></td>
-<td>
-  <a href='#schema-reasonableadjustment'>ReasonableAdjustment</a>
-</td>
-</tr>
-
-</tbody>
-</table>
-
-<h3 id="schema-reasonableadjustment">ReasonableAdjustment</h3>
-
-
-<table class='schema-reasonableadjustment'>
-<thead>
-<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
-</thead>
-<tbody>
-
-<tr>
-<td>treatmentCode</td>
-<td>string</td>
-<td>false</td>
-<td><p>Treatment code</p>
-</td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>commentText</td>
-<td>string</td>
-<td>false</td>
-<td><p>Comment text</p>
-</td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>startDate</td>
-<td>string</td>
-<td>false</td>
-<td><p>Start date</p>
-</td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>endDate</td>
-<td>string</td>
-<td>false</td>
-<td><p>End date</p>
-</td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>treatmentDescription</td>
-<td>string</td>
-<td>false</td>
-<td><p>Treatment description</p>
 </td>
 <td>
   
@@ -16965,217 +17264,6 @@
 <td></td>
 <td>
   <a href='#schema-imagemetadata'>ImageMetadata</a>
-</td>
-</tr>
-
-<tr>
-<td>pagination</td>
-<td>object</td>
-<td>true</td>
-<td></td>
-<td>
-  <a href='#schema-pagination'>Pagination</a>
-</td>
-</tr>
-
-</tbody>
-</table>
-
-<h3 id="schema-casenote">CaseNote</h3>
-
-
-<table class='schema-casenote'>
-<thead>
-<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
-</thead>
-<tbody>
-
-<tr>
-<td>caseNoteId</td>
-<td>string</td>
-<td>false</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>offenderIdentifier</td>
-<td>string</td>
-<td>false</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>type</td>
-<td>string</td>
-<td>false</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>typeDescription</td>
-<td>string</td>
-<td>false</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>subType</td>
-<td>string</td>
-<td>false</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>subTypeDescription</td>
-<td>string</td>
-<td>false</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>creationDateTime</td>
-<td>string</td>
-<td>false</td>
-<td><p>Date and Time of Case Note creation</p>
-</td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>occurrenceDateTime</td>
-<td>string</td>
-<td>false</td>
-<td><p>Date and Time of when case note contact with offender was made</p>
-</td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>text</td>
-<td>string</td>
-<td>false</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>locationId</td>
-<td>string</td>
-<td>false</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>sensitive</td>
-<td>boolean</td>
-<td>true</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>amendments</td>
-<td>array</td>
-<td>true</td>
-<td><p>List of amendments to the case note</p>
-</td>
-<td>
-  <a href='#schema-casenoteamendment'>CaseNoteAmendment</a>
-</td>
-</tr>
-
-</tbody>
-</table>
-
-<h3 id="schema-casenoteamendment">CaseNoteAmendment</h3>
-<p>List of amendments to the case note</p>
-
-
-<table class='schema-casenoteamendment'>
-<thead>
-<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
-</thead>
-<tbody>
-
-<tr>
-<td>caseNoteAmendmentId</td>
-<td>integer</td>
-<td>false</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>creationDateTime</td>
-<td>string</td>
-<td>false</td>
-<td><p>Date and Time of Case Note creation</p>
-</td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>additionalNoteText</td>
-<td>string</td>
-<td>false</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-</tbody>
-</table>
-
-<h3 id="schema-paginatedresponsecasenote">PaginatedResponseCaseNote</h3>
-
-
-<table class='schema-paginatedresponsecasenote'>
-<thead>
-<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
-</thead>
-<tbody>
-
-<tr>
-<td>data</td>
-<td>array</td>
-<td>true</td>
-<td></td>
-<td>
-  <a href='#schema-casenote'>CaseNote</a>
 </td>
 </tr>
 
