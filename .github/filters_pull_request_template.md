@@ -1,4 +1,4 @@
-# Pull Request Template
+# Prison Filters Template
 
 ## Description
 
@@ -21,14 +21,13 @@ This pull request implements the following changes:
 **Controller Tests:**
 
 - [ ] Updated `hmppsId` variable to a non-encoded version (e.g., "A1234AA").
-- [ ] Modified mock to use `getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, filters = filters)` instead of `getPersonService.execute`.
-- [ ] Updated service call to include `filters`.
+- [ ] Updated service calls to include `filters`.
 - [ ] Added a test case for the bad request error.
 
 **Service Logic:**
 
-- [ ] Added `filters` as a parameter to the service function.
-- [ ] Updated the service call to use `getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, filters = filters)`.
+- [ ] Added `filters` as a parameter to the service function and is nullable.
+- [ ] Updated the service call to use `getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, filters = filters)` or `getPersonService.getNomisNumberWithPrisonFilter()` if we only need the NOMIS number in the service.
 
 **Service Tests:**
 
@@ -37,7 +36,7 @@ This pull request implements the following changes:
 
 **Integration Tests:**
 
-- [ ] Updated `globals.yml` with the modified endpoint.
+- [ ] Updated `globals.yml` with the modified endpoint in the `private-prisons` role.
 - [ ] Added the following integration tests:
   - [ ] Returns a 400 if the `hmppsId` is invalid.
   - [ ] Returns a 404 for a person in the wrong prison (using `callApiWithCN()` and passing `limitedPrisonsCn` and the path).
