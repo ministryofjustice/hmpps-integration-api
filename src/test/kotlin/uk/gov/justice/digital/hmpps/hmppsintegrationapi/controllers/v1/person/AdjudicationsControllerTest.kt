@@ -17,14 +17,15 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Adjudication
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Identifiers
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.IncidentDetailsDto
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetAdjudicationsForPersonService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
-import java.net.URLEncoder
-import java.nio.charset.StandardCharsets
 
 @WebMvcTest(controllers = [AdjudicationsController::class])
 @ActiveProfiles("test")
@@ -32,18 +33,21 @@ internal class AdjudicationsControllerTest(
   @Autowired var springMockMvc: MockMvc,
   @MockitoBean val getAdjudicationsForPersonService: GetAdjudicationsForPersonService,
   @MockitoBean val auditService: AuditService,
+  @MockitoBean val getPersonService: GetPersonService,
 ) : DescribeSpec(
     {
-      val hmppsId = "9999/11111A"
-      val encodedHmppsId = URLEncoder.encode(hmppsId, StandardCharsets.UTF_8)
-      val path = "/v1/persons/$encodedHmppsId/reported-adjudications"
+      val hmppsId = "A1234AA"
+      val path = "/v1/persons/$hmppsId/reported-adjudications"
       val mockMvc = IntegrationAPIMockMvc(springMockMvc)
+      val filters = null
+      val person = Person(firstName = "Qui-gon", lastName = "Jin", identifiers = Identifiers(nomisNumber = hmppsId))
 
       describe("GET $path") {
         beforeTest {
           Mockito.reset(getAdjudicationsForPersonService)
           Mockito.reset(auditService)
-          whenever(getAdjudicationsForPersonService.execute(hmppsId)).thenReturn(
+          Mockito.reset(getPersonService)
+          whenever(getAdjudicationsForPersonService.execute(hmppsId, filters)).thenReturn(
             Response(
               data =
                 listOf(
@@ -56,10 +60,17 @@ internal class AdjudicationsControllerTest(
                 ),
             ),
           )
+
+          whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, filters = filters)).thenReturn(
+            Response(
+              data = person,
+              errors = emptyList(),
+            ),
+          )
         }
 
         it("throws exception when no person found") {
-          whenever(getAdjudicationsForPersonService.execute(hmppsId = "notfound")).thenReturn(
+          whenever(getAdjudicationsForPersonService.execute(hmppsId = "notfound", filters)).thenReturn(
             Response(
               data = emptyList(),
               errors =
@@ -86,7 +97,7 @@ internal class AdjudicationsControllerTest(
         }
 
         it("returns paginated adjudication results") {
-          whenever(getAdjudicationsForPersonService.execute(hmppsId)).thenReturn(
+          whenever(getAdjudicationsForPersonService.execute(hmppsId, filters)).thenReturn(
             Response(
               data =
                 List(20) {
@@ -111,7 +122,7 @@ internal class AdjudicationsControllerTest(
         }
 
         it("fails with the appropriate error when an upstream service is down") {
-          whenever(getAdjudicationsForPersonService.execute(hmppsId)).doThrow(
+          whenever(getAdjudicationsForPersonService.execute(hmppsId, filters)).doThrow(
             WebClientResponseException(500, "MockError", null, null, null, null),
           )
 
@@ -123,6 +134,25 @@ internal class AdjudicationsControllerTest(
               "{\"status\":500,\"errorCode\":null,\"userMessage\":\"500 MockError\",\"developerMessage\":\"Unable to complete request as an upstream service is not responding\",\"moreInfo\":null}",
             ),
           )
+        }
+
+        it("returns a 400 Bad request status code when hmpps id invalid in the upstream API") {
+          whenever(getAdjudicationsForPersonService.execute(hmppsId, filters)).thenReturn(
+            Response(
+              data = emptyList(),
+              errors =
+                listOf(
+                  UpstreamApiError(
+                    causedBy = UpstreamApi.ADJUDICATIONS,
+                    type = UpstreamApiError.Type.BAD_REQUEST,
+                  ),
+                ),
+            ),
+          )
+
+          val result = mockMvc.performAuthorised(path)
+
+          result.response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
         }
       }
     },

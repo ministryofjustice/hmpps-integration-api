@@ -14,4 +14,25 @@ class RisksIntegrationTest : IntegrationTestBase() {
       .andExpect(status().isOk)
       .andExpect(content().json(getExpectedResponse("person-risk-$path")))
   }
+
+  @ParameterizedTest
+  @ValueSource(strings = ["categories"])
+  fun `return a 404 when prison not in filter`(path: String) {
+    callApiWithCN("$basePath/$crn/risks/$path", limitedPrisonsCn)
+      .andExpect(status().isNotFound)
+  }
+
+  @ParameterizedTest
+  @ValueSource(strings = ["categories"])
+  fun `returns a 404 for prisoner in wrong prison`(path: String) {
+    callApiWithCN("$basePath/$crn/risks/$path", noPrisonsCn)
+      .andExpect(status().isNotFound)
+  }
+
+  @ParameterizedTest
+  @ValueSource(strings = ["categories"])
+  fun `return a 400 when invalid hmpps submitted`(path: String) {
+    callApi("$basePath/invalid=invalid/risks/$path")
+      .andExpect(status().isBadRequest)
+  }
 }
