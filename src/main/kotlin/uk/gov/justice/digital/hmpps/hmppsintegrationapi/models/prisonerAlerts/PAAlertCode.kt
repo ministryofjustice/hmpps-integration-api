@@ -1,6 +1,6 @@
-package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.alerts
+package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonerAlerts
 
-data class AlertsAlertCode(
+data class PAAlertCode(
   val alertTypeCode: String,
   val alertTypeDescription: String,
   val code: String,

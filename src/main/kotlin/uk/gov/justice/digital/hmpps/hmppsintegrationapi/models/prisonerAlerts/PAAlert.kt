@@ -1,11 +1,11 @@
-package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.alerts
+package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonerAlerts
 
 import java.time.LocalDateTime
 
-data class AlertsAlert(
+data class PAAlert(
   val alertUid: String,
   val prisonNumber: String,
-  val alertCode: AlertsAlertCode,
+  val alertCode: PAAlertCode,
   val description: String? = null,
   val authorisedBy: String? = null,
   val activeFrom: String,

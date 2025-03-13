@@ -6,9 +6,9 @@ import org.springframework.http.HttpMethod
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper.WebClientWrapperResponse
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.alerts.AlertsPaginatedAlerts
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonerAlerts.PAPaginatedAlerts
 
 @Component
 class AlertsGateway(
@@ -30,9 +30,9 @@ class AlertsGateway(
     prisonerNumber: String,
     page: Int,
     size: Int,
-  ): Response<AlertsPaginatedAlerts?> {
+  ): Response<PAPaginatedAlerts?> {
     val result =
-      webClient.request<AlertsPaginatedAlerts>(
+      webClient.request<PAPaginatedAlerts>(
         HttpMethod.GET,
         "/prisoners/$prisonerNumber/alerts?isActive=true&page=$page&size=$size",
         authenticationHeader(),
