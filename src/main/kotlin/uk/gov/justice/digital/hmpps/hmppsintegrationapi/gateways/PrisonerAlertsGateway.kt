@@ -11,7 +11,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonerAlerts.PAPaginatedAlerts
 
 @Component
-class AlertsGateway(
+class PrisonerAlertsGateway(
   @Value("\${services.alerts.base-url}") baseUrl: String,
 ) {
   private val webClient = WebClientWrapper(baseUrl)
