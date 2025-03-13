@@ -18,6 +18,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
@@ -30,9 +31,10 @@ internal class GetOffencesForPersonServiceTest(
   private val getOffencesForPersonService: GetOffencesForPersonService,
 ) : DescribeSpec(
     {
-      val hmppsId = "1234/56789B"
+      val hmppsId = "A1234AA"
       val prisonerNumber = "Z99999ZZ"
       val nDeliusCRN = "X123456"
+      val filters = null
       val prisonOffence1 = generateTestOffence(description = "Prison offence 1")
       val prisonOffence2 = generateTestOffence(description = "Prison offence 2")
       val prisonOffence3 = generateTestOffence(description = "Prison offence 3")
@@ -51,11 +53,12 @@ internal class GetOffencesForPersonServiceTest(
         Mockito.reset(nomisGateway)
         Mockito.reset(nDeliusGateway)
 
-        require(hmppsId.matches(Regex("^[0-9]+/[0-9A-Za-z]+$"))) {
-          "Invalid Hmpps Id format: $hmppsId"
-        }
-
         whenever(getPersonService.execute(hmppsId = hmppsId)).thenReturn(
+          Response(
+            data = personFromProbationOffenderSearch,
+          ),
+        )
+        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, filters)).thenReturn(
           Response(
             data = personFromProbationOffenderSearch,
           ),
@@ -84,14 +87,14 @@ internal class GetOffencesForPersonServiceTest(
         )
       }
 
-      it("Returns prison and probation offences given a hmppsId") {
+      it("Returns prison and probation offences given a hmppsId and no filters") {
         whenever(getPersonService.execute(hmppsId = hmppsId)).thenReturn(
           Response(
             data = personFromProbationOffenderSearch,
           ),
         )
 
-        val result = getOffencesForPersonService.execute(hmppsId)
+        val result = getOffencesForPersonService.execute(hmppsId, filters)
 
         result.shouldBe(
           Response(data = listOf(prisonOffence1, prisonOffence2, prisonOffence3, probationOffence1, probationOffence2, probationOffence3)),
@@ -99,25 +102,25 @@ internal class GetOffencesForPersonServiceTest(
       }
 
       it("gets a person using a Hmpps ID") {
-        getOffencesForPersonService.execute(hmppsId)
+        getOffencesForPersonService.execute(hmppsId, filters)
 
         verify(getPersonService, VerificationModeFactory.times(1)).execute(hmppsId = hmppsId)
       }
 
       it("gets offences from NOMIS using a prisoner number") {
-        getOffencesForPersonService.execute(hmppsId)
+        getOffencesForPersonService.execute(hmppsId, filters)
 
         verify(nomisGateway, VerificationModeFactory.times(1)).getOffencesForPerson(prisonerNumber)
       }
 
       it("gets offences from nDelius using a CRN") {
-        getOffencesForPersonService.execute(hmppsId)
+        getOffencesForPersonService.execute(hmppsId, filters)
 
         verify(nDeliusGateway, VerificationModeFactory.times(1)).getOffencesForPerson(nDeliusCRN)
       }
 
       it("combines and returns offences from Nomis and nDelius") {
-        val response = getOffencesForPersonService.execute(hmppsId)
+        val response = getOffencesForPersonService.execute(hmppsId, filters)
 
         response.data.shouldBe(
           listOf(
@@ -127,6 +130,24 @@ internal class GetOffencesForPersonServiceTest(
             probationOffence1,
             probationOffence2,
             probationOffence3,
+          ),
+        )
+      }
+
+      it("returns only offences from Nomis when prison filters present ") {
+        val populatedFilters = ConsumerFilters(listOf("ABC"))
+        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, populatedFilters)).thenReturn(
+          Response(
+            data = personFromProbationOffenderSearch,
+          ),
+        )
+        val response = getOffencesForPersonService.execute(hmppsId, populatedFilters)
+
+        response.data.shouldBe(
+          listOf(
+            prisonOffence1,
+            prisonOffence2,
+            prisonOffence3,
           ),
         )
       }
@@ -152,17 +173,17 @@ internal class GetOffencesForPersonServiceTest(
         }
 
         it("records upstream API errors") {
-          val response = getOffencesForPersonService.execute(hmppsId)
+          val response = getOffencesForPersonService.execute(hmppsId, filters)
           response.errors.shouldHaveSize(2)
         }
 
         it("does not get offences from Nomis") {
-          getOffencesForPersonService.execute(hmppsId)
+          getOffencesForPersonService.execute(hmppsId, filters)
           verify(nomisGateway, VerificationModeFactory.times(0)).getOffencesForPerson(id = prisonerNumber)
         }
 
         it("does not get offences from nDelius") {
-          getOffencesForPersonService.execute(hmppsId)
+          getOffencesForPersonService.execute(hmppsId, filters)
           verify(nDeliusGateway, VerificationModeFactory.times(0)).getOffencesForPerson(id = nDeliusCRN)
         }
       }
@@ -194,7 +215,7 @@ internal class GetOffencesForPersonServiceTest(
           ),
         )
 
-        val response = getOffencesForPersonService.execute(hmppsId)
+        val response = getOffencesForPersonService.execute(hmppsId, filters)
         response.errors.shouldHaveSize(2)
       }
     },
