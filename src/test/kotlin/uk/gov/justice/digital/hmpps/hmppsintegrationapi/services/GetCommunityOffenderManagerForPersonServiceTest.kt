@@ -31,6 +31,7 @@ class GetCommunityOffenderManagerForPersonServiceTest(
     {
       val hmppsId = "1234/56789B"
       val deliusCrn = "X224466"
+      val filter = null
 
       val person = Person(firstName = "Sam", lastName = "Smith", identifiers = Identifiers(deliusCrn = deliusCrn))
 
@@ -45,22 +46,22 @@ class GetCommunityOffenderManagerForPersonServiceTest(
       }
 
       it("performs a search according to hmpps Id") {
-        getCommunityOffenderManagerForPersonService.execute(hmppsId)
-        verify(getPersonService, VerificationModeFactory.times(1)).execute(hmppsId = hmppsId)
+        getCommunityOffenderManagerForPersonService.execute(hmppsId, filter)
+        verify(getPersonService, VerificationModeFactory.times(1)).getPersonWithPrisonFilter(hmppsId = hmppsId, filter)
       }
 
       it("Returns a community offender manager for person given a hmppsId") {
-        whenever(getPersonService.execute(hmppsId = hmppsId)).thenReturn(
+        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId, filter)).thenReturn(
           Response(
             data = person,
           ),
         )
-        val result = getCommunityOffenderManagerForPersonService.execute(hmppsId)
+        val result = getCommunityOffenderManagerForPersonService.execute(hmppsId, filter)
         result.shouldBe(Response(data = communityOffenderManager))
       }
 
       it("should return a list of errors if person not found") {
-        whenever(getPersonService.execute(hmppsId = "NOT_FOUND")).thenReturn(
+        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = "NOT_FOUND", filter)).thenReturn(
           Response(
             data = null,
             errors =
@@ -72,7 +73,7 @@ class GetCommunityOffenderManagerForPersonServiceTest(
               ),
           ),
         )
-        val result = getCommunityOffenderManagerForPersonService.execute("NOT_FOUND")
+        val result = getCommunityOffenderManagerForPersonService.execute("NOT_FOUND", filter)
         result.data.shouldBe(CommunityOffenderManager())
         result.errors
           .first()

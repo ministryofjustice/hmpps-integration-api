@@ -6,16 +6,18 @@ import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.tags.Tag
+import jakarta.validation.ValidationException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.RequestAttribute
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.decodeUrlCharacters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonResponsibleOfficer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetCommunityOffenderManagerForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPrisonOffenderManagerForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
@@ -28,7 +30,7 @@ class PersonResponsibleOfficerController(
   @Autowired val getPrisonOffenderManagerForPersonService: GetPrisonOffenderManagerForPersonService,
   @Autowired val getCommunityOffenderManagerForPersonService: GetCommunityOffenderManagerForPersonService,
 ) {
-  @GetMapping("{encodedHmppsId}/person-responsible-officer")
+  @GetMapping("{hmppsId}/person-responsible-officer")
   @Operation(
     summary = "Returns the person responsible officer associated with a person.",
     responses = [
@@ -38,11 +40,15 @@ class PersonResponsibleOfficerController(
     ],
   )
   fun getPersonResponsibleOfficer(
-    @Parameter(description = "A URL-encoded HMPPS identifier", example = "2008%2F0545166T") @PathVariable encodedHmppsId: String,
+    @Parameter(description = "A HMPPS identifier") @PathVariable hmppsId: String,
+    @RequestAttribute filters: ConsumerFilters?,
   ): DataResponse<PersonResponsibleOfficer> {
-    val hmppsId = encodedHmppsId.decodeUrlCharacters()
-    val prisonOffenderManager = getPrisonOffenderManagerForPersonService.execute(hmppsId)
-    val communityOffenderManager = getCommunityOffenderManagerForPersonService.execute(hmppsId)
+    val prisonOffenderManager = getPrisonOffenderManagerForPersonService.execute(hmppsId, filters)
+    val communityOffenderManager = getCommunityOffenderManagerForPersonService.execute(hmppsId, filters)
+
+    if (prisonOffenderManager.hasError(UpstreamApiError.Type.BAD_REQUEST) || communityOffenderManager.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
+      throw ValidationException("Invalid HMPPS ID: $hmppsId")
+    }
 
     if (prisonOffenderManager.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
       throw EntityNotFoundException("Could not find prison offender manager related to id: $hmppsId")

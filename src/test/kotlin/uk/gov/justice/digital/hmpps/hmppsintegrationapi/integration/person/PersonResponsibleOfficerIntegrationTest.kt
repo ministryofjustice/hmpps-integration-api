@@ -8,8 +8,26 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationT
 class PersonResponsibleOfficerIntegrationTest : IntegrationTestBase() {
   @Test
   fun `returns needs for a person`() {
-    callApi("$basePath/$pnc/person-responsible-officer")
+    callApi("$basePath/$nomsId/person-responsible-officer")
       .andExpect(status().isOk)
       .andExpect(content().json(getExpectedResponse("person-responsible-officer")))
+  }
+
+  @Test
+  fun `adjudications returns a 400 if the hmppsId is invalid`() {
+    callApi("$basePath/$invalidNomsId/person-responsible-officer")
+      .andExpect(status().isBadRequest)
+  }
+
+  @Test
+  fun `return a 404 for person in wrong prison`() {
+    callApiWithCN("$basePath/$nomsId/person-responsible-officer", limitedPrisonsCn)
+      .andExpect(status().isNotFound)
+  }
+
+  @Test
+  fun `return a 404 when no prisons in filter`() {
+    callApiWithCN("$basePath/$nomsId/person-responsible-officer", noPrisonsCn)
+      .andExpect(status().isNotFound)
   }
 }

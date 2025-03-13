@@ -11,6 +11,7 @@ import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ManagePOMCaseGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Identifiers
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NomisNumber
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Prison
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonOffenderManager
@@ -28,9 +29,10 @@ class GetPrisonOffenderManagerForPersonServiceTest(
   private val getPrisonOffenderManagerForPersonService: GetPrisonOffenderManagerForPersonService,
 ) : DescribeSpec(
     {
-      val hmppsId = "1234/56789B"
+      val hmppsId = "56789B"
       val nomisNumber = "Z99999ZZ"
       val person = Person(firstName = "Julianna", lastName = "Blake", identifiers = Identifiers(nomisNumber = nomisNumber))
+      val filters = null
 
       val prisonOffenderManager = PrisonOffenderManager(forename = "Paul", surname = "Smith", prison = Prison(code = "RED"))
 
@@ -38,13 +40,13 @@ class GetPrisonOffenderManagerForPersonServiceTest(
         Mockito.reset(getPersonService)
         Mockito.reset(managePOMCaseGateway)
 
-        whenever(getPersonService.execute(hmppsId = hmppsId)).thenReturn(Response(person))
+        whenever(getPersonService.getNomisNumberWithPrisonFilter(hmppsId = hmppsId, filters)).thenReturn(Response(NomisNumber(nomisNumber)))
         whenever(managePOMCaseGateway.getPrimaryPOMForNomisNumber(id = nomisNumber)).thenReturn(Response(prisonOffenderManager))
       }
 
       it("performs a search according to hmpps Id") {
-        getPrisonOffenderManagerForPersonService.execute(hmppsId)
-        verify(getPersonService, VerificationModeFactory.times(1)).execute(hmppsId = hmppsId)
+        getPrisonOffenderManagerForPersonService.execute(hmppsId, filters)
+        verify(getPersonService, VerificationModeFactory.times(1)).getNomisNumberWithPrisonFilter(hmppsId = hmppsId, filters)
       }
 
       it("Returns a prison offender manager for person given a hmppsId") {
@@ -53,12 +55,12 @@ class GetPrisonOffenderManagerForPersonServiceTest(
             data = person,
           ),
         )
-        val result = getPrisonOffenderManagerForPersonService.execute(hmppsId)
+        val result = getPrisonOffenderManagerForPersonService.execute(hmppsId, filters)
         result.shouldBe(Response(data = prisonOffenderManager))
       }
 
       it("should return a list of errors if person not found") {
-        whenever(getPersonService.execute(hmppsId = "NOT_FOUND")).thenReturn(
+        whenever(getPersonService.getNomisNumberWithPrisonFilter(hmppsId = "NOT_FOUND", filters)).thenReturn(
           Response(
             data = null,
             errors =
@@ -70,7 +72,7 @@ class GetPrisonOffenderManagerForPersonServiceTest(
               ),
           ),
         )
-        val result = getPrisonOffenderManagerForPersonService.execute("NOT_FOUND")
+        val result = getPrisonOffenderManagerForPersonService.execute("NOT_FOUND", filters)
         result.data.shouldBe(PrisonOffenderManager())
         result.errors
           .first()

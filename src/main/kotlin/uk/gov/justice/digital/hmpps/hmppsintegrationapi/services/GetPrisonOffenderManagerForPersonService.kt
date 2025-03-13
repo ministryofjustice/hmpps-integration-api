@@ -5,15 +5,20 @@ import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ManagePOMCaseGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonOffenderManager
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 @Service
 class GetPrisonOffenderManagerForPersonService(
   @Autowired val getPersonService: GetPersonService,
   @Autowired val managePOMCaseGateway: ManagePOMCaseGateway,
 ) {
-  fun execute(hmppsId: String): Response<PrisonOffenderManager> {
-    val personResponse = getPersonService.execute(hmppsId = hmppsId)
-    val nomisNumber = personResponse.data?.identifiers?.nomisNumber
+  fun execute(
+    hmppsId: String,
+    filters: ConsumerFilters?,
+  ): Response<PrisonOffenderManager> {
+    val personResponse = getPersonService.getNomisNumberWithPrisonFilter(hmppsId, filters)
+
+    val nomisNumber = personResponse.data?.nomisNumber
     var prisonOffenderManager: Response<PrisonOffenderManager> = Response(data = PrisonOffenderManager())
 
     if (nomisNumber != null) {
