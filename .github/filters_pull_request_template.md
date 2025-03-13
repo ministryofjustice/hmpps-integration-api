@@ -7,7 +7,7 @@ This pull request implements the following changes:
 **Controller Logic:**
 
 - [ ] Replaced `encodedHmppsId` variable with `hmppsId` in the endpoint.
-- [ ] Added "<b>Applicable filters</b>: <ul><li>prisons</li></ul>" to the endpoint description.
+- [ ] Added `<b>Applicable filters</b>: <ul><li>prisons</li></ul>` to the endpoint description.
 - [ ] Updated `@Parameter` annotation for `hmppsId`:
   - [ ] Changed description to "The HMPPS ID of the person".
   - [ ] Removed URL encoding example.
