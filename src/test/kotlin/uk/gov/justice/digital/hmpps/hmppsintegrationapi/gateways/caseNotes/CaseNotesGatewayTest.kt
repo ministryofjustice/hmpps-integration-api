@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.caseNotes
 
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.collections.shouldExist
@@ -19,6 +20,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.CaseNotesGatewa
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.caseNotes.CNSearchNotesRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.filters.CaseNoteFilter
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
@@ -34,10 +36,53 @@ class CaseNotesGatewayTest(
   private val caseNotesGateway: CaseNotesGateway,
 ) : DescribeSpec(
     {
+      val objectMapper = jacksonObjectMapper()
       val id = "123"
-      val pathNoParams = "/case-notes/$id"
+      val pathNoParams = "/search/case-notes/$id"
       val caseNotesApiMockServer = ApiMockServer.create(UpstreamApi.CASE_NOTES)
+      val caseNoteRequest = CNSearchNotesRequest(occurredFrom = "2025-01-01", occurredTo = "2025-01-02")
+      val caseNoteFilter = CaseNoteFilter(hmppsId = id, startDate = LocalDateTime.of(2025, 1, 1, 0, 0), endDate = LocalDateTime.of(2025, 1, 2, 0, 0))
+      val jsonRequest = objectMapper.writeValueAsString(caseNoteRequest.toApiConformingMap())
 
+      val responseJson = """
+          {
+            "content": [
+              {
+                "caseNoteId": $id,
+                "offenderIdentifier": "A1234AA",
+                "type": "KA",
+                "typeDescription": "Key Worker",
+                "subType": "KS",
+                "subTypeDescription": "Key Worker Session",
+                "creationDateTime": "2025-01-01T01:30:00",
+                "occurrenceDateTime": "2017-10-31T01:30:00",
+                "authorName": "John Smith",
+                "authorUserId": "12345",
+                "authorUsername": "USER1",
+                "text": "This is some text",
+                "locationId": "MDI",
+                "sensitive": true,
+                "amendments": [
+                  {
+                    "creationDateTime": "2018-12-01T13:45:00",
+                    "authorUserName": "USER1",
+                    "authorName": "Mickey Mouse",
+                    "authorUserId": "12345",
+                    "additionalNoteText": "Some Additional Text"
+                  }
+                ],
+                "systemGenerated": true,
+                "legacyId": 9007199254740991
+              }
+            ],
+            "metadata": {
+              "totalElements": 1073741824,
+              "page": 1073741824,
+              "size": 1073741824
+            },
+            "hasCaseNotes": true
+          }
+        """
       beforeEach {
         caseNotesApiMockServer.start()
 
@@ -52,24 +97,24 @@ class CaseNotesGatewayTest(
       }
 
       it("authenticates using HMPPS Auth with credentials") {
-        caseNotesGateway.getCaseNotesForPerson(id = "123", CaseNoteFilter(hmppsId = ""))
+        caseNotesGateway.getCaseNotesForPerson(id = "123", caseNoteFilter)
 
         verify(hmppsAuthGateway, times(1))
           .getClientToken("CaseNotes")
       }
 
       it("upstream API returns an error, throw exception") {
-        caseNotesApiMockServer.stubForGet(pathNoParams, "", HttpStatus.BAD_REQUEST)
+        caseNotesApiMockServer.stubForPost(pathNoParams, jsonRequest, responseJson, HttpStatus.BAD_REQUEST)
         val response =
           shouldThrow<WebClientResponseException> {
-            caseNotesGateway.getCaseNotesForPerson(id = "123", CaseNoteFilter(hmppsId = ""))
+            caseNotesGateway.getCaseNotesForPerson(id = id, caseNoteFilter)
           }
         response.statusCode.shouldBe(HttpStatus.BAD_REQUEST)
       }
 
       it("upstream API returns an forbidden error, throw forbidden exception") {
-        caseNotesApiMockServer.stubForGet(pathNoParams, "", HttpStatus.FORBIDDEN)
-        val response = caseNotesGateway.getCaseNotesForPerson(id = "123", CaseNoteFilter(hmppsId = ""))
+        caseNotesApiMockServer.stubForPost(pathNoParams, jsonRequest, "", HttpStatus.FORBIDDEN)
+        val response = caseNotesGateway.getCaseNotesForPerson(id = id, caseNoteFilter)
         response.errors.shouldHaveSize(1)
         response.errors
           .first()
@@ -82,149 +127,10 @@ class CaseNotesGatewayTest(
       }
 
       it("returns caseNote") {
-        val responseJson = """
-       {
-       "content": [
-    {
-      "caseNoteId": "131231",
-      "offenderIdentifier": "A1234AB",
-      "type": "POM",
-      "typeDescription": "POM Notes",
-      "subType": "GEN",
-      "subTypeDescription": "General POM Note",
-      "authorUserId": "SECURE_CASENOTE_USER_ID",
-      "authorName": "Mikey Mouse",
-      "text": "This is another case note",
-      "locationId": "LEI",
-      "amendments": [
-        {
-          "authorUserName": "SECURE_CASENOTE_USER",
-          "authorUserId": "SECURE_CASENOTE_USER_ID",
-          "additionalNoteText": "Amended case note"
-        }
-      ]
-    },
-    {
-      "caseNoteId": "131232",
-      "offenderIdentifier": "A1234AB",
-      "type": "OBS",
-      "typeDescription": "Observation",
-      "subType": "GEN",
-      "subTypeDescription": "General",
-      "source": "INST",
-      "authorUserId": "1231232",
-      "authorName": "Mickey Mouse",
-      "text": "Some Text",
-      "locationId": "LEI",
-      "amendments": []
-    }
-  ],
-  "pageable": {
-    "sort": {
-      "sorted": true,
-      "unsorted": false,
-      "empty": false
-    },
-    "offset": 0,
-    "pageSize": 10,
-    "pageNumber": 0,
-    "paged": true,
-    "unpaged": false
-  },
-  "totalElements": 2,
-  "totalPages": 1,
-  "last": true,
-  "size": 10,
-  "first": true,
-  "numberOfElements": 2,
-  "sort": {
-    "sorted": true,
-    "unsorted": false,
-    "empty": false
-  },
-  "number": 0,
-  "empty": false
-       }
-        """
-        caseNotesApiMockServer.stubForGet(pathNoParams, responseJson, HttpStatus.OK)
-        val response = caseNotesGateway.getCaseNotesForPerson(id = "123", CaseNoteFilter(hmppsId = ""))
-        response.data.count().shouldBe(2)
-        response.data.shouldExist { it -> it.caseNoteId == "131231" }
-        response.data.shouldExist { it -> it.caseNoteId == "131232" }
-      }
-
-      it("returns generate filter parameters caseNote") {
-        val filter = CaseNoteFilter("hmppsId", LocalDateTime.of(2024, 1, 2, 0, 0), LocalDateTime.of(2024, 1, 3, 0, 0), "mockLocation")
-        val responseJson = """
-       {
-       "content": [
-    {
-      "caseNoteId": "131231",
-      "offenderIdentifier": "A1234AB",
-      "type": "POM",
-      "typeDescription": "POM Notes",
-      "subType": "GEN",
-      "subTypeDescription": "General POM Note",
-      "authorUserId": "SECURE_CASENOTE_USER_ID",
-      "authorName": "Mikey Mouse",
-      "text": "This is another case note",
-      "locationId": "LEI",
-      "amendments": [
-        {
-          "authorUserName": "SECURE_CASENOTE_USER",
-          "authorUserId": "SECURE_CASENOTE_USER_ID",
-          "additionalNoteText": "Amended case note"
-        }
-      ]
-    },
-    {
-      "caseNoteId": "131232",
-      "offenderIdentifier": "A1234AB",
-      "type": "OBS",
-      "typeDescription": "Observation",
-      "subType": "GEN",
-      "subTypeDescription": "General",
-      "source": "INST",
-      "authorUserId": "1231232",
-      "authorName": "Mickey Mouse",
-      "text": "Some Text",
-      "locationId": "LEI",
-      "amendments": []
-    }
-  ],
-  "pageable": {
-    "sort": {
-      "sorted": true,
-      "unsorted": false,
-      "empty": false
-    },
-    "offset": 0,
-    "pageSize": 10,
-    "pageNumber": 0,
-    "paged": true,
-    "unpaged": false
-  },
-  "totalElements": 2,
-  "totalPages": 1,
-  "last": true,
-  "size": 10,
-  "first": true,
-  "numberOfElements": 2,
-  "sort": {
-    "sorted": true,
-    "unsorted": false,
-    "empty": false
-  },
-  "number": 0,
-  "empty": false
-       }
-        """
-        val pathWithParams = "/case-notes/$id?locationId=mockLocation&startDate=2024-01-02&endDate=2024-01-03"
-        caseNotesApiMockServer.stubForGet(pathWithParams, responseJson, HttpStatus.OK)
-        val response = caseNotesGateway.getCaseNotesForPerson(id = "123", filter)
-        response.data.count().shouldBe(2)
-        response.data.shouldExist { it -> it.caseNoteId == "131231" }
-        response.data.shouldExist { it -> it.caseNoteId == "131232" }
+        caseNotesApiMockServer.stubForPost(pathNoParams, jsonRequest, responseJson, HttpStatus.OK)
+        val response = caseNotesGateway.getCaseNotesForPerson(id = id, caseNoteFilter)
+        response.data.count().shouldBe(1)
+        response.data.shouldExist { it -> it.caseNoteId == id }
       }
     },
   )
