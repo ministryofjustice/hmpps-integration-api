@@ -35,7 +35,7 @@ class GetAlertsForPrisonerTest(
       val prisonerNumber = "zyx987"
       val page = 1
       val size = 10
-      val path = "/prisoners/$prisonerNumber/alerts?page=$page&size=$size"
+      val path = "/prisoners/$prisonerNumber/alerts?page=${page - 1}&size=$size"
 
       beforeEach {
         apiMockServer.start()
