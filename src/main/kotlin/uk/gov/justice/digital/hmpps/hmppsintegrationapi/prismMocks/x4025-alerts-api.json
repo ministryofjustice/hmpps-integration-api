@@ -17,10 +17,7 @@
   ],
   "security": [
     {
-      "bearer-jwt": [
-        "read",
-        "write"
-      ]
+      "bearer-jwt": ["read", "write"]
     }
   ],
   "tags": [
@@ -48,9 +45,7 @@
   "paths": {
     "/alerts/{alertUuid}": {
       "get": {
-        "tags": [
-          "RO Operations"
-        ],
+        "tags": ["RO Operations"],
         "summary": "Get an alert by its unique identifier",
         "description": "Returns the alert with the matching identifier.\n\nRequires one of the following roles:\n* ROLE_PRISONER_ALERTS__RO\n* ROLE_PRISONER_ALERTS__RW",
         "operationId": "retrieveAlert",
@@ -110,9 +105,7 @@
         }
       },
       "put": {
-        "tags": [
-          "RW Operations"
-        ],
+        "tags": ["RW Operations"],
         "summary": "Update an alert",
         "description": "\n\nRequires one of the following roles:\n* ROLE_PRISONER_ALERTS__RW",
         "operationId": "updateAlert",
@@ -147,10 +140,7 @@
               "*/*": {
                 "schema": {
                   "type": "string",
-                  "enum": [
-                    "DPS",
-                    "NOMIS"
-                  ]
+                  "enum": ["DPS", "NOMIS"]
                 }
               }
             }
@@ -210,9 +200,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "Nomis Sync Only"
-        ],
+        "tags": ["Nomis Sync Only"],
         "summary": "Delete an alert",
         "description": "This endpoint fully removes the alert from the system. It is used when an alert has been created in error or should otherwise be removed from this service. This endpoint will return 200 OK if the alert was not found or already deleted. This is to prevent low value warnings being logged.\n\nRequires one of the following roles:\n* ROLE_PRISONER_ALERTS__RW",
         "operationId": "deleteAlert",
@@ -247,10 +235,7 @@
               "*/*": {
                 "schema": {
                   "type": "string",
-                  "enum": [
-                    "DPS",
-                    "NOMIS"
-                  ]
+                  "enum": ["DPS", "NOMIS"]
                 }
               }
             }
@@ -295,9 +280,7 @@
     },
     "/search/alerts/prison-numbers": {
       "post": {
-        "tags": [
-          "RO Operations"
-        ],
+        "tags": ["RO Operations"],
         "summary": "Gets all the alerts for prisoners by their prison numbers",
         "description": "Returns all the alerts for the supplied prison numbers.\n\nRequires one of the following roles:\n* ROLE_PRISONER_ALERTS__RO\n* ROLE_PRISONER_ALERTS__RW",
         "operationId": "retrievePrisonerAlerts",
@@ -362,9 +345,7 @@
     },
     "/resync/{prisonNumber}/alerts": {
       "post": {
-        "tags": [
-          "Nomis Sync Only"
-        ],
+        "tags": ["Nomis Sync Only"],
         "summary": "Resync all alerts for a prisoner from NOMIS",
         "description": "\n\nRequires one of the following roles:\n* ROLE_NOMIS_ALERTS",
         "operationId": "resyncPrisonerAlerts",
@@ -443,9 +424,7 @@
     },
     "/prisoners/{prisonNumber}/alerts": {
       "get": {
-        "tags": [
-          "RO Operations"
-        ],
+        "tags": ["RO Operations"],
         "summary": "Gets all the alerts for a prisoner by their prison number",
         "description": "\n\nRequires one of the following roles:\n* ROLE_PRISONER_ALERTS__RO\n* ROLE_PRISONER_ALERTS__RW",
         "operationId": "retrievePrisonerAlerts_1",
@@ -551,9 +530,7 @@
             "required": false,
             "schema": {
               "type": "array",
-              "default": [
-                "activeFrom,DESC"
-              ],
+              "default": ["activeFrom,DESC"],
               "items": {
                 "type": "string"
               }
@@ -594,9 +571,7 @@
         }
       },
       "post": {
-        "tags": [
-          "RW Operations"
-        ],
+        "tags": ["RW Operations"],
         "summary": "Create an alert",
         "description": "\n\nRequires one of the following roles:\n* ROLE_PRISONER_ALERTS__RW",
         "operationId": "createPrisonerAlert",
@@ -640,10 +615,7 @@
               "*/*": {
                 "schema": {
                   "type": "string",
-                  "enum": [
-                    "DPS",
-                    "NOMIS"
-                  ]
+                  "enum": ["DPS", "NOMIS"]
                 }
               }
             }
@@ -715,9 +687,7 @@
     },
     "/bulk-alerts/plan": {
       "post": {
-        "tags": [
-          "Admin UI Only"
-        ],
+        "tags": ["Admin UI Only"],
         "summary": "Create the plan for bulk alerts",
         "description": "\n\n",
         "operationId": "createPlan",
@@ -742,10 +712,7 @@
               "*/*": {
                 "schema": {
                   "type": "string",
-                  "enum": [
-                    "DPS",
-                    "NOMIS"
-                  ]
+                  "enum": ["DPS", "NOMIS"]
                 }
               }
             }
@@ -797,9 +764,7 @@
     },
     "/bulk-alerts/plan/{id}/start": {
       "post": {
-        "tags": [
-          "Admin UI Only"
-        ],
+        "tags": ["Admin UI Only"],
         "summary": "Start the plan for bulk alerts",
         "description": "\n\n",
         "operationId": "startPlan",
@@ -833,10 +798,7 @@
               "*/*": {
                 "schema": {
                   "type": "string",
-                  "enum": [
-                    "DPS",
-                    "NOMIS"
-                  ]
+                  "enum": ["DPS", "NOMIS"]
                 }
               }
             }
@@ -871,9 +833,7 @@
     },
     "/alert-types": {
       "get": {
-        "tags": [
-          "RO Operations"
-        ],
+        "tags": ["RO Operations"],
         "summary": "Get all alert types",
         "description": "Returns the full list of alert types and the alert codes within those types. By default this endpoint only returns active alert types and codes. The include inactive parameter can be used to return all alert types and codes.\n\nRequires one of the following roles:\n* ROLE_PRISONER_ALERTS__RO\n* ROLE_PRISONER_ALERTS__RW",
         "operationId": "retrieveAlertTypes",
@@ -925,9 +885,7 @@
         }
       },
       "post": {
-        "tags": [
-          "Admin UI Only"
-        ],
+        "tags": ["Admin UI Only"],
         "summary": "Create an alert type",
         "description": "Create a new alert type, typically from the Alerts UI\n\n",
         "operationId": "createAlertType",
@@ -1004,9 +962,7 @@
     },
     "/alert-codes": {
       "get": {
-        "tags": [
-          "RO Operations"
-        ],
+        "tags": ["RO Operations"],
         "summary": "Retrieve all alert codes",
         "description": "Retrieve all alert codes, typically from the Alerts UI\n\nRequires one of the following roles:\n* ROLE_PRISONER_ALERTS__RO\n* ROLE_PRISONER_ALERTS__RW",
         "operationId": "retrieveAlertCodes",
@@ -1058,9 +1014,7 @@
         }
       },
       "post": {
-        "tags": [
-          "Admin UI Only"
-        ],
+        "tags": ["Admin UI Only"],
         "summary": "Create an alert code",
         "description": "Create a new alert code, typically from the Alerts UI\n\n",
         "operationId": "createAlertCode",
@@ -1144,9 +1098,7 @@
     },
     "/bulk-alerts/plan/{id}": {
       "patch": {
-        "tags": [
-          "Admin UI Only"
-        ],
+        "tags": ["Admin UI Only"],
         "summary": "Update the plan for bulk alerts",
         "description": "\n\n",
         "operationId": "updatePlan",
@@ -1180,10 +1132,7 @@
               "*/*": {
                 "schema": {
                   "type": "string",
-                  "enum": [
-                    "DPS",
-                    "NOMIS"
-                  ]
+                  "enum": ["DPS", "NOMIS"]
                 }
               }
             }
@@ -1241,9 +1190,7 @@
     },
     "/alert-types/{alertType}": {
       "patch": {
-        "tags": [
-          "Admin UI Only"
-        ],
+        "tags": ["Admin UI Only"],
         "summary": "Update alert type",
         "description": "Set the properties of an alert type to the submitted value.\n\n",
         "operationId": "updateAlertType",
@@ -1328,9 +1275,7 @@
     },
     "/alert-types/{alertType}/reactivate": {
       "patch": {
-        "tags": [
-          "Admin UI Only"
-        ],
+        "tags": ["Admin UI Only"],
         "summary": "Reactivate an alert type",
         "description": "Reactivate an alert type, typically from the Alerts UI\n\n",
         "operationId": "reactivateAlertType",
@@ -1402,9 +1347,7 @@
     },
     "/alert-types/{alertType}/deactivate": {
       "patch": {
-        "tags": [
-          "Admin UI Only"
-        ],
+        "tags": ["Admin UI Only"],
         "summary": "Deactivate an alert type",
         "description": "Deactivate an alert type, typically from the Alerts UI\n\n",
         "operationId": "deactivateAlertType",
@@ -1476,9 +1419,7 @@
     },
     "/alert-codes/{alertCode}": {
       "get": {
-        "tags": [
-          "RO Operations"
-        ],
+        "tags": ["RO Operations"],
         "summary": "Retrieve an alert code",
         "description": "Retrieve an alert code, typically from the Alerts UI\n\nRequires one of the following roles:\n* ROLE_PRISONER_ALERTS__RO\n* ROLE_PRISONER_ALERTS__RW",
         "operationId": "retrieveAlertCode",
@@ -1536,9 +1477,7 @@
         }
       },
       "patch": {
-        "tags": [
-          "Admin UI Only"
-        ],
+        "tags": ["Admin UI Only"],
         "summary": "Update alert code",
         "description": "Set the properties of an alert code to the submitted value.\n\n",
         "operationId": "updateAlertCode",
@@ -1623,9 +1562,7 @@
     },
     "/alert-codes/{alertCode}/reactivate": {
       "patch": {
-        "tags": [
-          "Admin UI Only"
-        ],
+        "tags": ["Admin UI Only"],
         "summary": "Reactivate an alert code",
         "description": "Reactivate an alert code, typically from the Alerts UI\n\n",
         "operationId": "reactivateAlertCode",
@@ -1697,9 +1634,7 @@
     },
     "/alert-codes/{alertCode}/deactivate": {
       "patch": {
-        "tags": [
-          "Admin UI Only"
-        ],
+        "tags": ["Admin UI Only"],
         "summary": "Deactivate an alert code",
         "description": "Deactivate an alert code, typically from the Alerts UI\n\n",
         "operationId": "deactivateAlertCode",
@@ -1771,9 +1706,7 @@
     },
     "/bulk-alerts/plan/{id}/status": {
       "get": {
-        "tags": [
-          "Admin UI Only"
-        ],
+        "tags": ["Admin UI Only"],
         "summary": "Get the status of a plan",
         "description": "\n\n",
         "operationId": "getPlanStatus",
@@ -1834,9 +1767,7 @@
     },
     "/bulk-alerts/plan/{id}/prisoners": {
       "get": {
-        "tags": [
-          "Admin UI Only"
-        ],
+        "tags": ["Admin UI Only"],
         "summary": "Get prisoners associated with a plan",
         "description": "\n\n",
         "operationId": "getPlanPrisoners",
@@ -1897,9 +1828,7 @@
     },
     "/bulk-alerts/plan/{id}/affects": {
       "get": {
-        "tags": [
-          "Admin UI Only"
-        ],
+        "tags": ["Admin UI Only"],
         "summary": "Get counts associated with a plan",
         "description": "\n\n",
         "operationId": "getPlanAffect",
@@ -1960,9 +1889,7 @@
     },
     "/alert-types/{alertTypeCode}": {
       "get": {
-        "tags": [
-          "RO Operations"
-        ],
+        "tags": ["RO Operations"],
         "summary": "Get an alert type",
         "description": "Returns the specified alert type.\n\nRequires one of the following roles:\n* ROLE_PRISONER_ALERTS__RO\n* ROLE_PRISONER_ALERTS__RW",
         "operationId": "retrieveAlertType",
@@ -2158,16 +2085,7 @@
             "example": "LEI"
           }
         },
-        "required": [
-          "activeFrom",
-          "alertCode",
-          "alertUuid",
-          "createdAt",
-          "createdBy",
-          "createdByDisplayName",
-          "isActive",
-          "prisonNumber"
-        ]
+        "required": ["activeFrom", "alertCode", "alertUuid", "createdAt", "createdBy", "createdByDisplayName", "isActive", "prisonNumber"]
       },
       "AlertCodeSummary": {
         "type": "object",
@@ -2194,12 +2112,7 @@
             "example": "Alert code description"
           }
         },
-        "required": [
-          "alertTypeCode",
-          "alertTypeDescription",
-          "code",
-          "description"
-        ]
+        "required": ["alertTypeCode", "alertTypeDescription", "code", "description"]
       },
       "ErrorResponse": {
         "type": "object",
@@ -2221,9 +2134,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "status"
-        ]
+        "required": ["status"]
       },
       "AlertsResponse": {
         "type": "object",
@@ -2235,9 +2146,7 @@
             }
           }
         },
-        "required": [
-          "content"
-        ]
+        "required": ["content"]
       },
       "ResyncAlert": {
         "type": "object",
@@ -2331,16 +2240,7 @@
             "type": "boolean"
           }
         },
-        "required": [
-          "activeFrom",
-          "alertCode",
-          "alertSeq",
-          "createdAt",
-          "createdBy",
-          "createdByDisplayName",
-          "isActive",
-          "offenderBookId"
-        ]
+        "required": ["activeFrom", "alertCode", "alertSeq", "createdAt", "createdBy", "createdByDisplayName", "isActive", "offenderBookId"]
       },
       "ResyncedAlert": {
         "type": "object",
@@ -2364,11 +2264,7 @@
             "example": "8cdadcf3-b003-4116-9956-c99bd8df6a00"
           }
         },
-        "required": [
-          "alertSeq",
-          "alertUuid",
-          "offenderBookId"
-        ]
+        "required": ["alertSeq", "alertUuid", "offenderBookId"]
       },
       "CreateAlert": {
         "type": "object",
@@ -2408,9 +2304,7 @@
             "example": "2022-07-15"
           }
         },
-        "required": [
-          "alertCode"
-        ]
+        "required": ["alertCode"]
       },
       "BulkPlan": {
         "type": "object",
@@ -2420,9 +2314,7 @@
             "format": "uuid"
           }
         },
-        "required": [
-          "id"
-        ]
+        "required": ["id"]
       },
       "CreateAlertTypeRequest": {
         "type": "object",
@@ -2444,10 +2336,7 @@
             "minLength": 1
           }
         },
-        "required": [
-          "code",
-          "description"
-        ]
+        "required": ["code", "description"]
       },
       "AlertCode": {
         "type": "object",
@@ -2513,15 +2402,7 @@
             "example": "USER1234"
           }
         },
-        "required": [
-          "alertTypeCode",
-          "code",
-          "createdAt",
-          "createdBy",
-          "description",
-          "isActive",
-          "listSequence"
-        ]
+        "required": ["alertTypeCode", "code", "createdAt", "createdBy", "description", "isActive", "listSequence"]
       },
       "AlertType": {
         "type": "object",
@@ -2589,15 +2470,7 @@
             }
           }
         },
-        "required": [
-          "alertCodes",
-          "code",
-          "createdAt",
-          "createdBy",
-          "description",
-          "isActive",
-          "listSequence"
-        ]
+        "required": ["alertCodes", "code", "createdAt", "createdBy", "description", "isActive", "listSequence"]
       },
       "CreateAlertCodeRequest": {
         "type": "object",
@@ -2626,11 +2499,7 @@
             "minLength": 1
           }
         },
-        "required": [
-          "code",
-          "description",
-          "parent"
-        ]
+        "required": ["code", "description", "parent"]
       },
       "UpdateAlertTypeRequest": {
         "type": "object",
@@ -2644,9 +2513,7 @@
             "minLength": 1
           }
         },
-        "required": [
-          "description"
-        ]
+        "required": ["description"]
       },
       "UpdateAlertCodeRequest": {
         "type": "object",
@@ -2660,9 +2527,7 @@
             "minLength": 1
           }
         },
-        "required": [
-          "description"
-        ]
+        "required": ["description"]
       },
       "PageAlert": {
         "type": "object",
@@ -2770,12 +2635,7 @@
             "format": "int32"
           }
         },
-        "required": [
-          "created",
-          "existingAlerts",
-          "expired",
-          "updated"
-        ]
+        "required": ["created", "existingAlerts", "expired", "updated"]
       },
       "BulkPlanStatus": {
         "type": "object",
@@ -2820,9 +2680,7 @@
             "uniqueItems": true
           }
         },
-        "required": [
-          "prisoners"
-        ]
+        "required": ["prisoners"]
       },
       "PrisonerSummary": {
         "type": "object",
@@ -2843,11 +2701,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "firstName",
-          "lastName",
-          "prisonNumber"
-        ]
+        "required": ["firstName", "lastName", "prisonNumber"]
       },
       "BulkPlanAffect": {
         "type": "object",
@@ -2856,9 +2710,7 @@
             "$ref": "#/components/schemas/BulkPlanCounts"
           }
         },
-        "required": [
-          "counts"
-        ]
+        "required": ["counts"]
       }
     },
     "securitySchemes": {
