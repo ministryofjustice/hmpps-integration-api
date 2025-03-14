@@ -34,7 +34,7 @@ class PrisonerAlertsGateway(
     val result =
       webClient.request<PAPaginatedAlerts>(
         HttpMethod.GET,
-        "/prisoners/$prisonerNumber/alerts?isActive=true&page=$page&size=$size",
+        "/prisoners/$prisonerNumber/alerts?page=$page&size=$size",
         authenticationHeader(),
         UpstreamApi.PRISONER_ALERTS,
         badRequestAsError = true,
