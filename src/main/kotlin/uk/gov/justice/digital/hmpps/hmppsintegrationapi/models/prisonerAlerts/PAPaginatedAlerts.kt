@@ -22,7 +22,7 @@ data class PAPaginatedAlerts(
       totalCount = this.totalElements,
       isLastPage = this.last,
       count = this.numberOfElements,
-      page = this.number,
+      page = this.number + 1, // Alerts API pagination is 0 based
       perPage = this.size,
     )
 }
