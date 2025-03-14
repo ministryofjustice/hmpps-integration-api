@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpMethod
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.caseNotes.CNSearchNotesRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.filters.CaseNoteFilter
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CaseNote
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
@@ -25,13 +26,19 @@ class CaseNotesGateway(
     id: String,
     filter: CaseNoteFilter,
   ): Response<List<CaseNote>> {
-    val params = getParamFilter(filter)
+    val requestBody =
+      CNSearchNotesRequest(
+        occurredFrom = filter.startDate?.format(DateTimeFormatter.ISO_DATE),
+        occurredTo = filter.endDate?.format(DateTimeFormatter.ISO_DATE),
+      )
+
     val result =
       webClient.request<NomisPageCaseNote>(
-        HttpMethod.GET,
-        "/case-notes/$id?$params",
+        HttpMethod.POST,
+        "/search/case-notes/$id",
         authenticationHeader(),
-        UpstreamApi.CASE_NOTES,
+        requestBody = requestBody.toApiConformingMap(),
+        upstreamApi = UpstreamApi.CASE_NOTES,
         forbiddenAsError = true,
       )
 
@@ -47,16 +54,6 @@ class CaseNotesGateway(
         )
       }
     }
-  }
-
-  private fun getParamFilter(filter: CaseNoteFilter): String {
-    val paramFilterMap =
-      mutableMapOf<String, String>().apply {
-        filter.locationId?.let { this["locationId"] = filter.locationId }
-        filter.startDate?.let { this["startDate"] = filter.startDate.format(DateTimeFormatter.ISO_DATE) }
-        filter.endDate?.let { this["endDate"] = filter.endDate.format(DateTimeFormatter.ISO_DATE) }
-      }
-    return paramFilterMap.entries.joinToString(separator = "&") { (key, value) -> "$key=$value" }
   }
 
   private fun authenticationHeader(): Map<String, String> {
