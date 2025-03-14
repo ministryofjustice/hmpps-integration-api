@@ -22,6 +22,6 @@ data class Alert(
   val dateExpired: LocalDate? = null,
   @Schema(description = "Whether the alert has expired", example = "true")
   val expired: Boolean? = null,
-  @Schema(description = "Whether the alert is active", example = "true")
+  @Schema(description = "Whether the alert is active", example = "false")
   val active: Boolean? = null,
 )
