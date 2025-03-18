@@ -25,10 +25,7 @@
   ],
   "security": [
     {
-      "bearer-jwt": [
-        "read",
-        "write"
-      ]
+      "bearer-jwt": ["read", "write"]
     }
   ],
   "tags": [
@@ -60,9 +57,7 @@
   "paths": {
     "/sync/case-notes": {
       "put": {
-        "tags": [
-          "NOMIS sync only"
-        ],
+        "tags": ["NOMIS sync only"],
         "summary": "Endpoint to sync a case note from nomis to dps.",
         "description": "Case notes that don't exist in dps will be created, those that already exist and can be identified will be updated. Conceptually, a merge endpoint.\nRequires one of the following roles: \n* ROLE_PRISONER_CASE_NOTES__SYNC__RW",
         "operationId": "syncCaseNotes",
@@ -132,9 +127,7 @@
     },
     "/move/case-notes": {
       "put": {
-        "tags": [
-          "NOMIS sync only"
-        ],
+        "tags": ["NOMIS sync only"],
         "summary": "Endpoint to move case notes - only for sync operations",
         "description": "Case notes that are moved across bookings in nomis can be moved using this endpoint\nRequires one of the following roles: \n* ROLE_PRISONER_CASE_NOTES__SYNC__RW",
         "operationId": "moveCaseNotes",
@@ -187,9 +180,7 @@
     },
     "/case-notes/{personIdentifier}/{caseNoteIdentifier}": {
       "get": {
-        "tags": [
-          "Retrieve case notes, types and sub-types"
-        ],
+        "tags": ["Retrieve case notes, types and sub-types"],
         "summary": "Retrieves a case note",
         "operationId": "getCaseNote",
         "parameters": [
@@ -251,9 +242,7 @@
         }
       },
       "put": {
-        "tags": [
-          "Create and amend case notes"
-        ],
+        "tags": ["Create and amend case notes"],
         "summary": "Amend Case Note for offender",
         "description": "Amend a case note information adds and additional entry to the note",
         "operationId": "amendCaseNote",
@@ -340,9 +329,7 @@
     },
     "/system-generated/case-notes/{personIdentifier}": {
       "post": {
-        "tags": [
-          "Create system generated case notes"
-        ],
+        "tags": ["Create system generated case notes"],
         "summary": "Create system generated case notes with custom author information",
         "description": "\nRequires one of the following roles: \n* ROLE_PRISONER_CASE_NOTES__SYSTEM_GENERATED__RW",
         "operationId": "createSystemGeneratedNote",
@@ -412,9 +399,7 @@
     },
     "/search/case-notes/{personIdentifier}": {
       "post": {
-        "tags": [
-          "Retrieve case notes, types and sub-types"
-        ],
+        "tags": ["Retrieve case notes, types and sub-types"],
         "summary": "Finds matching case notes",
         "description": "Sorting can be applied on occurrenceDateTime (default) or creationDateTime. Any other sort parameter will have the default result (occurrenceDateTime,desc)",
         "operationId": "findCaseNotes",
@@ -466,9 +451,7 @@
     },
     "/case-notes/{personIdentifier}": {
       "get": {
-        "tags": [
-          "Retrieve case notes, types and sub-types"
-        ],
+        "tags": ["Retrieve case notes, types and sub-types"],
         "summary": "Please do not use - this has been superseded by search/case-notes/{personIdentifier}",
         "operationId": "getCaseNotes",
         "parameters": [
@@ -528,9 +511,7 @@
         "deprecated": true
       },
       "post": {
-        "tags": [
-          "Create and amend case notes"
-        ],
+        "tags": ["Create and amend case notes"],
         "summary": "Add a user supplied case note for an offender.",
         "description": "\n    This endpoint should be used for adding a user supplied case note for an offender.\n    \n    System generated case notes, i.e. those generated as a side effect of another service, are supported but their usage is discouraged. \n    HMPPS intends case notes to only be supplied by users. Case notes used to inform of a change in another service, for example alerts being added or closed, should be considered deprecated and alternative methods of displaying this information to users should be pursued.\n    \n    An example alternative solution: a dedicated widget showing summary information on the prisoner profile provides improved context at a glance about a prisoner.\n    ",
         "operationId": "createCaseNote",
@@ -607,9 +588,7 @@
     },
     "/case-notes/usage": {
       "post": {
-        "tags": [
-          "Retrieve case notes, types and sub-types"
-        ],
+        "tags": ["Retrieve case notes, types and sub-types"],
         "summary": "Finds counts of case notes for person identifier",
         "operationId": "noteUsageForPersonIdentifier",
         "requestBody": {
@@ -668,9 +647,7 @@
     },
     "/case-notes/staff-usage": {
       "post": {
-        "tags": [
-          "Retrieve case notes, types and sub-types"
-        ],
+        "tags": ["Retrieve case notes, types and sub-types"],
         "summary": "Finds counts of case notes for an author",
         "operationId": "noteUsageForAuthorUserId",
         "requestBody": {
@@ -729,9 +706,7 @@
     },
     "/sync/case-notes/{personIdentifier}": {
       "get": {
-        "tags": [
-          "NOMIS sync only"
-        ],
+        "tags": ["NOMIS sync only"],
         "description": "\nRequires one of the following roles: \n* ROLE_PRISONER_CASE_NOTES__SYNC__RW",
         "operationId": "getNomisCaseNotes",
         "parameters": [
@@ -763,9 +738,7 @@
     },
     "/subject-access-request": {
       "get": {
-        "tags": [
-          "Subject Access Request"
-        ],
+        "tags": ["Subject Access Request"],
         "summary": "Provides content for a prisoner to satisfy the needs of a subject access request on their behalf",
         "description": "Requires role SAR_DATA_ACCESS\nRequires one of the following roles: \n* SAR_DATA_ACCESS",
         "operationId": "getSarContentByReference",
@@ -866,9 +839,7 @@
     },
     "/case-notes/types": {
       "get": {
-        "tags": [
-          "Retrieve case notes, types and sub-types"
-        ],
+        "tags": ["Retrieve case notes, types and sub-types"],
         "summary": "Retrieves a list of case note types",
         "description": "\n  Please note, current functionality of using user roles from the token is now deprecated. \n  Going forward user roles will not affect the results returned from this endpoint.\n  This has been replaced with optional request params to replicate the same functionality.\n  Setting a value for 'selectableBy' will allow the choice of filtering those that are selectable by dps users only or to include all types regardless.\n  Additionally, the following properties allow filtering: \n  includeInactive -\u003E if this is true the returned results will include inactive types, otherwise only active types will be returned.\n  includeRestricted -\u003E if this is true the returned results will include restricted use types, otherwise only non-restricted types will be returned.\n  \nRequires one of the following roles: \n* ROLE_PRISONER_CASE_NOTES__RO\n* ROLE_PRISONER_CASE_NOTES__RW",
         "operationId": "getCaseNoteTypes",
@@ -879,10 +850,7 @@
             "required": true,
             "schema": {
               "type": "string",
-              "enum": [
-                "DPS_USER",
-                "ALL"
-              ]
+              "enum": ["DPS_USER", "ALL"]
             }
           },
           {
@@ -931,9 +899,7 @@
     },
     "/sync/case-notes/{id}": {
       "delete": {
-        "tags": [
-          "NOMIS sync only"
-        ],
+        "tags": ["NOMIS sync only"],
         "summary": "Endpoint to delete a case note - only for sync operations",
         "description": "Case notes that exist will be deleted. No exception will be returned if the case note does not exist.\nRequires one of the following roles: \n* ROLE_PRISONER_CASE_NOTES__SYNC__RW",
         "operationId": "deleteCaseNote",
@@ -977,9 +943,7 @@
     },
     "/case-notes/{personIdentifier}/{caseNoteId}": {
       "delete": {
-        "tags": [
-          "Admin only"
-        ],
+        "tags": ["Admin only"],
         "summary": "Deletes a case note",
         "operationId": "deleteCaseNote_1",
         "parameters": [
@@ -1044,12 +1008,7 @@
             "description": "The last name of the author"
           }
         },
-        "required": [
-          "firstName",
-          "lastName",
-          "userId",
-          "username"
-        ]
+        "required": ["firstName", "lastName", "userId", "username"]
       },
       "SyncCaseNoteAmendmentRequest": {
         "type": "object",
@@ -1067,17 +1026,10 @@
           },
           "system": {
             "type": "string",
-            "enum": [
-              "DPS",
-              "NOMIS"
-            ]
+            "enum": ["DPS", "NOMIS"]
           }
         },
-        "required": [
-          "author",
-          "createdDateTime",
-          "text"
-        ]
+        "required": ["author", "createdDateTime", "text"]
       },
       "SyncCaseNoteRequest": {
         "type": "object",
@@ -1152,10 +1104,7 @@
           },
           "system": {
             "type": "string",
-            "enum": [
-              "DPS",
-              "NOMIS"
-            ]
+            "enum": ["DPS", "NOMIS"]
           }
         },
         "required": [
@@ -1194,9 +1143,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "status"
-        ]
+        "required": ["status"]
       },
       "SyncResult": {
         "type": "object",
@@ -1211,17 +1158,10 @@
           },
           "action": {
             "type": "string",
-            "enum": [
-              "CREATED",
-              "UPDATED"
-            ]
+            "enum": ["CREATED", "UPDATED"]
           }
         },
-        "required": [
-          "action",
-          "id",
-          "legacyId"
-        ]
+        "required": ["action", "id", "legacyId"]
       },
       "MoveCaseNotesRequest": {
         "type": "object",
@@ -1241,11 +1181,7 @@
             "uniqueItems": true
           }
         },
-        "required": [
-          "caseNoteIds",
-          "fromPersonIdentifier",
-          "toPersonIdentifier"
-        ]
+        "required": ["caseNoteIds", "fromPersonIdentifier", "toPersonIdentifier"]
       },
       "AmendCaseNoteRequest": {
         "type": "object",
@@ -1256,9 +1192,7 @@
             "description": "The text of the note"
           }
         },
-        "required": [
-          "text"
-        ]
+        "required": ["text"]
       },
       "CaseNote": {
         "type": "object",
@@ -1418,11 +1352,7 @@
             "example": "Some Additional Text"
           }
         },
-        "required": [
-          "additionalNoteText",
-          "authorName",
-          "authorUserName"
-        ]
+        "required": ["additionalNoteText", "authorName", "authorUserName"]
       },
       "SystemGeneratedRequest": {
         "type": "object",
@@ -1460,12 +1390,7 @@
             "description": "The text of the note"
           }
         },
-        "required": [
-          "authorName",
-          "subType",
-          "text",
-          "type"
-        ]
+        "required": ["authorName", "subType", "text", "type"]
       },
       "SearchNotesRequest": {
         "type": "object",
@@ -1502,13 +1427,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "includeSensitive",
-          "page",
-          "size",
-          "sort",
-          "typeSubTypes"
-        ]
+        "required": ["includeSensitive", "page", "size", "sort", "typeSubTypes"]
       },
       "TypeSubTypeRequest": {
         "type": "object",
@@ -1524,10 +1443,7 @@
             "uniqueItems": true
           }
         },
-        "required": [
-          "subTypes",
-          "type"
-        ]
+        "required": ["subTypes", "type"]
       },
       "PageMeta": {
         "type": "object",
@@ -1545,11 +1461,7 @@
             "format": "int32"
           }
         },
-        "required": [
-          "page",
-          "size",
-          "totalElements"
-        ]
+        "required": ["page", "size", "totalElements"]
       },
       "SearchNotesResponse": {
         "type": "object",
@@ -1567,11 +1479,7 @@
             "type": "boolean"
           }
         },
-        "required": [
-          "content",
-          "hasCaseNotes",
-          "metadata"
-        ]
+        "required": ["content", "hasCaseNotes", "metadata"]
       },
       "CreateCaseNoteRequest": {
         "type": "object",
@@ -1606,11 +1514,7 @@
             "description": "Boolean flag to indicate if case not is system generated"
           }
         },
-        "required": [
-          "subType",
-          "text",
-          "type"
-        ]
+        "required": ["subType", "text", "type"]
       },
       "UsageByPersonIdentifierRequest": {
         "type": "object",
@@ -1649,18 +1553,10 @@
           },
           "dateType": {
             "type": "string",
-            "enum": [
-              "CREATED_AT",
-              "OCCURRED_AT"
-            ]
+            "enum": ["CREATED_AT", "OCCURRED_AT"]
           }
         },
-        "required": [
-          "authorIds",
-          "dateType",
-          "personIdentifiers",
-          "typeSubTypes"
-        ]
+        "required": ["authorIds", "dateType", "personIdentifiers", "typeSubTypes"]
       },
       "LatestNote": {
         "type": "object",
@@ -1670,9 +1566,7 @@
             "format": "date-time"
           }
         },
-        "required": [
-          "occurredAt"
-        ]
+        "required": ["occurredAt"]
       },
       "NoteUsageResponseUsageByPersonIdentifierResponse": {
         "type": "object",
@@ -1687,9 +1581,7 @@
             }
           }
         },
-        "required": [
-          "content"
-        ]
+        "required": ["content"]
       },
       "UsageByPersonIdentifierResponse": {
         "type": "object",
@@ -1711,12 +1603,7 @@
             "$ref": "#/components/schemas/LatestNote"
           }
         },
-        "required": [
-          "count",
-          "personIdentifier",
-          "subType",
-          "type"
-        ]
+        "required": ["count", "personIdentifier", "subType", "type"]
       },
       "UsageByAuthorIdRequest": {
         "type": "object",
@@ -1748,17 +1635,10 @@
           },
           "dateType": {
             "type": "string",
-            "enum": [
-              "CREATED_AT",
-              "OCCURRED_AT"
-            ]
+            "enum": ["CREATED_AT", "OCCURRED_AT"]
           }
         },
-        "required": [
-          "authorIds",
-          "dateType",
-          "typeSubTypes"
-        ]
+        "required": ["authorIds", "dateType", "typeSubTypes"]
       },
       "NoteUsageResponseUsageByAuthorIdResponse": {
         "type": "object",
@@ -1773,9 +1653,7 @@
             }
           }
         },
-        "required": [
-          "content"
-        ]
+        "required": ["content"]
       },
       "UsageByAuthorIdResponse": {
         "type": "object",
@@ -1797,12 +1675,7 @@
             "$ref": "#/components/schemas/LatestNote"
           }
         },
-        "required": [
-          "authorId",
-          "count",
-          "subType",
-          "type"
-        ]
+        "required": ["authorId", "count", "subType", "type"]
       },
       "SarAmendment": {
         "type": "object",
@@ -1818,11 +1691,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "additionalNoteText",
-          "authorUsername",
-          "creationDateTime"
-        ]
+        "required": ["additionalNoteText", "authorUsername", "creationDateTime"]
       },
       "SarNote": {
         "type": "object",
@@ -1850,14 +1719,7 @@
             }
           }
         },
-        "required": [
-          "amendments",
-          "authorUsername",
-          "creationDateTime",
-          "subType",
-          "text",
-          "type"
-        ]
+        "required": ["amendments", "authorUsername", "creationDateTime", "subType", "text", "type"]
       },
       "SubjectAccessResponse": {
         "type": "object",
@@ -1872,10 +1734,7 @@
             }
           }
         },
-        "required": [
-          "content",
-          "prn"
-        ]
+        "required": ["content", "prn"]
       },
       "CaseNoteFilter": {
         "type": "object",
@@ -1929,10 +1788,7 @@
             }
           }
         },
-        "required": [
-          "includeSensitive",
-          "typesAndSubTypes"
-        ]
+        "required": ["includeSensitive", "typesAndSubTypes"]
       },
       "Pageable": {
         "type": "object",
@@ -2073,21 +1929,11 @@
             "description": "Shows the actors that can select this case note type",
             "items": {
               "type": "string",
-              "enum": [
-                "DPS_USER",
-                "ALL"
-              ]
+              "enum": ["DPS_USER", "ALL"]
             }
           }
         },
-        "required": [
-          "active",
-          "code",
-          "description",
-          "restrictedUse",
-          "selectableBy",
-          "sensitive"
-        ]
+        "required": ["active", "code", "description", "restrictedUse", "selectableBy", "sensitive"]
       },
       "CaseNoteType": {
         "type": "object",
@@ -2106,11 +1952,7 @@
             }
           }
         },
-        "required": [
-          "code",
-          "description",
-          "subCodes"
-        ]
+        "required": ["code", "description", "subCodes"]
       }
     },
     "securitySchemes": {
