@@ -1,9 +1,12 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.validation.Valid
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull
+import org.springframework.web.context.request.RequestAttributes
+import org.springframework.web.context.request.RequestContextHolder
 import java.time.LocalDateTime
 
 @Schema(description = "Private prison visit request")
@@ -41,4 +44,34 @@ data class CreateVisitRequest(
   val visitors: Set<@Valid Visitor>? = setOf(),
   @Schema(description = "Username for user who actioned this request", required = false)
   val actionedBy: String?,
-)
+) {
+  fun toVisitQueueEvent(): VisitQueueEvent {
+    val objectMapper = ObjectMapper()
+    val username =
+      RequestContextHolder
+        .currentRequestAttributes()
+        .getAttribute("clientName", RequestAttributes.SCOPE_REQUEST) as String
+
+    return VisitQueueEvent(
+      eventType = VisitQueueEventType.CREATE,
+      payload = objectMapper.writeValueAsString(modelToMap()),
+      who = username,
+    )
+  }
+
+  private fun modelToMap(): Map<String, Any?> =
+    mapOf(
+      "prisonerId" to this.prisonerId,
+      "prisonId" to this.prisonId,
+      "clientVisitReference" to this.clientVisitReference,
+      "visitRoom" to this.visitRoom,
+      "visitType" to this.visitType,
+      "visitStatus" to this.visitStatus,
+      "visitRestriction" to this.visitRestriction,
+      "startTimestamp" to this.startTimestamp,
+      "endTimestamp" to this.endTimestamp,
+      "createDateTime" to this.createDateTime,
+      "visitors" to this.visitors?.map { mapOf("nomisPersonId" to it.nomisPersonId, "visitContact" to it.visitContact) },
+      "actionedBy" to this.actionedBy,
+    )
+}
