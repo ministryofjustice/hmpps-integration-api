@@ -40,6 +40,7 @@ class CaseNotesGateway(
         requestBody = requestBody.toApiConformingMap(),
         upstreamApi = UpstreamApi.CASE_NOTES,
         forbiddenAsError = true,
+        badRequestAsError = true,
       )
 
     return when (result) {

@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.caseNotes
 
 data class CNSearchNotesRequest(
+  val includeSensitive: Boolean? = true,
   val occurredFrom: String? = null,
   val occurredTo: String? = null,
   // confirm pagination is not required
@@ -8,8 +9,11 @@ data class CNSearchNotesRequest(
   val size: String? = null,
   val sort: String? = null,
 ) {
-  fun toApiConformingMap(): Map<String, String> {
-    val map = mutableMapOf<String, String>()
+  fun toApiConformingMap(): Map<String, Any> {
+    val map = mutableMapOf<String, Any>()
+    if (includeSensitive != null) {
+      map["includeSensitive"] = includeSensitive
+    }
     if (occurredFrom != null) {
       map["occurredFrom"] = occurredFrom
     }
