@@ -5,8 +5,6 @@ import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.validation.Valid
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull
-import org.springframework.web.context.request.RequestAttributes
-import org.springframework.web.context.request.RequestContextHolder
 import java.time.LocalDateTime
 
 @Schema(description = "Private prison visit request")
@@ -45,17 +43,13 @@ data class CreateVisitRequest(
   @Schema(description = "Username for user who actioned this request", required = false)
   val actionedBy: String?,
 ) {
-  fun toVisitQueueEvent(): VisitQueueEvent {
+  fun toVisitQueueEvent(who: String): VisitQueueEvent {
     val objectMapper = ObjectMapper()
-    val username =
-      RequestContextHolder
-        .currentRequestAttributes()
-        .getAttribute("clientName", RequestAttributes.SCOPE_REQUEST) as String
 
     return VisitQueueEvent(
       eventType = VisitQueueEventType.CREATE,
       payload = objectMapper.writeValueAsString(modelToMap()),
-      who = username,
+      who = who,
     )
   }
 
@@ -68,9 +62,9 @@ data class CreateVisitRequest(
       "visitType" to this.visitType,
       "visitStatus" to this.visitStatus,
       "visitRestriction" to this.visitRestriction,
-      "startTimestamp" to this.startTimestamp,
-      "endTimestamp" to this.endTimestamp,
-      "createDateTime" to this.createDateTime,
+      "startTimestamp" to this.startTimestamp.toString(),
+      "endTimestamp" to this.endTimestamp.toString(),
+      "createDateTime" to this.createDateTime.toString(),
       "visitors" to this.visitors?.map { mapOf("nomisPersonId" to it.nomisPersonId, "visitContact" to it.visitContact) },
       "actionedBy" to this.actionedBy,
     )
