@@ -26,6 +26,10 @@ class PrisonerAlertsGateway(
     )
   }
 
+  /**
+   * @param page page number (1 based)
+   * @param size records per page
+   */
   fun getPrisonerAlerts(
     prisonerNumber: String,
     page: Int,
@@ -34,7 +38,7 @@ class PrisonerAlertsGateway(
     val result =
       webClient.request<PAPaginatedAlerts>(
         HttpMethod.GET,
-        "/prisoners/$prisonerNumber/alerts?page=$page&size=$size",
+        "/prisoners/$prisonerNumber/alerts?page=${page - 1}&size=$size",
         authenticationHeader(),
         UpstreamApi.PRISONER_ALERTS,
         badRequestAsError = true,
