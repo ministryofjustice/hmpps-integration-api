@@ -37,23 +37,8 @@ class GetAlertsForPersonService(
       return Response(data = null, errors = alertsResponse.errors)
     }
 
-    val paginatedAlerts = alertsResponse.data?.toPaginatedAlerts(pndOnly)
-
-    if (paginatedAlerts?.content.orEmpty().isEmpty()) {
-      return Response(
-        data = null,
-        errors =
-          listOf(
-            UpstreamApiError(
-              causedBy = UpstreamApi.PRISONER_ALERTS,
-              type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-            ),
-          ),
-      )
-    }
-
     return Response(
-      data = paginatedAlerts,
+      data = alertsResponse.data?.toPaginatedAlerts(pndOnly),
     )
   }
 }

@@ -2,7 +2,6 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.collections.shouldHaveSize
-import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
 import org.mockito.kotlin.times
@@ -188,18 +187,6 @@ internal class GetAlertsForPersonServiceTest(
         it("returns PND filtered data") {
           val response = getAlertsForPersonService.execute(hmppsId, filters, page, perPage, pndOnly = true)
           response.data?.content.shouldBe(listOf(alert.toAlert()))
-        }
-
-        it("returns an error when the alert code is not in the allowed list") {
-          whenever(prisonerAlertsGateway.getPrisonerAlerts(hmppsId, page, perPage)).thenReturn(
-            Response(
-              data = getPaginatedAlerts(listOf(nonMatchingAlert)),
-            ),
-          )
-
-          val response = getAlertsForPersonService.execute(hmppsId, filters, page, perPage, pndOnly = true)
-          response.data.shouldBeNull()
-          response.errors.shouldHaveSize(1)
         }
       }
     },
