@@ -63,12 +63,46 @@ class AlertsController(
     return response.data.toPaginatedResponse()
   }
 
-  @GetMapping("/persons/{hmppsId}/alerts/pnd", "/pnd/persons/{hmppsId}/alerts")
+  @GetMapping("/persons/{hmppsId}/alerts/pnd")
   @Operation(
     deprecated = true,
     summary = "Returns alerts associated with a person, sorted by dateCreated (newest first).",
+    description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
     responses = [
       ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found alerts for a person with the provided HMPPS ID."),
+      ApiResponse(responseCode = "400", content = [Content(schema = Schema(ref = "#/components/schemas/BadRequest"))]),
+      ApiResponse(responseCode = "404", content = [Content(schema = Schema(ref = "#/components/schemas/PersonNotFound"))]),
+      ApiResponse(responseCode = "500", content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]),
+    ],
+  )
+  fun getPersonAlertsPND(
+    @Parameter(description = "The HMPPS ID of the person", example = "2008%2F0545166T") @PathVariable hmppsId: String,
+    @Parameter(description = "The page number (starting from 1)", schema = Schema(minimum = "1")) @RequestParam(required = false, defaultValue = "1", name = "page") page: Int,
+    @Parameter(description = "The maximum number of results for a page", schema = Schema(minimum = "1")) @RequestParam(required = false, defaultValue = "10", name = "perPage") perPage: Int,
+    @RequestAttribute filters: ConsumerFilters?,
+  ): PaginatedResponse<Alert> {
+    val response = getAlertsForPersonService.execute(hmppsId, filters, page, perPage, pndOnly = true)
+
+    if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
+      throw EntityNotFoundException("Could not find person with id: $hmppsId")
+    }
+
+    if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
+      throw ValidationException("Invalid HMPPS ID: $hmppsId")
+    }
+
+    auditService.createEvent("GET_PERSON_ALERTS_PND", mapOf("hmppsId" to hmppsId))
+
+    return response.data.toPaginatedResponse()
+  }
+
+  @GetMapping("/pnd/persons/{hmppsId}/alerts")
+  @Operation(
+    summary = "Returns alerts associated with a person, sorted by dateCreated (newest first).",
+    description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
+    responses = [
+      ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found alerts for a person with the provided HMPPS ID."),
+      ApiResponse(responseCode = "400", content = [Content(schema = Schema(ref = "#/components/schemas/BadRequest"))]),
       ApiResponse(responseCode = "404", content = [Content(schema = Schema(ref = "#/components/schemas/PersonNotFound"))]),
       ApiResponse(responseCode = "500", content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]),
     ],
@@ -77,11 +111,16 @@ class AlertsController(
     @Parameter(description = "The HMPPS ID of the person", example = "2008%2F0545166T") @PathVariable hmppsId: String,
     @Parameter(description = "The page number (starting from 1)", schema = Schema(minimum = "1")) @RequestParam(required = false, defaultValue = "1", name = "page") page: Int,
     @Parameter(description = "The maximum number of results for a page", schema = Schema(minimum = "1")) @RequestParam(required = false, defaultValue = "10", name = "perPage") perPage: Int,
+    @RequestAttribute filters: ConsumerFilters?,
   ): PaginatedResponse<Alert> {
-    val response = getAlertsForPersonService.execute(hmppsId, null, page, perPage, pndOnly = true)
+    val response = getAlertsForPersonService.execute(hmppsId, filters, page, perPage, pndOnly = true)
 
     if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
       throw EntityNotFoundException("Could not find person with id: $hmppsId")
+    }
+
+    if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
+      throw ValidationException("Invalid HMPPS ID: $hmppsId")
     }
 
     auditService.createEvent("GET_PERSON_ALERTS_PND", mapOf("hmppsId" to hmppsId))

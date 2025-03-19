@@ -16,12 +16,12 @@ class GetAlertsForPersonService(
 ) {
   fun execute(
     hmppsId: String,
-    filter: ConsumerFilters?,
+    filters: ConsumerFilters?,
     page: Int,
     perPage: Int,
     pndOnly: Boolean = false,
   ): Response<PaginatedAlerts?> {
-    val personResponse = getPersonService.getNomisNumberWithPrisonFilter(hmppsId, filter)
+    val personResponse = getPersonService.getNomisNumberWithPrisonFilter(hmppsId, filters)
     if (personResponse.errors.isNotEmpty()) {
       return Response(data = null, errors = personResponse.errors)
     }
