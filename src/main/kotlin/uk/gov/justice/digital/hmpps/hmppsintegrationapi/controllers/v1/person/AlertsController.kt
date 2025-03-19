@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.decodeUrlCharacters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Alert
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.interfaces.toPaginatedResponse
@@ -64,7 +63,7 @@ class AlertsController(
     return response.data.toPaginatedResponse()
   }
 
-  @GetMapping("/persons/{encodedHmppsId}/alerts/pnd")
+  @GetMapping("/persons/{hmppsId}/alerts/pnd", "/pnd/persons/{hmppsId}/alerts")
   @Operation(
     deprecated = true,
     summary = "Returns alerts associated with a person, sorted by dateCreated (newest first).",
@@ -74,38 +73,11 @@ class AlertsController(
       ApiResponse(responseCode = "500", content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]),
     ],
   )
-  fun getPersonAlertsPND(
-    @Parameter(description = "A URL-encoded HMPPS identifier", example = "2008%2F0545166T") @PathVariable encodedHmppsId: String,
-    @Parameter(description = "The page number (starting from 1)", schema = Schema(minimum = "1")) @RequestParam(required = false, defaultValue = "1", name = "page") page: Int,
-    @Parameter(description = "The maximum number of results for a page", schema = Schema(minimum = "1")) @RequestParam(required = false, defaultValue = "10", name = "perPage") perPage: Int,
-  ): PaginatedResponse<Alert> {
-    val hmppsId = encodedHmppsId.decodeUrlCharacters()
-    val response = getAlertsForPersonService.execute(hmppsId, null, page, perPage, pndOnly = true)
-
-    if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
-      throw EntityNotFoundException("Could not find person with id: $hmppsId")
-    }
-
-    auditService.createEvent("GET_PERSON_ALERTS_PND", mapOf("hmppsId" to hmppsId))
-
-    return response.data.toPaginatedResponse()
-  }
-
-  @GetMapping("/pnd/persons/{encodedHmppsId}/alerts")
-  @Operation(
-    summary = "Returns alerts associated with a person, sorted by dateCreated (newest first).",
-    responses = [
-      ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found alerts for a person with the provided HMPPS ID."),
-      ApiResponse(responseCode = "404", content = [Content(schema = Schema(ref = "#/components/schemas/PersonNotFound"))]),
-      ApiResponse(responseCode = "500", content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]),
-    ],
-  )
   fun getPndPersonAlerts(
-    @Parameter(description = "A URL-encoded HMPPS identifier", example = "2008%2F0545166T") @PathVariable encodedHmppsId: String,
+    @Parameter(description = "The HMPPS ID of the person", example = "2008%2F0545166T") @PathVariable hmppsId: String,
     @Parameter(description = "The page number (starting from 1)", schema = Schema(minimum = "1")) @RequestParam(required = false, defaultValue = "1", name = "page") page: Int,
     @Parameter(description = "The maximum number of results for a page", schema = Schema(minimum = "1")) @RequestParam(required = false, defaultValue = "10", name = "perPage") perPage: Int,
   ): PaginatedResponse<Alert> {
-    val hmppsId = encodedHmppsId.decodeUrlCharacters()
     val response = getAlertsForPersonService.execute(hmppsId, null, page, perPage, pndOnly = true)
 
     if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
