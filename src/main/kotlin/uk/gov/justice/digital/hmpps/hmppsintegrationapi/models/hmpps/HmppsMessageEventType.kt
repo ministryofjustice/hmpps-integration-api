@@ -12,4 +12,19 @@ enum class HmppsMessageEventType(
     eventTypeCode = "ExpressionOfInterestCreated",
     description = "An expression of interest has been created",
   ),
+  VISIT_CREATED(
+    type = "visit-someone-in-prison.visit.created",
+    eventTypeCode = "VisitCreated",
+    description = "An visit has been created",
+  ),
+  VISIT_UPDATED(
+    type = "visit-someone-in-prison.visit.updated",
+    eventTypeCode = "VisitUpdated",
+    description = "An visit has been updated",
+  ),
+  VISIT_CANCELLED(
+    type = "visit-someone-in-prison.visit.cancelled",
+    eventTypeCode = "VisitCancelled",
+    description = "An visit has been cancelled",
+  ),
 }

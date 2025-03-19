@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.validation.Valid
 import jakarta.validation.constraints.NotBlank
@@ -43,15 +42,12 @@ data class CreateVisitRequest(
   @Schema(description = "Username for user who actioned this request", required = false)
   val actionedBy: String?,
 ) {
-  fun toVisitQueueEvent(who: String): VisitQueueEvent {
-    val objectMapper = ObjectMapper()
-
-    return VisitQueueEvent(
-      eventType = VisitQueueEventType.CREATE,
-      payload = objectMapper.writeValueAsString(modelToMap()),
+  fun toHmppsMessage(who: String): HmppsMessage =
+    HmppsMessage(
+      eventType = HmppsMessageEventType.VISIT_CREATED,
+      messageAttributes = modelToMap(),
       who = who,
     )
-  }
 
   private fun modelToMap(): Map<String, Any?> =
     mapOf(
