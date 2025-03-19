@@ -1,7 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 
 import io.kotest.core.spec.style.DescribeSpec
-import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
 import org.mockito.kotlin.times
@@ -134,28 +133,27 @@ internal class GetAlertsForPersonServiceTest(
 
       describe("when an upstream API returns an error when looking up nomis number by a Hmmps Id") {
         it("records upstream API errors when failed prison check call") {
-          val err = listOf(UpstreamApiError(UpstreamApi.NOMIS, UpstreamApiError.Type.ENTITY_NOT_FOUND, description = "NOMIS number not found"))
+          val errors = listOf(UpstreamApiError(UpstreamApi.NOMIS, UpstreamApiError.Type.ENTITY_NOT_FOUND, description = "NOMIS number not found"))
           whenever(personService.getNomisNumberWithPrisonFilter(hmppsId = hmppsId, filters = filters)).thenReturn(
             Response(
               data = null,
-              errors = err,
+              errors = errors,
             ),
           )
 
           val response = getAlertsForPersonService.execute(hmppsId, filters, page, perPage)
-          response.errors.shouldHaveSize(1)
-          response.errors.shouldBe(err)
+          response.errors.shouldBe(errors)
         }
 
         it("failed to get prisoners nomis number") {
-          val err = listOf(UpstreamApiError(UpstreamApi.NOMIS, UpstreamApiError.Type.ENTITY_NOT_FOUND))
+          val errors = listOf(UpstreamApiError(UpstreamApi.NOMIS, UpstreamApiError.Type.ENTITY_NOT_FOUND))
           whenever(personService.getNomisNumberWithPrisonFilter(hmppsId, filters)).thenReturn(Response(data = NomisNumber(), errors = emptyList()))
 
           val response = getAlertsForPersonService.execute(hmppsId, filters, page, perPage)
-          response.errors.shouldBe(err)
+          response.errors.shouldBe(errors)
         }
 
-        it("does not get alerts from Nomis") {
+        it("does not get alerts from prison alerts gateway") {
           whenever(personService.getNomisNumberWithPrisonFilter(hmppsId, filters)).thenReturn(Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.NOMIS, UpstreamApiError.Type.ENTITY_NOT_FOUND, description = "NOMIS number not found"))))
 
           getAlertsForPersonService.execute(hmppsId, filters, page, perPage)
@@ -163,7 +161,7 @@ internal class GetAlertsForPersonServiceTest(
         }
       }
 
-      it("records errors when it prisoner alerts gateway returns an error") {
+      it("records errors when prisoner alerts gateway returns an error") {
         val errors =
           listOf(
             UpstreamApiError(
