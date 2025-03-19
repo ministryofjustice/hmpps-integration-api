@@ -1,7 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import software.amazon.awssdk.services.sqs.model.SendMessageRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.MessageFailedException
@@ -15,16 +15,13 @@ import uk.gov.justice.hmpps.sqs.eventTypeMessageAttributes
 
 @Service
 class VisitQueueService(
-  private val getPersonService: GetPersonService,
-  private val hmppsQueueService: HmppsQueueService,
+  @Autowired private val getPersonService: GetPersonService,
+  @Autowired private val hmppsQueueService: HmppsQueueService,
+  @Autowired private val objectMapper: ObjectMapper,
 ) {
-  private val visitsQueue by lazy { hmppsQueueService.findByQueueId("") as HmppsQueue }
+  private val visitsQueue by lazy { hmppsQueueService.findByQueueId("visits") as HmppsQueue }
   private val visitsQueueSqsClient by lazy { visitsQueue.sqsClient }
   private val visitsQueueUrl by lazy { visitsQueue.queueUrl }
-
-  companion object {
-    private val objectMapper: ObjectMapper = jacksonObjectMapper()
-  }
 
   fun sendCreateVisit(
     visit: CreateVisitRequest,
@@ -32,26 +29,25 @@ class VisitQueueService(
     consumerFilters: ConsumerFilters?,
   ): Response<HmppsMessageResponse?> {
     val visitPrisonerId = visit.prisonerId
-
     val personResponse = getPersonService.getNomisNumberWithPrisonFilter(hmppsId = visitPrisonerId, filters = consumerFilters)
 
     if (personResponse.errors.isNotEmpty()) {
       return Response(data = null, errors = personResponse.errors)
     }
 
-    val message = visit.toHmppsMessage(who)
+    val hmppsMessage = visit.toHmppsMessage(who)
 
     try {
-      val stringifiedMessage = objectMapper.writeValueAsString(message)
-
-      visitsQueueSqsClient.sendMessage(
+      val stringifiedMessage = objectMapper.writeValueAsString(hmppsMessage)
+      val sendMessageRequest =
         SendMessageRequest
           .builder()
           .queueUrl(visitsQueueUrl)
           .messageBody(stringifiedMessage)
-          .eventTypeMessageAttributes(message.eventType.toString())
-          .build(),
-      )
+          .eventTypeMessageAttributes(hmppsMessage.eventType.toString())
+          .build()
+
+      visitsQueueSqsClient.sendMessage(sendMessageRequest)
 
       return Response(HmppsMessageResponse(message = "Visit creation written to queue"))
     } catch (e: Exception) {
