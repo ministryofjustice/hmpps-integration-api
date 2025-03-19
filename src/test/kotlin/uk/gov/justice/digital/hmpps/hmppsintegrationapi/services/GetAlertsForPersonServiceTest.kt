@@ -39,7 +39,7 @@ internal class GetAlertsForPersonServiceTest(
       val hmppsId = "A1234AA"
       val filters = ConsumerFilters(null)
       val page = 1
-      val size = 10
+      val perPage = 10
       val alert =
         PAAlert(
           alertUuid = UUID.randomUUID().toString(),
@@ -82,7 +82,7 @@ internal class GetAlertsForPersonServiceTest(
           totalPages = 1,
           first = true,
           last = true,
-          size = size,
+          size = perPage,
           number = page,
           sort =
             PASort(
@@ -101,34 +101,36 @@ internal class GetAlertsForPersonServiceTest(
                   unsorted = true,
                 ),
               unpaged = false,
-              pageSize = size,
+              pageSize = perPage,
               paged = true,
               pageNumber = page,
             ),
           empty = false,
         )
 
+      val paginatedAlerts = getPaginatedAlerts(listOf(alert, nonMatchingAlert))
+
       beforeEach {
         Mockito.reset(prisonerAlertsGateway)
 
         whenever(personService.getNomisNumberWithPrisonFilter(hmppsId, filters)).thenReturn(Response(data = NomisNumber(hmppsId)))
-        whenever(prisonerAlertsGateway.getPrisonerAlerts(hmppsId, page, size)).thenReturn(
+        whenever(prisonerAlertsGateway.getPrisonerAlerts(hmppsId, page, perPage)).thenReturn(
           Response(
-            data = getPaginatedAlerts(listOf(alert, nonMatchingAlert)),
+            data = paginatedAlerts,
           ),
         )
       }
 
       it("gets a nomis number from getPersonService") {
-        getAlertsForPersonService.execute(hmppsId, filters, page, size)
+        getAlertsForPersonService.execute(hmppsId, filters, page, perPage)
 
         verify(personService, times(1)).getNomisNumberWithPrisonFilter(hmppsId = hmppsId, filters)
       }
 
-      it("gets alerts from NOMIS using a prisoner number") {
-        getAlertsForPersonService.execute(hmppsId, filters, page, size)
-
-        verify(prisonerAlertsGateway, times(1)).getPrisonerAlerts(hmppsId, page, size)
+      it("gets alerts using a prisoner number") {
+        val response = getAlertsForPersonService.execute(hmppsId, filters, page, perPage)
+        verify(prisonerAlertsGateway, times(1)).getPrisonerAlerts(hmppsId, page, perPage)
+        response.data.shouldBe(paginatedAlerts.toPaginatedAlerts())
       }
 
       describe("when an upstream API returns an error when looking up nomis number by a Hmmps Id") {
@@ -141,7 +143,7 @@ internal class GetAlertsForPersonServiceTest(
             ),
           )
 
-          val response = getAlertsForPersonService.execute(hmppsId, filters, page, size)
+          val response = getAlertsForPersonService.execute(hmppsId, filters, page, perPage)
           response.errors.shouldHaveSize(1)
           response.errors.shouldBe(err)
         }
@@ -150,15 +152,15 @@ internal class GetAlertsForPersonServiceTest(
           val err = listOf(UpstreamApiError(UpstreamApi.NOMIS, UpstreamApiError.Type.ENTITY_NOT_FOUND))
           whenever(personService.getNomisNumberWithPrisonFilter(hmppsId, filters)).thenReturn(Response(data = NomisNumber(), errors = emptyList()))
 
-          val response = getAlertsForPersonService.execute(hmppsId, filters, page, size)
+          val response = getAlertsForPersonService.execute(hmppsId, filters, page, perPage)
           response.errors.shouldBe(err)
         }
 
         it("does not get alerts from Nomis") {
           whenever(personService.getNomisNumberWithPrisonFilter(hmppsId, filters)).thenReturn(Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.NOMIS, UpstreamApiError.Type.ENTITY_NOT_FOUND, description = "NOMIS number not found"))))
 
-          getAlertsForPersonService.execute(hmppsId, filters, page, size)
-          verify(prisonerAlertsGateway, times(0)).getPrisonerAlerts(hmppsId, page, size)
+          getAlertsForPersonService.execute(hmppsId, filters, page, perPage)
+          verify(prisonerAlertsGateway, times(0)).getPrisonerAlerts(hmppsId, page, perPage)
         }
       }
 
@@ -171,31 +173,31 @@ internal class GetAlertsForPersonServiceTest(
               description = "Prisoner alerts error",
             ),
           )
-        whenever(prisonerAlertsGateway.getPrisonerAlerts(hmppsId, page, size)).thenReturn(
+        whenever(prisonerAlertsGateway.getPrisonerAlerts(hmppsId, page, perPage)).thenReturn(
           Response(
             data = null,
             errors = errors,
           ),
         )
 
-        val response = getAlertsForPersonService.execute(hmppsId, filters, page, size)
+        val response = getAlertsForPersonService.execute(hmppsId, filters, page, perPage)
         response.errors.shouldBe(errors)
       }
 
       describe("getAlertsForPnd") {
         it("returns PND filtered data") {
-          val response = getAlertsForPersonService.execute(hmppsId, filters, page, size, pndOnly = true)
-          response.data?.content.shouldBe(alert)
+          val response = getAlertsForPersonService.execute(hmppsId, filters, page, perPage, pndOnly = true)
+          response.data?.content.shouldBe(listOf(alert.toAlert()))
         }
 
         it("returns an error when the alert code is not in the allowed list") {
-          whenever(prisonerAlertsGateway.getPrisonerAlerts(hmppsId, page, size)).thenReturn(
+          whenever(prisonerAlertsGateway.getPrisonerAlerts(hmppsId, page, perPage)).thenReturn(
             Response(
               data = getPaginatedAlerts(listOf(nonMatchingAlert)),
             ),
           )
 
-          val response = getAlertsForPersonService.execute(hmppsId, filters, page, size, pndOnly = true)
+          val response = getAlertsForPersonService.execute(hmppsId, filters, page, perPage, pndOnly = true)
           response.data.shouldBeNull()
           response.errors.shouldHaveSize(1)
         }

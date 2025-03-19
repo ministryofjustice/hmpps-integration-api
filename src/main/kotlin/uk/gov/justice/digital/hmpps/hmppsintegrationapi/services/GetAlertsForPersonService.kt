@@ -18,7 +18,7 @@ class GetAlertsForPersonService(
     hmppsId: String,
     filter: ConsumerFilters?,
     page: Int,
-    size: Int,
+    perPage: Int,
     pndOnly: Boolean = false,
   ): Response<PaginatedAlerts?> {
     val personResponse = getPersonService.getNomisNumberWithPrisonFilter(hmppsId, filter)
@@ -32,13 +32,28 @@ class GetAlertsForPersonService(
         errors = listOf(UpstreamApiError(UpstreamApi.NOMIS, UpstreamApiError.Type.ENTITY_NOT_FOUND)),
       )
 
-    val alertsResponse = prisonerAlertsGateway.getPrisonerAlerts(nomisNumber, page, size)
+    val alertsResponse = prisonerAlertsGateway.getPrisonerAlerts(nomisNumber, page, size = perPage)
     if (alertsResponse.errors.isNotEmpty()) {
       return Response(data = null, errors = alertsResponse.errors)
     }
 
+    val paginatedAlerts = alertsResponse.data?.toPaginatedAlerts(pndOnly)
+
+    if (paginatedAlerts?.content.orEmpty().isEmpty()) {
+      return Response(
+        data = null,
+        errors =
+          listOf(
+            UpstreamApiError(
+              causedBy = UpstreamApi.PRISONER_ALERTS,
+              type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+            ),
+          ),
+      )
+    }
+
     return Response(
-      data = alertsResponse.data?.toPaginatedAlerts(pndOnly),
+      data = paginatedAlerts,
     )
   }
 }

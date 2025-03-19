@@ -19,11 +19,11 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFound
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.decodeUrlCharacters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Alert
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.interfaces.toPaginatedResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetAlertsForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.PaginatedResponse
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.paginateWith
 
 @RestController
 @RequestMapping("/v1")
@@ -49,17 +49,19 @@ class AlertsController(
     @Parameter(description = "The maximum number of results for a page", schema = Schema(minimum = "1")) @RequestParam(required = false, defaultValue = "10", name = "perPage") perPage: Int,
     @RequestAttribute filters: ConsumerFilters?,
   ): PaginatedResponse<Alert> {
-    val response = getAlertsForPersonService.execute(hmppsId, filters)
+    val response = getAlertsForPersonService.execute(hmppsId, filters, page, perPage)
 
     if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
       throw EntityNotFoundException("Could not find person with id: $hmppsId")
     }
+
     if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
       throw ValidationException("Invalid HMPPS ID: $hmppsId")
     }
+
     auditService.createEvent("GET_PERSON_ALERTS", mapOf("hmppsId" to hmppsId))
 
-    return response.data.paginateWith(page, perPage)
+    return response.data.toPaginatedResponse()
   }
 
   @GetMapping("/persons/{encodedHmppsId}/alerts/pnd")
@@ -78,13 +80,15 @@ class AlertsController(
     @Parameter(description = "The maximum number of results for a page", schema = Schema(minimum = "1")) @RequestParam(required = false, defaultValue = "10", name = "perPage") perPage: Int,
   ): PaginatedResponse<Alert> {
     val hmppsId = encodedHmppsId.decodeUrlCharacters()
-    val response = getAlertsForPersonService.getAlertsForPnd(hmppsId)
+    val response = getAlertsForPersonService.execute(hmppsId, null, page, perPage, pndOnly = true)
 
     if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
       throw EntityNotFoundException("Could not find person with id: $hmppsId")
     }
+
     auditService.createEvent("GET_PERSON_ALERTS_PND", mapOf("hmppsId" to hmppsId))
-    return response.data.paginateWith(page, perPage)
+
+    return response.data.toPaginatedResponse()
   }
 
   @GetMapping("/pnd/persons/{encodedHmppsId}/alerts")
@@ -102,12 +106,14 @@ class AlertsController(
     @Parameter(description = "The maximum number of results for a page", schema = Schema(minimum = "1")) @RequestParam(required = false, defaultValue = "10", name = "perPage") perPage: Int,
   ): PaginatedResponse<Alert> {
     val hmppsId = encodedHmppsId.decodeUrlCharacters()
-    val response = getAlertsForPersonService.getAlertsForPnd(hmppsId)
+    val response = getAlertsForPersonService.execute(hmppsId, null, page, perPage, pndOnly = true)
 
     if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
       throw EntityNotFoundException("Could not find person with id: $hmppsId")
     }
+
     auditService.createEvent("GET_PERSON_ALERTS_PND", mapOf("hmppsId" to hmppsId))
-    return response.data.paginateWith(page, perPage)
+
+    return response.data.toPaginatedResponse()
   }
 }
