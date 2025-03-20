@@ -4,6 +4,12 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CreateVisitRequest
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitRestriction
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitStatus
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitType
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Visitor
+import java.time.LocalDateTime
 
 class VisitsIntegrationTest : IntegrationTestBase() {
   @Nested
@@ -52,6 +58,79 @@ class VisitsIntegrationTest : IntegrationTestBase() {
     @Test
     fun `return a 404 when no prisons in filter`() {
       callApiWithCN("/v1/visit/$visitReference", noPrisonsCn)
+        .andExpect(status().isNotFound)
+    }
+  }
+
+  @Nested
+  inner class PostVisit {
+    private val clientName = "automated-test-client"
+    private val timestamp = "2020-12-04T10:42:43"
+    private val prisonerId = "A1234AB"
+    private val prisonId = "MDI"
+
+    private fun getCreateVisitRequestBody(
+      prisonerId: String,
+      prisonId: String,
+    ): String {
+      val createVisitRequest =
+        CreateVisitRequest(
+          prisonerId = prisonerId,
+          prisonId = prisonId,
+          clientVisitReference = "123456",
+          visitRoom = "A1",
+          visitType = VisitType.SOCIAL,
+          visitStatus = VisitStatus.BOOKED,
+          visitRestriction = VisitRestriction.OPEN,
+          startTimestamp = LocalDateTime.parse(timestamp),
+          endTimestamp = LocalDateTime.parse(timestamp),
+          createDateTime = LocalDateTime.parse(timestamp),
+          visitors = setOf(Visitor(nomisPersonId = 3L, visitContact = true)),
+          actionedBy = clientName,
+        )
+      return asJsonString(createVisitRequest)
+    }
+
+    @Test
+    fun `post the visit and get back a message response`() {
+      val requestBody = getCreateVisitRequestBody(prisonerId, prisonId)
+
+      postToApi("/v1/visit", requestBody)
+        .andExpect(status().isOk)
+        .andExpect(
+          content().json(
+            """
+            {
+              "data": {
+                  "message": "Visit creation written to queue"
+              }
+            }
+            """,
+          ),
+        )
+    }
+
+    @Test
+    fun `return a 400 when prisoner ID not valid`() {
+      val requestBody = getCreateVisitRequestBody("INVALID_PRISON_ID", "MDI")
+
+      postToApiWithCN("/v1/visit", requestBody, limitedPrisonsCn)
+        .andExpect(status().isBadRequest)
+    }
+
+    @Test
+    fun `return a 404 when prison not in filter`() {
+      val requestBody = getCreateVisitRequestBody(prisonerId, prisonId)
+
+      postToApiWithCN("/v1/visit", requestBody, limitedPrisonsCn)
+        .andExpect(status().isNotFound)
+    }
+
+    @Test
+    fun `return a 404 when no prisons in filter`() {
+      val requestBody = getCreateVisitRequestBody(prisonerId, prisonId)
+
+      postToApiWithCN("/v1/visit", requestBody, noPrisonsCn)
         .andExpect(status().isNotFound)
     }
   }
