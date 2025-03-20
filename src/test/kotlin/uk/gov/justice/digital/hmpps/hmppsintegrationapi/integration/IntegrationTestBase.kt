@@ -1,5 +1,8 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.SerializationFeature
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
 import org.springframework.beans.factory.annotation.Autowired
@@ -90,4 +93,12 @@ abstract class IntegrationTestBase {
         .content(requestBody)
         .contentType(org.springframework.http.MediaType.APPLICATION_JSON),
     )
+
+  fun asJsonString(obj: Any): String {
+    val objectMapper = ObjectMapper()
+    objectMapper.registerModule(JavaTimeModule())
+    objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+
+    return objectMapper.writeValueAsString(obj)
+  }
 }
