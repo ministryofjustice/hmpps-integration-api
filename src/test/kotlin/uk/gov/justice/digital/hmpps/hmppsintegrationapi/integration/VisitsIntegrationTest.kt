@@ -1,19 +1,22 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration
 
+import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
 class VisitsIntegrationTest : IntegrationTestBase() {
-  val visitReference = "123456"
+  @Nested
+  inner class GetVisitByReference {
+    private val visitReference = "123456"
 
-  @Test
-  fun `gets the visit detail`() {
-    callApi("/v1/visit/$visitReference")
-      .andExpect(status().isOk)
-      .andExpect(
-        content().json(
-          """
+    @Test
+    fun `gets the visit detail`() {
+      callApi("/v1/visit/$visitReference")
+        .andExpect(status().isOk)
+        .andExpect(
+          content().json(
+            """
             {
               "data": {
                   "prisonerId": "AF34567G",
@@ -36,19 +39,20 @@ class VisitsIntegrationTest : IntegrationTestBase() {
               }
             }
       """,
-        ),
-      )
-  }
+          ),
+        )
+    }
 
-  @Test
-  fun `return a 404 when prison not in filter`() {
-    callApiWithCN("/v1/visit/$visitReference", limitedPrisonsCn)
-      .andExpect(status().isNotFound)
-  }
+    @Test
+    fun `return a 404 when prison not in filter`() {
+      callApiWithCN("/v1/visit/$visitReference", limitedPrisonsCn)
+        .andExpect(status().isNotFound)
+    }
 
-  @Test
-  fun `return a 404 when no prisons in filter`() {
-    callApiWithCN("/v1/visit/$visitReference", noPrisonsCn)
-      .andExpect(status().isNotFound)
+    @Test
+    fun `return a 404 when no prisons in filter`() {
+      callApiWithCN("/v1/visit/$visitReference", noPrisonsCn)
+        .andExpect(status().isNotFound)
+    }
   }
 }
