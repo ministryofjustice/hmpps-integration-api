@@ -10,6 +10,7 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.argThat
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.reset
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
@@ -18,10 +19,13 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean
 import software.amazon.awssdk.services.sqs.SqsAsyncClient
 import software.amazon.awssdk.services.sqs.model.SendMessageRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.MessageFailedException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CancelOutcome
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CancelVisitRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CreateVisitRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HmppsMessage
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HmppsMessageResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NomisNumber
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.OutcomeStatus
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
@@ -56,6 +60,7 @@ internal class VisitQueueServiceTest(
     val filters = null
 
     beforeTest {
+      reset(mockSqsClient, objectMapper)
       whenever(hmppsQueueService.findByQueueId("visits")).thenReturn(visitQueue)
       whenever(getPersonService.getNomisNumberWithPrisonFilter(hmppsId = hmppsId, filters = filters)).thenReturn(Response(NomisNumber(hmppsId)))
     }
@@ -112,6 +117,59 @@ internal class VisitQueueServiceTest(
         whenever(getPersonService.getNomisNumberWithPrisonFilter(hmppsId = hmppsId, filters = filters)).thenReturn(Response(data = null, errors))
 
         val response = visitQueueService.sendCreateVisit(createVisitRequest, who, filters)
+        response.data.shouldBeNull()
+        response.errors.shouldBe(errors)
+      }
+    }
+
+    describe("cancel visit request") {
+      val cancelVisitRequest =
+        CancelVisitRequest(
+          visitReference = "ABC-123-DEF-456",
+          prisonerId = "A1234AB",
+          cancelOutcome =
+            CancelOutcome(
+              outcomeStatus = OutcomeStatus.VISIT_ORDER_CANCELLED,
+              text = "Visitor has informed us they cannot make the visit.",
+            ),
+          actionedBy = "someUser",
+        )
+      val who = "client-name"
+
+      it("successfully adds to message queue") {
+        val messageBody = """{"messageId":"1","eventType":"VisitCancelled","messageAttributes":{}}"""
+
+        whenever(objectMapper.writeValueAsString(any<HmppsMessage>())).thenReturn(messageBody)
+
+        val response = visitQueueService.sendCancelVisit(cancelVisitRequest, who, filters)
+
+        verify(mockSqsClient).sendMessage(
+          argThat<SendMessageRequest> { request: SendMessageRequest? ->
+            request?.queueUrl() == "https://test-queue-url" &&
+              request.messageBody() == messageBody
+          },
+        )
+
+        response.data.shouldBeTypeOf<HmppsMessageResponse>()
+      }
+
+      it("should throw message failed exception if fails to write to the queue") {
+        whenever(mockSqsClient.sendMessage(any<SendMessageRequest>()))
+          .thenThrow(RuntimeException("Failed to send message to SQS"))
+
+        val exception =
+          shouldThrow<MessageFailedException> {
+            visitQueueService.sendCancelVisit(cancelVisitRequest, who, filters)
+          }
+
+        exception.message.shouldBe("Could not send Visit cancellation to queue")
+      }
+
+      it("return error if getPersonService returns an error") {
+        val errors = listOf(UpstreamApiError(UpstreamApi.NOMIS, UpstreamApiError.Type.INTERNAL_SERVER_ERROR, description = "getPersonService returns an error"))
+        whenever(getPersonService.getNomisNumberWithPrisonFilter(hmppsId = hmppsId, filters = filters)).thenReturn(Response(data = null, errors))
+
+        val response = visitQueueService.sendCancelVisit(cancelVisitRequest, who, filters)
         response.data.shouldBeNull()
         response.errors.shouldBe(errors)
       }
