@@ -43,7 +43,7 @@ class AlertsController(
     ],
   )
   fun getPersonAlerts(
-    @Parameter(description = "The HMPPS ID of the person") @PathVariable hmppsId: String,
+    @Parameter(description = "The HMPPS ID of the person", example = "A1234AA") @PathVariable hmppsId: String,
     @Parameter(description = "The page number (starting from 1)", schema = Schema(minimum = "1")) @RequestParam(required = false, defaultValue = "1", name = "page") page: Int,
     @Parameter(description = "The maximum number of results for a page", schema = Schema(minimum = "1")) @RequestParam(required = false, defaultValue = "10", name = "perPage") perPage: Int,
     @RequestAttribute filters: ConsumerFilters?,
@@ -76,7 +76,7 @@ class AlertsController(
     ],
   )
   fun getPersonAlertsPND(
-    @Parameter(description = "The HMPPS ID of the person", example = "2008%2F0545166T") @PathVariable hmppsId: String,
+    @Parameter(description = "The HMPPS ID of the person", example = "A1234AA") @PathVariable hmppsId: String,
     @Parameter(description = "The page number (starting from 1)", schema = Schema(minimum = "1")) @RequestParam(required = false, defaultValue = "1", name = "page") page: Int,
     @Parameter(description = "The maximum number of results for a page", schema = Schema(minimum = "1")) @RequestParam(required = false, defaultValue = "10", name = "perPage") perPage: Int,
     @RequestAttribute filters: ConsumerFilters?,
@@ -108,7 +108,7 @@ class AlertsController(
     ],
   )
   fun getPndPersonAlerts(
-    @Parameter(description = "The HMPPS ID of the person", example = "2008%2F0545166T") @PathVariable hmppsId: String,
+    @Parameter(description = "The HMPPS ID of the person", example = "A1234AA") @PathVariable hmppsId: String,
     @Parameter(description = "The page number (starting from 1)", schema = Schema(minimum = "1")) @RequestParam(required = false, defaultValue = "1", name = "page") page: Int,
     @Parameter(description = "The maximum number of results for a page", schema = Schema(minimum = "1")) @RequestParam(required = false, defaultValue = "10", name = "perPage") perPage: Int,
     @RequestAttribute filters: ConsumerFilters?,
