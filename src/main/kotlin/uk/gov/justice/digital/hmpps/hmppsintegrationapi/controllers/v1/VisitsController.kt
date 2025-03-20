@@ -121,7 +121,7 @@ class VisitsController(
     @RequestAttribute clientName: String?,
     @RequestAttribute filters: ConsumerFilters?,
   ): DataResponse<HmppsMessageResponse?> {
-    val response = visitQueueService.sendCreateVisit(createVisitRequest, clientName, filters)
+    val response = visitQueueService.sendCreateVisit(createVisitRequest, clientName.orEmpty(), filters)
 
     if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
       throw EntityNotFoundException("Could not find prisoner")
