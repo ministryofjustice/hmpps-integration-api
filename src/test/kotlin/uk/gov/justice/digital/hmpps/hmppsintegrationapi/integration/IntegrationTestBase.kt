@@ -29,6 +29,7 @@ abstract class IntegrationTestBase {
   lateinit var mockMvc: MockMvc
 
   final val basePath = "/v1/persons"
+  final val defaultCn = "automated-test-client"
   final val pnc = URLEncoder.encode("2004/13116M", StandardCharsets.UTF_8)
   final val nomsId = "G2996UX"
   final val invalidNomsId = "G2996UXX"
@@ -56,7 +57,7 @@ abstract class IntegrationTestBase {
     }
   }
 
-  fun getAuthHeader(cn: String = "automated-test-client"): HttpHeaders {
+  fun getAuthHeader(cn: String = defaultCn): HttpHeaders {
     val headers = HttpHeaders()
     headers.set("subject-distinguished-name", "C=GB,ST=London,L=London,O=Home Office,CN=$cn")
     return headers
