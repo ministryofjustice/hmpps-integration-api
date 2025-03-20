@@ -20,6 +20,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Visit
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitContact
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitorSupport
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetVisitInformationByReferenceService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.VisitQueueService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 
 @WebMvcTest(controllers = [VisitsController::class])
@@ -28,6 +29,7 @@ class VisitsControllerTest(
   @Autowired var springMockMvc: MockMvc,
   @MockitoBean val auditService: AuditService,
   @MockitoBean val getVisitInformationByReferenceService: GetVisitInformationByReferenceService,
+  @MockitoBean val visitQueueService: VisitQueueService,
 ) : DescribeSpec(
     {
       val visitReference = "1234567"
