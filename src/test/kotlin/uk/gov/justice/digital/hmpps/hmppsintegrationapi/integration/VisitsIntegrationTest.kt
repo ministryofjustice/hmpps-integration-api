@@ -67,16 +67,12 @@ class VisitsIntegrationTest : IntegrationTestBase() {
     private val clientName = "automated-test-client"
     private val timestamp = "2020-12-04T10:42:43"
     private val prisonerId = "A1234AB"
-    private val prisonId = "MDI"
 
-    private fun getCreateVisitRequestBody(
-      prisonerId: String,
-      prisonId: String,
-    ): String {
+    private fun getCreateVisitRequestBody(prisonerId: String): String {
       val createVisitRequest =
         CreateVisitRequest(
           prisonerId = prisonerId,
-          prisonId = prisonId,
+          prisonId = "MDI",
           clientVisitReference = "123456",
           visitRoom = "A1",
           visitType = VisitType.SOCIAL,
@@ -93,7 +89,7 @@ class VisitsIntegrationTest : IntegrationTestBase() {
 
     @Test
     fun `post the visit and get back a message response`() {
-      val requestBody = getCreateVisitRequestBody(prisonerId, prisonId)
+      val requestBody = getCreateVisitRequestBody(prisonerId)
 
       postToApi("/v1/visit", requestBody)
         .andExpect(status().isOk)
@@ -112,7 +108,7 @@ class VisitsIntegrationTest : IntegrationTestBase() {
 
     @Test
     fun `return a 400 when prisoner ID not valid`() {
-      val requestBody = getCreateVisitRequestBody("INVALID_PRISON_ID", "MDI")
+      val requestBody = getCreateVisitRequestBody("INVALID_PRISON_ID")
 
       postToApiWithCN("/v1/visit", requestBody, limitedPrisonsCn)
         .andExpect(status().isBadRequest)
@@ -120,7 +116,7 @@ class VisitsIntegrationTest : IntegrationTestBase() {
 
     @Test
     fun `return a 404 when prison not in filter`() {
-      val requestBody = getCreateVisitRequestBody(prisonerId, prisonId)
+      val requestBody = getCreateVisitRequestBody(prisonerId)
 
       postToApiWithCN("/v1/visit", requestBody, limitedPrisonsCn)
         .andExpect(status().isNotFound)
@@ -128,7 +124,7 @@ class VisitsIntegrationTest : IntegrationTestBase() {
 
     @Test
     fun `return a 404 when no prisons in filter`() {
-      val requestBody = getCreateVisitRequestBody(prisonerId, prisonId)
+      val requestBody = getCreateVisitRequestBody(prisonerId)
 
       postToApiWithCN("/v1/visit", requestBody, noPrisonsCn)
         .andExpect(status().isNotFound)
