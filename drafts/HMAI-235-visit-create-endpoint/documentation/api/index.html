@@ -157,9 +157,6 @@
         <a href="../../documentation/api/index.html#queue-admin-purge-queue-queuename"><span>/queue-admin/purge-queue/{queueName}</span></a>
       </li>
       <li>
-        <a href="../../documentation/api/index.html#v1-visit"><span>/v1/visit</span></a>
-      </li>
-      <li>
         <a href="../../documentation/api/index.html#v1-prison-prisonid-prisoners-hmppsid-transactions"><span>/v1/prison/{prisonId}/prisoners/{hmppsId}/transactions</span></a>
       </li>
       <li>
@@ -193,7 +190,7 @@
         <a href="../../documentation/api/index.html#v1-prison-prisoners-hmppsid"><span>/v1/prison/prisoners/{hmppsId}</span></a>
       </li>
       <li>
-        <a href="../../documentation/api/index.html#v1-pnd-persons-encodedhmppsid-alerts"><span>/v1/pnd/persons/{encodedHmppsId}/alerts</span></a>
+        <a href="../../documentation/api/index.html#v1-pnd-persons-hmppsid-alerts"><span>/v1/pnd/persons/{hmppsId}/alerts</span></a>
       </li>
       <li>
         <a href="../../documentation/api/index.html#v1-persons"><span>/v1/persons</span></a>
@@ -256,6 +253,9 @@
         <a href="../../documentation/api/index.html#v1-persons-hmppsid-alerts"><span>/v1/persons/{hmppsId}/alerts</span></a>
       </li>
       <li>
+        <a href="../../documentation/api/index.html#v1-persons-hmppsid-alerts-pnd"><span>/v1/persons/{hmppsId}/alerts/pnd</span></a>
+      </li>
+      <li>
         <a href="../../documentation/api/index.html#v1-persons-hmppsid-addresses"><span>/v1/persons/{hmppsId}/addresses</span></a>
       </li>
       <li>
@@ -290,9 +290,6 @@
       </li>
       <li>
         <a href="../../documentation/api/index.html#v1-persons-encodedhmppsid-images"><span>/v1/persons/{encodedHmppsId}/images</span></a>
-      </li>
-      <li>
-        <a href="../../documentation/api/index.html#v1-persons-encodedhmppsid-alerts-pnd"><span>/v1/persons/{encodedHmppsId}/alerts/pnd</span></a>
       </li>
       <li>
         <a href="../../documentation/api/index.html#v1-images-id"><span>/v1/images/{id}</span></a>
@@ -667,110 +664,6 @@
 
 
 
-<h2 id="v1-visit">/v1/visit</h2>
-
-<h3 id="v1-visit-post">post</h3>
-
-  <p><em>Create visit.</em></p>
-
-
-  <p><br><br><b>Applicable filters</b>: <ul><li>prisons</li></ul></p>
-
-
-
-
-
-
-
-<h4 id="v1-visit-post-responses">Responses</h4>
-<table>
-<thead>
-<tr><th>Status</th><th>Description</th><th>Schema</th></tr>
-</thead>
-<tbody>
-
-<tr>
-<td>200</td>
-<td>
-<p>Successfully wrote to visit queue.</p>
-
-
-
-<pre><code>{
-  "data": {
-    "message": "string"
-  }
-}</code></pre>
-
-</td>
-<td>
-<a href='#schema-dataresponsehmppsmessageresponse'>DataResponseHmppsMessageResponse</a>
-</td>
-</tr>
-
-<tr>
-<td>400</td>
-<td>
-<p>Bad Request</p>
-
-
-
-<pre><code>{
-  "status": 400,
-  "userMessage": "Validation failure: No query parameters specified.",
-  "developerMessage": "No query parameters specified."
-}</code></pre>
-
-</td>
-<td>
-<a href='#schema-badrequest'>BadRequest</a>
-</td>
-</tr>
-
-<tr>
-<td>404</td>
-<td>
-<p>Not Found</p>
-
-
-
-<pre><code>{
-  "status": 404,
-  "userMessage": "404 Not found error: Could not find person with HMPPS id: 2003/0011991D.",
-  "developerMessage": "Could not find person with HMPPS id: 2003/0011991D."
-}</code></pre>
-
-</td>
-<td>
-<a href='#schema-personnotfound'>PersonNotFound</a>
-</td>
-</tr>
-
-<tr>
-<td>500</td>
-<td>
-<p>Internal Server Error</p>
-
-
-
-<pre><code>{
-  "status": 500,
-  "userMessage": "Internal Server Error",
-  "developerMessage": "Unable to complete request as an upstream service is not responding."
-}</code></pre>
-
-</td>
-<td>
-<a href='#schema-internalservererror'>InternalServerError</a>
-</td>
-</tr>
-
-</tbody>
-</table>
-
-
-
-
 <h2 id="v1-prison-prisonid-prisoners-hmppsid-transactions">/v1/prison/{prisonId}/prisoners/{hmppsId}/transactions</h2>
 
 <h3 id="v1-prison-prisonid-prisoners-hmppsid-transactions-post">post</h3>
@@ -1088,9 +981,6 @@
 <h3 id="v1-visit-visitreference-get">get</h3>
 
   <p><em>Get visit information for a visit by visit reference.</em></p>
-
-
-  <p><br><br><b>Applicable filters</b>: <ul><li>prisons</li></ul></p>
 
 
 
@@ -2656,16 +2546,19 @@
 
 
 
-<h2 id="v1-pnd-persons-encodedhmppsid-alerts">/v1/pnd/persons/{encodedHmppsId}/alerts</h2>
+<h2 id="v1-pnd-persons-hmppsid-alerts">/v1/pnd/persons/{hmppsId}/alerts</h2>
 
-<h3 id="v1-pnd-persons-encodedhmppsid-alerts-get">get</h3>
+<h3 id="v1-pnd-persons-hmppsid-alerts-get">get</h3>
 
   <p><em>Returns alerts associated with a person, sorted by dateCreated (newest first).</em></p>
 
 
+  <p><b>Applicable filters</b>: <ul><li>prisons</li></ul></p>
 
 
-<h4 id="v1-pnd-persons-encodedhmppsid-alerts-get-parameters">Parameters</h4>
+
+
+<h4 id="v1-pnd-persons-hmppsid-alerts-get-parameters">Parameters</h4>
 <table>
 <thead>
 <tr><th>Parameter</th><th>In</th><th>Type</th><th>Required</th><th>Description</th></tr>
@@ -2673,11 +2566,11 @@
 <tbody>
 
 <tr>
-<td>encodedHmppsId</td>
+<td>hmppsId</td>
 <td>path</td>
 <td>string</td>
 <td>true</td>
-<td><p>A URL-encoded HMPPS identifier</p>
+<td><p>The HMPPS ID of the person</p>
 
 
 </td>
@@ -2711,7 +2604,7 @@
 
 
 
-<h4 id="v1-pnd-persons-encodedhmppsid-alerts-get-responses">Responses</h4>
+<h4 id="v1-pnd-persons-hmppsid-alerts-get-responses">Responses</h4>
 <table>
 <thead>
 <tr><th>Status</th><th>Description</th><th>Schema</th></tr>
@@ -2753,6 +2646,25 @@
 </td>
 <td>
 <a href='#schema-paginatedresponsealert'>PaginatedResponseAlert</a>
+</td>
+</tr>
+
+<tr>
+<td>400</td>
+<td>
+<p>Bad Request</p>
+
+
+
+<pre><code>{
+  "status": 400,
+  "userMessage": "Validation failure: No query parameters specified.",
+  "developerMessage": "No query parameters specified."
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-badrequest'>BadRequest</a>
 </td>
 </tr>
 
@@ -5937,6 +5849,172 @@
 
 
 
+<h2 id="v1-persons-hmppsid-alerts-pnd">/v1/persons/{hmppsId}/alerts/pnd</h2>
+
+<h3 id="v1-persons-hmppsid-alerts-pnd-get">get</h3>
+
+  <p><em>Returns alerts associated with a person, sorted by dateCreated (newest first).</em></p>
+
+
+  <p><b>Applicable filters</b>: <ul><li>prisons</li></ul></p>
+
+
+
+
+<h4 id="v1-persons-hmppsid-alerts-pnd-get-parameters">Parameters</h4>
+<table>
+<thead>
+<tr><th>Parameter</th><th>In</th><th>Type</th><th>Required</th><th>Description</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>hmppsId</td>
+<td>path</td>
+<td>string</td>
+<td>true</td>
+<td><p>The HMPPS ID of the person</p>
+
+
+</td>
+</tr>
+
+<tr>
+<td>page</td>
+<td>query</td>
+<td>string</td>
+<td>false</td>
+<td><p>The page number (starting from 1)</p>
+
+
+</td>
+</tr>
+
+<tr>
+<td>perPage</td>
+<td>query</td>
+<td>string</td>
+<td>false</td>
+<td><p>The maximum number of results for a page</p>
+
+
+</td>
+</tr>
+
+</tbody>
+</table>
+
+
+
+
+<h4 id="v1-persons-hmppsid-alerts-pnd-get-responses">Responses</h4>
+<table>
+<thead>
+<tr><th>Status</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>200</td>
+<td>
+<p>Successfully found alerts for a person with the provided HMPPS ID.</p>
+
+
+
+<pre><code>{
+  "data": [
+    {
+      "offenderNo": "Z1234ZZ",
+      "type": "X",
+      "typeDescription": "Security",
+      "code": "PO",
+      "codeDescription": "MAPPA Nominal",
+      "comment": "Professional lock pick",
+      "dateCreated": "2014-09-23",
+      "dateExpired": "2015-09-23",
+      "expired": true,
+      "active": "boolean"
+    }
+  ],
+  "pagination": {
+    "isLastPage": true,
+    "count": 1,
+    "page": 1,
+    "perPage": 10,
+    "totalCount": 1,
+    "totalPages": 1
+  }
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-paginatedresponsealert'>PaginatedResponseAlert</a>
+</td>
+</tr>
+
+<tr>
+<td>400</td>
+<td>
+<p>Bad Request</p>
+
+
+
+<pre><code>{
+  "status": 400,
+  "userMessage": "Validation failure: No query parameters specified.",
+  "developerMessage": "No query parameters specified."
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-badrequest'>BadRequest</a>
+</td>
+</tr>
+
+<tr>
+<td>404</td>
+<td>
+<p>Not Found</p>
+
+
+
+<pre><code>{
+  "status": 404,
+  "userMessage": "404 Not found error: Could not find person with HMPPS id: 2003/0011991D.",
+  "developerMessage": "Could not find person with HMPPS id: 2003/0011991D."
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-personnotfound'>PersonNotFound</a>
+</td>
+</tr>
+
+<tr>
+<td>500</td>
+<td>
+<p>Internal Server Error</p>
+
+
+
+<pre><code>{
+  "status": 500,
+  "userMessage": "Internal Server Error",
+  "developerMessage": "Unable to complete request as an upstream service is not responding."
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-internalservererror'>InternalServerError</a>
+</td>
+</tr>
+
+</tbody>
+</table>
+
+
+
+
 <h2 id="v1-persons-hmppsid-addresses">/v1/persons/{hmppsId}/addresses</h2>
 
 <h3 id="v1-persons-hmppsid-addresses-get">get</h3>
@@ -7778,150 +7856,6 @@
 
 
 
-<h2 id="v1-persons-encodedhmppsid-alerts-pnd">/v1/persons/{encodedHmppsId}/alerts/pnd</h2>
-
-<h3 id="v1-persons-encodedhmppsid-alerts-pnd-get">get</h3>
-
-  <p><em>Returns alerts associated with a person, sorted by dateCreated (newest first).</em></p>
-
-
-
-
-<h4 id="v1-persons-encodedhmppsid-alerts-pnd-get-parameters">Parameters</h4>
-<table>
-<thead>
-<tr><th>Parameter</th><th>In</th><th>Type</th><th>Required</th><th>Description</th></tr>
-</thead>
-<tbody>
-
-<tr>
-<td>encodedHmppsId</td>
-<td>path</td>
-<td>string</td>
-<td>true</td>
-<td><p>A URL-encoded HMPPS identifier</p>
-
-
-</td>
-</tr>
-
-<tr>
-<td>page</td>
-<td>query</td>
-<td>string</td>
-<td>false</td>
-<td><p>The page number (starting from 1)</p>
-
-
-</td>
-</tr>
-
-<tr>
-<td>perPage</td>
-<td>query</td>
-<td>string</td>
-<td>false</td>
-<td><p>The maximum number of results for a page</p>
-
-
-</td>
-</tr>
-
-</tbody>
-</table>
-
-
-
-
-<h4 id="v1-persons-encodedhmppsid-alerts-pnd-get-responses">Responses</h4>
-<table>
-<thead>
-<tr><th>Status</th><th>Description</th><th>Schema</th></tr>
-</thead>
-<tbody>
-
-<tr>
-<td>200</td>
-<td>
-<p>Successfully found alerts for a person with the provided HMPPS ID.</p>
-
-
-
-<pre><code>{
-  "data": [
-    {
-      "offenderNo": "Z1234ZZ",
-      "type": "X",
-      "typeDescription": "Security",
-      "code": "PO",
-      "codeDescription": "MAPPA Nominal",
-      "comment": "Professional lock pick",
-      "dateCreated": "2014-09-23",
-      "dateExpired": "2015-09-23",
-      "expired": true,
-      "active": "boolean"
-    }
-  ],
-  "pagination": {
-    "isLastPage": true,
-    "count": 1,
-    "page": 1,
-    "perPage": 10,
-    "totalCount": 1,
-    "totalPages": 1
-  }
-}</code></pre>
-
-</td>
-<td>
-<a href='#schema-paginatedresponsealert'>PaginatedResponseAlert</a>
-</td>
-</tr>
-
-<tr>
-<td>404</td>
-<td>
-<p>Not Found</p>
-
-
-
-<pre><code>{
-  "status": 404,
-  "userMessage": "404 Not found error: Could not find person with HMPPS id: 2003/0011991D.",
-  "developerMessage": "Could not find person with HMPPS id: 2003/0011991D."
-}</code></pre>
-
-</td>
-<td>
-<a href='#schema-personnotfound'>PersonNotFound</a>
-</td>
-</tr>
-
-<tr>
-<td>500</td>
-<td>
-<p>Internal Server Error</p>
-
-
-
-<pre><code>{
-  "status": 500,
-  "userMessage": "Internal Server Error",
-  "developerMessage": "Unable to complete request as an upstream service is not responding."
-}</code></pre>
-
-</td>
-<td>
-<a href='#schema-internalservererror'>InternalServerError</a>
-</td>
-</tr>
-
-</tbody>
-</table>
-
-
-
-
 <h2 id="v1-images-id">/v1/images/{id}</h2>
 
 <h3 id="v1-images-id-get">get</h3>
@@ -8964,228 +8898,6 @@
 <tr>
 <td>messagesFoundCount</td>
 <td>integer</td>
-<td>true</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-</tbody>
-</table>
-
-<h3 id="schema-createvisitrequest">CreateVisitRequest</h3>
-<p>Private prison visit request</p>
-
-
-<table class='schema-createvisitrequest'>
-<thead>
-<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
-</thead>
-<tbody>
-
-<tr>
-<td>prisonerId</td>
-<td>string</td>
-<td>true</td>
-<td><p>Prisoner Id</p>
-</td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>prisonId</td>
-<td>string</td>
-<td>true</td>
-<td><p>Prison Id</p>
-</td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>clientVisitReference</td>
-<td>string</td>
-<td>true</td>
-<td><p>Client visit reference</p>
-</td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>visitRoom</td>
-<td>string</td>
-<td>true</td>
-<td><p>Visit Room</p>
-</td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>visitType</td>
-<td>string</td>
-<td>true</td>
-<td><p>Visit Type</p>
-</td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>visitStatus</td>
-<td>string</td>
-<td>true</td>
-<td><p>Visit Status</p>
-</td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>visitRestriction</td>
-<td>string</td>
-<td>true</td>
-<td><p>Visit Restriction</p>
-</td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>startTimestamp</td>
-<td>string</td>
-<td>true</td>
-<td><p>The date and time of the visit</p>
-</td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>endTimestamp</td>
-<td>string</td>
-<td>true</td>
-<td><p>The finishing date and time of the visit</p>
-</td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>createDateTime</td>
-<td>string</td>
-<td>false</td>
-<td><p>The date and time of when the visit was created in NEXUS</p>
-</td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>visitors</td>
-<td>array</td>
-<td>false</td>
-<td><p>List of visitors associated with the visit</p>
-</td>
-<td>
-  <a href='#schema-visitor'>Visitor</a>
-</td>
-</tr>
-
-<tr>
-<td>actionedBy</td>
-<td>string</td>
-<td>false</td>
-<td><p>Username for user who actioned this request</p>
-</td>
-<td>
-  
-</td>
-</tr>
-
-</tbody>
-</table>
-
-<h3 id="schema-visitor">Visitor</h3>
-<p>List of visitors associated with the visit</p>
-
-
-<table class='schema-visitor'>
-<thead>
-<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
-</thead>
-<tbody>
-
-<tr>
-<td>nomisPersonId</td>
-<td>integer</td>
-<td>true</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>visitContact</td>
-<td>boolean</td>
-<td>false</td>
-<td></td>
-<td>
-  
-</td>
-</tr>
-
-</tbody>
-</table>
-
-<h3 id="schema-dataresponsehmppsmessageresponse">DataResponseHmppsMessageResponse</h3>
-
-
-<table class='schema-dataresponsehmppsmessageresponse'>
-<thead>
-<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
-</thead>
-<tbody>
-
-<tr>
-<td>data</td>
-<td>object</td>
-<td>true</td>
-<td></td>
-<td>
-  <a href='#schema-hmppsmessageresponse'>HmppsMessageResponse</a>
-</td>
-</tr>
-
-</tbody>
-</table>
-
-<h3 id="schema-hmppsmessageresponse">HmppsMessageResponse</h3>
-
-
-<table class='schema-hmppsmessageresponse'>
-<thead>
-<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
-</thead>
-<tbody>
-
-<tr>
-<td>message</td>
-<td>string</td>
 <td>true</td>
 <td></td>
 <td>
