@@ -1,6 +1,8 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.SerializationFeature
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.http.MediaType
@@ -61,5 +63,11 @@ class IntegrationAPIMockMvc(
 
   fun performUnAuthorised(path: String): MvcResult = mockMvc.perform(MockMvcRequestBuilders.get(path)).andReturn()
 
-  private fun asJsonString(obj: Any): String = jacksonObjectMapper().writeValueAsString(obj)
+  private fun asJsonString(obj: Any): String {
+    val objectMapper = ObjectMapper()
+    objectMapper.registerModule(JavaTimeModule())
+    objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+
+    return objectMapper.writeValueAsString(obj)
+  }
 }

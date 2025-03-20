@@ -1,5 +1,8 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.SerializationFeature
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
 import org.springframework.beans.factory.annotation.Autowired
@@ -26,6 +29,7 @@ abstract class IntegrationTestBase {
   lateinit var mockMvc: MockMvc
 
   final val basePath = "/v1/persons"
+  final val defaultCn = "automated-test-client"
   final val pnc = URLEncoder.encode("2004/13116M", StandardCharsets.UTF_8)
   final val nomsId = "G2996UX"
   final val invalidNomsId = "G2996UXX"
@@ -53,7 +57,7 @@ abstract class IntegrationTestBase {
     }
   }
 
-  fun getAuthHeader(cn: String = "automated-test-client"): HttpHeaders {
+  fun getAuthHeader(cn: String = defaultCn): HttpHeaders {
     val headers = HttpHeaders()
     headers.set("subject-distinguished-name", "C=GB,ST=London,L=London,O=Home Office,CN=$cn")
     return headers
@@ -90,4 +94,12 @@ abstract class IntegrationTestBase {
         .content(requestBody)
         .contentType(org.springframework.http.MediaType.APPLICATION_JSON),
     )
+
+  fun asJsonString(obj: Any): String {
+    val objectMapper = ObjectMapper()
+    objectMapper.registerModule(JavaTimeModule())
+    objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+
+    return objectMapper.writeValueAsString(obj)
+  }
 }

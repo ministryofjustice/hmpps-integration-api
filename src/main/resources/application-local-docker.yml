@@ -90,3 +90,5 @@ hmpps.sqs:
       queueName: "audit"
     jobsboardintegration:
       queueName: "jobsboard-integration"
+    visits:
+      queueName: "visits"
