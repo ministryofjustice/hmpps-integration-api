@@ -17,10 +17,10 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.web.reactive.function.client.WebClientResponseException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.CrnSupplier
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.GetCaseAccess
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.HmppsIdConverter
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.redactor.LaoRedactorAspect
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.redactor.Redactor
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Licence
@@ -42,7 +42,7 @@ class LicenceConditionControllerTests(
   @Autowired var springMockMvc: MockMvc,
   @MockitoBean val getLicenceConditionService: GetLicenceConditionService,
   @MockitoBean val auditService: AuditService,
-  @MockitoBean val hmppsIdConverter: HmppsIdConverter,
+  @MockitoBean val crnSupplier: CrnSupplier,
   @MockitoBean val getCaseAccess: GetCaseAccess,
 ) : DescribeSpec(
     {
@@ -131,7 +131,7 @@ class LicenceConditionControllerTests(
         it("returns redacted licence condition results") {
 
           val laoCrn = "E123456"
-          whenever(hmppsIdConverter.getCrn(laoCrn)).thenReturn(laoCrn)
+          whenever(crnSupplier.getCrn(laoCrn)).thenReturn(laoCrn)
           whenever(getCaseAccess.getAccessForCrn(laoCrn)).thenReturn(CaseAccess(laoCrn, true, true, "Exclusion Message", "Restriction Message"))
           whenever(getLicenceConditionService.execute(laoCrn)).thenReturn(
             Response(

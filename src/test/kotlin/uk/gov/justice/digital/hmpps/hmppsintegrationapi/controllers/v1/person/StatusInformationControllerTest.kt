@@ -18,10 +18,10 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.web.reactive.function.client.WebClientResponseException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.CrnSupplier
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.GetCaseAccess
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.HmppsIdConverter
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.redactor.LaoRedactorAspect
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.redactor.Redactor
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
@@ -41,7 +41,7 @@ internal class StatusInformationControllerTest(
   @Autowired var springMockMvc: MockMvc,
   @MockitoBean val getStatusInformationForPersonService: GetStatusInformationForPersonService,
   @MockitoBean val auditService: AuditService,
-  @MockitoBean val hmppsIdConverter: HmppsIdConverter,
+  @MockitoBean val crnSupplier: CrnSupplier,
   @MockitoBean val getCaseAccess: GetCaseAccess,
 ) : DescribeSpec(
     {
@@ -126,7 +126,7 @@ internal class StatusInformationControllerTest(
         it("returns the redacted status information for a person with the matching identifier") {
           val laoNoms = "S1234RE"
           val laoCrn = "S123456"
-          whenever(hmppsIdConverter.getCrn(laoNoms)).thenReturn(laoCrn)
+          whenever(crnSupplier.getCrn(laoNoms)).thenReturn(laoCrn)
           whenever(getCaseAccess.getAccessForCrn(laoCrn)).thenReturn(CaseAccess(laoCrn, false, true, null, "Restriction Message"))
           whenever(getStatusInformationForPersonService.execute(laoNoms)).thenReturn(
             Response(

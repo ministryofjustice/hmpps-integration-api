@@ -11,8 +11,8 @@ import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.CrnSupplier
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.AccessFor
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.CrnSupplier
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.LaoContext
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.LaoContextInterceptor
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.CaseAccess

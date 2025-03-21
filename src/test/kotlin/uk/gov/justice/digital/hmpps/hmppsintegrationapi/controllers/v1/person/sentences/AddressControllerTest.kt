@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.hmppsintegrationapi.controllers.v1.person
+package uk.gov.justice.digital.hmpps.hmppsintegrationapi.controllers.v1.person.sentences
 
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
@@ -14,11 +14,12 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.web.reactive.function.client.WebClientResponseException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.CrnSupplier
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.controllers.v1.person.AddressController
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.generateTestAddress
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.GetCaseAccess
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.HmppsIdConverter
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
@@ -31,7 +32,7 @@ internal class AddressControllerTest(
   @Autowired var springMockMvc: MockMvc,
   @MockitoBean val getAddressesForPersonService: GetAddressesForPersonService,
   @MockitoBean val auditService: AuditService,
-  @MockitoBean val hmppsIdConverter: HmppsIdConverter,
+  @MockitoBean val crnSupplier: CrnSupplier,
   @MockitoBean val getCaseAccess: GetCaseAccess,
 ) : DescribeSpec(
     {
