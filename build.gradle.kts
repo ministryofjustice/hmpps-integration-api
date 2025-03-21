@@ -1,3 +1,5 @@
+import org.gradle.internal.impldep.org.junit.experimental.categories.Categories.CategoryFilter.exclude
+
 plugins {
   id("uk.gov.justice.hmpps.gradle-spring-boot") version "7.1.3"
   kotlin("plugin.spring") version "2.1.10"
@@ -9,11 +11,13 @@ configurations {
 
 dependencies {
   runtimeOnly("org.flywaydb:flyway-database-postgresql")
-  implementation("org.springframework.boot:spring-boot-starter-webflux:3.4.3")
+  implementation("org.springframework.boot:spring-boot-starter-webflux")
   implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0")
   implementation("io.sentry:sentry-spring-boot-starter-jakarta:8.3.0")
   implementation("io.sentry:sentry-logback:8.3.0")
-  implementation("org.springframework.data:spring-data-commons:3.4.3")
+  implementation("org.springframework.data:spring-data-commons")
+  implementation("org.springframework:spring-aop")
+  implementation("org.aspectj:aspectjweaver")
   implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:5.3.2") {
     exclude("org.springframework.security", "spring-security-config")
     exclude("org.springframework.security", "spring-security-core")

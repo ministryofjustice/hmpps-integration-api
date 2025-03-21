@@ -17,8 +17,10 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.web.reactive.function.client.WebClientResponseException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.CrnSupplier
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.GetCaseAccess
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Contact
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ContactDetailsWithEmailAndPhone
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.IEPLevel
@@ -65,6 +67,8 @@ internal class PersonControllerTest(
   @MockitoBean val getPrisonerContactsService: GetPrisonerContactsService,
   @MockitoBean val getIEPLevelService: GetIEPLevelService,
   @MockitoBean val getVisitOrdersForPersonService: GetVisitOrdersForPersonService,
+  @MockitoBean val crnSupplier: CrnSupplier,
+  @MockitoBean val getCaseAccess: GetCaseAccess,
 ) : DescribeSpec(
     {
       val hmppsId = "2003/13116M"

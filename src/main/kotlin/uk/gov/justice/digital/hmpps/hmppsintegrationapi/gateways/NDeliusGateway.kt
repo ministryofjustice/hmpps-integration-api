@@ -14,7 +14,9 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Sentence
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.StatusInformation
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.CaseAccess
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.NDeliusSupervisions
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.UserAccess
 
 @Component
 class NDeliusGateway(
@@ -158,6 +160,26 @@ class NDeliusGateway(
           data = CommunityOffenderManager(),
           errors = result.errors,
         )
+      }
+    }
+  }
+
+  fun getCaseAccess(crn: String): Response<CaseAccess?> {
+    val result =
+      webClient.request<UserAccess>(
+        HttpMethod.POST,
+        "/probation-cases/access",
+        authenticationHeader(),
+        UpstreamApi.NDELIUS,
+        mapOf("crns" to listOf(crn)),
+      )
+    return when (result) {
+      is WebClientWrapperResponse.Success -> {
+        Response(result.data.access.firstOrNull { it.crn == crn })
+      }
+
+      is WebClientWrapperResponse.Error -> {
+        Response(null, result.errors)
       }
     }
   }

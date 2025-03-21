@@ -1,6 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps
 
-class LicenceCondition(
+data class LicenceCondition(
   val type: String? = null,
   val code: String? = null,
   val category: String? = null,
