@@ -190,7 +190,7 @@ class VisitsController(
       throw ValidationException("Either invalid prisoner or prison id.")
     }
 
-    auditService.createEvent("POST_CANCEL_VISIT", mapOf("prisonerId" to cancelVisitRequest.prisonerId, "clientVisitReference" to cancelVisitRequest.clientVisitReference, "clientName" to clientName.orEmpty()))
+    auditService.createEvent("POST_CANCEL_VISIT", mapOf("prisonerId" to cancelVisitRequest.prisonerId, "clientVisitReference" to cancelVisitRequest.visitReference, "clientName" to clientName.orEmpty()))
 
     return DataResponse(response.data)
   }
