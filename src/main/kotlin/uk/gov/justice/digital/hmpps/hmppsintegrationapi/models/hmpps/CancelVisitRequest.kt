@@ -8,9 +8,6 @@ data class CancelVisitRequest(
   @Schema(description = "Visit Reference", example = "Reference ID in the client system", required = true)
   @field:NotBlank
   val visitReference: String,
-  @Schema(description = "Prisoner Id", example = "AF34567G", required = true)
-  @field:NotBlank
-  val prisonerId: String,
   @Schema(description = "Outcome status and description", required = true)
   val cancelOutcome: CancelOutcome,
   @Schema(description = "Username for user who actioned this request", required = false)
@@ -26,7 +23,6 @@ data class CancelVisitRequest(
   private fun modelToMap(): Map<String, Any?> =
     mapOf(
       "visitReference" to this.visitReference,
-      "prisonerId" to this.prisonerId,
       "cancelOutcome" to this.cancelOutcome,
       "actionedBy" to this.actionedBy,
     )

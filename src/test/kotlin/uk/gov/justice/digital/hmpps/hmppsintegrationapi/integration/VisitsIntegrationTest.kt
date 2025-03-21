@@ -169,4 +169,87 @@ class VisitsIntegrationTest : IntegrationTestBase() {
         .andExpect(status().isNotFound)
     }
   }
+
+//  @DisplayName("POST /v1/visit/{visitReference}/cancel")
+//  @Nested
+//  inner class PostCancelVisit {
+//    private val clientName = "automated-test-client"
+//    private val timestamp = "2020-12-04T10:42:43"
+//    private val prisonerId = "A1234AB"
+//
+//    private fun getCancelVisitRequest(prisonerId: String) =
+//      CancelVisitRequest(
+//        prisonerId = prisonerId,
+//        prisonId = "MDI",
+//        clientVisitReference = "123456",
+//        visitRoom = "A1",
+//        visitType = VisitType.SOCIAL,
+//        visitStatus = VisitStatus.BOOKED,
+//        visitRestriction = VisitRestriction.OPEN,
+//        startTimestamp = LocalDateTime.parse(timestamp),
+//        endTimestamp = LocalDateTime.parse(timestamp),
+//        createDateTime = LocalDateTime.parse(timestamp),
+//        visitors = setOf(Visitor(nomisPersonId = 3L, visitContact = true)),
+//        actionedBy = clientName,
+//      )
+//
+//    @Test
+//    fun `post the visit, get back a message response and find a message on the queue`() {
+//      val createVisitRequest = getCreateVisitRequest(prisonerId)
+//      val requestBody = asJsonString(createVisitRequest)
+//
+//      postToApi("/v1/visit", requestBody)
+//        .andExpect(status().isOk)
+//        .andExpect(
+//          content().json(
+//            """
+//            {
+//              "data": {
+//                  "message": "Visit creation written to queue"
+//              }
+//            }
+//            """,
+//          ),
+//        )
+//
+//      val queueMessages = getQueueMessages()
+//      queueMessages.size.shouldBe(1)
+//
+//      val messageJson = queueMessages[0].body()
+//      val expectedMessage = createVisitRequest.toHmppsMessage(defaultCn)
+//      messageJson.shouldContainJsonKeyValue("$.eventType", expectedMessage.eventType.eventTypeCode)
+//      messageJson.shouldContainJsonKeyValue("$.who", defaultCn)
+//      val objectMapper = jacksonObjectMapper()
+//      val messageAttributes = objectMapper.readTree(messageJson).at("/messageAttributes")
+//      val expectedMessageAttributes = objectMapper.readTree(objectMapper.writeValueAsString(expectedMessage.messageAttributes))
+//      messageAttributes.shouldBe(expectedMessageAttributes)
+//    }
+//
+//    @Test
+//    fun `return a 400 when prisoner ID not valid`() {
+//      val createVisitRequest = getCreateVisitRequest("INVALID_PRISON_ID")
+//      val requestBody = asJsonString(createVisitRequest)
+//
+//      postToApiWithCN("/v1/visit", requestBody, limitedPrisonsCn)
+//        .andExpect(status().isBadRequest)
+//    }
+//
+//    @Test
+//    fun `return a 404 when prison not in filter`() {
+//      val createVisitRequest = getCreateVisitRequest(prisonerId)
+//      val requestBody = asJsonString(createVisitRequest)
+//
+//      postToApiWithCN("/v1/visit", requestBody, limitedPrisonsCn)
+//        .andExpect(status().isNotFound)
+//    }
+//
+//    @Test
+//    fun `return a 404 when no prisons in filter`() {
+//      val createVisitRequest = getCreateVisitRequest(prisonerId)
+//      val requestBody = asJsonString(createVisitRequest)
+//
+//      postToApiWithCN("/v1/visit", requestBody, noPrisonsCn)
+//        .andExpect(status().isNotFound)
+//    }
+//  }
 }

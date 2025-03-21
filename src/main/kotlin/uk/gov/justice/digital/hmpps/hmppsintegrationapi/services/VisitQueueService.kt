@@ -19,6 +19,7 @@ class VisitQueueService(
   @Autowired private val getPersonService: GetPersonService,
   @Autowired private val hmppsQueueService: HmppsQueueService,
   @Autowired private val objectMapper: ObjectMapper,
+  @Autowired private val getVisitInformationByReferenceService: GetVisitInformationByReferenceService,
 ) {
   private val visitsQueue by lazy { hmppsQueueService.findByQueueId("visits") as HmppsQueue }
   private val visitsQueueSqsClient by lazy { visitsQueue.sqsClient }
@@ -61,11 +62,10 @@ class VisitQueueService(
     who: String,
     consumerFilters: ConsumerFilters?,
   ): Response<HmppsMessageResponse?> {
-    val visitPrisonerId = visit.prisonerId
-    val personResponse = getPersonService.getNomisNumberWithPrisonFilter(hmppsId = visitPrisonerId, filters = consumerFilters)
+    val visitResponse = getVisitInformationByReferenceService.execute(visit.visitReference, consumerFilters)
 
-    if (personResponse.errors.isNotEmpty()) {
-      return Response(data = null, errors = personResponse.errors)
+    if (visitResponse.errors.isNotEmpty()) {
+      return Response(data = null, errors = visitResponse.errors)
     }
 
     val hmppsMessage = visit.toHmppsMessage(who)

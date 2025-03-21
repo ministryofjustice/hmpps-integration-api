@@ -225,7 +225,6 @@ class VisitsControllerTest(
         val cancelVisitRequest =
           CancelVisitRequest(
             visitReference = "1234567",
-            prisonerId = "A1234AB",
             cancelOutcome =
               CancelOutcome(
                 outcomeStatus = OutcomeStatus.VISIT_ORDER_CANCELLED,
@@ -246,7 +245,7 @@ class VisitsControllerTest(
           verify(
             auditService,
             times(1),
-          ).createEvent("POST_CANCEL_VISIT", mapOf("prisonerId" to cancelVisitRequest.prisonerId, "clientVisitReference" to cancelVisitRequest.visitReference, "clientName" to clientName))
+          ).createEvent("POST_CANCEL_VISIT", mapOf("clientVisitReference" to cancelVisitRequest.visitReference, "clientName" to clientName))
         }
 
         it("Calls the visit queue service and gets a response") {

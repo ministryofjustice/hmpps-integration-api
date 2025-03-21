@@ -15,7 +15,6 @@ class CancelVisitRequestTest :
         val cancelVisitRequest =
           CancelVisitRequest(
             visitReference = "1234",
-            prisonerId = "A1234AB",
             cancelOutcome =
               CancelOutcome(
                 outcomeStatus = OutcomeStatus.VISIT_ORDER_CANCELLED,
@@ -30,7 +29,6 @@ class CancelVisitRequestTest :
 
         val hmppsMessageString = objectMapper.writeValueAsString(hmppsMessage)
         hmppsMessageString.shouldBeValidJson()
-        hmppsMessageString.shouldContainJsonKeyValue("$.messageAttributes.prisonerId", cancelVisitRequest.prisonerId)
         hmppsMessageString.shouldContainJsonKeyValue("$.messageAttributes.visitReference", cancelVisitRequest.visitReference)
         hmppsMessageString.shouldContainJsonKeyValue("$.messageAttributes.cancelOutcome.text", cancelVisitRequest.cancelOutcome.text)
         hmppsMessageString.shouldContainJsonKeyValue("$.messageAttributes.cancelOutcome.outcomeStatus", cancelVisitRequest.cancelOutcome.outcomeStatus.toString())

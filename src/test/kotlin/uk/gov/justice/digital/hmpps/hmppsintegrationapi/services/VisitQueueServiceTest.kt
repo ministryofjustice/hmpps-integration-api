@@ -29,10 +29,13 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.OutcomeStat
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Visit
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitContact
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitRestriction
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitStatus
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitType
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Visitor
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitorSupport
 import uk.gov.justice.hmpps.sqs.HmppsQueue
 import uk.gov.justice.hmpps.sqs.HmppsQueueService
 import java.time.LocalDateTime
@@ -46,6 +49,7 @@ internal class VisitQueueServiceTest(
   @MockitoBean val hmppsQueueService: HmppsQueueService,
   private val visitQueueService: VisitQueueService,
   @MockitoBean val objectMapper: ObjectMapper,
+  @MockitoBean val getVisitInformationByReferenceService: GetVisitInformationByReferenceService,
 ) : DescribeSpec({
 
     val mockSqsClient = mock<SqsAsyncClient>()
@@ -58,11 +62,36 @@ internal class VisitQueueServiceTest(
 
     val hmppsId = "A1234AB"
     val filters = null
+    val visitReference = "ABC-123-DEF-456"
+    val visitResponse =
+      Visit(
+        prisonerId = "PrisonerId",
+        prisonId = "MDI",
+        prisonName = "Some Prison",
+        visitRoom = "Room",
+        visitType = "Type",
+        visitStatus = "Status",
+        outcomeStatus = "Outcome",
+        visitRestriction = "Restriction",
+        startTimestamp = "Start",
+        endTimestamp = "End",
+        createdTimestamp = "Created",
+        modifiedTimestamp = "Modified",
+        firstBookedDateTime = "First",
+        visitors = emptyList(),
+        visitNotes = emptyList(),
+        visitContact = VisitContact(name = "Name", telephone = "Telephone", email = "Email"),
+        applicationReference = "dfs-wjs-abc",
+        reference = "dfs-wjs-abc",
+        sessionTemplateReference = "dfs-wjs-xyz",
+        visitorSupport = VisitorSupport(description = "Description"),
+      )
 
     beforeTest {
       reset(mockSqsClient, objectMapper)
       whenever(hmppsQueueService.findByQueueId("visits")).thenReturn(visitQueue)
       whenever(getPersonService.getNomisNumberWithPrisonFilter(hmppsId = hmppsId, filters = filters)).thenReturn(Response(NomisNumber(hmppsId)))
+      whenever(getVisitInformationByReferenceService.execute(visitReference, filters)).thenReturn(Response(data = visitResponse))
     }
 
     describe("create visit message") {
@@ -125,8 +154,7 @@ internal class VisitQueueServiceTest(
     describe("cancel visit request") {
       val cancelVisitRequest =
         CancelVisitRequest(
-          visitReference = "ABC-123-DEF-456",
-          prisonerId = "A1234AB",
+          visitReference = visitReference,
           cancelOutcome =
             CancelOutcome(
               outcomeStatus = OutcomeStatus.VISIT_ORDER_CANCELLED,
@@ -165,9 +193,9 @@ internal class VisitQueueServiceTest(
         exception.message.shouldBe("Could not send Visit cancellation to queue")
       }
 
-      it("return error if getPersonService returns an error") {
-        val errors = listOf(UpstreamApiError(UpstreamApi.NOMIS, UpstreamApiError.Type.INTERNAL_SERVER_ERROR, description = "getPersonService returns an error"))
-        whenever(getPersonService.getNomisNumberWithPrisonFilter(hmppsId = hmppsId, filters = filters)).thenReturn(Response(data = null, errors))
+      it("return error if getVisitInformationByReferenceService returns an error") {
+        val errors = listOf(UpstreamApiError(UpstreamApi.MANAGE_PRISON_VISITS, UpstreamApiError.Type.INTERNAL_SERVER_ERROR, description = "getVisitInformationByReferenceService returns an error"))
+        whenever(getVisitInformationByReferenceService.execute(visitReference, filters = filters)).thenReturn(Response(data = null, errors))
 
         val response = visitQueueService.sendCancelVisit(cancelVisitRequest, who, filters)
         response.data.shouldBeNull()
