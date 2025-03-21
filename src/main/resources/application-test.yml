@@ -41,12 +41,18 @@ services:
     base-url: http://localhost:4007
   incentives:
     base-url: http://localhost:4008
+  alerts:
+    base-url: http://localhost:4009
 
 hmpps.sqs:
   provider: localstack
   queues:
     audit:
       queueName: "audit"
+    jobsboardintegration:
+      queueName: "jobsboard-integration"
+    visits:
+      queueName: "visits"
 
 authorisation:
   consumers:
@@ -108,6 +114,8 @@ authorisation:
         - "/v1/prison/.*/prisoners/.*/non-associations"
         - "/v1/persons/.*/visitor/.*/restrictions"
         - "/v1/visit/[^/]*$"
+        - "/v1/visit"
+        - "/v1/visit/.*/cancel"
         - "/v1/prison/.*/visit/search[^/]*$"
         - "/v1/contacts/[^/]*$"
         - "/v1/persons/.*/contacts[^/]*$"

@@ -19,6 +19,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.ConflictFoundE
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.ForbiddenByUpstreamServiceException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.HmppsAuthFailedException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.MessageFailedException
 
 @RestControllerAdvice
 class HmppsIntegrationApiExceptionHandler {
@@ -130,6 +131,20 @@ class HmppsIntegrationApiExceptionHandler {
         ErrorResponse(
           status = INTERNAL_SERVER_ERROR,
           developerMessage = "Unable to complete request as an upstream service is not responding",
+          userMessage = e.message,
+        ),
+      )
+  }
+
+  @ExceptionHandler(MessageFailedException::class)
+  fun handleMessageFailedException(e: MessageFailedException): ResponseEntity<ErrorResponse?>? {
+    logAndCapture("Message failed to be added to queue: {}", e)
+    return ResponseEntity
+      .status(INTERNAL_SERVER_ERROR)
+      .body(
+        ErrorResponse(
+          status = INTERNAL_SERVER_ERROR,
+          developerMessage = "Failed to add message to queue.",
           userMessage = e.message,
         ),
       )

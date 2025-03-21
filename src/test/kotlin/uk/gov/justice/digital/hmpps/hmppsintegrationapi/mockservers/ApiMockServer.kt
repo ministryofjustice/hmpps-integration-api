@@ -33,6 +33,7 @@ class ApiMockServer(
         UpstreamApi.PERSONAL_RELATIONSHIPS -> ApiMockServer(4006)
         UpstreamApi.MANAGE_PRISON_VISITS -> ApiMockServer(4007)
         UpstreamApi.INCENTIVES -> ApiMockServer(4008)
+        UpstreamApi.PRISONER_ALERTS -> ApiMockServer(4009)
       }
   }
 

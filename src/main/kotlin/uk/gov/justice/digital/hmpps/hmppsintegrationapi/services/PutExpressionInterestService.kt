@@ -15,7 +15,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.hmpps.sqs.HmppsQueue
 import uk.gov.justice.hmpps.sqs.HmppsQueueService
 import uk.gov.justice.hmpps.sqs.eventTypeMessageAttributes
-import java.util.UUID
 
 @Component
 class PutExpressionInterestService(
@@ -55,7 +54,6 @@ class PutExpressionInterestService(
       val hmppsMessage =
         objectMapper.writeValueAsString(
           HmppsMessage(
-            messageId = UUID.randomUUID().toString(),
             eventType = eventType,
             messageAttributes = with(expressionOfInterest) { mapOf("jobId" to jobId, "prisonNumber" to prisonNumber) },
           ),
