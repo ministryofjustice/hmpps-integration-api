@@ -224,7 +224,6 @@ class VisitsControllerTest(
         val clientName = "automated-test-client"
         val cancelVisitRequest =
           CancelVisitRequest(
-            visitReference = "1234567",
             cancelOutcome =
               CancelOutcome(
                 outcomeStatus = OutcomeStatus.VISIT_ORDER_CANCELLED,
@@ -236,7 +235,7 @@ class VisitsControllerTest(
         beforeTest {
           Mockito.reset(visitQueueService)
 
-          whenever(visitQueueService.sendCancelVisit(cancelVisitRequest, clientName, filters)).thenReturn(Response(data = postResponse))
+          whenever(visitQueueService.sendCancelVisit(visitReference, cancelVisitRequest, clientName, filters)).thenReturn(Response(data = postResponse))
         }
 
         it("logs audit") {
@@ -245,7 +244,7 @@ class VisitsControllerTest(
           verify(
             auditService,
             times(1),
-          ).createEvent("POST_CANCEL_VISIT", mapOf("clientVisitReference" to cancelVisitRequest.visitReference, "clientName" to clientName))
+          ).createEvent("POST_CANCEL_VISIT", mapOf("visitReference" to visitReference, "clientName" to clientName))
         }
 
         it("Calls the visit queue service and gets a response") {
@@ -263,21 +262,21 @@ class VisitsControllerTest(
         }
 
         it("returns a 400 when upstream returns 400") {
-          whenever(visitQueueService.sendCancelVisit(cancelVisitRequest, clientName, filters)).thenReturn(Response(data = null, errors = listOf(UpstreamApiError(causedBy = UpstreamApi.MANAGE_PRISON_VISITS, type = UpstreamApiError.Type.BAD_REQUEST))))
+          whenever(visitQueueService.sendCancelVisit(visitReference, cancelVisitRequest, clientName, filters)).thenReturn(Response(data = null, errors = listOf(UpstreamApiError(causedBy = UpstreamApi.MANAGE_PRISON_VISITS, type = UpstreamApiError.Type.BAD_REQUEST))))
 
           val result = mockMvc.performAuthorisedPost(path, cancelVisitRequest)
           result.response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
         }
 
         it("returns a 404 when upstream returns 404") {
-          whenever(visitQueueService.sendCancelVisit(cancelVisitRequest, clientName, filters)).thenReturn(Response(data = null, errors = listOf(UpstreamApiError(causedBy = UpstreamApi.MANAGE_PRISON_VISITS, type = UpstreamApiError.Type.ENTITY_NOT_FOUND))))
+          whenever(visitQueueService.sendCancelVisit(visitReference, cancelVisitRequest, clientName, filters)).thenReturn(Response(data = null, errors = listOf(UpstreamApiError(causedBy = UpstreamApi.MANAGE_PRISON_VISITS, type = UpstreamApiError.Type.ENTITY_NOT_FOUND))))
 
           val result = mockMvc.performAuthorisedPost(path, cancelVisitRequest)
           result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
         }
 
         it("gets a 500 when visit queue service throws MessageFailedException") {
-          whenever(visitQueueService.sendCancelVisit(cancelVisitRequest, clientName, filters)).thenThrow(MessageFailedException("Could not send Visit message to queue"))
+          whenever(visitQueueService.sendCancelVisit(visitReference, cancelVisitRequest, clientName, filters)).thenThrow(MessageFailedException("Could not send Visit message to queue"))
 
           val result = mockMvc.performAuthorisedPost(path, cancelVisitRequest)
           result.response.status.shouldBe(HttpStatus.INTERNAL_SERVER_ERROR.value())

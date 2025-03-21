@@ -177,28 +177,21 @@ class VisitsIntegrationTest : IntegrationTestBase() {
 //    private val timestamp = "2020-12-04T10:42:43"
 //    private val prisonerId = "A1234AB"
 //
-//    private fun getCancelVisitRequest(prisonerId: String) =
+//    private val cancelVisitRequest =
 //      CancelVisitRequest(
-//        prisonerId = prisonerId,
-//        prisonId = "MDI",
-//        clientVisitReference = "123456",
-//        visitRoom = "A1",
-//        visitType = VisitType.SOCIAL,
-//        visitStatus = VisitStatus.BOOKED,
-//        visitRestriction = VisitRestriction.OPEN,
-//        startTimestamp = LocalDateTime.parse(timestamp),
-//        endTimestamp = LocalDateTime.parse(timestamp),
-//        createDateTime = LocalDateTime.parse(timestamp),
-//        visitors = setOf(Visitor(nomisPersonId = 3L, visitContact = true)),
-//        actionedBy = clientName,
+//        cancelOutcome =
+//          CancelOutcome(
+//            outcomeStatus = OutcomeStatus.VISIT_ORDER_CANCELLED,
+//            text = "visit order cancelled",
+//          ),
+//        actionedBy = "test-consumer",
 //      )
 //
 //    @Test
 //    fun `post the visit, get back a message response and find a message on the queue`() {
-//      val createVisitRequest = getCreateVisitRequest(prisonerId)
-//      val requestBody = asJsonString(createVisitRequest)
+//      val requestBody = asJsonString(cancelVisitRequest)
 //
-//      postToApi("/v1/visit", requestBody)
+//      postToApi("/v1/visit/${visitReference}/cancel", requestBody)
 //        .andExpect(status().isOk)
 //        .andExpect(
 //          content().json(

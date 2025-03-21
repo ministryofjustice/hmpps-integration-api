@@ -58,11 +58,12 @@ class VisitQueueService(
   }
 
   fun sendCancelVisit(
+    visitReference: String,
     visit: CancelVisitRequest,
     who: String,
     consumerFilters: ConsumerFilters?,
   ): Response<HmppsMessageResponse?> {
-    val visitResponse = getVisitInformationByReferenceService.execute(visit.visitReference, consumerFilters)
+    val visitResponse = getVisitInformationByReferenceService.execute(visitReference, consumerFilters)
 
     if (visitResponse.errors.isNotEmpty()) {
       return Response(data = null, errors = visitResponse.errors)

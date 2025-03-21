@@ -154,7 +154,6 @@ internal class VisitQueueServiceTest(
     describe("cancel visit request") {
       val cancelVisitRequest =
         CancelVisitRequest(
-          visitReference = visitReference,
           cancelOutcome =
             CancelOutcome(
               outcomeStatus = OutcomeStatus.VISIT_ORDER_CANCELLED,
@@ -169,7 +168,7 @@ internal class VisitQueueServiceTest(
 
         whenever(objectMapper.writeValueAsString(any<HmppsMessage>())).thenReturn(messageBody)
 
-        val response = visitQueueService.sendCancelVisit(cancelVisitRequest, who, filters)
+        val response = visitQueueService.sendCancelVisit(visitReference, cancelVisitRequest, who, filters)
 
         verify(mockSqsClient).sendMessage(
           argThat<SendMessageRequest> { request: SendMessageRequest? ->
@@ -187,7 +186,7 @@ internal class VisitQueueServiceTest(
 
         val exception =
           shouldThrow<MessageFailedException> {
-            visitQueueService.sendCancelVisit(cancelVisitRequest, who, filters)
+            visitQueueService.sendCancelVisit(visitReference, cancelVisitRequest, who, filters)
           }
 
         exception.message.shouldBe("Could not send Visit cancellation to queue")
@@ -197,7 +196,7 @@ internal class VisitQueueServiceTest(
         val errors = listOf(UpstreamApiError(UpstreamApi.MANAGE_PRISON_VISITS, UpstreamApiError.Type.INTERNAL_SERVER_ERROR, description = "getVisitInformationByReferenceService returns an error"))
         whenever(getVisitInformationByReferenceService.execute(visitReference, filters = filters)).thenReturn(Response(data = null, errors))
 
-        val response = visitQueueService.sendCancelVisit(cancelVisitRequest, who, filters)
+        val response = visitQueueService.sendCancelVisit(visitReference, cancelVisitRequest, who, filters)
         response.data.shouldBeNull()
         response.errors.shouldBe(errors)
       }

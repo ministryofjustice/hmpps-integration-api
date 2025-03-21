@@ -14,7 +14,6 @@ class CancelVisitRequestTest :
         val timestamp = "2020-12-04T10:42:43"
         val cancelVisitRequest =
           CancelVisitRequest(
-            visitReference = "1234",
             cancelOutcome =
               CancelOutcome(
                 outcomeStatus = OutcomeStatus.VISIT_ORDER_CANCELLED,
@@ -29,7 +28,6 @@ class CancelVisitRequestTest :
 
         val hmppsMessageString = objectMapper.writeValueAsString(hmppsMessage)
         hmppsMessageString.shouldBeValidJson()
-        hmppsMessageString.shouldContainJsonKeyValue("$.messageAttributes.visitReference", cancelVisitRequest.visitReference)
         hmppsMessageString.shouldContainJsonKeyValue("$.messageAttributes.cancelOutcome.text", cancelVisitRequest.cancelOutcome.text)
         hmppsMessageString.shouldContainJsonKeyValue("$.messageAttributes.cancelOutcome.outcomeStatus", cancelVisitRequest.cancelOutcome.outcomeStatus.toString())
       }

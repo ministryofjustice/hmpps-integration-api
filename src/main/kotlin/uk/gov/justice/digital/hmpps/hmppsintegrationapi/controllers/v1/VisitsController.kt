@@ -177,10 +177,11 @@ class VisitsController(
   @PostMapping("/{visitReference}/cancel")
   fun postCancelVisit(
     @Valid @RequestBody cancelVisitRequest: CancelVisitRequest,
+    @Parameter(description = "The visit reference number relating to the visit.") @PathVariable visitReference: String,
     @RequestAttribute clientName: String?,
     @RequestAttribute filters: ConsumerFilters?,
   ): DataResponse<HmppsMessageResponse?> {
-    val response = visitQueueService.sendCancelVisit(cancelVisitRequest, clientName.orEmpty(), filters)
+    val response = visitQueueService.sendCancelVisit(visitReference, cancelVisitRequest, clientName.orEmpty(), filters)
 
     if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
       throw EntityNotFoundException("Could not find prisoner")
@@ -190,7 +191,7 @@ class VisitsController(
       throw ValidationException("Either invalid prisoner or prison id.")
     }
 
-    auditService.createEvent("POST_CANCEL_VISIT", mapOf("clientVisitReference" to cancelVisitRequest.visitReference, "clientName" to clientName.orEmpty()))
+    auditService.createEvent("POST_CANCEL_VISIT", mapOf("visitReference" to visitReference, "clientName" to clientName.orEmpty()))
 
     return DataResponse(response.data)
   }

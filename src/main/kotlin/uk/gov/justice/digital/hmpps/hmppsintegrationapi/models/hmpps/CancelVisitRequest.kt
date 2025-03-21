@@ -1,13 +1,9 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps
 
 import io.swagger.v3.oas.annotations.media.Schema
-import jakarta.validation.constraints.NotBlank
 
 @Schema(description = "Private prison visit cancellation request")
 data class CancelVisitRequest(
-  @Schema(description = "Visit Reference", example = "Reference ID in the client system", required = true)
-  @field:NotBlank
-  val visitReference: String,
   @Schema(description = "Outcome status and description", required = true)
   val cancelOutcome: CancelOutcome,
   @Schema(description = "Username for user who actioned this request", required = false)
@@ -22,7 +18,6 @@ data class CancelVisitRequest(
 
   private fun modelToMap(): Map<String, Any?> =
     mapOf(
-      "visitReference" to this.visitReference,
       "cancelOutcome" to this.cancelOutcome,
       "actionedBy" to this.actionedBy,
     )
