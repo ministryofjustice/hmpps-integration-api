@@ -160,6 +160,9 @@
         <a href="../../documentation/api/index.html#v1-visit"><span>/v1/visit</span></a>
       </li>
       <li>
+        <a href="../../documentation/api/index.html#v1-visit-visitreference-cancel"><span>/v1/visit/{visitReference}/cancel</span></a>
+      </li>
+      <li>
         <a href="../../documentation/api/index.html#v1-prison-prisonid-prisoners-hmppsid-transactions"><span>/v1/prison/{prisonId}/prisoners/{hmppsId}/transactions</span></a>
       </li>
       <li>
@@ -683,6 +686,131 @@
 
 
 <h4 id="v1-visit-post-responses">Responses</h4>
+<table>
+<thead>
+<tr><th>Status</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>200</td>
+<td>
+<p>Successfully wrote to visit queue.</p>
+
+
+
+<pre><code>{
+  "data": {
+    "message": "string"
+  }
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-dataresponsehmppsmessageresponse'>DataResponseHmppsMessageResponse</a>
+</td>
+</tr>
+
+<tr>
+<td>400</td>
+<td>
+<p>Bad Request</p>
+
+
+
+<pre><code>{
+  "status": 400,
+  "userMessage": "Validation failure: No query parameters specified.",
+  "developerMessage": "No query parameters specified."
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-badrequest'>BadRequest</a>
+</td>
+</tr>
+
+<tr>
+<td>404</td>
+<td>
+<p>Not Found</p>
+
+
+
+<pre><code>{
+  "status": 404,
+  "userMessage": "404 Not found error: Could not find person with HMPPS id: 2003/0011991D.",
+  "developerMessage": "Could not find person with HMPPS id: 2003/0011991D."
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-personnotfound'>PersonNotFound</a>
+</td>
+</tr>
+
+<tr>
+<td>500</td>
+<td>
+<p>Internal Server Error</p>
+
+
+
+<pre><code>{
+  "status": 500,
+  "userMessage": "Internal Server Error",
+  "developerMessage": "Unable to complete request as an upstream service is not responding."
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-internalservererror'>InternalServerError</a>
+</td>
+</tr>
+
+</tbody>
+</table>
+
+
+
+
+<h2 id="v1-visit-visitreference-cancel">/v1/visit/{visitReference}/cancel</h2>
+
+<h3 id="v1-visit-visitreference-cancel-post">post</h3>
+
+  <p><em>Cancel visit.</em></p>
+
+
+  <p><br><br><b>Applicable filters</b>: <ul><li>prisons</li></ul></p>
+
+
+
+
+<h4 id="v1-visit-visitreference-cancel-post-parameters">Parameters</h4>
+<table>
+<thead>
+<tr><th>Parameter</th><th>In</th><th>Type</th><th>Required</th><th>Description</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>visitReference</td>
+<td>path</td>
+<td>string</td>
+<td>true</td>
+<td><p>The visit reference number relating to the visit.</p>
+
+
+</td>
+</tr>
+
+</tbody>
+</table>
+
+
+
+
+<h4 id="v1-visit-visitreference-cancel-post-responses">Responses</h4>
 <table>
 <thead>
 <tr><th>Status</th><th>Description</th><th>Schema</th></tr>
@@ -9232,6 +9360,74 @@
 <td>string</td>
 <td>true</td>
 <td></td>
+<td>
+  
+</td>
+</tr>
+
+</tbody>
+</table>
+
+<h3 id="schema-canceloutcome">CancelOutcome</h3>
+<p>Outcome status and description</p>
+
+
+<table class='schema-canceloutcome'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>outcomeStatus</td>
+<td>string</td>
+<td>true</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>text</td>
+<td>string</td>
+<td>true</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+</tbody>
+</table>
+
+<h3 id="schema-cancelvisitrequest">CancelVisitRequest</h3>
+<p>Private prison visit cancellation request</p>
+
+
+<table class='schema-cancelvisitrequest'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>cancelOutcome</td>
+<td>object</td>
+<td>true</td>
+<td><p>Outcome status and description</p>
+</td>
+<td>
+  <a href='#schema-canceloutcome'>CancelOutcome</a>
+</td>
+</tr>
+
+<tr>
+<td>actionedBy</td>
+<td>string</td>
+<td>false</td>
+<td><p>Username for user who actioned this request</p>
+</td>
 <td>
   
 </td>
