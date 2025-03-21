@@ -2,7 +2,6 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.controllers.v1
 
 import ReferenceData
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
@@ -15,6 +14,8 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.MockMvcExtensions.contentAsJson
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.GetCaseAccess
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.HmppsIdConverter
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.ReferenceDataService
 
@@ -23,7 +24,9 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.ReferenceDataSe
 internal class ReferenceDataControllerTests(
   @Autowired var springMockMvc: MockMvc,
   @MockitoBean val referenceDataService: ReferenceDataService,
-  val objectMapper: ObjectMapper = ObjectMapper().registerKotlinModule(),
+  @Autowired val objectMapper: ObjectMapper,
+  @MockitoBean val hmppsIdConverter: HmppsIdConverter,
+  @MockitoBean val getCaseAccess: GetCaseAccess,
 ) : DescribeSpec(
     {
       lateinit var referenceData: Response<ReferenceData?>

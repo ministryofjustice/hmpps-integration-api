@@ -15,6 +15,8 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.GetCaseAccess
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.HmppsIdConverter
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.AccountBalance
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Balance
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Balances
@@ -33,6 +35,8 @@ class BalancesControllerTest(
   @MockitoBean val getPersonService: GetPersonService,
   @MockitoBean val getBalancesForPersonService: GetBalancesForPersonService,
   @MockitoBean val auditService: AuditService,
+  @MockitoBean val hmppsIdConverter: HmppsIdConverter,
+  @MockitoBean val getCaseAccess: GetCaseAccess,
 ) : DescribeSpec({
     val hmppsId = "200313116M"
     val prisonId = "ABC"

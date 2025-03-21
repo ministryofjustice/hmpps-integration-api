@@ -14,6 +14,8 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.GetCaseAccess
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.HmppsIdConverter
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
@@ -31,6 +33,8 @@ class FutureVisitsControllerTest(
   @MockitoBean val getPersonService: GetPersonService,
   @MockitoBean val getFutureVisitsService: GetFutureVisitsService,
   @MockitoBean val auditService: AuditService,
+  @MockitoBean val hmppsIdConverter: HmppsIdConverter,
+  @MockitoBean val getCaseAccess: GetCaseAccess,
 ) : DescribeSpec({
     val mockMvc = IntegrationAPIMockMvc(springMockMvc)
     val hmppsId = "G6980GG"

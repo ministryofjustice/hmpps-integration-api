@@ -15,6 +15,8 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.GetCaseAccess
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.HmppsIdConverter
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CommunityOffenderManager
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonResponsibleOfficerName
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonResponsibleOfficerTeam
@@ -32,6 +34,8 @@ internal class PersonResponsibleOfficerControllerTest(
   @MockitoBean val auditService: AuditService,
   @MockitoBean val getCommunityOffenderManagerForPersonService: GetCommunityOffenderManagerForPersonService,
   @MockitoBean val getPrisonOffenderManagerForPersonService: GetPrisonOffenderManagerForPersonService,
+  @MockitoBean val hmppsIdConverter: HmppsIdConverter,
+  @MockitoBean val getCaseAccess: GetCaseAccess,
 ) : DescribeSpec() {
   init {
     val hmppsId = "11111A"
