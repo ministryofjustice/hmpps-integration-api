@@ -13,7 +13,10 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import software.amazon.awssdk.services.sqs.model.Message
 import software.amazon.awssdk.services.sqs.model.PurgeQueueRequest
 import software.amazon.awssdk.services.sqs.model.ReceiveMessageRequest
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CancelOutcome
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CancelVisitRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CreateVisitRequest
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.OutcomeStatus
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitRestriction
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitStatus
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitType
@@ -170,79 +173,66 @@ class VisitsIntegrationTest : IntegrationTestBase() {
     }
   }
 
-//  @DisplayName("POST /v1/visit/{visitReference}/cancel")
-//  @Nested
-//  inner class PostCancelVisit {
-//    private val clientName = "automated-test-client"
-//    private val timestamp = "2020-12-04T10:42:43"
-//    private val prisonerId = "A1234AB"
-//
-//    private val cancelVisitRequest =
-//      CancelVisitRequest(
-//        cancelOutcome =
-//          CancelOutcome(
-//            outcomeStatus = OutcomeStatus.VISIT_ORDER_CANCELLED,
-//            text = "visit order cancelled",
-//          ),
-//        actionedBy = "test-consumer",
-//      )
-//
-//    @Test
-//    fun `post the visit, get back a message response and find a message on the queue`() {
-//      val requestBody = asJsonString(cancelVisitRequest)
-//
-//      postToApi("/v1/visit/${visitReference}/cancel", requestBody)
-//        .andExpect(status().isOk)
-//        .andExpect(
-//          content().json(
-//            """
-//            {
-//              "data": {
-//                  "message": "Visit creation written to queue"
-//              }
-//            }
-//            """,
-//          ),
-//        )
-//
-//      val queueMessages = getQueueMessages()
-//      queueMessages.size.shouldBe(1)
-//
-//      val messageJson = queueMessages[0].body()
-//      val expectedMessage = createVisitRequest.toHmppsMessage(defaultCn)
-//      messageJson.shouldContainJsonKeyValue("$.eventType", expectedMessage.eventType.eventTypeCode)
-//      messageJson.shouldContainJsonKeyValue("$.who", defaultCn)
-//      val objectMapper = jacksonObjectMapper()
-//      val messageAttributes = objectMapper.readTree(messageJson).at("/messageAttributes")
-//      val expectedMessageAttributes = objectMapper.readTree(objectMapper.writeValueAsString(expectedMessage.messageAttributes))
-//      messageAttributes.shouldBe(expectedMessageAttributes)
-//    }
-//
-//    @Test
-//    fun `return a 400 when prisoner ID not valid`() {
-//      val createVisitRequest = getCreateVisitRequest("INVALID_PRISON_ID")
-//      val requestBody = asJsonString(createVisitRequest)
-//
-//      postToApiWithCN("/v1/visit", requestBody, limitedPrisonsCn)
-//        .andExpect(status().isBadRequest)
-//    }
-//
-//    @Test
-//    fun `return a 404 when prison not in filter`() {
-//      val createVisitRequest = getCreateVisitRequest(prisonerId)
-//      val requestBody = asJsonString(createVisitRequest)
-//
-//      postToApiWithCN("/v1/visit", requestBody, limitedPrisonsCn)
-//        .andExpect(status().isNotFound)
-//    }
-//
-//    @Test
-//    fun `return a 404 when no prisons in filter`() {
-//      val createVisitRequest = getCreateVisitRequest(prisonerId)
-//      val requestBody = asJsonString(createVisitRequest)
-//
-//      postToApiWithCN("/v1/visit", requestBody, noPrisonsCn)
-//        .andExpect(status().isNotFound)
-//    }
-//  }
+  @DisplayName("POST /v1/visit/{visitReference}/cancel")
+  @Nested
+  inner class PostCancelVisit {
+    private val visitReference = "123456"
+    private val path = "/v1/visit/$visitReference/cancel"
+    private val cancelVisitRequest =
+      CancelVisitRequest(
+        cancelOutcome =
+          CancelOutcome(
+            outcomeStatus = OutcomeStatus.VISIT_ORDER_CANCELLED,
+            text = "visit order cancelled",
+          ),
+        actionedBy = "test-consumer",
+      )
+
+    @Test
+    fun `post the visit cancellation, get back a message response and find a message on the queue`() {
+      val requestBody = asJsonString(cancelVisitRequest)
+
+      postToApi(path, requestBody)
+        .andExpect(status().isOk)
+        .andExpect(
+          content().json(
+            """
+            {
+              "data": {
+                  "message": "Visit cancellation written to queue"
+              }
+            }
+            """,
+          ),
+        )
+
+      val queueMessages = getQueueMessages()
+      queueMessages.size.shouldBe(1)
+
+      val messageJson = queueMessages[0].body()
+      val expectedMessage = cancelVisitRequest.toHmppsMessage(defaultCn)
+      messageJson.shouldContainJsonKeyValue("$.eventType", expectedMessage.eventType.eventTypeCode)
+      messageJson.shouldContainJsonKeyValue("$.who", defaultCn)
+      val objectMapper = jacksonObjectMapper()
+      val messageAttributes = objectMapper.readTree(messageJson).at("/messageAttributes")
+      val expectedMessageAttributes = objectMapper.readTree(objectMapper.writeValueAsString(expectedMessage.messageAttributes))
+      messageAttributes.shouldBe(expectedMessageAttributes)
+    }
+
+    @Test
+    fun `return a 404 when prison not in filter`() {
+      val requestBody = asJsonString(cancelVisitRequest)
+
+      postToApiWithCN(path, requestBody, limitedPrisonsCn)
+        .andExpect(status().isNotFound)
+    }
+
+    @Test
+    fun `return a 404 when no prisons in filter`() {
+      val requestBody = asJsonString(cancelVisitRequest)
+
+      postToApiWithCN(path, requestBody, noPrisonsCn)
+        .andExpect(status().isNotFound)
+    }
+  }
 }
