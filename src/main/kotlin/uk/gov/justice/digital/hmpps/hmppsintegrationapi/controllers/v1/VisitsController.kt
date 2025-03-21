@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CancelVisitRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CreateVisitRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HmppsMessageResponse
@@ -131,7 +132,66 @@ class VisitsController(
       throw ValidationException("Either invalid prisoner or prison id.")
     }
 
-    auditService.createEvent("POST_VISIT", mapOf())
+    auditService.createEvent("POST_VISIT", mapOf("prisonerId" to createVisitRequest.prisonerId, "clientVisitReference" to createVisitRequest.clientVisitReference, "clientName" to clientName.orEmpty()))
+
+    return DataResponse(response.data)
+  }
+
+  @Operation(
+    summary = "Cancel visit.",
+    description = "<br><br><b>Applicable filters</b>: <ul><li>prisons</li></ul>",
+    responses = [
+      ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully wrote to visit queue."),
+      ApiResponse(
+        responseCode = "400",
+        content = [
+          Content(
+            schema =
+              io.swagger.v3.oas.annotations.media
+                .Schema(ref = "#/components/schemas/BadRequest"),
+          ),
+        ],
+      ),
+      ApiResponse(
+        responseCode = "404",
+        content = [
+          Content(
+            schema =
+              io.swagger.v3.oas.annotations.media
+                .Schema(ref = "#/components/schemas/PersonNotFound"),
+          ),
+        ],
+      ),
+      ApiResponse(
+        responseCode = "500",
+        content = [
+          Content(
+            schema =
+              io.swagger.v3.oas.annotations.media
+                .Schema(ref = "#/components/schemas/InternalServerError"),
+          ),
+        ],
+      ),
+    ],
+  )
+  @PostMapping("/{visitReference}/cancel")
+  fun postCancelVisit(
+    @Valid @RequestBody cancelVisitRequest: CancelVisitRequest,
+    @Parameter(description = "The visit reference number relating to the visit.") @PathVariable visitReference: String,
+    @RequestAttribute clientName: String?,
+    @RequestAttribute filters: ConsumerFilters?,
+  ): DataResponse<HmppsMessageResponse?> {
+    val response = visitQueueService.sendCancelVisit(visitReference, cancelVisitRequest, clientName.orEmpty(), filters)
+
+    if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
+      throw EntityNotFoundException("Could not find prisoner")
+    }
+
+    if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
+      throw ValidationException("Either invalid prisoner or prison id.")
+    }
+
+    auditService.createEvent("POST_CANCEL_VISIT", mapOf("visitReference" to visitReference, "clientName" to clientName.orEmpty()))
 
     return DataResponse(response.data)
   }

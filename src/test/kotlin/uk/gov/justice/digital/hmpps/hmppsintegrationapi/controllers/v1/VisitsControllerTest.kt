@@ -15,8 +15,11 @@ import org.springframework.test.web.servlet.MockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.MessageFailedException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CancelOutcome
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CancelVisitRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CreateVisitRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HmppsMessageResponse
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.OutcomeStatus
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
@@ -173,7 +176,7 @@ class VisitsControllerTest(
           verify(
             auditService,
             times(1),
-          ).createEvent("POST_VISIT", mapOf())
+          ).createEvent("POST_VISIT", mapOf("prisonerId" to createVisitRequest.prisonerId, "clientVisitReference" to createVisitRequest.clientVisitReference, "clientName" to clientName))
         }
 
         it("Calls the visit queue service and gets a response") {
@@ -208,6 +211,74 @@ class VisitsControllerTest(
           whenever(visitQueueService.sendCreateVisit(createVisitRequest, clientName, filters)).thenThrow(MessageFailedException("Could not send Visit message to queue"))
 
           val result = mockMvc.performAuthorisedPost(path, createVisitRequest)
+          result.response.status.shouldBe(HttpStatus.INTERNAL_SERVER_ERROR.value())
+        }
+      }
+
+      describe("/v1/visit/{visitReference}/cancel") {
+        val visitReference = "1234567"
+        val path = "/v1/visit/$visitReference/cancel"
+        val filters = null
+        val message = "Visit Message"
+        val postResponse = HmppsMessageResponse(message = message)
+        val clientName = "automated-test-client"
+        val cancelVisitRequest =
+          CancelVisitRequest(
+            cancelOutcome =
+              CancelOutcome(
+                outcomeStatus = OutcomeStatus.VISIT_ORDER_CANCELLED,
+                text = "Visitor has informed us they cannot make the visit.",
+              ),
+            actionedBy = "someUser",
+          )
+
+        beforeTest {
+          Mockito.reset(visitQueueService)
+
+          whenever(visitQueueService.sendCancelVisit(visitReference, cancelVisitRequest, clientName, filters)).thenReturn(Response(data = postResponse))
+        }
+
+        it("logs audit") {
+          mockMvc.performAuthorisedPost(path, cancelVisitRequest)
+
+          verify(
+            auditService,
+            times(1),
+          ).createEvent("POST_CANCEL_VISIT", mapOf("visitReference" to visitReference, "clientName" to clientName))
+        }
+
+        it("Calls the visit queue service and gets a response") {
+          val result = mockMvc.performAuthorisedPost(path, cancelVisitRequest)
+          result.response.status.shouldBe(HttpStatus.OK.value())
+          result.response.contentAsString shouldBe (
+            """
+            {
+              "data": {
+                "message": "$message"
+              }
+            }
+          """.removeWhitespaceAndNewlines()
+          )
+        }
+
+        it("returns a 400 when upstream returns 400") {
+          whenever(visitQueueService.sendCancelVisit(visitReference, cancelVisitRequest, clientName, filters)).thenReturn(Response(data = null, errors = listOf(UpstreamApiError(causedBy = UpstreamApi.MANAGE_PRISON_VISITS, type = UpstreamApiError.Type.BAD_REQUEST))))
+
+          val result = mockMvc.performAuthorisedPost(path, cancelVisitRequest)
+          result.response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
+        }
+
+        it("returns a 404 when upstream returns 404") {
+          whenever(visitQueueService.sendCancelVisit(visitReference, cancelVisitRequest, clientName, filters)).thenReturn(Response(data = null, errors = listOf(UpstreamApiError(causedBy = UpstreamApi.MANAGE_PRISON_VISITS, type = UpstreamApiError.Type.ENTITY_NOT_FOUND))))
+
+          val result = mockMvc.performAuthorisedPost(path, cancelVisitRequest)
+          result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
+        }
+
+        it("gets a 500 when visit queue service throws MessageFailedException") {
+          whenever(visitQueueService.sendCancelVisit(visitReference, cancelVisitRequest, clientName, filters)).thenThrow(MessageFailedException("Could not send Visit message to queue"))
+
+          val result = mockMvc.performAuthorisedPost(path, cancelVisitRequest)
           result.response.status.shouldBe(HttpStatus.INTERNAL_SERVER_ERROR.value())
         }
       }
