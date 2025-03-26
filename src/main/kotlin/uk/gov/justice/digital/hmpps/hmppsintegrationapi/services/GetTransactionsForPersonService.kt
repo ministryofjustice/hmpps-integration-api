@@ -6,9 +6,7 @@ import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.ConsumerPrisonAccessService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NomisGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Transactions
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Transaction
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 @Service
@@ -24,8 +22,8 @@ class GetTransactionsForPersonService(
     startDate: String,
     endDate: String,
     filters: ConsumerFilters? = null,
-  ): Response<Transactions?> {
-    val consumerPrisonFilterCheck = consumerPrisonAccessService.checkConsumerHasPrisonAccess<Transactions>(prisonId, filters)
+  ): Response<List<Transaction>?> {
+    val consumerPrisonFilterCheck = consumerPrisonAccessService.checkConsumerHasPrisonAccess<List<Transaction>>(prisonId, filters)
 
     if (consumerPrisonFilterCheck.errors.isNotEmpty()) {
       return consumerPrisonFilterCheck
@@ -37,21 +35,11 @@ class GetTransactionsForPersonService(
 
     val personResponse = getPersonService.getNomisNumber(hmppsId = hmppsId)
 
-    if (personResponse == null) {
-      return Response(
-        data = null,
-        errors = listOf(UpstreamApiError(UpstreamApi.NOMIS, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Nomis number not found")),
-      )
-    }
-
-    val nomisNumber = personResponse.data?.nomisNumber
-
-    if (nomisNumber == null) {
-      return Response(
+    val nomisNumber =
+      personResponse.data?.nomisNumber ?: return Response(
         data = null,
         errors = personResponse.errors,
       )
-    }
 
     val nomisTransactions =
       nomisGateway.getTransactionsForPerson(
@@ -70,7 +58,7 @@ class GetTransactionsForPersonService(
     }
 
     return Response(
-      data = nomisTransactions.data,
+      data = nomisTransactions.data?.toTransactionList(),
       errors = emptyList(),
     )
   }
