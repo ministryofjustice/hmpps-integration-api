@@ -43,8 +43,9 @@ class AuthorisationFilter(
     val authoriseConsumerService = AuthoriseConsumerService()
     val requestedPath = req.requestURI
 
-    val includesResult = authoriseConsumerService.doesConsumerHaveIncludesAccess(authorisationConfig.consumers[subjectDistinguishedName], requestedPath)
-    if (includesResult) {
+    if (authorisedThroughIncludes(authoriseConsumerService, subjectDistinguishedName, requestedPath) ||
+      authorisedThroughRole(authoriseConsumerService, subjectDistinguishedName, requestedPath)
+    ) {
       try {
         chain.doFilter(request, response)
       } catch (e: Throwable) {
@@ -56,8 +57,16 @@ class AuthorisationFilter(
         }
       }
       return
+    } else {
+      res.sendError(HttpServletResponse.SC_FORBIDDEN, "Unable to authorise $requestedPath for $subjectDistinguishedName")
     }
+  }
 
+  private fun authorisedThroughRole(
+    authoriseConsumerService: AuthoriseConsumerService,
+    subjectDistinguishedName: String?,
+    requestedPath: String,
+  ): Boolean {
     val consumerConfig: ConsumerConfig? = authorisationConfig.consumers[subjectDistinguishedName]
     val consumersRoles = consumerConfig?.roles
     val rolesInclude =
@@ -68,20 +77,12 @@ class AuthorisationFilter(
       }
     val roleResult =
       authoriseConsumerService.doesConsumerHaveRoleAccess(rolesInclude, requestedPath)
-    if (!roleResult) {
-      res.sendError(HttpServletResponse.SC_FORBIDDEN, "Unable to authorise $requestedPath for $subjectDistinguishedName")
-      return
-    }
-
-    try {
-      chain.doFilter(request, response)
-    } catch (e: Throwable) {
-      val cause = e.cause
-      if (cause is LimitedAccessException) {
-        res.sendError(HttpServletResponse.SC_FORBIDDEN, cause.message)
-      } else {
-        throw e
-      }
-    }
+    return roleResult
   }
+
+  private fun authorisedThroughIncludes(
+    authoriseConsumerService: AuthoriseConsumerService,
+    subjectDistinguishedName: String?,
+    requestedPath: String,
+  ) = authoriseConsumerService.doesConsumerHaveIncludesAccess(authorisationConfig.consumers[subjectDistinguishedName], requestedPath)
 }
