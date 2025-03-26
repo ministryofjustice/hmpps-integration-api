@@ -16,6 +16,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConf
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.ForbiddenByUpstreamServiceException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.decodeUrlCharacters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.redactor.LaoRedaction
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.redactor.LaoRedaction.Mode
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.RiskManagementPlan
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
@@ -31,6 +33,7 @@ class RiskManagementController(
   @Autowired val getRiskManagementPlansForCrnService: GetRiskManagementPlansForCrnService,
   @Autowired val auditService: AuditService,
 ) {
+  @LaoRedaction(Mode.REJECT)
   @GetMapping("/v1/persons/{encodedHmppsId}/risk-management-plan")
   @Operation(
     summary = "Returns a list of Risk Management Plans created for the person with the provided HMPPS ID.",

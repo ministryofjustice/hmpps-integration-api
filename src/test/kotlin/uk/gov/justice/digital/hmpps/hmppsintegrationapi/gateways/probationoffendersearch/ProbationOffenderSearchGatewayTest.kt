@@ -80,7 +80,7 @@ class ProbationOffenderSearchGatewayTest(
 
       it("returns person(s) when searching on first name, last name, pnc number and date of birth") {
         val response = probationOffenderSearchGateway.getPersons(firstName, surname, pncNumber, dateOfBirth)
-        println(response)
+
         response.data.count().shouldBe(1)
         response.data
           .first()
@@ -122,8 +122,6 @@ class ProbationOffenderSearchGatewayTest(
 
         val response = probationOffenderSearchGateway.getPersons("Ahsoka", "Tano", null, null)
 
-        println(response)
-
         response.data.count().shouldBe(1)
         response.data
           .first()
@@ -156,8 +154,6 @@ class ProbationOffenderSearchGatewayTest(
         )
 
         val response = probationOffenderSearchGateway.getPersons("Ahsoka", "Tano", null, null)
-
-        println(response)
 
         response.data.count().shouldBe(1)
         response.data

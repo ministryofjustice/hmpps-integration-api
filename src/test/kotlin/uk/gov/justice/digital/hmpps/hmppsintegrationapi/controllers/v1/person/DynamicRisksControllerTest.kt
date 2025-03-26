@@ -10,7 +10,9 @@ import org.mockito.kotlin.doThrow
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.autoconfigure.aop.AopAutoConfiguration
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
+import org.springframework.context.annotation.Import
 import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.bean.override.mockito.MockitoBean
@@ -18,21 +20,27 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.GetCaseAccess
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.redactor.LaoRedactorAspect
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.redactor.Redactor
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DynamicRisk
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.CaseAccess
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetDynamicRisksForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 
 @WebMvcTest(controllers = [DynamicRisksController::class])
+@Import(value = [AopAutoConfiguration::class, LaoRedactorAspect::class])
 @ActiveProfiles("test")
 internal class DynamicRisksControllerTest(
   @Autowired var springMockMvc: MockMvc,
   @MockitoBean val getDynamicRisksForPersonService: GetDynamicRisksForPersonService,
   @MockitoBean val auditService: AuditService,
+  @MockitoBean val getCaseAccess: GetCaseAccess,
 ) : DescribeSpec(
     {
       val hmppsId = "9999/11111A"
@@ -107,6 +115,56 @@ internal class DynamicRisksControllerTest(
               "startDate": "2022-09-01",
               "reviewDate": "2024-12-23",
               "notes": "A lot of notes"
+            }
+          ]
+        """.removeWhitespaceAndNewlines(),
+          )
+        }
+
+        it("returns the redacted dynamic risks for a person with the matching identifier") {
+
+          val laoCrn = "R123456"
+          whenever(getCaseAccess.getAccessFor(laoCrn)).thenReturn(CaseAccess(laoCrn, true, true, "Exclusion Message", "Restriction Message"))
+          whenever(getDynamicRisksForPersonService.execute(laoCrn)).thenReturn(
+            Response(
+              data =
+                listOf(
+                  DynamicRisk(
+                    code = "AVIS",
+                    description = "Subject has a ViSOR record",
+                    startDate = "2023-09-08",
+                    reviewDate = "2026-04-29",
+                    notes = "Nothing to say",
+                  ),
+                  DynamicRisk(
+                    code = "RHRH",
+                    description = "High Risk of Harm",
+                    startDate = "2022-09-01",
+                    reviewDate = "2024-12-23",
+                    notes = "A lot of notes",
+                  ),
+                ),
+            ),
+          )
+
+          val result = mockMvc.performAuthorised("/v1/persons/$laoCrn/risks/dynamic")
+
+          result.response.contentAsString.shouldContain(
+            """
+          "data": [
+            {
+              "code": "AVIS",
+              "description": "Subject has a ViSOR record",
+              "startDate": "2023-09-08",
+              "reviewDate": "2026-04-29",
+              "notes": "${Redactor.REDACTED}"
+            },
+            {
+              "code": "RHRH",
+              "description": "High Risk of Harm",
+              "startDate": "2022-09-01",
+              "reviewDate": "2024-12-23",
+              "notes": "${Redactor.REDACTED}"
             }
           ]
         """.removeWhitespaceAndNewlines(),
