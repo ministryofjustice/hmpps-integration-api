@@ -17,7 +17,6 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.GetCaseAccess
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PaginatedVisits
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonInPrison
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
@@ -45,7 +44,6 @@ internal class PrisonControllerTest(
   @MockitoBean val getPrisonersService: GetPrisonersService,
   @MockitoBean val getVisitsService: GetVisitsService,
   @Autowired val request: HttpServletRequest,
-  @MockitoBean val getCaseAccess: GetCaseAccess,
 ) : DescribeSpec(
     {
       val hmppsId = "200313116M"

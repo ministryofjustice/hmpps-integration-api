@@ -17,7 +17,6 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.GetCaseAccess
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Need
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Needs
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
@@ -35,7 +34,6 @@ internal class NeedsControllerTest(
   @Autowired var springMockMvc: MockMvc,
   @MockitoBean val getNeedsForPersonService: GetNeedsForPersonService,
   @MockitoBean val auditService: AuditService,
-  @MockitoBean val getCaseAccess: GetCaseAccess,
 ) : DescribeSpec(
     {
       val hmppsId = "9999/11111A"

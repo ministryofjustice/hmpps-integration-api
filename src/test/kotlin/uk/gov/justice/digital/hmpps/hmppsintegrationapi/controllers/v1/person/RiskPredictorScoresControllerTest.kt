@@ -18,7 +18,6 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.GetCaseAccess
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.GeneralPredictor
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.GroupReconviction
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
@@ -40,7 +39,6 @@ internal class RiskPredictorScoresControllerTest(
   @Autowired var springMockMvc: MockMvc,
   @MockitoBean val getRiskPredictorScoresForPersonService: GetRiskPredictorScoresForPersonService,
   @MockitoBean val auditService: AuditService,
-  @MockitoBean val getCaseAccess: GetCaseAccess,
 ) : DescribeSpec(
     {
       val hmppsId = "9999/11111A"

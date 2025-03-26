@@ -12,7 +12,6 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.GetCaseAccess
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
@@ -29,7 +28,6 @@ class OffenderRestrictionsControllerTest(
   @Autowired var springMockMvc: MockMvc,
   @MockitoBean val getPrisonersNonAssociationsService: GetPrisonersNonAssociationsService,
   @MockitoBean val auditService: AuditService,
-  @MockitoBean val getCaseAccess: GetCaseAccess,
 ) : DescribeSpec({
     val prisonId = "XYZ"
     val hmppsId = "200313116M"

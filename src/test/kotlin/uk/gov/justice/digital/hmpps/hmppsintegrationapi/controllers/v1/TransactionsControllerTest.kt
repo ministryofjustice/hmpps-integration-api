@@ -17,7 +17,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.ValidationErrorRe
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.MockMvcExtensions.contentAsJson
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.GetCaseAccess
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Transaction
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.TransactionCreateResponse
@@ -45,7 +44,6 @@ class TransactionsControllerTest(
   @MockitoBean val getTransactionForPersonService: GetTransactionForPersonService,
   @MockitoBean val postTransactionForPersonService: PostTransactionForPersonService,
   @MockitoBean val postTransactionTransferForPersonService: PostTransactionTransferForPersonService,
-  @MockitoBean val getCaseAccess: GetCaseAccess,
 ) : DescribeSpec(
     {
       val hmppsId = "200313116M"
