@@ -10,7 +10,6 @@ import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.CrnSupplier
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.GetCaseAccess
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
@@ -29,7 +28,6 @@ internal class ContactsControllerTest(
   @Autowired var springMockMvc: MockMvc,
   @MockitoBean val auditService: AuditService,
   @MockitoBean val getContactService: GetContactService,
-  @MockitoBean val crnSupplier: CrnSupplier,
   @MockitoBean val getCaseAccess: GetCaseAccess,
 ) : DescribeSpec({
     val mockMvc = IntegrationAPIMockMvc(springMockMvc)

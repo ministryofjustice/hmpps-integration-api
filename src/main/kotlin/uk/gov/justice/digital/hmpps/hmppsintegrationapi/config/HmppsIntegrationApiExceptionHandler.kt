@@ -19,6 +19,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.ConflictFoundE
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.ForbiddenByUpstreamServiceException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.HmppsAuthFailedException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.LimitedAccessException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.MessageFailedException
 
 @RestControllerAdvice
@@ -80,7 +81,7 @@ class HmppsIntegrationApiExceptionHandler {
       )
   }
 
-  @ExceptionHandler(ForbiddenByUpstreamServiceException::class)
+  @ExceptionHandler(ForbiddenByUpstreamServiceException::class, LimitedAccessException::class)
   fun handleAuthenticationFailedException(e: ForbiddenByUpstreamServiceException): ResponseEntity<ErrorResponse?>? {
     logAndCapture("Forbidden to complete action by upstream service: {}", e)
     return ResponseEntity

@@ -13,6 +13,7 @@ import org.springframework.core.annotation.Order
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.GlobalsConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.LimitedAccessException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuthoriseConsumerService
 import java.io.IOException
@@ -44,7 +45,15 @@ class AuthorisationFilter(
 
     val includesResult = authoriseConsumerService.doesConsumerHaveIncludesAccess(authorisationConfig.consumers[subjectDistinguishedName], requestedPath)
     if (includesResult) {
-      chain.doFilter(request, response)
+      try {
+        chain.doFilter(request, response)
+      } catch (e: Throwable) {
+        if (e.cause is LimitedAccessException) {
+          res.sendError(HttpServletResponse.SC_FORBIDDEN, e.message)
+        } else {
+          throw e
+        }
+      }
       return
     }
 

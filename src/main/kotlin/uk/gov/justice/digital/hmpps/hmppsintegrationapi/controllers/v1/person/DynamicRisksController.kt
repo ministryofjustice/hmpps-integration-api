@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.decodeUrlCharacters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.redactor.LaoRedaction
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.redactor.LaoRedaction.Mode
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DynamicRisk
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetDynamicRisksForPersonService
@@ -29,6 +31,7 @@ class DynamicRisksController(
   @Autowired val getDynamicRisksForPersonService: GetDynamicRisksForPersonService,
   @Autowired val auditService: AuditService,
 ) {
+  @LaoRedaction(Mode.REDACT)
   @GetMapping("{encodedHmppsId}/risks/dynamic")
   @Operation(
     summary = "Returns dynamic risks associated with a person.",

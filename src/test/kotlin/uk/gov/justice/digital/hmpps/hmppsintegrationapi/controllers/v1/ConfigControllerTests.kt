@@ -12,7 +12,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.CrnSupplier
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.GetCaseAccess
 
@@ -24,9 +23,6 @@ class ConfigControllerTests(
 ) {
   private val basePath = "/v1/config/authorisation"
   private val mockMvc = IntegrationAPIMockMvc(springMockMvc)
-
-  @MockitoBean
-  internal lateinit var crnSupplier: CrnSupplier
 
   @MockitoBean
   internal lateinit var getCaseAccess: GetCaseAccess
