@@ -107,13 +107,15 @@ class AuthorisationFilterTest {
     verify(mockResponse, times(1)).sendError(403, "Attempt to access a limited access case")
   }
 
-//  @Test
-//  fun `Forbidden if limited access caused by error for path found in roles (but not in includes)`() {
-//    val authorisationConfig = AuthorisationConfig()
-//    authorisationConfig.consumers = mapOf(exampleConsumer to ConsumerConfig(include = emptyList(), filters = ConsumerFilters(prisons = null), roles = exampleRoles))
-//    val authorisationFilter = AuthorisationFilter(authorisationConfig, exampleGlobalsConfig)
-//    authorisationFilter.doFilter(mockRequest, mockResponse, mockChain)
-//
-//    verify(mockChain, times(1)).doFilter(mockRequest, mockResponse)
-//  }
+  @Test
+  fun `Forbidden if limited access caused by error for path found in roles (but not in includes)`() {
+    val authorisationConfig = AuthorisationConfig()
+    authorisationConfig.consumers = mapOf(exampleConsumer to ConsumerConfig(include = emptyList(), filters = ConsumerFilters(prisons = null), roles = exampleRoles))
+    val authorisationFilter = AuthorisationFilter(authorisationConfig, exampleGlobalsConfig)
+    whenever(mockChain.doFilter(mockRequest, mockResponse)).thenThrow(ServletException(LimitedAccessException()))
+
+    authorisationFilter.doFilter(mockRequest, mockResponse, mockChain)
+
+    verify(mockResponse, times(1)).sendError(403, "Attempt to access a limited access case")
+  }
 }
