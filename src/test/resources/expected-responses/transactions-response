@@ -1,6 +1,5 @@
 {
-	"data": {
-"transactions": [
+	"data": [
     	{
       		"id": "204564839-3",
      		"type": {
@@ -11,6 +10,13 @@
       		"amount": 12345,
       		"date": "2016-10-21"
     	}
-  		]
-}
+  		],
+  		"pagination": {
+          "isLastPage": true,
+          "count": 1,
+          "page": 1,
+          "perPage": 10,
+          "totalCount": 1,
+          "totalPages": 1
+        }
 }
