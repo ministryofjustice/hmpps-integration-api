@@ -98,7 +98,7 @@ class TransactionsControllerTest(
       }
 
       it("returns a prisoners transactions according to supplied code") {
-        whenever(getTransactionsForPersonService.execute(hmppsId, prisonId, accountCode, "2025-01-01", "2025-01-01", null)).thenReturn(Response(transactions))
+        whenever(getTransactionsForPersonService.execute(hmppsId, prisonId, accountCode, "2025-01-01", "2025-01-01", null)).thenReturn(Response(listOf(transaction)))
 
         val dateParams = "?from_date=2025-01-01&to_date=2025-01-01"
         val result = mockMvc.performAuthorised(transactionsPath + dateParams)
@@ -107,7 +107,7 @@ class TransactionsControllerTest(
           """
             {
             "data": {
-            "transactions": [
+            [
               {
                 "id": "123",
                 "type": {
@@ -118,7 +118,7 @@ class TransactionsControllerTest(
                 "amount": 100,
                 "date": "2025-01-01"
               }
-            ]
+            ],
           }
           }
           """.removeWhitespaceAndNewlines(),

@@ -113,7 +113,7 @@ internal class GetTransactionsForPersonServiceTest(
           filters,
         )
 
-      result.data.shouldBe(exampleTransactions)
+      result.data.shouldBe(exampleTransactions.toTransactionList())
     }
 
     it("records upstream API errors") {
@@ -248,6 +248,6 @@ internal class GetTransactionsForPersonServiceTest(
           consumerFillters,
         )
 
-      result.data.shouldBe(exampleTransactions)
+      result.data.shouldBe(exampleTransactions.toTransactionList())
     }
   })

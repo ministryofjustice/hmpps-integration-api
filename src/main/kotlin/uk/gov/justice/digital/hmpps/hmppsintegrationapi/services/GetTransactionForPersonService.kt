@@ -6,8 +6,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.ConsumerPrisonAcc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NomisGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Transaction
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 @Service
@@ -29,22 +27,11 @@ class GetTransactionForPersonService(
     }
 
     val personResponse = getPersonService.getNomisNumber(hmppsId = hmppsId)
-
-    if (personResponse == null) {
-      return Response(
-        data = null,
-        errors = listOf(UpstreamApiError(UpstreamApi.NOMIS, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Nomis number not found")),
-      )
-    }
-
-    val nomisNumber = personResponse.data?.nomisNumber
-
-    if (nomisNumber == null) {
-      return Response(
+    val nomisNumber =
+      personResponse.data?.nomisNumber ?: return Response(
         data = null,
         errors = personResponse.errors,
       )
-    }
 
     val nomisTransaction =
       nomisGateway.getTransactionForPerson(
