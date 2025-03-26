@@ -14,7 +14,6 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.MockMvcExtensions.contentAsJson
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.GetCaseAccess
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.ReferenceDataService
 
@@ -24,7 +23,6 @@ internal class ReferenceDataControllerTests(
   @Autowired var springMockMvc: MockMvc,
   @MockitoBean val referenceDataService: ReferenceDataService,
   @Autowired val objectMapper: ObjectMapper,
-  @MockitoBean val getCaseAccess: GetCaseAccess,
 ) : DescribeSpec(
     {
       lateinit var referenceData: Response<ReferenceData?>

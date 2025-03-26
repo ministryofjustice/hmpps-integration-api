@@ -15,7 +15,6 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.GetCaseAccess
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HmppsId
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NomisNumber
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
@@ -32,7 +31,6 @@ internal class HmppsIdControllerTest(
   @MockitoBean val getHmppsIdService: GetHmppsIdService,
   @MockitoBean val auditService: AuditService,
   @MockitoBean val getPersonService: GetPersonService,
-  @MockitoBean val getCaseAccess: GetCaseAccess,
 ) : DescribeSpec({
     val nomisNumber = "A1234AA"
     val mockMvc = IntegrationAPIMockMvc(springMockMvc)

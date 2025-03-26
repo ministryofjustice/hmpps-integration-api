@@ -14,7 +14,6 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.GetCaseAccess
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.PutExpressionInterestService
 
 @WebMvcTest(controllers = [ExpressionInterestController::class])
@@ -22,7 +21,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.PutExpressionIn
 class ExpressionInterestControllerTest(
   @Autowired var springMockMvc: MockMvc,
   @MockitoBean val expressionOfInterestService: PutExpressionInterestService,
-  @MockitoBean val getCaseAccess: GetCaseAccess,
 ) : DescribeSpec({
     val mockMvc = IntegrationAPIMockMvc(springMockMvc)
     val basePath = "/v1/persons"
