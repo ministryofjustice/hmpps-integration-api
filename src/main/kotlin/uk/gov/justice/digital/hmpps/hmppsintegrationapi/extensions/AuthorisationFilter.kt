@@ -48,8 +48,9 @@ class AuthorisationFilter(
       try {
         chain.doFilter(request, response)
       } catch (e: Throwable) {
-        if (e.cause is LimitedAccessException) {
-          res.sendError(HttpServletResponse.SC_FORBIDDEN, e.message)
+        val cause = e.cause
+        if (cause is LimitedAccessException) {
+          res.sendError(HttpServletResponse.SC_FORBIDDEN, cause.message)
         } else {
           throw e
         }

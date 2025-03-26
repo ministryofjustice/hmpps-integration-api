@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions
 
 import jakarta.servlet.FilterChain
+import jakarta.servlet.ServletException
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.junit.jupiter.api.BeforeEach
@@ -12,6 +13,7 @@ import org.mockito.kotlin.reset
 import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.GlobalsConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.LimitedAccessException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Role
@@ -91,4 +93,27 @@ class AuthorisationFilterTest {
 
     verify(mockResponse, times(1)).sendError(403, "No subject-distinguished-name header provided for authorisation")
   }
+
+  @Test
+  fun `Forbidden if limited access caused by error for path not found in roles, but found in includes`() {
+    val authorisationConfig = AuthorisationConfig()
+    authorisationConfig.consumers = mapOf(exampleConsumer to ConsumerConfig(include = listOf(examplePath), filters = ConsumerFilters(prisons = null), roles = listOf()))
+    val invalidRoleConfig = GlobalsConfig(roles = mapOf(roleName to Role(include = emptyList())))
+    val authorisationFilter = AuthorisationFilter(authorisationConfig, invalidRoleConfig)
+    whenever(mockChain.doFilter(mockRequest, mockResponse)).thenThrow(ServletException(LimitedAccessException()))
+
+    authorisationFilter.doFilter(mockRequest, mockResponse, mockChain)
+
+    verify(mockResponse, times(1)).sendError(403, "Attempt to access a limited access case")
+  }
+
+//  @Test
+//  fun `Forbidden if limited access caused by error for path found in roles (but not in includes)`() {
+//    val authorisationConfig = AuthorisationConfig()
+//    authorisationConfig.consumers = mapOf(exampleConsumer to ConsumerConfig(include = emptyList(), filters = ConsumerFilters(prisons = null), roles = exampleRoles))
+//    val authorisationFilter = AuthorisationFilter(authorisationConfig, exampleGlobalsConfig)
+//    authorisationFilter.doFilter(mockRequest, mockResponse, mockChain)
+//
+//    verify(mockChain, times(1)).doFilter(mockRequest, mockResponse)
+//  }
 }
