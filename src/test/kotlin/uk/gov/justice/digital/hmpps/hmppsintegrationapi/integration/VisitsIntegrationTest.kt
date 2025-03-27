@@ -17,10 +17,12 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CancelOutco
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CancelVisitRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CreateVisitRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.OutcomeStatus
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitContact
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitNotes
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitRestriction
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitStatus
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitType
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Visitor
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitorSupport
 import uk.gov.justice.hmpps.sqs.HmppsQueueService
 import java.time.LocalDateTime
 
@@ -104,12 +106,14 @@ class VisitsIntegrationTest : IntegrationTestBase() {
         clientVisitReference = "123456",
         visitRoom = "A1",
         visitType = VisitType.SOCIAL,
-        visitStatus = VisitStatus.BOOKED,
         visitRestriction = VisitRestriction.OPEN,
         startTimestamp = LocalDateTime.parse(timestamp),
         endTimestamp = LocalDateTime.parse(timestamp),
+        visitNotes = listOf(VisitNotes(type = "VISITOR_CONCERN", text = "Visitor is concerned their mother in law is coming!")),
+        visitContact = VisitContact(name = "John Smith", telephone = "0987654321", email = "john.smith@example.com"),
         createDateTime = LocalDateTime.parse(timestamp),
         visitors = setOf(Visitor(nomisPersonId = 3L, visitContact = true)),
+        visitorSupport = VisitorSupport(description = "Visually impaired assistance"),
         actionedBy = clientName,
       )
 

@@ -20,12 +20,14 @@ class CreateVisitRequestTest :
             clientVisitReference = "123456",
             visitRoom = "A1",
             visitType = VisitType.SOCIAL,
-            visitStatus = VisitStatus.BOOKED,
             visitRestriction = VisitRestriction.OPEN,
             startTimestamp = LocalDateTime.parse(timestamp),
             endTimestamp = LocalDateTime.parse(timestamp),
+            visitNotes = listOf(VisitNotes(type = "VISITOR_CONCERN", text = "Visitor is concerned their mother in law is coming!")),
+            visitContact = VisitContact(name = "John Smith", telephone = "0987654321", email = "john.smith@example.com"),
             createDateTime = LocalDateTime.parse(timestamp),
             visitors = setOf(Visitor(nomisPersonId = 3L, visitContact = true)),
+            visitorSupport = VisitorSupport(description = "Visually impaired assistance"),
             actionedBy = "test-consumer",
           )
 
@@ -38,8 +40,11 @@ class CreateVisitRequestTest :
         hmppsMessageString.shouldContainJsonKeyValue("$.messageAttributes.prisonerId", createVisitRequest.prisonerId)
         hmppsMessageString.shouldContainJsonKeyValue("$.messageAttributes.startTimestamp", timestamp)
         hmppsMessageString.shouldContainJsonKeyValue("$.messageAttributes.endTimestamp", timestamp)
+        hmppsMessageString.shouldContainJsonKeyValue("$.messageAttributes.visitNotes[0].type", createVisitRequest.visitNotes.first().type)
+        hmppsMessageString.shouldContainJsonKeyValue("$.messageAttributes.visitContact.name", createVisitRequest.visitContact.name)
         hmppsMessageString.shouldContainJsonKeyValue("$.messageAttributes.createDateTime", timestamp)
         hmppsMessageString.shouldContainJsonKeyValue("$.messageAttributes.visitors.[0].nomisPersonId", createVisitRequest.visitors!!.first().nomisPersonId)
+        hmppsMessageString.shouldContainJsonKeyValue("$.messageAttributes.visitorSupport.description", createVisitRequest.visitorSupport!!.description)
       }
     },
   )
