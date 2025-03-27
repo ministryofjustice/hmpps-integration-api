@@ -319,6 +319,21 @@ internal class RiskSeriousHarmControllerTest(
           )
         }
 
+        it("can handle null response") {
+          val laoCrn = "N444411"
+          whenever(getCaseAccess.getAccessFor(laoCrn)).thenReturn(CaseAccess(laoCrn, true, false, "Exclusion Message"))
+          whenever(getRiskSeriousHarmForPersonService.execute(laoCrn)).thenReturn(Response(data = null))
+
+          val result = mockMvc.performAuthorised("/v1/persons/$laoCrn/risks/serious-harm")
+
+          result.response.contentAsString.shouldContain(
+            """{
+          "data": null
+          }
+          """.removeWhitespaceAndNewlines(),
+          )
+        }
+
         it("logs audit") {
           mockMvc.performAuthorised(path)
 
