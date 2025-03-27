@@ -2160,6 +2160,28 @@
 </td>
 </tr>
 
+<tr>
+<td>page</td>
+<td>query</td>
+<td>string</td>
+<td>false</td>
+<td><p>The page number (starting from 1)</p>
+
+
+</td>
+</tr>
+
+<tr>
+<td>perPage</td>
+<td>query</td>
+<td>string</td>
+<td>false</td>
+<td><p>The maximum number of results for a page</p>
+
+
+</td>
+</tr>
+
 </tbody>
 </table>
 
@@ -2181,25 +2203,31 @@
 
 
 <pre><code>{
-  "data": {
-    "transactions": [
-      {
-        "id": "string",
-        "type": {
-          "code": "string",
-          "desc": "string"
-        },
-        "description": "string",
-        "amount": "integer",
-        "date": "string"
-      }
-    ]
+  "data": [
+    {
+      "id": "string",
+      "type": {
+        "code": "string",
+        "desc": "string"
+      },
+      "description": "string",
+      "amount": "integer",
+      "date": "string"
+    }
+  ],
+  "pagination": {
+    "isLastPage": true,
+    "count": 1,
+    "page": 1,
+    "perPage": 10,
+    "totalCount": 1,
+    "totalPages": 1
   }
 }</code></pre>
 
 </td>
 <td>
-<a href='#schema-dataresponsetransactions'>DataResponseTransactions</a>
+<a href='#schema-paginatedresponsetransaction'>PaginatedResponseTransaction</a>
 </td>
 </tr>
 
@@ -10745,10 +10773,10 @@
 </tbody>
 </table>
 
-<h3 id="schema-dataresponsetransactions">DataResponseTransactions</h3>
+<h3 id="schema-paginatedresponsetransaction">PaginatedResponseTransaction</h3>
 
 
-<table class='schema-dataresponsetransactions'>
+<table class='schema-paginatedresponsetransaction'>
 <thead>
 <tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
 </thead>
@@ -10756,33 +10784,21 @@
 
 <tr>
 <td>data</td>
-<td>object</td>
-<td>true</td>
-<td></td>
-<td>
-  <a href='#schema-transactions'>Transactions</a>
-</td>
-</tr>
-
-</tbody>
-</table>
-
-<h3 id="schema-transactions">Transactions</h3>
-
-
-<table class='schema-transactions'>
-<thead>
-<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
-</thead>
-<tbody>
-
-<tr>
-<td>transactions</td>
 <td>array</td>
 <td>true</td>
 <td></td>
 <td>
   <a href='#schema-transaction'>Transaction</a>
+</td>
+</tr>
+
+<tr>
+<td>pagination</td>
+<td>object</td>
+<td>true</td>
+<td></td>
+<td>
+  <a href='#schema-pagination'>Pagination</a>
 </td>
 </tr>
 
