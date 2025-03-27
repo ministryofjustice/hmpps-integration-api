@@ -11,7 +11,7 @@ class CancelVisitRequestTest :
     {
       it("correctly creates cancel visit queue event") {
         val consumerName = "client-name"
-        val timestamp = "2020-12-04T10:42:43"
+        val visitReference = "v9-d7-ed-7u"
         val cancelVisitRequest =
           CancelVisitRequest(
             cancelOutcome =
@@ -22,12 +22,13 @@ class CancelVisitRequestTest :
             actionedBy = "test-consumer",
           )
 
-        val hmppsMessage = cancelVisitRequest.toHmppsMessage(consumerName)
+        val hmppsMessage = cancelVisitRequest.toHmppsMessage(consumerName, visitReference)
         hmppsMessage.eventType.shouldBe(HmppsMessageEventType.VISIT_CANCELLED)
         hmppsMessage.who.shouldBe(consumerName)
 
         val hmppsMessageString = objectMapper.writeValueAsString(hmppsMessage)
         hmppsMessageString.shouldBeValidJson()
+        hmppsMessageString.shouldContainJsonKeyValue("$.messageAttributes.visitReference", visitReference)
         hmppsMessageString.shouldContainJsonKeyValue("$.messageAttributes.cancelOutcome.text", cancelVisitRequest.cancelOutcome.text)
         hmppsMessageString.shouldContainJsonKeyValue("$.messageAttributes.cancelOutcome.outcomeStatus", cancelVisitRequest.cancelOutcome.outcomeStatus.toString())
       }

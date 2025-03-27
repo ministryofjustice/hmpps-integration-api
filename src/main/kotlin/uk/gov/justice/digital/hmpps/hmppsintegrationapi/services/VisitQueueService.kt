@@ -69,7 +69,7 @@ class VisitQueueService(
       return Response(data = null, errors = visitResponse.errors)
     }
 
-    val hmppsMessage = visit.toHmppsMessage(who)
+    val hmppsMessage = visit.toHmppsMessage(who, visitReference)
 
     try {
       val stringifiedMessage = objectMapper.writeValueAsString(hmppsMessage)
