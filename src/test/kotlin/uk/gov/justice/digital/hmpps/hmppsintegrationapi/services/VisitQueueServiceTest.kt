@@ -31,8 +31,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Visit
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitContact
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitNotes
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitRestriction
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitStatus
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitType
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Visitor
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitorSupport
@@ -102,12 +102,14 @@ internal class VisitQueueServiceTest(
           clientVisitReference = "123456",
           visitRoom = "A1",
           visitType = VisitType.SOCIAL,
-          visitStatus = VisitStatus.BOOKED,
           visitRestriction = VisitRestriction.OPEN,
           startTimestamp = LocalDateTime.parse("2020-12-04T10:42:43"),
           endTimestamp = LocalDateTime.parse("2020-12-04T10:42:43"),
+          visitNotes = listOf(VisitNotes(type = "VISITOR_CONCERN", text = "Visitor is concerned their mother in law is coming!")),
+          visitContact = VisitContact(name = "John Smith", telephone = "0987654321", email = "john.smith@example.com"),
           createDateTime = LocalDateTime.parse("2020-12-04T10:42:43"),
           visitors = setOf(Visitor(nomisPersonId = 3L, visitContact = true)),
+          visitorSupport = VisitorSupport(description = "Visually impaired assistance"),
           actionedBy = "test-consumer",
         )
       val who = "client-name"
