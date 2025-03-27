@@ -118,11 +118,7 @@ class TransactionsController(
     }
     auditService.createEvent("GET_TRANSACTIONS_FOR_PERSON", mapOf("hmppsId" to hmppsId, "prisonId" to prisonId, "fromDate" to fromDate, "toDate" to toDate))
 
-    if (response.data.isNullOrEmpty()) {
-      return emptyList<Transaction>().paginateWith(page, perPage)
-    }
-
-    return response.data.paginateWith(page, perPage)
+    return response.data.orEmpty().paginateWith(page, perPage)
   }
 
   @Operation(
