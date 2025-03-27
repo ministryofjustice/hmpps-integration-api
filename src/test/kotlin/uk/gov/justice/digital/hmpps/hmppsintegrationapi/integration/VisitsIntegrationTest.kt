@@ -210,7 +210,7 @@ class VisitsIntegrationTest : IntegrationTestBase() {
       queueMessages.size.shouldBe(1)
 
       val messageJson = queueMessages[0].body()
-      val expectedMessage = cancelVisitRequest.toHmppsMessage(defaultCn)
+      val expectedMessage = cancelVisitRequest.toHmppsMessage(defaultCn, visitReference)
       messageJson.shouldContainJsonKeyValue("$.eventType", expectedMessage.eventType.eventTypeCode)
       messageJson.shouldContainJsonKeyValue("$.who", defaultCn)
       val objectMapper = jacksonObjectMapper()

@@ -9,15 +9,19 @@ data class CancelVisitRequest(
   @Schema(description = "Username for user who actioned this request", required = false)
   val actionedBy: String?,
 ) {
-  fun toHmppsMessage(who: String): HmppsMessage =
+  fun toHmppsMessage(
+    who: String,
+    visitReference: String,
+  ): HmppsMessage =
     HmppsMessage(
       eventType = HmppsMessageEventType.VISIT_CANCELLED,
-      messageAttributes = modelToMap(),
+      messageAttributes = modelToMap(visitReference),
       who = who,
     )
 
-  private fun modelToMap(): Map<String, Any?> =
+  private fun modelToMap(visitReference: String): Map<String, Any?> =
     mapOf(
+      "visitReference" to visitReference,
       "cancelOutcome" to this.cancelOutcome,
       "actionedBy" to this.actionedBy,
     )
