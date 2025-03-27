@@ -46,7 +46,11 @@ class LaoRedactorAspect(
     }
   }
 
-  private fun redactDataResponse(dataResponse: DataResponse<*>): DataResponse<*> = LaoRedactor.of(dataResponse.data as Any)?.redact(dataResponse.data)?.let { DataResponse(it) } ?: dataResponse
+  private fun redactDataResponse(dataResponse: DataResponse<*>): DataResponse<*> =
+    dataResponse.data
+      ?.let { LaoRedactor.of(it) }
+      ?.redact(dataResponse.data)
+      ?.let { DataResponse(it) } ?: dataResponse
 
   private fun redactPaginatedResponse(paginatedResponse: PaginatedResponse<*>): PaginatedResponse<*> {
     val redactor = paginatedResponse.data.firstOrNull()?.let { LaoRedactor.of(it) }
