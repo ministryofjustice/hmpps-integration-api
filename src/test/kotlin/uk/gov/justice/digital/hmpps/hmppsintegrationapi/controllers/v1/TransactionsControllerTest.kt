@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.controllers.v1
 
+import io.kotest.assertions.json.shouldContainJsonKeyValue
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.collections.shouldContainAll
 import io.kotest.matchers.shouldBe
@@ -97,8 +98,18 @@ class TransactionsControllerTest(
         verify(getTransactionsForPersonService, VerificationModeFactory.times(1)).execute(hmppsId, prisonId, accountCode, "2025-01-01", "2025-01-01", null)
       }
 
+      it("returns paginated result") {
+        whenever(getTransactionsForPersonService.execute(hmppsId, prisonId, accountCode, "2025-01-01", "2025-01-01", null)).thenReturn(Response(listOf(transaction)))
+
+        val dateParams = "?from_date=2025-01-01&to_date=2025-01-01"
+        val result = mockMvc.performAuthorised(transactionsPath + dateParams)
+
+        result.response.contentAsString.shouldContainJsonKeyValue("$.pagination.page", 1)
+        result.response.contentAsString.shouldContainJsonKeyValue("$.pagination.totalPages", 1)
+      }
+
       it("returns a prisoners transactions according to supplied code") {
-        whenever(getTransactionsForPersonService.execute(hmppsId, prisonId, accountCode, "2025-01-01", "2025-01-01", null)).thenReturn(Response(transactions))
+        whenever(getTransactionsForPersonService.execute(hmppsId, prisonId, accountCode, "2025-01-01", "2025-01-01", null)).thenReturn(Response(listOf(transaction)))
 
         val dateParams = "?from_date=2025-01-01&to_date=2025-01-01"
         val result = mockMvc.performAuthorised(transactionsPath + dateParams)
@@ -106,21 +117,17 @@ class TransactionsControllerTest(
         result.response.contentAsString.shouldContain(
           """
             {
-            "data": {
-            "transactions": [
-              {
-                "id": "123",
-                "type": {
-                  "code": "spends",
-                  "desc": "Spends"
-                },
-                "description": "Spends desc",
-                "amount": 100,
-                "date": "2025-01-01"
-              }
-            ]
-          }
-          }
+              "data":
+                [
+                  {
+                    "id":"123",
+                    "type":{"code":"spends","desc":"Spends"},
+                    "description":"Spends desc",
+                    "amount":100,
+                    "date":"2016-10-21"
+                   }
+                ],
+                "pagination":{"isLastPage":true,"count":1,"page":1,"perPage":10,"totalCount":1,"totalPages":1}}
           """.removeWhitespaceAndNewlines(),
         )
       }
