@@ -110,7 +110,6 @@ internal class VisitQueueServiceTest(
           createDateTime = LocalDateTime.parse("2020-12-04T10:42:43"),
           visitors = setOf(Visitor(nomisPersonId = 3L, visitContact = true)),
           visitorSupport = VisitorSupport(description = "Visually impaired assistance"),
-          actionedBy = "test-consumer",
         )
       val who = "client-name"
 

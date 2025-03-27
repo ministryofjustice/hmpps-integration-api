@@ -95,7 +95,6 @@ class VisitsIntegrationTest : IntegrationTestBase() {
   @DisplayName("POST /v1/visit")
   @Nested
   inner class PostVisit {
-    private val clientName = "automated-test-client"
     private val timestamp = "2020-12-04T10:42:43"
     private val prisonerId = "A1234AB"
 
@@ -114,7 +113,6 @@ class VisitsIntegrationTest : IntegrationTestBase() {
         createDateTime = LocalDateTime.parse(timestamp),
         visitors = setOf(Visitor(nomisPersonId = 3L, visitContact = true)),
         visitorSupport = VisitorSupport(description = "Visually impaired assistance"),
-        actionedBy = clientName,
       )
 
     @Test

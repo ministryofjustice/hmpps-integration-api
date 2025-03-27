@@ -28,7 +28,6 @@ class CreateVisitRequestTest :
             createDateTime = LocalDateTime.parse(timestamp),
             visitors = setOf(Visitor(nomisPersonId = 3L, visitContact = true)),
             visitorSupport = VisitorSupport(description = "Visually impaired assistance"),
-            actionedBy = "test-consumer",
           )
 
         val hmppsMessage = createVisitRequest.toHmppsMessage(consumerName)
