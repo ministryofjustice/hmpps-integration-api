@@ -9240,17 +9240,6 @@
 </tr>
 
 <tr>
-<td>visitStatus</td>
-<td>string</td>
-<td>true</td>
-<td><p>Visit Status</p>
-</td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
 <td>visitRestriction</td>
 <td>string</td>
 <td>true</td>
@@ -9284,6 +9273,28 @@
 </tr>
 
 <tr>
+<td>visitNotes</td>
+<td>array</td>
+<td>true</td>
+<td><p>Visit Notes</p>
+</td>
+<td>
+  <a href='#schema-visitnotes'>VisitNotes</a>
+</td>
+</tr>
+
+<tr>
+<td>visitContact</td>
+<td>object</td>
+<td>true</td>
+<td><p>Contact associated with the visit</p>
+</td>
+<td>
+  <a href='#schema-visitcontact'>VisitContact</a>
+</td>
+</tr>
+
+<tr>
 <td>createDateTime</td>
 <td>string</td>
 <td>false</td>
@@ -9306,10 +9317,102 @@
 </tr>
 
 <tr>
+<td>visitorSupport</td>
+<td>object</td>
+<td>false</td>
+<td><p>Additional support associated with the visit</p>
+</td>
+<td>
+  <a href='#schema-visitorsupport'>VisitorSupport</a>
+</td>
+</tr>
+
+<tr>
 <td>actionedBy</td>
 <td>string</td>
 <td>false</td>
 <td><p>Username for user who actioned this request</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+</tbody>
+</table>
+
+<h3 id="schema-visitcontact">VisitContact</h3>
+<p>Contact associated with the visit</p>
+
+
+<table class='schema-visitcontact'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>name</td>
+<td>string</td>
+<td>true</td>
+<td><p>Contact name</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>telephone</td>
+<td>string</td>
+<td>true</td>
+<td><p>Contact Phone Number</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>email</td>
+<td>string</td>
+<td>true</td>
+<td><p>Contact Email Address</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+</tbody>
+</table>
+
+<h3 id="schema-visitnotes">VisitNotes</h3>
+<p>Visit Notes</p>
+
+
+<table class='schema-visitnotes'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>type</td>
+<td>string</td>
+<td>true</td>
+<td><p>Note type</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>text</td>
+<td>string</td>
+<td>true</td>
+<td><p>Note Text</p>
 </td>
 <td>
   
@@ -9344,6 +9447,30 @@
 <td>boolean</td>
 <td>false</td>
 <td></td>
+<td>
+  
+</td>
+</tr>
+
+</tbody>
+</table>
+
+<h3 id="schema-visitorsupport">VisitorSupport</h3>
+<p>Additional support associated with the visit</p>
+
+
+<table class='schema-visitorsupport'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>description</td>
+<td>string</td>
+<td>true</td>
+<td><p>Support text description</p>
+</td>
 <td>
   
 </td>
@@ -9965,111 +10092,6 @@
 <td>string</td>
 <td>true</td>
 <td><p>Date the visit was first booked or migrated</p>
-</td>
-<td>
-  
-</td>
-</tr>
-
-</tbody>
-</table>
-
-<h3 id="schema-visitcontact">VisitContact</h3>
-<p>Contact associated with the visit</p>
-
-
-<table class='schema-visitcontact'>
-<thead>
-<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
-</thead>
-<tbody>
-
-<tr>
-<td>name</td>
-<td>string</td>
-<td>true</td>
-<td><p>Contact name</p>
-</td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>telephone</td>
-<td>string</td>
-<td>true</td>
-<td><p>Contact Phone Number</p>
-</td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>email</td>
-<td>string</td>
-<td>true</td>
-<td><p>Contact Email Address</p>
-</td>
-<td>
-  
-</td>
-</tr>
-
-</tbody>
-</table>
-
-<h3 id="schema-visitnotes">VisitNotes</h3>
-<p>Visit Notes</p>
-
-
-<table class='schema-visitnotes'>
-<thead>
-<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
-</thead>
-<tbody>
-
-<tr>
-<td>type</td>
-<td>string</td>
-<td>true</td>
-<td><p>Note type</p>
-</td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>text</td>
-<td>string</td>
-<td>true</td>
-<td><p>Note Text</p>
-</td>
-<td>
-  
-</td>
-</tr>
-
-</tbody>
-</table>
-
-<h3 id="schema-visitorsupport">VisitorSupport</h3>
-<p>Additional support associated with the visit</p>
-
-
-<table class='schema-visitorsupport'>
-<thead>
-<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
-</thead>
-<tbody>
-
-<tr>
-<td>description</td>
-<td>string</td>
-<td>true</td>
-<td><p>Support text description</p>
 </td>
 <td>
   
