@@ -31,7 +31,7 @@ class OffenderRestrictionsController(
   @GetMapping("/v1/prison/{prisonId}/prisoners/{hmppsId}/non-associations")
   @Operation(
     summary = "Returns a single prisoners list of non associates.",
-    description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul> <br> includeOpen is true by default, includeClosed is false by default. At least one must be true. The role READ_NON_ASSOCIATIONS is required for this endpoint.",
+    description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul> <br> includeOpen is true by default, includeClosed is false by default. At least one must be true.",
     responses = [
       ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found prisoners non associates."),
       ApiResponse(
