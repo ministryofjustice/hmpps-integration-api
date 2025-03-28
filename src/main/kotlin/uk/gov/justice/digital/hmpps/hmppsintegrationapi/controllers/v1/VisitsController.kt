@@ -81,7 +81,10 @@ class VisitsController(
 
   @Operation(
     summary = "Report the creation of a visit in an external system.",
-    description = "<br><br><b>Applicable filters</b>: <ul><li>prisons</li></ul>",
+    description =
+      "This API only validates the existence of the entities included. It does not perform any checking of the suitability of the visit. " +
+        "That responsibility is left to the client." +
+        "<br><br><b>Applicable filters</b>: <ul><li>prisons</li></ul>",
     responses = [
       ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully wrote to visit queue."),
       ApiResponse(
