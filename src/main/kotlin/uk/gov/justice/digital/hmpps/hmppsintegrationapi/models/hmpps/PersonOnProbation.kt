@@ -15,4 +15,8 @@ class PersonOnProbation(
     pncId = person.pncId,
     hmppsId = person.hmppsId,
     contactDetails = person.contactDetails,
+    currentExclusion = person.currentExclusion,
+    exclusionMessage = person.exclusionMessage,
+    currentRestriction = person.currentRestriction,
+    restrictionMessage = person.restrictionMessage,
   )

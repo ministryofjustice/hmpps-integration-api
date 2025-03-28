@@ -373,10 +373,10 @@ internal class PersonControllerTest(
                    "pncId":null,
                    "hmppsId":null,
                    "contactDetails":null,
-                   "currentRestriction": null,
+                   "currentRestriction": false,
                    "restrictionMessage": null,
-                   "currentExclusion": null,
-                   "exclusionMessage": null
+                   "currentExclusion": true,
+                   "exclusionMessage": "An exclusion exists"
                 }
              }
           }

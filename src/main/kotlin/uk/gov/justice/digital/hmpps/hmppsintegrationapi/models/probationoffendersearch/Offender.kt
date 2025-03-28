@@ -18,6 +18,10 @@ data class Offender(
   val otherIds: OtherIds = OtherIds(),
   val age: Number = 0,
   val activeProbationManagedSentence: Boolean = false,
+  val currentRestriction: Boolean = false,
+  val restrictionMessage: String? = null,
+  val currentExclusion: Boolean = false,
+  val exclusionMessage: String? = null,
 ) {
   fun toPerson() =
     Person(
@@ -37,6 +41,10 @@ data class Offender(
       pncId = otherIds.pncNumber,
       hmppsId = if (otherIds.crn?.isNotEmpty() == true) otherIds.crn else otherIds.nomsNumber,
       contactDetails = this.contactDetails?.toContactDetails(),
+      currentRestriction = this.currentRestriction,
+      restrictionMessage = this.restrictionMessage,
+      currentExclusion = this.currentExclusion,
+      exclusionMessage = this.exclusionMessage,
     )
 
   fun toPersonOnProbation() =
