@@ -32,8 +32,8 @@ class VisitRestrictionsController(
   @Autowired val getVisitorRestrictionsService: GetVisitorRestrictionsService,
 ) {
   @Operation(
-    summary = "Gets restrictions for latest booking.",
-    description = "Returns a list of restrictions for the latest booking",
+    summary = "Gets visit restrictions for a prisoner.",
+    description = "Returns a prisoner's visit restrictions. Only returns the visit restrictions for the prisoner's most recent booking.",
     responses = [
       ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found a person's visit restrictions with the provided HMPPS ID."),
       ApiResponse(responseCode = "400", content = [Content(schema = Schema(ref = "#/components/schemas/BadRequest"))]),
