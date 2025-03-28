@@ -29,6 +29,8 @@ internal class GetPrisonersNonAssociationsServiceTest(
 ) : DescribeSpec(
     {
       val prisonId = "MDI"
+      val prisonerNumber = "ABC1234"
+      val filters = null
       val nonAssociations =
         NonAssociations(
           nonAssociations =
@@ -51,7 +53,7 @@ internal class GetPrisonersNonAssociationsServiceTest(
                 closedAt = "Bad Dudes",
                 otherPrisonerDetails =
                   NonAssociationPrisonerDetails(
-                    prisonerNumber = "ABC1234",
+                    prisonerNumber = prisonerNumber,
                     role = "Bad Dudes",
                     roleDescription = "Bad Dudes",
                     firstName = "Bad Dudes",
@@ -72,16 +74,15 @@ internal class GetPrisonersNonAssociationsServiceTest(
         whenever(
           consumerPrisonAccessService.checkConsumerHasPrisonAccess<NonAssociations?>(
             prisonId,
-            filters = ConsumerFilters(null),
+            filters,
             upstreamServiceType = UpstreamApi.NON_ASSOCIATIONS,
           ),
         ).thenReturn(Response(data = null, errors = emptyList()))
+        whenever(nonAssociationsGateway.getNonAssociationsForPerson(prisonerNumber)).thenReturn(Response(data = nonAssociations))
       }
 
       it("returns a valid response when provided a valid prisoner number") {
-        whenever(nonAssociationsGateway.getNonAssociationsForPerson(prisonerNumber = "ABC1234")).thenReturn(Response(data = nonAssociations))
-
-        val response = getPrisonersNonAssociationsService.execute("ABC1234", prisonId, filters = ConsumerFilters(null))
+        val response = getPrisonersNonAssociationsService.execute(prisonerNumber, prisonId, filters = filters)
         response.errors.shouldBeEmpty()
         response.data.shouldBe(nonAssociations)
       }
@@ -97,12 +98,11 @@ internal class GetPrisonersNonAssociationsServiceTest(
             ),
           )
 
-        whenever(nonAssociationsGateway.getNonAssociationsForPerson(prisonerNumber = "ABC1234")).thenReturn(Response(data = null))
         whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<NonAssociations?>(wrongPrisonId, ConsumerFilters(listOf("MDI")), upstreamServiceType = UpstreamApi.NON_ASSOCIATIONS)).thenReturn(
           Response(data = null, errors = errors),
         )
 
-        val response = getPrisonersNonAssociationsService.execute("ABC1234", wrongPrisonId, filters = ConsumerFilters(listOf("MDI")))
+        val response = getPrisonersNonAssociationsService.execute(prisonerNumber, wrongPrisonId, filters = ConsumerFilters(listOf("MDI")))
         response.errors.shouldBe(errors)
         response.data.shouldBe(null)
       }
@@ -116,10 +116,9 @@ internal class GetPrisonersNonAssociationsServiceTest(
               description = "Not found",
             ),
           )
+        whenever(nonAssociationsGateway.getNonAssociationsForPerson(prisonerNumber)).thenReturn(Response(data = null, errors = errors))
 
-        whenever(nonAssociationsGateway.getNonAssociationsForPerson(prisonerNumber = "ABC1234")).thenReturn(Response(data = null, errors = errors))
-
-        val response = getPrisonersNonAssociationsService.execute("ABC1234", prisonId, filters = ConsumerFilters(null))
+        val response = getPrisonersNonAssociationsService.execute(prisonerNumber, prisonId, filters = filters)
         response.errors.shouldBe(errors)
         response.data.shouldBe(null)
       }

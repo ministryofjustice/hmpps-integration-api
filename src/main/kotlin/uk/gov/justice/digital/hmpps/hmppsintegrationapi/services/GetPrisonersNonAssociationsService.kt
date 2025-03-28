@@ -23,13 +23,11 @@ class GetPrisonersNonAssociationsService(
     filters: ConsumerFilters?,
   ): Response<NonAssociations?> {
     val consumerPrisonFilterCheck = consumerPrisonAccessService.checkConsumerHasPrisonAccess<NonAssociations?>(prisonId, filters, upstreamServiceType = UpstreamApi.NON_ASSOCIATIONS)
-
     if (consumerPrisonFilterCheck.errors.isNotEmpty()) {
       return consumerPrisonFilterCheck
     }
 
     val responseFromNonAssociationsGateway = nonAssociationsGateway.getNonAssociationsForPerson(hmppsId, includeOpen, includeClosed)
-
     if (responseFromNonAssociationsGateway.errors.isNotEmpty()) {
       return Response(data = null, responseFromNonAssociationsGateway.errors)
     }
