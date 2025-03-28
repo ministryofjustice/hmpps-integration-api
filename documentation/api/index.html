@@ -674,10 +674,10 @@
 
 <h3 id="v1-visit-post">post</h3>
 
-  <p><em>Create visit.</em></p>
+  <p><em>Report the creation of a visit in an external system.</em></p>
 
 
-  <p><br><br><b>Applicable filters</b>: <ul><li>prisons</li></ul></p>
+  <p>This API only validates the existence of the entities included. It does not perform any checking of the suitability of the visit. That responsibility is left to the client.<br><b>Applicable filters</b>: <ul><li>prisons</li></ul></p>
 
 
 
@@ -778,10 +778,10 @@
 
 <h3 id="v1-visit-visitreference-cancel-post">post</h3>
 
-  <p><em>Cancel visit.</em></p>
+  <p><em>Report the cancellation of a visit in an external system.</em></p>
 
 
-  <p><br><br><b>Applicable filters</b>: <ul><li>prisons</li></ul></p>
+  <p><b>Applicable filters</b>: <ul><li>prisons</li></ul></p>
 
 
 
@@ -906,7 +906,7 @@
   <p><em>Make a financial transaction.</em></p>
 
 
-  <p><a href="#schema-transactionrequest">Request body</a><br><br><b>Applicable filters</b>: <ul><li>prisons</li></ul></p>
+  <p><a href="#schema-transactionrequest">Request body</a><br><b>Applicable filters</b>: <ul><li>prisons</li></ul></p>
 
 
 
@@ -1061,7 +1061,7 @@
   <p><em>Transfer funds between the accounts of a prisoner.</em></p>
 
 
-  <p>Currently only able to move from spends to savings.<br><br><a href="#schema-transactiontransferrequest">Request body</a><br><br><b>Applicable filters</b>: <ul><li>prisons</li></ul></p>
+  <p>Currently only able to move from spends to savings.<br><a href="#schema-transactiontransferrequest">Request body</a><br><br><b>Applicable filters</b>: <ul><li>prisons</li></ul></p>
 
 
 
@@ -1218,7 +1218,7 @@
   <p><em>Get visit information for a visit by visit reference.</em></p>
 
 
-  <p><br><br><b>Applicable filters</b>: <ul><li>prisons</li></ul></p>
+  <p><b>Applicable filters</b>: <ul><li>prisons</li></ul></p>
 
 
 
@@ -1768,7 +1768,7 @@
   <p><em>Returns a single prisoners list of non associates.</em></p>
 
 
-  <p><b>Applicable filters</b>: <ul><li>prisons</li></ul> <br> includeOpen is true by default, includeClosed is false by default. At least one must be true. The role READ<em>NON</em>ASSOCIATIONS is required for this endpoint.</p>
+  <p><b>Applicable filters</b>: <ul><li>prisons</li></ul> <br> includeOpen is true by default, includeClosed is false by default. At least one must be true.</p>
 
 
 
@@ -3199,10 +3199,10 @@
 
 <h3 id="v1-persons-hmppsid-visitor-contactid-restrictions-get">get</h3>
 
-  <p><em>Gets visitor restrictions.</em></p>
+  <p><em>Get the restrictions for a visitor.</em></p>
 
 
-  <p>Returns visitor restrictions for a prisoner</p>
+  <p>Provides both the global restrictions for the visitor, as well as the restrictions for the relationship between the prisoner and visitor.</p>
 
 
 
@@ -3364,7 +3364,7 @@
 
 <h3 id="v1-persons-hmppsid-visit-future-get">get</h3>
 
-  <p><em>Get Future Visit Information.</em></p>
+  <p><em>Get information about a prisoner&rsquo;s future visits.</em></p>
 
 
   <p><b>Applicable filters</b>: <ul><li>prisons</li></ul></p>
@@ -3526,10 +3526,10 @@
 
 <h3 id="v1-persons-hmppsid-visit-restrictions-get">get</h3>
 
-  <p><em>Gets restrictions for latest booking.</em></p>
+  <p><em>Gets visit restrictions for a prisoner.</em></p>
 
 
-  <p>Returns a list of restrictions for the latest booking</p>
+  <p>Returns a prisoner&rsquo;s visit restrictions. Only returns the visit restrictions for the prisoner&rsquo;s most recent booking.</p>
 
 
 
@@ -3659,7 +3659,7 @@
 
 <h3 id="v1-persons-hmppsid-visit-orders-get">get</h3>
 
-  <p><em>Returns visit orders.</em></p>
+  <p><em>Returns the number of remaining visit orders a prisoner has.</em></p>
 
 
 
@@ -8318,9 +8318,8 @@
   <p><em>Return nomis number for a given HMPPS Id</em></p>
 
 
-  <div class="highlight"><pre class="highlight plaintext" tabindex="0"><code>  Accepts a HMPPS Id (hmppsId) and looks up the corresponding nomis number.&lt;br&gt;
-  &lt;b&gt;Applicable filters&lt;/b&gt;: &lt;ul&gt;&lt;li&gt;prisons&lt;/li&gt;&lt;/ul&gt;
-</code></pre></div>
+  <p>Accepts a HMPPS Id (hmppsId) and looks up the corresponding nomis number.<br><b>Applicable filters</b>: <ul><li>prisons</li></ul></p>
+
 
 
 
