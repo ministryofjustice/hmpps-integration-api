@@ -80,7 +80,7 @@ class VisitsController(
   }
 
   @Operation(
-    summary = "Create visit.",
+    summary = "Report the creation of a visit in an external system.",
     description = "<br><br><b>Applicable filters</b>: <ul><li>prisons</li></ul>",
     responses = [
       ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully wrote to visit queue."),
@@ -138,7 +138,7 @@ class VisitsController(
   }
 
   @Operation(
-    summary = "Cancel visit.",
+    summary = "Report the cancellation of a visit in an external system.",
     description = "<br><br><b>Applicable filters</b>: <ul><li>prisons</li></ul>",
     responses = [
       ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully wrote to visit queue."),
