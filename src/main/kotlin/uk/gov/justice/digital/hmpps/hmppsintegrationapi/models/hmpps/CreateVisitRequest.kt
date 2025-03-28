@@ -43,8 +43,6 @@ data class CreateVisitRequest(
   val visitors: Set<@Valid Visitor>? = setOf(),
   @Schema(description = "Additional support associated with the visit")
   val visitorSupport: VisitorSupport? = null,
-  @Schema(description = "Username for user who actioned this request", required = false)
-  val actionedBy: String?,
 ) {
   fun toHmppsMessage(who: String): HmppsMessage =
     HmppsMessage(
@@ -68,6 +66,5 @@ data class CreateVisitRequest(
       "createDateTime" to this.createDateTime.toString(),
       "visitors" to this.visitors?.map { mapOf("nomisPersonId" to it.nomisPersonId, "visitContact" to it.visitContact) },
       "visitorSupport" to this.visitorSupport?.let { mapOf("description" to this.visitorSupport.description) },
-      "actionedBy" to this.actionedBy,
     )
 }
