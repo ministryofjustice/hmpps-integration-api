@@ -37,7 +37,7 @@ class VisitsController(
 ) {
   @Operation(
     summary = "Get visit information for a visit by visit reference.",
-    description = "<br><br><b>Applicable filters</b>: <ul><li>prisons</li></ul>",
+    description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
     responses = [
       ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found visit information for a given visit reference."),
       ApiResponse(
@@ -142,7 +142,7 @@ class VisitsController(
 
   @Operation(
     summary = "Report the cancellation of a visit in an external system.",
-    description = "<br><br><b>Applicable filters</b>: <ul><li>prisons</li></ul>",
+    description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
     responses = [
       ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully wrote to visit queue."),
       ApiResponse(
