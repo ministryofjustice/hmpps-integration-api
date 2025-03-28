@@ -57,13 +57,11 @@ class CaseNotesController(
     @RequestParam(required = false, name = "endDate")
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     endDate: LocalDateTime?,
-    @Parameter(description = "Filter by the location. example MDI", example = "MDI")
-    @RequestParam(required = false, name = "locationId") locationId: String?,
     @RequestParam(required = false, defaultValue = "1", name = "page") page: Int,
     @RequestParam(required = false, defaultValue = "10", name = "perPage") perPage: Int,
     @RequestAttribute filters: ConsumerFilters?,
   ): PaginatedResponse<CaseNote> {
-    val response = getCaseNoteForPersonService.execute(CaseNoteFilter(hmppsId, startDate, endDate, locationId), filters)
+    val response = getCaseNoteForPersonService.execute(CaseNoteFilter(hmppsId, startDate, endDate), filters)
 
     if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
       throw ValidationException("Invalid id: $hmppsId")
