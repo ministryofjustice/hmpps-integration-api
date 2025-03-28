@@ -22,8 +22,10 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataRespons
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HmppsMessageResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Visit
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.VisitReference
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetVisitInformationByReferenceService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetVisitReferencesByClientReferenceService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.VisitQueueService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 
@@ -34,6 +36,7 @@ class VisitsController(
   @Autowired val auditService: AuditService,
   @Autowired val visitQueueService: VisitQueueService,
   @Autowired val getVisitInformationByReferenceService: GetVisitInformationByReferenceService,
+  private val getVisitReferencesByClientReferenceService: GetVisitReferencesByClientReferenceService,
 ) {
   @Operation(
     summary = "Get visit information for a visit by visit reference.",
@@ -196,6 +199,51 @@ class VisitsController(
 
     auditService.createEvent("POST_CANCEL_VISIT", mapOf("visitReference" to visitReference, "clientName" to clientName.orEmpty()))
 
+    return DataResponse(response.data)
+  }
+
+  @Operation(
+    summary = "Get visit references from given client reference .",
+    description = "<br><br><b>Applicable filters</b>: <ul><li>prisons</li></ul>",
+    responses = [
+      ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found visit references for a given client reference."),
+      ApiResponse(
+        responseCode = "404",
+        content = [
+          Content(
+            schema =
+              io.swagger.v3.oas.annotations.media
+                .Schema(ref = "#/components/schemas/PersonNotFound"),
+          ),
+        ],
+      ),
+      ApiResponse(
+        responseCode = "500",
+        content = [
+          Content(
+            schema =
+              io.swagger.v3.oas.annotations.media
+                .Schema(ref = "#/components/schemas/InternalServerError"),
+          ),
+        ],
+      ),
+    ],
+  )
+  @GetMapping("/{clientReference}")
+  fun getVisitReferencesByClientReference(
+    @Parameter(description = "The visit reference number relating to the visit.")
+    @PathVariable clientReference: String,
+    @RequestAttribute filters: ConsumerFilters?,
+  ): DataResponse<List<VisitReference?>> {
+    val response = getVisitReferencesByClientReferenceService.execute(clientReference, filters)
+
+    if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
+      throw EntityNotFoundException("Could not find visit references for client reference: $clientReference")
+    }
+    if (response.hasError(UpstreamApiError.Type.INTERNAL_SERVER_ERROR)) {
+      throw Exception("Internal server error")
+    }
+    auditService.createEvent("GET_VISIT_REFERENCES_BY_CLIENT_REFERENCE", mapOf("clientReference" to clientReference))
     return DataResponse(response.data)
   }
 }
