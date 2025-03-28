@@ -60,8 +60,8 @@ class VisitRestrictionsController(
   }
 
   @Operation(
-    summary = "Gets visitor restrictions.",
-    description = "Returns visitor restrictions for a prisoner",
+    summary = "Get the restrictions for a visitor.",
+    description = "Provides both the global restrictions for the visitor, as well as the restrictions for the relationship between prisoner and visitor.",
     responses = [
       ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found a prisoners vistor restrictions with the provided HMPPS ID and contact ID."),
       ApiResponse(responseCode = "400", content = [Content(schema = Schema(ref = "#/components/schemas/BadRequest"))]),
