@@ -1,10 +1,12 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps
 
 import io.swagger.v3.oas.annotations.media.Schema
+import jakarta.validation.constraints.NotBlank
 
 @Schema(description = "Private prison visit cancellation request")
 data class CancelVisitRequest(
   @Schema(description = "Outcome status and description", required = true)
+  @field:NotBlank
   val cancelOutcome: CancelOutcome,
   @Schema(description = "Username for user who actioned this request", required = false)
   val actionedBy: String?,
@@ -28,8 +30,11 @@ data class CancelVisitRequest(
 }
 
 data class CancelOutcome(
+  @Schema(description = "Outcome status", required = true)
+  @field:NotBlank
   val outcomeStatus: OutcomeStatus,
-  val text: String,
+  @Schema(description = "Outcome description", required = true)
+  val text: String?,
 )
 
 enum class OutcomeStatus {
