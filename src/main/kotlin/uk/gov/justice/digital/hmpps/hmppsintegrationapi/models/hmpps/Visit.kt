@@ -37,6 +37,8 @@ data class Visit(
   val visitors: List<Visitors>,
   @Schema(description = "Additional support associated with the visit")
   val visitorSupport: VisitorSupport,
+  @Schema(description = "External system details associated with the visit")
+  val visitExternalSystemDetails: VisitExternalSystemDetails?,
   @Schema(description = "The visit created date and time")
   val createdTimestamp: String,
   @Schema(description = "The visit modified date and time")
@@ -71,4 +73,11 @@ data class VisitContact(
 data class VisitorSupport(
   @Schema(description = "Support text description", example = "Visually impaired assistance")
   val description: String,
+)
+
+data class VisitExternalSystemDetails(
+  @Schema(description = "Client name", example = "client_name")
+  val clientName: String?,
+  @Schema(description = "Client visit reference", example = "Reference ID in the client system")
+  val clientVisitReference: String?,
 )
