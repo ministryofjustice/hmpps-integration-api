@@ -37,6 +37,7 @@ class CreateVisitRequestTest :
         val hmppsMessageString = objectMapper.writeValueAsString(hmppsMessage)
         hmppsMessageString.shouldBeValidJson()
         hmppsMessageString.shouldContainJsonKeyValue("$.messageAttributes.prisonerId", createVisitRequest.prisonerId)
+        hmppsMessageString.shouldContainJsonKeyValue("$.messageAttributes.clientName", consumerName)
         hmppsMessageString.shouldContainJsonKeyValue("$.messageAttributes.startTimestamp", timestamp)
         hmppsMessageString.shouldContainJsonKeyValue("$.messageAttributes.endTimestamp", timestamp)
         hmppsMessageString.shouldContainJsonKeyValue("$.messageAttributes.visitNotes[0].type", createVisitRequest.visitNotes.first().type)
