@@ -27207,7 +27207,7 @@
             "type": "string",
             "description": "Valid transaction type for the prison_id",
             "enum": [
-              "CANT,REFND,PHONE,MRPR,MTDS,DTDS,CASHD,RELA,RELS"
+              "CANT","REFND","PHONE","MRPR","MTDS","DTDS","CASHD","RELA","RELS"
             ],
             "example": "CANT"
           },
