@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits
 import com.fasterxml.jackson.annotation.JsonProperty
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Visit
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitContact
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitExternalSystemDetails
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitNotes
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitorSupport
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Visitors
@@ -42,6 +43,8 @@ data class PVVisit(
   val visitors: List<PVVisitors>,
   @JsonProperty("visitorSupport")
   val visitorSupport: PVVisitorSupport,
+  @JsonProperty("visitExternalSystemDetails")
+  val visitExternalSystemDetails: PVVistExternalSystemDetails?,
   @JsonProperty("createdTimestamp")
   val createdTimestamp: String,
   @JsonProperty("modifiedTimestamp")
@@ -68,6 +71,7 @@ data class PVVisit(
       visitContact = this.visitContact.toVisitContact(),
       visitors = this.visitors.map { it.toVisitors() },
       visitorSupport = this.visitorSupport.toVisitorSupport(),
+      visitExternalSystemDetails = this.visitExternalSystemDetails?.toVisitExternalSystemDetails(),
       createdTimestamp = this.createdTimestamp,
       modifiedTimestamp = this.modifiedTimestamp,
       firstBookedDateTime = this.firstBookedDateTime,
@@ -108,4 +112,13 @@ data class PVVisitorSupport(
   val description: String,
 ) {
   fun toVisitorSupport(): VisitorSupport = VisitorSupport(description = this.description)
+}
+
+data class PVVistExternalSystemDetails(
+  @JsonProperty("clientName")
+  val clientName: String?,
+  @JsonProperty("clientVisitReference")
+  val clientVisitReference: String?,
+) {
+  fun toVisitExternalSystemDetails(): VisitExternalSystemDetails = VisitExternalSystemDetails(clientName = this.clientName, clientVisitReference = this.clientVisitReference)
 }
