@@ -23798,17 +23798,17 @@
           "primary": {
             "type": "boolean",
             "description": "Primary Address",
-            "example": "Y"
+            "example": true
           },
           "mail": {
             "type": "boolean",
             "description": "Mail Address",
-            "example": "Y"
+            "example": true
           },
           "noFixedAddress": {
             "type": "boolean",
             "description": "No Fixed Address",
-            "example": "N"
+            "example": false
           },
           "startDate": {
             "type": "string",
@@ -27149,12 +27149,12 @@
           "primary": {
             "type": "boolean",
             "description": "Primary Address",
-            "example": "Y"
+            "example": true
           },
           "noFixedAddress": {
             "type": "boolean",
             "description": "No Fixed Address",
-            "example": "N"
+            "example": false
           },
           "startDate": {
             "type": "string",
