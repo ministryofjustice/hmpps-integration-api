@@ -8,7 +8,7 @@ data class CancelVisitRequest(
   @Schema(description = "Outcome status and description", required = true)
   val cancelOutcome: CancelOutcome,
   @Schema(description = "Username for user who actioned this request", required = false)
-  val actionedBy: String?,
+  val actionedBy: String? = null,
 ) {
   fun toHmppsMessage(
     who: String,
