@@ -47,14 +47,15 @@ data class CreateVisitRequest(
   fun toHmppsMessage(who: String): HmppsMessage =
     HmppsMessage(
       eventType = HmppsMessageEventType.VISIT_CREATED,
-      messageAttributes = modelToMap(),
+      messageAttributes = modelToMap(who),
       who = who,
     )
 
-  private fun modelToMap(): Map<String, Any?> =
+  private fun modelToMap(clientName: String): Map<String, Any?> =
     mapOf(
       "prisonerId" to this.prisonerId,
       "prisonId" to this.prisonId,
+      "clientName" to clientName,
       "clientVisitReference" to this.clientVisitReference,
       "visitRoom" to this.visitRoom,
       "visitType" to this.visitType,
