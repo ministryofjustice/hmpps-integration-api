@@ -126,6 +126,7 @@ class VisitsIntegrationTest : IntegrationTestBase() {
       noPrisonId: Boolean = false,
       noClientVisitReference: Boolean = false,
       noVisitRoom: Boolean = false,
+      noNomisPersonId: Boolean = false,
     ) = CreateVisitRequest(
       prisonerId = if (noPrisonerId) "" else prisonerId,
       prisonId = if (noPrisonId) "" else "MDI",
@@ -138,7 +139,7 @@ class VisitsIntegrationTest : IntegrationTestBase() {
       visitNotes = listOf(VisitNotes(type = "VISITOR_CONCERN", text = "Visitor is concerned their mother in law is coming!")),
       visitContact = VisitContact(name = "John Smith", telephone = "0987654321", email = "john.smith@example.com"),
       createDateTime = LocalDateTime.parse(timestamp),
-      visitors = setOf(Visitor(nomisPersonId = 3L, visitContact = true)),
+      visitors = setOf(Visitor(nomisPersonId = if (noNomisPersonId) 0L else 3L, visitContact = true)),
       visitorSupport = VisitorSupport(description = "Visually impaired assistance"),
     )
 
@@ -178,6 +179,17 @@ class VisitsIntegrationTest : IntegrationTestBase() {
     @Test
     fun `post a visit with no visit room, should get 400 with no message on the queue`() {
       val createVisitRequest = getInvalidCreateVisitRequest(noVisitRoom = true)
+      val requestBody = asJsonString(createVisitRequest)
+
+      postToApi(path, requestBody)
+        .andExpect(status().isBadRequest)
+
+      checkQueueIsEmpty()
+    }
+
+    @Test
+    fun `post a visit with no nomisPersonId for the visitor, should get 400 with no message on the queue`() {
+      val createVisitRequest = getInvalidCreateVisitRequest(noNomisPersonId = true)
       val requestBody = asJsonString(createVisitRequest)
 
       postToApi(path, requestBody)
