@@ -6,7 +6,6 @@ import jakarta.validation.constraints.NotBlank
 @Schema(description = "Private prison visit cancellation request")
 data class CancelVisitRequest(
   @Schema(description = "Outcome status and description", required = true)
-  @field:NotBlank
   val cancelOutcome: CancelOutcome,
   @Schema(description = "Username for user who actioned this request", required = false)
   val actionedBy: String?,
