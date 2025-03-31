@@ -12,7 +12,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.PVPaginatedVisits
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.PVVisit
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.VisitReference
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.VisitReferences
 
 @Component
 class PrisonVisitsGateway(
@@ -123,7 +123,7 @@ class PrisonVisitsGateway(
     }
   }
 
-  fun getVisitReferencesByClientReference(clientReference: String): Response<List<VisitReference>?> {
+  fun getVisitReferencesByClientReference(clientReference: String): Response<VisitReferences?> {
     val result =
       webClient.request<List<String>>(
         HttpMethod.GET,
@@ -136,7 +136,7 @@ class PrisonVisitsGateway(
     return when (result) {
       is WebClientWrapperResponse.Success -> {
         Response(
-          data = result.data?.map { VisitReference(it) },
+          data = VisitReferences(result.data),
         )
       }
 

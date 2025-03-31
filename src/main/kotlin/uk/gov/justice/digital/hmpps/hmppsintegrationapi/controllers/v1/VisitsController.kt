@@ -22,7 +22,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataRespons
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HmppsMessageResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Visit
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.VisitReference
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.VisitReferences
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetVisitInformationByReferenceService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetVisitReferencesByClientReferenceService
@@ -229,12 +229,12 @@ class VisitsController(
       ),
     ],
   )
-  @GetMapping("/{clientReference}")
+  @GetMapping("/id/by-client-ref/{clientReference}")
   fun getVisitReferencesByClientReference(
     @Parameter(description = "The visit reference number relating to the visit.")
     @PathVariable clientReference: String,
     @RequestAttribute filters: ConsumerFilters?,
-  ): DataResponse<List<VisitReference?>> {
+  ): DataResponse<VisitReferences?> {
     val response = getVisitReferencesByClientReferenceService.execute(clientReference, filters)
 
     if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
@@ -243,6 +243,11 @@ class VisitsController(
     if (response.hasError(UpstreamApiError.Type.INTERNAL_SERVER_ERROR)) {
       throw Exception("Internal server error")
     }
+
+    if (response.data?.visitReferences.isNullOrEmpty()) {
+      throw EntityNotFoundException("Could not find visit references for client reference: $clientReference")
+    }
+
     auditService.createEvent("GET_VISIT_REFERENCES_BY_CLIENT_REFERENCE", mapOf("clientReference" to clientReference))
     return DataResponse(response.data)
   }

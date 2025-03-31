@@ -8,7 +8,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Visit
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.VisitReference
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.VisitReferences
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 @Service
@@ -19,46 +19,48 @@ class GetVisitReferencesByClientReferenceService(
   fun execute(
     clientReference: String,
     filters: ConsumerFilters? = null,
-  ): Response<List<VisitReference>?> {
+  ): Response<VisitReferences?> {
     val visitReferencesResponse = prisonVisitsGateway.getVisitReferencesByClientReference(clientReference)
 
     if (!visitReferencesResponse.errors.isNullOrEmpty()) {
       return Response(data = null, errors = visitReferencesResponse.errors)
     }
 
-    val visitRef =
+    val visitRefs =
       visitReferencesResponse.data
-        ?.firstOrNull()
-        ?.visitReference
-        .orEmpty()
+        ?.visitReferences
 
-    val getVisitResponse = prisonVisitsGateway.getVisitByReference(visitRef)
+    if (visitRefs != null) {
+      for (visitRef in visitRefs) {
+        val getVisitResponse = visitRef?.let { prisonVisitsGateway.getVisitByReference(it) }
 
-    val prisonId = getVisitResponse?.data?.prisonId
+        val prisonId = getVisitResponse?.data?.prisonId
 
-    if (prisonId.isNullOrBlank()) {
-      return Response(
-        data = null,
-        errors =
-          listOf(
-            UpstreamApiError(
-              UpstreamApi.MANAGE_PRISON_VISITS,
-              UpstreamApiError.Type.ENTITY_NOT_FOUND,
-              "PrisonId not found",
-            ),
-          ),
-      )
-    }
+        if (prisonId.isNullOrBlank()) {
+          return Response(
+            data = null,
+            errors =
+              listOf(
+                UpstreamApiError(
+                  UpstreamApi.MANAGE_PRISON_VISITS,
+                  UpstreamApiError.Type.ENTITY_NOT_FOUND,
+                  "PrisonId not found",
+                ),
+              ),
+          )
+        }
 
-    val consumerPrisonFilterCheck =
-      consumerPrisonAccessService.checkConsumerHasPrisonAccess<Visit>(
-        prisonId,
-        filters,
-        UpstreamApi.MANAGE_PRISON_VISITS,
-      )
+        val consumerPrisonFilterCheck =
+          consumerPrisonAccessService.checkConsumerHasPrisonAccess<Visit>(
+            prisonId,
+            filters,
+            UpstreamApi.MANAGE_PRISON_VISITS,
+          )
 
-    if (consumerPrisonFilterCheck.errors.isNotEmpty()) {
-      return Response(data = null, errors = consumerPrisonFilterCheck.errors)
+        if (consumerPrisonFilterCheck.errors.isNotEmpty()) {
+          return Response(data = null, errors = consumerPrisonFilterCheck.errors)
+        }
+      }
     }
 
     return Response(data = visitReferencesResponse.data)
