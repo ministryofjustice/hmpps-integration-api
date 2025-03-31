@@ -1296,6 +1296,10 @@
     "visitorSupport": {
       "description": "Visually impaired assistance"
     },
+    "visitExternalSystemDetails": {
+      "clientName": "client_name",
+      "clientVisitReference": "Reference ID in the client system"
+    },
     "createdTimestamp": "string",
     "modifiedTimestamp": "string",
     "firstBookedDateTime": "string"
@@ -1503,6 +1507,10 @@
       ],
       "visitorSupport": {
         "description": "Visually impaired assistance"
+      },
+      "visitExternalSystemDetails": {
+        "clientName": "client_name",
+        "clientVisitReference": "Reference ID in the client system"
       },
       "createdTimestamp": "string",
       "modifiedTimestamp": "string",
@@ -3445,6 +3453,10 @@
       ],
       "visitorSupport": {
         "description": "Visually impaired assistance"
+      },
+      "visitExternalSystemDetails": {
+        "clientName": "client_name",
+        "clientVisitReference": "Reference ID in the client system"
       },
       "createdTimestamp": "string",
       "modifiedTimestamp": "string",
@@ -10054,6 +10066,17 @@
 </tr>
 
 <tr>
+<td>visitExternalSystemDetails</td>
+<td>object</td>
+<td>false</td>
+<td><p>External system details associated with the visit</p>
+</td>
+<td>
+  <a href='#schema-visitexternalsystemdetails'>VisitExternalSystemDetails</a>
+</td>
+</tr>
+
+<tr>
 <td>createdTimestamp</td>
 <td>string</td>
 <td>true</td>
@@ -10080,6 +10103,41 @@
 <td>string</td>
 <td>true</td>
 <td><p>Date the visit was first booked or migrated</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+</tbody>
+</table>
+
+<h3 id="schema-visitexternalsystemdetails">VisitExternalSystemDetails</h3>
+<p>External system details associated with the visit</p>
+
+
+<table class='schema-visitexternalsystemdetails'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>clientName</td>
+<td>string</td>
+<td>false</td>
+<td><p>Client name</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>clientVisitReference</td>
+<td>string</td>
+<td>false</td>
+<td><p>Client visit reference</p>
 </td>
 <td>
   
