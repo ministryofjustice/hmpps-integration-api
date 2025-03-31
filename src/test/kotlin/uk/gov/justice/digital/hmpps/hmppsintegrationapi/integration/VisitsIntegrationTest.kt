@@ -144,6 +144,38 @@ class VisitsIntegrationTest : IntegrationTestBase() {
     )
 
     @Test
+    fun `post the visit, get back a message response and find a message on the queue`() {
+      val createVisitRequest = getCreateVisitRequest(prisonerId)
+      val requestBody = asJsonString(createVisitRequest)
+
+      postToApi(path, requestBody)
+        .andExpect(status().isOk)
+        .andExpect(
+          content().json(
+            """
+            {
+              "data": {
+                  "message": "Visit creation written to queue"
+              }
+            }
+            """,
+          ),
+        )
+
+      val queueMessages = getQueueMessages()
+      queueMessages.size.shouldBe(1)
+
+      val messageJson = queueMessages[0].body()
+      val expectedMessage = createVisitRequest.toHmppsMessage(defaultCn)
+      messageJson.shouldContainJsonKeyValue("$.eventType", expectedMessage.eventType.eventTypeCode)
+      messageJson.shouldContainJsonKeyValue("$.who", defaultCn)
+      val objectMapper = jacksonObjectMapper()
+      val messageAttributes = objectMapper.readTree(messageJson).at("/messageAttributes")
+      val expectedMessageAttributes = objectMapper.readTree(objectMapper.writeValueAsString(expectedMessage.messageAttributes))
+      messageAttributes.shouldBe(expectedMessageAttributes)
+    }
+
+    @Test
     fun `post a visit with no prison id, should get 400 with no message on the queue`() {
       val createVisitRequest = getInvalidCreateVisitRequest(noPrisonId = true)
       val requestBody = asJsonString(createVisitRequest)
@@ -229,38 +261,6 @@ class VisitsIntegrationTest : IntegrationTestBase() {
         .andExpect(status().isNotFound)
 
       checkQueueIsEmpty()
-    }
-
-    @Test
-    fun `post the visit, get back a message response and find a message on the queue`() {
-      val createVisitRequest = getCreateVisitRequest(prisonerId)
-      val requestBody = asJsonString(createVisitRequest)
-
-      postToApi(path, requestBody)
-        .andExpect(status().isOk)
-        .andExpect(
-          content().json(
-            """
-            {
-              "data": {
-                  "message": "Visit creation written to queue"
-              }
-            }
-            """,
-          ),
-        )
-
-      val queueMessages = getQueueMessages()
-      queueMessages.size.shouldBe(1)
-
-      val messageJson = queueMessages[0].body()
-      val expectedMessage = createVisitRequest.toHmppsMessage(defaultCn)
-      messageJson.shouldContainJsonKeyValue("$.eventType", expectedMessage.eventType.eventTypeCode)
-      messageJson.shouldContainJsonKeyValue("$.who", defaultCn)
-      val objectMapper = jacksonObjectMapper()
-      val messageAttributes = objectMapper.readTree(messageJson).at("/messageAttributes")
-      val expectedMessageAttributes = objectMapper.readTree(objectMapper.writeValueAsString(expectedMessage.messageAttributes))
-      messageAttributes.shouldBe(expectedMessageAttributes)
     }
   }
 
