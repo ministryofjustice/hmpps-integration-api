@@ -237,4 +237,29 @@ class VisitsIntegrationTest : IntegrationTestBase() {
         .andExpect(status().isNotFound)
     }
   }
+
+  @DisplayName("GET /id/by-client-ref/{clientReference}")
+  @Nested
+  inner class GetClientRefByVisitRef {
+    private val clientReference = "123456"
+
+    @Test
+    fun `gets the visit reference`() {
+      callApiWithCN("/v1/visit/id/by-client-ref/$clientReference", defaultCn)
+        .andExpect(status().isOk)
+        .andExpect(
+          content().json(
+            """
+              {"data":{"visitReferences":["abc-123-xyz"]}}
+                     """,
+          ),
+        )
+    }
+
+    @Test
+    fun `return a 404 when prison not in filter`() {
+      callApiWithCN("/v1/visit/id/by-client-ref/$clientReference", limitedPrisonsCn)
+        .andExpect(status().isNotFound)
+    }
+  }
 }

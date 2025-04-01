@@ -240,6 +240,7 @@ class VisitsController(
     if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
       throw EntityNotFoundException("Could not find visit references for client reference: $clientReference")
     }
+
     if (response.hasError(UpstreamApiError.Type.INTERNAL_SERVER_ERROR)) {
       throw Exception("Internal server error")
     }
