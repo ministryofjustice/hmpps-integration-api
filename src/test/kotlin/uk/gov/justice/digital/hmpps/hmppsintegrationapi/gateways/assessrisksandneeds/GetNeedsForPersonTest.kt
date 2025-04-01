@@ -33,7 +33,7 @@ class GetNeedsForPersonTest(
 ) : DescribeSpec(
     {
       val deliusCrn = "X777776"
-      val path = "/needs/crn/$deliusCrn"
+      val path = "/needs/$deliusCrn"
       val assessRisksAndNeedsApiMockServer = ApiMockServer.create(UpstreamApi.ASSESS_RISKS_AND_NEEDS)
 
       beforeEach {

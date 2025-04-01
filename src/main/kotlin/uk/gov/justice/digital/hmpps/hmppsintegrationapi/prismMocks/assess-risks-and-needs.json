@@ -14,7 +14,7 @@
     }
   ],
   "paths": {
-    "/risks/crn/{crn}": {
+    "/risks/rosh/{crn}": {
       "get": {
         "tags": [
           "risks-controller"
@@ -47,7 +47,7 @@
         }
       }
     },
-    "/risks/crn/{crn}/predictors/all": {
+    "/risks/predictors/{crn}": {
       "get": {
         "tags": [
           "risk-predictors-controller"
@@ -81,7 +81,7 @@
         }
       }
     },
-    "/needs/crn/{crn}": {
+    "/needs/{crn}": {
       "get": {
         "tags": [
           "assessment-controller"
@@ -114,7 +114,7 @@
         }
       }
     },
-    "/risks/crn/{crn}/risk-management-plan": {
+    "/risks/risk-management-plan/{crn}": {
       "get": {
         "tags": [
           "risks-controller"

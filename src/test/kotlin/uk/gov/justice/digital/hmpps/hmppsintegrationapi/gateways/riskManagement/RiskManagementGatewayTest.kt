@@ -44,7 +44,7 @@ class RiskManagementGatewayTest(
 
     describe("Get risks for given CRN") {
       val crn = "D1974X"
-      val path = "/risks/crn/$crn/risk-management-plan"
+      val path = "/risks/risk-management-plan/$crn"
 
       beforeEach {
         riskManagementMockServer.stubForGet(
