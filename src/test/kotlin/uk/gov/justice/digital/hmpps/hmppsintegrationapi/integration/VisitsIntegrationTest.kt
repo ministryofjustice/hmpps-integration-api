@@ -117,7 +117,7 @@ class VisitsIntegrationTest : IntegrationTestBase() {
         visitNotes = listOf(VisitNotes(type = "VISITOR_CONCERN", text = "Visitor is concerned their mother in law is coming!")),
         visitContact = VisitContact(name = "John Smith", telephone = "0987654321", email = "john.smith@example.com"),
         createDateTime = LocalDateTime.parse(timestamp),
-        visitors = setOf(Visitor(nomisPersonId = 3L, visitContact = true)),
+        visitors = setOf(Visitor(nomisPersonId = 654321L, visitContact = true)),
         visitorSupport = VisitorSupport(description = "Visually impaired assistance"),
       )
 
@@ -127,6 +127,7 @@ class VisitsIntegrationTest : IntegrationTestBase() {
       noClientVisitReference: Boolean = false,
       noVisitRoom: Boolean = false,
       noNomisPersonId: Boolean = false,
+      invalidNomisPersonId: Boolean = false,
       noVisitNoteType: Boolean = false,
       noVisitContactName: Boolean = false,
       noVisitorSupportDescription: Boolean = false,
@@ -142,7 +143,20 @@ class VisitsIntegrationTest : IntegrationTestBase() {
       visitNotes = listOf(VisitNotes(type = if (noVisitNoteType) "" else "VISITOR_CONCERN", text = "Visitor is concerned their mother in law is coming!")),
       visitContact = VisitContact(name = if (noVisitContactName) "" else "John Smith", telephone = "0987654321", email = "john.smith@example.com"),
       createDateTime = LocalDateTime.parse(timestamp),
-      visitors = setOf(Visitor(nomisPersonId = if (noNomisPersonId) 0L else 3L, visitContact = true)),
+      visitors =
+        setOf(
+          Visitor(
+            nomisPersonId =
+              if (noNomisPersonId) {
+                0L
+              } else if (invalidNomisPersonId) {
+                123456L
+              } else {
+                654321L
+              },
+            visitContact = true,
+          ),
+        ),
       visitorSupport = VisitorSupport(description = if (noVisitorSupportDescription) "" else "Visually impaired assistance"),
     )
 
@@ -229,6 +243,17 @@ class VisitsIntegrationTest : IntegrationTestBase() {
 
       postToApi(path, requestBody)
         .andExpect(status().isBadRequest)
+
+      checkQueueIsEmpty()
+    }
+
+    @Test
+    fun `post a visit with no a nomisPersonId not part of the contacts for the visitor, should get 404 with no message on the queue`() {
+      val createVisitRequest = getInvalidCreateVisitRequest(invalidNomisPersonId = true)
+      val requestBody = asJsonString(createVisitRequest)
+
+      postToApi(path, requestBody)
+        .andExpect(status().isNotFound)
 
       checkQueueIsEmpty()
     }
