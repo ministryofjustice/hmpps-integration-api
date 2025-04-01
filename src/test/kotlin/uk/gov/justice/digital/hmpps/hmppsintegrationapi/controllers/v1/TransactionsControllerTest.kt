@@ -24,7 +24,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Transaction
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.TransactionRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.TransactionTransferCreateResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.TransactionTransferRequest
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Transactions
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Type
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
@@ -34,7 +33,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetTransactions
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.PostTransactionForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.PostTransactionTransferForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
-import java.time.LocalDate
 
 @WebMvcTest(controllers = [TransactionsController::class])
 @ActiveProfiles("test")
@@ -64,20 +62,6 @@ class TransactionsControllerTest(
       val fromAccount = "spends"
       val toAccount = "savings"
 
-      val transactions =
-        Transactions(
-          transactions =
-            listOf(
-              Transaction(
-                id = "123",
-                type = Type(code = "spends", desc = "Spends"),
-                amount = 100,
-                date = LocalDate.parse("2025-01-01").toString(),
-                description = "Spends desc",
-              ),
-            ),
-        )
-
       val transaction =
         Transaction(
           id = "123",
@@ -85,6 +69,7 @@ class TransactionsControllerTest(
           amount = 100,
           date = "2016-10-21",
           description = "Spends desc",
+          clientUniqueRef = "client ref",
         )
 
       val transactionCreateResponse = TransactionCreateResponse(transactionId = "6179604-1")
