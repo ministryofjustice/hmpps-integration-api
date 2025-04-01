@@ -18,6 +18,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Visit
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.PVVisit
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.PVVisitContact
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.PVVisitorSupport
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.PVVistExternalSystemDetails
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.VisitReferences
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
@@ -33,6 +34,7 @@ class GetVisitReferencesByClientReferenceServiceTest(
     describe("GetVisitReferencesByClientReferenceService") {
       val clientReference = "client-ref-123"
       val filters = null
+      val visitExternalSystemDetails = PVVistExternalSystemDetails(clientName = "BOB", clientVisitReference = "ABCABC")
       val visitResponse =
         PVVisit(
           prisonerId = "PrisonerId",
@@ -55,6 +57,7 @@ class GetVisitReferencesByClientReferenceServiceTest(
           applicationReference = "dfs-wjs-abc",
           reference = "dfs-wjs-abc",
           sessionTemplateReference = "dfs-wjs-xyz",
+          visitExternalSystemDetails = visitExternalSystemDetails,
         )
       val visitReferences = VisitReferences(listOf("visit-ref1", "visit-ref2"))
 
