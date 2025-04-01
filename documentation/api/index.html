@@ -1622,7 +1622,7 @@
   <p><em>Returns details for a transaction by clientUniqueRef.</em></p>
 
 
-  <p><b>Applicable filters</b>: <ul><li>prisons</li></ul></p>
+  <p>The clientUniqueRef will not be present on the response.<br><b>Applicable filters</b>: <ul><li>prisons</li></ul></p>
 
 
 
@@ -1696,7 +1696,8 @@
     },
     "description": "string",
     "amount": "integer",
-    "date": "string"
+    "date": "string",
+    "clientUniqueRef": "string"
   }
 }</code></pre>
 
@@ -2101,7 +2102,7 @@
   <p><em>Returns all transactions for a prisoner associated with an account code that they have at a prison.</em></p>
 
 
-  <p><b>Applicable filters</b>: <ul><li>prisons</li></ul></p>
+  <p>The clientUniqueRef will only be present if it was specified by an API client.<br><b>Applicable filters</b>: <ul><li>prisons</li></ul></p>
 
 
 
@@ -2220,7 +2221,8 @@
       },
       "description": "string",
       "amount": "integer",
-      "date": "string"
+      "date": "string",
+      "clientUniqueRef": "string"
     }
   ],
   "pagination": {
@@ -10371,6 +10373,16 @@
 <td>date</td>
 <td>string</td>
 <td>true</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>clientUniqueRef</td>
+<td>string</td>
+<td>false</td>
 <td></td>
 <td>
   
