@@ -34,9 +34,7 @@
   "paths": {
     "/visits/{reference}/cancel": {
       "put": {
-        "tags": [
-          "orchestration-visits-controller"
-        ],
+        "tags": ["orchestration-visits-controller"],
         "summary": "Cancel an existing booked visit",
         "operationId": "cancelVisit",
         "parameters": [
@@ -115,9 +113,7 @@
     },
     "/visits/{applicationReference}/update": {
       "put": {
-        "tags": [
-          "orchestration-visits-controller"
-        ],
+        "tags": ["orchestration-visits-controller"],
         "summary": "Update an existing visit",
         "operationId": "updateAVisit",
         "parameters": [
@@ -210,9 +206,7 @@
     },
     "/visits/{applicationReference}/book": {
       "put": {
-        "tags": [
-          "orchestration-visits-controller"
-        ],
+        "tags": ["orchestration-visits-controller"],
         "summary": "Book a visit (end of flow)",
         "operationId": "bookAVisit",
         "parameters": [
@@ -305,9 +299,7 @@
     },
     "/visits/notification/visit/{reference}/ignore": {
       "put": {
-        "tags": [
-          "Visit notification controller /visits/notification"
-        ],
+        "tags": ["Visit notification controller /visits/notification"],
         "summary": "Do not change an existing booked visit and ignore all notifications",
         "operationId": "ignoreVisitNotifications",
         "parameters": [
@@ -390,9 +382,7 @@
     },
     "/visits/application/{reference}/slot/change": {
       "put": {
-        "tags": [
-          "orchestration-applications-controller"
-        ],
+        "tags": ["orchestration-applications-controller"],
         "summary": "Change an incomplete application",
         "operationId": "changeIncompleteApplication",
         "parameters": [
@@ -475,9 +465,7 @@
     },
     "/visits/application/{bookingReference}/change": {
       "put": {
-        "tags": [
-          "orchestration-applications-controller"
-        ],
+        "tags": ["orchestration-applications-controller"],
         "summary": "Create an application for an existing visit",
         "operationId": "createApplicationForAnExistingVisit",
         "parameters": [
@@ -550,9 +538,7 @@
     },
     "/queue-admin/retry-dlq/{dlqName}": {
       "put": {
-        "tags": [
-          "hmpps-queue-resource"
-        ],
+        "tags": ["hmpps-queue-resource"],
         "operationId": "retryDlq",
         "parameters": [
           {
@@ -580,9 +566,7 @@
     },
     "/queue-admin/retry-all-dlqs": {
       "put": {
-        "tags": [
-          "hmpps-queue-resource"
-        ],
+        "tags": ["hmpps-queue-resource"],
         "operationId": "retryAllDlqs",
         "responses": {
           "200": {
@@ -603,9 +587,7 @@
     },
     "/queue-admin/purge-queue/{queueName}": {
       "put": {
-        "tags": [
-          "hmpps-queue-resource"
-        ],
+        "tags": ["hmpps-queue-resource"],
         "operationId": "purgeQueue",
         "parameters": [
           {
@@ -633,9 +615,7 @@
     },
     "/public/booker/register/auth": {
       "put": {
-        "tags": [
-          "public-booker-controller"
-        ],
+        "tags": ["public-booker-controller"],
         "summary": "Authenticate one login details against pre populated bookers",
         "description": "Authenticate one login details against pre populated bookers and return BookerReference object to be used for all other api calls for booker information",
         "operationId": "bookerAuthorisation",
@@ -695,9 +675,7 @@
     },
     "/config/sessions/session/{sessionTemplateReference}/exclude-date/remove": {
       "put": {
-        "tags": [
-          "orchestration-sessions-exclude-date-controller"
-        ],
+        "tags": ["orchestration-sessions-exclude-date-controller"],
         "summary": "Remove exclude date for a given session template",
         "description": "Remove exclude date for a given session template",
         "operationId": "removeExcludeDateForSessionTemplate",
@@ -852,9 +830,7 @@
     },
     "/config/sessions/session/{sessionTemplateReference}/exclude-date/add": {
       "put": {
-        "tags": [
-          "orchestration-sessions-exclude-date-controller"
-        ],
+        "tags": ["orchestration-sessions-exclude-date-controller"],
         "summary": "Add exclude date for a given session template",
         "description": "Add exclude date for a given session template",
         "operationId": "addExcludeDateForSessionTemplate",
@@ -1009,9 +985,7 @@
     },
     "/config/prisons/prison/{prisonCode}/exclude-date/remove": {
       "put": {
-        "tags": [
-          "orchestration-prisons-exclude-date-controller"
-        ],
+        "tags": ["orchestration-prisons-exclude-date-controller"],
         "summary": "Remove exclude date for a given prison",
         "description": "Remove exclude date for a given prison",
         "operationId": "removeExcludeDateForPrison",
@@ -1166,9 +1140,7 @@
     },
     "/config/prisons/prison/{prisonCode}/exclude-date/add": {
       "put": {
-        "tags": [
-          "orchestration-prisons-exclude-date-controller"
-        ],
+        "tags": ["orchestration-prisons-exclude-date-controller"],
         "summary": "Add exclude date for a given prison",
         "description": "Add exclude date for a given prison",
         "operationId": "addExcludeDateForPrison",
@@ -1323,9 +1295,7 @@
     },
     "/visits/application/slot/reserve": {
       "post": {
-        "tags": [
-          "orchestration-applications-controller"
-        ],
+        "tags": ["orchestration-applications-controller"],
         "summary": "Create an initial application and reserve a slot",
         "operationId": "createInitialApplication",
         "requestBody": {
@@ -1384,9 +1354,7 @@
     },
     "/public/booker/{bookerReference}/permitted/prisoners/register": {
       "post": {
-        "tags": [
-          "public-booker-controller"
-        ],
+        "tags": ["public-booker-controller"],
         "summary": "Register prisoner to a booker",
         "description": "Register prisoner to a booker",
         "operationId": "registerPrisoner",
@@ -1441,9 +1409,7 @@
               "application/json": {
                 "schema": {
                   "type": "string",
-                  "enum": [
-                    "FAILED_REGISTRATION"
-                  ]
+                  "enum": ["FAILED_REGISTRATION"]
                 }
               }
             }
@@ -1453,9 +1419,7 @@
     },
     "/visits/{reference}": {
       "get": {
-        "tags": [
-          "orchestration-visits-controller"
-        ],
+        "tags": ["orchestration-visits-controller"],
         "summary": "Get a visit",
         "description": "Retrieve a BOOKED or CANCELLED visit by visit reference",
         "operationId": "getVisitsByReference",
@@ -1525,9 +1489,7 @@
     },
     "/visits/{reference}/history": {
       "get": {
-        "tags": [
-          "orchestration-visits-controller"
-        ],
+        "tags": ["orchestration-visits-controller"],
         "summary": "Get visit history",
         "description": "Retrieve visit history by visit reference",
         "operationId": "getVisitHistoryByReference",
@@ -1597,9 +1559,7 @@
     },
     "/visits/{reference}/detailed": {
       "get": {
-        "tags": [
-          "orchestration-visits-controller"
-        ],
+        "tags": ["orchestration-visits-controller"],
         "summary": "Get a detailed summary of the visit including prisoner, visitor, event audit and notification event details",
         "description": "Retrieve a detailed summary of the visit given a visit reference",
         "operationId": "getVisitFullDetailsByReference",
@@ -1669,9 +1629,7 @@
     },
     "/visits/session-template": {
       "get": {
-        "tags": [
-          "orchestration-visits-controller"
-        ],
+        "tags": ["orchestration-visits-controller"],
         "summary": "Get visits for a session template reference and date",
         "description": "Retrieve visits for session template reference and date",
         "operationId": "getVisitsBySessionTemplate",
@@ -1783,9 +1741,7 @@
     },
     "/visits/search": {
       "get": {
-        "tags": [
-          "orchestration-visits-controller"
-        ],
+        "tags": ["orchestration-visits-controller"],
         "summary": "Get visits",
         "description": "Retrieve visits with optional filters, sorted by start timestamp descending",
         "operationId": "getVisitsByFilterPageable",
@@ -1914,9 +1870,7 @@
     },
     "/visits/search/future/{prisonerId}": {
       "get": {
-        "tags": [
-          "orchestration-visits-controller"
-        ],
+        "tags": ["orchestration-visits-controller"],
         "summary": "Get future visits for a prisoner",
         "description": "Get future visits for given prisoner number",
         "operationId": "getFutureVisitsForPrisoner",
@@ -1980,9 +1934,7 @@
     },
     "/visits/notification/{prisonCode}/groups": {
       "get": {
-        "tags": [
-          "Visit notification controller /visits/notification"
-        ],
+        "tags": ["Visit notification controller /visits/notification"],
         "summary": "get future notification visit groups by prison code",
         "description": "Retrieve future notification visit groups by prison code",
         "operationId": "getFutureNotificationVisitGroups",
@@ -2039,9 +1991,7 @@
     },
     "/visits/notification/{prisonCode}/count": {
       "get": {
-        "tags": [
-          "Visit notification controller /visits/notification"
-        ],
+        "tags": ["Visit notification controller /visits/notification"],
         "summary": "Get notification count for a prison",
         "description": "Retrieve notification count by prison code",
         "operationId": "getNotificationCountForPrison",
@@ -2121,9 +2071,7 @@
     },
     "/visits/notification/visit/{reference}/types": {
       "get": {
-        "tags": [
-          "Visit notification controller /visits/notification"
-        ],
+        "tags": ["Visit notification controller /visits/notification"],
         "summary": "get visit notification types by booking reference",
         "description": "Retrieve visit  notification types by booking reference",
         "operationId": "getNotificationTypesForBookingReference",
@@ -2192,9 +2140,7 @@
     },
     "/visits/notification/visit/{reference}/events": {
       "get": {
-        "tags": [
-          "Visit notification controller /visits/notification"
-        ],
+        "tags": ["Visit notification controller /visits/notification"],
         "summary": "get visit notification events by booking reference",
         "description": "Retrieve visit  notification events by booking reference",
         "operationId": "getNotificationEventsForBookingReference",
@@ -2251,9 +2197,7 @@
     },
     "/visits/external-system/{clientReference}": {
       "get": {
-        "tags": [
-          "orchestration-visits-controller"
-        ],
+        "tags": ["orchestration-visits-controller"],
         "summary": "Get visit reference from given client reference",
         "operationId": "getVisitReferenceByClientReference",
         "parameters": [
@@ -2331,9 +2275,7 @@
     },
     "/visit-sessions": {
       "get": {
-        "tags": [
-          "orchestration-sessions-controller"
-        ],
+        "tags": ["orchestration-sessions-controller"],
         "summary": "Returns all visit sessions which are within the reservable time period - whether or not they are full",
         "description": "Retrieve all visits for a specified prisoner",
         "operationId": "getVisitSessions",
@@ -2430,9 +2372,7 @@
     },
     "/visit-sessions/session": {
       "get": {
-        "tags": [
-          "orchestration-sessions-controller"
-        ],
+        "tags": ["orchestration-sessions-controller"],
         "summary": "Returns a single VSIP session",
         "description": "Returns a single VSIP session",
         "operationId": "getVisitSession",
@@ -2515,9 +2455,7 @@
     },
     "/visit-sessions/schedule": {
       "get": {
-        "tags": [
-          "orchestration-sessions-controller"
-        ],
+        "tags": ["orchestration-sessions-controller"],
         "summary": "Returns session scheduled for given prison and date",
         "description": "Returns session scheduled for given prison and date",
         "operationId": "getSessionSchedule",
@@ -2583,9 +2521,7 @@
     },
     "/visit-sessions/capacity": {
       "get": {
-        "tags": [
-          "orchestration-sessions-controller"
-        ],
+        "tags": ["orchestration-sessions-controller"],
         "summary": "Returns the VSIP session capacity for the given sessions",
         "description": "Returns the VSIP session capacity for the given sessions",
         "operationId": "getSessionCapacity",
@@ -2680,9 +2616,7 @@
     },
     "/visit-sessions/available": {
       "get": {
-        "tags": [
-          "orchestration-sessions-controller"
-        ],
+        "tags": ["orchestration-sessions-controller"],
         "summary": "Returns only available visit sessions for a specified prisoner by restriction and within the reservable time period",
         "description": "Returns only available visit sessions for a specified prisoner by restriction and within the reservable time period",
         "operationId": "getAvailableVisitSessions",
@@ -2714,10 +2648,7 @@
             "required": false,
             "schema": {
               "type": "string",
-              "enum": [
-                "OPEN",
-                "CLOSED"
-              ]
+              "enum": ["OPEN", "CLOSED"]
             },
             "example": "CLOSED"
           },
@@ -2834,9 +2765,7 @@
     },
     "/visit-sessions/available/restriction": {
       "get": {
-        "tags": [
-          "orchestration-sessions-controller"
-        ],
+        "tags": ["orchestration-sessions-controller"],
         "summary": "Returns the restriction type of available sessions",
         "description": "Returns the restriction of available sessions given a prisoner and optionally a list of visitors [OPEN / CLOSED]",
         "operationId": "getSessionRestrictionType",
@@ -2902,9 +2831,7 @@
     },
     "/queue-admin/get-dlq-messages/{dlqName}": {
       "get": {
-        "tags": [
-          "hmpps-queue-resource"
-        ],
+        "tags": ["hmpps-queue-resource"],
         "operationId": "getDlqMessages",
         "parameters": [
           {
@@ -2942,9 +2869,7 @@
     },
     "/public/booker/{bookerReference}/visits/cancelled": {
       "get": {
-        "tags": [
-          "orchestration-visits-controller"
-        ],
+        "tags": ["orchestration-visits-controller"],
         "summary": "Get public cancelled visits by booker reference",
         "description": "Get public cancelled visits by booker reference",
         "operationId": "getCancelledPublicVisitsByBookerReference",
@@ -3011,9 +2936,7 @@
     },
     "/public/booker/{bookerReference}/visits/booked/past": {
       "get": {
-        "tags": [
-          "orchestration-visits-controller"
-        ],
+        "tags": ["orchestration-visits-controller"],
         "summary": "Get public past visits by booker reference",
         "description": "Get public past visits by booker reference",
         "operationId": "getPastPublicBookedVisitsByBookerReference",
@@ -3080,9 +3003,7 @@
     },
     "/public/booker/{bookerReference}/visits/booked/future": {
       "get": {
-        "tags": [
-          "orchestration-visits-controller"
-        ],
+        "tags": ["orchestration-visits-controller"],
         "summary": "Get future public booked visits by booker reference",
         "description": "Get future public booked visits by booker reference",
         "operationId": "getFuturePublicBookedVisitsByBookerReference",
@@ -3149,9 +3070,7 @@
     },
     "/public/booker/{bookerReference}/permitted/prisoners": {
       "get": {
-        "tags": [
-          "public-booker-controller"
-        ],
+        "tags": ["public-booker-controller"],
         "summary": "Get permitted prisoners associated with a booker.",
         "description": "Get permitted prisoners associated with a booker.",
         "operationId": "getPermittedPrisonersForBooker",
@@ -3217,9 +3136,7 @@
     },
     "/public/booker/{bookerReference}/permitted/prisoners/{prisonerId}/validate": {
       "get": {
-        "tags": [
-          "public-booker-controller"
-        ],
+        "tags": ["public-booker-controller"],
         "summary": "Validates prisoner associated with a booker",
         "description": "Validates prisoner associated with a booker",
         "operationId": "validatePrisoner",
@@ -3284,9 +3201,7 @@
     },
     "/public/booker/{bookerReference}/permitted/prisoners/{prisonerId}/permitted/visitors": {
       "get": {
-        "tags": [
-          "public-booker-controller"
-        ],
+        "tags": ["public-booker-controller"],
         "summary": "Get permitted visitors for a prisoner associated with that booker.",
         "description": "Get permitted visitors for a prisoner associated with that booker.",
         "operationId": "getPermittedVisitorsForPrisoner",
@@ -3361,9 +3276,7 @@
     },
     "/prisoner/{prisonId}/{prisonerId}/profile": {
       "get": {
-        "tags": [
-          "prisoner-profile-controller"
-        ],
+        "tags": ["prisoner-profile-controller"],
         "summary": "Get a prisoner's profile page",
         "description": "Get the prisoner's profile page",
         "operationId": "getPrisonerProfile",
@@ -3441,9 +3354,7 @@
     },
     "/config/sessions/session/{sessionTemplateReference}/exclude-date/{excludeDate}/isExcluded": {
       "get": {
-        "tags": [
-          "orchestration-sessions-exclude-date-controller"
-        ],
+        "tags": ["orchestration-sessions-exclude-date-controller"],
         "summary": "Endpoint to check if the date passed has been excluded for visits for the session template",
         "description": "Returns true if the date passed has been excluded for visits for the session template, false otherwise.",
         "operationId": "isDateExcludedForSessionTemplateVisits",
@@ -3520,9 +3431,7 @@
     },
     "/config/sessions/session/{sessionTemplateReference}/exclude-date/past": {
       "get": {
-        "tags": [
-          "orchestration-sessions-exclude-date-controller"
-        ],
+        "tags": ["orchestration-sessions-exclude-date-controller"],
         "summary": "Get all past exclude dates for a given session template",
         "description": "Get all past exclude dates for a given session template",
         "operationId": "getPastExcludeDatesForSessionTemplate",
@@ -3589,9 +3498,7 @@
     },
     "/config/sessions/session/{sessionTemplateReference}/exclude-date/future": {
       "get": {
-        "tags": [
-          "orchestration-sessions-exclude-date-controller"
-        ],
+        "tags": ["orchestration-sessions-exclude-date-controller"],
         "summary": "Get all current or future exclude dates for a given session template",
         "description": "Get current or future exclude dates for a given session template",
         "operationId": "getFutureExcludeDatesForSessionTemplate",
@@ -3658,9 +3565,7 @@
     },
     "/config/prisons/user-type/{type}/supported": {
       "get": {
-        "tags": [
-          "orchestration-prisons-config-controller"
-        ],
+        "tags": ["orchestration-prisons-config-controller"],
         "summary": "Get supported prisons",
         "description": "Get all supported prisons id's",
         "operationId": "getSupportedPrisons",
@@ -3673,11 +3578,7 @@
             "schema": {
               "type": "string",
               "description": "type",
-              "enum": [
-                "STAFF",
-                "PUBLIC",
-                "SYSTEM"
-              ],
+              "enum": ["STAFF", "PUBLIC", "SYSTEM"],
               "example": "STAFF"
             },
             "example": "STAFF"
@@ -3694,10 +3595,7 @@
                     "type": "string"
                   }
                 },
-                "example": [
-                  "HEI",
-                  "MDI"
-                ]
+                "example": ["HEI", "MDI"]
               }
             }
           },
@@ -3726,9 +3624,7 @@
     },
     "/config/prisons/user-type/{type}/supported/detailed": {
       "get": {
-        "tags": [
-          "orchestration-prisons-config-controller"
-        ],
+        "tags": ["orchestration-prisons-config-controller"],
         "summary": "Get supported prisons with detailed prison details by user type",
         "description": "Get all supported prisons with detailed prison details by user type",
         "operationId": "getSupportedPrisonDetails",
@@ -3741,11 +3637,7 @@
             "schema": {
               "type": "string",
               "description": "type",
-              "enum": [
-                "STAFF",
-                "PUBLIC",
-                "SYSTEM"
-              ],
+              "enum": ["STAFF", "PUBLIC", "SYSTEM"],
               "example": "STAFF"
             },
             "example": "STAFF"
@@ -3790,9 +3682,7 @@
     },
     "/config/prisons/prison/{prisonCode}": {
       "get": {
-        "tags": [
-          "orchestration-prisons-config-controller"
-        ],
+        "tags": ["orchestration-prisons-config-controller"],
         "summary": "Gets prison by given prison id/code",
         "description": "Gets prison by given prison id/code",
         "operationId": "getPrison",
@@ -3846,9 +3736,7 @@
     },
     "/config/prisons/prison/{prisonCode}/exclude-date/{excludeDate}/isExcluded": {
       "get": {
-        "tags": [
-          "orchestration-prisons-exclude-date-controller"
-        ],
+        "tags": ["orchestration-prisons-exclude-date-controller"],
         "summary": "Endpoint to check if the date passed has been excluded for visits by the prison",
         "description": "Returns true if the date passed has been excluded for visits by the prison, false otherwise.",
         "operationId": "isDateExcludedForPrisonVisits",
@@ -3925,9 +3813,7 @@
     },
     "/config/prisons/prison/{prisonCode}/exclude-date/past": {
       "get": {
-        "tags": [
-          "orchestration-prisons-exclude-date-controller"
-        ],
+        "tags": ["orchestration-prisons-exclude-date-controller"],
         "summary": "Get all past exclude dates for a given prison",
         "description": "Get all past exclude dates for a given prison",
         "operationId": "getPastExcludeDatesForPrison",
@@ -3994,9 +3880,7 @@
     },
     "/config/prisons/prison/{prisonCode}/exclude-date/future": {
       "get": {
-        "tags": [
-          "orchestration-prisons-exclude-date-controller"
-        ],
+        "tags": ["orchestration-prisons-exclude-date-controller"],
         "summary": "Get all current or future exclude dates for a given prison",
         "description": "Get current or future exclude dates for a given prison",
         "operationId": "getFutureExcludeDatesForPrison",
@@ -4074,15 +3958,7 @@
           "applicationMethodType": {
             "type": "string",
             "description": "application method",
-            "enum": [
-              "PHONE",
-              "WEBSITE",
-              "EMAIL",
-              "IN_PERSON",
-              "NOT_KNOWN",
-              "NOT_APPLICABLE",
-              "BY_PRISONER"
-            ]
+            "enum": ["PHONE", "WEBSITE", "EMAIL", "IN_PERSON", "NOT_KNOWN", "NOT_APPLICABLE", "BY_PRISONER"]
           },
           "actionedBy": {
             "type": "string",
@@ -4092,20 +3968,11 @@
           "userType": {
             "type": "string",
             "description": "User type",
-            "enum": [
-              "STAFF",
-              "PUBLIC",
-              "SYSTEM"
-            ],
+            "enum": ["STAFF", "PUBLIC", "SYSTEM"],
             "example": "STAFF"
           }
         },
-        "required": [
-          "actionedBy",
-          "applicationMethodType",
-          "cancelOutcome",
-          "userType"
-        ]
+        "required": ["actionedBy", "applicationMethodType", "cancelOutcome", "userType"]
       },
       "OutcomeDto": {
         "type": "object",
@@ -4146,9 +4013,7 @@
             "example": "Because he got covid"
           }
         },
-        "required": [
-          "outcomeStatus"
-        ]
+        "required": ["outcomeStatus"]
       },
       "ErrorResponse": {
         "type": "object",
@@ -4168,9 +4033,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "status"
-        ]
+        "required": ["status"]
       },
       "ContactDto": {
         "type": "object",
@@ -4192,9 +4055,7 @@
             "example": "email@example.com"
           }
         },
-        "required": [
-          "name"
-        ]
+        "required": ["name"]
       },
       "VisitDto": {
         "type": "object",
@@ -4239,18 +4100,13 @@
           "visitType": {
             "type": "string",
             "description": "Visit Type",
-            "enum": [
-              "SOCIAL"
-            ],
+            "enum": ["SOCIAL"],
             "example": "SOCIAL"
           },
           "visitStatus": {
             "type": "string",
             "description": "Visit Status",
-            "enum": [
-              "BOOKED",
-              "CANCELLED"
-            ],
+            "enum": ["BOOKED", "CANCELLED"],
             "example": "RESERVED"
           },
           "outcomeStatus": {
@@ -4284,11 +4140,7 @@
           "visitRestriction": {
             "type": "string",
             "description": "Visit Restriction",
-            "enum": [
-              "OPEN",
-              "CLOSED",
-              "UNKNOWN"
-            ],
+            "enum": ["OPEN", "CLOSED", "UNKNOWN"],
             "example": "OPEN"
           },
           "startTimestamp": {
@@ -4389,12 +4241,7 @@
           "type": {
             "type": "string",
             "description": "Note type",
-            "enum": [
-              "VISITOR_CONCERN",
-              "VISIT_OUTCOMES",
-              "VISIT_COMMENT",
-              "STATUS_CHANGED_REASON"
-            ],
+            "enum": ["VISITOR_CONCERN", "VISIT_OUTCOMES", "VISIT_COMMENT", "STATUS_CHANGED_REASON"],
             "example": "VISITOR_CONCERN"
           },
           "text": {
@@ -4403,10 +4250,7 @@
             "example": "Visitor is concerned that his mother in-law is coming!"
           }
         },
-        "required": [
-          "text",
-          "type"
-        ]
+        "required": ["text", "type"]
       },
       "VisitorDto": {
         "type": "object",
@@ -4424,9 +4268,7 @@
             "example": true
           }
         },
-        "required": [
-          "nomisPersonId"
-        ]
+        "required": ["nomisPersonId"]
       },
       "VisitorSupportDto": {
         "type": "object",
@@ -4440,9 +4282,7 @@
             "minLength": 3
           }
         },
-        "required": [
-          "description"
-        ]
+        "required": ["description"]
       },
       "ApplicationValidationErrorResponse": {
         "type": "object",
@@ -4478,10 +4318,7 @@
             }
           }
         },
-        "required": [
-          "status",
-          "validationErrors"
-        ]
+        "required": ["status", "validationErrors"]
       },
       "BookingOrchestrationRequestDto": {
         "type": "object",
@@ -4493,15 +4330,7 @@
           "applicationMethodType": {
             "type": "string",
             "description": "application method",
-            "enum": [
-              "PHONE",
-              "WEBSITE",
-              "EMAIL",
-              "IN_PERSON",
-              "NOT_KNOWN",
-              "NOT_APPLICABLE",
-              "BY_PRISONER"
-            ]
+            "enum": ["PHONE", "WEBSITE", "EMAIL", "IN_PERSON", "NOT_KNOWN", "NOT_APPLICABLE", "BY_PRISONER"]
           },
           "allowOverBooking": {
             "type": "boolean",
@@ -4510,19 +4339,10 @@
           "userType": {
             "type": "string",
             "description": "User type for user who actioned this request",
-            "enum": [
-              "STAFF",
-              "PUBLIC",
-              "SYSTEM"
-            ]
+            "enum": ["STAFF", "PUBLIC", "SYSTEM"]
           }
         },
-        "required": [
-          "actionedBy",
-          "allowOverBooking",
-          "applicationMethodType",
-          "userType"
-        ]
+        "required": ["actionedBy", "allowOverBooking", "applicationMethodType", "userType"]
       },
       "IgnoreVisitNotificationsDto": {
         "type": "object",
@@ -4538,10 +4358,7 @@
             "minLength": 1
           }
         },
-        "required": [
-          "actionedBy",
-          "reason"
-        ]
+        "required": ["actionedBy", "reason"]
       },
       "ApplicationSupportDto": {
         "type": "object",
@@ -4555,9 +4372,7 @@
             "minLength": 0
           }
         },
-        "required": [
-          "description"
-        ]
+        "required": ["description"]
       },
       "ChangeApplicationDto": {
         "type": "object",
@@ -4565,10 +4380,7 @@
           "applicationRestriction": {
             "type": "string",
             "description": "Session Restriction",
-            "enum": [
-              "OPEN",
-              "CLOSED"
-            ],
+            "enum": ["OPEN", "CLOSED"],
             "example": "OPEN"
           },
           "sessionTemplateReference": {
@@ -4604,12 +4416,7 @@
             "description": "allow over booking"
           }
         },
-        "required": [
-          "allowOverBooking",
-          "sessionDate",
-          "sessionTemplateReference",
-          "visitors"
-        ]
+        "required": ["allowOverBooking", "sessionDate", "sessionTemplateReference", "visitors"]
       },
       "ApplicationDto": {
         "type": "object",
@@ -4638,19 +4445,13 @@
           "visitType": {
             "type": "string",
             "description": "Visit Type",
-            "enum": [
-              "SOCIAL"
-            ],
+            "enum": ["SOCIAL"],
             "example": "SOCIAL"
           },
           "visitRestriction": {
             "type": "string",
             "description": "Visit Restriction",
-            "enum": [
-              "OPEN",
-              "CLOSED",
-              "UNKNOWN"
-            ],
+            "enum": ["OPEN", "CLOSED", "UNKNOWN"],
             "example": "OPEN"
           },
           "startTimestamp": {
@@ -4712,11 +4513,7 @@
           "userType": {
             "type": "string",
             "description": "User type",
-            "enum": [
-              "STAFF",
-              "PUBLIC",
-              "SYSTEM"
-            ],
+            "enum": ["STAFF", "PUBLIC", "SYSTEM"],
             "example": "STAFF"
           }
         },
@@ -4761,10 +4558,7 @@
           "applicationRestriction": {
             "type": "string",
             "description": "Session Restriction",
-            "enum": [
-              "OPEN",
-              "CLOSED"
-            ],
+            "enum": ["OPEN", "CLOSED"],
             "example": "OPEN"
           },
           "visitContact": {
@@ -4787,11 +4581,7 @@
           "userType": {
             "type": "string",
             "description": "User type",
-            "enum": [
-              "STAFF",
-              "PUBLIC",
-              "SYSTEM"
-            ],
+            "enum": ["STAFF", "PUBLIC", "SYSTEM"],
             "example": "STAFF"
           },
           "actionedBy": {
@@ -4824,9 +4614,7 @@
             "format": "int32"
           }
         },
-        "required": [
-          "messagesFoundCount"
-        ]
+        "required": ["messagesFoundCount"]
       },
       "PurgeQueueResult": {
         "type": "object",
@@ -4836,9 +4624,7 @@
             "format": "int32"
           }
         },
-        "required": [
-          "messagesFoundCount"
-        ]
+        "required": ["messagesFoundCount"]
       },
       "AuthDetailDto": {
         "type": "object",
@@ -4859,10 +4645,7 @@
             "description": "auth phone number"
           }
         },
-        "required": [
-          "email",
-          "oneLoginSub"
-        ]
+        "required": ["email", "oneLoginSub"]
       },
       "BookerReference": {
         "type": "object",
@@ -4874,9 +4657,7 @@
             "minLength": 1
           }
         },
-        "required": [
-          "value"
-        ]
+        "required": ["value"]
       },
       "ExcludeDateDto": {
         "type": "object",
@@ -4893,10 +4674,7 @@
             "description": "full name of user who added the exclude date or username if full name is not available."
           }
         },
-        "required": [
-          "actionedBy",
-          "excludeDate"
-        ]
+        "required": ["actionedBy", "excludeDate"]
       },
       "RegisterPrisonerForBookerDto": {
         "type": "object",
@@ -4933,13 +4711,7 @@
             "minLength": 1
           }
         },
-        "required": [
-          "prisonId",
-          "prisonerDateOfBirth",
-          "prisonerFirstName",
-          "prisonerId",
-          "prisonerLastName"
-        ]
+        "required": ["prisonId", "prisonerDateOfBirth", "prisonerFirstName", "prisonerId", "prisonerLastName"]
       },
       "EventAuditOrchestrationDto": {
         "type": "object",
@@ -4975,15 +4747,7 @@
           "applicationMethodType": {
             "type": "string",
             "description": "What was the application method for this event",
-            "enum": [
-              "PHONE",
-              "WEBSITE",
-              "EMAIL",
-              "IN_PERSON",
-              "NOT_KNOWN",
-              "NOT_APPLICABLE",
-              "BY_PRISONER"
-            ]
+            "enum": ["PHONE", "WEBSITE", "EMAIL", "IN_PERSON", "NOT_KNOWN", "NOT_APPLICABLE", "BY_PRISONER"]
           },
           "actionedByFullName": {
             "type": "string",
@@ -4993,11 +4757,7 @@
           "userType": {
             "type": "string",
             "description": "User type",
-            "enum": [
-              "STAFF",
-              "PUBLIC",
-              "SYSTEM"
-            ],
+            "enum": ["STAFF", "PUBLIC", "SYSTEM"],
             "example": "STAFF"
           },
           "text": {
@@ -5012,12 +4772,7 @@
             "minLength": 1
           }
         },
-        "required": [
-          "applicationMethodType",
-          "createTimestamp",
-          "type",
-          "userType"
-        ]
+        "required": ["applicationMethodType", "createTimestamp", "type", "userType"]
       },
       "VisitHistoryDetailsDto": {
         "type": "object",
@@ -5035,10 +4790,7 @@
             "description": "The visit details"
           }
         },
-        "required": [
-          "eventsAudit",
-          "visit"
-        ]
+        "required": ["eventsAudit", "visit"]
       },
       "AddressDto": {
         "type": "object",
@@ -5131,12 +4883,7 @@
             }
           }
         },
-        "required": [
-          "addressUsages",
-          "noFixedAddress",
-          "phones",
-          "primary"
-        ]
+        "required": ["addressUsages", "noFixedAddress", "phones", "primary"]
       },
       "AddressUsageDto": {
         "type": "object",
@@ -5206,14 +4953,7 @@
             "example": false
           }
         },
-        "required": [
-          "active",
-          "alertCode",
-          "alertCodeDescription",
-          "alertType",
-          "alertTypeDescription",
-          "dateCreated"
-        ]
+        "required": ["active", "alertCode", "alertCodeDescription", "alertType", "alertTypeDescription", "dateCreated"]
       },
       "OffenderRestrictionDto": {
         "type": "object",
@@ -5253,13 +4993,7 @@
             "description": "true if restriction is within the start date and optional expiry date range"
           }
         },
-        "required": [
-          "active",
-          "restrictionId",
-          "restrictionType",
-          "restrictionTypeDescription",
-          "startDate"
-        ]
+        "required": ["active", "restrictionId", "restrictionType", "restrictionTypeDescription", "startDate"]
       },
       "PrisonRegisterPrisonDto": {
         "type": "object",
@@ -5280,11 +5014,7 @@
             "description": "Whether the prison is still active"
           }
         },
-        "required": [
-          "active",
-          "prisonId",
-          "prisonName"
-        ]
+        "required": ["active", "prisonId", "prisonName"]
       },
       "PrisonerDetailsDto": {
         "type": "object",
@@ -5345,14 +5075,7 @@
             }
           }
         },
-        "required": [
-          "dateOfBirth",
-          "firstName",
-          "lastName",
-          "prisonerAlerts",
-          "prisonerNumber",
-          "prisonerRestrictions"
-        ]
+        "required": ["dateOfBirth", "firstName", "lastName", "prisonerAlerts", "prisonerNumber", "prisonerRestrictions"]
       },
       "RestrictionDto": {
         "type": "object",
@@ -5390,12 +5113,7 @@
             "example": "This is a comment text"
           }
         },
-        "required": [
-          "globalRestriction",
-          "restrictionType",
-          "restrictionTypeDescription",
-          "startDate"
-        ]
+        "required": ["globalRestriction", "restrictionType", "restrictionTypeDescription", "startDate"]
       },
       "TelephoneDto": {
         "type": "object",
@@ -5417,10 +5135,7 @@
             "example": 123
           }
         },
-        "required": [
-          "number",
-          "type"
-        ]
+        "required": ["number", "type"]
       },
       "VisitBookingDetailsDto": {
         "type": "object",
@@ -5439,10 +5154,7 @@
           "visitStatus": {
             "type": "string",
             "description": "Visit Status",
-            "enum": [
-              "BOOKED",
-              "CANCELLED"
-            ],
+            "enum": ["BOOKED", "CANCELLED"],
             "example": "RESERVED"
           },
           "outcomeStatus": {
@@ -5476,11 +5188,7 @@
           "visitRestriction": {
             "type": "string",
             "description": "Visit Restriction",
-            "enum": [
-              "OPEN",
-              "CLOSED",
-              "UNKNOWN"
-            ],
+            "enum": ["OPEN", "CLOSED", "UNKNOWN"],
             "example": "OPEN"
           },
           "startTimestamp": {
@@ -5585,9 +5293,7 @@
             "example": "email@example.com"
           }
         },
-        "required": [
-          "name"
-        ]
+        "required": ["name"]
       },
       "VisitNotificationDto": {
         "type": "object",
@@ -5623,11 +5329,7 @@
             }
           }
         },
-        "required": [
-          "additionalData",
-          "createdDateTime",
-          "type"
-        ]
+        "required": ["additionalData", "createdDateTime", "type"]
       },
       "VisitNotificationEventAttributeDto": {
         "type": "object",
@@ -5635,10 +5337,7 @@
           "attributeName": {
             "type": "string",
             "description": "Name of the attribute associated with the notification event",
-            "enum": [
-              "VISITOR_RESTRICTION",
-              "VISITOR_ID"
-            ],
+            "enum": ["VISITOR_RESTRICTION", "VISITOR_ID"],
             "example": "VISITOR_RESTRICTION"
           },
           "attributeValue": {
@@ -5647,10 +5346,7 @@
             "example": "BAN"
           }
         },
-        "required": [
-          "attributeName",
-          "attributeValue"
-        ]
+        "required": ["attributeName", "attributeValue"]
       },
       "VisitorDetailsDto": {
         "type": "object",
@@ -5695,11 +5391,7 @@
             "description": "Primary address for the contact or the first address if no primary address available, null if address list is empty"
           }
         },
-        "required": [
-          "firstName",
-          "lastName",
-          "restrictions"
-        ]
+        "required": ["firstName", "lastName", "restrictions"]
       },
       "visitStatus": {
         "type": "array",
@@ -5708,10 +5400,7 @@
         "items": {
           "type": "string",
           "description": "To filter visits by status",
-          "enum": [
-            "BOOKED",
-            "CANCELLED"
-          ],
+          "enum": ["BOOKED", "CANCELLED"],
           "example": "BOOKED"
         }
       },
@@ -5722,11 +5411,7 @@
         "items": {
           "type": "string",
           "description": "Visit Restriction(s) - OPEN / CLOSED / UNKNOWN",
-          "enum": [
-            "OPEN",
-            "CLOSED",
-            "UNKNOWN"
-          ],
+          "enum": ["OPEN", "CLOSED", "UNKNOWN"],
           "example": "OPEN"
         }
       },
@@ -5744,10 +5429,7 @@
             "example": "11:30"
           }
         },
-        "required": [
-          "endTime",
-          "startTime"
-        ]
+        "required": ["endTime", "startTime"]
       },
       "VisitPreviewDto": {
         "type": "object",
@@ -5791,11 +5473,7 @@
           "visitRestriction": {
             "type": "string",
             "description": "Visit Restriction",
-            "enum": [
-              "OPEN",
-              "CLOSED",
-              "UNKNOWN"
-            ],
+            "enum": ["OPEN", "CLOSED", "UNKNOWN"],
             "example": "OPEN"
           }
         },
@@ -5931,11 +5609,7 @@
             "minItems": 1
           }
         },
-        "required": [
-          "affectedVisits",
-          "reference",
-          "type"
-        ]
+        "required": ["affectedVisits", "reference", "type"]
       },
       "OrchestrationPrisonerVisitsNotificationDto": {
         "type": "object",
@@ -5978,14 +5652,7 @@
             }
           }
         },
-        "required": [
-          "bookedByName",
-          "bookedByUserName",
-          "bookingReference",
-          "notificationEventAttributes",
-          "prisonerNumber",
-          "visitDate"
-        ]
+        "required": ["bookedByName", "bookedByUserName", "bookingReference", "notificationEventAttributes", "prisonerNumber", "visitDate"]
       },
       "NotificationCountDto": {
         "type": "object",
@@ -5995,9 +5662,7 @@
             "format": "int32"
           }
         },
-        "required": [
-          "count"
-        ]
+        "required": ["count"]
       },
       "VisitNotificationEventDto": {
         "type": "object",
@@ -6038,12 +5703,7 @@
             }
           }
         },
-        "required": [
-          "additionalData",
-          "createdDateTime",
-          "notificationEventReference",
-          "type"
-        ]
+        "required": ["additionalData", "createdDateTime", "notificationEventReference", "type"]
       },
       "VisitSessionDto": {
         "type": "object",
@@ -6064,9 +5724,7 @@
           "visitType": {
             "type": "string",
             "description": "The type of visits taking place within this session",
-            "enum": [
-              "SOCIAL"
-            ],
+            "enum": ["SOCIAL"],
             "example": "SOCIAL"
           },
           "prisonId": {
@@ -6116,10 +5774,7 @@
             "description": "Session conflicts",
             "items": {
               "type": "string",
-              "enum": [
-                "NON_ASSOCIATION",
-                "DOUBLE_BOOKING_OR_RESERVATION"
-              ]
+              "enum": ["NON_ASSOCIATION", "DOUBLE_BOOKING_OR_RESERVATION"]
             },
             "uniqueItems": true
           }
@@ -6152,10 +5807,7 @@
             "example": 50
           }
         },
-        "required": [
-          "closed",
-          "open"
-        ]
+        "required": ["closed", "open"]
       },
       "SessionDateRangeDto": {
         "type": "object",
@@ -6173,9 +5825,7 @@
             "example": "2019-12-02"
           }
         },
-        "required": [
-          "validFromDate"
-        ]
+        "required": ["validFromDate"]
       },
       "SessionScheduleDto": {
         "type": "object",
@@ -6202,9 +5852,7 @@
           "visitType": {
             "type": "string",
             "description": "visit type",
-            "enum": [
-              "SOCIAL"
-            ],
+            "enum": ["SOCIAL"],
             "example": "Social"
           },
           "areLocationGroupsInclusive": {
@@ -6283,19 +5931,11 @@
           "sessionRestriction": {
             "type": "string",
             "description": "Session Restriction",
-            "enum": [
-              "OPEN",
-              "CLOSED"
-            ],
+            "enum": ["OPEN", "CLOSED"],
             "example": "OPEN"
           }
         },
-        "required": [
-          "sessionDate",
-          "sessionRestriction",
-          "sessionTemplateReference",
-          "sessionTimeSlot"
-        ]
+        "required": ["sessionDate", "sessionRestriction", "sessionTemplateReference", "sessionTimeSlot"]
       },
       "AvailableVisitSessionRestrictionDto": {
         "type": "object",
@@ -6304,16 +5944,11 @@
           "sessionRestriction": {
             "type": "string",
             "description": "Session Restriction",
-            "enum": [
-              "OPEN",
-              "CLOSED"
-            ],
+            "enum": ["OPEN", "CLOSED"],
             "example": "OPEN"
           }
         },
-        "required": [
-          "sessionRestriction"
-        ]
+        "required": ["sessionRestriction"]
       },
       "DlqMessage": {
         "type": "object",
@@ -6328,10 +5963,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "body",
-          "messageId"
-        ]
+        "required": ["body", "messageId"]
       },
       "GetDlqResult": {
         "type": "object",
@@ -6351,11 +5983,7 @@
             }
           }
         },
-        "required": [
-          "messages",
-          "messagesFoundCount",
-          "messagesReturnedCount"
-        ]
+        "required": ["messages", "messagesFoundCount", "messagesReturnedCount"]
       },
       "OrchestrationVisitDto": {
         "type": "object",
@@ -6389,10 +6017,7 @@
           "visitStatus": {
             "type": "string",
             "description": "Visit Status",
-            "enum": [
-              "BOOKED",
-              "CANCELLED"
-            ],
+            "enum": ["BOOKED", "CANCELLED"],
             "example": "BOOKED"
           },
           "outcomeStatus": {
@@ -6451,16 +6076,7 @@
             "description": "Additional support associated with the visit"
           }
         },
-        "required": [
-          "endTimestamp",
-          "prisonId",
-          "prisonerId",
-          "reference",
-          "startTimestamp",
-          "visitContact",
-          "visitStatus",
-          "visitors"
-        ]
+        "required": ["endTimestamp", "prisonId", "prisonerId", "reference", "startTimestamp", "visitContact", "visitStatus", "visitors"]
       },
       "OrchestrationVisitorDto": {
         "type": "object",
@@ -6483,9 +6099,7 @@
             "example": "James"
           }
         },
-        "required": [
-          "nomisPersonId"
-        ]
+        "required": ["nomisPersonId"]
       },
       "BookerPrisonerInfoDto": {
         "type": "object",
@@ -6511,12 +6125,7 @@
             "description": "Current prison code for the prison that the booker registered the prisoner with"
           }
         },
-        "required": [
-          "availableVos",
-          "nextAvailableVoDate",
-          "prisoner",
-          "registeredPrison"
-        ]
+        "required": ["availableVos", "nextAvailableVoDate", "prisoner", "registeredPrison"]
       },
       "CurrentIncentive": {
         "type": "object",
@@ -6538,11 +6147,7 @@
             "example": "2022-11-10"
           }
         },
-        "required": [
-          "dateTime",
-          "level",
-          "nextReviewDate"
-        ]
+        "required": ["dateTime", "level", "nextReviewDate"]
       },
       "IncentiveLevel": {
         "type": "object",
@@ -6558,9 +6163,7 @@
             "example": "Standard"
           }
         },
-        "required": [
-          "description"
-        ]
+        "required": ["description"]
       },
       "PrisonerDto": {
         "type": "object",
@@ -6613,19 +6216,11 @@
           "convictedStatus": {
             "type": "string",
             "description": "Convicted Status",
-            "enum": [
-              "Convicted",
-              "Remand"
-            ],
+            "enum": ["Convicted", "Remand"],
             "example": "Convicted"
           }
         },
-        "required": [
-          "dateOfBirth",
-          "firstName",
-          "lastName",
-          "prisonerNumber"
-        ]
+        "required": ["dateOfBirth", "firstName", "lastName", "prisonerNumber"]
       },
       "RegisteredPrisonDto": {
         "type": "object",
@@ -6641,10 +6236,7 @@
             "example": "MDI"
           }
         },
-        "required": [
-          "prisonCode",
-          "prisonName"
-        ]
+        "required": ["prisonCode", "prisonName"]
       },
       "BookerPrisonerValidationErrorResponse": {
         "type": "object",
@@ -6673,10 +6265,7 @@
             ]
           }
         },
-        "required": [
-          "status",
-          "validationError"
-        ]
+        "required": ["status", "validationError"]
       },
       "VisitorInfoDto": {
         "type": "object",
@@ -6713,12 +6302,7 @@
             "uniqueItems": true
           }
         },
-        "required": [
-          "firstName",
-          "lastName",
-          "visitorId",
-          "visitorRestrictions"
-        ]
+        "required": ["firstName", "lastName", "visitorId", "visitorRestrictions"]
       },
       "VisitorRestrictionDto": {
         "type": "object",
@@ -6727,9 +6311,7 @@
           "restrictionType": {
             "type": "string",
             "description": "Restriction Type",
-            "enum": [
-              "BAN"
-            ],
+            "enum": ["BAN"],
             "example": "BAN"
           },
           "expiryDate": {
@@ -6739,9 +6321,7 @@
             "example": "2029-12-31"
           }
         },
-        "required": [
-          "restrictionType"
-        ]
+        "required": ["restrictionType"]
       },
       "PrisonerProfileDto": {
         "type": "object",
@@ -6790,10 +6370,7 @@
           "convictedStatus": {
             "type": "string",
             "description": "Convicted Status",
-            "enum": [
-              "Convicted",
-              "Remand"
-            ],
+            "enum": ["Convicted", "Remand"],
             "example": "Convicted"
           },
           "incentiveLevel": {
@@ -6827,14 +6404,7 @@
             }
           }
         },
-        "required": [
-          "dateOfBirth",
-          "firstName",
-          "lastName",
-          "prisonerId",
-          "prisonerRestrictions",
-          "visits"
-        ]
+        "required": ["dateOfBirth", "firstName", "lastName", "prisonerId", "prisonerRestrictions", "visits"]
       },
       "VisitBalancesDto": {
         "type": "object",
@@ -6861,10 +6431,7 @@
             "description": "Date of last IEP adjustment for Privilege Visit orders"
           }
         },
-        "required": [
-          "remainingPvo",
-          "remainingVo"
-        ]
+        "required": ["remainingPvo", "remainingVo"]
       },
       "VisitSummaryDto": {
         "type": "object",
@@ -6893,28 +6460,19 @@
           "visitType": {
             "type": "string",
             "description": "Visit Type",
-            "enum": [
-              "SOCIAL"
-            ],
+            "enum": ["SOCIAL"],
             "example": "SOCIAL"
           },
           "visitStatus": {
             "type": "string",
             "description": "Visit Status",
-            "enum": [
-              "BOOKED",
-              "CANCELLED"
-            ],
+            "enum": ["BOOKED", "CANCELLED"],
             "example": "RESERVED"
           },
           "visitRestriction": {
             "type": "string",
             "description": "Visit Restriction",
-            "enum": [
-              "OPEN",
-              "CLOSED",
-              "UNKNOWN"
-            ],
+            "enum": ["OPEN", "CLOSED", "UNKNOWN"],
             "example": "OPEN"
           },
           "startTimestamp": {
@@ -6939,16 +6497,7 @@
             }
           }
         },
-        "required": [
-          "endTimestamp",
-          "prisonId",
-          "prisonerId",
-          "reference",
-          "startTimestamp",
-          "visitRestriction",
-          "visitStatus",
-          "visitType"
-        ]
+        "required": ["endTimestamp", "prisonId", "prisonerId", "reference", "startTimestamp", "visitRestriction", "visitStatus", "visitType"]
       },
       "VisitorSummaryDto": {
         "type": "object",
@@ -6971,9 +6520,7 @@
             "example": "Smith"
           }
         },
-        "required": [
-          "nomisPersonId"
-        ]
+        "required": ["nomisPersonId"]
       },
       "IsExcludeDateDto": {
         "type": "object",
@@ -6988,9 +6535,7 @@
             "writeOnly": true
           }
         },
-        "required": [
-          "isExcluded"
-        ]
+        "required": ["isExcluded"]
       },
       "PrisonDto": {
         "type": "object",
@@ -7087,11 +6632,7 @@
           "userType": {
             "type": "string",
             "description": "User type",
-            "enum": [
-              "STAFF",
-              "PUBLIC",
-              "SYSTEM"
-            ],
+            "enum": ["STAFF", "PUBLIC", "SYSTEM"],
             "example": "STAFF"
           },
           "active": {
@@ -7100,10 +6641,7 @@
             "example": true
           }
         },
-        "required": [
-          "active",
-          "userType"
-        ]
+        "required": ["active", "userType"]
       }
     }
   }
