@@ -61,7 +61,7 @@ class VisitQueueService(
 
       visitors.forEach {
         if (it.nomisPersonId !in contacts.map { contact -> contact.contactId }) {
-          return Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.PERSONAL_RELATIONSHIPS, UpstreamApiError.Type.ENTITY_NOT_FOUND)))
+          return Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.PERSONAL_RELATIONSHIPS, UpstreamApiError.Type.ENTITY_NOT_FOUND, description = "No contact found with an ID of ${it.nomisPersonId}")))
         }
       }
     }
