@@ -33071,12 +33071,14 @@
           },
           "restrictionType": {
             "type": "string",
-            "description": "code of restriction type"
+            "description": "code of restriction type",
+            "example": "ACC"
           },
           "restrictionTypeDescription": {
             "type": "string",
             "description": "description of restriction type",
-            "minLength": 1
+            "minLength": 1,
+            "example": "Access Requirements"
           },
           "startDate": {
             "type": "string",
