@@ -36,6 +36,11 @@ class VisitsIntegrationTest : IntegrationTestBase() {
 
   fun getQueueMessages(): List<Message> = testSqsClient.receiveMessage(ReceiveMessageRequest.builder().queueUrl(testQueueUrl).build()).join().messages()
 
+  fun checkQueueIsEmpty() {
+    val queueMessages = getQueueMessages()
+    queueMessages.size.shouldBe(0)
+  }
+
   @BeforeEach
   fun `clear queues`() {
     testSqsClient.purgeQueue(PurgeQueueRequest.builder().queueUrl(testQueueUrl).build())
@@ -95,6 +100,7 @@ class VisitsIntegrationTest : IntegrationTestBase() {
   @DisplayName("POST /v1/visit")
   @Nested
   inner class PostVisit {
+    private val path = "/v1/visit"
     private val timestamp = "2020-12-04T10:42:43"
     private val prisonerId = "A1234AB"
 
@@ -115,12 +121,34 @@ class VisitsIntegrationTest : IntegrationTestBase() {
         visitorSupport = VisitorSupport(description = "Visually impaired assistance"),
       )
 
+    private fun getInvalidCreateVisitRequest(
+      noPrisonerId: Boolean = false,
+      noPrisonId: Boolean = false,
+      noClientVisitReference: Boolean = false,
+      noVisitRoom: Boolean = false,
+      noNomisPersonId: Boolean = false,
+    ) = CreateVisitRequest(
+      prisonerId = if (noPrisonerId) "" else prisonerId,
+      prisonId = if (noPrisonId) "" else "MDI",
+      clientVisitReference = if (noClientVisitReference) "" else "123456",
+      visitRoom = if (noVisitRoom) "" else "A1",
+      visitType = VisitType.SOCIAL,
+      visitRestriction = VisitRestriction.OPEN,
+      startTimestamp = LocalDateTime.parse(timestamp),
+      endTimestamp = LocalDateTime.parse(timestamp),
+      visitNotes = listOf(VisitNotes(type = "VISITOR_CONCERN", text = "Visitor is concerned their mother in law is coming!")),
+      visitContact = VisitContact(name = "John Smith", telephone = "0987654321", email = "john.smith@example.com"),
+      createDateTime = LocalDateTime.parse(timestamp),
+      visitors = setOf(Visitor(nomisPersonId = if (noNomisPersonId) 0L else 3L, visitContact = true)),
+      visitorSupport = VisitorSupport(description = "Visually impaired assistance"),
+    )
+
     @Test
     fun `post the visit, get back a message response and find a message on the queue`() {
       val createVisitRequest = getCreateVisitRequest(prisonerId)
       val requestBody = asJsonString(createVisitRequest)
 
-      postToApi("/v1/visit", requestBody)
+      postToApi(path, requestBody)
         .andExpect(status().isOk)
         .andExpect(
           content().json(
@@ -148,12 +176,69 @@ class VisitsIntegrationTest : IntegrationTestBase() {
     }
 
     @Test
+    fun `post a visit with no prison id, should get 400 with no message on the queue`() {
+      val createVisitRequest = getInvalidCreateVisitRequest(noPrisonId = true)
+      val requestBody = asJsonString(createVisitRequest)
+
+      postToApi(path, requestBody)
+        .andExpect(status().isBadRequest)
+
+      checkQueueIsEmpty()
+    }
+
+    @Test
+    fun `post a visit with no prisoner id, should get 400 with no message on the queue`() {
+      val createVisitRequest = getInvalidCreateVisitRequest(noPrisonerId = true)
+      val requestBody = asJsonString(createVisitRequest)
+
+      postToApi(path, requestBody)
+        .andExpect(status().isBadRequest)
+
+      checkQueueIsEmpty()
+    }
+
+    @Test
+    fun `post a visit with no client visit reference, should get 400 with no message on the queue`() {
+      val createVisitRequest = getInvalidCreateVisitRequest(noClientVisitReference = true)
+      val requestBody = asJsonString(createVisitRequest)
+
+      postToApi(path, requestBody)
+        .andExpect(status().isBadRequest)
+
+      checkQueueIsEmpty()
+    }
+
+    @Test
+    fun `post a visit with no visit room, should get 400 with no message on the queue`() {
+      val createVisitRequest = getInvalidCreateVisitRequest(noVisitRoom = true)
+      val requestBody = asJsonString(createVisitRequest)
+
+      postToApi(path, requestBody)
+        .andExpect(status().isBadRequest)
+
+      checkQueueIsEmpty()
+    }
+
+    @Test
+    fun `post a visit with no nomisPersonId for the visitor, should get 400 with no message on the queue`() {
+      val createVisitRequest = getInvalidCreateVisitRequest(noNomisPersonId = true)
+      val requestBody = asJsonString(createVisitRequest)
+
+      postToApi(path, requestBody)
+        .andExpect(status().isBadRequest)
+
+      checkQueueIsEmpty()
+    }
+
+    @Test
     fun `return a 400 when prisoner ID not valid`() {
       val createVisitRequest = getCreateVisitRequest("INVALID_PRISON_ID")
       val requestBody = asJsonString(createVisitRequest)
 
-      postToApiWithCN("/v1/visit", requestBody, limitedPrisonsCn)
+      postToApiWithCN(path, requestBody, limitedPrisonsCn)
         .andExpect(status().isBadRequest)
+
+      checkQueueIsEmpty()
     }
 
     @Test
@@ -161,8 +246,10 @@ class VisitsIntegrationTest : IntegrationTestBase() {
       val createVisitRequest = getCreateVisitRequest(prisonerId)
       val requestBody = asJsonString(createVisitRequest)
 
-      postToApiWithCN("/v1/visit", requestBody, limitedPrisonsCn)
+      postToApiWithCN(path, requestBody, limitedPrisonsCn)
         .andExpect(status().isNotFound)
+
+      checkQueueIsEmpty()
     }
 
     @Test
@@ -170,8 +257,10 @@ class VisitsIntegrationTest : IntegrationTestBase() {
       val createVisitRequest = getCreateVisitRequest(prisonerId)
       val requestBody = asJsonString(createVisitRequest)
 
-      postToApiWithCN("/v1/visit", requestBody, noPrisonsCn)
+      postToApiWithCN(path, requestBody, noPrisonsCn)
         .andExpect(status().isNotFound)
+
+      checkQueueIsEmpty()
     }
   }
 
@@ -227,6 +316,8 @@ class VisitsIntegrationTest : IntegrationTestBase() {
 
       postToApiWithCN(path, requestBody, limitedPrisonsCn)
         .andExpect(status().isNotFound)
+
+      checkQueueIsEmpty()
     }
 
     @Test
@@ -235,6 +326,8 @@ class VisitsIntegrationTest : IntegrationTestBase() {
 
       postToApiWithCN(path, requestBody, noPrisonsCn)
         .andExpect(status().isNotFound)
+
+      checkQueueIsEmpty()
     }
   }
 }
