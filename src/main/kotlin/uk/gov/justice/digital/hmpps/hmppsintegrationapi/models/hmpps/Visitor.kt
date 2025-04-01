@@ -7,6 +7,6 @@ data class Visitor(
   @Schema(description = "Person ID (nomis) of the visitor", required = true)
   @field:Min(value = 1, message = "Nomis person ID must be positive")
   val nomisPersonId: Long,
-  @Schema(description = "true if visitor is the contact for the visit otherwise false", required = true)
+  @Schema(description = "true if visitor is the contact for the visit otherwise false", required = false)
   val visitContact: Boolean?,
 )
