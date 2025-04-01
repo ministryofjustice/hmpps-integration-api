@@ -31,6 +31,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Visit
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitContact
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitExternalSystemDetails
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitNotes
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitRestriction
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitType
@@ -85,6 +86,11 @@ internal class VisitQueueServiceTest(
         reference = "dfs-wjs-abc",
         sessionTemplateReference = "dfs-wjs-xyz",
         visitorSupport = VisitorSupport(description = "Description"),
+        visitExternalSystemDetails =
+          VisitExternalSystemDetails(
+            clientName = "client_name",
+            clientVisitReference = "12345",
+          ),
       )
 
     beforeTest {
