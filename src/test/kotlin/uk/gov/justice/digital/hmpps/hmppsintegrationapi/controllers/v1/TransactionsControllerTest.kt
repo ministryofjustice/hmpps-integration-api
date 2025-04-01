@@ -71,6 +71,15 @@ class TransactionsControllerTest(
           description = "Spends desc",
           clientUniqueRef = "client ref",
         )
+      val transactionWithoutClientRef =
+        Transaction(
+          id = "123",
+          type = Type(code = "spends", desc = "Spends"),
+          amount = 100,
+          date = "2016-10-21",
+          description = "Spends desc",
+          clientUniqueRef = null,
+        )
 
       val transactionCreateResponse = TransactionCreateResponse(transactionId = "6179604-1")
 
@@ -109,7 +118,8 @@ class TransactionsControllerTest(
                     "type":{"code":"spends","desc":"Spends"},
                     "description":"Spends desc",
                     "amount":100,
-                    "date":"2016-10-21"
+                    "date":"2016-10-21",
+                    "clientUniqueRef":"client ref"
                    }
                 ],
                 "pagination":{"isLastPage":true,"count":1,"page":1,"perPage":10,"totalCount":1,"totalPages":1}}
@@ -157,7 +167,7 @@ class TransactionsControllerTest(
 
       // get Transaction
       it("returns a prisoner's transaction according to clientUniqueRef") {
-        whenever(getTransactionForPersonService.execute(hmppsId, prisonId, clientUniqueRef, null)).thenReturn(Response(transaction))
+        whenever(getTransactionForPersonService.execute(hmppsId, prisonId, clientUniqueRef, null)).thenReturn(Response(transactionWithoutClientRef))
 
         val result = mockMvc.performAuthorised(transactionPath)
 
@@ -171,7 +181,8 @@ class TransactionsControllerTest(
             },
             "description": "Spends desc",
             "amount": 100,
-            "date": "2016-10-21"
+            "date": "2016-10-21",
+            "clientUniqueRef": null
           }
           """.removeWhitespaceAndNewlines(),
         )
