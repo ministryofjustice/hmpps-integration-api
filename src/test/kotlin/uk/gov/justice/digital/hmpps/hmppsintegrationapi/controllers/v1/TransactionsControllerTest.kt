@@ -73,10 +73,10 @@ class TransactionsControllerTest(
         )
       val transactionWithoutClientRef =
         Transaction(
-          id = "123",
+          id = "124",
           type = Type(code = "spends", desc = "Spends"),
           amount = 100,
-          date = "2016-10-21",
+          date = "2016-10-22",
           description = "Spends desc",
           clientUniqueRef = null,
         )
@@ -103,7 +103,7 @@ class TransactionsControllerTest(
       }
 
       it("returns a prisoners transactions according to supplied code") {
-        whenever(getTransactionsForPersonService.execute(hmppsId, prisonId, accountCode, "2025-01-01", "2025-01-01", null)).thenReturn(Response(listOf(transaction)))
+        whenever(getTransactionsForPersonService.execute(hmppsId, prisonId, accountCode, "2025-01-01", "2025-01-01", null)).thenReturn(Response(listOf(transaction, transactionWithoutClientRef)))
 
         val dateParams = "?from_date=2025-01-01&to_date=2025-01-01"
         val result = mockMvc.performAuthorised(transactionsPath + dateParams)
@@ -120,9 +120,17 @@ class TransactionsControllerTest(
                     "amount":100,
                     "date":"2016-10-21",
                     "clientUniqueRef":"client ref"
-                   }
+                  },
+                  {
+                    "id":"124",
+                    "type":{"code":"spends","desc":"Spends"},
+                    "description":"Spends desc",
+                    "amount":100,
+                    "date":"2016-10-22",
+                    "clientUniqueRef":null
+                  }
                 ],
-                "pagination":{"isLastPage":true,"count":1,"page":1,"perPage":10,"totalCount":1,"totalPages":1}}
+                "pagination":{"isLastPage":true,"count":2,"page":1,"perPage":10,"totalCount":2,"totalPages":1}}
           """.removeWhitespaceAndNewlines(),
         )
       }
@@ -174,14 +182,14 @@ class TransactionsControllerTest(
         result.response.contentAsString.shouldContain(
           """
           {
-            "id": "123",
+            "id": "124",
             "type": {
               "code": "spends",
               "desc": "Spends"
             },
             "description": "Spends desc",
             "amount": 100,
-            "date": "2016-10-21",
+            "date": "2016-10-22",
             "clientUniqueRef": null
           }
           """.removeWhitespaceAndNewlines(),
