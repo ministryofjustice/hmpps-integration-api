@@ -331,7 +331,7 @@ class NomisGateway(
     val result =
       webClient.request<Transactions>(
         HttpMethod.GET,
-        "/api/v1/prison/$prisonId/offenders/$nomisNumber/accounts/$accountCode/transactions?from_date=$fromDate&to_date=$toDate",
+        "/api/transactions/prison/$prisonId/offenders/$nomisNumber/accounts/$accountCode?from_date=$fromDate&to_date=$toDate",
         authenticationHeader(),
         UpstreamApi.NOMIS,
       )

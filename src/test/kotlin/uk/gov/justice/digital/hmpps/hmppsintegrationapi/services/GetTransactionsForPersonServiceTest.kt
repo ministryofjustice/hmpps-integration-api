@@ -37,7 +37,13 @@ internal class GetTransactionsForPersonServiceTest(
     val startDate = "2019-04-01"
     val endDate = "2019-04-05"
     val filters = ConsumerFilters(null)
-    val exampleTransactions = Transactions(listOf(Transaction("204564839-3", Type(code = "spends", desc = "Spends desc"), "Spends account code", 12345, "2016-10-21")))
+    val exampleTransactions =
+      Transactions(
+        listOf(
+          Transaction("204564839-3", Type(code = "EG", desc = "Example"), "Example transaction", 12345, "2016-10-21", "Client Ref"),
+          Transaction("204564840-1", Type(code = "EG 2", desc = "Another Example"), "Another Example", 7890, "2016-10-22", null),
+        ),
+      )
 
     beforeEach {
       Mockito.reset(getPersonService)

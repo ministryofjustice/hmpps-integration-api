@@ -24,7 +24,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Transaction
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.TransactionRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.TransactionTransferCreateResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.TransactionTransferRequest
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Transactions
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Type
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
@@ -34,7 +33,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetTransactions
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.PostTransactionForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.PostTransactionTransferForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
-import java.time.LocalDate
 
 @WebMvcTest(controllers = [TransactionsController::class])
 @ActiveProfiles("test")
@@ -64,20 +62,6 @@ class TransactionsControllerTest(
       val fromAccount = "spends"
       val toAccount = "savings"
 
-      val transactions =
-        Transactions(
-          transactions =
-            listOf(
-              Transaction(
-                id = "123",
-                type = Type(code = "spends", desc = "Spends"),
-                amount = 100,
-                date = LocalDate.parse("2025-01-01").toString(),
-                description = "Spends desc",
-              ),
-            ),
-        )
-
       val transaction =
         Transaction(
           id = "123",
@@ -85,6 +69,16 @@ class TransactionsControllerTest(
           amount = 100,
           date = "2016-10-21",
           description = "Spends desc",
+          clientUniqueRef = "client ref",
+        )
+      val transactionWithoutClientRef =
+        Transaction(
+          id = "124",
+          type = Type(code = "spends", desc = "Spends"),
+          amount = 100,
+          date = "2016-10-22",
+          description = "Spends desc",
+          clientUniqueRef = null,
         )
 
       val transactionCreateResponse = TransactionCreateResponse(transactionId = "6179604-1")
@@ -109,7 +103,7 @@ class TransactionsControllerTest(
       }
 
       it("returns a prisoners transactions according to supplied code") {
-        whenever(getTransactionsForPersonService.execute(hmppsId, prisonId, accountCode, "2025-01-01", "2025-01-01", null)).thenReturn(Response(listOf(transaction)))
+        whenever(getTransactionsForPersonService.execute(hmppsId, prisonId, accountCode, "2025-01-01", "2025-01-01", null)).thenReturn(Response(listOf(transaction, transactionWithoutClientRef)))
 
         val dateParams = "?from_date=2025-01-01&to_date=2025-01-01"
         val result = mockMvc.performAuthorised(transactionsPath + dateParams)
@@ -124,10 +118,19 @@ class TransactionsControllerTest(
                     "type":{"code":"spends","desc":"Spends"},
                     "description":"Spends desc",
                     "amount":100,
-                    "date":"2016-10-21"
-                   }
+                    "date":"2016-10-21",
+                    "clientUniqueRef":"client ref"
+                  },
+                  {
+                    "id":"124",
+                    "type":{"code":"spends","desc":"Spends"},
+                    "description":"Spends desc",
+                    "amount":100,
+                    "date":"2016-10-22",
+                    "clientUniqueRef":null
+                  }
                 ],
-                "pagination":{"isLastPage":true,"count":1,"page":1,"perPage":10,"totalCount":1,"totalPages":1}}
+                "pagination":{"isLastPage":true,"count":2,"page":1,"perPage":10,"totalCount":2,"totalPages":1}}
           """.removeWhitespaceAndNewlines(),
         )
       }
@@ -172,21 +175,22 @@ class TransactionsControllerTest(
 
       // get Transaction
       it("returns a prisoner's transaction according to clientUniqueRef") {
-        whenever(getTransactionForPersonService.execute(hmppsId, prisonId, clientUniqueRef, null)).thenReturn(Response(transaction))
+        whenever(getTransactionForPersonService.execute(hmppsId, prisonId, clientUniqueRef, null)).thenReturn(Response(transactionWithoutClientRef))
 
         val result = mockMvc.performAuthorised(transactionPath)
 
         result.response.contentAsString.shouldContain(
           """
           {
-            "id": "123",
+            "id": "124",
             "type": {
               "code": "spends",
               "desc": "Spends"
             },
             "description": "Spends desc",
             "amount": 100,
-            "date": "2016-10-21"
+            "date": "2016-10-22",
+            "clientUniqueRef": null
           }
           """.removeWhitespaceAndNewlines(),
         )

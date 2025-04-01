@@ -48,7 +48,7 @@ class TransactionsController(
 ) {
   @Operation(
     summary = "Returns all transactions for a prisoner associated with an account code that they have at a prison.",
-    description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
+    description = "The clientUniqueRef will only be present if it was specified by an API client.<br><b>Applicable filters</b>: <ul><li>prisons</li></ul>",
     responses = [
       ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found a prisoner's transactions."),
       ApiResponse(
@@ -123,7 +123,7 @@ class TransactionsController(
 
   @Operation(
     summary = "Returns details for a transaction by clientUniqueRef.",
-    description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
+    description = "The clientUniqueRef will not be present on the response.<br><b>Applicable filters</b>: <ul><li>prisons</li></ul>",
     responses = [
       ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found a transaction."),
       ApiResponse(

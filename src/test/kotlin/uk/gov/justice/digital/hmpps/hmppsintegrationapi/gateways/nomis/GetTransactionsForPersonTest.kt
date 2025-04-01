@@ -37,7 +37,7 @@ class GetTransactionsForPersonTest(
       val accountCode = "spends"
       val fromDate = "2019-04-01"
       val toDate = "2019-04-05"
-      val transactionsPath = "/api/v1/prison/$prisonId/offenders/$nomisNumber/accounts/$accountCode/transactions?from_date=$fromDate&to_date=$toDate"
+      val transactionsPath = "/api/transactions/prison/$prisonId/offenders/$nomisNumber/accounts/$accountCode?from_date=$fromDate&to_date=$toDate"
 
       beforeEach {
         nomisApiMockServer.start()
