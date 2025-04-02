@@ -20,6 +20,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CancelOutco
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CancelVisitRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CreateVisitRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.OutcomeStatus
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpdateVisitRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitContact
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitNotes
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitRestriction
@@ -326,6 +327,178 @@ class VisitsIntegrationTest : IntegrationTestBase() {
       val requestBody = asJsonString(createVisitRequest)
 
       postToApiWithCN(path, requestBody, noPrisonsCn)
+        .andExpect(status().isNotFound)
+
+      checkQueueIsEmpty()
+    }
+  }
+
+  @DisplayName("PUT /v1/visit/{visitReference}")
+  @Nested
+  inner class PutVisit {
+    private val visitReference = "123456"
+    private val path = "/v1/visit/$visitReference"
+    private val timestamp = "2020-12-04T10:42:43"
+
+    private val updateVisitRequest =
+      UpdateVisitRequest(
+        visitRoom = "A1",
+        visitType = VisitType.SOCIAL,
+        visitRestriction = VisitRestriction.OPEN,
+        startTimestamp = LocalDateTime.parse(timestamp),
+        endTimestamp = LocalDateTime.parse(timestamp),
+        visitNotes = listOf(VisitNotes(type = "VISITOR_CONCERN", text = "Visitor is concerned their mother in law is coming!")),
+        visitContact = VisitContact(name = "John Smith", telephone = "0987654321", email = "john.smith@example.com"),
+        visitors = setOf(Visitor(nomisPersonId = 654321L, visitContact = true)),
+        visitorSupport = VisitorSupport(description = "Visually impaired assistance"),
+      )
+
+    private fun getInvalidUpdateVisitRequest(
+      noVisitRoom: Boolean = false,
+      noNomisPersonId: Boolean = false,
+      invalidNomisPersonId: Boolean = false,
+      noVisitNoteType: Boolean = false,
+      noVisitContactName: Boolean = false,
+      noVisitorSupportDescription: Boolean = false,
+    ) = UpdateVisitRequest(
+      visitRoom = if (noVisitRoom) "" else "A1",
+      visitType = VisitType.SOCIAL,
+      visitRestriction = VisitRestriction.OPEN,
+      startTimestamp = LocalDateTime.parse(timestamp),
+      endTimestamp = LocalDateTime.parse(timestamp),
+      visitNotes = listOf(VisitNotes(type = if (noVisitNoteType) "" else "VISITOR_CONCERN", text = "Visitor is concerned their mother in law is coming!")),
+      visitContact = VisitContact(name = if (noVisitContactName) "" else "John Smith", telephone = "0987654321", email = "john.smith@example.com"),
+      visitors =
+        setOf(
+          Visitor(
+            nomisPersonId =
+              if (noNomisPersonId) {
+                0L
+              } else if (invalidNomisPersonId) {
+                123456L
+              } else {
+                654321L
+              },
+            visitContact = true,
+          ),
+        ),
+      visitorSupport = VisitorSupport(description = if (noVisitorSupportDescription) "" else "Visually impaired assistance"),
+    )
+
+    @Test
+    fun `put the visit update, get back a message response and find a message on the queue`() {
+      val requestBody = asJsonString(updateVisitRequest)
+
+      putApi(path, requestBody)
+        .andExpect(status().isOk)
+        .andExpect(
+          content().json(
+            """
+            {
+              "data": {
+                  "message": "Visit update written to queue"
+              }
+            }
+            """,
+          ),
+        )
+
+      await untilCallTo { getNumberOfMessagesCurrentlyOnQueue() } matches { it == 1 }
+
+      val queueMessages = getQueueMessages()
+      queueMessages.size.shouldBe(1)
+
+      val messageJson = queueMessages[0].body()
+      val expectedMessage = updateVisitRequest.toHmppsMessage(defaultCn, visitReference)
+      messageJson.shouldContainJsonKeyValue("$.eventType", expectedMessage.eventType.eventTypeCode)
+      messageJson.shouldContainJsonKeyValue("$.who", defaultCn)
+      val objectMapper = jacksonObjectMapper()
+      val messageAttributes = objectMapper.readTree(messageJson).at("/messageAttributes")
+      val expectedMessageAttributes = objectMapper.readTree(objectMapper.writeValueAsString(expectedMessage.messageAttributes))
+      messageAttributes.shouldBe(expectedMessageAttributes)
+    }
+
+    @Test
+    fun `put the visit update with no visit room, should get 400 with no message on the queue`() {
+      val updateVisitRequest = getInvalidUpdateVisitRequest(noVisitRoom = true)
+      val requestBody = asJsonString(updateVisitRequest)
+
+      putApi(path, requestBody)
+        .andExpect(status().isBadRequest)
+
+      checkQueueIsEmpty()
+    }
+
+    @Test
+    fun `put a visit update with no nomisPersonId for the visitor, should get 400 with no message on the queue`() {
+      val updateVisitRequest = getInvalidUpdateVisitRequest(noNomisPersonId = true)
+      val requestBody = asJsonString(updateVisitRequest)
+
+      putApi(path, requestBody)
+        .andExpect(status().isBadRequest)
+
+      checkQueueIsEmpty()
+    }
+
+    @Test
+    fun `put a visit update with no a nomisPersonId not part of the contacts for the visitor, should get 404 with no message on the queue`() {
+      val updateVisitRequest = getInvalidUpdateVisitRequest(invalidNomisPersonId = true)
+      val requestBody = asJsonString(updateVisitRequest)
+
+      putApi(path, requestBody)
+        .andExpect(status().isNotFound)
+
+      checkQueueIsEmpty()
+    }
+
+    @Test
+    fun `put a visit update with no visit note type for the visit note, should get 400 with no message on the queue`() {
+      val updateVisitRequest = getInvalidUpdateVisitRequest(noVisitNoteType = true)
+      val requestBody = asJsonString(updateVisitRequest)
+
+      putApi(path, requestBody)
+        .andExpect(status().isBadRequest)
+
+      checkQueueIsEmpty()
+    }
+
+    @Test
+    fun `put a visit update with no visit contact name for the visit contact, should get 400 with no message on the queue`() {
+      val updateVisitRequest = getInvalidUpdateVisitRequest(noVisitContactName = true)
+      val requestBody = asJsonString(updateVisitRequest)
+
+      putApi(path, requestBody)
+        .andExpect(status().isBadRequest)
+
+      checkQueueIsEmpty()
+    }
+
+    @Test
+    fun `put a visit update with no visitor support description for the visit support, should get 400 with no message on the queue`() {
+      val updateVisitRequest = getInvalidUpdateVisitRequest(noVisitorSupportDescription = true)
+      val requestBody = asJsonString(updateVisitRequest)
+
+      putApi(path, requestBody)
+        .andExpect(status().isBadRequest)
+
+      checkQueueIsEmpty()
+    }
+
+    @Test
+    fun `return a 404 when prison not in filter`() {
+      val requestBody = asJsonString(updateVisitRequest)
+
+      putApiWithCN(path, requestBody, limitedPrisonsCn)
+        .andExpect(status().isNotFound)
+
+      checkQueueIsEmpty()
+    }
+
+    @Test
+    fun `return a 404 when no prisons in filter`() {
+      val requestBody = asJsonString(updateVisitRequest)
+
+      putApiWithCN(path, requestBody, noPrisonsCn)
         .andExpect(status().isNotFound)
 
       checkQueueIsEmpty()
