@@ -245,6 +245,11 @@ workflows:
           slack_channel_name: << pipeline.parameters.releases-slack-channel >>
           slack_notification: false
 
+      - request-prod-approval:
+          type: approval
+          requires:
+            - deploy-to-preprod
+
       - create-and-push-image-to-ecr:
           <<: *slack-fail-post-step
           name: create-and-push-image-to-prod-ecr
@@ -252,7 +257,7 @@ workflows:
             - hmpps-integration-api-prod
             - hmpps-common-vars
           requires:
-            - deploy-to-preprod
+            - request-prod-approval
           filters:
             branches:
               only:
