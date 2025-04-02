@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull
 import java.time.LocalDateTime
 
-@Schema(description = "Private prison visit request")
+@Schema(description = "Create visit request")
 data class CreateVisitRequest(
   @Schema(description = "Prisoner Id", example = "AF34567G", required = true)
   @field:NotBlank
@@ -38,7 +38,7 @@ data class CreateVisitRequest(
   @Schema(description = "Contact associated with the visit", required = true)
   @field:Valid
   val visitContact: VisitContact,
-  @Schema(description = "The date and time of when the visit was created in NEXUS", example = "2018-12-01T13:45:00", required = false)
+  @Schema(description = "The date and time of when the visit was created in the client system", example = "2018-12-01T13:45:00", required = false)
   val createDateTime: LocalDateTime? = null,
   @Schema(description = "List of visitors associated with the visit", required = false)
   @field:Valid
