@@ -127,6 +127,15 @@ authorisation:
       include:
         - "/.*"
       filters:
+    specific-prison:
+      roles:
+        - "private-prison"
+      include:
+        - "/v1/hmpps/id/nomis-number/[^/]*$"
+        - "/v1/persons/.*/sentences/latest-key-dates-and-adjustments"
+      filters:
+        prisons:
+          - MDI
     limited-prisons:
       roles:
         - "private-prison"

@@ -110,22 +110,24 @@ class VisitsIntegrationTest : IntegrationTestBase() {
     private val timestamp = "2020-12-04T10:42:43"
     private val prisonerId = "A1234AB"
 
-    private fun getCreateVisitRequest(prisonerId: String) =
-      CreateVisitRequest(
-        prisonerId = prisonerId,
-        prisonId = "MDI",
-        clientVisitReference = "123456",
-        visitRoom = "A1",
-        visitType = VisitType.SOCIAL,
-        visitRestriction = VisitRestriction.OPEN,
-        startTimestamp = LocalDateTime.parse(timestamp),
-        endTimestamp = LocalDateTime.parse(timestamp),
-        visitNotes = listOf(VisitNotes(type = "VISITOR_CONCERN", text = "Visitor is concerned their mother in law is coming!")),
-        visitContact = VisitContact(name = "John Smith", telephone = "0987654321", email = "john.smith@example.com"),
-        createDateTime = LocalDateTime.parse(timestamp),
-        visitors = setOf(Visitor(nomisPersonId = 654321L, visitContact = true)),
-        visitorSupport = VisitorSupport(description = "Visually impaired assistance"),
-      )
+    private fun getCreateVisitRequest(
+      prisonerId: String,
+      prisonId: String = "MDI",
+    ) = CreateVisitRequest(
+      prisonerId = prisonerId,
+      prisonId = prisonId,
+      clientVisitReference = "123456",
+      visitRoom = "A1",
+      visitType = VisitType.SOCIAL,
+      visitRestriction = VisitRestriction.OPEN,
+      startTimestamp = LocalDateTime.parse(timestamp),
+      endTimestamp = LocalDateTime.parse(timestamp),
+      visitNotes = listOf(VisitNotes(type = "VISITOR_CONCERN", text = "Visitor is concerned their mother in law is coming!")),
+      visitContact = VisitContact(name = "John Smith", telephone = "0987654321", email = "john.smith@example.com"),
+      createDateTime = LocalDateTime.parse(timestamp),
+      visitors = setOf(Visitor(nomisPersonId = 654321L, visitContact = true)),
+      visitorSupport = VisitorSupport(description = "Visually impaired assistance"),
+    )
 
     private fun getInvalidCreateVisitRequest(
       noPrisonerId: Boolean = false,
@@ -306,6 +308,17 @@ class VisitsIntegrationTest : IntegrationTestBase() {
 
       postToApiWithCN(path, requestBody, limitedPrisonsCn)
         .andExpect(status().isBadRequest)
+
+      checkQueueIsEmpty()
+    }
+
+    @Test
+    fun `return a 404 when no prisoner is in prison but prisonId specified not in filter`() {
+      val createVisitRequest = getCreateVisitRequest(prisonerId, "XYZ")
+      val requestBody = asJsonString(createVisitRequest)
+
+      postToApiWithCN(path, requestBody, specificPrisonCn)
+        .andExpect(status().isNotFound)
 
       checkQueueIsEmpty()
     }
