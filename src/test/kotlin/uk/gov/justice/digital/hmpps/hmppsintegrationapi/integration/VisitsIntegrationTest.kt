@@ -575,7 +575,7 @@ class VisitsIntegrationTest : IntegrationTestBase() {
   @DisplayName("GET /id/by-client-ref/{clientReference}")
   @Nested
   inner class GetClientRefByVisitRef {
-    private val clientReference = "123456"
+    private val clientReference = "AABDC234"
 
     @Test
     fun `gets the visit reference`() {
