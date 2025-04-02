@@ -14,11 +14,9 @@
     }
   ],
   "paths": {
-    "/risks/crn/{crn}": {
+    "/risks/rosh/{crn}": {
       "get": {
-        "tags": [
-          "risks-controller"
-        ],
+        "tags": ["risks-controller"],
         "description": "Gets ROSH risks for crn. Only returns freeform text concerns for risk to self where answer to corresponding risk question is Yes. Returns only assessments completed within the last year",
         "operationId": "getRoshRisksByCrn",
         "parameters": [
@@ -47,11 +45,9 @@
         }
       }
     },
-    "/risks/crn/{crn}/predictors/all": {
+    "/risks/predictors/{crn}": {
       "get": {
-        "tags": [
-          "risk-predictors-controller"
-        ],
+        "tags": ["risk-predictors-controller"],
         "description": "Gets risk predictors scores for all latest completed assessments from the last 1 year",
         "operationId": "getAllRiskScores",
         "parameters": [
@@ -81,11 +77,9 @@
         }
       }
     },
-    "/needs/crn/{crn}": {
+    "/needs/{crn}": {
       "get": {
-        "tags": [
-          "assessment-controller"
-        ],
+        "tags": ["assessment-controller"],
         "description": "Gets criminogenic needs for crn",
         "operationId": "getCriminogenicNeedsByCrn",
         "parameters": [
@@ -114,11 +108,9 @@
         }
       }
     },
-    "/risks/crn/{crn}/risk-management-plan": {
+    "/risks/risk-management-plan/{crn}": {
       "get": {
-        "tags": [
-          "risks-controller"
-        ],
+        "tags": ["risks-controller"],
         "description": "Gets Risk Management Plan from latest complete assessments for crn",
         "operationId": "getRiskManagementPlan",
         "parameters": [
@@ -218,11 +210,7 @@
   "components": {
     "schemas": {
       "ErrorResponse": {
-        "required": [
-          "errorCode",
-          "status",
-          "userMessage"
-        ],
+        "required": ["errorCode", "status", "userMessage"],
         "type": "object",
         "properties": {
           "status": {
@@ -255,11 +243,7 @@
         }
       },
       "RiskManagementPlanDto": {
-        "required": [
-          "assessmentId",
-          "assessmentStatus",
-          "assessmentType"
-        ],
+        "required": ["assessmentId", "assessmentStatus", "assessmentType"],
         "type": "object",
         "properties": {
           "assessmentId": {
@@ -345,11 +329,7 @@
         }
       },
       "RiskManagementPlansDto": {
-        "required": [
-          "crn",
-          "limitedAccessOffender",
-          "riskManagementPlan"
-        ],
+        "required": ["crn", "limitedAccessOffender", "riskManagementPlan"],
         "type": "object",
         "properties": {
           "crn": {
@@ -367,14 +347,7 @@
         }
       },
       "SupplementaryRiskDto": {
-        "required": [
-          "createdByUserType",
-          "createdDate",
-          "crn",
-          "riskSummaryComments",
-          "source",
-          "sourceId"
-        ],
+        "required": ["createdByUserType", "createdDate", "crn", "riskSummaryComments", "source", "sourceId"],
         "type": "object",
         "properties": {
           "supplementaryRiskId": {
@@ -387,9 +360,7 @@
             "type": "string",
             "description": "Source of Risk",
             "example": "INTERVENTION_REFERRAL",
-            "enum": [
-              "INTERVENTION_REFERRAL"
-            ]
+            "enum": ["INTERVENTION_REFERRAL"]
           },
           "sourceId": {
             "type": "string",
@@ -467,11 +438,7 @@
         "description": "Redacted risk answers"
       },
       "AllRoshRiskDto_AllRisksView": {
-        "required": [
-          "otherRisks",
-          "riskToSelf",
-          "summary"
-        ],
+        "required": ["otherRisks", "riskToSelf", "summary"],
         "type": "object",
         "properties": {
           "riskToSelf": {
@@ -495,42 +462,22 @@
           "escapeOrAbscond": {
             "type": "string",
             "description": "Escape / abscond",
-            "enum": [
-              "YES",
-              "NO",
-              "DK",
-              "NA"
-            ]
+            "enum": ["YES", "NO", "DK", "NA"]
           },
           "controlIssuesDisruptiveBehaviour": {
             "type": "string",
             "description": "Control issues / disruptive behaviour",
-            "enum": [
-              "YES",
-              "NO",
-              "DK",
-              "NA"
-            ]
+            "enum": ["YES", "NO", "DK", "NA"]
           },
           "breachOfTrust": {
             "type": "string",
             "description": "Concerns in respect of breach of trust",
-            "enum": [
-              "YES",
-              "NO",
-              "DK",
-              "NA"
-            ]
+            "enum": ["YES", "NO", "DK", "NA"]
           },
           "riskToOtherPrisoners": {
             "type": "string",
             "description": "Risks to other prisoners",
-            "enum": [
-              "YES",
-              "NO",
-              "DK",
-              "NA"
-            ]
+            "enum": ["YES", "NO", "DK", "NA"]
           }
         }
       },
@@ -541,23 +488,13 @@
             "type": "string",
             "description": "is there any risk",
             "example": "YES",
-            "enum": [
-              "YES",
-              "NO",
-              "DK",
-              "NA"
-            ]
+            "enum": ["YES", "NO", "DK", "NA"]
           },
           "previous": {
             "type": "string",
             "description": "Previous concerns",
             "example": "YES",
-            "enum": [
-              "YES",
-              "NO",
-              "DK",
-              "NA"
-            ]
+            "enum": ["YES", "NO", "DK", "NA"]
           },
           "previousConcernsText": {
             "type": "string",
@@ -568,12 +505,7 @@
             "type": "string",
             "description": "Current concerns",
             "example": "YES",
-            "enum": [
-              "YES",
-              "NO",
-              "DK",
-              "NA"
-            ]
+            "enum": ["YES", "NO", "DK", "NA"]
           },
           "currentConcernsText": {
             "type": "string",
@@ -584,10 +516,7 @@
         "description": "Vulnerability"
       },
       "RiskRoshSummaryDto_AllRisksView": {
-        "required": [
-          "riskInCommunity",
-          "riskInCustody"
-        ],
+        "required": ["riskInCommunity", "riskInCustody"],
         "type": "object",
         "properties": {
           "whoIsAtRisk": {
@@ -621,17 +550,9 @@
               "type": "array",
               "description": "Assess the risk of serious harm the offender poses in the community",
               "example": {
-                "HIGH ": [
-                  "Children",
-                  "Public",
-                  "Know adult"
-                ],
-                "MEDIUM": [
-                  "Staff"
-                ],
-                "LOW": [
-                  "Prisoners"
-                ]
+                "HIGH ": ["Children", "Public", "Know adult"],
+                "MEDIUM": ["Staff"],
+                "LOW": ["Prisoners"]
               },
               "items": {
                 "type": "string",
@@ -641,17 +562,9 @@
             },
             "description": "Assess the risk of serious harm the offender poses in the community",
             "example": {
-              "HIGH ": [
-                "Children",
-                "Public",
-                "Know adult"
-              ],
-              "MEDIUM": [
-                "Staff"
-              ],
-              "LOW": [
-                "Prisoners"
-              ]
+              "HIGH ": ["Children", "Public", "Know adult"],
+              "MEDIUM": ["Staff"],
+              "LOW": ["Prisoners"]
             }
           },
           "riskInCustody": {
@@ -660,17 +573,9 @@
               "type": "array",
               "description": "Assess the risk of serious harm the offender poses on the basis that they could be released imminently back into the community.Assess both the risk of serious harm the offender presents now, in custody, and the risk they could present to others whilst in a custodial setting.",
               "example": {
-                "HIGH ": [
-                  "Know adult"
-                ],
-                "VERY_HIGH": [
-                  "Staff",
-                  "Prisoners"
-                ],
-                "LOW": [
-                  "Children",
-                  "Public"
-                ]
+                "HIGH ": ["Know adult"],
+                "VERY_HIGH": ["Staff", "Prisoners"],
+                "LOW": ["Children", "Public"]
               },
               "items": {
                 "type": "string",
@@ -680,29 +585,16 @@
             },
             "description": "Assess the risk of serious harm the offender poses on the basis that they could be released imminently back into the community.Assess both the risk of serious harm the offender presents now, in custody, and the risk they could present to others whilst in a custodial setting.",
             "example": {
-              "HIGH ": [
-                "Know adult"
-              ],
-              "VERY_HIGH": [
-                "Staff",
-                "Prisoners"
-              ],
-              "LOW": [
-                "Children",
-                "Public"
-              ]
+              "HIGH ": ["Know adult"],
+              "VERY_HIGH": ["Staff", "Prisoners"],
+              "LOW": ["Children", "Public"]
             }
           },
           "overallRiskLevel": {
             "type": "string",
             "description": "Overall Risk Level",
             "example": "HIGH",
-            "enum": [
-              "VERY_HIGH",
-              "HIGH",
-              "MEDIUM",
-              "LOW"
-            ]
+            "enum": ["VERY_HIGH", "HIGH", "MEDIUM", "LOW"]
           }
         }
       },
@@ -746,13 +638,7 @@
           },
           "ogpRisk": {
             "type": "string",
-            "enum": [
-              "LOW",
-              "MEDIUM",
-              "HIGH",
-              "VERY_HIGH",
-              "NOT_APPLICABLE"
-            ]
+            "enum": ["LOW", "MEDIUM", "HIGH", "VERY_HIGH", "NOT_APPLICABLE"]
           }
         }
       },
@@ -767,13 +653,7 @@
           },
           "scoreLevel": {
             "type": "string",
-            "enum": [
-              "LOW",
-              "MEDIUM",
-              "HIGH",
-              "VERY_HIGH",
-              "NOT_APPLICABLE"
-            ]
+            "enum": ["LOW", "MEDIUM", "HIGH", "VERY_HIGH", "NOT_APPLICABLE"]
           }
         }
       },
@@ -788,23 +668,11 @@
           },
           "ospIndecentScoreLevel": {
             "type": "string",
-            "enum": [
-              "LOW",
-              "MEDIUM",
-              "HIGH",
-              "VERY_HIGH",
-              "NOT_APPLICABLE"
-            ]
+            "enum": ["LOW", "MEDIUM", "HIGH", "VERY_HIGH", "NOT_APPLICABLE"]
           },
           "ospContactScoreLevel": {
             "type": "string",
-            "enum": [
-              "LOW",
-              "MEDIUM",
-              "HIGH",
-              "VERY_HIGH",
-              "NOT_APPLICABLE"
-            ]
+            "enum": ["LOW", "MEDIUM", "HIGH", "VERY_HIGH", "NOT_APPLICABLE"]
           }
         }
       },
@@ -828,13 +696,7 @@
           },
           "ovpRisk": {
             "type": "string",
-            "enum": [
-              "LOW",
-              "MEDIUM",
-              "HIGH",
-              "VERY_HIGH",
-              "NOT_APPLICABLE"
-            ]
+            "enum": ["LOW", "MEDIUM", "HIGH", "VERY_HIGH", "NOT_APPLICABLE"]
           }
         }
       },
@@ -866,9 +728,7 @@
         }
       },
       "RsrScoreDto": {
-        "required": [
-          "source"
-        ],
+        "required": ["source"],
         "type": "object",
         "properties": {
           "percentageScore": {
@@ -876,31 +736,18 @@
           },
           "staticOrDynamic": {
             "type": "string",
-            "enum": [
-              "STATIC",
-              "DYNAMIC"
-            ]
+            "enum": ["STATIC", "DYNAMIC"]
           },
           "source": {
             "type": "string",
-            "enum": [
-              "ASSESSMENTS_API",
-              "OASYS",
-              "DELIUS"
-            ]
+            "enum": ["ASSESSMENTS_API", "OASYS", "DELIUS"]
           },
           "algorithmVersion": {
             "type": "string"
           },
           "scoreLevel": {
             "type": "string",
-            "enum": [
-              "LOW",
-              "MEDIUM",
-              "HIGH",
-              "VERY_HIGH",
-              "NOT_APPLICABLE"
-            ]
+            "enum": ["LOW", "MEDIUM", "HIGH", "VERY_HIGH", "NOT_APPLICABLE"]
           }
         }
       },
@@ -941,11 +788,7 @@
             "type": "string",
             "description": "The calculated severity of the need",
             "example": "SEVERE",
-            "enum": [
-              "NO_NEED",
-              "STANDARD",
-              "SEVERE"
-            ]
+            "enum": ["NO_NEED", "STANDARD", "SEVERE"]
           },
           "identifiedAsNeed": {
             "type": "boolean",
@@ -962,12 +805,7 @@
         "description": "Collection of assessment need sections which have not been answered"
       },
       "AssessmentNeedsDto": {
-        "required": [
-          "assessedOn",
-          "identifiedNeeds",
-          "notIdentifiedNeeds",
-          "unansweredNeeds"
-        ],
+        "required": ["assessedOn", "identifiedNeeds", "notIdentifiedNeeds", "unansweredNeeds"],
         "type": "object",
         "properties": {
           "identifiedNeeds": {

@@ -22,7 +22,7 @@ class RiskManagementGateway(
     val result =
       webClient.request<CrnRiskManagementPlans>(
         HttpMethod.GET,
-        "/risks/crn/$crn/risk-management-plan",
+        "/risks/risk-management-plan/$crn",
         authenticationHeader(),
         UpstreamApi.RISK_MANAGEMENT_PLAN,
         forbiddenAsError = true,

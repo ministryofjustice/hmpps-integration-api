@@ -37,7 +37,7 @@ class GetRiskPredictorScoresForPersonTest(
 ) : DescribeSpec(
     {
       val deliusCrn = "X777776"
-      val path = "/risks/crn/$deliusCrn/predictors/all"
+      val path = "/risks/predictors/$deliusCrn"
       val assessRisksAndNeedsApiMockServer = ApiMockServer.create(UpstreamApi.ASSESS_RISKS_AND_NEEDS)
 
       beforeEach {

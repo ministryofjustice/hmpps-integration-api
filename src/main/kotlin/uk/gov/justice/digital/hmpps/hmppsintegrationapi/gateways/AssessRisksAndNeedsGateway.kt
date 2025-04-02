@@ -28,7 +28,7 @@ class AssessRisksAndNeedsGateway(
     val result =
       webClient.requestList<ArnRiskPredictorScore>(
         HttpMethod.GET,
-        "/risks/crn/$id/predictors/all",
+        "/risks/predictors/$id",
         authenticationHeader(),
         UpstreamApi.ASSESS_RISKS_AND_NEEDS,
         forbiddenAsError = true,
@@ -57,7 +57,7 @@ class AssessRisksAndNeedsGateway(
     val result =
       webClient.request<ArnRisks>(
         HttpMethod.GET,
-        "/risks/crn/$id",
+        "/risks/rosh/$id",
         authenticationHeader(),
         UpstreamApi.ASSESS_RISKS_AND_NEEDS,
         forbiddenAsError = true,
@@ -81,7 +81,7 @@ class AssessRisksAndNeedsGateway(
     val result =
       webClient.request<ArnNeeds>(
         HttpMethod.GET,
-        "/needs/crn/$id",
+        "/needs/$id",
         authenticationHeader(),
         UpstreamApi.ASSESS_RISKS_AND_NEEDS,
         forbiddenAsError = true,
