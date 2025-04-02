@@ -8,8 +8,10 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.MessageFailedE
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PersonalRelationshipsGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CancelVisitRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CreateVisitRequest
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HmppsMessage
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HmppsMessageResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpdateVisitRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
@@ -67,23 +69,26 @@ class VisitQueueService(
     }
 
     val hmppsMessage = visit.toHmppsMessage(who)
+    writeMessageToQueue(hmppsMessage, "Could not send Visit create to queue")
 
-    try {
-      val stringifiedMessage = objectMapper.writeValueAsString(hmppsMessage)
-      val sendMessageRequest =
-        SendMessageRequest
-          .builder()
-          .queueUrl(visitsQueueUrl)
-          .messageBody(stringifiedMessage)
-          .eventTypeMessageAttributes(hmppsMessage.eventType.toString())
-          .build()
+    return Response(HmppsMessageResponse(message = "Visit creation written to queue"))
+  }
 
-      visitsQueueSqsClient.sendMessage(sendMessageRequest)
-
-      return Response(HmppsMessageResponse(message = "Visit creation written to queue"))
-    } catch (e: Exception) {
-      throw MessageFailedException("Could not send Visit message to queue", e)
+  fun sendUpdateVisit(
+    visitReference: String,
+    visit: UpdateVisitRequest,
+    who: String,
+    consumerFilters: ConsumerFilters?,
+  ): Response<HmppsMessageResponse?> {
+    val visitResponse = getVisitInformationByReferenceService.execute(visitReference, consumerFilters)
+    if (visitResponse.errors.isNotEmpty()) {
+      return Response(data = null, errors = visitResponse.errors)
     }
+
+    val hmppsMessage = visit.toHmppsMessage(who, visitReference)
+    writeMessageToQueue(hmppsMessage, "Could not send Visit update to queue")
+
+    return Response(HmppsMessageResponse(message = "Visit update written to queue"))
   }
 
   fun sendCancelVisit(
@@ -99,7 +104,15 @@ class VisitQueueService(
     }
 
     val hmppsMessage = visit.toHmppsMessage(who, visitReference)
+    writeMessageToQueue(hmppsMessage, "Could not send Visit cancellation to queue")
 
+    return Response(HmppsMessageResponse(message = "Visit cancellation written to queue"))
+  }
+
+  private fun writeMessageToQueue(
+    hmppsMessage: HmppsMessage,
+    exceptionMessage: String,
+  ) {
     try {
       val stringifiedMessage = objectMapper.writeValueAsString(hmppsMessage)
       val sendMessageRequest =
@@ -111,10 +124,8 @@ class VisitQueueService(
           .build()
 
       visitsQueueSqsClient.sendMessage(sendMessageRequest)
-
-      return Response(HmppsMessageResponse(message = "Visit cancellation written to queue"))
     } catch (e: Exception) {
-      throw MessageFailedException("Could not send Visit cancellation to queue", e)
+      throw MessageFailedException(exceptionMessage, e)
     }
   }
 }
