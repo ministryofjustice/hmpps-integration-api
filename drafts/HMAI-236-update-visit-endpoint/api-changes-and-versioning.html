@@ -1,0 +1,442 @@
+<!doctype html>
+<html lang="en" class="govuk-template no-js">
+  <head>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+
+    <title>API Changes and Versioning - HMPPS Integration API And Events Documentation</title>
+
+    <link href="stylesheets/manifest.css" rel="stylesheet" />
+
+    <link rel="canonical" href="https://ministryofjustice.github.io/hmpps-integration-api/api-changes-and-versioning.html">
+      <link rel="icon" sizes="48x48" href="/images/favicon.ico">
+      <link rel="icon" sizes="any" href="/images/favicon.svg" type="image/svg+xml">
+
+      <meta name="robots" content="noindex" />
+      <meta name="twitter:card" content="summary" />
+      <meta name="twitter:domain" content="ministryofjustice.github.io" />
+      <meta name="twitter:image" content="https://ministryofjustice.github.io/hmpps-integration-api/images/opengraph-image.png" />
+      <meta name="twitter:title" content="API Changes and Versioning - HMPPS Integration API And Events Documentation" />
+      <meta name="twitter:url" content="https://ministryofjustice.github.io/hmpps-integration-api/api-changes-and-versioning.html" />
+
+      <meta property="og:image" content="https://ministryofjustice.github.io/hmpps-integration-api/images/opengraph-image.png" />
+      <meta property="og:site_name" content="HMPPS Integration API And Events Documentation" />
+      <meta property="og:title" content="API Changes and Versioning" />
+      <meta property="og:type" content="object" />
+      <meta property="og:url" content="https://ministryofjustice.github.io/hmpps-integration-api/api-changes-and-versioning.html" />
+
+    
+  </head>
+
+  <body class="govuk-template__body">
+    <script>document.body.className += ' js-enabled' + ('noModule' in HTMLScriptElement.prototype ? ' govuk-frontend-supported' : '');</script>
+
+    <div class="app-pane">
+      <div class="app-pane__header toc-open-disabled">
+        <a href="#content" class="govuk-skip-link" data-module="govuk-skip-link">Skip to main content</a>
+
+        <header class="govuk-header app-header" role="banner" data-module="govuk-header">
+  <div class="govuk-header__container govuk-header__container--full-width">
+    <div class="govuk-header__logo">
+      <a href="./" class="govuk-header__link govuk-header__link--homepage">
+        <span class="govuk-header__product-name">
+          HMPPS Integration API And Events Documentation
+        </span>
+      </a>
+    </div>
+    <div class="govuk-header__content">
+      <nav class="govuk-header__navigation govuk-header__navigation--end" aria-label="Menu">
+        <button type="button" class="govuk-header__menu-button govuk-js-header-toggle" aria-controls="navigation" hidden>Menu</button>
+        <ul id="navigation" class="govuk-header__navigation-list">
+            <li class="govuk-header__navigation-item">
+              <a class="govuk-header__link" href="https://github.com/ministryofjustice/hmpps-integration-api">Integration API GitHub</a>
+            </li>
+            <li class="govuk-header__navigation-item">
+              <a class="govuk-header__link" href="https://github.com/ministryofjustice/hmpps-integration-events">Integration Events Github</a>
+            </li>
+        </ul>
+      </nav>
+    </div>
+  </div>
+</header>
+
+      </div>
+
+        <div id="toc-heading" class="toc-show fixedsticky">
+          <button type="button" class="toc-show__label js-toc-show" aria-controls="toc">
+            Table of contents <span class="toc-show__icon"></span>
+          </button>
+        </div>
+
+      <div class="app-pane__body" data-module="in-page-navigation">
+          <div class="app-pane__toc">
+            <div class="toc" data-module="table-of-contents" tabindex="-1" aria-label="Table of contents">
+              <div class="search" data-module="search" data-path-to-site-root="./">
+  <form action="https://www.google.co.uk/search" method="get" role="search" class="search__form govuk-!-margin-bottom-4">
+    <input type="hidden" name="as_sitesearch" value="https://ministryofjustice.github.io/hmpps-integration-api"/>
+    <label class="govuk-label search__label" for="search">
+      Search (via Google)
+    </label>
+    <input
+      type="search"
+      id="search" name="q"
+      class="govuk-input govuk-!-margin-bottom-0 search__input"
+      aria-controls="search-results"
+      placeholder="Search">
+    <button type="submit" class="search__button">Search</button>
+  </form>
+</div>
+
+              <button type="button" class="toc__close js-toc-close" aria-controls="toc" aria-label="Hide table of contents"></button>
+              <nav id="toc" class="js-toc-list toc__list" aria-labelledby="toc-heading" data-module="collapsible-navigation">
+                      <ul>
+  <li>
+    <a href="./index.html"><span>About</span></a>
+    <ul>
+      <li>
+        <a href="./index.html#diagrams"><span>Diagrams</span></a>
+      </li>
+    </ul>
+  </li>
+  <li>
+    <a href="./documentation/get-started/index.html"><span>Get started</span></a>
+    <ul>
+      <li>
+        <a href="./documentation/get-started/index.html#request-access"><span>Request access</span></a>
+      </li>
+      <li>
+        <a href="./documentation/get-started/index.html#explore-available-endpoints"><span>Explore Available Endpoints</span></a>
+      </li>
+    </ul>
+  </li>
+  <li>
+    <a href="./authentication.html"><span>Authentication</span></a>
+    <ul>
+      <li>
+        <a href="./authentication.html#reading-from-the-api"><span>Reading from the API</span></a>
+      </li>
+      <li>
+        <a href="./authentication.html#interacting-with-an-hmpps-sqs-queue"><span>Interacting with an HMPPS SQS Queue</span></a>
+      </li>
+    </ul>
+  </li>
+  <li>
+    <a href="./api-changes-and-versioning.html"><span>API Changes and Versioning</span></a>
+    <ul>
+      <li>
+        <a href="./api-changes-and-versioning.html#non-breaking-change"><span>Non-Breaking Change</span></a>
+      </li>
+      <li>
+        <a href="./api-changes-and-versioning.html#breaking-change"><span>Breaking Change</span></a>
+      </li>
+      <li>
+        <a href="./api-changes-and-versioning.html#ongoing-assurance"><span>Ongoing Assurance</span></a>
+      </li>
+      <li>
+        <a href="./api-changes-and-versioning.html#uri-path"><span>URI Path</span></a>
+      </li>
+    </ul>
+  </li>
+  <li>
+    <a href="./documentation/api/index.html"><span>HMPPS Integration API v1.0</span></a>
+    <ul>
+      <li>
+        <a href="./documentation/api/index.html#servers"><span>Servers</span></a>
+      </li>
+      <li>
+        <a href="./documentation/api/index.html#v1-persons-hmppsid-expression-of-interest-jobs-jobid"><span>/v1/persons/{hmppsId}/expression-of-interest/jobs/{jobid}</span></a>
+      </li>
+      <li>
+        <a href="./documentation/api/index.html#queue-admin-retry-dlq-dlqname"><span>/queue-admin/retry-dlq/{dlqName}</span></a>
+      </li>
+      <li>
+        <a href="./documentation/api/index.html#queue-admin-retry-all-dlqs"><span>/queue-admin/retry-all-dlqs</span></a>
+      </li>
+      <li>
+        <a href="./documentation/api/index.html#queue-admin-purge-queue-queuename"><span>/queue-admin/purge-queue/{queueName}</span></a>
+      </li>
+      <li>
+        <a href="./documentation/api/index.html#v1-visit"><span>/v1/visit</span></a>
+      </li>
+      <li>
+        <a href="./documentation/api/index.html#v1-visit-visitreference-cancel"><span>/v1/visit/{visitReference}/cancel</span></a>
+      </li>
+      <li>
+        <a href="./documentation/api/index.html#v1-prison-prisonid-prisoners-hmppsid-transactions"><span>/v1/prison/{prisonId}/prisoners/{hmppsId}/transactions</span></a>
+      </li>
+      <li>
+        <a href="./documentation/api/index.html#v1-prison-prisonid-prisoners-hmppsid-transactions-transfer"><span>/v1/prison/{prisonId}/prisoners/{hmppsId}/transactions/transfer</span></a>
+      </li>
+      <li>
+        <a href="./documentation/api/index.html#v1-visit-visitreference"><span>/v1/visit/{visitReference}</span></a>
+      </li>
+      <li>
+        <a href="./documentation/api/index.html#v1-visit-id-by-client-ref-clientreference"><span>/v1/visit/id/by-client-ref/{clientReference}</span></a>
+      </li>
+      <li>
+        <a href="./documentation/api/index.html#v1-prison-prisonid-visit-search"><span>/v1/prison/{prisonId}/visit/search</span></a>
+      </li>
+      <li>
+        <a href="./documentation/api/index.html#v1-prison-prisonid-prisoners-hmppsid-transactions-clientuniqueref"><span>/v1/prison/{prisonId}/prisoners/{hmppsId}/transactions/{clientUniqueRef}</span></a>
+      </li>
+      <li>
+        <a href="./documentation/api/index.html#v1-prison-prisonid-prisoners-hmppsid-non-associations"><span>/v1/prison/{prisonId}/prisoners/{hmppsId}/non-associations</span></a>
+      </li>
+      <li>
+        <a href="./documentation/api/index.html#v1-prison-prisonid-prisoners-hmppsid-balances"><span>/v1/prison/{prisonId}/prisoners/{hmppsId}/balances</span></a>
+      </li>
+      <li>
+        <a href="./documentation/api/index.html#v1-prison-prisonid-prisoners-hmppsid-accounts-accountcode-transactions"><span>/v1/prison/{prisonId}/prisoners/{hmppsId}/accounts/{accountCode}/transactions</span></a>
+      </li>
+      <li>
+        <a href="./documentation/api/index.html#v1-prison-prisonid-prisoners-hmppsid-accounts-accountcode-balances"><span>/v1/prison/{prisonId}/prisoners/{hmppsId}/accounts/{accountCode}/balances</span></a>
+      </li>
+      <li>
+        <a href="./documentation/api/index.html#v1-prison-prisoners"><span>/v1/prison/prisoners</span></a>
+      </li>
+      <li>
+        <a href="./documentation/api/index.html#v1-prison-prisoners-hmppsid"><span>/v1/prison/prisoners/{hmppsId}</span></a>
+      </li>
+      <li>
+        <a href="./documentation/api/index.html#v1-pnd-persons-hmppsid-alerts"><span>/v1/pnd/persons/{hmppsId}/alerts</span></a>
+      </li>
+      <li>
+        <a href="./documentation/api/index.html#v1-persons"><span>/v1/persons</span></a>
+      </li>
+      <li>
+        <a href="./documentation/api/index.html#v1-persons-hmppsid-visitor-contactid-restrictions"><span>/v1/persons/{hmppsId}/visitor/{contactId}/restrictions</span></a>
+      </li>
+      <li>
+        <a href="./documentation/api/index.html#v1-persons-hmppsid-visit-future"><span>/v1/persons/{hmppsId}/visit/future</span></a>
+      </li>
+      <li>
+        <a href="./documentation/api/index.html#v1-persons-hmppsid-visit-restrictions"><span>/v1/persons/{hmppsId}/visit-restrictions</span></a>
+      </li>
+      <li>
+        <a href="./documentation/api/index.html#v1-persons-hmppsid-visit-orders"><span>/v1/persons/{hmppsId}/visit-orders</span></a>
+      </li>
+      <li>
+        <a href="./documentation/api/index.html#v1-persons-hmppsid-sentences"><span>/v1/persons/{hmppsId}/sentences</span></a>
+      </li>
+      <li>
+        <a href="./documentation/api/index.html#v1-persons-hmppsid-risks-categories"><span>/v1/persons/{hmppsId}/risks/categories</span></a>
+      </li>
+      <li>
+        <a href="./documentation/api/index.html#v1-persons-hmppsid-reported-adjudications"><span>/v1/persons/{hmppsId}/reported-adjudications</span></a>
+      </li>
+      <li>
+        <a href="./documentation/api/index.html#v1-persons-hmppsid-protected-characteristics"><span>/v1/persons/{hmppsId}/protected-characteristics</span></a>
+      </li>
+      <li>
+        <a href="./documentation/api/index.html#v1-persons-hmppsid-plp-review-schedule"><span>/v1/persons/{hmppsId}/plp-review-schedule</span></a>
+      </li>
+      <li>
+        <a href="./documentation/api/index.html#v1-persons-hmppsid-plp-induction-schedule"><span>/v1/persons/{hmppsId}/plp-induction-schedule</span></a>
+      </li>
+      <li>
+        <a href="./documentation/api/index.html#v1-persons-hmppsid-plp-induction-schedule-history"><span>/v1/persons/{hmppsId}/plp-induction-schedule/history</span></a>
+      </li>
+      <li>
+        <a href="./documentation/api/index.html#v1-persons-hmppsid-person-responsible-officer"><span>/v1/persons/{hmppsId}/person-responsible-officer</span></a>
+      </li>
+      <li>
+        <a href="./documentation/api/index.html#v1-persons-hmppsid-offences"><span>/v1/persons/{hmppsId}/offences</span></a>
+      </li>
+      <li>
+        <a href="./documentation/api/index.html#v1-persons-hmppsid-name"><span>/v1/persons/{hmppsId}/name</span></a>
+      </li>
+      <li>
+        <a href="./documentation/api/index.html#v1-persons-hmppsid-iep-level"><span>/v1/persons/{hmppsId}/iep-level</span></a>
+      </li>
+      <li>
+        <a href="./documentation/api/index.html#v1-persons-hmppsid-contacts"><span>/v1/persons/{hmppsId}/contacts</span></a>
+      </li>
+      <li>
+        <a href="./documentation/api/index.html#v1-persons-hmppsid-cell-location"><span>/v1/persons/{hmppsId}/cell-location</span></a>
+      </li>
+      <li>
+        <a href="./documentation/api/index.html#v1-persons-hmppsid-case-notes"><span>/v1/persons/{hmppsId}/case-notes</span></a>
+      </li>
+      <li>
+        <a href="./documentation/api/index.html#v1-persons-hmppsid-alerts"><span>/v1/persons/{hmppsId}/alerts</span></a>
+      </li>
+      <li>
+        <a href="./documentation/api/index.html#v1-persons-hmppsid-alerts-pnd"><span>/v1/persons/{hmppsId}/alerts/pnd</span></a>
+      </li>
+      <li>
+        <a href="./documentation/api/index.html#v1-persons-hmppsid-addresses"><span>/v1/persons/{hmppsId}/addresses</span></a>
+      </li>
+      <li>
+        <a href="./documentation/api/index.html#v1-persons-encodedhmppsid"><span>/v1/persons/{encodedHmppsId}</span></a>
+      </li>
+      <li>
+        <a href="./documentation/api/index.html#v1-persons-encodedhmppsid-status-information"><span>/v1/persons/{encodedHmppsId}/status-information</span></a>
+      </li>
+      <li>
+        <a href="./documentation/api/index.html#v1-persons-encodedhmppsid-sentences-latest-key-dates-and-adjustments"><span>/v1/persons/{encodedHmppsId}/sentences/latest-key-dates-and-adjustments</span></a>
+      </li>
+      <li>
+        <a href="./documentation/api/index.html#v1-persons-encodedhmppsid-risks-serious-harm"><span>/v1/persons/{encodedHmppsId}/risks/serious-harm</span></a>
+      </li>
+      <li>
+        <a href="./documentation/api/index.html#v1-persons-encodedhmppsid-risks-scores"><span>/v1/persons/{encodedHmppsId}/risks/scores</span></a>
+      </li>
+      <li>
+        <a href="./documentation/api/index.html#v1-persons-encodedhmppsid-risks-mappadetail"><span>/v1/persons/{encodedHmppsId}/risks/mappadetail</span></a>
+      </li>
+      <li>
+        <a href="./documentation/api/index.html#v1-persons-encodedhmppsid-risks-dynamic"><span>/v1/persons/{encodedHmppsId}/risks/dynamic</span></a>
+      </li>
+      <li>
+        <a href="./documentation/api/index.html#v1-persons-encodedhmppsid-risk-management-plan"><span>/v1/persons/{encodedHmppsId}/risk-management-plan</span></a>
+      </li>
+      <li>
+        <a href="./documentation/api/index.html#v1-persons-encodedhmppsid-needs"><span>/v1/persons/{encodedHmppsId}/needs</span></a>
+      </li>
+      <li>
+        <a href="./documentation/api/index.html#v1-persons-encodedhmppsid-licences-conditions"><span>/v1/persons/{encodedHmppsId}/licences/conditions</span></a>
+      </li>
+      <li>
+        <a href="./documentation/api/index.html#v1-persons-encodedhmppsid-images"><span>/v1/persons/{encodedHmppsId}/images</span></a>
+      </li>
+      <li>
+        <a href="./documentation/api/index.html#v1-images-id"><span>/v1/images/{id}</span></a>
+      </li>
+      <li>
+        <a href="./documentation/api/index.html#v1-hmpps-reference-data"><span>/v1/hmpps/reference-data</span></a>
+      </li>
+      <li>
+        <a href="./documentation/api/index.html#v1-hmpps-id-nomis-number-by-hmpps-id-hmppsid"><span>/v1/hmpps/id/nomis-number/by-hmpps-id/{hmppsId}</span></a>
+      </li>
+      <li>
+        <a href="./documentation/api/index.html#v1-hmpps-id-nomis-number-nomisnumber"><span>/v1/hmpps/id/nomis-number/{nomisNumber}</span></a>
+      </li>
+      <li>
+        <a href="./documentation/api/index.html#v1-hmpps-id-by-nomis-number-nomisnumber"><span>/v1/hmpps/id/by-nomis-number/{nomisNumber}</span></a>
+      </li>
+      <li>
+        <a href="./documentation/api/index.html#v1-epf-person-details-hmppsid-eventnumber"><span>/v1/epf/person-details/{hmppsId}/{eventNumber}</span></a>
+      </li>
+      <li>
+        <a href="./documentation/api/index.html#v1-contacts-contactid"><span>/v1/contacts/{contactId}</span></a>
+      </li>
+      <li>
+        <a href="./documentation/api/index.html#queue-admin-get-dlq-messages-dlqname"><span>/queue-admin/get-dlq-messages/{dlqName}</span></a>
+      </li>
+      <li>
+        <a href="./documentation/api/index.html#schemas"><span>Schemas</span></a>
+      </li>
+      <li>
+        <a href="./documentation/api/index.html#openapi-specification"><span>OpenAPI Specification</span></a>
+      </li>
+    </ul>
+  </li>
+  <li>
+    <a href="./documentation/adr/index.html"><span>Relevant Architecture Decision Records</span></a>
+  </li>
+</ul>
+
+
+              </nav>
+            </div>
+          </div>
+
+        <div class="app-pane__content toc-open-disabled" aria-label="Content">
+          <main id="content" class="technical-documentation" data-module="anchored-headings">
+            <h1 id="api-changes-and-versioning">API Changes and Versioning</h1>
+<p>As HMPPS Integration API evolves, more features will be added, and features that already exist will change. Both consumers and MOJ must be prepared to handle these changes, and to manage them carefully.</p>
+<p>There will broadly speaking be two kinds of changes - &ldquo;non-breaking&rdquo; changes, where consumers should be able to use the new version without modifying their usage, and &ldquo;breaking&rdquo; changes where we would expect that consumers would not be able to seamlessly use the new version.</p>
+<h2 id="non-breaking-change">Non-Breaking Change</h2>
+<p>We would like to minimise the number of breaking changes, and where this is not possible, we will increment the API version and manage the migration.</p>
+
+<ul>
+<li>MOJ - must not change or remove an existing data element unless we are certain it is not in use</li>
+<li>MOJ - must update documentation to reflect any changes</li>
+<li>MOJ - may add new elements and change/remove elements that we know are not in use</li>
+<li>Consumers - implementation must accept new elements and changes to elements that are not in use (i.e. it must be resilient to non-breaking API changes)</li>
+</ul>
+<h2 id="breaking-change">Breaking Change</h2>
+<p>Where a non-breaking change is not possible, there is then a breaking change. In this case, we will increment the version of the API</p>
+
+<ul>
+<li>MOJ - must update documentation, and explicitly call out the change between versions</li>
+<li>MOJ - must distribute the new documentation as soon as practical</li>
+<li>MOJ - must run both versions of the API, as long as this is practical, for at least 1 month</li>
+<li>Consumers - must commit to moving to the new version of the API within a reasonable timescale, usually 1 month</li>
+<li>Depending on the size of the change, MOJ may require the Consumer to go through additional re-assurance steps</li>
+</ul>
+<h2 id="ongoing-assurance">Ongoing Assurance</h2>
+<p>As part of including new functionality into the system, new processes will be available to be undertaken via the API. As these are introduced, we will ask consumers to go through further rounds of assurance, broadly similar to the initial round described above.</p>
+<h2 id="uri-path">URI Path</h2>
+<p>Where versioning must be implemented, it will be in the form of a path parameter:</p>
+<div class="highlight"><pre class="highlight plaintext" tabindex="0"><code>https://integration-api.hmpps.service.justice.gov.uk/v1/images/123456
+</code></pre></div><p>Versions will increment by major version only and no minor version updates will be supported.</p>
+
+              <div data-module='page-expiry' data-last-reviewed-on="2025-04-07">
+    <div class='page-expiry--not-expired'>
+      This page was last reviewed on 7 January 2025.
+
+        It needs to be reviewed again on 7 April 2025
+        by the page owner <a href="">#hmpps-integration-api-alerts</a>
+        .
+    </div>
+
+    <div class='page-expiry--expired' hidden>
+      This page was set to be reviewed before 7 April 2025
+       by the page owner <a href="">#hmpps-integration-api-alerts</a>.
+      This might mean the content is out of date.
+    </div>
+  </div>
+
+          </main>
+
+          <aside>
+          </aside>
+
+          <footer class="govuk-footer app-footer" role="contentinfo">
+  <div class="govuk-footer__meta">
+    <div class="govuk-footer__meta-item govuk-footer__meta-item--grow">
+
+
+      <svg
+        aria-hidden="true"
+        focusable="false"
+        class="govuk-footer__licence-logo"
+        xmlns="http://www.w3.org/2000/svg"
+        viewbox="0 0 483.2 195.7"
+        height="17"
+        width="41"
+      >
+        <path
+          fill="currentColor"
+          d="M421.5 142.8V.1l-50.7 32.3v161.1h112.4v-50.7zm-122.3-9.6A47.12 47.12 0 0 1 221 97.8c0-26 21.1-47.1 47.1-47.1 16.7 0 31.4 8.7 39.7 21.8l42.7-27.2A97.63 97.63 0 0 0 268.1 0c-36.5 0-68.3 20.1-85.1 49.7A98 98 0 0 0 97.8 0C43.9 0 0 43.9 0 97.8s43.9 97.8 97.8 97.8c36.5 0 68.3-20.1 85.1-49.7a97.76 97.76 0 0 0 149.6 25.4l19.4 22.2h3v-87.8h-80l24.3 27.5zM97.8 145c-26 0-47.1-21.1-47.1-47.1s21.1-47.1 47.1-47.1 47.2 21 47.2 47S123.8 145 97.8 145"
+        />
+      </svg>
+      <span class="govuk-footer__licence-description">
+        All content is available under the
+        <a
+          class="govuk-footer__link"
+          href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/"
+          rel="license"
+        >Open Government Licence v3.0</a>, except where otherwise stated
+      </span>
+    </div>
+    <div class="govuk-footer__meta-item">
+      <a
+        class="govuk-footer__link govuk-footer__copyright-logo"
+        href="https://www.nationalarchives.gov.uk/information-management/re-using-public-sector-information/uk-government-licensing-framework/crown-copyright/"
+      >© Crown copyright</a>
+    </div>
+  </div>
+</footer>
+
+        </div>
+      </div>
+    </div>
+
+    
+    <script src="javascripts/govuk_frontend.js" type="module"></script>
+    <script src="javascripts/application.js"></script>
+  </body>
+</html>
