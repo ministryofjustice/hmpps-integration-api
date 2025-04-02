@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import software.amazon.awssdk.services.sqs.model.SendMessageRequest
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.ConsumerPrisonAccessService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.MessageFailedException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PersonalRelationshipsGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CancelVisitRequest
@@ -27,6 +28,7 @@ class VisitQueueService(
   @Autowired private val objectMapper: ObjectMapper,
   @Autowired private val getVisitInformationByReferenceService: GetVisitInformationByReferenceService,
   @Autowired private val personalRelationshipsGateway: PersonalRelationshipsGateway,
+  @Autowired private val consumerPrisonAccessService: ConsumerPrisonAccessService,
 ) {
   private val visitsQueue by lazy { hmppsQueueService.findByQueueId("visits") as HmppsQueue }
   private val visitsQueueSqsClient by lazy { visitsQueue.sqsClient }
@@ -35,12 +37,19 @@ class VisitQueueService(
   fun sendCreateVisit(
     visit: CreateVisitRequest,
     who: String,
-    consumerFilters: ConsumerFilters?,
+    filters: ConsumerFilters?,
   ): Response<HmppsMessageResponse?> {
     val visitPrisonerId = visit.prisonerId
-    val personResponse = getPersonService.getNomisNumberWithPrisonFilter(hmppsId = visitPrisonerId, filters = consumerFilters)
+    val personResponse = getPersonService.getNomisNumberWithPrisonFilter(hmppsId = visitPrisonerId, filters = filters)
     if (personResponse.errors.isNotEmpty()) {
       return Response(data = null, errors = personResponse.errors)
+    }
+
+    if (filters?.prisons != null) {
+      val consumerPrisonFilterCheck = consumerPrisonAccessService.checkConsumerHasPrisonAccess<HmppsMessageResponse>(visit.prisonId, filters)
+      if (consumerPrisonFilterCheck.errors.isNotEmpty()) {
+        return consumerPrisonFilterCheck
+      }
     }
 
     val nomisNumber = personResponse.data?.nomisNumber ?: return Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.NOMIS, UpstreamApiError.Type.ENTITY_NOT_FOUND)))
@@ -60,9 +69,9 @@ class VisitQueueService(
     visitReference: String,
     visit: UpdateVisitRequest,
     who: String,
-    consumerFilters: ConsumerFilters?,
+    filters: ConsumerFilters?,
   ): Response<HmppsMessageResponse?> {
-    val visitResponse = getVisitInformationByReferenceService.execute(visitReference, consumerFilters)
+    val visitResponse = getVisitInformationByReferenceService.execute(visitReference, filters)
     if (visitResponse.errors.isNotEmpty()) {
       return Response(data = null, errors = visitResponse.errors)
     }
@@ -84,9 +93,9 @@ class VisitQueueService(
     visitReference: String,
     visit: CancelVisitRequest,
     who: String,
-    consumerFilters: ConsumerFilters?,
+    filters: ConsumerFilters?,
   ): Response<HmppsMessageResponse?> {
-    val visitResponse = getVisitInformationByReferenceService.execute(visitReference, consumerFilters)
+    val visitResponse = getVisitInformationByReferenceService.execute(visitReference, filters)
 
     if (visitResponse.errors.isNotEmpty()) {
       return Response(data = null, errors = visitResponse.errors)
