@@ -579,13 +579,17 @@ class VisitsIntegrationTest : IntegrationTestBase() {
 
     @Test
     fun `gets the visit reference`() {
-      callApiWithCN("/v1/visit/id/by-client-ref/$clientReference", defaultCn)
+      callApi("/v1/visit/id/by-client-ref/$clientReference")
         .andExpect(status().isOk)
         .andExpect(
           content().json(
             """
-              {"data":{"visitReferences":["abc-123-xyz"]}}
-                     """,
+              {
+                "data": {
+                  "visitReferences": ["abc-123-xyz"]
+                }
+              }
+              """,
           ),
         )
     }
