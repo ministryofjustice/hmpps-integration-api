@@ -595,5 +595,11 @@ class VisitsIntegrationTest : IntegrationTestBase() {
       callApiWithCN("/v1/visit/id/by-client-ref/$clientReference", limitedPrisonsCn)
         .andExpect(status().isNotFound)
     }
+
+    @Test
+    fun `return a 404 when no prisons in filter`() {
+      callApiWithCN("/v1/visit/id/by-client-ref/$clientReference", noPrisonsCn)
+        .andExpect(status().isNotFound)
+    }
   }
 }
