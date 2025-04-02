@@ -520,6 +520,16 @@ class VisitsIntegrationTest : IntegrationTestBase() {
         actionedBy = "test-consumer",
       )
 
+    private fun getInvalidCancelVisitRequest(noActionedBy: Boolean = false) =
+      CancelVisitRequest(
+        cancelOutcome =
+          CancelOutcome(
+            outcomeStatus = OutcomeStatus.VISIT_ORDER_CANCELLED,
+            text = "visit order cancelled",
+          ),
+        actionedBy = if (noActionedBy) "" else "test-consumer",
+      )
+
     @Test
     fun `post the visit cancellation, get back a message response and find a message on the queue`() {
       val requestBody = asJsonString(cancelVisitRequest)
@@ -549,6 +559,17 @@ class VisitsIntegrationTest : IntegrationTestBase() {
       val messageAttributes = objectMapper.readTree(messageJson).at("/messageAttributes")
       val expectedMessageAttributes = objectMapper.readTree(objectMapper.writeValueAsString(expectedMessage.messageAttributes))
       messageAttributes.shouldBe(expectedMessageAttributes)
+    }
+
+    @Test
+    fun `post a visit cancellation with no actioned by, should get 400 with no message on the queue`() {
+      val cancelVisitRequest = getInvalidCancelVisitRequest(noActionedBy = true)
+      val requestBody = asJsonString(cancelVisitRequest)
+
+      postToApi(path, requestBody)
+        .andExpect(status().isBadRequest)
+
+      checkQueueIsEmpty()
     }
 
     @Test
