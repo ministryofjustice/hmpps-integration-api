@@ -1,13 +1,17 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps
 
 import io.swagger.v3.oas.annotations.media.Schema
+import jakarta.validation.Valid
 import jakarta.validation.constraints.NotBlank
+import jakarta.validation.constraints.NotNull
 
 @Schema(description = "Private prison visit cancellation request")
 data class CancelVisitRequest(
   @Schema(description = "Outcome status and description", required = true)
+  @field:Valid
   val cancelOutcome: CancelOutcome,
   @Schema(description = "Username for user who actioned this request", required = false)
+  @field:NotBlank
   val actionedBy: String? = null,
 ) {
   fun toHmppsMessage(
@@ -30,9 +34,9 @@ data class CancelVisitRequest(
 
 data class CancelOutcome(
   @Schema(description = "Outcome status", required = true)
-  @field:NotBlank
+  @field:NotNull
   val outcomeStatus: OutcomeStatus,
-  @Schema(description = "Outcome description", required = true)
+  @Schema(description = "Outcome description", required = false)
   val text: String?,
 )
 
