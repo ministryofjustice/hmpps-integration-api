@@ -131,7 +131,7 @@ class VisitsController(
     val response = visitQueueService.sendCreateVisit(createVisitRequest, clientName.orEmpty(), filters)
 
     if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
-      throw EntityNotFoundException("Could not find prisoner")
+      throw EntityNotFoundException(response.errors[0].description ?: "Could not find information for a given visit.")
     }
 
     if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {

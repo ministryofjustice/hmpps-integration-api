@@ -3,6 +3,9 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.kotest.assertions.json.shouldContainJsonKeyValue
 import io.kotest.matchers.shouldBe
+import org.awaitility.kotlin.await
+import org.awaitility.kotlin.matches
+import org.awaitility.kotlin.untilCallTo
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
@@ -24,6 +27,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitType
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Visitor
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitorSupport
 import uk.gov.justice.hmpps.sqs.HmppsQueueService
+import uk.gov.justice.hmpps.sqs.countAllMessagesOnQueue
 import java.time.LocalDateTime
 
 class VisitsIntegrationTest : IntegrationTestBase() {
@@ -34,12 +38,13 @@ class VisitsIntegrationTest : IntegrationTestBase() {
   internal val testSqsClient by lazy { testQueue.sqsClient }
   internal val testQueueUrl by lazy { testQueue.queueUrl }
 
-  fun getQueueMessages(): List<Message> = testSqsClient.receiveMessage(ReceiveMessageRequest.builder().queueUrl(testQueueUrl).build()).join().messages()
+  fun getNumberOfMessagesCurrentlyOnQueue(): Int = testSqsClient.countAllMessagesOnQueue(testQueueUrl).get()
 
   fun checkQueueIsEmpty() {
-    val queueMessages = getQueueMessages()
-    queueMessages.size.shouldBe(0)
+    getNumberOfMessagesCurrentlyOnQueue().shouldBe(0)
   }
+
+  fun getQueueMessages(): List<Message> = testSqsClient.receiveMessage(ReceiveMessageRequest.builder().queueUrl(testQueueUrl).build()).join().messages()
 
   @BeforeEach
   fun `clear queues`() {
@@ -117,7 +122,7 @@ class VisitsIntegrationTest : IntegrationTestBase() {
         visitNotes = listOf(VisitNotes(type = "VISITOR_CONCERN", text = "Visitor is concerned their mother in law is coming!")),
         visitContact = VisitContact(name = "John Smith", telephone = "0987654321", email = "john.smith@example.com"),
         createDateTime = LocalDateTime.parse(timestamp),
-        visitors = setOf(Visitor(nomisPersonId = 3L, visitContact = true)),
+        visitors = setOf(Visitor(nomisPersonId = 654321L, visitContact = true)),
         visitorSupport = VisitorSupport(description = "Visually impaired assistance"),
       )
 
@@ -127,6 +132,10 @@ class VisitsIntegrationTest : IntegrationTestBase() {
       noClientVisitReference: Boolean = false,
       noVisitRoom: Boolean = false,
       noNomisPersonId: Boolean = false,
+      invalidNomisPersonId: Boolean = false,
+      noVisitNoteType: Boolean = false,
+      noVisitContactName: Boolean = false,
+      noVisitorSupportDescription: Boolean = false,
     ) = CreateVisitRequest(
       prisonerId = if (noPrisonerId) "" else prisonerId,
       prisonId = if (noPrisonId) "" else "MDI",
@@ -136,11 +145,24 @@ class VisitsIntegrationTest : IntegrationTestBase() {
       visitRestriction = VisitRestriction.OPEN,
       startTimestamp = LocalDateTime.parse(timestamp),
       endTimestamp = LocalDateTime.parse(timestamp),
-      visitNotes = listOf(VisitNotes(type = "VISITOR_CONCERN", text = "Visitor is concerned their mother in law is coming!")),
-      visitContact = VisitContact(name = "John Smith", telephone = "0987654321", email = "john.smith@example.com"),
+      visitNotes = listOf(VisitNotes(type = if (noVisitNoteType) "" else "VISITOR_CONCERN", text = "Visitor is concerned their mother in law is coming!")),
+      visitContact = VisitContact(name = if (noVisitContactName) "" else "John Smith", telephone = "0987654321", email = "john.smith@example.com"),
       createDateTime = LocalDateTime.parse(timestamp),
-      visitors = setOf(Visitor(nomisPersonId = if (noNomisPersonId) 0L else 3L, visitContact = true)),
-      visitorSupport = VisitorSupport(description = "Visually impaired assistance"),
+      visitors =
+        setOf(
+          Visitor(
+            nomisPersonId =
+              if (noNomisPersonId) {
+                0L
+              } else if (invalidNomisPersonId) {
+                123456L
+              } else {
+                654321L
+              },
+            visitContact = true,
+          ),
+        ),
+      visitorSupport = VisitorSupport(description = if (noVisitorSupportDescription) "" else "Visually impaired assistance"),
     )
 
     @Test
@@ -161,6 +183,8 @@ class VisitsIntegrationTest : IntegrationTestBase() {
             """,
           ),
         )
+
+      await untilCallTo { getNumberOfMessagesCurrentlyOnQueue() } matches { it == 1 }
 
       val queueMessages = getQueueMessages()
       queueMessages.size.shouldBe(1)
@@ -222,6 +246,50 @@ class VisitsIntegrationTest : IntegrationTestBase() {
     @Test
     fun `post a visit with no nomisPersonId for the visitor, should get 400 with no message on the queue`() {
       val createVisitRequest = getInvalidCreateVisitRequest(noNomisPersonId = true)
+      val requestBody = asJsonString(createVisitRequest)
+
+      postToApi(path, requestBody)
+        .andExpect(status().isBadRequest)
+
+      checkQueueIsEmpty()
+    }
+
+    @Test
+    fun `post a visit with no a nomisPersonId not part of the contacts for the visitor, should get 404 with no message on the queue`() {
+      val createVisitRequest = getInvalidCreateVisitRequest(invalidNomisPersonId = true)
+      val requestBody = asJsonString(createVisitRequest)
+
+      postToApi(path, requestBody)
+        .andExpect(status().isNotFound)
+
+      checkQueueIsEmpty()
+    }
+
+    @Test
+    fun `post a visit with no visit note type for the visit note, should get 400 with no message on the queue`() {
+      val createVisitRequest = getInvalidCreateVisitRequest(noVisitNoteType = true)
+      val requestBody = asJsonString(createVisitRequest)
+
+      postToApi(path, requestBody)
+        .andExpect(status().isBadRequest)
+
+      checkQueueIsEmpty()
+    }
+
+    @Test
+    fun `post a visit with no visit contact name for the visit contact, should get 400 with no message on the queue`() {
+      val createVisitRequest = getInvalidCreateVisitRequest(noVisitContactName = true)
+      val requestBody = asJsonString(createVisitRequest)
+
+      postToApi(path, requestBody)
+        .andExpect(status().isBadRequest)
+
+      checkQueueIsEmpty()
+    }
+
+    @Test
+    fun `post a visit with no visitor support description for the visit support, should get 400 with no message on the queue`() {
+      val createVisitRequest = getInvalidCreateVisitRequest(noVisitorSupportDescription = true)
       val requestBody = asJsonString(createVisitRequest)
 
       postToApi(path, requestBody)

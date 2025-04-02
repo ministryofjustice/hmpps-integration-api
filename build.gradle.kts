@@ -37,6 +37,7 @@ dependencies {
   testImplementation("io.kotest.extensions:kotest-extensions-spring:1.3.0")
   testImplementation("org.mockito:mockito-core:5.16.1")
   testImplementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.18.3")
+  testImplementation("org.awaitility:awaitility-kotlin:4.3.0")
 
   annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
   testImplementation(kotlin("test"))

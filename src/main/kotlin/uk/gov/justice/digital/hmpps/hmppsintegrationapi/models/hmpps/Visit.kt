@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps
 
 import io.swagger.v3.oas.annotations.media.Schema
+import jakarta.validation.constraints.NotBlank
 
 data class Visit(
   @Schema(description = "Application Reference", example = "dfs-wjs-eqr")
@@ -48,9 +49,11 @@ data class Visit(
 )
 
 data class VisitNotes(
-  @Schema(description = "Note type", allowableValues = ["VISITOR_CONCERN", "VISIT_OUTCOMES", "VISIT_COMMENT", "STATUS_CHANGED_REASON"], example = "VISITOR_CONCERN")
+  @Schema(description = "Note type", allowableValues = ["VISITOR_CONCERN", "VISIT_OUTCOMES", "VISIT_COMMENT", "STATUS_CHANGED_REASON"], example = "VISITOR_CONCERN", required = true)
+  @field:NotBlank
   val type: String,
-  @Schema(description = "Note Text", example = "Visitor is concerned that his mother in-law is coming!")
+  @Schema(description = "Note Text", example = "Visitor is concerned that his mother in-law is coming!", required = true)
+  @field:NotBlank
   val text: String,
 )
 
@@ -62,16 +65,18 @@ data class Visitors(
 )
 
 data class VisitContact(
-  @Schema(description = "Contact name", example = "John Smith")
+  @Schema(description = "Contact name", example = "John Smith", required = true)
+  @field:NotBlank
   val name: String,
-  @Schema(description = "Contact Phone Number", example = "01234 567890")
-  val telephone: String,
-  @Schema(description = "Contact Email Address", example = "email@example.com")
-  val email: String,
+  @Schema(description = "Contact Phone Number", example = "01234 567890", required = false)
+  val telephone: String?,
+  @Schema(description = "Contact Email Address", example = "email@example.com", required = false)
+  val email: String?,
 )
 
 data class VisitorSupport(
-  @Schema(description = "Support text description", example = "Visually impaired assistance")
+  @Schema(description = "Support text description", example = "Visually impaired assistance", required = true)
+  @field:NotBlank
   val description: String,
 )
 

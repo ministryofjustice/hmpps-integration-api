@@ -19,6 +19,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean
 import software.amazon.awssdk.services.sqs.SqsAsyncClient
 import software.amazon.awssdk.services.sqs.model.SendMessageRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.MessageFailedException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PersonalRelationshipsGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CancelOutcome
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CancelVisitRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CreateVisitRequest
@@ -37,6 +38,11 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitRestri
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitType
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Visitor
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitorSupport
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Visitors
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PRPaginatedPrisonerContacts
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PRPrisonerContact
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.Pageable
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.Sort
 import uk.gov.justice.hmpps.sqs.HmppsQueue
 import uk.gov.justice.hmpps.sqs.HmppsQueueService
 import java.time.LocalDateTime
@@ -46,15 +52,15 @@ import java.time.LocalDateTime
   classes = [VisitQueueService::class],
 )
 internal class VisitQueueServiceTest(
+  private val visitQueueService: VisitQueueService,
   @MockitoBean val getPersonService: GetPersonService,
   @MockitoBean val hmppsQueueService: HmppsQueueService,
-  private val visitQueueService: VisitQueueService,
   @MockitoBean val objectMapper: ObjectMapper,
   @MockitoBean val getVisitInformationByReferenceService: GetVisitInformationByReferenceService,
+  @MockitoBean val personalRelationshipsGateway: PersonalRelationshipsGateway,
 ) : DescribeSpec({
 
     val mockSqsClient = mock<SqsAsyncClient>()
-
     val visitQueue =
       mock<HmppsQueue> {
         on { sqsClient } doReturn mockSqsClient
@@ -64,9 +70,10 @@ internal class VisitQueueServiceTest(
     val hmppsId = "A1234AB"
     val filters = null
     val visitReference = "ABC-123-DEF-456"
+    val visitor = Visitors(contactId = 654321, visitContact = true)
     val visitResponse =
       Visit(
-        prisonerId = "PrisonerId",
+        prisonerId = hmppsId,
         prisonId = "MDI",
         prisonName = "Some Prison",
         visitRoom = "Room",
@@ -79,7 +86,7 @@ internal class VisitQueueServiceTest(
         createdTimestamp = "Created",
         modifiedTimestamp = "Modified",
         firstBookedDateTime = "First",
-        visitors = emptyList(),
+        visitors = listOf(visitor),
         visitNotes = emptyList(),
         visitContact = VisitContact(name = "Name", telephone = "Telephone", email = "Email"),
         applicationReference = "dfs-wjs-abc",
@@ -118,6 +125,84 @@ internal class VisitQueueServiceTest(
           visitorSupport = VisitorSupport(description = "Visually impaired assistance"),
         )
       val who = "client-name"
+      val visitorNomisPersonId = createVisitRequest.visitors!!.toList()[0].nomisPersonId
+
+      beforeTest {
+        whenever(personalRelationshipsGateway.getContacts(createVisitRequest.prisonerId, page = 1, size = 10)).thenReturn(
+          Response(
+            data =
+              PRPaginatedPrisonerContacts(
+                contacts =
+                  listOf(
+                    PRPrisonerContact(
+                      prisonerContactId = 123456,
+                      contactId = visitorNomisPersonId,
+                      prisonerNumber = "A1234BC",
+                      lastName = "Doe",
+                      firstName = "John",
+                      middleNames = "William",
+                      dateOfBirth = "1980-01-01",
+                      relationshipTypeCode = "S",
+                      relationshipTypeDescription = "Friend",
+                      relationshipToPrisonerCode = "FRI",
+                      relationshipToPrisonerDescription = "Friend",
+                      flat = "Flat 1",
+                      property = "123",
+                      street = "Baker Street",
+                      area = "Marylebone",
+                      cityCode = "25343",
+                      cityDescription = "Sheffield",
+                      countyCode = "S.YORKSHIRE",
+                      countyDescription = "South Yorkshire",
+                      postCode = "NW1 6XE",
+                      countryCode = "ENG",
+                      countryDescription = "England",
+                      primaryAddress = true,
+                      mailAddress = true,
+                      phoneType = "MOB",
+                      phoneTypeDescription = "Mobile",
+                      phoneNumber = "+1234567890",
+                      extNumber = "123",
+                      approvedVisitor = true,
+                      nextOfKin = false,
+                      emergencyContact = true,
+                      isRelationshipActive = true,
+                      currentTerm = true,
+                      comments = "Close family friend",
+                    ),
+                  ),
+                pageable =
+                  Pageable(
+                    offset = 0,
+                    sort =
+                      Sort(
+                        empty = false,
+                        sorted = false,
+                        unsorted = true,
+                      ),
+                    pageSize = 10,
+                    paged = true,
+                    pageNumber = 1,
+                    unpaged = false,
+                  ),
+                totalElements = 1,
+                totalPages = 1,
+                first = true,
+                last = true,
+                size = 10,
+                number = 1,
+                sort =
+                  Sort(
+                    empty = false,
+                    sorted = false,
+                    unsorted = true,
+                  ),
+                numberOfElements = 1,
+                empty = false,
+              ),
+          ),
+        )
+      }
 
       it("successfully adds to message queue") {
         val messageBody = """{"messageId":"1","eventType":"VisitCreated","messageAttributes":{}}"""
@@ -155,6 +240,96 @@ internal class VisitQueueServiceTest(
         val response = visitQueueService.sendCreateVisit(createVisitRequest, who, filters)
         response.data.shouldBeNull()
         response.errors.shouldBe(errors)
+      }
+
+      it("return error if personalRelationshipsGateway returns an error") {
+        val errors = listOf(UpstreamApiError(UpstreamApi.PERSONAL_RELATIONSHIPS, UpstreamApiError.Type.INTERNAL_SERVER_ERROR, description = "personalRelationshipsGateway returns an error"))
+        whenever(personalRelationshipsGateway.getContacts(prisonerId = hmppsId, page = 1, size = 10)).thenReturn(Response(data = null, errors))
+
+        val response = visitQueueService.sendCreateVisit(createVisitRequest, who, filters)
+        response.data.shouldBeNull()
+        response.errors.shouldBe(errors)
+      }
+
+      it("return error if the visitor is not a contact of the prisoner") {
+        whenever(personalRelationshipsGateway.getContacts(prisonerId = hmppsId, page = 1, size = 10)).thenReturn(
+          Response(
+            data =
+              PRPaginatedPrisonerContacts(
+                contacts =
+                  listOf(
+                    PRPrisonerContact(
+                      prisonerContactId = 123456,
+                      contactId = visitorNomisPersonId + 1, // Add 1 so it is different from expected
+                      prisonerNumber = "A1234BC",
+                      lastName = "Doe",
+                      firstName = "John",
+                      middleNames = "William",
+                      dateOfBirth = "1980-01-01",
+                      relationshipTypeCode = "S",
+                      relationshipTypeDescription = "Friend",
+                      relationshipToPrisonerCode = "FRI",
+                      relationshipToPrisonerDescription = "Friend",
+                      flat = "Flat 1",
+                      property = "123",
+                      street = "Baker Street",
+                      area = "Marylebone",
+                      cityCode = "25343",
+                      cityDescription = "Sheffield",
+                      countyCode = "S.YORKSHIRE",
+                      countyDescription = "South Yorkshire",
+                      postCode = "NW1 6XE",
+                      countryCode = "ENG",
+                      countryDescription = "England",
+                      primaryAddress = true,
+                      mailAddress = true,
+                      phoneType = "MOB",
+                      phoneTypeDescription = "Mobile",
+                      phoneNumber = "+1234567890",
+                      extNumber = "123",
+                      approvedVisitor = true,
+                      nextOfKin = false,
+                      emergencyContact = true,
+                      isRelationshipActive = true,
+                      currentTerm = true,
+                      comments = "Close family friend",
+                    ),
+                  ),
+                pageable =
+                  Pageable(
+                    offset = 0,
+                    sort =
+                      Sort(
+                        empty = false,
+                        sorted = false,
+                        unsorted = true,
+                      ),
+                    pageSize = 10,
+                    paged = true,
+                    pageNumber = 1,
+                    unpaged = false,
+                  ),
+                totalElements = 1,
+                totalPages = 1,
+                first = true,
+                last = true,
+                size = 10,
+                number = 1,
+                sort =
+                  Sort(
+                    empty = false,
+                    sorted = false,
+                    unsorted = true,
+                  ),
+                numberOfElements = 1,
+                empty = false,
+              ),
+          ),
+        )
+
+        val response = visitQueueService.sendCreateVisit(createVisitRequest, who, filters)
+        response.data.shouldBeNull()
+        response.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.PERSONAL_RELATIONSHIPS, UpstreamApiError.Type.ENTITY_NOT_FOUND, "No contact found with an ID of $visitorNomisPersonId")))
       }
     }
 
