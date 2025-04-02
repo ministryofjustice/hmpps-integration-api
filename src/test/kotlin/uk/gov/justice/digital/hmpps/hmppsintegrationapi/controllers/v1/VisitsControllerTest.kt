@@ -31,7 +31,9 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitRestri
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitType
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Visitor
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitorSupport
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.VisitReferences
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetVisitInformationByReferenceService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetVisitReferencesByClientReferenceService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.VisitQueueService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 import java.time.LocalDateTime
@@ -43,6 +45,7 @@ class VisitsControllerTest(
   @MockitoBean val auditService: AuditService,
   @MockitoBean val getVisitInformationByReferenceService: GetVisitInformationByReferenceService,
   @MockitoBean val visitQueueService: VisitQueueService,
+  @MockitoBean val getVisitReferencesByClientReferenceService: GetVisitReferencesByClientReferenceService,
 ) : DescribeSpec(
     {
       val mockMvc = IntegrationAPIMockMvc(springMockMvc)
@@ -287,6 +290,52 @@ class VisitsControllerTest(
           whenever(visitQueueService.sendCancelVisit(visitReference, cancelVisitRequest, clientName, filters)).thenThrow(MessageFailedException("Could not send Visit message to queue"))
 
           val result = mockMvc.performAuthorisedPost(path, cancelVisitRequest)
+          result.response.status.shouldBe(HttpStatus.INTERNAL_SERVER_ERROR.value())
+        }
+      }
+
+      describe("/id/by-client-ref/{clientReference}") {
+        val clientRef = "ABC223"
+        val path = "/v1/visit/id/by-client-ref/$clientRef"
+        val filters = null
+        val response = VisitReferences(visitReferences = listOf(clientRef))
+        beforeTest {
+          Mockito.reset(getVisitReferencesByClientReferenceService)
+
+          whenever(getVisitReferencesByClientReferenceService.execute(clientRef, filters)).thenReturn(Response(data = response))
+        }
+
+        it("logs audit") {
+          mockMvc.performAuthorised(path)
+
+          verify(
+            auditService,
+            times(1),
+          ).createEvent("GET_VISIT_REFERENCES_BY_CLIENT_REFERENCE", mapOf("clientReference" to clientRef))
+        }
+
+        it("calls visit orchestration and returns visitreferences associated with the client reference supplied") {
+          val result = mockMvc.performAuthorised(path)
+          result.response.status.shouldBe(HttpStatus.OK.value())
+          result.response.contentAsString shouldBe (
+            """
+            {"data":{"visitReferences":["ABC223"]}}
+          """.removeWhitespaceAndNewlines()
+          )
+          verify(getVisitReferencesByClientReferenceService, times(1)).execute(clientRef, filters)
+        }
+
+        it("gets a 404 when retrieved visit not found by reference") {
+          whenever(getVisitReferencesByClientReferenceService.execute(clientRef, filters)).thenReturn(Response(data = null, errors = listOf(UpstreamApiError(causedBy = UpstreamApi.MANAGE_PRISON_VISITS, type = UpstreamApiError.Type.ENTITY_NOT_FOUND))))
+
+          val result = mockMvc.performAuthorised(path)
+          result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
+        }
+
+        it("gets a 500 when visit service responds") {
+          whenever(getVisitReferencesByClientReferenceService.execute(clientRef, filters)).thenReturn(Response(data = null, errors = listOf(UpstreamApiError(causedBy = UpstreamApi.MANAGE_PRISON_VISITS, type = UpstreamApiError.Type.INTERNAL_SERVER_ERROR))))
+
+          val result = mockMvc.performAuthorised(path)
           result.response.status.shouldBe(HttpStatus.INTERNAL_SERVER_ERROR.value())
         }
       }

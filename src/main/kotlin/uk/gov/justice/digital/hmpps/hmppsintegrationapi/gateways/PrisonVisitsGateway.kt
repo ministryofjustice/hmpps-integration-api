@@ -12,6 +12,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.PVPaginatedVisits
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.PVVisit
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonVisits.VisitReferences
 
 @Component
 class PrisonVisitsGateway(
@@ -110,6 +111,32 @@ class PrisonVisitsGateway(
       is WebClientWrapperResponse.Success -> {
         Response(
           data = mapToVisits(result),
+        )
+      }
+
+      is WebClientWrapperResponse.Error -> {
+        Response(
+          data = null,
+          errors = result.errors,
+        )
+      }
+    }
+  }
+
+  fun getVisitReferencesByClientReference(clientReference: String): Response<VisitReferences?> {
+    val result =
+      webClient.request<List<String>>(
+        HttpMethod.GET,
+        "/visits/external-system/$clientReference",
+        authenticationHeader(),
+        UpstreamApi.MANAGE_PRISON_VISITS,
+        badRequestAsError = true,
+      )
+
+    return when (result) {
+      is WebClientWrapperResponse.Success -> {
+        Response(
+          data = VisitReferences(result.data),
         )
       }
 
