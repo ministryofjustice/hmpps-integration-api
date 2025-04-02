@@ -172,6 +172,9 @@
         <a href="../../documentation/api/index.html#v1-visit-visitreference"><span>/v1/visit/{visitReference}</span></a>
       </li>
       <li>
+        <a href="../../documentation/api/index.html#v1-visit-id-by-client-ref-clientreference"><span>/v1/visit/id/by-client-ref/{clientReference}</span></a>
+      </li>
+      <li>
         <a href="../../documentation/api/index.html#v1-prison-prisonid-visit-search"><span>/v1/prison/{prisonId}/visit/search</span></a>
       </li>
       <li>
@@ -1309,6 +1312,115 @@
 </td>
 <td>
 <a href='#schema-dataresponsevisit'>DataResponseVisit</a>
+</td>
+</tr>
+
+<tr>
+<td>404</td>
+<td>
+<p>Not Found</p>
+
+
+
+<pre><code>{
+  "status": 404,
+  "userMessage": "404 Not found error: Could not find person with HMPPS id: 2003/0011991D.",
+  "developerMessage": "Could not find person with HMPPS id: 2003/0011991D."
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-personnotfound'>PersonNotFound</a>
+</td>
+</tr>
+
+<tr>
+<td>500</td>
+<td>
+<p>Internal Server Error</p>
+
+
+
+<pre><code>{
+  "status": 500,
+  "userMessage": "Internal Server Error",
+  "developerMessage": "Unable to complete request as an upstream service is not responding."
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-internalservererror'>InternalServerError</a>
+</td>
+</tr>
+
+</tbody>
+</table>
+
+
+
+
+<h2 id="v1-visit-id-by-client-ref-clientreference">/v1/visit/id/by-client-ref/{clientReference}</h2>
+
+<h3 id="v1-visit-id-by-client-ref-clientreference-get">get</h3>
+
+  <p><em>Get visit references from given client reference .</em></p>
+
+
+  <p><br><br><b>Applicable filters</b>: <ul><li>prisons</li></ul></p>
+
+
+
+
+<h4 id="v1-visit-id-by-client-ref-clientreference-get-parameters">Parameters</h4>
+<table>
+<thead>
+<tr><th>Parameter</th><th>In</th><th>Type</th><th>Required</th><th>Description</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>clientReference</td>
+<td>path</td>
+<td>string</td>
+<td>true</td>
+<td><p>The visit reference number relating to the visit.</p>
+
+
+</td>
+</tr>
+
+</tbody>
+</table>
+
+
+
+
+<h4 id="v1-visit-id-by-client-ref-clientreference-get-responses">Responses</h4>
+<table>
+<thead>
+<tr><th>Status</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>200</td>
+<td>
+<p>Successfully found visit references for a given client reference.</p>
+
+
+
+<pre><code>{
+  "data": {
+    "visitReferences": [
+      {
+      }
+    ]
+  }
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-dataresponsevisitreferences'>DataResponseVisitReferences</a>
 </td>
 </tr>
 
@@ -10179,6 +10291,51 @@
 <td>boolean</td>
 <td>false</td>
 <td><p>true if visitor is the contact for the visit otherwise false</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+</tbody>
+</table>
+
+<h3 id="schema-dataresponsevisitreferences">DataResponseVisitReferences</h3>
+
+
+<table class='schema-dataresponsevisitreferences'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>data</td>
+<td>object</td>
+<td>true</td>
+<td></td>
+<td>
+  <a href='#schema-visitreferences'>VisitReferences</a>
+</td>
+</tr>
+
+</tbody>
+</table>
+
+<h3 id="schema-visitreferences">VisitReferences</h3>
+
+
+<table class='schema-visitreferences'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>visitReferences</td>
+<td>array</td>
+<td>true</td>
+<td><p>List of Visit References</p>
 </td>
 <td>
   
