@@ -8,10 +8,13 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.MessageFailedE
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PersonalRelationshipsGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CancelVisitRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CreateVisitRequest
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HmppsMessage
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HmppsMessageResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpdateVisitRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Visitor
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.hmpps.sqs.HmppsQueue
 import uk.gov.justice.hmpps.sqs.HmppsQueueService
@@ -41,49 +44,40 @@ class VisitQueueService(
     }
 
     val nomisNumber = personResponse.data?.nomisNumber ?: return Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.NOMIS, UpstreamApiError.Type.ENTITY_NOT_FOUND)))
-
     val visitors = visit.visitors.orEmpty()
-    if (visitors.isNotEmpty()) {
-      var page = 1
-      var isLastPage = false
-      val contacts =
-        buildList {
-          while (!isLastPage) {
-            val response = personalRelationshipsGateway.getContacts(nomisNumber, page, size = 10)
-            if (response.errors.isNotEmpty()) {
-              return Response(data = null, errors = response.errors)
-            }
-            addAll(response.data?.contacts.orEmpty())
-            isLastPage = response.data?.last ?: true
-            page++
-          }
-        }
-
-      visitors.forEach {
-        if (it.nomisPersonId !in contacts.map { contact -> contact.contactId }) {
-          return Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.PERSONAL_RELATIONSHIPS, UpstreamApiError.Type.ENTITY_NOT_FOUND, description = "No contact found with an ID of ${it.nomisPersonId}")))
-        }
-      }
+    val checkVisitorsResponse = checkVisitors(nomisNumber, visitors)
+    if (checkVisitorsResponse.errors.isNotEmpty()) {
+      return Response(data = null, errors = checkVisitorsResponse.errors)
     }
 
     val hmppsMessage = visit.toHmppsMessage(who)
+    writeMessageToQueue(hmppsMessage, "Could not send Visit create to queue")
 
-    try {
-      val stringifiedMessage = objectMapper.writeValueAsString(hmppsMessage)
-      val sendMessageRequest =
-        SendMessageRequest
-          .builder()
-          .queueUrl(visitsQueueUrl)
-          .messageBody(stringifiedMessage)
-          .eventTypeMessageAttributes(hmppsMessage.eventType.toString())
-          .build()
+    return Response(HmppsMessageResponse(message = "Visit creation written to queue"))
+  }
 
-      visitsQueueSqsClient.sendMessage(sendMessageRequest)
-
-      return Response(HmppsMessageResponse(message = "Visit creation written to queue"))
-    } catch (e: Exception) {
-      throw MessageFailedException("Could not send Visit message to queue", e)
+  fun sendUpdateVisit(
+    visitReference: String,
+    visit: UpdateVisitRequest,
+    who: String,
+    consumerFilters: ConsumerFilters?,
+  ): Response<HmppsMessageResponse?> {
+    val visitResponse = getVisitInformationByReferenceService.execute(visitReference, consumerFilters)
+    if (visitResponse.errors.isNotEmpty()) {
+      return Response(data = null, errors = visitResponse.errors)
     }
+
+    val nomisNumber = visitResponse.data?.prisonerId ?: return Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.NOMIS, UpstreamApiError.Type.ENTITY_NOT_FOUND)))
+    val visitors = visit.visitors.orEmpty()
+    val checkVisitorsResponse = checkVisitors(nomisNumber, visitors)
+    if (checkVisitorsResponse.errors.isNotEmpty()) {
+      return Response(data = null, errors = checkVisitorsResponse.errors)
+    }
+
+    val hmppsMessage = visit.toHmppsMessage(who, visitReference)
+    writeMessageToQueue(hmppsMessage, "Could not send Visit update to queue")
+
+    return Response(HmppsMessageResponse(message = "Visit update written to queue"))
   }
 
   fun sendCancelVisit(
@@ -99,7 +93,15 @@ class VisitQueueService(
     }
 
     val hmppsMessage = visit.toHmppsMessage(who, visitReference)
+    writeMessageToQueue(hmppsMessage, "Could not send Visit cancellation to queue")
 
+    return Response(HmppsMessageResponse(message = "Visit cancellation written to queue"))
+  }
+
+  private fun writeMessageToQueue(
+    hmppsMessage: HmppsMessage,
+    exceptionMessage: String,
+  ) {
     try {
       val stringifiedMessage = objectMapper.writeValueAsString(hmppsMessage)
       val sendMessageRequest =
@@ -111,10 +113,40 @@ class VisitQueueService(
           .build()
 
       visitsQueueSqsClient.sendMessage(sendMessageRequest)
-
-      return Response(HmppsMessageResponse(message = "Visit cancellation written to queue"))
     } catch (e: Exception) {
-      throw MessageFailedException("Could not send Visit cancellation to queue", e)
+      throw MessageFailedException(exceptionMessage, e)
     }
+  }
+
+  private fun checkVisitors(
+    nomisNumber: String,
+    visitors: Set<Visitor>,
+  ): Response<Nothing?> {
+    if (visitors.isEmpty()) {
+      return Response(data = null)
+    }
+
+    var page = 1
+    var isLastPage = false
+    val contacts =
+      buildList {
+        while (!isLastPage) {
+          val response = personalRelationshipsGateway.getContacts(nomisNumber, page, size = 10)
+          if (response.errors.isNotEmpty()) {
+            return Response(data = null, errors = response.errors)
+          }
+          addAll(response.data?.contacts.orEmpty())
+          isLastPage = response.data?.last ?: true
+          page++
+        }
+      }
+
+    visitors.forEach {
+      if (it.nomisPersonId !in contacts.map { contact -> contact.contactId }) {
+        return Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.PERSONAL_RELATIONSHIPS, UpstreamApiError.Type.ENTITY_NOT_FOUND, description = "No contact found with an ID of ${it.nomisPersonId}")))
+      }
+    }
+
+    return Response(data = null)
   }
 }

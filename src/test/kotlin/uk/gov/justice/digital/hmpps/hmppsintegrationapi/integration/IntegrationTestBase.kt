@@ -15,6 +15,7 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.ResultActions
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
 import java.io.File
@@ -90,6 +91,29 @@ abstract class IntegrationTestBase {
   ): ResultActions =
     mockMvc.perform(
       post(path)
+        .headers(getAuthHeader(cn))
+        .content(requestBody)
+        .contentType(org.springframework.http.MediaType.APPLICATION_JSON),
+    )
+
+  fun putApi(
+    path: String,
+    requestBody: String,
+  ): ResultActions =
+    mockMvc.perform(
+      put(path)
+        .headers(getAuthHeader())
+        .content(requestBody)
+        .contentType(org.springframework.http.MediaType.APPLICATION_JSON),
+    )
+
+  fun putApiWithCN(
+    path: String,
+    requestBody: String,
+    cn: String,
+  ): ResultActions =
+    mockMvc.perform(
+      put(path)
         .headers(getAuthHeader(cn))
         .content(requestBody)
         .contentType(org.springframework.http.MediaType.APPLICATION_JSON),

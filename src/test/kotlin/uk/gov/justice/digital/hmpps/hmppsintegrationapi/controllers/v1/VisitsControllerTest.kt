@@ -21,6 +21,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CreateVisit
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HmppsMessageResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.OutcomeStatus
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpdateVisitRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Visit
@@ -54,7 +55,7 @@ class VisitsControllerTest(
         Mockito.reset(auditService)
       }
 
-      describe("/v1/visit/{visitReference}") {
+      describe("GET /v1/visit/{visitReference}") {
         val visitReference = "1234567"
         val path = "/v1/visit/$visitReference"
         val visitResponse =
@@ -151,7 +152,7 @@ class VisitsControllerTest(
         }
       }
 
-      describe("/v1/visit") {
+      describe("POST /v1/visit") {
         val path = "/v1/visit"
         val filters = null
         val message = "Visit Message"
@@ -190,7 +191,7 @@ class VisitsControllerTest(
           ).createEvent("POST_VISIT", mapOf("prisonerId" to createVisitRequest.prisonerId, "clientVisitReference" to createVisitRequest.clientVisitReference, "clientName" to clientName))
         }
 
-        it("Calls the visit queue service and gets a response") {
+        it("Calls the visit queue service and gets a success response") {
           val result = mockMvc.performAuthorisedPost(path, createVisitRequest)
           result.response.status.shouldBe(HttpStatus.OK.value())
           result.response.contentAsString shouldBe (
@@ -226,7 +227,79 @@ class VisitsControllerTest(
         }
       }
 
-      describe("/v1/visit/{visitReference}/cancel") {
+      describe("PUT /v1/visit/{visitReference}") {
+        val visitReference = "1234567"
+        val path = "/v1/visit/$visitReference"
+        val filters = null
+        val message = "Visit Message"
+        val putResponse = HmppsMessageResponse(message = message)
+        val clientName = "automated-test-client"
+        val timestamp = "2020-12-04T10:42:43"
+        val updateVisitRequest =
+          UpdateVisitRequest(
+            visitRoom = "A1",
+            visitType = VisitType.SOCIAL,
+            visitRestriction = VisitRestriction.OPEN,
+            startTimestamp = LocalDateTime.parse(timestamp),
+            endTimestamp = LocalDateTime.parse(timestamp),
+            visitNotes = listOf(VisitNotes(type = "VISITOR_CONCERN", text = "Visitor is concerned their mother in law is coming!")),
+            visitContact = VisitContact(name = "John Smith", telephone = "0987654321", email = "john.smith@example.com"),
+            visitors = setOf(Visitor(nomisPersonId = 3L, visitContact = true)),
+            visitorSupport = VisitorSupport(description = "Visually impaired assistance"),
+          )
+
+        beforeTest {
+          Mockito.reset(visitQueueService)
+
+          whenever(visitQueueService.sendUpdateVisit(visitReference, updateVisitRequest, clientName, filters)).thenReturn(Response(data = putResponse))
+        }
+
+        it("logs audit") {
+          mockMvc.performAuthorisedPut(path, updateVisitRequest)
+
+          verify(
+            auditService,
+            times(1),
+          ).createEvent("POST_UPDATE_VISIT", mapOf("visitReference" to visitReference, "clientName" to clientName))
+        }
+
+        it("Calls the visit queue service and gets a success response") {
+          val result = mockMvc.performAuthorisedPut(path, updateVisitRequest)
+          result.response.status.shouldBe(HttpStatus.OK.value())
+          result.response.contentAsString shouldBe (
+            """
+            {
+              "data": {
+                "message": "$message"
+              }
+            }
+          """.removeWhitespaceAndNewlines()
+          )
+        }
+
+        it("returns a 400 when upstream returns 400") {
+          whenever(visitQueueService.sendUpdateVisit(visitReference, updateVisitRequest, clientName, filters)).thenReturn(Response(data = null, errors = listOf(UpstreamApiError(causedBy = UpstreamApi.MANAGE_PRISON_VISITS, type = UpstreamApiError.Type.BAD_REQUEST))))
+
+          val result = mockMvc.performAuthorisedPut(path, updateVisitRequest)
+          result.response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
+        }
+
+        it("returns a 404 when upstream returns 404") {
+          whenever(visitQueueService.sendUpdateVisit(visitReference, updateVisitRequest, clientName, filters)).thenReturn(Response(data = null, errors = listOf(UpstreamApiError(causedBy = UpstreamApi.MANAGE_PRISON_VISITS, type = UpstreamApiError.Type.ENTITY_NOT_FOUND))))
+
+          val result = mockMvc.performAuthorisedPut(path, updateVisitRequest)
+          result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
+        }
+
+        it("gets a 500 when visit queue service throws MessageFailedException") {
+          whenever(visitQueueService.sendUpdateVisit(visitReference, updateVisitRequest, clientName, filters)).thenThrow(MessageFailedException("Could not send Visit message to queue"))
+
+          val result = mockMvc.performAuthorisedPut(path, updateVisitRequest)
+          result.response.status.shouldBe(HttpStatus.INTERNAL_SERVER_ERROR.value())
+        }
+      }
+
+      describe("POST /v1/visit/{visitReference}/cancel") {
         val visitReference = "1234567"
         val path = "/v1/visit/$visitReference/cancel"
         val filters = null
@@ -258,7 +331,7 @@ class VisitsControllerTest(
           ).createEvent("POST_CANCEL_VISIT", mapOf("visitReference" to visitReference, "clientName" to clientName))
         }
 
-        it("Calls the visit queue service and gets a response") {
+        it("Calls the visit queue service and gets a success response") {
           val result = mockMvc.performAuthorisedPost(path, cancelVisitRequest)
           result.response.status.shouldBe(HttpStatus.OK.value())
           result.response.contentAsString shouldBe (
