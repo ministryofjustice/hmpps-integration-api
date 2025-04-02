@@ -389,9 +389,9 @@ class VisitsIntegrationTest : IntegrationTestBase() {
     }
 
     @Test
-    fun `post a visit with no prison id, should get 400 with no message on the queue`() {
-      val createVisitRequest = getInvalidCancelVisitRequest(noActionedBy = true)
-      val requestBody = asJsonString(createVisitRequest)
+    fun `post a visit cancellation with no actioned by, should get 400 with no message on the queue`() {
+      val cancelVisitRequest = getInvalidCancelVisitRequest(noActionedBy = true)
+      val requestBody = asJsonString(cancelVisitRequest)
 
       postToApi(path, requestBody)
         .andExpect(status().isBadRequest)
