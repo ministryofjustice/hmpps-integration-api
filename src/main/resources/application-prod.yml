@@ -34,6 +34,9 @@ services:
     username: ${CLIENT_ID}
     password: ${CLIENT_SECRET}
 
+feature-flag:
+  use-arns-endpoints: false
+
 authorisation:
   consumers:
     ctrlo:

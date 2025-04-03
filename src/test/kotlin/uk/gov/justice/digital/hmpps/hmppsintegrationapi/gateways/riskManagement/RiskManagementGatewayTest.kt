@@ -1,7 +1,9 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.riskManagement
 
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.string.shouldContain
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory
 import org.mockito.kotlin.verify
@@ -11,6 +13,8 @@ import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.FeatureNotEnabledException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.RiskManagementGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
@@ -26,6 +30,7 @@ import java.io.File
 )
 class RiskManagementGatewayTest(
   @MockitoBean val hmppsAuthGateway: HmppsAuthGateway,
+  @MockitoBean val featureFlag: FeatureFlagConfig,
   private val riskManagementGateway: RiskManagementGateway,
 ) : DescribeSpec({
 
@@ -34,6 +39,7 @@ class RiskManagementGatewayTest(
     beforeEach {
       riskManagementMockServer.start()
       Mockito.reset(hmppsAuthGateway)
+      whenever(featureFlag.useArnsEndpoints).thenReturn(true)
 
       whenever(hmppsAuthGateway.getClientToken("Risk Management Plan Search")).thenReturn(HmppsAuthMockServer.TOKEN)
     }
@@ -86,6 +92,12 @@ class RiskManagementGatewayTest(
         val response = riskManagementGateway.getRiskManagementPlansForCrn(crn)
         response.errors.size.shouldBe(1)
         response.errors[0].type.shouldBe(UpstreamApiError.Type.FORBIDDEN)
+      }
+
+      it("returns 503 service not available when feature flag set to false") {
+        whenever(featureFlag.useArnsEndpoints).thenReturn(false)
+        val exception = shouldThrow<FeatureNotEnabledException> { riskManagementGateway.getRiskManagementPlansForCrn(crn) }
+        exception.message.shouldContain("use-arns-endpoints not enabled")
       }
     }
   })
