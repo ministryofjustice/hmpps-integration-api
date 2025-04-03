@@ -42,6 +42,7 @@ class VisitsIntegrationTest : IntegrationTestBase() {
   fun getNumberOfMessagesCurrentlyOnQueue(): Int = testSqsClient.countAllMessagesOnQueue(testQueueUrl).get()
 
   fun checkQueueIsEmpty() {
+    await untilCallTo { getNumberOfMessagesCurrentlyOnQueue() } matches { it == 0 }
     getNumberOfMessagesCurrentlyOnQueue().shouldBe(0)
   }
 
