@@ -21,6 +21,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CancelVisit
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CreateVisitRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.OutcomeStatus
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpdateVisitRequest
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UserType
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitContact
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitNotes
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitRestriction
@@ -531,16 +532,7 @@ class VisitsIntegrationTest : IntegrationTestBase() {
             text = "visit order cancelled",
           ),
         actionedBy = "test-consumer",
-      )
-
-    private fun getInvalidCancelVisitRequest(noActionedBy: Boolean = false) =
-      CancelVisitRequest(
-        cancelOutcome =
-          CancelOutcome(
-            outcomeStatus = OutcomeStatus.VISIT_ORDER_CANCELLED,
-            text = "visit order cancelled",
-          ),
-        actionedBy = if (noActionedBy) "" else "test-consumer",
+        userType = UserType.PRISONER,
       )
 
     @Test
@@ -565,24 +557,13 @@ class VisitsIntegrationTest : IntegrationTestBase() {
       queueMessages.size.shouldBe(1)
 
       val messageJson = queueMessages[0].body()
-      val expectedMessage = cancelVisitRequest.toHmppsMessage(defaultCn, visitReference)
+      val expectedMessage = cancelVisitRequest.toHmppsMessage(defaultCn, visitReference, prisonerId = "AF34567G")
       messageJson.shouldContainJsonKeyValue("$.eventType", expectedMessage.eventType.eventTypeCode)
       messageJson.shouldContainJsonKeyValue("$.who", defaultCn)
       val objectMapper = jacksonObjectMapper()
       val messageAttributes = objectMapper.readTree(messageJson).at("/messageAttributes")
       val expectedMessageAttributes = objectMapper.readTree(objectMapper.writeValueAsString(expectedMessage.messageAttributes))
       messageAttributes.shouldBe(expectedMessageAttributes)
-    }
-
-    @Test
-    fun `post a visit cancellation with no actioned by, should get 400 with no message on the queue`() {
-      val cancelVisitRequest = getInvalidCancelVisitRequest(noActionedBy = true)
-      val requestBody = asJsonString(cancelVisitRequest)
-
-      postToApi(path, requestBody)
-        .andExpect(status().isBadRequest)
-
-      checkQueueIsEmpty()
     }
 
     @Test

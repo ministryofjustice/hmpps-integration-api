@@ -101,7 +101,9 @@ class VisitQueueService(
       return Response(data = null, errors = visitResponse.errors)
     }
 
-    val hmppsMessage = visit.toHmppsMessage(who, visitReference)
+    val prisonerId = visitResponse.data?.prisonerId ?: return Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.MANAGE_PRISON_VISITS, UpstreamApiError.Type.ENTITY_NOT_FOUND)))
+
+    val hmppsMessage = visit.toHmppsMessage(who, visitReference, prisonerId)
     writeMessageToQueue(hmppsMessage, "Could not send Visit cancellation to queue")
 
     return Response(HmppsMessageResponse(message = "Visit cancellation written to queue"))
