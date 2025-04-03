@@ -54,6 +54,9 @@ hmpps.sqs:
     visits:
       queueName: "visits"
 
+feature-flag:
+  use-arns-endpoints: true
+
 authorisation:
   consumers:
     automated-test-client:

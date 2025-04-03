@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpMethod
 import org.springframework.stereotype.Component
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.featureNotEnabledException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper.WebClientWrapperResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNeeds.ArnNeeds
@@ -18,6 +20,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 @Component
 class AssessRisksAndNeedsGateway(
   @Value("\${services.assess-risks-and-needs.base-url}") baseUrl: String,
+  private val featureConfig: FeatureFlagConfig,
 ) {
   private val webClient = WebClientWrapper(baseUrl)
 
@@ -25,6 +28,7 @@ class AssessRisksAndNeedsGateway(
   lateinit var hmppsAuthGateway: HmppsAuthGateway
 
   fun getRiskPredictorScoresForPerson(id: String): Response<List<RiskPredictorScore>> {
+    if (!featureConfig.useArnsEndpoints) throw featureNotEnabledException(FeatureFlagConfig.USE_ARNS_ENDPOINTS)
     val result =
       webClient.requestList<ArnRiskPredictorScore>(
         HttpMethod.GET,
@@ -54,6 +58,7 @@ class AssessRisksAndNeedsGateway(
   }
 
   fun getRiskSeriousHarmForPerson(id: String): Response<Risks?> {
+    if (!featureConfig.useArnsEndpoints) throw featureNotEnabledException(FeatureFlagConfig.USE_ARNS_ENDPOINTS)
     val result =
       webClient.request<ArnRisks>(
         HttpMethod.GET,
@@ -78,6 +83,7 @@ class AssessRisksAndNeedsGateway(
   }
 
   fun getNeedsForPerson(id: String): Response<Needs?> {
+    if (!featureConfig.useArnsEndpoints) throw featureNotEnabledException(FeatureFlagConfig.USE_ARNS_ENDPOINTS)
     val result =
       webClient.request<ArnNeeds>(
         HttpMethod.GET,

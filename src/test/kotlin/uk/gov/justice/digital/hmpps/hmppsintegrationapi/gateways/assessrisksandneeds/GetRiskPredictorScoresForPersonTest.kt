@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.assessrisksandneeds
 
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.booleans.shouldBeTrue
 import io.kotest.matchers.shouldBe
@@ -12,6 +13,8 @@ import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.ResponseException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.AssessRisksAndNeedsGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
@@ -33,6 +36,7 @@ import java.time.LocalDateTime
 )
 class GetRiskPredictorScoresForPersonTest(
   @MockitoBean val hmppsAuthGateway: HmppsAuthGateway,
+  @MockitoBean val featureFlag: FeatureFlagConfig,
   val assessRisksAndNeedsGateway: AssessRisksAndNeedsGateway,
 ) : DescribeSpec(
     {
@@ -43,6 +47,7 @@ class GetRiskPredictorScoresForPersonTest(
       beforeEach {
         assessRisksAndNeedsApiMockServer.start()
         Mockito.reset(hmppsAuthGateway)
+        whenever(featureFlag.useArnsEndpoints).thenReturn(true)
         assessRisksAndNeedsApiMockServer.stubForGet(
           path,
           """
@@ -124,6 +129,12 @@ class GetRiskPredictorScoresForPersonTest(
         val response = assessRisksAndNeedsGateway.getRiskPredictorScoresForPerson(deliusCrn)
 
         response.hasError(UpstreamApiError.Type.FORBIDDEN).shouldBeTrue()
+      }
+
+      it("returns 503 service not available when feature flag set to false") {
+        whenever(featureFlag.useArnsEndpoints).thenReturn(false)
+        val exception = shouldThrow<ResponseException> { assessRisksAndNeedsGateway.getRiskPredictorScoresForPerson(deliusCrn) }
+        exception.shouldBe(ResponseException("use-arns-endpoints not enabled", 503))
       }
     },
   )

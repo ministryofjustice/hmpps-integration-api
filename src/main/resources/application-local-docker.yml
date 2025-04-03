@@ -92,3 +92,6 @@ hmpps.sqs:
       queueName: "jobsboard-integration"
     visits:
       queueName: "visits"
+
+feature-flag:
+  use-arns-endpoints: true
