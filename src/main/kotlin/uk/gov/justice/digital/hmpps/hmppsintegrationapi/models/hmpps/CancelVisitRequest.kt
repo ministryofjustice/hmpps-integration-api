@@ -5,7 +5,7 @@ import jakarta.validation.Valid
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull
 
-@Schema(description = "Private prison visit cancellation request")
+@Schema(description = "Cancel visit request")
 data class CancelVisitRequest(
   @Schema(description = "Outcome status and description", required = true)
   @field:Valid
