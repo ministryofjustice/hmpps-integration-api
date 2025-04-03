@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpMethod
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.featureNotEnabledException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.FeatureNotEnabledException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.assessRisksAndNeeds.CrnRiskManagementPlans
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
@@ -22,7 +22,7 @@ class RiskManagementGateway(
   lateinit var hmppsAuthGateway: HmppsAuthGateway
 
   fun getRiskManagementPlansForCrn(crn: String): Response<CrnRiskManagementPlans?> {
-    if (!featureFlag.useArnsEndpoints) throw featureNotEnabledException(FeatureFlagConfig.USE_ARNS_ENDPOINTS)
+    if (!featureFlag.useArnsEndpoints) throw FeatureNotEnabledException(FeatureFlagConfig.USE_ARNS_ENDPOINTS)
     val result =
       webClient.request<CrnRiskManagementPlans>(
         HttpMethod.GET,

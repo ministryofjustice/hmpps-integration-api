@@ -4,6 +4,7 @@ import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.booleans.shouldBeTrue
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.string.shouldContain
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory
 import org.mockito.kotlin.verify
@@ -14,7 +15,7 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.ResponseException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.FeatureNotEnabledException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.AssessRisksAndNeedsGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
@@ -164,8 +165,8 @@ class GetRisksForPersonTest(
 
       it("returns 503 service not available when feature flag set to false") {
         whenever(featureFlag.useArnsEndpoints).thenReturn(false)
-        val exception = shouldThrow<ResponseException> { assessRisksAndNeedsGateway.getRiskSeriousHarmForPerson(deliusCrn) }
-        exception.shouldBe(ResponseException("use-arns-endpoints not enabled", 503))
+        val exception = shouldThrow<FeatureNotEnabledException> { assessRisksAndNeedsGateway.getRiskSeriousHarmForPerson(deliusCrn) }
+        exception.message.shouldContain("use-arns-endpoints not enabled")
       }
     },
   )

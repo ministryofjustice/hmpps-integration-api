@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.riskManagement
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.string.shouldContain
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory
 import org.mockito.kotlin.verify
@@ -13,7 +14,7 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.ResponseException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.FeatureNotEnabledException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.RiskManagementGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
@@ -95,8 +96,8 @@ class RiskManagementGatewayTest(
 
       it("returns 503 service not available when feature flag set to false") {
         whenever(featureFlag.useArnsEndpoints).thenReturn(false)
-        val exception = shouldThrow<ResponseException> { riskManagementGateway.getRiskManagementPlansForCrn(crn) }
-        exception.shouldBe(ResponseException("use-arns-endpoints not enabled", 503))
+        val exception = shouldThrow<FeatureNotEnabledException> { riskManagementGateway.getRiskManagementPlansForCrn(crn) }
+        exception.message.shouldContain("use-arns-endpoints not enabled")
       }
     }
   })
