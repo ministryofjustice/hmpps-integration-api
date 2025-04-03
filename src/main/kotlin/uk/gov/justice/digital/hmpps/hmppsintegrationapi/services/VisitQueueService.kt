@@ -15,6 +15,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpdateVisitRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UserType
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Visitor
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.hmpps.sqs.HmppsQueue
@@ -91,7 +92,7 @@ class VisitQueueService(
 
   fun sendCancelVisit(
     visitReference: String,
-    visit: CancelVisitRequest,
+    cancelVisitRequest: CancelVisitRequest,
     who: String,
     filters: ConsumerFilters?,
   ): Response<HmppsMessageResponse?> {
@@ -101,7 +102,10 @@ class VisitQueueService(
       return Response(data = null, errors = visitResponse.errors)
     }
 
-    val hmppsMessage = visit.toHmppsMessage(who, visitReference)
+    val prisonerId = visitResponse.data?.prisonerId ?: return Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.MANAGE_PRISON_VISITS, UpstreamApiError.Type.ENTITY_NOT_FOUND)))
+
+    val actionedBy = if (cancelVisitRequest.userType == UserType.PRISONER) prisonerId else null
+    val hmppsMessage = cancelVisitRequest.toHmppsMessage(who, visitReference, actionedBy)
     writeMessageToQueue(hmppsMessage, "Could not send Visit cancellation to queue")
 
     return Response(HmppsMessageResponse(message = "Visit cancellation written to queue"))
