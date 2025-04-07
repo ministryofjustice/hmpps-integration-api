@@ -143,6 +143,16 @@ jobs:
       - run:
           name: Run heartbeat
           command: make heartbeat
+  smoke_test:
+    docker:
+      - image: grafana/k6:latest-with-browser
+    steps:
+      - checkout
+      - run:
+          command: k6 run src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/smoke/run.js
+          environment:
+            EXECUTION_TYPE: smoke
+            PROCESS: dev
 
 workflows:
   version: 2
@@ -210,6 +220,15 @@ workflows:
       - heartbeat:
           <<: *slack-fail-post-step
           name: post-deploy-heartbeat-for-dev
+          context:
+            - hmpps-common-vars
+            - hmpps-integration-api-heartbeat-dev
+          requires:
+            - deploy-to-dev
+
+      - smoke-tests:
+          <<: *slack-fail-post-step
+          name: smoke-tests-for-dev
           context:
             - hmpps-common-vars
             - hmpps-integration-api-heartbeat-dev
