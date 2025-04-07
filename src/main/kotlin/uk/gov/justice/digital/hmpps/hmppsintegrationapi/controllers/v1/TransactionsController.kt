@@ -255,7 +255,9 @@ class TransactionsController(
 
   @Operation(
     summary = "Transfer funds between the accounts of a prisoner.",
-    description = "Currently only able to move from spends to savings.<br><a href=\"#schema-transactiontransferrequest\">Request body</a><br><br><b>Applicable filters</b>: <ul><li>prisons</li></ul>",
+    description =
+      "Currently only able to move from spends to savings." +
+        "<br><br><b>Applicable filters</b>: <ul><li>prisons</li></ul>",
     responses = [
       ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully created a transaction transfer."),
       ApiResponse(
