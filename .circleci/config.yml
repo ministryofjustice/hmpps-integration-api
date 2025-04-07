@@ -145,7 +145,7 @@ jobs:
           command: make heartbeat
   smoke-tests:
     docker:
-      - image: grafana/k6:latest-with-browser
+      - image: grafana/k6:latest
     steps:
       - checkout
       - run:
