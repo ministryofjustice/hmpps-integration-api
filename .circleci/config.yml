@@ -149,7 +149,7 @@ jobs:
     steps:
       - checkout
       - run:
-          command: k6 run src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/smoke/run.js
+          command: k6 run smoke_tests/run.js
           environment:
             EXECUTION_TYPE: smoke
             PROCESS: dev
