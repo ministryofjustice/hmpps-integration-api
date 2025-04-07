@@ -182,7 +182,7 @@ class TransactionsController(
 
   @Operation(
     summary = "Make a financial transaction.",
-    description = "<a href=\"#schema-transactionrequest\">Request body</a><br><b>Applicable filters</b>: <ul><li>prisons</li></ul>",
+    description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
     responses = [
       ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully created a transaction."),
       ApiResponse(
