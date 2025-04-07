@@ -232,8 +232,6 @@ workflows:
           context:
             - hmpps-common-vars
             - hmpps-integration-api-heartbeat-dev
-          requires:
-            - deploy-to-dev
 
       - create-and-push-image-to-ecr:
           <<: *slack-fail-post-step
