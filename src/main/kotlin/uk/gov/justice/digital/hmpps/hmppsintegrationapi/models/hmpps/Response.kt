@@ -14,6 +14,13 @@ data class Response<T>(
     type: UpstreamApiError.Type,
     causedBy: UpstreamApi,
   ): Boolean = this.errors.any { it.type == type && it.causedBy == causedBy }
+
+  fun getDataWhenNoErrors(): T & Any {
+    if (this.errors.isNotEmpty()) {
+      throw IllegalStateException("Response has errors, data might be null or invalid.")
+    }
+    return this.data!!
+  }
 }
 
 data class DataResponse<T>(
