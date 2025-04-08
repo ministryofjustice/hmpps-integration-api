@@ -7,7 +7,6 @@ export const errorRate = new Rate('errors')
 
 const ExecutionOptions_Scenarios = getScenarios()
 
-getCerts()
 
 export const options = {
     scenarios: ExecutionOptions_Scenarios,
@@ -17,6 +16,7 @@ export const options = {
 }
 
 export function getScenarios() {
+    getCerts()
     return {
         smokeTest: {
             executor: 'shared-iterations',
