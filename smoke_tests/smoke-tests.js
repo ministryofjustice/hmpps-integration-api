@@ -1,6 +1,8 @@
 import http from 'k6/http';
 import { check } from 'k6';
 
+const API_KEY = __ENV.API_KEY
+
 // export const options = {
 //   tlsAuth: [
 //     {
@@ -18,6 +20,18 @@ const get_urls = [
 
 
 export function mainSmokeTest() {
+    console.log("HEY HEY -------------------")
+  console.log(API_KEY)
+  // console.log(is)
+  try {
+      const file = open('/client.pem')
+    file.close();
+      console.log('hurray!')
+  } catch(error) {
+      console.log('NOPE')
+  }
+
+console.log("-----------------")
     get_urls.forEach((url) => {
         const res = http.get(url, {
             tlsAuth: [
@@ -26,6 +40,9 @@ export function mainSmokeTest() {
                 key: '/client.key',
               },
             ],
+          headers: {
+              'x-api-key': API_KEY
+          }
           })
         check(res, {'status code MUST be 200': (res) => res.status === 200})
 
