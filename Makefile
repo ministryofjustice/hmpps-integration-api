@@ -37,8 +37,8 @@ integration-test: serve
 heartbeat:
 	./scripts/heartbeat.sh
 
-get-certs:
-	./scripts/get-write-certs.sh
+bash-smoke-tests:
+	./scripts/smoke-tests.sh
 
 test: unit-test smoke-test
 

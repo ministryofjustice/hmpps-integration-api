@@ -144,15 +144,13 @@ jobs:
           name: Run heartbeat
           command: make heartbeat
   smoke-tests:
-    docker:
-      - image: grafana/k6:latest
+    machine:
+      image: ubuntu-2204:2022.10.2
     steps:
       - checkout
       - run:
-          command: k6 run smoke_tests/run.js
-          environment:
-            EXECUTION_TYPE: smoke
-            PROCESS: dev
+          name: Run smoke tests
+          command: make bash-smoke-tests
 
 workflows:
   version: 2
