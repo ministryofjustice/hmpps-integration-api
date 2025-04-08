@@ -1,6 +1,5 @@
 import {Rate} from 'k6/metrics'
 import { b64decode } from 'k6/encoding';
-import { open } from 'k6/fs';
 
 export { mainSmokeTest } from './smoke-tests.js'
 
