@@ -149,7 +149,7 @@ jobs:
     steps:
       - checkout
       - run:
-          command: k6 run smoke_tests/run.js
+          command: k6 run smoke_tests/run.js CERT
           environment:
             EXECUTION_TYPE: smoke
             PROCESS: dev
