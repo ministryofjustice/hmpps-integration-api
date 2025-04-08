@@ -150,10 +150,10 @@ jobs:
       - checkout
       - run:
           name: chmod777
-          command: chmod 777 ./scripts/get_write_certs.sh
+          command: chmod +wx ./scripts/get_write_certs.sh
       - run:
           name: Get certs for smoke tests
-          command: ./scripts/get_write_certs.sh
+          command: bash ./scripts/get_write_certs.sh
       - run:
           command: k6 run smoke_tests/run.js
           environment:
