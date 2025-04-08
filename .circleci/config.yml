@@ -153,7 +153,7 @@ jobs:
           command: chmod +wx ./scripts/get_write_certs.sh
       - run:
           name: Get certs for smoke tests
-          command: bash ./scripts/get_write_certs.sh
+          command: RUN ./scripts/get_write_certs.sh
       - run:
           command: k6 run smoke_tests/run.js
           environment:
