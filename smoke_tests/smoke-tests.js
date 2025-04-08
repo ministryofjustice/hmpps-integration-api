@@ -2,7 +2,8 @@ import http from 'k6/http';
 import {check} from 'k6';
 
 const API_KEY = __ENV.API_KEY
-
+const mtlsCertBase64 = __ENV.MTLS_CERT;
+const mtlsKeyBase64 = __ENV.MTLS_KEY;
 // export const options = {
 //   tlsAuth: [
 //     {
@@ -24,8 +25,10 @@ export function mainSmokeTest() {
   console.log(API_KEY)
   // console.log(is)
   try {
-      const file = open('/tmp/client.pem')
-    file.close();
+    if(!mtlsCertBase64 || !mtlsKeyBase64) {
+        console.error("Error: MTLS_CERT or MTLS_KEY environment variables not set.");
+        return; // Exit setup if environment variables are missing
+      }
       console.log('hurray!')
   } catch(error) {
       console.log('NOPE')
@@ -36,8 +39,9 @@ console.log("-----------------")
         const res = http.get(url, {
             tlsAuth: [
               {
-                cert: '/tmp/client.pem',
-                key: '/tmp/client.key',
+                domain: 'dev.integration-api.hmpps.service.justice.gov.uk',
+                cert: mtlsCertBase64,
+                key: mtlsKeyBase64
               },
             ],
           headers: {
