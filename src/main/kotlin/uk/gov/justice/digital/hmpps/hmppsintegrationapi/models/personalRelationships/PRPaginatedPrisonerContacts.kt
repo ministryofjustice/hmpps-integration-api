@@ -22,7 +22,7 @@ data class PRPaginatedPrisonerContacts(
       content = this.contacts.map { it.toPrisonerContact() },
       isLastPage = this.last,
       count = this.numberOfElements.toInt(),
-      page = this.number.toInt(),
+      page = this.number.toInt() + 1,
       perPage = this.size.toInt(),
       totalCount = this.totalElements,
       totalPages = this.totalPages.toInt(),
