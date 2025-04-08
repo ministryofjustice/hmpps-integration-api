@@ -149,6 +149,9 @@ jobs:
     steps:
       - checkout
       - run:
+          name: Get certs for smoke tests
+          command: ./scripts/get_write_certs.sh
+      - run:
           command: k6 run smoke_tests/run.js
           environment:
             EXECUTION_TYPE: smoke

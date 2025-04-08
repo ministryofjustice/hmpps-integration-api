@@ -1,5 +1,5 @@
 import http from 'k6/http';
-import { check } from 'k6';
+import {check} from 'k6';
 
 const API_KEY = __ENV.API_KEY
 
@@ -24,7 +24,7 @@ export function mainSmokeTest() {
   console.log(API_KEY)
   // console.log(is)
   try {
-      const file = open('/client.pem')
+      const file = open('/tmp/client.pem')
     file.close();
       console.log('hurray!')
   } catch(error) {
@@ -36,8 +36,8 @@ console.log("-----------------")
         const res = http.get(url, {
             tlsAuth: [
               {
-                cert: '/client.pem',
-                key: '/client.key',
+                cert: '/tmp/client.pem',
+                key: '/tmp/client.key',
               },
             ],
           headers: {

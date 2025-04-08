@@ -1,5 +1,4 @@
 import {Rate} from 'k6/metrics'
-import { b64decode } from 'k6/encoding';
 
 export { mainSmokeTest } from './smoke-tests.js'
 
@@ -16,7 +15,6 @@ export const options = {
 }
 
 export function getScenarios() {
-    getCerts()
     return {
         smokeTest: {
             executor: 'shared-iterations',
@@ -27,7 +25,7 @@ export function getScenarios() {
         },
     }
 }
-
+/*
 export function getCerts() {
   console.log("\n[Setup] Retrieving certificates from context");
 
@@ -63,4 +61,6 @@ export function getCerts() {
     console.error("Error during certificate setup:", stringifyError);
     return; // Exit setup on error
   }
+
 }
+ */
