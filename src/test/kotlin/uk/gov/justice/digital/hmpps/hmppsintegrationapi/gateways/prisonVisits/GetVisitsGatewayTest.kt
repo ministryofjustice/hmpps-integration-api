@@ -37,7 +37,7 @@ class GetVisitsGatewayTest(
       val visitStatus = "BOOKED"
       val page = 1
       val size = 10
-      val pathWithQueryParams = "$path?prisonId=$prisonId&visitStatus=$visitStatus&page=$page&size=$size&prisonerId=$hmppsId&visitStartDate=$fromDate&visitEndDate=$toDate"
+      val pathWithQueryParams = "$path?prisonId=$prisonId&visitStatus=$visitStatus&page=${page - 1}&size=$size&prisonerId=$hmppsId&visitStartDate=$fromDate&visitEndDate=$toDate"
       val prisonVisitsApiMockServer = ApiMockServer.create(UpstreamApi.MANAGE_PRISON_VISITS)
 
       beforeEach {
