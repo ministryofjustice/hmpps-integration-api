@@ -1,4 +1,6 @@
 import {Rate} from 'k6/metrics'
+import { b64decode } from 'k6/encoding';
+import { open } from 'k6/fs';
 
 export { mainSmokeTest } from './smoke-tests.js'
 
@@ -58,7 +60,8 @@ export function getCerts() {
       clientKeyPath: '/client.key',
     };
   } catch (error) {
-    console.error("Error during certificate setup:", error);
+    const stringifyError = JSON.stringify(error.message)
+    console.error("Error during certificate setup:", stringifyError);
     return; // Exit setup on error
   }
 }
