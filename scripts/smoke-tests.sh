@@ -8,27 +8,6 @@ GREEN='\033[0;32m'
 RED='\033[0;31m'
 NC='\033[0m' # No Color
 
-# endpoints from file
-baseUrl="https://dev.integration-api.hmpps.service.justice.gov.uk"
-hmppsId="X828566"
-prisonId="MDI"
-endpoints=(
-  "$baseUrl/v1/persons/$hmppsId"
-  "$baseUrl/v1/epf/person-details/$hmppsId/1"
-  "$baseUrl/v1/persons/$hmppsId/licences/conditions"
-  "$baseUrl/v1/persons/$hmppsId/alerts"
-  "$baseUrl/v1/persons/$hmppsId/case-notes"
-  "$baseUrl/v1/persons/$hmppsId/contact"
-  "$baseUrl/v1/persons/$hmppsId/iep-level"
-  "$baseUrl/v1/persons/$hmppsId/person-responsible-officer"
-  "$baseUrl/v1/persons/$hmppsId/reported-adjudications"
-  "$baseUrl/v1/persons/$hmppsId/needs"
-  "$baseUrl/v1/persons/$hmppsId/risks/mappadetail"
-  "$baseUrl/v1/persons/$hmppsId/risks/scores"
-  "$baseUrl/v1/prison/$prisonId/prisoners/$hmppsId/non-associations"
-  "$baseUrl/v1/prison/$prisonId/visit/search"
-)
-
 echo -e "=========\n"
 
 for str in "${requiredVars[@]}"; do
@@ -48,27 +27,63 @@ echo -n "${MTLS_CERT}" | base64 --decode > /tmp/client.pem
 echo -n "${MTLS_KEY}" | base64 --decode > /tmp/client.key
 echo -e "[Setup] Certificates retrieved\n";
 
+baseUrl="https://dev.integration-api.hmpps.service.justice.gov.uk"
+hmppsId="X828566"
+prisonId="MDI"
+
 echo -e "Beginning smoke tests\n"
-for endpoint in "${endpoints[@]}"
+
+# Full access smoke tests
+
+all_endpoints=(
+  "v1/persons/$hmppsId"
+  "v1/epf/person-details/$hmppsId/1"
+  "v1/persons/$hmppsId/licences/conditions"
+  "v1/persons/$hmppsId/alerts"
+  "v1/persons/$hmppsId/case-notes"
+  "v1/persons/$hmppsId/contact"
+  "v1/persons/$hmppsId/iep-level"
+  "v1/persons/$hmppsId/person-responsible-officer"
+  "v1/persons/$hmppsId/reported-adjudications"
+  "v1/persons/$hmppsId/needs"
+  "v1/persons/$hmppsId/risks/mappadetail"
+  "v1/persons/$hmppsId/risks/scores"
+  "v1/prison/$prisonId/prisoners/$hmppsId/non-associations"
+  "v1/prison/$prisonId/visit/search"
+)
+
+echo -e "Beginning full access smoke tests - Should all return 200\n"
+for endpoint in "${all_endpoints[@]}"
 do
-  echo -e "${endpoint}"
-
-  expected_200_http_status_code=$(curl -s -o response.txt -w "%{http_code}" "${endpoint}" -H "x-api-key: ${API_KEY}" --cert /tmp/client.pem --key /tmp/client.key)
-  if [[ $expected_200_http_status_code == "200" ]]; then
-    echo -e "✅ ${GREEN}Success! $expected_200_http_status_code${NC}"
+  http_status_code=$(curl -s -o response.txt -w "%{http_code}" "${baseUrl}/${endpoint}" -H "x-api-key: ${API_KEY}" --cert /tmp/client.pem --key /tmp/client.key)
+  if [[ $http_status_code == "200" ]]; then
+    echo -e "✅ ${GREEN}${endpoint}${NC}"
   else
-    echo -e "${RED}❌ Failed! Expected 200 but got $expected_200_http_status_code - $(jq '.userMessage' response.txt)${NC}"
-    fail=true
-  fi
-
-  expected_403_http_status_code=$(curl -s -o response.txt -w "%{http_code}" "${endpoint}" --cert /tmp/client.pem --key /tmp/client.key)
-  if [[ $expected_403_http_status_code == "403" ]]; then
-    echo -e "✅ ${GREEN}Success! $expected_403_http_status_code${NC}"
-  else
-    echo -e "${RED}❌ Failed! Expected 403 but got $expected_403_http_status_code - $(jq '.userMessage' response.txt)${NC}"
+    echo -e "${RED}❌ ${endpoint} returned $http_status_code - $(jq '.userMessage' response.txt)${NC}"
     fail=true
   fi
 done
+echo -e "Completed full access smoke tests\n"
+
+# Limited access smoke tests
+
+# TODO: Add limited access smoke tests
+
+# No access smoke tests
+
+echo -e "Beginning no access smoke tests - Should all return 403\n"
+for endpoint in "${all_endpoints[@]}"
+do
+  http_status_code=$(curl -s -o response.txt -w "%{http_code}" "${baseUrl}/${endpoint}" --cert /tmp/client.pem --key /tmp/client.key)
+  if [[ $http_status_code == "403" ]]; then
+    echo -e "✅ ${GREEN}${endpoint}${NC}"
+  else
+    echo -e "${RED}❌ ${endpoint} returned $http_status_code - $(jq '.userMessage' response.txt)${NC}"
+    fail=true
+  fi
+done
+echo -e "Completed no access smoke tests\n"
+
 echo -e "Completed smoke tests\n"
 
 if [[ $fail == true ]]; then
