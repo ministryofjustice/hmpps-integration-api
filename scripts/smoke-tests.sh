@@ -57,7 +57,7 @@ do
   if [[ $expected_200_http_status_code == "200" ]]; then
     echo -e "✅ ${GREEN}Success! $expected_200_http_status_code${NC}"
   else
-    echo -e "❌ ${RED}Failed! $expected_200_http_status_code - $(jq '.userMessage' response.txt)${NC}"
+    echo -e "${RED}❌ Failed! Expected 200 but got $expected_200_http_status_code - $(jq '.userMessage' response.txt)${NC}"
     fail=true
   fi
 
@@ -65,7 +65,7 @@ do
   if [[ $expected_403_http_status_code == "403" ]]; then
     echo -e "✅ ${GREEN}Success! $expected_403_http_status_code${NC}"
   else
-    echo -e "❌ ${RED}Failed! $expected_403_http_status_code - $(jq '.userMessage' response.txt)${NC}"
+    echo -e "${RED}❌ Failed! Expected 403 but got $expected_403_http_status_code - $(jq '.userMessage' response.txt)${NC}"
     fail=true
   fi
 done
