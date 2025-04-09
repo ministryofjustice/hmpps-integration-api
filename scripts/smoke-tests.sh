@@ -92,7 +92,6 @@ not_allowed_endpoints=(
   "/v1/persons/$hmppsId/risks/dynamic"
   "/v1/persons/$hmppsId/risk-management-plan"
   "/v1/persons/$hmppsId/images"
-  "/v1/images/id"
   "/v1/hmpps/reference-data"
   "/v1/hmpps/id/nomis-number/$hmppsId"
 )
