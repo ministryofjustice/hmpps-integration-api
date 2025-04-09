@@ -9,8 +9,25 @@ RED='\033[0;31m'
 NC='\033[0m' # No Color
 
 # endpoints from file
-baseUrl=("https://dev.integration-api.hmpps.service.justice.gov.uk")
-endpoints=("$baseUrl/v1/persons/X828566")
+baseUrl="https://dev.integration-api.hmpps.service.justice.gov.uk"
+hmppsId="X828566"
+prisonId="MDI"
+endpoints=(
+  "$baseUrl/v1/persons/$hmppsId"
+  "$baseUrl/v1/epf/person-details/$hmppsId/1"
+  "$baseUrl/v1/persons/$hmppsId/licences/conditions"
+  "$baseUrl/v1/persons/$hmppsId/alerts"
+  "$baseUrl/v1/persons/$hmppsId/case-notes"
+  "$baseUrl/v1/persons/$hmppsId/contact"
+  "$baseUrl/v1/persons/$hmppsId/iep-level"
+  "$baseUrl/v1/persons/$hmppsId/person-responsible-officer"
+  "$baseUrl/v1/persons/$hmppsId/reported-adjudications"
+  "$baseUrl/v1/persons/$hmppsId/needs"
+  "$baseUrl/v1/persons/$hmppsId/risks/mappadetail"
+  "$baseUrl/v1/persons/$hmppsId/risks/scores"
+  "$baseUrl/v1/prison/$prisonId/prisoners/$hmppsId/non-associations"
+  "$baseUrl/v1/prison/$prisonId/visit/search"
+)
 
 echo -e "=========\n"
 
