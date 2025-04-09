@@ -18,6 +18,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PRPaginatedPrisonerContacts
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PRPrisonerContact
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.Pageable
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.RestrictionSummary
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.Sort
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
@@ -102,12 +103,13 @@ internal class GetPrisonerContactsServiceTest(
         phoneTypeDescription = "Mobile",
         phoneNumber = "+1234567890",
         extNumber = "123",
-        approvedVisitor = true,
-        nextOfKin = false,
-        emergencyContact = true,
+        isApprovedVisitor = true,
+        isNextOfKin = false,
+        isEmergencyContact = true,
         isRelationshipActive = true,
         currentTerm = true,
         comments = "Close family friend",
+        restrictionSummary = RestrictionSummary(active = emptyList(), totalActive = 0, totalExpired = 0),
       )
     val sortInstance =
       Sort(

@@ -39,7 +39,7 @@ class GetVisitorRestrictionsServiceTest(
       val contactId = 123456L
       val filters = ConsumerFilters(null)
       val posPrisoner = POSPrisoner(firstName = "Test", lastName = "Person", prisonId = prisonId, prisonerNumber = hmppsId)
-      val listOfRelationships = listOf(PRLinkedPrisonerRelationship(prisonerContactId = contactId, relationshipTypeCode = "FAM", relationshipTypeDescription = "Family", relationshipToPrisonerCode = "SON", relationshipToPrisonerDescription = "Son"))
+      val listOfRelationships = listOf(PRLinkedPrisonerRelationship(prisonerContactId = contactId, relationshipTypeCode = "FAM", relationshipTypeDescription = "Family", relationshipToPrisonerCode = "SON", relationshipToPrisonerDescription = "Son", isRelationshipActive = true))
       val listOfLinkedPrisoners = listOf(PRLinkedPrisoner(prisonerNumber = hmppsId, relationships = listOfRelationships, firstName = "Test", lastName = "Person", middleNames = null))
       val prisonerContactRestrictionsResponse =
         listOf(
@@ -172,7 +172,7 @@ class GetVisitorRestrictionsServiceTest(
 
       it("returns multiple relationships and queries getPrisonerContactRestrictions accordingly") {
         val scopedPrisonerContactId = 123457L
-        val listOfManyRelationships = listOf(PRLinkedPrisonerRelationship(prisonerContactId = contactId, relationshipTypeCode = "FAM", relationshipTypeDescription = "Family", relationshipToPrisonerCode = "SON", relationshipToPrisonerDescription = "Son"), PRLinkedPrisonerRelationship(prisonerContactId = scopedPrisonerContactId, relationshipTypeCode = "FAM", relationshipTypeDescription = "Family", relationshipToPrisonerCode = "BRO", relationshipToPrisonerDescription = "Brother"))
+        val listOfManyRelationships = listOf(PRLinkedPrisonerRelationship(prisonerContactId = contactId, relationshipTypeCode = "FAM", relationshipTypeDescription = "Family", relationshipToPrisonerCode = "SON", relationshipToPrisonerDescription = "Son", isRelationshipActive = true), PRLinkedPrisonerRelationship(prisonerContactId = scopedPrisonerContactId, relationshipTypeCode = "FAM", relationshipTypeDescription = "Family", relationshipToPrisonerCode = "BRO", relationshipToPrisonerDescription = "Brother", isRelationshipActive = true))
         val listOfLinkedPrisonerWithManyRelationships = listOf(PRLinkedPrisoner(prisonerNumber = "A1234AA", relationships = listOfManyRelationships, firstName = "Test", lastName = "Person", middleNames = null))
 
         whenever(personalRelationshipsGateway.getLinkedPrisoner(contactId)).thenReturn(Response(data = listOfLinkedPrisonerWithManyRelationships, errors = emptyList()))

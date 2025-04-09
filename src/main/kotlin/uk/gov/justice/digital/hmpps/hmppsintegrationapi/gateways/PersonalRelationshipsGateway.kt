@@ -120,7 +120,6 @@ class PersonalRelationshipsGateway(
       }
 
       is WebClientWrapperResponse.Error -> {
-        println(result.errors)
         Response(
           data = null,
           errors = result.errors,

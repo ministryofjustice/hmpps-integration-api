@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import io.swagger.v3.oas.annotations.media.Schema
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Contact
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerContact
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerContactRelationship
@@ -33,47 +34,49 @@ data class PRPrisonerContact(
   @JsonProperty("property")
   val property: String?,
   @JsonProperty("street")
-  val street: String,
+  val street: String?,
   @JsonProperty("area")
   val area: String?,
   @JsonProperty("cityCode")
   val cityCode: String?,
   @JsonProperty("cityDescription")
-  val cityDescription: String,
+  val cityDescription: String?,
   @JsonProperty("countyCode")
   val countyCode: String?,
   @JsonProperty("countyDescription")
-  val countyDescription: String,
+  val countyDescription: String?,
   @JsonProperty("postCode")
-  val postCode: String,
+  val postCode: String?,
   @JsonProperty("countryCode")
-  val countryCode: String,
+  val countryCode: String?,
   @JsonProperty("countryDescription")
-  val countryDescription: String,
+  val countryDescription: String?,
   @JsonProperty("primaryAddress")
-  val primaryAddress: Boolean,
+  val primaryAddress: Boolean?,
   @JsonProperty("mailAddress")
-  val mailAddress: Boolean,
+  val mailAddress: Boolean?,
   @JsonProperty("phoneType")
-  val phoneType: String,
+  val phoneType: String?,
   @JsonProperty("phoneTypeDescription")
-  val phoneTypeDescription: String,
+  val phoneTypeDescription: String?,
   @JsonProperty("phoneNumber")
-  val phoneNumber: String,
+  val phoneNumber: String?,
   @JsonProperty("extNumber")
   val extNumber: String?,
-  @JsonProperty("approvedVisitor")
-  val approvedVisitor: Boolean,
-  @JsonProperty("nextOfKin")
-  val nextOfKin: Boolean,
-  @JsonProperty("emergencyContact")
-  val emergencyContact: Boolean,
+  @JsonProperty("isApprovedVisitor")
+  val isApprovedVisitor: Boolean,
+  @JsonProperty("isNextOfKin")
+  val isNextOfKin: Boolean,
+  @JsonProperty("isEmergencyContact")
+  val isEmergencyContact: Boolean,
   @JsonProperty("isRelationshipActive")
   val isRelationshipActive: Boolean,
   @JsonProperty("currentTerm")
   val currentTerm: Boolean,
   @JsonProperty("comments")
   val comments: String?,
+  @Schema(description = "Any restriction summary details")
+  val restrictionSummary: RestrictionSummary?,
 ) {
   fun toPrisonerContact(): PrisonerContact =
     PrisonerContact(
@@ -108,12 +111,23 @@ data class PRPrisonerContact(
           relationshipTypeDescription = this.relationshipTypeDescription,
           relationshipToPrisonerCode = this.relationshipToPrisonerCode,
           relationshipToPrisonerDescription = this.relationshipToPrisonerDescription,
-          approvedVisitor = this.approvedVisitor,
-          nextOfKin = this.nextOfKin,
-          emergencyContact = this.emergencyContact,
+          approvedVisitor = this.isApprovedVisitor,
+          nextOfKin = this.isNextOfKin,
+          emergencyContact = this.isEmergencyContact,
           isRelationshipActive = this.isRelationshipActive,
           currentTerm = this.currentTerm,
           comments = this.comments,
         ),
     )
 }
+
+data class RestrictionSummary(
+  val active: List<RestrictionTypeDetails?>,
+  val totalActive: Int?,
+  val totalExpired: Int?,
+)
+
+data class RestrictionTypeDetails(
+  val restrictionType: String?,
+  val restrictionTypeDescription: String?,
+)
