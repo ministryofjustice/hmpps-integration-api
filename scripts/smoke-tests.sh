@@ -72,11 +72,11 @@ allowed_endpoints=(
   "/v1/contacts/123456"
 )
 not_allowed_endpoints=(
-  "v1/epf/person-details/$hmppsId/1"
-  "v1/persons/$hmppsId/licences/conditions"
-  "v1/persons/$hmppsId/needs"
-  "v1/persons/$hmppsId/risks/mappadetail"
-  "v1/persons/$hmppsId/risks/scores"
+  "/v1/epf/person-details/$hmppsId/1"
+  "/v1/persons/$hmppsId/licences/conditions"
+  "/v1/persons/$hmppsId/needs"
+  "/v1/persons/$hmppsId/risks/mappadetail"
+  "/v1/persons/$hmppsId/risks/scores"
   "/v1/pnd/persons/$hmppsId/alerts"
   "/v1/persons/$hmppsId/plp-review-schedule"
   "/v1/persons/$hmppsId/plp-induction-schedule"
@@ -92,7 +92,7 @@ not_allowed_endpoints=(
   "/v1/hmpps/reference-data"
   "/v1/hmpps/id/nomis-number/$hmppsId"
 )
-all_endpoints+=("${allowed_endpoints[@]}" "${not_allowed_endpoints@]}")
+all_endpoints+=("${allowed_endpoints[@]}" "${not_allowed_endpoints[@]}")
 
 echo -e "Beginning smoke tests\n"
 
@@ -109,6 +109,7 @@ do
     fail=true
   fi
 done
+echo
 echo -e "Completed full access smoke tests\n"
 
 # Limited access smoke tests
@@ -126,6 +127,7 @@ do
     fail=true
   fi
 done
+echo
 
 echo -e "Limited access smoke tests - Should all return 403\n"
 for endpoint in "${not_allowed_endpoints[@]}"
@@ -139,6 +141,7 @@ do
   fi
 done
 
+echo
 echo -e "Completed limited access smoke tests\n"
 
 # No access smoke tests
@@ -154,6 +157,7 @@ do
     fail=true
   fi
 done
+echo
 echo -e "Completed no access smoke tests\n"
 
 echo -e "Completed smoke tests\n"
