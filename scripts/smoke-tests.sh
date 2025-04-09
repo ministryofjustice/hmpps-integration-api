@@ -35,12 +35,13 @@ echo -e "[Setup] Certificates retrieved\n";
 
 baseUrl="https://dev.integration-api.hmpps.service.justice.gov.uk"
 hmppsId="A8451DY"
+deliusCrn="X725642"
 prisonId="MKI"
 allowed_endpoints=(
   "/v1/hmpps/id/by-nomis-number/$hmppsId"
   "/v1/hmpps/id/nomis-number/by-hmpps-id/$hmppsId"
   "/v1/persons?first_name=john"
-  "/v1/persons/$hmppsId"
+  "/v1/persons/$deliusCrn"
   "/v1/persons/$hmppsId/addresses"
   "/v1/persons/$hmppsId/contacts"
   "/v1/persons/$hmppsId/iep-level"
