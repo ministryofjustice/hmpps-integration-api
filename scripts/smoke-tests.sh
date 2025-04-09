@@ -31,7 +31,7 @@ echo -e "Integration tests, expected 200 HTTP status code\n"
 for endpoint in "${endpoints[@]}"
 do
   echo -e "${endpoint}\n"
-  expected_200_http_status_code=$(curl -s -o response.txt -w "%{http_code}" "${endpoint}" -H "x-api-key: ${API_KEY}" --cert /tmp/client.pem --key /tmp/client.key)
+  expected_200_http_status_code=$(curl -s -o response.txt -w "%{http_code}" "${endpoint}" -H "${API_KEY}" --cert /tmp/client.pem --key /tmp/client.key)
   echo -e "${expected_200_http_status_code}\n"
 
   if [[ $expected_200_http_status_code != "200" ]]; then
@@ -45,7 +45,7 @@ echo -e "Integration tests, expected 403 HTTP status code\n"
 for endpoint in "${endpoints[@]}"
 do
   echo -e "${endpoint}\n"
-  expected_403_http_status_code=$(curl -s -o response.txt -w "%{http_code}" "${endpoint}")
+  expected_403_http_status_code=$(curl -s -o response.txt -w "%{http_code}" "${endpoint}" --cert /tmp/client.pem --key /tmp/client.key)
   echo -e "${expected_403_http_status_code}\n"
 
   if [[ $expected_403_http_status_code != "403" ]]; then
