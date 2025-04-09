@@ -4,6 +4,10 @@ set -o pipefail
 
 requiredVars=("MTLS_KEY" "MTLS_CERT" "API_KEY")
 
+GREEN='\033[0;32m'
+RED='\033[0;31m'
+NC='\033[0m' # No Color
+
 # endpoints from file
 baseUrl=("https://dev.integration-api.hmpps.service.justice.gov.uk")
 endpoints=("$baseUrl/v1/persons/X828566")
@@ -34,17 +38,17 @@ do
 
   expected_200_http_status_code=$(curl -s -o response.txt -w "%{http_code}" "${endpoint}" -H "x-api-key: ${API_KEY}" --cert /tmp/client.pem --key /tmp/client.key)
   if [[ $expected_200_http_status_code == "200" ]]; then
-    echo -e "✅ Success! $expected_200_http_status_code"
+    echo -e "✅ ${GREEN}Success! $expected_200_http_status_code${NC}"
   else
-    echo -e "❌ Failed! $expected_200_http_status_code - $(jq '.userMessage' response.txt)"
+    echo -e "❌ ${RED}Failed! $expected_200_http_status_code - $(jq '.userMessage' response.txt)${NC}"
     fail=true
   fi
 
   expected_403_http_status_code=$(curl -s -o response.txt -w "%{http_code}" "${endpoint}" --cert /tmp/client.pem --key /tmp/client.key)
   if [[ $expected_403_http_status_code == "403" ]]; then
-    echo -e "✅ Success! $expected_403_http_status_code"
+    echo -e "✅ ${GREEN}Success! $expected_403_http_status_code${NC}"
   else
-    echo -e "❌ Failed! $expected_403_http_status_code - $(jq '.userMessage' response.txt)"
+    echo -e "❌ ${RED}Failed! $expected_403_http_status_code - $(jq '.userMessage' response.txt)${NC}"
     fail=true
   fi
 done
