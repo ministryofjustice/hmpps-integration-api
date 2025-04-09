@@ -2,7 +2,7 @@
 
 set -o pipefail
 
-requiredVars=("MTLS_KEY" "MTLS_CERT" "API_KEY")
+requiredVars=("FULL_ACCESS_KEY" "FULL_ACCESS_CERT" "FULL_ACCESS_API_KEY" "LIMITED_ACCESS_KEY" "LIMITED_ACCESS_CERT" "LIMITED_ACCESS_API_KEY" "NO_ACCESS_KEY" "NO_ACCESS_CERT" "NO_ACCESS_API_KEY")
 
 GREEN='\033[0;32m'
 RED='\033[0;31m'
@@ -23,8 +23,12 @@ if [[ $fail == 1 ]]; then
 fi
 
 echo -e "\n[Setup] Retrieving certificates from context";
-echo -n "${MTLS_CERT}" | base64 --decode > /tmp/client.pem
-echo -n "${MTLS_KEY}" | base64 --decode > /tmp/client.key
+echo -n "${FULL_ACCESS_CERT}" | base64 --decode > /tmp/full_access.pem
+echo -n "${FULL_ACCESS_KEY}" | base64 --decode > /tmp/full_access.key
+echo -n "${LIMITED_ACCESS_CERT}" | base64 --decode > /tmp/limited_access.pem
+echo -n "${LIMITED_ACCESS_KEY}" | base64 --decode > /tmp/limited_access.key
+echo -n "${NO_ACCESS_CERT}" | base64 --decode > /tmp/no_access.pem
+echo -n "${NO_ACCESS_KEY}" | base64 --decode > /tmp/no_access.key
 echo -e "[Setup] Certificates retrieved\n";
 
 # Endpoints
@@ -101,7 +105,7 @@ echo -e "Beginning smoke tests\n"
 echo -e "Beginning full access smoke tests - Should all return 200\n"
 for endpoint in "${all_endpoints[@]}"
 do
-  http_status_code=$(curl -s -o response.txt -w "%{http_code}" "${baseUrl}${endpoint}" -H "x-api-key: ${API_KEY}" --cert /tmp/client.pem --key /tmp/client.key)
+  http_status_code=$(curl -s -o response.txt -w "%{http_code}" "${baseUrl}${endpoint}" -H "x-api-key: ${FULL_ACCESS_API_KEY}" --cert /tmp/full_access.pem --key /tmp/full_access.key)
   if [[ $http_status_code == "200" ]]; then
     echo -e "${GREEN}✔ ${endpoint}${NC}"
   else
@@ -119,7 +123,7 @@ echo -e "Beginning limited access smoke tests\n"
 echo -e "Limited access smoke tests - Should all return 200\n"
 for endpoint in "${allowed_endpoints[@]}"
 do
-  http_status_code=$(curl -s -o response.txt -w "%{http_code}" "${baseUrl}${endpoint}" -H "x-api-key: ${API_KEY}" --cert /tmp/client.pem --key /tmp/client.key)
+  http_status_code=$(curl -s -o response.txt -w "%{http_code}" "${baseUrl}${endpoint}" -H "x-api-key: ${LIMITED_ACCESS_API_KEY}" --cert /tmp/limited_access.pem --key /tmp/limited_access.key)
   if [[ $http_status_code == "200" ]]; then
     echo -e "${GREEN}✔ ${endpoint}${NC}"
   else
@@ -132,7 +136,7 @@ echo
 echo -e "Limited access smoke tests - Should all return 403\n"
 for endpoint in "${not_allowed_endpoints[@]}"
 do
-  http_status_code=$(curl -s -o response.txt -w "%{http_code}" "${baseUrl}${endpoint}" --cert /tmp/client.pem --key /tmp/client.key)
+  http_status_code=$(curl -s -o response.txt -w "%{http_code}" "${baseUrl}${endpoint}" -H "x-api-key: ${LIMITED_ACCESS_API_KEY}" --cert /tmp/limited_access.pem --key /tmp/limited_access.key)
   if [[ $http_status_code == "403" ]]; then
     echo -e "${GREEN}✔ ${endpoint}${NC}"
   else
@@ -149,7 +153,7 @@ echo -e "Completed limited access smoke tests\n"
 echo -e "Beginning no access smoke tests - Should all return 403\n"
 for endpoint in "${all_endpoints[@]}"
 do
-  http_status_code=$(curl -s -o response.txt -w "%{http_code}" "${baseUrl}${endpoint}" --cert /tmp/client.pem --key /tmp/client.key)
+  http_status_code=$(curl -s -o response.txt -w "%{http_code}" "${baseUrl}${endpoint}" -H "x-api-key: ${NO_ACCESS_API_KEY}" --cert /tmp/no_access.pem --key /tmp/no_access.key)
   if [[ $http_status_code == "403" ]]; then
     echo -e "${GREEN}✔ ${endpoint}${NC}"
   else

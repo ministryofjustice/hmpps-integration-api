@@ -229,7 +229,7 @@ workflows:
           name: smoke-tests-for-dev
           context:
             - hmpps-common-vars
-            - hmpps-integration-api-heartbeat-dev
+            - hmpps-integration-api-smoke-test-dev
 
       - create-and-push-image-to-ecr:
           <<: *slack-fail-post-step
