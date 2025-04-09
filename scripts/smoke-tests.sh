@@ -31,8 +31,9 @@ echo -e "[Setup] Certificates retrieved\n";
 echo -n "Integration tests, expected 200 HTTP status code\n"
 for(( i=0; i<${#expected200Endpoints[@]}; i++ ));
 do
-
+  echo -n ${#expected200Endpoints[i]}
   expected_200_http_status_code=$(curl -s -o response.txt -w "%{http_code}" "${#expected200Endpoints[i]}" -H "x-api-key: ${API_KEY}" --cert /tmp/client.pem --key /tmp/client.key)
+  echo -n expected_200_http_status_code
 
   if [[ $expected_200_http_status_code != "200" ]]; then
     echo -e "[Integration test for endpoint ${#expected200Endpoints[i]}] 📋 $expected_200_http_status_code - $(jq '.userMessage' response.txt)"
