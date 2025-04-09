@@ -213,3 +213,16 @@ authorisation:
         - "/v1/persons/.*/risk-management-plan"
         - "/v1/hmpps/reference-data"
       filters:
+    smoke-test-full-access:
+      include:
+        - "/.*"
+      filters:
+    smoke-test-limited-access:
+      include:
+      filters:
+      roles:
+        - "private-prison"
+    smoke-test-no-access:
+      include:
+      filters:
+      roles:
