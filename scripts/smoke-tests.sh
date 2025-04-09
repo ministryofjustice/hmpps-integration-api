@@ -6,7 +6,7 @@ requiredVars=("MTLS_KEY" "MTLS_CERT" "API_KEY")
 
 # endpoints from file
 baseUrl=("https://dev.integration-api.hmpps.service.justice.gov.uk")
-endpoints=("$baseUrl/v1/persons/X828566")
+endpoints=("$baseUrl/v1/per/X828566")
 
 echo -e "=========\n"
 
@@ -36,6 +36,7 @@ do
 
   if [[ $expected_200_http_status_code != "200" ]]; then
     echo -e "[Integration test for endpoint ${endpoint}] 📋 ${expected_200_http_status_code} - $(jq '.userMessage' response.txt)\n"
+    fail=true
   fi
   echo
 
@@ -50,8 +51,14 @@ do
 
   if [[ $expected_403_http_status_code != "403" ]]; then
     echo -e "[Integration test for endpoint ${endpoint}] 📋 ${expected_403_http_status_code} - $(jq '.userMessage' response.txt)"
+    fail=true
   fi
 echo
 done
+
+if [[ $fail == true ]]; then
+  echo " 💔️️ Failed! Some tests have failed."
+  exit 1
+fi
 
 exit 0
