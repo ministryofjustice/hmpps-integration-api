@@ -101,6 +101,7 @@ class PersonIntegrationTest : IntegrationTestBase() {
     val params = "?page=1&size=10"
     callApi("$basePath/$nomsId/contacts$params")
       .andExpect(status().isOk)
+      // update expected bozo
       .andExpect(content().json(getExpectedResponse("prisoners-contacts")))
   }
 

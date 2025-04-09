@@ -14403,19 +14403,23 @@
         "properties": {
           "size": {
             "type": "integer",
-            "format": "int64"
+            "format": "int64",
+            "example": 1
           },
           "number": {
             "type": "integer",
-            "format": "int64"
+            "format": "int64",
+            "example": 1
           },
           "totalElements": {
             "type": "integer",
-            "format": "int64"
+            "format": "int64",
+            "example": 1
           },
           "totalPages": {
             "type": "integer",
-            "format": "int64"
+            "format": "int64",
+            "example": 1
           }
         }
       },

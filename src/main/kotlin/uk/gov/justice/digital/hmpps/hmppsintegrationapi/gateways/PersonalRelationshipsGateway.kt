@@ -11,7 +11,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrap
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PRDetailedContact
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PRLinkedPrisoner
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PRLinkedPrisoners
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PRPaginatedPrisonerContacts
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PRPrisonerContactRestrictions
 
@@ -25,9 +25,9 @@ class PersonalRelationshipsGateway(
   @Autowired
   lateinit var hmppsAuthGateway: HmppsAuthGateway
 
-  fun getLinkedPrisoner(contactId: Long): Response<List<PRLinkedPrisoner>> {
+  fun getLinkedPrisoner(contactId: Long): Response<PRLinkedPrisoners?> {
     val result =
-      webClient.request<List<PRLinkedPrisoner>>(
+      webClient.request<PRLinkedPrisoners>(
         HttpMethod.GET,
         "/contact/$contactId/linked-prisoners",
         authenticationHeader(),
@@ -41,7 +41,7 @@ class PersonalRelationshipsGateway(
       }
       is WebClientWrapper.WebClientWrapperResponse.Error -> {
         Response(
-          data = emptyList(),
+          data = null,
           errors = result.errors,
         )
       }
@@ -128,8 +128,8 @@ class PersonalRelationshipsGateway(
     }
   }
 
-  fun mapToLinkedPrisoner(result: WebClientWrapper.WebClientWrapperResponse.Success<List<PRLinkedPrisoner>>): List<PRLinkedPrisoner> {
-    val mappedResult: List<PRLinkedPrisoner> = mapper.convertValue(result.data, object : TypeReference<List<PRLinkedPrisoner>>() {})
+  fun mapToLinkedPrisoner(result: WebClientWrapper.WebClientWrapperResponse.Success<PRLinkedPrisoners>): PRLinkedPrisoners {
+    val mappedResult: PRLinkedPrisoners = mapper.convertValue(result.data, object : TypeReference<PRLinkedPrisoners>() {})
     return mappedResult
   }
 
