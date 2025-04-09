@@ -6,8 +6,7 @@ requiredVars=("MTLS_KEY" "MTLS_CERT" "API_KEY")
 
 # endpoints from file
 baseUrl=("https://dev.integration-api.hmpps.service.justice.gov.uk")
-expected200Endpoints=("$baseUrl/v1/persons/X828566")
-expected403Endpoints=("")
+endpoints=("$baseUrl/v1/persons/X828566")
 
 echo -e "=========\n"
 
@@ -28,28 +27,28 @@ echo -n "${MTLS_CERT}" | base64 --decode > /tmp/client.pem
 echo -n "${MTLS_KEY}" | base64 --decode > /tmp/client.key
 echo -e "[Setup] Certificates retrieved\n";
 
-echo -n "Integration tests, expected 200 HTTP status code\n"
-for endpoint in "${expected200Endpoints[@]}"
+echo -e "Integration tests, expected 200 HTTP status code\n"
+for endpoint in "${endpoints[@]}"
 do
-  echo -n "${endpoint}"
+  echo -e "${endpoint}\n"
   expected_200_http_status_code=$(curl -s -o response.txt -w "%{http_code}" "${endpoint}" -H "x-api-key: ${API_KEY}" --cert /tmp/client.pem --key /tmp/client.key)
-  echo -n expected_200_http_status_code
+  echo -e "${expected_200_http_status_code}\n"
 
   if [[ $expected_200_http_status_code != "200" ]]; then
-    echo -e "[Integration test for endpoint ${endpoint}] 📋 $expected_200_http_status_code - $(jq '.userMessage' response.txt)"
+    echo -e "[Integration test for endpoint ${endpoint}] 📋 ${expected_200_http_status_code} - $(jq '.userMessage' response.txt)\n"
   fi
   echo
 
 done
 
 echo -n "Integration tests, expected 403 HTTP status code\n"
-for(( i=0; i<${#expected403Endpoints[@]}; i++ ));
+for endpoint in "${endpoints[@]}"
 do
 
-  expected_403_http_status_code=$(curl -s -o response.txt -w "%{http_code}" "${#expected403Endpoints[i]}")
+  expected_403_http_status_code=$(curl -s -o response.txt -w "%{http_code}" "${endpoint}")
 
   if [[ $expected_403_http_status_code != "403" ]]; then
-    echo -e "[Integration test for endpoint ${#expected403Endpoints[i]}] 📋 $expected_403_http_status_code- $(jq '.userMessage' response.txt)"
+    echo -e "[Integration test for endpoint ${endpoint}] 📋 $expected_403_http_status_code- $(jq '.userMessage' response.txt)"
   fi
 echo
 done
