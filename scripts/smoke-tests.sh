@@ -36,8 +36,9 @@ do
 
   if [[ $expected_200_http_status_code != "200" ]]; then
     echo -e "[Integration test for endpoint ${#expected200Endpoints[i]}] 📋 $expected_200_http_status_code - $(jq '.userMessage' response.txt)"
-
+  fi
   echo
+
 done
 
 echo -n "Integration tests, expected 403 HTTP status code\n"
@@ -48,6 +49,7 @@ do
 
   if [[ $expected_403_http_status_code != "403" ]]; then
     echo -e "[Integration test for endpoint ${#expected403Endpoints[i]}] 📋 $expected_403_http_status_code- $(jq '.userMessage' response.txt)"
+  fi
 echo
 done
 
