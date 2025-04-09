@@ -30,21 +30,21 @@ echo -e "[Setup] Certificates retrieved\n";
 echo -e "Beginning smoke tests\n"
 for endpoint in "${endpoints[@]}"
 do
-  echo -e "${endpoint}\n"
+  echo -e "${endpoint}"
 
   expected_200_http_status_code=$(curl -s -o response.txt -w "%{http_code}" "${endpoint}" -H "x-api-key: ${API_KEY}" --cert /tmp/client.pem --key /tmp/client.key)
   if [[ $expected_200_http_status_code == "200" ]]; then
-    echo -e "✅ Success! $expected_200_http_status_code\n"
+    echo -e "✅ Success! $expected_200_http_status_code"
   else
-    echo -e "❌ Failed! $expected_200_http_status_code - $(jq '.userMessage' response.txt)\n"
+    echo -e "❌ Failed! $expected_200_http_status_code - $(jq '.userMessage' response.txt)"
     fail=true
   fi
 
   expected_403_http_status_code=$(curl -s -o response.txt -w "%{http_code}" "${endpoint}" --cert /tmp/client.pem --key /tmp/client.key)
   if [[ $expected_403_http_status_code == "403" ]]; then
-    echo -e "✅ Success! $expected_403_http_status_code\n"
+    echo -e "✅ Success! $expected_403_http_status_code"
   else
-    echo -e "❌ Failed! $expected_403_http_status_code - $(jq '.userMessage' response.txt)\n"
+    echo -e "❌ Failed! $expected_403_http_status_code - $(jq '.userMessage' response.txt)"
     fail=true
   fi
 done
