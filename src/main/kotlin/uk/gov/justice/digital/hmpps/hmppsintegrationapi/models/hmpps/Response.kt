@@ -15,12 +15,22 @@ data class Response<T>(
     causedBy: UpstreamApi,
   ): Boolean = this.errors.any { it.type == type && it.causedBy == causedBy }
 
-  fun getDataWhenNoErrors(): T & Any {
-    if (this.errors.isNotEmpty()) {
-      throw IllegalStateException("Response has errors, data might be null or invalid.")
+  fun toResult(): ResponseResult<T & Any> {
+    if (data == null || errors.isNotEmpty()) {
+      return ResponseResult.Failure(this.errors)
     }
-    return this.data!!
+    return ResponseResult.Success(this.data)
   }
+}
+
+sealed class ResponseResult<out T> {
+  data class Success<out T>(
+    val data: T,
+  ) : ResponseResult<T>()
+
+  data class Failure(
+    val errors: List<UpstreamApiError>,
+  ) : ResponseResult<Nothing>()
 }
 
 data class DataResponse<T>(
