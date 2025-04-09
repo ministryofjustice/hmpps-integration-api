@@ -41,14 +41,15 @@ do
 
 done
 
-echo -n "Integration tests, expected 403 HTTP status code\n"
+echo -e "Integration tests, expected 403 HTTP status code\n"
 for endpoint in "${endpoints[@]}"
 do
-
+  echo -e "${endpoint}\n"
   expected_403_http_status_code=$(curl -s -o response.txt -w "%{http_code}" "${endpoint}")
+  echo -e "${expected_403_http_status_code}\n"
 
   if [[ $expected_403_http_status_code != "403" ]]; then
-    echo -e "[Integration test for endpoint ${endpoint}] 📋 $expected_403_http_status_code- $(jq '.userMessage' response.txt)"
+    echo -e "[Integration test for endpoint ${endpoint}] 📋 ${expected_403_http_status_code} - $(jq '.userMessage' response.txt)"
   fi
 echo
 done
