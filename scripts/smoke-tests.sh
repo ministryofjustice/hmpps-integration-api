@@ -82,7 +82,7 @@ not_allowed_endpoints=(
   "/v1/persons/$hmppsId/needs"
   "/v1/persons/$hmppsId/risks/mappadetail"
   "/v1/persons/$hmppsId/risks/scores"
-  "/v1/persons/A1234AA/plp-review-schedule"
+  "/v1/persons/$hmppsId/plp-review-schedule"
   "/v1/persons/$hmppsId/plp-induction-schedule"
   "/v1/persons/$hmppsId/plp-induction-schedule/history"
   "/v1/persons/$hmppsId/status-information"
@@ -98,6 +98,45 @@ not_allowed_endpoints=(
 all_endpoints+=("${allowed_endpoints[@]}" "${not_allowed_endpoints[@]}")
 
 echo -e "Beginning smoke tests\n"
+data='{
+       "prisonerId": \"$hmppsId\",
+       "prisonId": "$prisonId",
+       "clientVisitReference": "123456",
+       "visitRoom": "A1",
+       "visitType": "SOCIAL",
+       "visitRestriction": "OPEN",
+       "startTimestamp": "timestamp",
+       "endTimestamp": "timestamp",
+       "visitNotes": [
+         {
+           "type": "VISITOR_CONCERN",
+           "text": "Visitor is concerned their mother in law is coming!"
+         }
+       ],
+       "visitContact": {
+         "name": "John Smith",
+         "telephone": "0987654321",
+         "email": "john.smith@example.com"
+       },
+       "createDateTime": "timestamp",
+       "visitors": [
+         {
+           "nomisPersonId": 654321,
+           "visitContact": true
+         }
+       ],
+       "visitorSupport": {
+         "description": "Visually impaired assistance"
+       }
+     }'
+
+http_status_code=$(curl -s -o response.txt -w "%{http_code}" "${baseUrl}/v1/visit" -X POST -H "x-api-key: ${FULL_ACCESS_API_KEY}, Content-Type: application/json" -d "$data" --cert /tmp/full_access.pem --key /tmp/full_access.key)
+  if [[ $http_status_code == "200" ]]; then
+    echo -e "${GREEN}✔ ${baseUrl}/v1/visit${NC}"
+  else
+    echo -e "${RED}✗ ${baseUrl}/v1/visit returned $http_status_code - $(jq '.userMessage' response.txt)${NC}"
+    fail=true
+  fi
 
 # Full access smoke tests
 
