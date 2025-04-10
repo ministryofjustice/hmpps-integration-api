@@ -82,7 +82,7 @@ not_allowed_endpoints=(
   "/v1/persons/$hmppsId/needs"
   "/v1/persons/$hmppsId/risks/mappadetail"
   "/v1/persons/$hmppsId/risks/scores"
-#  "/v1/persons/$hmppsId/plp-review-schedule"
+  "/v1/persons/A1234AA/plp-review-schedule"
   "/v1/persons/$hmppsId/plp-induction-schedule"
   "/v1/persons/$hmppsId/plp-induction-schedule/history"
   "/v1/persons/$hmppsId/status-information"
