@@ -47,7 +47,7 @@ allowed_endpoints=(
   "/v1/persons/$hmppsId/iep-level"
   "/v1/persons/$hmppsId/visit-restrictions"
 #  "/v1/persons/$hmppsId/visit-orders"
-  "/v1/persons/$hmppsId/visit/future"
+#  "/v1/persons/$hmppsId/visit/future"
   "/v1/persons/$hmppsId/alerts"
   "/v1/persons/$hmppsId/alerts/pnd"
 #  "/v1/persons/$hmppsId/case-notes"
