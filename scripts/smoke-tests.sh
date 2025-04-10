@@ -99,14 +99,14 @@ all_endpoints+=("${allowed_endpoints[@]}" "${not_allowed_endpoints[@]}")
 
 echo -e "Beginning smoke tests\n"
 data='{
-       "prisonerId": \"$hmppsId\",
-       "prisonId": "$prisonId",
+       "prisonerId": "A8451DY",
+       "prisonId": "MKI",
        "clientVisitReference": "123456",
        "visitRoom": "A1",
        "visitType": "SOCIAL",
        "visitRestriction": "OPEN",
-       "startTimestamp": "timestamp",
-       "endTimestamp": "timestamp",
+       "startTimestamp": "2025-09-05T10:15:41",
+       "endTimestamp": "2025-09-05T11:15:41",
        "visitNotes": [
          {
            "type": "VISITOR_CONCERN",
@@ -118,7 +118,7 @@ data='{
          "telephone": "0987654321",
          "email": "john.smith@example.com"
        },
-       "createDateTime": "timestamp",
+       "createDateTime": "2025-09-05T10:15:41",
        "visitors": [
          {
            "nomisPersonId": 654321,
