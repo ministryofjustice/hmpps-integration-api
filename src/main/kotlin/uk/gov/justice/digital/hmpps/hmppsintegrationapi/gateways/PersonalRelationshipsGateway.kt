@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways
 
-import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
@@ -36,7 +35,7 @@ class PersonalRelationshipsGateway(
     return when (result) {
       is WebClientWrapper.WebClientWrapperResponse.Success -> {
         return Response(
-          data = mapToLinkedPrisoner(result),
+          data = result.data,
         )
       }
       is WebClientWrapper.WebClientWrapperResponse.Error -> {
@@ -110,7 +109,7 @@ class PersonalRelationshipsGateway(
         UpstreamApi.PERSONAL_RELATIONSHIPS,
         badRequestAsError = true,
       )
-
+    println(result)
     return when (result) {
       is WebClientWrapperResponse.Success -> {
         Response(
@@ -128,11 +127,12 @@ class PersonalRelationshipsGateway(
     }
   }
 
+/*
   fun mapToLinkedPrisoner(result: WebClientWrapper.WebClientWrapperResponse.Success<PRLinkedPrisoners>): PRLinkedPrisoners {
-    val mappedResult: PRLinkedPrisoners = mapper.convertValue(result.data, object : TypeReference<PRLinkedPrisoners>() {})
+    val mappedResult: PRLinkedPrisoners = mapper.convertValue(result.data.prisoners, object : TypeReference<PRLinkedPrisoners>() {})
     return mappedResult
   }
-
+*/
   private fun authenticationHeader(): Map<String, String> {
     val token = hmppsAuthGateway.getClientToken("PERSONAL-RELATIONSHIPS")
 

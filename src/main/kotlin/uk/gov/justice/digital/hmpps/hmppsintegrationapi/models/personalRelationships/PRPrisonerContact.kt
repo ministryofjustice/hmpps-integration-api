@@ -45,7 +45,7 @@ data class PRPrisonerContact(
   val countyCode: String?,
   @JsonProperty("countyDescription")
   val countyDescription: String?,
-  @JsonProperty("postCode")
+  @JsonProperty("postcode")
   val postCode: String?,
   @JsonProperty("countryCode")
   val countryCode: String?,
