@@ -97,8 +97,8 @@ not_allowed_endpoints=(
 )
 all_endpoints+=("${allowed_endpoints[@]}" "${not_allowed_endpoints[@]}")
 
-visit_url="/v1/visit"
-visit_data='{
+post_visit_endpoint="/v1/visit"
+post_visit_data='{
   "prisonerId": "A8451DY",
   "prisonId": "MKI",
   "clientVisitReference": "123456",
@@ -136,12 +136,12 @@ echo -e "Beginning smoke tests\n"
 
 echo -e "Beginning full access smoke tests - Should all return 200\n"
 
-http_status_code=$(curl -s -o response.txt -w "%{http_code}" "${baseUrl}${visit_url}" -X POST -H "x-api-key: ${FULL_ACCESS_API_KEY}, Content-Type: application/json" -d "$visit_data" --cert /tmp/full_access.pem --key /tmp/full_access.key)
-echo -e "${visit_data}"
+http_status_code=$(curl -s -o response.txt -w "%{http_code}" "${baseUrl}${post_visit_endpoint}" -X POST -H "x-api-key: ${FULL_ACCESS_API_KEY}" -H "Content-Type: application/json" -d "$post_visit_data" --cert /tmp/full_access.pem --key /tmp/full_access.key)
+echo -e "${post_visit_data}"
 if [[ $http_status_code == "200" ]]; then
-  echo -e "${GREEN}✔ ${visit_url}${NC}"
+  echo -e "${GREEN}✔ ${post_visit_endpoint}${NC}"
 else
-  echo -e "${RED}✗ ${visit_url} returned $http_status_code - $(jq '.userMessage' response.txt)${NC}"
+  echo -e "${RED}✗ ${post_visit_endpoint} returned $http_status_code - $(jq '.userMessage' response.txt)${NC}"
   fail=true
 fi
 
