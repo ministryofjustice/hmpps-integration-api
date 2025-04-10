@@ -43,7 +43,7 @@ allowed_endpoints=(
   "/v1/persons?first_name=john"
   "/v1/persons/$deliusCrn"
   "/v1/persons/$hmppsId/addresses"
-#  "/v1/persons/$hmppsId/contacts"
+  "/v1/persons/$hmppsId/contacts"
   "/v1/persons/$hmppsId/iep-level"
   "/v1/persons/$hmppsId/visit-restrictions"
 #  "/v1/persons/$hmppsId/visit-orders"
@@ -137,7 +137,6 @@ echo -e "Beginning smoke tests\n"
 echo -e "Beginning full access smoke tests - Should all return 200\n"
 
 http_status_code=$(curl -s -o response.txt -w "%{http_code}" "${baseUrl}${post_visit_endpoint}" -X POST -H "x-api-key: ${FULL_ACCESS_API_KEY}" -H "Content-Type: application/json" -d "$post_visit_data" --cert /tmp/full_access.pem --key /tmp/full_access.key)
-echo -e "${post_visit_data}"
 if [[ $http_status_code == "200" ]]; then
   echo -e "${GREEN}✔ ${post_visit_endpoint}${NC}"
 else
