@@ -5,11 +5,11 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelations
 
 data class Relationship(
   @JsonProperty("relationshipTypeCode")
-  override val relationshipTypeCode: String?,
+  override val relationshipTypeCode: String,
   @JsonProperty("relationshipTypeDescription")
-  override val relationshipTypeDescription: String?,
+  override val relationshipTypeDescription: String,
   @JsonProperty("relationshipToPrisonerCode")
-  override val relationshipToPrisonerCode: String?,
+  override val relationshipToPrisonerCode: String,
   @JsonProperty("relationshipToPrisonerDescription")
   override val relationshipToPrisonerDescription: String?,
   @JsonProperty("approvedVisitor")
@@ -19,7 +19,7 @@ data class Relationship(
   @JsonProperty("emergencyContact")
   val emergencyContact: Boolean?,
   @JsonProperty("isRelationshipActive")
-  val isRelationshipActive: Boolean?,
+  override val isRelationshipActive: Boolean,
   @JsonProperty("currentTerm")
   val currentTerm: Boolean?,
   @JsonProperty("comments")
