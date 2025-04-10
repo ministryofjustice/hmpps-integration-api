@@ -131,6 +131,7 @@ data='{
      }'
 
 http_status_code=$(curl -s -o response.txt -w "%{http_code}" "${baseUrl}/v1/visit" -X POST -H "x-api-key: ${FULL_ACCESS_API_KEY}, Content-Type: application/json" -d "$data" --cert /tmp/full_access.pem --key /tmp/full_access.key)
+  echo -e "${data}"
   if [[ $http_status_code == "200" ]]; then
     echo -e "${GREEN}✔ ${baseUrl}/v1/visit${NC}"
   else
