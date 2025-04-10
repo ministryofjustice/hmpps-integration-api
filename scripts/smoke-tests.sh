@@ -97,11 +97,54 @@ not_allowed_endpoints=(
 )
 all_endpoints+=("${allowed_endpoints[@]}" "${not_allowed_endpoints[@]}")
 
+visit_url="/v1/visit"
+visit_data='{
+  "prisonerId": "A8451DY",
+  "prisonId": "MKI",
+  "clientVisitReference": "123456",
+  "visitRoom": "A1",
+  "visitType": "SOCIAL",
+  "visitRestriction": "OPEN",
+  "startTimestamp": "2025-09-05T10:15:41",
+  "endTimestamp": "2025-09-05T11:15:41",
+  "visitNotes": [
+   {
+     "type": "VISITOR_CONCERN",
+     "text": "Visitor is concerned their mother in law is coming!"
+   }
+  ],
+  "visitContact": {
+    "name": "John Smith",
+    "telephone": "0987654321",
+    "email": "john.smith@example.com"
+  },
+  "createDateTime": "2025-09-05T10:15:41",
+  "visitorSupport": {
+    "description": "Visually impaired assistance"
+  }
+}'
+#       "visitors": [
+#         {
+#           "nomisPersonId": 654321,
+#           "visitContact": true
+#         }
+#       ],
+
 echo -e "Beginning smoke tests\n"
 
 # Full access smoke tests
 
 echo -e "Beginning full access smoke tests - Should all return 200\n"
+
+http_status_code=$(curl -s -o response.txt -w "%{http_code}" "${baseUrl}${visit_url}" -X POST -H "x-api-key: ${FULL_ACCESS_API_KEY}, Content-Type: application/json" -d "$visit_data" --cert /tmp/full_access.pem --key /tmp/full_access.key)
+echo -e "${visit_data}"
+if [[ $http_status_code == "200" ]]; then
+  echo -e "${GREEN}✔ ${visit_url}${NC}"
+else
+  echo -e "${RED}✗ ${visit_url} returned $http_status_code - $(jq '.userMessage' response.txt)${NC}"
+  fail=true
+fi
+
 for endpoint in "${all_endpoints[@]}"
 do
   http_status_code=$(curl -s -o response.txt -w "%{http_code}" "${baseUrl}${endpoint}" -H "x-api-key: ${FULL_ACCESS_API_KEY}" --cert /tmp/full_access.pem --key /tmp/full_access.key)
