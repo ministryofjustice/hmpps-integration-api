@@ -109,7 +109,7 @@ class PersonalRelationshipsGateway(
         UpstreamApi.PERSONAL_RELATIONSHIPS,
         badRequestAsError = true,
       )
-    println(result)
+
     return when (result) {
       is WebClientWrapperResponse.Success -> {
         Response(
@@ -127,12 +127,6 @@ class PersonalRelationshipsGateway(
     }
   }
 
-/*
-  fun mapToLinkedPrisoner(result: WebClientWrapper.WebClientWrapperResponse.Success<PRLinkedPrisoners>): PRLinkedPrisoners {
-    val mappedResult: PRLinkedPrisoners = mapper.convertValue(result.data.prisoners, object : TypeReference<PRLinkedPrisoners>() {})
-    return mappedResult
-  }
-*/
   private fun authenticationHeader(): Map<String, String> {
     val token = hmppsAuthGateway.getClientToken("PERSONAL-RELATIONSHIPS")
 
