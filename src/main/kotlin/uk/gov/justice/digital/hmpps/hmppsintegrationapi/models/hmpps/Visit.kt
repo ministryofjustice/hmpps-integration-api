@@ -13,7 +13,7 @@ data class Visit(
   @Schema(description = "Prison Id", example = "MDI")
   val prisonId: String,
   @Schema(description = "Prison Name", example = "Moorland (HMP & YOI)")
-  val prisonName: String,
+  val prisonName: String?,
   @Schema(description = "Session Template Reference", example = "v9d.7ed.7u")
   val sessionTemplateReference: String?,
   @Schema(description = "Location of Visit ", example = "Visits Main Hall")
@@ -33,11 +33,11 @@ data class Visit(
   @Schema(description = "Visit Notes")
   val visitNotes: List<VisitNotes>,
   @Schema(description = "Contact associated with the visit")
-  val visitContact: VisitContact,
+  val visitContact: VisitContact?,
   @Schema(description = "List of visitors associated with the visit")
   val visitors: List<Visitors>,
   @Schema(description = "Additional support associated with the visit")
-  val visitorSupport: VisitorSupport,
+  val visitorSupport: VisitorSupport?,
   @Schema(description = "External system details associated with the visit")
   val visitExternalSystemDetails: VisitExternalSystemDetails?,
   @Schema(description = "The visit created date and time")
