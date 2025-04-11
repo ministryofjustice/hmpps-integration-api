@@ -45,7 +45,7 @@ data class Visit(
   @Schema(description = "The visit modified date and time")
   val modifiedTimestamp: String,
   @Schema(description = "Date the visit was first booked or migrated")
-  val firstBookedDateTime: String,
+  val firstBookedDateTime: String?,
 )
 
 data class VisitNotes(
