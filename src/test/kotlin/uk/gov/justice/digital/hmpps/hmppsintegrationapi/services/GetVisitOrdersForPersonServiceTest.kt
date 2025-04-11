@@ -109,4 +109,26 @@ class GetVisitOrdersForPersonServiceTest(
           type = UpstreamApiError.Type.BAD_REQUEST,
         ).shouldBe(true)
     }
+
+    it("return a 404 error when getVisitBalances data is null") {
+      whenever(nomisGateway.getVisitBalances(nomisNumber)).thenReturn(
+        Response(
+          data = null,
+          errors =
+            listOf(
+              UpstreamApiError(
+                type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+                causedBy = UpstreamApi.NOMIS,
+              ),
+            ),
+        ),
+      )
+
+      val response = getVisitOrdersForPersonService.execute(hmppsId, filters)
+      response
+        .hasErrorCausedBy(
+          causedBy = UpstreamApi.NOMIS,
+          type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+        ).shouldBe(true)
+    }
   })
