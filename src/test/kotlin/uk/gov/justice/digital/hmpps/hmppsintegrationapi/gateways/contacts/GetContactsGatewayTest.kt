@@ -34,7 +34,7 @@ class GetContactsGatewayTest(
       val getContactsPath = "/prisoner/$prisonerId/contact"
       val page = 1
       val size = 10
-      val pathWithQueryParams = "$getContactsPath?page=$page&size=$size"
+      val pathWithQueryParams = "$getContactsPath?page=${page - 1}&size=$size"
       val personalRelationshipsApiMockServer = ApiMockServer.create(UpstreamApi.PERSONAL_RELATIONSHIPS)
 
       beforeEach {

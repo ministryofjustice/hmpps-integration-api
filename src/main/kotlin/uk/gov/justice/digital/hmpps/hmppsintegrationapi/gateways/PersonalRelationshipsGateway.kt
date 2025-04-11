@@ -104,7 +104,7 @@ class PersonalRelationshipsGateway(
     val result =
       webClient.request<PRPaginatedPrisonerContacts?>(
         HttpMethod.GET,
-        "/prisoner/$prisonerId/contact?page=$page&size=$size",
+        "/prisoner/$prisonerId/contact?page=${page - 1}&size=$size",
         authenticationHeader(),
         UpstreamApi.PERSONAL_RELATIONSHIPS,
         badRequestAsError = true,

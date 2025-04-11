@@ -153,7 +153,7 @@ internal class VisitQueueServiceTest(
         pageMetadata =
           PagedModel.PageMetadata(
             1,
-            1,
+            0,
             1,
             1,
           ),
