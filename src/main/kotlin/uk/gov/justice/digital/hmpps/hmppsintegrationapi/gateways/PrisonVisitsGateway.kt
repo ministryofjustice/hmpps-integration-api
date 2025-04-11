@@ -59,7 +59,7 @@ class PrisonVisitsGateway(
     page: Int,
     size: Int,
   ): Response<PVPaginatedVisits?> {
-    var queryString = "?prisonId=$prisonId&visitStatus=$visitStatus&page=$page&size=$size&"
+    var queryString = "?prisonId=$prisonId&visitStatus=$visitStatus&page=${page - 1}&size=$size&"
 
     if (!hmppsId.isNullOrBlank()) {
       queryString += "prisonerId=$hmppsId&"
