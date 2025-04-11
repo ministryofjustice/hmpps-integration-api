@@ -7,6 +7,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ProbationOffend
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HmppsId
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NomisNumber
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ResponseResult
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
@@ -37,14 +38,13 @@ class GetHmppsIdService(
     return Response(data = HmppsId(hmppsId))
   }
 
-  fun getNomisNumber(hmppsId: String): Response<NomisNumber?> {
-    val nomisResponse = getPersonService.getNomisNumber(hmppsId = hmppsId)
-
-    return Response(
-      data = NomisNumber(nomisNumber = nomisResponse.data?.nomisNumber),
-      errors = nomisResponse.errors,
-    )
-  }
+  fun getNomisNumber(hmppsId: String): Response<NomisNumber?> =
+    getPersonService.getNomisNumber(hmppsId = hmppsId).toResult().let {
+      when (it) {
+        is ResponseResult.Success -> Response(data = NomisNumber(nomisNumber = it.data.nomisNumber))
+        is ResponseResult.Failure -> Response(data = null, errors = it.errors)
+      }
+    }
 
   override fun getCrn(hmppsId: String): String? =
     if (hmppsId.matches(CRN_REGEX)) {
