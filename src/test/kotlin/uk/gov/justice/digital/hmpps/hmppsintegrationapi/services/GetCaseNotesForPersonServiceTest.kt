@@ -86,7 +86,7 @@ class GetCaseNotesForPersonServiceTest(
       it("return entity not found if getPersonService returns no nomis number") {
         whenever(getPersonService.getNomisNumberWithPrisonFilter(hmppsId, filters)).thenReturn(
           Response(
-            data = NomisNumber(null),
+            data = null,
           ),
         )
 

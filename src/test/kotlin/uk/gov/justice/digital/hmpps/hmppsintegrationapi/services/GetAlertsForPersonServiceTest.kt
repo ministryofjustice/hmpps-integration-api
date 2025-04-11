@@ -147,7 +147,7 @@ internal class GetAlertsForPersonServiceTest(
 
         it("failed to get prisoners nomis number") {
           val errors = listOf(UpstreamApiError(UpstreamApi.NOMIS, UpstreamApiError.Type.ENTITY_NOT_FOUND))
-          whenever(personService.getNomisNumberWithPrisonFilter(hmppsId, filters)).thenReturn(Response(data = NomisNumber(), errors = emptyList()))
+          whenever(personService.getNomisNumberWithPrisonFilter(hmppsId, filters)).thenReturn(Response(data = null))
 
           val response = getAlertsForPersonService.execute(hmppsId, filters, page, perPage)
           response.errors.shouldBe(errors)

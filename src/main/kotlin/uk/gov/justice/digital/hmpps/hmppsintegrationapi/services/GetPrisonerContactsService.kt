@@ -5,8 +5,7 @@ import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PersonalRelationshipsGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PaginatedPrisonerContacts
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ResponseResult
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 @Service
@@ -20,22 +19,19 @@ class GetPrisonerContactsService(
     size: Int,
     filter: ConsumerFilters?,
   ): Response<PaginatedPrisonerContacts?> {
-    val personResponse = getPersonService.getNomisNumberWithPrisonFilter(prisonerId, filter)
-    if (personResponse.errors.isNotEmpty()) {
-      return Response(data = null, errors = personResponse.errors)
+    val (nomisNumber) =
+      getPersonService.getNomisNumberWithPrisonFilter(prisonerId, filter).toResult().let {
+        when (it) {
+          is ResponseResult.Success -> it.data
+          is ResponseResult.Failure -> return Response(data = null, it.errors)
+        }
+      }
+
+    return personalRelationshipsGateway.getContacts(nomisNumber, page, size).toResult().let {
+      when (it) {
+        is ResponseResult.Success -> Response(it.data.toPaginatedPrisonerContacts())
+        is ResponseResult.Failure -> Response(data = null, errors = it.errors)
+      }
     }
-
-    val nomisNumber =
-      personResponse.data?.nomisNumber ?: return Response(
-        data = null,
-        errors = listOf(UpstreamApiError(UpstreamApi.NOMIS, UpstreamApiError.Type.ENTITY_NOT_FOUND)),
-      )
-
-    val response = personalRelationshipsGateway.getContacts(nomisNumber, page, size)
-    if (response.errors.isNotEmpty()) {
-      return Response(data = null, errors = response.errors)
-    }
-
-    return Response(data = response.data?.toPaginatedPrisonerContacts())
   }
 }

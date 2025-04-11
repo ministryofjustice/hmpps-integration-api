@@ -212,7 +212,7 @@ internal class GetAddressesForPersonServiceTest(
       }
 
       it("No nomis number, delius success → return Delius") {
-        whenever(personService.getNomisNumberWithPrisonFilter(hmppsId, filters)).thenReturn(Response(NomisNumber(null)))
+        whenever(personService.getNomisNumberWithPrisonFilter(hmppsId, filters)).thenReturn(Response(null))
         whenever(probationOffenderSearchGateway.getAddressesForPerson(hmppsId)).thenReturn(Response(listOf(deliusAddress)))
 
         val result = getAddressesForPersonService.execute(hmppsId, filters)
@@ -221,7 +221,7 @@ internal class GetAddressesForPersonServiceTest(
       }
 
       it("No nomis number, delius any error → return Delius") {
-        whenever(personService.getNomisNumberWithPrisonFilter(hmppsId, filters)).thenReturn(Response(NomisNumber(null)))
+        whenever(personService.getNomisNumberWithPrisonFilter(hmppsId, filters)).thenReturn(Response(null))
         whenever(probationOffenderSearchGateway.getAddressesForPerson(hmppsId)).thenReturn(
           Response(
             data = emptyList(),

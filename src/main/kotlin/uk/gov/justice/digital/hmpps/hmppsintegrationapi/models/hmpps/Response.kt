@@ -14,6 +14,23 @@ data class Response<T>(
     type: UpstreamApiError.Type,
     causedBy: UpstreamApi,
   ): Boolean = this.errors.any { it.type == type && it.causedBy == causedBy }
+
+  fun toResult(): ResponseResult<T & Any> {
+    if (data == null || errors.isNotEmpty()) {
+      return ResponseResult.Failure(this.errors)
+    }
+    return ResponseResult.Success(this.data)
+  }
+}
+
+sealed class ResponseResult<out T> {
+  data class Success<out T>(
+    val data: T,
+  ) : ResponseResult<T>()
+
+  data class Failure(
+    val errors: List<UpstreamApiError>,
+  ) : ResponseResult<Nothing>()
 }
 
 data class DataResponse<T>(
