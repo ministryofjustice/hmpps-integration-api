@@ -40,7 +40,7 @@ class GetVisitorRestrictionsService(
       return Response(null, linkedPrisonersErrors)
     }
 
-    val linkedPrisoner = linkedPrisoners.firstOrNull { it.prisonerNumber == personResponse.data?.identifiers?.nomisNumber }
+    val linkedPrisoner = linkedPrisoners?.prisoners?.firstOrNull { it.prisonerNumber == personResponse.data?.identifiers?.nomisNumber }
 
     if (linkedPrisoner == null) {
       return Response(null, listOf(UpstreamApiError(UpstreamApi.PERSONAL_RELATIONSHIPS, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Prisoner not found")))
@@ -49,7 +49,7 @@ class GetVisitorRestrictionsService(
     val prisonerContactRestrictions = mutableListOf<ContactRestriction>()
     var contactGlobalRestrictions = listOf<ContactRestriction>()
 
-    val prisonerContactIds = linkedPrisoner.relationships?.map { it.prisonerContactId }.orEmpty()
+    val prisonerContactIds = linkedPrisoners.prisoners.map { it.prisonerContactId }
     for (prisonerContactId in prisonerContactIds) {
       val gatewayResult = personalRelationshipsGateway.getPrisonerContactRestrictions(prisonerContactId!!)
       if (gatewayResult.errors.isEmpty() && gatewayResult.data != null) {

@@ -6,6 +6,7 @@ import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
 import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
+import org.springframework.data.web.PagedModel
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PersonalRelationshipsGateway
@@ -17,8 +18,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PRPaginatedPrisonerContacts
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PRPrisonerContact
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.Pageable
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.Sort
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.RestrictionSummary
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 @ContextConfiguration(
@@ -102,41 +102,26 @@ internal class GetPrisonerContactsServiceTest(
         phoneTypeDescription = "Mobile",
         phoneNumber = "+1234567890",
         extNumber = "123",
-        approvedVisitor = true,
-        nextOfKin = false,
-        emergencyContact = true,
+        isApprovedVisitor = true,
+        isNextOfKin = false,
+        isEmergencyContact = true,
         isRelationshipActive = true,
         currentTerm = true,
         comments = "Close family friend",
+        restrictionSummary = RestrictionSummary(active = emptyList(), totalActive = 0, totalExpired = 0),
       )
-    val sortInstance =
-      Sort(
-        empty = true,
-        sorted = true,
-        unsorted = false,
-      )
-    val pageableInstance =
-      Pageable(
-        offset = 9007199254740991,
-        sort = sortInstance,
-        pageSize = 1073741824,
-        paged = true,
-        pageNumber = 1073741824,
-        unpaged = true,
+
+    val pageMetadata =
+      PagedModel.PageMetadata(
+        10,
+        1,
+        10,
+        1,
       )
     val prPaginatedContactsInstance =
       PRPaginatedPrisonerContacts(
         contacts = listOf(personalRelationshipsContactResponseInstance),
-        pageable = pageableInstance,
-        totalElements = 9007199254740991,
-        totalPages = 1073741824,
-        first = true,
-        last = true,
-        size = 1073741824,
-        number = 1073741824,
-        sort = sortInstance,
-        numberOfElements = 1073741824,
-        empty = true,
+        pageMetadata = pageMetadata,
       )
 
     beforeEach {

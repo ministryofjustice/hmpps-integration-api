@@ -149,7 +149,7 @@ class VisitQueueService(
             return Response(data = null, errors = response.errors)
           }
           addAll(response.data?.contacts.orEmpty())
-          isLastPage = response.data?.last ?: true
+          isLastPage = response.data?.toPaginatedPrisonerContacts()?.isLastPage ?: true
           page++
         }
       }

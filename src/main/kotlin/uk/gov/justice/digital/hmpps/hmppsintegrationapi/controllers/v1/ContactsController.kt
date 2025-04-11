@@ -21,7 +21,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditS
 @Tag(name = "contacts")
 class ContactsController(
   @Autowired val auditService: AuditService,
-  @Autowired val getVisitorService: GetContactService,
+  @Autowired val getContactService: GetContactService,
 ) {
   @GetMapping("/v1/contacts/{contactId}")
   @Operation(
@@ -41,7 +41,7 @@ class ContactsController(
   fun getContactById(
     @PathVariable contactId: String,
   ): Response<DetailedContact?> {
-    val response = getVisitorService.execute(contactId)
+    val response = getContactService.execute(contactId)
 
     if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
       throw ValidationException()
