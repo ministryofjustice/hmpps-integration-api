@@ -31,31 +31,30 @@ echo -n "${NO_ACCESS_CERT}" | base64 --decode > /tmp/no_access.pem
 echo -n "${NO_ACCESS_KEY}" | base64 --decode > /tmp/no_access.key
 echo -e "[Setup] Certificates retrieved\n";
 
-# Endpoints
-
 baseUrl="https://dev.integration-api.hmpps.service.justice.gov.uk"
+timeout=2
 hmppsId="A8451DY"
 deliusCrn="X725642"
 prisonId="MKI"
-allowed_endpoints=(
+visitReference="qd-lh-gy-lx"
+clientReference="123456"
+
+# Endpoints for testing full access
+
+get_endpoints=(
   "/v1/hmpps/id/by-nomis-number/$hmppsId"
   "/v1/hmpps/id/nomis-number/by-hmpps-id/$hmppsId"
   "/v1/persons/$hmppsId/addresses"
   "/v1/persons/$hmppsId/contacts"
   "/v1/persons/$hmppsId/iep-level"
   "/v1/persons/$hmppsId/visit-restrictions"
-#  "/v1/persons/$hmppsId/visit-orders"
-#  "/v1/persons/$hmppsId/visit/future"
   "/v1/persons/$hmppsId/alerts"
   "/v1/persons/$hmppsId/alerts/pnd"
-#  "/v1/persons/$hmppsId/case-notes"
   "/v1/persons/$hmppsId/name"
   "/v1/persons/$hmppsId/cell-location"
   "/v1/persons/$hmppsId/risks/categories"
   "/v1/persons/$hmppsId/sentences"
   "/v1/persons/$hmppsId/offences"
-#  "/v1/persons/$hmppsId/person-responsible-officer"
-#  "/v1/persons/$hmppsId/protected-characteristics"
   "/v1/persons/$hmppsId/reported-adjudications"
   "/v1/pnd/persons/$hmppsId/alerts"
   "/v1/prison/prisoners?first_name=john"
@@ -65,24 +64,13 @@ allowed_endpoints=(
   "/v1/prison/$prisonId/prisoners/$hmppsId/accounts/spends/transactions"
   "/v1/prison/$prisonId/prisoners/$hmppsId/transactions/canteen_test"
   "/v1/prison/$prisonId/prisoners/$hmppsId/non-associations"
-  "/v1/prison/$prisonId/visit/search?visitStatus=BOOKED"
   "/v1/contacts/123456"
-  #"/v1/persons/$hmppsId/visitor/123456/restrictions"
-  #"/v1/prison/$prisonId/prisoners/$hmppsId/transactions"
-  #"/v1/visit/[^/]*$"
-  #"/v1/visit"
-  #"/v1/visit/id/by-client-ref/AABDC234"
-  #"/v1/visit/.*/cancel"
-)
-not_allowed_endpoints=(
-#  "/v1/epf/person-details/$hmppsId/1"
   "/v1/persons?first_name=john"
   "/v1/persons/$deliusCrn"
   "/v1/persons/$hmppsId/licences/conditions"
   "/v1/persons/$hmppsId/needs"
   "/v1/persons/$hmppsId/risks/mappadetail"
   "/v1/persons/$hmppsId/risks/scores"
-#  "/v1/persons/$hmppsId/plp-review-schedule"
   "/v1/persons/$hmppsId/plp-induction-schedule"
   "/v1/persons/$hmppsId/plp-induction-schedule/history"
   "/v1/persons/$hmppsId/status-information"
@@ -90,13 +78,33 @@ not_allowed_endpoints=(
   "/v1/persons/$hmppsId/risks/serious-harm"
   "/v1/persons/$hmppsId/risks/scores"
   "/v1/persons/$hmppsId/risks/dynamic"
-#  "/v1/persons/$hmppsId/risk-management-plan"
-#  "/v1/persons/$hmppsId/images"
   "/v1/hmpps/reference-data"
   "/v1/hmpps/id/nomis-number/$hmppsId"
+  "/v1/persons/$hmppsId/visit/future"
+  "/v1/visit/$visitReference"
+  "/v1/visit/id/by-client-ref/$clientReference"
+  "/v1/prison/$prisonId/visit/search?visitStatus=BOOKED"
 )
-all_endpoints+=("${allowed_endpoints[@]}" "${not_allowed_endpoints[@]}")
 
+broken_get_endpoints=(
+# HMAI-445 Return 404's as could not find person https://dsdmoj.atlassian.net/jira/software/c/projects/HMAI/boards/1723/backlog?selectedIssue=HMAI-445
+    "/v1/persons/$hmppsId/protected-characteristics"
+    "/v1/epf/person-details/$hmppsId/1"
+    "/v1/persons/$hmppsId/plp-review-schedule"
+    "/v1/persons/$hmppsId/risk-management-plan"
+    "/v1/persons/$hmppsId/images"
+    "/v1/persons/$hmppsId/visit-orders"
+# HMAI-440 Returns 500 https://dsdmoj.atlassian.net/jira/software/c/projects/HMAI/boards/1723/backlog?selectedIssue=HMAI-440
+# HMAI-442 Returns 403 https://dsdmoj.atlassian.net/jira/software/c/projects/HMAI/boards/1723/backlog?selectedIssue=HMAI-442
+    "/v1/persons/$hmppsId/case-notes"
+# HMAI-396 Returns 404 https://dsdmoj.atlassian.net/jira/software/c/projects/HMAI/boards/1723/backlog?selectedIssue=HMAI-396
+    "/v1/persons/$hmppsId/person-responsible-officer"
+# Not got example of valid contactId
+    "/v1/persons/$hmppsId/visitor/{contactId}/restrictions"
+
+)
+
+all_get_endpoints+=("${get_endpoints[@]}" "${broken_get_endpoints[@]}")
 post_visit_endpoint="/v1/visit"
 post_visit_data='{
   "prisonerId": "A8451DY",
@@ -130,6 +138,10 @@ post_visit_data='{
 #         }
 #       ],
 
+# Endpoints for testing of limited access (who is set up as if they have the private prison role) and no access consumers.
+allowed_endpoint="/v1/persons/$hmppsId/name"
+not_allowed_endpoint="/v1/persons?first_name=john"
+
 echo -e "Beginning smoke tests\n"
 
 # Full access smoke tests
@@ -144,7 +156,7 @@ else
   fail=true
 fi
 
-for endpoint in "${all_endpoints[@]}"
+for endpoint in "${get_endpoints[@]}"
 do
   http_status_code=$(curl -s -o response.txt -w "%{http_code}" "${baseUrl}${endpoint}" -H "x-api-key: ${FULL_ACCESS_API_KEY}" --cert /tmp/full_access.pem --key /tmp/full_access.key)
   if [[ $http_status_code == "200" ]]; then
@@ -159,51 +171,61 @@ echo -e "Completed full access smoke tests\n"
 
 # Limited access smoke tests
 
-echo -e "Beginning limited access smoke tests\n"
+echo -e "Beginning limited access smoke tests - first endpoint should return 200, second should return 403\n"
 
-echo -e "Limited access smoke tests - Should all return 200\n"
-for endpoint in "${allowed_endpoints[@]}"
-do
-  http_status_code=$(curl -s -o response.txt -w "%{http_code}" "${baseUrl}${endpoint}" -H "x-api-key: ${LIMITED_ACCESS_API_KEY}" --cert /tmp/limited_access.pem --key /tmp/limited_access.key)
+  http_status_code=$(curl -s -o response.txt -w "%{http_code}" "${baseUrl}${allowed_endpoint}" -H "x-api-key: ${LIMITED_ACCESS_API_KEY}" --cert /tmp/limited_access.pem --key /tmp/limited_access.key)
   if [[ $http_status_code == "200" ]]; then
-    echo -e "${GREEN}✔ ${endpoint}${NC}"
+    echo -e "${GREEN}✔ ${allowed_endpoint} returned $http_status_code ${NC}"
   else
-    echo -e "${RED}✗ ${endpoint} returned $http_status_code - $(jq '.userMessage' response.txt)${NC}"
+    echo -e "${RED}✗ ${allowed_endpoint} returned $http_status_code - $(jq '.userMessage' response.txt)${NC}"
     fail=true
   fi
-done
-echo
 
-echo -e "Limited access smoke tests - Should all return 403\n"
-for endpoint in "${not_allowed_endpoints[@]}"
-do
-  http_status_code=$(curl -s -o response.txt -w "%{http_code}" "${baseUrl}${endpoint}" -H "x-api-key: ${LIMITED_ACCESS_API_KEY}" --cert /tmp/limited_access.pem --key /tmp/limited_access.key)
+  http_status_code=$(curl -s -o response.txt -w "%{http_code}" "${baseUrl}${not_allowed_endpoint}" -H "x-api-key: ${LIMITED_ACCESS_API_KEY}" --cert /tmp/limited_access.pem --key /tmp/limited_access.key)
   if [[ $http_status_code == "403" ]]; then
-    echo -e "${GREEN}✔ ${endpoint}${NC}"
+    echo -e "${GREEN}✔ ${not_allowed_endpoint} returned $http_status_code${NC}"
   else
-    echo -e "${RED}✗ ${endpoint} returned $http_status_code - $(jq '.userMessage' response.txt)${NC}"
+    echo -e "${RED}✗ ${not_allowed_endpoint} returned $http_status_code - $(jq '.userMessage' response.txt)${NC}"
     fail=true
   fi
-done
 
 echo
 echo -e "Completed limited access smoke tests\n"
 
 # No access smoke tests
 
-echo -e "Beginning no access smoke tests - Should all return 403\n"
-for endpoint in "${all_endpoints[@]}"
-do
-  http_status_code=$(curl -s -o response.txt -w "%{http_code}" "${baseUrl}${endpoint}" -H "x-api-key: ${NO_ACCESS_API_KEY}" --cert /tmp/no_access.pem --key /tmp/no_access.key)
+echo -e "Beginning no access smoke tests\n"
+echo -e "Consumer has certs but no endpoints associated to them so should return 403\n"
+  http_status_code=$(curl -s -o response.txt -w "%{http_code}" "${baseUrl}${not_allowed_endpoint}" -H "x-api-key: ${NO_ACCESS_API_KEY}" --cert /tmp/no_access.pem --key /tmp/no_access.key)
   if [[ $http_status_code == "403" ]]; then
-    echo -e "${GREEN}✔ ${endpoint}${NC}"
+    echo -e "${GREEN}✔ ${not_allowed_endpoint} returned $http_status_code${NC}"
+  else
+    echo -e "${RED}✗ ${not_allowed_endpoint} returned $http_status_code - $(jq '.userMessage' response.txt)${NC}"
+    fail=true
+  fi
+
+echo
+echo -e "Consumer has no certs so should not gain access to any endpoints\n"
+  if curl -m "$timeout" -s --fail "${baseUrl}${allowed_endpoint}" > /dev/null 2>&1; then
+    echo -e "${RED}✗ Successfully connected to ${baseUrl} (which is NOT what we wanted).${NC}"
+  else
+    echo -e "${GREEN}✔ Failed to connect to ${baseUrl} (as expected).${NC}"
+  fi
+
+echo
+echo -e "Completed no access smoke tests\n"
+
+echo -e "Check broken endpoints - Should return a 400, 403, 404 or 500 and be captured by a ticket in the backlog\n"
+for endpoint in "${broken_get_endpoints[@]}"
+do
+  http_status_code=$(curl -s -o response.txt -w "%{http_code}" "${baseUrl}${endpoint}" -H "x-api-key: ${FULL_ACCESS_API_KEY}" --cert /tmp/full_access.pem --key /tmp/full_access.key)
+  if [ "$http_status_code" -ge "400" ]; then
+    echo -e "${GREEN}✔ ${endpoint} returned $http_status_code - $(jq '.userMessage' response.txt)${NC}${NC}"
   else
     echo -e "${RED}✗ ${endpoint} returned $http_status_code - $(jq '.userMessage' response.txt)${NC}"
     fail=true
   fi
 done
-echo
-echo -e "Completed no access smoke tests\n"
 
 echo -e "Completed smoke tests\n"
 
