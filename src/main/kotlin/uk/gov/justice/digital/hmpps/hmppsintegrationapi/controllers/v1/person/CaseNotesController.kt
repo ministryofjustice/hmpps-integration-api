@@ -51,17 +51,15 @@ class CaseNotesController(
     @Parameter(description = "The HMPPS ID of the person", example = "G2996UX") @PathVariable hmppsId: String,
     @Parameter(description = "Filter case notes from this date")
     @RequestParam(required = false, name = "startDate")
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-    startDate: LocalDateTime?,
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) startDate: LocalDateTime?,
     @Parameter(description = "Filter case notes up to this date")
     @RequestParam(required = false, name = "endDate")
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-    endDate: LocalDateTime?,
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) endDate: LocalDateTime?,
     @RequestParam(required = false, defaultValue = "1", name = "page") page: Int,
     @RequestParam(required = false, defaultValue = "10", name = "perPage") perPage: Int,
     @RequestAttribute filters: ConsumerFilters?,
   ): PaginatedResponse<CaseNote> {
-    val response = getCaseNoteForPersonService.execute(CaseNoteFilter(hmppsId, startDate, endDate), filters)
+    val response = getCaseNoteForPersonService.execute(CaseNoteFilter(hmppsId, startDate, endDate, page, perPage), filters)
 
     if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
       throw ValidationException("Invalid id: $hmppsId")
@@ -77,6 +75,7 @@ class CaseNotesController(
 
     auditService.createEvent("GET_CASE_NOTES", mapOf("hmppsId" to hmppsId))
 
+    // we dont wanna paginate for them
     return response.data.orEmpty().paginateWith(page, perPage)
   }
 }

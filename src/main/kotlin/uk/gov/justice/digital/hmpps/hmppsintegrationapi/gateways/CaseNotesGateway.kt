@@ -10,7 +10,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.filters.CaseNoteF
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CaseNote
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisPageCaseNote
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.OCNCaseNote
 import java.time.format.DateTimeFormatter
 
 @Component
@@ -30,10 +30,13 @@ class CaseNotesGateway(
       CNSearchNotesRequest(
         occurredFrom = filter.startDate?.format(DateTimeFormatter.ISO_DATE),
         occurredTo = filter.endDate?.format(DateTimeFormatter.ISO_DATE),
+        page = filter.page.toString(),
+        size = filter.size.toString(),
+        sort = filter.sort,
       )
 
     val result =
-      webClient.request<NomisPageCaseNote>(
+      webClient.request<OCNCaseNote>(
         HttpMethod.POST,
         "/search/case-notes/$id",
         authenticationHeader(),

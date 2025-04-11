@@ -4,7 +4,6 @@ data class CNSearchNotesRequest(
   val includeSensitive: Boolean? = true,
   val occurredFrom: String? = null,
   val occurredTo: String? = null,
-  // confirm pagination is not required
   val page: String? = null,
   val size: String? = null,
   val sort: String? = null,
