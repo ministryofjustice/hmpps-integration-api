@@ -30,29 +30,18 @@ class GetVisitOrdersForPersonService(
       )
 
     val visitBalancesResponse = nomisGateway.getVisitBalances(nomisNumber)
+    if (visitBalancesResponse.errors.isNotEmpty()) {
+      return Response(data = null, errors = visitBalancesResponse.errors)
+    }
 
     val transformedResponse: Response<VisitOrders?> =
-      Response<VisitOrders?>(
+      Response(
         data =
           VisitOrders(
             remainingVisitOrders = visitBalancesResponse.data?.remainingVo ?: 0L,
             remainingPrivilegeVisitOrders = visitBalancesResponse.data?.remainingPvo ?: 0L,
           ),
       )
-
-    if (transformedResponse.data == null) {
-      transformedResponse.errors =
-        listOf(
-          UpstreamApiError(
-            type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-            causedBy = UpstreamApi.NOMIS,
-          ),
-        )
-    }
-
-    if (visitBalancesResponse.errors.isNotEmpty()) {
-      transformedResponse.errors = visitBalancesResponse.errors
-    }
 
     return transformedResponse
   }
