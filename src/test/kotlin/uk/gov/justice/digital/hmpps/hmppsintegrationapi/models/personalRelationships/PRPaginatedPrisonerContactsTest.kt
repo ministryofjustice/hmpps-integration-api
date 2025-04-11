@@ -106,5 +106,61 @@ internal class PRPaginatedPrisonerContactsTest {
 
       prPaginatedPrisonerContacts.toPaginatedPrisonerContacts().shouldBe(paginatedPrisonerContacts)
     }
+
+    @Test
+    fun `Handle multiple pages - Page 1 of 2`() {
+      val prPaginatedPrisonerContacts =
+        PRPaginatedPrisonerContacts(
+          contacts = emptyList(),
+          pageMetadata =
+            PagedModel.PageMetadata(
+              10,
+              0,
+              20,
+              2,
+            ),
+        )
+
+      val paginatedPrisonerContacts =
+        PaginatedPrisonerContacts(
+          content = emptyList(),
+          count = 0,
+          page = 1,
+          totalCount = 20,
+          totalPages = 2,
+          isLastPage = false,
+          perPage = 10,
+        )
+
+      prPaginatedPrisonerContacts.toPaginatedPrisonerContacts().shouldBe(paginatedPrisonerContacts)
+    }
+
+    @Test
+    fun `Handle multiple pages - Page 2 of 2`() {
+      val prPaginatedPrisonerContacts =
+        PRPaginatedPrisonerContacts(
+          contacts = emptyList(),
+          pageMetadata =
+            PagedModel.PageMetadata(
+              10,
+              1,
+              20,
+              2,
+            ),
+        )
+
+      val paginatedPrisonerContacts =
+        PaginatedPrisonerContacts(
+          content = emptyList(),
+          count = 0,
+          page = 2,
+          totalCount = 20,
+          totalPages = 2,
+          isLastPage = true,
+          perPage = 10,
+        )
+
+      prPaginatedPrisonerContacts.toPaginatedPrisonerContacts().shouldBe(paginatedPrisonerContacts)
+    }
   }
 }
