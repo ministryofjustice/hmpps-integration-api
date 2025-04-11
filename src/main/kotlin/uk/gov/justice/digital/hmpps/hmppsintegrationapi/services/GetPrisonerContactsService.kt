@@ -27,8 +27,8 @@ class GetPrisonerContactsService(
         }
       }
 
-    personalRelationshipsGateway.getContacts(nomisNumber, page, size).toResult().let {
-      return when (it) {
+    return personalRelationshipsGateway.getContacts(nomisNumber, page, size).toResult().let {
+      when (it) {
         is ResponseResult.Success -> Response(it.data.toPaginatedPrisonerContacts())
         is ResponseResult.Failure -> Response(data = null, errors = it.errors)
       }
