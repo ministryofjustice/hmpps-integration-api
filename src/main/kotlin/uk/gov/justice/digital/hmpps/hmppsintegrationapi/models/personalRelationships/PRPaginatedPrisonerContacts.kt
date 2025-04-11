@@ -13,11 +13,11 @@ data class PRPaginatedPrisonerContacts(
   fun toPaginatedPrisonerContacts(): PaginatedPrisonerContacts =
     PaginatedPrisonerContacts(
       content = this.contacts.map { it.toPrisonerContact() },
-      count = this.pageMetadata.size.toInt(),
+      count = this.contacts.size,
       page = this.pageMetadata.number.toInt() + 1,
       totalCount = this.pageMetadata.totalElements,
       totalPages = this.pageMetadata.totalPages.toInt(),
-      isLastPage = this.pageMetadata.number + 1 == this.pageMetadata.totalPages,
+      isLastPage = if (this.pageMetadata.totalPages.toInt() == 0) true else (this.pageMetadata.number + 1 == this.pageMetadata.totalPages),
       perPage = this.pageMetadata.size.toInt(),
     )
 }
