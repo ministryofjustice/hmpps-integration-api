@@ -18,7 +18,7 @@ data class PVVisit(
   @JsonProperty("prisonId")
   val prisonId: String,
   @JsonProperty("prisonName")
-  val prisonName: String,
+  val prisonName: String?,
   @JsonProperty("sessionTemplateReference")
   val sessionTemplateReference: String?,
   @JsonProperty("visitRoom")
@@ -36,21 +36,21 @@ data class PVVisit(
   @JsonProperty("endTimestamp")
   val endTimestamp: String,
   @JsonProperty("visitNotes")
-  val visitNotes: List<PVVisitNotes>,
+  val visitNotes: List<PVVisitNotes>?,
   @JsonProperty("visitContact")
-  val visitContact: PVVisitContact,
+  val visitContact: PVVisitContact?,
   @JsonProperty("visitors")
-  val visitors: List<PVVisitors>,
+  val visitors: List<PVVisitors>?,
   @JsonProperty("visitorSupport")
-  val visitorSupport: PVVisitorSupport,
-  @JsonProperty("visitExternalSystemDetails")
-  val visitExternalSystemDetails: PVVistExternalSystemDetails?,
+  val visitorSupport: PVVisitorSupport?,
   @JsonProperty("createdTimestamp")
   val createdTimestamp: String,
   @JsonProperty("modifiedTimestamp")
   val modifiedTimestamp: String,
   @JsonProperty("firstBookedDateTime")
   val firstBookedDateTime: String,
+  @JsonProperty("visitExternalSystemDetails")
+  val visitExternalSystemDetails: PVVistExternalSystemDetails?,
 ) {
   fun toVisit(): Visit =
     Visit(
@@ -67,10 +67,10 @@ data class PVVisit(
       visitRestriction = this.visitRestriction,
       startTimestamp = this.startTimestamp,
       endTimestamp = this.endTimestamp,
-      visitNotes = this.visitNotes.map { it.toVisitNotes() },
-      visitContact = this.visitContact.toVisitContact(),
-      visitors = this.visitors.map { it.toVisitors() },
-      visitorSupport = this.visitorSupport.toVisitorSupport(),
+      visitNotes = this.visitNotes?.map { it.toVisitNotes() }.orEmpty(),
+      visitContact = this.visitContact?.toVisitContact(),
+      visitors = this.visitors?.map { it.toVisitors() }.orEmpty(),
+      visitorSupport = this.visitorSupport?.toVisitorSupport(),
       visitExternalSystemDetails = this.visitExternalSystemDetails?.toVisitExternalSystemDetails(),
       createdTimestamp = this.createdTimestamp,
       modifiedTimestamp = this.modifiedTimestamp,
