@@ -84,8 +84,7 @@ get_endpoints=(
   "/v1/persons/$hmppsId/visit/future"
   "/v1/visit/$visitReference"
   "/v1/visit/id/by-client-ref/$clientReference"
-    "/v1/prison/$prisonId/visit/search?visitStatus=BOOKED"
-#  Currently been commented out
+  "/v1/prison/$prisonId/visit/search?visitStatus=BOOKED"
 )
 
 broken_get_endpoints=(
