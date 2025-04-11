@@ -83,8 +83,8 @@ get_endpoints=(
   "/v1/persons/$hmppsId/visit/future"
   "/v1/visit/$visitReference"
   "/v1/visit/id/by-client-ref/$clientReference"
+    "/v1/prison/$prisonId/visit/search?visitStatus=BOOKED"
 #  Currently been commented out
-    "/v1/persons/$hmppsId/visitor/{contactId}/restrictions"
 )
 
 broken_get_endpoints=(
@@ -96,11 +96,12 @@ broken_get_endpoints=(
     "/v1/persons/$hmppsId/images"
     "/v1/persons/$hmppsId/visit-orders"
 # HMAI-440 Returns 500
-    "/v1/prison/$prisonId/visit/search?visitStatus=BOOKED"
 # HMAI-442 Returns 403
     "/v1/persons/$hmppsId/case-notes"
 # HMAI-396 Returns 404
     "/v1/persons/$hmppsId/person-responsible-officer"
+# Not got example of valid contactId
+    "/v1/persons/$hmppsId/visitor/{contactId}/restrictions"
 
 )
 
@@ -210,7 +211,7 @@ echo -e "Check broken endpoints - Should return 403, 404 or 500 and be captured 
 for endpoint in "${broken_get_endpoints[@]}"
 do
   http_status_code=$(curl -s -o response.txt -w "%{http_code}" "${baseUrl}${endpoint}" -H "x-api-key: ${FULL_ACCESS_API_KEY}" --cert /tmp/full_access.pem --key /tmp/full_access.key)
-  if [ "$http_status_code" = "403" ] || [ "$http_status_code" = "404" ] || [ "$http_status_code" = "500" ]; then
+  if [ "$http_status_code" -ge "400" ]; then
     echo -e "${GREEN}✔ ${endpoint} returned $http_status_code - $(jq '.userMessage' response.txt)${NC}${NC}"
   else
     echo -e "${RED}✗ ${endpoint} returned $http_status_code - $(jq '.userMessage' response.txt)${NC}"
