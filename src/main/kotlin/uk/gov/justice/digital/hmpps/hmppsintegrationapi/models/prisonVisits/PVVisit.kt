@@ -100,9 +100,9 @@ data class PVVisitContact(
   @JsonProperty("name")
   val name: String,
   @JsonProperty("telephone")
-  val telephone: String,
+  val telephone: String?,
   @JsonProperty("email")
-  val email: String,
+  val email: String?,
 ) {
   fun toVisitContact(): VisitContact = VisitContact(name = this.name, telephone = this.telephone, email = this.email)
 }
