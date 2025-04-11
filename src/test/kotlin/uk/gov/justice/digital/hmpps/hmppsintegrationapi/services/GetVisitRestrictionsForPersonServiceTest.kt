@@ -78,7 +78,7 @@ class GetVisitRestrictionsForPersonServiceTest(
     it("records 404 when Nomis number is null") {
       whenever(getPersonService.getNomisNumberWithPrisonFilter(hmppsId = hmppsId, filters)).thenReturn(
         Response(
-          data = NomisNumber(nomisNumber = null),
+          data = null,
         ),
       )
 

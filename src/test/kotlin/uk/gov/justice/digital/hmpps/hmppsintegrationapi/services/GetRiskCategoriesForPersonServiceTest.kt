@@ -11,9 +11,7 @@ import org.springframework.boot.test.context.ConfigDataApplicationContextInitial
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NomisGateway
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Identifiers
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NomisNumber
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.RiskAssessment
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.RiskCategory
@@ -35,14 +33,11 @@ internal class GetRiskCategoriesForPersonServiceTest(
       val nomisNumber = "A7796DY"
       val filters = ConsumerFilters(null)
 
-      val personFromProbationOffenderSearch =
-        Person(firstName = "Phoebe", lastName = "Buffay", identifiers = Identifiers(nomisNumber = nomisNumber))
-
       beforeEach {
         Mockito.reset(getPersonService)
         Mockito.reset(nomisGateway)
 
-        whenever(getPersonService.getNomisNumberWithPrisonFilter(hmppsId, filters)).thenReturn(Response(data = NomisNumber(personFromProbationOffenderSearch.identifiers.nomisNumber)))
+        whenever(getPersonService.getNomisNumberWithPrisonFilter(hmppsId, filters)).thenReturn(Response(data = NomisNumber(nomisNumber)))
 
         whenever(nomisGateway.getRiskCategoriesForPerson(nomisNumber)).thenReturn(Response(data = RiskCategory()))
       }

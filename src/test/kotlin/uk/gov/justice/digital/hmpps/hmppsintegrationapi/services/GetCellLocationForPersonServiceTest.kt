@@ -110,7 +110,7 @@ internal class GetCellLocationForPersonServiceTest(
 
       it("failed to get prisoners nomis number") {
         val err = listOf(UpstreamApiError(UpstreamApi.NOMIS, UpstreamApiError.Type.ENTITY_NOT_FOUND))
-        whenever(getPersonService.getNomisNumberWithPrisonFilter(hmppsId, filters)).thenReturn(Response(data = NomisNumber(), errors = emptyList()))
+        whenever(getPersonService.getNomisNumberWithPrisonFilter(hmppsId, filters)).thenReturn(Response(data = null))
         val response = getCellLocationForPersonService.execute(hmppsId, filters)
         response.errors.shouldBe(err)
       }
