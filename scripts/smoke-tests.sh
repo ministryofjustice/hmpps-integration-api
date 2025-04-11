@@ -172,7 +172,7 @@ echo -e "Completed full access smoke tests\n"
 
 # Limited access smoke tests
 
-echo -e "Beginning limited access smoke tests\n"
+echo -e "Beginning limited access smoke tests - first endpoint should return 200, second should return 403\n"
 
   http_status_code=$(curl -s -o response.txt -w "%{http_code}" "${baseUrl}${allowed_endpoint}" -H "x-api-key: ${LIMITED_ACCESS_API_KEY}" --cert /tmp/limited_access.pem --key /tmp/limited_access.key)
   if [[ $http_status_code == "200" ]]; then
@@ -207,7 +207,7 @@ echo -e "Beginning no access smoke test - Should return 403\n"
 echo
 echo -e "Completed no access smoke tests\n"
 
-echo -e "Check broken endpoints - Should return 403, 404 or 500 and be captured by a ticket in the backlog\n"
+echo -e "Check broken endpoints - Should return a 400, 403, 404 or 500 and be captured by a ticket in the backlog\n"
 for endpoint in "${broken_get_endpoints[@]}"
 do
   http_status_code=$(curl -s -o response.txt -w "%{http_code}" "${baseUrl}${endpoint}" -H "x-api-key: ${FULL_ACCESS_API_KEY}" --cert /tmp/full_access.pem --key /tmp/full_access.key)
