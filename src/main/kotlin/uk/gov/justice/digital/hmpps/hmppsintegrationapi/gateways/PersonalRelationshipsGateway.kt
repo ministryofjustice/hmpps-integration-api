@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways
 
-import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
@@ -11,7 +10,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrap
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PRDetailedContact
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PRLinkedPrisoner
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PRLinkedPrisoners
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PRPaginatedPrisonerContacts
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PRPrisonerContactRestrictions
 
@@ -25,9 +24,9 @@ class PersonalRelationshipsGateway(
   @Autowired
   lateinit var hmppsAuthGateway: HmppsAuthGateway
 
-  fun getLinkedPrisoner(contactId: Long): Response<List<PRLinkedPrisoner>> {
+  fun getLinkedPrisoner(contactId: Long): Response<PRLinkedPrisoners?> {
     val result =
-      webClient.request<List<PRLinkedPrisoner>>(
+      webClient.request<PRLinkedPrisoners>(
         HttpMethod.GET,
         "/contact/$contactId/linked-prisoners",
         authenticationHeader(),
@@ -36,12 +35,12 @@ class PersonalRelationshipsGateway(
     return when (result) {
       is WebClientWrapper.WebClientWrapperResponse.Success -> {
         return Response(
-          data = mapToLinkedPrisoner(result),
+          data = result.data,
         )
       }
       is WebClientWrapper.WebClientWrapperResponse.Error -> {
         Response(
-          data = emptyList(),
+          data = null,
           errors = result.errors,
         )
       }
@@ -105,7 +104,7 @@ class PersonalRelationshipsGateway(
     val result =
       webClient.request<PRPaginatedPrisonerContacts?>(
         HttpMethod.GET,
-        "/prisoner/$prisonerId/contact?page=$page&size=$size",
+        "/prisoner/$prisonerId/contact?page=${page - 1}&size=$size",
         authenticationHeader(),
         UpstreamApi.PERSONAL_RELATIONSHIPS,
         badRequestAsError = true,
@@ -120,18 +119,12 @@ class PersonalRelationshipsGateway(
       }
 
       is WebClientWrapperResponse.Error -> {
-        println(result.errors)
         Response(
           data = null,
           errors = result.errors,
         )
       }
     }
-  }
-
-  fun mapToLinkedPrisoner(result: WebClientWrapper.WebClientWrapperResponse.Success<List<PRLinkedPrisoner>>): List<PRLinkedPrisoner> {
-    val mappedResult: List<PRLinkedPrisoner> = mapper.convertValue(result.data, object : TypeReference<List<PRLinkedPrisoner>>() {})
-    return mappedResult
   }
 
   private fun authenticationHeader(): Map<String, String> {

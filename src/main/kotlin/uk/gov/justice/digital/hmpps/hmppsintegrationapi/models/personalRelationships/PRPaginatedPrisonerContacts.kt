@@ -1,45 +1,23 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import org.springframework.data.web.PagedModel
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PaginatedPrisonerContacts
 
 data class PRPaginatedPrisonerContacts(
   @JsonProperty("content")
   val contacts: List<PRPrisonerContact>,
-  val pageable: Pageable,
-  val totalElements: Long,
-  val totalPages: Long,
-  val first: Boolean,
-  val last: Boolean,
-  val size: Long,
-  val number: Long,
-  val sort: Sort,
-  val numberOfElements: Long,
-  val empty: Boolean,
+  @JsonProperty("page")
+  val pageMetadata: PagedModel.PageMetadata,
 ) {
   fun toPaginatedPrisonerContacts(): PaginatedPrisonerContacts =
     PaginatedPrisonerContacts(
       content = this.contacts.map { it.toPrisonerContact() },
-      isLastPage = this.last,
-      count = this.numberOfElements.toInt(),
-      page = this.number.toInt(),
-      perPage = this.size.toInt(),
-      totalCount = this.totalElements,
-      totalPages = this.totalPages.toInt(),
+      count = this.pageMetadata.size.toInt(),
+      page = this.pageMetadata.number.toInt() + 1,
+      totalCount = this.pageMetadata.totalElements,
+      totalPages = this.pageMetadata.totalPages.toInt(),
+      isLastPage = this.pageMetadata.number + 1 == this.pageMetadata.totalPages,
+      perPage = this.pageMetadata.size.toInt(),
     )
 }
-
-data class Sort(
-  val empty: Boolean,
-  val sorted: Boolean,
-  val unsorted: Boolean,
-)
-
-data class Pageable(
-  val offset: Long,
-  val sort: Sort,
-  val pageSize: Long,
-  val paged: Boolean,
-  val pageNumber: Long,
-  val unpaged: Boolean,
-)

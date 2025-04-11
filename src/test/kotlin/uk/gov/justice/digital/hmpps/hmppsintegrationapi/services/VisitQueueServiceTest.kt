@@ -15,6 +15,7 @@ import org.mockito.kotlin.reset
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
+import org.springframework.data.web.PagedModel
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import software.amazon.awssdk.services.sqs.SqsAsyncClient
@@ -45,8 +46,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitorSupp
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Visitors
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PRPaginatedPrisonerContacts
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PRPrisonerContact
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.Pageable
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.Sort
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.RestrictionSummary
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.hmpps.sqs.HmppsQueue
 import uk.gov.justice.hmpps.sqs.HmppsQueueService
@@ -141,42 +141,22 @@ internal class VisitQueueServiceTest(
               phoneTypeDescription = "Mobile",
               phoneNumber = "+1234567890",
               extNumber = "123",
-              approvedVisitor = true,
-              nextOfKin = false,
-              emergencyContact = true,
+              isApprovedVisitor = true,
+              isNextOfKin = false,
+              isEmergencyContact = true,
               isRelationshipActive = true,
               currentTerm = true,
               comments = "Close family friend",
+              restrictionSummary = RestrictionSummary(active = emptyList(), totalActive = 0, totalExpired = 0),
             ),
           ),
-        pageable =
-          Pageable(
-            offset = 0,
-            sort =
-              Sort(
-                empty = false,
-                sorted = false,
-                unsorted = true,
-              ),
-            pageSize = 10,
-            paged = true,
-            pageNumber = 1,
-            unpaged = false,
+        pageMetadata =
+          PagedModel.PageMetadata(
+            1,
+            0,
+            1,
+            1,
           ),
-        totalElements = 1,
-        totalPages = 1,
-        first = true,
-        last = true,
-        size = 10,
-        number = 1,
-        sort =
-          Sort(
-            empty = false,
-            sorted = false,
-            unsorted = true,
-          ),
-        numberOfElements = 1,
-        empty = false,
       )
 
     beforeTest {
