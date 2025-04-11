@@ -148,7 +148,7 @@ class PrisonController(
     @Parameter(description = "The HMPPS ID of the person") @RequestParam(required = false) hmppsId: String?,
     @Parameter(description = "The start date of the visit") @RequestParam(required = false) fromDate: String?,
     @Parameter(description = "The end date of the visit") @RequestParam(required = false) toDate: String?,
-    @Parameter(description = "The status of the visit. (BOOKING or CANCELLED)") @RequestParam visitStatus: String,
+    @Parameter(description = "The status of the visit. (BOOKED or CANCELLED)") @RequestParam visitStatus: String,
     @Parameter(description = "The page number", schema = Schema(minimum = "1")) @RequestParam(required = true, defaultValue = "1") page: Int,
     @Parameter(description = "The maximum number of results for a page", schema = Schema(minimum = "1")) @RequestParam(required = true, defaultValue = "10") size: Int,
     @RequestAttribute filters: ConsumerFilters?,
