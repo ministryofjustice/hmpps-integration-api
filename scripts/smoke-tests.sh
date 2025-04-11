@@ -36,6 +36,8 @@ baseUrl="https://dev.integration-api.hmpps.service.justice.gov.uk"
 hmppsId="A8451DY"
 deliusCrn="X725642"
 prisonId="MKI"
+visitReference="qd-lh-gy-lx"
+clientReference="123456"
 
 # Endpoints for testing full access
 
@@ -78,12 +80,12 @@ get_endpoints=(
   "/v1/persons/$hmppsId/risks/dynamic"
   "/v1/hmpps/reference-data"
   "/v1/hmpps/id/nomis-number/$hmppsId"
+  "/v1/persons/$hmppsId/visit/future"
 #  Currently been commented out
-    "/v1/visit/{visitReference}"
-    "/v1/visit/id/by-client-ref/AABDC234"
+    "/v1/visit/$visitReference"
+    "/v1/visit/id/by-client-ref/$clientReference"
     "/v1/persons/$hmppsId/visitor/123456/restrictions"
     "/v1/persons/$hmppsId/visit-orders"
-    "/v1/persons/$hmppsId/visit/future"
 )
 
 broken_get_endpoints=(
@@ -171,20 +173,18 @@ echo -e "Completed full access smoke tests\n"
 
 echo -e "Beginning limited access smoke tests\n"
 
-echo -e "Limited access smoke test - Should return 200\n"
   http_status_code=$(curl -s -o response.txt -w "%{http_code}" "${baseUrl}${allowed_endpoint}" -H "x-api-key: ${LIMITED_ACCESS_API_KEY}" --cert /tmp/limited_access.pem --key /tmp/limited_access.key)
   if [[ $http_status_code == "200" ]]; then
-    echo -e "${GREEN}✔ ${allowed_endpoint}${NC}"
+    echo -e "${GREEN}✔ ${allowed_endpoint} returned $http_status_code ${NC}"
   else
     echo -e "${RED}✗ ${allowed_endpoint} returned $http_status_code - $(jq '.userMessage' response.txt)${NC}"
     fail=true
   fi
 echo
 
-echo -e "Limited access smoke tests - Should all return 403\n"
   http_status_code=$(curl -s -o response.txt -w "%{http_code}" "${baseUrl}${not_allowed_endpoint}" -H "x-api-key: ${LIMITED_ACCESS_API_KEY}" --cert /tmp/limited_access.pem --key /tmp/limited_access.key)
   if [[ $http_status_code == "403" ]]; then
-    echo -e "${GREEN}✔ ${not_allowed_endpoint}${NC}"
+    echo -e "${GREEN}✔ ${not_allowed_endpoint} returned $http_status_code${NC}"
   else
     echo -e "${RED}✗ ${not_allowed_endpoint} returned $http_status_code - $(jq '.userMessage' response.txt)${NC}"
     fail=true
@@ -195,10 +195,10 @@ echo -e "Completed limited access smoke tests\n"
 
 # No access smoke tests
 
-echo -e "Beginning no access smoke tests - Should all return 403\n"
+echo -e "Beginning no access smoke test - Should return 403\n"
   http_status_code=$(curl -s -o response.txt -w "%{http_code}" "${baseUrl}${not_allowed_endpoint}" -H "x-api-key: ${NO_ACCESS_API_KEY}" --cert /tmp/no_access.pem --key /tmp/no_access.key)
   if [[ $http_status_code == "403" ]]; then
-    echo -e "${GREEN}✔ ${not_allowed_endpoint}${NC}"
+    echo -e "${GREEN}✔ ${not_allowed_endpoint} returned $http_status_code${NC}"
   else
     echo -e "${RED}✗ ${not_allowed_endpoint} returned $http_status_code - $(jq '.userMessage' response.txt)${NC}"
     fail=true
