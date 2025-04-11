@@ -27,11 +27,11 @@ class GetPrisonerContactsService(
         }
       }
 
-    val response = personalRelationshipsGateway.getContacts(nomisNumber, page, size)
-    if (response.errors.isNotEmpty()) {
-      return Response(data = null, errors = response.errors)
+    personalRelationshipsGateway.getContacts(nomisNumber, page, size).toResult().let {
+      return when (it) {
+        is ResponseResult.Success -> Response(it.data.toPaginatedPrisonerContacts())
+        is ResponseResult.Failure -> Response(data = null, errors = it.errors)
+      }
     }
-
-    return Response(data = response.data?.toPaginatedPrisonerContacts())
   }
 }
