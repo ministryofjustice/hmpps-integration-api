@@ -19,7 +19,6 @@ object LaoRedactor {
       LaoStatusInformationRedactor,
       LaoMappaDetailRedactor,
       LaoDynamicRiskRedactor,
-      LaoRisksRedactor,
     )
 
   @Suppress("UNCHECKED_CAST")

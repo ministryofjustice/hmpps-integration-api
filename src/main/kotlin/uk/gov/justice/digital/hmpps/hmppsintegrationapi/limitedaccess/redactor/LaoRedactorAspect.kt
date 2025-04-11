@@ -66,7 +66,7 @@ class LaoRedactorAspect(
 @Target(AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)
 annotation class LaoRedaction(
-  val mode: Mode = Mode.REDACT,
+  val mode: Mode,
 ) {
   enum class Mode {
     REDACT,
