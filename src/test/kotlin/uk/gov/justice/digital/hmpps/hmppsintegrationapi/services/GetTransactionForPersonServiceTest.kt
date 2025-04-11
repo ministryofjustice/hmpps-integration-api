@@ -34,7 +34,7 @@ internal class GetTransactionForPersonServiceTest(
     val prisonId = "ABC"
     val clientUniqueRef = "client_unique_ref"
     val filters = ConsumerFilters(null)
-    val exampleTransaction = Transaction("204564839-3", Type(code = "spends", desc = "Spends desc"), "Spends account code", 12345, "2016-10-21")
+    val exampleTransaction = Transaction("204564839-3", Type(code = "spends", desc = "Spends desc"), "Spends account code", 12345, "2016-10-21", null)
 
     beforeEach {
       Mockito.reset(getPersonService)

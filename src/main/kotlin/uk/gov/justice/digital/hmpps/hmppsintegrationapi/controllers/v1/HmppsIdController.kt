@@ -31,7 +31,7 @@ class HmppsIdController(
   @GetMapping("nomis-number/{nomisNumber}", "by-nomis-number/{nomisNumber}")
   @Operation(
     summary = "Return a HMPPS id for a given nomis number",
-    description = "Accepts a nomis number and looks up the corresponding HMPPS Id (hmppsId).<br><br><b>Applicable filters</b>: <ul><li>prisons</li></ul>",
+    description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
     responses = [
       ApiResponse(responseCode = "200", useReturnTypeSchema = true),
       ApiResponse(responseCode = "404", description = "Nomis number could not be found."),
@@ -60,10 +60,7 @@ class HmppsIdController(
   @GetMapping("nomis-number/by-hmpps-id/{hmppsId}")
   @Operation(
     summary = "Return nomis number for a given HMPPS Id",
-    description = """
-      Accepts a HMPPS Id (hmppsId) and looks up the corresponding nomis number.<br>
-      <b>Applicable filters</b>: <ul><li>prisons</li></ul>
-    """,
+    description = "Accepts a HMPPS Id (hmppsId) and looks up the corresponding nomis number.<br><b>Applicable filters</b>: <ul><li>prisons</li></ul>",
     responses = [
       ApiResponse(responseCode = "200", useReturnTypeSchema = true),
       ApiResponse(responseCode = "404", description = "Nomis number could not be found."),

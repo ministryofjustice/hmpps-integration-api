@@ -23,13 +23,11 @@ class GetPrisonersNonAssociationsService(
     filters: ConsumerFilters?,
   ): Response<NonAssociations?> {
     val consumerPrisonFilterCheck = consumerPrisonAccessService.checkConsumerHasPrisonAccess<NonAssociations?>(prisonId, filters, upstreamServiceType = UpstreamApi.NON_ASSOCIATIONS)
-
     if (consumerPrisonFilterCheck.errors.isNotEmpty()) {
       return consumerPrisonFilterCheck
     }
 
     val responseFromNonAssociationsGateway = nonAssociationsGateway.getNonAssociationsForPerson(hmppsId, includeOpen, includeClosed)
-
     if (responseFromNonAssociationsGateway.errors.isNotEmpty()) {
       return Response(data = null, responseFromNonAssociationsGateway.errors)
     }
@@ -37,12 +35,6 @@ class GetPrisonersNonAssociationsService(
       return Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.NON_ASSOCIATIONS, UpstreamApiError.Type.ENTITY_NOT_FOUND, "No non associates found with prisoner")))
     }
 
-    val unpackedResponse = NonAssociations(responseFromNonAssociationsGateway.data.nonAssociations ?: emptyList())
-
-    if (unpackedResponse.nonAssociations.isEmpty()) {
-      return Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.NON_ASSOCIATIONS, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found")))
-    }
-
-    return Response(data = unpackedResponse)
+    return Response(data = NonAssociations(responseFromNonAssociationsGateway.data.nonAssociations))
   }
 }

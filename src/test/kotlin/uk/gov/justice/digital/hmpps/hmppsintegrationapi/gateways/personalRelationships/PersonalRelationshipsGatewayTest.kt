@@ -61,31 +61,36 @@ class PersonalRelationshipsGatewayTest(
         path,
         body =
           """
-          [
-            {
-              "prisonerNumber": "A1234BC",
-              "lastName": "Doe",
-              "firstName": "John",
-              "middleNames": "William",
-              "relationships": [
-                {
-                  "prisonerContactId": 123456,
-                  "relationshipTypeCode": "S",
-                  "relationshipTypeDescription": "Official",
-                  "relationshipToPrisonerCode": "FRI",
-                  "relationshipToPrisonerDescription": "Friend"
-                }
-              ]
+          {
+            "content": [
+              {
+                "prisonerNumber": "A1234BC",
+                "lastName": "Doe",
+                "firstName": "John",
+                "middleNames": "William",
+                "prisonerContactId": 123456,
+                "relationshipTypeCode": "S",
+                "relationshipTypeDescription": "Official",
+                "relationshipToPrisonerCode": "FRI",
+                "relationshipToPrisonerDescription": "Friend",
+                "isRelationshipActive": true
+              }
+            ],
+            "page": {
+              "size": 10,
+              "totalElements": 1,
+              "totalPages": 1,
+              "number": 0
             }
-          ]
+          }
           """.trimIndent(),
       )
 
       val response = personalRelationshipsGateway.getLinkedPrisoner(contactId)
       response.errors.shouldBeEmpty()
       response.data.shouldNotBeNull()
-      response.data[0]
-        .relationships!!
+      response.data!!
+        .prisoners
         .first()
         .prisonerContactId
         .shouldBe(123456)

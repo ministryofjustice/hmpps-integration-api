@@ -16,6 +16,7 @@ services:
   personal-relationships.base-url: http://localhost:4022
   manage-prison-visits.base-url: http://localhost:4023
   incentives.base-url: http://localhost:4024
+  alerts.base-url: http://localhost:4025
 
 authorisation:
   consumers:
@@ -89,3 +90,8 @@ hmpps.sqs:
       queueName: "audit"
     jobsboardintegration:
       queueName: "jobsboard-integration"
+    visits:
+      queueName: "visits"
+
+feature-flag:
+  use-arns-endpoints: true

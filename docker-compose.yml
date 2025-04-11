@@ -6,7 +6,7 @@ services:
     container_name: prism
     healthcheck:
       test: 'curl -H "Authorization: Bearer abc" -f http://0.0.0.0:4010/reported-adjudications/hearings?hearingDate=1910-06-03 &&
-        curl -H "Authorization: Bearer abc" -f http://0.0.0.0:4011/risks/crn/voluptatem/predictors/all &&
+        curl -H "Authorization: Bearer abc" -f http://0.0.0.0:4011/risks/predictors/D1974X &&
         curl -H "Authorization: Bearer abc" -f http://0.0.0.0:4012/case-notes/A1234AA/518b2200-6489-4c77-8514-10cf80ccd488 &&
         curl -H "Authorization: Bearer abc" -f http://0.0.0.0:4013/public/licences/id/123 &&
         curl -H "Authorization: Bearer abc" -f http://0.0.0.0:4014/api/allocation/X1234YZ/primary_pom &&
@@ -18,7 +18,8 @@ services:
         curl -H "Authorization: Bearer abc" -f http://0.0.0.0:4020/inductions/K5995YZ/induction-schedule &&
         curl -H "Authorization: Bearer abc" -f http://0.0.0.0:4021/prisoner/A1234AL/non-associations &&
         curl -H "Authorization: Bearer abc" -f http://0.0.0.0:4022/contact/123456789/linked-prisoners &&
-        curl -H "Authorization: Bearer abc" -f http://0.0.0.0:4024/incentive-reviews/prisoner/A1234AA'
+        curl -H "Authorization: Bearer abc" -f http://0.0.0.0:4024/incentive-reviews/prisoner/A1234AA &&
+        curl -H "Authorization: Bearer abc" -f http://0.0.0.0:4025/prisoners/A1234AA/alerts'
 
     ports:
       - "4010:4010"
@@ -36,6 +37,7 @@ services:
       - "4022:4022"
       - "4023:4023"
       - "4024:4024"
+      - "4025:4025"
 
   local-stack-aws:
     image: localstack/localstack:3.0

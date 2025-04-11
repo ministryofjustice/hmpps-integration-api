@@ -2,7 +2,6 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.controllers.v1
 
 import ReferenceData
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
@@ -23,7 +22,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.ReferenceDataSe
 internal class ReferenceDataControllerTests(
   @Autowired var springMockMvc: MockMvc,
   @MockitoBean val referenceDataService: ReferenceDataService,
-  val objectMapper: ObjectMapper = ObjectMapper().registerKotlinModule(),
+  @Autowired val objectMapper: ObjectMapper,
 ) : DescribeSpec(
     {
       lateinit var referenceData: Response<ReferenceData?>

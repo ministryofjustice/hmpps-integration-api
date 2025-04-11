@@ -30,21 +30,18 @@ class GetTransactionForPersonService(
 
     val personResponse = getPersonService.getNomisNumber(hmppsId = hmppsId)
 
-    if (personResponse == null) {
-      return Response(
-        data = null,
-        errors = listOf(UpstreamApiError(UpstreamApi.NOMIS, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Nomis number not found")),
-      )
-    }
-
-    val nomisNumber = personResponse.data?.nomisNumber
-
-    if (nomisNumber == null) {
+    if (personResponse.errors.isNotEmpty()) {
       return Response(
         data = null,
         errors = personResponse.errors,
       )
     }
+
+    val nomisNumber =
+      personResponse.data?.nomisNumber ?: return Response(
+        data = null,
+        errors = listOf(UpstreamApiError(UpstreamApi.NOMIS, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found")),
+      )
 
     val nomisTransaction =
       nomisGateway.getTransactionForPerson(

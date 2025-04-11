@@ -235,7 +235,7 @@ class PersonController(
 
   @GetMapping("{hmppsId}/visit-orders")
   @Operation(
-    summary = "Returns visit orders.",
+    summary = "Returns the number of remaining visit orders a prisoner has.",
     responses = [
       ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found a prisoners visit orders."),
       ApiResponse(responseCode = "404", content = [Content(schema = Schema(ref = "#/components/schemas/PersonNotFound"))]),

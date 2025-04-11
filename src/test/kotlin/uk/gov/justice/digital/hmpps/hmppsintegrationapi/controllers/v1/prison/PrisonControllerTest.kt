@@ -27,6 +27,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError.Type.FORBIDDEN
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Visit
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitContact
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitExternalSystemDetails
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitorSupport
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService
@@ -77,6 +78,11 @@ internal class PrisonControllerTest(
           reference = "dfs-wjs-abc",
           sessionTemplateReference = "dfs-wjs-xyz",
           visitorSupport = VisitorSupport(description = "Description"),
+          visitExternalSystemDetails =
+            VisitExternalSystemDetails(
+              clientName = "client_name",
+              clientVisitReference = "12345",
+            ),
         )
       val paginatedVisitsData =
         PaginatedVisits(

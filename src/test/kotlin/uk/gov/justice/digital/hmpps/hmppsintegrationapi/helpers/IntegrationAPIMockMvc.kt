@@ -1,6 +1,8 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.SerializationFeature
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.http.MediaType
@@ -17,9 +19,19 @@ class IntegrationAPIMockMvc(
     return mockMvc.perform(MockMvcRequestBuilders.get(path).header("subject-distinguished-name", subjectDistinguishedName)).andReturn()
   }
 
-  fun performAuthorisedPut(path: String): MvcResult {
+  fun performAuthorisedPut(
+    path: String,
+    requestBody: Any? = null,
+  ): MvcResult {
     val subjectDistinguishedName = "C=GB,ST=London,L=London,O=Home Office,CN=automated-test-client"
-    return mockMvc.perform(MockMvcRequestBuilders.put(path).header("subject-distinguished-name", subjectDistinguishedName)).andReturn()
+    var requestBuilder = MockMvcRequestBuilders.put(path).header("subject-distinguished-name", subjectDistinguishedName)
+    if (requestBody != null) {
+      requestBuilder =
+        requestBuilder
+          .content(asJsonString(requestBody))
+          .contentType(MediaType.APPLICATION_JSON)
+    }
+    return mockMvc.perform(requestBuilder).andReturn()
   }
 
   fun performAuthorisedWithCN(
@@ -61,5 +73,11 @@ class IntegrationAPIMockMvc(
 
   fun performUnAuthorised(path: String): MvcResult = mockMvc.perform(MockMvcRequestBuilders.get(path)).andReturn()
 
-  private fun asJsonString(obj: Any): String = jacksonObjectMapper().writeValueAsString(obj)
+  private fun asJsonString(obj: Any): String {
+    val objectMapper = ObjectMapper()
+    objectMapper.registerModule(JavaTimeModule())
+    objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+
+    return objectMapper.writeValueAsString(obj)
+  }
 }

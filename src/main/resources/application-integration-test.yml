@@ -40,6 +40,8 @@ services:
     base-url: http://localhost:4023
   incentives:
     base-url: http://localhost:4024
+  alerts:
+    base-url: http://localhost:4025
 
 hmpps.sqs:
   provider: localstack
@@ -48,6 +50,11 @@ hmpps.sqs:
       queueName: "audit"
     jobsboardintegration:
       queueName: "jobsboard-integration"
+    visits:
+      queueName: "visits"
+
+feature-flag:
+  use-arns-endpoints: true
 
 authorisation:
   consumers:
@@ -107,6 +114,9 @@ authorisation:
         - "/v1/prison/.*/prisoners/.*/non-associations"
         - "/v1/persons/.*/visitor/.*/restrictions"
         - "/v1/visit/[^/]*$"
+        - "/v1/visit"
+        - "/v1/visit/.*/cancel"
+        - "/v1/visit/id/by-client-ref/[^/]*$"
         - "/v1/prison/.*/visit/search[^/]*$"
         - "/v1/contacts/[^/]*$"
         - "/v1/persons/.*/contacts[^/]*$"
@@ -120,6 +130,15 @@ authorisation:
       include:
         - "/.*"
       filters:
+    specific-prison:
+      roles:
+        - "private-prison"
+      include:
+        - "/v1/hmpps/id/nomis-number/[^/]*$"
+        - "/v1/persons/.*/sentences/latest-key-dates-and-adjustments"
+      filters:
+        prisons:
+          - MDI
     limited-prisons:
       roles:
         - "private-prison"

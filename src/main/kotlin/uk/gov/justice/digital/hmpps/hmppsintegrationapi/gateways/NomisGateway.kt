@@ -7,7 +7,6 @@ import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper.WebClientWrapperResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Address
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Alert
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ImageMetadata
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Offence
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonVisitRestriction
@@ -24,7 +23,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Transaction
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisAccounts
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisAddress
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisAlert
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisBooking
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisImageDetail
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisInmateDetail
@@ -122,28 +120,6 @@ class NomisGateway(
     return when (result) {
       is WebClientWrapperResponse.Success -> {
         Response(data = result.data.map { it.toOffence() }.sortedByDescending { it.startDate })
-      }
-
-      is WebClientWrapperResponse.Error -> {
-        Response(
-          data = emptyList(),
-          errors = result.errors,
-        )
-      }
-    }
-  }
-
-  fun getAlertsForPerson(id: String): Response<List<Alert>> {
-    val result =
-      webClient.requestList<NomisAlert>(
-        HttpMethod.GET,
-        "/api/offenders/$id/alerts/v2",
-        authenticationHeader(),
-        UpstreamApi.NOMIS,
-      )
-    return when (result) {
-      is WebClientWrapperResponse.Success -> {
-        Response(data = result.data.map { it.toAlert() }.sortedByDescending { it.dateCreated })
       }
 
       is WebClientWrapperResponse.Error -> {
@@ -355,7 +331,7 @@ class NomisGateway(
     val result =
       webClient.request<Transactions>(
         HttpMethod.GET,
-        "/api/v1/prison/$prisonId/offenders/$nomisNumber/accounts/$accountCode/transactions?from_date=$fromDate&to_date=$toDate",
+        "/api/transactions/prison/$prisonId/offenders/$nomisNumber/accounts/$accountCode?from_date=$fromDate&to_date=$toDate",
         authenticationHeader(),
         UpstreamApi.NOMIS,
       )

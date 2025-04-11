@@ -30,7 +30,7 @@ class FutureVisitsController(
   @Autowired val getFutureVisitsService: GetFutureVisitsService,
 ) {
   @Operation(
-    summary = "Get Future Visit Information.",
+    summary = "Get information about a prisoner's future visits.",
     description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
     responses = [
       ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found a person's future visits with the provided HMPPS ID."),

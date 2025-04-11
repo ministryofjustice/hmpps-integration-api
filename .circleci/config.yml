@@ -143,6 +143,14 @@ jobs:
       - run:
           name: Run heartbeat
           command: make heartbeat
+  smoke-tests:
+    machine:
+      image: ubuntu-2204:2022.10.2
+    steps:
+      - checkout
+      - run:
+          name: Run smoke tests
+          command: make bash-smoke-tests
 
 workflows:
   version: 2
@@ -216,6 +224,15 @@ workflows:
           requires:
             - deploy-to-dev
 
+      - smoke-tests:
+          <<: *slack-fail-post-step
+          name: smoke-tests-for-dev
+          context:
+            - hmpps-common-vars
+            - hmpps-integration-api-smoke-test-dev
+          requires:
+            - post-deploy-heartbeat-for-dev
+
       - create-and-push-image-to-ecr:
           <<: *slack-fail-post-step
           name: create-and-push-image-to-preprod-ecr
@@ -223,7 +240,7 @@ workflows:
             - hmpps-common-vars
             - hmpps-integration-api-preprod
           requires:
-            - post-deploy-heartbeat-for-dev
+            - smoke-tests-for-dev
           filters:
             branches:
               only:
@@ -245,6 +262,11 @@ workflows:
           slack_channel_name: << pipeline.parameters.releases-slack-channel >>
           slack_notification: false
 
+      - request-prod-approval:
+          type: approval
+          requires:
+            - deploy-to-preprod
+
       - create-and-push-image-to-ecr:
           <<: *slack-fail-post-step
           name: create-and-push-image-to-prod-ecr
@@ -252,7 +274,7 @@ workflows:
             - hmpps-integration-api-prod
             - hmpps-common-vars
           requires:
-            - deploy-to-preprod
+            - request-prod-approval
           filters:
             branches:
               only:
@@ -293,9 +315,9 @@ workflows:
             - veracode-credentials
             - hmpps-common-vars
       - hmpps/trivy_latest_scan:
-                slack_channel: << pipeline.parameters.alerts-slack-channel >>
-                context:
-                  - hmpps-common-vars
+          slack_channel: << pipeline.parameters.alerts-slack-channel >>
+          context:
+            - hmpps-common-vars
   security-weekly:
     triggers:
       - schedule:

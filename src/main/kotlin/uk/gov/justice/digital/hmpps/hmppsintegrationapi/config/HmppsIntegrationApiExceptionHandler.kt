@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus.CONFLICT
 import org.springframework.http.HttpStatus.FORBIDDEN
 import org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR
 import org.springframework.http.HttpStatus.NOT_FOUND
+import org.springframework.http.HttpStatus.SERVICE_UNAVAILABLE
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
@@ -17,8 +18,11 @@ import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.ConflictFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.FeatureNotEnabledException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.ForbiddenByUpstreamServiceException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.HmppsAuthFailedException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.LimitedAccessException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.MessageFailedException
 
 @RestControllerAdvice
 class HmppsIntegrationApiExceptionHandler {
@@ -79,7 +83,7 @@ class HmppsIntegrationApiExceptionHandler {
       )
   }
 
-  @ExceptionHandler(ForbiddenByUpstreamServiceException::class)
+  @ExceptionHandler(ForbiddenByUpstreamServiceException::class, LimitedAccessException::class)
   fun handleAuthenticationFailedException(e: ForbiddenByUpstreamServiceException): ResponseEntity<ErrorResponse?>? {
     logAndCapture("Forbidden to complete action by upstream service: {}", e)
     return ResponseEntity
@@ -130,6 +134,34 @@ class HmppsIntegrationApiExceptionHandler {
         ErrorResponse(
           status = INTERNAL_SERVER_ERROR,
           developerMessage = "Unable to complete request as an upstream service is not responding",
+          userMessage = e.message,
+        ),
+      )
+  }
+
+  @ExceptionHandler(MessageFailedException::class)
+  fun handleMessageFailedException(e: MessageFailedException): ResponseEntity<ErrorResponse?>? {
+    logAndCapture("Message failed to be added to queue: {}", e)
+    return ResponseEntity
+      .status(INTERNAL_SERVER_ERROR)
+      .body(
+        ErrorResponse(
+          status = INTERNAL_SERVER_ERROR,
+          developerMessage = "Failed to add message to queue.",
+          userMessage = e.message,
+        ),
+      )
+  }
+
+  @ExceptionHandler(FeatureNotEnabledException::class)
+  fun handleFeatureNotEnabledException(e: FeatureNotEnabledException): ResponseEntity<ErrorResponse> {
+    logAndCapture("Validation exception: {}", e)
+    return ResponseEntity
+      .status(SERVICE_UNAVAILABLE)
+      .body(
+        ErrorResponse(
+          status = SERVICE_UNAVAILABLE,
+          developerMessage = e.message,
           userMessage = e.message,
         ),
       )

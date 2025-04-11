@@ -10,17 +10,22 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.test.context.ActiveProfiles
+import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.GetCaseAccess
 
 @WebMvcTest(controllers = [ConfigController::class])
 @ActiveProfiles("test")
 class ConfigControllerTests(
   @Autowired var springMockMvc: MockMvc,
+  @Autowired var objectMapper: ObjectMapper,
 ) {
   private val basePath = "/v1/config/authorisation"
   private val mockMvc = IntegrationAPIMockMvc(springMockMvc)
-  private val objectMapper = ObjectMapper()
+
+  @MockitoBean
+  internal lateinit var getCaseAccess: GetCaseAccess
 
   @Test
   fun `will return authorise config based on application yml`() {

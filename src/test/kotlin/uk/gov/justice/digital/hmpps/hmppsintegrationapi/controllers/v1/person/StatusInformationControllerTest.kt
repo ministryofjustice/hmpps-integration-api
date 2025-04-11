@@ -10,7 +10,9 @@ import org.mockito.kotlin.doThrow
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.autoconfigure.aop.AopAutoConfiguration
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
+import org.springframework.context.annotation.Import
 import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.bean.override.mockito.MockitoBean
@@ -18,21 +20,27 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.GetCaseAccess
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.redactor.LaoRedactorAspect
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.redactor.Redactor
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.StatusInformation
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.ndelius.CaseAccess
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetStatusInformationForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 
 @WebMvcTest(controllers = [StatusInformationController::class])
+@Import(value = [AopAutoConfiguration::class, LaoRedactorAspect::class])
 @ActiveProfiles("test")
 internal class StatusInformationControllerTest(
   @Autowired var springMockMvc: MockMvc,
   @MockitoBean val getStatusInformationForPersonService: GetStatusInformationForPersonService,
   @MockitoBean val auditService: AuditService,
+  @MockitoBean val getCaseAccess: GetCaseAccess,
 ) : DescribeSpec(
     {
       val hmppsId = "8888/12345P"
@@ -107,6 +115,56 @@ internal class StatusInformationControllerTest(
               "startDate": "2022-09-01",
               "reviewDate": "2024-12-23",
               "notes": "A lot of notes"
+            }
+          ]
+        """.removeWhitespaceAndNewlines(),
+          )
+        }
+
+        it("returns the redacted status information for a person with the matching identifier") {
+          val laoNoms = "S1234RE"
+          val laoCrn = "S123456"
+          whenever(getCaseAccess.getAccessFor(laoNoms)).thenReturn(CaseAccess(laoCrn, false, true, null, "Restriction Message"))
+          whenever(getStatusInformationForPersonService.execute(laoNoms)).thenReturn(
+            Response(
+              data =
+                listOf(
+                  StatusInformation(
+                    code = "ASFO",
+                    description = "Serious Further Offence - Subject to SFO review/investigation",
+                    startDate = "2022-10-18",
+                    reviewDate = "2025-12-22",
+                    notes = "To review later on in the year.",
+                  ),
+                  StatusInformation(
+                    code = "WRSM",
+                    description = "Warrant/Summons - Outstanding warrant or summons",
+                    startDate = "2022-09-01",
+                    reviewDate = "2024-12-23",
+                    notes = "A lot of notes",
+                  ),
+                ),
+            ),
+          )
+
+          val result = mockMvc.performAuthorised("/v1/persons/$laoNoms/status-information")
+
+          result.response.contentAsString.shouldContain(
+            """
+          "data": [
+            {
+              "code": "ASFO",
+              "description": "Serious Further Offence - Subject to SFO review/investigation",
+              "startDate": "2022-10-18",
+              "reviewDate": "2025-12-22",
+              "notes": "${Redactor.REDACTED}"
+            },
+            {
+              "code": "WRSM",
+              "description": "Warrant/Summons - Outstanding warrant or summons",
+              "startDate": "2022-09-01",
+              "reviewDate": "2024-12-23",
+              "notes": "${Redactor.REDACTED}"
             }
           ]
         """.removeWhitespaceAndNewlines(),

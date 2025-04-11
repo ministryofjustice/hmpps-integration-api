@@ -21,7 +21,7 @@ class GetVisitInformationByReferenceService(
   ): Response<Visit?> {
     val prisonVisitsResponse = prisonVisitsGateway.getVisitByReference(visitReference)
 
-    if (!prisonVisitsResponse.errors.isNullOrEmpty()) {
+    if (prisonVisitsResponse.errors.isNotEmpty()) {
       return Response(data = null, errors = prisonVisitsResponse.errors)
     }
 
