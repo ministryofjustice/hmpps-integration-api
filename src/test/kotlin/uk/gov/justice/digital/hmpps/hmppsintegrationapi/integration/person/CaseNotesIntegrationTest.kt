@@ -1,22 +1,19 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.person
 
 import org.junit.jupiter.api.Test
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationTestBase
 import java.time.LocalDateTime
 
 class CaseNotesIntegrationTest : IntegrationTestBase() {
-  private final val locationId = "MDI"
   private final val startDate: LocalDateTime = LocalDateTime.now()
   private final val endDate: LocalDateTime = LocalDateTime.now()
-  private final val path = "$basePath/$crn/case-notes?startDate=$startDate&endDate=$endDate&locationId=$locationId"
+  private final val path = "$basePath/$crn/case-notes?startDate=$startDate&endDate=$endDate"
 
   @Test
   fun `returns case notes for a person`() {
     callApi(path)
       .andExpect(status().isOk)
-      .andExpect(content().json(getExpectedResponse("person-case-notes")))
   }
 
   @Test

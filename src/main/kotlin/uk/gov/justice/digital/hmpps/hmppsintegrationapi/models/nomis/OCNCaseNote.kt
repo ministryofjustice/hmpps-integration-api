@@ -3,8 +3,9 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CaseNote
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CaseNoteAmendment
 
-data class NomisPageCaseNote(
+data class OCNCaseNote(
   val content: List<NomisCaseNote> = listOf(),
+  val page: OCNPagination,
 ) {
   fun toCaseNotes(): List<CaseNote> =
     this.content.map {
@@ -30,3 +31,9 @@ data class NomisPageCaseNote(
       )
     }
 }
+
+data class OCNPagination(
+  val totalElements: Int,
+  val page: Int,
+  val size: Int,
+)
