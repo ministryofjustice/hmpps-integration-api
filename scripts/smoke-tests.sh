@@ -88,17 +88,17 @@ get_endpoints=(
 )
 
 broken_get_endpoints=(
-# HMAI-445 Return 404's as could not find person
+# HMAI-445 Return 404's as could not find person https://dsdmoj.atlassian.net/jira/software/c/projects/HMAI/boards/1723/backlog?selectedIssue=HMAI-445
     "/v1/persons/$hmppsId/protected-characteristics"
     "/v1/epf/person-details/$hmppsId/1"
     "/v1/persons/$hmppsId/plp-review-schedule"
     "/v1/persons/$hmppsId/risk-management-plan"
     "/v1/persons/$hmppsId/images"
     "/v1/persons/$hmppsId/visit-orders"
-# HMAI-440 Returns 500
-# HMAI-442 Returns 403
+# HMAI-440 Returns 500 https://dsdmoj.atlassian.net/jira/software/c/projects/HMAI/boards/1723/backlog?selectedIssue=HMAI-440
+# HMAI-442 Returns 403 https://dsdmoj.atlassian.net/jira/software/c/projects/HMAI/boards/1723/backlog?selectedIssue=HMAI-442
     "/v1/persons/$hmppsId/case-notes"
-# HMAI-396 Returns 404
+# HMAI-396 Returns 404 https://dsdmoj.atlassian.net/jira/software/c/projects/HMAI/boards/1723/backlog?selectedIssue=HMAI-396
     "/v1/persons/$hmppsId/person-responsible-officer"
 # Not got example of valid contactId
     "/v1/persons/$hmppsId/visitor/{contactId}/restrictions"
