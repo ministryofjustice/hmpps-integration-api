@@ -40,7 +40,7 @@ class GetVisitOrdersForPersonService(
           ),
       )
 
-    if (transformedResponse.data?.remainingVisitOrders == 0L || transformedResponse.data?.remainingPrivilegeVisitOrders == 0L) {
+    if (transformedResponse.data == null) {
       transformedResponse.errors =
         listOf(
           UpstreamApiError(
