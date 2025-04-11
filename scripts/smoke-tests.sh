@@ -209,9 +209,9 @@ echo -e "Consumer has certs but no endpoints associated to them so should return
 
 echo -e "Consumer has no certs so should not gain access to any endpoints\n"
   if curl -m "$timeout" -s --fail "${baseUrl}${allowed_endpoint}" > /dev/null 2>&1; then
-    echo "Successfully connected to ${baseUrl} (which is NOT what we wanted)."
+    echo -e "${RED}✗ Successfully connected to ${baseUrl} (which is NOT what we wanted).${NC}"
   else
-    echo "Failed to connect to ${baseUrl} (as expected)."
+    echo -e "${GREEN}✔ Failed to connect to ${baseUrl} (as expected).${NC}"
   fi
 
 echo
