@@ -35,4 +35,11 @@ class VisitSearchIntegrationTest : IntegrationTestBase() {
     callApi("$path?visitStatus=$invalidStatus&page=$page&size=$size&prisonerId=$hmppsId&fromDate=$fromDate&toDate=$toDate")
       .andExpect(status().isBadRequest)
   }
+
+  @Test
+  fun `missing visit status results in a 400`() {
+    val pathWithQueryParams = "?page=$page&size=$size&prisonerId=$hmppsId&fromDate=$fromDate&toDate=$toDate"
+    callApi("$path$pathWithQueryParams")
+      .andExpect(status().isBadRequest)
+  }
 }

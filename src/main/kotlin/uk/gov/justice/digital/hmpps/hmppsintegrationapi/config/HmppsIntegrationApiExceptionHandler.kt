@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus.NOT_FOUND
 import org.springframework.http.HttpStatus.SERVICE_UNAVAILABLE
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.MethodArgumentNotValidException
+import org.springframework.web.bind.MissingServletRequestParameterException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.reactive.function.client.WebClientResponseException
@@ -161,6 +162,20 @@ class HmppsIntegrationApiExceptionHandler {
       .body(
         ErrorResponse(
           status = SERVICE_UNAVAILABLE,
+          developerMessage = e.message,
+          userMessage = e.message,
+        ),
+      )
+  }
+
+  @ExceptionHandler(MissingServletRequestParameterException::class)
+  fun handleFMissingServletRequestParameterException(e: MissingServletRequestParameterException): ResponseEntity<ErrorResponse> {
+    logAndCapture("Missing request parameter exception: {}", e)
+    return ResponseEntity
+      .status(BAD_REQUEST)
+      .body(
+        ErrorResponse(
+          status = BAD_REQUEST,
           developerMessage = e.message,
           userMessage = e.message,
         ),
