@@ -196,7 +196,8 @@ echo -e "Completed limited access smoke tests\n"
 
 # No access smoke tests
 
-echo -e "Beginning no access smoke test - Should return 403\n"
+echo -e "Beginning no access smoke tests\n"
+echo -e "Consumer has certs but no endpoints associated to them so should return 403\n"
   http_status_code=$(curl -s -o response.txt -w "%{http_code}" "${baseUrl}${not_allowed_endpoint}" -H "x-api-key: ${NO_ACCESS_API_KEY}" --cert /tmp/no_access.pem --key /tmp/no_access.key)
   if [[ $http_status_code == "403" ]]; then
     echo -e "${GREEN}✔ ${not_allowed_endpoint} returned $http_status_code${NC}"
@@ -204,6 +205,17 @@ echo -e "Beginning no access smoke test - Should return 403\n"
     echo -e "${RED}✗ ${not_allowed_endpoint} returned $http_status_code - $(jq '.userMessage' response.txt)${NC}"
     fail=true
   fi
+
+echo -e "Consumer has no certs so should not gain access to any endpoints\n"
+http_status_code=$(curl -s -o response.txt -w "%{http_code}" "${baseUrl}${allowed_endpoint}")
+  if [[ $http_status_code == "200" ]]; then
+    echo -e "${GREEN}✔ ${allowed_endpoint} returned $http_status_code ${NC}"
+  else
+    echo -e "${RED}✗ ${allowed_endpoint} returned $http_status_code - $(jq '.userMessage' response.txt)${NC}"
+    fail=true
+  fi
+echo
+
 echo
 echo -e "Completed no access smoke tests\n"
 
