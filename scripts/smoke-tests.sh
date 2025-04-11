@@ -181,7 +181,6 @@ echo -e "Beginning limited access smoke tests - first endpoint should return 200
     echo -e "${RED}✗ ${allowed_endpoint} returned $http_status_code - $(jq '.userMessage' response.txt)${NC}"
     fail=true
   fi
-echo
 
   http_status_code=$(curl -s -o response.txt -w "%{http_code}" "${baseUrl}${not_allowed_endpoint}" -H "x-api-key: ${LIMITED_ACCESS_API_KEY}" --cert /tmp/limited_access.pem --key /tmp/limited_access.key)
   if [[ $http_status_code == "403" ]]; then
@@ -206,6 +205,7 @@ echo -e "Consumer has certs but no endpoints associated to them so should return
     fail=true
   fi
 
+echo
 echo -e "Consumer has no certs so should not gain access to any endpoints\n"
   if curl -m "$timeout" -s --fail "${baseUrl}${allowed_endpoint}" > /dev/null 2>&1; then
     echo -e "${RED}✗ Successfully connected to ${baseUrl} (which is NOT what we wanted).${NC}"
