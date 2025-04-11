@@ -66,7 +66,7 @@ class GetVisitsGatewayTest(
    "first":true,
    "last":true,
    "size":1,
-   "number":1,
+   "number":0,
    "sort":{
       "empty":false,
       "sorted":false,
@@ -82,7 +82,7 @@ class GetVisitsGatewayTest(
       },
       "pageSize":1,
       "paged":true,
-      "pageNumber":1,
+      "pageNumber":0,
       "unpaged":false
    },
    "empty":false,
