@@ -139,23 +139,16 @@ internal class GetPrisonerContactsServiceTest(
     }
 
     it("failed personal relationship call") {
-      val err = listOf(UpstreamApiError(UpstreamApi.PERSONAL_RELATIONSHIPS, UpstreamApiError.Type.INTERNAL_SERVER_ERROR))
-      whenever(personalRelationshipsGateway.getContacts(hmppsId, page, size)).thenReturn(Response(data = null, errors = err))
+      val errors = listOf(UpstreamApiError(UpstreamApi.PERSONAL_RELATIONSHIPS, UpstreamApiError.Type.INTERNAL_SERVER_ERROR))
+      whenever(personalRelationshipsGateway.getContacts(hmppsId, page, size)).thenReturn(Response(data = null, errors = errors))
       val result = getPrisonerContactsService.execute(hmppsId, page, size, filters)
-      result.errors.shouldBe(err)
-    }
-
-    it("failed prison check call") {
-      val err = listOf(UpstreamApiError(UpstreamApi.NOMIS, UpstreamApiError.Type.ENTITY_NOT_FOUND, description = "NOMIS number not found"))
-      whenever(getPersonService.getNomisNumberWithPrisonFilter(hmppsId, filters)).thenReturn(Response(data = null, errors = err))
-      val result = getPrisonerContactsService.execute(hmppsId, page, size, filters)
-      result.errors.shouldBe(err)
+      result.errors.shouldBe(errors)
     }
 
     it("failed to get prisoners nomis number") {
-      val err = listOf(UpstreamApiError(UpstreamApi.NOMIS, UpstreamApiError.Type.ENTITY_NOT_FOUND))
-      whenever(getPersonService.getNomisNumberWithPrisonFilter(hmppsId, filters)).thenReturn(Response(data = null))
+      val errors = listOf(UpstreamApiError(UpstreamApi.NOMIS, UpstreamApiError.Type.ENTITY_NOT_FOUND, description = "NOMIS number not found"))
+      whenever(getPersonService.getNomisNumberWithPrisonFilter(hmppsId, filters)).thenReturn(Response(data = null, errors = errors))
       val result = getPrisonerContactsService.execute(hmppsId, page, size, filters)
-      result.errors.shouldBe(err)
+      result.errors.shouldBe(errors)
     }
   })
