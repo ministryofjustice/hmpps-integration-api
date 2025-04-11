@@ -40,8 +40,6 @@ prisonId="MKI"
 allowed_endpoints=(
   "/v1/hmpps/id/by-nomis-number/$hmppsId"
   "/v1/hmpps/id/nomis-number/by-hmpps-id/$hmppsId"
-  "/v1/persons?first_name=john"
-  "/v1/persons/$deliusCrn"
   "/v1/persons/$hmppsId/addresses"
   "/v1/persons/$hmppsId/contacts"
   "/v1/persons/$hmppsId/iep-level"
@@ -78,6 +76,8 @@ allowed_endpoints=(
 )
 not_allowed_endpoints=(
 #  "/v1/epf/person-details/$hmppsId/1"
+  "/v1/persons?first_name=john"
+  "/v1/persons/$deliusCrn"
   "/v1/persons/$hmppsId/licences/conditions"
   "/v1/persons/$hmppsId/needs"
   "/v1/persons/$hmppsId/risks/mappadetail"
