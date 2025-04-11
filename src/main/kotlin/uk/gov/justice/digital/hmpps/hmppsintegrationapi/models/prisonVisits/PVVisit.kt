@@ -48,7 +48,7 @@ data class PVVisit(
   @JsonProperty("modifiedTimestamp")
   val modifiedTimestamp: String,
   @JsonProperty("firstBookedDateTime")
-  val firstBookedDateTime: String,
+  val firstBookedDateTime: String?,
   @JsonProperty("visitExternalSystemDetails")
   val visitExternalSystemDetails: PVVistExternalSystemDetails?,
 ) {
