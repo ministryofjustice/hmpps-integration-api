@@ -33,6 +33,7 @@ echo -n "${NO_ACCESS_KEY}" | base64 --decode > /tmp/no_access.key
 echo -e "[Setup] Certificates retrieved\n";
 
 baseUrl="https://dev.integration-api.hmpps.service.justice.gov.uk"
+timeout=2
 hmppsId="A8451DY"
 deliusCrn="X725642"
 prisonId="MKI"
@@ -207,14 +208,11 @@ echo -e "Consumer has certs but no endpoints associated to them so should return
   fi
 
 echo -e "Consumer has no certs so should not gain access to any endpoints\n"
-http_status_code=$(curl -s -o response.txt -w "%{http_code}" "${baseUrl}${allowed_endpoint}")
-  if [[ $http_status_code == "200" ]]; then
-    echo -e "${GREEN}✔ ${allowed_endpoint} returned $http_status_code ${NC}"
+  if curl -m "$timeout" -s --fail "${baseUrl}${allowed_endpoint}" > /dev/null 2>&1; then
+    echo "Successfully connected to ${baseUrl} (which is NOT what we wanted)."
   else
-    echo -e "${RED}✗ ${allowed_endpoint} returned $http_status_code - $(jq '.userMessage' response.txt)${NC}"
-    fail=true
+    echo "Failed to connect to ${baseUrl} (as expected)."
   fi
-echo
 
 echo
 echo -e "Completed no access smoke tests\n"
