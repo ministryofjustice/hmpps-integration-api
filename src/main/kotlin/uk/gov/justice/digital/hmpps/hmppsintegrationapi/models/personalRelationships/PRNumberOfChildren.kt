@@ -8,6 +8,6 @@ data class PRNumberOfChildren(
   val createdBy: String?,
 )
 
-data class PRNumberOfChildrenDto(
+data class NumberOfChildren(
   val numberOfChildren: String,
 )
