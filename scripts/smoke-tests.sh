@@ -78,7 +78,7 @@ get_endpoints=(
   "/v1/persons/$hmppsId/risks/serious-harm"
   "/v1/persons/$hmppsId/risks/scores"
   "/v1/persons/$hmppsId/risks/dynamic"
-#  "/v1/hmpps/reference-data" Currently 401 code from delius.
+  "/v1/hmpps/reference-data"
   "/v1/hmpps/id/nomis-number/$hmppsId"
   "/v1/persons/$hmppsId/visit/future"
   "/v1/visit/$visitReference"
