@@ -33,7 +33,7 @@ echo -e "[Setup] Certificates retrieved\n";
 
 baseUrl="https://dev.integration-api.hmpps.service.justice.gov.uk"
 timeout=2
-hmppsId="A8451DY"
+hmppsId="G6333VK"
 plpHmppsId="A5502DZ"
 deliusCrn="X725642"
 risksCrn="X756352"
@@ -49,6 +49,7 @@ get_endpoints=(
   "/v1/persons/$hmppsId/addresses"
   "/v1/persons/$hmppsId/contacts"
   "/v1/persons/$hmppsId/iep-level"
+  "/v1/persons/$hmppsId/visit-orders"
   "/v1/persons/$hmppsId/visit-restrictions"
   "/v1/persons/$hmppsId/alerts"
   "/v1/persons/$hmppsId/alerts/pnd"
@@ -93,15 +94,14 @@ get_endpoints=(
 )
 
 broken_get_endpoints=(
-# HMAI-427 Currently returning 404 as does not exist in probation. Will be solved when we add filter https://dsdmoj.atlassian.net/browse/HMAI-427
-    "/v1/persons/$hmppsId/images"
-    "/v1/persons/$hmppsId/visit-orders"
-# HMAI-442 Returns 403 https://dsdmoj.atlassian.net/jira/software/c/projects/HMAI/boards/1723/backlog?selectedIssue=HMAI-442
-    "/v1/persons/$hmppsId/case-notes"
-# HMAI-396 Returns 404 https://dsdmoj.atlassian.net/jira/software/c/projects/HMAI/boards/1723/backlog?selectedIssue=HMAI-396
-    "/v1/persons/$hmppsId/person-responsible-officer"
 # Not got example of valid contactId
     "/v1/persons/$hmppsId/visitor/{contactId}/restrictions"
+# HMAI-396 Returns 404 https://dsdmoj.atlassian.net/jira/software/c/projects/HMAI/boards/1723/backlog?selectedIssue=HMAI-396
+    "/v1/persons/$hmppsId/person-responsible-officer"
+# HMAI-427 Currently returning 404 as does not exist in probation. Will be solved when we add filter https://dsdmoj.atlassian.net/browse/HMAI-427
+    "/v1/persons/$hmppsId/images"
+# HMAI-442 Returns 403 https://dsdmoj.atlassian.net/jira/software/c/projects/HMAI/boards/1723/backlog?selectedIssue=HMAI-442
+    "/v1/persons/$hmppsId/case-notes"
 )
 
 all_get_endpoints+=("${get_endpoints[@]}" "${broken_get_endpoints[@]}")
