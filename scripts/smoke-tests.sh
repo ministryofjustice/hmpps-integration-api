@@ -34,10 +34,14 @@ echo -e "[Setup] Certificates retrieved\n";
 baseUrl="https://dev.integration-api.hmpps.service.justice.gov.uk"
 timeout=2
 hmppsId="A8451DY"
+alternativeHmppsId="G6333VK"
+plpHmppsId="A5502DZ"
 deliusCrn="X725642"
+risksCrn="X756352"
 prisonId="MKI"
 visitReference="qd-lh-gy-lx"
 clientReference="123456"
+contactId="1898610"
 
 # Endpoints for testing full access
 
@@ -47,6 +51,7 @@ get_endpoints=(
   "/v1/persons/$hmppsId/addresses"
   "/v1/persons/$hmppsId/contacts"
   "/v1/persons/$hmppsId/iep-level"
+  "/v1/persons/$alternativeHmppsId/visit-orders"
   "/v1/persons/$hmppsId/visit-restrictions"
   "/v1/persons/$hmppsId/alerts"
   "/v1/persons/$hmppsId/alerts/pnd"
@@ -73,6 +78,7 @@ get_endpoints=(
   "/v1/persons/$hmppsId/risks/scores"
   "/v1/persons/$hmppsId/plp-induction-schedule"
   "/v1/persons/$hmppsId/plp-induction-schedule/history"
+  "/v1/persons/$plpHmppsId/plp-review-schedule"
   "/v1/persons/$hmppsId/status-information"
   "/v1/persons/$hmppsId/sentences/latest-key-dates-and-adjustments"
   "/v1/persons/$hmppsId/risks/serious-harm"
@@ -84,24 +90,18 @@ get_endpoints=(
   "/v1/visit/$visitReference"
   "/v1/visit/id/by-client-ref/$clientReference"
   "/v1/prison/$prisonId/visit/search?visitStatus=BOOKED"
+  "/v1/persons/$deliusCrn/protected-characteristics"
+  "/v1/epf/person-details/$deliusCrn/1"
+  "/v1/persons/$risksCrn/risk-management-plan"
+  "/v1/persons/$alternativeHmppsId/person-responsible-officer"
+  "/v1/persons/$alternativeHmppsId/visitor/$contactId/restrictions"
 )
 
 broken_get_endpoints=(
-# HMAI-445 Return 404's as could not find person https://dsdmoj.atlassian.net/jira/software/c/projects/HMAI/boards/1723/backlog?selectedIssue=HMAI-445
-    "/v1/persons/$hmppsId/protected-characteristics"
-    "/v1/epf/person-details/$hmppsId/1"
-    "/v1/persons/$hmppsId/plp-review-schedule"
-    "/v1/persons/$hmppsId/risk-management-plan"
+# HMAI-427 Currently returning 404 as does not exist in probation. Will be solved when we add filter https://dsdmoj.atlassian.net/browse/HMAI-427
     "/v1/persons/$hmppsId/images"
-    "/v1/persons/$hmppsId/visit-orders"
-# HMAI-440 Returns 500 https://dsdmoj.atlassian.net/jira/software/c/projects/HMAI/boards/1723/backlog?selectedIssue=HMAI-440
 # HMAI-442 Returns 403 https://dsdmoj.atlassian.net/jira/software/c/projects/HMAI/boards/1723/backlog?selectedIssue=HMAI-442
     "/v1/persons/$hmppsId/case-notes"
-# HMAI-396 Returns 404 https://dsdmoj.atlassian.net/jira/software/c/projects/HMAI/boards/1723/backlog?selectedIssue=HMAI-396
-    "/v1/persons/$hmppsId/person-responsible-officer"
-# Not got example of valid contactId
-    "/v1/persons/$hmppsId/visitor/{contactId}/restrictions"
-
 )
 
 all_get_endpoints+=("${get_endpoints[@]}" "${broken_get_endpoints[@]}")
