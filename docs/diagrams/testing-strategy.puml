@@ -38,7 +38,7 @@ Boundary(unit_test_boundary, "Unit Tests", "Kotlin"){
 }
 
 Boundary(smoke_test_boundary, "Smoke Tests", "Docker Compose, Kotlin"){
-  Container(smoke_tests, "Smoke Tests", "Kotest", "End-to-end testing of the core functionality of our API with mocked upstream APIs.", $tags="smoke_tests")  
+  Container(smoke_tests, "Smoke Tests", "Kotest", "End-to-end testing of the core functionality of our API with all upstream APIs in our development environment.", $tags="smoke_tests")
   Container(simulators, "Simulators", "Prism", " Mocked upstream APIs based on the most up-to-date OpenAPI schemas.", $tags="simulators")
 }
 

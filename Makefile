@@ -28,19 +28,16 @@ stop:
 unit-test:
 	./gradlew unitTest
 
-smoke-test: serve
-	./gradlew smokeTest --warning-mode all
-
 integration-test: serve
 	./gradlew integrationTest --warning-mode all
 
 heartbeat:
 	./scripts/heartbeat.sh
 
-bash-smoke-tests:
+smoke-tests:
 	./scripts/smoke-tests.sh
 
-test: unit-test smoke-test
+test: unit-test
 
 e2e:
 	./gradlew integrationTest --warning-mode all
