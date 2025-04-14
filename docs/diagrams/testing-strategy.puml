@@ -37,9 +37,9 @@ Boundary(unit_test_boundary, "Unit Tests", "Kotlin"){
   Container(mock_servers, "Mock Servers", "WireMock", "Provides canned responses mocking upstream API endpoints.", $tags="mock_servers")
 }
 
-Boundary(smoke_test_boundary, "Smoke Tests", "Docker Compose, Kotlin"){
-  Container(smoke_tests, "Smoke Tests", "Kotest", "End-to-end testing of the core functionality of our API with all upstream APIs in our development environment.", $tags="smoke_tests")
-  Container(simulators, "Simulators", "Prism", " Mocked upstream APIs based on the most up-to-date OpenAPI schemas.", $tags="simulators")
+Boundary(smoke_test_boundary, "Smoke Tests", "CircleCI Pipeline"){
+  Container(smoke_tests, "Smoke Tests", "Bash", "End-to-end testing of the core functionality of our API with all upstream APIs in our development environment.", $tags="smoke_tests")
+  Container(calls_to_dev, "Calls to Dev", "Bash", " Real calls to upstream APIs in the development environment.", $tags="calls_to_dev")
 }
 
 System_Ext(upstream, "Upstream Systems", "Integrated systems where data is retrieved from.")
@@ -48,7 +48,7 @@ Lay_D(controller_tests, service_tests)
 Lay_D(service_tests, gateway_tests)
 Lay_D(service_tests, model_tests)
 Lay_D(consumer, controller)
-Lay_Distance(smoke_tests, simulators, 3)
+Lay_Distance(smoke_tests, calls_to_dev, 3)
 
 Rel(consumer, controller, "Makes API calls to", "JSON/HTTPS")
 Rel_Down(controller, service, "Uses")
@@ -57,9 +57,9 @@ Rel_Down(gateway, upstream, "Makes API calls to", "JSON/HTTPS")
 Rel_Left(gateway, model, "")
 
 Rel_Down(smoke_tests, spring_boot_api, "Tests")
-Rel_Down(smoke_tests, simulators, "Uses")
+Rel_Down(smoke_tests, calls_to_dev, "Uses")
 Rel_Right(smoke_tests, consumer, "Mocks", $tags="mocks")
-Rel_Right(simulators, upstream, "Mocks", $tags="mocks")
+Rel_Right(calls_to_dev, upstream, "Mocks", $tags="mocks")
 
 Rel_Left(controller_tests, controller, "Tests")
 Rel_Left(service_tests, service, "Tests")
