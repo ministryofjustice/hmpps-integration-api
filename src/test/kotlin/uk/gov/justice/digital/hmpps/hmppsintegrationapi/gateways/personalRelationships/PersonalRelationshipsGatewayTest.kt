@@ -9,6 +9,7 @@ import org.mockito.internal.verification.VerificationModeFactory
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
+import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
@@ -17,6 +18,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PersonalRelatio
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 
 @ActiveProfiles("test")
 @ContextConfiguration(
@@ -351,6 +353,18 @@ class PersonalRelationshipsGatewayTest(
         response.errors.shouldBeEmpty()
         response.data.shouldNotBeNull()
         response.data!!.numberOfChildren.shouldBe("2")
+      }
+
+      it("Returns a bad request error") {
+        personalRelationshipsApiMockServer.stubForGet(
+          getChildrenPath,
+          "",
+          HttpStatus.BAD_REQUEST,
+        )
+
+        val response = personalRelationshipsGateway.getNumberOfChildren(prisonerId)
+        response.data.shouldBe(null)
+        response.errors.shouldBe(listOf(UpstreamApiError(causedBy = UpstreamApi.PERSONAL_RELATIONSHIPS, type = UpstreamApiError.Type.BAD_REQUEST, description = null)))
       }
     }
   })
