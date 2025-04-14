@@ -75,6 +75,27 @@ internal class GetNumberOfChildrenForPersonServiceTest(
           .shouldBe(UpstreamApiError.Type.ENTITY_NOT_FOUND)
       }
 
+      it("should return a list of errors if a bad request is made to getPersonService") {
+        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = "badRequest", filters = filters)).thenReturn(
+          Response(
+            data = null,
+            errors =
+              listOf(
+                UpstreamApiError(
+                  causedBy = UpstreamApi.PERSONAL_RELATIONSHIPS,
+                  type = UpstreamApiError.Type.BAD_REQUEST,
+                ),
+              ),
+          ),
+        )
+        val result = getNumberOfChildrenForPersonService.execute(hmppsId = "badRequest", filters)
+        result.data.shouldBe(null)
+        result.errors
+          .first()
+          .type
+          .shouldBe(UpstreamApiError.Type.BAD_REQUEST)
+      }
+
       it("should return a list of errors if personal relationships gateway returns error") {
         whenever(personalRelationshipsGateway.getNumberOfChildren(prisonerNumber)).thenReturn(
           Response(
