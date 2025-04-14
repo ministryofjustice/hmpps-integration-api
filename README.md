@@ -203,7 +203,7 @@ make unit-test
 To run smoke tests using the command line:
 
 ```bash
-make smoke-test
+make smoke-tests
 ```
 
 ### Running the linter

@@ -73,4 +73,4 @@ check-docs:
 		-v $$(pwd)/tech-docs/source:/app/source \
 		-it $(IMAGE) /scripts/check-url-links.sh
 
-.PHONY: authenticate-docker build-dev test serve publish unit-test smoke-test build lint preview-docs check-docs
+.PHONY: authenticate-docker build-dev test serve publish unit-test build lint preview-docs check-docs
