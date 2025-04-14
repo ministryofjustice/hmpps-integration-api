@@ -41,6 +41,7 @@ risksCrn="X756352"
 prisonId="MKI"
 visitReference="qd-lh-gy-lx"
 clientReference="123456"
+contactId="1898610"
 
 # Endpoints for testing full access
 
@@ -93,11 +94,10 @@ get_endpoints=(
   "/v1/epf/person-details/$deliusCrn/1"
   "/v1/persons/$risksCrn/risk-management-plan"
   "/v1/persons/$alternativeHmppsId/person-responsible-officer"
+  "/v1/persons/$alternativeHmppsId/visitor/$contactId/restrictions"
 )
 
 broken_get_endpoints=(
-# Not got example of valid contactId
-    "/v1/persons/$hmppsId/visitor/{contactId}/restrictions"
 # HMAI-427 Currently returning 404 as does not exist in probation. Will be solved when we add filter https://dsdmoj.atlassian.net/browse/HMAI-427
     "/v1/persons/$hmppsId/images"
 # HMAI-442 Returns 403 https://dsdmoj.atlassian.net/jira/software/c/projects/HMAI/boards/1723/backlog?selectedIssue=HMAI-442
