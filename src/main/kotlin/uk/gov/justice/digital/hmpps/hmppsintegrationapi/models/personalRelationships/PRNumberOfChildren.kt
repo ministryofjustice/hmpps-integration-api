@@ -1,6 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships
 
-data class NumberOfChildren(
+data class PRNumberOfChildren(
   val id: Int,
   val numberOfChildren: String,
   val active: Boolean,

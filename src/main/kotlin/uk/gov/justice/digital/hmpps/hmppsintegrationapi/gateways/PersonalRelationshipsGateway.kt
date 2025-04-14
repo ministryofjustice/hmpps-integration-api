@@ -9,9 +9,9 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrap
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper.WebClientWrapperResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.NumberOfChildren
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PRDetailedContact
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PRLinkedPrisoners
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PRNumberOfChildren
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PRPaginatedPrisonerContacts
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PRPrisonerContactRestrictions
 
@@ -128,9 +128,9 @@ class PersonalRelationshipsGateway(
     }
   }
 
-  fun getNumberOfChildren(prisonerId: String): Response<NumberOfChildren?> {
+  fun getNumberOfChildren(prisonerId: String): Response<PRNumberOfChildren?> {
     val result =
-      webClient.request<NumberOfChildren?>(
+      webClient.request<PRNumberOfChildren?>(
         HttpMethod.GET,
         "/prisoner/$prisonerId/number-of-children",
         authenticationHeader(),
