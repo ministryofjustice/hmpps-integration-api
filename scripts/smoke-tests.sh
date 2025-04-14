@@ -36,6 +36,7 @@ timeout=2
 hmppsId="A8451DY"
 plpHmppsId="A5502DZ"
 deliusCrn="X725642"
+risksCrn="X756352"
 prisonId="MKI"
 visitReference="qd-lh-gy-lx"
 clientReference="123456"
@@ -88,10 +89,10 @@ get_endpoints=(
   "/v1/prison/$prisonId/visit/search?visitStatus=BOOKED"
   "/v1/persons/$deliusCrn/protected-characteristics"
   "/v1/epf/person-details/$deliusCrn/1"
+  "/v1/persons/$risksCrn/risk-management-plan"
 )
 
 broken_get_endpoints=(
-    "/v1/persons/$hmppsId/risk-management-plan"
 # HMAI-427 Currently returning 404 as does not exist in probation. Will be solved when we add filter https://dsdmoj.atlassian.net/browse/HMAI-427
     "/v1/persons/$hmppsId/images"
     "/v1/persons/$hmppsId/visit-orders"
