@@ -9,6 +9,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrap
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper.WebClientWrapperResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.NumberOfChildren
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PRDetailedContact
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PRLinkedPrisoners
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PRPaginatedPrisonerContacts
@@ -105,6 +106,33 @@ class PersonalRelationshipsGateway(
       webClient.request<PRPaginatedPrisonerContacts?>(
         HttpMethod.GET,
         "/prisoner/$prisonerId/contact?page=${page - 1}&size=$size",
+        authenticationHeader(),
+        UpstreamApi.PERSONAL_RELATIONSHIPS,
+        badRequestAsError = true,
+      )
+
+    return when (result) {
+      is WebClientWrapperResponse.Success -> {
+        Response(
+          data =
+            result.data,
+        )
+      }
+
+      is WebClientWrapperResponse.Error -> {
+        Response(
+          data = null,
+          errors = result.errors,
+        )
+      }
+    }
+  }
+
+  fun getNumberOfChildren(prisonerId: String): Response<NumberOfChildren?> {
+    val result =
+      webClient.request<NumberOfChildren?>(
+        HttpMethod.GET,
+        "/prisoner/$prisonerId/number-of-children",
         authenticationHeader(),
         UpstreamApi.PERSONAL_RELATIONSHIPS,
         badRequestAsError = true,

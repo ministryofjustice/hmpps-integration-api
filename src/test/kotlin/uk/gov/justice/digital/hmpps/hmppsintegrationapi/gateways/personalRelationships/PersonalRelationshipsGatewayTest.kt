@@ -29,7 +29,8 @@ class PersonalRelationshipsGatewayTest(
 ) : DescribeSpec({
     val contactId: Long = 123456
     val prisonerContactId: Long = 234561
-
+    val prisonerId = "A1234BC"
+    val getChildrenPath = "/prisoner/$prisonerId/number-of-children"
     val personalRelationshipsApiMockServer = ApiMockServer.create(UpstreamApi.PERSONAL_RELATIONSHIPS)
 
     beforeEach {
@@ -319,6 +320,37 @@ class PersonalRelationshipsGatewayTest(
           .contactId
           .shouldBe(123456)
         response.data!!.genderCode.shouldBe("M")
+      }
+    }
+
+    describe("GET /prisoner/{prisonerNumber}/number-of-children") {
+
+      it("authenticates using HMPPS Auth with credentials") {
+
+        personalRelationshipsGateway.getNumberOfChildren(prisonerId)
+
+        verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("PERSONAL-RELATIONSHIPS")
+      }
+
+      it("Gets a number of children by id successfully") {
+        personalRelationshipsApiMockServer.stubForGet(
+          getChildrenPath,
+          body =
+            """
+            {
+              "id": 1,
+              "numberOfChildren": "2",
+              "active": true,
+              "createdTime": "2025-04-14T10:11:25.052Z",
+              "createdBy": "Person"
+            }
+            """.trimIndent(),
+        )
+
+        val response = personalRelationshipsGateway.getNumberOfChildren(prisonerId)
+        response.errors.shouldBeEmpty()
+        response.data.shouldNotBeNull()
+        response.data!!.numberOfChildren.shouldBe("2")
       }
     }
   })
