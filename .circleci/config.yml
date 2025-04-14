@@ -156,6 +156,12 @@ workflows:
   version: 2
   build-test-and-deploy:
     jobs:
+      - smoke-tests-testing:
+          <<: *slack-fail-post-step
+          name: smoke-tests-testing
+          context:
+            - hmpps-common-vars
+            - hmpps-integration-api-smoke-test-dev
       - lint-code:
           context:
             - hmpps-common-vars
