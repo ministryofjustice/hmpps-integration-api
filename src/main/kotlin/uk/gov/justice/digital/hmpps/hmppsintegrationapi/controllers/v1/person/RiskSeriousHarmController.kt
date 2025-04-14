@@ -28,7 +28,7 @@ class RiskSeriousHarmController(
   @Autowired val getRiskSeriousHarmForPersonService: GetRiskSeriousHarmForPersonService,
   @Autowired val auditService: AuditService,
 ) {
-  @LaoRedaction(Mode.REDACT)
+  @LaoRedaction(Mode.REJECT)
   @GetMapping("{encodedHmppsId}/risks/serious-harm")
   @Operation(
     summary = "Returns Risk of Serious Harm (ROSH) risks associated with a person. Returns only assessments completed in the last year. This endpoint does not serve LAO (Limited Access Offender) data.",

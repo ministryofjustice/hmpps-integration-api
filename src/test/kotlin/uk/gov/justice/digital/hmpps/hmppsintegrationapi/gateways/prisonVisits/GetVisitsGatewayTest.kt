@@ -37,7 +37,7 @@ class GetVisitsGatewayTest(
       val visitStatus = "BOOKED"
       val page = 1
       val size = 10
-      val pathWithQueryParams = "$path?prisonId=$prisonId&visitStatus=$visitStatus&page=$page&size=$size&prisonerId=$hmppsId&visitStartDate=$fromDate&visitEndDate=$toDate"
+      val pathWithQueryParams = "$path?prisonId=$prisonId&visitStatus=$visitStatus&page=${page - 1}&size=$size&prisonerId=$hmppsId&visitStartDate=$fromDate&visitEndDate=$toDate"
       val prisonVisitsApiMockServer = ApiMockServer.create(UpstreamApi.MANAGE_PRISON_VISITS)
 
       beforeEach {
@@ -66,7 +66,7 @@ class GetVisitsGatewayTest(
    "first":true,
    "last":true,
    "size":1,
-   "number":1,
+   "number":0,
    "sort":{
       "empty":false,
       "sorted":false,
@@ -82,7 +82,7 @@ class GetVisitsGatewayTest(
       },
       "pageSize":1,
       "paged":true,
-      "pageNumber":1,
+      "pageNumber":0,
       "unpaged":false
    },
    "empty":false,

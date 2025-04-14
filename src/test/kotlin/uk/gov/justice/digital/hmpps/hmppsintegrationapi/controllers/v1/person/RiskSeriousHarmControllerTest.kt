@@ -21,7 +21,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitesp
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.GetCaseAccess
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.redactor.LaoRedactorAspect
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.redactor.Redactor
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.OtherRisks
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Risk
@@ -197,141 +196,11 @@ internal class RiskSeriousHarmControllerTest(
           )
         }
 
-        it("returns the redacted risks for a person with the matching identifier") {
+        it("Returns 403 Forbidden for LAO case") {
           val laoCrn = "B123456"
           whenever(getCaseAccess.getAccessFor(laoCrn)).thenReturn(CaseAccess(laoCrn, true, false, "Exclusion Message"))
-          whenever(getRiskSeriousHarmForPersonService.execute(laoCrn)).thenReturn(
-            Response(
-              data =
-                Risks(
-                  assessedOn =
-                    LocalDateTime.of(
-                      2023,
-                      9,
-                      19,
-                      12,
-                      51,
-                      38,
-                    ),
-                  riskToSelf =
-                    RiskToSelf(
-                      suicide = Risk(risk = "YES", current = "YES", currentConcernsText = "Some text that should be redacted"),
-                      selfHarm = Risk(risk = "YES", current = "NO", previous = "YES", previousConcernsText = "Some text that should be redacted"),
-                      custody = Risk(risk = "NO"),
-                      hostelSetting = Risk(risk = "YES", current = "YES", currentConcernsText = "Some text that should be redacted", previous = "YES", previousConcernsText = "Some text that should be redacted"),
-                      vulnerability = Risk(risk = "YES", current = "YES", currentConcernsText = "Some text that should be redacted"),
-                    ),
-                  otherRisks = OtherRisks(breachOfTrust = "NO"),
-                  summary =
-                    RiskSummary(
-                      overallRiskLevel = "LOW",
-                      whoIsAtRisk = "X, Y and Z are at risk",
-                      natureOfRisk = "The nature of the risk is X",
-                      riskImminence = "the risk is imminent and more probably in X situation",
-                      riskIncreaseFactors = "If offender in situation X the risk can be higher",
-                      riskMitigationFactors = "Giving offender therapy in X will reduce the risk",
-                      riskInCommunity =
-                        mapOf(
-                          "children" to "HIGH",
-                          "public" to "HIGH",
-                          "knownAdult" to "HIGH",
-                          "staff" to "MEDIUM",
-                          "prisoners" to "LOW",
-                        ),
-                      riskInCustody =
-                        mapOf(
-                          "children" to "LOW",
-                          "public" to "LOW",
-                          "knownAdult" to "HIGH",
-                          "staff" to "VERY_HIGH",
-                          "prisoners" to "VERY_HIGH",
-                        ),
-                    ),
-                ),
-            ),
-          )
-
           val result = mockMvc.performAuthorised("/v1/persons/$laoCrn/risks/serious-harm")
-
-          result.response.contentAsString.shouldContain(
-            """
-          "data": {
-            "assessedOn": "2023-09-19T12:51:38",
-            "riskToSelf": {
-              "suicide": {
-                 "risk": "YES",
-                 "previous": null,
-                 "previousConcernsText": null,
-                 "current": "YES",
-                 "currentConcernsText": "${Redactor.REDACTED}"
-              },
-              "selfHarm": {
-                 "risk": "YES",
-                 "previous": "YES",
-                 "previousConcernsText": "${Redactor.REDACTED}",
-                 "current": "NO",
-                 "currentConcernsText": null
-              },
-              "custody": {
-                 "risk": "NO",
-                 "previous": null,
-                 "previousConcernsText": null,
-                 "current": null,
-                 "currentConcernsText": null
-              },
-              "hostelSetting": {
-                 "risk": "YES",
-                 "previous": "YES",
-                 "previousConcernsText": "${Redactor.REDACTED}",
-                 "current": "YES",
-                 "currentConcernsText": "${Redactor.REDACTED}"
-              },
-              "vulnerability": {
-                 "risk": "YES",
-                 "previous": null,
-                 "previousConcernsText": null,
-                 "current": "YES",
-                 "currentConcernsText": "${Redactor.REDACTED}"
-              }
-            },
-            "otherRisks": {
-              "escapeOrAbscond": null,
-              "controlIssuesDisruptiveBehaviour": null,
-              "breachOfTrust": "NO",
-              "riskToOtherPrisoners": null
-            },
-            "summary": {
-              "whoIsAtRisk": "${Redactor.REDACTED}",
-              "natureOfRisk": "${Redactor.REDACTED}",
-              "riskImminence": "${Redactor.REDACTED}",
-              "riskIncreaseFactors": "${Redactor.REDACTED}",
-              "riskMitigationFactors": "${Redactor.REDACTED}",
-              "overallRiskLevel": "${Redactor.REDACTED}",
-              "riskInCommunity": {
-                "${Redactor.REDACTED}":"${Redactor.REDACTED}"
-               },
-               "riskInCustody": {
-                "${Redactor.REDACTED}": "${Redactor.REDACTED}"
-               }
-            }
-          }
-          """.removeWhitespaceAndNewlines(),
-          )
-        }
-
-        it("can handle null response") {
-          val laoCrn = "N444411"
-          whenever(getCaseAccess.getAccessFor(laoCrn)).thenReturn(CaseAccess(laoCrn, true, false, "Exclusion Message"))
-          whenever(getRiskSeriousHarmForPersonService.execute(laoCrn)).thenReturn(Response(data = null))
-
-          val result = mockMvc.performAuthorised("/v1/persons/$laoCrn/risks/serious-harm")
-
-          result.response.contentAsString.shouldContain(
-            """{
-          "data": null
-          }
-          """.removeWhitespaceAndNewlines(),
-          )
+          result.response.status.shouldBe(HttpStatus.FORBIDDEN.value())
         }
 
         it("logs audit") {
