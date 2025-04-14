@@ -259,6 +259,13 @@ internal class VisitQueueServiceTest(
         response.data.shouldBeNull()
         response.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.PERSONAL_RELATIONSHIPS, UpstreamApiError.Type.ENTITY_NOT_FOUND, "No contact found with an ID of $visitorContactId")))
       }
+
+      it("return error if visit notes contains notes of the same type") {
+        val createVisitRequestWithDuplicateNoteTypes = createVisitRequest.copy(visitNotes = listOf(createVisitRequest.visitNotes[0].copy(), createVisitRequest.visitNotes[0].copy()))
+        val response = visitQueueService.sendCreateVisit(createVisitRequestWithDuplicateNoteTypes, who, filters)
+        response.data.shouldBeNull()
+        response.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.MANAGE_PRISON_VISITS, UpstreamApiError.Type.BAD_REQUEST, "You cannot have multiple visit notes of the same type")))
+      }
     }
 
     describe("update visit request") {
@@ -332,6 +339,13 @@ internal class VisitQueueServiceTest(
         val response = visitQueueService.sendUpdateVisit(visitReference, updateVisitRequest, who, filters)
         response.data.shouldBeNull()
         response.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.PERSONAL_RELATIONSHIPS, UpstreamApiError.Type.ENTITY_NOT_FOUND, "No contact found with an ID of $visitorContactId")))
+      }
+
+      it("return error if visit notes contains notes of the same type") {
+        val updateVisitRequestWithDuplicateNoteTypes = updateVisitRequest.copy(visitNotes = listOf(updateVisitRequest.visitNotes[0].copy(), updateVisitRequest.visitNotes[0].copy()))
+        val response = visitQueueService.sendUpdateVisit(visitReference, updateVisitRequestWithDuplicateNoteTypes, who, filters)
+        response.data.shouldBeNull()
+        response.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.MANAGE_PRISON_VISITS, UpstreamApiError.Type.BAD_REQUEST, "You cannot have multiple visit notes of the same type")))
       }
     }
 
