@@ -17,11 +17,13 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.caseNotes.PaginatedCaseNotes
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.filters.CaseNoteFilter
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CaseNote
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.OCNPagination
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetCaseNotesForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
@@ -39,12 +41,13 @@ class CaseNotesControllerTest(
       val locationId = "MDI"
       val startDate: LocalDateTime = LocalDateTime.now()
       val endDate: LocalDateTime = LocalDateTime.now()
-      val path = "/v1/persons/$hmppsId/case-notes?startDate=$startDate&endDate=$endDate&locationId=$locationId"
+      val path = "/v1/persons/$hmppsId/case-notes?startDate=$startDate&endDate=$endDate"
       val caseNoteFilter = CaseNoteFilter(hmppsId, startDate, endDate)
       val mockMvc = IntegrationAPIMockMvc(springMockMvc)
       val pageCaseNote =
-        listOf(
-          CaseNote(caseNoteId = "abcd1234"),
+        PaginatedCaseNotes(
+          content = listOf(CaseNote(caseNoteId = "abcd1234")),
+          pagination = OCNPagination(page = 1, size = 10, totalElements = 1),
         )
       val filters = null
 
@@ -86,41 +89,14 @@ class CaseNotesControllerTest(
           val result = mockMvc.performAuthorised(path)
           result.response.status.shouldBe(HttpStatus.OK.value())
           result.response.contentAsString.shouldContain(
-            """
-            {
-              "data": [
-                {
-                  "caseNoteId": "abcd1234",
-                  "offenderIdentifier": null,
-                  "type": null,
-                  "typeDescription": null,
-                  "subType": null,
-                  "subTypeDescription": null,
-                  "creationDateTime": null,
-                  "occurrenceDateTime": null,
-                  "text": null,
-                  "locationId": null,
-                  "sensitive": false,
-                  "amendments": []
-                }
-              ],
-              "pagination": {
-                "isLastPage": true,
-                "count": 1,
-                "page": 1,
-                "perPage": 10,
-                "totalCount": 1,
-                "totalPages": 1
-              }
-            }
-            """.removeWhitespaceAndNewlines(),
+            """{"data":{"content":[{"caseNoteId":"abcd1234","offenderIdentifier":null,"type":null,"typeDescription":null,"subType":null,"subTypeDescription":null,"creationDateTime":null,"occurrenceDateTime":null,"text":null,"locationId":null,"sensitive":false,"amendments":[]}],"pagination":{"page":1,"totalElements":1,"size":10}}}""".removeWhitespaceAndNewlines(),
           )
         }
 
         it("returns a 400 when the upstream service returns bad request") {
           whenever(getCaseNotesForPersonService.execute(caseNoteFilter, filters)).thenReturn(
             Response(
-              data = emptyList(),
+              data = null,
               errors =
                 listOf(
                   UpstreamApiError(
@@ -138,7 +114,7 @@ class CaseNotesControllerTest(
         it("returns a 403 when the upstream service provides a 403") {
           whenever(getCaseNotesForPersonService.execute(caseNoteFilter, filters)).thenReturn(
             Response(
-              data = emptyList(),
+              data = null,
               errors =
                 listOf(
                   UpstreamApiError(
@@ -156,7 +132,7 @@ class CaseNotesControllerTest(
         it("returns a 400 when the upstream service returns entity not found") {
           whenever(getCaseNotesForPersonService.execute(caseNoteFilter, filters)).thenReturn(
             Response(
-              data = emptyList(),
+              data = null,
               errors =
                 listOf(
                   UpstreamApiError(

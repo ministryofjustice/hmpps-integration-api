@@ -24,7 +24,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.caseNotes.CNSearc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.filters.CaseNoteFilter
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import java.time.LocalDateTime
 
 @ActiveProfiles("test")
 @ContextConfiguration(
@@ -40,12 +39,13 @@ class CaseNotesGatewayTest(
       val id = "123"
       val pathNoParams = "/search/case-notes/$id"
       val caseNotesApiMockServer = ApiMockServer.create(UpstreamApi.CASE_NOTES)
-      val caseNoteRequest = CNSearchNotesRequest(occurredFrom = "2025-01-01", occurredTo = "2025-01-02")
-      val caseNoteFilter = CaseNoteFilter(hmppsId = id, startDate = LocalDateTime.of(2025, 1, 1, 0, 0), endDate = LocalDateTime.of(2025, 1, 2, 0, 0))
+      val caseNoteRequest = CNSearchNotesRequest(page = 1, size = 10, sort = "")
+      val caseNoteFilter = CaseNoteFilter(hmppsId = id)
+
       val jsonRequest = objectMapper.writeValueAsString(caseNoteRequest.toApiConformingMap())
 
       val responseJson = """
-          {
+         {
             "content": [
               {
                 "caseNoteId": $id,
@@ -54,8 +54,8 @@ class CaseNotesGatewayTest(
                 "typeDescription": "Key Worker",
                 "subType": "KS",
                 "subTypeDescription": "Key Worker Session",
-                "creationDateTime": "2025-01-01T01:30:00",
-                "occurrenceDateTime": "2017-10-31T01:30:00",
+                "creationDateTime": "2025-01-01T01:30:00Z",
+                "occurrenceDateTime": "2017-10-31T01:30:00Z",
                 "authorName": "John Smith",
                 "authorUserId": "12345",
                 "authorUsername": "USER1",
@@ -64,7 +64,7 @@ class CaseNotesGatewayTest(
                 "sensitive": true,
                 "amendments": [
                   {
-                    "creationDateTime": "2018-12-01T13:45:00",
+                    "creationDateTime": "2018-12-01T13:45:00Z",
                     "authorUserName": "USER1",
                     "authorName": "Mickey Mouse",
                     "authorUserId": "12345",
@@ -76,9 +76,9 @@ class CaseNotesGatewayTest(
               }
             ],
             "metadata": {
-              "totalElements": 1073741824,
-              "page": 1073741824,
-              "size": 1073741824
+              "totalElements": 1,
+              "page": 1,
+              "size": 10
             },
             "hasCaseNotes": true
           }
@@ -104,7 +104,7 @@ class CaseNotesGatewayTest(
       }
 
       it("upstream API returns an error, throw exception") {
-        caseNotesApiMockServer.stubForPost(pathNoParams, jsonRequest, responseJson, HttpStatus.BAD_REQUEST)
+        caseNotesApiMockServer.stubForPost(pathNoParams, jsonRequest, "", HttpStatus.BAD_REQUEST)
         val response =
           shouldThrow<WebClientResponseException> {
             caseNotesGateway.getCaseNotesForPerson(id = id, caseNoteFilter)
@@ -129,8 +129,11 @@ class CaseNotesGatewayTest(
       it("returns caseNote") {
         caseNotesApiMockServer.stubForPost(pathNoParams, jsonRequest, responseJson, HttpStatus.OK)
         val response = caseNotesGateway.getCaseNotesForPerson(id = id, caseNoteFilter)
-        response.data.count().shouldBe(1)
-        response.data.shouldExist { it -> it.caseNoteId == id }
+        response.data
+          ?.content!!
+          .count()
+          .shouldBe(1)
+        response.data!!.content.shouldExist { it -> it.caseNoteId == id }
       }
     },
   )

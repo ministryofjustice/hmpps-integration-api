@@ -1,10 +1,13 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis
 
+import com.fasterxml.jackson.annotation.JsonProperty
+import io.swagger.v3.oas.annotations.media.Schema
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CaseNote
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CaseNoteAmendment
 
 data class OCNCaseNote(
   val content: List<NomisCaseNote> = listOf(),
+  @JsonProperty("metadata")
   val page: OCNPagination,
 ) {
   fun toCaseNotes(): List<CaseNote> =
@@ -33,7 +36,10 @@ data class OCNCaseNote(
 }
 
 data class OCNPagination(
-  val totalElements: Int,
+  @Schema(description = "Current Page")
   val page: Int,
+  @Schema(description = "Total elements")
+  val totalElements: Int,
+  @Schema(description = "Total pages")
   val size: Int,
 )

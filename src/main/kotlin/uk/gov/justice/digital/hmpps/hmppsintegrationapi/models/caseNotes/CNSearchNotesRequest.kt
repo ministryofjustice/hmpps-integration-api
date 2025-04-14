@@ -4,8 +4,8 @@ data class CNSearchNotesRequest(
   val includeSensitive: Boolean? = true,
   val occurredFrom: String? = null,
   val occurredTo: String? = null,
-  val page: String? = null,
-  val size: String? = null,
+  val page: Int? = null,
+  val size: Int? = null,
   val sort: String? = null,
 ) {
   fun toApiConformingMap(): Map<String, Any> {
@@ -20,10 +20,10 @@ data class CNSearchNotesRequest(
       map["occurredTo"] = occurredTo
     }
     if (page != null) {
-      map["page"] = page
+      map["page"] = page.toInt()
     }
     if (size != null) {
-      map["size"] = size
+      map["size"] = size.toInt()
     }
     if (sort != null) {
       map["sort"] = sort

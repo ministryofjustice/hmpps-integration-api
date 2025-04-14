@@ -6,12 +6,11 @@ import org.springframework.http.HttpMethod
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.caseNotes.CNSearchNotesRequest
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.caseNotes.PaginatedCaseNotes
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.filters.CaseNoteFilter
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CaseNote
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.OCNCaseNote
-import java.time.format.DateTimeFormatter
 
 @Component
 class CaseNotesGateway(
@@ -25,13 +24,14 @@ class CaseNotesGateway(
   fun getCaseNotesForPerson(
     id: String,
     filter: CaseNoteFilter,
-  ): Response<List<CaseNote>> {
+  ): Response<PaginatedCaseNotes?> {
     val requestBody =
       CNSearchNotesRequest(
-        occurredFrom = filter.startDate?.format(DateTimeFormatter.ISO_DATE),
-        occurredTo = filter.endDate?.format(DateTimeFormatter.ISO_DATE),
-        page = filter.page.toString(),
-        size = filter.size.toString(),
+        // date-time format enforced demands format RFC3339, ISO Offset isnt valid apparently
+        occurredFrom = filter.startDate?.let { it.toString() + "Z" },
+        occurredTo = filter.endDate?.let { it.toString() + "Z" },
+        page = filter.page,
+        size = filter.size,
         sort = filter.sort,
       )
 
@@ -43,17 +43,22 @@ class CaseNotesGateway(
         requestBody = requestBody.toApiConformingMap(),
         upstreamApi = UpstreamApi.CASE_NOTES,
         forbiddenAsError = true,
-        badRequestAsError = true,
       )
 
     return when (result) {
       is WebClientWrapper.WebClientWrapperResponse.Success -> {
-        Response(data = result.data.toCaseNotes())
+        val paginatedCaseNotes =
+          PaginatedCaseNotes(
+            content = result.data.toCaseNotes(),
+            pagination = result.data.page,
+          )
+
+        Response(data = paginatedCaseNotes)
       }
 
       is WebClientWrapper.WebClientWrapperResponse.Error -> {
         Response(
-          data = emptyList(),
+          data = null,
           errors = result.errors,
         )
       }

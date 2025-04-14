@@ -8,12 +8,19 @@ import java.time.LocalDateTime
 class CaseNotesIntegrationTest : IntegrationTestBase() {
   private final val startDate: LocalDateTime = LocalDateTime.now()
   private final val endDate: LocalDateTime = LocalDateTime.now()
-  private final val path = "$basePath/$crn/case-notes?startDate=$startDate&endDate=$endDate"
+  private final val cnMatchedPrisonerId = "A1234AA"
+  private final val path = "$basePath/$cnMatchedPrisonerId/case-notes"
 
   @Test
   fun `returns case notes for a person`() {
-    callApi(path)
-      .andExpect(status().isOk)
+    callApi(path).andExpect(status().isOk)
+  }
+
+  @Test
+  fun `returns case notes for a person when date range query`() {
+    callApi(
+      "$path?startDate=$startDate&endDate=$endDate",
+    ).andExpect(status().isOk)
   }
 
   @Test
