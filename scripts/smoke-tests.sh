@@ -34,6 +34,7 @@ echo -e "[Setup] Certificates retrieved\n";
 baseUrl="https://dev.integration-api.hmpps.service.justice.gov.uk"
 timeout=2
 hmppsId="A8451DY"
+plpHmppsId="A5502DZ"
 deliusCrn="X725642"
 prisonId="MKI"
 visitReference="qd-lh-gy-lx"
@@ -71,8 +72,9 @@ get_endpoints=(
   "/v1/persons/$hmppsId/needs"
   "/v1/persons/$hmppsId/risks/mappadetail"
   "/v1/persons/$hmppsId/risks/scores"
-  "/v1/persons/$hmppsId/plp-induction-schedule"
-  "/v1/persons/$hmppsId/plp-induction-schedule/history"
+  "/v1/persons/$plpHmppsId/plp-induction-schedule"
+  "/v1/persons/$plpHmppsId/plp-induction-schedule/history"
+  "/v1/persons/$plpHmppsId/plp-review-schedule"
   "/v1/persons/$hmppsId/status-information"
   "/v1/persons/$hmppsId/sentences/latest-key-dates-and-adjustments"
   "/v1/persons/$hmppsId/risks/serious-harm"
@@ -85,12 +87,10 @@ get_endpoints=(
   "/v1/visit/id/by-client-ref/$clientReference"
   "/v1/prison/$prisonId/visit/search?visitStatus=BOOKED"
   "/v1/persons/$deliusCrn/protected-characteristics"
+  "/v1/epf/person-details/$deliusCrn/1"
 )
 
 broken_get_endpoints=(
-# HMAI-445 Return 404's as could not find person https://dsdmoj.atlassian.net/jira/software/c/projects/HMAI/boards/1723/backlog?selectedIssue=HMAI-445
-    "/v1/epf/person-details/$hmppsId/1"
-    "/v1/persons/$hmppsId/plp-review-schedule"
     "/v1/persons/$hmppsId/risk-management-plan"
 # HMAI-427 Currently returning 404 as does not exist in probation. Will be solved when we add filter https://dsdmoj.atlassian.net/browse/HMAI-427
     "/v1/persons/$hmppsId/images"
