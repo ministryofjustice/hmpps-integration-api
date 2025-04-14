@@ -15,7 +15,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.NumberOfChildren
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PRNumberOfChildren
 
 @ContextConfiguration(
@@ -32,8 +31,8 @@ internal class GetNumberOfChildrenForPersonServiceTest(
       val prisonerNumber = "Z99999ZZ"
       val person = Person(firstName = "Qui-gon", lastName = "Jin", identifiers = Identifiers(nomisNumber = prisonerNumber))
       val filters = null
-      val numberOfChildren = NumberOfChildren(numberOfChildren = "2")
       val numberOfChildrenGatewayResponse = PRNumberOfChildren(numberOfChildren = "2", id = 1, active = true, createdTime = "now", createdBy = "me")
+      val numberOfChildren = numberOfChildrenGatewayResponse.toNumberOfChildren()
 
       beforeEach {
         Mockito.reset(getPersonService)

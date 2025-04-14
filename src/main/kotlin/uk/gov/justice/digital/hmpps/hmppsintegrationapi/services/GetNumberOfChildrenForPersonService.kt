@@ -3,8 +3,8 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PersonalRelationshipsGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NumberOfChildren
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.NumberOfChildren
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 @Service
@@ -22,7 +22,7 @@ class GetNumberOfChildrenForPersonService(
     val numberOfChildren = personalRelationshipsGateway.getNumberOfChildren(nomisNumber)
 
     return Response(
-      data = numberOfChildren.data?.let { NumberOfChildren(it.numberOfChildren) },
+      data = numberOfChildren.data?.toNumberOfChildren(),
       errors = numberOfChildren.errors,
     )
   }
