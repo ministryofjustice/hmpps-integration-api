@@ -16,6 +16,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpdateVisit
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UserType
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitNotes
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Visitor
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.hmpps.sqs.HmppsQueue
@@ -36,31 +37,36 @@ class VisitQueueService(
   private val visitsQueueUrl by lazy { visitsQueue.queueUrl }
 
   fun sendCreateVisit(
-    visit: CreateVisitRequest,
+    createVisitRequest: CreateVisitRequest,
     who: String,
     filters: ConsumerFilters?,
   ): Response<HmppsMessageResponse?> {
-    val visitPrisonerId = visit.prisonerId
+    val checkVisitNoteTypesUniqueResponse = checkVisitNoteTypesUnique(createVisitRequest.visitNotes)
+    if (checkVisitNoteTypesUniqueResponse.errors.isNotEmpty()) {
+      return Response(data = null, errors = checkVisitNoteTypesUniqueResponse.errors)
+    }
+
+    val visitPrisonerId = createVisitRequest.prisonerId
     val personResponse = getPersonService.getNomisNumberWithPrisonFilter(hmppsId = visitPrisonerId, filters = filters)
     if (personResponse.errors.isNotEmpty()) {
       return Response(data = null, errors = personResponse.errors)
     }
 
     if (filters?.prisons != null) {
-      val consumerPrisonFilterCheck = consumerPrisonAccessService.checkConsumerHasPrisonAccess<HmppsMessageResponse>(visit.prisonId, filters)
+      val consumerPrisonFilterCheck = consumerPrisonAccessService.checkConsumerHasPrisonAccess<HmppsMessageResponse>(createVisitRequest.prisonId, filters)
       if (consumerPrisonFilterCheck.errors.isNotEmpty()) {
         return consumerPrisonFilterCheck
       }
     }
 
     val nomisNumber = personResponse.data?.nomisNumber ?: return Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.NOMIS, UpstreamApiError.Type.ENTITY_NOT_FOUND)))
-    val visitors = visit.visitors.orEmpty()
+    val visitors = createVisitRequest.visitors.orEmpty()
     val checkVisitorsResponse = checkVisitors(nomisNumber, visitors)
     if (checkVisitorsResponse.errors.isNotEmpty()) {
       return Response(data = null, errors = checkVisitorsResponse.errors)
     }
 
-    val hmppsMessage = visit.toHmppsMessage(who)
+    val hmppsMessage = createVisitRequest.toHmppsMessage(who)
     writeMessageToQueue(hmppsMessage, "Could not send Visit create to queue")
 
     return Response(HmppsMessageResponse(message = "Visit creation written to queue"))
@@ -68,23 +74,28 @@ class VisitQueueService(
 
   fun sendUpdateVisit(
     visitReference: String,
-    visit: UpdateVisitRequest,
+    updateVisitRequest: UpdateVisitRequest,
     who: String,
     filters: ConsumerFilters?,
   ): Response<HmppsMessageResponse?> {
+    val checkVisitNoteTypesUniqueResponse = checkVisitNoteTypesUnique(updateVisitRequest.visitNotes)
+    if (checkVisitNoteTypesUniqueResponse.errors.isNotEmpty()) {
+      return Response(data = null, errors = checkVisitNoteTypesUniqueResponse.errors)
+    }
+
     val visitResponse = getVisitInformationByReferenceService.execute(visitReference, filters)
     if (visitResponse.errors.isNotEmpty()) {
       return Response(data = null, errors = visitResponse.errors)
     }
 
     val nomisNumber = visitResponse.data?.prisonerId ?: return Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.NOMIS, UpstreamApiError.Type.ENTITY_NOT_FOUND)))
-    val visitors = visit.visitors.orEmpty()
+    val visitors = updateVisitRequest.visitors.orEmpty()
     val checkVisitorsResponse = checkVisitors(nomisNumber, visitors)
     if (checkVisitorsResponse.errors.isNotEmpty()) {
       return Response(data = null, errors = checkVisitorsResponse.errors)
     }
 
-    val hmppsMessage = visit.toHmppsMessage(who, visitReference)
+    val hmppsMessage = updateVisitRequest.toHmppsMessage(who, visitReference)
     writeMessageToQueue(hmppsMessage, "Could not send Visit update to queue")
 
     return Response(HmppsMessageResponse(message = "Visit update written to queue"))
@@ -158,6 +169,19 @@ class VisitQueueService(
       if (it.nomisPersonId !in contacts.map { contact -> contact.contactId }) {
         return Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.PERSONAL_RELATIONSHIPS, UpstreamApiError.Type.ENTITY_NOT_FOUND, description = "No contact found with an ID of ${it.nomisPersonId}")))
       }
+    }
+
+    return Response(data = null)
+  }
+
+  fun checkVisitNoteTypesUnique(visitNotes: List<VisitNotes>): Response<Nothing?> {
+    if (visitNotes.isEmpty()) {
+      return Response(data = null)
+    }
+
+    val uniqueVisitNotes = visitNotes.map { it.type }.toSet()
+    if (uniqueVisitNotes.size != visitNotes.size) {
+      return Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.MANAGE_PRISON_VISITS, UpstreamApiError.Type.BAD_REQUEST, description = "You cannot have multiple visit notes of the same type")))
     }
 
     return Response(data = null)

@@ -23,7 +23,7 @@ data class UpdateVisitRequest(
   @Schema(description = "The finishing date and time of the visit", example = "2018-12-01T13:45:00", required = true)
   @field:NotNull
   val endTimestamp: LocalDateTime,
-  @Schema(description = "Visit Notes")
+  @Schema(description = "Visit Notes - only 1 note of each type is allowed")
   @field:Valid
   val visitNotes: List<VisitNotes> = emptyList(),
   @Schema(description = "Contact associated with the visit", required = true)

@@ -141,34 +141,38 @@ class VisitsIntegrationTest : IntegrationTestBase() {
       noVisitNoteType: Boolean = false,
       noVisitContactName: Boolean = false,
       noVisitorSupportDescription: Boolean = false,
-    ) = CreateVisitRequest(
-      prisonerId = if (noPrisonerId) "" else prisonerId,
-      prisonId = if (noPrisonId) "" else "MDI",
-      clientVisitReference = if (noClientVisitReference) "" else "123456",
-      visitRoom = if (noVisitRoom) "" else "A1",
-      visitType = VisitType.SOCIAL,
-      visitRestriction = VisitRestriction.OPEN,
-      startTimestamp = LocalDateTime.parse(timestamp),
-      endTimestamp = LocalDateTime.parse(timestamp),
-      visitNotes = listOf(VisitNotes(type = if (noVisitNoteType) "" else "VISITOR_CONCERN", text = "Visitor is concerned their mother in law is coming!")),
-      visitContact = VisitContact(name = if (noVisitContactName) "" else "John Smith", telephone = "0987654321", email = "john.smith@example.com"),
-      createDateTime = LocalDateTime.parse(timestamp),
-      visitors =
-        setOf(
-          Visitor(
-            nomisPersonId =
-              if (noNomisPersonId) {
-                0L
-              } else if (invalidNomisPersonId) {
-                123456L
-              } else {
-                654321L
-              },
-            visitContact = true,
+      duplicateVisitNoteTypes: Boolean = false,
+    ): CreateVisitRequest {
+      val visitNote = VisitNotes(type = if (noVisitNoteType) "" else "VISITOR_CONCERN", text = "Visitor is concerned their mother in law is coming!")
+      return CreateVisitRequest(
+        prisonerId = if (noPrisonerId) "" else prisonerId,
+        prisonId = if (noPrisonId) "" else "MDI",
+        clientVisitReference = if (noClientVisitReference) "" else "123456",
+        visitRoom = if (noVisitRoom) "" else "A1",
+        visitType = VisitType.SOCIAL,
+        visitRestriction = VisitRestriction.OPEN,
+        startTimestamp = LocalDateTime.parse(timestamp),
+        endTimestamp = LocalDateTime.parse(timestamp),
+        visitNotes = if (duplicateVisitNoteTypes) listOf(visitNote, visitNote.copy()) else listOf(visitNote),
+        visitContact = VisitContact(name = if (noVisitContactName) "" else "John Smith", telephone = "0987654321", email = "john.smith@example.com"),
+        createDateTime = LocalDateTime.parse(timestamp),
+        visitors =
+          setOf(
+            Visitor(
+              nomisPersonId =
+                if (noNomisPersonId) {
+                  0L
+                } else if (invalidNomisPersonId) {
+                  123456L
+                } else {
+                  654321L
+                },
+              visitContact = true,
+            ),
           ),
-        ),
-      visitorSupport = VisitorSupport(description = if (noVisitorSupportDescription) "" else "Visually impaired assistance"),
-    )
+        visitorSupport = VisitorSupport(description = if (noVisitorSupportDescription) "" else "Visually impaired assistance"),
+      )
+    }
 
     @Test
     fun `post the visit, get back a message response and find a message on the queue`() {
@@ -282,6 +286,17 @@ class VisitsIntegrationTest : IntegrationTestBase() {
     }
 
     @Test
+    fun `post a visit with multiple visit note of the same type, should get 400 with no message on the queue`() {
+      val createVisitRequest = getInvalidCreateVisitRequest(duplicateVisitNoteTypes = true)
+      val requestBody = asJsonString(createVisitRequest)
+
+      postToApi(path, requestBody)
+        .andExpect(status().isBadRequest)
+
+      checkQueueIsEmpty()
+    }
+
+    @Test
     fun `post a visit with no visit contact name for the visit contact, should get 400 with no message on the queue`() {
       val createVisitRequest = getInvalidCreateVisitRequest(noVisitContactName = true)
       val requestBody = asJsonString(createVisitRequest)
@@ -375,30 +390,34 @@ class VisitsIntegrationTest : IntegrationTestBase() {
       noVisitNoteType: Boolean = false,
       noVisitContactName: Boolean = false,
       noVisitorSupportDescription: Boolean = false,
-    ) = UpdateVisitRequest(
-      visitRoom = if (noVisitRoom) "" else "A1",
-      visitType = VisitType.SOCIAL,
-      visitRestriction = VisitRestriction.OPEN,
-      startTimestamp = LocalDateTime.parse(timestamp),
-      endTimestamp = LocalDateTime.parse(timestamp),
-      visitNotes = listOf(VisitNotes(type = if (noVisitNoteType) "" else "VISITOR_CONCERN", text = "Visitor is concerned their mother in law is coming!")),
-      visitContact = VisitContact(name = if (noVisitContactName) "" else "John Smith", telephone = "0987654321", email = "john.smith@example.com"),
-      visitors =
-        setOf(
-          Visitor(
-            nomisPersonId =
-              if (noNomisPersonId) {
-                0L
-              } else if (invalidNomisPersonId) {
-                123456L
-              } else {
-                654321L
-              },
-            visitContact = true,
+      duplicateVisitNoteTypes: Boolean = false,
+    ): UpdateVisitRequest {
+      val visitNote = VisitNotes(type = if (noVisitNoteType) "" else "VISITOR_CONCERN", text = "Visitor is concerned their mother in law is coming!")
+      return UpdateVisitRequest(
+        visitRoom = if (noVisitRoom) "" else "A1",
+        visitType = VisitType.SOCIAL,
+        visitRestriction = VisitRestriction.OPEN,
+        startTimestamp = LocalDateTime.parse(timestamp),
+        endTimestamp = LocalDateTime.parse(timestamp),
+        visitNotes = if (duplicateVisitNoteTypes) listOf(visitNote, visitNote.copy()) else listOf(visitNote),
+        visitContact = VisitContact(name = if (noVisitContactName) "" else "John Smith", telephone = "0987654321", email = "john.smith@example.com"),
+        visitors =
+          setOf(
+            Visitor(
+              nomisPersonId =
+                if (noNomisPersonId) {
+                  0L
+                } else if (invalidNomisPersonId) {
+                  123456L
+                } else {
+                  654321L
+                },
+              visitContact = true,
+            ),
           ),
-        ),
-      visitorSupport = VisitorSupport(description = if (noVisitorSupportDescription) "" else "Visually impaired assistance"),
-    )
+        visitorSupport = VisitorSupport(description = if (noVisitorSupportDescription) "" else "Visually impaired assistance"),
+      )
+    }
 
     @Test
     fun `put the visit update, get back a message response and find a message on the queue`() {
@@ -469,6 +488,17 @@ class VisitsIntegrationTest : IntegrationTestBase() {
     @Test
     fun `put a visit update with no visit note type for the visit note, should get 400 with no message on the queue`() {
       val updateVisitRequest = getInvalidUpdateVisitRequest(noVisitNoteType = true)
+      val requestBody = asJsonString(updateVisitRequest)
+
+      putApi(path, requestBody)
+        .andExpect(status().isBadRequest)
+
+      checkQueueIsEmpty()
+    }
+
+    @Test
+    fun `post a visit with multiple visit note of the same type, should get 400 with no message on the queue`() {
+      val updateVisitRequest = getInvalidUpdateVisitRequest(duplicateVisitNoteTypes = true)
       val requestBody = asJsonString(updateVisitRequest)
 
       putApi(path, requestBody)
