@@ -26,12 +26,11 @@ class CaseNotesGateway(
   ): Response<OCNCaseNote?> {
     val requestBody =
       CNSearchNotesRequest(
-        // date-time format enforced demands format RFC3339, ISO Offset isnt valid apparently
+        // date-time format enforced demands format RFC3339, ISO Offset isn't valid apparently
         occurredFrom = filter.startDate?.let { it.toString() + "Z" },
         occurredTo = filter.endDate?.let { it.toString() + "Z" },
         page = filter.page,
         size = filter.size,
-        sort = filter.sort,
       )
 
     val result =
