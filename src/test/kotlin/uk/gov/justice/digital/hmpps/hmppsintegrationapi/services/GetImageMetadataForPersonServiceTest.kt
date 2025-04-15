@@ -30,8 +30,9 @@ internal class GetImageMetadataForPersonServiceTest(
   @MockitoBean val probationOffenderSearchGateway: ProbationOffenderSearchGateway,
   private val getImageMetadataForPersonService: GetImageMetadataForPersonService,
 ) : DescribeSpec({
-    val hmppsId = "2003/13116M"
+    val hmppsId = "A1234AA"
     val prisonerNumber = "abc123"
+    val filters = null
 
     beforeEach {
       Mockito.reset(nomisGateway)
@@ -43,13 +44,13 @@ internal class GetImageMetadataForPersonServiceTest(
     }
 
     it("gets prisoner ID from Probation Offender Search") {
-      getImageMetadataForPersonService.execute(hmppsId)
+      getImageMetadataForPersonService.execute(hmppsId, filters)
 
       verify(probationOffenderSearchGateway, VerificationModeFactory.times(1)).getPerson(id = hmppsId)
     }
 
     it("gets images details from NOMIS") {
-      getImageMetadataForPersonService.execute(hmppsId)
+      getImageMetadataForPersonService.execute(hmppsId, filters)
 
       verify(nomisGateway, VerificationModeFactory.times(1)).getImageMetadataForPerson(prisonerNumber)
     }
@@ -68,7 +69,7 @@ internal class GetImageMetadataForPersonServiceTest(
         )
       whenever(nomisGateway.getImageMetadataForPerson(prisonerNumber)).thenReturn(Response(data = imageMetadataFromNomis))
 
-      val response = getImageMetadataForPersonService.execute(hmppsId)
+      val response = getImageMetadataForPersonService.execute(hmppsId, filters)
 
       response.data.shouldBe(imageMetadataFromNomis)
     }
@@ -87,7 +88,7 @@ internal class GetImageMetadataForPersonServiceTest(
         ),
       )
 
-      val response = getImageMetadataForPersonService.execute(hmppsId)
+      val response = getImageMetadataForPersonService.execute(hmppsId, filters)
 
       response.errors.shouldHaveSize(1)
       response.errors
@@ -114,7 +115,7 @@ internal class GetImageMetadataForPersonServiceTest(
         ),
       )
 
-      val response = getImageMetadataForPersonService.execute(hmppsId)
+      val response = getImageMetadataForPersonService.execute(hmppsId, filters)
 
       response.errors.shouldHaveSize(1)
       response.errors
