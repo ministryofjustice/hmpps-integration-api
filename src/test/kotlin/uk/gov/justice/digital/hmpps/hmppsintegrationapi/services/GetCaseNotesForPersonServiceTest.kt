@@ -11,13 +11,13 @@ import org.springframework.boot.test.context.ConfigDataApplicationContextInitial
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.CaseNotesGateway
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.caseNotes.PaginatedCaseNotes
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.filters.CaseNoteFilter
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CaseNote
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NomisNumber
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisCaseNote
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.OCNCaseNote
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.OCNPagination
 
 @ContextConfiguration(
@@ -34,10 +34,10 @@ class GetCaseNotesForPersonServiceTest(
       val nomisNumber = "Z99999ZZ"
       val caseNoteFilter = CaseNoteFilter(hmppsId = hmppsId)
       val filters = null
-      val pageCaseNote =
-        PaginatedCaseNotes(
-          content = listOf(CaseNote(caseNoteId = "abcd1234")),
-          pagination = OCNPagination(page = 1, size = 10, totalElements = 1),
+      val oCNCaseNote =
+        OCNCaseNote(
+          content = listOf(NomisCaseNote(caseNoteId = "abcd1234")),
+          page = OCNPagination(page = 1, size = 10, totalElements = 10),
         )
 
       beforeEach {
@@ -45,7 +45,7 @@ class GetCaseNotesForPersonServiceTest(
         Mockito.reset(caseNotesGateway)
 
         whenever(getPersonService.getNomisNumberWithPrisonFilter(hmppsId, filters)).thenReturn(Response(NomisNumber(nomisNumber)))
-        whenever(caseNotesGateway.getCaseNotesForPerson(id = nomisNumber, caseNoteFilter)).thenReturn(Response(pageCaseNote))
+        whenever(caseNotesGateway.getCaseNotesForPerson(id = nomisNumber, caseNoteFilter)).thenReturn(Response(oCNCaseNote))
       }
 
       it("performs a search according to hmpps Id") {

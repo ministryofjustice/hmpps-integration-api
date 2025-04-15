@@ -28,8 +28,10 @@ class GetCaseNotesForPersonService(
 
     val caseNotes = caseNotesGateway.getCaseNotesForPerson(id = nomisNumber, filter)
 
+    val paginatedCaseNotes = caseNotes.data?.toPaginatedCaseNotes()
+
     return Response(
-      data = caseNotes.data,
+      data = paginatedCaseNotes,
       errors = caseNotes.errors,
     )
   }

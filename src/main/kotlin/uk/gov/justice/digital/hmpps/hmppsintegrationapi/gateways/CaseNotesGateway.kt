@@ -6,7 +6,6 @@ import org.springframework.http.HttpMethod
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.caseNotes.CNSearchNotesRequest
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.caseNotes.PaginatedCaseNotes
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.filters.CaseNoteFilter
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
@@ -24,7 +23,7 @@ class CaseNotesGateway(
   fun getCaseNotesForPerson(
     id: String,
     filter: CaseNoteFilter,
-  ): Response<PaginatedCaseNotes?> {
+  ): Response<OCNCaseNote?> {
     val requestBody =
       CNSearchNotesRequest(
         // date-time format enforced demands format RFC3339, ISO Offset isnt valid apparently
@@ -47,13 +46,7 @@ class CaseNotesGateway(
 
     return when (result) {
       is WebClientWrapper.WebClientWrapperResponse.Success -> {
-        val paginatedCaseNotes =
-          PaginatedCaseNotes(
-            content = result.data.toCaseNotes(),
-            pagination = result.data.page,
-          )
-
-        Response(data = paginatedCaseNotes)
+        Response(data = result.data)
       }
 
       is WebClientWrapper.WebClientWrapperResponse.Error -> {

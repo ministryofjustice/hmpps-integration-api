@@ -23,7 +23,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CaseNote
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.OCNPagination
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetCaseNotesForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
@@ -38,7 +37,6 @@ class CaseNotesControllerTest(
 ) : DescribeSpec(
     {
       val hmppsId = "G2996UX"
-      val locationId = "MDI"
       val startDate: LocalDateTime = LocalDateTime.now()
       val endDate: LocalDateTime = LocalDateTime.now()
       val path = "/v1/persons/$hmppsId/case-notes?startDate=$startDate&endDate=$endDate"
@@ -47,7 +45,12 @@ class CaseNotesControllerTest(
       val pageCaseNote =
         PaginatedCaseNotes(
           content = listOf(CaseNote(caseNoteId = "abcd1234")),
-          pagination = OCNPagination(page = 1, size = 10, totalElements = 1),
+          count = 1,
+          page = 1,
+          totalCount = 10,
+          totalPages = 1,
+          isLastPage = true,
+          perPage = 10,
         )
       val filters = null
 
@@ -89,7 +92,7 @@ class CaseNotesControllerTest(
           val result = mockMvc.performAuthorised(path)
           result.response.status.shouldBe(HttpStatus.OK.value())
           result.response.contentAsString.shouldContain(
-            """{"data":{"content":[{"caseNoteId":"abcd1234","offenderIdentifier":null,"type":null,"typeDescription":null,"subType":null,"subTypeDescription":null,"creationDateTime":null,"occurrenceDateTime":null,"text":null,"locationId":null,"sensitive":false,"amendments":[]}],"pagination":{"page":1,"totalElements":1,"size":10}}}""".removeWhitespaceAndNewlines(),
+            """{"data":[{"caseNoteId":"abcd1234","offenderIdentifier":null,"type":null,"typeDescription":null,"subType":null,"subTypeDescription":null,"creationDateTime":null,"occurrenceDateTime":null,"text":null,"locationId":null,"sensitive":false,"amendments":[]}],"pagination":{"isLastPage":true,"count":1,"page":1,"perPage":10,"totalCount":10,"totalPages":1}}""".removeWhitespaceAndNewlines(),
           )
         }
 

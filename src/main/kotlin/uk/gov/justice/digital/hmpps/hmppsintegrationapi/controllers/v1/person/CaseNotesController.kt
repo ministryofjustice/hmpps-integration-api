@@ -17,14 +17,15 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.ForbiddenByUpstreamServiceException
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.caseNotes.PaginatedCaseNotes
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.filters.CaseNoteFilter
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CaseNote
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.interfaces.toPaginatedResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetCaseNotesForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.PaginatedResponse
 import java.time.LocalDateTime
 
 @RestController
@@ -59,7 +60,7 @@ class CaseNotesController(
     @Parameter(description = "Total results per page, will default to 10 if not provided")
     @RequestParam(required = false, defaultValue = "10", name = "perPage") perPage: Int,
     @RequestAttribute filters: ConsumerFilters?,
-  ): DataResponse<PaginatedCaseNotes?> {
+  ): PaginatedResponse<CaseNote> {
     val response = getCaseNoteForPersonService.execute(CaseNoteFilter(hmppsId, startDate, endDate, page, perPage), filters)
 
     if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
@@ -76,6 +77,6 @@ class CaseNotesController(
 
     auditService.createEvent("GET_CASE_NOTES", mapOf("hmppsId" to hmppsId))
 
-    return DataResponse(response.data)
+    return response.data.toPaginatedResponse()
   }
 }
