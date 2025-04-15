@@ -56,6 +56,8 @@ hmpps.sqs:
 
 feature-flag:
   use-arns-endpoints: true
+  use-number-children-endpoints: true
+
 
 authorisation:
   consumers:
