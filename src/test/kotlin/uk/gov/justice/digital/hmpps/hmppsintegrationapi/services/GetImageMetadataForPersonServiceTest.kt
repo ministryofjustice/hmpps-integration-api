@@ -10,15 +10,14 @@ import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NomisGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ProbationOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Identifiers
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ImageMetadata
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NomisNumber
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonOnProbation
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import java.time.LocalDateTime
 
 @ContextConfiguration(
@@ -28,6 +27,8 @@ import java.time.LocalDateTime
 internal class GetImageMetadataForPersonServiceTest(
   @MockitoBean val nomisGateway: NomisGateway,
   @MockitoBean val probationOffenderSearchGateway: ProbationOffenderSearchGateway,
+  @MockitoBean val getPersonService: GetPersonService,
+  @MockitoBean val featureFlagConfig: FeatureFlagConfig,
   private val getImageMetadataForPersonService: GetImageMetadataForPersonService,
 ) : DescribeSpec({
     val hmppsId = "A1234AA"
@@ -36,17 +37,29 @@ internal class GetImageMetadataForPersonServiceTest(
 
     beforeEach {
       Mockito.reset(nomisGateway)
-
+      whenever(featureFlagConfig.usePrisonFilterImagesEndpoint).thenReturn(true)
+      whenever(getPersonService.getNomisNumberWithPrisonFilter(hmppsId, filters)).thenReturn(
+        Response(
+          data = NomisNumber(prisonerNumber),
+        ),
+      )
       whenever(probationOffenderSearchGateway.getPerson(id = hmppsId)).thenReturn(
         Response(data = PersonOnProbation(Person(firstName = "Joey", lastName = "Tribbiani", identifiers = Identifiers(nomisNumber = prisonerNumber)), false)),
       )
       whenever(nomisGateway.getImageMetadataForPerson(prisonerNumber)).thenReturn(Response(data = emptyList()))
     }
 
-    it("gets prisoner ID from Probation Offender Search") {
+    it("gets prisoner ID from Probation Offender Search when filters feature is disabled") {
+      whenever(featureFlagConfig.usePrisonFilterImagesEndpoint).thenReturn(false)
       getImageMetadataForPersonService.execute(hmppsId, filters)
 
       verify(probationOffenderSearchGateway, VerificationModeFactory.times(1)).getPerson(id = hmppsId)
+    }
+
+    it("gets prisoner ID from Person service when filters feature is enabled") {
+      getImageMetadataForPersonService.execute(hmppsId, filters)
+
+      verify(getPersonService, VerificationModeFactory.times(1)).getNomisNumberWithPrisonFilter(hmppsId, filters)
     }
 
     it("gets images details from NOMIS") {
@@ -74,7 +87,8 @@ internal class GetImageMetadataForPersonServiceTest(
       response.data.shouldBe(imageMetadataFromNomis)
     }
 
-    it("returns a not found error when person cannot be found in Probation Offender Search") {
+    it("returns a not found error when person cannot be found in Probation Offender Search when filters feature is disabled") {
+      whenever(featureFlagConfig.usePrisonFilterImagesEndpoint).thenReturn(false)
       whenever(probationOffenderSearchGateway.getPerson(id = hmppsId)).thenReturn(
         Response(
           data = null,
