@@ -42,7 +42,7 @@ class GetProtectedCharacteristicsServiceTest {
   val filters = null
 
   var mockOffender: Offender = Offender("John", "Smith", otherIds = OtherIds(nomsNumber = "mockNomsNumber"), age = 35, gender = "Male", offenderProfile = OffenderProfile(sexualOrientation = "Unknown", ethnicity = "British", nationality = "British", religion = "None", disabilities = emptyList()))
-  var mockPrisonOffender: POSPrisoner = POSPrisoner("John", "Smith", maritalStatus = "Widowed", bookingId = "bookingId", prisonId = "ABC")
+  var mockPrisonOffender: POSPrisoner = POSPrisoner("John", "Smith", maritalStatus = "Widowed", bookingId = "bookingId", youthOffender = false, prisonId = "ABC")
   var mockReasonableAdjustment: ReasonableAdjustment = ReasonableAdjustment(treatmentCode = "abc")
 
   @BeforeEach
@@ -115,7 +115,7 @@ class GetProtectedCharacteristicsServiceTest {
 
   @Test
   fun `Prisoner no booking, return data from probation and prison search`() {
-    val mockPrisonOffender: POSPrisoner = POSPrisoner("John", "Smith", maritalStatus = "Widowed")
+    val mockPrisonOffender: POSPrisoner = POSPrisoner("John", "Smith", maritalStatus = "Widowed", youthOffender = false)
 
     whenever(nDeliusGateway.getOffender(hmppsId)).thenReturn(Response(data = mockOffender, errors = emptyList()))
     whenever(prisonerOffenderSearchGateway.getPrisonOffender(mockOffender.otherIds.nomsNumber!!)).thenReturn(Response(data = mockPrisonOffender))
@@ -201,7 +201,7 @@ class GetProtectedCharacteristicsServiceTest {
   fun `returns null when protected characteristics are requested from an unapproved prison`() {
     val wrongPrisonId = "XYZ"
     val filters = ConsumerFilters(listOf("ABC"))
-    val mockPrisonOffenderInWrongPrison = POSPrisoner("John", "Smith", maritalStatus = "Widowed", bookingId = "bookingId", prisonId = wrongPrisonId)
+    val mockPrisonOffenderInWrongPrison = POSPrisoner("John", "Smith", maritalStatus = "Widowed", bookingId = "bookingId", prisonId = wrongPrisonId, youthOffender = false)
     whenever(nDeliusGateway.getOffender(hmppsId)).thenReturn(Response(data = mockOffender, errors = emptyList()))
     whenever(prisonerOffenderSearchGateway.getPrisonOffender(mockOffender.otherIds.nomsNumber!!)).thenReturn(Response(data = mockPrisonOffenderInWrongPrison))
     whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<PersonProtectedCharacteristics>(wrongPrisonId, filters)).thenReturn(

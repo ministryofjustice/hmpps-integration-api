@@ -251,7 +251,7 @@ internal class PersonControllerTest(
 
       describe("GET $basePath/{id}") {
         val probationOffenderSearch = PersonOnProbation(Person("Sam", "Smith", identifiers = Identifiers(nomisNumber = "1234ABC"), currentExclusion = true, exclusionMessage = "An exclusion exists", currentRestriction = false), underActiveSupervision = true)
-        val prisonOffenderSearch = POSPrisoner("Kim", "Kardashian")
+        val prisonOffenderSearch = POSPrisoner("Kim", "Kardashian", youthOffender = false)
         val prisonResponse = Response(data = prisonOffenderSearch, errors = emptyList())
 
         beforeTest {
@@ -480,11 +480,11 @@ internal class PersonControllerTest(
         }
       }
 
-      describe("GET $basePath/$encodedHmppsId/images") {
+      describe("GET $basePath/$sanitisedHmppsId/images") {
         beforeTest {
           Mockito.reset(auditService)
           Mockito.reset(getImageMetadataForPersonService)
-          whenever(getImageMetadataForPersonService.execute(hmppsId)).thenReturn(
+          whenever(getImageMetadataForPersonService.execute(sanitisedHmppsId, filters)).thenReturn(
             Response(
               data =
                 listOf(
@@ -502,7 +502,7 @@ internal class PersonControllerTest(
         }
 
         it("returns paginated results") {
-          whenever(getImageMetadataForPersonService.execute(hmppsId)).thenReturn(
+          whenever(getImageMetadataForPersonService.execute(sanitisedHmppsId, filters)).thenReturn(
             Response(
               data =
                 List(20) {
@@ -518,29 +518,29 @@ internal class PersonControllerTest(
             ),
           )
 
-          val result = mockMvc.performAuthorised("$basePath/$encodedHmppsId/images?page=3&perPage=5")
+          val result = mockMvc.performAuthorised("$basePath/$sanitisedHmppsId/images?page=3&perPage=5")
           result.response.contentAsString.shouldContainJsonKeyValue("$.pagination.page", 3)
           result.response.contentAsString.shouldContainJsonKeyValue("$.pagination.totalPages", 4)
         }
 
         it("returns a 200 OK status code") {
-          val result = mockMvc.performAuthorised("$basePath/$encodedHmppsId/images")
+          val result = mockMvc.performAuthorised("$basePath/$sanitisedHmppsId/images")
           result.response.status.shouldBe(HttpStatus.OK.value())
         }
 
         it("logs audit") {
-          mockMvc.performAuthorised("$basePath/$encodedHmppsId/images")
-          verify(auditService, times(1)).createEvent("GET_PERSON_IMAGE", mapOf("hmppsId" to hmppsId))
+          mockMvc.performAuthorised("$basePath/$sanitisedHmppsId/images")
+          verify(auditService, times(1)).createEvent("GET_PERSON_IMAGE", mapOf("hmppsId" to sanitisedHmppsId))
         }
 
         it("gets the metadata of images for a person with the matching ID") {
-          mockMvc.performAuthorised("$basePath/$encodedHmppsId/images")
+          mockMvc.performAuthorised("$basePath/$sanitisedHmppsId/images")
 
-          verify(getImageMetadataForPersonService, times(1)).execute(hmppsId)
+          verify(getImageMetadataForPersonService, times(1)).execute(sanitisedHmppsId, filters)
         }
 
         it("returns the metadata of images for a person with the matching ID") {
-          val result = mockMvc.performAuthorised("$basePath/$encodedHmppsId/images")
+          val result = mockMvc.performAuthorised("$basePath/$sanitisedHmppsId/images")
           result.response.contentAsString.shouldContain("\"data\":[")
           result.response.contentAsString.shouldContain(
             """
@@ -555,7 +555,7 @@ internal class PersonControllerTest(
         }
 
         it("returns a 404 NOT FOUND status code") {
-          whenever(getImageMetadataForPersonService.execute(hmppsId)).thenReturn(
+          whenever(getImageMetadataForPersonService.execute(sanitisedHmppsId, filters)).thenReturn(
             Response(
               data = emptyList(),
               errors =
@@ -568,7 +568,7 @@ internal class PersonControllerTest(
             ),
           )
 
-          val result = mockMvc.performAuthorised("$basePath/$encodedHmppsId/images")
+          val result = mockMvc.performAuthorised("$basePath/$sanitisedHmppsId/images")
 
           result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
         }

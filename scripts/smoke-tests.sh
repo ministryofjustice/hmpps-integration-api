@@ -96,12 +96,11 @@ get_endpoints=(
   "/v1/persons/$risksCrn/risk-management-plan"
   "/v1/persons/$alternativeHmppsId/person-responsible-officer"
   "/v1/persons/$alternativeHmppsId/visitor/$contactId/restrictions"
+  "/v1/persons/$hmppsId/images"
   "/v1/persons/$hmppsId/case-notes"
 )
 
 broken_get_endpoints=(
-# HMAI-427 Currently returning 404 as does not exist in probation. Will be solved when we add filter https://dsdmoj.atlassian.net/browse/HMAI-427
-    "/v1/persons/$hmppsId/images"
 )
 
 all_get_endpoints+=("${get_endpoints[@]}" "${broken_get_endpoints[@]}")
