@@ -250,6 +250,9 @@
         <a href="../../documentation/api/index.html#v1-persons-hmppsid-name"><span>/v1/persons/{hmppsId}/name</span></a>
       </li>
       <li>
+        <a href="../../documentation/api/index.html#v1-persons-hmppsid-images"><span>/v1/persons/{hmppsId}/images</span></a>
+      </li>
+      <li>
         <a href="../../documentation/api/index.html#v1-persons-hmppsid-iep-level"><span>/v1/persons/{hmppsId}/iep-level</span></a>
       </li>
       <li>
@@ -299,9 +302,6 @@
       </li>
       <li>
         <a href="../../documentation/api/index.html#v1-persons-encodedhmppsid-licences-conditions"><span>/v1/persons/{encodedHmppsId}/licences/conditions</span></a>
-      </li>
-      <li>
-        <a href="../../documentation/api/index.html#v1-persons-encodedhmppsid-images"><span>/v1/persons/{encodedHmppsId}/images</span></a>
       </li>
       <li>
         <a href="../../documentation/api/index.html#v1-images-id"><span>/v1/images/{id}</span></a>
@@ -5674,6 +5674,149 @@
 
 
 
+<h2 id="v1-persons-hmppsid-images">/v1/persons/{hmppsId}/images</h2>
+
+<h3 id="v1-persons-hmppsid-images-get">get</h3>
+
+  <p><em>Returns metadata of images associated with a person sorted by captureDateTime (newest first).</em></p>
+
+
+  <p><b>Applicable filters</b>: <ul><li>prisons</li></ul></p>
+
+
+
+
+<h4 id="v1-persons-hmppsid-images-get-parameters">Parameters</h4>
+<table>
+<thead>
+<tr><th>Parameter</th><th>In</th><th>Type</th><th>Required</th><th>Description</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>hmppsId</td>
+<td>path</td>
+<td>string</td>
+<td>true</td>
+<td><p>A HMPPS identifier</p>
+
+
+</td>
+</tr>
+
+<tr>
+<td>page</td>
+<td>query</td>
+<td>string</td>
+<td>false</td>
+<td><p>The page number (starting from 1)</p>
+
+
+</td>
+</tr>
+
+<tr>
+<td>perPage</td>
+<td>query</td>
+<td>string</td>
+<td>false</td>
+<td><p>The maximum number of results for a page</p>
+
+
+</td>
+</tr>
+
+</tbody>
+</table>
+
+
+
+
+<h4 id="v1-persons-hmppsid-images-get-responses">Responses</h4>
+<table>
+<thead>
+<tr><th>Status</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>200</td>
+<td>
+<p>Successfully found a person with the provided HMPPS ID. If a person doesn&rsquo;t have any images, then an empty list (<code>[]</code>) is returned in the <code>data</code> property.</p>
+
+
+
+<pre><code>{
+  "data": [
+    {
+      "id": 2461788,
+      "active": true,
+      "captureDateTime": "string",
+      "view": "FACE",
+      "orientation": "FRONT",
+      "type": "OFF_BKG"
+    }
+  ],
+  "pagination": {
+    "isLastPage": true,
+    "count": 1,
+    "page": 1,
+    "perPage": 10,
+    "totalCount": 1,
+    "totalPages": 1
+  }
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-paginatedresponseimagemetadata'>PaginatedResponseImageMetadata</a>
+</td>
+</tr>
+
+<tr>
+<td>404</td>
+<td>
+<p>Not Found</p>
+
+
+
+<pre><code>{
+  "status": 404,
+  "userMessage": "404 Not found error: Could not find person with HMPPS id: 2003/0011991D.",
+  "developerMessage": "Could not find person with HMPPS id: 2003/0011991D."
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-personnotfound'>PersonNotFound</a>
+</td>
+</tr>
+
+<tr>
+<td>500</td>
+<td>
+<p>Internal Server Error</p>
+
+
+
+<pre><code>{
+  "status": 500,
+  "userMessage": "Internal Server Error",
+  "developerMessage": "Unable to complete request as an upstream service is not responding."
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-internalservererror'>InternalServerError</a>
+</td>
+</tr>
+
+</tbody>
+</table>
+
+
+
+
 <h2 id="v1-persons-hmppsid-iep-level">/v1/persons/{hmppsId}/iep-level</h2>
 
 <h3 id="v1-persons-hmppsid-iep-level-get">get</h3>
@@ -8301,146 +8444,6 @@
 </td>
 <td>
 <a href='#schema-dataresponsepersonlicences'>DataResponsePersonLicences</a>
-</td>
-</tr>
-
-<tr>
-<td>404</td>
-<td>
-<p>Not Found</p>
-
-
-
-<pre><code>{
-  "status": 404,
-  "userMessage": "404 Not found error: Could not find person with HMPPS id: 2003/0011991D.",
-  "developerMessage": "Could not find person with HMPPS id: 2003/0011991D."
-}</code></pre>
-
-</td>
-<td>
-<a href='#schema-personnotfound'>PersonNotFound</a>
-</td>
-</tr>
-
-<tr>
-<td>500</td>
-<td>
-<p>Internal Server Error</p>
-
-
-
-<pre><code>{
-  "status": 500,
-  "userMessage": "Internal Server Error",
-  "developerMessage": "Unable to complete request as an upstream service is not responding."
-}</code></pre>
-
-</td>
-<td>
-<a href='#schema-internalservererror'>InternalServerError</a>
-</td>
-</tr>
-
-</tbody>
-</table>
-
-
-
-
-<h2 id="v1-persons-encodedhmppsid-images">/v1/persons/{encodedHmppsId}/images</h2>
-
-<h3 id="v1-persons-encodedhmppsid-images-get">get</h3>
-
-  <p><em>Returns metadata of images associated with a person sorted by captureDateTime (newest first).</em></p>
-
-
-
-
-<h4 id="v1-persons-encodedhmppsid-images-get-parameters">Parameters</h4>
-<table>
-<thead>
-<tr><th>Parameter</th><th>In</th><th>Type</th><th>Required</th><th>Description</th></tr>
-</thead>
-<tbody>
-
-<tr>
-<td>encodedHmppsId</td>
-<td>path</td>
-<td>string</td>
-<td>true</td>
-<td><p>A URL-encoded HMPPS identifier</p>
-
-
-</td>
-</tr>
-
-<tr>
-<td>page</td>
-<td>query</td>
-<td>string</td>
-<td>false</td>
-<td><p>The page number (starting from 1)</p>
-
-
-</td>
-</tr>
-
-<tr>
-<td>perPage</td>
-<td>query</td>
-<td>string</td>
-<td>false</td>
-<td><p>The maximum number of results for a page</p>
-
-
-</td>
-</tr>
-
-</tbody>
-</table>
-
-
-
-
-<h4 id="v1-persons-encodedhmppsid-images-get-responses">Responses</h4>
-<table>
-<thead>
-<tr><th>Status</th><th>Description</th><th>Schema</th></tr>
-</thead>
-<tbody>
-
-<tr>
-<td>200</td>
-<td>
-<p>Successfully found a person with the provided HMPPS ID. If a person doesn&rsquo;t have any images, then an empty list (<code>[]</code>) is returned in the <code>data</code> property.</p>
-
-
-
-<pre><code>{
-  "data": [
-    {
-      "id": 2461788,
-      "active": true,
-      "captureDateTime": "string",
-      "view": "FACE",
-      "orientation": "FRONT",
-      "type": "OFF_BKG"
-    }
-  ],
-  "pagination": {
-    "isLastPage": true,
-    "count": 1,
-    "page": 1,
-    "perPage": 10,
-    "totalCount": 1,
-    "totalPages": 1
-  }
-}</code></pre>
-
-</td>
-<td>
-<a href='#schema-paginatedresponseimagemetadata'>PaginatedResponseImageMetadata</a>
 </td>
 </tr>
 
@@ -15036,6 +15039,152 @@
 </tbody>
 </table>
 
+<h3 id="schema-imagemetadata">ImageMetadata</h3>
+
+
+<table class='schema-imagemetadata'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>id</td>
+<td>integer</td>
+<td>true</td>
+<td><p>The Image ID, in reference to a unique identifier.</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>active</td>
+<td>boolean</td>
+<td>true</td>
+<td><p>A flag to indicate whether an image is in active use. It is no guarantee that the latest uploaded image will be the active one.</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>captureDateTime</td>
+<td>string</td>
+<td>true</td>
+<td><p>The Date and Time of when the image was captured.</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>view</td>
+<td>string</td>
+<td>true</td>
+<td><div class="highlight"><pre class="highlight plaintext" tabindex="0"><code>  View is the subject focus; describing the inner focus or subject of the image, normally referring to a marking, tattoo or deeper level focus of the orientation. In practise this is the interior foci of what is captured in the 'orientation' field.
+  Possible values are:
+  `FACE` - Facing,
+  `TAT` - Tattoo,
+  `OTH` - Other,
+  `SCAR` - Scar,
+  `MARK` - Mark,
+  `OIC` - Offence in Custody
+</code></pre></div></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>orientation</td>
+<td>string</td>
+<td>true</td>
+<td><div class="highlight"><pre class="highlight plaintext" tabindex="0"><code>  Orientation is the scope focus; describing the scope or outer focus of the image, normally referring to the highest level object of interest within the bounds of the photo itself. This is normally a body part or an angle of photography, such as a photo of someone’s facial view (`FRONT`) or arm (`ARM`).
+  Possible values are:
+  `ANKLE` - Ankle,
+  `ARM` - Arm,
+  `DAMAGE` - Damage,
+  `EAR` - Ear,
+  `ELBOW` - Elbow,
+  `FACE` - Face,
+  `FIGHT` - Fight,
+  `FINGER` - Finger,
+  `FOOT` - Foot,
+  `FRONT` - Front Facial View,
+  `HAND` - Hand,
+  `HEAD` - Head,
+  `INCIDENT` - Incident,
+  `INJURY` - Injury,
+  `KNEE` - Knee,
+  `LEG` - Leg,
+  `LIP` - Lip,
+  `NECK` - Neck,
+  `NOSE` - Nose,
+  `SHOULDER` - Shoulder,
+  `THIGH` - Thigh,
+  `TOE` - Toe,
+  `TORSO` - Torso
+</code></pre></div></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>type</td>
+<td>string</td>
+<td>true</td>
+<td><div class="highlight"><pre class="highlight plaintext" tabindex="0"><code>  Type is the contextual focus; describing the context or scenario the image was taken within. It could be for a particular purpose or capturing the results of a particular type of incident.
+  Possible values are:
+  `OFF_BKG` - Offender Booking,
+  `OFF_IDM` - Offender Identification Marks,
+  `OIC` - Offence In Custody,
+  `PPTY` - Property Image
+</code></pre></div></td>
+<td>
+  
+</td>
+</tr>
+
+</tbody>
+</table>
+
+<h3 id="schema-paginatedresponseimagemetadata">PaginatedResponseImageMetadata</h3>
+
+
+<table class='schema-paginatedresponseimagemetadata'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>data</td>
+<td>array</td>
+<td>true</td>
+<td></td>
+<td>
+  <a href='#schema-imagemetadata'>ImageMetadata</a>
+</td>
+</tr>
+
+<tr>
+<td>pagination</td>
+<td>object</td>
+<td>true</td>
+<td></td>
+<td>
+  <a href='#schema-pagination'>Pagination</a>
+</td>
+</tr>
+
+</tbody>
+</table>
+
 <h3 id="schema-dataresponseieplevel">DataResponseIEPLevel</h3>
 
 
@@ -18391,152 +18540,6 @@
 <td></td>
 <td>
   <a href='#schema-licence'>Licence</a>
-</td>
-</tr>
-
-</tbody>
-</table>
-
-<h3 id="schema-imagemetadata">ImageMetadata</h3>
-
-
-<table class='schema-imagemetadata'>
-<thead>
-<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
-</thead>
-<tbody>
-
-<tr>
-<td>id</td>
-<td>integer</td>
-<td>true</td>
-<td><p>The Image ID, in reference to a unique identifier.</p>
-</td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>active</td>
-<td>boolean</td>
-<td>true</td>
-<td><p>A flag to indicate whether an image is in active use. It is no guarantee that the latest uploaded image will be the active one.</p>
-</td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>captureDateTime</td>
-<td>string</td>
-<td>true</td>
-<td><p>The Date and Time of when the image was captured.</p>
-</td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>view</td>
-<td>string</td>
-<td>true</td>
-<td><div class="highlight"><pre class="highlight plaintext" tabindex="0"><code>  View is the subject focus; describing the inner focus or subject of the image, normally referring to a marking, tattoo or deeper level focus of the orientation. In practise this is the interior foci of what is captured in the 'orientation' field.
-  Possible values are:
-  `FACE` - Facing,
-  `TAT` - Tattoo,
-  `OTH` - Other,
-  `SCAR` - Scar,
-  `MARK` - Mark,
-  `OIC` - Offence in Custody
-</code></pre></div></td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>orientation</td>
-<td>string</td>
-<td>true</td>
-<td><div class="highlight"><pre class="highlight plaintext" tabindex="0"><code>  Orientation is the scope focus; describing the scope or outer focus of the image, normally referring to the highest level object of interest within the bounds of the photo itself. This is normally a body part or an angle of photography, such as a photo of someone’s facial view (`FRONT`) or arm (`ARM`).
-  Possible values are:
-  `ANKLE` - Ankle,
-  `ARM` - Arm,
-  `DAMAGE` - Damage,
-  `EAR` - Ear,
-  `ELBOW` - Elbow,
-  `FACE` - Face,
-  `FIGHT` - Fight,
-  `FINGER` - Finger,
-  `FOOT` - Foot,
-  `FRONT` - Front Facial View,
-  `HAND` - Hand,
-  `HEAD` - Head,
-  `INCIDENT` - Incident,
-  `INJURY` - Injury,
-  `KNEE` - Knee,
-  `LEG` - Leg,
-  `LIP` - Lip,
-  `NECK` - Neck,
-  `NOSE` - Nose,
-  `SHOULDER` - Shoulder,
-  `THIGH` - Thigh,
-  `TOE` - Toe,
-  `TORSO` - Torso
-</code></pre></div></td>
-<td>
-  
-</td>
-</tr>
-
-<tr>
-<td>type</td>
-<td>string</td>
-<td>true</td>
-<td><div class="highlight"><pre class="highlight plaintext" tabindex="0"><code>  Type is the contextual focus; describing the context or scenario the image was taken within. It could be for a particular purpose or capturing the results of a particular type of incident.
-  Possible values are:
-  `OFF_BKG` - Offender Booking,
-  `OFF_IDM` - Offender Identification Marks,
-  `OIC` - Offence In Custody,
-  `PPTY` - Property Image
-</code></pre></div></td>
-<td>
-  
-</td>
-</tr>
-
-</tbody>
-</table>
-
-<h3 id="schema-paginatedresponseimagemetadata">PaginatedResponseImageMetadata</h3>
-
-
-<table class='schema-paginatedresponseimagemetadata'>
-<thead>
-<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
-</thead>
-<tbody>
-
-<tr>
-<td>data</td>
-<td>array</td>
-<td>true</td>
-<td></td>
-<td>
-  <a href='#schema-imagemetadata'>ImageMetadata</a>
-</td>
-</tr>
-
-<tr>
-<td>pagination</td>
-<td>object</td>
-<td>true</td>
-<td></td>
-<td>
-  <a href='#schema-pagination'>Pagination</a>
 </td>
 </tr>
 
