@@ -8,5 +8,4 @@ data class CaseNoteFilter(
   val endDate: LocalDateTime? = null,
   val page: Int = 1,
   val size: Int = 10,
-  val sort: String = "",
 )

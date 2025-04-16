@@ -1623,7 +1623,7 @@
             "type": "string"
           }
         },
-        "required": ["includeSensitive", "page", "size", "sort"]
+        "required": ["page", "size"]
       },
       "TypeSubTypeRequest": {
         "type": "object",

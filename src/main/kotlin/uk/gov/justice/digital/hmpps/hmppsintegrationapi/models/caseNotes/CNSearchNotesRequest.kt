@@ -6,7 +6,6 @@ data class CNSearchNotesRequest(
   val occurredTo: String? = null,
   val page: Int? = null,
   val size: Int? = null,
-  val sort: String? = null,
 ) {
   fun toApiConformingMap(): Map<String, Any> {
     val map = mutableMapOf<String, Any>()
@@ -24,9 +23,6 @@ data class CNSearchNotesRequest(
     }
     if (size != null) {
       map["size"] = size.toInt()
-    }
-    if (sort != null) {
-      map["sort"] = sort
     }
     return map
   }
