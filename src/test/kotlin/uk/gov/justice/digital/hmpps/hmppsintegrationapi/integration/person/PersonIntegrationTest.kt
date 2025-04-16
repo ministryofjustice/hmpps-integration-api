@@ -198,4 +198,34 @@ class PersonIntegrationTest : IntegrationTestBase() {
         .andExpect(status().isBadRequest)
     }
   }
+
+  @Nested
+  inner class GetVisibleCharacteristics {
+    val path = "$basePath/$nomsId/visible-characteristics"
+
+    @Test
+    fun `returns a prisoner's visible characteristics`() {
+      callApi(path)
+        .andExpect(status().isOk)
+        .andExpect(content().json(getExpectedResponse("visible-characteristics")))
+    }
+
+    @Test
+    fun `return a 404 for person in wrong prison`() {
+      callApiWithCN(path, limitedPrisonsCn)
+        .andExpect(status().isNotFound)
+    }
+
+    @Test
+    fun `return a 404 when no prisons in filter`() {
+      callApiWithCN(path, noPrisonsCn)
+        .andExpect(status().isNotFound)
+    }
+
+    @Test
+    fun `return a 400 when invalid noms passed in`() {
+      callApi("$basePath/$invalidNomsId/visible-characteristics")
+        .andExpect(status().isBadRequest)
+    }
+  }
 }
