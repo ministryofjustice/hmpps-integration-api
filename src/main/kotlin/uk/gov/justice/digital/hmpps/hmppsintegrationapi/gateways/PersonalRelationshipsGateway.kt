@@ -5,8 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpMethod
 import org.springframework.stereotype.Component
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.FeatureNotEnabledException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper.WebClientWrapperResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
@@ -20,7 +18,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelations
 @Component
 class PersonalRelationshipsGateway(
   @Value("\${services.personal-relationships.base-url}") baseUrl: String,
-  private val featureFlag: FeatureFlagConfig,
 ) {
   private val webClient = WebClientWrapper(baseUrl)
   private val mapper: ObjectMapper = ObjectMapper()
@@ -132,10 +129,6 @@ class PersonalRelationshipsGateway(
   }
 
   fun getNumberOfChildren(prisonerId: String): Response<PRNumberOfChildren?> {
-    if (!featureFlag.useNumberOfChildrenEndpoints) {
-      throw FeatureNotEnabledException(FeatureFlagConfig.USE_NUMBER_OF_CHILDREN_ENDPOINTS)
-    }
-
     val result =
       webClient.request<PRNumberOfChildren?>(
         HttpMethod.GET,
