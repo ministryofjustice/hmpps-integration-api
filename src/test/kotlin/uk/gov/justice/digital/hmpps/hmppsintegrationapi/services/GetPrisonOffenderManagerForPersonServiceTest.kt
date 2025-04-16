@@ -81,7 +81,7 @@ class GetPrisonOffenderManagerForPersonServiceTest(
         )
 
         val result = getPrisonOffenderManagerForPersonService.execute(hmppsId, filters)
-        result.shouldBe(Response(data = null))
+        result.data.shouldBe(null)
         result.errors.shouldBeEmpty()
       }
 
