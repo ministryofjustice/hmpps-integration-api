@@ -2,7 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import io.swagger.v3.oas.annotations.media.Schema
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.caseNotes.PaginatedCaseNotes
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PaginatedCaseNotes
 
 data class OCNCaseNote(
   val content: List<NomisCaseNote> = listOf(),
@@ -12,7 +12,7 @@ data class OCNCaseNote(
   fun toPaginatedCaseNotes(): PaginatedCaseNotes =
     PaginatedCaseNotes(
       content = this.content.map { it.toCaseNote() },
-      count = this.page.size,
+      count = this.content.size,
       page = this.page.page,
       totalCount = this.page.totalElements.toLong(),
       totalPages = (this.page.totalElements + this.page.size - 1) / this.page.size,
