@@ -5,7 +5,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties
 @ConfigurationProperties(prefix = "feature-flag")
 data class FeatureFlagConfig(
   val useArnsEndpoints: Boolean,
-  val useNumberChildrenEndpoints: Boolean,
+  val useNumberOfChildrenEndpoints: Boolean,
 ) {
   companion object {
     const val USE_ARNS_ENDPOINTS = "use-arns-endpoints"

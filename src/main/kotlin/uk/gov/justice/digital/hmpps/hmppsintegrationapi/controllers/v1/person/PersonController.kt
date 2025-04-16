@@ -14,7 +14,9 @@ import org.springframework.web.bind.annotation.RequestAttribute
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.FeatureNotEnabledException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.decodeUrlCharacters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.IEPLevel
@@ -57,6 +59,7 @@ class PersonController(
   @Autowired val getVisitOrdersForPersonService: GetVisitOrdersForPersonService,
   @Autowired val getNumberOfChildrenForPersonService: GetNumberOfChildrenForPersonService,
   @Autowired val auditService: AuditService,
+  @Autowired val featureFlag: FeatureFlagConfig,
 ) {
   @GetMapping
   @Operation(
@@ -279,6 +282,10 @@ class PersonController(
     @Parameter(description = "The HMPPS ID of the prisoner") @PathVariable hmppsId: String,
     @RequestAttribute filters: ConsumerFilters?,
   ): DataResponse<NumberOfChildren?> {
+    if (!featureFlag.useNumberOfChildrenEndpoints) {
+      throw FeatureNotEnabledException(FeatureFlagConfig.USE_NUMBER_OF_CHILDREN_ENDPOINTS)
+    }
+
     val response = getNumberOfChildrenForPersonService.execute(hmppsId, filters)
 
     if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {

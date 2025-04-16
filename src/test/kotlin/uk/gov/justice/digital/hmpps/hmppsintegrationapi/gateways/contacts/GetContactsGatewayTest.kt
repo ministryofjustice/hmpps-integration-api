@@ -42,7 +42,7 @@ class GetContactsGatewayTest(
       beforeEach {
         personalRelationshipsApiMockServer.start()
         Mockito.reset(hmppsAuthGateway)
-        whenever(featureFlag.useNumberChildrenEndpoints).thenReturn(true)
+        whenever(featureFlag.useNumberOfChildrenEndpoints).thenReturn(true)
 
         whenever(hmppsAuthGateway.getClientToken("PERSONAL-RELATIONSHIPS")).thenReturn(HmppsAuthMockServer.TOKEN)
       }
