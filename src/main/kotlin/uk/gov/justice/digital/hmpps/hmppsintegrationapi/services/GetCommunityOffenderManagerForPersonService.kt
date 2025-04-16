@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CommunityOffenderManager
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 @Service
@@ -24,7 +25,7 @@ class GetCommunityOffenderManagerForPersonService(
     val deliusCrn = personResponse.data?.identifiers?.deliusCrn ?: return Response(data = null)
 
     val nDeliusMappaDetailResponse = nDeliusGateway.getCommunityOffenderManagerForPerson(crn = deliusCrn)
-    if (nDeliusMappaDetailResponse.errors.isNotEmpty()) {
+    if (nDeliusMappaDetailResponse.errors.isNotEmpty() && !nDeliusMappaDetailResponse.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
       return Response(data = null, errors = nDeliusMappaDetailResponse.errors)
     }
 
