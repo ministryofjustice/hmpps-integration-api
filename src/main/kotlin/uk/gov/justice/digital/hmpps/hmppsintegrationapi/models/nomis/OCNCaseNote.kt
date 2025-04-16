@@ -2,7 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import io.swagger.v3.oas.annotations.media.Schema
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.caseNotes.PaginatedCaseNotes
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PaginatedCaseNotes
 
 data class OCNCaseNote(
   val content: List<NomisCaseNote> = listOf(),
