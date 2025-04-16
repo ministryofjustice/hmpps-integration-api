@@ -51,16 +51,6 @@ repositories {
   mavenCentral()
 }
 
-sourceSets {
-  create("tests") {
-    kotlin {
-      srcDirs("src/test")
-    }
-    compileClasspath += sourceSets["main"].output + configurations["testRuntimeClasspath"] + sourceSets["test"].output
-    runtimeClasspath += output + compileClasspath
-  }
-}
-
 tasks {
   register<Test>("unitTest") {
     filter {
@@ -70,8 +60,8 @@ tasks {
 
   register<Test>("integrationTest") {
     description = "Runs the integration tests, make sure that dependencies are available first by running `make serve`."
-    testClassesDirs = sourceSets["tests"].output.classesDirs
-    classpath = sourceSets["tests"].runtimeClasspath
+    testClassesDirs = sourceSets["test"].output.classesDirs
+    classpath = sourceSets["main"].output + configurations["testRuntimeClasspath"] + sourceSets["test"].output
     filter {
       includeTestsMatching("uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration*")
     }
