@@ -21,11 +21,11 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.filters.CaseNoteF
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CaseNote
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.interfaces.toPaginatedResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetCaseNotesForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.PaginatedResponse
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.paginateWith
 import java.time.LocalDateTime
 
 @RestController
@@ -49,21 +49,19 @@ class CaseNotesController(
   )
   fun getCaseNotesForPerson(
     @Parameter(description = "The HMPPS ID of the person", example = "G2996UX") @PathVariable hmppsId: String,
-    @Parameter(description = "Filter case notes from this date")
+    @Parameter(description = "Filter case notes from this date, required format RFC3339")
     @RequestParam(required = false, name = "startDate")
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-    startDate: LocalDateTime?,
-    @Parameter(description = "Filter case notes up to this date")
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) startDate: LocalDateTime?,
+    @Parameter(description = "Filter case notes up to this date, required format RFC3339")
     @RequestParam(required = false, name = "endDate")
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-    endDate: LocalDateTime?,
-    @Parameter(description = "Filter by the location. example MDI", example = "MDI")
-    @RequestParam(required = false, name = "locationId") locationId: String?,
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) endDate: LocalDateTime?,
+    @Parameter(description = "Page of the request, will default to 1 if not provided")
     @RequestParam(required = false, defaultValue = "1", name = "page") page: Int,
+    @Parameter(description = "Total results per page, will default to 10 if not provided")
     @RequestParam(required = false, defaultValue = "10", name = "perPage") perPage: Int,
     @RequestAttribute filters: ConsumerFilters?,
   ): PaginatedResponse<CaseNote> {
-    val response = getCaseNoteForPersonService.execute(CaseNoteFilter(hmppsId, startDate, endDate, locationId), filters)
+    val response = getCaseNoteForPersonService.execute(CaseNoteFilter(hmppsId, startDate, endDate, page, perPage), filters)
 
     if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
       throw ValidationException("Invalid id: $hmppsId")
@@ -79,6 +77,6 @@ class CaseNotesController(
 
     auditService.createEvent("GET_CASE_NOTES", mapOf("hmppsId" to hmppsId))
 
-    return response.data.orEmpty().paginateWith(page, perPage)
+    return response.data.toPaginatedResponse()
   }
 }
