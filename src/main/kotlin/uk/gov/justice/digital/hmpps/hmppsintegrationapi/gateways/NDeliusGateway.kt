@@ -142,11 +142,11 @@ class NDeliusGateway(
     }
   }
 
-  fun getCommunityOffenderManagerForPerson(id: String): Response<CommunityOffenderManager?> {
+  fun getCommunityOffenderManagerForPerson(crn: String): Response<CommunityOffenderManager?> {
     val result =
       webClient.request<NDeliusSupervisions?>(
         HttpMethod.GET,
-        "/case/$id/supervisions",
+        "/case/$crn/supervisions",
         authenticationHeader(),
         UpstreamApi.NDELIUS,
       )

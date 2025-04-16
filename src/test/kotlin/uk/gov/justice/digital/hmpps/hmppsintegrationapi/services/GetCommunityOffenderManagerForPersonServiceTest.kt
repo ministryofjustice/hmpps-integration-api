@@ -42,7 +42,7 @@ class GetCommunityOffenderManagerForPersonServiceTest(
         Mockito.reset(nDeliusGateway)
 
         whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, filter)).thenReturn(Response(person))
-        whenever(nDeliusGateway.getCommunityOffenderManagerForPerson(id = deliusCrn)).thenReturn(Response(communityOffenderManager))
+        whenever(nDeliusGateway.getCommunityOffenderManagerForPerson(crn = deliusCrn)).thenReturn(Response(communityOffenderManager))
       }
 
       it("performs a search according to hmpps Id") {

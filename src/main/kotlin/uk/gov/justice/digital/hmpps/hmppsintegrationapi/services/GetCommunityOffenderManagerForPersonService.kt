@@ -23,7 +23,7 @@ class GetCommunityOffenderManagerForPersonService(
 
     val deliusCrn = personResponse.data?.identifiers?.deliusCrn ?: return Response(data = null)
 
-    val nDeliusMappaDetailResponse = nDeliusGateway.getCommunityOffenderManagerForPerson(id = deliusCrn)
+    val nDeliusMappaDetailResponse = nDeliusGateway.getCommunityOffenderManagerForPerson(crn = deliusCrn)
     if (nDeliusMappaDetailResponse.errors.isNotEmpty()) {
       return Response(data = null, errors = nDeliusMappaDetailResponse.errors)
     }
