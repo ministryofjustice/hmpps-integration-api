@@ -19,11 +19,11 @@ class ManagePOMCaseGateway(
   @Autowired
   lateinit var hmppsAuthGateway: HmppsAuthGateway
 
-  fun getPrimaryPOMForNomisNumber(id: String): Response<PrisonOffenderManager> {
+  fun getPrimaryPOMForNomisNumber(nomsNumber: String): Response<PrisonOffenderManager> {
     val result =
       webClient.request<AllocationPrimaryPOM>(
         HttpMethod.GET,
-        "/api/allocation/$id/primary_pom",
+        "/api/allocation/$nomsNumber/primary_pom",
         authenticationHeader(),
         UpstreamApi.MANAGE_POM_CASE,
       )

@@ -26,11 +26,11 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 )
 class ManagePOMCaseGatewayTest(
   @MockitoBean val hmppsAuthGateway: HmppsAuthGateway,
-  val managePOMCaseGateway: ManagePOMCaseGateway,
+  private val managePOMCaseGateway: ManagePOMCaseGateway,
 ) : DescribeSpec(
     {
-      val id = "X1234YZ"
-      val path = "/api/allocation/$id/primary_pom"
+      val nomsNumber = "X1234YZ"
+      val path = "/api/allocation/$nomsNumber/primary_pom"
       val managePOMCaseApiMockServer = ApiMockServer.create(UpstreamApi.MANAGE_POM_CASE)
       beforeEach {
         managePOMCaseApiMockServer.start()
@@ -45,7 +45,7 @@ class ManagePOMCaseGatewayTest(
       }
 
       it("authenticates using HMPPS Auth with credentials") {
-        managePOMCaseGateway.getPrimaryPOMForNomisNumber(id = id)
+        managePOMCaseGateway.getPrimaryPOMForNomisNumber(nomsNumber)
 
         verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("ManagePOMCase")
       }
@@ -54,7 +54,7 @@ class ManagePOMCaseGatewayTest(
         managePOMCaseApiMockServer.stubForGet(path, "", HttpStatus.BAD_REQUEST)
         val response =
           shouldThrow<WebClientResponseException> {
-            managePOMCaseGateway.getPrimaryPOMForNomisNumber(id = id)
+            managePOMCaseGateway.getPrimaryPOMForNomisNumber(nomsNumber)
           }
         response.statusCode.shouldBe(HttpStatus.BAD_REQUEST)
       }
@@ -77,7 +77,7 @@ class ManagePOMCaseGatewayTest(
           HttpStatus.OK,
         )
 
-        val response = managePOMCaseGateway.getPrimaryPOMForNomisNumber(id = id)
+        val response = managePOMCaseGateway.getPrimaryPOMForNomisNumber(nomsNumber)
         response.data.forename.shouldBe("string")
         response.data.surname.shouldBe("string")
       }

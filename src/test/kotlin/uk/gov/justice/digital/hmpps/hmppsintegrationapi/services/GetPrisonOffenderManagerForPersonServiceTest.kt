@@ -41,7 +41,7 @@ class GetPrisonOffenderManagerForPersonServiceTest(
         Mockito.reset(managePOMCaseGateway)
 
         whenever(getPersonService.getNomisNumberWithPrisonFilter(hmppsId = hmppsId, filters)).thenReturn(Response(NomisNumber(nomisNumber)))
-        whenever(managePOMCaseGateway.getPrimaryPOMForNomisNumber(id = nomisNumber)).thenReturn(Response(prisonOffenderManager))
+        whenever(managePOMCaseGateway.getPrimaryPOMForNomisNumber(nomsNumber = nomisNumber)).thenReturn(Response(prisonOffenderManager))
       }
 
       it("performs a search according to hmpps Id") {
