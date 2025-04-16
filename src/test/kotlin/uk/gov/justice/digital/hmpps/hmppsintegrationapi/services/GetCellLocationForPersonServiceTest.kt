@@ -38,7 +38,7 @@ internal class GetCellLocationForPersonServiceTest(
         whenever(getPersonService.getNomisNumberWithPrisonFilter(hmppsId, filters)).thenReturn(Response(data = NomisNumber(hmppsId)))
 
         whenever(prisonerOffenderSearchGateway.getPrisonOffender(hmppsId)).thenReturn(
-          Response(data = POSPrisoner(firstName = "Qui-gon", lastName = "Jin", inOutStatus = "IN", prisonId = "MDI", prisonName = "Moorland (HMP & YOI)", cellLocation = "6-2-006")),
+          Response(data = POSPrisoner(firstName = "Qui-gon", lastName = "Jin", inOutStatus = "IN", prisonId = "MDI", prisonName = "Moorland (HMP & YOI)", cellLocation = "6-2-006", youthOffender = false)),
         )
       }
 

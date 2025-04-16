@@ -46,22 +46,22 @@ internal class GetPersonServiceTest(
       val nomsNumber = "N1234PS"
       val invalidNomsNumber = "N1234PSX"
       val crnNumber = "AA123456"
-      val prisoner = POSPrisoner(firstName = "Jim", lastName = "Brown", dateOfBirth = LocalDate.of(1992, 12, 3), prisonerNumber = nomsNumber)
+      val prisoner = POSPrisoner(firstName = "Jim", lastName = "Brown", dateOfBirth = LocalDate.of(1992, 12, 3), prisonerNumber = nomsNumber, youthOffender = false)
       val wrongPrisonId = "XYZ"
       val prisonId = "ABC"
       val filters = ConsumerFilters(listOf(prisonId))
       val blankConsumerFilters = ConsumerFilters(null)
       val personOnProbation = PersonOnProbation(Person(firstName = "Sam", lastName = "Person", identifiers = Identifiers(nomisNumber = nomsNumber)), underActiveSupervision = true)
       val personOnProbationMissingNomisNumber = PersonOnProbation(Person(firstName = "Sam", lastName = "Person"), underActiveSupervision = true)
-      val prisonerWithPrisonId = POSPrisoner(firstName = "Sam", lastName = "Person", prisonId = prisonId)
-      val prisonerWithWrongPrisonId = POSPrisoner(firstName = "Sam", lastName = "Person", prisonId = wrongPrisonId)
+      val prisonerWithPrisonId = POSPrisoner(firstName = "Sam", lastName = "Person", prisonId = prisonId, youthOffender = false)
+      val prisonerWithWrongPrisonId = POSPrisoner(firstName = "Sam", lastName = "Person", prisonId = wrongPrisonId, youthOffender = false)
 
       beforeEach {
         Mockito.reset(prisonerOffenderSearchGateway)
         Mockito.reset(probationOffenderSearchGateway)
 
         whenever(prisonerOffenderSearchGateway.getPersons("Qui-gon", "Jin", "1966-10-25")).thenReturn(
-          Response(data = listOf(POSPrisoner(firstName = "Qui-gon", lastName = "Jin", prisonerNumber = "A1234AA"))),
+          Response(data = listOf(POSPrisoner(firstName = "Qui-gon", lastName = "Jin", prisonerNumber = "A1234AA", youthOffender = false))),
         )
         whenever(probationOffenderSearchGateway.getPerson(id = hmppsId)).thenReturn(
           Response(data = PersonOnProbation(Person(firstName = "Qui-gon", lastName = "Jin", identifiers = Identifiers(nomisNumber = "A1234AA")), underActiveSupervision = true)),
@@ -72,7 +72,7 @@ internal class GetPersonServiceTest(
           Response(data = PersonOnProbation(Person(firstName = "Sam", lastName = "Person", identifiers = Identifiers(nomisNumber = null)), underActiveSupervision = true)),
         )
         whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber = "A1234AA")).thenReturn(
-          Response(data = POSPrisoner(firstName = "Sam", lastName = "Mills")),
+          Response(data = POSPrisoner(firstName = "Sam", lastName = "Mills", youthOffender = false)),
         )
         whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber = nomsNumber)).thenReturn(Response(data = prisoner))
 
@@ -94,6 +94,7 @@ internal class GetPersonServiceTest(
           assertThat(lastName).isEqualTo(prisoner.lastName)
           assertThat(dateOfBirth).isEqualTo(prisoner.dateOfBirth)
           assertThat(nomsNumber).isEqualTo(prisoner.prisonerNumber)
+          assertThat(false).isEqualTo(prisoner.youthOffender)
         }
       }
 
@@ -120,7 +121,7 @@ internal class GetPersonServiceTest(
 
       it("returns a person with both probation and prison data when prison data exists") {
         val personFromProbationOffenderSearch = PersonOnProbation(Person("Paula", "First", identifiers = Identifiers(nomisNumber = "A1234AA")), underActiveSupervision = true)
-        val personFromPrisonOffenderSearch = POSPrisoner("Sam", "Mills")
+        val personFromPrisonOffenderSearch = POSPrisoner("Sam", "Mills", youthOffender = false)
 
         whenever(probationOffenderSearchGateway.getPerson(hmppsId)).thenReturn(
           Response(data = personFromProbationOffenderSearch),
@@ -160,9 +161,9 @@ internal class GetPersonServiceTest(
 
       it("returns a prisoner when valid hmppsId is provided") {
         val validHmppsId = "G2996UX"
-        val person = PersonInPrison(firstName = "Sam", lastName = "Mills", category = null, csra = null, receptionDate = null, status = null, prisonId = null, prisonName = null, cellLocation = null)
+        val person = PersonInPrison(firstName = "Sam", lastName = "Mills", category = null, csra = null, receptionDate = null, status = null, prisonId = null, prisonName = null, cellLocation = null, youthOffender = false)
         whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber = "G2996UX")).thenReturn(
-          Response(data = POSPrisoner(firstName = "Sam", lastName = "Mills")),
+          Response(data = POSPrisoner(firstName = "Sam", lastName = "Mills", youthOffender = false)),
         )
 
         val result = getPersonService.getPrisoner(validHmppsId, blankConsumerFilters)
@@ -213,7 +214,7 @@ internal class GetPersonServiceTest(
       it("returns null when prisoner is found but not in approved prison") {
         val wrongPrisonHmppsId = "Z9999ZZ"
         whenever(prisonerOffenderSearchGateway.getPrisonOffender(wrongPrisonHmppsId))
-          .thenReturn(Response(data = POSPrisoner(firstName = "Test", lastName = "Person", prisonId = "XYZ")))
+          .thenReturn(Response(data = POSPrisoner(firstName = "Test", lastName = "Person", prisonId = "XYZ", youthOffender = false)))
 
         val result = getPersonService.getPrisoner(wrongPrisonHmppsId, ConsumerFilters(prisons = listOf("ABC")))
 
@@ -224,7 +225,7 @@ internal class GetPersonServiceTest(
       it("returns prisoner when in approved prison") {
         val correctPrisonHmppsId = "Z9999ZZ"
         val prisonId = "XYZ"
-        val posPrisoner = POSPrisoner(firstName = "Test", lastName = "Person", prisonId = prisonId)
+        val posPrisoner = POSPrisoner(firstName = "Test", lastName = "Person", prisonId = prisonId, youthOffender = false)
         whenever(prisonerOffenderSearchGateway.getPrisonOffender(correctPrisonHmppsId))
           .thenReturn(Response(data = posPrisoner))
 
@@ -238,10 +239,10 @@ internal class GetPersonServiceTest(
 
       it("returns prisoner if no prison filter present") {
         val validHmppsId = "G2996UX"
-        val person = PersonInPrison(firstName = "Sam", lastName = "Mills", category = null, csra = null, receptionDate = null, status = null, prisonId = null, prisonName = null, cellLocation = null)
+        val person = PersonInPrison(firstName = "Sam", lastName = "Mills", category = null, csra = null, receptionDate = null, status = null, prisonId = null, prisonName = null, cellLocation = null, youthOffender = false)
 
         whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber = validHmppsId)).thenReturn(
-          Response(data = POSPrisoner(firstName = "Sam", lastName = "Mills")),
+          Response(data = POSPrisoner(firstName = "Sam", lastName = "Mills", youthOffender = false)),
         )
 
         val result = getPersonService.getPrisoner(validHmppsId, ConsumerFilters(prisons = null))
@@ -255,7 +256,7 @@ internal class GetPersonServiceTest(
       it("returns null if no prisons in prison filter") {
         val validHmppsId = "Z9999ZZ"
         whenever(prisonerOffenderSearchGateway.getPrisonOffender(validHmppsId))
-          .thenReturn(Response(data = POSPrisoner(firstName = "Test", lastName = "Person", prisonId = "XYZ")))
+          .thenReturn(Response(data = POSPrisoner(firstName = "Test", lastName = "Person", prisonId = "XYZ", youthOffender = false)))
 
         val result = getPersonService.getPrisoner(validHmppsId, ConsumerFilters(prisons = emptyList()))
 
@@ -266,7 +267,7 @@ internal class GetPersonServiceTest(
       it("does not return prisoners who are missing prison ID") {
         val validHmppsId = "Z9999ZZ"
         whenever(prisonerOffenderSearchGateway.getPrisonOffender(validHmppsId))
-          .thenReturn(Response(data = POSPrisoner(firstName = "Test", lastName = "Person")))
+          .thenReturn(Response(data = POSPrisoner(firstName = "Test", lastName = "Person", youthOffender = false)))
 
         val result = getPersonService.getPrisoner(validHmppsId, ConsumerFilters(prisons = listOf("ABC")))
 
@@ -276,10 +277,10 @@ internal class GetPersonServiceTest(
 
       it("returns prisoner if no consumer filters present") {
         val validHmppsId = "G2996UX"
-        val person = PersonInPrison(firstName = "Sam", lastName = "Mills", category = null, csra = null, receptionDate = null, status = null, prisonId = null, prisonName = null, cellLocation = null)
+        val person = PersonInPrison(firstName = "Sam", lastName = "Mills", category = null, csra = null, receptionDate = null, status = null, prisonId = null, prisonName = null, cellLocation = null, youthOffender = false)
 
         whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber = validHmppsId)).thenReturn(
-          Response(data = POSPrisoner(firstName = "Sam", lastName = "Mills")),
+          Response(data = POSPrisoner(firstName = "Sam", lastName = "Mills", youthOffender = false)),
         )
 
         val result = getPersonService.getPrisoner(validHmppsId, null)
@@ -298,7 +299,7 @@ internal class GetPersonServiceTest(
 
       it("if filters are present, consumer filter check fails, return 404") {
         val errors = listOf(UpstreamApiError(causedBy = UpstreamApi.NOMIS, type = UpstreamApiError.Type.ENTITY_NOT_FOUND))
-        whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber)).thenReturn(Response(data = POSPrisoner(firstName = "Sam", lastName = "Person", prisonId = wrongPrisonId)))
+        whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber)).thenReturn(Response(data = POSPrisoner(firstName = "Sam", lastName = "Person", prisonId = wrongPrisonId, youthOffender = false)))
         whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<Person>(wrongPrisonId, filters)).thenReturn(Response(data = null, errors = errors))
 
         val result = getPersonService.getPersonWithPrisonFilter(nomsNumber, filters)

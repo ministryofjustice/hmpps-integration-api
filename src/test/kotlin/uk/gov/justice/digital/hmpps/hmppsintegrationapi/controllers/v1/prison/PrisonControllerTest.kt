@@ -22,9 +22,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonInPri
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError.Type.BAD_REQUEST
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError.Type.ENTITY_NOT_FOUND
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError.Type.FORBIDDEN
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Visit
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitContact
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitExternalSystemDetails
@@ -131,6 +128,7 @@ internal class PrisonControllerTest(
                 prisonId = "MDI",
                 prisonName = "HMP Leeds",
                 cellLocation = "A-1-002",
+                youthOffender = false,
               ),
           ),
         )
@@ -160,7 +158,8 @@ internal class PrisonControllerTest(
                    "status": "ACTIVE IN",
                    "prisonId": "MDI",
                    "prisonName": "HMP Leeds",
-                   "cellLocation": "A-1-002"
+                   "cellLocation": "A-1-002",
+                   "youthOffender": false
                 }
              }
           """.removeWhitespaceAndNewlines(),
@@ -186,6 +185,7 @@ internal class PrisonControllerTest(
                 prisonId = "MDI",
                 prisonName = "HMP Leeds",
                 cellLocation = "A-1-002",
+                youthOffender = false,
               ),
           ),
         )
@@ -291,12 +291,14 @@ internal class PrisonControllerTest(
                   lastName = "Allen",
                   middleName = "Jonas",
                   dateOfBirth = LocalDate.parse("2023-03-01"),
+                  youthOffender = false,
                 ),
                 PersonInPrison(
                   firstName = "Barry",
                   lastName = "Allen",
                   middleName = "Rock",
                   dateOfBirth = LocalDate.parse("2022-07-22"),
+                  youthOffender = false,
                 ),
               ),
           ),

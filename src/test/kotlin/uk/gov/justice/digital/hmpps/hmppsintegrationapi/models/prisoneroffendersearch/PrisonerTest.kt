@@ -27,6 +27,7 @@ class PrisonerTest :
                 listOf(
                   POSPrisonerAlias(firstName = "Alias First Name", lastName = "Alias Last Name"),
                 ),
+              youthOffender = false,
             )
 
           val person = prisoner.toPerson()
