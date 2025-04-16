@@ -132,7 +132,7 @@ class PersonalRelationshipsGateway(
   }
 
   fun getNumberOfChildren(prisonerId: String): Response<PRNumberOfChildren?> {
-    if (!featureFlag.useNumberChildrenEndpoints) {
+    if (!featureFlag.useNumberOfChildrenEndpoints) {
       throw FeatureNotEnabledException(FeatureFlagConfig.USE_NUMBER_OF_CHILDREN_ENDPOINTS)
     }
 

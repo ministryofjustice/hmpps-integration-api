@@ -43,7 +43,7 @@ class PersonalRelationshipsGatewayTest(
     beforeEach {
       personalRelationshipsApiMockServer.start()
       Mockito.reset(hmppsAuthGateway)
-      whenever(featureFlag.useNumberChildrenEndpoints).thenReturn(true)
+      whenever(featureFlag.useNumberOfChildrenEndpoints).thenReturn(true)
 
       whenever(hmppsAuthGateway.getClientToken("PERSONAL-RELATIONSHIPS")).thenReturn(HmppsAuthMockServer.TOKEN)
     }
@@ -374,7 +374,7 @@ class PersonalRelationshipsGatewayTest(
       }
 
       it("returns 503 service not available when feature flag set to false") {
-        whenever(featureFlag.useNumberChildrenEndpoints).thenReturn(false)
+        whenever(featureFlag.useNumberOfChildrenEndpoints).thenReturn(false)
         val exception = shouldThrow<FeatureNotEnabledException> { personalRelationshipsGateway.getNumberOfChildren(prisonerId) }
         exception.message.shouldContain("use-number-of-children-endpoints not enabled")
       }
