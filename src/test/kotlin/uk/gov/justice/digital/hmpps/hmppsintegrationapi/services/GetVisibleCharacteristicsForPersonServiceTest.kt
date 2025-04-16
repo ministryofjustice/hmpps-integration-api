@@ -10,13 +10,14 @@ import org.springframework.boot.test.context.ConfigDataApplicationContextInitial
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffenderSearchGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.BodyMark
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Identifiers
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisibleCharacteristics
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.BodyMark
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSBodyMark
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSPrisoner
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSPrisonerAlias
 import java.time.LocalDate
@@ -97,16 +98,16 @@ internal class GetVisibleCharacteristicsForPersonServiceTest(
           shoeSize = 10,
           tattoos =
             listOf(
-              BodyMark(bodyPart = "Left Arm", comment = "Tribal band"),
-              BodyMark(bodyPart = "Chest", comment = "Dragon"),
+              POSBodyMark(bodyPart = "Left Arm", comment = "Tribal band"),
+              POSBodyMark(bodyPart = "Chest", comment = "Dragon"),
             ),
           scars =
             listOf(
-              BodyMark(bodyPart = "Right Knee", comment = "Long, thin scar"),
+              POSBodyMark(bodyPart = "Right Knee", comment = "Long, thin scar"),
             ),
           marks =
             listOf(
-              BodyMark(bodyPart = "Left Cheek", comment = "Small mole"),
+              POSBodyMark(bodyPart = "Left Cheek", comment = "Small mole"),
             ),
         )
 
