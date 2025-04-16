@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 
 import io.kotest.core.spec.style.DescribeSpec
+import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
 import org.mockito.kotlin.times
@@ -81,6 +82,7 @@ class GetPrisonOffenderManagerForPersonServiceTest(
 
         val result = getPrisonOffenderManagerForPersonService.execute(hmppsId, filters)
         result.shouldBe(Response(data = null))
+        result.errors.shouldBeEmpty()
       }
 
       it("Should return errors if Manage POM gateway returns non 404 errors") {
