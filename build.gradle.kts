@@ -1,4 +1,5 @@
 import org.gradle.internal.impldep.org.junit.experimental.categories.Categories.CategoryFilter.exclude
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
   id("uk.gov.justice.hmpps.gradle-spring-boot") version "7.1.3"
@@ -71,8 +72,8 @@ tasks {
   }
 
   withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
-    kotlinOptions {
-      jvmTarget = "21"
+    compilerOptions {
+      jvmTarget = JvmTarget.JVM_21
     }
   }
 }
