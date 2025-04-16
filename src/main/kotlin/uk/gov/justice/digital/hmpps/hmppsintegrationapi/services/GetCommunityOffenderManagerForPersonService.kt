@@ -15,19 +15,21 @@ class GetCommunityOffenderManagerForPersonService(
   fun execute(
     hmppsId: String,
     filters: ConsumerFilters?,
-  ): Response<CommunityOffenderManager> {
+  ): Response<CommunityOffenderManager?> {
     val personResponse = getPersonService.getPersonWithPrisonFilter(hmppsId, filters)
+    if (personResponse.errors.isNotEmpty()) {
+      return Response(data = null, errors = personResponse.errors)
+    }
 
-    val deliusCrn = personResponse.data?.identifiers?.deliusCrn
-    var nDeliusMappaDetailResponse: Response<CommunityOffenderManager> = Response(data = CommunityOffenderManager())
+    val deliusCrn = personResponse.data?.identifiers?.deliusCrn ?: return Response(data = null)
 
-    if (deliusCrn != null) {
-      nDeliusMappaDetailResponse = nDeliusGateway.getCommunityOffenderManagerForPerson(id = deliusCrn)
+    val nDeliusMappaDetailResponse = nDeliusGateway.getCommunityOffenderManagerForPerson(id = deliusCrn)
+    if (nDeliusMappaDetailResponse.errors.isNotEmpty()) {
+      return Response(data = null, errors = nDeliusMappaDetailResponse.errors)
     }
 
     return Response(
       data = nDeliusMappaDetailResponse.data,
-      errors = personResponse.errors + nDeliusMappaDetailResponse.errors,
     )
   }
 }
