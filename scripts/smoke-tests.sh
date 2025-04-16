@@ -61,6 +61,7 @@ get_endpoints=(
   "/v1/persons/$hmppsId/sentences"
   "/v1/persons/$hmppsId/offences"
   "/v1/persons/$hmppsId/reported-adjudications"
+  "/v1/persons/$hmppsId/number-of-children"
   "/v1/pnd/persons/$hmppsId/alerts"
   "/v1/prison/prisoners?first_name=john"
   "/v1/prison/prisoners/$hmppsId"

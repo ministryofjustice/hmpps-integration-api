@@ -1,4 +1,4 @@
-import org.gradle.internal.impldep.org.junit.experimental.categories.Categories.CategoryFilter.exclude
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
   id("uk.gov.justice.hmpps.gradle-spring-boot") version "7.1.3"
@@ -46,33 +46,37 @@ dependencies {
 java {
   toolchain.languageVersion.set(JavaLanguageVersion.of(21))
 }
+
 repositories {
   mavenCentral()
+}
+
+sourceSets {
+  create("integrationTest") {
+    kotlin {
+      srcDirs("src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/integration")
+    }
+    compileClasspath += sourceSets["main"].output + configurations["testRuntimeClasspath"] + sourceSets["test"].output
+    runtimeClasspath += output + compileClasspath
+  }
 }
 
 tasks {
   register<Test>("unitTest") {
     filter {
-      excludeTestsMatching("uk.gov.justice.digital.hmpps.hmppsintegrationapi.smoke*")
       excludeTestsMatching("uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration*")
     }
   }
 
-  register<Test>("smokeTest") {
-    filter {
-      includeTestsMatching("uk.gov.justice.digital.hmpps.hmppsintegrationapi.smoke*")
-    }
-  }
-
   register<Test>("integrationTest") {
-    filter {
-      includeTestsMatching("uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration*")
-    }
+    description = "Runs the integration tests, make sure that dependencies are available first by running `make serve`."
+    testClassesDirs = sourceSets["integrationTest"].output.classesDirs
+    classpath = sourceSets["integrationTest"].runtimeClasspath
   }
 
   withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
-    kotlinOptions {
-      jvmTarget = "21"
+    compilerOptions {
+      jvmTarget = JvmTarget.JVM_21
     }
   }
 }

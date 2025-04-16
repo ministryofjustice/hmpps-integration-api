@@ -39,7 +39,7 @@ class CaseNotesGatewayTest(
       val id = "123"
       val pathNoParams = "/search/case-notes/$id"
       val caseNotesApiMockServer = ApiMockServer.create(UpstreamApi.CASE_NOTES)
-      val caseNoteRequest = CNSearchNotesRequest(page = 1, size = 10, sort = "")
+      val caseNoteRequest = CNSearchNotesRequest(page = 1, size = 10)
       val caseNoteFilter = CaseNoteFilter(hmppsId = id)
 
       val jsonRequest = objectMapper.writeValueAsString(caseNoteRequest.toApiConformingMap())
@@ -133,7 +133,7 @@ class CaseNotesGatewayTest(
           ?.content!!
           .count()
           .shouldBe(1)
-        response.data!!.content.shouldExist { it -> it.caseNoteId == id }
+        response.data!!.content.shouldExist { it.caseNoteId == id }
       }
     },
   )
