@@ -1,5 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.person
 
+import org.junit.jupiter.api.DisplayName
+import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
@@ -24,11 +26,27 @@ class PersonIntegrationTest : IntegrationTestBase() {
       .andExpect(content().json(getExpectedResponse("person-offender-and-probation-search-response")))
   }
 
-  @Test
-  fun `returns image metadata for a person`() {
-    callApi("$basePath/$pnc/images")
-      .andExpect(status().isOk)
-      .andExpect(content().json(getExpectedResponse("person-image-meta-data")))
+  @DisplayName("GET hmppsId/images")
+  @Nested
+  inner class GetImageMetadataForPerson {
+    @Test
+    fun `returns image metadata for a person`() {
+      callApi("$basePath/$nomsId/images")
+        .andExpect(status().isOk)
+        .andExpect(content().json(getExpectedResponse("person-image-meta-data")))
+    }
+
+    @Test
+    fun `images endpoint return a 404 for person in wrong prison`() {
+      callApiWithCN("$basePath/$nomsId/images", limitedPrisonsCn)
+        .andExpect(status().isNotFound)
+    }
+
+    @Test
+    fun `images name endpoint return a 404 when no prisons in filter`() {
+      callApiWithCN("$basePath/$nomsId/images", noPrisonsCn)
+        .andExpect(status().isNotFound)
+    }
   }
 
   // Get persons name tests
