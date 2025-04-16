@@ -220,7 +220,7 @@ internal class PrisonControllerTest(
             errors =
               listOf(
                 UpstreamApiError(
-                  type = ENTITY_NOT_FOUND,
+                  type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
                   causedBy = UpstreamApi.PRISONER_OFFENDER_SEARCH,
                   description = "NOMIS number not found",
                 ),
@@ -241,7 +241,7 @@ internal class PrisonControllerTest(
               listOf(
                 UpstreamApiError(
                   description = "Invalid HMPPS ID: $hmppsId",
-                  type = BAD_REQUEST,
+                  type = UpstreamApiError.Type.BAD_REQUEST,
                   causedBy = UpstreamApi.NOMIS,
                 ),
               ),
@@ -269,7 +269,7 @@ internal class PrisonControllerTest(
             errors =
               listOf(
                 UpstreamApiError(
-                  type = ENTITY_NOT_FOUND,
+                  type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
                   causedBy = UpstreamApi.PRISONER_OFFENDER_SEARCH,
                   description = "Service error",
                 ),
@@ -315,7 +315,7 @@ internal class PrisonControllerTest(
             errors =
               listOf(
                 UpstreamApiError(
-                  type = FORBIDDEN,
+                  type = UpstreamApiError.Type.FORBIDDEN,
                   causedBy = UpstreamApi.PRISONER_OFFENDER_SEARCH,
                   description = "Consumer configured with no access to any prisons",
                 ),
@@ -368,7 +368,7 @@ internal class PrisonControllerTest(
               errors =
                 listOf(
                   UpstreamApiError(
-                    type = ENTITY_NOT_FOUND,
+                    type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
                     causedBy = UpstreamApi.MANAGE_PRISON_VISITS,
                   ),
                 ),
@@ -387,7 +387,7 @@ internal class PrisonControllerTest(
               errors =
                 listOf(
                   UpstreamApiError(
-                    type = BAD_REQUEST,
+                    type = UpstreamApiError.Type.BAD_REQUEST,
                     causedBy = UpstreamApi.MANAGE_PRISON_VISITS,
                   ),
                 ),
