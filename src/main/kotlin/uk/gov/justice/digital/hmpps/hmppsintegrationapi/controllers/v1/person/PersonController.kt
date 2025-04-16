@@ -14,11 +14,14 @@ import org.springframework.web.bind.annotation.RequestAttribute
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.FeatureNotEnabledException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.decodeUrlCharacters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.IEPLevel
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ImageMetadata
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NumberOfChildren
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.OffenderSearchResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonName
@@ -32,6 +35,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Consum
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetIEPLevelService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetImageMetadataForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetNameForPersonService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetNumberOfChildrenForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonsService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPrisonerContactsService
@@ -53,7 +57,9 @@ class PersonController(
   @Autowired val getPrisonerContactsService: GetPrisonerContactsService,
   @Autowired val getIEPLevelService: GetIEPLevelService,
   @Autowired val getVisitOrdersForPersonService: GetVisitOrdersForPersonService,
+  @Autowired val getNumberOfChildrenForPersonService: GetNumberOfChildrenForPersonService,
   @Autowired val auditService: AuditService,
+  @Autowired val featureFlag: FeatureFlagConfig,
 ) {
   @GetMapping
   @Operation(
@@ -259,6 +265,40 @@ class PersonController(
     auditService.createEvent("GET_PRISONER_VISIT_ORDERS", mapOf("hmppsId" to hmppsId))
 
     return DataResponse(response.data)
+  }
+
+  @GetMapping("{hmppsId}/number-of-children")
+  @Operation(
+    summary = "Returns a prisoner's number of children.",
+    description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
+    responses = [
+      ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found a prisoner's number of children."),
+      ApiResponse(responseCode = "400", content = [Content(schema = Schema(ref = "#/components/schemas/BadRequest"))]),
+      ApiResponse(responseCode = "404", content = [Content(schema = Schema(ref = "#/components/schemas/PersonNotFound"))]),
+      ApiResponse(responseCode = "500", content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]),
+    ],
+  )
+  fun getPrisonersNumberofChildren(
+    @Parameter(description = "The HMPPS ID of the prisoner") @PathVariable hmppsId: String,
+    @RequestAttribute filters: ConsumerFilters?,
+  ): DataResponse<NumberOfChildren?> {
+    if (!featureFlag.useNumberOfChildrenEndpoints) {
+      throw FeatureNotEnabledException(FeatureFlagConfig.USE_NUMBER_OF_CHILDREN_ENDPOINTS)
+    }
+
+    val response = getNumberOfChildrenForPersonService.execute(hmppsId, filters)
+
+    if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
+      throw EntityNotFoundException("Could not find person with id: $hmppsId")
+    }
+
+    if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
+      throw ValidationException("Invalid HMPPS ID: $hmppsId")
+    }
+
+    auditService.createEvent("GET_PRISONER_NUMBER_OF_CHILDREN", mapOf("hmppsId" to hmppsId))
+
+    return DataResponse(data = response.data)
   }
 
   private fun isValidISODateFormat(dateString: String): Boolean =
