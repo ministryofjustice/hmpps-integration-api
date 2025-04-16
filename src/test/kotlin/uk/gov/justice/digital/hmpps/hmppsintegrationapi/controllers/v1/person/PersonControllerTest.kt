@@ -50,6 +50,9 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonsServi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPrisonerContactsService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetVisitOrdersForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.BodyMark
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisibleCharacteristics
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetVisibleCharacteristicsForPersonService
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 import java.time.LocalDate
@@ -69,6 +72,7 @@ internal class PersonControllerTest(
   @MockitoBean val getIEPLevelService: GetIEPLevelService,
   @MockitoBean val getVisitOrdersForPersonService: GetVisitOrdersForPersonService,
   @MockitoBean val getNumberOfChildrenForPersonService: GetNumberOfChildrenForPersonService,
+  @MockitoBean val getVisibleCharacteristicsForPersonService: GetVisibleCharacteristicsForPersonService,
   @MockitoBean val featureFlagConfig: FeatureFlagConfig,
 ) : DescribeSpec(
     {
@@ -974,6 +978,130 @@ internal class PersonControllerTest(
 
           val result = mockMvc.performAuthorised("$basePath/$sanitisedHmppsId/visit-orders")
           result.response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
+        }
+      }
+
+      describe("/v1/persons/{hmppsId}/visible-characterstics") {
+        val path = "$basePath/$sanitisedHmppsId/visible-characterstics"
+        val visibleCharacteristics =
+          VisibleCharacteristics(
+            heightCentimetres = 200,
+            weightKilograms = 102,
+            hairColour = "Blonde",
+            rightEyeColour = "Green",
+            leftEyeColour = "Hazel",
+            facialHair = "Clean Shaven",
+            shapeOfFace = "Round",
+            build = "Muscular",
+            shoeSize = 10,
+            tattoos = listOf(
+              BodyMark(bodyPart = "Head", comment = "Skull and crossbones covering chest")
+            ),
+            scars = listOf(
+              BodyMark(bodyPart = "Head", comment = "Skull and crossbones covering chest")
+            ),
+            marks = listOf(
+              BodyMark(bodyPart = "Head", comment = "Skull and crossbones covering chest")
+            ),
+          )
+
+
+        beforeTest {
+          Mockito.reset(getVisibleCharacteristicsForPersonService)
+          Mockito.reset(auditService)
+
+          whenever(featureFlagConfig.useVisibleCharacteristicsEndpoints).thenReturn(true)
+          whenever(getVisibleCharacteristicsForPersonService.execute(sanitisedHmppsId, filters)).thenReturn(
+            Response(
+              data = visibleCharacteristics,
+            ),
+          )
+        }
+
+        it("logs audit") {
+          mockMvc.performAuthorised(path)
+          verify(auditService, times(1)).createEvent("GET_PERSON_VISIBLE_CHARACTERISTICS", mapOf("hmppsId" to sanitisedHmppsId))
+        }
+
+        it("returns a 200 OK status code with data") {
+          val result = mockMvc.performAuthorised(path)
+          result.response.status.shouldBe(HttpStatus.OK.value())
+          result.response.contentAsString.shouldBe(
+            """
+            {
+              "data":{
+                "heightCentimetres": 200,
+                "weightKilograms": 102,
+                "hairColour": "Blonde",
+                "rightEyeColour": "Green",
+                "leftEyeColour": "Hazel",
+                "facialHair": "Clean Shaven",
+                "shapeOfFace": "Round",
+                "build": "Muscular",
+                "shoeSize": 10,
+                "tattoos": [
+                  {
+                    "bodyPart": "Head",
+                    "comment": "Skull and crossbones covering chest"
+                  }
+                ],
+                "scars": [
+                  {
+                    "bodyPart": "Head",
+                    "comment": "Skull and crossbones covering chest"
+                  }
+                ],
+                "marks": [
+                  {
+                    "bodyPart": "Head",
+                    "comment": "Skull and crossbones covering chest"
+                  }
+                ]
+              }
+            }
+
+          """.removeWhitespaceAndNewlines(),
+          )
+        }
+
+        it("returns a 400 bad request") {
+          whenever(getVisibleCharacteristicsForPersonService.execute(sanitisedHmppsId, filters)).thenReturn(
+            Response(
+              data = null,
+              errors =
+                listOf(
+                  UpstreamApiError(
+                    causedBy = UpstreamApi.PRISONER_OFFENDER_SEARCH,
+                    type = UpstreamApiError.Type.BAD_REQUEST,
+                  ),
+                ),
+            ),
+          )
+          val result = mockMvc.performAuthorised(path)
+          result.response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
+        }
+
+        it("returns a 404 not found") {
+          whenever(getVisibleCharacteristicsForPersonService.execute(sanitisedHmppsId, filters)).thenReturn(
+            Response(
+              data = null,
+              errors =
+                listOf(
+                  UpstreamApiError(
+                    causedBy = UpstreamApi.PRISONER_OFFENDER_SEARCH,
+                    type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+                  ),
+                ),
+            ),
+          )
+          val result = mockMvc.performAuthorised(path)
+          result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
+        }
+
+        it("returns 503 service not available when feature flag set to false") {
+          whenever(featureFlagConfig.useVisibleCharacteristicsEndpoints).thenReturn(false)
+          val result = mockMvc.performAuthorised(path)
+          result.response.status.shouldBe(HttpStatus.SERVICE_UNAVAILABLE.value())
         }
       }
 

@@ -29,6 +29,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerCon
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError.Type.ENTITY_NOT_FOUND
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisibleCharacteristics
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitOrders
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.interfaces.toPaginatedResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
@@ -39,6 +40,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetNumberOfChil
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonsService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPrisonerContactsService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetVisibleCharacteristicsForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetVisitOrdersForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.PaginatedResponse
@@ -58,6 +60,7 @@ class PersonController(
   @Autowired val getIEPLevelService: GetIEPLevelService,
   @Autowired val getVisitOrdersForPersonService: GetVisitOrdersForPersonService,
   @Autowired val getNumberOfChildrenForPersonService: GetNumberOfChildrenForPersonService,
+  @Autowired val getVisibleCharacteristicsForPersonService: GetVisibleCharacteristicsForPersonService,
   @Autowired val auditService: AuditService,
   @Autowired val featureFlag: FeatureFlagConfig,
 ) {
@@ -299,6 +302,38 @@ class PersonController(
     auditService.createEvent("GET_PRISONER_NUMBER_OF_CHILDREN", mapOf("hmppsId" to hmppsId))
 
     return DataResponse(data = response.data)
+  }
+
+  @Operation(
+    summary = "Gets visible characteristics for a prisoner.",
+    description = "Returns a prisoner's visible characteristics.",
+    responses = [
+      ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found a person's visible characteristics with the provided HMPPS ID."),
+      ApiResponse(responseCode = "400", content = [Content(schema = Schema(ref = "#/components/schemas/BadRequest"))]),
+      ApiResponse(responseCode = "404", content = [Content(schema = Schema(ref = "#/components/schemas/PersonNotFound"))]),
+      ApiResponse(responseCode = "500", content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]),
+    ],
+  )
+  @GetMapping("/visible-characterstics")
+  fun getVisibleCharacteristicsForPerson(
+    @Parameter(description = "A HMPPS identifier") @PathVariable hmppsId: String,
+    @RequestAttribute filters: ConsumerFilters?,
+  ): DataResponse<VisibleCharacteristics?> {
+    if (!featureFlag.useVisibleCharacteristicsEndpoints) {
+      throw FeatureNotEnabledException(FeatureFlagConfig.USE_VISIBLE_CHARACTERISTICS_ENDPOINTS)
+    }
+
+    val response = getVisibleCharacteristicsForPersonService.execute(hmppsId, filters = filters)
+
+    if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
+      throw ValidationException("Bad request from upstream ${response.errors.first().description}")
+    }
+    if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
+      throw EntityNotFoundException("Could not find person with id: $hmppsId")
+    }
+
+    auditService.createEvent("GET_PERSON_VISIBLE_CHARACTERISTICS", mapOf("hmppsId" to hmppsId))
+    return DataResponse(response.data)
   }
 
   private fun isValidISODateFormat(dateString: String): Boolean =
