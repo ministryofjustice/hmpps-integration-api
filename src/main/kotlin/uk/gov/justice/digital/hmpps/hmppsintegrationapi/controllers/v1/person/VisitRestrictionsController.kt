@@ -63,7 +63,7 @@ class VisitRestrictionsController(
     summary = "Get the restrictions for a visitor.",
     description = "Provides both the global restrictions for the visitor, as well as the restrictions for the relationship between the prisoner and visitor.",
     responses = [
-      ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found a prisoners vistor restrictions with the provided HMPPS ID and contact ID."),
+      ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found a visitor's restrictions with the provided HMPPS ID and contact ID."),
       ApiResponse(responseCode = "400", content = [Content(schema = Schema(ref = "#/components/schemas/BadRequest"))]),
       ApiResponse(responseCode = "404", content = [Content(schema = Schema(ref = "#/components/schemas/PersonNotFound"))]),
       ApiResponse(responseCode = "500", content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]),

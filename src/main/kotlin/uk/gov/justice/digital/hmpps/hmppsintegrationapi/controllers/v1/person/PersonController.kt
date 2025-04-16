@@ -183,7 +183,7 @@ class PersonController(
     summary = "Returns a prisoners contacts.",
     description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
     responses = [
-      ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found a prisoners contacts."),
+      ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found a prisoner's contacts."),
       ApiResponse(responseCode = "404", content = [Content(schema = Schema(ref = "#/components/schemas/PersonNotFound"))]),
       ApiResponse(responseCode = "500", content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]),
     ],
@@ -214,7 +214,7 @@ class PersonController(
     summary = "Returns a prisoners IEP level.",
     description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
     responses = [
-      ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found a prisoners contacts."),
+      ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found a prisoner's IEP level."),
       ApiResponse(responseCode = "400", content = [Content(schema = Schema(ref = "#/components/schemas/BadRequest"))]),
       ApiResponse(responseCode = "404", content = [Content(schema = Schema(ref = "#/components/schemas/PersonNotFound"))]),
       ApiResponse(responseCode = "500", content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]),
@@ -243,7 +243,7 @@ class PersonController(
   @Operation(
     summary = "Returns the number of remaining visit orders a prisoner has.",
     responses = [
-      ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found a prisoners visit orders."),
+      ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found a prisoner's visit orders."),
       ApiResponse(responseCode = "404", content = [Content(schema = Schema(ref = "#/components/schemas/PersonNotFound"))]),
       ApiResponse(responseCode = "500", content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]),
     ],
