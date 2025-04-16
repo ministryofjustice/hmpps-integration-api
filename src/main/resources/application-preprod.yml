@@ -35,7 +35,8 @@ services:
     password: ${CLIENT_SECRET}
 
 feature-flag:
-  use-arns-endpoints: true
+  use-arns-endpoints: false
+  use-prison-filter-images-endpoint: false
   use-number-of-children-endpoints: false
 
 authorisation:

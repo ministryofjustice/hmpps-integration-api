@@ -26,12 +26,27 @@ class PersonIntegrationTest : IntegrationTestBase() {
         .andExpect(status().isOk)
         .andExpect(content().json(getExpectedResponse("person-offender-and-probation-search-response")))
     }
+  }
 
+  @Nested
+  inner class GetImageMetadataForPerson {
     @Test
     fun `returns image metadata for a person`() {
-      callApi("$basePath/$pnc/images")
+      callApi("$basePath/$nomsId/images")
         .andExpect(status().isOk)
         .andExpect(content().json(getExpectedResponse("person-image-meta-data")))
+    }
+
+    @Test
+    fun `images endpoint return a 404 for person in wrong prison`() {
+      callApiWithCN("$basePath/$nomsId/images", limitedPrisonsCn)
+        .andExpect(status().isNotFound)
+    }
+
+    @Test
+    fun `images name endpoint return a 404 when no prisons in filter`() {
+      callApiWithCN("$basePath/$nomsId/images", noPrisonsCn)
+        .andExpect(status().isNotFound)
     }
   }
 
@@ -44,8 +59,8 @@ class PersonIntegrationTest : IntegrationTestBase() {
         .andExpect(
           content().json(
             """
-        {"data":{"firstName":"string","lastName":"string"}}
-      """,
+      {"data":{"firstName":"string","lastName":"string"}}
+    """,
           ),
         )
     }
@@ -78,8 +93,8 @@ class PersonIntegrationTest : IntegrationTestBase() {
         .andExpect(
           content().json(
             """
-    {"data":{"prisonCode":"MDI","prisonName":"HMP Leeds","cell":"A-1-002"}}
-  """,
+  {"data":{"prisonCode":"MDI","prisonName":"HMP Leeds","cell":"A-1-002"}}
+""",
           ),
         )
     }
@@ -155,12 +170,12 @@ class PersonIntegrationTest : IntegrationTestBase() {
         .andExpect(
           content().json(
             """
-            {
-              "data": {
-                "numberOfChildren": "string"
-              }
+          {
+            "data": {
+              "numberOfChildren": "string"
             }
-            """,
+          }
+          """,
           ),
         )
     }
