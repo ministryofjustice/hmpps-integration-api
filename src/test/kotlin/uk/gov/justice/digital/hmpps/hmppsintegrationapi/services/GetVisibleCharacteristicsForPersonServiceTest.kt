@@ -3,20 +3,18 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
-import org.mockito.internal.verification.VerificationModeFactory
+import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffenderSearchGateway
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Identifiers
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NomisNumber
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisibleCharacteristics
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.BodyMark
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSBodyMark
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSPrisoner
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSPrisonerAlias
 import java.time.LocalDate
@@ -32,33 +30,8 @@ internal class GetVisibleCharacteristicsForPersonServiceTest(
 ) : DescribeSpec(
     {
       val hmppsId = "A1234AA"
-      val person = Person(firstName = "Qui-gon", lastName = "Jin", identifiers = Identifiers(nomisNumber = hmppsId))
+      val nomisNumber = NomisNumber(hmppsId)
       val filters = null
-      val visibleCharacteristics =
-        VisibleCharacteristics(
-          heightCentimetres = 180,
-          weightKilograms = 85,
-          hairColour = "Brown",
-          rightEyeColour = "Blue",
-          leftEyeColour = "Blue",
-          facialHair = "Beard",
-          shapeOfFace = "Oval",
-          build = "Muscular",
-          shoeSize = 10,
-          tattoos =
-            listOf(
-              BodyMark(bodyPart = "Left Arm", comment = "Tribal band"),
-              BodyMark(bodyPart = "Chest", comment = "Dragon"),
-            ),
-          scars =
-            listOf(
-              BodyMark(bodyPart = "Right Knee", comment = "Long, thin scar"),
-            ),
-          marks =
-            listOf(
-              BodyMark(bodyPart = "Left Cheek", comment = "Small mole"),
-            ),
-        )
 
       val posPrisoner =
         POSPrisoner(
@@ -97,30 +70,31 @@ internal class GetVisibleCharacteristicsForPersonServiceTest(
           shoeSize = 10,
           tattoos =
             listOf(
-              BodyMark(bodyPart = "Left Arm", comment = "Tribal band"),
-              BodyMark(bodyPart = "Chest", comment = "Dragon"),
+              POSBodyMark(bodyPart = "Left Arm", comment = "Tribal band"),
+              POSBodyMark(bodyPart = "Chest", comment = "Dragon"),
             ),
           scars =
             listOf(
-              BodyMark(bodyPart = "Right Knee", comment = "Long, thin scar"),
+              POSBodyMark(bodyPart = "Right Knee", comment = "Long, thin scar"),
             ),
           marks =
             listOf(
-              BodyMark(bodyPart = "Left Cheek", comment = "Small mole"),
+              POSBodyMark(bodyPart = "Left Cheek", comment = "Small mole"),
             ),
         )
+      val visibleCharacteristics = posPrisoner.toVisibleCharacteristics()
 
       beforeEach {
         Mockito.reset(getPersonService)
         Mockito.reset(prisonerOffenderSearchGateway)
 
-        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, filters = filters)).thenReturn(Response(person))
+        whenever(getPersonService.getNomisNumberWithPrisonFilter(hmppsId = hmppsId, filters = filters)).thenReturn(Response(nomisNumber))
         whenever(prisonerOffenderSearchGateway.getPrisonOffender(hmppsId)).thenReturn(Response(posPrisoner))
       }
 
       it("performs a search according to hmpps Id") {
         getVisibleCharacteristicsForPersonService.execute(hmppsId, filters)
-        verify(getPersonService, VerificationModeFactory.times(1)).getPersonWithPrisonFilter(hmppsId = hmppsId, filters = filters)
+        verify(getPersonService, times(1)).getNomisNumberWithPrisonFilter(hmppsId = hmppsId, filters = filters)
       }
 
       it("should return visible charactertistics from gateway") {
@@ -130,66 +104,61 @@ internal class GetVisibleCharacteristicsForPersonServiceTest(
       }
 
       it("should return a list of errors if person not found") {
-        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = "notfound", filters = filters)).thenReturn(
+        val errors =
+          listOf(
+            UpstreamApiError(
+              causedBy = UpstreamApi.NOMIS,
+              type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+            ),
+          )
+        whenever(getPersonService.getNomisNumberWithPrisonFilter(hmppsId = "notfound", filters = filters)).thenReturn(
           Response(
             data = null,
-            errors =
-              listOf(
-                UpstreamApiError(
-                  causedBy = UpstreamApi.PRISONER_OFFENDER_SEARCH,
-                  type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-                ),
-              ),
+            errors = errors,
           ),
         )
         val result = getVisibleCharacteristicsForPersonService.execute(hmppsId = "notfound", filters)
         result.data.shouldBe(null)
-        result.errors
-          .first()
-          .type
-          .shouldBe(UpstreamApiError.Type.ENTITY_NOT_FOUND)
+        result.errors.shouldBe(errors)
       }
 
       it("should return a list of errors if a bad request is made to getPersonService") {
-        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = "badRequest", filters = filters)).thenReturn(
+        val errors =
+          listOf(
+            UpstreamApiError(
+              causedBy = UpstreamApi.NOMIS,
+              type = UpstreamApiError.Type.BAD_REQUEST,
+            ),
+          )
+        whenever(getPersonService.getNomisNumberWithPrisonFilter(hmppsId = "badRequest", filters = filters)).thenReturn(
           Response(
             data = null,
-            errors =
-              listOf(
-                UpstreamApiError(
-                  causedBy = UpstreamApi.PRISONER_OFFENDER_SEARCH,
-                  type = UpstreamApiError.Type.BAD_REQUEST,
-                ),
-              ),
+            errors = errors,
           ),
         )
         val result = getVisibleCharacteristicsForPersonService.execute(hmppsId = "badRequest", filters)
         result.data.shouldBe(null)
-        result.errors
-          .first()
-          .type
-          .shouldBe(UpstreamApiError.Type.BAD_REQUEST)
+        result.errors.shouldBe(errors)
       }
 
       it("should return a list of errors if personal relationships gateway returns error") {
+        val errors =
+          listOf(
+            UpstreamApiError(
+              causedBy = UpstreamApi.PRISONER_OFFENDER_SEARCH,
+              type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+            ),
+          )
         whenever(prisonerOffenderSearchGateway.getPrisonOffender(hmppsId)).thenReturn(
           Response(
             data = null,
-            errors =
-              listOf(
-                UpstreamApiError(
-                  causedBy = UpstreamApi.PRISONER_OFFENDER_SEARCH,
-                  type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-                ),
-              ),
+            errors = errors,
           ),
         )
+
         val result = getVisibleCharacteristicsForPersonService.execute(hmppsId, filters)
         result.data.shouldBe(null)
-        result.errors
-          .first()
-          .type
-          .shouldBe(UpstreamApiError.Type.ENTITY_NOT_FOUND)
+        result.errors.shouldBe(errors)
       }
     },
   )

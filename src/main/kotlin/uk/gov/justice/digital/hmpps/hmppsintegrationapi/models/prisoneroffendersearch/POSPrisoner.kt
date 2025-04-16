@@ -36,9 +36,9 @@ data class POSPrisoner(
   val shapeOfFace: String? = null,
   val build: String? = null,
   val shoeSize: Int? = null,
-  val tattoos: List<BodyMark>? = null,
-  val scars: List<BodyMark>? = null,
-  val marks: List<BodyMark>? = null,
+  val tattoos: List<POSBodyMark>? = null,
+  val scars: List<POSBodyMark>? = null,
+  val marks: List<POSBodyMark>? = null,
 ) {
   fun toPerson(): Person =
     Person(
@@ -92,13 +92,8 @@ data class POSPrisoner(
       shapeOfFace = this.shapeOfFace,
       build = this.build,
       shoeSize = this.shoeSize,
-      tattoos = this.tattoos,
-      scars = this.scars,
-      marks = this.marks,
+      tattoos = this.tattoos?.map { it.toBodyMark() },
+      scars = this.scars?.map { it.toBodyMark() },
+      marks = this.marks?.map { it.toBodyMark() },
     )
 }
-
-data class BodyMark(
-  val bodyPart: String,
-  val comment: String,
-)

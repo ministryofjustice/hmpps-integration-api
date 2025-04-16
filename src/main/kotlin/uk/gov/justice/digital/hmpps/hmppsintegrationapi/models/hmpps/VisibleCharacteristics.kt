@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps
 
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.BodyMark
 
 data class VisibleCharacteristics(
   val heightCentimetres: Int? = null,
