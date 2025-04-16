@@ -26,8 +26,12 @@ generic-service:
       APPINSIGHTS_INSTRUMENTATIONKEY: "azure-app-insights"
       SENTRY_DSN: "sentry"
 
-
 # CloudPlatform AlertManager receiver to route prometheus alerts to slack
 # See https://user-guide.cloud-platform.service.justice.gov.uk/documentation/monitoring-an-app/how-to-create-alarms.html#creating-your-own-custom-alerts
 generic-prometheus-alerts:
   alertSeverity: digital-prison-service
+  sqsAlertsQueueNames:
+    - "book-a-prison-visit-prod-hmpps_prison_visits_write_events_queue"
+    - "book-a-prison-visit-prod-hmpps_prison_visits_write_events_dlq"
+  sqsAlertsOldestThreshold: 1
+  sqsAlertsTotalMessagesThreshold: 1

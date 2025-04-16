@@ -13,7 +13,6 @@ import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PersonalRelationshipsGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
@@ -28,7 +27,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 )
 class GetContactsGatewayTest(
   @MockitoBean val hmppsAuthGateway: HmppsAuthGateway,
-  @MockitoBean val featureFlag: FeatureFlagConfig,
   private val personalRelationshipsGateway: PersonalRelationshipsGateway,
 ) : DescribeSpec(
     {
@@ -42,7 +40,6 @@ class GetContactsGatewayTest(
       beforeEach {
         personalRelationshipsApiMockServer.start()
         Mockito.reset(hmppsAuthGateway)
-        whenever(featureFlag.useNumberOfChildrenEndpoints).thenReturn(true)
 
         whenever(hmppsAuthGateway.getClientToken("PERSONAL-RELATIONSHIPS")).thenReturn(HmppsAuthMockServer.TOKEN)
       }

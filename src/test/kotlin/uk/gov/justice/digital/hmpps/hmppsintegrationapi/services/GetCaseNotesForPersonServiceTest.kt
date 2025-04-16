@@ -12,11 +12,13 @@ import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.CaseNotesGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.filters.CaseNoteFilter
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CaseNote
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NomisNumber
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisCaseNote
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.OCNCaseNote
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.OCNPagination
 
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
@@ -32,11 +34,10 @@ class GetCaseNotesForPersonServiceTest(
       val nomisNumber = "Z99999ZZ"
       val caseNoteFilter = CaseNoteFilter(hmppsId = hmppsId)
       val filters = null
-      val caseNotes =
-        listOf(
-          CaseNote(
-            caseNoteId = "12345ABC",
-          ),
+      val oCNCaseNote =
+        OCNCaseNote(
+          content = listOf(NomisCaseNote(caseNoteId = "abcd1234")),
+          page = OCNPagination(page = 1, size = 10, totalElements = 10),
         )
 
       beforeEach {
@@ -44,7 +45,7 @@ class GetCaseNotesForPersonServiceTest(
         Mockito.reset(caseNotesGateway)
 
         whenever(getPersonService.getNomisNumberWithPrisonFilter(hmppsId, filters)).thenReturn(Response(NomisNumber(nomisNumber)))
-        whenever(caseNotesGateway.getCaseNotesForPerson(id = nomisNumber, caseNoteFilter)).thenReturn(Response(caseNotes))
+        whenever(caseNotesGateway.getCaseNotesForPerson(id = nomisNumber, caseNoteFilter)).thenReturn(Response(oCNCaseNote))
       }
 
       it("performs a search according to hmpps Id") {
@@ -55,11 +56,14 @@ class GetCaseNotesForPersonServiceTest(
       it("should return case notes from gateway") {
         val result = getCaseNoteForPersonService.execute(caseNoteFilter, filters)
         result.data.shouldNotBeNull()
-        result.data!!.size.shouldBe(1)
         result.data!!
+          .content.size
+          .shouldBe(1)
+        result.data!!
+          .content
           .first()
           .caseNoteId
-          .shouldBe("12345ABC")
+          .shouldBe("abcd1234")
         result.errors.count().shouldBe(0)
       }
 
@@ -105,7 +109,7 @@ class GetCaseNotesForPersonServiceTest(
           )
         whenever(caseNotesGateway.getCaseNotesForPerson(id = nomisNumber, caseNoteFilter)).thenReturn(
           Response(
-            data = emptyList(),
+            data = null,
             errors = errors,
           ),
         )

@@ -1,9 +1,11 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.personalRelationships
 
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.string.shouldContain
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory
 import org.mockito.kotlin.verify
@@ -13,6 +15,8 @@ import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.FeatureNotEnabledException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PersonalRelationshipsGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
@@ -27,6 +31,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 )
 class PersonalRelationshipsGatewayTest(
   @MockitoBean val hmppsAuthGateway: HmppsAuthGateway,
+  @MockitoBean val featureFlag: FeatureFlagConfig,
   private val personalRelationshipsGateway: PersonalRelationshipsGateway,
 ) : DescribeSpec({
     val contactId: Long = 123456
@@ -38,6 +43,7 @@ class PersonalRelationshipsGatewayTest(
     beforeEach {
       personalRelationshipsApiMockServer.start()
       Mockito.reset(hmppsAuthGateway)
+      whenever(featureFlag.useNumberChildrenEndpoints).thenReturn(true)
 
       whenever(hmppsAuthGateway.getClientToken("PERSONAL-RELATIONSHIPS")).thenReturn(HmppsAuthMockServer.TOKEN)
     }
@@ -365,6 +371,12 @@ class PersonalRelationshipsGatewayTest(
         val response = personalRelationshipsGateway.getNumberOfChildren(prisonerId)
         response.data.shouldBe(null)
         response.errors.shouldBe(listOf(UpstreamApiError(causedBy = UpstreamApi.PERSONAL_RELATIONSHIPS, type = UpstreamApiError.Type.BAD_REQUEST, description = null)))
+      }
+
+      it("returns 503 service not available when feature flag set to false") {
+        whenever(featureFlag.useNumberChildrenEndpoints).thenReturn(false)
+        val exception = shouldThrow<FeatureNotEnabledException> { personalRelationshipsGateway.getNumberOfChildren(prisonerId) }
+        exception.message.shouldContain("use-number-of-children-endpoints not enabled")
       }
     }
   })
