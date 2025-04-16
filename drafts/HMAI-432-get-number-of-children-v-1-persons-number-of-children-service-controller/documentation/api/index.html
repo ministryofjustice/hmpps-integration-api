@@ -6135,7 +6135,7 @@
 <td>query</td>
 <td>string</td>
 <td>false</td>
-<td><p>Filter case notes from this date</p>
+<td><p>Filter case notes from this date, required format RFC3339</p>
 
 
 </td>
@@ -6146,18 +6146,7 @@
 <td>query</td>
 <td>string</td>
 <td>false</td>
-<td><p>Filter case notes up to this date</p>
-
-
-</td>
-</tr>
-
-<tr>
-<td>locationId</td>
-<td>query</td>
-<td>string</td>
-<td>false</td>
-<td><p>Filter by the location. example MDI</p>
+<td><p>Filter case notes up to this date, required format RFC3339</p>
 
 
 </td>
@@ -6168,7 +6157,8 @@
 <td>query</td>
 <td>integer</td>
 <td>false</td>
-<td>
+<td><p>Page of the request, will default to 1 if not provided</p>
+
 
 </td>
 </tr>
@@ -6178,7 +6168,8 @@
 <td>query</td>
 <td>integer</td>
 <td>false</td>
-<td>
+<td><p>Total results per page, will default to 10 if not provided</p>
+
 
 </td>
 </tr>
@@ -6219,7 +6210,7 @@
       "sensitive": "boolean",
       "amendments": [
         {
-          "caseNoteAmendmentId": 123232,
+          "id": "string",
           "creationDateTime": "string",
           "additionalNoteText": "Some Additional Text"
         }
@@ -9496,7 +9487,7 @@
 <td>visitNotes</td>
 <td>array</td>
 <td>true</td>
-<td><p>Visit Notes</p>
+<td><p>Visit Notes - only 1 note of each type is allowed</p>
 </td>
 <td>
   <a href='#schema-visitnotes'>VisitNotes</a>
@@ -9586,7 +9577,7 @@
 </table>
 
 <h3 id="schema-visitnotes">VisitNotes</h3>
-<p>Visit Notes</p>
+<p>Visit Notes - only 1 note of each type is allowed</p>
 
 
 <table class='schema-visitnotes'>
@@ -9946,7 +9937,7 @@
 <td>visitNotes</td>
 <td>array</td>
 <td>true</td>
-<td><p>Visit Notes</p>
+<td><p>Visit Notes - only 1 note of each type is allowed</p>
 </td>
 <td>
   <a href='#schema-visitnotes'>VisitNotes</a>
@@ -15755,10 +15746,11 @@
 <tbody>
 
 <tr>
-<td>caseNoteAmendmentId</td>
-<td>integer</td>
+<td>id</td>
+<td>string</td>
 <td>false</td>
-<td></td>
+<td><p>The ID of the Case Note in uuid format</p>
+</td>
 <td>
   
 </td>
