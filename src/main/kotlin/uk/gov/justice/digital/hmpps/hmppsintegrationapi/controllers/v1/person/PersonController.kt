@@ -314,7 +314,7 @@ class PersonController(
       ApiResponse(responseCode = "500", content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]),
     ],
   )
-  @GetMapping("/visible-characteristics")
+  @GetMapping("{hmppsId}/visible-characteristics")
   fun getVisibleCharacteristicsForPerson(
     @Parameter(description = "A HMPPS identifier") @PathVariable hmppsId: String,
     @RequestAttribute filters: ConsumerFilters?,
