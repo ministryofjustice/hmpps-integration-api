@@ -95,11 +95,10 @@ get_endpoints=(
   "/v1/persons/$risksCrn/risk-management-plan"
   "/v1/persons/$alternativeHmppsId/person-responsible-officer"
   "/v1/persons/$alternativeHmppsId/visitor/$contactId/restrictions"
+  "/v1/persons/$hmppsId/images"
 )
 
 broken_get_endpoints=(
-# HMAI-427 Currently returning 404 as does not exist in probation. Will be solved when we add filter https://dsdmoj.atlassian.net/browse/HMAI-427
-    "/v1/persons/$hmppsId/images"
 # HMAI-442 Returns 403 https://dsdmoj.atlassian.net/jira/software/c/projects/HMAI/boards/1723/backlog?selectedIssue=HMAI-442
     "/v1/persons/$hmppsId/case-notes"
 )
