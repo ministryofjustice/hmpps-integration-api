@@ -48,6 +48,12 @@ class PersonIntegrationTest : IntegrationTestBase() {
       callApiWithCN("$basePath/$nomsId/images", noPrisonsCn)
         .andExpect(status().isNotFound)
     }
+
+    @Test
+    fun `return a 400 when invalid noms passed in`() {
+      callApi("$basePath/$invalidNomsId/images")
+        .andExpect(status().isBadRequest)
+    }
   }
 
   @Nested
