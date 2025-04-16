@@ -19,9 +19,9 @@ class ManagePOMCaseGateway(
   @Autowired
   lateinit var hmppsAuthGateway: HmppsAuthGateway
 
-  fun getPrimaryPOMForNomisNumber(nomsNumber: String): Response<PrisonOffenderManager> {
+  fun getPrimaryPOMForNomisNumber(nomsNumber: String): Response<PrisonOffenderManager?> {
     val result =
-      webClient.request<AllocationPrimaryPOM>(
+      webClient.request<AllocationPrimaryPOM?>(
         HttpMethod.GET,
         "/api/allocation/$nomsNumber/primary_pom",
         authenticationHeader(),
@@ -30,12 +30,12 @@ class ManagePOMCaseGateway(
 
     return when (result) {
       is WebClientWrapper.WebClientWrapperResponse.Success -> {
-        Response(data = result.data.toPrisonOffenderManager())
+        Response(data = result.data?.toPrisonOffenderManager())
       }
 
       is WebClientWrapper.WebClientWrapperResponse.Error -> {
         Response(
-          data = PrisonOffenderManager(),
+          data = null,
           errors = result.errors,
         )
       }
