@@ -3,16 +3,14 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
-import org.mockito.internal.verification.VerificationModeFactory
+import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ManagePOMCaseGateway
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Identifiers
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NomisNumber
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Prison
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonOffenderManager
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
@@ -31,7 +29,6 @@ class GetPrisonOffenderManagerForPersonServiceTest(
     {
       val hmppsId = "56789B"
       val nomisNumber = "Z99999ZZ"
-      val person = Person(firstName = "Julianna", lastName = "Blake", identifiers = Identifiers(nomisNumber = nomisNumber))
       val filters = null
 
       val prisonOffenderManager = PrisonOffenderManager(forename = "Paul", surname = "Smith", prison = Prison(code = "RED"))
@@ -46,38 +43,65 @@ class GetPrisonOffenderManagerForPersonServiceTest(
 
       it("performs a search according to hmpps Id") {
         getPrisonOffenderManagerForPersonService.execute(hmppsId, filters)
-        verify(getPersonService, VerificationModeFactory.times(1)).getNomisNumberWithPrisonFilter(hmppsId = hmppsId, filters)
+        verify(getPersonService, times(1)).getNomisNumberWithPrisonFilter(hmppsId = hmppsId, filters)
       }
 
       it("Returns a prison offender manager for person given a hmppsId") {
-        whenever(getPersonService.execute(hmppsId = hmppsId)).thenReturn(
-          Response(
-            data = person,
-          ),
-        )
         val result = getPrisonOffenderManagerForPersonService.execute(hmppsId, filters)
         result.shouldBe(Response(data = prisonOffenderManager))
       }
 
-      it("should return a list of errors if person not found") {
+      it("should return errors if getPersonService returns errors") {
+        val errors =
+          listOf(
+            UpstreamApiError(
+              causedBy = UpstreamApi.NOMIS,
+              type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+            ),
+          )
         whenever(getPersonService.getNomisNumberWithPrisonFilter(hmppsId = "NOT_FOUND", filters)).thenReturn(
           Response(
             data = null,
-            errors =
-              listOf(
-                UpstreamApiError(
-                  causedBy = UpstreamApi.MANAGE_POM_CASE,
-                  type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-                ),
-              ),
+            errors = errors,
           ),
         )
+
         val result = getPrisonOffenderManagerForPersonService.execute("NOT_FOUND", filters)
-        result.data.shouldBe(PrisonOffenderManager())
-        result.errors
-          .first()
-          .type
-          .shouldBe(UpstreamApiError.Type.ENTITY_NOT_FOUND)
+        result.data.shouldBe(null)
+        result.errors.shouldBe(errors)
+      }
+
+      it("Should return null if Manage POM gateway returns 404") {
+        whenever(managePOMCaseGateway.getPrimaryPOMForNomisNumber(nomsNumber = nomisNumber)).thenReturn(
+          Response(
+            data = null,
+            errors = listOf(UpstreamApiError(UpstreamApi.MANAGE_POM_CASE, UpstreamApiError.Type.ENTITY_NOT_FOUND)),
+          ),
+        )
+
+        val result = getPrisonOffenderManagerForPersonService.execute(hmppsId, filters)
+        result.shouldBe(Response(data = null))
+      }
+
+      it("Should return errors if Manage POM gateway returns non 404 errors") {
+        val errors =
+          listOf(
+            UpstreamApiError(
+              causedBy = UpstreamApi.MANAGE_POM_CASE,
+              type = UpstreamApiError.Type.INTERNAL_SERVER_ERROR,
+              description = "Error returned by Manage POM gateway",
+            ),
+          )
+        whenever(managePOMCaseGateway.getPrimaryPOMForNomisNumber(nomsNumber = nomisNumber)).thenReturn(
+          Response(
+            data = null,
+            errors = errors,
+          ),
+        )
+
+        val result = getPrisonOffenderManagerForPersonService.execute(hmppsId, filters)
+        result.data.shouldBe(null)
+        result.errors.shouldBe(errors)
       }
     },
   )
