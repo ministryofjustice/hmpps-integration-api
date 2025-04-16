@@ -81,6 +81,7 @@ internal class GetVisibleCharacteristicsForPersonServiceTest(
             listOf(
               POSBodyMark(bodyPart = "Left Cheek", comment = "Small mole"),
             ),
+          youthOffender = false,
         )
       val visibleCharacteristics = posPrisoner.toVisibleCharacteristics()
 
