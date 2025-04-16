@@ -92,7 +92,7 @@ internal class GetSentencesForPersonServiceTest(
         listOf(
           UpstreamApiError(
             type = UpstreamApiError.Type.INTERNAL_SERVER_ERROR,
-            causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH,
+            causedBy = UpstreamApi.NDELIUS,
             description = "Mock error from person service",
           ),
         )

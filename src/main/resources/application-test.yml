@@ -15,8 +15,6 @@ services:
     password: client-secret
   prisoner-offender-search:
     base-url: http://localhost:4001
-  probation-offender-search:
-    base-url: http://localhost:4002
   ndelius:
     base-url: http://localhost:4003
   assess-risks-and-needs:

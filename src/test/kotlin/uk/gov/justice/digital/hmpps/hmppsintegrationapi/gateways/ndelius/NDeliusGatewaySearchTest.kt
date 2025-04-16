@@ -1,51 +1,47 @@
-package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.probationoffendersearch
+package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ndelius
 
-import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.DescribeSpec
-import io.kotest.matchers.collections.shouldBeEmpty
-import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
-import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
-import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ProbationOffenderSearchGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import java.io.File
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import kotlin.text.format
 
 @ActiveProfiles("test")
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
-  classes = [ProbationOffenderSearchGateway::class],
+  classes = [NDeliusGateway::class],
 )
-class ProbationOffenderSearchGatewayTest(
+class NDeliusGatewaySearchTest(
   @MockitoBean val hmppsAuthGateway: HmppsAuthGateway,
-  private val probationOffenderSearchGateway: ProbationOffenderSearchGateway,
+  private val nDeliusGateway: NDeliusGateway,
 ) : DescribeSpec({
-    val probationOffenderSearchApiMockServer = ApiMockServer.create(UpstreamApi.PROBATION_OFFENDER_SEARCH)
-    val path = "/search"
+    val nDeliusMockServer = ApiMockServer.Companion.create(UpstreamApi.NDELIUS)
+    val path = "/search/probation-cases"
 
     beforeEach {
-      probationOffenderSearchApiMockServer.start()
+      nDeliusMockServer.start()
       Mockito.reset(hmppsAuthGateway)
 
-      whenever(hmppsAuthGateway.getClientToken("Probation Offender Search")).thenReturn(HmppsAuthMockServer.TOKEN)
+      whenever(hmppsAuthGateway.getClientToken("nDelius")).thenReturn(HmppsAuthMockServer.Companion.TOKEN)
     }
 
     afterTest {
-      probationOffenderSearchApiMockServer.stop()
+      nDeliusMockServer.stop()
     }
 
     describe("#getPersons") {
@@ -56,7 +52,7 @@ class ProbationOffenderSearchGatewayTest(
       val dateOfBirthString = dateOfBirth.format(DateTimeFormatter.ISO_DATE)
 
       beforeEach {
-        probationOffenderSearchApiMockServer.stubForPost(
+        nDeliusMockServer.stubForPost(
           path,
           """
             {
@@ -74,12 +70,12 @@ class ProbationOffenderSearchGatewayTest(
       }
 
       it("authenticates using HMPPS Auth with credentials") {
-        probationOffenderSearchGateway.getPersons(firstName, surname, pncNumber, dateOfBirth)
-        verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("Probation Offender Search")
+        nDeliusGateway.getPersons(firstName, surname, pncNumber, dateOfBirth)
+        verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("nDelius")
       }
 
       it("returns person(s) when searching on first name, last name, pnc number and date of birth") {
-        val response = probationOffenderSearchGateway.getPersons(firstName, surname, pncNumber, dateOfBirth)
+        val response = nDeliusGateway.getPersons(firstName, surname, pncNumber, dateOfBirth)
 
         response.data.count().shouldBe(1)
         response.data
@@ -101,7 +97,7 @@ class ProbationOffenderSearchGatewayTest(
       }
 
       it("returns person(s) when searching on first name and last name") {
-        probationOffenderSearchApiMockServer.stubForPost(
+        nDeliusMockServer.stubForPost(
           path,
           """
         {
@@ -120,7 +116,7 @@ class ProbationOffenderSearchGatewayTest(
           """.trimIndent(),
         )
 
-        val response = probationOffenderSearchGateway.getPersons("Ahsoka", "Tano", null, null)
+        val response = nDeliusGateway.getPersons("Ahsoka", "Tano", null, null)
 
         response.data.count().shouldBe(1)
         response.data
@@ -134,7 +130,7 @@ class ProbationOffenderSearchGatewayTest(
       }
 
       it("returns person(s) when searching on first name and last name") {
-        probationOffenderSearchApiMockServer.stubForPost(
+        nDeliusMockServer.stubForPost(
           path,
           """
         {
@@ -153,7 +149,7 @@ class ProbationOffenderSearchGatewayTest(
           """.trimIndent(),
         )
 
-        val response = probationOffenderSearchGateway.getPersons("Ahsoka", "Tano", null, null)
+        val response = nDeliusGateway.getPersons("Ahsoka", "Tano", null, null)
 
         response.data.count().shouldBe(1)
         response.data
@@ -167,7 +163,7 @@ class ProbationOffenderSearchGatewayTest(
       }
 
       it("returns person(s) when searching on first name only") {
-        probationOffenderSearchApiMockServer.stubForPost(
+        nDeliusMockServer.stubForPost(
           path,
           """
         {
@@ -185,7 +181,7 @@ class ProbationOffenderSearchGatewayTest(
           """.trimIndent(),
         )
 
-        val response = probationOffenderSearchGateway.getPersons("Ahsoka", null, null, null)
+        val response = nDeliusGateway.getPersons("Ahsoka", null, null, null)
 
         response.data.count().shouldBe(1)
         response.data
@@ -199,7 +195,7 @@ class ProbationOffenderSearchGatewayTest(
       }
 
       it("returns person(s) when searching on last name only") {
-        probationOffenderSearchApiMockServer.stubForPost(
+        nDeliusMockServer.stubForPost(
           path,
           """
         {
@@ -217,7 +213,7 @@ class ProbationOffenderSearchGatewayTest(
           """.trimIndent(),
         )
 
-        val response = probationOffenderSearchGateway.getPersons(null, "Tano", null, null)
+        val response = nDeliusGateway.getPersons(null, "Tano", null, null)
 
         response.data.count().shouldBe(1)
         response.data
@@ -231,7 +227,7 @@ class ProbationOffenderSearchGatewayTest(
       }
 
       it("returns person(s) when searching on pnc number only") {
-        probationOffenderSearchApiMockServer.stubForPost(
+        nDeliusMockServer.stubForPost(
           path,
           """
         {
@@ -249,7 +245,7 @@ class ProbationOffenderSearchGatewayTest(
           """.trimIndent(),
         )
 
-        val response = probationOffenderSearchGateway.getPersons(null, null, pncNumber, null)
+        val response = nDeliusGateway.getPersons(null, null, pncNumber, null)
 
         response.data.count().shouldBe(1)
         response.data
@@ -263,7 +259,7 @@ class ProbationOffenderSearchGatewayTest(
       }
 
       it("returns person(s) when searching on date of birth only") {
-        probationOffenderSearchApiMockServer.stubForPost(
+        nDeliusMockServer.stubForPost(
           path,
           """
         {
@@ -281,7 +277,7 @@ class ProbationOffenderSearchGatewayTest(
           """.trimIndent(),
         )
 
-        val response = probationOffenderSearchGateway.getPersons(null, null, null, dateOfBirth)
+        val response = nDeliusGateway.getPersons(null, null, null, dateOfBirth)
 
         response.data.count().shouldBe(1)
         response.data
@@ -295,7 +291,7 @@ class ProbationOffenderSearchGatewayTest(
       }
 
       it("returns person(s) when searching within aliases") {
-        probationOffenderSearchApiMockServer.stubForPost(
+        nDeliusMockServer.stubForPost(
           path,
           """
         {
@@ -319,7 +315,7 @@ class ProbationOffenderSearchGatewayTest(
           """.trimIndent(),
         )
 
-        val response = probationOffenderSearchGateway.getPersons("Fulcrum", null, null, null, searchWithinAliases = true)
+        val response = nDeliusGateway.getPersons("Fulcrum", null, null, null, searchWithinAliases = true)
 
         response.data.count().shouldBe(1)
         response.data
@@ -338,130 +334,12 @@ class ProbationOffenderSearchGatewayTest(
     }
 
     describe("#getPerson") {
-      describe("when PNC id is used to make requests") {
-        val hmppsId = "2002/1121M"
-        beforeEach {
-          probationOffenderSearchApiMockServer.stubForPost(
-            path,
-            "{\"pncNumber\": \"$hmppsId\"}",
-            """
-        [
-           {
-            "firstName": "Jonathan",
-            "middleNames": [
-              "Echo",
-              "Fred"
-            ],
-            "surname": "Bravo",
-            "dateOfBirth": "1970-02-07",
-            "offenderAliases": [
-              {
-                "dateOfBirth": "2000-02-07",
-                "firstName": "John",
-                "middleNames": [
-                  "Tom"
-                ],
-                "surname": "Wick"
-              }
-            ]
-          }
-        ]
-      """,
-          )
-        }
-
-        it("authenticates using HMPPS Auth with credentials") {
-          probationOffenderSearchGateway.getPerson(hmppsId)
-
-          verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("Probation Offender Search")
-        }
-
-        it("returns a person with the matching ID") {
-          val response = probationOffenderSearchGateway.getPerson(hmppsId)
-
-          response.data?.firstName.shouldBe("Jonathan")
-          response.data?.middleName.shouldBe("Echo Fred")
-          response.data?.lastName.shouldBe("Bravo")
-          response.data?.dateOfBirth.shouldBe(LocalDate.parse("1970-02-07"))
-          response.data
-            ?.aliases
-            ?.first()
-            ?.firstName
-            .shouldBe("John")
-          response.data
-            ?.aliases
-            ?.first()
-            ?.middleName
-            .shouldBe("Tom")
-          response.data
-            ?.aliases
-            ?.first()
-            ?.lastName
-            .shouldBe("Wick")
-          response.data
-            ?.aliases
-            ?.first()
-            ?.dateOfBirth
-            .shouldBe(LocalDate.parse("2000-02-07"))
-        }
-
-        it("returns a person without aliases when no aliases are found") {
-          probationOffenderSearchApiMockServer.stubForPost(
-            path,
-            "{\"pncNumber\": \"$hmppsId\"}",
-            """
-          [
-           {
-            "firstName": "Jonathan",
-            "surname": "Bravo",
-            "dateOfBirth": "1970-02-07",
-            "offenderAliases": []
-          }
-        ]
-        """,
-          )
-
-          val response = probationOffenderSearchGateway.getPerson(hmppsId)
-
-          response.data?.aliases.shouldBeEmpty()
-        }
-
-        it("returns null when 400 Bad Request is returned") {
-          probationOffenderSearchApiMockServer.stubForPost(
-            path,
-            "{\"pncNumber\": \"$hmppsId\"}",
-            """
-            {
-              "developerMessage": "reason for bad request"
-            }
-            """.trimIndent(),
-            HttpStatus.BAD_REQUEST,
-          )
-          val response =
-            shouldThrow<WebClientResponseException> {
-              probationOffenderSearchGateway.getPerson(hmppsId)
-            }
-          response.statusCode.shouldBe(HttpStatus.BAD_REQUEST)
-        }
-
-        it("returns null when no offenders are returned") {
-          probationOffenderSearchApiMockServer.stubForPost(
-            path,
-            "{\"pncNumber\": \"$hmppsId\"}",
-            "[]",
-          )
-
-          val response = probationOffenderSearchGateway.getPerson(hmppsId)
-
-          response.data.shouldBeNull()
-        }
-      }
 
       describe("when a Delius CRN is used to make requests") {
         val hmppsId = "X777776"
 
         beforeEach {
-          probationOffenderSearchApiMockServer.stubForPost(
+          nDeliusMockServer.stubForPost(
             path,
             "{\"crn\": \"$hmppsId\"}",
             """
@@ -481,7 +359,7 @@ class ProbationOffenderSearchGatewayTest(
         }
 
         it("calls the Probation API service with a Delius CRN") {
-          probationOffenderSearchApiMockServer.stubForPost(
+          nDeliusMockServer.stubForPost(
             path,
             "{\"crn\": \"$hmppsId\"}",
             """
@@ -496,7 +374,7 @@ class ProbationOffenderSearchGatewayTest(
         """,
           )
 
-          probationOffenderSearchGateway.getPerson(hmppsId)
+          nDeliusGateway.getPerson(hmppsId)
         }
       }
 
@@ -504,7 +382,7 @@ class ProbationOffenderSearchGatewayTest(
         val hmppsId = "A7777ZZ"
 
         it("calls the Probation API service with a Nomis number") {
-          probationOffenderSearchApiMockServer.stubForPost(
+          nDeliusMockServer.stubForPost(
             path,
             "{\"nomsNumber\": \"$hmppsId\"}",
             """
@@ -519,7 +397,7 @@ class ProbationOffenderSearchGatewayTest(
         """,
           )
 
-          val response = probationOffenderSearchGateway.getPerson(hmppsId)
+          val response = nDeliusGateway.getPerson(hmppsId)
 
           response.data?.firstName.shouldBe("Jonathan")
           response.data?.lastName.shouldBe("Bravo")

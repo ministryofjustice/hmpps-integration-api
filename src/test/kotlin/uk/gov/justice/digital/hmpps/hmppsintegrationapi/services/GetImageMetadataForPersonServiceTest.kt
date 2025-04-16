@@ -10,8 +10,8 @@ import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NomisGateway
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ProbationOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Identifiers
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ImageMetadata
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
@@ -27,7 +27,7 @@ import java.time.LocalDateTime
 )
 internal class GetImageMetadataForPersonServiceTest(
   @MockitoBean val nomisGateway: NomisGateway,
-  @MockitoBean val probationOffenderSearchGateway: ProbationOffenderSearchGateway,
+  @MockitoBean val nDeliusGateway: NDeliusGateway,
   private val getImageMetadataForPersonService: GetImageMetadataForPersonService,
 ) : DescribeSpec({
     val hmppsId = "2003/13116M"
@@ -36,7 +36,7 @@ internal class GetImageMetadataForPersonServiceTest(
     beforeEach {
       Mockito.reset(nomisGateway)
 
-      whenever(probationOffenderSearchGateway.getPerson(id = hmppsId)).thenReturn(
+      whenever(nDeliusGateway.getPerson(id = hmppsId)).thenReturn(
         Response(data = PersonOnProbation(Person(firstName = "Joey", lastName = "Tribbiani", identifiers = Identifiers(nomisNumber = prisonerNumber)), false)),
       )
       whenever(nomisGateway.getImageMetadataForPerson(prisonerNumber)).thenReturn(Response(data = emptyList()))
@@ -45,7 +45,7 @@ internal class GetImageMetadataForPersonServiceTest(
     it("gets prisoner ID from Probation Offender Search") {
       getImageMetadataForPersonService.execute(hmppsId)
 
-      verify(probationOffenderSearchGateway, VerificationModeFactory.times(1)).getPerson(id = hmppsId)
+      verify(nDeliusGateway, VerificationModeFactory.times(1)).getPerson(id = hmppsId)
     }
 
     it("gets images details from NOMIS") {
@@ -74,13 +74,13 @@ internal class GetImageMetadataForPersonServiceTest(
     }
 
     it("returns a not found error when person cannot be found in Probation Offender Search") {
-      whenever(probationOffenderSearchGateway.getPerson(id = hmppsId)).thenReturn(
+      whenever(nDeliusGateway.getPerson(id = hmppsId)).thenReturn(
         Response(
           data = null,
           errors =
             listOf(
               UpstreamApiError(
-                causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH,
+                causedBy = UpstreamApi.NDELIUS,
                 type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
               ),
             ),
@@ -93,7 +93,7 @@ internal class GetImageMetadataForPersonServiceTest(
       response.errors
         .first()
         .causedBy
-        .shouldBe(UpstreamApi.PROBATION_OFFENDER_SEARCH)
+        .shouldBe(UpstreamApi.NDELIUS)
       response.errors
         .first()
         .type

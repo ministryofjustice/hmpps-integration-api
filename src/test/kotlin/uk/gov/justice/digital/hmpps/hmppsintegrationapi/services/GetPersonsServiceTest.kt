@@ -9,8 +9,8 @@ import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffenderSearchGateway
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ProbationOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSPrisoner
@@ -21,7 +21,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffenders
 )
 internal class GetPersonsServiceTest(
   @MockitoBean val prisonerOffenderSearchGateway: PrisonerOffenderSearchGateway,
-  @MockitoBean val probationOffenderSearchGateway: ProbationOffenderSearchGateway,
+  @MockitoBean val nDeliusGateway: NDeliusGateway,
   private val getPersonsService: GetPersonsService,
 ) : DescribeSpec({
     val firstName = "Bruce"
@@ -31,9 +31,9 @@ internal class GetPersonsServiceTest(
 
     beforeEach {
       Mockito.reset(prisonerOffenderSearchGateway)
-      Mockito.reset(probationOffenderSearchGateway)
+      Mockito.reset(nDeliusGateway)
 
-      whenever(probationOffenderSearchGateway.getPersons(firstName, lastName, null, dateOfBirth)).thenReturn(Response(data = emptyList()))
+      whenever(nDeliusGateway.getPersons(firstName, lastName, null, dateOfBirth)).thenReturn(Response(data = emptyList()))
       whenever(prisonerOffenderSearchGateway.getPersons(firstName, lastName, dateOfBirth)).thenReturn(Response(data = emptyList()))
     }
 
@@ -46,19 +46,19 @@ internal class GetPersonsServiceTest(
     it("gets person(s) from Probation Offender Search") {
       getPersonsService.execute(firstName, lastName, null, dateOfBirth)
 
-      verify(probationOffenderSearchGateway, times(1)).getPersons(firstName, lastName, null, dateOfBirth)
+      verify(nDeliusGateway, times(1)).getPersons(firstName, lastName, null, dateOfBirth)
     }
 
     it("defaults to not searching within aliases") {
       getPersonsService.execute(firstName, lastName, null, dateOfBirth)
 
-      verify(probationOffenderSearchGateway, times(1)).getPersons(firstName, lastName, null, dateOfBirth, searchWithinAliases = false)
+      verify(nDeliusGateway, times(1)).getPersons(firstName, lastName, null, dateOfBirth, searchWithinAliases = false)
       verify(prisonerOffenderSearchGateway, times(1)).getPersons(firstName, lastName, dateOfBirth, searchWithinAliases = false)
     }
 
     it("allows searching within aliases") {
       whenever(
-        probationOffenderSearchGateway.getPersons(firstName, lastName, null, dateOfBirth, searchWithinAliases = true),
+        nDeliusGateway.getPersons(firstName, lastName, null, dateOfBirth, searchWithinAliases = true),
       ).thenReturn(Response(data = emptyList()))
       whenever(
         prisonerOffenderSearchGateway.getPersons(firstName, lastName, dateOfBirth, searchWithinAliases = true),
@@ -66,7 +66,7 @@ internal class GetPersonsServiceTest(
 
       getPersonsService.execute(firstName, lastName, null, dateOfBirth, true)
 
-      verify(probationOffenderSearchGateway, times(1)).getPersons(firstName, lastName, null, dateOfBirth, true)
+      verify(nDeliusGateway, times(1)).getPersons(firstName, lastName, null, dateOfBirth, true)
       verify(prisonerOffenderSearchGateway, times(1)).getPersons(firstName, lastName, dateOfBirth, true)
     }
 
@@ -75,7 +75,7 @@ internal class GetPersonsServiceTest(
       val responseFromPrisonerOffenderSearch = Response(data = listOf(POSPrisoner(firstName, lastName, middleNames = "Gary")))
 
       whenever(
-        probationOffenderSearchGateway.getPersons(firstName, lastName, null, dateOfBirth),
+        nDeliusGateway.getPersons(firstName, lastName, null, dateOfBirth),
       ).thenReturn(responseFromProbationOffenderSearch)
       whenever(
         prisonerOffenderSearchGateway.getPersons(firstName, lastName, dateOfBirth),
@@ -97,7 +97,7 @@ internal class GetPersonsServiceTest(
       val responseFromPrisonerOffenderSearch = Response(data = listOf(POSPrisoner(firstName, lastName, middleNames = "Gary")))
 
       whenever(
-        probationOffenderSearchGateway.getPersons(firstName, lastName, pncNumber, dateOfBirth),
+        nDeliusGateway.getPersons(firstName, lastName, pncNumber, dateOfBirth),
       ).thenReturn(responseFromProbationOffenderSearch)
       whenever(prisonerOffenderSearchGateway.getPersons(firstName, lastName, dateOfBirth)).thenReturn(responseFromPrisonerOffenderSearch)
 
@@ -108,7 +108,7 @@ internal class GetPersonsServiceTest(
     }
 
     it("returns an empty list when no person(s) are found") {
-      whenever(probationOffenderSearchGateway.getPersons(firstName, lastName, null, dateOfBirth)).thenReturn(Response(emptyList()))
+      whenever(nDeliusGateway.getPersons(firstName, lastName, null, dateOfBirth)).thenReturn(Response(emptyList()))
       whenever(prisonerOffenderSearchGateway.getPersons(firstName, lastName, dateOfBirth)).thenReturn(Response(emptyList()))
 
       val response = getPersonsService.execute(firstName, lastName, null, dateOfBirth)
