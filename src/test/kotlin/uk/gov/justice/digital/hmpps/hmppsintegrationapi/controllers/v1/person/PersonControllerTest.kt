@@ -38,7 +38,9 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerCon
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisibleCharacteristics
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitOrders
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.BodyMark
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSPrisoner
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetIEPLevelService
@@ -48,11 +50,9 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetNumberOfChil
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonsService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPrisonerContactsService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetVisibleCharacteristicsForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetVisitOrdersForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.BodyMark
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisibleCharacteristics
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetVisibleCharacteristicsForPersonService
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 import java.time.LocalDate
@@ -981,8 +981,8 @@ internal class PersonControllerTest(
         }
       }
 
-      describe("/v1/persons/{hmppsId}/visible-characterstics") {
-        val path = "$basePath/$sanitisedHmppsId/visible-characterstics"
+      describe("/v1/persons/{hmppsId}/visible-characteristics") {
+        val path = "$basePath/$sanitisedHmppsId/visible-characteristics"
         val visibleCharacteristics =
           VisibleCharacteristics(
             heightCentimetres = 200,
@@ -994,17 +994,19 @@ internal class PersonControllerTest(
             shapeOfFace = "Round",
             build = "Muscular",
             shoeSize = 10,
-            tattoos = listOf(
-              BodyMark(bodyPart = "Head", comment = "Skull and crossbones covering chest")
-            ),
-            scars = listOf(
-              BodyMark(bodyPart = "Head", comment = "Skull and crossbones covering chest")
-            ),
-            marks = listOf(
-              BodyMark(bodyPart = "Head", comment = "Skull and crossbones covering chest")
-            ),
+            tattoos =
+              listOf(
+                BodyMark(bodyPart = "Head", comment = "Skull and crossbones covering chest"),
+              ),
+            scars =
+              listOf(
+                BodyMark(bodyPart = "Head", comment = "Skull and crossbones covering chest"),
+              ),
+            marks =
+              listOf(
+                BodyMark(bodyPart = "Head", comment = "Skull and crossbones covering chest"),
+              ),
           )
-
 
         beforeTest {
           Mockito.reset(getVisibleCharacteristicsForPersonService)

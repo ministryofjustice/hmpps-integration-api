@@ -99,6 +99,8 @@ authorisation:
         - "/v1/persons/.*/expression-of-interest/jobs/[^/]*$"
         - "/v1/persons/.*/visit/future"
         - "/v1/persons/.*/iep-level"
+        - "/v1/persons/.*/number-of-children"
+        - "/v1/persons/.*/visible-characteristics"
         - "/v1/hmpps/id/nomis-number/[^/]*$"
         - "/v1/hmpps/id/.*/nomis-number"
         - "/v1/hmpps/id/by-nomis-number/[^/]*$"
