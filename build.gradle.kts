@@ -52,9 +52,9 @@ repositories {
 }
 
 sourceSets {
-  create("integrationTest") {
+  create("tests") {
     kotlin {
-      srcDirs("src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/integration")
+      srcDirs("src/test")
     }
     compileClasspath += sourceSets["main"].output + configurations["testRuntimeClasspath"] + sourceSets["test"].output
     runtimeClasspath += output + compileClasspath
@@ -70,8 +70,11 @@ tasks {
 
   register<Test>("integrationTest") {
     description = "Runs the integration tests, make sure that dependencies are available first by running `make serve`."
-    testClassesDirs = sourceSets["integrationTest"].output.classesDirs
-    classpath = sourceSets["integrationTest"].runtimeClasspath
+    testClassesDirs = sourceSets["tests"].output.classesDirs
+    classpath = sourceSets["tests"].runtimeClasspath
+    filter {
+      includeTestsMatching("uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration*")
+    }
   }
 
   withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
