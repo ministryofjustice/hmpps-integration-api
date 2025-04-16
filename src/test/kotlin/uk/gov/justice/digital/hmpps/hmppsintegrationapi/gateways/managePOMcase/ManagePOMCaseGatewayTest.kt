@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.managePOMcase
 
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.DescribeSpec
+import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory
@@ -78,8 +79,9 @@ class ManagePOMCaseGatewayTest(
         )
 
         val response = managePOMCaseGateway.getPrimaryPOMForNomisNumber(nomsNumber)
-        response.data.forename.shouldBe("string")
-        response.data.surname.shouldBe("string")
+        response.data.shouldNotBeNull()
+        response.data!!.forename.shouldBe("string")
+        response.data!!.surname.shouldBe("string")
       }
     },
   )
