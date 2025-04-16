@@ -12,7 +12,7 @@ data class OCNCaseNote(
   fun toPaginatedCaseNotes(): PaginatedCaseNotes =
     PaginatedCaseNotes(
       content = this.content.map { it.toCaseNote() },
-      count = this.page.size,
+      count = this.content.size,
       page = this.page.page,
       totalCount = this.page.totalElements.toLong(),
       totalPages = (this.page.totalElements + this.page.size - 1) / this.page.size,
