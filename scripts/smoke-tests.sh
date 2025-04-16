@@ -61,6 +61,7 @@ get_endpoints=(
   "/v1/persons/$hmppsId/sentences"
   "/v1/persons/$hmppsId/offences"
   "/v1/persons/$hmppsId/reported-adjudications"
+  "/v1/persons/$hmppsId/number-of-children"
   "/v1/pnd/persons/$hmppsId/alerts"
   "/v1/prison/prisoners?first_name=john"
   "/v1/prison/prisoners/$hmppsId"
@@ -96,11 +97,10 @@ get_endpoints=(
   "/v1/persons/$alternativeHmppsId/person-responsible-officer"
   "/v1/persons/$alternativeHmppsId/visitor/$contactId/restrictions"
   "/v1/persons/$hmppsId/images"
+  "/v1/persons/$hmppsId/case-notes"
 )
 
 broken_get_endpoints=(
-# HMAI-442 Returns 403 https://dsdmoj.atlassian.net/jira/software/c/projects/HMAI/boards/1723/backlog?selectedIssue=HMAI-442
-    "/v1/persons/$hmppsId/case-notes"
 )
 
 all_get_endpoints+=("${get_endpoints[@]}" "${broken_get_endpoints[@]}")

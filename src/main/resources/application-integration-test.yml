@@ -56,6 +56,7 @@ hmpps.sqs:
 feature-flag:
   use-arns-endpoints: true
   use-prison-filter-images-endpoint: true
+  use-number-of-children-endpoints: true
 
 authorisation:
   consumers:
@@ -122,6 +123,7 @@ authorisation:
         - "/v1/contacts/[^/]*$"
         - "/v1/persons/.*/contacts[^/]*$"
         - "/v1/persons/.*/visit-orders"
+        - "/v1/persons/.*/number-of-children"
       filters:
     config-test:
       include:

@@ -17,6 +17,7 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.web.reactive.function.client.WebClientResponseException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Contact
@@ -25,6 +26,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.IEPLevel
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Identifiers
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ImageMetadata
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NomisNumber
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NumberOfChildren
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.OffenderSearchResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PaginatedPrisonerContacts
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
@@ -42,6 +44,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Consum
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetIEPLevelService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetImageMetadataForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetNameForPersonService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetNumberOfChildrenForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonsService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPrisonerContactsService
@@ -65,6 +68,8 @@ internal class PersonControllerTest(
   @MockitoBean val getPrisonerContactsService: GetPrisonerContactsService,
   @MockitoBean val getIEPLevelService: GetIEPLevelService,
   @MockitoBean val getVisitOrdersForPersonService: GetVisitOrdersForPersonService,
+  @MockitoBean val getNumberOfChildrenForPersonService: GetNumberOfChildrenForPersonService,
+  @MockitoBean val featureFlagConfig: FeatureFlagConfig,
 ) : DescribeSpec(
     {
       val hmppsId = "2003/13116M"
@@ -910,6 +915,141 @@ internal class PersonControllerTest(
           )
           val result = mockMvc.performAuthorised(path)
           result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
+        }
+      }
+
+      describe("GET /v1/persons/{hmppsId}/visit-orders") {
+        beforeTest {
+          Mockito.reset(getPersonsService)
+          Mockito.reset(auditService)
+          val filters = ConsumerFilters(prisons = emptyList())
+          whenever(getPersonService.getNomisNumberWithPrisonFilter(sanitisedHmppsId, filters)).thenReturn(Response(NomisNumber("A1234AA")))
+        }
+
+        it("returns a prisoners visit orders") {
+          whenever(getVisitOrdersForPersonService.execute(sanitisedHmppsId)).thenReturn(
+            Response(
+              data =
+                VisitOrders(
+                  remainingVisitOrders = 10,
+                  remainingPrivilegeVisitOrders = 5,
+                ),
+            ),
+          )
+
+          val result = mockMvc.performAuthorised("$basePath/$sanitisedHmppsId/visit-orders")
+          result.response.contentAsString.shouldBe("""{"data":{"remainingVisitOrders":10,"remainingPrivilegeVisitOrders":5}}""")
+        }
+
+        it("returns a 404 when no prisoner visit orders found") {
+          whenever(getVisitOrdersForPersonService.execute(sanitisedHmppsId)).thenReturn(
+            Response(
+              data = null,
+              errors =
+                listOf(
+                  UpstreamApiError(
+                    causedBy = UpstreamApi.NOMIS,
+                    type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+                  ),
+                ),
+            ),
+          )
+          val result = mockMvc.performAuthorised("$basePath/$sanitisedHmppsId/visit-orders")
+          result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
+        }
+
+        it("returns a 400 when invalid hmppsid") {
+          whenever(getVisitOrdersForPersonService.execute(sanitisedHmppsId)).thenReturn(
+            Response(
+              data = null,
+              errors =
+                listOf(
+                  UpstreamApiError(
+                    causedBy = UpstreamApi.NOMIS,
+                    type = UpstreamApiError.Type.BAD_REQUEST,
+                  ),
+                ),
+            ),
+          )
+
+          val result = mockMvc.performAuthorised("$basePath/$sanitisedHmppsId/visit-orders")
+          result.response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
+        }
+      }
+
+      describe("/v1/persons/{hmppsId}/number-of-children") {
+        val path = "$basePath/$sanitisedHmppsId/number-of-children"
+        val numberOfChildren = NumberOfChildren(numberOfChildren = "2")
+
+        beforeTest {
+          Mockito.reset(getNumberOfChildrenForPersonService)
+          Mockito.reset(auditService)
+
+          whenever(featureFlagConfig.useNumberOfChildrenEndpoints).thenReturn(true)
+          whenever(getNumberOfChildrenForPersonService.execute(sanitisedHmppsId, filters)).thenReturn(
+            Response(
+              data = numberOfChildren,
+            ),
+          )
+        }
+
+        it("logs audit") {
+          mockMvc.performAuthorised(path)
+          verify(auditService, times(1)).createEvent("GET_PRISONER_NUMBER_OF_CHILDREN", mapOf("hmppsId" to sanitisedHmppsId))
+        }
+
+        it("returns a 200 OK status code with data") {
+          val result = mockMvc.performAuthorised(path)
+          result.response.status.shouldBe(HttpStatus.OK.value())
+          result.response.contentAsString.shouldBe(
+            """
+            {
+              "data": {
+                "numberOfChildren": "2"
+              }
+            }
+          """.removeWhitespaceAndNewlines(),
+          )
+        }
+
+        it("returns a 400 bad request") {
+          whenever(getNumberOfChildrenForPersonService.execute(sanitisedHmppsId, filters)).thenReturn(
+            Response(
+              data = null,
+              errors =
+                listOf(
+                  UpstreamApiError(
+                    causedBy = UpstreamApi.PERSONAL_RELATIONSHIPS,
+                    type = UpstreamApiError.Type.BAD_REQUEST,
+                  ),
+                ),
+            ),
+          )
+          val result = mockMvc.performAuthorised(path)
+          result.response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
+        }
+
+        it("returns a 404 not found") {
+          whenever(getNumberOfChildrenForPersonService.execute(sanitisedHmppsId, filters)).thenReturn(
+            Response(
+              data = null,
+              errors =
+                listOf(
+                  UpstreamApiError(
+                    causedBy = UpstreamApi.PERSONAL_RELATIONSHIPS,
+                    type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+                  ),
+                ),
+            ),
+          )
+          val result = mockMvc.performAuthorised(path)
+          result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
+        }
+
+        it("returns 503 service not available when feature flag set to false") {
+          whenever(featureFlagConfig.useNumberOfChildrenEndpoints).thenReturn(false)
+          val result = mockMvc.performAuthorised(path)
+          result.response.status.shouldBe(HttpStatus.SERVICE_UNAVAILABLE.value())
         }
       }
 

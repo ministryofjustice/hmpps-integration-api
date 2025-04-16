@@ -33,7 +33,7 @@ class OffenderRestrictionsController(
     summary = "Returns a single prisoners list of non associates.",
     description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul> <br> includeOpen is true by default, includeClosed is false by default. At least one must be true.",
     responses = [
-      ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found prisoners non associates."),
+      ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found prisoner's non associates."),
       ApiResponse(
         responseCode = "400",
         description = "The HMPPS ID provided has an invalid format.",
