@@ -69,6 +69,7 @@ tasks {
   }
 
   register<Test>("integrationTest") {
+    description = "Runs the integration tests, make sure that dependencies are available first by running `make serve`."
     testClassesDirs = sourceSets["integrationTest"].output.classesDirs
     classpath = sourceSets["integrationTest"].runtimeClasspath
   }
