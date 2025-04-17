@@ -305,7 +305,7 @@ class PersonController(
   }
 
   @Operation(
-    summary = "Gets visible characteristics for a prisoner.",
+    summary = "Gets physical characteristics and distinguishing marks for a prisoner.",
     description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
     responses = [
       ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found a person's visible characteristics with the provided HMPPS ID."),
