@@ -1,10 +1,10 @@
 # `application-*.yml` files
 
-The `application-*.yml` files (e.g. `application-dev.yml`) contain the per environment configs. These include the deployed environments, (`dev`, `preprod`, `prod`), as well as testing environments (e.g. `integration-test`). These files set environment specific configuration. 
+The `application-*.yml` files (e.g. `application-dev.yml`) contain the configuration for each environment. These include the deployed environments, (`dev`, `preprod`, `prod`), as well as testing environments (e.g. `integration-test`).
 
 ## `services`
 
-Lists the services that are used by the Integration API. Includes for each service:
+Lists the services that are used by the Integration API. Includes:
 - the endpoint that will be used
 - any additional configuration for the service
 
@@ -24,8 +24,8 @@ The primary way that a consumer should gain access to endpoints. The `globals.ym
 
 ### `include`
 
-Any additional endpoints that are allowed but do not fit into a suitable role.
+Any additional endpoints that are allowed, but do not fit into a suitable role.
 
 ### `filters`
 
-Restricts access to data from endpoints. This is to allow endpoints to be used by a wider audience, by preventing them from having access to data that they shouldn't have access to. 
+Restricts access to data from endpoints. This is to allow endpoints to be used by a wider audience, by preventing a consumer from having access to data that they shouldn't have access to. 
