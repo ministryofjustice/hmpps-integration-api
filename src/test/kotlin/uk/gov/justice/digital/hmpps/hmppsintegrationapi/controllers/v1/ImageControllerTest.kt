@@ -31,6 +31,8 @@ internal class ImageControllerTest(
     {
       val id = 2461788
       val image = byteArrayOf(0x48, 101, 108, 108, 111)
+      val hmppsId = "Z99999ZZ"
+      val filter = null
 
       val basePath = "/v1/images"
       val mockMvc = IntegrationAPIMockMvc(springMockMvc)
@@ -38,7 +40,7 @@ internal class ImageControllerTest(
       describe("GET $basePath/{id}") {
         beforeTest {
           Mockito.reset(getImageService)
-          whenever(getImageService.execute(id)).thenReturn(Response(data = image))
+          whenever(getImageService.execute(id, hmppsId, filter)).thenReturn(Response(data = image))
           Mockito.reset(auditService)
         }
 
@@ -51,7 +53,7 @@ internal class ImageControllerTest(
         it("gets a image with the matching ID") {
           mockMvc.performAuthorised("$basePath/$id")
 
-          verify(getImageService, VerificationModeFactory.times(1)).execute(id)
+          verify(getImageService, VerificationModeFactory.times(1)).execute(id, hmppsId, filter)
         }
 
         it("returns an image with the matching ID") {
@@ -67,7 +69,7 @@ internal class ImageControllerTest(
         }
 
         it("returns a 404 NOT FOUND status code") {
-          whenever(getImageService.execute(id)).thenReturn(
+          whenever(getImageService.execute(id, hmppsId, filter)).thenReturn(
             Response(
               data = byteArrayOf(),
               errors =
@@ -86,7 +88,7 @@ internal class ImageControllerTest(
 
         it("returns a 500 INTERNAL SERVER ERROR status code when upstream api return expected error") {
 
-          whenever(getImageService.execute(id)).doThrow(
+          whenever(getImageService.execute(id, hmppsId, filter)).doThrow(
             WebClientResponseException(500, "MockError", null, null, null, null),
           )
 
