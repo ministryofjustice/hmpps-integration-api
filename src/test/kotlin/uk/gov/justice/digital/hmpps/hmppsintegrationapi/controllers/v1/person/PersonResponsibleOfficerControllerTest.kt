@@ -4,7 +4,7 @@ import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
 import org.mockito.Mockito
-import org.mockito.internal.verification.VerificationModeFactory
+import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
@@ -21,6 +21,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonRespo
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Prison
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonOffenderManager
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetCommunityOffenderManagerForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPrisonOffenderManagerForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
@@ -80,7 +82,7 @@ internal class PersonResponsibleOfficerControllerTest(
 
       it("gets the person responsible officer for a person with the matching ID") {
         mockMvc.performAuthorised(path)
-        verify(getCommunityOffenderManagerForPersonService, VerificationModeFactory.times(1)).execute(hmppsId, filters)
+        verify(getCommunityOffenderManagerForPersonService, times(1)).execute(hmppsId, filters)
       }
 
       it("logs audit") {
@@ -88,7 +90,7 @@ internal class PersonResponsibleOfficerControllerTest(
 
         verify(
           auditService,
-          VerificationModeFactory.times(1),
+          times(1),
         ).createEvent("GET_PERSON_RESPONSIBLE_OFFICER", mapOf("hmppsId" to hmppsId))
       }
 
@@ -122,6 +124,54 @@ internal class PersonResponsibleOfficerControllerTest(
             }
             """.removeWhitespaceAndNewlines(),
         )
+      }
+
+      it("returns a 400 when getPrisonOffenderManagerForPersonService returns a bad request") {
+        whenever(getPrisonOffenderManagerForPersonService.execute(hmppsId, filters)).thenReturn(
+          Response(
+            data = null,
+            errors = listOf(UpstreamApiError(UpstreamApi.MANAGE_POM_CASE, UpstreamApiError.Type.BAD_REQUEST)),
+          ),
+        )
+
+        val result = mockMvc.performAuthorised(path)
+        result.response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
+      }
+
+      it("returns a 404 when getPrisonOffenderManagerForPersonService returns a not found") {
+        whenever(getPrisonOffenderManagerForPersonService.execute(hmppsId, filters)).thenReturn(
+          Response(
+            data = null,
+            errors = listOf(UpstreamApiError(UpstreamApi.MANAGE_POM_CASE, UpstreamApiError.Type.ENTITY_NOT_FOUND)),
+          ),
+        )
+
+        val result = mockMvc.performAuthorised(path)
+        result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
+      }
+
+      it("returns a 400 when getCommunityOffenderManagerForPersonService returns a bad request") {
+        whenever(getCommunityOffenderManagerForPersonService.execute(hmppsId, filters)).thenReturn(
+          Response(
+            data = null,
+            errors = listOf(UpstreamApiError(UpstreamApi.NDELIUS, UpstreamApiError.Type.BAD_REQUEST)),
+          ),
+        )
+
+        val result = mockMvc.performAuthorised(path)
+        result.response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
+      }
+
+      it("returns a 404 when getCommunityOffenderManagerForPersonService returns a not found") {
+        whenever(getCommunityOffenderManagerForPersonService.execute(hmppsId, filters)).thenReturn(
+          Response(
+            data = null,
+            errors = listOf(UpstreamApiError(UpstreamApi.NDELIUS, UpstreamApiError.Type.ENTITY_NOT_FOUND)),
+          ),
+        )
+
+        val result = mockMvc.performAuthorised(path)
+        result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
       }
     }
   }
