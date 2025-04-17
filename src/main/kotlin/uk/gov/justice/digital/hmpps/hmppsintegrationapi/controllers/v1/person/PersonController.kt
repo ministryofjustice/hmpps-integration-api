@@ -306,7 +306,7 @@ class PersonController(
 
   @Operation(
     summary = "Gets visible characteristics for a prisoner.",
-    description = "Returns a prisoner's visible characteristics.",
+    description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
     responses = [
       ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found a person's visible characteristics with the provided HMPPS ID."),
       ApiResponse(responseCode = "400", content = [Content(schema = Schema(ref = "#/components/schemas/BadRequest"))]),
