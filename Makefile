@@ -28,19 +28,16 @@ stop:
 unit-test:
 	./gradlew unitTest
 
-smoke-test: serve
-	./gradlew smokeTest --warning-mode all
-
 integration-test: serve
 	./gradlew integrationTest --warning-mode all
 
 heartbeat:
 	./scripts/heartbeat.sh
 
-bash-smoke-tests:
+smoke-tests:
 	./scripts/smoke-tests.sh
 
-test: unit-test smoke-test
+test: unit-test
 
 e2e:
 	./gradlew integrationTest --warning-mode all
@@ -76,4 +73,4 @@ check-docs:
 		-v $$(pwd)/tech-docs/source:/app/source \
 		-it $(IMAGE) /scripts/check-url-links.sh
 
-.PHONY: authenticate-docker build-dev test serve publish unit-test smoke-test build lint preview-docs check-docs
+.PHONY: authenticate-docker build-dev test serve publish unit-test build lint preview-docs check-docs

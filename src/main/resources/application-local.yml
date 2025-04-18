@@ -30,7 +30,6 @@ hmpps.sqs:
 
 feature-flag:
   use-arns-endpoints: true
-  use-prison-filter-images-endpoint: true
   use-number-of-children-endpoints: true
 
 authorisation:
