@@ -36,9 +36,7 @@
   "paths": {
     "/probation-cases/access": {
       "get": {
-        "tags": [
-          "lao-access-controller"
-        ],
+        "tags": ["lao-access-controller"],
         "operationId": "caseAccess",
         "parameters": [
           {
@@ -83,9 +81,7 @@
         }
       },
       "post": {
-        "tags": [
-          "lao-access-controller"
-        ],
+        "tags": ["lao-access-controller"],
         "operationId": "caseAccess_1",
         "parameters": [
           {
@@ -132,9 +128,7 @@
     },
     "/search/probation-cases": {
       "post": {
-        "tags": [
-          "search-controller"
-        ],
+        "tags": ["search-controller"],
         "operationId": "searchProbationCases",
         "requestBody": {
           "content": {
@@ -165,9 +159,7 @@
     },
     "/reference-data": {
       "get": {
-        "tags": [
-          "Identifier Converter"
-        ],
+        "tags": ["Identifier Converter"],
         "summary": "Gets delius reference data ",
         "operationId": "refData",
         "responses": {
@@ -186,9 +178,7 @@
     },
     "/identifier-converter/noms-to-crn/{nomsId}": {
       "get": {
-        "tags": [
-          "Identifier Converter"
-        ],
+        "tags": ["Identifier Converter"],
         "summary": "Gets the corresponding CRN from delius for the provided nomsId if found",
         "operationId": "nomsToCrn",
         "parameters": [
@@ -217,9 +207,7 @@
     },
     "/exists-in-delius/crn/{crn}": {
       "get": {
-        "tags": [
-          "Identifier Converter"
-        ],
+        "tags": ["Identifier Converter"],
         "summary": "Check if crn exists in delius for the provided crn",
         "operationId": "checkIfPersonExists",
         "parameters": [
@@ -248,9 +236,7 @@
     },
     "/case/{crn}/supervisions": {
       "get": {
-        "tags": [
-          "Case Details"
-        ],
+        "tags": ["Case Details"],
         "summary": "Get a list of supervisions (called “events” in Delius) for a probation case, by CRN",
         "operationId": "supervisions",
         "parameters": [
@@ -279,9 +265,7 @@
     },
     "/case/{crn}/addresses": {
       "get": {
-        "tags": [
-          "Case Details"
-        ],
+        "tags": ["Case Details"],
         "operationId": "addresses",
         "parameters": [
           {
@@ -322,9 +306,7 @@
             "minItems": 1
           }
         },
-        "required": [
-          "crns"
-        ]
+        "required": ["crns"]
       },
       "CaseAccess": {
         "type": "object",
@@ -345,11 +327,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "crn",
-          "userExcluded",
-          "userRestricted"
-        ]
+        "required": ["crn", "userExcluded", "userRestricted"]
       },
       "UserAccess": {
         "type": "object",
@@ -361,9 +339,7 @@
             }
           }
         },
-        "required": [
-          "access"
-        ]
+        "required": ["access"]
       },
       "SearchRequest": {
         "type": "object",
@@ -421,13 +397,7 @@
             }
           }
         },
-        "required": [
-          "dateOfBirth",
-          "firstName",
-          "gender",
-          "middleNames",
-          "surname"
-        ]
+        "required": ["dateOfBirth", "firstName", "gender", "middleNames", "surname"]
       },
       "CaseDisability": {
         "type": "object",
@@ -450,9 +420,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "disabilityType"
-        ]
+        "required": ["disabilityType"]
       },
       "CaseProfile": {
         "type": "object",
@@ -476,9 +444,7 @@
             }
           }
         },
-        "required": [
-          "disabilities"
-        ]
+        "required": ["disabilities"]
       },
       "CodedValue": {
         "type": "object",
@@ -490,10 +456,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "code",
-          "description"
-        ]
+        "required": ["code", "description"]
       },
       "ContactDetails": {
         "type": "object",
@@ -511,10 +474,7 @@
             }
           }
         },
-        "required": [
-          "emailAddresses",
-          "phoneNumbers"
-        ]
+        "required": ["emailAddresses", "phoneNumbers"]
       },
       "OtherIds": {
         "type": "object",
@@ -540,9 +500,7 @@
             "example": "G5555TT"
           }
         },
-        "required": [
-          "crn"
-        ]
+        "required": ["crn"]
       },
       "PhoneNumber": {
         "type": "object",
@@ -552,16 +510,10 @@
           },
           "type": {
             "type": "string",
-            "enum": [
-              "TELEPHONE",
-              "MOBILE"
-            ]
+            "enum": ["TELEPHONE", "MOBILE"]
           }
         },
-        "required": [
-          "number",
-          "type"
-        ]
+        "required": ["number", "type"]
       },
       "ProbationCaseDetail": {
         "type": "object",
@@ -654,9 +606,7 @@
             }
           }
         },
-        "required": [
-          "probationReferenceData"
-        ]
+        "required": ["probationReferenceData"]
       },
       "RefData": {
         "type": "object",
@@ -672,10 +622,7 @@
             "example": "MALE"
           }
         },
-        "required": [
-          "code",
-          "description"
-        ]
+        "required": ["code", "description"]
       },
       "PersonIdentifier": {
         "type": "object",
@@ -687,10 +634,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "crn",
-          "nomsId"
-        ]
+        "required": ["crn", "nomsId"]
       },
       "PersonExists": {
         "type": "object",
@@ -702,10 +646,7 @@
             "type": "boolean"
           }
         },
-        "required": [
-          "crn",
-          "existsInDelius"
-        ]
+        "required": ["crn", "existsInDelius"]
       },
       "CourtAppearance": {
         "type": "object",
@@ -724,11 +665,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "court",
-          "date",
-          "type"
-        ]
+        "required": ["court", "date", "type"]
       },
       "DynamicRiskRegistration": {
         "type": "object",
@@ -753,11 +690,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "code",
-          "description",
-          "startDate"
-        ]
+        "required": ["code", "description", "startDate"]
       },
       "Manager": {
         "type": "object",
@@ -784,12 +717,7 @@
             "type": "boolean"
           }
         },
-        "required": [
-          "allocated",
-          "code",
-          "name",
-          "team"
-        ]
+        "required": ["allocated", "code", "name", "team"]
       },
       "MappaDetail": {
         "type": "object",
@@ -820,9 +748,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "startDate"
-        ]
+        "required": ["startDate"]
       },
       "Name": {
         "type": "object",
@@ -834,10 +760,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "forename",
-          "surname"
-        ]
+        "required": ["forename", "surname"]
       },
       "Offence": {
         "type": "object",
@@ -869,10 +792,7 @@
             "type": "boolean"
           }
         },
-        "required": [
-          "code",
-          "description"
-        ]
+        "required": ["code", "description"]
       },
       "OffenceCategory": {
         "type": "object",
@@ -884,10 +804,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "code",
-          "description"
-        ]
+        "required": ["code", "description"]
       },
       "PersonStatusRegistration": {
         "type": "object",
@@ -912,11 +829,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "code",
-          "description",
-          "startDate"
-        ]
+        "required": ["code", "description", "startDate"]
       },
       "Provider": {
         "type": "object",
@@ -928,10 +841,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "code",
-          "description"
-        ]
+        "required": ["code", "description"]
       },
       "Sentence": {
         "type": "object",
@@ -949,23 +859,13 @@
           },
           "lengthUnits": {
             "type": "string",
-            "enum": [
-              "Hours",
-              "Days",
-              "Weeks",
-              "Months",
-              "Years"
-            ]
+            "enum": ["Hours", "Days", "Weeks", "Months", "Years"]
           },
           "custodial": {
             "type": "boolean"
           }
         },
-        "required": [
-          "custodial",
-          "date",
-          "description"
-        ]
+        "required": ["custodial", "date", "description"]
       },
       "Supervision": {
         "type": "object",
@@ -1000,10 +900,7 @@
             }
           }
         },
-        "required": [
-          "active",
-          "number"
-        ]
+        "required": ["active", "number"]
       },
       "SupervisionResponse": {
         "type": "object",
@@ -1033,12 +930,7 @@
             }
           }
         },
-        "required": [
-          "communityManager",
-          "dynamicRisks",
-          "personStatus",
-          "supervisions"
-        ]
+        "required": ["communityManager", "dynamicRisks", "personStatus", "supervisions"]
       },
       "Team": {
         "type": "object",
@@ -1059,11 +951,7 @@
             "$ref": "#/components/schemas/Provider"
           }
         },
-        "required": [
-          "code",
-          "description",
-          "provider"
-        ]
+        "required": ["code", "description", "provider"]
       },
       "AddressWrapper": {
         "type": "object",
@@ -1072,9 +960,7 @@
             "$ref": "#/components/schemas/ContactDetailAddresses"
           }
         },
-        "required": [
-          "contactDetails"
-        ]
+        "required": ["contactDetails"]
       },
       "CaseAddress": {
         "type": "object",
@@ -1118,10 +1004,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "noFixedAbode",
-          "type"
-        ]
+        "required": ["noFixedAbode", "type"]
       },
       "ContactDetailAddresses": {
         "type": "object",
@@ -1133,9 +1016,7 @@
             }
           }
         },
-        "required": [
-          "addresses"
-        ]
+        "required": ["addresses"]
       }
     },
     "securitySchemes": {
