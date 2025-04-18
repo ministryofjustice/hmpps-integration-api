@@ -3,9 +3,9 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.ConsumerPrisonAccessService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NomisGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffenderSearchGateway
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ProbationOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonProtectedCharacteristics
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
@@ -15,7 +15,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonServic
 
 @Service
 class GetProtectedCharacteristicsService(
-  @Autowired val probationOffenderSearchGateway: ProbationOffenderSearchGateway,
+  @Autowired val nDeliusGateway: NDeliusGateway,
   @Autowired val prisonerOffenderSearchGateway: PrisonerOffenderSearchGateway,
   @Autowired val nomisGateway: NomisGateway,
   @Autowired val consumerPrisonAccessService: ConsumerPrisonAccessService,
@@ -33,7 +33,7 @@ class GetProtectedCharacteristicsService(
       )
     }
 
-    val probationOffender = probationOffenderSearchGateway.getOffender(hmppsId)
+    val probationOffender = nDeliusGateway.getOffender(hmppsId)
 
     if (probationOffender.data != null) {
       val prisonOffender =

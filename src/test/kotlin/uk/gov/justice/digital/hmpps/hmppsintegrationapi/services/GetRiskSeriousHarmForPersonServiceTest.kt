@@ -83,7 +83,7 @@ GetRiskSeriousHarmForPersonServiceTest(
                       type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
                     ),
                     UpstreamApiError(
-                      causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH,
+                      causedBy = UpstreamApi.NDELIUS,
                       type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
                     ),
                   ),
@@ -94,7 +94,7 @@ GetRiskSeriousHarmForPersonServiceTest(
           it("records upstream 404 API error for probation offender search") {
             val response = getRiskSeriousHarmForPersonService.execute(hmppsId)
 
-            response.hasErrorCausedBy(UpstreamApiError.Type.ENTITY_NOT_FOUND, UpstreamApi.PROBATION_OFFENDER_SEARCH).shouldBe(true)
+            response.hasErrorCausedBy(UpstreamApiError.Type.ENTITY_NOT_FOUND, UpstreamApi.NDELIUS).shouldBe(true)
           }
 
           it("records upstream 403 API error for probation offender search") {

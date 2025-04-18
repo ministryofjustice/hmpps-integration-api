@@ -56,7 +56,7 @@ internal class GetPersonNameServiceTest(
             errors =
               listOf(
                 UpstreamApiError(
-                  causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH,
+                  causedBy = UpstreamApi.NDELIUS,
                   type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
                 ),
               ),
@@ -69,7 +69,7 @@ internal class GetPersonNameServiceTest(
         response.errors
           .first()
           .causedBy
-          .shouldBe(UpstreamApi.PROBATION_OFFENDER_SEARCH)
+          .shouldBe(UpstreamApi.NDELIUS)
         response.errors
           .first()
           .type

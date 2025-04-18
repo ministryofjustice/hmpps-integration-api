@@ -131,7 +131,7 @@ internal class PostTransactionTransferForPersonServiceTest(
           errors =
             listOf(
               UpstreamApiError(
-                causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH,
+                causedBy = UpstreamApi.NDELIUS,
                 type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
               ),
             ),
@@ -146,7 +146,7 @@ internal class PostTransactionTransferForPersonServiceTest(
         )
       response
         .hasErrorCausedBy(
-          causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH,
+          causedBy = UpstreamApi.NDELIUS,
           type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
         ).shouldBe(true)
     }

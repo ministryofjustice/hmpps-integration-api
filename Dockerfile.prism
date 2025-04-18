@@ -7,7 +7,6 @@ RUN mkdir /prismMocks
 COPY src/main/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/prismMocks /prismMocks
 ADD https://manage-adjudications-api-dev.hmpps.service.justice.gov.uk/v3/api-docs /tmp/adjudications.json
 ADD https://dev.moic.service.justice.gov.uk/v3/api-docs.json /prismMocks/manage-pom-case-api.json
-ADD https://ministryofjustice.github.io/hmpps-probation-integration-services/tech-docs/projects/external-api-and-delius/api-docs.json /prismMocks/ndelius.json
 ADD https://ministryofjustice.github.io/hmpps-probation-integration-services/tech-docs/projects/effective-proposal-framework-and-delius/api-docs.json /prismMocks/probation-integration-epf.json
 ADD https://prisoner-search-dev.prison.service.justice.gov.uk/v3/api-docs /tmp/prisoner-offender-search-tmp.json
 
@@ -26,5 +25,20 @@ RUN sed -i 's/\*\/\*/application\/json/g' /prismMocks/x4022-personal-relationshi
 RUN sed -i 's/\*\/\*/application\/json/g' /prismMocks/x4023-manage-prison-visits.json
 RUN sed -i 's/\*\/\*/application\/json/g' /prismMocks/x4024-incentives.json
 RUN sed -i 's/\*\/\*/application\/json/g' /prismMocks/x4025-alerts-api.json
+RUN sed -i 's/\*\/\*/application\/json/g' /prismMocks/ndelius.json
 
-ENTRYPOINT sh -c 'port=4010; for file in $(ls /prismMocks/*.json | sort); do node dist/index.js mock -p $port -h 0.0.0.0 $file & port=$((port + 1)); done; wait'
+ENTRYPOINT sh -c 'node dist/index.js mock -p 4010 -h 0.0.0.0 /prismMocks/adjudications.json & \
+                  node dist/index.js mock -p 4011 -h 0.0.0.0 /prismMocks/assess-risks-and-needs.json & \
+                  node dist/index.js mock -p 4012 -h 0.0.0.0 /prismMocks/case-notes.json & \
+                  node dist/index.js mock -p 4013 -h 0.0.0.0 /prismMocks/create-and-vary-a-licence.json & \
+                  node dist/index.js mock -p 4014 -h 0.0.0.0 /prismMocks/manage-pom-case-api.json & \
+                  node dist/index.js mock -p 4015 -h 0.0.0.0 /prismMocks/ndelius.json & \
+                  node dist/index.js mock -p 4016 -h 0.0.0.0 /prismMocks/prison-api.json & \
+                  node dist/index.js mock -p 4017 -h 0.0.0.0 /prismMocks/prisoner-offender-search.json & \
+                  node dist/index.js mock -p 4018 -h 0.0.0.0 /prismMocks/probation-integration-epf.json & \
+                  node dist/index.js mock -p 4020 -h 0.0.0.0 /prismMocks/x4020-plp-api.json & \
+                  node dist/index.js mock -p 4021 -h 0.0.0.0 /prismMocks/x4021-non-associations.json & \
+                  node dist/index.js mock -p 4022 -h 0.0.0.0 /prismMocks/x4022-personal-relationships.json & \
+                  node dist/index.js mock -p 4023 -h 0.0.0.0 /prismMocks/x4023-manage-prison-visits.json & \
+                  node dist/index.js mock -p 4024 -h 0.0.0.0 /prismMocks/x4024-incentives.json & \
+                  node dist/index.js mock -p 4025 -h 0.0.0.0 /prismMocks/x4025-alerts-api.json'
