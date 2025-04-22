@@ -36,7 +36,6 @@ services:
 
 feature-flag:
   use-arns-endpoints: false
-  use-prison-filter-images-endpoint: false
   use-number-of-children-endpoints: false
   use-physical-characteristics-endpoints: false
 

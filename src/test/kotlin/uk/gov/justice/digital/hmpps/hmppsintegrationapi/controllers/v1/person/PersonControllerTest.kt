@@ -255,7 +255,7 @@ internal class PersonControllerTest(
 
       describe("GET $basePath/{id}") {
         val probationOffenderSearch = PersonOnProbation(Person("Sam", "Smith", identifiers = Identifiers(nomisNumber = "1234ABC"), currentExclusion = true, exclusionMessage = "An exclusion exists", currentRestriction = false), underActiveSupervision = true)
-        val prisonOffenderSearch = POSPrisoner("Kim", "Kardashian")
+        val prisonOffenderSearch = POSPrisoner("Kim", "Kardashian", youthOffender = false)
         val prisonResponse = Response(data = prisonOffenderSearch, errors = emptyList())
 
         beforeTest {

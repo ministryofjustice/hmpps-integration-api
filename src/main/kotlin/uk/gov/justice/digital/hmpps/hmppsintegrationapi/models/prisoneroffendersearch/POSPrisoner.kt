@@ -27,6 +27,7 @@ data class POSPrisoner(
   val csra: String? = null,
   val receptionDate: String? = null,
   val status: String? = null,
+  val youthOffender: Boolean,
   val heightCentimetres: Int? = null,
   val weightKilograms: Int? = null,
   val hairColour: String? = null,
@@ -79,6 +80,7 @@ data class POSPrisoner(
       csra = this.csra,
       receptionDate = this.receptionDate,
       status = this.status,
+      youthOffender = this.youthOffender,
     )
 
   fun toPhysicalCharacteristics(): PhysicalCharacteristics =

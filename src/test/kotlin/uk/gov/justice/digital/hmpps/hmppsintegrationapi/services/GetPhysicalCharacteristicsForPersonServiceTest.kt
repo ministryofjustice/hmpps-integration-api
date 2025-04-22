@@ -81,6 +81,7 @@ internal class GetPhysicalCharacteristicsForPersonServiceTest(
             listOf(
               POSBodyMark(bodyPart = "Left Cheek", comment = "Small mole"),
             ),
+          youthOffender = false,
         )
       val physicalCharacteristics = posPrisoner.toPhysicalCharacteristics()
 
