@@ -12,12 +12,15 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
+import org.springframework.context.annotation.Import
 import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.featureflags.FeatureFlagAspect
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.featureflags.implementations.FeatureFlagNumberOfChildrenEndpointImpl
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Contact
@@ -57,6 +60,10 @@ import java.time.LocalDateTime
 import kotlin.random.Random
 
 @WebMvcTest(controllers = [PersonController::class])
+@Import(
+  FeatureFlagAspect::class,
+  FeatureFlagNumberOfChildrenEndpointImpl::class,
+)
 @ActiveProfiles("test")
 internal class PersonControllerTest(
   @Autowired var springMockMvc: MockMvc,
@@ -70,6 +77,8 @@ internal class PersonControllerTest(
   @MockitoBean val getVisitOrdersForPersonService: GetVisitOrdersForPersonService,
   @MockitoBean val getNumberOfChildrenForPersonService: GetNumberOfChildrenForPersonService,
   @MockitoBean val featureFlagConfig: FeatureFlagConfig,
+//  @MockitoBean val featureFlagNumberOfChildrenEndpointImpl: FeatureFlagNumberOfChildrenEndpointImpl,
+//  @MockitoBean val featureFlagAspect: FeatureFlagAspect,
 ) : DescribeSpec(
     {
       val hmppsId = "2003/13116M"
@@ -985,7 +994,6 @@ internal class PersonControllerTest(
           Mockito.reset(getNumberOfChildrenForPersonService)
           Mockito.reset(auditService)
 
-          whenever(featureFlagConfig.useNumberOfChildrenEndpoints).thenReturn(true)
           whenever(getNumberOfChildrenForPersonService.execute(sanitisedHmppsId, filters)).thenReturn(
             Response(
               data = numberOfChildren,
@@ -1048,7 +1056,10 @@ internal class PersonControllerTest(
 
         it("returns 503 service not available when feature flag set to false") {
           whenever(featureFlagConfig.useNumberOfChildrenEndpoints).thenReturn(false)
+          // whenever(featureFlagNumberOfChildrenEndpointImpl.validate(Any())).thenReturn(false)
+          // whenever(featureFlagAspect.checkFeatureFlag().thenThrow(FeatureNotEnabledException::class.java)
           val result = mockMvc.performAuthorised(path)
+
           result.response.status.shouldBe(HttpStatus.SERVICE_UNAVAILABLE.value())
         }
       }
