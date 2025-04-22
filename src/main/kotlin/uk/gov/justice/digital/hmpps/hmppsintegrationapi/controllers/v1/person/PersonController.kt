@@ -289,10 +289,6 @@ class PersonController(
     @Parameter(description = "The HMPPS ID of the prisoner") @PathVariable hmppsId: String,
     @RequestAttribute filters: ConsumerFilters?,
   ): DataResponse<NumberOfChildren?> {
-    // if (!featureFlag.useNumberOfChildrenEndpoints) {
-    //   throw FeatureNotEnabledException(FeatureFlagConfig.USE_NUMBER_OF_CHILDREN_ENDPOINTS)
-    // }
-
     val response = getNumberOfChildrenForPersonService.execute(hmppsId, filters)
 
     if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
