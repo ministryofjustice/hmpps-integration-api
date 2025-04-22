@@ -37,6 +37,7 @@ services:
 feature-flag:
   use-arns-endpoints: false
   use-number-of-children-endpoints: false
+  use-image-endpoints: false
 
 authorisation:
   consumers:
