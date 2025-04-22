@@ -39,6 +39,7 @@ feature-flag:
   use-number-of-children-endpoints: false
   use-physical-characteristics-endpoints: false
   use-image-endpoints: false
+  use-education-assessments-endpoints: false
 
 authorisation:
   consumers:
