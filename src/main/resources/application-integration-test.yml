@@ -57,6 +57,7 @@ feature-flag:
   use-arns-endpoints: true
   use-number-of-children-endpoints: true
   use-image-endpoints: true
+  use-education-assessments-endpoints: true
 
 authorisation:
   consumers:
@@ -125,6 +126,7 @@ authorisation:
         - "/v1/persons/.*/visit-orders"
         - "/v1/persons/.*/number-of-children"
         - "/v1/persons/.*/images/.*"
+        - "/v1/persons/.*/education/assessments/status"
       filters:
     config-test:
       include:

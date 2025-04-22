@@ -33,6 +33,7 @@ feature-flag:
   use-arns-endpoints: true
   use-number-of-children-endpoints: true
   use-image-endpoints: true
+  use-education-assessments-endpoints: true
 
 authorisation:
   consumers:
@@ -87,6 +88,7 @@ authorisation:
         - "/v1/prison/.*/prisoners/.*/transactions/[^/]*$"
         - "/v1/prison/.*/prisoners/.*/transactions"
         - "/v1/prison/.*/prisoners/.*/non-associations"
+        - "/v1/persons/.*/education/assessments/status"
       filters:
     config-test:
       include:
