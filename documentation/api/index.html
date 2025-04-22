@@ -172,6 +172,9 @@
         <a href="../../documentation/api/index.html#v1-prison-prisonid-prisoners-hmppsid-transactions-transfer"><span>/v1/prison/{prisonId}/prisoners/{hmppsId}/transactions/transfer</span></a>
       </li>
       <li>
+        <a href="../../documentation/api/index.html#v1-persons-hmppsid-education-assessments-status"><span>/v1/persons/{hmppsId}/education/assessments/status</span></a>
+      </li>
+      <li>
         <a href="../../documentation/api/index.html#v1-visit-id-by-client-ref-clientreference"><span>/v1/visit/id/by-client-ref/{clientReference}</span></a>
       </li>
       <li>
@@ -651,7 +654,7 @@
 
 <h3 id="v1-persons-hmppsid-expression-of-interest-jobs-jobid-put">put</h3>
 
-  <p><em>Returns completed response</em></p>
+  <p><em>Notify that a person has expressed an interest in a particular job.</em></p>
 
 
 
@@ -745,7 +748,7 @@
 <tr>
 <td>403</td>
 <td>
-<p>Access is forbidden</p>
+<p>Forbidden</p>
 
 
 
@@ -1477,6 +1480,122 @@
 </td>
 <td>
 <a href='#schema-internalservererror'>InternalServerError</a>
+</td>
+</tr>
+
+</tbody>
+</table>
+
+
+
+
+<h2 id="v1-persons-hmppsid-education-assessments-status">/v1/persons/{hmppsId}/education/assessments/status</h2>
+
+<h3 id="v1-persons-hmppsid-education-assessments-status-post">post</h3>
+
+  <p><em>Notify that a person has had a change in status to their Assessments in relation to their in-prison Education.</em></p>
+
+
+
+
+<h4 id="v1-persons-hmppsid-education-assessments-status-post-parameters">Parameters</h4>
+<table>
+<thead>
+<tr><th>Parameter</th><th>In</th><th>Type</th><th>Required</th><th>Description</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>hmppsId</td>
+<td>path</td>
+<td>string</td>
+<td>true</td>
+<td><p>A HMPPS person identifier</p>
+
+
+</td>
+</tr>
+
+</tbody>
+</table>
+
+
+
+
+<h4 id="v1-persons-hmppsid-education-assessments-status-post-responses">Responses</h4>
+<table>
+<thead>
+<tr><th>Status</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>200</td>
+<td>
+<p>Successful notification of change of Education Assessments status</p>
+
+
+
+</td>
+<td>
+
+</td>
+</tr>
+
+<tr>
+<td>400</td>
+<td>
+<p>Bad Request</p>
+
+
+
+<pre><code>{
+  "status": 400,
+  "userMessage": "Validation failure: No query parameters specified.",
+  "developerMessage": "No query parameters specified."
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-badrequest'>BadRequest</a>
+</td>
+</tr>
+
+<tr>
+<td>403</td>
+<td>
+<p>Forbidden</p>
+
+
+
+<pre><code>{
+  "status": 403,
+  "userMessage": "Forbidden to complete action by upstream service",
+  "developerMessage": "Forbidden to complete action by upstream service"
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-forbiddenresponse'>ForbiddenResponse</a>
+</td>
+</tr>
+
+<tr>
+<td>404</td>
+<td>
+<p>Not Found</p>
+
+
+
+<pre><code>{
+  "status": 404,
+  "userMessage": "404 Not found error: Could not find person with HMPPS id: 2003/0011991D.",
+  "developerMessage": "Could not find person with HMPPS id: 2003/0011991D."
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-personnotfound'>PersonNotFound</a>
 </td>
 </tr>
 
@@ -4729,7 +4848,7 @@
 
 <h3 id="v1-persons-hmppsid-plp-review-schedule-get">get</h3>
 
-  <p><em>Returns the plp review schedule associated with a person.</em></p>
+  <p><em>Returns the history of Learning and work progress (LWP/PLP) Review Schedules associated with a person.</em></p>
 
 
 
@@ -4779,7 +4898,7 @@
 <tr>
 <td>200</td>
 <td>
-<p>Successfully found induction schedule for a person with the provided HMPPS ID.</p>
+<p>Successfully found Review Schedule history for a person with the provided HMPPS ID.</p>
 
 
 
@@ -4866,7 +4985,7 @@
 
 <h3 id="v1-persons-hmppsid-plp-induction-schedule-get">get</h3>
 
-  <p><em>Returns plp the current induction schedule associated with a person.</em></p>
+  <p><em>Returns the current Learning and work progress (LWP/PLP) Induction Schedule associated with a person.</em></p>
 
 
 
@@ -4905,7 +5024,7 @@
 <tr>
 <td>200</td>
 <td>
-<p>Successfully found induction schedule for a person with the provided HMPPS ID.</p>
+<p>Successfully found Induction Schedule for a person with the provided HMPPS ID.</p>
 
 
 
@@ -4984,7 +5103,7 @@
 
 <h3 id="v1-persons-hmppsid-plp-induction-schedule-history-get">get</h3>
 
-  <p><em>Returns the plp induction schedule history associated with a person.</em></p>
+  <p><em>Returns the history of changes to the Learning and work progress (LWP/PLP) Induction Schedule associated with a person.</em></p>
 
 
 
@@ -5023,7 +5142,7 @@
 <tr>
 <td>200</td>
 <td>
-<p>Successfully found induction schedule history for a person with the provided HMPPS ID.</p>
+<p>Successfully found Induction Schedule history for a person with the provided HMPPS ID.</p>
 
 
 
@@ -10474,6 +10593,62 @@
 <td>string</td>
 <td>true</td>
 <td><p>Transaction id for the whole transaction.</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+</tbody>
+</table>
+
+<h3 id="schema-educationassessmentstatuschangerequest">EducationAssessmentStatusChangeRequest</h3>
+
+
+<table class='schema-educationassessmentstatuschangerequest'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>status</td>
+<td>string</td>
+<td>true</td>
+<td><p>The current status of the Assessments</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>statusChangeDate</td>
+<td>string</td>
+<td>true</td>
+<td><p>The ISO-8601 formatted date that the status changed.</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>detailUrl</td>
+<td>string</td>
+<td>true</td>
+<td><p>The URL of where to get the person&rsquo;s current Education Assessments</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>requestId</td>
+<td>string</td>
+<td>true</td>
+<td><p>A unique request identifier generated by the consumer to allow for tracing requests through the various systems. The format is to be defined by the consumer but a UUID is suggested.</p>
 </td>
 <td>
   
