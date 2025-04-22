@@ -39,7 +39,7 @@ internal class ImageControllerTest(
       val mockMvc = IntegrationAPIMockMvc(springMockMvc)
 
       describe("GET /v1/images/id") {
-        val path = "/v1/images/${id}"
+        val path = "/v1/images/$id"
 
         beforeTest {
           Mockito.reset(getImageService)
@@ -100,7 +100,7 @@ internal class ImageControllerTest(
       }
 
       describe("GET /v1/persons/hmppsId/images/id") {
-        val path = "/v1/persons/${hmppsId}/images/${id}"
+        val path = "/v1/persons/$hmppsId/images/$id"
 
         beforeTest {
           Mockito.reset(getImageService)

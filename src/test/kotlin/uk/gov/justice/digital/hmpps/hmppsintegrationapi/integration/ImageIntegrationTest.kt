@@ -17,7 +17,7 @@ class ImageIntegrationTest : IntegrationTestBase() {
 
   @Test
   fun `returns an image from NOMIS`() {
-    callApi(path )
+    callApi(path)
       .andExpect(status().isOk)
       .andExpect(content().contentType("image/jpeg"))
   }
