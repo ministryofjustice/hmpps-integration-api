@@ -238,6 +238,9 @@
         <a href="../../documentation/api/index.html#v1-persons-hmppsid-plp-induction-schedule-history"><span>/v1/persons/{hmppsId}/plp-induction-schedule/history</span></a>
       </li>
       <li>
+        <a href="../../documentation/api/index.html#v1-persons-hmppsid-physical-characteristics"><span>/v1/persons/{hmppsId}/physical-characteristics</span></a>
+      </li>
+      <li>
         <a href="../../documentation/api/index.html#v1-persons-hmppsid-person-responsible-officer"><span>/v1/persons/{hmppsId}/person-responsible-officer</span></a>
       </li>
       <li>
@@ -5055,6 +5058,157 @@
 </td>
 <td>
 <a href='#schema-dataresponseinductionschedules'>DataResponseInductionSchedules</a>
+</td>
+</tr>
+
+<tr>
+<td>404</td>
+<td>
+<p>Not Found</p>
+
+
+
+<pre><code>{
+  "status": 404,
+  "userMessage": "404 Not found error: Could not find person with HMPPS id: 2003/0011991D.",
+  "developerMessage": "Could not find person with HMPPS id: 2003/0011991D."
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-personnotfound'>PersonNotFound</a>
+</td>
+</tr>
+
+<tr>
+<td>500</td>
+<td>
+<p>Internal Server Error</p>
+
+
+
+<pre><code>{
+  "status": 500,
+  "userMessage": "Internal Server Error",
+  "developerMessage": "Unable to complete request as an upstream service is not responding."
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-internalservererror'>InternalServerError</a>
+</td>
+</tr>
+
+</tbody>
+</table>
+
+
+
+
+<h2 id="v1-persons-hmppsid-physical-characteristics">/v1/persons/{hmppsId}/physical-characteristics</h2>
+
+<h3 id="v1-persons-hmppsid-physical-characteristics-get">get</h3>
+
+  <p><em>Gets physical characteristics and distinguishing marks for a prisoner.</em></p>
+
+
+  <p><b>Applicable filters</b>: <ul><li>prisons</li></ul></p>
+
+
+
+
+<h4 id="v1-persons-hmppsid-physical-characteristics-get-parameters">Parameters</h4>
+<table>
+<thead>
+<tr><th>Parameter</th><th>In</th><th>Type</th><th>Required</th><th>Description</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>hmppsId</td>
+<td>path</td>
+<td>string</td>
+<td>true</td>
+<td><p>A HMPPS identifier</p>
+
+
+</td>
+</tr>
+
+</tbody>
+</table>
+
+
+
+
+<h4 id="v1-persons-hmppsid-physical-characteristics-get-responses">Responses</h4>
+<table>
+<thead>
+<tr><th>Status</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>200</td>
+<td>
+<p>Successfully found a person&rsquo;s physical characteristics with the provided HMPPS ID.</p>
+
+
+
+<pre><code>{
+  "data": {
+    "heightCentimetres": "integer",
+    "weightKilograms": "integer",
+    "hairColour": "string",
+    "rightEyeColour": "string",
+    "leftEyeColour": "string",
+    "facialHair": "string",
+    "shapeOfFace": "string",
+    "build": "string",
+    "shoeSize": "integer",
+    "tattoos": [
+      {
+        "bodyPart": "string",
+        "comment": "string"
+      }
+    ],
+    "scars": [
+      {
+        "bodyPart": "string",
+        "comment": "string"
+      }
+    ],
+    "marks": [
+      {
+        "bodyPart": "string",
+        "comment": "string"
+      }
+    ]
+  }
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-dataresponsephysicalcharacteristics'>DataResponsePhysicalCharacteristics</a>
+</td>
+</tr>
+
+<tr>
+<td>400</td>
+<td>
+<p>Bad Request</p>
+
+
+
+<pre><code>{
+  "status": 400,
+  "userMessage": "Validation failure: No query parameters specified.",
+  "developerMessage": "No query parameters specified."
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-badrequest'>BadRequest</a>
 </td>
 </tr>
 
@@ -14810,6 +14964,192 @@
 </code></pre></div></td>
 <td>
   <a href='#schema-inductionschedule'>InductionSchedule</a>
+</td>
+</tr>
+
+</tbody>
+</table>
+
+<h3 id="schema-bodymark">BodyMark</h3>
+
+
+<table class='schema-bodymark'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>bodyPart</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>comment</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+</tbody>
+</table>
+
+<h3 id="schema-dataresponsephysicalcharacteristics">DataResponsePhysicalCharacteristics</h3>
+
+
+<table class='schema-dataresponsephysicalcharacteristics'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>data</td>
+<td>object</td>
+<td>true</td>
+<td></td>
+<td>
+  <a href='#schema-physicalcharacteristics'>PhysicalCharacteristics</a>
+</td>
+</tr>
+
+</tbody>
+</table>
+
+<h3 id="schema-physicalcharacteristics">PhysicalCharacteristics</h3>
+
+
+<table class='schema-physicalcharacteristics'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>heightCentimetres</td>
+<td>integer</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>weightKilograms</td>
+<td>integer</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>hairColour</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>rightEyeColour</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>leftEyeColour</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>facialHair</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>shapeOfFace</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>build</td>
+<td>string</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>shoeSize</td>
+<td>integer</td>
+<td>false</td>
+<td></td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>tattoos</td>
+<td>array</td>
+<td>false</td>
+<td></td>
+<td>
+  <a href='#schema-bodymark'>BodyMark</a>
+</td>
+</tr>
+
+<tr>
+<td>scars</td>
+<td>array</td>
+<td>false</td>
+<td></td>
+<td>
+  <a href='#schema-bodymark'>BodyMark</a>
+</td>
+</tr>
+
+<tr>
+<td>marks</td>
+<td>array</td>
+<td>false</td>
+<td></td>
+<td>
+  <a href='#schema-bodymark'>BodyMark</a>
 </td>
 </tr>
 
