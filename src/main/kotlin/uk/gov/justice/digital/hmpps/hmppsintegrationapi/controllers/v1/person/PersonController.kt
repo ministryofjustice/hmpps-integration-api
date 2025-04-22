@@ -16,8 +16,9 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.FeatureNotEnabledException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.decodeUrlCharacters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.featureflags.FeatureFlag
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.featureflags.implementations.FeatureFlagNumberOfChildrenEndpointImpl
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.IEPLevel
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ImageMetadata
@@ -273,6 +274,7 @@ class PersonController(
   }
 
   @GetMapping("{hmppsId}/number-of-children")
+  @FeatureFlag(validators = [FeatureFlagNumberOfChildrenEndpointImpl::class])
   @Operation(
     summary = "Returns a prisoner's number of children.",
     description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
@@ -287,9 +289,9 @@ class PersonController(
     @Parameter(description = "The HMPPS ID of the prisoner") @PathVariable hmppsId: String,
     @RequestAttribute filters: ConsumerFilters?,
   ): DataResponse<NumberOfChildren?> {
-    if (!featureFlag.useNumberOfChildrenEndpoints) {
-      throw FeatureNotEnabledException(FeatureFlagConfig.USE_NUMBER_OF_CHILDREN_ENDPOINTS)
-    }
+    // if (!featureFlag.useNumberOfChildrenEndpoints) {
+    //   throw FeatureNotEnabledException(FeatureFlagConfig.USE_NUMBER_OF_CHILDREN_ENDPOINTS)
+    // }
 
     val response = getNumberOfChildrenForPersonService.execute(hmppsId, filters)
 
