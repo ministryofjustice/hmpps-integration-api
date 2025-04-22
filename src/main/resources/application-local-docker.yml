@@ -71,6 +71,7 @@ authorisation:
         - "/v1/prison/.*/prisoners/.*/transactions/[^/]*$"
         - "/v1/prison/.*/prisoners/.*/transactions"
         - "/v1/prison/.*/prisoners/.*/non-associations"
+        - "/v1/persons/.*/education/assessments/status"
       filters:
     config-test:
       include:

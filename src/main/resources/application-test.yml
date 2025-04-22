@@ -128,6 +128,7 @@ authorisation:
         - "/v1/persons/.*/contacts[^/]*$"
         - "/v1/persons/.*/visit-orders"
         - "/v1/persons/.*/number-of-children"
+        - "/v1/persons/.*/education/assessments/status"
     config-test:
       include:
         - "/v1/config/authorisation"
