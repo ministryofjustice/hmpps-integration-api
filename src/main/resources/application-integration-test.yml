@@ -124,6 +124,7 @@ authorisation:
         - "/v1/persons/.*/contacts[^/]*$"
         - "/v1/persons/.*/visit-orders"
         - "/v1/persons/.*/number-of-children"
+        - "/v1/persons/.*/images/.*"
       filters:
     config-test:
       include:
