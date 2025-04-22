@@ -37,12 +37,11 @@ class GetImageService(
       return Response(data = null, errors = prisonerImageDetails.errors)
     }
 
-    val prisonerImage =
-      prisonerImageDetails.data?.find { it.id.toInt() == id }
-        ?: return Response(
-          data = null,
-          errors = listOf(UpstreamApiError(UpstreamApi.NOMIS, UpstreamApiError.Type.ENTITY_NOT_FOUND)),
-        )
+    prisonerImageDetails.data.find { it.id.toInt() == id }
+      ?: return Response(
+        data = null,
+        errors = listOf(UpstreamApiError(UpstreamApi.NOMIS, UpstreamApiError.Type.ENTITY_NOT_FOUND)),
+      )
 
     val prisonerImageData = nomisGateway.getImageData(id)
 
