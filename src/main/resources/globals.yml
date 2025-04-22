@@ -23,6 +23,7 @@ globals:
         - "/v1/persons/.*/protected-characteristics"
         - "/v1/persons/.*/reported-adjudications"
         - "/v1/persons/.*/number-of-children"
+        - "/v1/persons/.*/physical-characteristics"
         - "/v1/persons/.*/images"
         - "/v1/persons/.*/images/.*"
         - "/v1/pnd/persons/.*/alerts"

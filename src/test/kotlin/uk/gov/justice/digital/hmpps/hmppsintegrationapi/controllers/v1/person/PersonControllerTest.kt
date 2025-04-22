@@ -20,6 +20,7 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.BodyMark
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Contact
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ContactDetailsWithEmailAndPhone
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.IEPLevel
@@ -33,6 +34,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonName
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonOnProbation
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PhoneNumber
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PhysicalCharacteristics
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerContact
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerContactRelationship
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
@@ -47,6 +49,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetNameForPerso
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetNumberOfChildrenForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonsService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPhysicalCharacteristicsForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPrisonerContactsService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetVisitOrdersForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
@@ -69,6 +72,7 @@ internal class PersonControllerTest(
   @MockitoBean val getIEPLevelService: GetIEPLevelService,
   @MockitoBean val getVisitOrdersForPersonService: GetVisitOrdersForPersonService,
   @MockitoBean val getNumberOfChildrenForPersonService: GetNumberOfChildrenForPersonService,
+  @MockitoBean val getPhysicalCharacteristicsForPersonService: GetPhysicalCharacteristicsForPersonService,
   @MockitoBean val featureFlagConfig: FeatureFlagConfig,
 ) : DescribeSpec(
     {
@@ -974,6 +978,132 @@ internal class PersonControllerTest(
 
           val result = mockMvc.performAuthorised("$basePath/$sanitisedHmppsId/visit-orders")
           result.response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
+        }
+      }
+
+      describe("/v1/persons/{hmppsId}/physical-characteristics") {
+        val path = "$basePath/$sanitisedHmppsId/physical-characteristics"
+        val physicalCharacteristics =
+          PhysicalCharacteristics(
+            heightCentimetres = 200,
+            weightKilograms = 102,
+            hairColour = "Blonde",
+            rightEyeColour = "Green",
+            leftEyeColour = "Hazel",
+            facialHair = "Clean Shaven",
+            shapeOfFace = "Round",
+            build = "Muscular",
+            shoeSize = 10,
+            tattoos =
+              listOf(
+                BodyMark(bodyPart = "Head", comment = "Skull and crossbones covering chest"),
+              ),
+            scars =
+              listOf(
+                BodyMark(bodyPart = "Head", comment = "Skull and crossbones covering chest"),
+              ),
+            marks =
+              listOf(
+                BodyMark(bodyPart = "Head", comment = "Skull and crossbones covering chest"),
+              ),
+          )
+
+        beforeTest {
+          Mockito.reset(getPhysicalCharacteristicsForPersonService)
+          Mockito.reset(auditService)
+
+          whenever(featureFlagConfig.usePhysicalCharacteristicsEndpoints).thenReturn(true)
+          whenever(getPhysicalCharacteristicsForPersonService.execute(sanitisedHmppsId, filters)).thenReturn(
+            Response(
+              data = physicalCharacteristics,
+            ),
+          )
+        }
+
+        it("logs audit") {
+          mockMvc.performAuthorised(path)
+          verify(auditService, times(1)).createEvent("GET_PERSON_PHYSICAL_CHARACTERISTICS", mapOf("hmppsId" to sanitisedHmppsId))
+        }
+
+        it("returns a 200 OK status code with data") {
+          val result = mockMvc.performAuthorised(path)
+          result.response.status.shouldBe(HttpStatus.OK.value())
+          result.response.contentAsString.shouldBe(
+            """
+            {
+              "data":{
+                "heightCentimetres": 200,
+                "weightKilograms": 102,
+                "hairColour": "Blonde",
+                "rightEyeColour": "Green",
+                "leftEyeColour": "Hazel",
+                "facialHair": "Clean Shaven",
+                "shapeOfFace": "Round",
+                "build": "Muscular",
+                "shoeSize": 10,
+                "tattoos": [
+                  {
+                    "bodyPart": "Head",
+                    "comment": "Skull and crossbones covering chest"
+                  }
+                ],
+                "scars": [
+                  {
+                    "bodyPart": "Head",
+                    "comment": "Skull and crossbones covering chest"
+                  }
+                ],
+                "marks": [
+                  {
+                    "bodyPart": "Head",
+                    "comment": "Skull and crossbones covering chest"
+                  }
+                ]
+              }
+            }
+
+          """.removeWhitespaceAndNewlines(),
+          )
+        }
+
+        it("returns a 400 bad request") {
+          whenever(getPhysicalCharacteristicsForPersonService.execute(sanitisedHmppsId, filters)).thenReturn(
+            Response(
+              data = null,
+              errors =
+                listOf(
+                  UpstreamApiError(
+                    causedBy = UpstreamApi.PRISONER_OFFENDER_SEARCH,
+                    type = UpstreamApiError.Type.BAD_REQUEST,
+                  ),
+                ),
+            ),
+          )
+          val result = mockMvc.performAuthorised(path)
+          result.response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
+        }
+
+        it("returns a 404 not found") {
+          whenever(getPhysicalCharacteristicsForPersonService.execute(sanitisedHmppsId, filters)).thenReturn(
+            Response(
+              data = null,
+              errors =
+                listOf(
+                  UpstreamApiError(
+                    causedBy = UpstreamApi.PRISONER_OFFENDER_SEARCH,
+                    type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+                  ),
+                ),
+            ),
+          )
+          val result = mockMvc.performAuthorised(path)
+          result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
+        }
+
+        it("returns 503 service not available when feature flag set to false") {
+          whenever(featureFlagConfig.usePhysicalCharacteristicsEndpoints).thenReturn(false)
+          val result = mockMvc.performAuthorised(path)
+          result.response.status.shouldBe(HttpStatus.SERVICE_UNAVAILABLE.value())
         }
       }
 
