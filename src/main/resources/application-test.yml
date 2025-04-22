@@ -58,6 +58,7 @@ feature-flag:
   use-arns-endpoints: true
   use-number-of-children-endpoints: true
   use-physical-characteristics-endpoints: true
+  use-image-endpoints: true
 
 authorisation:
   consumers:
@@ -100,6 +101,7 @@ authorisation:
         - "/v1/persons/.*/iep-level"
         - "/v1/persons/.*/number-of-children"
         - "/v1/persons/.*/physical-characteristics"
+        - "/v1/persons/.*/images/.*"
         - "/v1/hmpps/id/nomis-number/[^/]*$"
         - "/v1/hmpps/id/.*/nomis-number"
         - "/v1/hmpps/id/by-nomis-number/[^/]*$"
