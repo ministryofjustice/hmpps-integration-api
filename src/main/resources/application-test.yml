@@ -58,6 +58,7 @@ feature-flag:
   use-arns-endpoints: true
   use-number-of-children-endpoints: true
   use-image-endpoints: true
+  use-education-assessments-endpoints: true
 
 authorisation:
   consumers:

@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.FeatureNotEnabledException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.EducationAssessmentStatusChangeRequest
 
 /**
@@ -21,7 +23,9 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.EducationAs
 @RestController
 @RequestMapping("/v1/persons/{hmppsId}/education")
 @Tags(value = [Tag(name = "persons"), Tag(name = "education")])
-class EducationAssessmentsController {
+class EducationAssessmentsController(
+  private val featureFlag: FeatureFlagConfig,
+) {
   /**
    * API endpoint to notify that a given person/offender has had a change of status to their Education Assessments.
    */
@@ -39,6 +43,10 @@ class EducationAssessmentsController {
     @Parameter(description = "A HMPPS person identifier", example = "A1234AA") @PathVariable hmppsId: String,
     @Valid @RequestBody request: EducationAssessmentStatusChangeRequest,
   ) {
+    if (!featureFlag.useEducationAssessmentsEndpoints) {
+      throw FeatureNotEnabledException(FeatureFlagConfig.USE_EDUCATION_ASSESSMENTS_ENDPOINTS)
+    }
+
     // TODO - implement me
   }
 }
