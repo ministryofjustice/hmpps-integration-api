@@ -39,7 +39,7 @@ class EducationAssessmentsController(
       ApiResponse(responseCode = "404", content = [Content(schema = Schema(ref = "#/components/schemas/PersonNotFound"))]),
     ],
   )
-  fun notifyChangeOfScreeningsAndAssessmentsStatus(
+  fun notifyChangeOfEducationAssessmentsStatus(
     @Parameter(description = "A HMPPS person identifier", example = "A1234AA") @PathVariable hmppsId: String,
     @Valid @RequestBody request: EducationAssessmentStatusChangeRequest,
   ) {

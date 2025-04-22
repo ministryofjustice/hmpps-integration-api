@@ -27,6 +27,11 @@ window.addEventListener("load", (event) => {
       endpoint: 'v1/visit/{visitReference}/cancel',
       method: 'post'
     },
+    {
+      schemaName: 'EducationAssessmentStatusChangeRequest',
+      endpoint: '/v1/persons/{hmppsId}/education/assessments/status',
+      method: 'post'
+    },
   ];
   endpoints.forEach(body => {
     const endpointFormatted = body.endpoint
