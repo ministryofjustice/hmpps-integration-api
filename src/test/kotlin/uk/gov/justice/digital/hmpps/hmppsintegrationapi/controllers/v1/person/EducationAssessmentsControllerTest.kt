@@ -8,9 +8,9 @@ import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.ErrorResponse
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.ValidationErrorResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.MockMvcExtensions.contentAsJson
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
-import java.time.LocalDate
 
 @WebMvcTest(controllers = [EducationAssessmentsController::class])
 @ActiveProfiles("test")
@@ -29,12 +29,13 @@ class EducationAssessmentsControllerTest(
         val requestBody =
           mapOf(
             "status" to "ALL_RELEVANT_ASSESSMENTS_COMPLETE",
-            "statusChangeDate" to LocalDate.now(),
+            "statusChangeDate" to "2025-04-22",
             "detailUrl" to "https://example.com/sequation-virtual-campus2-api/learnerAssessments/v2/A1234AB",
+            "requestId" to "0650ba37-a977-4fbe-9000-4715aaecadba",
           )
 
         // When
-        val response = mockMvc.performAuthorisedPut(apiPath(), requestBody).response
+        val response = mockMvc.performAuthorisedPost(apiPath(), requestBody).response
 
         // Then
         response.status.shouldBe(HttpStatus.OK.value())
@@ -48,10 +49,11 @@ class EducationAssessmentsControllerTest(
             "status" to "ALL_RELEVANT_ASSESSMENTS_COMPLETE",
             "statusChangeDate" to null,
             "detailUrl" to "https://example.com/sequation-virtual-campus2-api/learnerAssessments/v2/A1234AB",
+            "requestId" to "0650ba37-a977-4fbe-9000-4715aaecadba",
           )
 
         // When
-        val response = mockMvc.performAuthorisedPut(apiPath(), requestBody).response
+        val response = mockMvc.performAuthorisedPost(apiPath(), requestBody).response
 
         // Then
         response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
@@ -65,12 +67,13 @@ class EducationAssessmentsControllerTest(
         val requestBody =
           mapOf(
             "status" to "some-invalid-status",
-            "statusChangeDate" to LocalDate.now(),
+            "statusChangeDate" to "2025-04-22",
             "detailUrl" to "https://example.com/sequation-virtual-campus2-api/learnerAssessments/v2/A1234AB",
+            "requestId" to "0650ba37-a977-4fbe-9000-4715aaecadba",
           )
 
         // When
-        val response = mockMvc.performAuthorisedPut(apiPath(), requestBody).response
+        val response = mockMvc.performAuthorisedPost(apiPath(), requestBody).response
 
         // Then
         response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
@@ -84,18 +87,39 @@ class EducationAssessmentsControllerTest(
         val requestBody =
           mapOf(
             "status" to "ALL_RELEVANT_ASSESSMENTS_COMPLETE",
-            "statusChangeDate" to LocalDate.now(),
+            "statusChangeDate" to "2025-04-22",
             "detailUrl" to "not-a-valid-url",
+            "requestId" to "0650ba37-a977-4fbe-9000-4715aaecadba",
           )
 
         // When
-        val response = mockMvc.performAuthorisedPut(apiPath(), requestBody).response
+        val response = mockMvc.performAuthorisedPost(apiPath(), requestBody).response
 
         // Then
         response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
         val errorResponse = response.contentAsJson<ErrorResponse>()
         assertThat(errorResponse.status).isEqualTo(400)
         assertThat(errorResponse.userMessage).isEqualTo("JSON parse error: Cannot deserialize value of type `java.net.URL` from String \"not-a-valid-url\": not a valid textual representation, problem: no protocol: not-a-valid-url")
+      }
+
+      it("should return 400 given blank request ID") {
+        // Given
+        val requestBody =
+          mapOf(
+            "status" to "ALL_RELEVANT_ASSESSMENTS_COMPLETE",
+            "statusChangeDate" to "2025-04-22",
+            "detailUrl" to "https://example.com/sequation-virtual-campus2-api/learnerAssessments/v2/A1234AB",
+            "requestId" to "",
+          )
+
+        // When
+        val response = mockMvc.performAuthorisedPost(apiPath(), requestBody).response
+
+        // Then
+        response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
+        val errorResponse = response.contentAsJson<ValidationErrorResponse>()
+        assertThat(errorResponse.status).isEqualTo(400)
+        assertThat(errorResponse.validationErrors).isEqualTo(listOf("A requestId must be provided"))
       }
     }
   })
