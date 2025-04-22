@@ -36,10 +36,72 @@ internal class ImageControllerTest(
       val hmppsId = "Z99999ZZ"
       val filter = null
 
-      val path = "/v1/persons/${hmppsId}/images/${id}"
       val mockMvc = IntegrationAPIMockMvc(springMockMvc)
 
+      describe("GET /v1/images/id") {
+        val path = "/v1/images/${id}"
+
+        beforeTest {
+          Mockito.reset(getImageService)
+          Mockito.reset(auditService)
+
+          whenever(getImageService.getById(id)).thenReturn(Response(data = image))
+        }
+
+        it("returns a 200 OK status code") {
+          val result = mockMvc.performAuthorised(path)
+
+          result.response.status.shouldBe(HttpStatus.OK.value())
+        }
+
+        it("returns an image with the matching ID") {
+          val result = mockMvc.performAuthorised(path)
+
+          result.response.contentAsByteArray.shouldBe(image)
+        }
+
+        it("logs audit") {
+          mockMvc.performAuthorised(path)
+
+          verify(auditService, VerificationModeFactory.times(1)).createEvent("GET_IMAGE", mapOf("imageId" to id.toString()))
+        }
+
+        it("returns a 404 NOT FOUND status code") {
+          whenever(getImageService.getById(id)).thenReturn(
+            Response(
+              data = byteArrayOf(),
+              errors =
+                listOf(
+                  UpstreamApiError(
+                    causedBy = UpstreamApi.NOMIS,
+                    type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+                  ),
+                ),
+            ),
+          )
+
+          val result = mockMvc.performAuthorised(path)
+          result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
+        }
+
+        it("returns a 500 INTERNAL SERVER ERROR status code when upstream api return expected error") {
+          whenever(getImageService.getById(id)).doThrow(
+            WebClientResponseException(500, "MockError", null, null, null, null),
+          )
+
+          val result = mockMvc.performAuthorised(path)
+          assert(result.response.status == 500)
+          assert(
+            result.response.contentAsString.equals(
+              "{\"status\":500,\"errorCode\":null,\"userMessage\":\"500 MockError\",\"developerMessage\":\"Unable to complete request as an upstream service is not responding\",\"moreInfo\":null}",
+            ),
+          )
+        }
+      }
+
       describe("GET /v1/persons/hmppsId/images/id") {
+        val path = "/v1/persons/${hmppsId}/images/${id}"
+
         beforeTest {
           Mockito.reset(getImageService)
           whenever(featureFlag.useImageEndpoints).thenReturn(true)
@@ -62,7 +124,7 @@ internal class ImageControllerTest(
         it("logs audit") {
           mockMvc.performAuthorised(path)
 
-          verify(auditService, VerificationModeFactory.times(1)).createEvent("GET_PERSON_IMAGE", mapOf("imageId" to id.toString()))
+          verify(auditService, VerificationModeFactory.times(1)).createEvent("GET_PERSON_IMAGE", mapOf(hmppsId to hmppsId, "imageId" to id.toString()))
         }
 
         it("returns a 404 NOT FOUND status code") {

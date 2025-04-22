@@ -13,6 +13,8 @@ class GetImageService(
   @Autowired val nomisGateway: NomisGateway,
   @Autowired val getPersonService: GetPersonService,
 ) {
+  fun getById(id: Int): Response<ByteArray> = nomisGateway.getImageData(id)
+
   fun execute(
     id: Int,
     hmppsId: String,
