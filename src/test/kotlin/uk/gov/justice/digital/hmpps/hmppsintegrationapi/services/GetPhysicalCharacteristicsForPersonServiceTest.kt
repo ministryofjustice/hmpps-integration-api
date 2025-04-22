@@ -21,12 +21,12 @@ import java.time.LocalDate
 
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
-  classes = [GetVisibleCharacteristicsForPersonService::class],
+  classes = [GetPhysicalCharacteristicsForPersonService::class],
 )
-internal class GetVisibleCharacteristicsForPersonServiceTest(
+internal class GetPhysicalCharacteristicsForPersonServiceTest(
   @MockitoBean val prisonerOffenderSearchGateway: PrisonerOffenderSearchGateway,
   @MockitoBean val getPersonService: GetPersonService,
-  private val getVisibleCharacteristicsForPersonService: GetVisibleCharacteristicsForPersonService,
+  private val getPhysicalCharacteristicsForPersonService: GetPhysicalCharacteristicsForPersonService,
 ) : DescribeSpec(
     {
       val hmppsId = "A1234AA"
@@ -82,7 +82,7 @@ internal class GetVisibleCharacteristicsForPersonServiceTest(
               POSBodyMark(bodyPart = "Left Cheek", comment = "Small mole"),
             ),
         )
-      val visibleCharacteristics = posPrisoner.toVisibleCharacteristics()
+      val physicalCharacteristics = posPrisoner.toPhysicalCharacteristics()
 
       beforeEach {
         Mockito.reset(getPersonService)
@@ -93,13 +93,13 @@ internal class GetVisibleCharacteristicsForPersonServiceTest(
       }
 
       it("performs a search according to hmpps Id") {
-        getVisibleCharacteristicsForPersonService.execute(hmppsId, filters)
+        getPhysicalCharacteristicsForPersonService.execute(hmppsId, filters)
         verify(getPersonService, times(1)).getNomisNumberWithPrisonFilter(hmppsId = hmppsId, filters = filters)
       }
 
-      it("should return visible charactertistics from gateway") {
-        val result = getVisibleCharacteristicsForPersonService.execute(hmppsId, filters)
-        result.data.shouldBe(visibleCharacteristics)
+      it("should return physical charactertistics from gateway") {
+        val result = getPhysicalCharacteristicsForPersonService.execute(hmppsId, filters)
+        result.data.shouldBe(physicalCharacteristics)
         result.errors.count().shouldBe(0)
       }
 
@@ -117,7 +117,7 @@ internal class GetVisibleCharacteristicsForPersonServiceTest(
             errors = errors,
           ),
         )
-        val result = getVisibleCharacteristicsForPersonService.execute(hmppsId = "notfound", filters)
+        val result = getPhysicalCharacteristicsForPersonService.execute(hmppsId = "notfound", filters)
         result.data.shouldBe(null)
         result.errors.shouldBe(errors)
       }
@@ -136,7 +136,7 @@ internal class GetVisibleCharacteristicsForPersonServiceTest(
             errors = errors,
           ),
         )
-        val result = getVisibleCharacteristicsForPersonService.execute(hmppsId = "badRequest", filters)
+        val result = getPhysicalCharacteristicsForPersonService.execute(hmppsId = "badRequest", filters)
         result.data.shouldBe(null)
         result.errors.shouldBe(errors)
       }
@@ -156,7 +156,7 @@ internal class GetVisibleCharacteristicsForPersonServiceTest(
           ),
         )
 
-        val result = getVisibleCharacteristicsForPersonService.execute(hmppsId, filters)
+        val result = getPhysicalCharacteristicsForPersonService.execute(hmppsId, filters)
         result.data.shouldBe(null)
         result.errors.shouldBe(errors)
       }

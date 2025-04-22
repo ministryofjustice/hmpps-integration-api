@@ -39,7 +39,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerCon
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisibleCharacteristics
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PhysicalCharacteristics
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitOrders
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSPrisoner
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
@@ -50,7 +50,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetNumberOfChil
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonsService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPrisonerContactsService
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetVisibleCharacteristicsForPersonService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPhysicalCharacteristicsForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetVisitOrdersForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 import java.net.URLEncoder
@@ -72,7 +72,7 @@ internal class PersonControllerTest(
   @MockitoBean val getIEPLevelService: GetIEPLevelService,
   @MockitoBean val getVisitOrdersForPersonService: GetVisitOrdersForPersonService,
   @MockitoBean val getNumberOfChildrenForPersonService: GetNumberOfChildrenForPersonService,
-  @MockitoBean val getVisibleCharacteristicsForPersonService: GetVisibleCharacteristicsForPersonService,
+  @MockitoBean val getPhysicalCharacteristicsForPersonService: GetPhysicalCharacteristicsForPersonService,
   @MockitoBean val featureFlagConfig: FeatureFlagConfig,
 ) : DescribeSpec(
     {
@@ -981,10 +981,10 @@ internal class PersonControllerTest(
         }
       }
 
-      describe("/v1/persons/{hmppsId}/visible-characteristics") {
-        val path = "$basePath/$sanitisedHmppsId/visible-characteristics"
-        val visibleCharacteristics =
-          VisibleCharacteristics(
+      describe("/v1/persons/{hmppsId}/physical-characteristics") {
+        val path = "$basePath/$sanitisedHmppsId/physical-characteristics"
+        val physicalCharacteristics =
+          PhysicalCharacteristics(
             heightCentimetres = 200,
             weightKilograms = 102,
             hairColour = "Blonde",
@@ -1009,20 +1009,20 @@ internal class PersonControllerTest(
           )
 
         beforeTest {
-          Mockito.reset(getVisibleCharacteristicsForPersonService)
+          Mockito.reset(getPhysicalCharacteristicsForPersonService)
           Mockito.reset(auditService)
 
-          whenever(featureFlagConfig.useVisibleCharacteristicsEndpoints).thenReturn(true)
-          whenever(getVisibleCharacteristicsForPersonService.execute(sanitisedHmppsId, filters)).thenReturn(
+          whenever(featureFlagConfig.usePhysicalCharacteristicsEndpoints).thenReturn(true)
+          whenever(getPhysicalCharacteristicsForPersonService.execute(sanitisedHmppsId, filters)).thenReturn(
             Response(
-              data = visibleCharacteristics,
+              data = physicalCharacteristics,
             ),
           )
         }
 
         it("logs audit") {
           mockMvc.performAuthorised(path)
-          verify(auditService, times(1)).createEvent("GET_PERSON_VISIBLE_CHARACTERISTICS", mapOf("hmppsId" to sanitisedHmppsId))
+          verify(auditService, times(1)).createEvent("GET_PERSON_PHYSICAL_CHARACTERISTICS", mapOf("hmppsId" to sanitisedHmppsId))
         }
 
         it("returns a 200 OK status code with data") {
@@ -1067,7 +1067,7 @@ internal class PersonControllerTest(
         }
 
         it("returns a 400 bad request") {
-          whenever(getVisibleCharacteristicsForPersonService.execute(sanitisedHmppsId, filters)).thenReturn(
+          whenever(getPhysicalCharacteristicsForPersonService.execute(sanitisedHmppsId, filters)).thenReturn(
             Response(
               data = null,
               errors =
@@ -1084,7 +1084,7 @@ internal class PersonControllerTest(
         }
 
         it("returns a 404 not found") {
-          whenever(getVisibleCharacteristicsForPersonService.execute(sanitisedHmppsId, filters)).thenReturn(
+          whenever(getPhysicalCharacteristicsForPersonService.execute(sanitisedHmppsId, filters)).thenReturn(
             Response(
               data = null,
               errors =
@@ -1101,7 +1101,7 @@ internal class PersonControllerTest(
         }
 
         it("returns 503 service not available when feature flag set to false") {
-          whenever(featureFlagConfig.useVisibleCharacteristicsEndpoints).thenReturn(false)
+          whenever(featureFlagConfig.usePhysicalCharacteristicsEndpoints).thenReturn(false)
           val result = mockMvc.performAuthorised(path)
           result.response.status.shouldBe(HttpStatus.SERVICE_UNAVAILABLE.value())
         }

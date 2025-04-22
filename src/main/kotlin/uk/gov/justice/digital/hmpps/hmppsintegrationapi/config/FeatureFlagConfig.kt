@@ -7,12 +7,12 @@ data class FeatureFlagConfig(
   val useArnsEndpoints: Boolean,
   val useNumberOfChildrenEndpoints: Boolean,
   val usePrisonFilterImagesEndpoint: Boolean,
-  val useVisibleCharacteristicsEndpoints: Boolean,
+  val usePhysicalCharacteristicsEndpoints: Boolean,
 ) {
   companion object {
     const val USE_ARNS_ENDPOINTS = "use-arns-endpoints"
     const val USE_NUMBER_OF_CHILDREN_ENDPOINTS = "use-number-of-children-endpoints"
     const val USE_PRISON_FILTER_IMAGES_ENDPOINT = "use-prison-filter-images-endpoint"
-    const val USE_VISIBLE_CHARACTERISTICS_ENDPOINTS = "use-visible-characteristics-endpoints"
+    const val USE_PHYSICAL_CHARACTERISTICS_ENDPOINTS = "use-physical-characteristics-endpoints"
   }
 }

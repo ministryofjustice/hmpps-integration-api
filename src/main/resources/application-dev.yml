@@ -40,7 +40,7 @@ feature-flag:
   use-arns-endpoints: true
   use-number-of-children-endpoints: true
   use-prison-filter-images-endpoint: true
-  use-visible-characteristics-endpoints: true
+  use-physical-characteristics-endpoints: true
 
 authorisation:
   consumers:

@@ -3,7 +3,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffender
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Identifiers
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonInPrison
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisibleCharacteristics
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PhysicalCharacteristics
 import java.time.LocalDate
 
 data class POSPrisoner(
@@ -81,8 +81,8 @@ data class POSPrisoner(
       status = this.status,
     )
 
-  fun toVisibleCharacteristics(): VisibleCharacteristics =
-    VisibleCharacteristics(
+  fun toPhysicalCharacteristics(): PhysicalCharacteristics =
+    PhysicalCharacteristics(
       heightCentimetres = this.heightCentimetres,
       weightKilograms = this.weightKilograms,
       hairColour = this.hairColour,

@@ -200,14 +200,14 @@ class PersonIntegrationTest : IntegrationTestBase() {
   }
 
   @Nested
-  inner class GetVisibleCharacteristics {
-    val path = "$basePath/$nomsId/visible-characteristics"
+  inner class GetPhysicalCharacteristics {
+    val path = "$basePath/$nomsId/physical-characteristics"
 
     @Test
-    fun `returns a prisoner's visible characteristics`() {
+    fun `returns a prisoner's physical characteristics`() {
       callApi(path)
         .andExpect(status().isOk)
-        .andExpect(content().json(getExpectedResponse("visible-characteristics")))
+        .andExpect(content().json(getExpectedResponse("physical-characteristics")))
     }
 
     @Test
@@ -224,7 +224,7 @@ class PersonIntegrationTest : IntegrationTestBase() {
 
     @Test
     fun `return a 400 when invalid noms passed in`() {
-      callApi("$basePath/$invalidNomsId/visible-characteristics")
+      callApi("$basePath/$invalidNomsId/physical-characteristics")
         .andExpect(status().isBadRequest)
     }
   }
