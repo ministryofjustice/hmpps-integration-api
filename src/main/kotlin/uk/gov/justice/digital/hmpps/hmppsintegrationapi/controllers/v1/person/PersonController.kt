@@ -18,7 +18,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.decodeUrlCharacters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.featureflags.FeatureFlag
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.featureflags.implementations.FeatureFlagNumberOfChildrenEndpointImpl
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.IEPLevel
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ImageMetadata
@@ -274,7 +273,7 @@ class PersonController(
   }
 
   @GetMapping("{hmppsId}/number-of-children")
-  @FeatureFlag(validators = [FeatureFlagNumberOfChildrenEndpointImpl::class])
+  @FeatureFlag(name = "use-number-of-children-endpoints")
   @Operation(
     summary = "Returns a prisoner's number of children.",
     description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",

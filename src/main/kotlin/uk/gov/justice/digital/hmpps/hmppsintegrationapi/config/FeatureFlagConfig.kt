@@ -11,4 +11,11 @@ data class FeatureFlagConfig(
     const val USE_ARNS_ENDPOINTS = "use-arns-endpoints"
     const val USE_NUMBER_OF_CHILDREN_ENDPOINTS = "use-number-of-children-endpoints"
   }
+
+  fun fromDashSeparatedName(name: String): String? =
+    when (name) {
+      USE_ARNS_ENDPOINTS -> "useArnsEndpoints"
+      USE_NUMBER_OF_CHILDREN_ENDPOINTS -> "useNumberOfChildrenEndpoints"
+      else -> null
+    }
 }
