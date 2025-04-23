@@ -5458,25 +5458,6 @@
 </tr>
 
 <tr>
-<td>404</td>
-<td>
-<p>Not Found</p>
-
-
-
-<pre><code>{
-  "status": 404,
-  "userMessage": "404 Not found error: Could not find person with HMPPS id: 2003/0011991D.",
-  "developerMessage": "Could not find person with HMPPS id: 2003/0011991D."
-}</code></pre>
-
-</td>
-<td>
-<a href='#schema-personnotfound'>PersonNotFound</a>
-</td>
-</tr>
-
-<tr>
 <td>400</td>
 <td>
 <p>Bad Request</p>
@@ -5492,6 +5473,25 @@
 </td>
 <td>
 <a href='#schema-badrequest'>BadRequest</a>
+</td>
+</tr>
+
+<tr>
+<td>404</td>
+<td>
+<p>Not Found</p>
+
+
+
+<pre><code>{
+  "status": 404,
+  "userMessage": "404 Not found error: Could not find person with HMPPS id: 2003/0011991D.",
+  "developerMessage": "Could not find person with HMPPS id: 2003/0011991D."
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-personnotfound'>PersonNotFound</a>
 </td>
 </tr>
 
@@ -15417,7 +15417,7 @@
 <tr>
 <td>prisonOffenderManager</td>
 <td>object</td>
-<td>true</td>
+<td>false</td>
 <td></td>
 <td>
   <a href='#schema-prisonoffendermanager'>PrisonOffenderManager</a>
@@ -15427,7 +15427,7 @@
 <tr>
 <td>communityOffenderManager</td>
 <td>object</td>
-<td>true</td>
+<td>false</td>
 <td></td>
 <td>
   <a href='#schema-communityoffendermanager'>CommunityOffenderManager</a>
