@@ -37,7 +37,7 @@ services:
 feature-flag:
   use-arns-endpoints: false
   use-number-of-children-endpoints: false
-  use-physical-characteristics-endpoints: false
+  use-physical-characteristics-endpoints: true
   use-image-endpoints: true
   use-education-assessments-endpoints: false
 
