@@ -84,20 +84,20 @@ using IntelliJ but other IDEs will prove similar.
 
 1. Clone the repo.
 
-    ```bash
-    git clone git@github.com:ministryofjustice/hmpps-integration-api.git
-    ```
+   ```bash
+   git clone git@github.com:ministryofjustice/hmpps-integration-api.git
+   ```
 
 2. Launch IntelliJ and open the `hmpps-integration-api` project by navigating to the location of the repository.
 
-    Upon opening the project, IntelliJ will begin downloading and installing necessary dependencies which may take a few
-    minutes.
+   Upon opening the project, IntelliJ will begin downloading and installing necessary dependencies which may take a few
+   minutes.
 
 3. Enable pre-commit hooks for formatting and linting code.
 
-    ```bash
-    ./gradlew addKtlintFormatGitPreCommitHook addKtlintCheckGitPreCommitHook
-    ```
+   ```bash
+   ./gradlew addKtlintFormatGitPreCommitHook addKtlintCheckGitPreCommitHook
+   ```
 
 ## Usage
 
@@ -128,32 +128,32 @@ the [NOMIS / Prison API](https://github.com/ministryofjustice/prison-api)
 and [HMPPS Auth](https://github.com/ministryofjustice/hmpps-auth) with Docker
 using [docker-compose](https://docs.docker.com/compose/).
 
-1. Build and start the containers for each service.
+1.  Build and start the containers for each service.
 
     ```bash
     make serve
     ```
-    
+
     Each service is then accessible at:
-    
+
     - [http://localhost:8080](http://localhost:8080) for this application
     - [http://localhost:4010](http://localhost:4010) to [http://localhost:40XX]() for mocked HMPPS APIs
     - [http://localhost:9090](http://localhost:9090) for the HMPPS Auth service
 
-2. To call the integration-api, you need to pass a distinguished name in the `subject-distinguished-name` header. The `CN` attribute should match the client you wish to access the service as.
-The list of clients and their authorised endpoints can be found in [application-local-docker.yml](src/main/resources/application-local-docker.yml).
+2.  To call the integration-api, you need to pass a distinguished name in the `subject-distinguished-name` header. The `CN` attribute should match the client you wish to access the service as.
+    The list of clients and their authorised endpoints can be found in [application-local-docker.yml](src/main/resources/application-local-docker.yml).
 
-    For example,
-    
-    ```bash
-    curl -H "subject-distinguished-name: O=local,CN=all-access" http://localhost:8080/health
-    ```
-    
-    As part of getting the HMPPS Auth service running
-    locally, [the in-memory database is seeded with data including a number of clients](https://github.com/ministryofjustice/hmpps-auth/blob/main/src/main/resources/db/dev/data/auth/V900_0__clients.sql). A client can have different permissions i.e. read, write, reporting, although strangely the column name is called `​​autoapprove`.
+        For example,
 
-3. If you wish to call an endpoint of a dependent API directly, an access token must be provided that is generated from the HMPPS Auth
-   service. Use the following cURL to generate a token for a HMPPS Auth client.
+        ```bash
+        curl -H "subject-distinguished-name: O=local,CN=all-access" http://localhost:8080/health
+        ```
+
+        As part of getting the HMPPS Auth service running
+        locally, [the in-memory database is seeded with data including a number of clients](https://github.com/ministryofjustice/hmpps-auth/blob/main/src/main/resources/db/dev/data/auth/V900_0__clients.sql). A client can have different permissions i.e. read, write, reporting, although strangely the column name is called `​​autoapprove`.
+
+3.  If you wish to call an endpoint of a dependent API directly, an access token must be provided that is generated from the HMPPS Auth
+    service. Use the following cURL to generate a token for a HMPPS Auth client.
 
     ```bash
     curl -X POST "http://localhost:9090/auth/oauth/token?grant_type=client_credentials" \
@@ -163,9 +163,9 @@ The list of clients and their authorised endpoints can be found in [application-
 
     This uses the client ID: `hmpps-integration-api-client` and the client secret: `clientsecret`. A number of seeded
     clients use the same client secret.
-    
+
     A JWT token is returned as a result, it will look like this:
-    
+
     ```json
     {
       "access_token": "eyJhbGciOiJSUzI1NiIs...BAtWD653XpCzn8A",
@@ -180,7 +180,7 @@ The list of clients and their authorised endpoints can be found in [application-
     ```
 
     Using the value of `access_token`, you can call a dependent API using it as a Bearer Token.
-    
+
     There are a couple of options for doing so such as [curl](https://curl.se/),
     [Postman](https://www.postman.com/) and using in-built Swagger UI via the browser e.g.
     for Prison API at [http://localhost:4030/swagger-ui/index.html](http://localhost:4030/swagger-ui/index.html) which documents the
@@ -193,7 +193,7 @@ The testing framework used in this project is [Kotest](https://kotest.io/).
 To run the tests using IntelliJ:
 
 1. Install the [Kotest IntelliJ plugin](https://kotest.io/docs/intellij/intellij-plugin.html). This provides the ability to easily run a test as it provides run buttons (gutter icons) next to each test and test
-file.
+   file.
 2. Click the run button beside a test or test file.
 
 To run unit and integration tests using the command line:
@@ -285,7 +285,7 @@ Note, this will only specifically enable the `RequestLogger`.
 ## Related repositories
 
 | Name                                                                                                   | Purpose                                   |
-|--------------------------------------------------------------------------------------------------------|-------------------------------------------|
+| ------------------------------------------------------------------------------------------------------ | ----------------------------------------- |
 | [HMPPS Integration API Documentation](https://github.com/ministryofjustice/hmpps-integration-api-docs) | Provides documentation for API consumers. |
 
 ## License
