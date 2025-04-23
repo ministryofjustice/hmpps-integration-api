@@ -84,20 +84,20 @@ using IntelliJ but other IDEs will prove similar.
 
 1. Clone the repo.
 
-```bash
-git clone git@github.com:ministryofjustice/hmpps-integration-api.git
-```
+    ```bash
+    git clone git@github.com:ministryofjustice/hmpps-integration-api.git
+    ```
 
 2. Launch IntelliJ and open the `hmpps-integration-api` project by navigating to the location of the repository.
 
-Upon opening the project, IntelliJ will begin downloading and installing necessary dependencies which may take a few
-minutes.
+    Upon opening the project, IntelliJ will begin downloading and installing necessary dependencies which may take a few
+    minutes.
 
 3. Enable pre-commit hooks for formatting and linting code.
 
-```bash
-./gradlew addKtlintFormatGitPreCommitHook addKtlintCheckGitPreCommitHook
-```
+    ```bash
+    ./gradlew addKtlintFormatGitPreCommitHook addKtlintCheckGitPreCommitHook
+    ```
 
 ## Usage
 
@@ -194,11 +194,8 @@ The testing framework used in this project is [Kotest](https://kotest.io/).
 
 To run the tests using IntelliJ:
 
-1. Install the [Kotest IntelliJ plugin](https://kotest.io/docs/intellij/intellij-plugin.html).
-
-This provides the ability to easily run a test as it provides run buttons (gutter icons) next to each test and test
+1. Install the [Kotest IntelliJ plugin](https://kotest.io/docs/intellij/intellij-plugin.html). This provides the ability to easily run a test as it provides run buttons (gutter icons) next to each test and test
 file.
-
 2. Click the run button beside a test or test file.
 
 To run unit and integration tests using the command line:
