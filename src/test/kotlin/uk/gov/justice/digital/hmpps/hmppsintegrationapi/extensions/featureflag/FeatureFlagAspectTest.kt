@@ -38,7 +38,7 @@ class FeatureFlagAspectTest {
   @Test
   fun `test feature flag disabled then throw feature flag not enabled exception`() {
     assertThrows<FeatureNotEnabledException> {
-      featureFlagAspect.checkFeatureFlag(proceedingJoinPoint, FeatureFlag(FeatureFlagConfig.USE_ARNS_ENDPOINTS))
+      featureFlagAspect.checkFeatureFlag(proceedingJoinPoint, FeatureFlag(FeatureFlagConfig.USE_PHYSICAL_CHARACTERISTICS_ENDPOINTS))
     }
     verify(proceedingJoinPoint, times(0)).proceed()
     verifyNoMoreInteractions(proceedingJoinPoint)
