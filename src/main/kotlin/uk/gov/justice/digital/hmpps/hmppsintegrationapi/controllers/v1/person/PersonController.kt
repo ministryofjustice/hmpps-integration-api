@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.FeatureNotEnabledException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.decodeUrlCharacters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.featureflag.FeatureFlag
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
@@ -62,6 +63,7 @@ class PersonController(
   @Autowired val getNumberOfChildrenForPersonService: GetNumberOfChildrenForPersonService,
   @Autowired val getPhysicalCharacteristicsForPersonService: GetPhysicalCharacteristicsForPersonService,
   @Autowired val auditService: AuditService,
+  @Autowired val featureFlag: FeatureFlagConfig,
 ) {
   @GetMapping
   @Operation(
