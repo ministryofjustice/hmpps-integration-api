@@ -51,6 +51,18 @@ This solution is dependent on:
 - [Prisoner Search](https://github.com/ministryofjustice/hmpps-prisoner-search)
 - [Probation Offender Search](https://github.com/ministryofjustice/probation-offender-search)
 - [HMPPS Auth](https://github.com/ministryofjustice/hmpps-auth)
+- [Assess Risks and Needs (ARNS)](https://github.com/ministryofjustice/hmpps-assess-risks-and-needs-coordinator-api)
+- [Adjudications](https://github.com/ministryofjustice/hmpps-manage-adjudications-api)
+- [Case Notes](https://github.com/ministryofjustice/offender-case-notes)
+- [Create and Vary License](https://github.com/ministryofjustice/create-and-vary-a-licence)
+- [Incentives](https://github.com/ministryofjustice/hmpps-incentives-api)
+- [Manage POM Case](https://github.com/ministryofjustice/hmpps-manage-pom-cases-api)
+- [Non-associations](https://github.com/ministryofjustice/hmpps-personal-relationships-api)
+- [Personal Relationships](https://github.com/ministryofjustice/hmpps-personal-relationships-api)
+- [Education and Work Plan](https://github.com/ministryofjustice/hmpps-education-and-work-plan-api)
+- [Prisoner Alerts](https://github.com/ministryofjustice/hmpps-alerts-api)
+- [Manage Prison Visits](https://github.com/ministryofjustice/hmpps-manage-prison-visits-orchestration)
+- [Risk Management](https://github.com/ministryofjustice/hmpps-assess-risks-and-needs)
 
 These things depend upon this solution:
 
