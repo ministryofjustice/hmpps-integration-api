@@ -201,7 +201,7 @@ file.
 
 2. Click the run button beside a test or test file.
 
-To run all tests using the command line:
+To run unit and integration tests using the command line:
 
 ```bash
 make test
@@ -219,11 +219,13 @@ To run integration tests using the command line:
 make integration-test
 ```
 
-To run smoke tests using the command line:
+To run smoke tests against dev using the command line:
 
 ```bash
 make smoke-tests
 ```
+
+Smoke tests require several environment variables to be set up to run so generally should only be run in CircleCI
 
 ### Running the linter
 
