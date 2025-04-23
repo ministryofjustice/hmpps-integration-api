@@ -16,7 +16,14 @@ class FeatureFlagAspectTest {
     mock(ProceedingJoinPoint::class.java).apply {
       `when`(proceed()).thenReturn(Unit)
     }
-  private val featureFlagConfig: FeatureFlagConfig = FeatureFlagConfig(useArnsEndpoints = true, useNumberOfChildrenEndpoints = false)
+  private val featureFlagConfig: FeatureFlagConfig =
+    FeatureFlagConfig(
+      useArnsEndpoints = true,
+      useNumberOfChildrenEndpoints = false,
+      useImageEndpoints = false,
+      useEducationAssessmentsEndpoints = false,
+      usePhysicalCharacteristicsEndpoints = false,
+    )
   private val featureFlagAspect: FeatureFlagAspect =
     FeatureFlagAspect(
       featureFlagConfig = featureFlagConfig,
