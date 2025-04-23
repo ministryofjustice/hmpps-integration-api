@@ -213,6 +213,12 @@ To run unit tests using the command line:
 make unit-test
 ```
 
+To run integration tests using the command line:
+
+```bash
+make integration-test
+```
+
 To run smoke tests using the command line:
 
 ```bash
