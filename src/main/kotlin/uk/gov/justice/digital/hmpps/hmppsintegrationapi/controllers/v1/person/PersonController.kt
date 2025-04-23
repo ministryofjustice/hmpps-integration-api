@@ -59,7 +59,6 @@ class PersonController(
   @Autowired val getVisitOrdersForPersonService: GetVisitOrdersForPersonService,
   @Autowired val getNumberOfChildrenForPersonService: GetNumberOfChildrenForPersonService,
   @Autowired val auditService: AuditService,
-  @Autowired val featureFlag: FeatureFlagConfig,
 ) {
   @GetMapping
   @Operation(
