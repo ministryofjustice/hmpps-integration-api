@@ -22,7 +22,7 @@ class FeatureFlagAspect(
   ): Any {
     val featureFlagName = featureFlag.name
 
-    val featureFlagValue = featureFlagConfig.fromDashSeparatedName(featureFlagName) ?: throw FeatureNotEnabledException("Feature flag not found: $featureFlagName")
+    val featureFlagValue = featureFlagConfig.getConfigFlagValue(featureFlagName) ?: throw FeatureNotEnabledException("Feature flag not found: $featureFlagName")
 
     if (!featureFlagValue) {
       throw FeatureNotEnabledException("Feature flag is disabled: $featureFlagName")
