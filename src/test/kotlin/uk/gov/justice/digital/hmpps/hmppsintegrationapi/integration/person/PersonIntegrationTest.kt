@@ -204,4 +204,34 @@ class PersonIntegrationTest : IntegrationTestBase() {
         .andExpect(status().isBadRequest)
     }
   }
+
+  @Nested
+  inner class GetPhysicalCharacteristics {
+    val path = "$basePath/$nomsId/physical-characteristics"
+
+    @Test
+    fun `returns a prisoner's physical characteristics`() {
+      callApi(path)
+        .andExpect(status().isOk)
+        .andExpect(content().json(getExpectedResponse("physical-characteristics")))
+    }
+
+    @Test
+    fun `return a 404 for person in wrong prison`() {
+      callApiWithCN(path, limitedPrisonsCn)
+        .andExpect(status().isNotFound)
+    }
+
+    @Test
+    fun `return a 404 when no prisons in filter`() {
+      callApiWithCN(path, noPrisonsCn)
+        .andExpect(status().isNotFound)
+    }
+
+    @Test
+    fun `return a 400 when invalid noms passed in`() {
+      callApi("$basePath/$invalidNomsId/physical-characteristics")
+        .andExpect(status().isBadRequest)
+    }
+  }
 }

@@ -39,6 +39,9 @@ services:
 feature-flag:
   use-arns-endpoints: true
   use-number-of-children-endpoints: true
+  use-physical-characteristics-endpoints: true
+  use-image-endpoints: true
+  use-education-assessments-endpoints: true
 
 authorisation:
   consumers:
@@ -158,6 +161,7 @@ authorisation:
         - "/v1/persons/[^/]+/expression-of-interest/jobs/[^/]+$"
         - "/v1/hmpps/id/by-nomis-number/[^/]*$"
         - "/v1/hmpps/id/nomis-number/by-hmpps-id/[^/]*$"
+        - "/v1/persons/.*/education/assessments/status"
       filters:
     moj-esw:
       include:
@@ -188,6 +192,7 @@ authorisation:
         - "/v1/hmpps/id/by-nomis-number/[^/]*$"
         - "/v1/hmpps/id/nomis-number/by-hmpps-id/[^/]*$"
         - "/v1/persons/.*/cell-location"
+        - "/v1/prison/prisoners/[^/]*$" # This has been provided for testing purposes. Approval needed before access can be provided in prod.
       filters:
     abritton:
       include:
