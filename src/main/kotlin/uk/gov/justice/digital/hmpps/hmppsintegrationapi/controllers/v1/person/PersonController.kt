@@ -273,7 +273,7 @@ class PersonController(
   }
 
   @GetMapping("{hmppsId}/number-of-children")
-  @FeatureFlag(name = "use-number-of-children-endpoints")
+  @FeatureFlag(name = FeatureFlagConfig.USE_NUMBER_OF_CHILDREN_ENDPOINTS)
   @Operation(
     summary = "Returns a prisoner's number of children.",
     description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",

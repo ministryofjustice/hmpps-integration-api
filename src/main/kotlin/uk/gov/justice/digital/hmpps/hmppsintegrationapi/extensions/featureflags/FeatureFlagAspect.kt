@@ -22,17 +22,10 @@ class FeatureFlagAspect(
   ): Any {
     val featureFlagName = featureFlag.name
 
-    val nameOfField = featureFlagConfig.fromDashSeparatedName(featureFlagName) ?: throw FeatureNotEnabledException("Feature flag not found: $featureFlagName")
+    val featureFlagValue = featureFlagConfig.fromDashSeparatedName(featureFlagName) ?: throw FeatureNotEnabledException("Feature flag not found: $featureFlagName")
 
-    val fieldValue =
-      FeatureFlagConfig::class
-        .members
-        .firstOrNull { it.name == nameOfField }
-        ?.call(featureFlagConfig) as? Boolean
-        ?: throw FeatureNotEnabledException("Feature flag not found or not a Boolean: $nameOfField")
-
-    if (!fieldValue) {
-      throw FeatureNotEnabledException("Feature flag is disabled: $nameOfField")
+    if (!featureFlagValue) {
+      throw FeatureNotEnabledException("Feature flag is disabled: $featureFlagName")
     }
 
     return joinPoint.proceed()
