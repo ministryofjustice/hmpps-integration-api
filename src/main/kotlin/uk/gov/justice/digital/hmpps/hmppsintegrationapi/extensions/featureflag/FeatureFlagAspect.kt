@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.featureflags
+package uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.featureflag
 
 import org.aspectj.lang.ProceedingJoinPoint
 import org.aspectj.lang.annotation.Around

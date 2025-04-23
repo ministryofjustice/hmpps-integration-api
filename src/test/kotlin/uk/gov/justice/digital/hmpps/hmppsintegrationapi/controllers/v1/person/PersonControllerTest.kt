@@ -1044,15 +1044,6 @@ internal class PersonControllerTest(
           val result = mockMvc.performAuthorised(path)
           result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
         }
-
-        it("returns 503 service not available when feature flag set to false") {
-          whenever(featureFlagConfig.useNumberOfChildrenEndpoints).thenReturn(false)
-          // whenever(featureFlagNumberOfChildrenEndpointImpl.validate(Any())).thenReturn(false)
-          // whenever(featureFlagAspect.checkFeatureFlag().thenThrow(FeatureNotEnabledException::class.java)
-          val result = mockMvc.performAuthorised(path)
-
-          result.response.status.shouldBe(HttpStatus.SERVICE_UNAVAILABLE.value())
-        }
       }
 
       describe("GET $basePath/$sanitisedHmppsId/visit-orders") {

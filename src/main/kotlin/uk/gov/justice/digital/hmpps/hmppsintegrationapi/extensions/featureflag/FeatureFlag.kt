@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.featureflags
+package uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.featureflag
 
 @Target(AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)
