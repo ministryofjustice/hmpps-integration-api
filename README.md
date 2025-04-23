@@ -12,7 +12,7 @@
 - [Get started](#get-started)
   - [Using IntelliJ IDEA](#using-intellij-idea)
 - [Usage](#usage)
-  - [Running the application](#running-the-application)
+  - [Running the application](#running-the-application-locally)
     - [With dependent services](#with-dependent-services)
   - [Running the tests](#running-the-tests)
   - [Running the linter](#running-the-linter)
