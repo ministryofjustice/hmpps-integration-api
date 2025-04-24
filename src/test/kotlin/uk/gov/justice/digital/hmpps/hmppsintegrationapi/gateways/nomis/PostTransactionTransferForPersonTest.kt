@@ -29,8 +29,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
   classes = [PrisonApiGateway::class],
 )
 class PostTransactionTransferForPersonTest(
-    @MockitoBean val hmppsAuthGateway: HmppsAuthGateway,
-    val prisonApiGateway: PrisonApiGateway,
+  @MockitoBean val hmppsAuthGateway: HmppsAuthGateway,
+  val prisonApiGateway: PrisonApiGateway,
 ) : DescribeSpec({
     val nomisApiMockServer = ApiMockServer.create(UpstreamApi.PRISON_API)
     val prisonId = "XYZ"

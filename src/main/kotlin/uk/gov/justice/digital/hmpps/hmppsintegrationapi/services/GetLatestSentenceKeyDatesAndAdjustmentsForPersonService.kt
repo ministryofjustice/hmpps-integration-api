@@ -12,8 +12,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Consum
 
 @Service
 class GetLatestSentenceKeyDatesAndAdjustmentsForPersonService(
-    @Autowired val prisonApiGateway: PrisonApiGateway,
-    private val getPersonService: GetPersonService,
+  @Autowired val prisonApiGateway: PrisonApiGateway,
+  private val getPersonService: GetPersonService,
 ) {
   fun execute(
     hmppsId: String,

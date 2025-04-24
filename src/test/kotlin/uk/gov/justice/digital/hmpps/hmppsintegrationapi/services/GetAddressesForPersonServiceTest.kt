@@ -21,10 +21,10 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
   classes = [GetAddressesForPersonService::class],
 )
 internal class GetAddressesForPersonServiceTest(
-    @MockitoBean val probationOffenderSearchGateway: ProbationOffenderSearchGateway,
-    @MockitoBean val prisonApiGateway: PrisonApiGateway,
-    @MockitoBean val personService: GetPersonService,
-    private val getAddressesForPersonService: GetAddressesForPersonService,
+  @MockitoBean val probationOffenderSearchGateway: ProbationOffenderSearchGateway,
+  @MockitoBean val prisonApiGateway: PrisonApiGateway,
+  @MockitoBean val personService: GetPersonService,
+  private val getAddressesForPersonService: GetAddressesForPersonService,
 ) : DescribeSpec(
     {
       val hmppsId = "A5553AA"

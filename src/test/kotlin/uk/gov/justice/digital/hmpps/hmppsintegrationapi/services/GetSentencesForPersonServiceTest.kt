@@ -23,10 +23,10 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Consum
   classes = [GetSentencesForPersonService::class],
 )
 internal class GetSentencesForPersonServiceTest(
-    @MockitoBean val prisonApiGateway: PrisonApiGateway,
-    @MockitoBean val getPersonService: GetPersonService,
-    @MockitoBean val nDeliusGateway: NDeliusGateway,
-    private val getSentencesForPersonService: GetSentencesForPersonService,
+  @MockitoBean val prisonApiGateway: PrisonApiGateway,
+  @MockitoBean val getPersonService: GetPersonService,
+  @MockitoBean val nDeliusGateway: NDeliusGateway,
+  private val getSentencesForPersonService: GetSentencesForPersonService,
 ) : DescribeSpec(
     {
       val hmppsId = "A1234AA"

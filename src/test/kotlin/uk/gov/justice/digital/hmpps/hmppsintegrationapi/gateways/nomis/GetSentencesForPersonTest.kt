@@ -31,8 +31,8 @@ import java.time.LocalDate
   classes = [PrisonApiGateway::class],
 )
 class GetSentencesForPersonTest(
-    @MockitoBean val hmppsAuthGateway: HmppsAuthGateway,
-    val prisonApiGateway: PrisonApiGateway,
+  @MockitoBean val hmppsAuthGateway: HmppsAuthGateway,
+  val prisonApiGateway: PrisonApiGateway,
 ) : DescribeSpec(
     {
       val nomisApiMockServer = ApiMockServer.create(UpstreamApi.PRISON_API)

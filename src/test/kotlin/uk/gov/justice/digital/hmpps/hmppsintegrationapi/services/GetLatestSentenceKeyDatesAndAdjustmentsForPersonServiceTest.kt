@@ -35,9 +35,9 @@ import java.time.LocalDate
   classes = [GetLatestSentenceKeyDatesAndAdjustmentsForPersonService::class],
 )
 internal class GetLatestSentenceKeyDatesAndAdjustmentsForPersonServiceTest(
-    @MockitoBean val prisonApiGateway: PrisonApiGateway,
-    @MockitoBean val getPersonService: GetPersonService,
-    private val getLatestSentenceKeyDatesAndAdjustmentsForPersonService: GetLatestSentenceKeyDatesAndAdjustmentsForPersonService,
+  @MockitoBean val prisonApiGateway: PrisonApiGateway,
+  @MockitoBean val getPersonService: GetPersonService,
+  private val getLatestSentenceKeyDatesAndAdjustmentsForPersonService: GetLatestSentenceKeyDatesAndAdjustmentsForPersonService,
 ) : DescribeSpec(
     {
       val hmppsId = "A1234AA"

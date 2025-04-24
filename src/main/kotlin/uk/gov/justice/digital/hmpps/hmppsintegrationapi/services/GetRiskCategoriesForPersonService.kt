@@ -9,8 +9,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Consum
 
 @Service
 class GetRiskCategoriesForPersonService(
-    @Autowired val prisonApiGateway: PrisonApiGateway,
-    @Autowired val getPersonService: GetPersonService,
+  @Autowired val prisonApiGateway: PrisonApiGateway,
+  @Autowired val getPersonService: GetPersonService,
 ) {
   fun execute(
     hmppsId: String,

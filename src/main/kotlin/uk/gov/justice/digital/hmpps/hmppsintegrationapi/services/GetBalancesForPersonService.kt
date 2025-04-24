@@ -14,9 +14,9 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Consum
 
 @Service
 class GetBalancesForPersonService(
-    @Autowired val prisonApiGateway: PrisonApiGateway,
-    @Autowired val getPersonService: GetPersonService,
-    @Autowired val consumerPrisonAccessService: ConsumerPrisonAccessService,
+  @Autowired val prisonApiGateway: PrisonApiGateway,
+  @Autowired val getPersonService: GetPersonService,
+  @Autowired val consumerPrisonAccessService: ConsumerPrisonAccessService,
 ) {
   fun execute(
     prisonId: String,

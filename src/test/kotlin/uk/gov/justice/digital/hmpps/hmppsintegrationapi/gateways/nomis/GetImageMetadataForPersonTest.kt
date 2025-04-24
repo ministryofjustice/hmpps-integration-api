@@ -27,8 +27,8 @@ import java.time.LocalDateTime
   classes = [PrisonApiGateway::class],
 )
 class GetImageMetadataForPersonTest(
-    @MockitoBean val hmppsAuthGateway: HmppsAuthGateway,
-    private val prisonApiGateway: PrisonApiGateway,
+  @MockitoBean val hmppsAuthGateway: HmppsAuthGateway,
+  private val prisonApiGateway: PrisonApiGateway,
 ) : DescribeSpec({
     val nomisApiMockServer = ApiMockServer.create(UpstreamApi.PRISON_API)
     val offenderNo = "abc123"

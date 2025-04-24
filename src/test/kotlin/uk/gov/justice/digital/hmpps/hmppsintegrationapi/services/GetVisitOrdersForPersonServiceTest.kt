@@ -21,9 +21,9 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Consum
   classes = [GetVisitOrdersForPersonService::class],
 )
 class GetVisitOrdersForPersonServiceTest(
-    @MockitoBean val prisonApiGateway: PrisonApiGateway,
-    @MockitoBean val getPersonService: GetPersonService,
-    private val getVisitOrdersForPersonService: GetVisitOrdersForPersonService,
+  @MockitoBean val prisonApiGateway: PrisonApiGateway,
+  @MockitoBean val getPersonService: GetPersonService,
+  private val getVisitOrdersForPersonService: GetVisitOrdersForPersonService,
 ) : DescribeSpec({
     val hmppsId = "1234/56789B"
     val nomisNumber = "Z99999ZZ"

@@ -11,9 +11,9 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Consum
 
 @Service
 class GetAddressesForPersonService(
-    @Autowired val prisonApiGateway: PrisonApiGateway,
-    @Autowired val getPersonService: GetPersonService,
-    @Autowired val probationOffenderSearchGateway: ProbationOffenderSearchGateway,
+  @Autowired val prisonApiGateway: PrisonApiGateway,
+  @Autowired val getPersonService: GetPersonService,
+  @Autowired val probationOffenderSearchGateway: ProbationOffenderSearchGateway,
 ) {
   fun execute(
     hmppsId: String,

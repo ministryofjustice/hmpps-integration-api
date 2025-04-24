@@ -15,11 +15,11 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonServic
 
 @Service
 class GetProtectedCharacteristicsService(
-    @Autowired val probationOffenderSearchGateway: ProbationOffenderSearchGateway,
-    @Autowired val prisonerOffenderSearchGateway: PrisonerOffenderSearchGateway,
-    @Autowired val prisonApiGateway: PrisonApiGateway,
-    @Autowired val consumerPrisonAccessService: ConsumerPrisonAccessService,
-    @Autowired val getPersonService: GetPersonService,
+  @Autowired val probationOffenderSearchGateway: ProbationOffenderSearchGateway,
+  @Autowired val prisonerOffenderSearchGateway: PrisonerOffenderSearchGateway,
+  @Autowired val prisonApiGateway: PrisonApiGateway,
+  @Autowired val consumerPrisonAccessService: ConsumerPrisonAccessService,
+  @Autowired val getPersonService: GetPersonService,
 ) {
   fun execute(
     hmppsId: String,

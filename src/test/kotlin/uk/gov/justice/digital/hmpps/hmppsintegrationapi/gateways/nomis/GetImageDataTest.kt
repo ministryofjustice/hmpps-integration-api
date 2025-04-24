@@ -26,8 +26,8 @@ import java.io.File
   classes = [PrisonApiGateway::class],
 )
 class GetImageDataTest(
-    @MockitoBean val hmppsAuthGateway: HmppsAuthGateway,
-    private val prisonApiGateway: PrisonApiGateway,
+  @MockitoBean val hmppsAuthGateway: HmppsAuthGateway,
+  private val prisonApiGateway: PrisonApiGateway,
 ) : DescribeSpec({
     val nomisApiMockServer = ApiMockServer.create(UpstreamApi.PRISON_API)
     val imageId = 5678

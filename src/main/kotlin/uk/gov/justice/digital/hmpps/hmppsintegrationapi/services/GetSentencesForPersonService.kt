@@ -12,9 +12,9 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Consum
 
 @Service
 class GetSentencesForPersonService(
-    @Autowired val prisonApiGateway: PrisonApiGateway,
-    @Autowired val getPersonService: GetPersonService,
-    @Autowired val nDeliusGateway: NDeliusGateway,
+  @Autowired val prisonApiGateway: PrisonApiGateway,
+  @Autowired val getPersonService: GetPersonService,
+  @Autowired val nDeliusGateway: NDeliusGateway,
 ) {
   fun execute(
     hmppsId: String,

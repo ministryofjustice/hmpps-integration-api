@@ -8,14 +8,14 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import java.time.LocalDate
 
 fun generateTestSentence(
-    serviceSource: UpstreamApi = UpstreamApi.PRISON_API,
-    systemSource: SystemSource = SystemSource.PRISON_SYSTEMS,
-    dateOfSentencing: LocalDate? = null,
-    description: String? = "Some description",
-    fineAmount: Number? = null,
-    isActive: Boolean? = true,
-    isCustodial: Boolean = true,
-    length: SentenceLength =
+  serviceSource: UpstreamApi = UpstreamApi.PRISON_API,
+  systemSource: SystemSource = SystemSource.PRISON_SYSTEMS,
+  dateOfSentencing: LocalDate? = null,
+  description: String? = "Some description",
+  fineAmount: Number? = null,
+  isActive: Boolean? = true,
+  isCustodial: Boolean = true,
+  length: SentenceLength =
     SentenceLength(
       duration = null,
       units = null,
