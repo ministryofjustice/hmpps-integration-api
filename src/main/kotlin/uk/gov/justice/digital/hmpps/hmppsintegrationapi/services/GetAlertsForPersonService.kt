@@ -29,7 +29,7 @@ class GetAlertsForPersonService(
     val nomisNumber =
       personResponse.data?.nomisNumber ?: return Response(
         data = null,
-        errors = listOf(UpstreamApiError(UpstreamApi.NOMIS, UpstreamApiError.Type.ENTITY_NOT_FOUND)),
+        errors = listOf(UpstreamApiError(UpstreamApi.PRISON_API, UpstreamApiError.Type.ENTITY_NOT_FOUND)),
       )
 
     val alertsResponse = prisonerAlertsGateway.getPrisonerAlerts(nomisNumber, page, size = perPage)

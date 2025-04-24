@@ -11,7 +11,7 @@ import org.springframework.boot.test.context.ConfigDataApplicationContextInitial
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NomisGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonApiGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.generateTestOffence
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Identifiers
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
@@ -25,10 +25,10 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Consum
   classes = [GetOffencesForPersonService::class],
 )
 internal class GetOffencesForPersonServiceTest(
-  @MockitoBean val nomisGateway: NomisGateway,
-  @MockitoBean val getPersonService: GetPersonService,
-  @MockitoBean val nDeliusGateway: NDeliusGateway,
-  private val getOffencesForPersonService: GetOffencesForPersonService,
+    @MockitoBean val prisonApiGateway: PrisonApiGateway,
+    @MockitoBean val getPersonService: GetPersonService,
+    @MockitoBean val nDeliusGateway: NDeliusGateway,
+    private val getOffencesForPersonService: GetOffencesForPersonService,
 ) : DescribeSpec(
     {
       val hmppsId = "A1234AA"
@@ -50,7 +50,7 @@ internal class GetOffencesForPersonServiceTest(
 
       beforeEach {
         Mockito.reset(getPersonService)
-        Mockito.reset(nomisGateway)
+        Mockito.reset(prisonApiGateway)
         Mockito.reset(nDeliusGateway)
 
         whenever(getPersonService.execute(hmppsId = hmppsId)).thenReturn(
@@ -64,7 +64,7 @@ internal class GetOffencesForPersonServiceTest(
           ),
         )
 
-        whenever(nomisGateway.getOffencesForPerson(prisonerNumber)).thenReturn(
+        whenever(prisonApiGateway.getOffencesForPerson(prisonerNumber)).thenReturn(
           Response(
             data =
               listOf(
@@ -110,7 +110,7 @@ internal class GetOffencesForPersonServiceTest(
       it("gets offences from NOMIS using a prisoner number") {
         getOffencesForPersonService.execute(hmppsId, filters)
 
-        verify(nomisGateway, VerificationModeFactory.times(1)).getOffencesForPerson(prisonerNumber)
+        verify(prisonApiGateway, VerificationModeFactory.times(1)).getOffencesForPerson(prisonerNumber)
       }
 
       it("gets offences from nDelius using a CRN") {
@@ -179,7 +179,7 @@ internal class GetOffencesForPersonServiceTest(
 
         it("does not get offences from Nomis") {
           getOffencesForPersonService.execute(hmppsId, filters)
-          verify(nomisGateway, VerificationModeFactory.times(0)).getOffencesForPerson(id = prisonerNumber)
+          verify(prisonApiGateway, VerificationModeFactory.times(0)).getOffencesForPerson(id = prisonerNumber)
         }
 
         it("does not get offences from nDelius") {
@@ -202,13 +202,13 @@ internal class GetOffencesForPersonServiceTest(
           ),
         )
 
-        whenever(nomisGateway.getOffencesForPerson(id = prisonerNumber)).thenReturn(
+        whenever(prisonApiGateway.getOffencesForPerson(id = prisonerNumber)).thenReturn(
           Response(
             data = emptyList(),
             errors =
               listOf(
                 UpstreamApiError(
-                  causedBy = UpstreamApi.NOMIS,
+                  causedBy = UpstreamApi.PRISON_API,
                   type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
                 ),
               ),

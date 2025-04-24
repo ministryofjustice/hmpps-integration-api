@@ -3,7 +3,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.ConsumerPrisonAccessService
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NomisGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonApiGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.TransactionTransferCreateResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.TransactionTransferRequest
@@ -13,9 +13,9 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Consum
 
 @Service
 class PostTransactionTransferForPersonService(
-  @Autowired val nomisGateway: NomisGateway,
-  @Autowired val getPersonService: GetPersonService,
-  @Autowired val consumerPrisonAccessService: ConsumerPrisonAccessService,
+    @Autowired val prisonApiGateway: PrisonApiGateway,
+    @Autowired val getPersonService: GetPersonService,
+    @Autowired val consumerPrisonAccessService: ConsumerPrisonAccessService,
 ) {
   fun execute(
     prisonId: String,
@@ -31,7 +31,7 @@ class PostTransactionTransferForPersonService(
         errors =
           listOf(
             UpstreamApiError(
-              causedBy = UpstreamApi.NOMIS,
+              causedBy = UpstreamApi.PRISON_API,
               type = UpstreamApiError.Type.BAD_REQUEST,
               description = "Invalid from and/or to accounts provided",
             ),
@@ -53,7 +53,7 @@ class PostTransactionTransferForPersonService(
     }
 
     val response =
-      nomisGateway.postTransactionTransferForPerson(
+      prisonApiGateway.postTransactionTransferForPerson(
         prisonId,
         nomisNumber,
         transactionTransferRequest,

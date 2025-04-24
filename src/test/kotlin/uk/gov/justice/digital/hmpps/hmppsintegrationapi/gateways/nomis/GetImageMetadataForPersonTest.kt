@@ -14,7 +14,7 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NomisGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonApiGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
@@ -24,13 +24,13 @@ import java.time.LocalDateTime
 @ActiveProfiles("test")
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
-  classes = [NomisGateway::class],
+  classes = [PrisonApiGateway::class],
 )
 class GetImageMetadataForPersonTest(
-  @MockitoBean val hmppsAuthGateway: HmppsAuthGateway,
-  private val nomisGateway: NomisGateway,
+    @MockitoBean val hmppsAuthGateway: HmppsAuthGateway,
+    private val prisonApiGateway: PrisonApiGateway,
 ) : DescribeSpec({
-    val nomisApiMockServer = ApiMockServer.create(UpstreamApi.NOMIS)
+    val nomisApiMockServer = ApiMockServer.create(UpstreamApi.PRISON_API)
     val offenderNo = "abc123"
     val imagePath = "/api/images/offenders/$offenderNo"
     beforeEach {
@@ -68,13 +68,13 @@ class GetImageMetadataForPersonTest(
     }
 
     it("authenticates using HMPPS Auth with credentials") {
-      nomisGateway.getImageMetadataForPerson(offenderNo)
+      prisonApiGateway.getImageMetadataForPerson(offenderNo)
 
       verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("NOMIS")
     }
 
     it("returns image metadata for the matching person ID") {
-      val response = nomisGateway.getImageMetadataForPerson(offenderNo)
+      val response = prisonApiGateway.getImageMetadataForPerson(offenderNo)
 
       response.data[0].id.shouldBe(24299)
       response.data[0].active.shouldBe(true)
@@ -92,7 +92,7 @@ class GetImageMetadataForPersonTest(
     }
 
     it("returns sorted by newest date image metadata for the matching person ID") {
-      val response = nomisGateway.getImageMetadataForPerson(offenderNo)
+      val response = prisonApiGateway.getImageMetadataForPerson(offenderNo)
 
       response.data[0].captureDateTime.shouldBe(LocalDateTime.parse("2010-08-27T16:35:00"))
       response.data[1].captureDateTime.shouldBe(LocalDateTime.parse("2008-08-27T16:35:00"))
@@ -101,7 +101,7 @@ class GetImageMetadataForPersonTest(
     it("returns a person without image metadata when no images are found") {
       nomisApiMockServer.stubForGet(imagePath, "[]")
 
-      val response = nomisGateway.getImageMetadataForPerson(offenderNo)
+      val response = prisonApiGateway.getImageMetadataForPerson(offenderNo)
 
       response.data.shouldBeEmpty()
     }
@@ -109,13 +109,13 @@ class GetImageMetadataForPersonTest(
     it("returns an error when 404 Not Found is returned") {
       nomisApiMockServer.stubForGet(imagePath, "", HttpStatus.NOT_FOUND)
 
-      val response = nomisGateway.getImageMetadataForPerson(offenderNo)
+      val response = prisonApiGateway.getImageMetadataForPerson(offenderNo)
 
       response.errors.shouldHaveSize(1)
       response.errors
         .first()
         .causedBy
-        .shouldBe(UpstreamApi.NOMIS)
+        .shouldBe(UpstreamApi.PRISON_API)
       response.errors
         .first()
         .type

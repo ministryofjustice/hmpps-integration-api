@@ -10,7 +10,7 @@ import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NomisGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonApiGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ProbationOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Identifiers
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ImageMetadata
@@ -27,7 +27,7 @@ import java.time.LocalDateTime
   classes = [GetImageMetadataForPersonService::class],
 )
 internal class GetImageMetadataForPersonServiceTest(
-  @MockitoBean val nomisGateway: NomisGateway,
+  @MockitoBean val prisonApiGateway: PrisonApiGateway,
   @MockitoBean val probationOffenderSearchGateway: ProbationOffenderSearchGateway,
   @MockitoBean val getPersonService: GetPersonService,
   private val getImageMetadataForPersonService: GetImageMetadataForPersonService,
@@ -37,7 +37,7 @@ internal class GetImageMetadataForPersonServiceTest(
     val filters = null
 
     beforeEach {
-      Mockito.reset(nomisGateway)
+      Mockito.reset(prisonApiGateway)
       whenever(getPersonService.getNomisNumberWithPrisonFilter(hmppsId, filters)).thenReturn(
         Response(
           data = NomisNumber(prisonerNumber),
@@ -46,7 +46,7 @@ internal class GetImageMetadataForPersonServiceTest(
       whenever(probationOffenderSearchGateway.getPerson(id = hmppsId)).thenReturn(
         Response(data = PersonOnProbation(Person(firstName = "Joey", lastName = "Tribbiani", identifiers = Identifiers(nomisNumber = prisonerNumber)), false)),
       )
-      whenever(nomisGateway.getImageMetadataForPerson(prisonerNumber)).thenReturn(Response(data = emptyList()))
+      whenever(prisonApiGateway.getImageMetadataForPerson(prisonerNumber)).thenReturn(Response(data = emptyList()))
     }
 
     it("gets prisoner ID from Person service") {
@@ -58,7 +58,7 @@ internal class GetImageMetadataForPersonServiceTest(
     it("gets images details from NOMIS") {
       getImageMetadataForPersonService.execute(hmppsId, filters)
 
-      verify(nomisGateway, VerificationModeFactory.times(1)).getImageMetadataForPerson(prisonerNumber)
+      verify(prisonApiGateway, VerificationModeFactory.times(1)).getImageMetadataForPerson(prisonerNumber)
     }
 
     it("returns metadata for a persons images") {
@@ -73,7 +73,7 @@ internal class GetImageMetadataForPersonServiceTest(
             type = "OFF_BKG",
           ),
         )
-      whenever(nomisGateway.getImageMetadataForPerson(prisonerNumber)).thenReturn(Response(data = imageMetadataFromNomis))
+      whenever(prisonApiGateway.getImageMetadataForPerson(prisonerNumber)).thenReturn(Response(data = imageMetadataFromNomis))
 
       val response = getImageMetadataForPersonService.execute(hmppsId, filters)
 
@@ -87,7 +87,7 @@ internal class GetImageMetadataForPersonServiceTest(
           errors =
             listOf(
               UpstreamApiError(
-                causedBy = UpstreamApi.NOMIS,
+                causedBy = UpstreamApi.PRISON_API,
                 type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
               ),
             ),
@@ -100,7 +100,7 @@ internal class GetImageMetadataForPersonServiceTest(
       response.errors
         .first()
         .causedBy
-        .shouldBe(UpstreamApi.NOMIS)
+        .shouldBe(UpstreamApi.PRISON_API)
       response.errors
         .first()
         .type
@@ -108,13 +108,13 @@ internal class GetImageMetadataForPersonServiceTest(
     }
 
     it("returns the error from NOMIS when an error occurs") {
-      whenever(nomisGateway.getImageMetadataForPerson(prisonerNumber)).thenReturn(
+      whenever(prisonApiGateway.getImageMetadataForPerson(prisonerNumber)).thenReturn(
         Response(
           data = emptyList(),
           errors =
             listOf(
               UpstreamApiError(
-                causedBy = UpstreamApi.NOMIS,
+                causedBy = UpstreamApi.PRISON_API,
                 type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
               ),
             ),
@@ -127,7 +127,7 @@ internal class GetImageMetadataForPersonServiceTest(
       response.errors
         .first()
         .causedBy
-        .shouldBe(UpstreamApi.NOMIS)
+        .shouldBe(UpstreamApi.PRISON_API)
       response.errors
         .first()
         .type

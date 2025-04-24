@@ -13,7 +13,7 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NomisGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonApiGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
@@ -22,14 +22,14 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 @ActiveProfiles("test")
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
-  classes = [NomisGateway::class],
+  classes = [PrisonApiGateway::class],
 )
 class GetLatestSentenceAdjustmentsForPersonTest(
-  @MockitoBean val hmppsAuthGateway: HmppsAuthGateway,
-  private val nomisGateway: NomisGateway,
+    @MockitoBean val hmppsAuthGateway: HmppsAuthGateway,
+    private val prisonApiGateway: PrisonApiGateway,
 ) : DescribeSpec(
     {
-      val nomisApiMockServer = ApiMockServer.create(UpstreamApi.NOMIS)
+      val nomisApiMockServer = ApiMockServer.create(UpstreamApi.PRISON_API)
       val offenderNo = "abc123"
       val sentenceSummaryPath = "/api/offenders/$offenderNo/booking/latest/sentence-summary"
       beforeEach {
@@ -66,13 +66,13 @@ class GetLatestSentenceAdjustmentsForPersonTest(
       }
 
       it("authenticates using HMPPS Auth with credentials") {
-        nomisGateway.getLatestSentenceAdjustmentsForPerson(offenderNo)
+        prisonApiGateway.getLatestSentenceAdjustmentsForPerson(offenderNo)
 
         verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("NOMIS")
       }
 
       it("returns sentence adjustments for a person with the matching ID") {
-        val response = nomisGateway.getLatestSentenceAdjustmentsForPerson(offenderNo)
+        val response = prisonApiGateway.getLatestSentenceAdjustmentsForPerson(offenderNo)
 
         response.data?.additionalDaysAwarded.shouldBe(12)
         response.data?.unlawfullyAtLarge.shouldBe(10)
@@ -97,7 +97,7 @@ class GetLatestSentenceAdjustmentsForPersonTest(
           HttpStatus.NOT_FOUND,
         )
 
-        val response = nomisGateway.getLatestSentenceAdjustmentsForPerson(offenderNo)
+        val response = prisonApiGateway.getLatestSentenceAdjustmentsForPerson(offenderNo)
 
         response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND).shouldBeTrue()
       }

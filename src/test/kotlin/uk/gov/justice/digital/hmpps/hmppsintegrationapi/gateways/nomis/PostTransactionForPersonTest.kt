@@ -16,7 +16,7 @@ import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NomisGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonApiGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.TransactionRequest
@@ -26,13 +26,13 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 @ActiveProfiles("test")
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
-  classes = [NomisGateway::class],
+  classes = [PrisonApiGateway::class],
 )
 class PostTransactionForPersonTest(
-  @MockitoBean val hmppsAuthGateway: HmppsAuthGateway,
-  val nomisGateway: NomisGateway,
+    @MockitoBean val hmppsAuthGateway: HmppsAuthGateway,
+    val prisonApiGateway: PrisonApiGateway,
 ) : DescribeSpec({
-    val nomisApiMockServer = ApiMockServer.create(UpstreamApi.NOMIS)
+    val nomisApiMockServer = ApiMockServer.create(UpstreamApi.PRISON_API)
     val prisonId = "XYZ"
     val nomisNumber = "AA1234Z"
     val path = "/api/v1/prison/$prisonId/offenders/$nomisNumber/transactions"
@@ -64,7 +64,7 @@ class PostTransactionForPersonTest(
         """.removeWhitespaceAndNewlines(),
       )
 
-      nomisGateway.postTransactionForPerson(
+      prisonApiGateway.postTransactionForPerson(
         prisonId,
         nomisNumber,
         exampleTransaction,
@@ -85,7 +85,7 @@ class PostTransactionForPersonTest(
       )
 
       val response =
-        nomisGateway.postTransactionForPerson(
+        prisonApiGateway.postTransactionForPerson(
           prisonId,
           nomisNumber,
           exampleTransaction,
@@ -102,18 +102,18 @@ class PostTransactionForPersonTest(
       val invalidTransactionRequest = TransactionRequest("invalid", "", 0, "", "")
       nomisApiMockServer.stubForPost(path, asJsonString(invalidTransactionRequest.toApiConformingMap()), "", HttpStatus.BAD_REQUEST)
 
-      val response = nomisGateway.postTransactionForPerson(prisonId, nomisNumber, invalidTransactionRequest)
+      val response = prisonApiGateway.postTransactionForPerson(prisonId, nomisNumber, invalidTransactionRequest)
 
-      response.errors.shouldBe(arrayOf(UpstreamApiError(causedBy = UpstreamApi.NOMIS, type = UpstreamApiError.Type.BAD_REQUEST)))
+      response.errors.shouldBe(arrayOf(UpstreamApiError(causedBy = UpstreamApi.PRISON_API, type = UpstreamApiError.Type.BAD_REQUEST)))
     }
 
     it("return a 404 error response") {
       val invalidTransactionRequest = TransactionRequest("invalid", "", 0, "", "")
       nomisApiMockServer.stubForPost(path, asJsonString(invalidTransactionRequest.toApiConformingMap()), "", HttpStatus.NOT_FOUND)
 
-      val response = nomisGateway.postTransactionForPerson(prisonId, nomisNumber, invalidTransactionRequest)
+      val response = prisonApiGateway.postTransactionForPerson(prisonId, nomisNumber, invalidTransactionRequest)
 
-      response.errors.shouldBe(arrayOf(UpstreamApiError(causedBy = UpstreamApi.NOMIS, type = UpstreamApiError.Type.ENTITY_NOT_FOUND)))
+      response.errors.shouldBe(arrayOf(UpstreamApiError(causedBy = UpstreamApi.PRISON_API, type = UpstreamApiError.Type.ENTITY_NOT_FOUND)))
     }
 
     it("return a 409 error response") {
@@ -127,9 +127,9 @@ class PostTransactionForPersonTest(
         HttpStatus.CONFLICT,
       )
 
-      val response = nomisGateway.postTransactionForPerson(prisonId, nomisNumber, exampleTransaction)
+      val response = prisonApiGateway.postTransactionForPerson(prisonId, nomisNumber, exampleTransaction)
 
-      response.errors.shouldBe(arrayOf(UpstreamApiError(causedBy = UpstreamApi.NOMIS, type = UpstreamApiError.Type.CONFLICT)))
+      response.errors.shouldBe(arrayOf(UpstreamApiError(causedBy = UpstreamApi.PRISON_API, type = UpstreamApiError.Type.CONFLICT)))
     }
   })
 

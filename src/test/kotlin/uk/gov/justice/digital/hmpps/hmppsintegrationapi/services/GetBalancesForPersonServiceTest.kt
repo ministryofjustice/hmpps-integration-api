@@ -11,7 +11,7 @@ import org.springframework.boot.test.context.ConfigDataApplicationContextInitial
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.ConsumerPrisonAccessService
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NomisGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonApiGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.AccountBalance
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Balance
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Balances
@@ -27,10 +27,10 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Consum
   classes = [GetBalancesForPersonService::class],
 )
 internal class GetBalancesForPersonServiceTest(
-  @MockitoBean val nomisGateway: NomisGateway,
-  @MockitoBean val getPersonService: GetPersonService,
-  @MockitoBean val consumerPrisonAccessService: ConsumerPrisonAccessService,
-  private val getBalancesForPersonService: GetBalancesForPersonService,
+    @MockitoBean val prisonApiGateway: PrisonApiGateway,
+    @MockitoBean val getPersonService: GetPersonService,
+    @MockitoBean val consumerPrisonAccessService: ConsumerPrisonAccessService,
+    private val getBalancesForPersonService: GetBalancesForPersonService,
 ) : DescribeSpec({
     val hmppsId = "1234/56789B"
     val nomisNumber = "Z99999ZZ"
@@ -43,7 +43,7 @@ internal class GetBalancesForPersonServiceTest(
 
     beforeEach {
       Mockito.reset(getPersonService)
-      Mockito.reset(nomisGateway)
+      Mockito.reset(prisonApiGateway)
 
       whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<Balance>(prisonId, null)).thenReturn(
         Response(data = null, errors = emptyList()),
@@ -57,7 +57,7 @@ internal class GetBalancesForPersonServiceTest(
         Response(data = NomisNumber(nomisNumber = nomisNumber)),
       )
 
-      whenever(nomisGateway.getAccountsForPerson(prisonId, nomisNumber)).thenReturn(
+      whenever(prisonApiGateway.getAccountsForPerson(prisonId, nomisNumber)).thenReturn(
         Response(
           data = NomisAccounts(spends = nomisSpends, savings = nomisSavings, cash = nomisCash),
         ),
@@ -87,7 +87,7 @@ internal class GetBalancesForPersonServiceTest(
     it("gets accounts from NOMIS using a prisoner number") {
       getBalancesForPersonService.execute(prisonId, hmppsId)
 
-      verify(nomisGateway, VerificationModeFactory.times(1)).getAccountsForPerson(prisonId, nomisNumber)
+      verify(prisonApiGateway, VerificationModeFactory.times(1)).getAccountsForPerson(prisonId, nomisNumber)
     }
 
     it("returns a person's account balances given a Hmpps ID") {
@@ -125,7 +125,7 @@ internal class GetBalancesForPersonServiceTest(
             listOf(
               UpstreamApiError(
                 type = UpstreamApiError.Type.BAD_REQUEST,
-                causedBy = UpstreamApi.NOMIS,
+                causedBy = UpstreamApi.PRISON_API,
               ),
             ),
         ),
@@ -133,20 +133,20 @@ internal class GetBalancesForPersonServiceTest(
       val response = getBalancesForPersonService.execute(prisonId, hmppsId)
       response
         .hasErrorCausedBy(
-          causedBy = UpstreamApi.NOMIS,
+          causedBy = UpstreamApi.PRISON_API,
           type = UpstreamApiError.Type.BAD_REQUEST,
         ).shouldBe(true)
     }
 
     it("records upstream API errors when getAccountsForPerson returns errors") {
-      whenever(nomisGateway.getAccountsForPerson(prisonId, nomisNumber)).thenReturn(
+      whenever(prisonApiGateway.getAccountsForPerson(prisonId, nomisNumber)).thenReturn(
         Response(
           data = null,
           errors =
             listOf(
               UpstreamApiError(
                 type = UpstreamApiError.Type.BAD_REQUEST,
-                causedBy = UpstreamApi.NOMIS,
+                causedBy = UpstreamApi.PRISON_API,
               ),
             ),
         ),
@@ -154,13 +154,13 @@ internal class GetBalancesForPersonServiceTest(
       val response = getBalancesForPersonService.execute(prisonId, hmppsId)
       response
         .hasErrorCausedBy(
-          causedBy = UpstreamApi.NOMIS,
+          causedBy = UpstreamApi.PRISON_API,
           type = UpstreamApiError.Type.BAD_REQUEST,
         ).shouldBe(true)
     }
 
     it("records data as null and errors as null when getAccountsForPerson returns null data") {
-      whenever(nomisGateway.getAccountsForPerson(prisonId, nomisNumber)).thenReturn(Response(data = null, errors = emptyList()))
+      whenever(prisonApiGateway.getAccountsForPerson(prisonId, nomisNumber)).thenReturn(Response(data = null, errors = emptyList()))
 
       shouldThrow<IllegalStateException> {
         getBalancesForPersonService.execute(prisonId, hmppsId)
@@ -170,12 +170,12 @@ internal class GetBalancesForPersonServiceTest(
     it("returns null when balances are requested from an unapproved prison") {
       val wrongPrisonId = "XYZ"
       whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<Balance>(wrongPrisonId, filters)).thenReturn(
-        Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.NOMIS, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found"))),
+        Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.PRISON_API, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found"))),
       )
       val result = getBalancesForPersonService.execute(wrongPrisonId, hmppsId, filters = filters)
 
       result.data.shouldBe(null)
-      result.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.NOMIS, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found")))
+      result.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.PRISON_API, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found")))
     }
 
     it("returns balances when requested from an approved prison") {
@@ -198,17 +198,17 @@ internal class GetBalancesForPersonServiceTest(
       val result = getBalancesForPersonService.getBalance(prisonId = prisonId, hmppsId = hmppsId, accountCode = wrongAccountCode)
 
       result.data.shouldBe(null)
-      result.errors.shouldBe(listOf(UpstreamApiError(type = UpstreamApiError.Type.BAD_REQUEST, causedBy = UpstreamApi.NOMIS)))
+      result.errors.shouldBe(listOf(UpstreamApiError(type = UpstreamApiError.Type.BAD_REQUEST, causedBy = UpstreamApi.PRISON_API)))
     }
 
     it("returns null when balance is requested from an unapproved prison") {
       val wrongPrisonId = "XYZ"
       whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<Balance>(wrongPrisonId, filters)).thenReturn(
-        Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.NOMIS, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found"))),
+        Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.PRISON_API, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found"))),
       )
       val result = getBalancesForPersonService.getBalance(wrongPrisonId, hmppsId, accountCode, filters)
 
       result.data.shouldBe(null)
-      result.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.NOMIS, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found")))
+      result.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.PRISON_API, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found")))
     }
   })

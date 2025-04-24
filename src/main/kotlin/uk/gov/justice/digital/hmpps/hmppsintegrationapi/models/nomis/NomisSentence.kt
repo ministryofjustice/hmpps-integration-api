@@ -15,7 +15,7 @@ data class NomisSentence(
 ) {
   fun toSentence(): Sentence =
     Sentence(
-      serviceSource = UpstreamApi.NOMIS,
+      serviceSource = UpstreamApi.PRISON_API,
       systemSource = SystemSource.PRISON_SYSTEMS,
       dateOfSentencing = this.sentenceDate,
       description = this.sentenceTypeDescription,

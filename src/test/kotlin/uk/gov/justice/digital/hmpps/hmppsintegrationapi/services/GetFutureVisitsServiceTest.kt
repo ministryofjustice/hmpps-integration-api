@@ -117,7 +117,7 @@ class GetFutureVisitsServiceTest(
     }
 
     it("returns an errors if getPersonWithPrisonFilter returns an error") {
-      val errors = listOf(UpstreamApiError(type = UpstreamApiError.Type.ENTITY_NOT_FOUND, causedBy = UpstreamApi.NOMIS, description = "Person with prison filters error"))
+      val errors = listOf(UpstreamApiError(type = UpstreamApiError.Type.ENTITY_NOT_FOUND, causedBy = UpstreamApi.PRISON_API, description = "Person with prison filters error"))
       whenever(getPersonService.getPersonWithPrisonFilter(hmppsId, filters = null)).thenReturn(
         Response(data = null, errors = errors),
       )
@@ -128,7 +128,7 @@ class GetFutureVisitsServiceTest(
     }
 
     it("returns a 404 if no Nomis number found on the person") {
-      val errors = listOf(UpstreamApiError(type = UpstreamApiError.Type.ENTITY_NOT_FOUND, causedBy = UpstreamApi.NOMIS, description = "No Nomis number found for $hmppsId"))
+      val errors = listOf(UpstreamApiError(type = UpstreamApiError.Type.ENTITY_NOT_FOUND, causedBy = UpstreamApi.PRISON_API, description = "No Nomis number found for $hmppsId"))
       whenever(getPersonService.getPersonWithPrisonFilter(hmppsId, filters = null)).thenReturn(
         Response(data = personWithoutNomisNumber),
       )

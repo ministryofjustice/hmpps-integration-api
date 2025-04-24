@@ -2,7 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NomisGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonApiGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.KeyDatesAndAdjustmentsDTO
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.LatestSentenceKeyDatesAndAdjustments
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
@@ -12,8 +12,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Consum
 
 @Service
 class GetLatestSentenceKeyDatesAndAdjustmentsForPersonService(
-  @Autowired val nomisGateway: NomisGateway,
-  private val getPersonService: GetPersonService,
+    @Autowired val prisonApiGateway: PrisonApiGateway,
+    private val getPersonService: GetPersonService,
 ) {
   fun execute(
     hmppsId: String,
@@ -25,14 +25,14 @@ class GetLatestSentenceKeyDatesAndAdjustmentsForPersonService(
       return Response(data = null, personErrors)
     }
 
-    val nomisNumber = person?.identifiers?.nomisNumber ?: return Response(data = null, errors = listOf(UpstreamApiError(causedBy = UpstreamApi.NOMIS, type = UpstreamApiError.Type.ENTITY_NOT_FOUND)))
+    val nomisNumber = person?.identifiers?.nomisNumber ?: return Response(data = null, errors = listOf(UpstreamApiError(causedBy = UpstreamApi.PRISON_API, type = UpstreamApiError.Type.ENTITY_NOT_FOUND)))
 
     val (latestSentenceKeyDates, latestSentenceKeyDatesErrors) =
-      nomisGateway.getLatestSentenceKeyDatesForPerson(
+      prisonApiGateway.getLatestSentenceKeyDatesForPerson(
         nomisNumber,
       )
     val (latestSentenceAdjustments, latestSentenceAdjustmentsErrors) =
-      nomisGateway.getLatestSentenceAdjustmentsForPerson(
+      prisonApiGateway.getLatestSentenceAdjustmentsForPerson(
         nomisNumber,
       )
 
@@ -47,7 +47,7 @@ class GetLatestSentenceKeyDatesAndAdjustmentsForPersonService(
       )
 
     if (checkLatestSentencesDtoIsNotPopulated(combinedKeyDatesAndAdjustments)) {
-      return Response(data = null, errors = listOf(UpstreamApiError(causedBy = UpstreamApi.NOMIS, type = UpstreamApiError.Type.ENTITY_NOT_FOUND)))
+      return Response(data = null, errors = listOf(UpstreamApiError(causedBy = UpstreamApi.PRISON_API, type = UpstreamApiError.Type.ENTITY_NOT_FOUND)))
     }
 
     return Response(

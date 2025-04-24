@@ -58,7 +58,7 @@ internal class GetHmppsIdServiceTest(
       }
 
       it("Returns an error if getPersonWithPrisonFilter() returns an error") {
-        val errors = listOf(UpstreamApiError(causedBy = UpstreamApi.NOMIS, type = UpstreamApiError.Type.ENTITY_NOT_FOUND, description = "getPersonWithPrisonFilter error"))
+        val errors = listOf(UpstreamApiError(causedBy = UpstreamApi.PRISON_API, type = UpstreamApiError.Type.ENTITY_NOT_FOUND, description = "getPersonWithPrisonFilter error"))
         whenever(getPersonService.getPersonWithPrisonFilter(id, filters)).thenReturn(
           Response(
             data = null,
@@ -77,7 +77,7 @@ internal class GetHmppsIdServiceTest(
           ),
         )
         val result = getHmppsIdService.execute(id, filters)
-        result.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.NOMIS, type = UpstreamApiError.Type.ENTITY_NOT_FOUND)))
+        result.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.PRISON_API, type = UpstreamApiError.Type.ENTITY_NOT_FOUND)))
       }
     },
   )

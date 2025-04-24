@@ -16,7 +16,7 @@ import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NomisGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonApiGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
@@ -25,14 +25,14 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 @ActiveProfiles("test")
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
-  classes = [NomisGateway::class],
+  classes = [PrisonApiGateway::class],
 )
 class GetOffencesForPersonTest(
-  @MockitoBean val hmppsAuthGateway: HmppsAuthGateway,
-  val nomisGateway: NomisGateway,
+    @MockitoBean val hmppsAuthGateway: HmppsAuthGateway,
+    val prisonApiGateway: PrisonApiGateway,
 ) : DescribeSpec(
     {
-      val nomisApiMockServer = ApiMockServer.create(UpstreamApi.NOMIS)
+      val nomisApiMockServer = ApiMockServer.create(UpstreamApi.PRISON_API)
       val offenderNo = "zyx987"
       val offenceHistoryPath = "/api/bookings/offenderNo/$offenderNo/offenceHistory"
       beforeEach {
@@ -71,13 +71,13 @@ class GetOffencesForPersonTest(
       }
 
       it("authenticates using HMPPS Auth with credentials") {
-        nomisGateway.getOffencesForPerson(offenderNo)
+        prisonApiGateway.getOffencesForPerson(offenderNo)
 
         verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("NOMIS")
       }
 
       it("returns offence history for the matching person ID") {
-        val response = nomisGateway.getOffencesForPerson(offenderNo)
+        val response = prisonApiGateway.getOffencesForPerson(offenderNo)
 
         response.data.count().shouldBeGreaterThan(0)
       }
@@ -85,7 +85,7 @@ class GetOffencesForPersonTest(
       it("returns a person with an empty list of offences when no offences are found") {
         nomisApiMockServer.stubForGet(offenceHistoryPath, "[]")
 
-        val response = nomisGateway.getOffencesForPerson(offenderNo)
+        val response = prisonApiGateway.getOffencesForPerson(offenderNo)
 
         response.data.shouldBeEmpty()
       }
@@ -93,13 +93,13 @@ class GetOffencesForPersonTest(
       it("returns an error when 404 Not Found is returned because no person is found") {
         nomisApiMockServer.stubForGet(offenceHistoryPath, "", HttpStatus.NOT_FOUND)
 
-        val response = nomisGateway.getOffencesForPerson(offenderNo)
+        val response = prisonApiGateway.getOffencesForPerson(offenderNo)
 
         response.errors.shouldHaveSize(1)
         response.errors
           .first()
           .causedBy
-          .shouldBe(UpstreamApi.NOMIS)
+          .shouldBe(UpstreamApi.PRISON_API)
         response.errors
           .first()
           .type

@@ -15,7 +15,7 @@ data class NomisOffenceHistoryDetail(
 ) {
   fun toOffence(): Offence =
     Offence(
-      serviceSource = UpstreamApi.NOMIS,
+      serviceSource = UpstreamApi.PRISON_API,
       systemSource = SystemSource.PRISON_SYSTEMS,
       cjsCode = this.offenceCode,
       courtDates = listOf(this.courtDate).filterNotNull(),

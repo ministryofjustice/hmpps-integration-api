@@ -15,7 +15,7 @@ import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NomisGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonApiGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.generateTestSentence
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
@@ -28,14 +28,14 @@ import java.time.LocalDate
 @ActiveProfiles("test")
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
-  classes = [NomisGateway::class],
+  classes = [PrisonApiGateway::class],
 )
 class GetSentencesForPersonTest(
-  @MockitoBean val hmppsAuthGateway: HmppsAuthGateway,
-  val nomisGateway: NomisGateway,
+    @MockitoBean val hmppsAuthGateway: HmppsAuthGateway,
+    val prisonApiGateway: PrisonApiGateway,
 ) : DescribeSpec(
     {
-      val nomisApiMockServer = ApiMockServer.create(UpstreamApi.NOMIS)
+      val nomisApiMockServer = ApiMockServer.create(UpstreamApi.PRISON_API)
       val offenderNo = "zyx987"
       val someBookingId = 1
       val sentecesAndOffencesPath = "/api/offender-sentences/booking/$someBookingId/sentences-and-offences"
@@ -85,13 +85,13 @@ class GetSentencesForPersonTest(
       }
 
       it("authenticates using HMPPS Auth with credentials") {
-        nomisGateway.getSentencesForBooking(someBookingId)
+        prisonApiGateway.getSentencesForBooking(someBookingId)
 
         verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("NOMIS")
       }
 
       it("returns a sentence for a matching bookingId") {
-        val response = nomisGateway.getSentencesForBooking(someBookingId)
+        val response = prisonApiGateway.getSentencesForBooking(someBookingId)
 
         response.data.shouldBe(
           listOf(
@@ -121,13 +121,13 @@ class GetSentencesForPersonTest(
       it("returns an error when 404 Not Found is returned because no person is found") {
         nomisApiMockServer.stubForGet(sentencesPath, "", HttpStatus.NOT_FOUND)
 
-        val response = nomisGateway.getBookingIdsForPerson(offenderNo)
+        val response = prisonApiGateway.getBookingIdsForPerson(offenderNo)
 
         response.errors.shouldHaveSize(1)
         response.errors
           .first()
           .causedBy
-          .shouldBe(UpstreamApi.NOMIS)
+          .shouldBe(UpstreamApi.PRISON_API)
         response.errors
           .first()
           .type
@@ -137,14 +137,14 @@ class GetSentencesForPersonTest(
       it("returns an error when no sentence is found") {
         nomisApiMockServer.stubForGet(sentecesAndOffencesPath, "", HttpStatus.NOT_FOUND)
 
-        val response = nomisGateway.getSentencesForBooking(someBookingId)
+        val response = prisonApiGateway.getSentencesForBooking(someBookingId)
 
         response.data.shouldBeEmpty()
         response.errors.shouldHaveSize(1)
         response.errors
           .first()
           .causedBy
-          .shouldBe(UpstreamApi.NOMIS)
+          .shouldBe(UpstreamApi.PRISON_API)
         response.errors
           .first()
           .type

@@ -14,7 +14,7 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NomisGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonApiGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
@@ -23,14 +23,14 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 @ActiveProfiles("test")
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
-  classes = [NomisGateway::class],
+  classes = [PrisonApiGateway::class],
 )
 class GetReferenceDomainsTest(
-  @MockitoBean val hmppsAuthGateway: HmppsAuthGateway,
-  private val nomisGateway: NomisGateway,
+    @MockitoBean val hmppsAuthGateway: HmppsAuthGateway,
+    private val prisonApiGateway: PrisonApiGateway,
 ) : DescribeSpec(
     {
-      val nomisApiMockServer = ApiMockServer.create(UpstreamApi.NOMIS)
+      val nomisApiMockServer = ApiMockServer.create(UpstreamApi.PRISON_API)
       val testDomain = "abc"
       val domainPath = "/api/reference-domains/domains/$testDomain/codes"
       beforeEach {
@@ -55,13 +55,13 @@ class GetReferenceDomainsTest(
       }
 
       it("authenticates using HMPPS Auth with credentials") {
-        nomisGateway.getReferenceDomains(testDomain)
+        prisonApiGateway.getReferenceDomains(testDomain)
 
         verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("NOMIS")
       }
 
       it("returns reference domains with the matching ID") {
-        val response = nomisGateway.getReferenceDomains(testDomain)
+        val response = prisonApiGateway.getReferenceDomains(testDomain)
 
         response.data.count().shouldBe(3)
         response.data.count { it.domain == "abc" && it.code == "a" }.shouldBe(1)
@@ -72,7 +72,7 @@ class GetReferenceDomainsTest(
       it("returns an empty list when no domains are found") {
         nomisApiMockServer.stubForGet(domainPath, "[]")
 
-        val response = nomisGateway.getReferenceDomains(testDomain)
+        val response = prisonApiGateway.getReferenceDomains(testDomain)
 
         response.data.shouldBeEmpty()
       }
@@ -88,7 +88,7 @@ class GetReferenceDomainsTest(
           HttpStatus.NOT_FOUND,
         )
 
-        val response = nomisGateway.getReferenceDomains(testDomain)
+        val response = prisonApiGateway.getReferenceDomains(testDomain)
 
         response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND).shouldBeTrue()
       }

@@ -3,7 +3,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NomisGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonApiGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Sentence
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
@@ -12,9 +12,9 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Consum
 
 @Service
 class GetSentencesForPersonService(
-  @Autowired val nomisGateway: NomisGateway,
-  @Autowired val getPersonService: GetPersonService,
-  @Autowired val nDeliusGateway: NDeliusGateway,
+    @Autowired val prisonApiGateway: PrisonApiGateway,
+    @Autowired val getPersonService: GetPersonService,
+    @Autowired val nDeliusGateway: NDeliusGateway,
 ) {
   fun execute(
     hmppsId: String,
@@ -30,19 +30,19 @@ class GetSentencesForPersonService(
     if (nomisNumber == null && deliusCrn == null) {
       return Response(
         data = emptyList(),
-        errors = listOf(UpstreamApiError(causedBy = UpstreamApi.NOMIS, type = UpstreamApiError.Type.ENTITY_NOT_FOUND)),
+        errors = listOf(UpstreamApiError(causedBy = UpstreamApi.PRISON_API, type = UpstreamApiError.Type.ENTITY_NOT_FOUND)),
       )
     }
 
     var nomisSentenceResponse = Response<List<Sentence>>(data = emptyList())
     if (nomisNumber != null) {
-      val bookingIdsResponse = nomisGateway.getBookingIdsForPerson(nomisNumber)
+      val bookingIdsResponse = prisonApiGateway.getBookingIdsForPerson(nomisNumber)
       if (bookingIdsResponse.errors.isNotEmpty()) {
         if (!bookingIdsResponse.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
           return Response(data = emptyList(), errors = bookingIdsResponse.errors)
         }
       } else {
-        nomisSentenceResponse = Response.merge(bookingIdsResponse.data.map { nomisGateway.getSentencesForBooking(it.bookingId) })
+        nomisSentenceResponse = Response.merge(bookingIdsResponse.data.map { prisonApiGateway.getSentencesForBooking(it.bookingId) })
         if (nomisSentenceResponse.errors.isNotEmpty() && !nomisSentenceResponse.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
           return Response(data = emptyList(), errors = nomisSentenceResponse.errors)
         }

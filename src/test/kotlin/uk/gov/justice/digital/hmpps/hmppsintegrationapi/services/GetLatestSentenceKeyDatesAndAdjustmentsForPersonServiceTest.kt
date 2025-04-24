@@ -12,7 +12,7 @@ import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NomisGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonApiGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HomeDetentionCurfewDate
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Identifiers
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NonDtoDate
@@ -35,9 +35,9 @@ import java.time.LocalDate
   classes = [GetLatestSentenceKeyDatesAndAdjustmentsForPersonService::class],
 )
 internal class GetLatestSentenceKeyDatesAndAdjustmentsForPersonServiceTest(
-  @MockitoBean val nomisGateway: NomisGateway,
-  @MockitoBean val getPersonService: GetPersonService,
-  private val getLatestSentenceKeyDatesAndAdjustmentsForPersonService: GetLatestSentenceKeyDatesAndAdjustmentsForPersonService,
+    @MockitoBean val prisonApiGateway: PrisonApiGateway,
+    @MockitoBean val getPersonService: GetPersonService,
+    private val getLatestSentenceKeyDatesAndAdjustmentsForPersonService: GetLatestSentenceKeyDatesAndAdjustmentsForPersonService,
 ) : DescribeSpec(
     {
       val hmppsId = "A1234AA"
@@ -46,7 +46,7 @@ internal class GetLatestSentenceKeyDatesAndAdjustmentsForPersonServiceTest(
       val person = Person(firstName = "Test", lastName = "Name", hmppsId = hmppsId, identifiers = Identifiers(nomisNumber = nomisNumber))
 
       beforeEach {
-        Mockito.reset(nomisGateway)
+        Mockito.reset(prisonApiGateway)
         Mockito.reset(getPersonService)
 
         whenever(getPersonService.getPersonWithPrisonFilter(hmppsId, filters)).thenReturn(
@@ -55,7 +55,7 @@ internal class GetLatestSentenceKeyDatesAndAdjustmentsForPersonServiceTest(
           ),
         )
 
-        whenever(nomisGateway.getLatestSentenceKeyDatesForPerson(nomisNumber)).thenReturn(
+        whenever(prisonApiGateway.getLatestSentenceKeyDatesForPerson(nomisNumber)).thenReturn(
           Response(
             data =
               SentenceKeyDates(
@@ -127,7 +127,7 @@ internal class GetLatestSentenceKeyDatesAndAdjustmentsForPersonServiceTest(
               ),
           ),
         )
-        whenever(nomisGateway.getLatestSentenceAdjustmentsForPerson(nomisNumber)).thenReturn(
+        whenever(prisonApiGateway.getLatestSentenceAdjustmentsForPerson(nomisNumber)).thenReturn(
           Response(
             data =
               SentenceAdjustment(
@@ -155,13 +155,13 @@ internal class GetLatestSentenceKeyDatesAndAdjustmentsForPersonServiceTest(
       it("gets latest sentence key dates from NOMIS") {
         getLatestSentenceKeyDatesAndAdjustmentsForPersonService.execute(hmppsId, filters)
 
-        verify(nomisGateway, VerificationModeFactory.times(1)).getLatestSentenceKeyDatesForPerson(id = nomisNumber)
+        verify(prisonApiGateway, VerificationModeFactory.times(1)).getLatestSentenceKeyDatesForPerson(id = nomisNumber)
       }
 
       it("gets latest sentence adjustments from NOMIS") {
         getLatestSentenceKeyDatesAndAdjustmentsForPersonService.execute(hmppsId, filters)
 
-        verify(nomisGateway, VerificationModeFactory.times(1)).getLatestSentenceAdjustmentsForPerson(id = nomisNumber)
+        verify(prisonApiGateway, VerificationModeFactory.times(1)).getLatestSentenceAdjustmentsForPerson(id = nomisNumber)
       }
 
       it("returns latest sentence key dates and adjustments from NOMIS") {
@@ -409,7 +409,7 @@ internal class GetLatestSentenceKeyDatesAndAdjustmentsForPersonServiceTest(
             errors =
               listOf(
                 UpstreamApiError(
-                  causedBy = UpstreamApi.NOMIS,
+                  causedBy = UpstreamApi.PRISON_API,
                   type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
                 ),
               ),
@@ -422,7 +422,7 @@ internal class GetLatestSentenceKeyDatesAndAdjustmentsForPersonServiceTest(
         response.errors
           .first()
           .causedBy
-          .shouldBe(UpstreamApi.NOMIS)
+          .shouldBe(UpstreamApi.PRISON_API)
         response.errors
           .first()
           .type
@@ -430,25 +430,25 @@ internal class GetLatestSentenceKeyDatesAndAdjustmentsForPersonServiceTest(
       }
 
       it("returns all errors when latest sentence key dates and adjustments cannot be found for NOMIS number") {
-        whenever(nomisGateway.getLatestSentenceKeyDatesForPerson(nomisNumber)).thenReturn(
+        whenever(prisonApiGateway.getLatestSentenceKeyDatesForPerson(nomisNumber)).thenReturn(
           Response(
             data = null,
             errors =
               listOf(
                 UpstreamApiError(
-                  causedBy = UpstreamApi.NOMIS,
+                  causedBy = UpstreamApi.PRISON_API,
                   type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
                 ),
               ),
           ),
         )
-        whenever(nomisGateway.getLatestSentenceAdjustmentsForPerson(nomisNumber)).thenReturn(
+        whenever(prisonApiGateway.getLatestSentenceAdjustmentsForPerson(nomisNumber)).thenReturn(
           Response(
             data = null,
             errors =
               listOf(
                 UpstreamApiError(
-                  causedBy = UpstreamApi.NOMIS,
+                  causedBy = UpstreamApi.PRISON_API,
                   type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
                 ),
               ),
@@ -466,7 +466,7 @@ internal class GetLatestSentenceKeyDatesAndAdjustmentsForPersonServiceTest(
         whenever(getPersonService.getPersonWithPrisonFilter(hmppsId, consumerFilters)).thenReturn(
           Response(
             data = null,
-            errors = listOf(UpstreamApiError(UpstreamApi.NOMIS, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found")),
+            errors = listOf(UpstreamApiError(UpstreamApi.PRISON_API, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found")),
           ),
         )
         val result =
@@ -476,7 +476,7 @@ internal class GetLatestSentenceKeyDatesAndAdjustmentsForPersonServiceTest(
           )
 
         result.data.shouldBe(null)
-        result.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.NOMIS, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found")))
+        result.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.PRISON_API, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found")))
       }
 
       it("returns latest key dates and adjustments when the consumer does have access to the persons prison") {
@@ -498,14 +498,14 @@ internal class GetLatestSentenceKeyDatesAndAdjustmentsForPersonServiceTest(
       }
 
       it("returns an entity not found error when key dates and adjustments are null ") {
-        whenever(nomisGateway.getLatestSentenceKeyDatesForPerson(nomisNumber)).thenReturn(
+        whenever(prisonApiGateway.getLatestSentenceKeyDatesForPerson(nomisNumber)).thenReturn(
           Response(
             data = null,
             errors = emptyList(),
           ),
         )
 
-        whenever(nomisGateway.getLatestSentenceAdjustmentsForPerson(nomisNumber)).thenReturn(
+        whenever(prisonApiGateway.getLatestSentenceAdjustmentsForPerson(nomisNumber)).thenReturn(
           Response(
             data = null,
             errors = emptyList(),
@@ -515,7 +515,7 @@ internal class GetLatestSentenceKeyDatesAndAdjustmentsForPersonServiceTest(
         val response = getLatestSentenceKeyDatesAndAdjustmentsForPersonService.execute(hmppsId, filters)
 
         response.errors.shouldHaveSize(1)
-        response.errors.shouldBe(listOf(UpstreamApiError(causedBy = UpstreamApi.NOMIS, type = UpstreamApiError.Type.ENTITY_NOT_FOUND)))
+        response.errors.shouldBe(listOf(UpstreamApiError(causedBy = UpstreamApi.PRISON_API, type = UpstreamApiError.Type.ENTITY_NOT_FOUND)))
       }
     },
   )

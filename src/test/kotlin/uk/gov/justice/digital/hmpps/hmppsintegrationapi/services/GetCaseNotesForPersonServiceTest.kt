@@ -72,7 +72,7 @@ class GetCaseNotesForPersonServiceTest(
           listOf(
             UpstreamApiError(
               type = UpstreamApiError.Type.INTERNAL_SERVER_ERROR,
-              causedBy = UpstreamApi.NOMIS,
+              causedBy = UpstreamApi.PRISON_API,
               description = "Mock error from person service",
             ),
           )
@@ -95,7 +95,7 @@ class GetCaseNotesForPersonServiceTest(
         )
 
         val result = getCaseNoteForPersonService.execute(caseNoteFilter, filters)
-        result.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.NOMIS, UpstreamApiError.Type.ENTITY_NOT_FOUND)))
+        result.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.PRISON_API, UpstreamApiError.Type.ENTITY_NOT_FOUND)))
       }
 
       it("return errors if case notes gateway returns an error") {

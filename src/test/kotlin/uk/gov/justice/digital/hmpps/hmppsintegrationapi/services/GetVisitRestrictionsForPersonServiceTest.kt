@@ -7,7 +7,7 @@ import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NomisGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonApiGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NomisNumber
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonVisitRestriction
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
@@ -20,9 +20,9 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Consum
   classes = [GetVisitRestrictionsForPersonService::class],
 )
 class GetVisitRestrictionsForPersonServiceTest(
-  @MockitoBean val nomisGateway: NomisGateway,
-  @MockitoBean val getPersonService: GetPersonService,
-  private val getVisitRestrictionsForPersonService: GetVisitRestrictionsForPersonService,
+    @MockitoBean val prisonApiGateway: PrisonApiGateway,
+    @MockitoBean val getPersonService: GetPersonService,
+    private val getVisitRestrictionsForPersonService: GetVisitRestrictionsForPersonService,
 ) : DescribeSpec({
     val hmppsId = "1234/56789B"
     val nomisNumber = "Z99999ZZ"
@@ -34,7 +34,7 @@ class GetVisitRestrictionsForPersonServiceTest(
       )
 
     beforeEach {
-      Mockito.reset(nomisGateway)
+      Mockito.reset(prisonApiGateway)
       Mockito.reset(getPersonService)
 
       require(hmppsId.matches(Regex("^[0-9]+/[0-9A-Za-z]+$"))) {
@@ -45,7 +45,7 @@ class GetVisitRestrictionsForPersonServiceTest(
         Response(data = NomisNumber(nomisNumber = nomisNumber)),
       )
 
-      whenever(nomisGateway.getOffenderVisitRestrictions(nomisNumber)).thenReturn(Response(data = examplePersonVisitRestrictions))
+      whenever(prisonApiGateway.getOffenderVisitRestrictions(nomisNumber)).thenReturn(Response(data = examplePersonVisitRestrictions))
     }
 
     it("returns visitor restrictions for a valid HMPPS ID") {
@@ -61,7 +61,7 @@ class GetVisitRestrictionsForPersonServiceTest(
             listOf(
               UpstreamApiError(
                 type = UpstreamApiError.Type.BAD_REQUEST,
-                causedBy = UpstreamApi.NOMIS,
+                causedBy = UpstreamApi.PRISON_API,
               ),
             ),
         ),
@@ -70,7 +70,7 @@ class GetVisitRestrictionsForPersonServiceTest(
       val response = getVisitRestrictionsForPersonService.execute(hmppsId, filters)
       response
         .hasErrorCausedBy(
-          causedBy = UpstreamApi.NOMIS,
+          causedBy = UpstreamApi.PRISON_API,
           type = UpstreamApiError.Type.BAD_REQUEST,
         ).shouldBe(true)
     }
@@ -85,20 +85,20 @@ class GetVisitRestrictionsForPersonServiceTest(
       val response = getVisitRestrictionsForPersonService.execute(hmppsId, filters)
       response
         .hasErrorCausedBy(
-          causedBy = UpstreamApi.NOMIS,
+          causedBy = UpstreamApi.PRISON_API,
           type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
         ).shouldBe(true)
     }
 
     it("return an error when nomisGateway.getOffenderVisitRestrictions returns an error") {
-      whenever(nomisGateway.getOffenderVisitRestrictions(nomisNumber)).thenReturn(
+      whenever(prisonApiGateway.getOffenderVisitRestrictions(nomisNumber)).thenReturn(
         Response(
           data = null,
           errors =
             listOf(
               UpstreamApiError(
                 type = UpstreamApiError.Type.BAD_REQUEST,
-                causedBy = UpstreamApi.NOMIS,
+                causedBy = UpstreamApi.PRISON_API,
               ),
             ),
         ),
@@ -107,7 +107,7 @@ class GetVisitRestrictionsForPersonServiceTest(
       val response = getVisitRestrictionsForPersonService.execute(hmppsId, filters)
       response
         .hasErrorCausedBy(
-          causedBy = UpstreamApi.NOMIS,
+          causedBy = UpstreamApi.PRISON_API,
           type = UpstreamApiError.Type.BAD_REQUEST,
         ).shouldBe(true)
     }

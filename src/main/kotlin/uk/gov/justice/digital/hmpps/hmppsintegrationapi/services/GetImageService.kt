@@ -2,7 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NomisGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonApiGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
@@ -10,10 +10,10 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Consum
 
 @Service
 class GetImageService(
-  @Autowired val nomisGateway: NomisGateway,
+  @Autowired val prisonApiGateway: PrisonApiGateway,
   @Autowired val getPersonService: GetPersonService,
 ) {
-  fun getById(id: Int): Response<ByteArray> = nomisGateway.getImageData(id)
+  fun getById(id: Int): Response<ByteArray> = prisonApiGateway.getImageData(id)
 
   fun execute(
     id: Int,
@@ -28,10 +28,10 @@ class GetImageService(
     val nomisNumber =
       personResponse.data?.nomisNumber ?: return Response(
         data = null,
-        errors = listOf(UpstreamApiError(UpstreamApi.NOMIS, UpstreamApiError.Type.ENTITY_NOT_FOUND)),
+        errors = listOf(UpstreamApiError(UpstreamApi.PRISON_API, UpstreamApiError.Type.ENTITY_NOT_FOUND)),
       )
 
-    val prisonerImageDetails = nomisGateway.getImageMetadataForPerson(nomisNumber)
+    val prisonerImageDetails = prisonApiGateway.getImageMetadataForPerson(nomisNumber)
 
     if (prisonerImageDetails.errors.isNotEmpty()) {
       return Response(data = null, errors = prisonerImageDetails.errors)
@@ -40,10 +40,10 @@ class GetImageService(
     prisonerImageDetails.data.find { it.id.toInt() == id }
       ?: return Response(
         data = null,
-        errors = listOf(UpstreamApiError(UpstreamApi.NOMIS, UpstreamApiError.Type.ENTITY_NOT_FOUND)),
+        errors = listOf(UpstreamApiError(UpstreamApi.PRISON_API, UpstreamApiError.Type.ENTITY_NOT_FOUND)),
       )
 
-    val prisonerImageData = nomisGateway.getImageData(id)
+    val prisonerImageData = prisonApiGateway.getImageData(id)
 
     if (prisonerImageData.errors.isNotEmpty()) {
       return Response(data = null, errors = prisonerImageData.errors)

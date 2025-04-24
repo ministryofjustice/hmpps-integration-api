@@ -28,7 +28,7 @@ internal class ConsumerPrisonAccessServiceTest(
       it("Should return an error when prison id is not in filters") {
         val result =
           consumerPrisonAccessService.checkConsumerHasPrisonAccess<Nothing>("XYZ", ConsumerFilters(listOf("MDI")))
-        result.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.NOMIS, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found")))
+        result.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.PRISON_API, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found")))
       }
 
       it("Should return no errors when prison id is supplied but filters are not") {
@@ -40,7 +40,7 @@ internal class ConsumerPrisonAccessServiceTest(
       it("Should return an error when prison id is null but filters is supplied") {
         val result =
           consumerPrisonAccessService.checkConsumerHasPrisonAccess<Nothing>(null, ConsumerFilters(listOf("MDI")))
-        result.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.NOMIS, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found")))
+        result.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.PRISON_API, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found")))
       }
 
       it("Should return no errors when prison id nor the filters are supplied") {

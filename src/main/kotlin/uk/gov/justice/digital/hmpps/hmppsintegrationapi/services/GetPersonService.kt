@@ -39,7 +39,7 @@ class GetPersonService(
     if (hmppsIdType == IdentifierType.UNKNOWN) {
       return Response(
         data = null,
-        errors = listOf(UpstreamApiError(causedBy = UpstreamApi.NOMIS, type = UpstreamApiError.Type.BAD_REQUEST)),
+        errors = listOf(UpstreamApiError(causedBy = UpstreamApi.PRISON_API, type = UpstreamApiError.Type.BAD_REQUEST)),
       )
     }
 
@@ -60,7 +60,7 @@ class GetPersonService(
       } else {
         return Response(
           data = null,
-          errors = listOf(UpstreamApiError(causedBy = UpstreamApi.NOMIS, type = UpstreamApiError.Type.ENTITY_NOT_FOUND)),
+          errors = listOf(UpstreamApiError(causedBy = UpstreamApi.PRISON_API, type = UpstreamApiError.Type.ENTITY_NOT_FOUND)),
         )
       }
 
@@ -179,7 +179,7 @@ class GetPersonService(
               UpstreamApiError(
                 description = "Invalid HMPPS ID: $hmppsId",
                 type = UpstreamApiError.Type.BAD_REQUEST,
-                causedBy = UpstreamApi.NOMIS,
+                causedBy = UpstreamApi.PRISON_API,
               ),
             ),
         )

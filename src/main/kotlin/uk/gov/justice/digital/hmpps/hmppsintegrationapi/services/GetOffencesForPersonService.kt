@@ -3,7 +3,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NomisGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonApiGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Offence
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
@@ -11,9 +11,9 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Consum
 
 @Service
 class GetOffencesForPersonService(
-  @Autowired val nomisGateway: NomisGateway,
-  @Autowired val nDeliusGateway: NDeliusGateway,
-  @Autowired val getPersonService: GetPersonService,
+    @Autowired val prisonApiGateway: PrisonApiGateway,
+    @Autowired val nDeliusGateway: NDeliusGateway,
+    @Autowired val getPersonService: GetPersonService,
 ) {
   fun execute(
     hmppsId: String,
@@ -27,7 +27,7 @@ class GetOffencesForPersonService(
     if (filters != null) {
       personResponse = getPersonService.getPersonWithPrisonFilter(hmppsId, filters)
       nomisNumber = personResponse.data?.identifiers?.nomisNumber ?: return Response(data = emptyList(), errors = personResponse.errors)
-      nomisOffences = nomisGateway.getOffencesForPerson(nomisNumber)
+      nomisOffences = prisonApiGateway.getOffencesForPerson(nomisNumber)
 
       return Response(
         data = nomisOffences.data,
@@ -39,7 +39,7 @@ class GetOffencesForPersonService(
       val deliusCrn = personResponse.data?.identifiers?.deliusCrn
 
       if (nomisNumber != null) {
-        nomisOffences = nomisGateway.getOffencesForPerson(nomisNumber)
+        nomisOffences = prisonApiGateway.getOffencesForPerson(nomisNumber)
       }
 
       if (deliusCrn != null) {

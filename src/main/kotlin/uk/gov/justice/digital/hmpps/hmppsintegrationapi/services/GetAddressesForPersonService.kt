@@ -2,7 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NomisGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonApiGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ProbationOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Address
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
@@ -11,9 +11,9 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Consum
 
 @Service
 class GetAddressesForPersonService(
-  @Autowired val nomisGateway: NomisGateway,
-  @Autowired val getPersonService: GetPersonService,
-  @Autowired val probationOffenderSearchGateway: ProbationOffenderSearchGateway,
+    @Autowired val prisonApiGateway: PrisonApiGateway,
+    @Autowired val getPersonService: GetPersonService,
+    @Autowired val probationOffenderSearchGateway: ProbationOffenderSearchGateway,
 ) {
   fun execute(
     hmppsId: String,
@@ -31,7 +31,7 @@ class GetAddressesForPersonService(
 
     val nomisNumber = personResponse.data?.nomisNumber ?: return addressesFromDelius
 
-    val addressesFromNomis = nomisGateway.getAddressesForPerson(id = nomisNumber)
+    val addressesFromNomis = prisonApiGateway.getAddressesForPerson(id = nomisNumber)
     if (hasErrorOtherThanEntityNotFound(addressesFromNomis)) {
       return Response(data = emptyList(), errors = addressesFromNomis.errors)
     }

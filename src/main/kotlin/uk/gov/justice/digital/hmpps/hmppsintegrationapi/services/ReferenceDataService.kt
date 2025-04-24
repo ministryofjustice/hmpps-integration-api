@@ -52,7 +52,7 @@ class ReferenceDataService(
           HttpMethod.GET,
           "/api/reference-domains/domains/$domain",
           prisonAuthHeader(),
-          UpstreamApi.NOMIS,
+          UpstreamApi.PRISON_API,
         ).getOrError { (errors) -> return Response(null, errors = listOf(errors)) }
     return Response(data = prisonReferenceData)
   }

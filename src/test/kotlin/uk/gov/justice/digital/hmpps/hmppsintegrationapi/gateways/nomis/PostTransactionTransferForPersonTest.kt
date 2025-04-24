@@ -16,7 +16,7 @@ import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NomisGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonApiGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.TransactionTransferRequest
@@ -26,13 +26,13 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 @ActiveProfiles("test")
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
-  classes = [NomisGateway::class],
+  classes = [PrisonApiGateway::class],
 )
 class PostTransactionTransferForPersonTest(
-  @MockitoBean val hmppsAuthGateway: HmppsAuthGateway,
-  val nomisGateway: NomisGateway,
+    @MockitoBean val hmppsAuthGateway: HmppsAuthGateway,
+    val prisonApiGateway: PrisonApiGateway,
 ) : DescribeSpec({
-    val nomisApiMockServer = ApiMockServer.create(UpstreamApi.NOMIS)
+    val nomisApiMockServer = ApiMockServer.create(UpstreamApi.PRISON_API)
     val prisonId = "XYZ"
     val nomisNumber = "AA1234Z"
     val path = "/api/finance/prison/$prisonId/offenders/$nomisNumber/transfer-to-savings"
@@ -71,7 +71,7 @@ class PostTransactionTransferForPersonTest(
         """.removeWhitespaceAndNewlines(),
       )
 
-      nomisGateway.postTransactionTransferForPerson(
+      prisonApiGateway.postTransactionTransferForPerson(
         prisonId,
         nomisNumber,
         exampleTransfer,
@@ -98,7 +98,7 @@ class PostTransactionTransferForPersonTest(
       )
 
       val response =
-        nomisGateway.postTransactionTransferForPerson(
+        prisonApiGateway.postTransactionTransferForPerson(
           prisonId,
           nomisNumber,
           exampleTransfer,
@@ -126,12 +126,12 @@ class PostTransactionTransferForPersonTest(
         HttpStatus.BAD_REQUEST,
       )
 
-      val response = nomisGateway.postTransactionTransferForPerson(prisonId, nomisNumber, invalidTransferRequest)
+      val response = prisonApiGateway.postTransactionTransferForPerson(prisonId, nomisNumber, invalidTransferRequest)
 
       response.errors.shouldBe(
         arrayOf(
           UpstreamApiError(
-            causedBy = UpstreamApi.NOMIS,
+            causedBy = UpstreamApi.PRISON_API,
             type = UpstreamApiError.Type.BAD_REQUEST,
           ),
         ),
@@ -147,12 +147,12 @@ class PostTransactionTransferForPersonTest(
         HttpStatus.NOT_FOUND,
       )
 
-      val response = nomisGateway.postTransactionTransferForPerson(prisonId, nomisNumber, invalidTransferRequest)
+      val response = prisonApiGateway.postTransactionTransferForPerson(prisonId, nomisNumber, invalidTransferRequest)
 
       response.errors.shouldBe(
         arrayOf(
           UpstreamApiError(
-            causedBy = UpstreamApi.NOMIS,
+            causedBy = UpstreamApi.PRISON_API,
             type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
           ),
         ),
@@ -170,12 +170,12 @@ class PostTransactionTransferForPersonTest(
         HttpStatus.CONFLICT,
       )
 
-      val response = nomisGateway.postTransactionTransferForPerson(prisonId, nomisNumber, exampleTransfer)
+      val response = prisonApiGateway.postTransactionTransferForPerson(prisonId, nomisNumber, exampleTransfer)
 
       response.errors.shouldBe(
         arrayOf(
           UpstreamApiError(
-            causedBy = UpstreamApi.NOMIS,
+            causedBy = UpstreamApi.PRISON_API,
             type = UpstreamApiError.Type.CONFLICT,
           ),
         ),

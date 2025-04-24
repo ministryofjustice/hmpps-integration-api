@@ -38,7 +38,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisTransa
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.visits.VisitBalances
 
 @Component
-class NomisGateway(
+class PrisonApiGateway(
   @Value("\${services.prison-api.base-url}") baseUrl: String,
 ) {
   private val webClient = WebClientWrapper(baseUrl)
@@ -52,7 +52,7 @@ class NomisGateway(
         HttpMethod.GET,
         "api/images/offenders/$id",
         authenticationHeader(),
-        UpstreamApi.NOMIS,
+        UpstreamApi.PRISON_API,
       )
 
     return when (result) {
@@ -70,7 +70,7 @@ class NomisGateway(
   }
 
   fun getImageData(id: Int): Response<ByteArray> {
-    val result = webClient.request<ByteArray>(HttpMethod.GET, "/api/images/$id/data", authenticationHeader(), UpstreamApi.NOMIS)
+    val result = webClient.request<ByteArray>(HttpMethod.GET, "/api/images/$id/data", authenticationHeader(), UpstreamApi.PRISON_API)
 
     return when (result) {
       is WebClientWrapperResponse.Success -> {
@@ -92,7 +92,7 @@ class NomisGateway(
         HttpMethod.GET,
         "/api/offenders/$id/addresses",
         authenticationHeader(),
-        UpstreamApi.NOMIS,
+        UpstreamApi.PRISON_API,
       )
 
     return when (result) {
@@ -115,7 +115,7 @@ class NomisGateway(
         HttpMethod.GET,
         "/api/bookings/offenderNo/$id/offenceHistory",
         authenticationHeader(),
-        UpstreamApi.NOMIS,
+        UpstreamApi.PRISON_API,
       )
     return when (result) {
       is WebClientWrapperResponse.Success -> {
@@ -137,7 +137,7 @@ class NomisGateway(
         HttpMethod.GET,
         "/api/offender-sentences/booking/$id/sentences-and-offences",
         authenticationHeader(),
-        UpstreamApi.NOMIS,
+        UpstreamApi.PRISON_API,
       )
     return when (result) {
       is WebClientWrapperResponse.Success -> {
@@ -159,7 +159,7 @@ class NomisGateway(
         HttpMethod.GET,
         "/api/offender-sentences?offenderNo=$id",
         authenticationHeader(),
-        UpstreamApi.NOMIS,
+        UpstreamApi.PRISON_API,
       )
     return when (result) {
       is WebClientWrapperResponse.Success -> {
@@ -181,7 +181,7 @@ class NomisGateway(
         HttpMethod.GET,
         "/api/offenders/$id/booking/latest/sentence-summary",
         authenticationHeader(),
-        UpstreamApi.NOMIS,
+        UpstreamApi.PRISON_API,
       )
 
     return when (result) {
@@ -208,7 +208,7 @@ class NomisGateway(
         HttpMethod.GET,
         "/api/offenders/$id/sentences",
         authenticationHeader(),
-        UpstreamApi.NOMIS,
+        UpstreamApi.PRISON_API,
       )
 
     return when (result) {
@@ -231,7 +231,7 @@ class NomisGateway(
         HttpMethod.GET,
         "/api/offenders/$id",
         authenticationHeaderForCategories(),
-        UpstreamApi.NOMIS,
+        UpstreamApi.PRISON_API,
       )
 
     return when (result) {
@@ -257,7 +257,7 @@ class NomisGateway(
         HttpMethod.GET,
         "/api/bookings/$booking/reasonable-adjustments$params",
         authenticationHeaderForCategories(),
-        UpstreamApi.NOMIS,
+        UpstreamApi.PRISON_API,
       )
 
     return when (result) {
@@ -279,7 +279,7 @@ class NomisGateway(
         HttpMethod.GET,
         "/api/reference-domains/domains/$domain/codes",
         authenticationHeaderForCategories(),
-        UpstreamApi.NOMIS,
+        UpstreamApi.PRISON_API,
       )
 
     return when (result) {
@@ -304,7 +304,7 @@ class NomisGateway(
         HttpMethod.GET,
         "/api/v1/prison/$prisonId/offenders/$nomisNumber/accounts",
         authenticationHeader(),
-        UpstreamApi.NOMIS,
+        UpstreamApi.PRISON_API,
         badRequestAsError = true,
       )
     return when (result) {
@@ -333,7 +333,7 @@ class NomisGateway(
         HttpMethod.GET,
         "/api/transactions/prison/$prisonId/offenders/$nomisNumber/accounts/$accountCode?from_date=$fromDate&to_date=$toDate",
         authenticationHeader(),
-        UpstreamApi.NOMIS,
+        UpstreamApi.PRISON_API,
       )
     return when (result) {
       is WebClientWrapperResponse.Success -> {
@@ -359,7 +359,7 @@ class NomisGateway(
         HttpMethod.GET,
         "/api/v1/prison/$prisonId/offenders/$nomisNumber/transactions/$clientUniqueRef",
         authenticationHeader(),
-        UpstreamApi.NOMIS,
+        UpstreamApi.PRISON_API,
       )
     return when (result) {
       is WebClientWrapperResponse.Success -> {
@@ -385,7 +385,7 @@ class NomisGateway(
         HttpMethod.POST,
         "/api/v1/prison/$prisonId/offenders/$nomisNumber/transactions",
         authenticationHeader(),
-        UpstreamApi.NOMIS,
+        UpstreamApi.PRISON_API,
         requestBody = transactionRequest.toApiConformingMap(),
         badRequestAsError = true,
       )
@@ -413,7 +413,7 @@ class NomisGateway(
         HttpMethod.POST,
         "/api/finance/prison/$prisonId/offenders/$nomisNumber/transfer-to-savings",
         authenticationHeader(),
-        UpstreamApi.NOMIS,
+        UpstreamApi.PRISON_API,
         requestBody = transactionTransferRequest.toApiConformingMap(),
         badRequestAsError = true,
       )
@@ -437,7 +437,7 @@ class NomisGateway(
         HttpMethod.GET,
         "/api/offenders/$offenderNumber/offender-restrictions",
         authenticationHeader(),
-        UpstreamApi.NOMIS,
+        UpstreamApi.PRISON_API,
         badRequestAsError = true,
       )
     return when (result) {
@@ -460,7 +460,7 @@ class NomisGateway(
         HttpMethod.GET,
         "/api/bookings/offenderNo/$offenderNumber/visit/balances",
         authenticationHeader(),
-        UpstreamApi.NOMIS,
+        UpstreamApi.PRISON_API,
         badRequestAsError = true,
       )
 

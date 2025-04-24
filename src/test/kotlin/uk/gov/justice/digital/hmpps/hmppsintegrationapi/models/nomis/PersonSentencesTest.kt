@@ -184,10 +184,10 @@ class PersonSentencesTest :
 
         it("deals with NULL values") {
           val integrationApiSentence =
-            Sentence(isCustodial = true, serviceSource = UpstreamApi.NOMIS, systemSource = SystemSource.PRISON_SYSTEMS)
+            Sentence(isCustodial = true, serviceSource = UpstreamApi.PRISON_API, systemSource = SystemSource.PRISON_SYSTEMS)
           integrationApiSentence.shouldBe(
             Sentence(
-              serviceSource = UpstreamApi.NOMIS,
+              serviceSource = UpstreamApi.PRISON_API,
               systemSource = SystemSource.PRISON_SYSTEMS,
               dateOfSentencing = null,
               description = null,
