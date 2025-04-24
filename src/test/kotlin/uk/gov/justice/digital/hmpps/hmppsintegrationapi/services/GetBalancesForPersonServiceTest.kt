@@ -19,7 +19,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NomisNumber
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisAccounts
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonApiAccounts
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 @ContextConfiguration(
@@ -59,7 +59,7 @@ internal class GetBalancesForPersonServiceTest(
 
       whenever(prisonApiGateway.getAccountsForPerson(prisonId, nomisNumber)).thenReturn(
         Response(
-          data = NomisAccounts(spends = nomisSpends, savings = nomisSavings, cash = nomisCash),
+          data = PrisonApiAccounts(spends = nomisSpends, savings = nomisSavings, cash = nomisCash),
         ),
       )
     }

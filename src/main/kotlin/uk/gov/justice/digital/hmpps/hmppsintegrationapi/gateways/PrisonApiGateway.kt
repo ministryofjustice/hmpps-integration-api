@@ -21,21 +21,21 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Transaction
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.TransactionTransferRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Transactions
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisAccounts
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisAddress
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisBooking
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisImageDetail
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisInmateDetail
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisOffenceHistoryDetail
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisOffenderSentence
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisOffenderVisitRestrictions
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisReasonableAdjustments
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisReferenceCode
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisSentence
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisSentenceSummary
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisTransactionResponse
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisTransactionTransferResponse
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.visits.VisitBalances
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.NomisOffenderVisitRestrictions
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.NomisTransactionTransferResponse
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonApiAccounts
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonApiAddress
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonApiBooking
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonApiImageDetail
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonApiInmateDetail
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonApiOffenceHistoryDetail
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonApiOffenderSentence
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonApiReasonableAdjustments
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonApiReferenceCode
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonApiSentence
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonApiSentenceSummary
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonApiTransactionResponse
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.visits.VisitBalances
 
 @Component
 class PrisonApiGateway(
@@ -48,7 +48,7 @@ class PrisonApiGateway(
 
   fun getImageMetadataForPerson(id: String): Response<List<ImageMetadata>> {
     val result =
-      webClient.requestList<NomisImageDetail>(
+      webClient.requestList<PrisonApiImageDetail>(
         HttpMethod.GET,
         "api/images/offenders/$id",
         authenticationHeader(),
@@ -88,7 +88,7 @@ class PrisonApiGateway(
 
   fun getAddressesForPerson(id: String): Response<List<Address>> {
     val result =
-      webClient.requestList<NomisAddress>(
+      webClient.requestList<PrisonApiAddress>(
         HttpMethod.GET,
         "/api/offenders/$id/addresses",
         authenticationHeader(),
@@ -111,7 +111,7 @@ class PrisonApiGateway(
 
   fun getOffencesForPerson(id: String): Response<List<Offence>> {
     val result =
-      webClient.requestList<NomisOffenceHistoryDetail>(
+      webClient.requestList<PrisonApiOffenceHistoryDetail>(
         HttpMethod.GET,
         "/api/bookings/offenderNo/$id/offenceHistory",
         authenticationHeader(),
@@ -133,7 +133,7 @@ class PrisonApiGateway(
 
   fun getSentencesForBooking(id: Int): Response<List<Sentence>> {
     val result =
-      webClient.requestList<NomisSentence>(
+      webClient.requestList<PrisonApiSentence>(
         HttpMethod.GET,
         "/api/offender-sentences/booking/$id/sentences-and-offences",
         authenticationHeader(),
@@ -153,9 +153,9 @@ class PrisonApiGateway(
     }
   }
 
-  fun getBookingIdsForPerson(id: String): Response<List<NomisBooking>> {
+  fun getBookingIdsForPerson(id: String): Response<List<PrisonApiBooking>> {
     val result =
-      webClient.requestList<NomisBooking>(
+      webClient.requestList<PrisonApiBooking>(
         HttpMethod.GET,
         "/api/offender-sentences?offenderNo=$id",
         authenticationHeader(),
@@ -177,7 +177,7 @@ class PrisonApiGateway(
 
   fun getLatestSentenceAdjustmentsForPerson(id: String): Response<SentenceAdjustment?> {
     val result =
-      webClient.request<NomisSentenceSummary>(
+      webClient.request<PrisonApiSentenceSummary>(
         HttpMethod.GET,
         "/api/offenders/$id/booking/latest/sentence-summary",
         authenticationHeader(),
@@ -204,7 +204,7 @@ class PrisonApiGateway(
 
   fun getLatestSentenceKeyDatesForPerson(id: String): Response<SentenceKeyDates?> {
     val result =
-      webClient.request<NomisOffenderSentence>(
+      webClient.request<PrisonApiOffenderSentence>(
         HttpMethod.GET,
         "/api/offenders/$id/sentences",
         authenticationHeader(),
@@ -227,7 +227,7 @@ class PrisonApiGateway(
 
   fun getRiskCategoriesForPerson(id: String): Response<RiskCategory?> {
     val result =
-      webClient.request<NomisInmateDetail>(
+      webClient.request<PrisonApiInmateDetail>(
         HttpMethod.GET,
         "/api/offenders/$id",
         authenticationHeaderForCategories(),
@@ -253,7 +253,7 @@ class PrisonApiGateway(
     val codes = treatmentCodes.map { "type=${it.code}" }.toList()
     val params = codes.joinToString(separator = "&", prefix = "?")
     val result =
-      webClient.request<NomisReasonableAdjustments>(
+      webClient.request<PrisonApiReasonableAdjustments>(
         HttpMethod.GET,
         "/api/bookings/$booking/reasonable-adjustments$params",
         authenticationHeaderForCategories(),
@@ -273,9 +273,9 @@ class PrisonApiGateway(
     }
   }
 
-  fun getReferenceDomains(domain: String): Response<List<NomisReferenceCode>> {
+  fun getReferenceDomains(domain: String): Response<List<PrisonApiReferenceCode>> {
     val result =
-      webClient.requestList<NomisReferenceCode>(
+      webClient.requestList<PrisonApiReferenceCode>(
         HttpMethod.GET,
         "/api/reference-domains/domains/$domain/codes",
         authenticationHeaderForCategories(),
@@ -298,9 +298,9 @@ class PrisonApiGateway(
   fun getAccountsForPerson(
     prisonId: String,
     nomisNumber: String?,
-  ): Response<NomisAccounts?> {
+  ): Response<PrisonApiAccounts?> {
     val result =
-      webClient.request<NomisAccounts>(
+      webClient.request<PrisonApiAccounts>(
         HttpMethod.GET,
         "/api/v1/prison/$prisonId/offenders/$nomisNumber/accounts",
         authenticationHeader(),
@@ -379,9 +379,9 @@ class PrisonApiGateway(
     prisonId: String,
     nomisNumber: String,
     transactionRequest: TransactionRequest,
-  ): Response<NomisTransactionResponse?> {
+  ): Response<PrisonApiTransactionResponse?> {
     val result =
-      webClient.requestWithRetry<NomisTransactionResponse>(
+      webClient.requestWithRetry<PrisonApiTransactionResponse>(
         HttpMethod.POST,
         "/api/v1/prison/$prisonId/offenders/$nomisNumber/transactions",
         authenticationHeader(),

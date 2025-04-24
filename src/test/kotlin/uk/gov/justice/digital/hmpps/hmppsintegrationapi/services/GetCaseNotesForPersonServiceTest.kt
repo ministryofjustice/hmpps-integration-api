@@ -16,9 +16,9 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NomisNumber
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisCaseNote
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.OCNCaseNote
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.OCNPagination
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.OCNCaseNote
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.OCNPagination
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonApiCaseNote
 
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
@@ -36,7 +36,7 @@ class GetCaseNotesForPersonServiceTest(
       val filters = null
       val oCNCaseNote =
         OCNCaseNote(
-          content = listOf(NomisCaseNote(caseNoteId = "abcd1234")),
+          content = listOf(PrisonApiCaseNote(caseNoteId = "abcd1234")),
           page = OCNPagination(page = 1, size = 10, totalElements = 10),
         )
 

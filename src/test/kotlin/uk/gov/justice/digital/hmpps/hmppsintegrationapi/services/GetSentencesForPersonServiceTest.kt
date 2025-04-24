@@ -15,7 +15,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisBooking
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonApiBooking
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 @ContextConfiguration(
@@ -165,7 +165,7 @@ internal class GetSentencesForPersonServiceTest(
 
         whenever(prisonApiGateway.getBookingIdsForPerson(nomisNumber)).thenReturn(
           Response(
-            data = listOf(NomisBooking(bookingId = firstBookingId), NomisBooking(bookingId = secondBookingId)),
+            data = listOf(PrisonApiBooking(bookingId = firstBookingId), PrisonApiBooking(bookingId = secondBookingId)),
           ),
         )
 
@@ -208,7 +208,7 @@ internal class GetSentencesForPersonServiceTest(
 
         whenever(prisonApiGateway.getBookingIdsForPerson(nomisNumber)).thenReturn(
           Response(
-            data = listOf(NomisBooking(bookingId = firstBookingId), NomisBooking(bookingId = secondBookingId)),
+            data = listOf(PrisonApiBooking(bookingId = firstBookingId), PrisonApiBooking(bookingId = secondBookingId)),
           ),
         )
 
@@ -232,7 +232,7 @@ internal class GetSentencesForPersonServiceTest(
 
         whenever(prisonApiGateway.getBookingIdsForPerson(nomisNumber)).thenReturn(
           Response(
-            data = listOf(NomisBooking(bookingId = firstBookingId), NomisBooking(bookingId = secondBookingId)),
+            data = listOf(PrisonApiBooking(bookingId = firstBookingId), PrisonApiBooking(bookingId = secondBookingId)),
           ),
         )
 
@@ -260,7 +260,7 @@ internal class GetSentencesForPersonServiceTest(
 
         whenever(prisonApiGateway.getBookingIdsForPerson(nomisNumber)).thenReturn(
           Response(
-            data = listOf(NomisBooking(bookingId = firstBookingId), NomisBooking(bookingId = secondBookingId)),
+            data = listOf(PrisonApiBooking(bookingId = firstBookingId), PrisonApiBooking(bookingId = secondBookingId)),
           ),
         )
 
@@ -310,7 +310,7 @@ internal class GetSentencesForPersonServiceTest(
 
         whenever(prisonApiGateway.getBookingIdsForPerson(nomisNumber)).thenReturn(
           Response(
-            data = listOf(NomisBooking(bookingId = firstBookingId), NomisBooking(bookingId = secondBookingId)),
+            data = listOf(PrisonApiBooking(bookingId = firstBookingId), PrisonApiBooking(bookingId = secondBookingId)),
           ),
         )
 
@@ -356,7 +356,7 @@ internal class GetSentencesForPersonServiceTest(
 
         whenever(prisonApiGateway.getBookingIdsForPerson(nomisNumber)).thenReturn(
           Response(
-            data = listOf(NomisBooking(bookingId = firstBookingId), NomisBooking(bookingId = secondBookingId)),
+            data = listOf(PrisonApiBooking(bookingId = firstBookingId), PrisonApiBooking(bookingId = secondBookingId)),
           ),
         )
 
@@ -380,7 +380,7 @@ internal class GetSentencesForPersonServiceTest(
 
         whenever(prisonApiGateway.getBookingIdsForPerson(nomisNumber)).thenReturn(
           Response(
-            data = listOf(NomisBooking(bookingId = firstBookingId), NomisBooking(bookingId = secondBookingId)),
+            data = listOf(PrisonApiBooking(bookingId = firstBookingId), PrisonApiBooking(bookingId = secondBookingId)),
           ),
         )
 
@@ -430,7 +430,7 @@ internal class GetSentencesForPersonServiceTest(
 
         whenever(prisonApiGateway.getBookingIdsForPerson(nomisNumber)).thenReturn(
           Response(
-            data = listOf(NomisBooking(bookingId = firstBookingId), NomisBooking(bookingId = secondBookingId)),
+            data = listOf(PrisonApiBooking(bookingId = firstBookingId), PrisonApiBooking(bookingId = secondBookingId)),
           ),
         )
 
