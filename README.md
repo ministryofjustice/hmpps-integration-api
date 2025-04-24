@@ -12,7 +12,7 @@
 - [Get started](#get-started)
   - [Using IntelliJ IDEA](#using-intellij-idea)
 - [Usage](#usage)
-  - [Running the application](#running-the-application)
+  - [Running the application](#running-the-application-locally)
     - [With dependent services](#with-dependent-services)
   - [Running the tests](#running-the-tests)
   - [Running the linter](#running-the-linter)
@@ -51,6 +51,18 @@ This solution is dependent on:
 - [Prisoner Search](https://github.com/ministryofjustice/hmpps-prisoner-search)
 - [Probation Offender Search](https://github.com/ministryofjustice/probation-offender-search)
 - [HMPPS Auth](https://github.com/ministryofjustice/hmpps-auth)
+- [Assess Risks and Needs (ARNS)](https://github.com/ministryofjustice/hmpps-assess-risks-and-needs-coordinator-api)
+- [Adjudications](https://github.com/ministryofjustice/hmpps-manage-adjudications-api)
+- [Case Notes](https://github.com/ministryofjustice/offender-case-notes)
+- [Create and Vary License](https://github.com/ministryofjustice/create-and-vary-a-licence)
+- [Incentives](https://github.com/ministryofjustice/hmpps-incentives-api)
+- [Manage POM Case](https://github.com/ministryofjustice/hmpps-manage-pom-cases-api)
+- [Non-associations](https://github.com/ministryofjustice/hmpps-personal-relationships-api)
+- [Personal Relationships](https://github.com/ministryofjustice/hmpps-personal-relationships-api)
+- [Education and Work Plan](https://github.com/ministryofjustice/hmpps-education-and-work-plan-api)
+- [Prisoner Alerts](https://github.com/ministryofjustice/hmpps-alerts-api)
+- [Manage Prison Visits](https://github.com/ministryofjustice/hmpps-manage-prison-visits-orchestration)
+- [Risk Management](https://github.com/ministryofjustice/hmpps-assess-risks-and-needs)
 
 These things depend upon this solution:
 
@@ -72,20 +84,20 @@ using IntelliJ but other IDEs will prove similar.
 
 1. Clone the repo.
 
-```bash
-git clone git@github.com:ministryofjustice/hmpps-integration-api.git
-```
+   ```bash
+   git clone git@github.com:ministryofjustice/hmpps-integration-api.git
+   ```
 
 2. Launch IntelliJ and open the `hmpps-integration-api` project by navigating to the location of the repository.
 
-Upon opening the project, IntelliJ will begin downloading and installing necessary dependencies which may take a few
-minutes.
+   Upon opening the project, IntelliJ will begin downloading and installing necessary dependencies which may take a few
+   minutes.
 
 3. Enable pre-commit hooks for formatting and linting code.
 
-```bash
-./gradlew addKtlintFormatGitPreCommitHook addKtlintCheckGitPreCommitHook
-```
+   ```bash
+   ./gradlew addKtlintFormatGitPreCommitHook addKtlintCheckGitPreCommitHook
+   ```
 
 ## Usage
 
@@ -116,65 +128,63 @@ the [NOMIS / Prison API](https://github.com/ministryofjustice/prison-api)
 and [HMPPS Auth](https://github.com/ministryofjustice/hmpps-auth) with Docker
 using [docker-compose](https://docs.docker.com/compose/).
 
-1. Build and start the containers for each service.
+1.  Build and start the containers for each service.
 
-```bash
-make serve
-```
+    ```bash
+    make serve
+    ```
 
-Each service is then accessible at:
+    Each service is then accessible at:
 
-- [http://localhost:8080](http://localhost:8080) for this application
-- [http://localhost:4010](http://localhost:4010) to [http://localhost:40XX]() for mocked HMPPS APIs
-- [http://localhost:9090](http://localhost:9090) for the HMPPS Auth service
+    - [http://localhost:8080](http://localhost:8080) for this application
+    - [http://localhost:4010](http://localhost:4010) to [http://localhost:40XX]() for mocked HMPPS APIs
+    - [http://localhost:9090](http://localhost:9090) for the HMPPS Auth service
 
-To call the integration-api, you need to pass a distinguished name in the `subject-distinguished-name` header. The `CN` attribute should match the client you wish to access the service as.
-The list of clients and their authorised endpoints can be found in [application-local-docker.yml](src/main/resources/application-local-docker.yml).
+2.  To call the integration-api, you need to pass a distinguished name in the `subject-distinguished-name` header. The `CN` attribute should match the client you wish to access the service as.
+    The list of clients and their authorised endpoints can be found in [application-local-docker.yml](src/main/resources/application-local-docker.yml).
 
-For example,
+        For example,
 
-```bash
-curl -H "subject-distinguished-name: O=local,CN=all-access" http://localhost:8080/health
-```
+        ```bash
+        curl -H "subject-distinguished-name: O=local,CN=all-access" http://localhost:8080/health
+        ```
 
-As part of getting the HMPPS Auth service running
-locally, [the in-memory database is seeded with data including a number of clients](https://github.com/ministryofjustice/hmpps-auth/blob/main/src/main/resources/db/dev/data/auth/V900_0__clients.sql). A client can have different permissions i.e. read, write, reporting, although strangely the column name is called `​​autoapprove`.
+        As part of getting the HMPPS Auth service running
+        locally, [the in-memory database is seeded with data including a number of clients](https://github.com/ministryofjustice/hmpps-auth/blob/main/src/main/resources/db/dev/data/auth/V900_0__clients.sql). A client can have different permissions i.e. read, write, reporting, although strangely the column name is called `​​autoapprove`.
 
-If you wish to call an endpoint of a dependent API directly, an access token must be provided that is generated from the HMPPS Auth
-service.
+3.  If you wish to call an endpoint of a dependent API directly, an access token must be provided that is generated from the HMPPS Auth
+    service. Use the following cURL to generate a token for a HMPPS Auth client.
 
-2. Generate a token for a HMPPS Auth client.
+    ```bash
+    curl -X POST "http://localhost:9090/auth/oauth/token?grant_type=client_credentials" \
+      -H 'Content-Type: application/json' \
+      -H "Authorization: Basic $(echo -n "hmpps-integration-api-client:clientsecret" | base64)"
+    ```
 
-```bash
-curl -X POST "http://localhost:9090/auth/oauth/token?grant_type=client_credentials" \
-  -H 'Content-Type: application/json' \
-  -H "Authorization: Basic $(echo -n "hmpps-integration-api-client:clientsecret" | base64)"
-```
+    This uses the client ID: `hmpps-integration-api-client` and the client secret: `clientsecret`. A number of seeded
+    clients use the same client secret.
 
-This uses the client ID: `hmpps-integration-api-client` and the client secret: `clientsecret`. A number of seeded
-clients use the same client secret.
+    A JWT token is returned as a result, it will look like this:
 
-A JWT token is returned as a result, it will look like this:
+    ```json
+    {
+      "access_token": "eyJhbGciOiJSUzI1NiIs...BAtWD653XpCzn8A",
+      "token_type": "bearer",
+      "expires_in": 3599,
+      "scope": "read write",
+      "sub": "hmpps-integration-api-client",
+      "auth_source": "none",
+      "jti": "Ptr-MIdUBDGDOl8_qqeIuNV9Wpc",
+      "iss": "http://localhost:9090/auth/issuer"
+    }
+    ```
 
-```json
-{
-  "access_token": "eyJhbGciOiJSUzI1NiIs...BAtWD653XpCzn8A",
-  "token_type": "bearer",
-  "expires_in": 3599,
-  "scope": "read write",
-  "sub": "hmpps-integration-api-client",
-  "auth_source": "none",
-  "jti": "Ptr-MIdUBDGDOl8_qqeIuNV9Wpc",
-  "iss": "http://localhost:9090/auth/issuer"
-}
-```
+    Using the value of `access_token`, you can call a dependent API using it as a Bearer Token.
 
-Using the value of `access_token`, you can call a dependent API using it as a Bearer Token.
-
-There are a couple of options for doing so such as [curl](https://curl.se/),
-[Postman](https://www.postman.com/) and using in-built Swagger UI via the browser e.g.
-for Prison API at [http://localhost:4030/swagger-ui/index.html](http://localhost:4030/swagger-ui/index.html) which documents the
-available API endpoints.
+    There are a couple of options for doing so such as [curl](https://curl.se/),
+    [Postman](https://www.postman.com/) and using in-built Swagger UI via the browser e.g.
+    for Prison API at [http://localhost:4030/swagger-ui/index.html](http://localhost:4030/swagger-ui/index.html) which documents the
+    available API endpoints.
 
 ### Running the tests
 
@@ -182,14 +192,11 @@ The testing framework used in this project is [Kotest](https://kotest.io/).
 
 To run the tests using IntelliJ:
 
-1. Install the [Kotest IntelliJ plugin](https://kotest.io/docs/intellij/intellij-plugin.html).
-
-This provides the ability to easily run a test as it provides run buttons (gutter icons) next to each test and test
-file.
-
+1. Install the [Kotest IntelliJ plugin](https://kotest.io/docs/intellij/intellij-plugin.html). This provides the ability to easily run a test as it provides run buttons (gutter icons) next to each test and test
+   file.
 2. Click the run button beside a test or test file.
 
-To run all tests using the command line:
+To run unit and integration tests using the command line:
 
 ```bash
 make test
@@ -201,11 +208,19 @@ To run unit tests using the command line:
 make unit-test
 ```
 
-To run smoke tests using the command line:
+To run integration tests using the command line:
+
+```bash
+make integration-test
+```
+
+To run smoke tests against dev using the command line:
 
 ```bash
 make smoke-tests
 ```
+
+Smoke tests require several environment variables to be set up to run so generally should only be run in CircleCI
 
 ### Running the linter
 

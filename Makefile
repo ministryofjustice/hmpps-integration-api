@@ -37,7 +37,7 @@ heartbeat:
 smoke-tests:
 	./scripts/smoke-tests.sh
 
-test: unit-test
+test: unit-test integration-test
 
 e2e:
 	./gradlew integrationTest --warning-mode all

@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR
 import org.springframework.http.HttpStatus.NOT_FOUND
 import org.springframework.http.HttpStatus.SERVICE_UNAVAILABLE
 import org.springframework.http.ResponseEntity
+import org.springframework.http.converter.HttpMessageNotReadableException
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.MissingServletRequestParameterException
 import org.springframework.web.bind.annotation.ExceptionHandler
@@ -27,7 +28,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.MessageFailedE
 
 @RestControllerAdvice
 class HmppsIntegrationApiExceptionHandler {
-  @ExceptionHandler(ValidationException::class)
+  @ExceptionHandler(value = [ValidationException::class, HttpMessageNotReadableException::class])
   fun handleValidationException(e: Exception): ResponseEntity<ErrorResponse> {
     logAndCapture("Validation exception: {}", e)
     return ResponseEntity

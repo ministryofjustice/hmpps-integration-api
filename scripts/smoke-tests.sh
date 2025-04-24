@@ -42,6 +42,7 @@ prisonId="MKI"
 visitReference="qd-lh-gy-lx"
 clientReference="123456"
 contactId="1898610"
+imageId="1988315"
 
 # Endpoints for testing full access
 
@@ -62,6 +63,7 @@ get_endpoints=(
   "/v1/persons/$hmppsId/offences"
   "/v1/persons/$hmppsId/reported-adjudications"
   "/v1/persons/$hmppsId/number-of-children"
+  "/v1/persons/$hmppsId/physical-characteristics"
   "/v1/pnd/persons/$hmppsId/alerts"
   "/v1/prison/prisoners?first_name=john"
   "/v1/prison/prisoners/$hmppsId"
@@ -97,6 +99,7 @@ get_endpoints=(
   "/v1/persons/$alternativeHmppsId/person-responsible-officer"
   "/v1/persons/$alternativeHmppsId/visitor/$contactId/restrictions"
   "/v1/persons/$hmppsId/images"
+  "/v1/persons/$hmppsId/images/$imageId"
   "/v1/persons/$hmppsId/case-notes"
 )
 
