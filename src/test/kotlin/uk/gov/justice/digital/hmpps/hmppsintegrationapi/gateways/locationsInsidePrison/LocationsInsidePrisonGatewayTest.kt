@@ -288,52 +288,6 @@ class LocationsInsidePrisonGatewayTest(
                 "parentLocation": "string",
                 "inactiveCells": 1073741824,
                 "numberOfCellLocations": 1073741824,
-                "changeHistory": [
-                  {
-                    "transactionId": "019464e9-05da-77b3-810b-887e199d8190",
-                    "transactionType": "CAPACITY_CHANGE",
-                    "attribute": "Location Type",
-                    "oldValues": [
-                      "Dry cell",
-                      "Safe cell"
-                    ],
-                    "newValues": [
-                      "Dry cell",
-                      "Safe cell"
-                    ],
-                    "amendedBy": "user",
-                    "amendedDate": "2023-01-23T10:15:30"
-                  }
-                ],
-                "transactionHistory": [
-                  {
-                    "transactionId": "019464e9-05da-77b3-810b-887e199d8190",
-                    "transactionType": "CAPACITY_CHANGE",
-                    "prisonId": "MDI",
-                    "transactionDetail": "Working capacity changed from 0 to 1",
-                    "transactionInvokedBy": "STAFF_USER1",
-                    "txStartTime": "2025-04-25T13:39:56.692Z",
-                    "txEndTime": "2025-04-25T13:39:56.692Z",
-                    "transactionDetails": [
-                      {
-                        "locationId": "019483f5-fee7-7ed0-924c-3ee4b2b51904",
-                        "locationKey": "BXI-1-1-001",
-                        "attributeCode": "STATUS",
-                        "attribute": "Location Type",
-                        "amendedBy": "user",
-                        "amendedDate": "2023-01-23T10:15:30",
-                        "oldValues": [
-                          "Dry cell",
-                          "Safe cell"
-                        ],
-                        "newValues": [
-                          "Dry cell",
-                          "Safe cell"
-                        ]
-                      }
-                    ]
-                  }
-                ],
                 "lastModifiedBy": "string",
                 "lastModifiedDate": "2025-04-25T13:39:56.692Z",
                 "key": "MDI-A-1-001",
