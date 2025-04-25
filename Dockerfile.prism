@@ -30,7 +30,7 @@ RUN sed -i 's/\*\/\*/application\/json/g' /prismMocks/ndelius.json
 ENTRYPOINT sh -c 'node dist/index.js mock -p 4010 -h 0.0.0.0 /prismMocks/adjudications.json & \
                   node dist/index.js mock -p 4011 -h 0.0.0.0 /prismMocks/assess-risks-and-needs.json & \
                   node dist/index.js mock -p 4012 -h 0.0.0.0 /prismMocks/case-notes.json & \
-                  node dist/index.js mock -p 4013 -h 0.0.0.0 /prismMocks/create-and-vary-a-licence.json & \
+                  node dist/index.js mock -p 4013 -h 0.0.0.0 /prismMocks/create-and-vary-licence.json & \
                   node dist/index.js mock -p 4014 -h 0.0.0.0 /prismMocks/manage-pom-case-api.json & \
                   node dist/index.js mock -p 4015 -h 0.0.0.0 /prismMocks/ndelius.json & \
                   node dist/index.js mock -p 4016 -h 0.0.0.0 /prismMocks/prison-api.json & \

@@ -1387,7 +1387,7 @@
           "authorUserId": {
             "type": "string",
             "description": "User identifier of case note author - staffId for NOMIS users, username for auth users",
-            "example": 12345
+            "example": "12345"
           },
           "authorUsername": {
             "type": "string",
@@ -1478,7 +1478,7 @@
           "authorUserId": {
             "type": "string",
             "description": "User identifier of the user amending the case note - staffId for NOMIS users, userId for auth users",
-            "example": 12345
+            "example": "12345"
           },
           "additionalNoteText": {
             "type": "string",
