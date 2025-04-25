@@ -7,7 +7,7 @@ data class LIPTransactionHistoryItem(
   val transactionDetail: String,
   val transactionInvokedBy: String,
   val txStartTime: String,
-  val transactionDetails: List<LIPTransactionDetails>
+  val transactionDetails: List<LIPTransactionDetails>,
 )
 
 data class LIPTransactionDetails(

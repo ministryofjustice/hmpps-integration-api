@@ -3,5 +3,5 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.locationsInsideP
 data class LIPUsageItem(
   val usageType: String,
   val capacity: Int?,
-  val sequence: Int
+  val sequence: Int,
 )

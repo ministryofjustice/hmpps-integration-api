@@ -2,5 +2,5 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.locationsInsideP
 
 data class LIPCapacity(
   val maxCapacity: Int,
-  val workingCapacity: Int
+  val workingCapacity: Int,
 )

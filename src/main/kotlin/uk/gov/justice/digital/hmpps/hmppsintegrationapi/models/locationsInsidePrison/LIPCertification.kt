@@ -2,5 +2,5 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.locationsInsideP
 
 data class LIPCertification(
   val certified: Boolean,
-  val capacityOfCertifiedCell: Int
+  val capacityOfCertifiedCell: Int,
 )

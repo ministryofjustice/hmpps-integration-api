@@ -8,4 +8,4 @@ data class LIPChangeHistoryItem(
   val newValues: List<String>?,
   val amendedBy: String,
   val amendedDate: String,
-  )
+)

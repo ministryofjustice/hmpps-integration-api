@@ -43,5 +43,5 @@ data class LIPLocation(
   val lastModifiedBy: String,
   val lastModifiedDate: LocalDateTime,
   val key: String,
-  val isResidential: Boolean
+  val isResidential: Boolean,
 )
