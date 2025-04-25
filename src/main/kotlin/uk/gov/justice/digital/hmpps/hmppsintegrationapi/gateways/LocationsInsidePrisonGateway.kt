@@ -23,9 +23,10 @@ class LocationsInsidePrisonGateway(
     val result =
       webClient.request<LIPLocation>(
         HttpMethod.GET,
-        "location/key/$key",
+        "locations/key/$key",
         authenticationHeader(),
         UpstreamApi.LOCATIONS_INSIDE_PRISON,
+        badRequestAsError = true,
       )
 
     return when (result) {

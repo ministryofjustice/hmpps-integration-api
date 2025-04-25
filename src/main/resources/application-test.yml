@@ -44,7 +44,7 @@ services:
   alerts:
     base-url: http://localhost:4009
   locations-inside-prison:
-    base-url: http://localhost:4010
+    base-url: http://localhost:4000
 
 
 hmpps.sqs:
