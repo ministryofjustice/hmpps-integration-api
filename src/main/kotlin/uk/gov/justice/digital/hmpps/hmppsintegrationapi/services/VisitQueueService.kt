@@ -59,7 +59,7 @@ class VisitQueueService(
       }
     }
 
-    val nomisNumber = personResponse.data?.nomisNumber ?: return Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.NOMIS, UpstreamApiError.Type.ENTITY_NOT_FOUND)))
+    val nomisNumber = personResponse.data?.nomisNumber ?: return Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.PRISON_API, UpstreamApiError.Type.ENTITY_NOT_FOUND)))
     val visitors = createVisitRequest.visitors.orEmpty()
     val checkVisitorsResponse = checkVisitors(nomisNumber, visitors)
     if (checkVisitorsResponse.errors.isNotEmpty()) {
@@ -88,7 +88,7 @@ class VisitQueueService(
       return Response(data = null, errors = visitResponse.errors)
     }
 
-    val nomisNumber = visitResponse.data?.prisonerId ?: return Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.NOMIS, UpstreamApiError.Type.ENTITY_NOT_FOUND)))
+    val nomisNumber = visitResponse.data?.prisonerId ?: return Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.PRISON_API, UpstreamApiError.Type.ENTITY_NOT_FOUND)))
     val visitors = updateVisitRequest.visitors.orEmpty()
     val checkVisitorsResponse = checkVisitors(nomisNumber, visitors)
     if (checkVisitorsResponse.errors.isNotEmpty()) {

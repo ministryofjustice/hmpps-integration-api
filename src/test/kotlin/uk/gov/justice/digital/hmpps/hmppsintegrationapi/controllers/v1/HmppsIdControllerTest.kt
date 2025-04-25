@@ -58,7 +58,7 @@ internal class HmppsIdControllerTest(
         whenever(getHmppsIdService.execute(nomisNumber)).thenReturn(
           Response(
             data = null,
-            errors = listOf(UpstreamApiError(causedBy = UpstreamApi.NOMIS, type = UpstreamApiError.Type.BAD_REQUEST)),
+            errors = listOf(UpstreamApiError(causedBy = UpstreamApi.PRISON_API, type = UpstreamApiError.Type.BAD_REQUEST)),
           ),
         )
         val result = mockMvc.performAuthorised(path)
@@ -69,7 +69,7 @@ internal class HmppsIdControllerTest(
         whenever(getHmppsIdService.execute(nomisNumber)).thenReturn(
           Response(
             data = null,
-            errors = listOf(UpstreamApiError(causedBy = UpstreamApi.NOMIS, type = UpstreamApiError.Type.ENTITY_NOT_FOUND)),
+            errors = listOf(UpstreamApiError(causedBy = UpstreamApi.PRISON_API, type = UpstreamApiError.Type.ENTITY_NOT_FOUND)),
           ),
         )
         val result = mockMvc.performAuthorised(path)
@@ -135,7 +135,7 @@ internal class HmppsIdControllerTest(
         whenever(getPersonService.getNomisNumberWithPrisonFilter(nomisNumber, consumerFilters)).thenReturn(
           Response(
             data = null,
-            errors = listOf(UpstreamApiError(causedBy = UpstreamApi.NOMIS, type = UpstreamApiError.Type.BAD_REQUEST)),
+            errors = listOf(UpstreamApiError(causedBy = UpstreamApi.PRISON_API, type = UpstreamApiError.Type.BAD_REQUEST)),
           ),
         )
         val result = mockMvc.performAuthorised(path)
@@ -146,7 +146,7 @@ internal class HmppsIdControllerTest(
         whenever(getPersonService.getNomisNumberWithPrisonFilter(nomisNumber, consumerFilters)).thenReturn(
           Response(
             data = null,
-            errors = listOf(UpstreamApiError(causedBy = UpstreamApi.NOMIS, type = UpstreamApiError.Type.ENTITY_NOT_FOUND)),
+            errors = listOf(UpstreamApiError(causedBy = UpstreamApi.PRISON_API, type = UpstreamApiError.Type.ENTITY_NOT_FOUND)),
           ),
         )
         val result = mockMvc.performAuthorised(path)

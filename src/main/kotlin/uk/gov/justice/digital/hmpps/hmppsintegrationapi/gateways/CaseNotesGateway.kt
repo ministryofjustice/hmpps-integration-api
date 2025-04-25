@@ -9,7 +9,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.caseNotes.CNSearc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.filters.CaseNoteFilter
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.OCNCaseNote
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.OCNCaseNote
 
 @Component
 class CaseNotesGateway(

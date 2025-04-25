@@ -5,9 +5,9 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PaginatedCaseNotes
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisCaseNote
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.OCNCaseNote
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.OCNPagination
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.OCNCaseNote
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.OCNPagination
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonApiCaseNote
 
 internal class PRPaginatedCaseNotesTest {
   @DisplayName("Handle converting to PaginatedCaseNotes")
@@ -39,7 +39,7 @@ internal class PRPaginatedCaseNotesTest {
     fun `Handle data`() {
       val prPaginatedCaseNotes =
         OCNCaseNote(
-          content = listOf(NomisCaseNote(caseNoteId = "abcd1234")),
+          content = listOf(PrisonApiCaseNote(caseNoteId = "abcd1234")),
           page = OCNPagination(page = 1, size = 10, totalElements = 1),
         )
 
@@ -61,7 +61,7 @@ internal class PRPaginatedCaseNotesTest {
     fun `Handle multiple pages - Page 1 of 2`() {
       val prPaginatedCaseNotes =
         OCNCaseNote(
-          content = listOf(NomisCaseNote(caseNoteId = "abcd1234")),
+          content = listOf(PrisonApiCaseNote(caseNoteId = "abcd1234")),
           page = OCNPagination(page = 1, size = 10, totalElements = 20),
         )
 
@@ -83,7 +83,7 @@ internal class PRPaginatedCaseNotesTest {
     fun `Handle multiple pages - Page 2 of 2`() {
       val prPaginatedCaseNotes =
         OCNCaseNote(
-          content = listOf(NomisCaseNote(caseNoteId = "abcd1234")),
+          content = listOf(PrisonApiCaseNote(caseNoteId = "abcd1234")),
           page = OCNPagination(page = 2, size = 10, totalElements = 20),
         )
 

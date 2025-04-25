@@ -28,7 +28,7 @@ class ReferenceDataServiceTest(
   private val objectMapper: ObjectMapper = ObjectMapper().registerKotlinModule(),
 ) : DescribeSpec(
     {
-      val nomisApiMockServer = ApiMockServer.create(UpstreamApi.NOMIS)
+      val nomisApiMockServer = ApiMockServer.create(UpstreamApi.PRISON_API)
       val ndeliusApiMockServer = ApiMockServer.create(UpstreamApi.NDELIUS)
 
       beforeEach {
@@ -143,7 +143,7 @@ class ReferenceDataServiceTest(
         response.data.shouldBe(null)
         response.errors[0]
           .causedBy.name
-          .shouldBe("NOMIS")
+          .shouldBe("PRISON_API")
         response.errors[0]
           .type.name
           .shouldBe("ENTITY_NOT_FOUND")

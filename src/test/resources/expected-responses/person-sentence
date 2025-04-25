@@ -1,7 +1,7 @@
 {
   "data": [
       {
-        "serviceSource": "NOMIS",
+        "serviceSource": "PRISON_API",
         "systemSource": "PRISON_SYSTEMS",
         "dateOfSentencing": "2019-08-24",
         "description": "string",

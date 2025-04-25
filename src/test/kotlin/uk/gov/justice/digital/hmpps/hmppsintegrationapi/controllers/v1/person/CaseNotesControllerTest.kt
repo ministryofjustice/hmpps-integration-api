@@ -104,7 +104,7 @@ class CaseNotesControllerTest(
                 listOf(
                   UpstreamApiError(
                     type = UpstreamApiError.Type.BAD_REQUEST,
-                    causedBy = UpstreamApi.NOMIS,
+                    causedBy = UpstreamApi.PRISON_API,
                   ),
                 ),
             ),
@@ -140,7 +140,7 @@ class CaseNotesControllerTest(
                 listOf(
                   UpstreamApiError(
                     type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-                    causedBy = UpstreamApi.NOMIS,
+                    causedBy = UpstreamApi.PRISON_API,
                   ),
                 ),
             ),

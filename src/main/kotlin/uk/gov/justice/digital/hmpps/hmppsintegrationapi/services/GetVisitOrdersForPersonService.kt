@@ -2,7 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NomisGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonApiGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
@@ -11,7 +11,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Consum
 
 @Service
 class GetVisitOrdersForPersonService(
-  @Autowired val nomisGateway: NomisGateway,
+  @Autowired val prisonApiGateway: PrisonApiGateway,
   @Autowired val getPersonService: GetPersonService,
 ) {
   fun execute(
@@ -26,10 +26,10 @@ class GetVisitOrdersForPersonService(
     val nomisNumber =
       personResponse.data?.nomisNumber ?: return Response(
         data = null,
-        errors = listOf(UpstreamApiError(causedBy = UpstreamApi.NOMIS, type = UpstreamApiError.Type.ENTITY_NOT_FOUND)),
+        errors = listOf(UpstreamApiError(causedBy = UpstreamApi.PRISON_API, type = UpstreamApiError.Type.ENTITY_NOT_FOUND)),
       )
 
-    val visitBalancesResponse = nomisGateway.getVisitBalances(nomisNumber)
+    val visitBalancesResponse = prisonApiGateway.getVisitBalances(nomisNumber)
     if (visitBalancesResponse.errors.isNotEmpty()) {
       return Response(data = null, errors = visitBalancesResponse.errors)
     }

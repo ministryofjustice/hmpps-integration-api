@@ -11,7 +11,7 @@ class ConsumerPrisonAccessService {
   fun <T> checkConsumerHasPrisonAccess(
     prisonId: String?,
     filters: ConsumerFilters?,
-    upstreamServiceType: UpstreamApi = UpstreamApi.NOMIS,
+    upstreamServiceType: UpstreamApi = UpstreamApi.PRISON_API,
   ): Response<T?> {
     val response = Response<T?>(data = null, errors = emptyList<UpstreamApiError>())
     if (filters != null && !filters.matchesPrison(prisonId)) {

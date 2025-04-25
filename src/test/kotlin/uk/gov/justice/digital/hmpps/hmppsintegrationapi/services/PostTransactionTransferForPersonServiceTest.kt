@@ -10,7 +10,7 @@ import org.springframework.boot.test.context.ConfigDataApplicationContextInitial
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.ConsumerPrisonAccessService
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NomisGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonApiGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NomisNumber
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.TransactionCreateResponse
@@ -18,9 +18,9 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Transaction
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.TransactionTransferRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.CreditTransaction
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.DebitTransaction
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisTransactionTransferResponse
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.CreditTransaction
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.DebitTransaction
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.NomisTransactionTransferResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 @ContextConfiguration(
@@ -28,7 +28,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Consum
   classes = [PostTransactionTransferForPersonService::class],
 )
 internal class PostTransactionTransferForPersonServiceTest(
-  @MockitoBean val nomisGateway: NomisGateway,
+  @MockitoBean val prisonApiGateway: PrisonApiGateway,
   @MockitoBean val getPersonService: GetPersonService,
   @MockitoBean val consumerPrisonAccessService: ConsumerPrisonAccessService,
   private val postTransactionTransferForPersonService: PostTransactionTransferForPersonService,
@@ -53,7 +53,7 @@ internal class PostTransactionTransferForPersonServiceTest(
 
     beforeEach {
       Mockito.reset(getPersonService)
-      Mockito.reset(nomisGateway)
+      Mockito.reset(prisonApiGateway)
 
       whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<TransactionCreateResponse>(prisonId, filters)).thenReturn(
         Response(data = null),
@@ -68,7 +68,7 @@ internal class PostTransactionTransferForPersonServiceTest(
       )
 
       whenever(
-        nomisGateway.postTransactionTransferForPerson(
+        prisonApiGateway.postTransactionTransferForPerson(
           prisonId,
           nomisNumber,
           exampleTransfer,
@@ -99,7 +99,7 @@ internal class PostTransactionTransferForPersonServiceTest(
         filters,
       )
 
-      verify(nomisGateway, VerificationModeFactory.times(1)).postTransactionTransferForPerson(
+      verify(prisonApiGateway, VerificationModeFactory.times(1)).postTransactionTransferForPerson(
         prisonId,
         nomisNumber,
         exampleTransfer,
@@ -159,7 +159,7 @@ internal class PostTransactionTransferForPersonServiceTest(
             listOf(
               UpstreamApiError(
                 type = UpstreamApiError.Type.BAD_REQUEST,
-                causedBy = UpstreamApi.NOMIS,
+                causedBy = UpstreamApi.PRISON_API,
               ),
             ),
         ),
@@ -173,7 +173,7 @@ internal class PostTransactionTransferForPersonServiceTest(
         )
       response
         .hasErrorCausedBy(
-          causedBy = UpstreamApi.NOMIS,
+          causedBy = UpstreamApi.PRISON_API,
           type = UpstreamApiError.Type.BAD_REQUEST,
         ).shouldBe(true)
     }
@@ -189,7 +189,7 @@ internal class PostTransactionTransferForPersonServiceTest(
         )
       response
         .hasErrorCausedBy(
-          causedBy = UpstreamApi.NOMIS,
+          causedBy = UpstreamApi.PRISON_API,
           type = UpstreamApiError.Type.BAD_REQUEST,
         ).shouldBe(true)
     }

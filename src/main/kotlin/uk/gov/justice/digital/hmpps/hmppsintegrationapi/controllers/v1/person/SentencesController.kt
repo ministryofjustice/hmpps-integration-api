@@ -55,7 +55,7 @@ class SentencesController(
   ): PaginatedResponse<Sentence> {
     val response = getSentencesForPersonService.execute(hmppsId, filters)
 
-    if (response.hasErrorCausedBy(causedBy = UpstreamApi.NOMIS, type = UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
+    if (response.hasErrorCausedBy(causedBy = UpstreamApi.PRISON_API, type = UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
       throw EntityNotFoundException("Could not find person with id: $hmppsId")
     }
     if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
@@ -84,7 +84,7 @@ class SentencesController(
     val hmppsId = encodedHmppsId.decodeUrlCharacters()
     val response = getLatestSentenceKeyDatesAndAdjustmentsForPersonService.execute(hmppsId, filters)
 
-    if (response.hasErrorCausedBy(UpstreamApiError.Type.ENTITY_NOT_FOUND, causedBy = UpstreamApi.NOMIS)) {
+    if (response.hasErrorCausedBy(UpstreamApiError.Type.ENTITY_NOT_FOUND, causedBy = UpstreamApi.PRISON_API)) {
       throw EntityNotFoundException("Could not find person with id: $hmppsId")
     }
 

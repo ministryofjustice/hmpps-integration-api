@@ -7,13 +7,13 @@ import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NomisGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonApiGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NomisNumber
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitOrders
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.visits.VisitBalances
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.visits.VisitBalances
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 @ContextConfiguration(
@@ -21,7 +21,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Consum
   classes = [GetVisitOrdersForPersonService::class],
 )
 class GetVisitOrdersForPersonServiceTest(
-  @MockitoBean val nomisGateway: NomisGateway,
+  @MockitoBean val prisonApiGateway: PrisonApiGateway,
   @MockitoBean val getPersonService: GetPersonService,
   private val getVisitOrdersForPersonService: GetVisitOrdersForPersonService,
 ) : DescribeSpec({
@@ -32,7 +32,7 @@ class GetVisitOrdersForPersonServiceTest(
     val exampleVisitOrders = VisitOrders(remainingVisitOrders = 1073741824, remainingPrivilegeVisitOrders = 1073741824)
 
     beforeEach {
-      Mockito.reset(nomisGateway)
+      Mockito.reset(prisonApiGateway)
       Mockito.reset(getPersonService)
 
       require(hmppsId.matches(Regex("^[0-9]+/[0-9A-Za-z]+$"))) {
@@ -43,7 +43,7 @@ class GetVisitOrdersForPersonServiceTest(
         Response(data = NomisNumber(nomisNumber = nomisNumber)),
       )
 
-      whenever(nomisGateway.getVisitBalances(nomisNumber)).thenReturn(Response(data = exampleVisitBalances))
+      whenever(prisonApiGateway.getVisitBalances(nomisNumber)).thenReturn(Response(data = exampleVisitBalances))
     }
 
     it("returns a prisoners visit balances for a valid HMPPS ID") {
@@ -59,7 +59,7 @@ class GetVisitOrdersForPersonServiceTest(
             listOf(
               UpstreamApiError(
                 type = UpstreamApiError.Type.BAD_REQUEST,
-                causedBy = UpstreamApi.NOMIS,
+                causedBy = UpstreamApi.PRISON_API,
               ),
             ),
         ),
@@ -68,7 +68,7 @@ class GetVisitOrdersForPersonServiceTest(
       val response = getVisitOrdersForPersonService.execute(hmppsId, filters)
       response
         .hasErrorCausedBy(
-          causedBy = UpstreamApi.NOMIS,
+          causedBy = UpstreamApi.PRISON_API,
           type = UpstreamApiError.Type.BAD_REQUEST,
         ).shouldBe(true)
     }
@@ -83,20 +83,20 @@ class GetVisitOrdersForPersonServiceTest(
       val response = getVisitOrdersForPersonService.execute(hmppsId, filters)
       response
         .hasErrorCausedBy(
-          causedBy = UpstreamApi.NOMIS,
+          causedBy = UpstreamApi.PRISON_API,
           type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
         ).shouldBe(true)
     }
 
     it("return an error when nomisGateway.getVisitBalances returns an error") {
-      whenever(nomisGateway.getVisitBalances(nomisNumber)).thenReturn(
+      whenever(prisonApiGateway.getVisitBalances(nomisNumber)).thenReturn(
         Response(
           data = null,
           errors =
             listOf(
               UpstreamApiError(
                 type = UpstreamApiError.Type.BAD_REQUEST,
-                causedBy = UpstreamApi.NOMIS,
+                causedBy = UpstreamApi.PRISON_API,
               ),
             ),
         ),
@@ -105,7 +105,7 @@ class GetVisitOrdersForPersonServiceTest(
       val response = getVisitOrdersForPersonService.execute(hmppsId, filters)
       response
         .hasErrorCausedBy(
-          causedBy = UpstreamApi.NOMIS,
+          causedBy = UpstreamApi.PRISON_API,
           type = UpstreamApiError.Type.BAD_REQUEST,
         ).shouldBe(true)
     }

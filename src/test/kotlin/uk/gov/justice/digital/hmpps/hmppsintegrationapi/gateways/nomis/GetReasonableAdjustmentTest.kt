@@ -14,7 +14,7 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NomisGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonApiGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
@@ -24,14 +24,14 @@ import java.time.LocalDate
 @ActiveProfiles("test")
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
-  classes = [NomisGateway::class],
+  classes = [PrisonApiGateway::class],
 )
 class GetReasonableAdjustmentTest(
   @MockitoBean val hmppsAuthGateway: HmppsAuthGateway,
-  private val nomisGateway: NomisGateway,
+  private val prisonApiGateway: PrisonApiGateway,
 ) : DescribeSpec(
     {
-      val nomisApiMockServer = ApiMockServer.create(UpstreamApi.NOMIS)
+      val nomisApiMockServer = ApiMockServer.create(UpstreamApi.PRISON_API)
       val bookingId = "mockBooking"
       val domainPath = "/api/reference-domains/domains/HEALTH_TREAT/codes"
       var reasonableAdjustmentPath = "/api/bookings/$bookingId/reasonable-adjustments?type=a&type=b&type=c"
@@ -73,13 +73,13 @@ class GetReasonableAdjustmentTest(
       }
 
       it("authenticates using HMPPS Auth with credentials") {
-        nomisGateway.getReasonableAdjustments(bookingId)
+        prisonApiGateway.getReasonableAdjustments(bookingId)
 
         verify(hmppsAuthGateway, VerificationModeFactory.times(2)).getClientToken("NOMIS")
       }
 
       it("returns reasonable adjustment for a person with the matching ID") {
-        val response = nomisGateway.getReasonableAdjustments(bookingId)
+        val response = prisonApiGateway.getReasonableAdjustments(bookingId)
 
         response.data.count().shouldBe(1)
         response.data
@@ -107,7 +107,7 @@ class GetReasonableAdjustmentTest(
       it("returns an empty list when no reasonable adjustment are found") {
         nomisApiMockServer.stubForGet(domainPath, "[]")
 
-        val response = nomisGateway.getReasonableAdjustments(bookingId)
+        val response = prisonApiGateway.getReasonableAdjustments(bookingId)
 
         response.data.shouldBeEmpty()
       }
@@ -123,7 +123,7 @@ class GetReasonableAdjustmentTest(
           HttpStatus.NOT_FOUND,
         )
 
-        val response = nomisGateway.getReasonableAdjustments(bookingId)
+        val response = prisonApiGateway.getReasonableAdjustments(bookingId)
 
         response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND).shouldBeTrue()
       }
