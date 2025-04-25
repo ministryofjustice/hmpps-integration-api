@@ -35,6 +35,8 @@ services:
     base-url: https://sign-in-dev.hmpps.service.justice.gov.uk
     username: ${CLIENT_ID}
     password: ${CLIENT_SECRET}
+  locations-inside-prison:
+    base-url: https://locations-inside-prison-api-dev.hmpps.service.justice.gov.uk
 
 feature-flag:
   use-arns-endpoints: true
