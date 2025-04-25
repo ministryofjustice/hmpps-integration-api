@@ -7,5 +7,5 @@ data class LIPResidentialHierarchyItem(
   val fullLocationPath: String,
   val localName: String?,
   val level: Int,
-  val subLocations: List<String>?,
+  val subLocations: List<LIPResidentialHierarchyItem>?,
 )

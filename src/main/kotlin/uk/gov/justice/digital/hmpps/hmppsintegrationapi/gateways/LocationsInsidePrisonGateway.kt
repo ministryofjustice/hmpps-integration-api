@@ -1,5 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways
 
+import com.fasterxml.jackson.core.type.TypeReference
+import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpMethod
@@ -71,7 +73,7 @@ class LocationsInsidePrisonGateway(
 
   fun getResidentialHierarchy(prisonId: String): Response<List<LIPResidentialHierarchyItem>?> {
     val result =
-      webClient.request<List<LIPResidentialHierarchyItem>>(
+      webClient.requestList<LIPResidentialHierarchyItem>(
         HttpMethod.GET,
         "/locations/prison/$prisonId/residential-hierarchy",
         authenticationHeader(),

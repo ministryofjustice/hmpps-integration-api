@@ -28,36 +28,36 @@ class LocationsInsidePrisonGatewayTest(
   @MockitoBean val hmppsAuthGateway: HmppsAuthGateway,
   private val locationsInsidePrisonGateway: LocationsInsidePrisonGateway,
 ) : DescribeSpec(
-    {
-      val locationsInsidePrisonApiMockServer = ApiMockServer.create(UpstreamApi.LOCATIONS_INSIDE_PRISON)
+  {
+    val locationsInsidePrisonApiMockServer = ApiMockServer.create(UpstreamApi.LOCATIONS_INSIDE_PRISON)
 
-      beforeEach {
-        locationsInsidePrisonApiMockServer.start()
+    beforeEach {
+      locationsInsidePrisonApiMockServer.start()
 
-        Mockito.reset(hmppsAuthGateway)
-        whenever(hmppsAuthGateway.getClientToken("LOCATIONS-INSIDE-PRISON")).thenReturn(
-          HmppsAuthMockServer.TOKEN,
-        )
+      Mockito.reset(hmppsAuthGateway)
+      whenever(hmppsAuthGateway.getClientToken("LOCATIONS-INSIDE-PRISON")).thenReturn(
+        HmppsAuthMockServer.TOKEN,
+      )
+    }
+
+    afterTest {
+      locationsInsidePrisonApiMockServer.stop()
+    }
+
+    describe("getLocationByKey") {
+      val key = "123"
+      val path = "/locations/key/$key"
+
+      it("authenticates using HMPPS Auth with credentials") {
+        locationsInsidePrisonGateway.getLocationByKey(key)
+
+        verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("LOCATIONS-INSIDE-PRISON")
       }
 
-      afterTest {
-        locationsInsidePrisonApiMockServer.stop()
-      }
-
-      describe("getLocationByKey") {
-        val key = "123"
-        val path = "/locations/key/$key"
-
-        it("authenticates using HMPPS Auth with credentials") {
-          locationsInsidePrisonGateway.getLocationByKey(key)
-
-          verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("LOCATIONS-INSIDE-PRISON")
-        }
-
-        it("returns location") {
-          locationsInsidePrisonApiMockServer.stubForGet(
-            path,
-            """
+      it("returns location") {
+        locationsInsidePrisonApiMockServer.stubForGet(
+          path,
+          """
           {
             "id": "2475f250-434a-4257-afe7-b911f1773a4d",
             "prisonId": "MDI",
@@ -166,55 +166,55 @@ class LocationsInsidePrisonGatewayTest(
             "isResidential": true
           }
          """,
-          )
+        )
 
-          val result = locationsInsidePrisonGateway.getLocationByKey(key)
-          result.data.shouldNotBeNull()
-          result.data!!.id.shouldBe("2475f250-434a-4257-afe7-b911f1773a4d")
-          result.data!!
-            .usage
-            .orEmpty()
-            .size
-            .shouldBe(1)
-          result.data!!
-            .changeHistory
-            .orEmpty()
-            .size
-            .shouldBe(1)
-          result.data!!
-            .transactionHistory
-            .orEmpty()
-            .size
-            .shouldBe(1)
-        }
-
-        it("should return bad request if bad request thrown") {
-          locationsInsidePrisonApiMockServer.stubForGet(
-            path,
-            "",
-            HttpStatus.BAD_REQUEST,
-          )
-
-          val result = locationsInsidePrisonGateway.getLocationByKey(key)
-          result.data.shouldBe(null)
-          result.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.LOCATIONS_INSIDE_PRISON, UpstreamApiError.Type.BAD_REQUEST)))
-        }
+        val result = locationsInsidePrisonGateway.getLocationByKey(key)
+        result.data.shouldNotBeNull()
+        result.data!!.id.shouldBe("2475f250-434a-4257-afe7-b911f1773a4d")
+        result.data!!
+          .usage
+          .orEmpty()
+          .size
+          .shouldBe(1)
+        result.data!!
+          .changeHistory
+          .orEmpty()
+          .size
+          .shouldBe(1)
+        result.data!!
+          .transactionHistory
+          .orEmpty()
+          .size
+          .shouldBe(1)
       }
 
-      describe("getResidentialSummary") {
-        val prisonId = "G6333VK"
-        val path = "/locations/residential-summary/$prisonId"
+      it("should return bad request if bad request thrown") {
+        locationsInsidePrisonApiMockServer.stubForGet(
+          path,
+          "",
+          HttpStatus.BAD_REQUEST,
+        )
 
-        it("authenticates using HMPPS Auth with credentials") {
-          locationsInsidePrisonGateway.getResidentialSummary(prisonId)
+        val result = locationsInsidePrisonGateway.getLocationByKey(key)
+        result.data.shouldBe(null)
+        result.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.LOCATIONS_INSIDE_PRISON, UpstreamApiError.Type.BAD_REQUEST)))
+      }
+    }
 
-          verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("LOCATIONS-INSIDE-PRISON")
-        }
+    describe("getResidentialSummary") {
+      val prisonId = "G6333VK"
+      val path = "/locations/residential-summary/$prisonId"
 
-        it("returns residential summary") {
-          locationsInsidePrisonApiMockServer.stubForGet(
-            path,
-            """
+      it("authenticates using HMPPS Auth with credentials") {
+        locationsInsidePrisonGateway.getResidentialSummary(prisonId)
+
+        verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("LOCATIONS-INSIDE-PRISON")
+      }
+
+      it("returns residential summary") {
+        locationsInsidePrisonApiMockServer.stubForGet(
+          path,
+          """
             {
               "prisonSummary": {
                 "prisonName": "string",
@@ -456,32 +456,109 @@ class LocationsInsidePrisonGatewayTest(
               ]
             }
             """,
-          )
-          val result = locationsInsidePrisonGateway.getResidentialSummary(prisonId)
+        )
+        val result = locationsInsidePrisonGateway.getResidentialSummary(prisonId)
 
-          result.data.shouldNotBeNull()
-          result.data!!
-            .prisonSummary!!
-            .workingCapacity
-            .shouldBe(1073741824)
-          result.data!!
-            .subLocations.size
-            .shouldBe(1)
-          result.data!!.parentLocation.shouldNotBeNull()
-          result.data!!.topLevelLocationType.shouldBe("Wings")
-        }
-
-        it("should return bad request if bad request thrown") {
-          locationsInsidePrisonApiMockServer.stubForGet(
-            path,
-            "",
-            HttpStatus.BAD_REQUEST,
-          )
-
-          val result = locationsInsidePrisonGateway.getResidentialSummary(prisonId)
-          result.data.shouldBe(null)
-          result.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.LOCATIONS_INSIDE_PRISON, UpstreamApiError.Type.BAD_REQUEST)))
-        }
+        result.data.shouldNotBeNull()
+        result.data!!
+          .prisonSummary!!
+          .workingCapacity
+          .shouldBe(1073741824)
+        result.data!!
+          .subLocations.size
+          .shouldBe(1)
+        result.data!!.parentLocation.shouldNotBeNull()
+        result.data!!.topLevelLocationType.shouldBe("Wings")
       }
-    },
-  )
+
+      it("should return bad request if bad request thrown") {
+        locationsInsidePrisonApiMockServer.stubForGet(
+          path,
+          "",
+          HttpStatus.BAD_REQUEST,
+        )
+
+        val result = locationsInsidePrisonGateway.getResidentialSummary(prisonId)
+        result.data.shouldBe(null)
+        result.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.LOCATIONS_INSIDE_PRISON, UpstreamApiError.Type.BAD_REQUEST)))
+      }
+    }
+
+    describe("getResidentialHierarchy") {
+      val prisonId = "G6333VK"
+      val path = "/locations/prison/$prisonId/residential-hierarchy"
+
+      it("authenticates using HMPPS Auth with credentials") {
+        locationsInsidePrisonGateway.getResidentialHierarchy(prisonId)
+
+        verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("LOCATIONS-INSIDE-PRISON")
+      }
+
+      it("should get residential hierarchy") {
+        locationsInsidePrisonApiMockServer.stubForGet(
+          path,
+          """
+          [
+              {
+                  "locationId": "01951953-2f87-7f26-a803-e8157a95e5b5",
+                  "locationType": "WING",
+                  "locationCode": "A",
+                  "fullLocationPath": "A",
+                  "localName": "Mki-a",
+                  "level": 1,
+                  "subLocations": [
+                      {
+                          "locationId": "01951953-8044-7ebb-ba4e-1d4116e20fda",
+                          "locationType": "LANDING",
+                          "locationCode": "1",
+                          "fullLocationPath": "A-1",
+                          "localName": "Mki-a-1",
+                          "level": 2,
+                          "subLocations": [
+                              {
+                                  "locationId": "0195195c-711a-7c13-869f-1347b27979e1",
+                                  "locationType": "CELL",
+                                  "locationCode": "03",
+                                  "fullLocationPath": "A-1-03",
+                                  "level": 3
+                              }
+                          ]
+                      }
+                  ]
+              }
+          ]
+          """.trimIndent()
+        )
+
+        val result = locationsInsidePrisonGateway.getResidentialHierarchy(prisonId)
+        result.data.shouldNotBeNull()
+        val topLevelLocations = result.data.orEmpty()
+        topLevelLocations.size.shouldBe(1)
+        topLevelLocations[0].locationId.shouldBe("01951953-2f87-7f26-a803-e8157a95e5b5")
+        topLevelLocations[0].locationType.shouldBe("WING")
+        topLevelLocations[0].level.shouldBe(1)
+        val secondLevelLocations = topLevelLocations[0].subLocations.orEmpty()
+        secondLevelLocations.size.shouldBe(1)
+        secondLevelLocations[0].locationType.shouldBe("LANDING")
+        secondLevelLocations[0].locationId.shouldBe("01951953-8044-7ebb-ba4e-1d4116e20fda")
+        secondLevelLocations[0].level.shouldBe(2)
+        val thirdLevelLocations = secondLevelLocations[0].subLocations.orEmpty()
+        thirdLevelLocations.size.shouldBe(1)
+        thirdLevelLocations[0].locationId.shouldBe("0195195c-711a-7c13-869f-1347b27979e1")
+        thirdLevelLocations[0].locationType.shouldBe("CELL")
+        thirdLevelLocations[0].level.shouldBe(3)
+      }
+
+      it("should return bad request if bad request thrown") {
+        locationsInsidePrisonApiMockServer.stubForGet(
+          path,
+          "",
+          HttpStatus.BAD_REQUEST,
+        )
+
+        val result = locationsInsidePrisonGateway.getResidentialHierarchy(prisonId)
+        result.data.shouldBe(null)
+        result.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.LOCATIONS_INSIDE_PRISON, UpstreamApiError.Type.BAD_REQUEST)))
+      }
+    }
+  })
