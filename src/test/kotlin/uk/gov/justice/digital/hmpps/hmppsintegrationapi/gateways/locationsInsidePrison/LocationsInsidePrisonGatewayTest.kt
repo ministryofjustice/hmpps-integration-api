@@ -111,9 +111,7 @@ class LocationsInsidePrisonGatewayTest(
             "parentLocation": "string",
             "inactiveCells": 1073741824,
             "numberOfCellLocations": 1073741824,
-            "childLocations": [
-              "string"
-            ],
+            "childLocations": [],
             "changeHistory": [
               {
                 "transactionId": "019464e9-05da-77b3-810b-887e199d8190",
@@ -291,9 +289,6 @@ class LocationsInsidePrisonGatewayTest(
                 "parentLocation": "string",
                 "inactiveCells": 1073741824,
                 "numberOfCellLocations": 1073741824,
-                "childLocations": [
-                  "string"
-                ],
                 "changeHistory": [
                   {
                     "transactionId": "019464e9-05da-77b3-810b-887e199d8190",
@@ -400,9 +395,6 @@ class LocationsInsidePrisonGatewayTest(
                   "parentLocation": "string",
                   "inactiveCells": 1073741824,
                   "numberOfCellLocations": 1073741824,
-                  "childLocations": [
-                    "string"
-                  ],
                   "changeHistory": [
                     {
                       "transactionId": "019464e9-05da-77b3-810b-887e199d8190",
