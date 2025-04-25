@@ -25,7 +25,7 @@ class GetFutureVisitsService(
 
     val nomisNumber = person?.identifiers?.nomisNumber
     if (nomisNumber == null) {
-      return Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.NOMIS, UpstreamApiError.Type.ENTITY_NOT_FOUND, "No Nomis number found for $hmppsId")))
+      return Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.PRISON_API, UpstreamApiError.Type.ENTITY_NOT_FOUND, "No Nomis number found for $hmppsId")))
     }
 
     val response = prisonVisitsGateway.getFutureVisits(nomisNumber)

@@ -16,9 +16,9 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NomisNumber
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisCaseNote
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.OCNCaseNote
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.OCNPagination
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.OCNCaseNote
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.OCNPagination
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonApiCaseNote
 
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
@@ -36,7 +36,7 @@ class GetCaseNotesForPersonServiceTest(
       val filters = null
       val oCNCaseNote =
         OCNCaseNote(
-          content = listOf(NomisCaseNote(caseNoteId = "abcd1234")),
+          content = listOf(PrisonApiCaseNote(caseNoteId = "abcd1234")),
           page = OCNPagination(page = 1, size = 10, totalElements = 10),
         )
 
@@ -72,7 +72,7 @@ class GetCaseNotesForPersonServiceTest(
           listOf(
             UpstreamApiError(
               type = UpstreamApiError.Type.INTERNAL_SERVER_ERROR,
-              causedBy = UpstreamApi.NOMIS,
+              causedBy = UpstreamApi.PRISON_API,
               description = "Mock error from person service",
             ),
           )
@@ -95,7 +95,7 @@ class GetCaseNotesForPersonServiceTest(
         )
 
         val result = getCaseNoteForPersonService.execute(caseNoteFilter, filters)
-        result.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.NOMIS, UpstreamApiError.Type.ENTITY_NOT_FOUND)))
+        result.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.PRISON_API, UpstreamApiError.Type.ENTITY_NOT_FOUND)))
       }
 
       it("return errors if case notes gateway returns an error") {

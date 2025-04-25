@@ -1,7 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps
 
 enum class UpstreamApi {
-  NOMIS,
+  PRISON_API,
   PRISONER_OFFENDER_SEARCH,
   NDELIUS,
   ASSESS_RISKS_AND_NEEDS,

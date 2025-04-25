@@ -16,7 +16,7 @@ class ApiMockServer(
     // These ports must match the config in the yaml files
     fun create(upstreamApi: UpstreamApi): ApiMockServer =
       when (upstreamApi) {
-        UpstreamApi.NOMIS -> ApiMockServer(4000)
+        UpstreamApi.PRISON_API -> ApiMockServer(4000)
         UpstreamApi.PRISONER_OFFENDER_SEARCH -> ApiMockServer(4001)
         UpstreamApi.NDELIUS -> ApiMockServer(4003)
         UpstreamApi.ASSESS_RISKS_AND_NEEDS -> ApiMockServer(4004)

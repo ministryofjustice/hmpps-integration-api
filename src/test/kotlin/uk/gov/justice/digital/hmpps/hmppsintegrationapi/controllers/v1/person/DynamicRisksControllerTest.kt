@@ -195,7 +195,7 @@ internal class DynamicRisksControllerTest(
               errors =
                 listOf(
                   UpstreamApiError(
-                    causedBy = UpstreamApi.NOMIS,
+                    causedBy = UpstreamApi.PRISON_API,
                     type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
                   ),
                 ),

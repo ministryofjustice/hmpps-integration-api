@@ -61,7 +61,7 @@ internal class GetCellLocationForPersonServiceTest(
             errors =
               listOf(
                 UpstreamApiError(
-                  causedBy = UpstreamApi.NOMIS,
+                  causedBy = UpstreamApi.PRISON_API,
                   type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
                 ),
               ),
@@ -74,7 +74,7 @@ internal class GetCellLocationForPersonServiceTest(
         response.errors
           .first()
           .causedBy
-          .shouldBe(UpstreamApi.NOMIS)
+          .shouldBe(UpstreamApi.PRISON_API)
         response.errors
           .first()
           .type
@@ -109,7 +109,7 @@ internal class GetCellLocationForPersonServiceTest(
       }
 
       it("failed to get prisoners nomis number") {
-        val err = listOf(UpstreamApiError(UpstreamApi.NOMIS, UpstreamApiError.Type.ENTITY_NOT_FOUND))
+        val err = listOf(UpstreamApiError(UpstreamApi.PRISON_API, UpstreamApiError.Type.ENTITY_NOT_FOUND))
         whenever(getPersonService.getNomisNumberWithPrisonFilter(hmppsId, filters)).thenReturn(Response(data = NomisNumber(), errors = emptyList()))
         val response = getCellLocationForPersonService.execute(hmppsId, filters)
         response.errors.shouldBe(err)

@@ -183,7 +183,7 @@ internal class MappaDetailControllerTest(
               errors =
                 listOf(
                   UpstreamApiError(
-                    causedBy = UpstreamApi.NOMIS,
+                    causedBy = UpstreamApi.PRISON_API,
                     type = UpstreamApiError.Type.BAD_REQUEST,
                   ),
                 ),

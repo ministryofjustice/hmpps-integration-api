@@ -78,7 +78,7 @@ internal class SentencesControllerTest(
             """
         [
           {
-            "serviceSource": "NOMIS",
+            "serviceSource": "PRISON_API",
             "systemSource": "PRISON_SYSTEMS",
             "dateOfSentencing": null,
             "description": "Some description 1",
@@ -109,7 +109,7 @@ internal class SentencesControllerTest(
             }
           },
           {
-            "serviceSource": "NOMIS",
+            "serviceSource": "PRISON_API",
             "systemSource": "PRISON_SYSTEMS",
             "dateOfSentencing": null,
             "description": "Some description 2",
@@ -166,7 +166,7 @@ internal class SentencesControllerTest(
               errors =
                 listOf(
                   UpstreamApiError(
-                    causedBy = UpstreamApi.NOMIS,
+                    causedBy = UpstreamApi.PRISON_API,
                     type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
                   ),
                 ),
@@ -185,7 +185,7 @@ internal class SentencesControllerTest(
               errors =
                 listOf(
                   UpstreamApiError(
-                    causedBy = UpstreamApi.NOMIS,
+                    causedBy = UpstreamApi.PRISON_API,
                     type = UpstreamApiError.Type.BAD_REQUEST,
                   ),
                 ),
@@ -288,7 +288,7 @@ internal class SentencesControllerTest(
               errors =
                 listOf(
                   UpstreamApiError(
-                    causedBy = UpstreamApi.NOMIS,
+                    causedBy = UpstreamApi.PRISON_API,
                     type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
                   ),
                 ),
@@ -306,7 +306,7 @@ internal class SentencesControllerTest(
               errors =
                 listOf(
                   UpstreamApiError(
-                    causedBy = UpstreamApi.NOMIS,
+                    causedBy = UpstreamApi.PRISON_API,
                     type = UpstreamApiError.Type.BAD_REQUEST,
                   ),
                 ),

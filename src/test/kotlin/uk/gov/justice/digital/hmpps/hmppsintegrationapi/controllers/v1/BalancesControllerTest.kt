@@ -121,7 +121,7 @@ class BalancesControllerTest(
             errors =
               listOf(
                 UpstreamApiError(
-                  causedBy = UpstreamApi.NOMIS,
+                  causedBy = UpstreamApi.PRISON_API,
                   type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
                 ),
               ),
@@ -141,7 +141,7 @@ class BalancesControllerTest(
               listOf(
                 UpstreamApiError(
                   type = UpstreamApiError.Type.BAD_REQUEST,
-                  causedBy = UpstreamApi.NOMIS,
+                  causedBy = UpstreamApi.PRISON_API,
                 ),
               ),
           ),
@@ -223,7 +223,7 @@ class BalancesControllerTest(
             errors =
               listOf(
                 UpstreamApiError(
-                  causedBy = UpstreamApi.NOMIS,
+                  causedBy = UpstreamApi.PRISON_API,
                   type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
                 ),
               ),
@@ -243,7 +243,7 @@ class BalancesControllerTest(
               listOf(
                 UpstreamApiError(
                   type = UpstreamApiError.Type.BAD_REQUEST,
-                  causedBy = UpstreamApi.NOMIS,
+                  causedBy = UpstreamApi.PRISON_API,
                 ),
               ),
           ),

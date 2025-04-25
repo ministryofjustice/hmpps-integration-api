@@ -10,7 +10,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.getOrError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.nomis.NomisReferenceCode
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonApi.PrisonApiReferenceCode
 
 @Service
 class ReferenceDataService(
@@ -45,14 +45,14 @@ class ReferenceDataService(
     return Response(data = ReferenceData(prisonReferenceData, probationReferenceData))
   }
 
-  private fun prisonReferenceData(domain: String): Response<List<NomisReferenceCode>?> {
+  private fun prisonReferenceData(domain: String): Response<List<PrisonApiReferenceCode>?> {
     val prisonReferenceData =
       prisonApiWebclient
-        .requestList<NomisReferenceCode>(
+        .requestList<PrisonApiReferenceCode>(
           HttpMethod.GET,
           "/api/reference-domains/domains/$domain",
           prisonAuthHeader(),
-          UpstreamApi.NOMIS,
+          UpstreamApi.PRISON_API,
         ).getOrError { (errors) -> return Response(null, errors = listOf(errors)) }
     return Response(data = prisonReferenceData)
   }

@@ -64,7 +64,7 @@ class PrisonController(
   ): DataResponse<PersonInPrison?> {
     val response = getPersonService.getPrisoner(hmppsId, filters)
 
-    if (response.hasErrorCausedBy(BAD_REQUEST, causedBy = UpstreamApi.NOMIS)) {
+    if (response.hasErrorCausedBy(BAD_REQUEST, causedBy = UpstreamApi.PRISON_API)) {
       throw ValidationException("Invalid HMPPS ID: $hmppsId")
     }
     if (response.hasErrorCausedBy(ENTITY_NOT_FOUND, causedBy = UpstreamApi.PRISONER_OFFENDER_SEARCH)) {

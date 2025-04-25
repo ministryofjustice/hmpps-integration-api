@@ -242,7 +242,7 @@ internal class PrisonControllerTest(
                 UpstreamApiError(
                   description = "Invalid HMPPS ID: $hmppsId",
                   type = UpstreamApiError.Type.BAD_REQUEST,
-                  causedBy = UpstreamApi.NOMIS,
+                  causedBy = UpstreamApi.PRISON_API,
                 ),
               ),
           ),

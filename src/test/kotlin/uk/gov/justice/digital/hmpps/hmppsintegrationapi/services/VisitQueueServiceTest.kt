@@ -221,7 +221,7 @@ internal class VisitQueueServiceTest(
       }
 
       it("return error if getPersonService returns an error") {
-        val errors = listOf(UpstreamApiError(UpstreamApi.NOMIS, UpstreamApiError.Type.INTERNAL_SERVER_ERROR, description = "getPersonService returns an error"))
+        val errors = listOf(UpstreamApiError(UpstreamApi.PRISON_API, UpstreamApiError.Type.INTERNAL_SERVER_ERROR, description = "getPersonService returns an error"))
         whenever(getPersonService.getNomisNumberWithPrisonFilter(hmppsId = hmppsId, filters = filters)).thenReturn(Response(data = null, errors))
 
         val response = visitQueueService.sendCreateVisit(createVisitRequest, who, filters)
@@ -231,7 +231,7 @@ internal class VisitQueueServiceTest(
 
       it("return error if consumerPrisonAccessService returns an error") {
         val incorrectFilters = ConsumerFilters(prisons = listOf("XYZ"))
-        val errors = listOf(UpstreamApiError(UpstreamApi.NOMIS, UpstreamApiError.Type.ENTITY_NOT_FOUND, description = "consumerPrisonAccessService returns an error"))
+        val errors = listOf(UpstreamApiError(UpstreamApi.PRISON_API, UpstreamApiError.Type.ENTITY_NOT_FOUND, description = "consumerPrisonAccessService returns an error"))
         whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<HmppsMessage>(createVisitRequest.prisonId, incorrectFilters)).thenReturn(Response(data = null, errors))
 
         val response = visitQueueService.sendCreateVisit(createVisitRequest, who, incorrectFilters)

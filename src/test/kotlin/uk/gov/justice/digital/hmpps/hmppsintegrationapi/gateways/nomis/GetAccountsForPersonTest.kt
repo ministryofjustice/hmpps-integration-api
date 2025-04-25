@@ -15,7 +15,7 @@ import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NomisGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonApiGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
@@ -24,14 +24,14 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 @ActiveProfiles("test")
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
-  classes = [NomisGateway::class],
+  classes = [PrisonApiGateway::class],
 )
 class GetAccountsForPersonTest(
   @MockitoBean val hmppsAuthGateway: HmppsAuthGateway,
-  val nomisGateway: NomisGateway,
+  val prisonApiGateway: PrisonApiGateway,
 ) : DescribeSpec(
     {
-      val nomisApiMockServer = ApiMockServer.create(UpstreamApi.NOMIS)
+      val nomisApiMockServer = ApiMockServer.create(UpstreamApi.PRISON_API)
       val nomisNumber = "AA1234Z"
       val prisonId = "XYZ"
       val accountsPath = "/api/v1/prison/$prisonId/offenders/$nomisNumber/accounts"
@@ -58,13 +58,13 @@ class GetAccountsForPersonTest(
       }
 
       it("authenticates using HMPPS Auth with credentials") {
-        nomisGateway.getAccountsForPerson(prisonId, nomisNumber)
+        prisonApiGateway.getAccountsForPerson(prisonId, nomisNumber)
 
         verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("NOMIS")
       }
 
       it("returns account balances for the matching person ID") {
-        val response = nomisGateway.getAccountsForPerson(prisonId, nomisNumber)
+        val response = prisonApiGateway.getAccountsForPerson(prisonId, nomisNumber)
 
         response.errors.shouldBeEmpty()
         response.data?.spends.shouldBe(114217)
@@ -75,13 +75,13 @@ class GetAccountsForPersonTest(
       it("returns an error when 404 Not Found is returned because no person is found") {
         nomisApiMockServer.stubForGet(accountsPath, "", HttpStatus.NOT_FOUND)
 
-        val response = nomisGateway.getAccountsForPerson(prisonId, nomisNumber)
+        val response = prisonApiGateway.getAccountsForPerson(prisonId, nomisNumber)
 
         response.errors.shouldHaveSize(1)
         response.errors
           .first()
           .causedBy
-          .shouldBe(UpstreamApi.NOMIS)
+          .shouldBe(UpstreamApi.PRISON_API)
         response.errors
           .first()
           .type
@@ -91,13 +91,13 @@ class GetAccountsForPersonTest(
       it("returns an error when 400 Bad Request is returned because of invalid ID") {
         nomisApiMockServer.stubForGet(accountsPath, "", HttpStatus.BAD_REQUEST)
 
-        val response = nomisGateway.getAccountsForPerson(prisonId, nomisNumber)
+        val response = prisonApiGateway.getAccountsForPerson(prisonId, nomisNumber)
 
         response.errors.shouldHaveSize(1)
         response.errors
           .first()
           .causedBy
-          .shouldBe(UpstreamApi.NOMIS)
+          .shouldBe(UpstreamApi.PRISON_API)
         response.errors
           .first()
           .type

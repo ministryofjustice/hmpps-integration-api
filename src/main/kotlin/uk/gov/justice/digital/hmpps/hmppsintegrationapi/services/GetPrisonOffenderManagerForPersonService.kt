@@ -23,7 +23,7 @@ class GetPrisonOffenderManagerForPersonService(
       return Response(data = null, errors = personResponse.errors)
     }
 
-    val nomisNumber = personResponse.data?.nomisNumber ?: return Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.NOMIS, UpstreamApiError.Type.ENTITY_NOT_FOUND)))
+    val nomisNumber = personResponse.data?.nomisNumber ?: return Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.PRISON_API, UpstreamApiError.Type.ENTITY_NOT_FOUND)))
 
     val prisonOffenderManagerResponse = managePOMCaseGateway.getPrimaryPOMForNomisNumber(nomisNumber)
     if (prisonOffenderManagerResponse.errors.isNotEmpty() && !prisonOffenderManagerResponse.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {

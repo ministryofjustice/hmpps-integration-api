@@ -187,7 +187,7 @@ internal class GetPersonServiceTest(
 
       it("returns error when invalid hmppsId is provided") {
         val invalidHmppsId = "invalid_id"
-        val expectedError = UpstreamApiError(UpstreamApi.NOMIS, UpstreamApiError.Type.BAD_REQUEST, "Invalid HMPPS ID: $invalidHmppsId")
+        val expectedError = UpstreamApiError(UpstreamApi.PRISON_API, UpstreamApiError.Type.BAD_REQUEST, "Invalid HMPPS ID: $invalidHmppsId")
         val result = getPersonService.getPrisoner(invalidHmppsId, blankConsumerFilters)
 
         result.data.shouldBe(null)
@@ -294,11 +294,11 @@ internal class GetPersonServiceTest(
         val result = getPersonService.getPersonWithPrisonFilter(invalidNomsNumber, filters)
 
         result.data.shouldBe(null)
-        result.errors.shouldBe(listOf(UpstreamApiError(causedBy = UpstreamApi.NOMIS, type = UpstreamApiError.Type.BAD_REQUEST)))
+        result.errors.shouldBe(listOf(UpstreamApiError(causedBy = UpstreamApi.PRISON_API, type = UpstreamApiError.Type.BAD_REQUEST)))
       }
 
       it("if filters are present, consumer filter check fails, return 404") {
-        val errors = listOf(UpstreamApiError(causedBy = UpstreamApi.NOMIS, type = UpstreamApiError.Type.ENTITY_NOT_FOUND))
+        val errors = listOf(UpstreamApiError(causedBy = UpstreamApi.PRISON_API, type = UpstreamApiError.Type.ENTITY_NOT_FOUND))
         whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber)).thenReturn(Response(data = POSPrisoner(firstName = "Sam", lastName = "Person", prisonId = wrongPrisonId, youthOffender = false)))
         whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<Person>(wrongPrisonId, filters)).thenReturn(Response(data = null, errors = errors))
 
@@ -322,7 +322,7 @@ internal class GetPersonServiceTest(
       }
 
       it("if filters are present, probation offender search returns 404, get data from POS gateway") {
-        val errors = listOf(UpstreamApiError(causedBy = UpstreamApi.NOMIS, type = UpstreamApiError.Type.ENTITY_NOT_FOUND))
+        val errors = listOf(UpstreamApiError(causedBy = UpstreamApi.PRISON_API, type = UpstreamApiError.Type.ENTITY_NOT_FOUND))
         whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber)).thenReturn(Response(data = prisonerWithPrisonId))
         whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<Person>(prisonId, filters)).thenReturn(Response(data = null))
         whenever(nDeliusGateway.getPerson(id = nomsNumber)).thenReturn(
@@ -339,7 +339,7 @@ internal class GetPersonServiceTest(
       }
 
       it("if filters are present, POS gateway returns 404") {
-        val errors = listOf(UpstreamApiError(causedBy = UpstreamApi.NOMIS, type = UpstreamApiError.Type.ENTITY_NOT_FOUND))
+        val errors = listOf(UpstreamApiError(causedBy = UpstreamApi.PRISON_API, type = UpstreamApiError.Type.ENTITY_NOT_FOUND))
         whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber)).thenReturn(Response(data = null, errors = errors))
 
         val result = getPersonService.getPersonWithPrisonFilter(nomsNumber, filters)
@@ -359,7 +359,7 @@ internal class GetPersonServiceTest(
       }
 
       it("if filters are null, probation offender search returns 404, get data from POS gateway") {
-        val errors = listOf(UpstreamApiError(causedBy = UpstreamApi.NOMIS, type = UpstreamApiError.Type.ENTITY_NOT_FOUND))
+        val errors = listOf(UpstreamApiError(causedBy = UpstreamApi.PRISON_API, type = UpstreamApiError.Type.ENTITY_NOT_FOUND))
         whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber)).thenReturn(Response(data = prisonerWithPrisonId))
         whenever(nDeliusGateway.getPerson(id = nomsNumber)).thenReturn(
           Response(data = null, errors = errors),
@@ -375,7 +375,7 @@ internal class GetPersonServiceTest(
       }
 
       it("if filters are null, probation offender search returns 404, POS gateway returns 404") {
-        val errors = listOf(UpstreamApiError(causedBy = UpstreamApi.NOMIS, type = UpstreamApiError.Type.ENTITY_NOT_FOUND))
+        val errors = listOf(UpstreamApiError(causedBy = UpstreamApi.PRISON_API, type = UpstreamApiError.Type.ENTITY_NOT_FOUND))
         whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber)).thenReturn(Response(data = null, errors = errors))
         whenever(nDeliusGateway.getPerson(id = nomsNumber)).thenReturn(
           Response(data = null, errors = errors),
@@ -390,7 +390,7 @@ internal class GetPersonServiceTest(
       describe("getNomisNumber") {
         it("Invalid hmppsId (not nomis or crn) passed in, return bad request") {
           val result = getPersonService.getNomisNumber(invalidNomsNumber)
-          result.errors.shouldBe(listOf(UpstreamApiError(causedBy = UpstreamApi.NOMIS, type = UpstreamApiError.Type.BAD_REQUEST, description = "Invalid HMPPS ID: $invalidNomsNumber")))
+          result.errors.shouldBe(listOf(UpstreamApiError(causedBy = UpstreamApi.PRISON_API, type = UpstreamApiError.Type.BAD_REQUEST, description = "Invalid HMPPS ID: $invalidNomsNumber")))
         }
 
         it("Nomis number passed in, return nomis number from POS") {
@@ -400,7 +400,7 @@ internal class GetPersonServiceTest(
         }
 
         it("Nomis number passed in, POS returns error, return error") {
-          val errors = listOf(UpstreamApiError(causedBy = UpstreamApi.NOMIS, type = UpstreamApiError.Type.INTERNAL_SERVER_ERROR))
+          val errors = listOf(UpstreamApiError(causedBy = UpstreamApi.PRISON_API, type = UpstreamApiError.Type.INTERNAL_SERVER_ERROR))
           whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber)).thenReturn(Response(data = null, errors = errors))
           val result = getPersonService.getNomisNumber(nomsNumber)
           result.errors.shouldBe(errors)
@@ -429,7 +429,7 @@ internal class GetPersonServiceTest(
       describe("getNomisNumberWithPrisonFilter") {
         it("Invalid hmppsId (not nomis or crn) passed in, return bad request") {
           val result = getPersonService.getNomisNumberWithPrisonFilter(invalidNomsNumber, filters = null)
-          result.errors.shouldBe(listOf(UpstreamApiError(causedBy = UpstreamApi.NOMIS, type = UpstreamApiError.Type.BAD_REQUEST, description = "Invalid HMPPS ID: $invalidNomsNumber")))
+          result.errors.shouldBe(listOf(UpstreamApiError(causedBy = UpstreamApi.PRISON_API, type = UpstreamApiError.Type.BAD_REQUEST, description = "Invalid HMPPS ID: $invalidNomsNumber")))
         }
 
         it("Nomis number passed in, filters null - return nomis number from POS") {
@@ -439,7 +439,7 @@ internal class GetPersonServiceTest(
         }
 
         it("Nomis number passed in, POS returns error, return error") {
-          val errors = listOf(UpstreamApiError(causedBy = UpstreamApi.NOMIS, type = UpstreamApiError.Type.INTERNAL_SERVER_ERROR))
+          val errors = listOf(UpstreamApiError(causedBy = UpstreamApi.PRISON_API, type = UpstreamApiError.Type.INTERNAL_SERVER_ERROR))
           whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber)).thenReturn(Response(data = null, errors = errors))
           val result = getPersonService.getNomisNumberWithPrisonFilter(nomsNumber, filters = null)
           result.errors.shouldBe(errors)
@@ -453,7 +453,7 @@ internal class GetPersonServiceTest(
         }
 
         it("Nomis number passed in, filters present, filter check failed - return 404") {
-          val errors = listOf(UpstreamApiError(causedBy = UpstreamApi.NOMIS, type = UpstreamApiError.Type.ENTITY_NOT_FOUND))
+          val errors = listOf(UpstreamApiError(causedBy = UpstreamApi.PRISON_API, type = UpstreamApiError.Type.ENTITY_NOT_FOUND))
           whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber)).thenReturn(Response(data = prisonerWithWrongPrisonId, errors = emptyList()))
           whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<Person>(wrongPrisonId, filters)).thenReturn(Response(data = null, errors = errors))
           val result = getPersonService.getNomisNumberWithPrisonFilter(nomsNumber, filters)
@@ -488,7 +488,7 @@ internal class GetPersonServiceTest(
         }
 
         it("Crn number passed in, filters present - POS returns error, return error from POS") {
-          val errors = listOf(UpstreamApiError(causedBy = UpstreamApi.NOMIS, type = UpstreamApiError.Type.INTERNAL_SERVER_ERROR))
+          val errors = listOf(UpstreamApiError(causedBy = UpstreamApi.PRISON_API, type = UpstreamApiError.Type.INTERNAL_SERVER_ERROR))
           whenever(nDeliusGateway.getPerson(crnNumber)).thenReturn(Response(data = personOnProbation, errors = emptyList()))
           whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber)).thenReturn(Response(data = null, errors = errors))
           val result = getPersonService.getNomisNumberWithPrisonFilter(crnNumber, filters)
@@ -496,7 +496,7 @@ internal class GetPersonServiceTest(
         }
 
         it("Crn number passed in, filters present - POS returns prison id, filter check failed - return 404") {
-          val errors = listOf(UpstreamApiError(causedBy = UpstreamApi.NOMIS, type = UpstreamApiError.Type.ENTITY_NOT_FOUND))
+          val errors = listOf(UpstreamApiError(causedBy = UpstreamApi.PRISON_API, type = UpstreamApiError.Type.ENTITY_NOT_FOUND))
           whenever(nDeliusGateway.getPerson(crnNumber)).thenReturn(Response(data = personOnProbation, errors = emptyList()))
           whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber)).thenReturn(Response(data = prisonerWithPrisonId, errors = emptyList()))
           whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<Nothing>(prisonId, filters)).thenReturn(Response(data = null, errors = errors))

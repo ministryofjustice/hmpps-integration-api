@@ -3,7 +3,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.ConsumerPrisonAccessService
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NomisGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonApiGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.AccountBalance
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Balance
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Balances
@@ -14,7 +14,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Consum
 
 @Service
 class GetBalancesForPersonService(
-  @Autowired val nomisGateway: NomisGateway,
+  @Autowired val prisonApiGateway: PrisonApiGateway,
   @Autowired val getPersonService: GetPersonService,
   @Autowired val consumerPrisonAccessService: ConsumerPrisonAccessService,
 ) {
@@ -39,7 +39,7 @@ class GetBalancesForPersonService(
       )
     }
 
-    val nomisAccounts = nomisGateway.getAccountsForPerson(prisonId, nomisNumber)
+    val nomisAccounts = prisonApiGateway.getAccountsForPerson(prisonId, nomisNumber)
 
     if (nomisAccounts.errors.isNotEmpty()) {
       return Response(
@@ -81,7 +81,7 @@ class GetBalancesForPersonService(
     if (!listOf("spends", "savings", "cash").any { it == accountCode }) {
       return Response(
         data = null,
-        errors = listOf(UpstreamApiError(type = UpstreamApiError.Type.BAD_REQUEST, causedBy = UpstreamApi.NOMIS)),
+        errors = listOf(UpstreamApiError(type = UpstreamApiError.Type.BAD_REQUEST, causedBy = UpstreamApi.PRISON_API)),
       )
     }
 

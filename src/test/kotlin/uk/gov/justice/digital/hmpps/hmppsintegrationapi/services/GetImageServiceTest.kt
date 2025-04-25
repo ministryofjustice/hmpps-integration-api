@@ -11,7 +11,7 @@ import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NomisGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonApiGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ImageMetadata
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NomisNumber
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
@@ -24,7 +24,7 @@ import java.time.LocalDateTime
   classes = [GetImageService::class],
 )
 internal class GetImageServiceTest(
-  @MockitoBean val nomisGateway: NomisGateway,
+  @MockitoBean val prisonApiGateway: PrisonApiGateway,
   @MockitoBean val getPersonService: GetPersonService,
   private val getImageService: GetImageService,
 ) : DescribeSpec(
@@ -47,31 +47,31 @@ internal class GetImageServiceTest(
 
       describe("getById") {
         beforeEach {
-          Mockito.reset(nomisGateway)
-          whenever(nomisGateway.getImageData(id)).thenReturn(Response(data = image))
+          Mockito.reset(prisonApiGateway)
+          whenever(prisonApiGateway.getImageData(id)).thenReturn(Response(data = image))
         }
 
         it("should return image data for specified image id") {
           val response = getImageService.getById(id)
-          verify(nomisGateway, times(1)).getImageData(id)
+          verify(prisonApiGateway, times(1)).getImageData(id)
           response.data.shouldBe(image)
         }
       }
 
       describe("execute") {
         beforeEach {
-          Mockito.reset(nomisGateway)
+          Mockito.reset(prisonApiGateway)
           Mockito.reset(getPersonService)
 
           whenever(getPersonService.getNomisNumberWithPrisonFilter(hmppsId = prisonerNumber, filters = filters)).thenReturn(Response(NomisNumber(prisonerNumber)))
-          whenever(nomisGateway.getImageMetadataForPerson(prisonerNumber)).thenReturn(Response(data = imageMetadata))
+          whenever(prisonApiGateway.getImageMetadataForPerson(prisonerNumber)).thenReturn(Response(data = imageMetadata))
 
-          whenever(nomisGateway.getImageData(id)).thenReturn(Response(data = image))
+          whenever(prisonApiGateway.getImageData(id)).thenReturn(Response(data = image))
         }
 
         it("should return image data for a prisoner according to specified image id") {
           getImageService.execute(id, prisonerNumber, filters)
-          verify(nomisGateway, VerificationModeFactory.times(1)).getImageMetadataForPerson(prisonerNumber)
+          verify(prisonApiGateway, VerificationModeFactory.times(1)).getImageMetadataForPerson(prisonerNumber)
         }
 
         it("should return a list of errors if person not found") {
@@ -81,7 +81,7 @@ internal class GetImageServiceTest(
               errors =
                 listOf(
                   UpstreamApiError(
-                    causedBy = UpstreamApi.NOMIS,
+                    causedBy = UpstreamApi.PRISON_API,
                     type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
                   ),
                 ),
@@ -96,13 +96,13 @@ internal class GetImageServiceTest(
         }
 
         it("should return a list of errors if images are not found for person") {
-          whenever(nomisGateway.getImageMetadataForPerson(prisonerNumber)).thenReturn(
+          whenever(prisonApiGateway.getImageMetadataForPerson(prisonerNumber)).thenReturn(
             Response(
               data = emptyList(),
               errors =
                 listOf(
                   UpstreamApiError(
-                    causedBy = UpstreamApi.NOMIS,
+                    causedBy = UpstreamApi.PRISON_API,
                     type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
                   ),
                 ),
@@ -117,7 +117,7 @@ internal class GetImageServiceTest(
         }
 
         it("should return a list of errors if the image queried isn't found") {
-          whenever(nomisGateway.getImageMetadataForPerson(prisonerNumber)).thenReturn(
+          whenever(prisonApiGateway.getImageMetadataForPerson(prisonerNumber)).thenReturn(
             Response(
               data = imageMetadata,
               errors = emptyList(),
@@ -138,13 +138,13 @@ internal class GetImageServiceTest(
         }
 
         it("returns the error from NOMIS when an error occurs") {
-          whenever(nomisGateway.getImageData(id)).thenReturn(
+          whenever(prisonApiGateway.getImageData(id)).thenReturn(
             Response(
               data = byteArrayOf(),
               errors =
                 listOf(
                   UpstreamApiError(
-                    causedBy = UpstreamApi.NOMIS,
+                    causedBy = UpstreamApi.PRISON_API,
                     type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
                   ),
                 ),
@@ -157,7 +157,7 @@ internal class GetImageServiceTest(
           response.errors
             .first()
             .causedBy
-            .shouldBe(UpstreamApi.NOMIS)
+            .shouldBe(UpstreamApi.PRISON_API)
           response.errors
             .first()
             .type

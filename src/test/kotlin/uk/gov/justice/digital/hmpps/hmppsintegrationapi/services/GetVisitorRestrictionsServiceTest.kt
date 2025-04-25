@@ -139,13 +139,13 @@ class GetVisitorRestrictionsServiceTest(
         whenever(getPersonService.getPrisoner(hmppsId, consumerFilters)).thenReturn(Response(data = posPrisoner.toPersonInPrison(), errors = emptyList()))
 
         whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<List<PrisonerContactRestrictions>>(wrongPrisonId, consumerFilters)).thenReturn(
-          Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.NOMIS, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found"))),
+          Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.PRISON_API, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found"))),
         )
 
         val response = getVisitorRestrictionsService.execute(hmppsId, contactId, consumerFilters)
 
         response.data.shouldBe(null)
-        response.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.NOMIS, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found")))
+        response.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.PRISON_API, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found")))
       }
 
       it("returns an error when linked prisoners are not found") {
