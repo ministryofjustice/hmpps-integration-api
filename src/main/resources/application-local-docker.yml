@@ -17,6 +17,8 @@ services:
   manage-prison-visits.base-url: http://localhost:4023
   incentives.base-url: http://localhost:4024
   alerts.base-url: http://localhost:4025
+  locations-inside-prison.base-url: http://localhost:4026
+
 
 authorisation:
   consumers:
