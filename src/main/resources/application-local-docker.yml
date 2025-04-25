@@ -19,7 +19,6 @@ services:
   alerts.base-url: http://localhost:4025
   locations-inside-prison.base-url: http://localhost:4026
 
-
 authorisation:
   consumers:
     automated-test-client:

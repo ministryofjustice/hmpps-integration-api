@@ -46,7 +46,6 @@ services:
   locations-inside-prison:
     base-url: http://localhost:4000
 
-
 hmpps.sqs:
   provider: localstack
   queues:

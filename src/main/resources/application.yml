@@ -93,6 +93,5 @@ services:
   locations-inside-prison:
     base-url: http://localhost:4026
 
-
 sentry:
   traces-sample-rate: "0.05"
