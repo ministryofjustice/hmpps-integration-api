@@ -4,7 +4,7 @@ import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
-import org.mockito.internal.verification.VerificationModeFactory
+import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
@@ -51,7 +51,7 @@ class LocationsInsidePrisonGatewayTest(
         it("authenticates using HMPPS Auth with credentials") {
           locationsInsidePrisonGateway.getLocationByKey(key)
 
-          verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("LOCATIONS-INSIDE-PRISON")
+          verify(hmppsAuthGateway, times(1)).getClientToken("LOCATIONS-INSIDE-PRISON")
         }
 
         it("returns location") {
@@ -203,12 +203,13 @@ class LocationsInsidePrisonGatewayTest(
 
       describe("getResidentialSummary") {
         val prisonId = "G6333VK"
-        val path = "/locations/residential-summary/$prisonId"
+        val parentPathHierarchy = "A"
+        val path = "/locations/residential-summary/$prisonId?parentPathHierarchy=$parentPathHierarchy"
 
         it("authenticates using HMPPS Auth with credentials") {
           locationsInsidePrisonGateway.getResidentialSummary(prisonId)
 
-          verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("LOCATIONS-INSIDE-PRISON")
+          verify(hmppsAuthGateway, times(1)).getClientToken("LOCATIONS-INSIDE-PRISON")
         }
 
         it("returns residential summary") {
@@ -457,7 +458,7 @@ class LocationsInsidePrisonGatewayTest(
             }
             """,
           )
-          val result = locationsInsidePrisonGateway.getResidentialSummary(prisonId)
+          val result = locationsInsidePrisonGateway.getResidentialSummary(prisonId, parentPathHierarchy)
 
           result.data.shouldNotBeNull()
           result.data!!
@@ -478,7 +479,7 @@ class LocationsInsidePrisonGatewayTest(
             HttpStatus.BAD_REQUEST,
           )
 
-          val result = locationsInsidePrisonGateway.getResidentialSummary(prisonId)
+          val result = locationsInsidePrisonGateway.getResidentialSummary(prisonId, parentPathHierarchy)
           result.data.shouldBe(null)
           result.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.LOCATIONS_INSIDE_PRISON, UpstreamApiError.Type.BAD_REQUEST)))
         }
@@ -491,7 +492,7 @@ class LocationsInsidePrisonGatewayTest(
         it("authenticates using HMPPS Auth with credentials") {
           locationsInsidePrisonGateway.getResidentialHierarchy(prisonId)
 
-          verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("LOCATIONS-INSIDE-PRISON")
+          verify(hmppsAuthGateway, times(1)).getClientToken("LOCATIONS-INSIDE-PRISON")
         }
 
         it("should get residential hierarchy") {
