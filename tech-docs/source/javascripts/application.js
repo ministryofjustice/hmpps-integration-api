@@ -29,7 +29,7 @@ window.addEventListener("load", (event) => {
     },
     {
       schemaName: 'EducationAssessmentStatusChangeRequest',
-      endpoint: '/v1/persons/{hmppsId}/education/assessments/status',
+      endpoint: 'v1/persons/{hmppsId}/education/assessments/status',
       method: 'post'
     },
   ];
