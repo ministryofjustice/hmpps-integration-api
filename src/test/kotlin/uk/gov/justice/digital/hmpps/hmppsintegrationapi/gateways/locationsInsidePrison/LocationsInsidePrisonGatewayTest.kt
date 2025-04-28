@@ -4,7 +4,7 @@ import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
-import org.mockito.internal.verification.VerificationModeFactory
+import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
@@ -51,7 +51,7 @@ class LocationsInsidePrisonGatewayTest(
         it("authenticates using HMPPS Auth with credentials") {
           locationsInsidePrisonGateway.getLocationByKey(key)
 
-          verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("LOCATIONS-INSIDE-PRISON")
+          verify(hmppsAuthGateway, times(1)).getClientToken("LOCATIONS-INSIDE-PRISON")
         }
 
         it("returns location") {
@@ -111,9 +111,6 @@ class LocationsInsidePrisonGatewayTest(
             "parentLocation": "string",
             "inactiveCells": 1073741824,
             "numberOfCellLocations": 1073741824,
-            "childLocations": [
-              "string"
-            ],
             "changeHistory": [
               {
                 "transactionId": "019464e9-05da-77b3-810b-887e199d8190",
@@ -203,12 +200,13 @@ class LocationsInsidePrisonGatewayTest(
 
       describe("getResidentialSummary") {
         val prisonId = "G6333VK"
-        val path = "/locations/residential-summary/$prisonId"
+        val parentPathHierarchy = "A"
+        val path = "/locations/residential-summary/$prisonId?parentPathHierarchy=$parentPathHierarchy"
 
         it("authenticates using HMPPS Auth with credentials") {
           locationsInsidePrisonGateway.getResidentialSummary(prisonId)
 
-          verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("LOCATIONS-INSIDE-PRISON")
+          verify(hmppsAuthGateway, times(1)).getClientToken("LOCATIONS-INSIDE-PRISON")
         }
 
         it("returns residential summary") {
@@ -290,55 +288,6 @@ class LocationsInsidePrisonGatewayTest(
                 "parentLocation": "string",
                 "inactiveCells": 1073741824,
                 "numberOfCellLocations": 1073741824,
-                "childLocations": [
-                  "string"
-                ],
-                "changeHistory": [
-                  {
-                    "transactionId": "019464e9-05da-77b3-810b-887e199d8190",
-                    "transactionType": "CAPACITY_CHANGE",
-                    "attribute": "Location Type",
-                    "oldValues": [
-                      "Dry cell",
-                      "Safe cell"
-                    ],
-                    "newValues": [
-                      "Dry cell",
-                      "Safe cell"
-                    ],
-                    "amendedBy": "user",
-                    "amendedDate": "2023-01-23T10:15:30"
-                  }
-                ],
-                "transactionHistory": [
-                  {
-                    "transactionId": "019464e9-05da-77b3-810b-887e199d8190",
-                    "transactionType": "CAPACITY_CHANGE",
-                    "prisonId": "MDI",
-                    "transactionDetail": "Working capacity changed from 0 to 1",
-                    "transactionInvokedBy": "STAFF_USER1",
-                    "txStartTime": "2025-04-25T13:39:56.692Z",
-                    "txEndTime": "2025-04-25T13:39:56.692Z",
-                    "transactionDetails": [
-                      {
-                        "locationId": "019483f5-fee7-7ed0-924c-3ee4b2b51904",
-                        "locationKey": "BXI-1-1-001",
-                        "attributeCode": "STATUS",
-                        "attribute": "Location Type",
-                        "amendedBy": "user",
-                        "amendedDate": "2023-01-23T10:15:30",
-                        "oldValues": [
-                          "Dry cell",
-                          "Safe cell"
-                        ],
-                        "newValues": [
-                          "Dry cell",
-                          "Safe cell"
-                        ]
-                      }
-                    ]
-                  }
-                ],
                 "lastModifiedBy": "string",
                 "lastModifiedDate": "2025-04-25T13:39:56.692Z",
                 "key": "MDI-A-1-001",
@@ -399,9 +348,6 @@ class LocationsInsidePrisonGatewayTest(
                   "parentLocation": "string",
                   "inactiveCells": 1073741824,
                   "numberOfCellLocations": 1073741824,
-                  "childLocations": [
-                    "string"
-                  ],
                   "changeHistory": [
                     {
                       "transactionId": "019464e9-05da-77b3-810b-887e199d8190",
@@ -457,7 +403,7 @@ class LocationsInsidePrisonGatewayTest(
             }
             """,
           )
-          val result = locationsInsidePrisonGateway.getResidentialSummary(prisonId)
+          val result = locationsInsidePrisonGateway.getResidentialSummary(prisonId, parentPathHierarchy)
 
           result.data.shouldNotBeNull()
           result.data!!
@@ -478,7 +424,7 @@ class LocationsInsidePrisonGatewayTest(
             HttpStatus.BAD_REQUEST,
           )
 
-          val result = locationsInsidePrisonGateway.getResidentialSummary(prisonId)
+          val result = locationsInsidePrisonGateway.getResidentialSummary(prisonId, parentPathHierarchy)
           result.data.shouldBe(null)
           result.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.LOCATIONS_INSIDE_PRISON, UpstreamApiError.Type.BAD_REQUEST)))
         }
@@ -491,7 +437,7 @@ class LocationsInsidePrisonGatewayTest(
         it("authenticates using HMPPS Auth with credentials") {
           locationsInsidePrisonGateway.getResidentialHierarchy(prisonId)
 
-          verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("LOCATIONS-INSIDE-PRISON")
+          verify(hmppsAuthGateway, times(1)).getClientToken("LOCATIONS-INSIDE-PRISON")
         }
 
         it("should get residential hierarchy") {

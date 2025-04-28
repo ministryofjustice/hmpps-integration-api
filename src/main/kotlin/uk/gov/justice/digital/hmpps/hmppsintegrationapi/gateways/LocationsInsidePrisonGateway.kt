@@ -45,11 +45,14 @@ class LocationsInsidePrisonGateway(
     }
   }
 
-  fun getResidentialSummary(prisonId: String): Response<LIPResidentialSummary?> {
+  fun getResidentialSummary(
+    prisonId: String,
+    parentPathHierarchy: String? = null,
+  ): Response<LIPResidentialSummary?> {
     val result =
       webClient.request<LIPResidentialSummary>(
         HttpMethod.GET,
-        "/locations/residential-summary/$prisonId",
+        "/locations/residential-summary/$prisonId" + if (parentPathHierarchy == null) "" else "?parentPathHierarchy=$parentPathHierarchy",
         authenticationHeader(),
         UpstreamApi.LOCATIONS_INSIDE_PRISON,
         badRequestAsError = true,

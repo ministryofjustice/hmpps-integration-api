@@ -37,7 +37,7 @@ data class LIPLocation(
   val parentLocation: String?,
   val inactiveCells: Int?,
   val numberOfCellLocations: Int?,
-  val childLocations: List<String>?,
+  val childLocations: List<LIPLocation>?,
   val changeHistory: List<LIPChangeHistoryItem>?,
   val transactionHistory: List<LIPTransactionHistoryItem>?,
   val lastModifiedBy: String,
