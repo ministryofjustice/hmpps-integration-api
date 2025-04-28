@@ -429,7 +429,7 @@ internal class PrisonControllerTest(
 
           val result = mockMvc.performAuthorised(path)
           result.response.status.shouldBe(HttpStatus.OK.value())
-          result.response.contentAsJson<DataResponse<List<ResidentialHierarchyItem>>>().shouldBe(listOf(mainLocation))
+          result.response.contentAsJson<DataResponse<List<ResidentialHierarchyItem>>>().shouldBe(DataResponse(data = listOf(mainLocation)))
         }
 
         it("should call the audit service") {
