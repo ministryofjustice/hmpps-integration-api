@@ -36,6 +36,7 @@ globals:
         - "/v1/prison/.*/prisoners/.*/transactions"
         - "/v1/prison/.*/prisoners/.*/non-associations"
         - "/v1/prison/.*/visit/search[^/]*$"
+        - "/v1/prison/.*/residential-hierarchy"
         - "/v1/visit/[^/]*$"
         - "/v1/visit"
         - "/v1/visit/id/by-client-ref/[^/]*$"
