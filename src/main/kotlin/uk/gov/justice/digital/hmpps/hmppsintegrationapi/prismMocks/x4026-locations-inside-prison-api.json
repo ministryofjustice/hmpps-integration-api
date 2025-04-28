@@ -11219,7 +11219,8 @@
             "description": "Sub residential locations",
             "items": {
               "$ref": "#/components/schemas/PrisonHierarchyDto"
-            }
+            },
+            "example": []
           }
         },
         "required": [
