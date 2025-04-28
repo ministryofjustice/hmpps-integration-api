@@ -11208,11 +11208,7 @@
             "type": "integer",
             "format": "int32",
             "description": "Current Level within hierarchy, starts at 1, e.g Wing = 1",
-            "examples": [
-              "1",
-              "2",
-              "3"
-            ]
+            "example": 1
           },
           "subLocations": {
             "type": "array",
