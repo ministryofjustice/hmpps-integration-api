@@ -15,7 +15,7 @@ data class LIPLocation(
   val capacity: LIPLocationCapacity?,
   val oldWorkingCapacity: Int?,
   val certification: LIPLocationCertification?,
-  val usage: List<LIPUsageItem>?,
+  val usage: List<LIPLocationUsageItem>?,
   val accommodationTypes: List<String>?,
   val specialistCellTypes: List<String>?,
   val usedFor: List<String>?,

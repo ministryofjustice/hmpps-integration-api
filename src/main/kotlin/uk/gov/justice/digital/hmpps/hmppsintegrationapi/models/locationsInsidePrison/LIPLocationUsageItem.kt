@@ -1,6 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.locationsInsidePrison
 
-data class LIPUsageItem(
+data class LIPLocationUsageItem(
   val usageType: String,
   val capacity: Int?,
   val sequence: Int,
