@@ -452,7 +452,7 @@ internal class PrisonControllerTest(
               errors =
                 listOf(
                   UpstreamApiError(
-                    type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+                    type = UpstreamApiError.Type.BAD_REQUEST,
                     causedBy = UpstreamApi.LOCATIONS_INSIDE_PRISON,
                   ),
                 ),
@@ -470,7 +470,7 @@ internal class PrisonControllerTest(
               errors =
                 listOf(
                   UpstreamApiError(
-                    type = UpstreamApiError.Type.BAD_REQUEST,
+                    type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
                     causedBy = UpstreamApi.LOCATIONS_INSIDE_PRISON,
                   ),
                 ),
