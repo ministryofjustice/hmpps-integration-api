@@ -1,31 +1,13 @@
 {
   "data": [
-    {
-        "locationId": "01951953-2f87-7f26-a803-e8157a95e5b5",
-        "locationType": "WING",
-        "locationCode": "A",
-        "fullLocationPath": "A",
-        "localName": "Mki-a",
-        "level": 1,
-        "subLocations": [
-            {
-                "locationId": "01951953-8044-7ebb-ba4e-1d4116e20fda",
-                "locationType": "LANDING",
-                "locationCode": "1",
-                "fullLocationPath": "A-1",
-                "localName": "Mki-a-1",
-                "level": 2,
-                "subLocations": [
-                    {
-                        "locationId": "0195195c-711a-7c13-869f-1347b27979e1",
-                        "locationType": "CELL",
-                        "locationCode": "03",
-                        "fullLocationPath": "A-1-03",
-                        "level": 3
-                    }
-                ]
-            }
-        ]
-    }
+      {
+          "locationId": "2475f250-434a-4257-afe7-b911f1773a4d",
+          "locationType": "WING",
+          "locationCode": "001",
+          "fullLocationPath": "A-1-001",
+          "localName": "Wing A",
+          "level": 1,
+          "subLocations": []
+      }
   ]
 }
