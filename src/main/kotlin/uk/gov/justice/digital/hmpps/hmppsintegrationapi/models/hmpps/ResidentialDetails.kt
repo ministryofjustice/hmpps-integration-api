@@ -5,7 +5,7 @@ import io.swagger.v3.oas.annotations.media.Schema
 data class ResidentialDetails(
   @Schema(description = "The top level type of locations", example = "Wings")
   val topLevelLocationType: String,
-  @Schema(description = "The description of the type of sub locations most common", examples = ["Wings", "Landings", "Spurs", "Cells"])
+  @Schema(description = "The description of the type of sub locations most common", example = "Wings", examples = ["Wings", "Landings", "Spurs", "Cells"])
   val subLocationName: String?,
   @Schema(description = "The current parent location (e.g Wing or Landing) details")
   val parentLocation: Location?,
