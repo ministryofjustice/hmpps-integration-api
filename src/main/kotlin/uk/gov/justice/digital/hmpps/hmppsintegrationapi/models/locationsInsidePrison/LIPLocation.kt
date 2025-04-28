@@ -75,6 +75,7 @@ data class LIPLocation(
       proposedReactivationDate = this.proposedReactivationDate,
       planetFmReference = this.planetFmReference,
       level = this.level,
+      parentLocationKey = this.parentLocation?.key,
       inactiveCells = this.inactiveCells,
       numberOfCellLocations = this.numberOfCellLocations,
       isResidential = this.isResidential,
