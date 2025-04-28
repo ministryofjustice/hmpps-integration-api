@@ -11,13 +11,6 @@ internal class FeatureFlaggedEndpointsIntegrationTest : IntegrationTestBase() {
   private lateinit var featureFlagConfig: FeatureFlagConfig
 
   @Test
-  fun `number of children endpoint should return 503`() {
-    whenever(featureFlagConfig.useNumberOfChildrenEndpoints).thenReturn(false)
-    callApi("$basePath/$nomsId/number-of-children")
-      .andExpect(status().isServiceUnavailable)
-  }
-
-  @Test
   fun `physical characteristics endpoint should return 503`() {
     whenever(featureFlagConfig.usePhysicalCharacteristicsEndpoints).thenReturn(false)
     callApi("$basePath/$nomsId/physical-characteristics")
