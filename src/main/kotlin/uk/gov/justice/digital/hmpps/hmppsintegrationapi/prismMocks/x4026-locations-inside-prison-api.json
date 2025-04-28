@@ -17,10 +17,7 @@
   ],
   "security": [
     {
-      "bearer-jwt": [
-        "read",
-        "write"
-      ]
+      "bearer-jwt": ["read", "write"]
     },
     {
       "hmpps-auth": []
@@ -71,9 +68,7 @@
   "paths": {
     "/queue-admin/retry-dlq/{dlqName}": {
       "put": {
-        "tags": [
-          "hmpps-queue-resource"
-        ],
+        "tags": ["hmpps-queue-resource"],
         "operationId": "retryDlq",
         "parameters": [
           {
@@ -141,9 +136,7 @@
     },
     "/queue-admin/retry-all-dlqs": {
       "put": {
-        "tags": [
-          "hmpps-queue-resource"
-        ],
+        "tags": ["hmpps-queue-resource"],
         "operationId": "retryAllDlqs",
         "responses": {
           "403": {
@@ -204,9 +197,7 @@
     },
     "/queue-admin/purge-queue/{queueName}": {
       "put": {
-        "tags": [
-          "hmpps-queue-resource"
-        ],
+        "tags": ["hmpps-queue-resource"],
         "operationId": "purgeQueue",
         "parameters": [
           {
@@ -274,9 +265,7 @@
     },
     "/prison-configuration/{prisonId}/resi-service/{status}": {
       "put": {
-        "tags": [
-          "Prison Configuration"
-        ],
+        "tags": ["Prison Configuration"],
         "summary": "Update the status of the service service for a prison",
         "description": "Requires role LOCATION_ADMIN",
         "operationId": "updateResiLocationServiceActiveStatus",
@@ -304,10 +293,7 @@
             "schema": {
               "type": "string",
               "description": "Status of the resi service to change",
-              "enum": [
-                "ACTIVE",
-                "INACTIVE"
-              ],
+              "enum": ["ACTIVE", "INACTIVE"],
               "example": "ACTIVE"
             },
             "example": "ACTIVE"
@@ -379,9 +365,7 @@
     },
     "/prison-configuration/{prisonId}/certification-approval-required/{approvalProcessStatus}": {
       "put": {
-        "tags": [
-          "Prison Configuration"
-        ],
+        "tags": ["Prison Configuration"],
         "summary": "Update the certification approval process for a prison",
         "description": "Requires role LOCATION_ADMIN",
         "operationId": "updateCertificationApprovalProcessForPrison",
@@ -409,10 +393,7 @@
             "schema": {
               "type": "string",
               "description": "Activate/Deactivate the certification approval process for this prison",
-              "enum": [
-                "ACTIVE",
-                "INACTIVE"
-              ],
+              "enum": ["ACTIVE", "INACTIVE"],
               "example": "ACTIVE"
             },
             "example": "ACTIVE"
@@ -484,9 +465,7 @@
     },
     "/locations/{id}/used-for-type": {
       "put": {
-        "tags": [
-          "Locations"
-        ],
+        "tags": ["Locations"],
         "summary": "Update Used For types at cell location below the specified location",
         "description": "Requires role MAINTAIN_LOCATIONS and write scope",
         "operationId": "updateUsedForType",
@@ -615,9 +594,7 @@
     },
     "/locations/{id}/update/temporary-deactivation": {
       "put": {
-        "tags": [
-          "Locations"
-        ],
+        "tags": ["Locations"],
         "summary": "Update the details of the deactivation of a location",
         "description": "Requires role MAINTAIN_LOCATIONS and write scope",
         "operationId": "updateDeactivateDetails",
@@ -722,9 +699,7 @@
     },
     "/locations/{id}/update-non-res-cell": {
       "put": {
-        "tags": [
-          "Locations"
-        ],
+        "tags": ["Locations"],
         "summary": "Updates a non res cell type",
         "description": "Requires role MAINTAIN_LOCATIONS and write scope",
         "operationId": "updateNonResidentialCellType",
@@ -829,9 +804,7 @@
     },
     "/locations/{id}/specialist-cell-types": {
       "put": {
-        "tags": [
-          "Locations"
-        ],
+        "tags": ["Locations"],
         "summary": "Update specialist cell types for a cell",
         "description": "Requires role MAINTAIN_LOCATIONS and write scope",
         "operationId": "updateSpecialistCellTypes",
@@ -957,9 +930,7 @@
     },
     "/locations/{id}/reactivate": {
       "put": {
-        "tags": [
-          "Locations"
-        ],
+        "tags": ["Locations"],
         "summary": "Re-activate a location",
         "description": "Requires role MAINTAIN_LOCATIONS and write scope",
         "operationId": "reactivateLocation",
@@ -1064,9 +1035,7 @@
     },
     "/locations/{id}/deactivate/temporary": {
       "put": {
-        "tags": [
-          "Locations"
-        ],
+        "tags": ["Locations"],
         "summary": "Temporarily deactivate a location",
         "description": "Requires role MAINTAIN_LOCATIONS and write scope",
         "operationId": "temporarilyDeactivateLocation",
@@ -1174,9 +1143,7 @@
     },
     "/locations/{id}/deactivate/permanent": {
       "put": {
-        "tags": [
-          "Locations"
-        ],
+        "tags": ["Locations"],
         "summary": "Permanently deactivate a location",
         "description": "Requires role MAINTAIN_LOCATIONS and write scope",
         "operationId": "permanentlyDeactivateLocation",
@@ -1281,9 +1248,7 @@
     },
     "/locations/{id}/convert-to-cell": {
       "put": {
-        "tags": [
-          "Locations"
-        ],
+        "tags": ["Locations"],
         "summary": "Makes a non-res cell location a cell",
         "description": "Requires role MAINTAIN_LOCATIONS and write scope",
         "operationId": "convertToCellLocation",
@@ -1398,9 +1363,7 @@
     },
     "/locations/{id}/convert-cell-to-non-res-cell": {
       "put": {
-        "tags": [
-          "Locations"
-        ],
+        "tags": ["Locations"],
         "summary": "Converts a cell to a non res cell location",
         "description": "Requires role MAINTAIN_LOCATIONS and write scope",
         "operationId": "convertCellToNonResidentialLocation",
@@ -1505,9 +1468,7 @@
     },
     "/locations/{id}/change-local-name": {
       "put": {
-        "tags": [
-          "Locations"
-        ],
+        "tags": ["Locations"],
         "summary": "Update local name details of a location",
         "description": "Requires role MAINTAIN_LOCATIONS and write scope",
         "operationId": "updateLocalName",
@@ -1612,9 +1573,7 @@
     },
     "/locations/{id}/capacity": {
       "put": {
-        "tags": [
-          "Locations"
-        ],
+        "tags": ["Locations"],
         "summary": "Set the capacity of a cell",
         "description": "Requires role MAINTAIN_LOCATIONS and write scope",
         "operationId": "changeCapacity",
@@ -1719,9 +1678,7 @@
     },
     "/locations/bulk/reactivate": {
       "put": {
-        "tags": [
-          "Bulk Location Operations"
-        ],
+        "tags": ["Bulk Location Operations"],
         "summary": "Re-activates a series of locations",
         "description": "Requires role MAINTAIN_LOCATIONS and write scope",
         "operationId": "bulkReactivateLocations",
@@ -1814,9 +1771,7 @@
     },
     "/locations/bulk/deactivate/temporary": {
       "put": {
-        "tags": [
-          "Bulk Location Operations"
-        ],
+        "tags": ["Bulk Location Operations"],
         "summary": "Bulk temporarily deactivate a location",
         "description": "Requires role MAINTAIN_LOCATIONS and write scope",
         "operationId": "bulkDeactivateLocations",
@@ -1909,9 +1864,7 @@
     },
     "/locations/bulk/deactivate/permanent": {
       "put": {
-        "tags": [
-          "Bulk Location Operations"
-        ],
+        "tags": ["Bulk Location Operations"],
         "summary": "Bulk permanently deactivate a location, the location must already be temporarily deactivated",
         "description": "Requires role MAINTAIN_LOCATIONS and write scope",
         "operationId": "bulkPermanentlyDeactivateLocations",
@@ -2004,9 +1957,7 @@
     },
     "/locations/bulk/capacity-update": {
       "put": {
-        "tags": [
-          "Bulk Location Operations"
-        ],
+        "tags": ["Bulk Location Operations"],
         "summary": "Update capacity in map of cell locations",
         "description": "Requires role MAINTAIN_LOCATIONS and write scope",
         "operationId": "bulkUpdateCapacity",
@@ -2102,9 +2053,7 @@
     },
     "/sync/upsert": {
       "post": {
-        "tags": [
-          "Sync"
-        ],
+        "tags": ["Sync"],
         "summary": "Upsert of a location",
         "description": "Requires role SYNC_LOCATIONS and write scope",
         "operationId": "upsertLocation",
@@ -2204,9 +2153,7 @@
     },
     "/signed-op-cap/": {
       "post": {
-        "tags": [
-          "Signed Operation Capacity"
-        ],
+        "tags": ["Signed Operation Capacity"],
         "summary": "Create or update the signed operation capacity",
         "description": "Requires role ROLE_MAINTAIN_LOCATIONS",
         "operationId": "updateSignedOperationCapacity",
@@ -2306,9 +2253,7 @@
     },
     "/locations/residential": {
       "post": {
-        "tags": [
-          "Locations"
-        ],
+        "tags": ["Locations"],
         "summary": "Creates a residential location",
         "description": "Requires role MAINTAIN_LOCATIONS and write scope",
         "operationId": "createResidentialLocation",
@@ -2408,9 +2353,7 @@
     },
     "/locations/non-residential": {
       "post": {
-        "tags": [
-          "Locations"
-        ],
+        "tags": ["Locations"],
         "summary": "Creates a non-residential location",
         "description": "Requires role MAINTAIN_LOCATIONS and write scope",
         "operationId": "createNonResidentialLocation",
@@ -2510,9 +2453,7 @@
     },
     "/locations/keys": {
       "post": {
-        "tags": [
-          "Locations"
-        ],
+        "tags": ["Locations"],
         "summary": "Gets locations by their keys",
         "description": "Requires role VIEW_LOCATIONS",
         "operationId": "getLocationsByKeys",
@@ -2608,9 +2549,7 @@
     },
     "/locations/create-wing": {
       "post": {
-        "tags": [
-          "Locations"
-        ],
+        "tags": ["Locations"],
         "summary": "Creates a residential wing with landings and cells",
         "description": "Requires role MAINTAIN_LOCATIONS and write scope",
         "operationId": "createWing",
@@ -2700,9 +2639,7 @@
     },
     "/locations/residential/{id}": {
       "patch": {
-        "tags": [
-          "Locations"
-        ],
+        "tags": ["Locations"],
         "summary": "Partial update of a location",
         "description": "Requires role MAINTAIN_LOCATIONS and write scope",
         "operationId": "patchResidentialLocation",
@@ -2817,9 +2754,7 @@
     },
     "/locations/residential/key/{key}": {
       "patch": {
-        "tags": [
-          "Locations"
-        ],
+        "tags": ["Locations"],
         "summary": "Partial update of a location by key",
         "description": "Requires role MAINTAIN_LOCATIONS and write scope",
         "operationId": "patchResidentialLocationByKey",
@@ -2933,9 +2868,7 @@
     },
     "/locations/non-residential/{id}": {
       "patch": {
-        "tags": [
-          "Locations"
-        ],
+        "tags": ["Locations"],
         "summary": "Partial update of a non-residential location",
         "description": "Requires role MAINTAIN_LOCATIONS and write scope",
         "operationId": "patchNonResidentialLocation",
@@ -3050,9 +2983,7 @@
     },
     "/locations/non-residential/key/{key}": {
       "patch": {
-        "tags": [
-          "Locations"
-        ],
+        "tags": ["Locations"],
         "summary": "Partial update of a non-residential location",
         "description": "Requires role MAINTAIN_LOCATIONS and write scope",
         "operationId": "patchNonResidentialLocationByKey",
@@ -3166,9 +3097,7 @@
     },
     "/transactions/{txId}": {
       "get": {
-        "tags": [
-          "Transactions"
-        ],
+        "tags": ["Transactions"],
         "summary": "Returns transaction history information for this transaction ID",
         "description": "Requires role VIEW_LOCATIONS",
         "operationId": "getTransaction",
@@ -3263,9 +3192,7 @@
     },
     "/sync/id/{id}": {
       "get": {
-        "tags": [
-          "Sync"
-        ],
+        "tags": ["Sync"],
         "summary": "Returns location information for this ID in Legacy NOMIS format",
         "description": "Requires role VIEW_LOCATIONS",
         "operationId": "getLocation",
@@ -3369,9 +3296,7 @@
     },
     "/signed-op-cap/{prisonId}": {
       "get": {
-        "tags": [
-          "Signed Operation Capacity"
-        ],
+        "tags": ["Signed Operation Capacity"],
         "summary": "Get Signed Operation Capacity",
         "description": "Requires role VIEW_LOCATIONS",
         "operationId": "getSignedOperationCapacity",
@@ -3468,9 +3393,7 @@
     },
     "/reports/{reportId}/{reportVariantId}": {
       "get": {
-        "tags": [
-          "Data API - Synchronous"
-        ],
+        "tags": ["Data API - Synchronous"],
         "description": "Returns the dataset for the given report ID and report variant ID filtered by the filters provided in the query.",
         "operationId": "configuredApiDataset",
         "parameters": [
@@ -3634,9 +3557,7 @@
     },
     "/reports/{reportId}/{reportVariantId}/{fieldId}": {
       "get": {
-        "tags": [
-          "Data API - Synchronous"
-        ],
+        "tags": ["Data API - Synchronous"],
         "description": "Returns the dataset for the given report ID and report variant ID filtered by the filters provided in the query.",
         "operationId": "configuredApiDynamicFilter",
         "parameters": [
@@ -3798,9 +3719,7 @@
     },
     "/reports/{reportId}/{reportVariantId}/count": {
       "get": {
-        "tags": [
-          "Data API - Synchronous"
-        ],
+        "tags": ["Data API - Synchronous"],
         "description": "Returns the number of records for the given report ID and report variant ID filtered by the filters provided in the query.",
         "operationId": "configuredApiCount",
         "parameters": [
@@ -3919,9 +3838,7 @@
     },
     "/queue-admin/get-dlq-messages/{dlqName}": {
       "get": {
-        "tags": [
-          "hmpps-queue-resource"
-        ],
+        "tags": ["hmpps-queue-resource"],
         "operationId": "getDlqMessages",
         "parameters": [
           {
@@ -3999,9 +3916,7 @@
     },
     "/prisoner-locations/prison/{prisonId}": {
       "get": {
-        "tags": [
-          "Prisoner locations"
-        ],
+        "tags": ["Prisoner locations"],
         "summary": "Returns a map of prisoners in cells within this prison",
         "description": "Requires role VIEW_PRISONER_LOCATIONS",
         "operationId": "getPrisonersInLocationByPrison",
@@ -4014,11 +3929,7 @@
             "schema": {
               "type": "string",
               "description": "Prison ID",
-              "examples": [
-                "MDI",
-                "LEI",
-                "PVI"
-              ],
+              "examples": ["MDI", "LEI", "PVI"],
               "pattern": "^[A-Z]{2}I|ZZGHI$"
             }
           }
@@ -4092,9 +4003,7 @@
     },
     "/prisoner-locations/key/{key}": {
       "get": {
-        "tags": [
-          "Prisoner locations"
-        ],
+        "tags": ["Prisoner locations"],
         "summary": "Returns a map of prisoners in cells within this location",
         "description": "Requires role VIEW_PRISONER_LOCATIONS",
         "operationId": "getPrisonersInLocationByKey",
@@ -4107,11 +4016,7 @@
             "schema": {
               "type": "string",
               "description": "Full location key, can be a wing, landing or cell, prisonId must be included",
-              "examples": [
-                "MDI-1",
-                "LEI-A-1-001",
-                "PVI-1-2"
-              ]
+              "examples": ["MDI-1", "LEI-A-1-001", "PVI-1-2"]
             }
           }
         ],
@@ -4184,9 +4089,7 @@
     },
     "/prisoner-locations/id/{id}": {
       "get": {
-        "tags": [
-          "Prisoner locations"
-        ],
+        "tags": ["Prisoner locations"],
         "summary": "Returns a map of prisoners in cells within this location",
         "description": "Requires role VIEW_PRISONER_LOCATIONS",
         "operationId": "getPrisonersInLocationById",
@@ -4274,9 +4177,7 @@
     },
     "/prison/roll-count/{prisonId}": {
       "get": {
-        "tags": [
-          "Prison roll count"
-        ],
+        "tags": ["Prison roll count"],
         "summary": "Roll count for a specific prison",
         "description": "Requires role ESTABLISHMENT_ROLL",
         "operationId": "getPrisonRollCount",
@@ -4372,9 +4273,7 @@
     },
     "/prison/roll-count/{prisonId}/cells-only/{locationId}": {
       "get": {
-        "tags": [
-          "Prison roll count"
-        ],
+        "tags": ["Prison roll count"],
         "summary": "Provides the list of cells with roll counts under a specified location provided",
         "description": "Requires role ESTABLISHMENT_ROLL or agency in caseload.",
         "operationId": "getCellLevelRollCount",
@@ -4474,9 +4373,7 @@
     },
     "/prison-configuration/{prisonId}": {
       "get": {
-        "tags": [
-          "Prison Configuration"
-        ],
+        "tags": ["Prison Configuration"],
         "summary": "Get prison configuration",
         "description": "Requires role LOCATION_ADMIN",
         "operationId": "getPrisonConfiguration",
@@ -4563,9 +4460,7 @@
     },
     "/locations": {
       "get": {
-        "tags": [
-          "Locations"
-        ],
+        "tags": ["Locations"],
         "summary": "Get locations, filtered and paged",
         "description": "Requires VIEW_LOCATIONS role, max of 200 records per request",
         "operationId": "getLocations",
@@ -4599,9 +4494,7 @@
             "required": false,
             "schema": {
               "type": "array",
-              "default": [
-                "id,ASC"
-              ],
+              "default": ["id,ASC"],
               "items": {
                 "type": "string"
               }
@@ -4674,9 +4567,7 @@
     },
     "/locations/{prisonId}/local-name/{localName}": {
       "get": {
-        "tags": [
-          "Locations"
-        ],
+        "tags": ["Locations"],
         "summary": "Finds a location matching the local name for a given prison",
         "description": "Requires role VIEW_LOCATIONS",
         "operationId": "findLocationByLocalName",
@@ -4800,9 +4691,7 @@
     },
     "/locations/{id}": {
       "get": {
-        "tags": [
-          "Locations"
-        ],
+        "tags": ["Locations"],
         "summary": "Returns location information for this ID",
         "description": "Requires role VIEW_LOCATIONS",
         "operationId": "getLocation_1",
@@ -4924,9 +4813,7 @@
     },
     "/locations/{id}/attributes": {
       "get": {
-        "tags": [
-          "Locations"
-        ],
+        "tags": ["Locations"],
         "summary": "Get attributes for a cell",
         "description": "Requires VIEW_LOCATIONS role, attributes will either be specialist cell types or legacy attributes",
         "operationId": "getCellAttributes",
@@ -5014,9 +4901,7 @@
     },
     "/locations/residential-summary/{prisonId}": {
       "get": {
-        "tags": [
-          "Locations"
-        ],
+        "tags": ["Locations"],
         "summary": "Return locations for this prison below the parent location, is not provided - top level (w.g. WINGS)",
         "description": "Requires role VIEW_LOCATIONS",
         "operationId": "getLocationForPrisonBelowParent",
@@ -5149,9 +5034,7 @@
     },
     "/locations/prison/{prisonId}": {
       "get": {
-        "tags": [
-          "Locations"
-        ],
+        "tags": ["Locations"],
         "summary": "Return locations for this prison",
         "description": "Requires role VIEW_LOCATIONS",
         "operationId": "getLocationForPrison",
@@ -5251,9 +5134,7 @@
     },
     "/locations/prison/{prisonId}/residential-hierarchy": {
       "get": {
-        "tags": [
-          "Locations"
-        ],
+        "tags": ["Locations"],
         "summary": "Return the entire hierarchy for this prison",
         "description": "Requires role VIEW_LOCATIONS",
         "operationId": "getPrisonHierarchy",
@@ -5379,9 +5260,7 @@
     },
     "/locations/prison/{prisonId}/residential-first-level": {
       "get": {
-        "tags": [
-          "Locations"
-        ],
+        "tags": ["Locations"],
         "summary": "Return the entire hierarchy for this prison",
         "description": "Requires role VIEW_LOCATIONS",
         "operationId": "getTopLevelResidentialLocations",
@@ -5494,9 +5373,7 @@
     },
     "/locations/prison/{prisonId}/non-residential": {
       "get": {
-        "tags": [
-          "Locations"
-        ],
+        "tags": ["Locations"],
         "summary": "Get a list of active non-residential locations for a prison (excluding RTU)",
         "description": "Requires role VIEW_LOCATIONS",
         "operationId": "getNonResidentialLocationsForPrison",
@@ -5614,9 +5491,7 @@
     },
     "/locations/prison/{prisonId}/non-residential-usage-type": {
       "get": {
-        "tags": [
-          "Locations"
-        ],
+        "tags": ["Locations"],
         "summary": "Return non-residential locations by usage for this prison",
         "description": "Requires role VIEW_LOCATIONS",
         "operationId": "getLocationsByPrisonWithUsageTypes",
@@ -5733,9 +5608,7 @@
     },
     "/locations/prison/{prisonId}/non-residential-usage-type/{usageType}": {
       "get": {
-        "tags": [
-          "Locations"
-        ],
+        "tags": ["Locations"],
         "summary": "Return non-residential locations by usage for this prison",
         "description": "Requires role VIEW_LOCATIONS",
         "operationId": "getLocationsByPrisonAndNonResidentialUsageType",
@@ -5763,16 +5636,7 @@
             "schema": {
               "type": "string",
               "description": "Usage type",
-              "enum": [
-                "ADJUDICATION_HEARING",
-                "APPOINTMENT",
-                "MOVEMENT",
-                "OCCURRENCE",
-                "PROGRAMMES_ACTIVITIES",
-                "PROPERTY",
-                "VISIT",
-                "OTHER"
-              ],
+              "enum": ["ADJUDICATION_HEARING", "APPOINTMENT", "MOVEMENT", "OCCURRENCE", "PROGRAMMES_ACTIVITIES", "PROPERTY", "VISIT", "OTHER"],
               "example": "APPOINTMENTS"
             },
             "example": "APPOINTMENTS"
@@ -5874,9 +5738,7 @@
     },
     "/locations/prison/{prisonId}/location-type/{locationType}": {
       "get": {
-        "tags": [
-          "Locations"
-        ],
+        "tags": ["Locations"],
         "summary": "Return locations by their type for this prison",
         "description": "Requires role VIEW_LOCATIONS",
         "operationId": "getLocationsByPrisonAndLocationType",
@@ -6047,9 +5909,7 @@
     },
     "/locations/prison/{prisonId}/inactive-cells": {
       "get": {
-        "tags": [
-          "Locations"
-        ],
+        "tags": ["Locations"],
         "summary": "Return residential inactive cells for this prison",
         "description": "Requires role VIEW_LOCATIONS",
         "operationId": "getInactiveLocationsForPrison",
@@ -6152,9 +6012,7 @@
     },
     "/locations/prison/{prisonId}/groups": {
       "get": {
-        "tags": [
-          "Locations"
-        ],
+        "tags": ["Locations"],
         "summary": "Return location groups for this prison",
         "description": "Requires role VIEW_LOCATIONS",
         "operationId": "getLocationGroupsForPrison",
@@ -6254,9 +6112,7 @@
     },
     "/locations/prison/{prisonId}/group/{group}/location-prefix": {
       "get": {
-        "tags": [
-          "Locations"
-        ],
+        "tags": ["Locations"],
         "summary": "Get location prefix by group.",
         "description": "Requires role VIEW_LOCATIONS",
         "operationId": "getLocationPrefixFromGroup",
@@ -6345,9 +6201,7 @@
     },
     "/locations/prison/{prisonId}/archived": {
       "get": {
-        "tags": [
-          "Locations"
-        ],
+        "tags": ["Locations"],
         "summary": "Return residential archived locations for this prison",
         "description": "Requires role VIEW_LOCATIONS",
         "operationId": "getArchivedLocationForPrison",
@@ -6447,9 +6301,7 @@
     },
     "/locations/key/{key}": {
       "get": {
-        "tags": [
-          "Locations"
-        ],
+        "tags": ["Locations"],
         "summary": "Returns location information for this key",
         "description": "Requires role VIEW_LOCATIONS",
         "operationId": "getLocationByKey",
@@ -6561,9 +6413,7 @@
     },
     "/locations/groups/{prisonId}/{name}": {
       "get": {
-        "tags": [
-          "Locations"
-        ],
+        "tags": ["Locations"],
         "summary": "List of cell locations by group at prison location.",
         "description": "Requires role VIEW_LOCATIONS",
         "operationId": "getLocationGroup",
@@ -6672,9 +6522,7 @@
     },
     "/location-occupancy/cells-with-capacity/{prisonId}": {
       "get": {
-        "tags": [
-          "Location Occupancy"
-        ],
+        "tags": ["Location Occupancy"],
         "summary": "List of cells by group at prison which have capacity.",
         "description": "Requires role VIEW_LOCATIONS",
         "operationId": "getCellsWithCapacity",
@@ -6838,9 +6686,7 @@
     },
     "/definitions": {
       "get": {
-        "tags": [
-          "Report Definition API"
-        ],
+        "tags": ["Report Definition API"],
         "description": "Gets summaries of all report definitions",
         "operationId": "definitions",
         "parameters": [
@@ -6851,11 +6697,7 @@
             "required": false,
             "schema": {
               "type": "string",
-              "enum": [
-                "HTML",
-                "PDF",
-                "SVG"
-              ]
+              "enum": ["HTML", "PDF", "SVG"]
             },
             "example": "HTML"
           },
@@ -6935,9 +6777,7 @@
     },
     "/definitions/{reportId}/{variantId}": {
       "get": {
-        "tags": [
-          "Report Definition API"
-        ],
+        "tags": ["Report Definition API"],
         "description": "Gets report definition containing a single variant.",
         "operationId": "definition",
         "parameters": [
@@ -7034,9 +6874,7 @@
     },
     "/definitions/{dataProductDefinitionId}/dashboards/{dashboardId}": {
       "get": {
-        "tags": [
-          "Metric Definition API"
-        ],
+        "tags": ["Metric Definition API"],
         "description": "Gets the metric dashboard definition.",
         "operationId": "dashboardDefinition",
         "parameters": [
@@ -7133,9 +6971,7 @@
     },
     "/constants/used-for-type": {
       "get": {
-        "tags": [
-          "Constants"
-        ],
+        "tags": ["Constants"],
         "summary": "Get all used for types",
         "description": "Requires the READ_LOCATION_REFERENCE_DATA role.",
         "operationId": "getUsedForTypeConstants",
@@ -7211,9 +7047,7 @@
     },
     "/constants/used-for-type/{prisonId}": {
       "get": {
-        "tags": [
-          "Constants"
-        ],
+        "tags": ["Constants"],
         "summary": "Get used for type data for not female or secure estate",
         "description": "Requires the READ_LOCATION_REFERENCE_DATA role.",
         "operationId": "getUsedForTypeConstantsForSpecifiedPrison",
@@ -7306,9 +7140,7 @@
     },
     "/constants/specialist-cell-type": {
       "get": {
-        "tags": [
-          "Constants"
-        ],
+        "tags": ["Constants"],
         "summary": "Get specialist cell type data",
         "description": "Requires the READ_LOCATION_REFERENCE_DATA role.",
         "operationId": "getSpecialistCellTypeConstants",
@@ -7384,9 +7216,7 @@
     },
     "/constants/residential-housing-type": {
       "get": {
-        "tags": [
-          "Constants"
-        ],
+        "tags": ["Constants"],
         "summary": "Get residential housing reference data",
         "description": "Requires the READ_LOCATION_REFERENCE_DATA role.",
         "operationId": "locationAttributeConstants",
@@ -7462,9 +7292,7 @@
     },
     "/constants/residential-attribute-type": {
       "get": {
-        "tags": [
-          "Constants"
-        ],
+        "tags": ["Constants"],
         "summary": "Get residential attribute reference data",
         "description": "Requires the READ_LOCATION_REFERENCE_DATA role.",
         "operationId": "residentialAttributeTypeConstants",
@@ -7540,9 +7368,7 @@
     },
     "/constants/non-residential-usage-type": {
       "get": {
-        "tags": [
-          "Constants"
-        ],
+        "tags": ["Constants"],
         "summary": "Get non-residential usage reference data",
         "description": "Requires the READ_LOCATION_REFERENCE_DATA role.",
         "operationId": "nonResidentialUsageTypeConstants",
@@ -7618,9 +7444,7 @@
     },
     "/constants/location-type": {
       "get": {
-        "tags": [
-          "Constants"
-        ],
+        "tags": ["Constants"],
         "summary": "Get location reference data",
         "description": "Requires the READ_LOCATION_REFERENCE_DATA role.",
         "operationId": "locationConstants",
@@ -7696,9 +7520,7 @@
     },
     "/constants/deactivated-reason": {
       "get": {
-        "tags": [
-          "Constants"
-        ],
+        "tags": ["Constants"],
         "summary": "Get deactivated reason reference data",
         "description": "Requires the READ_LOCATION_REFERENCE_DATA role.",
         "operationId": "deactivedReasonsConstants",
@@ -7774,9 +7596,7 @@
     },
     "/constants/converted-cell-type": {
       "get": {
-        "tags": [
-          "Constants"
-        ],
+        "tags": ["Constants"],
         "summary": "Get converted cell type data",
         "description": "Requires the READ_LOCATION_REFERENCE_DATA role.",
         "operationId": "getConvertedCellType",
@@ -7852,9 +7672,7 @@
     },
     "/constants/accommodation-type": {
       "get": {
-        "tags": [
-          "Constants"
-        ],
+        "tags": ["Constants"],
         "summary": "Get accommodation type data",
         "description": "Requires the READ_LOCATION_REFERENCE_DATA role.",
         "operationId": "getAccommodationTypeConstants",
@@ -7930,9 +7748,7 @@
     },
     "/sync/delete/{id}": {
       "delete": {
-        "tags": [
-          "Sync"
-        ],
+        "tags": ["Sync"],
         "summary": "Delete a location",
         "description": "Requires role SYNC_LOCATIONS and write scope",
         "operationId": "deleteLocation",
@@ -8053,11 +7869,7 @@
             "example": "[Rarely used, error-specific]"
           }
         },
-        "required": [
-          "developerMessage",
-          "status",
-          "userMessage"
-        ]
+        "required": ["developerMessage", "status", "userMessage"]
       },
       "RetryDlqResult": {
         "type": "object",
@@ -8067,9 +7879,7 @@
             "format": "int32"
           }
         },
-        "required": [
-          "messagesFoundCount"
-        ]
+        "required": ["messagesFoundCount"]
       },
       "PurgeQueueResult": {
         "type": "object",
@@ -8079,9 +7889,7 @@
             "format": "int32"
           }
         },
-        "required": [
-          "messagesFoundCount"
-        ]
+        "required": ["messagesFoundCount"]
       },
       "PrisonConfigurationDto": {
         "type": "object",
@@ -8095,37 +7903,23 @@
           "resiLocationServiceActive": {
             "type": "string",
             "description": "Indicates that the residential service is active",
-            "enum": [
-              "ACTIVE",
-              "INACTIVE"
-            ],
+            "enum": ["ACTIVE", "INACTIVE"],
             "example": true
           },
           "includeSegregationInRollCount": {
             "type": "string",
             "description": "Indicates that roll count should include segregation in its calculations for net vacancies",
-            "enum": [
-              "ACTIVE",
-              "INACTIVE"
-            ],
+            "enum": ["ACTIVE", "INACTIVE"],
             "example": false
           },
           "certificationApprovalRequired": {
             "type": "string",
             "description": "Indicates that this prison must go through the certification process to create or change cells",
-            "enum": [
-              "ACTIVE",
-              "INACTIVE"
-            ],
+            "enum": ["ACTIVE", "INACTIVE"],
             "example": false
           }
         },
-        "required": [
-          "certificationApprovalRequired",
-          "includeSegregationInRollCount",
-          "prisonId",
-          "resiLocationServiceActive"
-        ]
+        "required": ["certificationApprovalRequired", "includeSegregationInRollCount", "prisonId", "resiLocationServiceActive"]
       },
       "Capacity": {
         "type": "object",
@@ -8146,10 +7940,7 @@
             "maximum": 99
           }
         },
-        "required": [
-          "maxCapacity",
-          "workingCapacity"
-        ]
+        "required": ["maxCapacity", "workingCapacity"]
       },
       "Certification": {
         "type": "object",
@@ -8167,10 +7958,7 @@
             "example": 1
           }
         },
-        "required": [
-          "capacityOfCertifiedCell",
-          "certified"
-        ]
+        "required": ["capacityOfCertifiedCell", "certified"]
       },
       "ChangeHistory": {
         "type": "object",
@@ -8212,10 +8000,7 @@
           "oldValues": {
             "type": "array",
             "description": "Previous values of this attribute",
-            "example": [
-              "Dry cell",
-              "Safe cell"
-            ],
+            "example": ["Dry cell", "Safe cell"],
             "items": {
               "type": "string"
             }
@@ -8223,10 +8008,7 @@
           "newValues": {
             "type": "array",
             "description": "New values of this attribute",
-            "example": [
-              "Dry cell",
-              "Safe cell"
-            ],
+            "example": ["Dry cell", "Safe cell"],
             "items": {
               "type": "string"
             }
@@ -8243,11 +8025,7 @@
             "example": "2023-01-23T10:15:30"
           }
         },
-        "required": [
-          "amendedBy",
-          "amendedDate",
-          "attribute"
-        ]
+        "required": ["amendedBy", "amendedDate", "attribute"]
       },
       "Location": {
         "type": "object",
@@ -8366,12 +8144,7 @@
             "items": {
               "type": "string",
               "description": "Accommodation Types",
-              "enum": [
-                "CARE_AND_SEPARATION",
-                "HEALTHCARE_INPATIENTS",
-                "NORMAL_ACCOMMODATION",
-                "OTHER_NON_RESIDENTIAL"
-              ]
+              "enum": ["CARE_AND_SEPARATION", "HEALTHCARE_INPATIENTS", "NORMAL_ACCOMMODATION", "OTHER_NON_RESIDENTIAL"]
             }
           },
           "specialistCellTypes": {
@@ -8492,17 +8265,7 @@
           "deactivatedReason": {
             "type": "string",
             "description": "Reason for deactivation",
-            "enum": [
-              "DAMAGED",
-              "DAMP",
-              "MAINTENANCE",
-              "MOTHBALLED",
-              "PEST",
-              "REFURBISHMENT",
-              "SECURITY_SEALED",
-              "STAFF_SHORTAGE",
-              "OTHER"
-            ],
+            "enum": ["DAMAGED", "DAMP", "MAINTENANCE", "MOTHBALLED", "PEST", "REFURBISHMENT", "SECURITY_SEALED", "STAFF_SHORTAGE", "OTHER"],
             "example": "DAMAGED"
           },
           "deactivationReasonDescription": {
@@ -8535,11 +8298,7 @@
             "type": "integer",
             "format": "int32",
             "description": "Current Level within hierarchy, starts at 1, e.g Wing = 1",
-            "examples": [
-              "1",
-              "2",
-              "3"
-            ]
+            "examples": ["1", "2", "3"]
           },
           "leafLevel": {
             "type": "boolean",
@@ -8633,16 +8392,7 @@
         "properties": {
           "usageType": {
             "type": "string",
-            "enum": [
-              "ADJUDICATION_HEARING",
-              "APPOINTMENT",
-              "MOVEMENT",
-              "OCCURRENCE",
-              "PROGRAMMES_ACTIVITIES",
-              "PROPERTY",
-              "VISIT",
-              "OTHER"
-            ]
+            "enum": ["ADJUDICATION_HEARING", "APPOINTMENT", "MOVEMENT", "OCCURRENCE", "PROGRAMMES_ACTIVITIES", "PROPERTY", "VISIT", "OTHER"]
           },
           "capacity": {
             "type": "integer",
@@ -8653,10 +8403,7 @@
             "format": "int32"
           }
         },
-        "required": [
-          "sequence",
-          "usageType"
-        ]
+        "required": ["sequence", "usageType"]
       },
       "TransactionDetail": {
         "type": "object",
@@ -8725,10 +8472,7 @@
           "oldValues": {
             "type": "array",
             "description": "Previous values of this attribute",
-            "example": [
-              "Dry cell",
-              "Safe cell"
-            ],
+            "example": ["Dry cell", "Safe cell"],
             "items": {
               "type": "string"
             }
@@ -8736,23 +8480,13 @@
           "newValues": {
             "type": "array",
             "description": "New values of this attribute",
-            "example": [
-              "Dry cell",
-              "Safe cell"
-            ],
+            "example": ["Dry cell", "Safe cell"],
             "items": {
               "type": "string"
             }
           }
         },
-        "required": [
-          "amendedBy",
-          "amendedDate",
-          "attribute",
-          "attributeCode",
-          "locationId",
-          "locationKey"
-        ]
+        "required": ["amendedBy", "amendedDate", "attribute", "attributeCode", "locationId", "locationKey"]
       },
       "TransactionHistory": {
         "type": "object",
@@ -8837,17 +8571,7 @@
           "deactivationReason": {
             "type": "string",
             "description": "Reason for temporary deactivation",
-            "enum": [
-              "DAMAGED",
-              "DAMP",
-              "MAINTENANCE",
-              "MOTHBALLED",
-              "PEST",
-              "REFURBISHMENT",
-              "SECURITY_SEALED",
-              "STAFF_SHORTAGE",
-              "OTHER"
-            ],
+            "enum": ["DAMAGED", "DAMP", "MAINTENANCE", "MOTHBALLED", "PEST", "REFURBISHMENT", "SECURITY_SEALED", "STAFF_SHORTAGE", "OTHER"],
             "example": "MOTHBALLED"
           },
           "deactivationReasonDescription": {
@@ -8871,9 +8595,7 @@
             "minLength": 0
           }
         },
-        "required": [
-          "deactivationReason"
-        ]
+        "required": ["deactivationReason"]
       },
       "UpdateNonResCellTypeRequest": {
         "type": "object",
@@ -8905,9 +8627,7 @@
             "minLength": 0
           }
         },
-        "required": [
-          "convertedCellType"
-        ]
+        "required": ["convertedCellType"]
       },
       "PermanentDeactivationLocationRequest": {
         "type": "object",
@@ -8921,9 +8641,7 @@
             "minLength": 0
           }
         },
-        "required": [
-          "reason"
-        ]
+        "required": ["reason"]
       },
       "ConvertToCellRequest": {
         "type": "object",
@@ -8932,20 +8650,13 @@
           "accommodationType": {
             "type": "string",
             "description": "Accommodation type of the location",
-            "enum": [
-              "NORMAL_ACCOMMODATION",
-              "HEALTHCARE_INPATIENTS",
-              "CARE_AND_SEPARATION"
-            ],
+            "enum": ["NORMAL_ACCOMMODATION", "HEALTHCARE_INPATIENTS", "CARE_AND_SEPARATION"],
             "example": "NORMAL_ACCOMMODATION"
           },
           "specialistCellTypes": {
             "type": "array",
             "description": "Specialist cell types",
-            "example": [
-              "BIOHAZARD_DIRTY_PROTEST",
-              "ACCESSIBLE_CELL"
-            ],
+            "example": ["BIOHAZARD_DIRTY_PROTEST", "ACCESSIBLE_CELL"],
             "items": {
               "type": "string",
               "description": "Specialist Cell Types",
@@ -8985,10 +8696,7 @@
           "usedForTypes": {
             "type": "array",
             "description": "Used For list",
-            "example": [
-              "STANDARD_ACCOMMODATION",
-              "PERSONALITY_DISORDER"
-            ],
+            "example": ["STANDARD_ACCOMMODATION", "PERSONALITY_DISORDER"],
             "items": {
               "type": "string",
               "description": "Used For Types",
@@ -9014,11 +8722,7 @@
             }
           }
         },
-        "required": [
-          "accommodationType",
-          "maxCapacity",
-          "workingCapacity"
-        ]
+        "required": ["accommodationType", "maxCapacity", "workingCapacity"]
       },
       "ConvertCellToNonResidentialLocationRequest": {
         "type": "object",
@@ -9050,9 +8754,7 @@
             "minLength": 0
           }
         },
-        "required": [
-          "convertedCellType"
-        ]
+        "required": ["convertedCellType"]
       },
       "UpdateLocationLocalNameRequest": {
         "type": "object",
@@ -9092,9 +8794,7 @@
             }
           }
         },
-        "required": [
-          "locations"
-        ]
+        "required": ["locations"]
       },
       "ReactivationDetail": {
         "type": "object",
@@ -9115,9 +8815,7 @@
             }
           }
         },
-        "required": [
-          "cascadeReactivation"
-        ]
+        "required": ["cascadeReactivation"]
       },
       "DeactivateLocationsRequest": {
         "type": "object",
@@ -9136,9 +8834,7 @@
             }
           }
         },
-        "required": [
-          "locations"
-        ]
+        "required": ["locations"]
       },
       "BulkPermanentDeactivationRequest": {
         "type": "object",
@@ -9154,20 +8850,13 @@
           "locations": {
             "type": "array",
             "description": "List of locations to permanently deactivate",
-            "example": [
-              "TCI-A-1-001",
-              "TCI-B-1-001",
-              "TCI-A-2-001"
-            ],
+            "example": ["TCI-A-1-001", "TCI-B-1-001", "TCI-A-2-001"],
             "items": {
               "type": "string"
             }
           }
         },
-        "required": [
-          "locations",
-          "reason"
-        ]
+        "required": ["locations", "reason"]
       },
       "CellCapacityUpdateDetail": {
         "type": "object",
@@ -9195,10 +8884,7 @@
             "maximum": 99
           }
         },
-        "required": [
-          "maxCapacity",
-          "workingCapacity"
-        ]
+        "required": ["maxCapacity", "workingCapacity"]
       },
       "UpdateCapacityRequest": {
         "type": "object",
@@ -9224,9 +8910,7 @@
             }
           }
         },
-        "required": [
-          "locations"
-        ]
+        "required": ["locations"]
       },
       "CapacityChanges": {
         "type": "object",
@@ -9260,10 +8944,7 @@
             "example": 1
           }
         },
-        "required": [
-          "key",
-          "message"
-        ]
+        "required": ["key", "message"]
       },
       "NomisSyncLocationRequest": {
         "type": "object",
@@ -9358,15 +9039,7 @@
           "residentialHousingType": {
             "type": "string",
             "description": "If residential location, its type",
-            "enum": [
-              "HEALTHCARE",
-              "HOLDING_CELL",
-              "NORMAL_ACCOMMODATION",
-              "RECEPTION",
-              "SEGREGATION",
-              "SPECIALIST_CELL",
-              "OTHER_USE"
-            ],
+            "enum": ["HEALTHCARE", "HOLDING_CELL", "NORMAL_ACCOMMODATION", "RECEPTION", "SEGREGATION", "SPECIALIST_CELL", "OTHER_USE"],
             "example": "NORMAL_ACCOMMODATION"
           },
           "deactivationReason": {
@@ -9538,13 +9211,7 @@
             "type": "boolean"
           }
         },
-        "required": [
-          "code",
-          "isDeactivated",
-          "lastUpdatedBy",
-          "locationType",
-          "prisonId"
-        ]
+        "required": ["code", "isDeactivated", "lastUpdatedBy", "locationType", "prisonId"]
       },
       "LegacyLocation": {
         "type": "object",
@@ -9620,15 +9287,7 @@
           "residentialHousingType": {
             "type": "string",
             "description": "If residential location, its type",
-            "enum": [
-              "HEALTHCARE",
-              "HOLDING_CELL",
-              "NORMAL_ACCOMMODATION",
-              "RECEPTION",
-              "SEGREGATION",
-              "SPECIALIST_CELL",
-              "OTHER_USE"
-            ],
+            "enum": ["HEALTHCARE", "HOLDING_CELL", "NORMAL_ACCOMMODATION", "RECEPTION", "SEGREGATION", "SPECIALIST_CELL", "OTHER_USE"],
             "example": "NORMAL_ACCOMMODATION"
           },
           "localName": {
@@ -9773,17 +9432,7 @@
           "deactivatedReason": {
             "type": "string",
             "description": "Reason for deactivation",
-            "enum": [
-              "DAMAGED",
-              "DAMP",
-              "MAINTENANCE",
-              "MOTHBALLED",
-              "PEST",
-              "REFURBISHMENT",
-              "SECURITY_SEALED",
-              "STAFF_SHORTAGE",
-              "OTHER"
-            ],
+            "enum": ["DAMAGED", "DAMP", "MAINTENANCE", "MOTHBALLED", "PEST", "REFURBISHMENT", "SECURITY_SEALED", "STAFF_SHORTAGE", "OTHER"],
             "example": "DAMAGED"
           },
           "proposedReactivationDate": {
@@ -9867,11 +9516,7 @@
             "minLength": 1
           }
         },
-        "required": [
-          "prisonId",
-          "signedOperationCapacity",
-          "updatedBy"
-        ]
+        "required": ["prisonId", "signedOperationCapacity", "updatedBy"]
       },
       "SignedOperationCapacityDto": {
         "type": "object",
@@ -9900,12 +9545,7 @@
             "example": "MALEMAN"
           }
         },
-        "required": [
-          "prisonId",
-          "signedOperationCapacity",
-          "updatedBy",
-          "whenUpdated"
-        ]
+        "required": ["prisonId", "signedOperationCapacity", "updatedBy", "whenUpdated"]
       },
       "CreateResidentialLocationRequest": {
         "type": "object",
@@ -9928,12 +9568,7 @@
           "accommodationType": {
             "type": "string",
             "description": "Accommodation Type",
-            "enum": [
-              "CARE_AND_SEPARATION",
-              "HEALTHCARE_INPATIENTS",
-              "NORMAL_ACCOMMODATION",
-              "OTHER_NON_RESIDENTIAL"
-            ],
+            "enum": ["CARE_AND_SEPARATION", "HEALTHCARE_INPATIENTS", "NORMAL_ACCOMMODATION", "OTHER_NON_RESIDENTIAL"],
             "example": "NORMAL_ACCOMMODATION"
           },
           "locationType": {
@@ -10054,13 +9689,7 @@
             "type": "boolean"
           }
         },
-        "required": [
-          "accommodationType",
-          "code",
-          "isCell",
-          "locationType",
-          "prisonId"
-        ]
+        "required": ["accommodationType", "code", "isCell", "locationType", "prisonId"]
       },
       "CreateNonResidentialLocationRequest": {
         "type": "object",
@@ -10136,11 +9765,7 @@
             "uniqueItems": true
           }
         },
-        "required": [
-          "code",
-          "locationType",
-          "prisonId"
-        ]
+        "required": ["code", "locationType", "prisonId"]
       },
       "CreateWingRequest": {
         "type": "object",
@@ -10198,12 +9823,7 @@
             "maximum": 4
           }
         },
-        "required": [
-          "defaultCellCapacity",
-          "numberOfCellsPerSection",
-          "prisonId",
-          "wingCode"
-        ]
+        "required": ["defaultCellCapacity", "numberOfCellsPerSection", "prisonId", "wingCode"]
       },
       "PatchResidentialLocationRequest": {
         "type": "object",
@@ -10236,12 +9856,7 @@
           "accommodationType": {
             "type": "string",
             "description": "Accommodation type",
-            "enum": [
-              "CARE_AND_SEPARATION",
-              "HEALTHCARE_INPATIENTS",
-              "NORMAL_ACCOMMODATION",
-              "OTHER_NON_RESIDENTIAL"
-            ],
+            "enum": ["CARE_AND_SEPARATION", "HEALTHCARE_INPATIENTS", "NORMAL_ACCOMMODATION", "OTHER_NON_RESIDENTIAL"],
             "example": "NORMAL_ACCOMMODATION"
           },
           "usedFor": {
@@ -10308,9 +9923,7 @@
             "example": "Not to be used"
           }
         },
-        "required": [
-          "code"
-        ]
+        "required": ["code"]
       },
       "PatchNonResidentialLocationRequest": {
         "type": "object",
@@ -10393,10 +10006,7 @@
             "example": "Not to be used"
           }
         },
-        "required": [
-          "code",
-          "locationType"
-        ]
+        "required": ["code", "locationType"]
       },
       "Count": {
         "type": "object",
@@ -10408,9 +10018,7 @@
             "example": 501
           }
         },
-        "required": [
-          "count"
-        ]
+        "required": ["count"]
       },
       "DlqMessage": {
         "type": "object",
@@ -10425,10 +10033,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "body",
-          "messageId"
-        ]
+        "required": ["body", "messageId"]
       },
       "GetDlqResult": {
         "type": "object",
@@ -10448,11 +10053,7 @@
             }
           }
         },
-        "required": [
-          "messages",
-          "messagesFoundCount",
-          "messagesReturnedCount"
-        ]
+        "required": ["messages", "messagesFoundCount", "messagesReturnedCount"]
       },
       "Alert": {
         "type": "object",
@@ -10478,12 +10079,7 @@
             "example": false
           }
         },
-        "required": [
-          "active",
-          "alertCode",
-          "alertType",
-          "expired"
-        ]
+        "required": ["active", "alertCode", "alertType", "expired"]
       },
       "Prisoner": {
         "type": "object",
@@ -10557,14 +10153,7 @@
             "example": "CRT"
           }
         },
-        "required": [
-          "firstName",
-          "gender",
-          "inOutStatus",
-          "lastName",
-          "prisonerNumber",
-          "status"
-        ]
+        "required": ["firstName", "gender", "inOutStatus", "lastName", "prisonerNumber", "status"]
       },
       "PrisonerLocation": {
         "type": "object",
@@ -10583,10 +10172,7 @@
             }
           }
         },
-        "required": [
-          "cellLocation",
-          "prisoners"
-        ]
+        "required": ["cellLocation", "prisoners"]
       },
       "LocationRollCount": {
         "type": "object",
@@ -10623,14 +10209,7 @@
             "description": "Out of order"
           }
         },
-        "required": [
-          "bedsInUse",
-          "currentlyInCell",
-          "currentlyOut",
-          "netVacancies",
-          "outOfOrder",
-          "workingCapacity"
-        ]
+        "required": ["bedsInUse", "currentlyInCell", "currentlyOut", "netVacancies", "outOfOrder", "workingCapacity"]
       },
       "PrisonRollCount": {
         "type": "object",
@@ -10783,17 +10362,7 @@
           "deactivatedReason": {
             "type": "string",
             "description": "Reason for deactivation",
-            "enum": [
-              "DAMAGED",
-              "DAMP",
-              "MAINTENANCE",
-              "MOTHBALLED",
-              "PEST",
-              "REFURBISHMENT",
-              "SECURITY_SEALED",
-              "STAFF_SHORTAGE",
-              "OTHER"
-            ],
+            "enum": ["DAMAGED", "DAMP", "MAINTENANCE", "MOTHBALLED", "PEST", "REFURBISHMENT", "SECURITY_SEALED", "STAFF_SHORTAGE", "OTHER"],
             "example": "DAMAGED"
           },
           "rollCount": {
@@ -10804,15 +10373,7 @@
             "description": "Sub Locations"
           }
         },
-        "required": [
-          "certified",
-          "fullLocationPath",
-          "key",
-          "locationCode",
-          "locationId",
-          "locationType",
-          "rollCount"
-        ]
+        "required": ["certified", "fullLocationPath", "key", "locationCode", "locationId", "locationType", "rollCount"]
       },
       "LocationSummary": {
         "type": "object",
@@ -10898,20 +10459,10 @@
             "type": "integer",
             "format": "int32",
             "description": "Current Level within hierarchy, starts at 1, e.g Wing = 1",
-            "examples": [
-              "1",
-              "2",
-              "3"
-            ]
+            "examples": ["1", "2", "3"]
           }
         },
-        "required": [
-          "code",
-          "level",
-          "pathHierarchy",
-          "prisonId",
-          "type"
-        ]
+        "required": ["code", "level", "pathHierarchy", "prisonId", "type"]
       },
       "PrisonCellRollCount": {
         "type": "object",
@@ -10936,11 +10487,7 @@
             }
           }
         },
-        "required": [
-          "locationHierarchy",
-          "locations",
-          "totals"
-        ]
+        "required": ["locationHierarchy", "locations", "totals"]
       },
       "PageLegacyLocation": {
         "type": "object",
@@ -11043,10 +10590,7 @@
             "example": "Cat A cell"
           }
         },
-        "required": [
-          "code",
-          "description"
-        ]
+        "required": ["code", "description"]
       },
       "PrisonSummary": {
         "type": "object",
@@ -11077,13 +10621,7 @@
             "description": "Total number of non-structural locations  e.g. cells and rooms"
           }
         },
-        "required": [
-          "maxCapacity",
-          "numberOfCellLocations",
-          "prisonName",
-          "signedOperationalCapacity",
-          "workingCapacity"
-        ]
+        "required": ["maxCapacity", "numberOfCellLocations", "prisonName", "signedOperationalCapacity", "workingCapacity"]
       },
       "ResidentialSummary": {
         "type": "object",
@@ -11101,12 +10639,7 @@
           "subLocationName": {
             "type": "string",
             "description": "The description of the type of sub locations most common",
-            "examples": [
-              "Wings",
-              "Landings",
-              "Spurs",
-              "Cells"
-            ]
+            "examples": ["Wings", "Landings", "Spurs", "Cells"]
           },
           "locationHierarchy": {
             "type": "array",
@@ -11127,11 +10660,7 @@
             }
           }
         },
-        "required": [
-          "locationHierarchy",
-          "subLocations",
-          "topLevelLocationType"
-        ]
+        "required": ["locationHierarchy", "subLocations", "topLevelLocationType"]
       },
       "PrisonHierarchyDto": {
         "type": "object",
@@ -11219,13 +10748,7 @@
             "example": []
           }
         },
-        "required": [
-          "fullLocationPath",
-          "level",
-          "locationCode",
-          "locationId",
-          "locationType"
-        ]
+        "required": ["fullLocationPath", "level", "locationCode", "locationId", "locationType"]
       },
       "LocationGroupDto": {
         "type": "object",
@@ -11258,11 +10781,7 @@
             }
           }
         },
-        "required": [
-          "children",
-          "key",
-          "name"
-        ]
+        "required": ["children", "key", "name"]
       },
       "CellType": {
         "type": "object",
@@ -11294,10 +10813,7 @@
             "title": "Specialist Cell Type Description"
           }
         },
-        "required": [
-          "typeCode",
-          "typeDescription"
-        ]
+        "required": ["typeCode", "typeDescription"]
       },
       "CellWithSpecialistCellTypes": {
         "type": "object",
@@ -11492,10 +11008,7 @@
             "title": "Attribute Type Description"
           }
         },
-        "required": [
-          "typeCode",
-          "typeDescription"
-        ]
+        "required": ["typeCode", "typeDescription"]
       },
       "DashboardDefinitionSummary": {
         "type": "object",
@@ -11510,11 +11023,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "description",
-          "id",
-          "name"
-        ]
+        "required": ["description", "id", "name"]
       },
       "ReportDefinitionSummary": {
         "type": "object",
@@ -11544,12 +11053,7 @@
             "type": "boolean"
           }
         },
-        "required": [
-          "authorised",
-          "id",
-          "name",
-          "variants"
-        ]
+        "required": ["authorised", "id", "name", "variants"]
       },
       "VariantDefinitionSummary": {
         "type": "object",
@@ -11564,10 +11068,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "id",
-          "name"
-        ]
+        "required": ["id", "name"]
       },
       "ChildVariantDefinition": {
         "type": "object",
@@ -11591,12 +11092,7 @@
             }
           }
         },
-        "required": [
-          "id",
-          "joinFields",
-          "name",
-          "resourceName"
-        ]
+        "required": ["id", "joinFields", "name", "resourceName"]
       },
       "DynamicFilterOption": {
         "type": "object",
@@ -11618,11 +11114,7 @@
           },
           "wordWrap": {
             "type": "string",
-            "enum": [
-              "none",
-              "normal",
-              "break-words"
-            ]
+            "enum": ["none", "normal", "break-words"]
           },
           "filter": {
             "$ref": "#/components/schemas/FilterDefinition"
@@ -11635,15 +11127,7 @@
           },
           "type": {
             "type": "string",
-            "enum": [
-              "boolean",
-              "date",
-              "double",
-              "HTML",
-              "long",
-              "string",
-              "time"
-            ]
+            "enum": ["boolean", "date", "double", "HTML", "long", "string", "time"]
           },
           "mandatory": {
             "type": "boolean"
@@ -11658,33 +11142,14 @@
             "type": "boolean"
           }
         },
-        "required": [
-          "calculated",
-          "defaultsort",
-          "display",
-          "header",
-          "mandatory",
-          "name",
-          "sortable",
-          "type",
-          "visible"
-        ]
+        "required": ["calculated", "defaultsort", "display", "header", "mandatory", "name", "sortable", "type", "visible"]
       },
       "FilterDefinition": {
         "type": "object",
         "properties": {
           "type": {
             "type": "string",
-            "enum": [
-              "Radio",
-              "Select",
-              "multiselect",
-              "daterange",
-              "autocomplete",
-              "text",
-              "date",
-              "granulardaterange"
-            ]
+            "enum": ["Radio", "Select", "multiselect", "daterange", "autocomplete", "text", "date", "granulardaterange"]
           },
           "mandatory": {
             "type": "boolean"
@@ -11715,14 +11180,7 @@
           },
           "defaultGranularity": {
             "type": "string",
-            "enum": [
-              "hourly",
-              "daily",
-              "weekly",
-              "monthly",
-              "quarterly",
-              "annually"
-            ]
+            "enum": ["hourly", "daily", "weekly", "monthly", "quarterly", "annually"]
           },
           "defaultQuickFilterValue": {
             "type": "string",
@@ -11751,10 +11209,7 @@
             ]
           }
         },
-        "required": [
-          "mandatory",
-          "type"
-        ]
+        "required": ["mandatory", "type"]
       },
       "FilterOption": {
         "type": "object",
@@ -11766,10 +11221,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "display",
-          "name"
-        ]
+        "required": ["display", "name"]
       },
       "ReportSummary": {
         "type": "object",
@@ -11779,14 +11231,7 @@
           },
           "template": {
             "type": "string",
-            "enum": [
-              "table-header",
-              "table-footer",
-              "section-header",
-              "section-footer",
-              "page-header",
-              "page-footer"
-            ]
+            "enum": ["table-header", "table-footer", "section-header", "section-footer", "page-header", "page-footer"]
           },
           "fields": {
             "type": "array",
@@ -11795,11 +11240,7 @@
             }
           }
         },
-        "required": [
-          "fields",
-          "id",
-          "template"
-        ]
+        "required": ["fields", "id", "template"]
       },
       "SingleVariantReportDefinition": {
         "type": "object",
@@ -11817,25 +11258,14 @@
             "$ref": "#/components/schemas/VariantDefinition"
           }
         },
-        "required": [
-          "id",
-          "name",
-          "variant"
-        ]
+        "required": ["id", "name", "variant"]
       },
       "Specification": {
         "type": "object",
         "properties": {
           "template": {
             "type": "string",
-            "enum": [
-              "list",
-              "list-section",
-              "list-tab",
-              "summary",
-              "summary-section",
-              "parent-child"
-            ]
+            "enum": ["list", "list-section", "list-tab", "summary", "summary-section", "parent-child"]
           },
           "fields": {
             "type": "array",
@@ -11850,11 +11280,7 @@
             }
           }
         },
-        "required": [
-          "fields",
-          "sections",
-          "template"
-        ]
+        "required": ["fields", "sections", "template"]
       },
       "SummaryField": {
         "type": "object",
@@ -11867,15 +11293,7 @@
           },
           "type": {
             "type": "string",
-            "enum": [
-              "boolean",
-              "date",
-              "double",
-              "HTML",
-              "long",
-              "string",
-              "time"
-            ]
+            "enum": ["boolean", "date", "double", "HTML", "long", "string", "time"]
           },
           "header": {
             "type": "boolean"
@@ -11884,9 +11302,7 @@
             "type": "boolean"
           }
         },
-        "required": [
-          "name"
-        ]
+        "required": ["name"]
       },
       "VariantDefinition": {
         "type": "object",
@@ -11928,11 +11344,7 @@
             }
           }
         },
-        "required": [
-          "id",
-          "name",
-          "resourceName"
-        ]
+        "required": ["id", "name", "resourceName"]
       },
       "DashboardDefinition": {
         "type": "object",
@@ -11959,12 +11371,7 @@
             }
           }
         },
-        "required": [
-          "description",
-          "id",
-          "name",
-          "sections"
-        ]
+        "required": ["description", "id", "name", "sections"]
       },
       "DashboardSectionDefinition": {
         "type": "object",
@@ -11985,10 +11392,7 @@
             }
           }
         },
-        "required": [
-          "id",
-          "visualisations"
-        ]
+        "required": ["id", "visualisations"]
       },
       "DashboardVisualisationColumnDefinition": {
         "type": "object",
@@ -12001,17 +11405,11 @@
           },
           "aggregate": {
             "type": "string",
-            "enum": [
-              "sum",
-              "average"
-            ]
+            "enum": ["sum", "average"]
           },
           "unit": {
             "type": "string",
-            "enum": [
-              "NUMBER",
-              "PERCENTAGE"
-            ]
+            "enum": ["NUMBER", "PERCENTAGE"]
           },
           "displayValue": {
             "type": "boolean"
@@ -12020,10 +11418,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "display",
-          "id"
-        ]
+        "required": ["display", "id"]
       },
       "DashboardVisualisationColumnsDefinition": {
         "type": "object",
@@ -12050,10 +11445,7 @@
             "type": "boolean"
           }
         },
-        "required": [
-          "expectNulls",
-          "measures"
-        ]
+        "required": ["expectNulls", "measures"]
       },
       "DashboardVisualisationDefinition": {
         "type": "object",
@@ -12063,15 +11455,7 @@
           },
           "type": {
             "type": "string",
-            "enum": [
-              "list",
-              "doughnut",
-              "bar",
-              "bar-timeseries",
-              "line",
-              "scorecard",
-              "scorecard-group"
-            ]
+            "enum": ["list", "doughnut", "bar", "bar-timeseries", "line", "scorecard", "scorecard-group"]
           },
           "display": {
             "type": "string"
@@ -12083,11 +11467,7 @@
             "$ref": "#/components/schemas/DashboardVisualisationColumnsDefinition"
           }
         },
-        "required": [
-          "columns",
-          "id",
-          "type"
-        ]
+        "required": ["columns", "id", "type"]
       },
       "ValueVisualisationColumnDefinition": {
         "type": "object",
@@ -12099,10 +11479,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "equals",
-          "id"
-        ]
+        "required": ["equals", "id"]
       },
       "Constant": {
         "type": "object",
@@ -12124,10 +11501,7 @@
             "example": "Some useful extra info"
           }
         },
-        "required": [
-          "description",
-          "key"
-        ]
+        "required": ["description", "key"]
       },
       "CompoundConstant": {
         "type": "object",
@@ -12151,11 +11525,7 @@
             }
           }
         },
-        "required": [
-          "description",
-          "key",
-          "values"
-        ]
+        "required": ["description", "key", "values"]
       }
     },
     "securitySchemes": {
