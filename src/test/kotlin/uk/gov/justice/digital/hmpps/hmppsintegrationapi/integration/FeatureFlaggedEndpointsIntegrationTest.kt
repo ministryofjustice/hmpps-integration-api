@@ -18,9 +18,18 @@ internal class FeatureFlaggedEndpointsIntegrationTest : IntegrationTestBase() {
   }
 
   @Test
-  fun `images by idendpoint should return 503`() {
+  fun `images by id endpoint should return 503`() {
     whenever(featureFlagConfig.useImageEndpoints).thenReturn(false)
     callApi("$basePath/$nomsId/images/2461788")
+      .andExpect(status().isServiceUnavailable)
+  }
+
+  @Test
+  fun `residential summary should return 503`() {
+    whenever(featureFlagConfig.useResidentialHierarchyEndpoints).thenReturn(false)
+    val prisonId = "MDI"
+    val path = "/v1/prison/$prisonId/residential-hierarchy"
+    callApi(path)
       .andExpect(status().isServiceUnavailable)
   }
 }
