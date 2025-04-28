@@ -19,7 +19,6 @@ class FeatureFlagAspectTest {
   private val featureFlagConfig: FeatureFlagConfig =
     FeatureFlagConfig(
       useArnsEndpoints = true,
-      useNumberOfChildrenEndpoints = false,
       useImageEndpoints = false,
       useEducationAssessmentsEndpoints = false,
       usePhysicalCharacteristicsEndpoints = false,
@@ -39,7 +38,7 @@ class FeatureFlagAspectTest {
   @Test
   fun `test feature flag disabled then throw feature flag not enabled exception`() {
     assertThrows<FeatureNotEnabledException> {
-      featureFlagAspect.checkFeatureFlag(proceedingJoinPoint, FeatureFlag(FeatureFlagConfig.USE_NUMBER_OF_CHILDREN_ENDPOINTS))
+      featureFlagAspect.checkFeatureFlag(proceedingJoinPoint, FeatureFlag(FeatureFlagConfig.USE_PHYSICAL_CHARACTERISTICS_ENDPOINTS))
     }
     verify(proceedingJoinPoint, times(0)).proceed()
     verifyNoMoreInteractions(proceedingJoinPoint)
