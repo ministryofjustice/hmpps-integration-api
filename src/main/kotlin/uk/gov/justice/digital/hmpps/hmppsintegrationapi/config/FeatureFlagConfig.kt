@@ -15,13 +15,7 @@ data class FeatureFlagConfig(
     const val USE_RESIDENTIAL_HIERARCHY_ENDPOINTS = "use-residential-hierarchy-endpoints"
   }
 
-  fun getConfigFlagValue(feature: String): Boolean? =
-//    when (name) {
-//      USE_ARNS_ENDPOINTS -> this.useArnsEndpoints
-//      USE_RESIDENTIAL_HIERARCHY_ENDPOINTS -> this.useResidentialHierarchyEndpoints
-//      else -> null
-//    }
-    flags[feature]
+  fun getConfigFlagValue(feature: String): Boolean? = flags[feature]
 
   fun isEnabled(feature: String): Boolean = flags.getOrDefault(feature, false)
 
