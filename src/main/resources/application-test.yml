@@ -62,6 +62,7 @@ feature-flag:
   use-image-endpoints: true
   use-education-assessments-endpoints: true
   use-residential-hierarchy-endpoints: true
+  use-residential-details-endpoints: true
 
 authorisation:
   consumers:
@@ -125,6 +126,7 @@ authorisation:
         - "/v1/prison/.*/prisoners/.*/transactions/transfer"
         - "/v1/prison/.*/prisoners/.*/non-associations"
         - "/v1/prison/.*/residential-hierarchy"
+        - "/v1/prison/.*/residential-details"
         - "/v1/persons/.*/visitor/.*/restrictions"
         - "/v1/visit/[^/]*$"
         - "/v1/visit"
