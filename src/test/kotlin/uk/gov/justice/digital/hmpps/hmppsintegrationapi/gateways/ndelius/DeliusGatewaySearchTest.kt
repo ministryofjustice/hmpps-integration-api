@@ -26,35 +26,35 @@ import kotlin.text.format
   initializers = [ConfigDataApplicationContextInitializer::class],
   classes = [NDeliusGateway::class],
 )
-class NDeliusGatewaySearchTest(
+class DeliusGatewaySearchTest(
   @MockitoBean val hmppsAuthGateway: HmppsAuthGateway,
   private val nDeliusGateway: NDeliusGateway,
 ) : DescribeSpec({
-  val nDeliusMockServer = ApiMockServer.Companion.create(UpstreamApi.NDELIUS)
-  val path = "/search/probation-cases"
-
-  beforeEach {
-    nDeliusMockServer.start()
-    Mockito.reset(hmppsAuthGateway)
-
-    whenever(hmppsAuthGateway.getClientToken("nDelius")).thenReturn(HmppsAuthMockServer.Companion.TOKEN)
-  }
-
-  afterTest {
-    nDeliusMockServer.stop()
-  }
-
-  describe("#getPersons") {
-    val firstName = "Matt"
-    val surname = "Nolan"
-    val pncNumber = "2018/0123456X"
-    val dateOfBirth = "1966-10-25"
-    val dateOfBirthString = dateOfBirth.format(DateTimeFormatter.ISO_DATE)
+    val nDeliusMockServer = ApiMockServer.Companion.create(UpstreamApi.NDELIUS)
+    val path = "/search/probation-cases"
 
     beforeEach {
-      nDeliusMockServer.stubForPost(
-        path,
-        """
+      nDeliusMockServer.start()
+      Mockito.reset(hmppsAuthGateway)
+
+      whenever(hmppsAuthGateway.getClientToken("nDelius")).thenReturn(HmppsAuthMockServer.Companion.TOKEN)
+    }
+
+    afterTest {
+      nDeliusMockServer.stop()
+    }
+
+    describe("#getPersons") {
+      val firstName = "Matt"
+      val surname = "Nolan"
+      val pncNumber = "2018/0123456X"
+      val dateOfBirth = "1966-10-25"
+      val dateOfBirthString = dateOfBirth.format(DateTimeFormatter.ISO_DATE)
+
+      beforeEach {
+        nDeliusMockServer.stubForPost(
+          path,
+          """
             {
               "firstName": "$firstName",
               "surname": "$surname",
@@ -63,50 +63,50 @@ class NDeliusGatewaySearchTest(
               "includeAliases": false
             }
           """.removeWhitespaceAndNewlines(),
-        File(
-          "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/probationoffendersearch/fixtures/GetOffendersResponse.json",
-        ).readText(),
-      )
-    }
+          File(
+            "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/probationoffendersearch/fixtures/GetOffendersResponse.json",
+          ).readText(),
+        )
+      }
 
-    it("authenticates using HMPPS Auth with credentials") {
-      nDeliusGateway.getPersons(firstName, surname, pncNumber, dateOfBirth)
-      verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("nDelius")
-    }
+      it("authenticates using HMPPS Auth with credentials") {
+        nDeliusGateway.getPersons(firstName, surname, pncNumber, dateOfBirth)
+        verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("nDelius")
+      }
 
-    it("returns person(s) when searching on first name, last name, pnc number and date of birth") {
-      val response = nDeliusGateway.getPersons(firstName, surname, pncNumber, dateOfBirth)
+      it("returns person(s) when searching on first name, last name, pnc number and date of birth") {
+        val response = nDeliusGateway.getPersons(firstName, surname, pncNumber, dateOfBirth)
 
-      response.data.count().shouldBe(1)
-      response.data
-        .first()
-        .firstName
-        .shouldBe(firstName)
-      response.data
-        .first()
-        .lastName
-        .shouldBe(surname)
-      response.data
-        .first()
-        .pncId
-        .shouldBe(pncNumber)
-      response.data
-        .first()
-        .dateOfBirth
-        .shouldBe(LocalDate.parse(dateOfBirth))
-    }
+        response.data.count().shouldBe(1)
+        response.data
+          .first()
+          .firstName
+          .shouldBe(firstName)
+        response.data
+          .first()
+          .lastName
+          .shouldBe(surname)
+        response.data
+          .first()
+          .pncId
+          .shouldBe(pncNumber)
+        response.data
+          .first()
+          .dateOfBirth
+          .shouldBe(LocalDate.parse(dateOfBirth))
+      }
 
-    it("returns person(s) when searching on first name and last name") {
-      nDeliusMockServer.stubForPost(
-        path,
-        """
+      it("returns person(s) when searching on first name and last name") {
+        nDeliusMockServer.stubForPost(
+          path,
+          """
         {
           "firstName": "Ahsoka",
           "surname": "Tano",
           "includeAliases": false
         }
         """.removeWhitespaceAndNewlines(),
-        """
+          """
           [
             {
               "firstName": "Ahsoka",
@@ -114,32 +114,32 @@ class NDeliusGatewaySearchTest(
             }
           ]
           """.trimIndent(),
-      )
+        )
 
-      val response = nDeliusGateway.getPersons("Ahsoka", "Tano", null, null)
+        val response = nDeliusGateway.getPersons("Ahsoka", "Tano", null, null)
 
-      response.data.count().shouldBe(1)
-      response.data
-        .first()
-        .firstName
-        .shouldBe("Ahsoka")
-      response.data
-        .first()
-        .lastName
-        .shouldBe("Tano")
-    }
+        response.data.count().shouldBe(1)
+        response.data
+          .first()
+          .firstName
+          .shouldBe("Ahsoka")
+        response.data
+          .first()
+          .lastName
+          .shouldBe("Tano")
+      }
 
-    it("returns person(s) when searching on first name and last name") {
-      nDeliusMockServer.stubForPost(
-        path,
-        """
+      it("returns person(s) when searching on first name and last name") {
+        nDeliusMockServer.stubForPost(
+          path,
+          """
         {
           "firstName": "Ahsoka",
           "surname": "Tano",
           "includeAliases": false
         }
         """.removeWhitespaceAndNewlines(),
-        """
+          """
           [
             {
               "firstName": "Ahsoka",
@@ -147,31 +147,31 @@ class NDeliusGatewaySearchTest(
             }
           ]
           """.trimIndent(),
-      )
+        )
 
-      val response = nDeliusGateway.getPersons("Ahsoka", "Tano", null, null)
+        val response = nDeliusGateway.getPersons("Ahsoka", "Tano", null, null)
 
-      response.data.count().shouldBe(1)
-      response.data
-        .first()
-        .firstName
-        .shouldBe("Ahsoka")
-      response.data
-        .first()
-        .lastName
-        .shouldBe("Tano")
-    }
+        response.data.count().shouldBe(1)
+        response.data
+          .first()
+          .firstName
+          .shouldBe("Ahsoka")
+        response.data
+          .first()
+          .lastName
+          .shouldBe("Tano")
+      }
 
-    it("returns person(s) when searching on first name only") {
-      nDeliusMockServer.stubForPost(
-        path,
-        """
+      it("returns person(s) when searching on first name only") {
+        nDeliusMockServer.stubForPost(
+          path,
+          """
         {
           "firstName": "Ahsoka",
           "includeAliases": false
         }
         """.removeWhitespaceAndNewlines(),
-        """
+          """
           [
             {
               "firstName": "Ahsoka",
@@ -179,31 +179,31 @@ class NDeliusGatewaySearchTest(
             }
           ]
           """.trimIndent(),
-      )
+        )
 
-      val response = nDeliusGateway.getPersons("Ahsoka", null, null, null)
+        val response = nDeliusGateway.getPersons("Ahsoka", null, null, null)
 
-      response.data.count().shouldBe(1)
-      response.data
-        .first()
-        .firstName
-        .shouldBe("Ahsoka")
-      response.data
-        .first()
-        .lastName
-        .shouldBe("Tano")
-    }
+        response.data.count().shouldBe(1)
+        response.data
+          .first()
+          .firstName
+          .shouldBe("Ahsoka")
+        response.data
+          .first()
+          .lastName
+          .shouldBe("Tano")
+      }
 
-    it("returns person(s) when searching on last name only") {
-      nDeliusMockServer.stubForPost(
-        path,
-        """
+      it("returns person(s) when searching on last name only") {
+        nDeliusMockServer.stubForPost(
+          path,
+          """
         {
           "surname": "Tano",
           "includeAliases": false
         }
         """.removeWhitespaceAndNewlines(),
-        """
+          """
           [
             {
               "firstName": "Ahsoka",
@@ -211,31 +211,31 @@ class NDeliusGatewaySearchTest(
             }
           ]
           """.trimIndent(),
-      )
+        )
 
-      val response = nDeliusGateway.getPersons(null, "Tano", null, null)
+        val response = nDeliusGateway.getPersons(null, "Tano", null, null)
 
-      response.data.count().shouldBe(1)
-      response.data
-        .first()
-        .firstName
-        .shouldBe("Ahsoka")
-      response.data
-        .first()
-        .lastName
-        .shouldBe("Tano")
-    }
+        response.data.count().shouldBe(1)
+        response.data
+          .first()
+          .firstName
+          .shouldBe("Ahsoka")
+        response.data
+          .first()
+          .lastName
+          .shouldBe("Tano")
+      }
 
-    it("returns person(s) when searching on pnc number only") {
-      nDeliusMockServer.stubForPost(
-        path,
-        """
+      it("returns person(s) when searching on pnc number only") {
+        nDeliusMockServer.stubForPost(
+          path,
+          """
         {
           "pncNumber": "2018/0123456X",
           "includeAliases": false
         }
         """.removeWhitespaceAndNewlines(),
-        """
+          """
           [
             {
               "firstName": "Ahsoka",
@@ -243,31 +243,31 @@ class NDeliusGatewaySearchTest(
             }
           ]
           """.trimIndent(),
-      )
+        )
 
-      val response = nDeliusGateway.getPersons(null, null, pncNumber, null)
+        val response = nDeliusGateway.getPersons(null, null, pncNumber, null)
 
-      response.data.count().shouldBe(1)
-      response.data
-        .first()
-        .firstName
-        .shouldBe("Ahsoka")
-      response.data
-        .first()
-        .lastName
-        .shouldBe("Tano")
-    }
+        response.data.count().shouldBe(1)
+        response.data
+          .first()
+          .firstName
+          .shouldBe("Ahsoka")
+        response.data
+          .first()
+          .lastName
+          .shouldBe("Tano")
+      }
 
-    it("returns person(s) when searching on date of birth only") {
-      nDeliusMockServer.stubForPost(
-        path,
-        """
+      it("returns person(s) when searching on date of birth only") {
+        nDeliusMockServer.stubForPost(
+          path,
+          """
         {
           "dateOfBirth": "1966-10-25",
           "includeAliases": false
         }
         """.removeWhitespaceAndNewlines(),
-        """
+          """
           [
             {
               "firstName": "Ahsoka",
@@ -275,31 +275,31 @@ class NDeliusGatewaySearchTest(
             }
           ]
           """.trimIndent(),
-      )
+        )
 
-      val response = nDeliusGateway.getPersons(null, null, null, dateOfBirth)
+        val response = nDeliusGateway.getPersons(null, null, null, dateOfBirth)
 
-      response.data.count().shouldBe(1)
-      response.data
-        .first()
-        .firstName
-        .shouldBe("Ahsoka")
-      response.data
-        .first()
-        .lastName
-        .shouldBe("Tano")
-    }
+        response.data.count().shouldBe(1)
+        response.data
+          .first()
+          .firstName
+          .shouldBe("Ahsoka")
+        response.data
+          .first()
+          .lastName
+          .shouldBe("Tano")
+      }
 
-    it("returns person(s) when searching within aliases") {
-      nDeliusMockServer.stubForPost(
-        path,
-        """
+      it("returns person(s) when searching within aliases") {
+        nDeliusMockServer.stubForPost(
+          path,
+          """
         {
           "firstName": "Fulcrum",
           "includeAliases": true
         }
         """.removeWhitespaceAndNewlines(),
-        """
+          """
           [
             {
               "firstName": "Ahsoka",
@@ -313,36 +313,36 @@ class NDeliusGatewaySearchTest(
             }
           ]
           """.trimIndent(),
-      )
+        )
 
-      val response = nDeliusGateway.getPersons("Fulcrum", null, null, null, searchWithinAliases = true)
+        val response = nDeliusGateway.getPersons("Fulcrum", null, null, null, searchWithinAliases = true)
 
-      response.data.count().shouldBe(1)
-      response.data
-        .first()
-        .aliases
-        .first()
-        .firstName
-        .shouldBe("Fulcrum")
-      response.data
-        .first()
-        .aliases
-        .first()
-        .lastName
-        .shouldBe("Tano")
+        response.data.count().shouldBe(1)
+        response.data
+          .first()
+          .aliases
+          .first()
+          .firstName
+          .shouldBe("Fulcrum")
+        response.data
+          .first()
+          .aliases
+          .first()
+          .lastName
+          .shouldBe("Tano")
+      }
     }
-  }
 
-  describe("#getPerson") {
+    describe("#getPerson") {
 
-    describe("when a Delius CRN is used to make requests") {
-      val hmppsId = "X777776"
+      describe("when a Delius CRN is used to make requests") {
+        val hmppsId = "X777776"
 
-      beforeEach {
-        nDeliusMockServer.stubForPost(
-          path,
-          "{\"crn\": \"$hmppsId\"}",
-          """
+        beforeEach {
+          nDeliusMockServer.stubForPost(
+            path,
+            "{\"crn\": \"$hmppsId\"}",
+            """
         [
           {
             "firstName": "Jonathan",
@@ -355,14 +355,14 @@ class NDeliusGatewaySearchTest(
           }
         ]
       """,
-        )
-      }
+          )
+        }
 
-      it("calls the Probation API service with a Delius CRN") {
-        nDeliusMockServer.stubForPost(
-          path,
-          "{\"crn\": \"$hmppsId\"}",
-          """
+        it("calls the Probation API service with a Delius CRN") {
+          nDeliusMockServer.stubForPost(
+            path,
+            "{\"crn\": \"$hmppsId\"}",
+            """
           [
            {
             "firstName": "Jonathan",
@@ -372,20 +372,20 @@ class NDeliusGatewaySearchTest(
           }
         ]
         """,
-        )
+          )
 
-        nDeliusGateway.getPerson(hmppsId)
+          nDeliusGateway.getPerson(hmppsId)
+        }
       }
-    }
 
-    describe("when a Nomis number is used to make requests") {
-      val hmppsId = "A7777ZZ"
+      describe("when a Nomis number is used to make requests") {
+        val hmppsId = "A7777ZZ"
 
-      it("calls the Probation API service with a Nomis number") {
-        nDeliusMockServer.stubForPost(
-          path,
-          "{\"nomsNumber\": \"$hmppsId\"}",
-          """
+        it("calls the Probation API service with a Nomis number") {
+          nDeliusMockServer.stubForPost(
+            path,
+            "{\"nomsNumber\": \"$hmppsId\"}",
+            """
           [
            {
             "firstName": "Jonathan",
@@ -395,13 +395,13 @@ class NDeliusGatewaySearchTest(
           }
         ]
         """,
-        )
+          )
 
-        val response = nDeliusGateway.getPerson(hmppsId)
+          val response = nDeliusGateway.getPerson(hmppsId)
 
-        response.data?.firstName.shouldBe("Jonathan")
-        response.data?.lastName.shouldBe("Bravo")
+          response.data?.firstName.shouldBe("Jonathan")
+          response.data?.lastName.shouldBe("Bravo")
+        }
       }
     }
-  }
-})
+  })

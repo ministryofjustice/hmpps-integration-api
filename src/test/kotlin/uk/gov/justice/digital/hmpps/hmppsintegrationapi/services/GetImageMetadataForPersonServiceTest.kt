@@ -11,12 +11,8 @@ import org.springframework.boot.test.context.ConfigDataApplicationContextInitial
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonApiGateway
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ProbationOffenderSearchGateway
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Identifiers
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ImageMetadata
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NomisNumber
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonOnProbation
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError

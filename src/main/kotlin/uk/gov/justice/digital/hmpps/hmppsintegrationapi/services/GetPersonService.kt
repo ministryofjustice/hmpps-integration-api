@@ -25,11 +25,12 @@ class GetPersonService(
   private val featureFlag: FeatureFlagConfig,
 ) {
   fun execute(hmppsId: String): Response<Person?> {
-    val probationResponse = if (featureFlag.replaceProbationSearch) {
-      deliusGateway.getPerson(hmppsId)
-    } else {
-      probationOffenderSearchGateway.getPerson(id = hmppsId)
-    }
+    val probationResponse =
+      if (featureFlag.replaceProbationSearch) {
+        deliusGateway.getPerson(hmppsId)
+      } else {
+        probationOffenderSearchGateway.getPerson(id = hmppsId)
+      }
     if (identifyHmppsId(hmppsId) == IdentifierType.NOMS && probationResponse.data == null) {
       val prisonResponse = prisonerOffenderSearchGateway.getPrisonOffender(hmppsId)
       return Response(data = prisonResponse.data?.toPerson(), prisonResponse.errors)
@@ -207,11 +208,12 @@ class GetPersonService(
   }
 
   fun getCombinedDataForPerson(hmppsId: String): Response<OffenderSearchResponse> {
-    val probationResponse = if (featureFlag.replaceProbationSearch) {
-      deliusGateway.getPerson(hmppsId)
-    } else {
-      probationOffenderSearchGateway.getPerson(id = hmppsId)
-    }
+    val probationResponse =
+      if (featureFlag.replaceProbationSearch) {
+        deliusGateway.getPerson(hmppsId)
+      } else {
+        probationOffenderSearchGateway.getPerson(id = hmppsId)
+      }
 
     val prisonResponse =
       probationResponse.data?.identifiers?.nomisNumber?.let {

@@ -3,7 +3,6 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.probationoffen
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldContain
-import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory
 import org.mockito.kotlin.verify
