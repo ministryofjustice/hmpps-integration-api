@@ -6,7 +6,7 @@ data class LIPResidentialSummary(
   val prisonSummary: LIPPrisonSummary?,
   val topLevelLocationType: String,
   val subLocationName: String?,
-  val locationHierarchy: List<LIPLocationHierarchyItem>,
+  val locationHierarchy: List<LIPLocationHierarchyItem>? = null,
   val parentLocation: LIPLocation?,
   val subLocations: List<LIPLocation>,
 ) {

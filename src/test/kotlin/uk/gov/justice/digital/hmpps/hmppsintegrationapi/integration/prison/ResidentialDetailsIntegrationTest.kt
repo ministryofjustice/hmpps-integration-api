@@ -5,15 +5,16 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationTestBase
 
-class ResidentialHierarchyIntegrationTest : IntegrationTestBase() {
+class ResidentialDetailsIntegrationTest : IntegrationTestBase() {
   private val prisonId = "MDI"
-  private val path = "/v1/prison/$prisonId/residential-hierarchy"
+  private val parentPathHierarchy = "A"
+  private val path = "/v1/prison/$prisonId/residential-details?parentPathHierarchy=$parentPathHierarchy"
 
   @Test
-  fun `return the residential hierarchy`() {
+  fun `return the residential details`() {
     callApi(path)
       .andExpect(status().isOk)
-      .andExpect(content().json(getExpectedResponse("prison-residential-hierarchy-response")))
+      .andExpect(content().json(getExpectedResponse("prison-residential-details-response")))
   }
 
   @Test
