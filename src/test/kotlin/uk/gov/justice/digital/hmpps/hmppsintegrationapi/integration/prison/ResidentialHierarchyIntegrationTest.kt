@@ -10,7 +10,7 @@ class ResidentialHierarchyIntegrationTest : IntegrationTestBase() {
   private val path = "/v1/prison/$prisonId/residential-hierarchy"
 
   @Test
-  fun `return a prisoner with all fields populated`() {
+  fun `return the residential hierarchy`() {
     callApi(path)
       .andExpect(status().isOk)
       .andExpect(content().json(getExpectedResponse("prison-residential-hierarchy-response")))
