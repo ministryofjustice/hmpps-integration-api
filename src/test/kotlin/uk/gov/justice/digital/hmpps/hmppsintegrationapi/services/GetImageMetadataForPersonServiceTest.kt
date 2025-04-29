@@ -28,7 +28,6 @@ import java.time.LocalDateTime
 )
 internal class GetImageMetadataForPersonServiceTest(
   @MockitoBean val prisonApiGateway: PrisonApiGateway,
-  @MockitoBean val probationOffenderSearchGateway: ProbationOffenderSearchGateway,
   @MockitoBean val getPersonService: GetPersonService,
   private val getImageMetadataForPersonService: GetImageMetadataForPersonService,
 ) : DescribeSpec({
@@ -42,9 +41,6 @@ internal class GetImageMetadataForPersonServiceTest(
         Response(
           data = NomisNumber(prisonerNumber),
         ),
-      )
-      whenever(probationOffenderSearchGateway.getPerson(id = hmppsId)).thenReturn(
-        Response(data = PersonOnProbation(Person(firstName = "Joey", lastName = "Tribbiani", identifiers = Identifiers(nomisNumber = prisonerNumber)), false)),
       )
       whenever(prisonApiGateway.getImageMetadataForPerson(prisonerNumber)).thenReturn(Response(data = emptyList()))
     }

@@ -15,6 +15,8 @@ import org.mockito.kotlin.whenever
 import org.springframework.boot.test.autoconfigure.json.JsonTest
 import org.springframework.test.context.ActiveProfiles
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.ConsumerPrisonAccessService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonApiGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ProbationOffenderSearchGateway
@@ -37,6 +39,9 @@ class GetProtectedCharacteristicsServiceTest {
   private val prisonerOffenderSearchGateway: PrisonerOffenderSearchGateway = mock()
   private val consumerPrisonAccessService: ConsumerPrisonAccessService = mock()
   private val getPersonService: GetPersonService = mock()
+  private val deliusGateway: NDeliusGateway = mock()
+  private val featureFlagConfig: FeatureFlagConfig = mock()
+
   val prisonApiGateway: PrisonApiGateway = mock()
   val hmppsId: String = "A1234AA"
   val filters = null
@@ -51,7 +56,7 @@ class GetProtectedCharacteristicsServiceTest {
     Mockito.reset(prisonerOffenderSearchGateway)
     Mockito.reset(prisonApiGateway)
     Mockito.reset(consumerPrisonAccessService)
-    service = GetProtectedCharacteristicsService(probationOffenderSearchGateway, prisonerOffenderSearchGateway, prisonApiGateway, consumerPrisonAccessService, getPersonService)
+    service = GetProtectedCharacteristicsService(probationOffenderSearchGateway, prisonerOffenderSearchGateway, prisonApiGateway, consumerPrisonAccessService, getPersonService, deliusGateway, featureFlagConfig)
 
     whenever(getPersonService.identifyHmppsId(hmppsId)).thenReturn(GetPersonService.IdentifierType.NOMS)
   }

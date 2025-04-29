@@ -3,6 +3,8 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.ConsumerPrisonAccessService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonApiGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ProbationOffenderSearchGateway
@@ -20,6 +22,8 @@ class GetProtectedCharacteristicsService(
   @Autowired val prisonApiGateway: PrisonApiGateway,
   @Autowired val consumerPrisonAccessService: ConsumerPrisonAccessService,
   @Autowired val getPersonService: GetPersonService,
+  private val deliusGateway: NDeliusGateway,
+  private val featureFlag: FeatureFlagConfig,
 ) {
   fun execute(
     hmppsId: String,
@@ -33,7 +37,12 @@ class GetProtectedCharacteristicsService(
       )
     }
 
-    val probationOffender = probationOffenderSearchGateway.getOffender(hmppsId)
+    val probationOffender =
+      if (featureFlag.replaceProbationSearch) {
+        deliusGateway.getOffender(hmppsId)
+      } else {
+        probationOffenderSearchGateway.getOffender(hmppsId)
+      }
 
     if (probationOffender.data != null) {
       val prisonOffender =

@@ -35,6 +35,7 @@ feature-flag:
   use-physical-characteristics-endpoints: true
   use-image-endpoints: true
   use-education-assessments-endpoints: true
+  replace-probation-search: true
 
 authorisation:
   consumers:
