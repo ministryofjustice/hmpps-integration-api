@@ -15,10 +15,6 @@ data class Location(
   val localName: String?,
   @Schema(description = "Additional comments that can be made about this location", example = "Not to be used")
   val comments: String?,
-  @Schema(description = "Indicates if the location is permanently inactive", example = "false")
-  val permanentlyInactive: Boolean,
-  @Schema(description = "Reason for permanently deactivating", example = "false")
-  val permanentlyInactiveReason: String?,
   @Schema(description = "Capacity details of the location")
   val capacity: LocationCapacity?,
   @Schema(description = "When a cell is inactive, show the active working capacity value")
