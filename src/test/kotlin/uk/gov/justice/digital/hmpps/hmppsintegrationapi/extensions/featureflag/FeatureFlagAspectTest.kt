@@ -23,7 +23,7 @@ class FeatureFlagAspectTest {
       useEducationAssessmentsEndpoints = false,
       usePhysicalCharacteristicsEndpoints = false,
       useResidentialHierarchyEndpoints = false,
-      useLocationEndpoints = false,
+      useLocationEndpoint = false,
     )
   private val featureFlagAspect: FeatureFlagAspect =
     FeatureFlagAspect(

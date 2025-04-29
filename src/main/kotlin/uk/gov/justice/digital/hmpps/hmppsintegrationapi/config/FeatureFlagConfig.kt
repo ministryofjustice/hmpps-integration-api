@@ -9,7 +9,7 @@ data class FeatureFlagConfig(
   val useImageEndpoints: Boolean,
   val useEducationAssessmentsEndpoints: Boolean,
   val useResidentialHierarchyEndpoints: Boolean,
-  val useLocationEndpoints: Boolean,
+  val useLocationEndpoint: Boolean,
 ) {
   companion object {
     const val USE_ARNS_ENDPOINTS = "use-arns-endpoints"
@@ -24,7 +24,7 @@ data class FeatureFlagConfig(
     when (name) {
       USE_ARNS_ENDPOINTS -> this.useArnsEndpoints
       USE_RESIDENTIAL_HIERARCHY_ENDPOINTS -> this.useResidentialHierarchyEndpoints
-      USE_LOCATION_ENDPOINTS -> this.useLocationEndpoints
+      USE_LOCATION_ENDPOINTS -> this.useLocationEndpoint
 
       else -> null
     }
