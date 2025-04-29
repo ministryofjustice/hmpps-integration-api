@@ -101,3 +101,4 @@ feature-flag:
   use-image-endpoints: true
   use-education-assessments-endpoints: true
   use-residential-hierarchy-endpoints: true
+  use_location_endpoints: true

@@ -15,8 +15,8 @@ class GetLocationByKeyService(
 ) {
   fun execute(
     prisonId: String,
-    filters: ConsumerFilters?,
     key: String,
+    filters: ConsumerFilters?,
   ): Response<Location?> {
     val checkAccess = consumerPrisonAccessService.checkConsumerHasPrisonAccess<Location?>(prisonId, filters)
 
