@@ -33,4 +33,4 @@ prevent_indexing: true
 
 show_contribution_banner: false
 
-api_path: https://ministryofjustice.github.io/hmpps-integration-api/openapi/api-docs.json
+api_path: http://host.docker.internal:8080/v3/api-docs
