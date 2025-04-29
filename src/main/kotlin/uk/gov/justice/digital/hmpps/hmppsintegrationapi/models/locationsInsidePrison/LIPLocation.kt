@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.locationsInsidePrison
 
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Location
 import java.time.LocalDateTime
 
 data class LIPLocation(
@@ -12,10 +13,10 @@ data class LIPLocation(
   val comments: String?,
   val permanentlyInactive: Boolean,
   val permanentlyInactiveReason: String?,
-  val capacity: LIPCapacity?,
+  val capacity: LIPLocationCapacity?,
   val oldWorkingCapacity: Int?,
-  val certification: LIPCertification?,
-  val usage: List<LIPUsageItem>?,
+  val certification: LIPLocationCertification?,
+  val usage: List<LIPLocationUsageItem>?,
   val accommodationTypes: List<String>?,
   val specialistCellTypes: List<String>?,
   val usedFor: List<String>?,
@@ -34,7 +35,7 @@ data class LIPLocation(
   val level: Int,
   val leafLevel: Boolean,
   val parentId: String?,
-  val parentLocation: String?,
+  val parentLocation: LIPLocation?,
   val inactiveCells: Int?,
   val numberOfCellLocations: Int?,
   val childLocations: List<LIPLocation>?,
@@ -44,4 +45,37 @@ data class LIPLocation(
   val lastModifiedDate: LocalDateTime,
   val key: String,
   val isResidential: Boolean,
-)
+) {
+  fun toLocation(): Location =
+    Location(
+      key = this.key,
+      code = this.code,
+      pathHierarchy = this.pathHierarchy,
+      locationType = this.locationType,
+      localName = this.localName,
+      comments = this.comments,
+      capacity = this.capacity?.toLocationCapacity(),
+      oldWorkingCapacity = this.oldWorkingCapacity,
+      certification = this.certification?.toLocationCertification(),
+      usage = this.usage?.map { it.toLocationUsageItem() },
+      accommodationTypes = this.accommodationTypes,
+      specialistCellTypes = this.specialistCellTypes,
+      usedFor = this.usedFor,
+      status = this.status,
+      convertedCellType = this.convertedCellType,
+      otherConvertedCellType = this.otherConvertedCellType,
+      active = this.active,
+      deactivatedByParent = this.deactivatedByParent,
+      deactivatedDate = this.deactivatedDate,
+      deactivatedReason = this.deactivatedReason,
+      deactivationReasonDescription = this.deactivationReasonDescription,
+      deactivatedBy = this.deactivatedBy,
+      proposedReactivationDate = this.proposedReactivationDate,
+      planetFmReference = this.planetFmReference,
+      level = this.level,
+      parentLocationKey = this.parentLocation?.key,
+      inactiveCells = this.inactiveCells,
+      numberOfCellLocations = this.numberOfCellLocations,
+      isResidential = this.isResidential,
+    )
+}

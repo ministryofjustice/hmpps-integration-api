@@ -43,6 +43,7 @@ feature-flag:
   use-physical-characteristics-endpoints: true
   use-image-endpoints: true
   use-education-assessments-endpoints: true
+  use-residential-hierarchy-endpoints: true
   replace-probation-search: true
 
 authorisation:
