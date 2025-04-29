@@ -12,25 +12,25 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Consum
 class GetLocationByKeyService(
   @Autowired val locationsInsidePrisonGateway: LocationsInsidePrisonGateway,
   @Autowired val consumerPrisonAccessService: ConsumerPrisonAccessService,
-)
+) {
+  fun execute(
+    prisonId: String,
+    filters: ConsumerFilters?,
+    key: String,
+  ): Response<Location?> {
+    val checkAccess = consumerPrisonAccessService.checkConsumerHasPrisonAccess<Location?>(prisonId, filters)
 
-fun execute(
-  prisonId: String,
-  filters: ConsumerFilters?,
-  key: String,
-): Response<Location?> {
-  val checkAccess = consumerPrisonAccessService.checkConsumerHasPrisonAccess<Location?>(prisonId, filters)
+    if (checkAccess.errors.isNotEmpty()) {
+      return Response(data = checkAccess.data, errors = checkAccess.errors)
+    }
 
-  if (checkAccess.errors.isNotEmpty()) {
-    return Response(data = checkAccess.data, errors = checkAccess.errors)
+    val prisonCombinedWithLocationKey = "$prisonId-$key"
+    val result = locationsInsidePrisonGateway.getLocationByKey(prisonCombinedWithLocationKey)
+
+    if (result.errors.isNotEmpty()) {
+      return Response(data = null, errors = result.errors)
+    }
+
+    return Response(data = result.data?.toLocation())
   }
-
-  val prisonCombinedWithLocationKey = "$prisonId-$key"
-  val result = locationsInsidePrisonGateway.getLocationByKey(prisonCombinedWithLocationKey)
-
-  if (result.errors.isNotEmpty()) {
-    return Response(data = null, errors = result.errors)
-  }
-
-  return Response(data = result.data)
 }
