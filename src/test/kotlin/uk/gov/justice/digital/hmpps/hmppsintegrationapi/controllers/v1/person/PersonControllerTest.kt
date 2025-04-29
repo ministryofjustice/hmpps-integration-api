@@ -18,6 +18,8 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_PHYSICAL_CHARACTERISTICS_ENDPOINTS
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.FeatureNotEnabledException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.BodyMark
@@ -1012,7 +1014,7 @@ internal class PersonControllerTest(
           Mockito.reset(getPhysicalCharacteristicsForPersonService)
           Mockito.reset(auditService)
 
-          whenever(featureFlagConfig.usePhysicalCharacteristicsEndpoints).thenReturn(true)
+          whenever(featureFlagConfig.isEnabled(USE_PHYSICAL_CHARACTERISTICS_ENDPOINTS)).thenReturn(true)
           whenever(getPhysicalCharacteristicsForPersonService.execute(sanitisedHmppsId, filters)).thenReturn(
             Response(
               data = physicalCharacteristics,
@@ -1101,7 +1103,8 @@ internal class PersonControllerTest(
         }
 
         it("returns 503 service not available when feature flag set to false") {
-          whenever(featureFlagConfig.usePhysicalCharacteristicsEndpoints).thenReturn(false)
+//          whenever(featureFlagConfig.usePhysicalCharacteristicsEndpoints).thenReturn(false)
+          whenever(featureFlagConfig.require(USE_PHYSICAL_CHARACTERISTICS_ENDPOINTS)).thenThrow(FeatureNotEnabledException(""))
           val result = mockMvc.performAuthorised(path)
           result.response.status.shouldBe(HttpStatus.SERVICE_UNAVAILABLE.value())
         }

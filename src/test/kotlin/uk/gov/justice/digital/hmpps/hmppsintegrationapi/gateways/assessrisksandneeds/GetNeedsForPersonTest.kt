@@ -15,6 +15,7 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_ARNS_ENDPOINTS
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.FeatureNotEnabledException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.AssessRisksAndNeedsGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
@@ -44,7 +45,7 @@ class GetNeedsForPersonTest(
       beforeEach {
         assessRisksAndNeedsApiMockServer.start()
         Mockito.reset(hmppsAuthGateway)
-        whenever(featureFlag.useArnsEndpoints).thenReturn(true)
+        whenever(featureFlag.isEnabled(USE_ARNS_ENDPOINTS)).thenReturn(true)
         assessRisksAndNeedsApiMockServer.stubForGet(
           path,
           """
@@ -162,7 +163,8 @@ class GetNeedsForPersonTest(
       }
 
       it("returns 503 service not available when feature flag set to false") {
-        whenever(featureFlag.useArnsEndpoints).thenReturn(false)
+//        whenever(featureFlag.useArnsEndpoints).thenReturn(false)
+        whenever(featureFlag.require(USE_ARNS_ENDPOINTS)).thenThrow(FeatureNotEnabledException("use-arns-endpoints not enabled"))
         val exception = shouldThrow<FeatureNotEnabledException> { assessRisksAndNeedsGateway.getNeedsForPerson(deliusCrn) }
         exception.message.shouldContain("use-arns-endpoints not enabled")
       }

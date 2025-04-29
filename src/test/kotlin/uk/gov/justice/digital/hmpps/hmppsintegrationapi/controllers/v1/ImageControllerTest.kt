@@ -15,6 +15,8 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_IMAGE_ENDPOINTS
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.FeatureNotEnabledException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
@@ -104,7 +106,7 @@ internal class ImageControllerTest(
 
         beforeTest {
           Mockito.reset(getImageService)
-          whenever(featureFlag.useImageEndpoints).thenReturn(true)
+          whenever(featureFlag.isEnabled(USE_IMAGE_ENDPOINTS)).thenReturn(true)
           whenever(getImageService.execute(id, hmppsId, filter)).thenReturn(Response(data = image))
           Mockito.reset(auditService)
         }
@@ -161,7 +163,7 @@ internal class ImageControllerTest(
         }
 
         it("returns 503 when feature flag is disabled") {
-          whenever(featureFlag.useImageEndpoints).thenReturn(false)
+          whenever(featureFlag.require(USE_IMAGE_ENDPOINTS)).thenThrow(FeatureNotEnabledException(""))
 
           val result = mockMvc.performAuthorised(path)
           result.response.status.shouldBe(HttpStatus.SERVICE_UNAVAILABLE.value())

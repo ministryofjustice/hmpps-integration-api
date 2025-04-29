@@ -6,8 +6,10 @@ import org.assertj.core.api.Assertions.assertThat
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
+import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.ErrorResponse
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.ValidationErrorResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.MockMvcExtensions.contentAsJson
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
@@ -16,6 +18,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMo
 @ActiveProfiles("test")
 class EducationAssessmentsControllerTest(
   private val springMockMvc: MockMvc,
+  @MockitoBean val featureFlagConfig: FeatureFlagConfig,
 ) : DescribeSpec({
     val mockMvc = IntegrationAPIMockMvc(springMockMvc)
 
@@ -34,7 +37,6 @@ class EducationAssessmentsControllerTest(
             "requestId" to "0650ba37-a977-4fbe-9000-4715aaecadba",
           )
 
-        // When
         val response = mockMvc.performAuthorisedPost(apiPath(), requestBody).response
 
         // Then
