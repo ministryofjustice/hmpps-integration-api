@@ -85,7 +85,7 @@ class GetLocationByKeyServiceTest(
       }
 
       it("performs a search according to prisonId and returns data") {
-        val result = getLocationByKeyService.execute(prisonId, filters, key)
+        val result = getLocationByKeyService.execute(prisonId, key, filters)
         result.data.shouldNotBeNull()
         result.data.shouldBe(lipLocation.toLocation())
         result.errors.count().shouldBe(0)
@@ -95,7 +95,7 @@ class GetLocationByKeyServiceTest(
         val errors = listOf(UpstreamApiError(UpstreamApi.LOCATIONS_INSIDE_PRISON, UpstreamApiError.Type.ENTITY_NOT_FOUND, description = "Consumer Prison Access Service not found"))
         whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<Location?>(prisonId, filters)).thenReturn(Response(data = null, errors = errors))
 
-        val result = getLocationByKeyService.execute(prisonId, filters, key)
+        val result = getLocationByKeyService.execute(prisonId, key, filters)
         result.data.shouldBe(null)
         result.errors.shouldBe(errors)
       }
@@ -104,7 +104,7 @@ class GetLocationByKeyServiceTest(
         val errors = listOf(UpstreamApiError(UpstreamApi.LOCATIONS_INSIDE_PRISON, UpstreamApiError.Type.ENTITY_NOT_FOUND, description = "locationsInsidePrisonGateway returns errors"))
         whenever(locationsInsidePrisonGateway.getLocationByKey(gatewayKey)).thenReturn(Response(data = null, errors = errors))
 
-        val result = getLocationByKeyService.execute(prisonId, filters, key)
+        val result = getLocationByKeyService.execute(prisonId, key, filters)
         result.data.shouldBe(null)
         result.errors.shouldBe(errors)
       }

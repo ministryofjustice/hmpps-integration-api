@@ -19,6 +19,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.MockMvcExtens
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Location
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PaginatedVisits
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonInPrison
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ResidentialHierarchyItem
@@ -31,10 +32,10 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitExtern
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitorSupport
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.locationsInsidePrison.LIPLocation
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetLocationByKeyService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPrisonersService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetResidentialHierarchyService
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetLocationByKeyService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetVisitsService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 import java.time.LocalDate
@@ -537,33 +538,37 @@ internal class PrisonControllerTest(
             isResidential = true,
           )
 
+        val mappedLIPResponse = lipLocation.toLocation()
+
         beforeEach {
           Mockito.reset(getResidentialHierarchyService)
         }
 
         it("should return 200 when success") {
-          whenever(getResidentialHierarchyService.execute(prisonId, filters)).thenReturn(Response(data = listOf(mainLocation)))
+          whenever(getLocationByKeyService.execute(prisonId, key, filters)).thenReturn(Response(data = mappedLIPResponse))
 
           val result = mockMvc.performAuthorised(path)
           result.response.status.shouldBe(HttpStatus.OK.value())
-          result.response.contentAsJson<DataResponse<List<ResidentialHierarchyItem>>>().shouldBe(DataResponse(data = listOf(mainLocation)))
+          result.response.contentAsJson<Response<Location>>().shouldBe(Response(data = mappedLIPResponse))
         }
 
         it("should call the audit service") {
-          whenever(getResidentialHierarchyService.execute(prisonId, filters)).thenReturn(Response(data = listOf(mainLocation)))
+          whenever(getLocationByKeyService.execute(prisonId, key, filters)).thenReturn(Response(data = mappedLIPResponse))
 
           mockMvc.performAuthorised(path)
           verify(
             auditService,
             times(1),
           ).createEvent(
-            "GET_PRISON_RESIDENTIAL_HIERARCHY",
-            mapOf("prisonId" to prisonId),
+            "GET_LOCATION_INFORMATION",
+            mapOf("prisonId" to prisonId, "key" to key),
           )
         }
 
-        it("returns 400 when getResidentialHierarchyService returns not found") {
-          whenever(getResidentialHierarchyService.execute(prisonId, filters)).thenReturn(
+        it("returns 400 when invalid params") {
+          val invalidParam = "ABC123"
+          val invalidPath = "$basePath/$prisonId/location/$invalidParam"
+          whenever(getLocationByKeyService.execute(prisonId, invalidParam, filters)).thenReturn(
             Response(
               data = null,
               errors =
@@ -576,12 +581,12 @@ internal class PrisonControllerTest(
             ),
           )
 
-          val result = mockMvc.performAuthorised(path)
+          val result = mockMvc.performAuthorised(invalidPath)
           result.response.status.shouldBe(400)
         }
 
-        it("returns 404 when getResidentialHierarchyService returns not found") {
-          whenever(getResidentialHierarchyService.execute(prisonId, filters)).thenReturn(
+        it("returns 404 when getLocationByKeyService returns not found") {
+          whenever(getLocationByKeyService.execute(prisonId, key, filters)).thenReturn(
             Response(
               data = null,
               errors =

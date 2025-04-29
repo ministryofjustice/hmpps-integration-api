@@ -136,6 +136,7 @@ authorisation:
         - "/v1/persons/.*/contacts[^/]*$"
         - "/v1/persons/.*/visit-orders"
         - "/v1/persons/.*/education/assessments/status"
+        - "/v1/prison/.*/location/[^/]*$"
     config-test:
       include:
         - "/v1/config/authorisation"
