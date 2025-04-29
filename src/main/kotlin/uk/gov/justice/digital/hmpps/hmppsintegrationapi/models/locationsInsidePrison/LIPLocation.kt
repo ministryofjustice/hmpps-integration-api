@@ -54,8 +54,6 @@ data class LIPLocation(
       locationType = this.locationType,
       localName = this.localName,
       comments = this.comments,
-      permanentlyInactive = this.permanentlyInactive,
-      permanentlyInactiveReason = this.permanentlyInactiveReason,
       capacity = this.capacity?.toLocationCapacity(),
       oldWorkingCapacity = this.oldWorkingCapacity,
       certification = this.certification?.toLocationCertification(),
