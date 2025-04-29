@@ -260,7 +260,6 @@ class PrisonController(
     return DataResponse(data = response.data)
   }
 
-
   private fun isValidISODateFormat(dateString: String): Boolean =
     try {
       LocalDate.parse(dateString, DateTimeFormatter.ISO_DATE)
