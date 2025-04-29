@@ -601,7 +601,6 @@ internal class PrisonControllerTest(
 
           val result = mockMvc.performAuthorised(path)
           result.response.status.shouldBe(404)
-          result.response.contentAsJson<List<Location>>().isNullOrEmpty()
         }
       }
     },

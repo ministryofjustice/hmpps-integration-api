@@ -8313,7 +8313,8 @@
           },
           "parentLocation": {
             "$ref": "#/components/schemas/Location",
-            "description": "Parent Location"
+            "description": "Parent Location",
+            "example": null
           },
           "inactiveCells": {
             "type": "integer",
@@ -8330,7 +8331,8 @@
             "description": "Child Locations",
             "items": {
               "$ref": "#/components/schemas/Location"
-            }
+            },
+            "example": []
           },
           "changeHistory": {
             "type": "array",
@@ -10459,7 +10461,7 @@
             "type": "integer",
             "format": "int32",
             "description": "Current Level within hierarchy, starts at 1, e.g Wing = 1",
-            "examples": ["1", "2", "3"]
+            "examples": [1, 2, 3]
           }
         },
         "required": ["code", "level", "pathHierarchy", "prisonId", "type"]
