@@ -3,9 +3,9 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.config
 import org.springframework.boot.context.properties.ConfigurationProperties
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.FeatureNotEnabledException
 
-@ConfigurationProperties(prefix = "feature-flag")
+@ConfigurationProperties()
 data class FeatureFlagConfig(
-  val flags: Map<String, Boolean> = mutableMapOf(),
+  val `feature-flag`: Map<String, Boolean> = mutableMapOf(),
 ) {
   companion object {
     const val USE_ARNS_ENDPOINTS = "use-arns-endpoints"
@@ -15,9 +15,9 @@ data class FeatureFlagConfig(
     const val USE_RESIDENTIAL_HIERARCHY_ENDPOINTS = "use-residential-hierarchy-endpoints"
   }
 
-  fun getConfigFlagValue(feature: String): Boolean? = flags[feature]
+  fun getConfigFlagValue(feature: String): Boolean? = `feature-flag`[feature]
 
-  fun isEnabled(feature: String): Boolean = flags.getOrDefault(feature, false)
+  fun isEnabled(feature: String): Boolean = `feature-flag`.getOrDefault(feature, false)
 
   fun require(feature: String) {
     if (!isEnabled(feature)) {
