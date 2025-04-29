@@ -49,7 +49,7 @@ class GetRiskPredictorScoresForPersonTest(
       beforeEach {
         assessRisksAndNeedsApiMockServer.start()
         Mockito.reset(hmppsAuthGateway)
-        whenever(featureFlag.isEnabled(USE_ARNS_ENDPOINTS)).thenReturn(true)
+        Mockito.reset(featureFlag)
         assessRisksAndNeedsApiMockServer.stubForGet(
           path,
           """
@@ -134,7 +134,7 @@ class GetRiskPredictorScoresForPersonTest(
       }
 
       it("returns 503 service not available when feature flag set to false") {
-        whenever(featureFlag.isEnabled(USE_ARNS_ENDPOINTS)).thenReturn(false)
+        whenever(featureFlag.require(USE_ARNS_ENDPOINTS)).thenThrow(FeatureNotEnabledException(USE_ARNS_ENDPOINTS))
         val exception = shouldThrow<FeatureNotEnabledException> { assessRisksAndNeedsGateway.getRiskPredictorScoresForPerson(deliusCrn) }
         exception.message.shouldContain("use-arns-endpoints not enabled")
       }
