@@ -17,14 +17,14 @@ data class FeatureFlagConfig(
     const val USE_IMAGE_ENDPOINTS = "use-image-endpoints"
     const val USE_EDUCATION_ASSESSMENTS_ENDPOINTS = "use-education-assessments-endpoints"
     const val USE_RESIDENTIAL_HIERARCHY_ENDPOINTS = "use-residential-hierarchy-endpoints"
-    const val USE_LOCATION_ENDPOINTS = "use_location_endpoints"
+    const val USE_LOCATION_ENDPOINT = "use_location_endpoint"
   }
 
   fun getConfigFlagValue(name: String): Boolean? =
     when (name) {
       USE_ARNS_ENDPOINTS -> this.useArnsEndpoints
       USE_RESIDENTIAL_HIERARCHY_ENDPOINTS -> this.useResidentialHierarchyEndpoints
-      USE_LOCATION_ENDPOINTS -> this.useLocationEndpoint
+      USE_LOCATION_ENDPOINT -> this.useLocationEndpoint
 
       else -> null
     }
