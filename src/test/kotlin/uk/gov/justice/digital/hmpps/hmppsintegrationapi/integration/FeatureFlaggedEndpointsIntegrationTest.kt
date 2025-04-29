@@ -7,6 +7,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_IMAGE_ENDPOINTS
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_PHYSICAL_CHARACTERISTICS_ENDPOINTS
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_RESIDENTIAL_DETAILS_ENDPOINTS
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_RESIDENTIAL_HIERARCHY_ENDPOINTS
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.FeatureNotEnabledException
 
@@ -39,7 +40,7 @@ internal class FeatureFlaggedEndpointsIntegrationTest : IntegrationTestBase() {
 
   @Test
   fun `residential details should return 503`() {
-    whenever(featureFlagConfig.useResidentialDetailsEndpoints).thenReturn(false)
+    whenever(featureFlagConfig.require(USE_RESIDENTIAL_DETAILS_ENDPOINTS)).thenThrow(FeatureNotEnabledException(""))
     val prisonId = "MDI"
     val path = "/v1/prison/$prisonId/residential-details?parentPathHierarchy=A"
     callApi(path)
