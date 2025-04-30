@@ -72,6 +72,7 @@ authorisation:
         - "/v1/prison/.*/prisoners/.*/transactions/[^/]*$"
         - "/v1/prison/.*/prisoners/.*/transactions"
         - "/v1/prison/.*/prisoners/.*/non-associations"
+        - "/v1/prison/.*/location/[^/]*$"
         - "/v1/persons/.*/education/assessments/status"
       filters:
     config-test:
@@ -101,5 +102,6 @@ feature-flag:
   use-image-endpoints: true
   use-education-assessments-endpoints: true
   use-residential-hierarchy-endpoints: true
+  use-location-endpoint: true
   use-residential-details-endpoints: true
   replace-probation-search: false

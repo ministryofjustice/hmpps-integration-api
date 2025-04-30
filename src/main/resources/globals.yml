@@ -37,6 +37,7 @@ globals:
         - "/v1/prison/.*/prisoners/.*/non-associations"
         - "/v1/prison/.*/visit/search[^/]*$"
         - "/v1/prison/.*/residential-hierarchy"
+        - "/v1/prison/.*/location/[^/]*$"
         - "/v1/prison/.*/residential-details"
         - "/v1/visit/[^/]*$"
         - "/v1/visit"

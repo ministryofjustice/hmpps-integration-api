@@ -62,6 +62,7 @@ feature-flag:
   use-image-endpoints: true
   use-education-assessments-endpoints: true
   use-residential-hierarchy-endpoints: true
+  use-location-endpoint: true
   use-residential-details-endpoints: true
   replace-probation-search: true
 
@@ -138,6 +139,7 @@ authorisation:
         - "/v1/persons/.*/contacts[^/]*$"
         - "/v1/persons/.*/visit-orders"
         - "/v1/persons/.*/education/assessments/status"
+        - "/v1/prison/.*/location/[^/]*$"
     config-test:
       include:
         - "/v1/config/authorisation"

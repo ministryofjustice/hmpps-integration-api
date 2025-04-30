@@ -23,6 +23,7 @@ class FeatureFlagAspectTest {
       useEducationAssessmentsEndpoints = false,
       usePhysicalCharacteristicsEndpoints = false,
       useResidentialHierarchyEndpoints = false,
+      useLocationEndpoint = false,
       useResidentialDetailsEndpoints = false,
       replaceProbationSearch = false,
     )
