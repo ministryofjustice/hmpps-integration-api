@@ -25,12 +25,14 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditS
 
 @RestController
 @RequestMapping("/v1/persons/{hmppsId}")
+@Tag(name = "visits")
 @Tag(name = "persons")
 class VisitRestrictionsController(
   @Autowired val auditService: AuditService,
   @Autowired val getVisitRestrictionsForPersonService: GetVisitRestrictionsForPersonService,
   @Autowired val getVisitorRestrictionsService: GetVisitorRestrictionsService,
 ) {
+  @GetMapping("/visit-restrictions")
   @Operation(
     summary = "Gets visit restrictions for a prisoner.",
     description = "Returns a prisoner's visit restrictions. Only returns the visit restrictions for the prisoner's most recent booking.",
@@ -41,7 +43,6 @@ class VisitRestrictionsController(
       ApiResponse(responseCode = "500", content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]),
     ],
   )
-  @GetMapping("/visit-restrictions")
   fun getRestrictionsForPerson(
     @Parameter(description = "A HMPPS identifier") @PathVariable hmppsId: String,
     @RequestAttribute filters: ConsumerFilters?,
