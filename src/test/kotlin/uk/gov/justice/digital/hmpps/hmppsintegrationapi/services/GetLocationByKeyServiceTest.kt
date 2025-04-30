@@ -1,8 +1,10 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
+import jakarta.validation.ValidationException
 import org.mockito.Mockito
 import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
@@ -28,7 +30,7 @@ class GetLocationByKeyServiceTest(
 ) : DescribeSpec(
     {
       val prisonId = "MDI"
-      val key = "A-1-001"
+      val key = "MDI-A-1-001"
       val gatewayKey = "MDI-A-1-001"
       val filters = null
 
@@ -107,6 +109,17 @@ class GetLocationByKeyServiceTest(
         val result = getLocationByKeyService.execute(prisonId, key, filters)
         result.data.shouldBe(null)
         result.errors.shouldBe(errors)
+      }
+
+      it("should reject a query with a key that does not start with the prisonId") {
+        val invalidKey = "XYZ-1-001"
+        whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<Location?>(prisonId, filters)).thenReturn(Response(data = null, errors = emptyList()))
+
+        val exception =
+          shouldThrow<ValidationException> {
+            getLocationByKeyService.execute(prisonId, invalidKey, filters)
+          }
+        exception.message.shouldBe("Key must start with matching prisonId")
       }
     },
   )

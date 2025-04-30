@@ -37,7 +37,7 @@ internal class FeatureFlaggedEndpointsIntegrationTest : IntegrationTestBase() {
   fun `location details should return 503`() {
     whenever(featureFlagConfig.useLocationEndpoint).thenReturn(false)
     val prisonId = "MDI"
-    val locationId = "A1-B1-C1"
+    val locationId = "MDI-A1-B1-C1"
     val path = "/v1/prison/$prisonId/location/$locationId"
     callApi(path)
       .andExpect(status().isServiceUnavailable)

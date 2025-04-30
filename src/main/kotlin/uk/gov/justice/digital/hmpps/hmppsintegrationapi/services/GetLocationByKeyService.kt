@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 
+import jakarta.validation.ValidationException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.ConsumerPrisonAccessService
@@ -24,8 +25,11 @@ class GetLocationByKeyService(
       return Response(data = checkAccess.data, errors = checkAccess.errors)
     }
 
-    val prisonCombinedWithLocationKey = "$prisonId-$key"
-    val result = locationsInsidePrisonGateway.getLocationByKey(prisonCombinedWithLocationKey)
+    if (!key.startsWith("$prisonId-")) {
+      throw ValidationException("Key must start with matching prisonId")
+    }
+
+    val result = locationsInsidePrisonGateway.getLocationByKey(key)
 
     if (result.errors.isNotEmpty()) {
       return Response(data = null, errors = result.errors)

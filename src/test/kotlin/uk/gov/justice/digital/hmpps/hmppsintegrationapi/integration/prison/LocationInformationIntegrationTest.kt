@@ -7,7 +7,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationT
 
 class LocationInformationIntegrationTest : IntegrationTestBase() {
   private final val prisonId = "MDI"
-  private final val locationId = "A1-B1-C1"
+  private final val locationId = "MDI-A1-B1-C1"
   private final val baseLocationInformationPath = "/v1/prison/$prisonId/location/$locationId"
 
   @Test

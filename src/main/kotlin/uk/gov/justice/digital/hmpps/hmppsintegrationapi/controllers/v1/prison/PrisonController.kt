@@ -51,7 +51,7 @@ class PrisonController(
   @Autowired val getResidentialHierarchyService: GetResidentialHierarchyService,
   @Autowired val getResidentialDetailsService: GetResidentialDetailsService,
   @Autowired val auditService: AuditService,
-  private val getLocationByKeyService: GetLocationByKeyService,
+  @Autowired val getLocationByKeyService: GetLocationByKeyService,
 ) {
   @GetMapping("/prisoners/{hmppsId}")
   @Operation(
@@ -241,7 +241,7 @@ class PrisonController(
   @FeatureFlag(name = FeatureFlagConfig.USE_LOCATION_ENDPOINT)
   fun getLocationInformation(
     @Parameter(description = "The ID of the prison to be queried against") @PathVariable prisonId: String,
-    @Parameter(description = "The key of the location to be queried against") @PathVariable key: String,
+    @Parameter(description = "The key of the location to be queried against in the format of (PrisonId-locationKey") @PathVariable key: String,
     @RequestAttribute filters: ConsumerFilters?,
   ): DataResponse<Location?> {
     val response = getLocationByKeyService.execute(prisonId, key, filters)
