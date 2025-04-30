@@ -38,6 +38,8 @@ feature-flag:
   use-residential-hierarchy-endpoints: true
   use-residential-details-endpoints: true
   use-capacity-endpoint: true
+  use-location-endpoint: true
+  replace-probation-search: true
 
 authorisation:
   consumers:
@@ -92,6 +94,7 @@ authorisation:
         - "/v1/prison/.*/prisoners/.*/transactions/[^/]*$"
         - "/v1/prison/.*/prisoners/.*/transactions"
         - "/v1/prison/.*/prisoners/.*/non-associations"
+        - "/v1/prison/.*/location/[^/]*$"
         - "/v1/persons/.*/education/assessments/status"
       filters:
     config-test:

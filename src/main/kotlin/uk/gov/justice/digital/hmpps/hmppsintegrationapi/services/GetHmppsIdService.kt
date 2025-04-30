@@ -3,6 +3,8 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.CrnSupplier
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.CrnSupplier.Companion.CRN_REGEX
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ProbationOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HmppsId
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NomisNumber
@@ -15,6 +17,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Consum
 class GetHmppsIdService(
   private val getPersonService: GetPersonService,
   private val probationSearch: ProbationOffenderSearchGateway,
+  private val deliusGateway: NDeliusGateway,
+  private val featureFlag: FeatureFlagConfig,
 ) : CrnSupplier {
   fun execute(
     nomisNumber: String,
@@ -50,9 +54,11 @@ class GetHmppsIdService(
     if (hmppsId.matches(CRN_REGEX)) {
       hmppsId
     } else {
-      probationSearch
-        .getPerson(hmppsId)
-        .data
+      if (featureFlag.replaceProbationSearch) {
+        deliusGateway.getPerson(hmppsId)
+      } else {
+        probationSearch.getPerson(hmppsId)
+      }.data
         ?.identifiers
         ?.deliusCrn
     }
