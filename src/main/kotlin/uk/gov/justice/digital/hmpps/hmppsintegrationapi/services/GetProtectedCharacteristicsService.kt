@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.ConsumerPrisonAccessService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.REPLACE_PROBATION_SEARCH
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonApiGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffenderSearchGateway
@@ -38,7 +39,7 @@ class GetProtectedCharacteristicsService(
     }
 
     val probationOffender =
-      if (featureFlag.replaceProbationSearch) {
+      if (featureFlag.isEnabled(REPLACE_PROBATION_SEARCH)) {
         deliusGateway.getOffender(hmppsId)
       } else {
         probationOffenderSearchGateway.getOffender(hmppsId)

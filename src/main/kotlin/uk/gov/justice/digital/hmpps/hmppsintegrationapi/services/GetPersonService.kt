@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.ConsumerPrisonAccessService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.REPLACE_PROBATION_SEARCH
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ProbationOffenderSearchGateway
@@ -270,7 +271,7 @@ class GetPersonService(
   }
 
   private fun getProbationResponse(hmppsId: String) =
-    if (featureFlag.replaceProbationSearch) {
+    if (featureFlag.isEnabled(REPLACE_PROBATION_SEARCH)) {
       deliusGateway.getPerson(hmppsId)
     } else {
       probationOffenderSearchGateway.getPerson(id = hmppsId)

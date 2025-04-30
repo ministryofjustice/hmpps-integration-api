@@ -18,14 +18,15 @@ class FeatureFlagAspectTest {
     }
   private val featureFlagConfig: FeatureFlagConfig =
     FeatureFlagConfig(
-      useArnsEndpoints = true,
-      useImageEndpoints = false,
-      useEducationAssessmentsEndpoints = false,
-      usePhysicalCharacteristicsEndpoints = false,
-      useResidentialHierarchyEndpoints = false,
-      useLocationEndpoint = false,
-      useResidentialDetailsEndpoints = false,
-      replaceProbationSearch = false,
+      mapOf(
+        "use-arns-endpoints" to true,
+        "use-image-endpoints" to false,
+        "use-education-assessments-endpoints" to false,
+        "use-physical-characteristics-endpoints" to false,
+        "use-residential-hierarchy-endpoints" to false,
+        "use-residential-details-endpoints" to false,
+        "replace-probation-search" to false,
+      ),
     )
   private val featureFlagAspect: FeatureFlagAspect =
     FeatureFlagAspect(
