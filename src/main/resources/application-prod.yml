@@ -43,6 +43,7 @@ feature-flag:
   use-education-assessments-endpoints: false
   use-residential-hierarchy-endpoints: false
   use_location_endpoint: false
+  use-residential-details-endpoints: false
 
 authorisation:
   consumers:

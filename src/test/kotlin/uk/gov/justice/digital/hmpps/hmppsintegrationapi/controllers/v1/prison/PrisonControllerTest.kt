@@ -20,8 +20,11 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitesp
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Location
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.LocationCapacity
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.LocationCertification
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PaginatedVisits
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonInPrison
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ResidentialDetails
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ResidentialHierarchyItem
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
@@ -35,6 +38,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Consum
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetLocationByKeyService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPrisonersService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetResidentialDetailsService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetResidentialHierarchyService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetVisitsService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
@@ -52,6 +56,7 @@ internal class PrisonControllerTest(
   @MockitoBean val getVisitsService: GetVisitsService,
   @MockitoBean val getResidentialHierarchyService: GetResidentialHierarchyService,
   @MockitoBean val getLocationByKeyService: GetLocationByKeyService,
+  @MockitoBean val getResidentialDetailsService: GetResidentialDetailsService,
 ) : DescribeSpec(
     {
       val hmppsId = "200313116M"
@@ -470,6 +475,121 @@ internal class PrisonControllerTest(
 
         it("returns 404 when getResidentialHierarchyService returns not found") {
           whenever(getResidentialHierarchyService.execute(prisonId, filters)).thenReturn(
+            Response(
+              data = null,
+              errors =
+                listOf(
+                  UpstreamApiError(
+                    type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+                    causedBy = UpstreamApi.LOCATIONS_INSIDE_PRISON,
+                  ),
+                ),
+            ),
+          )
+
+          val result = mockMvc.performAuthorised(path)
+          result.response.status.shouldBe(404)
+        }
+      }
+
+      describe("GET /{prisonId}/residential-details") {
+        val prisonId = "ABC"
+        val parentPathHierarchy = "A"
+        val filters = null
+        val path = "$basePath/$prisonId/residential-details?parentPathHierarchy=$parentPathHierarchy"
+
+        val residentialDetails =
+          ResidentialDetails(
+            topLevelLocationType = "Wings",
+            subLocationName = "Wings",
+            parentLocation =
+              Location(
+                key = "MKI-A",
+                code = "A",
+                pathHierarchy = "A",
+                locationType = "WING",
+                localName = "MKI-A",
+                comments = null,
+                capacity =
+                  LocationCapacity(
+                    maxCapacity = 240,
+                    workingCapacity = 1,
+                  ),
+                certification =
+                  LocationCertification(
+                    certified = true,
+                    capacityOfCertifiedCell = 240,
+                  ),
+                accommodationTypes = listOf("NORMAL_ACCOMMODATION"),
+                specialistCellTypes = listOf("ACCESSIBLE_CELL", "CONSTANT_SUPERVISION"),
+                usedFor = listOf("STANDARD_ACCOMMODATION"),
+                status = "ACTIVE",
+                convertedCellType = null,
+                otherConvertedCellType = null,
+                active = true,
+                deactivatedByParent = false,
+                level = 1,
+                inactiveCells = 221,
+                numberOfCellLocations = 222,
+                isResidential = true,
+                oldWorkingCapacity = null,
+                usage = null,
+                deactivatedDate = null,
+                deactivatedReason = null,
+                deactivationReasonDescription = null,
+                deactivatedBy = null,
+                proposedReactivationDate = null,
+                planetFmReference = null,
+                parentLocationKey = null,
+              ),
+            subLocations = listOf(),
+          )
+
+        beforeEach {
+          Mockito.reset(getResidentialHierarchyService)
+        }
+
+        it("should return 200 when success") {
+          whenever(getResidentialDetailsService.execute(prisonId, parentPathHierarchy, filters)).thenReturn(Response(data = residentialDetails))
+
+          val result = mockMvc.performAuthorised(path)
+          result.response.status.shouldBe(HttpStatus.OK.value())
+          result.response.contentAsJson<DataResponse<ResidentialDetails>>().shouldBe(DataResponse(data = residentialDetails))
+        }
+
+        it("should call the audit service") {
+          whenever(getResidentialDetailsService.execute(prisonId, parentPathHierarchy, filters)).thenReturn(Response(data = residentialDetails))
+
+          mockMvc.performAuthorised(path)
+          verify(
+            auditService,
+            times(1),
+          ).createEvent(
+            "GET_PRISON_RESIDENTIAL_DETAILS",
+            mapOf("prisonId" to prisonId, "parentPathHierarchy" to parentPathHierarchy),
+          )
+        }
+
+        it("returns 400 when getResidentialDetailsService returns not found") {
+          whenever(getResidentialDetailsService.execute(prisonId, parentPathHierarchy, filters)).thenReturn(
+            Response(
+              data = null,
+              errors =
+                listOf(
+                  UpstreamApiError(
+                    type = UpstreamApiError.Type.BAD_REQUEST,
+                    causedBy = UpstreamApi.LOCATIONS_INSIDE_PRISON,
+                  ),
+                ),
+            ),
+          )
+
+          val result = mockMvc.performAuthorised(path)
+          result.response.status.shouldBe(400)
+        }
+
+        it("returns 404 when getResidentialDetailsService returns not found") {
+          whenever(getResidentialDetailsService.execute(prisonId, parentPathHierarchy, filters)).thenReturn(
             Response(
               data = null,
               errors =

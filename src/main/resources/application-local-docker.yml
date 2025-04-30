@@ -103,3 +103,4 @@ feature-flag:
   use-education-assessments-endpoints: true
   use-residential-hierarchy-endpoints: true
   use_location_endpoint: true
+  use-residential-details-endpoints: true

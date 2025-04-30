@@ -42,4 +42,13 @@ internal class FeatureFlaggedEndpointsIntegrationTest : IntegrationTestBase() {
     callApi(path)
       .andExpect(status().isServiceUnavailable)
   }
+
+  @Test
+  fun `residential details should return 503`() {
+    whenever(featureFlagConfig.useResidentialDetailsEndpoints).thenReturn(false)
+    val prisonId = "MDI"
+    val path = "/v1/prison/$prisonId/residential-details?parentPathHierarchy=A"
+    callApi(path)
+      .andExpect(status().isServiceUnavailable)
+  }
 }

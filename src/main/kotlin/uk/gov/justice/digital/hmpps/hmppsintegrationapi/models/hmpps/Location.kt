@@ -97,7 +97,7 @@ data class Location(
   @Schema(description = "Indicates the location in inactive as a parent is deactivated", example = "false")
   val deactivatedByParent: Boolean,
   @Schema(description = "Date the location was deactivated", example = "2023-01-23T12:23:00")
-  val deactivatedDate: String,
+  val deactivatedDate: String?,
   @Schema(
     description = "Reason for deactivation",
     example = "DAMAGED",
@@ -119,7 +119,7 @@ data class Location(
   @Schema(description = "Staff username who deactivated the location")
   val deactivatedBy: String?,
   @Schema(description = "Estimated reactivation date for location reactivation", example = "2026-01-24")
-  val proposedReactivationDate: String,
+  val proposedReactivationDate: String?,
   @Schema(description = "Planet FM reference number", example = "2323/45M")
   val planetFmReference: String?,
   @Schema(description = "Current Level within hierarchy, starts at 1, e.g Wing = 1", example = "1", examples = ["1", "2", "3"])
