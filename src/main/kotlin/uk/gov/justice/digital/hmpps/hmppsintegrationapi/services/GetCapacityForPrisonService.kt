@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.ConsumerPrisonAccessService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.LocationsInsidePrisonGateway
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Capacity
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonCapacity
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
@@ -18,8 +18,8 @@ class GetCapacityForPrisonService(
   fun execute(
     prisonId: String,
     filters: ConsumerFilters?,
-  ): Response<Capacity?> {
-    val checkAccess = consumerPrisonAccessService.checkConsumerHasPrisonAccess<Capacity>(prisonId, filters)
+  ): Response<PrisonCapacity?> {
+    val checkAccess = consumerPrisonAccessService.checkConsumerHasPrisonAccess<PrisonCapacity>(prisonId, filters)
 
     if (checkAccess.errors.isNotEmpty()) {
       return Response(data = checkAccess.data, errors = checkAccess.errors)
@@ -31,6 +31,6 @@ class GetCapacityForPrisonService(
       return Response(data = null, errors = result.errors)
     }
 
-    return Response(data = result.data?.prisonSummary?.toCapacity())
+    return Response(data = result.data?.prisonSummary?.toPrisonCapacity())
   }
 }

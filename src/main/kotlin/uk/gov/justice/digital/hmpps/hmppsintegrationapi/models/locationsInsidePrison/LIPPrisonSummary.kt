@@ -1,6 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.locationsInsidePrison
 
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Capacity
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonCapacity
 
 data class LIPPrisonSummary(
   val prisonName: String,
@@ -9,8 +9,8 @@ data class LIPPrisonSummary(
   val maxCapacity: Int,
   val numberOfCellLocations: Int,
 ) {
-  fun toCapacity(): Capacity =
-    Capacity(
+  fun toPrisonCapacity(): PrisonCapacity =
+    PrisonCapacity(
       maxCapacity = this.maxCapacity,
       signedCapacity = this.signedOperationalCapacity,
       workingCapacity = this.workingCapacity,
