@@ -269,9 +269,10 @@ class GetPersonService(
     )
   }
 
-  private fun getProbationResponse(hmppsId: String) = if (featureFlag.replaceProbationSearch) {
-    deliusGateway.getPerson(hmppsId)
-  } else {
-    probationOffenderSearchGateway.getPerson(id = hmppsId)
-  }
+  private fun getProbationResponse(hmppsId: String) =
+    if (featureFlag.replaceProbationSearch) {
+      deliusGateway.getPerson(hmppsId)
+    } else {
+      probationOffenderSearchGateway.getPerson(id = hmppsId)
+    }
 }
