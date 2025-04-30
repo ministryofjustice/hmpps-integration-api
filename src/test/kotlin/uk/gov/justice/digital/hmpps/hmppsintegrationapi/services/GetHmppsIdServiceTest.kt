@@ -7,6 +7,8 @@ import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ProbationOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HmppsId
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Identifiers
@@ -23,6 +25,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Consum
 internal class GetHmppsIdServiceTest(
   @MockitoBean val getPersonService: GetPersonService,
   @MockitoBean val probationOffenderSearchGateway: ProbationOffenderSearchGateway,
+  @MockitoBean val deliusGateway: NDeliusGateway,
+  @MockitoBean val featureFlag: FeatureFlagConfig,
   private val getHmppsIdService: GetHmppsIdService,
 ) : DescribeSpec(
     {

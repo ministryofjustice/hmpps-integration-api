@@ -64,6 +64,7 @@ feature-flag:
   use-residential-hierarchy-endpoints: true
   use-location-endpoint: true
   use-residential-details-endpoints: true
+  replace-probation-search: true
 
 authorisation:
   consumers:
