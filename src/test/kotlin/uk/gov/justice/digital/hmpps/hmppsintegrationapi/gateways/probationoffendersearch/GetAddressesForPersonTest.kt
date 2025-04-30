@@ -12,6 +12,7 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.REPLACE_PROBATION_SEARCH
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ProbationOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.generateTestAddress
@@ -36,7 +37,8 @@ class GetAddressesForPersonTest(
       val hmppsId = "X777776"
 
       beforeEach {
-        whenever(featureFlag.replaceProbationSearch).thenReturn(false)
+        whenever(featureFlag.isEnabled(REPLACE_PROBATION_SEARCH)).thenReturn(false)
+
         probationOffenderSearchApiMockServer.start()
         probationOffenderSearchApiMockServer.stubForPost(
           path,

@@ -10,6 +10,7 @@ import org.springframework.boot.test.context.ConfigDataApplicationContextInitial
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.REPLACE_PROBATION_SEARCH
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ProbationOffenderSearchGateway
@@ -39,7 +40,7 @@ internal class GetPersonsServiceTest(
       Mockito.reset(deliusGateway)
       Mockito.reset(featureFlag)
 
-      whenever(featureFlag.replaceProbationSearch).thenReturn(false)
+      whenever(featureFlag.isEnabled(REPLACE_PROBATION_SEARCH)).thenReturn(false)
       whenever(probationOffenderSearchGateway.getPersons(firstName, lastName, null, dateOfBirth)).thenReturn(Response(data = emptyList()))
       whenever(prisonerOffenderSearchGateway.getPersons(firstName, lastName, dateOfBirth)).thenReturn(Response(data = emptyList()))
       whenever(deliusGateway.getPersons(firstName, lastName, null, dateOfBirth)).thenReturn(Response(data = emptyList()))
@@ -58,7 +59,7 @@ internal class GetPersonsServiceTest(
     }
 
     it("gets person(s) from Delius Gateway") {
-      whenever(featureFlag.replaceProbationSearch).thenReturn(true)
+      whenever(featureFlag.isEnabled(REPLACE_PROBATION_SEARCH)).thenReturn(true)
       getPersonsService.execute(firstName, lastName, null, dateOfBirth)
 
       verify(deliusGateway, times(1)).getPersons(firstName, lastName, null, dateOfBirth)

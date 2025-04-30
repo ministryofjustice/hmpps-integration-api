@@ -18,6 +18,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.REPLACE_PROBATION_SEARCH
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_PHYSICAL_CHARACTERISTICS_ENDPOINTS
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.FeatureNotEnabledException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
@@ -291,7 +292,7 @@ internal class PersonControllerTest(
           val idThatDoesNotExist = "9999/11111Z"
 
           it("returns a 404 status code when a person cannot be found in both upstream APIs") {
-            whenever(featureFlagConfig.replaceProbationSearch).thenReturn(false)
+            whenever(featureFlagConfig.isEnabled(REPLACE_PROBATION_SEARCH)).thenReturn(false)
             whenever(getPersonService.getCombinedDataForPerson(idThatDoesNotExist)).thenReturn(
               Response(
                 data = OffenderSearchResponse(null, null),
@@ -312,7 +313,7 @@ internal class PersonControllerTest(
           }
 
           it("returns a 404 status code when a person cannot be found in both upstream APIs") {
-            whenever(featureFlagConfig.replaceProbationSearch).thenReturn(true)
+            whenever(featureFlagConfig.isEnabled(REPLACE_PROBATION_SEARCH)).thenReturn(true)
             whenever(getPersonService.getCombinedDataForPerson(idThatDoesNotExist)).thenReturn(
               Response(
                 data = OffenderSearchResponse(null, null),
