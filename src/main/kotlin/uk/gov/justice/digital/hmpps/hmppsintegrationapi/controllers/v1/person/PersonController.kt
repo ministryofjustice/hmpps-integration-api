@@ -319,9 +319,6 @@ class PersonController(
     @Parameter(description = "A HMPPS identifier") @PathVariable hmppsId: String,
     @RequestAttribute filters: ConsumerFilters?,
   ): DataResponse<PhysicalCharacteristics?> {
-//    if (!featureFlag.usePhysicalCharacteristicsEndpoints) {
-//      throw FeatureNotEnabledException(FeatureFlagConfig.USE_PHYSICAL_CHARACTERISTICS_ENDPOINTS)
-//    }
     featureFlag.require(FeatureFlagConfig.USE_PHYSICAL_CHARACTERISTICS_ENDPOINTS)
 
     val response = getPhysicalCharacteristicsForPersonService.execute(hmppsId, filters = filters)

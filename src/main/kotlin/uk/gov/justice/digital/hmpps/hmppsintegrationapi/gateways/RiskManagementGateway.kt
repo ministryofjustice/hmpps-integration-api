@@ -21,8 +21,8 @@ class RiskManagementGateway(
   lateinit var hmppsAuthGateway: HmppsAuthGateway
 
   fun getRiskManagementPlansForCrn(crn: String): Response<CrnRiskManagementPlans?> {
-//    if (!featureFlag.useArnsEndpoints) throw FeatureNotEnabledException(FeatureFlagConfig.USE_ARNS_ENDPOINTS)
     featureFlag.require(FeatureFlagConfig.USE_ARNS_ENDPOINTS)
+
     val result =
       webClient.request<CrnRiskManagementPlans>(
         HttpMethod.GET,

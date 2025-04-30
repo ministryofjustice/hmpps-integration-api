@@ -71,9 +71,7 @@ class ImageController(
     @RequestAttribute filters: ConsumerFilters?,
   ): ResponseEntity<ByteArray> {
     featureFlag.require(FeatureFlagConfig.USE_IMAGE_ENDPOINTS)
-//    if (!featureFlag.isEnabled(FeatureFlagConfig.USE_IMAGE_ENDPOINTS)) {
-//      throw FeatureNotEnabledException(FeatureFlagConfig.USE_IMAGE_ENDPOINTS)
-//    }
+
     val response = getImageService.execute(id, hmppsId, filters)
 
     if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {

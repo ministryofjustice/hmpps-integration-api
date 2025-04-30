@@ -163,7 +163,6 @@ class GetNeedsForPersonTest(
       }
 
       it("returns 503 service not available when feature flag set to false") {
-//        whenever(featureFlag.useArnsEndpoints).thenReturn(false)
         whenever(featureFlag.require(USE_ARNS_ENDPOINTS)).thenThrow(FeatureNotEnabledException("use-arns-endpoints not enabled"))
         val exception = shouldThrow<FeatureNotEnabledException> { assessRisksAndNeedsGateway.getNeedsForPerson(deliusCrn) }
         exception.message.shouldContain("use-arns-endpoints not enabled")

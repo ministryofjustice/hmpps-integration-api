@@ -1,11 +1,22 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.config
 
 import org.springframework.boot.context.properties.ConfigurationProperties
+import org.springframework.boot.context.properties.bind.Name
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.FeatureNotEnabledException
 
+/**
+ * Feature flag configuration for the application.
+ *
+ * The values of the feature flags can be different in each environment, allowing
+ * code to be enabled in a dev/test environment but not in production.
+ *
+ * Feature flag settings are in the `application-*.yml` files, with each having
+ * a true/false value.
+ */
 @ConfigurationProperties()
 data class FeatureFlagConfig(
-  val `feature-flag`: Map<String, Boolean> = mutableMapOf(),
+  @Name("feature-flag")
+  val flags: Map<String, Boolean> = mutableMapOf(),
 ) {
   companion object {
     const val USE_ARNS_ENDPOINTS = "use-arns-endpoints"
@@ -16,10 +27,19 @@ data class FeatureFlagConfig(
     const val USE_RESIDENTIAL_DETAILS_ENDPOINTS = "use-residential-details-endpoints"
   }
 
-  fun getConfigFlagValue(feature: String): Boolean? = `feature-flag`[feature]
+  /**
+   * Returns the value of a feature flag, or null if it is not set.
+   */
+  fun getConfigFlagValue(feature: String): Boolean? = flags[feature]
 
-  fun isEnabled(feature: String): Boolean = `feature-flag`.getOrDefault(feature, false)
+  /**
+   * Returns true if the  feature flag is defined and set to true.
+   */
+  fun isEnabled(feature: String): Boolean = flags.getOrDefault(feature, false)
 
+  /**
+   * Throws a [FeatureNotEnabledException] if the feature is not enabled.
+   */
   fun require(feature: String) {
     if (!isEnabled(feature)) {
       throw FeatureNotEnabledException(feature)
