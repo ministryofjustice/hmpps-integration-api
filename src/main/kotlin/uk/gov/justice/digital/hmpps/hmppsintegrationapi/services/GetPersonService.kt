@@ -25,12 +25,7 @@ class GetPersonService(
   private val featureFlag: FeatureFlagConfig,
 ) {
   fun execute(hmppsId: String): Response<Person?> {
-    val probationResponse =
-      if (featureFlag.replaceProbationSearch) {
-        deliusGateway.getPerson(hmppsId)
-      } else {
-        probationOffenderSearchGateway.getPerson(id = hmppsId)
-      }
+    val probationResponse = getProbationResponse(hmppsId)
     if (identifyHmppsId(hmppsId) == IdentifierType.NOMS && probationResponse.data == null) {
       val prisonResponse = prisonerOffenderSearchGateway.getPrisonOffender(hmppsId)
       return Response(data = prisonResponse.data?.toPerson(), prisonResponse.errors)
@@ -53,12 +48,7 @@ class GetPersonService(
     }
 
     // Get a delius person, to get NOMIS number and for response
-    val probationResponse =
-      if (featureFlag.replaceProbationSearch) {
-        deliusGateway.getPerson(hmppsId)
-      } else {
-        probationOffenderSearchGateway.getPerson(id = hmppsId)
-      }
+    val probationResponse = getProbationResponse(hmppsId)
 
     if (probationResponse.errors.isNotEmpty() && !probationResponse.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
       return Response(
@@ -146,12 +136,7 @@ class GetPersonService(
       }
 
       IdentifierType.CRN -> {
-        val personFromProbationOffenderSearch =
-          if (featureFlag.replaceProbationSearch) {
-            deliusGateway.getPerson(hmppsId)
-          } else {
-            probationOffenderSearchGateway.getPerson(id = hmppsId)
-          }
+        val personFromProbationOffenderSearch = getProbationResponse(hmppsId)
 
         if (personFromProbationOffenderSearch.errors.isNotEmpty()) {
           return Response(
@@ -208,12 +193,7 @@ class GetPersonService(
   }
 
   fun getCombinedDataForPerson(hmppsId: String): Response<OffenderSearchResponse> {
-    val probationResponse =
-      if (featureFlag.replaceProbationSearch) {
-        deliusGateway.getPerson(hmppsId)
-      } else {
-        probationOffenderSearchGateway.getPerson(id = hmppsId)
-      }
+    val probationResponse = getProbationResponse(hmppsId)
 
     val prisonResponse =
       probationResponse.data?.identifiers?.nomisNumber?.let {
@@ -287,5 +267,11 @@ class GetPersonService(
       data = posPrisoner?.toPersonInPrison(),
       errors = prisonResponse.errors,
     )
+  }
+
+  private fun getProbationResponse(hmppsId: String) = if (featureFlag.replaceProbationSearch) {
+    deliusGateway.getPerson(hmppsId)
+  } else {
+    probationOffenderSearchGateway.getPerson(id = hmppsId)
   }
 }
