@@ -27,6 +27,7 @@ data class FeatureFlagConfig(
     const val USE_LOCATION_ENDPOINT = "use-location-endpoint"
     const val USE_RESIDENTIAL_DETAILS_ENDPOINTS = "use-residential-details-endpoints"
     const val REPLACE_PROBATION_SEARCH = "replace-probation-search"
+    const val USE_CAPACITY_ENDPOINT = "use-capacity-endpoint"
   }
 
   /**
