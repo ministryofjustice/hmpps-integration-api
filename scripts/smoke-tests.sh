@@ -43,6 +43,7 @@ visitReference="qd-lh-gy-lx"
 clientReference="123456"
 contactId="1898610"
 imageId="1988315"
+locationIdKey="A"
 
 # Endpoints for testing full access
 
@@ -73,6 +74,7 @@ get_endpoints=(
   "/v1/prison/$prisonId/prisoners/$hmppsId/transactions/canteen_test"
   "/v1/prison/$prisonId/prisoners/$hmppsId/non-associations"
   "/v1/prison/$prisonId/residential-hierarchy"
+  "/v1/prison/$prisonId/location/$locationIdKey"
   "/v1/contacts/123456"
   "/v1/persons?first_name=john"
   "/v1/persons/$deliusCrn"
