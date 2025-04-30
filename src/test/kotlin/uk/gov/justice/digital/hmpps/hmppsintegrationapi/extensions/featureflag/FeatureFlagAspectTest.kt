@@ -24,6 +24,7 @@ class FeatureFlagAspectTest {
       usePhysicalCharacteristicsEndpoints = false,
       useResidentialHierarchyEndpoints = false,
       useResidentialDetailsEndpoints = false,
+      useCapacityEndpoint = false,
     )
   private val featureFlagAspect: FeatureFlagAspect =
     FeatureFlagAspect(

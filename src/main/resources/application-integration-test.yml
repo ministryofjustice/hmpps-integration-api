@@ -122,6 +122,7 @@ authorisation:
         - "/v1/prison/.*/prisoners/.*/non-associations"
         - "/v1/prison/.*/residential-hierarchy"
         - "/v1/prison/.*/residential-details"
+        - "/v1/prison/.*/capacity"
         - "/v1/persons/.*/visitor/.*/restrictions"
         - "/v1/visit/[^/]*$"
         - "/v1/visit"
