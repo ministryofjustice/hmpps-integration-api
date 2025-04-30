@@ -9,6 +9,8 @@ import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ProbationOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
@@ -22,6 +24,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffenders
 internal class GetPersonsServiceTest(
   @MockitoBean val prisonerOffenderSearchGateway: PrisonerOffenderSearchGateway,
   @MockitoBean val probationOffenderSearchGateway: ProbationOffenderSearchGateway,
+  @MockitoBean val deliusGateway: NDeliusGateway,
+  @MockitoBean val featureFlag: FeatureFlagConfig,
   private val getPersonsService: GetPersonsService,
 ) : DescribeSpec({
     val firstName = "Bruce"
@@ -32,9 +36,13 @@ internal class GetPersonsServiceTest(
     beforeEach {
       Mockito.reset(prisonerOffenderSearchGateway)
       Mockito.reset(probationOffenderSearchGateway)
+      Mockito.reset(deliusGateway)
+      Mockito.reset(featureFlag)
 
+      whenever(featureFlag.replaceProbationSearch).thenReturn(false)
       whenever(probationOffenderSearchGateway.getPersons(firstName, lastName, null, dateOfBirth)).thenReturn(Response(data = emptyList()))
       whenever(prisonerOffenderSearchGateway.getPersons(firstName, lastName, dateOfBirth)).thenReturn(Response(data = emptyList()))
+      whenever(deliusGateway.getPersons(firstName, lastName, null, dateOfBirth)).thenReturn(Response(data = emptyList()))
     }
 
     it("gets person(s) from Prisoner Offender Search") {
@@ -47,6 +55,13 @@ internal class GetPersonsServiceTest(
       getPersonsService.execute(firstName, lastName, null, dateOfBirth)
 
       verify(probationOffenderSearchGateway, times(1)).getPersons(firstName, lastName, null, dateOfBirth)
+    }
+
+    it("gets person(s) from Delius Gateway") {
+      whenever(featureFlag.replaceProbationSearch).thenReturn(true)
+      getPersonsService.execute(firstName, lastName, null, dateOfBirth)
+
+      verify(deliusGateway, times(1)).getPersons(firstName, lastName, null, dateOfBirth)
     }
 
     it("defaults to not searching within aliases") {

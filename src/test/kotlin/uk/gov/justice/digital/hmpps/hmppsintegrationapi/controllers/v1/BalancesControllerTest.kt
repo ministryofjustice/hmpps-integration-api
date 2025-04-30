@@ -114,6 +114,25 @@ class BalancesControllerTest(
         result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
       }
 
+      it("returns a 404 NOT FOUND status code when person isn't found in delius") {
+        whenever(getBalancesForPersonService.execute(prisonId, hmppsId, null)).thenReturn(
+          Response(
+            data = null,
+            errors =
+              listOf(
+                UpstreamApiError(
+                  causedBy = UpstreamApi.NDELIUS,
+                  type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+                ),
+              ),
+          ),
+        )
+
+        val result = mockMvc.performAuthorised(balancesPath)
+
+        result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
+      }
+
       it("returns a 404 NOT FOUND status code when person isn't found in Nomis") {
         whenever(getBalancesForPersonService.execute(prisonId, hmppsId, filters = null)).thenReturn(
           Response(
