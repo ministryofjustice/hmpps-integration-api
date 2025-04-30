@@ -61,7 +61,7 @@ feature-flag:
   use-image-endpoints: true
   use-education-assessments-endpoints: true
   use-residential-hierarchy-endpoints: true
-  use_location_endpoint: true
+  use-location-endpoint: true
   use-residential-details-endpoints: true
 
 authorisation:

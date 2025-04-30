@@ -18,7 +18,7 @@ data class FeatureFlagConfig(
     const val USE_IMAGE_ENDPOINTS = "use-image-endpoints"
     const val USE_EDUCATION_ASSESSMENTS_ENDPOINTS = "use-education-assessments-endpoints"
     const val USE_RESIDENTIAL_HIERARCHY_ENDPOINTS = "use-residential-hierarchy-endpoints"
-    const val USE_LOCATION_ENDPOINT = "use_location_endpoint"
+    const val USE_LOCATION_ENDPOINT = "use-location-endpoint"
     const val USE_RESIDENTIAL_DETAILS_ENDPOINTS = "use-residential-details-endpoints"
   }
 
@@ -27,7 +27,6 @@ data class FeatureFlagConfig(
       USE_ARNS_ENDPOINTS -> this.useArnsEndpoints
       USE_RESIDENTIAL_HIERARCHY_ENDPOINTS -> this.useResidentialHierarchyEndpoints
       USE_LOCATION_ENDPOINT -> this.useLocationEndpoint
-
       USE_RESIDENTIAL_DETAILS_ENDPOINTS -> this.useResidentialDetailsEndpoints
       else -> null
     }

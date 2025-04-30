@@ -34,7 +34,7 @@ internal class FeatureFlaggedEndpointsIntegrationTest : IntegrationTestBase() {
   }
 
   @Test
-  fun `residential details should return 503`() {
+  fun `location details should return 503`() {
     whenever(featureFlagConfig.useLocationEndpoint).thenReturn(false)
     val prisonId = "MDI"
     val locationId = "A1-B1-C1"

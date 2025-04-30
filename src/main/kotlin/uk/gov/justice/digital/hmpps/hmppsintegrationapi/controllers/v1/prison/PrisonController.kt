@@ -289,7 +289,7 @@ class PrisonController(
   ): DataResponse<ResidentialDetails?> {
     val response = getResidentialDetailsService.execute(prisonId, parentPathHierarchy, filters)
 
-    if (response.hasError(BAD_REQUEST)) {
+    if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
       throw ValidationException("Invalid query parameters.")
     }
 
