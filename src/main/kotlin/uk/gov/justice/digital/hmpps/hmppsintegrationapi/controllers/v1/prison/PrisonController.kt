@@ -180,7 +180,7 @@ class PrisonController(
     return response.data.toPaginatedResponse()
   }
 
-  @Hidden
+  @Hidden // This is currently hidden because the recursive type breaks the docs
   @GetMapping("/{prisonId}/residential-hierarchy")
   @Tag(name = "residential-areas")
   @Operation(
