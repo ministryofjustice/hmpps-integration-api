@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.CrnSupplier
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.CrnSupplier.Companion.CRN_REGEX
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.REPLACE_PROBATION_SEARCH
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ProbationOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HmppsId
@@ -54,7 +55,7 @@ class GetHmppsIdService(
     if (hmppsId.matches(CRN_REGEX)) {
       hmppsId
     } else {
-      if (featureFlag.replaceProbationSearch) {
+      if (featureFlag.isEnabled(REPLACE_PROBATION_SEARCH)) {
         deliusGateway.getPerson(hmppsId)
       } else {
         probationSearch.getPerson(hmppsId)

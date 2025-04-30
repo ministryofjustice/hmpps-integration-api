@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.REPLACE_PROBATION_SEARCH
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ProbationOffenderSearchGateway
@@ -24,7 +25,7 @@ class GetPersonsService(
     searchWithinAliases: Boolean = false,
   ): Response<List<Person>> {
     val responseFromProbationOffenderSearch =
-      if (featureFlag.replaceProbationSearch) {
+      if (featureFlag.isEnabled(REPLACE_PROBATION_SEARCH)) {
         deliusGateway.getPersons(firstName, lastName, pncNumber, dateOfBirth, searchWithinAliases)
       } else {
         probationOffenderSearchGateway.getPersons(firstName, lastName, pncNumber, dateOfBirth, searchWithinAliases)

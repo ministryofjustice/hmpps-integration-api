@@ -18,6 +18,9 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.REPLACE_PROBATION_SEARCH
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_PHYSICAL_CHARACTERISTICS_ENDPOINTS
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.FeatureNotEnabledException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.BodyMark
@@ -289,7 +292,7 @@ internal class PersonControllerTest(
           val idThatDoesNotExist = "9999/11111Z"
 
           it("returns a 404 status code when a person cannot be found in both upstream APIs") {
-            whenever(featureFlagConfig.replaceProbationSearch).thenReturn(false)
+            whenever(featureFlagConfig.isEnabled(REPLACE_PROBATION_SEARCH)).thenReturn(false)
             whenever(getPersonService.getCombinedDataForPerson(idThatDoesNotExist)).thenReturn(
               Response(
                 data = OffenderSearchResponse(null, null),
@@ -310,7 +313,7 @@ internal class PersonControllerTest(
           }
 
           it("returns a 404 status code when a person cannot be found in both upstream APIs") {
-            whenever(featureFlagConfig.replaceProbationSearch).thenReturn(true)
+            whenever(featureFlagConfig.isEnabled(REPLACE_PROBATION_SEARCH)).thenReturn(true)
             whenever(getPersonService.getCombinedDataForPerson(idThatDoesNotExist)).thenReturn(
               Response(
                 data = OffenderSearchResponse(null, null),
@@ -1053,7 +1056,7 @@ internal class PersonControllerTest(
           Mockito.reset(getPhysicalCharacteristicsForPersonService)
           Mockito.reset(auditService)
 
-          whenever(featureFlagConfig.usePhysicalCharacteristicsEndpoints).thenReturn(true)
+          whenever(featureFlagConfig.isEnabled(USE_PHYSICAL_CHARACTERISTICS_ENDPOINTS)).thenReturn(true)
           whenever(getPhysicalCharacteristicsForPersonService.execute(sanitisedHmppsId, filters)).thenReturn(
             Response(
               data = physicalCharacteristics,
@@ -1142,7 +1145,8 @@ internal class PersonControllerTest(
         }
 
         it("returns 503 service not available when feature flag set to false") {
-          whenever(featureFlagConfig.usePhysicalCharacteristicsEndpoints).thenReturn(false)
+//          whenever(featureFlagConfig.usePhysicalCharacteristicsEndpoints).thenReturn(false)
+          whenever(featureFlagConfig.require(USE_PHYSICAL_CHARACTERISTICS_ENDPOINTS)).thenThrow(FeatureNotEnabledException(""))
           val result = mockMvc.performAuthorised(path)
           result.response.status.shouldBe(HttpStatus.SERVICE_UNAVAILABLE.value())
         }

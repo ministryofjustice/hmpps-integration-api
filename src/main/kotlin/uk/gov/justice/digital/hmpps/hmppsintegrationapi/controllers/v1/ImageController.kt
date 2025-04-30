@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.FeatureNotEnabledException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetImageService
@@ -71,9 +70,8 @@ class ImageController(
     @PathVariable hmppsId: String,
     @RequestAttribute filters: ConsumerFilters?,
   ): ResponseEntity<ByteArray> {
-    if (!featureFlag.useImageEndpoints) {
-      throw FeatureNotEnabledException(FeatureFlagConfig.USE_IMAGE_ENDPOINTS)
-    }
+    featureFlag.require(FeatureFlagConfig.USE_IMAGE_ENDPOINTS)
+
     val response = getImageService.execute(id, hmppsId, filters)
 
     if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {

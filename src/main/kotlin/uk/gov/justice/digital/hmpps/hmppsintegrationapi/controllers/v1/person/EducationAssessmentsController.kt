@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.FeatureNotEnabledException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.EducationAssessmentStatusChangeRequest
 
 /**
@@ -43,9 +42,7 @@ class EducationAssessmentsController(
     @Parameter(description = "A HMPPS person identifier", example = "A1234AA") @PathVariable hmppsId: String,
     @Valid @RequestBody request: EducationAssessmentStatusChangeRequest,
   ) {
-    if (!featureFlag.useEducationAssessmentsEndpoints) {
-      throw FeatureNotEnabledException(FeatureFlagConfig.USE_EDUCATION_ASSESSMENTS_ENDPOINTS)
-    }
+    featureFlag.require(FeatureFlagConfig.USE_EDUCATION_ASSESSMENTS_ENDPOINTS)
 
     // TODO - implement me
   }

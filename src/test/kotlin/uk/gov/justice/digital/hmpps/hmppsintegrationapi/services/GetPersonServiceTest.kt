@@ -16,6 +16,7 @@ import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.ConsumerPrisonAccessService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.REPLACE_PROBATION_SEARCH
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ProbationOffenderSearchGateway
@@ -66,7 +67,8 @@ internal class GetPersonServiceTest(
         Mockito.reset(deliusGateway)
         Mockito.reset(featureFlag)
 
-        whenever(featureFlag.replaceProbationSearch).thenReturn(true)
+        whenever(featureFlag.isEnabled(REPLACE_PROBATION_SEARCH)).thenReturn(true)
+
         whenever(prisonerOffenderSearchGateway.getPersons("Qui-gon", "Jin", "1966-10-25")).thenReturn(
           Response(data = listOf(POSPrisoner(firstName = "Qui-gon", lastName = "Jin", prisonerNumber = "A1234AA", youthOffender = false))),
         )
@@ -87,7 +89,7 @@ internal class GetPersonServiceTest(
       }
 
       it("gets a person from Probation Offender Search") {
-        whenever(featureFlag.replaceProbationSearch).thenReturn(false)
+        whenever(featureFlag.isEnabled(REPLACE_PROBATION_SEARCH)).thenReturn(false)
         whenever(probationOffenderSearchGateway.getPerson(id = hmppsId)).thenReturn(
           Response(data = PersonOnProbation(Person(firstName = "Qui-gon", lastName = "Jin", identifiers = Identifiers(nomisNumber = "A1234AA")), underActiveSupervision = true)),
         )
@@ -112,7 +114,7 @@ internal class GetPersonServiceTest(
       it("returns a person") {
         val personFromProbationOffenderSearch = PersonOnProbation(Person("Molly", "Mob"), underActiveSupervision = true)
 
-        whenever(featureFlag.replaceProbationSearch).thenReturn(false)
+        whenever(featureFlag.isEnabled(REPLACE_PROBATION_SEARCH)).thenReturn(false)
         whenever(probationOffenderSearchGateway.getPerson(hmppsId)).thenReturn(
           Response(personFromProbationOffenderSearch),
         )
@@ -150,7 +152,7 @@ internal class GetPersonServiceTest(
       }
 
       it("returns errors when unable to retrieve prison data and data when probation data is available") {
-        whenever(featureFlag.replaceProbationSearch).thenReturn(false)
+        whenever(featureFlag.isEnabled(REPLACE_PROBATION_SEARCH)).thenReturn(false)
         val personFromProbationOffenderSearch = PersonOnProbation(Person("Paula", "First", identifiers = Identifiers(nomisNumber = "A1234AA")), underActiveSupervision = true)
 
         whenever(probationOffenderSearchGateway.getPerson(hmppsId)).thenReturn(Response(data = personFromProbationOffenderSearch))
@@ -322,7 +324,7 @@ internal class GetPersonServiceTest(
       }
 
       it("if filters are present, we get data from probation offender search") {
-        whenever(featureFlag.replaceProbationSearch).thenReturn(false)
+        whenever(featureFlag.isEnabled(REPLACE_PROBATION_SEARCH)).thenReturn(false)
         whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber)).thenReturn(Response(data = prisonerWithPrisonId))
         whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<Person>(prisonId, filters)).thenReturn(Response(data = null))
         whenever(probationOffenderSearchGateway.getPerson(id = nomsNumber)).thenReturn(Response(data = personOnProbation))
@@ -428,7 +430,7 @@ internal class GetPersonServiceTest(
         }
 
         it("Crn number passed in - person from probation returns error - return error from probation") {
-          whenever(featureFlag.replaceProbationSearch).thenReturn(false)
+          whenever(featureFlag.isEnabled(REPLACE_PROBATION_SEARCH)).thenReturn(false)
           val errors = listOf(UpstreamApiError(causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH, type = UpstreamApiError.Type.INTERNAL_SERVER_ERROR))
           whenever(probationOffenderSearchGateway.getPerson(crnNumber)).thenReturn(Response(data = null, errors = errors))
           val result = getPersonService.getNomisNumber(crnNumber)
@@ -483,7 +485,7 @@ internal class GetPersonServiceTest(
         }
 
         it("Crn number passed in - person from probation returns error - return error from probation") {
-          whenever(featureFlag.replaceProbationSearch).thenReturn(false)
+          whenever(featureFlag.isEnabled(REPLACE_PROBATION_SEARCH)).thenReturn(false)
           val errors = listOf(UpstreamApiError(causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH, type = UpstreamApiError.Type.INTERNAL_SERVER_ERROR))
           whenever(probationOffenderSearchGateway.getPerson(crnNumber)).thenReturn(Response(data = null, errors = errors))
           val result = getPersonService.getNomisNumberWithPrisonFilter(crnNumber, filters = null)
@@ -491,7 +493,7 @@ internal class GetPersonServiceTest(
         }
 
         it("Crn number passed in, filters present - POS returns prison id, return nomis number from probation") {
-          whenever(featureFlag.replaceProbationSearch).thenReturn(false)
+          whenever(featureFlag.isEnabled(REPLACE_PROBATION_SEARCH)).thenReturn(false)
           whenever(probationOffenderSearchGateway.getPerson(crnNumber)).thenReturn(Response(data = personOnProbation, errors = emptyList()))
           whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber)).thenReturn(Response(data = prisonerWithPrisonId, errors = emptyList()))
           whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<Person>(prisonId, filters)).thenReturn(Response(data = null))
@@ -500,7 +502,7 @@ internal class GetPersonServiceTest(
         }
 
         it("Crn number passed in, filters present - POS returns error, return error from POS") {
-          whenever(featureFlag.replaceProbationSearch).thenReturn(false)
+          whenever(featureFlag.isEnabled(REPLACE_PROBATION_SEARCH)).thenReturn(false)
           val errors = listOf(UpstreamApiError(causedBy = UpstreamApi.PRISON_API, type = UpstreamApiError.Type.INTERNAL_SERVER_ERROR))
           whenever(probationOffenderSearchGateway.getPerson(crnNumber)).thenReturn(Response(data = personOnProbation, errors = emptyList()))
           whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber)).thenReturn(Response(data = null, errors = errors))
@@ -509,7 +511,7 @@ internal class GetPersonServiceTest(
         }
 
         it("Crn number passed in, filters present - POS returns prison id, filter check failed - return 404") {
-          whenever(featureFlag.replaceProbationSearch).thenReturn(false)
+          whenever(featureFlag.isEnabled(REPLACE_PROBATION_SEARCH)).thenReturn(false)
           val errors = listOf(UpstreamApiError(causedBy = UpstreamApi.PRISON_API, type = UpstreamApiError.Type.ENTITY_NOT_FOUND))
           whenever(probationOffenderSearchGateway.getPerson(crnNumber)).thenReturn(Response(data = personOnProbation, errors = emptyList()))
           whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber)).thenReturn(Response(data = prisonerWithPrisonId, errors = emptyList()))

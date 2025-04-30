@@ -1,18 +1,22 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.config
 
 import org.springframework.boot.context.properties.ConfigurationProperties
+import org.springframework.boot.context.properties.bind.Name
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.FeatureNotEnabledException
 
-@ConfigurationProperties(prefix = "feature-flag")
+/**
+ * Feature flag configuration for the application.
+ *
+ * The values of the feature flags can be different in each environment, allowing
+ * code to be enabled in a dev/test environment but not in production.
+ *
+ * Feature flag settings are in the `application-*.yml` files, with each having
+ * a true/false value.
+ */
+@ConfigurationProperties()
 data class FeatureFlagConfig(
-  val useArnsEndpoints: Boolean,
-  val usePhysicalCharacteristicsEndpoints: Boolean,
-  val useImageEndpoints: Boolean,
-  val useEducationAssessmentsEndpoints: Boolean,
-  val useResidentialHierarchyEndpoints: Boolean,
-  val useLocationEndpoint: Boolean,
-  val useResidentialDetailsEndpoints: Boolean,
-  val useCapacityEndpoint: Boolean,
-  val replaceProbationSearch: Boolean,
+  @Name("feature-flag")
+  val flags: Map<String, Boolean> = mutableMapOf(),
 ) {
   companion object {
     const val USE_ARNS_ENDPOINTS = "use-arns-endpoints"
@@ -22,18 +26,25 @@ data class FeatureFlagConfig(
     const val USE_RESIDENTIAL_HIERARCHY_ENDPOINTS = "use-residential-hierarchy-endpoints"
     const val USE_LOCATION_ENDPOINT = "use-location-endpoint"
     const val USE_RESIDENTIAL_DETAILS_ENDPOINTS = "use-residential-details-endpoints"
-    const val USE_CAPACITY_ENDPOINT = "use-capacity-endpoint"
     const val REPLACE_PROBATION_SEARCH = "replace-probation-search"
   }
 
-  fun getConfigFlagValue(name: String): Boolean? =
-    when (name) {
-      USE_ARNS_ENDPOINTS -> this.useArnsEndpoints
-      USE_RESIDENTIAL_HIERARCHY_ENDPOINTS -> this.useResidentialHierarchyEndpoints
-      USE_LOCATION_ENDPOINT -> this.useLocationEndpoint
-      USE_RESIDENTIAL_DETAILS_ENDPOINTS -> this.useResidentialDetailsEndpoints
-      USE_CAPACITY_ENDPOINT -> this.useCapacityEndpoint
-      REPLACE_PROBATION_SEARCH -> this.replaceProbationSearch
-      else -> null
+  /**
+   * Returns the value of a feature flag, or null if it is not set.
+   */
+  fun getConfigFlagValue(feature: String): Boolean? = flags[feature]
+
+  /**
+   * Returns true if the  feature flag is defined and set to true.
+   */
+  fun isEnabled(feature: String): Boolean = flags.getOrDefault(feature, false)
+
+  /**
+   * Throws a [FeatureNotEnabledException] if the feature is not enabled.
+   */
+  fun require(feature: String) {
+    if (!isEnabled(feature)) {
+      throw FeatureNotEnabledException(feature)
     }
+  }
 }

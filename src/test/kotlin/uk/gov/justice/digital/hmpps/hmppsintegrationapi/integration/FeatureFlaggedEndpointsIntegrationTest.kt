@@ -5,6 +5,12 @@ import org.mockito.kotlin.whenever
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_IMAGE_ENDPOINTS
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_LOCATION_ENDPOINT
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_PHYSICAL_CHARACTERISTICS_ENDPOINTS
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_RESIDENTIAL_DETAILS_ENDPOINTS
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_RESIDENTIAL_HIERARCHY_ENDPOINTS
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.FeatureNotEnabledException
 
 internal class FeatureFlaggedEndpointsIntegrationTest : IntegrationTestBase() {
   @MockitoBean
@@ -12,21 +18,21 @@ internal class FeatureFlaggedEndpointsIntegrationTest : IntegrationTestBase() {
 
   @Test
   fun `physical characteristics endpoint should return 503`() {
-    whenever(featureFlagConfig.usePhysicalCharacteristicsEndpoints).thenReturn(false)
+    whenever(featureFlagConfig.require(USE_PHYSICAL_CHARACTERISTICS_ENDPOINTS)).thenThrow(FeatureNotEnabledException(""))
     callApi("$basePath/$nomsId/physical-characteristics")
       .andExpect(status().isServiceUnavailable)
   }
 
   @Test
   fun `images by id endpoint should return 503`() {
-    whenever(featureFlagConfig.useImageEndpoints).thenReturn(false)
+    whenever(featureFlagConfig.require(USE_IMAGE_ENDPOINTS)).thenThrow(FeatureNotEnabledException(""))
     callApi("$basePath/$nomsId/images/2461788")
       .andExpect(status().isServiceUnavailable)
   }
 
   @Test
   fun `residential summary should return 503`() {
-    whenever(featureFlagConfig.useResidentialHierarchyEndpoints).thenReturn(false)
+    whenever(featureFlagConfig.require(USE_RESIDENTIAL_HIERARCHY_ENDPOINTS)).thenThrow(FeatureNotEnabledException(""))
     val prisonId = "MDI"
     val path = "/v1/prison/$prisonId/residential-hierarchy"
     callApi(path)
@@ -35,7 +41,8 @@ internal class FeatureFlaggedEndpointsIntegrationTest : IntegrationTestBase() {
 
   @Test
   fun `location details should return 503`() {
-    whenever(featureFlagConfig.useLocationEndpoint).thenReturn(false)
+    whenever(featureFlagConfig.isEnabled(USE_LOCATION_ENDPOINT)).thenReturn(false)
+
     val prisonId = "MDI"
     val locationId = "MDI-A1-B1-C1"
     val path = "/v1/prison/$prisonId/location/$locationId"
@@ -45,7 +52,7 @@ internal class FeatureFlaggedEndpointsIntegrationTest : IntegrationTestBase() {
 
   @Test
   fun `residential details should return 503`() {
-    whenever(featureFlagConfig.useResidentialDetailsEndpoints).thenReturn(false)
+    whenever(featureFlagConfig.require(USE_RESIDENTIAL_DETAILS_ENDPOINTS)).thenThrow(FeatureNotEnabledException(""))
     val prisonId = "MDI"
     val path = "/v1/prison/$prisonId/residential-details?parentPathHierarchy=A"
     callApi(path)
