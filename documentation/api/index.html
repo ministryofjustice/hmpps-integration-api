@@ -181,6 +181,9 @@
         <a href="../../documentation/api/index.html#v1-prison-prisonid-visit-search"><span>/v1/prison/{prisonId}/visit/search</span></a>
       </li>
       <li>
+        <a href="../../documentation/api/index.html#v1-prison-prisonid-residential-details"><span>/v1/prison/{prisonId}/residential-details</span></a>
+      </li>
+      <li>
         <a href="../../documentation/api/index.html#v1-prison-prisonid-prisoners-hmppsid-transactions-clientuniqueref"><span>/v1/prison/{prisonId}/prisoners/{hmppsId}/transactions/{clientUniqueRef}</span></a>
       </li>
       <li>
@@ -1891,6 +1894,268 @@
 </td>
 <td>
 <a href='#schema-paginatedresponsevisit'>PaginatedResponseVisit</a>
+</td>
+</tr>
+
+<tr>
+<td>400</td>
+<td>
+<p>Bad Request</p>
+
+
+
+<pre><code>{
+  "status": 400,
+  "userMessage": "Validation failure: No query parameters specified.",
+  "developerMessage": "No query parameters specified."
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-badrequest'>BadRequest</a>
+</td>
+</tr>
+
+<tr>
+<td>403</td>
+<td>
+<p>Forbidden</p>
+
+
+
+<pre><code>{
+  "status": 403,
+  "userMessage": "Forbidden to complete action by upstream service",
+  "developerMessage": "Forbidden to complete action by upstream service"
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-forbiddenresponse'>ForbiddenResponse</a>
+</td>
+</tr>
+
+<tr>
+<td>404</td>
+<td>
+<p>Not Found</p>
+
+
+
+<pre><code>{
+  "status": 404,
+  "userMessage": "404 Not found error: Could not find person with HMPPS id: 2003/0011991D.",
+  "developerMessage": "Could not find person with HMPPS id: 2003/0011991D."
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-personnotfound'>PersonNotFound</a>
+</td>
+</tr>
+
+<tr>
+<td>500</td>
+<td>
+<p>Internal Server Error</p>
+
+
+
+<pre><code>{
+  "status": 500,
+  "userMessage": "Internal Server Error",
+  "developerMessage": "Unable to complete request as an upstream service is not responding."
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-internalservererror'>InternalServerError</a>
+</td>
+</tr>
+
+</tbody>
+</table>
+
+
+
+
+<h2 id="v1-prison-prisonid-residential-details">/v1/prison/{prisonId}/residential-details</h2>
+
+<h3 id="v1-prison-prisonid-residential-details-get">get</h3>
+
+  <p><em>Gets the residential details for a prison.</em></p>
+
+
+  <p><b>Applicable filters</b>: <ul><li>prisons</li></ul></p>
+
+
+
+
+<h4 id="v1-prison-prisonid-residential-details-get-parameters">Parameters</h4>
+<table>
+<thead>
+<tr><th>Parameter</th><th>In</th><th>Type</th><th>Required</th><th>Description</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>prisonId</td>
+<td>path</td>
+<td>string</td>
+<td>true</td>
+<td><p>The ID of the prison to be queried against</p>
+
+
+</td>
+</tr>
+
+<tr>
+<td>parentPathHierarchy</td>
+<td>query</td>
+<td>string</td>
+<td>false</td>
+<td><p>Parent location path hierarchy, can be a Wing code, or landing code</p>
+
+
+</td>
+</tr>
+
+</tbody>
+</table>
+
+
+
+
+<h4 id="v1-prison-prisonid-residential-details-get-responses">Responses</h4>
+<table>
+<thead>
+<tr><th>Status</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>200</td>
+<td>
+<p>Successfully performed the query on upstream APIs. An empty list is returned when no results are found.</p>
+
+
+
+<pre><code>{
+  "data": {
+    "topLevelLocationType": "Wings",
+    "subLocationName": "Wings",
+    "parentLocation": {
+      "key": "MDI",
+      "code": "001",
+      "pathHierarchy": "A-1-001",
+      "locationType": "CELL",
+      "localName": "Wing A",
+      "comments": "Not to be used",
+      "capacity": {
+        "maxCapacity": 2,
+        "workingCapacity": 2
+      },
+      "oldWorkingCapacity": "integer",
+      "certification": {
+        "certified": true,
+        "capacityOfCertifiedCell": 1
+      },
+      "usage": [
+        {
+          "usageType": "ADJUDICATION_HEARING",
+          "capacity": "integer",
+          "sequence": "integer"
+        }
+      ],
+      "accommodationTypes": [
+        {
+        }
+      ],
+      "specialistCellTypes": [
+        {
+        }
+      ],
+      "usedFor": [
+        {
+        }
+      ],
+      "status": "ACTIVE",
+      "convertedCellType": "HOLDING_ROOM",
+      "otherConvertedCellType": "string",
+      "active": true,
+      "deactivatedByParent": "boolean",
+      "deactivatedDate": "2023-01-23T12:23:00",
+      "deactivatedReason": "DAMAGED",
+      "deactivationReasonDescription": "Window damaged",
+      "deactivatedBy": "string",
+      "proposedReactivationDate": "2026-01-24",
+      "planetFmReference": "2323/45M",
+      "level": 1,
+      "parentLocationKey": "MDI",
+      "inactiveCells": "integer",
+      "numberOfCellLocations": "integer",
+      "isResidential": true
+    },
+    "subLocations": [
+      {
+        "key": "MDI",
+        "code": "001",
+        "pathHierarchy": "A-1-001",
+        "locationType": "CELL",
+        "localName": "Wing A",
+        "comments": "Not to be used",
+        "capacity": {
+          "maxCapacity": 2,
+          "workingCapacity": 2
+        },
+        "oldWorkingCapacity": "integer",
+        "certification": {
+          "certified": true,
+          "capacityOfCertifiedCell": 1
+        },
+        "usage": [
+          {
+            "usageType": "ADJUDICATION_HEARING",
+            "capacity": "integer",
+            "sequence": "integer"
+          }
+        ],
+        "accommodationTypes": [
+          {
+          }
+        ],
+        "specialistCellTypes": [
+          {
+          }
+        ],
+        "usedFor": [
+          {
+          }
+        ],
+        "status": "ACTIVE",
+        "convertedCellType": "HOLDING_ROOM",
+        "otherConvertedCellType": "string",
+        "active": true,
+        "deactivatedByParent": "boolean",
+        "deactivatedDate": "2023-01-23T12:23:00",
+        "deactivatedReason": "DAMAGED",
+        "deactivationReasonDescription": "Window damaged",
+        "deactivatedBy": "string",
+        "proposedReactivationDate": "2026-01-24",
+        "planetFmReference": "2323/45M",
+        "level": 1,
+        "parentLocationKey": "MDI",
+        "inactiveCells": "integer",
+        "numberOfCellLocations": "integer",
+        "isResidential": true
+      }
+    ]
+  }
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-dataresponseresidentialdetails'>DataResponseResidentialDetails</a>
 </td>
 </tr>
 
@@ -11296,6 +11561,532 @@
 </td>
 <td>
   
+</td>
+</tr>
+
+</tbody>
+</table>
+
+<h3 id="schema-dataresponseresidentialdetails">DataResponseResidentialDetails</h3>
+
+
+<table class='schema-dataresponseresidentialdetails'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>data</td>
+<td>object</td>
+<td>true</td>
+<td></td>
+<td>
+  <a href='#schema-residentialdetails'>ResidentialDetails</a>
+</td>
+</tr>
+
+</tbody>
+</table>
+
+<h3 id="schema-location">Location</h3>
+<p>All residential locations under this parent</p>
+
+
+<table class='schema-location'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>key</td>
+<td>string</td>
+<td>true</td>
+<td><p>Business Key for a location</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>code</td>
+<td>string</td>
+<td>true</td>
+<td><p>Location Code</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>pathHierarchy</td>
+<td>string</td>
+<td>true</td>
+<td><p>Full path of the location within the prison</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>locationType</td>
+<td>string</td>
+<td>true</td>
+<td><p>Location Type</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>localName</td>
+<td>string</td>
+<td>false</td>
+<td><p>Alternative description to display for location, (Not Cells)</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>comments</td>
+<td>string</td>
+<td>false</td>
+<td><p>Additional comments that can be made about this location</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>capacity</td>
+<td>object</td>
+<td>false</td>
+<td><p>Capacity details of the location</p>
+</td>
+<td>
+  <a href='#schema-locationcapacity'>LocationCapacity</a>
+</td>
+</tr>
+
+<tr>
+<td>oldWorkingCapacity</td>
+<td>integer</td>
+<td>false</td>
+<td><p>When a cell is inactive, show the active working capacity value</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>certification</td>
+<td>object</td>
+<td>false</td>
+<td><p>Indicates that this location is certified for use as a residential location</p>
+</td>
+<td>
+  <a href='#schema-locationcertification'>LocationCertification</a>
+</td>
+</tr>
+
+<tr>
+<td>usage</td>
+<td>array</td>
+<td>false</td>
+<td><p>Non Residential Usage</p>
+</td>
+<td>
+  <a href='#schema-locationusageitem'>LocationUsageItem</a>
+</td>
+</tr>
+
+<tr>
+<td>accommodationTypes</td>
+<td>array</td>
+<td>false</td>
+<td><p>Accommodation Types</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>specialistCellTypes</td>
+<td>array</td>
+<td>false</td>
+<td><p>Specialist Cell Types</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>usedFor</td>
+<td>array</td>
+<td>false</td>
+<td><p>Used For</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>status</td>
+<td>string</td>
+<td>false</td>
+<td><p>Status of the location</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>convertedCellType</td>
+<td>string</td>
+<td>false</td>
+<td><p>Converted Cell Type</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>otherConvertedCellType</td>
+<td>string</td>
+<td>false</td>
+<td><p>Convert Cell Type (Other)</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>active</td>
+<td>boolean</td>
+<td>true</td>
+<td><p>Indicates the location is enabled</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>deactivatedByParent</td>
+<td>boolean</td>
+<td>true</td>
+<td><p>Indicates the location in inactive as a parent is deactivated</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>deactivatedDate</td>
+<td>string</td>
+<td>false</td>
+<td><p>Date the location was deactivated</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>deactivatedReason</td>
+<td>string</td>
+<td>false</td>
+<td><p>Reason for deactivation</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>deactivationReasonDescription</td>
+<td>string</td>
+<td>false</td>
+<td><p>For OTHER deactivation reason, a free text comment is provided</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>deactivatedBy</td>
+<td>string</td>
+<td>false</td>
+<td><p>Staff username who deactivated the location</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>proposedReactivationDate</td>
+<td>string</td>
+<td>false</td>
+<td><p>Estimated reactivation date for location reactivation</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>planetFmReference</td>
+<td>string</td>
+<td>false</td>
+<td><p>Planet FM reference number</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>level</td>
+<td>integer</td>
+<td>true</td>
+<td><p>Current Level within hierarchy, starts at 1, e.g Wing = 1</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>parentLocationKey</td>
+<td>string</td>
+<td>false</td>
+<td><p>Business Key for the parent location</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>inactiveCells</td>
+<td>integer</td>
+<td>false</td>
+<td><p>Number of inactive cells below this location</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>numberOfCellLocations</td>
+<td>integer</td>
+<td>false</td>
+<td><p>Total number of non-structural locations are below this level, e.g. cells and rooms</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>isResidential</td>
+<td>boolean</td>
+<td>true</td>
+<td><p>Indicates if the location is a residential location</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+</tbody>
+</table>
+
+<h3 id="schema-locationcapacity">LocationCapacity</h3>
+<p>Capacity details of the location</p>
+
+
+<table class='schema-locationcapacity'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>maxCapacity</td>
+<td>integer</td>
+<td>true</td>
+<td><p>Max capacity of the location</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>workingCapacity</td>
+<td>integer</td>
+<td>true</td>
+<td><p>Working capacity of the location</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+</tbody>
+</table>
+
+<h3 id="schema-locationcertification">LocationCertification</h3>
+<p>Indicates that this location is certified for use as a residential location</p>
+
+
+<table class='schema-locationcertification'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>certified</td>
+<td>boolean</td>
+<td>true</td>
+<td><p>Indicates that this location is certified for use as a residential location</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>capacityOfCertifiedCell</td>
+<td>integer</td>
+<td>true</td>
+<td><p>Indicates the capacity of the certified location (cell)</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+</tbody>
+</table>
+
+<h3 id="schema-locationusageitem">LocationUsageItem</h3>
+<p>Non Residential Usage</p>
+
+
+<table class='schema-locationusageitem'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>usageType</td>
+<td>string</td>
+<td>true</td>
+<td><p>Usage Type</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>capacity</td>
+<td>integer</td>
+<td>false</td>
+<td><p>Capacity</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>sequence</td>
+<td>integer</td>
+<td>true</td>
+<td><p>Sequence</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+</tbody>
+</table>
+
+<h3 id="schema-residentialdetails">ResidentialDetails</h3>
+
+
+<table class='schema-residentialdetails'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>topLevelLocationType</td>
+<td>string</td>
+<td>true</td>
+<td><p>The top level type of locations</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>subLocationName</td>
+<td>string</td>
+<td>false</td>
+<td><p>The description of the type of sub locations most common</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>parentLocation</td>
+<td>object</td>
+<td>false</td>
+<td><p>All residential locations under this parent</p>
+</td>
+<td>
+  <a href='#schema-location'>Location</a>
+</td>
+</tr>
+
+<tr>
+<td>subLocations</td>
+<td>array</td>
+<td>true</td>
+<td><p>All residential locations under this parent</p>
+</td>
+<td>
+  <a href='#schema-location'>Location</a>
 </td>
 </tr>
 
