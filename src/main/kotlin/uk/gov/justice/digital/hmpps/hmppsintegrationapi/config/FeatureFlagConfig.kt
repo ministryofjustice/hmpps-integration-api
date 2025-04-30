@@ -9,6 +9,7 @@ data class FeatureFlagConfig(
   val useImageEndpoints: Boolean,
   val useEducationAssessmentsEndpoints: Boolean,
   val useResidentialHierarchyEndpoints: Boolean,
+  val useResidentialDetailsEndpoints: Boolean,
   val replaceProbationSearch: Boolean,
 ) {
   companion object {
@@ -17,6 +18,7 @@ data class FeatureFlagConfig(
     const val USE_IMAGE_ENDPOINTS = "use-image-endpoints"
     const val USE_EDUCATION_ASSESSMENTS_ENDPOINTS = "use-education-assessments-endpoints"
     const val USE_RESIDENTIAL_HIERARCHY_ENDPOINTS = "use-residential-hierarchy-endpoints"
+    const val USE_RESIDENTIAL_DETAILS_ENDPOINTS = "use-residential-details-endpoints"
     const val REPLACE_PROBATION_SEARCH = "replace-probation-search"
   }
 
@@ -24,6 +26,8 @@ data class FeatureFlagConfig(
     when (name) {
       USE_ARNS_ENDPOINTS -> this.useArnsEndpoints
       USE_RESIDENTIAL_HIERARCHY_ENDPOINTS -> this.useResidentialHierarchyEndpoints
+      USE_RESIDENTIAL_DETAILS_ENDPOINTS -> this.useResidentialDetailsEndpoints
+      REPLACE_PROBATION_SEARCH -> this.replaceProbationSearch
       else -> null
     }
 }
