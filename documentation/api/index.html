@@ -202,6 +202,9 @@
         <a href="../../documentation/api/index.html#v1-prison-prisonid-location-key"><span>/v1/prison/{prisonId}/location/{key}</span></a>
       </li>
       <li>
+        <a href="../../documentation/api/index.html#v1-prison-prisonid-capacity"><span>/v1/prison/{prisonId}/capacity</span></a>
+      </li>
+      <li>
         <a href="../../documentation/api/index.html#v1-prison-prisoners"><span>/v1/prison/prisoners</span></a>
       </li>
       <li>
@@ -3199,6 +3202,152 @@
 </td>
 <td>
 <a href='#schema-dataresponselocation'>DataResponseLocation</a>
+</td>
+</tr>
+
+<tr>
+<td>400</td>
+<td>
+<p>Bad Request</p>
+
+
+
+<pre><code>{
+  "status": 400,
+  "userMessage": "Validation failure: No query parameters specified.",
+  "developerMessage": "No query parameters specified."
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-badrequest'>BadRequest</a>
+</td>
+</tr>
+
+<tr>
+<td>403</td>
+<td>
+<p>Forbidden</p>
+
+
+
+<pre><code>{
+  "status": 403,
+  "userMessage": "Forbidden to complete action by upstream service",
+  "developerMessage": "Forbidden to complete action by upstream service"
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-forbiddenresponse'>ForbiddenResponse</a>
+</td>
+</tr>
+
+<tr>
+<td>404</td>
+<td>
+<p>Not Found</p>
+
+
+
+<pre><code>{
+  "status": 404,
+  "userMessage": "404 Not found error: Could not find person with HMPPS id: 2003/0011991D.",
+  "developerMessage": "Could not find person with HMPPS id: 2003/0011991D."
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-personnotfound'>PersonNotFound</a>
+</td>
+</tr>
+
+<tr>
+<td>500</td>
+<td>
+<p>Internal Server Error</p>
+
+
+
+<pre><code>{
+  "status": 500,
+  "userMessage": "Internal Server Error",
+  "developerMessage": "Unable to complete request as an upstream service is not responding."
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-internalservererror'>InternalServerError</a>
+</td>
+</tr>
+
+</tbody>
+</table>
+
+
+
+
+<h2 id="v1-prison-prisonid-capacity">/v1/prison/{prisonId}/capacity</h2>
+
+<h3 id="v1-prison-prisonid-capacity-get">get</h3>
+
+  <p><em>Gets the capacity details for a prison.</em></p>
+
+
+  <p><b>Applicable filters</b>: <ul><li>prisons</li></ul></p>
+
+
+
+
+<h4 id="v1-prison-prisonid-capacity-get-parameters">Parameters</h4>
+<table>
+<thead>
+<tr><th>Parameter</th><th>In</th><th>Type</th><th>Required</th><th>Description</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>prisonId</td>
+<td>path</td>
+<td>string</td>
+<td>true</td>
+<td><p>The ID of the prison to be queried against</p>
+
+
+</td>
+</tr>
+
+</tbody>
+</table>
+
+
+
+
+<h4 id="v1-prison-prisonid-capacity-get-responses">Responses</h4>
+<table>
+<thead>
+<tr><th>Status</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>200</td>
+<td>
+<p>Successfully performed the query on upstream APIs. An empty list is returned when no results are found.</p>
+
+
+
+<pre><code>{
+  "data": {
+    "maxCapacity": 1000,
+    "signedCapacity": 1000,
+    "workingCapacity": 1000
+  }
+}</code></pre>
+
+</td>
+<td>
+<a href='#schema-dataresponseprisoncapacity'>DataResponsePrisonCapacity</a>
 </td>
 </tr>
 
@@ -12952,6 +13101,73 @@
 </td>
 <td>
   <a href='#schema-location'>Location</a>
+</td>
+</tr>
+
+</tbody>
+</table>
+
+<h3 id="schema-dataresponseprisoncapacity">DataResponsePrisonCapacity</h3>
+
+
+<table class='schema-dataresponseprisoncapacity'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>data</td>
+<td>object</td>
+<td>true</td>
+<td></td>
+<td>
+  <a href='#schema-prisoncapacity'>PrisonCapacity</a>
+</td>
+</tr>
+
+</tbody>
+</table>
+
+<h3 id="schema-prisoncapacity">PrisonCapacity</h3>
+
+
+<table class='schema-prisoncapacity'>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th><th>Schema</th></tr>
+</thead>
+<tbody>
+
+<tr>
+<td>maxCapacity</td>
+<td>integer</td>
+<td>true</td>
+<td><p>Max capacity of the location</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>signedCapacity</td>
+<td>integer</td>
+<td>true</td>
+<td><p>Signed capacity of the location</p>
+</td>
+<td>
+  
+</td>
+</tr>
+
+<tr>
+<td>workingCapacity</td>
+<td>integer</td>
+<td>true</td>
+<td><p>Working capacity of the location</p>
+</td>
+<td>
+  
 </td>
 </tr>
 
