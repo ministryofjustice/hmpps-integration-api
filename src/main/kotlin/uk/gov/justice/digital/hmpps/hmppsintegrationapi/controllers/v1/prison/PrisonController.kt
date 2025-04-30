@@ -22,14 +22,17 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.featureflag.F
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Location
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonInPrison
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonCapacity
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ResidentialDetails
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ResidentialHierarchyItem
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError.Type.BAD_REQUEST
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError.Type.ENTITY_NOT_FOUND
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Visit
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.interfaces.toPaginatedResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetCapacityForPrisonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetLocationByKeyService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPrisonersService
@@ -51,6 +54,7 @@ class PrisonController(
   @Autowired val getVisitsService: GetVisitsService,
   @Autowired val getResidentialHierarchyService: GetResidentialHierarchyService,
   @Autowired val getResidentialDetailsService: GetResidentialDetailsService,
+  @Autowired val getCapacityForPrisonService: GetCapacityForPrisonService,
   @Autowired val auditService: AuditService,
   @Autowired val getLocationByKeyService: GetLocationByKeyService,
 ) {
@@ -302,6 +306,46 @@ class PrisonController(
     auditService.createEvent(
       "GET_PRISON_RESIDENTIAL_DETAILS",
       mapOf("prisonId" to prisonId, "parentPathHierarchy" to parentPathHierarchy),
+    )
+
+    return DataResponse(data = response.data)
+  }
+
+  @GetMapping("/{prisonId}/capacity")
+  @Tag(name = "residential-areas")
+  @Operation(
+    summary = "Gets the capacity details for a prison.",
+    description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
+    responses = [
+      ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully performed the query on upstream APIs. An empty list is returned when no results are found."),
+      ApiResponse(
+        responseCode = "400",
+        description = "",
+        content = [Content(schema = Schema(ref = "#/components/schemas/BadRequest"))],
+      ),
+      ApiResponse(responseCode = "403", content = [Content(schema = Schema(ref = "#/components/schemas/ForbiddenResponse"))]),
+      ApiResponse(responseCode = "404", content = [Content(schema = Schema(ref = "#/components/schemas/PersonNotFound"))]),
+      ApiResponse(responseCode = "500", content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]),
+    ],
+  )
+  @FeatureFlag(name = FeatureFlagConfig.USE_CAPACITY_ENDPOINT)
+  fun getCapacityDetails(
+    @Parameter(description = "The ID of the prison to be queried against") @PathVariable prisonId: String,
+    @RequestAttribute filters: ConsumerFilters?,
+  ): DataResponse<PrisonCapacity?> {
+    val response = getCapacityForPrisonService.execute(prisonId, filters)
+
+    if (response.hasError(BAD_REQUEST)) {
+      throw ValidationException("Invalid query parameters.")
+    }
+
+    if (response.hasError(ENTITY_NOT_FOUND)) {
+      throw EntityNotFoundException("Could not find residential details with supplied query parameters.")
+    }
+
+    auditService.createEvent(
+      "GET_CAPACITY_DETAILS",
+      mapOf("prisonId" to prisonId),
     )
 
     return DataResponse(data = response.data)

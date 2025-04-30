@@ -76,6 +76,7 @@ get_endpoints=(
   "/v1/prison/$prisonId/residential-hierarchy"
   "/v1/prison/$prisonId/location/$locationIdKey"
   "/v1/prison/$prisonId/residential-details"
+  "/v1/prison/$prisonId/capacity"
   "/v1/contacts/123456"
   "/v1/persons?first_name=john"
   "/v1/persons/$deliusCrn"

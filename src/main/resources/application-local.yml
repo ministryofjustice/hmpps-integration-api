@@ -37,6 +37,7 @@ feature-flag:
   use-education-assessments-endpoints: true
   use-residential-hierarchy-endpoints: true
   use-residential-details-endpoints: true
+  use-capacity-endpoint: true
   use-location-endpoint: true
   replace-probation-search: true
 

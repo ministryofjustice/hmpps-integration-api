@@ -20,7 +20,7 @@ data class LIPLocation(
   val accommodationTypes: List<String>? = null,
   val specialistCellTypes: List<String>? = null,
   val usedFor: List<String>? = null,
-  val status: String?,
+  val status: String? = null,
   val convertedCellType: String? = null,
   val otherConvertedCellType: String? = null,
   val active: Boolean,
