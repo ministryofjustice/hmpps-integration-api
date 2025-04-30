@@ -291,6 +291,7 @@ internal class PersonControllerTest(
           val idThatDoesNotExist = "9999/11111Z"
 
           it("returns a 404 status code when a person cannot be found in both upstream APIs") {
+            whenever(featureFlagConfig.replaceProbationSearch).thenReturn(false)
             whenever(getPersonService.getCombinedDataForPerson(idThatDoesNotExist)).thenReturn(
               Response(
                 data = OffenderSearchResponse(null, null),
@@ -298,6 +299,27 @@ internal class PersonControllerTest(
                   listOf(
                     UpstreamApiError(
                       causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH,
+                      type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+                    ),
+                  ),
+              ),
+            )
+
+            val encodedIdThatDoesNotExist = URLEncoder.encode(idThatDoesNotExist, StandardCharsets.UTF_8)
+            val result = mockMvc.performAuthorised("$basePath/$encodedIdThatDoesNotExist")
+
+            result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
+          }
+
+          it("returns a 404 status code when a person cannot be found in both upstream APIs") {
+            whenever(featureFlagConfig.replaceProbationSearch).thenReturn(true)
+            whenever(getPersonService.getCombinedDataForPerson(idThatDoesNotExist)).thenReturn(
+              Response(
+                data = OffenderSearchResponse(null, null),
+                errors =
+                  listOf(
+                    UpstreamApiError(
+                      causedBy = UpstreamApi.NDELIUS,
                       type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
                     ),
                   ),
@@ -433,6 +455,25 @@ internal class PersonControllerTest(
                   listOf(
                     UpstreamApiError(
                       causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH,
+                      type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+                    ),
+                  ),
+              ),
+            )
+
+            val result = mockMvc.performAuthorised("$basePath/$idThatDoesNotExist/name")
+
+            result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
+          }
+
+          it("returns a 404 status code when a person cannot be found in both upstream APIs") {
+            whenever(getNameForPersonService.execute(idThatDoesNotExist, filters)).thenReturn(
+              Response(
+                data = null,
+                errors =
+                  listOf(
+                    UpstreamApiError(
+                      causedBy = UpstreamApi.NDELIUS,
                       type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
                     ),
                   ),

@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.controllers.v1.prison
 
+import io.swagger.v3.oas.annotations.Hidden
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.media.Content
@@ -19,16 +20,17 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFound
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.ForbiddenByUpstreamServiceException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.featureflag.FeatureFlag
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Location
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonInPrison
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ResidentialDetails
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ResidentialHierarchyItem
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError.Type.BAD_REQUEST
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError.Type.ENTITY_NOT_FOUND
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError.Type.FORBIDDEN
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Visit
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.interfaces.toPaginatedResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetLocationByKeyService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPrisonersService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetResidentialDetailsService
@@ -50,6 +52,7 @@ class PrisonController(
   @Autowired val getResidentialHierarchyService: GetResidentialHierarchyService,
   @Autowired val getResidentialDetailsService: GetResidentialDetailsService,
   @Autowired val auditService: AuditService,
+  @Autowired val getLocationByKeyService: GetLocationByKeyService,
 ) {
   @GetMapping("/prisoners/{hmppsId}")
   @Operation(
@@ -72,7 +75,7 @@ class PrisonController(
   ): DataResponse<PersonInPrison?> {
     val response = getPersonService.getPrisoner(hmppsId, filters)
 
-    if (response.hasErrorCausedBy(BAD_REQUEST, causedBy = UpstreamApi.PRISON_API)) {
+    if (response.hasErrorCausedBy(UpstreamApiError.Type.BAD_REQUEST, causedBy = UpstreamApi.PRISON_API)) {
       throw ValidationException("Invalid HMPPS ID: $hmppsId")
     }
     if (response.hasErrorCausedBy(ENTITY_NOT_FOUND, causedBy = UpstreamApi.PRISONER_OFFENDER_SEARCH)) {
@@ -123,7 +126,7 @@ class PrisonController(
       mapOf("firstName" to firstName, "lastName" to lastName, "aliases" to searchWithinAliases.toString(), "dateOfBirth" to dateOfBirth),
     )
 
-    if (response.hasErrorCausedBy(FORBIDDEN, causedBy = UpstreamApi.PRISONER_OFFENDER_SEARCH)) {
+    if (response.hasErrorCausedBy(UpstreamApiError.Type.FORBIDDEN, causedBy = UpstreamApi.PRISONER_OFFENDER_SEARCH)) {
       throw ForbiddenByUpstreamServiceException("Consumer configured with no access to any prisons: ${filters?.prisons}")
     }
 
@@ -163,7 +166,7 @@ class PrisonController(
   ): PaginatedResponse<Visit> {
     val response = getVisitsService.execute(hmppsId, prisonId, fromDate, toDate, visitStatus, page, size, filters)
 
-    if (response.hasErrorCausedBy(BAD_REQUEST, causedBy = UpstreamApi.MANAGE_PRISON_VISITS)) {
+    if (response.hasErrorCausedBy(UpstreamApiError.Type.BAD_REQUEST, causedBy = UpstreamApi.MANAGE_PRISON_VISITS)) {
       throw ValidationException("Invalid query parameters.")
     }
 
@@ -179,6 +182,7 @@ class PrisonController(
     return response.data.toPaginatedResponse()
   }
 
+  @Hidden // This is currently hidden because the recursive type breaks the docs
   @GetMapping("/{prisonId}/residential-hierarchy")
   @Tag(name = "residential-areas")
   @Operation(
@@ -203,7 +207,7 @@ class PrisonController(
   ): DataResponse<List<ResidentialHierarchyItem>?> {
     val response = getResidentialHierarchyService.execute(prisonId, filters)
 
-    if (response.hasError(BAD_REQUEST)) {
+    if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
       throw ValidationException("Invalid query parameters.")
     }
 
@@ -214,6 +218,47 @@ class PrisonController(
     auditService.createEvent(
       "GET_PRISON_RESIDENTIAL_HIERARCHY",
       mapOf("prisonId" to prisonId),
+    )
+
+    return DataResponse(data = response.data)
+  }
+
+  @GetMapping("/{prisonId}/location/{key}")
+  @Tag(name = "residential-areas")
+  @Operation(
+    summary = "Gets the location information for a prison location based on a key.",
+    description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
+    responses = [
+      ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully performed the query on upstream APIs."),
+      ApiResponse(
+        responseCode = "400",
+        description = "",
+        content = [Content(schema = Schema(ref = "#/components/schemas/BadRequest"))],
+      ),
+      ApiResponse(responseCode = "403", content = [Content(schema = Schema(ref = "#/components/schemas/ForbiddenResponse"))]),
+      ApiResponse(responseCode = "404", content = [Content(schema = Schema(ref = "#/components/schemas/PersonNotFound"))]),
+      ApiResponse(responseCode = "500", content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]),
+    ],
+  )
+  @FeatureFlag(name = FeatureFlagConfig.USE_LOCATION_ENDPOINT)
+  fun getLocationInformation(
+    @Parameter(description = "The ID of the prison to be queried against") @PathVariable prisonId: String,
+    @Parameter(description = "The key of the location to be queried against in the format of (PrisonId-locationKey") @PathVariable key: String,
+    @RequestAttribute filters: ConsumerFilters?,
+  ): DataResponse<Location?> {
+    val response = getLocationByKeyService.execute(prisonId, key, filters)
+
+    if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
+      throw ValidationException("Invalid query parameters.")
+    }
+
+    if (response.hasError(ENTITY_NOT_FOUND)) {
+      throw EntityNotFoundException("Could not find location information with supplied query parameters.")
+    }
+
+    auditService.createEvent(
+      "GET_LOCATION_INFORMATION",
+      mapOf("prisonId" to prisonId, "key" to key),
     )
 
     return DataResponse(data = response.data)
@@ -246,7 +291,7 @@ class PrisonController(
   ): DataResponse<ResidentialDetails?> {
     val response = getResidentialDetailsService.execute(prisonId, parentPathHierarchy, filters)
 
-    if (response.hasError(BAD_REQUEST)) {
+    if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
       throw ValidationException("Invalid query parameters.")
     }
 

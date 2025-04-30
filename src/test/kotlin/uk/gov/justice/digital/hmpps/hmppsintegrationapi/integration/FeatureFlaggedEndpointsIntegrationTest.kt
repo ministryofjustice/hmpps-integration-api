@@ -39,6 +39,16 @@ internal class FeatureFlaggedEndpointsIntegrationTest : IntegrationTestBase() {
   }
 
   @Test
+  fun `location details should return 503`() {
+    whenever(featureFlagConfig.useLocationEndpoint).thenReturn(false)
+    val prisonId = "MDI"
+    val locationId = "MDI-A1-B1-C1"
+    val path = "/v1/prison/$prisonId/location/$locationId"
+    callApi(path)
+      .andExpect(status().isServiceUnavailable)
+  }
+
+  @Test
   fun `residential details should return 503`() {
     whenever(featureFlagConfig.require(USE_RESIDENTIAL_DETAILS_ENDPOINTS)).thenThrow(FeatureNotEnabledException(""))
     val prisonId = "MDI"

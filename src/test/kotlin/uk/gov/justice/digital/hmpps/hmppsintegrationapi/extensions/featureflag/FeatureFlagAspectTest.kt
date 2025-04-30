@@ -25,6 +25,7 @@ class FeatureFlagAspectTest {
         "use-physical-characteristics-endpoints" to false,
         "use-residential-hierarchy-endpoints" to false,
         "use-residential-details-endpoints" to false,
+        "replace-probation-search" to false,
       ),
     )
   private val featureFlagAspect: FeatureFlagAspect =
