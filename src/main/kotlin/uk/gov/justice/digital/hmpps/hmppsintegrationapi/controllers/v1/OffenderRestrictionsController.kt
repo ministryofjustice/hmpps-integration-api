@@ -23,7 +23,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPrisonersNon
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 
 @RestController
-@Tag(name = "prison")
 class OffenderRestrictionsController(
   @Autowired val auditService: AuditService,
   @Autowired val getPrisonersNonAssociationsService: GetPrisonersNonAssociationsService,
