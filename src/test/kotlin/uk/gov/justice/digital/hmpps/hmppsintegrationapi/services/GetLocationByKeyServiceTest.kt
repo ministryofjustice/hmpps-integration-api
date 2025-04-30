@@ -1,10 +1,9 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 
-import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.DescribeSpec
+import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
-import jakarta.validation.ValidationException
 import org.mockito.Mockito
 import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
@@ -115,11 +114,9 @@ class GetLocationByKeyServiceTest(
         val invalidKey = "XYZ-1-001"
         whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<Location?>(prisonId, filters)).thenReturn(Response(data = null, errors = emptyList()))
 
-        val exception =
-          shouldThrow<ValidationException> {
-            getLocationByKeyService.execute(prisonId, invalidKey, filters)
-          }
-        exception.message.shouldBe("Key must start with matching prisonId")
+        val result = getLocationByKeyService.execute(prisonId, invalidKey, filters)
+
+        result.errors.shouldContain(UpstreamApiError(causedBy = UpstreamApi.LOCATIONS_INSIDE_PRISON, type = UpstreamApiError.Type.BAD_REQUEST, description = "Key must start with matching prisonId"))
       }
     },
   )

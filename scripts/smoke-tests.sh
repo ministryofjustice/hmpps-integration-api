@@ -43,7 +43,7 @@ visitReference="qd-lh-gy-lx"
 clientReference="123456"
 contactId="1898610"
 imageId="1988315"
-locationIdKey="A"
+locationIdKey="MKI-A"
 
 # Endpoints for testing full access
 
