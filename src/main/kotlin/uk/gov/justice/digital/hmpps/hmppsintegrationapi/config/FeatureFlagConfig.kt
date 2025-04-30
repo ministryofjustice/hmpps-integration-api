@@ -10,6 +10,7 @@ data class FeatureFlagConfig(
   val useEducationAssessmentsEndpoints: Boolean,
   val useResidentialHierarchyEndpoints: Boolean,
   val useResidentialDetailsEndpoints: Boolean,
+  val useCapacityEndpoint: Boolean,
 ) {
   companion object {
     const val USE_ARNS_ENDPOINTS = "use-arns-endpoints"
@@ -18,6 +19,7 @@ data class FeatureFlagConfig(
     const val USE_EDUCATION_ASSESSMENTS_ENDPOINTS = "use-education-assessments-endpoints"
     const val USE_RESIDENTIAL_HIERARCHY_ENDPOINTS = "use-residential-hierarchy-endpoints"
     const val USE_RESIDENTIAL_DETAILS_ENDPOINTS = "use-residential-details-endpoints"
+    const val USE_CAPACITY_ENDPOINT = "use-capacity-endpoint"
   }
 
   fun getConfigFlagValue(name: String): Boolean? =
@@ -25,6 +27,7 @@ data class FeatureFlagConfig(
       USE_ARNS_ENDPOINTS -> this.useArnsEndpoints
       USE_RESIDENTIAL_HIERARCHY_ENDPOINTS -> this.useResidentialHierarchyEndpoints
       USE_RESIDENTIAL_DETAILS_ENDPOINTS -> this.useResidentialDetailsEndpoints
+      USE_CAPACITY_ENDPOINT -> this.useCapacityEndpoint
       else -> null
     }
 }
