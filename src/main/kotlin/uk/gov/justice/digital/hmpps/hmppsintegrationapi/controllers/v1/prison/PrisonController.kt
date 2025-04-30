@@ -14,10 +14,14 @@ import org.springframework.web.bind.annotation.RequestAttribute
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.ForbiddenByUpstreamServiceException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.featureflag.FeatureFlag
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonInPrison
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ResidentialDetails
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ResidentialHierarchyItem
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError.Type.BAD_REQUEST
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError.Type.ENTITY_NOT_FOUND
@@ -27,6 +31,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.interfaces.
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPrisonersService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetResidentialDetailsService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetResidentialHierarchyService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetVisitsService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
@@ -43,6 +48,7 @@ class PrisonController(
   @Autowired val getPersonService: GetPersonService,
   @Autowired val getVisitsService: GetVisitsService,
   @Autowired val getResidentialHierarchyService: GetResidentialHierarchyService,
+  @Autowired val getResidentialDetailsService: GetResidentialDetailsService,
   @Autowired val auditService: AuditService,
 ) {
   @GetMapping("/prisoners/{hmppsId}")
@@ -173,45 +179,88 @@ class PrisonController(
     return response.data.toPaginatedResponse()
   }
 
-//  @GetMapping("/{prisonId}/residential-hierarchy")
-//  @Tag(name = "residential-areas")
-//  @Operation(
-//    summary = "Gets the residential hierarchy for a prison.",
-//    description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
-//    responses = [
-//      ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully performed the query on upstream APIs. An empty list is returned when no results are found."),
-//      ApiResponse(
-//        responseCode = "400",
-//        description = "",
-//        content = [Content(schema = Schema(ref = "#/components/schemas/BadRequest"))],
-//      ),
-//      ApiResponse(responseCode = "403", content = [Content(schema = Schema(ref = "#/components/schemas/ForbiddenResponse"))]),
-//      ApiResponse(responseCode = "404", content = [Content(schema = Schema(ref = "#/components/schemas/PersonNotFound"))]),
-//      ApiResponse(responseCode = "500", content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]),
-//    ],
-//  )
-//  @FeatureFlag(name = FeatureFlagConfig.USE_RESIDENTIAL_HIERARCHY_ENDPOINTS)
-//  fun getResidentialHierarchy(
-//    @Parameter(description = "The ID of the prison to be queried against") @PathVariable prisonId: String,
-//    @RequestAttribute filters: ConsumerFilters?,
-//  ): DataResponse<List<ResidentialHierarchyItem>?> {
-//    val response = getResidentialHierarchyService.execute(prisonId, filters)
-//
-//    if (response.hasError(BAD_REQUEST)) {
-//      throw ValidationException("Invalid query parameters.")
-//    }
-//
-//    if (response.hasError(ENTITY_NOT_FOUND)) {
-//      throw EntityNotFoundException("Could not find residential hierarchy with supplied query parameters.")
-//    }
-//
-//    auditService.createEvent(
-//      "GET_PRISON_RESIDENTIAL_HIERARCHY",
-//      mapOf("prisonId" to prisonId),
-//    )
-//
-//    return DataResponse(data = response.data)
-//  }
+  @GetMapping("/{prisonId}/residential-hierarchy")
+  @Tag(name = "residential-areas")
+  @Operation(
+    summary = "Gets the residential hierarchy for a prison.",
+    description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
+    responses = [
+      ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully performed the query on upstream APIs. An empty list is returned when no results are found."),
+      ApiResponse(
+        responseCode = "400",
+        description = "",
+        content = [Content(schema = Schema(ref = "#/components/schemas/BadRequest"))],
+      ),
+      ApiResponse(responseCode = "403", content = [Content(schema = Schema(ref = "#/components/schemas/ForbiddenResponse"))]),
+      ApiResponse(responseCode = "404", content = [Content(schema = Schema(ref = "#/components/schemas/PersonNotFound"))]),
+      ApiResponse(responseCode = "500", content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]),
+    ],
+  )
+  @FeatureFlag(name = FeatureFlagConfig.USE_RESIDENTIAL_HIERARCHY_ENDPOINTS)
+  fun getResidentialHierarchy(
+    @Parameter(description = "The ID of the prison to be queried against") @PathVariable prisonId: String,
+    @RequestAttribute filters: ConsumerFilters?,
+  ): DataResponse<List<ResidentialHierarchyItem>?> {
+    val response = getResidentialHierarchyService.execute(prisonId, filters)
+
+    if (response.hasError(BAD_REQUEST)) {
+      throw ValidationException("Invalid query parameters.")
+    }
+
+    if (response.hasError(ENTITY_NOT_FOUND)) {
+      throw EntityNotFoundException("Could not find residential hierarchy with supplied query parameters.")
+    }
+
+    auditService.createEvent(
+      "GET_PRISON_RESIDENTIAL_HIERARCHY",
+      mapOf("prisonId" to prisonId),
+    )
+
+    return DataResponse(data = response.data)
+  }
+
+  @GetMapping("/{prisonId}/residential-details")
+  @Tag(name = "residential-areas")
+  @Operation(
+    summary = "Gets the residential details for a prison.",
+    description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
+    responses = [
+      ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully performed the query on upstream APIs. An empty list is returned when no results are found."),
+      ApiResponse(
+        responseCode = "400",
+        description = "",
+        content = [Content(schema = Schema(ref = "#/components/schemas/BadRequest"))],
+      ),
+      ApiResponse(responseCode = "403", content = [Content(schema = Schema(ref = "#/components/schemas/ForbiddenResponse"))]),
+      ApiResponse(responseCode = "404", content = [Content(schema = Schema(ref = "#/components/schemas/PersonNotFound"))]),
+      ApiResponse(responseCode = "500", content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]),
+    ],
+  )
+  @FeatureFlag(name = FeatureFlagConfig.USE_RESIDENTIAL_DETAILS_ENDPOINTS)
+  fun getResidentialDetails(
+    @Parameter(description = "The ID of the prison to be queried against") @PathVariable prisonId: String,
+    @Parameter(description = "Parent location path hierarchy, can be a Wing code, or landing code", example = "A-1")
+    @RequestParam(required = false)
+    parentPathHierarchy: String?,
+    @RequestAttribute filters: ConsumerFilters?,
+  ): DataResponse<ResidentialDetails?> {
+    val response = getResidentialDetailsService.execute(prisonId, parentPathHierarchy, filters)
+
+    if (response.hasError(BAD_REQUEST)) {
+      throw ValidationException("Invalid query parameters.")
+    }
+
+    if (response.hasError(ENTITY_NOT_FOUND)) {
+      throw EntityNotFoundException("Could not find residential details with supplied query parameters.")
+    }
+
+    auditService.createEvent(
+      "GET_PRISON_RESIDENTIAL_DETAILS",
+      mapOf("prisonId" to prisonId, "parentPathHierarchy" to parentPathHierarchy),
+    )
+
+    return DataResponse(data = response.data)
+  }
 
   private fun isValidISODateFormat(dateString: String): Boolean =
     try {
