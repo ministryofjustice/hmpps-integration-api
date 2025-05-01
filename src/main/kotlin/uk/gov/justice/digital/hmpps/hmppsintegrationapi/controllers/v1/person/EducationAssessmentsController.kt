@@ -15,6 +15,10 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.EducationAssessmentStatusChangeRequest
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HmppsMessageResponse
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.EducationAssessmentService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 
 /**
  * Controller class exposing endpoints relating to a person's Assessments in relation to their in-prison Education.
@@ -24,6 +28,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.EducationAs
 @Tags(value = [Tag(name = "persons"), Tag(name = "education")])
 class EducationAssessmentsController(
   private val featureFlag: FeatureFlagConfig,
+  private val postAssessmentService: EducationAssessmentService,
+  private val auditService: AuditService,
 ) {
   /**
    * API endpoint to notify that a given person/offender has had a change of status to their Education Assessments.
@@ -41,9 +47,9 @@ class EducationAssessmentsController(
   fun notifyChangeOfEducationAssessmentsStatus(
     @Parameter(description = "A HMPPS person identifier", example = "A1234AA") @PathVariable hmppsId: String,
     @Valid @RequestBody request: EducationAssessmentStatusChangeRequest,
-  ) {
+  ): Response<HmppsMessageResponse> {
     featureFlag.require(FeatureFlagConfig.USE_EDUCATION_ASSESSMENTS_ENDPOINTS)
 
-    // TODO - implement me
+    return postAssessmentService.sendEducationAssessmentEvent(hmppsId, request)
   }
 }
