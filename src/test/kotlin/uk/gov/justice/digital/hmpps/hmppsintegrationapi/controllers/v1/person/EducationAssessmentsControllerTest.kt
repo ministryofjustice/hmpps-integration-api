@@ -13,12 +13,16 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.ValidationErrorResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.MockMvcExtensions.contentAsJson
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.EducationAssessmentService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 
 @WebMvcTest(controllers = [EducationAssessmentsController::class])
 @ActiveProfiles("test")
 class EducationAssessmentsControllerTest(
   private val springMockMvc: MockMvc,
   @MockitoBean val featureFlagConfig: FeatureFlagConfig,
+  @MockitoBean val educationAssessmentService: EducationAssessmentService,
+  @MockitoBean val auditService: AuditService,
 ) : DescribeSpec({
     val mockMvc = IntegrationAPIMockMvc(springMockMvc)
 
