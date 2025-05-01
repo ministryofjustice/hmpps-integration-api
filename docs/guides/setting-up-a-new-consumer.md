@@ -158,7 +158,7 @@ Within the [Cloud Platform Environments GitHub repository](https://github.com/mi
    # E.g. kubectl -n hmpps-integration-api-dev get secrets event-mapps-queue  -o json
    ```
 8. Send the client queue name and ARN to the consumer
-9. Follow the steps in the [Integration Events repository](https://github.com/ministryofjustice/hmpps-integration-events/blob/main/docs/guides/setting-up-a-new-consumer.md) to ensure the queue is populated with events. 
+9. Follow the steps in the [Integration Events repository](https://github.com/ministryofjustice/hmpps-integration-events/blob/main/docs/guides/setting-up-a-new-consumer.md) to ensure the queue is populated with events.
 
 The consumer can use the `POST /token` endpoint in API Gateway to retrieve temporary credentials, then use the SQS APIs or SDKs to receive and delete messages. For example:
 
