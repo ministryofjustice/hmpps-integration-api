@@ -72,11 +72,14 @@ class LocationsInsidePrisonGateway(
     }
   }
 
-  fun getResidentialHierarchy(prisonId: String): Response<List<LIPResidentialHierarchyItem>?> {
+  fun getResidentialHierarchy(
+    prisonId: String,
+    includeInactive: Boolean = false,
+  ): Response<List<LIPResidentialHierarchyItem>?> {
     val result =
       webClient.requestList<LIPResidentialHierarchyItem>(
         HttpMethod.GET,
-        "/locations/prison/$prisonId/residential-hierarchy",
+        "/locations/prison/$prisonId/residential-hierarchy" + if (includeInactive) "?includeInactive=true" else "",
         authenticationHeader(),
         UpstreamApi.LOCATIONS_INSIDE_PRISON,
         badRequestAsError = true,
