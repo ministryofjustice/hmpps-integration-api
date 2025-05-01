@@ -45,3 +45,6 @@ globals:
         - "/v1/visit/id/by-client-ref/[^/]*$"
         - "/v1/visit/.*/cancel"
         - "/v1/contacts/[^/]*$"
+    reference-data-only:
+      include:
+        - "/v1/hmpps/reference-data"
