@@ -36,6 +36,7 @@ class GetResidentialHierarchyServiceTest(
           fullLocationPath = "MDI-A-1-001",
           localName = "Cell 001",
           level = 3,
+          status = "ACTIVE",
           subLocations = null,
         )
       val mainLocation =
@@ -46,6 +47,7 @@ class GetResidentialHierarchyServiceTest(
           fullLocationPath = "MDI-A",
           localName = "Wing A",
           level = 2,
+          status = "ACTIVE",
           subLocations = listOf(subLocation1),
         )
 
