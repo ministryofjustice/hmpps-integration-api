@@ -90,7 +90,7 @@ class EducationAssessmentService(
     } catch (e: Exception) {
       throw MessageFailedException("Failed to send assessment event message to SQS", e)
     }
-    return Response(HmppsMessageResponse(message = "education assessment event written to queue"))
+    return Response(HmppsMessageResponse(message = "Education assessment event written to queue"))
   }
 }
 
