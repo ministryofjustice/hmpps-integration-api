@@ -48,4 +48,3 @@ globals:
   reference-data-only:
     include:
       - "/v1/hmpps/reference-data"
-
