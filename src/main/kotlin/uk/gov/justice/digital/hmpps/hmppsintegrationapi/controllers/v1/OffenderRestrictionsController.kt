@@ -23,12 +23,12 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPrisonersNon
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 
 @RestController
-@Tag(name = "prison")
 class OffenderRestrictionsController(
   @Autowired val auditService: AuditService,
   @Autowired val getPrisonersNonAssociationsService: GetPrisonersNonAssociationsService,
 ) {
   @GetMapping("/v1/prison/{prisonId}/prisoners/{hmppsId}/non-associations")
+  @Tag(name = "visits")
   @Operation(
     summary = "Returns a single prisoners list of non associates.",
     description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul> <br> includeOpen is true by default, includeClosed is false by default. At least one must be true.",
