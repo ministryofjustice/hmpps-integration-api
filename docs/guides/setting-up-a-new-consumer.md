@@ -158,14 +158,15 @@ Within the [Cloud Platform Environments GitHub repository](https://github.com/mi
    # E.g. kubectl -n hmpps-integration-api-dev get secrets event-mapps-queue  -o json
    ```
 8. Send the client queue name and ARN to the consumer
+9. Follow the steps in the [Integration Events repository](https://github.com/ministryofjustice/hmpps-integration-events/blob/main/docs/guides/setting-up-a-new-consumer.md) to ensure the queue is populated with events. 
 
 The consumer can use the `POST /token` endpoint in API Gateway to retrieve temporary credentials, then use the SQS APIs or SDKs to receive and delete messages. For example:
 
 ```shell
 temporary_credentials=$(curl --cert client.pem --key client.key -H "x-api-key: $api_key" -XPOST https://dev.integration-api.hmpps.service.justice.gov.uk/token)
-export AWS_ACCESS_KEY_ID=$(jq -r '.AccessKeyId' <<< "$creds")
-export AWS_SECRET_ACCESS_KEY=$(jq -r '.SecretAccessKey' <<< "$creds")
-export AWS_SESSION_TOKEN=$(jq -r '.SessionToken' <<< "$creds")
+export AWS_ACCESS_KEY_ID=$(jq -r '.AccessKeyId' <<< "$temporary_credentials")
+export AWS_SECRET_ACCESS_KEY=$(jq -r '.SecretAccessKey' <<< "$temporary_credentials")
+export AWS_SESSION_TOKEN=$(jq -r '.SessionToken' <<< "$temporary_credentials")
 
 aws sqs get-queue-attributes --attribute-names ApproximateNumberOfMessages --queue-url "https://sqs.eu-west-2.amazonaws.com/754256621582/$client_queue_name" --region eu-west-2 --output text
 > 1234
