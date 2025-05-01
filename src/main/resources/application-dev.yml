@@ -178,6 +178,21 @@ authorisation:
     bmadley:
       include:
         - "/.*"
+        # Below are added to be able to test our events setup
+        - "/v1/persons/.*/risks/mappadetail"
+        - "/v1/persons/.*/risks/scores"
+        - "/v1/persons/.*/sentences/latest-key-dates-and-adjustments"
+        - "/v1/persons/.*/status-information"
+        - "/v1/persons/.*/risks/dynamic"
+        - "/v1/persons/[^/]*$"
+        - "/v1/persons/.*/alerts/pnd"
+        - "/v1/pnd/persons/.*/alerts"
+        - "/v1/persons/.*/licences/conditions"
+        - "/v1/persons/.*/risks/serious-harm"
+        - "/v1/persons/.*/plp-induction-schedule"
+        - "/v1/persons/.*/plp-review-schedule"
+        - "/v1/persons/.*/addresses"
+        - "/v1/persons/.*/person-responsible-officer"
       filters:
     serco:
       include:
