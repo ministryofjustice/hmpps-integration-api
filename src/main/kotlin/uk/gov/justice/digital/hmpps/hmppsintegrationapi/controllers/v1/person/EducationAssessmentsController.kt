@@ -28,7 +28,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditS
 @Tags(value = [Tag(name = "persons"), Tag(name = "education")])
 class EducationAssessmentsController(
   private val featureFlag: FeatureFlagConfig,
-  private val postAssessmentService: EducationAssessmentService,
+  private val educationAssessmentService: EducationAssessmentService,
   private val auditService: AuditService,
 ) {
   /**
@@ -50,7 +50,7 @@ class EducationAssessmentsController(
   ): Response<HmppsMessageResponse> {
     featureFlag.require(FeatureFlagConfig.USE_EDUCATION_ASSESSMENTS_ENDPOINTS)
 
-    val response = postAssessmentService.sendEducationAssessmentEvent(hmppsId, request)
+    val response = educationAssessmentService.sendEducationAssessmentEvent(hmppsId, request)
     auditService.createEvent("CREATE EDUCATION ASSESSMENT EVENT", mapOf("hmppsId" to hmppsId))
     return response
   }

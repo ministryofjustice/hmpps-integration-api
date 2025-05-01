@@ -66,7 +66,16 @@ class EducationAssessmentService(
         objectMapper.writeValueAsString(
           HmppsMessage(
             eventType = eventType,
-            messageAttributes = with(assessmentEvent) { mapOf("prisonNumber" to prisonNumber) },
+            messageAttributes =
+              with(assessmentEvent) {
+                mapOf(
+                  "prisonNumber" to prisonNumber,
+                  "status" to status,
+                  "statusChangeDate" to statusChangeDate,
+                  "detailUrl" to detailUrl,
+                  "requestId" to request.requestId,
+                )
+              },
           ),
         )
 
