@@ -29,7 +29,7 @@ hmpps.sqs:
       queueName: "jobsboard-integration"
     visits:
       queueName: "visits"
-    assessmentEvents:
+    assessmentevents:
       queueName: "assessmentevents"
 
 feature-flag:
