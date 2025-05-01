@@ -114,7 +114,7 @@ class EducationAssessmentServiceTest :
               mapOf(
                 "prisonNumber" to "H1234",
                 "status" to aValidEducationAssessmentRequest.status,
-                "statusChangeDate" to aValidEducationAssessmentRequest.statusChangeDate,
+                "statusChangeDate" to aValidEducationAssessmentRequest.statusChangeDate.toString(),
                 "detailUrl" to aValidEducationAssessmentRequest.detailUrl,
                 "requestId" to aValidEducationAssessmentRequest.requestId,
               ),
@@ -146,7 +146,7 @@ class EducationAssessmentServiceTest :
               mapOf(
                 "prisonNumber" to "H1234",
                 "status" to aValidEducationAssessmentRequest.status,
-                "statusChangeDate" to aValidEducationAssessmentRequest.statusChangeDate,
+                "statusChangeDate" to aValidEducationAssessmentRequest.statusChangeDate.toString(),
                 "detailUrl" to aValidEducationAssessmentRequest.detailUrl,
                 "requestId" to aValidEducationAssessmentRequest.requestId,
               ),
