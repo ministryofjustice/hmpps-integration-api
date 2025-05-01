@@ -17,16 +17,15 @@ class GetResidentialHierarchyService(
 ) {
   fun execute(
     prisonId: String,
+    includeInactive: Boolean = false,
     filters: ConsumerFilters?,
   ): Response<List<ResidentialHierarchyItem>?> {
     val checkAccess = consumerPrisonAccessService.checkConsumerHasPrisonAccess<List<ResidentialHierarchyItem>>(prisonId, filters)
-
     if (checkAccess.errors.isNotEmpty()) {
       return Response(data = checkAccess.data, errors = checkAccess.errors)
     }
 
-    val result = locationsInsidePrisonGateway.getResidentialHierarchy(prisonId)
-
+    val result = locationsInsidePrisonGateway.getResidentialHierarchy(prisonId, includeInactive)
     if (result.errors.isNotEmpty()) {
       return Response(data = null, errors = result.errors)
     }

@@ -207,11 +207,14 @@ class PrisonController(
   @FeatureFlag(name = FeatureFlagConfig.USE_RESIDENTIAL_HIERARCHY_ENDPOINTS)
   fun getResidentialHierarchy(
     @Parameter(description = "The ID of the prison to be queried against") @PathVariable prisonId: String,
+    @Schema(description = "Include temporarily inactive locations", example = "false", required = false)
+    @RequestParam(name = "includeInactive", required = false, defaultValue = "false")
+    includeInactive: Boolean = false,
     @RequestAttribute filters: ConsumerFilters?,
   ): DataResponse<List<ResidentialHierarchyItem>?> {
-    val response = getResidentialHierarchyService.execute(prisonId, filters)
+    val response = getResidentialHierarchyService.execute(prisonId, includeInactive, filters)
 
-    if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
+    if (response.hasError(BAD_REQUEST)) {
       throw ValidationException("Invalid query parameters.")
     }
 

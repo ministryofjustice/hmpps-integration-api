@@ -409,8 +409,9 @@ internal class PrisonControllerTest(
 
     describe("GET /{prisonId}/residential-hierarchy") {
       val prisonId = "ABC"
+      val includeInactive = true
       val filters = null
-      val path = "$basePath/$prisonId/residential-hierarchy"
+      val path = "$basePath/$prisonId/residential-hierarchy?includeInactive=$includeInactive"
 
       val subLocation =
         ResidentialHierarchyItem(
@@ -438,7 +439,7 @@ internal class PrisonControllerTest(
       }
 
       it("should return 200 when success") {
-        whenever(getResidentialHierarchyService.execute(prisonId, filters)).thenReturn(Response(data = listOf(mainLocation)))
+        whenever(getResidentialHierarchyService.execute(prisonId, includeInactive, filters)).thenReturn(Response(data = listOf(mainLocation)))
 
         val result = mockMvc.performAuthorised(path)
         result.response.status.shouldBe(HttpStatus.OK.value())
@@ -446,7 +447,7 @@ internal class PrisonControllerTest(
       }
 
       it("should call the audit service") {
-        whenever(getResidentialHierarchyService.execute(prisonId, filters)).thenReturn(Response(data = listOf(mainLocation)))
+        whenever(getResidentialHierarchyService.execute(prisonId, includeInactive, filters)).thenReturn(Response(data = listOf(mainLocation)))
 
         mockMvc.performAuthorised(path)
         verify(
@@ -459,7 +460,7 @@ internal class PrisonControllerTest(
       }
 
       it("returns 400 when getResidentialHierarchyService returns not found") {
-        whenever(getResidentialHierarchyService.execute(prisonId, filters)).thenReturn(
+        whenever(getResidentialHierarchyService.execute(prisonId, includeInactive, filters)).thenReturn(
           Response(
             data = null,
             errors =
@@ -477,7 +478,7 @@ internal class PrisonControllerTest(
       }
 
       it("returns 404 when getResidentialHierarchyService returns not found") {
-        whenever(getResidentialHierarchyService.execute(prisonId, filters)).thenReturn(
+        whenever(getResidentialHierarchyService.execute(prisonId, includeInactive, filters)).thenReturn(
           Response(
             data = null,
             errors =

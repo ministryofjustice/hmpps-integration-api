@@ -27,6 +27,7 @@ class GetResidentialHierarchyServiceTest(
 ) : DescribeSpec(
     {
       val prisonId = "ABC"
+      val includeInactive = true
       val filters = null
       val subLocation1 =
         LIPResidentialHierarchyItem(
@@ -36,6 +37,7 @@ class GetResidentialHierarchyServiceTest(
           fullLocationPath = "MDI-A-1-001",
           localName = "Cell 001",
           level = 3,
+          status = "ACTIVE",
           subLocations = null,
         )
       val mainLocation =
@@ -46,6 +48,7 @@ class GetResidentialHierarchyServiceTest(
           fullLocationPath = "MDI-A",
           localName = "Wing A",
           level = 2,
+          status = "ACTIVE",
           subLocations = listOf(subLocation1),
         )
 
@@ -54,11 +57,11 @@ class GetResidentialHierarchyServiceTest(
         Mockito.reset(locationsInsidePrisonGateway)
 
         whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<List<ResidentialHierarchyItem>>(prisonId, filters)).thenReturn(Response(data = null, errors = emptyList()))
-        whenever(locationsInsidePrisonGateway.getResidentialHierarchy(prisonId)).thenReturn(Response(data = listOf(mainLocation)))
+        whenever(locationsInsidePrisonGateway.getResidentialHierarchy(prisonId, includeInactive)).thenReturn(Response(data = listOf(mainLocation)))
       }
 
       it("performs a search according to prisonId and returns data") {
-        val result = getResidentialHierarchyService.execute(prisonId, filters)
+        val result = getResidentialHierarchyService.execute(prisonId, includeInactive, filters)
         result.data.shouldNotBeNull()
         result.data.shouldBe(listOf(mainLocation.toResidentialHierarchyItem()))
         result.errors.count().shouldBe(0)
@@ -68,16 +71,16 @@ class GetResidentialHierarchyServiceTest(
         val errors = listOf(UpstreamApiError(UpstreamApi.LOCATIONS_INSIDE_PRISON, UpstreamApiError.Type.ENTITY_NOT_FOUND, description = "Consumer Prison Access Service not found"))
         whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<List<ResidentialHierarchyItem>>(prisonId, filters)).thenReturn(Response(data = null, errors = errors))
 
-        val result = getResidentialHierarchyService.execute(prisonId, filters)
+        val result = getResidentialHierarchyService.execute(prisonId, includeInactive, filters)
         result.data.shouldBe(null)
         result.errors.shouldBe(errors)
       }
 
       it("should return a list of errors if locationsInsidePrisonGateway returns errors") {
         val errors = listOf(UpstreamApiError(UpstreamApi.LOCATIONS_INSIDE_PRISON, UpstreamApiError.Type.ENTITY_NOT_FOUND, description = "locationsInsidePrisonGateway returns errors"))
-        whenever(locationsInsidePrisonGateway.getResidentialHierarchy(prisonId)).thenReturn(Response(data = null, errors = errors))
+        whenever(locationsInsidePrisonGateway.getResidentialHierarchy(prisonId, includeInactive)).thenReturn(Response(data = null, errors = errors))
 
-        val result = getResidentialHierarchyService.execute(prisonId, filters)
+        val result = getResidentialHierarchyService.execute(prisonId, includeInactive, filters)
         result.data.shouldBe(null)
         result.errors.shouldBe(errors)
       }

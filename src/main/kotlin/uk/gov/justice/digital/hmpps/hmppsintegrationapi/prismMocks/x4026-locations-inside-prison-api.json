@@ -10741,6 +10741,11 @@
             "description": "Current Level within hierarchy, starts at 1, e.g Wing = 1",
             "example": 1
           },
+          "status": {
+            "type": "string",
+            "description": "Status of the location",
+            "example": "ACTIVE"
+          },
           "subLocations": {
             "type": "array",
             "description": "Sub residential locations",

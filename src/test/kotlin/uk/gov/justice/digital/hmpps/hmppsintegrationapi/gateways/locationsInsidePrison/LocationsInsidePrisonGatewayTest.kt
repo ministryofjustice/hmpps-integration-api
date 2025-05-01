@@ -452,6 +452,7 @@ class LocationsInsidePrisonGatewayTest(
                     "fullLocationPath": "A",
                     "localName": "Mki-a",
                     "level": 1,
+                    "status": "ACTIVE",
                     "subLocations": [
                         {
                             "locationId": "01951953-8044-7ebb-ba4e-1d4116e20fda",
@@ -460,13 +461,15 @@ class LocationsInsidePrisonGatewayTest(
                             "fullLocationPath": "A-1",
                             "localName": "Mki-a-1",
                             "level": 2,
+                            "status": "ACTIVE",
                             "subLocations": [
                                 {
                                     "locationId": "0195195c-711a-7c13-869f-1347b27979e1",
                                     "locationType": "CELL",
                                     "locationCode": "03",
                                     "fullLocationPath": "A-1-03",
-                                    "level": 3
+                                    "level": 3,
+                                    "status": "ACTIVE"
                                 }
                             ]
                         }
