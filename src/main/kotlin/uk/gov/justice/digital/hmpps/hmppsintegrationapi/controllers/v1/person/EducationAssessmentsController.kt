@@ -50,6 +50,8 @@ class EducationAssessmentsController(
   ): Response<HmppsMessageResponse> {
     featureFlag.require(FeatureFlagConfig.USE_EDUCATION_ASSESSMENTS_ENDPOINTS)
 
-    return postAssessmentService.sendEducationAssessmentEvent(hmppsId, request)
+    val response = postAssessmentService.sendEducationAssessmentEvent(hmppsId, request)
+    auditService.createEvent("CREATE EDUCATION ASSESSMENT EVENT", mapOf("hmppsId" to hmppsId))
+    return response
   }
 }
