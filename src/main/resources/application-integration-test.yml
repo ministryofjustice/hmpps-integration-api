@@ -179,3 +179,8 @@ authorisation:
         - "private-prison"
       include:
       filters:
+    reference-data-only-user:
+      roles:
+        - "reference-data-only"
+      include:
+      filters:
