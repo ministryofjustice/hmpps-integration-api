@@ -78,3 +78,8 @@ authorisation:
         - "/v1/persons/[^/]+/expression-of-interest/jobs/[^/]+$"
         - "/v1/hmpps/id/by-nomis-number/[^/]*$"
         - "/v1/hmpps/id/nomis-number/by-hmpps-id/[^/]*$"
+    pnd:
+      include:
+      filters:
+      roles:
+        - "reference-data-only"
