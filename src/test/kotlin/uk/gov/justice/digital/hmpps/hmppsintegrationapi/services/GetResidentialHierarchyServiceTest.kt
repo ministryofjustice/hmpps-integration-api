@@ -78,7 +78,7 @@ class GetResidentialHierarchyServiceTest(
 
       it("should return a list of errors if locationsInsidePrisonGateway returns errors") {
         val errors = listOf(UpstreamApiError(UpstreamApi.LOCATIONS_INSIDE_PRISON, UpstreamApiError.Type.ENTITY_NOT_FOUND, description = "locationsInsidePrisonGateway returns errors"))
-        whenever(locationsInsidePrisonGateway.getResidentialHierarchy(prisonId)).thenReturn(Response(data = null, errors = errors))
+        whenever(locationsInsidePrisonGateway.getResidentialHierarchy(prisonId, includeInactive)).thenReturn(Response(data = null, errors = errors))
 
         val result = getResidentialHierarchyService.execute(prisonId, includeInactive, filters)
         result.data.shouldBe(null)

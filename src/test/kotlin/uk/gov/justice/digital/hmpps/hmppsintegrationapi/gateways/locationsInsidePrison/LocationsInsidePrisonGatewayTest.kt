@@ -468,7 +468,7 @@ class LocationsInsidePrisonGatewayTest(
                                     "locationType": "CELL",
                                     "locationCode": "03",
                                     "fullLocationPath": "A-1-03",
-                                    "level": 3
+                                    "level": 3,
                                     "status": "ACTIVE"
                                 }
                             ]
