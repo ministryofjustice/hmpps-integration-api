@@ -88,7 +88,7 @@ class EducationAssessmentService(
           .build(),
       )
     } catch (e: Exception) {
-      logger.error("failed to send assessment event: $hmppsId", e)
+      logger.error("failed to send assessment event: ${eventType.type}, queueURL: $assessmentEventsQueueUrl", e)
       throw MessageFailedException("Failed to send assessment event message to SQS", e)
     }
     return Response(HmppsMessageResponse(message = "Education assessment event written to queue"))
