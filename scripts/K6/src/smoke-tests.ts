@@ -2,35 +2,13 @@
 
 import http from 'k6/http';
 import { check } from 'k6';
-import { b64decode } from 'k6/encoding';
-
-const requiredVars = [
-  "FULL_ACCESS_KEY",
-  "FULL_ACCESS_CERT",
-  "FULL_ACCESS_API_KEY",
-  "LIMITED_ACCESS_KEY",
-  "LIMITED_ACCESS_CERT",
-  "LIMITED_ACCESS_API_KEY",
-  "NO_ACCESS_KEY",
-  "NO_ACCESS_CERT",
-  "NO_ACCESS_API_KEY",
-] as const;
-
-let fail = false;
-for (const str of requiredVars) {
-  if (!__ENV[str]) {
-    console.error(`[Config] Missing: ${str}`);
-    fail = true;
-  }
-}
-if (fail) throw new Error("Missing env vars");
 
 export const options = {
   tlsAuth: [
     {
       domains: ["dev.integration-api.hmpps.service.justice.gov.uk"],
-      cert: b64decode(__ENV.FULL_ACCESS_CERT).toString(),
-      key: b64decode(__ENV.FULL_ACCESS_KEY).toString(),
+      cert: open('/tmp/full_access.pem'),
+      key: open('/tmp/full_access.key'),
     },
   ],
 };
