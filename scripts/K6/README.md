@@ -20,15 +20,13 @@ While it, of course, still is possible to shoot yourself in the foot with TypeSc
 - Improve readability and maintainability.
 - Allow you to drop a lot of the defensive code previously needed to make sure consumers are calling functions properly.
 
-
 ## Installation
 
 **Creating a project from the `template-typescript` template**
 
 To generate a TypeScript project that includes the dependencies and initial configuration, navigate to the [template-typescript](https://github.com/grafana/k6-template-typescript) page and click **Use this template**.
 
-  ![](docs/use-this-template-button.png)
-
+![](docs/use-this-template-button.png)
 
 **Install dependencies**
 

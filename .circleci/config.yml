@@ -157,11 +157,11 @@ workflows:
   build-test-and-deploy:
     jobs:
       - smoke-tests:
-            <<: *slack-fail-post-step
-            name: smoke-tests-for-dev
-            context:
-              - hmpps-common-vars
-              - hmpps-integration-api-smoke-test-dev
+          <<: *slack-fail-post-step
+          name: smoke-tests-for-dev
+          context:
+            - hmpps-common-vars
+            - hmpps-integration-api-smoke-test-dev
         #          requires:
         #            - post-deploy-heartbeat-for-dev
       - lint-code:
@@ -231,8 +231,6 @@ workflows:
             - hmpps-integration-api-heartbeat-dev
           requires:
             - deploy-to-dev
-
-
 
       - create-and-push-image-to-ecr:
           <<: *slack-fail-post-step
