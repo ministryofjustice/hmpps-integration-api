@@ -128,26 +128,17 @@ export default function () {
     },
   };
 
-  type ErrorResponse = {
-    userMessage?: string;
-  };
-
-  let response = http.post(`${baseUrl}${post_visit_endpoint}`, post_visit_data, params);
-  if (check(response, { 'POST /v1/visit == 200': (res) => res.status === 200 })) {
-    console.log(`\x1b[0;32m✔ ${post_visit_endpoint}\x1b[0m`);
-  } else {
-    const body = response.json() as ErrorResponse;
-    console.error(`\x1b[0;31m✗ ${post_visit_endpoint} ${response.status} - ${body.userMessage}\x1b[0m`);
-  }
+  const postRes = http.post(`${baseUrl}${post_visit_endpoint}`, post_visit_data, params);
+  check(postRes, {
+    'POST /v1/visit returns 200': (r) => r.status === 200,
+  });
 
   for (const endpoint of get_endpoints) {
-    response = http.get(`${baseUrl}${endpoint}`, params);
-    if (check(response, { [`GET ${endpoint} == 200`]: (r) => r.status === 200 })) {
-      console.log(`\x1b[0;32m✔ ${endpoint}\x1b[0m`);
-    } else {
-      const body = response.json() as ErrorResponse;
-      console.error(`\x1b[0;31m✗ ${endpoint} ${response.status} - ${body.userMessage}\x1b[0m`);
-    }
+    const res = http.get(`${baseUrl}${endpoint}`, params);
+    check(res, {
+      [`GET ${endpoint} returns 200`]: (r) => r.status === 200,
+    });
   }
 }
+
 
