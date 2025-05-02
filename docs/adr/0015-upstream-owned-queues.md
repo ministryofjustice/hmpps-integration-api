@@ -16,13 +16,13 @@ We have decided that the queue providing the asynchronous integration and any DL
 
 ### Rationale
 
-If we follow the pattern of the Integration API owning the queue, we would reach a situation where a single team was responsible for managing events over several different domains. We believe that a single team would not be able to maintain the knowledge required to do this. 
+If we follow the pattern of the Integration API owning the queue, we would reach a situation where a single team was responsible for managing events over several different domains. We believe that a single team would not be able to maintain the knowledge required to do this.
 
-This would particularly be an issue when managing undelivered messages, as an Integration API team would only know how to resolve technical issues, and other business and data related issues would require response from the upstream service team. 
+This would particularly be an issue when managing undelivered messages, as an Integration API team would only know how to resolve technical issues, and other business and data related issues would require response from the upstream service team.
 
 ## Consequences
 
-- Teams that operate upstream APIs will be required to support queues in order to receive writes from external consumers. 
+- Teams that operate upstream APIs will be required to support queues in order to receive writes from external consumers.
 - The Integration API team will need to apply any validation rules defined by the upstream teams before writing to the queue.
 
 ## Supporting Documentation
