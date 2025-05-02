@@ -2,7 +2,9 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.controllers.v1.person
 
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
+import jakarta.validation.ValidationException
 import org.assertj.core.api.Assertions.assertThat
+import org.mockito.kotlin.whenever
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
@@ -11,10 +13,15 @@ import org.springframework.test.web.servlet.MockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.ErrorResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.ValidationErrorResponse
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.MockMvcExtensions.contentAsJson
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.EducationAssessmentStatus
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.EducationAssessmentStatusChangeRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.EducationAssessmentService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
+import java.net.URI
+import java.time.LocalDate
 
 @WebMvcTest(controllers = [EducationAssessmentsController::class])
 @ActiveProfiles("test")
@@ -23,10 +30,13 @@ class EducationAssessmentsControllerTest(
   @MockitoBean val featureFlagConfig: FeatureFlagConfig,
   @MockitoBean val educationAssessmentService: EducationAssessmentService,
   @MockitoBean val auditService: AuditService,
-) : DescribeSpec({
+) : DescribeSpec(
+  {
     val mockMvc = IntegrationAPIMockMvc(springMockMvc)
 
     val validHmppsId = "A1234BC"
+    val notFoundHmppsId = "B1234BC"
+    val invalidHmppsId = "C1234BC"
 
     fun apiPath(hmppsId: String = validHmppsId) = "/v1/persons/$hmppsId/education/assessments/status"
 
@@ -46,6 +56,59 @@ class EducationAssessmentsControllerTest(
         // Then
         response.status.shouldBe(HttpStatus.OK.value())
         response.contentAsString.shouldBe("")
+      }
+
+      it("should return 404 Not Found if ENTITY_NOT_FOUND error occurs") {
+        // Given
+        val requestBody =
+          mapOf(
+            "status" to "ALL_RELEVANT_ASSESSMENTS_COMPLETE",
+            "statusChangeDate" to "2025-04-22",
+            "detailUrl" to "https://example.com/sequation-virtual-campus2-api/learnerAssessments/v2/A1234AB",
+            "requestId" to "0650ba37-a977-4fbe-9000-4715aaecadba",
+          )
+
+        val requestBodyAsRequest = EducationAssessmentStatusChangeRequest(
+          status = EducationAssessmentStatus.ALL_RELEVANT_ASSESSMENTS_COMPLETE,
+          statusChangeDate = LocalDate.of(2025, 4, 22),
+          detailUrl = URI.create("https://example.com/sequation-virtual-campus2-api/learnerAssessments/v2/A1234AB").toURL(),
+          requestId = "0650ba37-a977-4fbe-9000-4715aaecadba",
+        )
+        whenever(educationAssessmentService.sendEducationAssessmentEvent(notFoundHmppsId, requestBodyAsRequest)).thenThrow(EntityNotFoundException("Could not find person with id: $notFoundHmppsId"))
+        val response = mockMvc.performAuthorisedPost("/v1/persons/$notFoundHmppsId/education/assessments/status", requestBody).response
+
+        // Then
+        response.status.shouldBe(HttpStatus.NOT_FOUND.value())
+        val errorResponse = response.contentAsJson<ErrorResponse>()
+        response.status.shouldBe(HttpStatus.NOT_FOUND.value())
+        assertThat(errorResponse.status).isEqualTo(404)
+        assertThat(errorResponse.userMessage).isEqualTo("Could not find person with id: B1234BC")
+      }
+
+      it("should throw ValidationException if an invalid hmppsId is provided") {
+        // Given
+        val requestBody =
+          mapOf(
+            "status" to "ALL_RELEVANT_ASSESSMENTS_COMPLETE",
+            "statusChangeDate" to "2025-04-22",
+            "detailUrl" to "https://example.com/sequation-virtual-campus2-api/learnerAssessments/v2/A1234AB",
+            "requestId" to "0650ba37-a977-4fbe-9000-4715aaecadba",
+          )
+        val requestBodyAsRequest = EducationAssessmentStatusChangeRequest(
+          status = EducationAssessmentStatus.ALL_RELEVANT_ASSESSMENTS_COMPLETE,
+          statusChangeDate = LocalDate.of(2025, 4, 22),
+          detailUrl = URI.create("https://example.com/sequation-virtual-campus2-api/learnerAssessments/v2/A1234AB").toURL(),
+          requestId = "0650ba37-a977-4fbe-9000-4715aaecadba",
+        )
+        whenever(educationAssessmentService.sendEducationAssessmentEvent(invalidHmppsId, requestBodyAsRequest)).thenThrow(ValidationException("Invalid HMPPS ID: $invalidHmppsId"))
+        val response = mockMvc.performAuthorisedPost("/v1/persons/$invalidHmppsId/education/assessments/status", requestBody).response
+
+        // Then
+        val errorResponse = response.contentAsJson<ErrorResponse>()
+        response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
+        assertThat(errorResponse.status).isEqualTo(400)
+        assertThat(errorResponse.userMessage).isEqualTo("Invalid HMPPS ID: C1234BC")
+
       }
 
       it("should return 400 given missing statusChangeDate") {
@@ -128,4 +191,5 @@ class EducationAssessmentsControllerTest(
         assertThat(errorResponse.validationErrors).isEqualTo(listOf("A requestId must be provided"))
       }
     }
-  })
+  }
+)
