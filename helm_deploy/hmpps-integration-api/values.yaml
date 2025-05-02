@@ -57,6 +57,8 @@ generic-service:
       HMPPS_SQS_QUEUES_JOBSBOARDINTEGRATION_QUEUE_NAME: "integrationqueue"
     sqs-hmpps-prison-visits-write-events-secret:
       HMPPS_SQS_QUEUES_VISITS_QUEUE_NAME: "sqs_queue_name"
+    eawp-assessment-events-secret:
+      HMPPS_SQS_QUEUES_ASSESSMENTEVENTS_QUEUE_NAME: "sqs_queue_name"
 
   allowlist:
     unrestricted: "0.0.0.0/0"
