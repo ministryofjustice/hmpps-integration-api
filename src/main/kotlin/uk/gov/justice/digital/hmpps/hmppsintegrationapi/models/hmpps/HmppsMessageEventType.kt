@@ -27,4 +27,9 @@ enum class HmppsMessageEventType(
     eventTypeCode = "VisitCancelled",
     description = "An visit has been cancelled",
   ),
+  EDUCATION_ASSESSMENT_EVENT_CREATED(
+    type = "education-assessment-event.created",
+    eventTypeCode = "EducationAssessmentEventCreated",
+    description = "An education assessment event has been created",
+  ),
 }
