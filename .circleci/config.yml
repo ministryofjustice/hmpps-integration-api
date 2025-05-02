@@ -148,9 +148,18 @@ jobs:
       image: ubuntu-2204:2022.10.2
     steps:
       - checkout
+
+      - run:
+          name: Install k6
+          command: |
+            sudo gpg --keyserver keyserver.ubuntu.com --recv-keys 33EE77F0
+            echo "deb https://dl.k6.io/deb stable main" | sudo tee /etc/apt/sources.list.d/k6.list
+            sudo apt-get update && sudo apt-get install -y k6
+
       - run:
           name: Run smoke tests
           command: make smoke-tests
+
 
 workflows:
   version: 2
