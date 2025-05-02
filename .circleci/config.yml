@@ -152,9 +152,10 @@ jobs:
       - run:
           name: Install k6
           command: |
-            sudo gpg --keyserver keyserver.ubuntu.com --recv-keys 33EE77F0
-            echo "deb https://dl.k6.io/deb stable main" | sudo tee /etc/apt/sources.list.d/k6.list
-            sudo apt-get update && sudo apt-get install -y k6
+            curl -L https://github.com/grafana/k6/releases/latest/download/k6-v0.48.0-linux-amd64.tar.gz -o k6.tar.gz
+            tar -xzf k6.tar.gz
+            sudo mv k6-v0.48.0-linux-amd64/k6 /usr/local/bin/
+            k6 version
 
       - run:
           name: Run smoke tests
