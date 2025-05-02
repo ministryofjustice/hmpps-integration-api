@@ -160,7 +160,6 @@ jobs:
           name: Run smoke tests
           command: make smoke-tests
 
-
 workflows:
   version: 2
   build-test-and-deploy:
