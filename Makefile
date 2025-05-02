@@ -36,6 +36,7 @@ heartbeat:
 
 smoke-tests:
 	./scripts/smoke-tests.sh
+	k6 run ./scripts/K6/dist/smoke-tests.js
 
 test: unit-test integration-test
 
