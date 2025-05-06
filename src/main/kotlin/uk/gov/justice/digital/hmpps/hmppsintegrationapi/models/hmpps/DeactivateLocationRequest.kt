@@ -12,26 +12,18 @@ data class DeactivateLocationRequest(
   @Schema(description = "Proposed reactivation date", example = "2025-01-05", required = true)
   val proposedReactivationDate: LocalDateTime,
 ) {
-  fun toHmppsMessage(
-    who: String,
-    locationId: String,
-  ): HmppsMessage =
+  fun toHmppsMessage(locationId: String): HmppsMessage =
     HmppsMessage(
       eventType = HmppsMessageEventType.LOCATION_DEACTIVATE,
-      messageAttributes = modelToMap(who, locationId),
-      who = who,
+      messageAttributes = modelToMap(locationId),
     )
 
-  private fun modelToMap(
-    clientName: String,
-    locationId: String,
-  ): Map<String, Any?> =
+  private fun modelToMap(locationId: String): Map<String, Any?> =
     mapOf(
       "reason" to this.reason,
       "reasonDescription" to this.reasonDescription,
       "proposedReactivationDate" to this.proposedReactivationDate,
       "locationId" to locationId,
-      "clientName" to clientName,
     )
 }
 

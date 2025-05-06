@@ -44,6 +44,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPrisonersSer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetResidentialDetailsService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetResidentialHierarchyService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetVisitsService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.LocationQueueService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.PaginatedResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.paginateWith
@@ -62,6 +63,7 @@ class PrisonController(
   @Autowired val getCapacityForPrisonService: GetCapacityForPrisonService,
   @Autowired val auditService: AuditService,
   @Autowired val getLocationByKeyService: GetLocationByKeyService,
+  @Autowired val locationQueueService: LocationQueueService,
 ) {
   @GetMapping("/prisoners/{hmppsId}")
   @Operation(
@@ -382,20 +384,20 @@ class PrisonController(
     @Valid @RequestBody deactivateLocationRequest: DeactivateLocationRequest,
     @RequestAttribute filters: ConsumerFilters?,
   ): DataResponse<HmppsMessageResponse?> {
-    val response = getLocationByKeyService.deactivateLocation(prisonId, key, deactivateLocationRequest, filters)
-    if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
-      throw EntityNotFoundException(response.errors[0].description ?: "Could not find information for a given visit.")
+    val response = locationQueueService.sendDeactivateLocationRequest(deactivateLocationRequest, prisonId, key, filters)
+    if (response.hasError(ENTITY_NOT_FOUND)) {
+      throw EntityNotFoundException(response.errors[0].description ?: "Could not find provided location.")
     }
 
     if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
       throw ValidationException("Either invalid prisoner or prison id.")
     }
 
-    auditService.createEvent("POST_VISIT", mapOf("reason" to deactivateLocationRequest.reason, "reasonDescription" to deactivateLocationRequest.reasonDescription, "proposedReactivationDate" to deactivateLocationRequest.proposedReactivationDate.toString()))
+    auditService.createEvent("DEACTIVATE_LOCATION", mapOf("reason" to deactivateLocationRequest.reason.toString(), "reasonDescription" to deactivateLocationRequest.reasonDescription, "proposedReactivationDate" to deactivateLocationRequest.proposedReactivationDate.toString()))
 
     return DataResponse(response.data)
   }
-  // feature flag
+  // TODO feature flag
 
   private fun isValidISODateFormat(dateString: String): Boolean =
     try {

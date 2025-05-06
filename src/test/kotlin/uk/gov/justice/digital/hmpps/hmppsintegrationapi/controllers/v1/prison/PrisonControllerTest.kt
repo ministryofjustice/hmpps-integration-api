@@ -44,6 +44,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPrisonersSer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetResidentialDetailsService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetResidentialHierarchyService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetVisitsService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.LocationQueueService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -61,6 +62,7 @@ internal class PrisonControllerTest(
   @MockitoBean val getLocationByKeyService: GetLocationByKeyService,
   @MockitoBean val getResidentialDetailsService: GetResidentialDetailsService,
   @MockitoBean val getCapacityForPrisonService: GetCapacityForPrisonService,
+  @MockitoBean val locationQueueService: LocationQueueService,
 ) : DescribeSpec({
     val hmppsId = "200313116M"
     val basePath = "/v1/prison"

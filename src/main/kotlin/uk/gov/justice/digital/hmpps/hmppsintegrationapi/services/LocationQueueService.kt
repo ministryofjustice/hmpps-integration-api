@@ -32,7 +32,6 @@ class LocationQueueService(
     deactivateLocationRequest: DeactivateLocationRequest,
     prisonId: String,
     key: String,
-    who: String,
     filters: ConsumerFilters?,
   ): Response<HmppsMessageResponse?> {
     if (filters?.prisons != null) {
@@ -50,7 +49,7 @@ class LocationQueueService(
 
     val locationId = locationResponse.data?.id ?: throw EntityNotFoundException("Location not found for key in upstream: $key")
 
-    val hmppsMessage = deactivateLocationRequest.toHmppsMessage(who, locationId)
+    val hmppsMessage = deactivateLocationRequest.toHmppsMessage(locationId)
     writeMessageToQueue(hmppsMessage, "Could not send deactivate location to queue")
 
     return Response(HmppsMessageResponse(message = "Deactivate location written to queue"))
