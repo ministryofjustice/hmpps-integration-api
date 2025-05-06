@@ -38,6 +38,7 @@ class EducationAssessmentService(
     hmppsId: String,
     request: EducationAssessmentStatusChangeRequest,
   ): Response<HmppsMessageResponse> {
+    logger.debug("AssessmentEvents: Attempting to send assessment event for hmppsId: $hmppsId")
     val personResponse = getPersonService.getNomisNumber(hmppsId = hmppsId)
 
     if (personResponse.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
@@ -88,6 +89,7 @@ class EducationAssessmentService(
           .build(),
       )
     } catch (e: Exception) {
+      logger.error("failed to send assessment event: ${eventType.type}, queueURL: $assessmentEventsQueueUrl", e)
       throw MessageFailedException("Failed to send assessment event message to SQS", e)
     }
     return Response(HmppsMessageResponse(message = "Education assessment event written to queue"))
