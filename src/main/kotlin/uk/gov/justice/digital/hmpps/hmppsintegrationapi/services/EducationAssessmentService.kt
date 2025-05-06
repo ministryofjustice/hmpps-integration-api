@@ -26,7 +26,7 @@ class EducationAssessmentService(
   private val hmppsQueueService: HmppsQueueService,
   private val objectMapper: ObjectMapper,
 ) {
-  private val assessmentEventsQueue by lazy { hmppsQueueService.findByQueueId("assessmentevents") as HmppsQueue }
+  private val assessmentEventsQueue by lazy { hmppsQueueService.findByQueueId("assessment_events") as HmppsQueue }
   private val assessmentEventsQueueSqsClient by lazy { assessmentEventsQueue.sqsClient }
   private val assessmentEventsQueueUrl by lazy { assessmentEventsQueue.queueUrl }
 
