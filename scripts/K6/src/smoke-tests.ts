@@ -1,14 +1,17 @@
 /// <reference types="k6" />
 
 import http from 'k6/http';
-import { check } from 'k6';
+import {check} from "k6";
+
+const certPath = __ENV.FULL_ACCESS_CERT;
+const keyPath = __ENV.FULL_ACCESS_KEY;
 
 export const options = {
   tlsAuth: [
     {
       domains: ["dev.integration-api.hmpps.service.justice.gov.uk"],
-      cert: open('/tmp/full_access.pem'),
-      key: open('/tmp/full_access.key'),
+      cert: open(certPath),
+      key: open(keyPath),
     },
   ],
 };
