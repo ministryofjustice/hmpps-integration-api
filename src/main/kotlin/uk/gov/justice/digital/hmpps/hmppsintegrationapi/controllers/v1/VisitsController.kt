@@ -33,7 +33,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditS
 
 @RestController
 @RequestMapping("/v1/visit")
-@Tag(name = "visits")
+@Tag(name = "Visits")
 class VisitsController(
   @Autowired val auditService: AuditService,
   @Autowired val visitQueueService: VisitQueueService,
