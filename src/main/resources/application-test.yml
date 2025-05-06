@@ -142,6 +142,7 @@ authorisation:
         - "/v1/persons/.*/visit-orders"
         - "/v1/persons/.*/education/assessments/status"
         - "/v1/prison/.*/location/[^/]*$"
+        - "/v1/prison/.*/location/.*/deactivate"
     config-test:
       include:
         - "/v1/config/authorisation"
