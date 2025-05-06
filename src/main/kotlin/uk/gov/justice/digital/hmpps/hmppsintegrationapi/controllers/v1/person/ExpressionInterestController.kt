@@ -15,7 +15,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.PutExpressionIn
 
 @RestController
 @RequestMapping("/v1/persons")
-@Tag(name = "persons")
+@Tag(name = "Persons")
 class ExpressionInterestController(
   private val putExpressionInterestService: PutExpressionInterestService,
 ) {

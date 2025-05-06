@@ -30,7 +30,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.paginateWith
 
 @RestController
 @RequestMapping("/v1/persons")
-@Tag(name = "persons")
+@Tag(name = "Persons")
 class SentencesController(
   @Autowired val getSentencesForPersonService: GetSentencesForPersonService,
   @Autowired val getLatestSentenceKeyDatesAndAdjustmentsForPersonService: GetLatestSentenceKeyDatesAndAdjustmentsForPersonService,

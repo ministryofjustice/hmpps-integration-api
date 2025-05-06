@@ -50,7 +50,7 @@ import java.time.format.DateTimeFormatter
 
 @RestController
 @RequestMapping("/v1/persons")
-@Tag(name = "persons")
+@Tag(name = "Persons")
 class PersonController(
   @Autowired val getPersonService: GetPersonService,
   @Autowired val getPersonsService: GetPersonsService,
@@ -189,7 +189,7 @@ class PersonController(
   }
 
   @GetMapping("{hmppsId}/contacts")
-  @Tag(name = "visits")
+  @Tag(name = "Visits")
   @Operation(
     summary = "Returns a prisoners contacts.",
     description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
@@ -221,7 +221,7 @@ class PersonController(
   }
 
   @GetMapping("{hmppsId}/iep-level")
-  @Tag(name = "visits")
+  @Tag(name = "Visits")
   @Operation(
     summary = "Returns a prisoners IEP level.",
     description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
@@ -252,7 +252,7 @@ class PersonController(
   }
 
   @GetMapping("{hmppsId}/visit-orders")
-  @Tag(name = "visits")
+  @Tag(name = "Visits")
   @Operation(
     summary = "Returns the number of remaining visit orders a prisoner has.",
     responses = [

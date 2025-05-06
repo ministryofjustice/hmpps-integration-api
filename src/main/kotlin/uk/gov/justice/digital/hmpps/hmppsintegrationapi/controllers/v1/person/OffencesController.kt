@@ -26,7 +26,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.paginateWith
 
 @RestController
 @RequestMapping("/v1/persons")
-@Tag(name = "persons")
+@Tag(name = "Persons")
 class OffencesController(
   @Autowired val auditService: AuditService,
   @Autowired val getOffencesForPersonService: GetOffencesForPersonService,

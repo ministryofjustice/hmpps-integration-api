@@ -25,7 +25,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditS
  */
 @RestController
 @RequestMapping("/v1/persons/{hmppsId}/education")
-@Tags(value = [Tag(name = "persons"), Tag(name = "education")])
+@Tags(value = [Tag(name = "Persons"), Tag(name = "Education")])
 class EducationAssessmentsController(
   private val featureFlag: FeatureFlagConfig,
   private val educationAssessmentService: EducationAssessmentService,

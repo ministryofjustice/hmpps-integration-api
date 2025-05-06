@@ -26,7 +26,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.PaginatedResponse
 
 @RestController
 @RequestMapping("/v1")
-@Tags(Tag(name = "persons"), Tag(name = "alerts"))
+@Tags(Tag(name = "Persons"), Tag(name = "Alerts"))
 class AlertsController(
   @Autowired val getAlertsForPersonService: GetAlertsForPersonService,
   @Autowired val auditService: AuditService,
