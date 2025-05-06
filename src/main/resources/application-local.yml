@@ -30,7 +30,7 @@ hmpps.sqs:
     visits:
       queueName: "visits"
     assessmentevents:
-      queueName: "assessmentevents"
+      queueName: "assessment-events"
 
 feature-flag:
   use-arns-endpoints: true
