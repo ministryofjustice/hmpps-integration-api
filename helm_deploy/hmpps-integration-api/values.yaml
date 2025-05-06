@@ -58,7 +58,7 @@ generic-service:
     sqs-hmpps-prison-visits-write-events-secret:
       HMPPS_SQS_QUEUES_VISITS_QUEUE_NAME: "sqs_queue_name"
     eawp-assessment-events-secret:
-      HMPPS_SQS_QUEUES_ASSESSMENTEVENTS_QUEUE_NAME: "sqs_queue_name"
+      HMPPS_SQS_QUEUES_ASSESSMENT_EVENTS_QUEUE_NAME: "sqs_queue_name"
 
   allowlist:
     unrestricted: "0.0.0.0/0"
