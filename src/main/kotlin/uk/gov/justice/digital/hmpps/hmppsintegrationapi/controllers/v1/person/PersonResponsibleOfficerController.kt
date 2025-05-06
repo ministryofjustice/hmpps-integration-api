@@ -24,7 +24,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditS
 
 @RestController
 @RequestMapping("/v1/persons")
-@Tag(name = "default")
+@Tag(name = "Persons")
 class PersonResponsibleOfficerController(
   @Autowired val auditService: AuditService,
   @Autowired val getPrisonOffenderManagerForPersonService: GetPrisonOffenderManagerForPersonService,

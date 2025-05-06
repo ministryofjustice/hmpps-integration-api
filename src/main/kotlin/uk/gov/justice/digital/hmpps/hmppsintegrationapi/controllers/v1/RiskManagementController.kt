@@ -28,13 +28,14 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.paginateWith
 
 @RestController
 @EnableConfigurationProperties(AuthorisationConfig::class)
-@Tag(name = "risks")
+@Tag(name = "Risks")
 class RiskManagementController(
   @Autowired val getRiskManagementPlansForCrnService: GetRiskManagementPlansForCrnService,
   @Autowired val auditService: AuditService,
 ) {
   @LaoRedaction(Mode.REJECT)
   @GetMapping("/v1/persons/{encodedHmppsId}/risk-management-plan")
+  @Tag(name = "Persons")
   @Operation(
     summary = "Returns a list of Risk Management Plans created for the person with the provided HMPPS ID.",
     responses = [
