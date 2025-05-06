@@ -24,7 +24,7 @@ class ContactsController(
   @Autowired val getContactService: GetContactService,
 ) {
   @GetMapping("/v1/contacts/{contactId}")
-  @Tag(name = "visits")
+  @Tag(name = "Visits")
   @Operation(
     summary = "Returns a contact by ID.",
     description = "",
