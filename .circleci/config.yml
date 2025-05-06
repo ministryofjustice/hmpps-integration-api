@@ -148,7 +148,6 @@ jobs:
       - image: grafana/k6:0.48.0
     steps:
       - checkout
-
       - run:
           name: Run smoke tests
           command: ./scripts/run-k6-smoke-tests.sh
