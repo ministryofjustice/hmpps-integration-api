@@ -156,6 +156,7 @@ jobs:
             cd scripts/K6
             npm ci
             npm run build
+          user: root
 
       - run:
           name: Run smoke tests
