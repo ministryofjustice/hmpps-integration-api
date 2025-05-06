@@ -120,6 +120,7 @@ const post_visit_data = JSON.stringify({
   // ],
 });
 
+console.log("Beginning full access smoke tests - Should all return 200")
 export default function () {
   const params = {
     headers: {
@@ -140,5 +141,5 @@ export default function () {
     });
   }
 }
-
+console.log("Completed full access smoke tests")
 

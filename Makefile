@@ -43,7 +43,9 @@ smoke-tests:
 	echo -n "$$NO_ACCESS_CERT" | base64 --decode > /tmp/no_access.pem
 	echo -n "$$NO_ACCESS_KEY" | base64 --decode > /tmp/no_access.key
 	echo -e "[Setup] Certificates retrieved\n";
-	k6 run ./scripts/K6/dist/smoke-tests.js
+	k6 run ./scripts/K6/dist/full-access-smoke-tests.js
+	k6 run ./scripts/K6/dist/limited-access-smoke-tests.js
+
 
 test: unit-test integration-test
 
