@@ -130,6 +130,7 @@ class PersonController(
   }
 
   @GetMapping("{hmppsId}/images")
+  @Tag(name = "Images")
   @Operation(
     summary = "Returns metadata of images associated with a person sorted by captureDateTime (newest first).",
     description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",

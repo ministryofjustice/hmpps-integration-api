@@ -22,7 +22,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditS
 
 @RestController
 @RequestMapping("/v1")
-@Tag(name = "images")
+@Tag(name = "Images")
 class ImageController(
   @Autowired val getImageService: GetImageService,
   @Autowired val auditService: AuditService,
@@ -55,6 +55,7 @@ class ImageController(
   }
 
   @GetMapping("persons/{hmppsId}/images/{id}")
+  @Tag(name = "Persons")
   @Operation(
     summary = "Returns an image in bytes as a JPEG.",
     description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
