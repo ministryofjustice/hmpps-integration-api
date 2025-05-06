@@ -150,15 +150,6 @@ jobs:
       - checkout
 
       - run:
-          name: Build K6 scripts
-          command: |
-            apk add --no-cache nodejs npm
-            cd scripts/K6
-            npm ci
-            npm run build
-          user: root
-
-      - run:
           name: Run smoke tests
           command: ./scripts/run-k6-smoke-tests.sh
 

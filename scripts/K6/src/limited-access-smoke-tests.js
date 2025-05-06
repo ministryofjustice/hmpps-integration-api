@@ -1,14 +1,12 @@
-/// <reference types="k6" />
-
-import http from 'k6/http';
-import { check } from 'k6';
+const http = require('k6/http');
+const { check } = require('k6');
 
 const baseUrl = 'https://dev.integration-api.hmpps.service.justice.gov.uk';
 const hmppsId = 'A8451DY';
 const allowed_endpoint = `/v1/persons/${hmppsId}/name`;
 const not_allowed_endpoint = `/v1/persons?first_name=john`;
 
-export const options = {
+module.exports.options = {
   tlsAuth: [
     {
       domains: ["dev.integration-api.hmpps.service.justice.gov.uk"],
@@ -18,7 +16,7 @@ export const options = {
   ],
 };
 
-export default function () {
+module.exports.default = function () {
   const params = {
     headers: {
       'Content-Type': 'application/json',
@@ -35,5 +33,4 @@ export default function () {
   check(res2, {
     'NOT ALLOWED: returns 403': (r) => r.status === 403,
   });
-}
-
+};
