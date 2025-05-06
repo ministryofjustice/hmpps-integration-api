@@ -181,6 +181,21 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.21.0/swagger-ui-standalone-preset.min.js" charset="UTF-8"> </script>
 
+<script>
+window.addEventListener("load", (event) => {
+  SwaggerUIBundle({
+    url: 'https://ministryofjustice.github.io/hmpps-integration-api/openapi/api-docs.json',
+    dom_id: '#swagger-ui',
+    presets: [
+      SwaggerUIBundle.presets.apis,
+      SwaggerUIStandalonePreset
+    ],
+    layout: "StandaloneLayout",
+    displayOperationId: false
+  })
+});
+</script>
+
               <div data-module='page-expiry' data-last-reviewed-on="2025-08-06">
     <div class='page-expiry--not-expired'>
       This page was last reviewed on 6 May 2025.
