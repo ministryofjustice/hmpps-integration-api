@@ -121,7 +121,6 @@ const post_visit_data = JSON.stringify({
 });
 
 export default function () {
-  console.log("Beginning full access smoke tests - Should all return 200")
   const params = {
     headers: {
       'Content-Type': 'application/json',
@@ -140,7 +139,6 @@ export default function () {
       [`GET ${endpoint} returns 200`]: (r) => r.status === 200,
     });
   }
-  console.log("Completed full access smoke tests")
 }
 
 

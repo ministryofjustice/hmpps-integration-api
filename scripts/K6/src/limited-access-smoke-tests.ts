@@ -19,7 +19,6 @@ export const options = {
 };
 
 export default function () {
-  console.log("Beginning limited access smoke tests - first endpoint should return 200, second should return 403")
   const params = {
     headers: {
       'Content-Type': 'application/json',
@@ -36,6 +35,5 @@ export default function () {
   check(res2, {
     'NOT ALLOWED: returns 403': (r) => r.status === 403,
   });
-  console.log("Completed limited access smoke tests")
 }
 
