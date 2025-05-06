@@ -47,7 +47,7 @@ import java.time.format.DateTimeFormatter
 
 @RestController
 @RequestMapping("/v1/prison")
-@Tag(name = "prison")
+@Tag(name = "Prison")
 class PrisonController(
   @Autowired val getPrisonersService: GetPrisonersService,
   @Autowired val getPersonService: GetPersonService,
@@ -59,6 +59,7 @@ class PrisonController(
   @Autowired val getLocationByKeyService: GetLocationByKeyService,
 ) {
   @GetMapping("/prisoners/{hmppsId}")
+  @Tag(name = "Prisoners")
   @Operation(
     summary = "Returns a single prisoners details given an hmppsId, does not query for a probation person.",
     description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
@@ -92,6 +93,7 @@ class PrisonController(
   }
 
   @GetMapping("/prisoners")
+  @Tag(name = "Prisoners")
   @Operation(
     summary = "Returns person(s) by search criteria, sorted by date of birth (newest first). Only queries prisoner search.",
     description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
@@ -142,7 +144,7 @@ class PrisonController(
   }
 
   @GetMapping("/{prisonId}/visit/search")
-  @Tag(name = "visits")
+  @Tag(name = "Visits")
   @Operation(
     summary = "Searches for visits by prisonId and criteria.",
     description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
@@ -188,7 +190,7 @@ class PrisonController(
 
   @Hidden // This is currently hidden because the recursive type breaks the docs
   @GetMapping("/{prisonId}/residential-hierarchy")
-  @Tag(name = "residential-areas")
+  @Tag(name = "Residential Areas")
   @Operation(
     summary = "Gets the residential hierarchy for a prison.",
     description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
@@ -231,7 +233,7 @@ class PrisonController(
   }
 
   @GetMapping("/{prisonId}/location/{key}")
-  @Tag(name = "residential-areas")
+  @Tag(name = "Residential Areas")
   @Operation(
     summary = "Gets the location information for a prison location based on a key.",
     description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
@@ -272,7 +274,7 @@ class PrisonController(
   }
 
   @GetMapping("/{prisonId}/residential-details")
-  @Tag(name = "residential-areas")
+  @Tag(name = "Residential Areas")
   @Operation(
     summary = "Gets the residential details for a prison.",
     description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
@@ -315,7 +317,7 @@ class PrisonController(
   }
 
   @GetMapping("/{prisonId}/capacity")
-  @Tag(name = "residential-areas")
+  @Tag(name = "Residential Areas")
   @Operation(
     summary = "Gets the capacity details for a prison.",
     description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
