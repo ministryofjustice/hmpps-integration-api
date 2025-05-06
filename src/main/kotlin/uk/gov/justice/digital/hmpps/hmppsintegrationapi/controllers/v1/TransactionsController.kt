@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.tags.Tag
+import io.swagger.v3.oas.annotations.tags.Tags
 import jakarta.validation.Valid
 import jakarta.validation.ValidationException
 import org.springframework.beans.factory.annotation.Autowired
@@ -38,7 +39,7 @@ import java.time.LocalDate
 
 @RestController
 @RequestMapping("/v1/prison/{prisonId}/prisoners/{hmppsId}")
-@Tag(name = "prison")
+@Tags(value = [Tag(name = "Prison"), Tag(name = "Finance")])
 class TransactionsController(
   @Autowired val auditService: AuditService,
   @Autowired val getTransactionsForPersonService: GetTransactionsForPersonService,
