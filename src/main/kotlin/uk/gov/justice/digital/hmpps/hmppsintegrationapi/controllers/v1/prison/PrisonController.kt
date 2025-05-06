@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.tags.Tag
+import io.swagger.v3.oas.annotations.tags.Tags
 import jakarta.validation.ValidationException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.GetMapping
@@ -59,7 +60,7 @@ class PrisonController(
   @Autowired val getLocationByKeyService: GetLocationByKeyService,
 ) {
   @GetMapping("/prisoners/{hmppsId}")
-  @Tag(name = "Prisoners")
+  @Tags(value = [Tag(name = "Prisoners"), Tag(name = "Reception")])
   @Operation(
     summary = "Returns a single prisoners details given an hmppsId, does not query for a probation person.",
     description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",

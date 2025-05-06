@@ -30,6 +30,7 @@ class BalancesController(
   @Autowired val getBalancesForPersonService: GetBalancesForPersonService,
 ) {
   @GetMapping("/balances")
+  @Tag(name = "Reception")
   @Operation(
     summary = "Returns all accounts for a prisoner that they have at a prison.",
     description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",

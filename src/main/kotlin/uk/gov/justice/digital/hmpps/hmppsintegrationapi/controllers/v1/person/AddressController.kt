@@ -29,6 +29,7 @@ class AddressController(
   @Autowired val getAddressesForPersonService: GetAddressesForPersonService,
 ) {
   @GetMapping("{hmppsId}/addresses")
+  @Tag(name = "Reception")
   @Operation(
     summary = "Returns addresses associated with a person, ordered by startDate.",
     description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",

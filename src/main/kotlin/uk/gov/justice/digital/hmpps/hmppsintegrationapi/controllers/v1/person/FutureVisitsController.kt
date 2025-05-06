@@ -24,11 +24,12 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditS
 
 @RestController
 @RequestMapping(value = ["/v1/persons"])
-@Tags(value = [Tag(name = "Persons"), Tag(name = "Visits")])
+@Tags(value = [Tag(name = "Persons"), Tag(name = "Visits"), Tag(name = "Reception")])
 class FutureVisitsController(
   @Autowired val auditService: AuditService,
   @Autowired val getFutureVisitsService: GetFutureVisitsService,
 ) {
+  @GetMapping("/{hmppsId}/visit/future")
   @Operation(
     summary = "Get information about a prisoner's future visits.",
     description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
@@ -39,7 +40,6 @@ class FutureVisitsController(
       ApiResponse(responseCode = "500", content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]),
     ],
   )
-  @GetMapping("/{hmppsId}/visit/future")
   fun getFutureVisits(
     @Parameter(description = "A HMPPS identifier") @PathVariable hmppsId: String,
     @RequestAttribute filters: ConsumerFilters?,

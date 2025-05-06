@@ -29,6 +29,7 @@ class ProtectedCharacteristicsController(
   @Autowired val auditService: AuditService,
 ) {
   @GetMapping("{hmppsId}/protected-characteristics")
+  @Tag(name = "Reception")
   @Operation(
     summary = "Returns protected characteristics of a person.",
     description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",

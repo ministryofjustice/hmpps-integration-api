@@ -32,6 +32,7 @@ class AlertsController(
   @Autowired val auditService: AuditService,
 ) {
   @GetMapping("/persons/{hmppsId}/alerts")
+  @Tag(name = "Reception")
   @Operation(
     summary = "Returns alerts associated with a person, sorted by dateCreated (newest first).",
     description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",

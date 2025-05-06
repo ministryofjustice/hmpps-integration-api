@@ -31,6 +31,7 @@ class AdjudicationsController(
   @Autowired val getAdjudicationsForPersonService: GetAdjudicationsForPersonService,
 ) {
   @GetMapping("{hmppsId}/reported-adjudications")
+  @Tag(name = "Reception")
   @Operation(
     summary = "Returns adjudications associated with a person, sorted by dateTimeOfIncident (newest first).",
     description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",

@@ -67,6 +67,7 @@ class SentencesController(
   }
 
   @GetMapping("{encodedHmppsId}/sentences/latest-key-dates-and-adjustments")
+  @Tag(name = "Reception")
   @Operation(
     summary = "Returns the key dates and adjustments about a person's release from prison for their latest sentence.",
     description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
