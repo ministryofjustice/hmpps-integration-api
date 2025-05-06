@@ -11,15 +11,15 @@ const not_allowed_endpoint = `/v1/persons?first_name=john`;
 export const options = {
   tlsAuth: [
     {
-      domains: [new URL(baseUrl).hostname],
+      domains: ["dev.integration-api.hmpps.service.justice.gov.uk"],
       cert: open('/tmp/limited_access.pem'),
       key: open('/tmp/limited_access.key'),
     },
   ],
 };
 
-console.log("Beginning limited access smoke tests - first endpoint should return 200, second should return 403")
 export default function () {
+  console.log("Beginning limited access smoke tests - first endpoint should return 200, second should return 403")
   const params = {
     headers: {
       'Content-Type': 'application/json',
@@ -36,6 +36,6 @@ export default function () {
   check(res2, {
     'NOT ALLOWED: returns 403': (r) => r.status === 403,
   });
+  console.log("Completed limited access smoke tests")
 }
-console.log("Completed limited access smoke tests")
 
