@@ -25,6 +25,6 @@
   },
   "scripts": {
     "bundle": "webpack",
-    "build": "npx esbuild src/limited-access-smoke-tests.ts --bundle --outfile=dist/smoke-tests.js --platform=neutral --external:k6 --external:k6/*"
+    "build": "esbuild src/*.ts --bundle --outdir=dist --platform=neutral --external:k6 --external:k6/*"
   }
 }

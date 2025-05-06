@@ -3,15 +3,14 @@
     "target": "es5",
     "moduleResolution": "node",
     "module": "commonjs",
-    "outDir": "./dist",
-    "rootDir": "./src",
-    "noEmit": false,
+    "noEmit": true,
     "allowJs": true,
     "removeComments": false,
 
     "strict": true,
     "noImplicitAny": true,
     "noImplicitThis": true,
+
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noImplicitReturns": true,
@@ -21,7 +20,7 @@
     "esModuleInterop": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
+
     "skipLibCheck": true
-  },
-  "include": ["src/**/*.ts"]
+  }
 }
