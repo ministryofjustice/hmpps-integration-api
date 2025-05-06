@@ -38,6 +38,7 @@ class EducationAssessmentService(
     hmppsId: String,
     request: EducationAssessmentStatusChangeRequest,
   ): Response<HmppsMessageResponse> {
+    logger.debug("AssessmentEvents: Attempting to send assessment event for hmppsId: $hmppsId")
     val personResponse = getPersonService.getNomisNumber(hmppsId = hmppsId)
 
     if (personResponse.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
