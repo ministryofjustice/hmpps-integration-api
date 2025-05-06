@@ -112,12 +112,12 @@ const post_visit_data = JSON.stringify({
   visitorSupport: {
     description: "Visually impaired assistance",
   },
-  visitors: [
-    {
-      nomisPersonId: 654321,
-      visitContact: true,
-    },
-  ],
+  // visitors: [
+  //   {
+  //     nomisPersonId: 654321,
+  //     visitContact: true,
+  //   },
+  // ],
 });
 
 export default function () {
