@@ -53,7 +53,7 @@ smoke-tests:
 	echo -e "Consumer has certs but no endpoints associated to them so should return 403\n"
 	k6 run ./scripts/K6/dist/no-access-with-certs-smoke-tests.js
 	echo -e "Consumer has no certs so should not gain access to any endpoints\n"
-	k6 run dist/no-access-without-certs-smoke-tests.js
+	k6 run ./scripts/K6/dist/no-access-without-certs-smoke-tests.js
 	echo -e "Completed no access smoke tests\n"
 
 
