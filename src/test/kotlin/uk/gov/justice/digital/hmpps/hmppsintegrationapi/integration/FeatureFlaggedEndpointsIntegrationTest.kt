@@ -6,6 +6,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_IMAGE_ENDPOINTS
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_LOCATION_DEACTIVATE_ENDPOINT
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_LOCATION_ENDPOINT
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_PHYSICAL_CHARACTERISTICS_ENDPOINTS
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_RESIDENTIAL_DETAILS_ENDPOINTS
@@ -53,6 +54,15 @@ internal class FeatureFlaggedEndpointsIntegrationTest : IntegrationTestBase() {
   @Test
   fun `residential details should return 503`() {
     whenever(featureFlagConfig.require(USE_RESIDENTIAL_DETAILS_ENDPOINTS)).thenThrow(FeatureNotEnabledException(""))
+    val prisonId = "MDI"
+    val path = "/v1/prison/$prisonId/residential-details?parentPathHierarchy=A"
+    callApi(path)
+      .andExpect(status().isServiceUnavailable)
+  }
+
+  @Test
+  fun `location deactivate should return 503`() {
+    whenever(featureFlagConfig.require(USE_LOCATION_DEACTIVATE_ENDPOINT)).thenThrow(FeatureNotEnabledException(""))
     val prisonId = "MDI"
     val path = "/v1/prison/$prisonId/residential-details?parentPathHierarchy=A"
     callApi(path)

@@ -378,6 +378,7 @@ class PrisonController(
       ApiResponse(responseCode = "500", content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]),
     ],
   )
+  @FeatureFlag(name = FeatureFlagConfig.USE_LOCATION_DEACTIVATE_ENDPOINT)
   fun deactivateLocation(
     @Parameter(description = "The ID of the prison the location is in") @PathVariable prisonId: String,
     @Parameter(description = "The key of the location") @PathVariable key: String,

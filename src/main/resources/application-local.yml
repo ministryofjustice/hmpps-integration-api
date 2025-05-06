@@ -40,6 +40,7 @@ feature-flag:
   use-capacity-endpoint: true
   use-location-endpoint: true
   replace-probation-search: true
+  use-location-deactivate-endpoint: true
 
 authorisation:
   consumers:

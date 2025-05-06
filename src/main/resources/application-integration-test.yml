@@ -65,6 +65,7 @@ feature-flag:
   use-residential-details-endpoints: true
   use-capacity-endpoint: true
   replace-probation-search: true
+  use-location-deactivate-endpoint: true
 
 authorisation:
   consumers:
@@ -139,6 +140,7 @@ authorisation:
         - "/v1/persons/.*/physical-characteristics"
         - "/v1/persons/.*/images/.*"
         - "/v1/persons/.*/education/assessments/status"
+        - "/v1/prison/.*/location/.*/deactivate"
       filters:
     config-test:
       include:

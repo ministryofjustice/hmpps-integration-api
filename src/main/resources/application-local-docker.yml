@@ -106,3 +106,4 @@ feature-flag:
   use-residential-details-endpoints: true
   use-capacity-endpoint: true
   replace-probation-search: false
+  use-location-deactivate-endpoint: true
