@@ -1,6 +1,7 @@
 const http = require('k6/http');
 const { check } = require('k6');
 import encoding from 'k6/encoding';
+import exec from 'k6/execution';
 
 const cert = encoding.b64decode(__ENV.FULL_ACCESS_CERT, 'std', 's');
 const key = encoding.b64decode(__ENV.FULL_ACCESS_KEY, 'std', 's');
@@ -13,10 +14,6 @@ export const options = {
       key,
     },
   ],
-  thresholds: {
-    // fail the job if all tests don't pass
-    checks: ['rate=1'],
-  },
 };
 
 const baseUrl = "https://dev.integration-api.hmpps.service.justice.gov.uk";
@@ -129,14 +126,18 @@ export default function ()  {
   };
 
   const postRes = http.post(`${baseUrl}${post_visit_endpoint}`, post_visit_data, params);
-  check(postRes, {
+  if (!check(postRes, {
     'POST /v1/visit returns 200': (r) => r.status === 200,
-  });
+  })) {
+    exec.test.fail(`${post_visit_endpoint} caused the test to fail`)
+  }
 
   for (const endpoint of get_endpoints) {
     const res = http.get(`${baseUrl}${endpoint}`, params);
-    check(res, {
+    if (!check(res, {
       [`GET ${endpoint} returns 200`]: (r) => r.status === 200,
-    });
+    })) {
+      exec.test.fail(`${endpoint} caused the test to fail`)
+    }
   }
 };
