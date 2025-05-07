@@ -148,12 +148,7 @@ jobs:
       image: ubuntu-2204:2022.10.2
     steps:
       - checkout
-      - run:
-          name: Install and build K6 TypeScript
-          command: |
-            cd scripts/K6
-            npm ci
-            npm run build
+
       - run:
           name: Install k6
           command: |
