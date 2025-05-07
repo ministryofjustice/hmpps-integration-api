@@ -164,7 +164,7 @@ jobs:
 
       - run:
           name: Run smoke tests
-          command: ./scripts/run-k6-smoke-tests.js
+          command: ./scripts/run-k6-smoke-tests.sh
 
 workflows:
   version: 2
