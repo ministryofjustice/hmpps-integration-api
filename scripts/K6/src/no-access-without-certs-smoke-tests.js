@@ -10,6 +10,7 @@ module.exports.default = function () {
     headers: {
       'x-api-key': __ENV.NO_ACCESS_API_KEY,
     },
+    timeout: '2s'
   });
 
   check(res, {
