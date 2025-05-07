@@ -74,7 +74,6 @@ const get_endpoints = [
   `/v1/persons/${hmppsId}/risks/serious-harm`,
   `/v1/persons/${hmppsId}/risks/scores`,
   `/v1/persons/${hmppsId}/risks/dynamic`,
-  // `/v1/hmpps/reference-data`, // Currently 401 code from delius.
   `/v1/hmpps/id/nomis-number/${hmppsId}`,
   `/v1/persons/${hmppsId}/visit/future`,
   `/v1/visit/${visitReference}`,
@@ -89,6 +88,10 @@ const get_endpoints = [
   `/v1/persons/${hmppsId}/images/${imageId}`,
   `/v1/persons/${hmppsId}/case-notes`
 ];
+
+const broken_endpoints = [
+  "/v1/hmpps/reference-data"   // Currently 401 code from delius.
+]
 
 const post_visit_endpoint = "/v1/visit";
 const post_visit_data = JSON.stringify({
@@ -136,6 +139,15 @@ export default function ()  {
     const res = http.get(`${baseUrl}${endpoint}`, params);
     if (!check(res, {
       [`GET ${endpoint} returns 200`]: (r) => r.status === 200,
+    })) {
+      exec.test.fail(`${endpoint} caused the test to fail`)
+    }
+  }
+
+  for (const endpoint of broken_endpoints) {
+    const res = http.get(`${baseUrl}${endpoint}`, params);
+    if (!check(res, {
+      [`GET ${endpoint} returns error`]: (r) => r.status >= 400,
     })) {
       exec.test.fail(`${endpoint} caused the test to fail`)
     }
