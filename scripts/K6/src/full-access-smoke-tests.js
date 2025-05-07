@@ -13,6 +13,10 @@ export const options = {
       key,
     },
   ],
+  thresholds: {
+    // fail the job if all tests don't pass
+    checks: ['rate=1'],
+  },
 };
 
 const baseUrl = "https://dev.integration-api.hmpps.service.justice.gov.uk";
