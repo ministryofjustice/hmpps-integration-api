@@ -191,7 +191,7 @@ class PersonController(
   }
 
   @GetMapping("{hmppsId}/contacts")
-  @Tags(value = [Tag(name = "Visits"), Tag(name = "Reception")])
+  @Tags(value = [Tag(name = "Visits"), Tag(name = "Contacts"), Tag(name = "Reception")])
   @Operation(
     summary = "Returns a prisoners contacts.",
     description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
