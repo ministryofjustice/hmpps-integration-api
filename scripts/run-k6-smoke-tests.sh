@@ -12,18 +12,18 @@ echo -e "[Setup] Certificates retrieved\n"
 
 echo -e "Beginning full access smoke tests - Should all return 200\n"
 ls -l
-k6 run ./scripts/K6/full-access-smoke-tests.js
+k6 run ./scripts/K6/src/full-access-smoke-tests.js
 echo -e "Completed full access smoke tests\n"
 
 echo -e "Beginning limited access smoke tests - first endpoint should return 200, second should return 403\n"
-k6 run ./scripts/K6/limited-access-smoke-tests.js
+k6 run ./scripts/K6/src/limited-access-smoke-tests.js
 echo -e "Completed limited access smoke tests\n"
 
 echo -e "Beginning no access smoke tests\n"
 echo -e "Consumer has certs but no endpoints associated to them so should return 403\n"
-k6 run ./scripts/K6/no-access-with-certs-smoke-tests.js
+k6 run ./scripts/K6/src/no-access-with-certs-smoke-tests.js
 
 echo -e "Consumer has no certs so should not gain access to any endpoints\n"
-k6 run ./scripts/K6/no-access-without-certs-smoke-tests.js
+k6 run ./scripts/K6/src/no-access-without-certs-smoke-tests.js
 
 echo -e "Completed no access smoke tests\n"
