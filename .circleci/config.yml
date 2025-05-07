@@ -144,8 +144,8 @@ jobs:
           name: Run heartbeat
           command: make heartbeat
   smoke-tests:
-    machine:
-      image: grafana/k6:1.0.0
+    docker:
+      - image: grafana/k6:1.0.0
     steps:
       - checkout
       - run:
