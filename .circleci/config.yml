@@ -150,9 +150,9 @@ jobs:
       - checkout
       - run:
           name: Run smoke tests
-    command: |
-      ls -la ./scripts
-      ./scripts/run-k6-smoke-tests.sh
+          command: |
+            ls -la ./scripts
+            ./scripts/run-k6-smoke-tests.sh
 
 workflows:
   version: 2
