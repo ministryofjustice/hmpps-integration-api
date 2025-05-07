@@ -34,10 +34,6 @@ integration-test: serve
 heartbeat:
 	./scripts/heartbeat.sh
 
-smoke-tests:
-	./scripts/run-k6-smoke-tests.sh
-
-
 test: unit-test integration-test
 
 e2e:
