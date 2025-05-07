@@ -398,7 +398,6 @@ class PrisonController(
 
     return DataResponse(response.data)
   }
-  // TODO feature flag
 
   private fun isValidISODateFormat(dateString: String): Boolean =
     try {
