@@ -116,9 +116,7 @@ const post_visit_data = JSON.stringify({
   },
 });
 
-module.exports.options = options;
-
-module.exports.default = function () {
+export default function ()  {
   const params = {
     headers: {
       'Content-Type': 'application/json',

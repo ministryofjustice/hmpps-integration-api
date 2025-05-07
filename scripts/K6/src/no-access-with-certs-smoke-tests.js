@@ -18,7 +18,7 @@ export const options = {
   ],
 };
 
-module.exports.default = function () {
+export default function ()  {
   const res = http.get(`${baseUrl}${notAllowedEndpoint}`, {
     headers: {
       'x-api-key': __ENV.NO_ACCESS_API_KEY,

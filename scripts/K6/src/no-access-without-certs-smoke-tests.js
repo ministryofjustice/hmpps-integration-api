@@ -5,7 +5,7 @@ const baseUrl = 'https://dev.integration-api.hmpps.service.justice.gov.uk';
 const hmppsId = 'A8451DY';
 const allowedEndpoint = `/v1/persons/${hmppsId}/name`;
 
-module.exports.default = function () {
+export default function () {
   const res = http.get(`${baseUrl}${allowedEndpoint}`, {
     headers: {
       'x-api-key': __ENV.NO_ACCESS_API_KEY,
