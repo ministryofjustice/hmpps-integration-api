@@ -2,8 +2,8 @@
 set -e
 
 echo -e "\n[Setup] Retrieving certificates from context";
-echo -n "$FULL_ACCESS_CERT" | base64 --decode > /tmp/full_access.pem
-echo -n "$FULL_ACCESS_KEY" | base64 --decode > /tmp/full_access.key
+#echo -n "$FULL_ACCESS_CERT" | base64 --decode > /tmp/full_access.pem
+#echo -n "$FULL_ACCESS_KEY" | base64 --decode > /tmp/full_access.key
 echo -n "$LIMITED_ACCESS_CERT" | base64 --decode > /tmp/limited_access.pem
 echo -n "$LIMITED_ACCESS_KEY" | base64 --decode > /tmp/limited_access.key
 echo -n "$NO_ACCESS_CERT" | base64 --decode > /tmp/no_access.pem
