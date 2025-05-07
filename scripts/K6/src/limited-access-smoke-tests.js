@@ -1,6 +1,7 @@
 const http = require('k6/http');
 const { check } = require('k6');
 import encoding from 'k6/encoding';
+import exec from 'k6/execution';
 
 const cert = encoding.b64decode(__ENV.LIMITED_ACCESS_CERT, 'std', 's');
 const key = encoding.b64decode(__ENV.LIMITED_ACCESS_KEY, 'std', 's');
@@ -29,12 +30,16 @@ export default function ()  {
   };
 
   const res1 = http.get(`${baseUrl}${allowed_endpoint}`, params);
-  check(res1, {
+  if (!check(res1, {
     'ALLOWED: returns 200': (r) => r.status === 200,
-  });
+  })){
+    exec.test.fail(`${allowed_endpoint} caused the test to fail`)
+  }
 
   const res2 = http.get(`${baseUrl}${not_allowed_endpoint}`, params);
-  check(res2, {
+  if (!check(res2, {
     'NOT ALLOWED: returns 403': (r) => r.status === 403,
-  });
+  })){
+    exec.test.fail(`${not_allowed_endpoint} caused the test to fail`)
+  }
 };

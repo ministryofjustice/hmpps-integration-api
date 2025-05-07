@@ -1,5 +1,6 @@
 const http = require('k6/http');
 const { check } = require('k6');
+import exec from 'k6/execution';
 
 const baseUrl = 'https://dev.integration-api.hmpps.service.justice.gov.uk';
 const hmppsId = 'A8451DY';
@@ -13,7 +14,9 @@ export default function () {
     timeout: '2s'
   });
 
-  check(res, {
+  if (!check(res, {
     'Request without cert should NOT return 200': (r) => r.status !== 200,
-  });
+  })){
+    exec.test.fail(`${allowedEndpoint} caused the test to fail`)
+  }
 };

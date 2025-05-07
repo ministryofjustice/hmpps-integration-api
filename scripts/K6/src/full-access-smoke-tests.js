@@ -92,29 +92,29 @@ const get_endpoints = [
 
 const post_visit_endpoint = "/v1/visit";
 const post_visit_data = JSON.stringify({
-  // prisonerId: "A8451DY",
-  // prisonId: "MKI",
-  // clientVisitReference: "123456",
-  // visitRoom: "A1",
-  // visitType: "SOCIAL",
-  // visitRestriction: "OPEN",
-  // startTimestamp: "2025-09-05T10:15:41",
-  // endTimestamp: "2025-09-05T11:15:41",
-  // visitNotes: [
-  //   {
-  //     type: "VISITOR_CONCERN",
-  //     text: "Visitor is concerned their mother in law is coming!",
-  //   },
-  // ],
-  // visitContact: {
-  //   name: "John Smith",
-  //   telephone: "0987654321",
-  //   email: "john.smith@example.com",
-  // },
-  // createDateTime: "2025-09-05T10:15:41",
-  // visitorSupport: {
-  //   description: "Visually impaired assistance",
-  // },
+  prisonerId: "A8451DY",
+  prisonId: "MKI",
+  clientVisitReference: "123456",
+  visitRoom: "A1",
+  visitType: "SOCIAL",
+  visitRestriction: "OPEN",
+  startTimestamp: "2025-09-05T10:15:41",
+  endTimestamp: "2025-09-05T11:15:41",
+  visitNotes: [
+    {
+      type: "VISITOR_CONCERN",
+      text: "Visitor is concerned their mother in law is coming!",
+    },
+  ],
+  visitContact: {
+    name: "John Smith",
+    telephone: "0987654321",
+    email: "john.smith@example.com",
+  },
+  createDateTime: "2025-09-05T10:15:41",
+  visitorSupport: {
+    description: "Visually impaired assistance",
+  },
 });
 
 export default function ()  {
