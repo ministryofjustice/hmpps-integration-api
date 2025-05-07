@@ -145,7 +145,7 @@ jobs:
           command: make heartbeat
   smoke-tests:
     machine:
-      image: grafana/k6:0.48.0
+      image: grafana/k6:v1.0.0
     steps:
       - checkout
       - run:
