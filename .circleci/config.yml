@@ -150,7 +150,10 @@ jobs:
       - checkout
       - run:
           name: Run smoke tests
-          command: run-k6-smoke-tests.sh
+          command: |
+            ls -la ~/hmpps-integration-api/scripts
+            ~/hmpps-integration-api/scripts/run-k6-smoke-tests.sh
+
 
 workflows:
   version: 2
