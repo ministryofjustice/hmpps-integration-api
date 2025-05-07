@@ -11,7 +11,6 @@ echo -n "$NO_ACCESS_KEY" | base64 --decode > /tmp/no_access.key
 echo -e "[Setup] Certificates retrieved\n"
 
 echo -e "Beginning full access smoke tests - Should all return 200\n"
-ls -l
 k6 run ./scripts/K6/src/full-access-smoke-tests.js
 echo -e "Completed full access smoke tests\n"
 

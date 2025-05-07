@@ -3,7 +3,7 @@ const { check } = require('k6');
 import encoding from 'k6/encoding';
 
 const cert = encoding.b64decode(__ENV.FULL_ACCESS_CERT, 'std', 's');
-const key = encoding.b64decode(__ENV.FULL_ACCESS_API_KEY, 'std', 's');
+const key = encoding.b64decode(__ENV.FULL_ACCESS_KEY, 'std', 's');
 
 export const options = {
   tlsAuth: [
