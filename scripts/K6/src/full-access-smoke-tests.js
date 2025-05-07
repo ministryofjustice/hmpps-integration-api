@@ -1,12 +1,13 @@
 const http = require('k6/http');
 const { check } = require('k6');
+const {b64decode} = require("k6/encoding");
 
 const options = {
   tlsAuth: [
     {
       domains: ["dev.integration-api.hmpps.service.justice.gov.uk"],
-      cert: open('/tmp/full_access.pem'),
-      key: open('/tmp/full_access.key'),
+      cert: b64decode(__ENV.FULL_ACCESS_CERT, 'std', 's'),
+      key: b64decode(__ENV.FULL_ACCESS_API_KEY, 'std', 's'),
     },
   ],
 };
@@ -25,7 +26,64 @@ const imageId = "1988315";
 const locationIdKey = "MKI-A";
 
 const get_endpoints = [
-  // same array as before...
+  `/v1/hmpps/id/by-nomis-number/${hmppsId}`,
+  `/v1/hmpps/id/nomis-number/by-hmpps-id/${hmppsId}`,
+  `/v1/persons/${hmppsId}/addresses`,
+  `/v1/persons/${hmppsId}/contacts`,
+  `/v1/persons/${hmppsId}/iep-level`,
+  `/v1/persons/${alternativeHmppsId}/visit-orders`,
+  `/v1/persons/${hmppsId}/visit-restrictions`,
+  `/v1/persons/${hmppsId}/alerts`,
+  `/v1/persons/${hmppsId}/alerts/pnd`,
+  `/v1/persons/${hmppsId}/name`,
+  `/v1/persons/${hmppsId}/cell-location`,
+  `/v1/persons/${hmppsId}/risks/categories`,
+  `/v1/persons/${hmppsId}/sentences`,
+  `/v1/persons/${hmppsId}/offences`,
+  `/v1/persons/${hmppsId}/reported-adjudications`,
+  `/v1/persons/${hmppsId}/number-of-children`,
+  `/v1/persons/${hmppsId}/physical-characteristics`,
+  `/v1/pnd/persons/${hmppsId}/alerts`,
+  `/v1/prison/prisoners?first_name=john`,
+  `/v1/prison/prisoners/${hmppsId}`,
+  `/v1/prison/${prisonId}/prisoners/${hmppsId}/balances`,
+  `/v1/prison/${prisonId}/prisoners/${hmppsId}/accounts/spends/balances`,
+  `/v1/prison/${prisonId}/prisoners/${hmppsId}/accounts/spends/transactions`,
+  `/v1/prison/${prisonId}/prisoners/${hmppsId}/transactions/canteen_test`,
+  `/v1/prison/${prisonId}/prisoners/${hmppsId}/non-associations`,
+  `/v1/prison/${prisonId}/residential-hierarchy`,
+  `/v1/prison/${prisonId}/location/${locationIdKey}`,
+  `/v1/prison/${prisonId}/residential-details`,
+  `/v1/prison/${prisonId}/capacity`,
+  `/v1/contacts/${clientReference}`,
+  `/v1/persons?first_name=john`,
+  `/v1/persons/${deliusCrn}`,
+  `/v1/persons/${hmppsId}/licences/conditions`,
+  `/v1/persons/${hmppsId}/needs`,
+  `/v1/persons/${hmppsId}/risks/mappadetail`,
+  `/v1/persons/${hmppsId}/risks/scores`,
+  `/v1/persons/${hmppsId}/plp-induction-schedule`,
+  `/v1/persons/${hmppsId}/plp-induction-schedule/history`,
+  `/v1/persons/${plpHmppsId}/plp-review-schedule`,
+  `/v1/persons/${hmppsId}/status-information`,
+  `/v1/persons/${hmppsId}/sentences/latest-key-dates-and-adjustments`,
+  `/v1/persons/${hmppsId}/risks/serious-harm`,
+  `/v1/persons/${hmppsId}/risks/scores`,
+  `/v1/persons/${hmppsId}/risks/dynamic`,
+  // `/v1/hmpps/reference-data`, // Currently 401 code from delius.
+  `/v1/hmpps/id/nomis-number/${hmppsId}`,
+  `/v1/persons/${hmppsId}/visit/future`,
+  `/v1/visit/${visitReference}`,
+  `/v1/visit/id/by-client-ref/${clientReference}`,
+  `/v1/prison/${prisonId}/visit/search?visitStatus=BOOKED`,
+  `/v1/persons/${deliusCrn}/protected-characteristics`,
+  `/v1/epf/person-details/${deliusCrn}/1`,
+  `/v1/persons/${risksCrn}/risk-management-plan`,
+  `/v1/persons/${alternativeHmppsId}/person-responsible-officer`,
+  `/v1/persons/${alternativeHmppsId}/visitor/${contactId}/restrictions`,
+  `/v1/persons/${hmppsId}/images`,
+  `/v1/persons/${hmppsId}/images/${imageId}`,
+  `/v1/persons/${hmppsId}/case-notes`
 ];
 
 const post_visit_endpoint = "/v1/visit";
