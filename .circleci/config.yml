@@ -145,17 +145,9 @@ jobs:
           command: make heartbeat
   smoke-tests:
     machine:
-      image: ubuntu-2204:2022.10.2
+      - image: grafana/k6:0.48.0
     steps:
       - checkout
-
-      - run:
-          name: Install k6
-          command: |
-            curl -L https://github.com/grafana/k6/releases/download/v0.48.0/k6-v0.48.0-linux-amd64.tar.gz -o k6.tar.gz
-            tar -xzf k6.tar.gz
-            sudo mv k6-v0.48.0-linux-amd64/k6 /usr/local/bin/
-            k6 version
 
       - run:
           name: Run smoke tests
