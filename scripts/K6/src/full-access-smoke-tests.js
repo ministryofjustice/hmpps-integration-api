@@ -2,6 +2,8 @@ const http = require('k6/http');
 const { check } = require('k6');
 import encoding from 'k6/encoding';
 
+console.log(typeof __ENV.FULL_ACCESS_API_KEY, __ENV.FULL_ACCESS_API_KEY?.length);
+
 const options = {
   tlsAuth: [
     {
