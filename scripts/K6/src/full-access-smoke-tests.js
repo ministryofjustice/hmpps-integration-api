@@ -1,13 +1,13 @@
 const http = require('k6/http');
 const { check } = require('k6');
-const {b64decode} = require("k6/encoding");
+import encoding from 'k6/encoding';
 
 const options = {
   tlsAuth: [
     {
       domains: ["dev.integration-api.hmpps.service.justice.gov.uk"],
-      cert: b64decode(__ENV.FULL_ACCESS_CERT, 'std', 's'),
-      key: b64decode(__ENV.FULL_ACCESS_API_KEY, 'std', 's'),
+      cert: encoding.b64decode(__ENV.FULL_ACCESS_CERT, 'std', 's'),
+      key: encoding.b64decode(__ENV.FULL_ACCESS_API_KEY, 'std', 's'),
     },
   ],
 };
