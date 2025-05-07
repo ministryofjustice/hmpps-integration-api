@@ -86,12 +86,11 @@ const get_endpoints = [
   `/v1/persons/${alternativeHmppsId}/visitor/${contactId}/restrictions`,
   `/v1/persons/${hmppsId}/images`,
   `/v1/persons/${hmppsId}/images/${imageId}`,
-  `/v1/persons/${hmppsId}/case-notes`
+  `/v1/persons/${hmppsId}/case-notes`,
+  "/v1/hmpps/reference-data"
 ];
 
-const broken_endpoints = [
-  "/v1/hmpps/reference-data"   // Currently 401 code from delius.
-]
+const broken_endpoints = []
 
 const post_visit_endpoint = "/v1/visit";
 const post_visit_data = JSON.stringify({
