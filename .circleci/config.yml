@@ -152,7 +152,7 @@ jobs:
           name: Run smoke tests
           command: |
             ls
-            ~/hmpps-integration-api/scripts/run-k6-smoke-tests.sh
+            ./scripts/run-k6-smoke-tests.sh
 
 
 workflows:
