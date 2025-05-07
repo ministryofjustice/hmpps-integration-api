@@ -159,7 +159,11 @@ jobs:
 
       - run:
           name: Run smoke tests
-          command: ./scripts/run-k6-smoke-tests.sh
+          command: |
+            k6 run ./scripts/K6/src/full-access-smoke-tests.js
+            k6 run ./scripts/K6/src/limited-access-smoke-tests.js
+            k6 run ./scripts/K6/src/no-access-with-certs-smoke-tests.js
+            k6 run ./scripts/K6/src/no-access-without-certs-smoke-tests.js
 
 workflows:
   version: 2

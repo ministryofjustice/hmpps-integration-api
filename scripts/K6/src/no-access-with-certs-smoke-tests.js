@@ -1,15 +1,19 @@
 const http = require('k6/http');
 const { check } = require('k6');
+import encoding from 'k6/encoding';
+
+const cert = encoding.b64decode(__ENV.NO_ACCESS_CERT, 'std', 's');
+const key = encoding.b64decode(__ENV.NO_ACCESS_KEY, 'std', 's');
 
 const baseUrl = 'https://dev.integration-api.hmpps.service.justice.gov.uk';
 const notAllowedEndpoint = `/v1/persons?first_name=john`;
 
-module.exports.options = {
+export const options = {
   tlsAuth: [
     {
-      domains: ['dev.integration-api.hmpps.service.justice.gov.uk'],
-      cert: open('/tmp/no_access.pem'),
-      key: open('/tmp/no_access.key'),
+      domains: ["dev.integration-api.hmpps.service.justice.gov.uk"],
+      cert,
+      key,
     },
   ],
 };
