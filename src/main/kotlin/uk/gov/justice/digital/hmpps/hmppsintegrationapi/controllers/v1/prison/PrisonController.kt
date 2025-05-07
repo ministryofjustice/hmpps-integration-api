@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.controllers.v1.prison
 
-import io.swagger.v3.oas.annotations.Hidden
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.media.Content
@@ -189,7 +188,6 @@ class PrisonController(
     return response.data.toPaginatedResponse()
   }
 
-  @Hidden // This is currently hidden because the recursive type breaks the docs
   @GetMapping("/{prisonId}/residential-hierarchy")
   @Tag(name = "Residential Areas")
   @Operation(
