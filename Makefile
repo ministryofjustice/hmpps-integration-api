@@ -34,9 +34,6 @@ integration-test: serve
 heartbeat:
 	./scripts/heartbeat.sh
 
-smoke-tests:
-	./scripts/smoke-tests.sh
-
 test: unit-test integration-test
 
 e2e:

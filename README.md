@@ -214,14 +214,6 @@ To run integration tests using the command line:
 make integration-test
 ```
 
-To run smoke tests against dev using the command line:
-
-```bash
-make smoke-tests
-```
-
-Smoke tests require several environment variables to be set up to run so generally should only be run in CircleCI
-
 ### Running the linter
 
 To lint the code using [Ktlint](https://pinterest.github.io/ktlint/):
