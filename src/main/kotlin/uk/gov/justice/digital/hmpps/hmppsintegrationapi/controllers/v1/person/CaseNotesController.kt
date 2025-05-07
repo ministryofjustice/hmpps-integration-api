@@ -30,7 +30,7 @@ import java.time.LocalDateTime
 
 @RestController
 @RequestMapping("/v1/persons")
-@Tag(name = "default")
+@Tag(name = "Persons")
 class CaseNotesController(
   @Autowired val getCaseNoteForPersonService: GetCaseNotesForPersonService,
   @Autowired val auditService: AuditService,

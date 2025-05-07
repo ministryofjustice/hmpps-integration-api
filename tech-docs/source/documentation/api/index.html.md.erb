@@ -2,12 +2,49 @@
 title: Open API Specification
 weight: 5
 owner_slack: "&#35;hmpps-integration-api-alerts (Slack Channel)"
-last_reviewed_on: 2025-04-24
+last_reviewed_on: 2025-05-06
 review_in: 3 months
 ---
 
-api>
+# HMPPS Integration API v1.0
 
-## OpenAPI Specification
+<noscript>The documentation requires JavaScript to be enabled in order for it be displayed</noscript>
 
-[View our OpenAPI specification file in JSON format](https://ministryofjustice.github.io/hmpps-integration-api/openapi/api-docs.json).
+<div id="swagger-ui"></div>
+
+<style>
+  .technical-documentation {
+    max-width: 100% !important;
+  }
+
+  #swagger-ui {
+    width: 100%;
+  }
+
+  .swagger-ui {
+    .topbar {
+      display: none !important;
+    }
+    h2.title {
+      display: none !important;
+    }
+  }
+</style>
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.21.0/swagger-ui.min.css">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.21.0/swagger-ui-bundle.min.js" charset="UTF-8"> </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.21.0/swagger-ui-standalone-preset.min.js" charset="UTF-8"> </script>
+<script>
+window.addEventListener("load", (event) => {
+  SwaggerUIBundle({
+    url: 'https://ministryofjustice.github.io/hmpps-integration-api/openapi/api-docs.json',
+    dom_id: '#swagger-ui',
+    presets: [
+      SwaggerUIBundle.presets.apis,
+      SwaggerUIStandalonePreset
+    ],
+    layout: "StandaloneLayout",
+    displayOperationId: false
+  })
+});
+</script>

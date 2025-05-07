@@ -25,12 +25,13 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.paginateWith
 
 @RestController
 @RequestMapping("/v1/persons")
-@Tag(name = "default")
+@Tag(name = "Persons")
 class AdjudicationsController(
   @Autowired val auditService: AuditService,
   @Autowired val getAdjudicationsForPersonService: GetAdjudicationsForPersonService,
 ) {
   @GetMapping("{hmppsId}/reported-adjudications")
+  @Tag(name = "Reception")
   @Operation(
     summary = "Returns adjudications associated with a person, sorted by dateTimeOfIncident (newest first).",
     description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",

@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.tags.Tag
+import io.swagger.v3.oas.annotations.tags.Tags
 import jakarta.validation.ValidationException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.GetMapping
@@ -23,12 +24,12 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditS
 
 @RestController
 @RequestMapping(value = ["/v1/persons"])
-@Tag(name = "persons")
-@Tag(name = "visits")
+@Tags(value = [Tag(name = "Persons"), Tag(name = "Visits"), Tag(name = "Reception")])
 class FutureVisitsController(
   @Autowired val auditService: AuditService,
   @Autowired val getFutureVisitsService: GetFutureVisitsService,
 ) {
+  @GetMapping("/{hmppsId}/visit/future")
   @Operation(
     summary = "Get information about a prisoner's future visits.",
     description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
@@ -39,7 +40,6 @@ class FutureVisitsController(
       ApiResponse(responseCode = "500", content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]),
     ],
   )
-  @GetMapping("/{hmppsId}/visit/future")
   fun getFutureVisits(
     @Parameter(description = "A HMPPS identifier") @PathVariable hmppsId: String,
     @RequestAttribute filters: ConsumerFilters?,

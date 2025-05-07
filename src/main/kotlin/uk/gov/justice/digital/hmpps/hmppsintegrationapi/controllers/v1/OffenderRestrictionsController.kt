@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.tags.Tag
+import io.swagger.v3.oas.annotations.tags.Tags
 import jakarta.validation.ValidationException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.GetMapping
@@ -28,7 +29,7 @@ class OffenderRestrictionsController(
   @Autowired val getPrisonersNonAssociationsService: GetPrisonersNonAssociationsService,
 ) {
   @GetMapping("/v1/prison/{prisonId}/prisoners/{hmppsId}/non-associations")
-  @Tag(name = "visits")
+  @Tags(value = [Tag(name = "Prison"), Tag(name = "Visits")])
   @Operation(
     summary = "Returns a single prisoners list of non associates.",
     description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul> <br> includeOpen is true by default, includeClosed is false by default. At least one must be true.",
