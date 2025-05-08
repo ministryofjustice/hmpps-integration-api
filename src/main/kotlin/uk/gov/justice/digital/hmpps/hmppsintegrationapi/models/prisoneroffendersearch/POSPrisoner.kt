@@ -89,7 +89,7 @@ data class POSPrisoner(
       youthOffender = this.youthOffender,
       religion = this.religion,
       raceCode = this.raceCode,
-      nationality = this.nationality
+      nationality = this.nationality,
     )
 
   fun toPhysicalCharacteristics(): PhysicalCharacteristics =

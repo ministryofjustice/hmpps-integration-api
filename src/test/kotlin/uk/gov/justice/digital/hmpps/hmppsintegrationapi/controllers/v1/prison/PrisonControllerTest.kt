@@ -102,7 +102,7 @@ internal class PrisonControllerTest(
                 youthOffender = false,
                 religion = "Agnostic",
                 raceCode = "W1",
-                nationality = "Egyptian"
+                nationality = "Egyptian",
               ),
           ),
         )
