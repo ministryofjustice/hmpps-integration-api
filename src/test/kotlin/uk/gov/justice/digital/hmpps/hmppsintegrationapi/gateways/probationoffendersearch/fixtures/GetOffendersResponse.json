@@ -6,9 +6,9 @@
     "surname": "Nolan",
     "dateOfBirth": "1966-10-25",
     "gender": "Male",
-    "raceCode":"W1",
-    "nationality":"Egyptian",
-    "religion":"Agnostic",
+    "raceCode": "W1",
+    "nationality": "Egyptian",
+    "religion": "Agnostic",
     "otherIds": {
       "crn": "X595043",
       "pncNumber": "2018/0123456X",
