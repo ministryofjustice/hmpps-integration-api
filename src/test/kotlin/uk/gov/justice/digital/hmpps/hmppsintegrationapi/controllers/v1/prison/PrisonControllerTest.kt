@@ -133,9 +133,9 @@ internal class PrisonControllerTest(
                    "prisonName": "HMP Leeds",
                    "cellLocation": "A-1-002",
                    "youthOffender": false,
+                   "religion":"Agnostic",
                    "raceCode":"W1",
-                   "nationality":"Egyptian",
-                   "religion":"Agnostic"
+                   "nationality":"Egyptian"
                 }
              }
           """.removeWhitespaceAndNewlines(),
