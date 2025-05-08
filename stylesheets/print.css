@@ -42,8 +42,11 @@
 
 
 
+
+
+
 :root {
-  --govuk-frontend-version: "5.7.1";
+  --govuk-frontend-version: "5.9.0";
   --govuk-frontend-breakpoint-mobile: 20rem;
   --govuk-frontend-breakpoint-tablet: 40.0625rem;
   --govuk-frontend-breakpoint-desktop: 48.0625rem;
@@ -882,6 +885,9 @@
 
 
 
+
+
+
 .govuk-button-group {
   margin-bottom: 5px;
   display: flex;
@@ -986,6 +992,9 @@
 
 
 
+
+
+
 .govuk-form-group {
   margin-bottom: 20px;
 }
@@ -1011,6 +1020,9 @@
   padding: 0;
   border: 0;
 }
+
+
+
 
 
 
@@ -1248,6 +1260,9 @@
 
 
 
+
+
+
 .govuk-main-wrapper {
   display: block;
   padding-top: 20px;
@@ -1270,6 +1285,9 @@
     padding-top: 50px;
   }
 }
+
+
+
 
 
 
@@ -1339,6 +1357,9 @@
   margin: 0;
   background-color: #ffffff;
 }
+
+
+
 
 
 
@@ -1872,12 +1893,9 @@
   font-weight: 400;
   font-size: 0.875rem;
   line-height: 1.1428571429;
-  position: absolute;
-  top: 13px;
-  right: 0;
   max-width: 80px;
   min-height: 24px;
-  margin: 0;
+  margin-bottom: 5px;
   padding: 0;
   border: 0;
   color: #ffffff;
@@ -1937,6 +1955,14 @@
   clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
   border-width: 0 5px 8.66px;
   border-bottom-color: inherit;
+}
+@media (min-width: 20em) {
+  .govuk-header__menu-button {
+    position: absolute;
+    top: 13px;
+    right: 0;
+    margin: 0;
+  }
 }
 @media (min-width: 40.0625em) {
   .govuk-header__menu-button {
