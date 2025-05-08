@@ -24,7 +24,7 @@ dependencies {
     exclude("org.springframework.security", "spring-security-crypto")
     exclude("org.springframework.security", "spring-security-web")
   }
-  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.7.0") {
+  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.6") {
     constraints {
       implementation("org.webjars:swagger-ui:5.21.0") // Fix security build HMAI-317
     }
