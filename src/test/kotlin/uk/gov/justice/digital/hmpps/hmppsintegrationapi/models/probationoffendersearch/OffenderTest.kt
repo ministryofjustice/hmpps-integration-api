@@ -31,6 +31,9 @@ class OffenderTest :
                   croNumber = "croNumber",
                   crn = "crn",
                 ),
+              religion = "Agnostic",
+              raceCode = "W1",
+              nationality = "Egyptian",
             )
 
           val person = offender.toPerson()
@@ -55,6 +58,9 @@ class OffenderTest :
               firstName = "First Name",
               surname = "Surname",
               middleNames = listOf(),
+              religion = "Agnostic",
+              raceCode = "W1",
+              nationality = "Egyptian",
             )
 
           val person = prisoner.toPerson()
@@ -74,6 +80,9 @@ class OffenderTest :
                   croNumber = "croNumber",
                   crn = "crnNumber",
                 ),
+              religion = "Agnostic",
+              raceCode = "W1",
+              nationality = "Egyptian",
             )
 
           val person = prisoner.toPerson()
@@ -92,6 +101,9 @@ class OffenderTest :
                   nomsNumber = "nomsNumber",
                   croNumber = "croNumber",
                 ),
+              religion = "Agnostic",
+              raceCode = "W1",
+              nationality = "Egyptian",
             )
 
           val person = prisoner.toPerson()

@@ -33,7 +33,16 @@ internal class GetPersonNameServiceTest(
         Mockito.reset(getPersonService)
 
         whenever(getPersonService.getPersonWithPrisonFilter(hmppsId, filters)).thenReturn(
-          Response(data = Person(firstName = "Qui-gon", lastName = "Jin")),
+          Response(
+            data =
+              Person(
+                firstName = "Qui-gon",
+                lastName = "Jin",
+                religion = "Agnostic",
+                raceCode = "W1",
+                nationality = "Egyptian",
+              ),
+          ),
         )
       }
 

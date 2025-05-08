@@ -30,7 +30,15 @@ internal class GetAdjudicationsForPersonServiceTest(
     {
       val hmppsId = "A1234AA"
       val prisonerNumber = "Z99999ZZ"
-      val person = Person(firstName = "Qui-gon", lastName = "Jin", identifiers = Identifiers(nomisNumber = prisonerNumber))
+      val person =
+        Person(
+          firstName = "Qui-gon",
+          lastName = "Jin",
+          identifiers = Identifiers(nomisNumber = prisonerNumber),
+          religion = "Agnostic",
+          raceCode = "W1",
+          nationality = "Egyptian",
+        )
       val adjudications = listOf(Adjudication(incidentDetails = IncidentDetailsDto(dateTimeOfIncident = "MockDate")))
       val filters = null
 

@@ -30,7 +30,15 @@ internal class GetLicenceConditionServiceTest(
     {
       val hmppsId = "1234/56789B"
       val crn = "Z99999ZZ"
-      val person = Person(firstName = "Qui-gon", lastName = "Jin", identifiers = Identifiers(deliusCrn = crn))
+      val person =
+        Person(
+          firstName = "Qui-gon",
+          lastName = "Jin",
+          identifiers = Identifiers(deliusCrn = crn),
+          religion = "Agnostic",
+          raceCode = "W1",
+          nationality = "Egyptian",
+        )
       val licences = listOf(Licence(id = "12345"))
       val conditions = listOf(LicenceCondition(condition = "MockCondition", category = "AP"))
 

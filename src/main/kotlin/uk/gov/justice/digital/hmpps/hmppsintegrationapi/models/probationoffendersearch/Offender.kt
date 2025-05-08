@@ -22,6 +22,9 @@ data class Offender(
   val restrictionMessage: String? = null,
   val currentExclusion: Boolean = false,
   val exclusionMessage: String? = null,
+  val religion: String,
+  val raceCode: String,
+  val nationality: String,
 ) {
   fun toPerson() =
     Person(
@@ -45,6 +48,9 @@ data class Offender(
       restrictionMessage = this.restrictionMessage,
       currentExclusion = this.currentExclusion,
       exclusionMessage = this.exclusionMessage,
+      religion = this.religion,
+      raceCode = this.raceCode,
+      nationality = this.nationality,
     )
 
   fun toPersonOnProbation() =

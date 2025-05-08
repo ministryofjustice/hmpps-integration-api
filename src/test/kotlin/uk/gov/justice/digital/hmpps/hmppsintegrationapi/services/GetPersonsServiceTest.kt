@@ -87,8 +87,35 @@ internal class GetPersonsServiceTest(
     }
 
     it("returns person(s)") {
-      val responseFromProbationOffenderSearch = Response(data = listOf(Person(firstName, lastName, middleName = "John")))
-      val responseFromPrisonerOffenderSearch = Response(data = listOf(POSPrisoner(firstName, lastName, middleNames = "Gary", youthOffender = false)))
+      val responseFromProbationOffenderSearch =
+        Response(
+          data =
+            listOf(
+              Person(
+                firstName,
+                lastName,
+                middleName = "John",
+                religion = "Agnostic",
+                raceCode = "W1",
+                nationality = "Egyptian",
+              ),
+            ),
+        )
+      val responseFromPrisonerOffenderSearch =
+        Response(
+          data =
+            listOf(
+              POSPrisoner(
+                firstName,
+                lastName,
+                middleNames = "Gary",
+                youthOffender = false,
+                religion = "Agnostic",
+                raceCode = "W1",
+                nationality = "Egyptian",
+              ),
+            ),
+        )
 
       whenever(
         probationOffenderSearchGateway.getPersons(firstName, lastName, null, dateOfBirth),
@@ -109,8 +136,35 @@ internal class GetPersonsServiceTest(
     }
 
     it("returns only probation person(s) if searched with a PNC") {
-      val responseFromProbationOffenderSearch = Response(data = listOf(Person(firstName, lastName, middleName = "John")))
-      val responseFromPrisonerOffenderSearch = Response(data = listOf(POSPrisoner(firstName, lastName, middleNames = "Gary", youthOffender = false)))
+      val responseFromProbationOffenderSearch =
+        Response(
+          data =
+            listOf(
+              Person(
+                firstName,
+                lastName,
+                middleName = "John",
+                religion = "Agnostic",
+                raceCode = "W1",
+                nationality = "Egyptian",
+              ),
+            ),
+        )
+      val responseFromPrisonerOffenderSearch =
+        Response(
+          data =
+            listOf(
+              POSPrisoner(
+                firstName,
+                lastName,
+                middleNames = "Gary",
+                youthOffender = false,
+                religion = "Agnostic",
+                raceCode = "W1",
+                nationality = "Egyptian",
+              ),
+            ),
+        )
 
       whenever(
         probationOffenderSearchGateway.getPersons(firstName, lastName, pncNumber, dateOfBirth),

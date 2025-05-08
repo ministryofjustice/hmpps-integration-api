@@ -40,21 +40,36 @@ internal class GetSentencesForPersonServiceTest(
           firstName = "Chandler",
           lastName = "ProbationBing",
           identifiers = Identifiers(deliusCrn = nDeliusCRN, nomisNumber = nomisNumber),
+          religion = "Agnostic",
+          raceCode = "W1",
+          nationality = "Egyptian",
         )
       val personNomisOnly =
         Person(
           firstName = "Chandler",
           lastName = "ProbationBing",
           identifiers = Identifiers(nomisNumber = nomisNumber),
+          religion = "Agnostic",
+          raceCode = "W1",
+          nationality = "Egyptian",
         )
       val personDeliusOnly =
         Person(
           firstName = "Chandler",
           lastName = "ProbationBing",
           identifiers = Identifiers(deliusCrn = nDeliusCRN),
+          religion = "Agnostic",
+          raceCode = "W1",
+          nationality = "Egyptian",
         )
       val personNoIdentifiers =
-        Person(firstName = "Qui-gon", lastName = "Jin")
+        Person(
+          firstName = "Qui-gon",
+          lastName = "Jin",
+          religion = "Agnostic",
+          raceCode = "W1",
+          nationality = "Egyptian",
+        )
       val nomisSentence1 = generateTestSentence()
       val nomisSentence2 = generateTestSentence()
       val nDeliusSentence1 = generateTestSentence()

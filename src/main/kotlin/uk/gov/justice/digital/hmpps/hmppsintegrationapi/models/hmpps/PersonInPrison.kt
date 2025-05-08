@@ -40,4 +40,10 @@ data class PersonInPrison(
   val cellLocation: String? = null,
   @Schema(description = "Is the prisoner a youth offender", example = "false")
   val youthOffender: Boolean,
+  @Schema(description = "Religion", example = "Church of England (Anglican)")
+  val religion: String,
+  @Schema(description = "Race code", example = "W1")
+  val raceCode: String,
+  @Schema(description = "Nationality", example = "Egyptian")
+  val nationality: String,
 )

@@ -100,6 +100,9 @@ internal class PrisonControllerTest(
                 prisonName = "HMP Leeds",
                 cellLocation = "A-1-002",
                 youthOffender = false,
+                religion = "Agnostic",
+                raceCode = "W1",
+                nationality = "Egyptian"
               ),
           ),
         )
@@ -129,7 +132,10 @@ internal class PrisonControllerTest(
                    "prisonId": "MDI",
                    "prisonName": "HMP Leeds",
                    "cellLocation": "A-1-002",
-                   "youthOffender": false
+                   "youthOffender": false,
+                   "raceCode":"W1",
+                   "nationality":"Egyptian",
+                   "religion":"Agnostic"
                 }
              }
           """.removeWhitespaceAndNewlines(),
@@ -156,6 +162,9 @@ internal class PrisonControllerTest(
                 prisonName = "HMP Leeds",
                 cellLocation = "A-1-002",
                 youthOffender = false,
+                religion = "Agnostic",
+                raceCode = "W1",
+                nationality = "Egyptian",
               ),
           ),
         )
@@ -264,6 +273,9 @@ internal class PrisonControllerTest(
                   middleName = "Jonas",
                   dateOfBirth = LocalDate.parse("2023-03-01"),
                   youthOffender = false,
+                  religion = "Agnostic",
+                  raceCode = "W1",
+                  nationality = "Egyptian",
                 ),
                 PersonInPrison(
                   firstName = "Barry",
@@ -271,6 +283,9 @@ internal class PrisonControllerTest(
                   middleName = "Rock",
                   dateOfBirth = LocalDate.parse("2022-07-22"),
                   youthOffender = false,
+                  religion = "Agnostic",
+                  raceCode = "W1",
+                  nationality = "Egyptian",
                 ),
               ),
           ),

@@ -29,7 +29,15 @@ internal class GetNumberOfChildrenForPersonServiceTest(
     {
       val hmppsId = "A1234AA"
       val prisonerNumber = "Z99999ZZ"
-      val person = Person(firstName = "Qui-gon", lastName = "Jin", identifiers = Identifiers(nomisNumber = prisonerNumber))
+      val person =
+        Person(
+          firstName = "Qui-gon",
+          lastName = "Jin",
+          identifiers = Identifiers(nomisNumber = prisonerNumber),
+          religion = "Agnostic",
+          raceCode = "W1",
+          nationality = "Egyptian",
+        )
       val filters = null
       val numberOfChildrenGatewayResponse = PRNumberOfChildren(numberOfChildren = "2", id = 1, active = true, createdTime = "now", createdBy = "me")
       val numberOfChildren = numberOfChildrenGatewayResponse.toNumberOfChildren()

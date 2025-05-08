@@ -96,7 +96,7 @@ internal class PersonControllerTest(
         )
       val emails: List<String> = listOf("barry.allen@starlabs.gov")
 
-      describe("GET $basePath") {
+      describe("GET v1/persons") {
         beforeTest {
           Mockito.reset(getPersonsService)
           Mockito.reset(auditService)
@@ -110,6 +110,9 @@ internal class PersonControllerTest(
                     middleName = "Jonas",
                     dateOfBirth = LocalDate.parse("2023-03-01"),
                     contactDetails = ContactDetailsWithEmailAndPhone(phoneNumbers, emails),
+                    religion = "Agnostic",
+                    raceCode = "W1",
+                    nationality = "Egyptian",
                   ),
                   Person(
                     firstName = "Barry",
@@ -117,6 +120,9 @@ internal class PersonControllerTest(
                     middleName = "Rock",
                     dateOfBirth = LocalDate.parse("2022-07-22"),
                     contactDetails = ContactDetailsWithEmailAndPhone(phoneNumbers, emails),
+                    religion = "Agnostic",
+                    raceCode = "W1",
+                    nationality = "Egyptian",
                   ),
                 ),
             ),
@@ -181,6 +187,9 @@ internal class PersonControllerTest(
                     firstName = "Barry $i",
                     lastName = "Allen $i",
                     dateOfBirth = LocalDate.parse("2023-03-01"),
+                    religion = "Agnostic",
+                    raceCode = "W1",
+                    nationality = "Egyptian",
                   )
                 },
             ),
@@ -231,7 +240,7 @@ internal class PersonControllerTest(
         }
       }
 
-      describe("GET $basePath return Internal Server Error when Upstream api throw unexpected error") {
+      describe("GET v1/persons return Internal Server Error when Upstream api throw unexpected error") {
         beforeTest {
           Mockito.reset(getPersonsService)
           Mockito.reset(auditService)
@@ -256,9 +265,31 @@ internal class PersonControllerTest(
         }
       }
 
-      describe("GET $basePath/{id}") {
-        val probationOffenderSearch = PersonOnProbation(Person("Sam", "Smith", identifiers = Identifiers(nomisNumber = "1234ABC"), currentExclusion = true, exclusionMessage = "An exclusion exists", currentRestriction = false), underActiveSupervision = true)
-        val prisonOffenderSearch = POSPrisoner("Kim", "Kardashian", youthOffender = false)
+      describe("GET v1/persons/{id}") {
+        val probationOffenderSearch =
+          PersonOnProbation(
+            Person(
+              "Sam",
+              "Smith",
+              identifiers = Identifiers(nomisNumber = "1234ABC"),
+              currentExclusion = true,
+              exclusionMessage = "An exclusion exists",
+              currentRestriction = false,
+              religion = "Agnostic",
+              raceCode = "W1",
+              nationality = "Egyptian",
+            ),
+            underActiveSupervision = true,
+          )
+        val prisonOffenderSearch =
+          POSPrisoner(
+            "Kim",
+            "Kardashian",
+            youthOffender = false,
+            religion = "Agnostic",
+            raceCode = "W1",
+            nationality = "Egyptian",
+          )
         val prisonResponse = Response(data = prisonOffenderSearch, errors = emptyList())
 
         beforeTest {
@@ -336,7 +367,21 @@ internal class PersonControllerTest(
           it("does not return a 404 status code when a person was found in one upstream API") {
             whenever(getPersonService.getCombinedDataForPerson(idThatDoesNotExist)).thenReturn(
               Response(
-                data = OffenderSearchResponse(prisonerOffenderSearch = null, probationOffenderSearch = PersonOnProbation(Person("someFirstName", "someLastName"), underActiveSupervision = false)),
+                data =
+                  OffenderSearchResponse(
+                    prisonerOffenderSearch = null,
+                    probationOffenderSearch =
+                      PersonOnProbation(
+                        Person(
+                          "someFirstName",
+                          "someLastName",
+                          religion = "Agnostic",
+                          raceCode = "W1",
+                          nationality = "Egyptian",
+                        ),
+                        underActiveSupervision = false,
+                      ),
+                  ),
                 errors =
                   listOf(
                     UpstreamApiError(
@@ -366,54 +411,58 @@ internal class PersonControllerTest(
           result.response.contentAsString.shouldBe(
             """
             {
-             "data":{
-                "prisonerOffenderSearch":{
-                   "firstName":"Kim",
-                   "lastName":"Kardashian",
-                   "middleName":null,
-                   "dateOfBirth":null,
-                   "gender":null,
-                   "ethnicity":null,
-                   "aliases":[
-                   ],
-                   "identifiers":{
-                      "nomisNumber":null,
-                      "croNumber":null,
-                      "deliusCrn":null
-                   },
-                   "pncId":null,
-                   "hmppsId":null,
-                   "contactDetails":null,
-                   "currentRestriction": null,
-                   "restrictionMessage": null,
-                   "currentExclusion": null,
-                   "exclusionMessage": null
+              "data": {
+                "prisonerOffenderSearch": {
+                  "firstName": "Kim",
+                  "lastName": "Kardashian",
+                  "middleName": null,
+                  "dateOfBirth": null,
+                  "gender": null,
+                  "ethnicity": null,
+                  "aliases": [],
+                  "identifiers": {
+                    "nomisNumber": null,
+                    "croNumber": null,
+                    "deliusCrn": null
+                  },
+                  "pncId": null,
+                  "hmppsId": null,
+                  "contactDetails": null,
+                  "currentRestriction": null,
+                  "restrictionMessage": null,
+                  "currentExclusion": null,
+                  "exclusionMessage": null,
+                  "religion": "Agnostic",
+                  "raceCode": "W1",
+                  "nationality": "Egyptian"
                 },
-                "probationOffenderSearch":{
-                   "underActiveSupervision":true,
-                   "firstName":"Sam",
-                   "lastName":"Smith",
-                   "middleName":null,
-                   "dateOfBirth":null,
-                   "gender":null,
-                   "ethnicity":null,
-                   "aliases":[
-                   ],
-                   "identifiers":{
-                      "nomisNumber":"1234ABC",
-                      "croNumber":null,
-                      "deliusCrn":null
-                   },
-                   "pncId":null,
-                   "hmppsId":null,
-                   "contactDetails":null,
-                   "currentRestriction": false,
-                   "restrictionMessage": null,
-                   "currentExclusion": true,
-                   "exclusionMessage": "An exclusion exists"
+                "probationOffenderSearch": {
+                  "underActiveSupervision": true,
+                  "firstName": "Sam",
+                  "lastName": "Smith",
+                  "middleName": null,
+                  "dateOfBirth": null,
+                  "gender": null,
+                  "ethnicity": null,
+                  "aliases": [],
+                  "identifiers": {
+                    "nomisNumber": "1234ABC",
+                    "croNumber": null,
+                    "deliusCrn": null
+                  },
+                  "pncId": null,
+                  "hmppsId": null,
+                  "contactDetails": null,
+                  "currentRestriction": false,
+                  "restrictionMessage": null,
+                  "currentExclusion": true,
+                  "exclusionMessage": "An exclusion exists",
+                  "religion": "Agnostic",
+                  "raceCode": "W1",
+                  "nationality": "Egyptian"
                 }
-             }
-          }
+              }
+            }
         """.removeWhitespaceAndNewlines(),
           )
         }

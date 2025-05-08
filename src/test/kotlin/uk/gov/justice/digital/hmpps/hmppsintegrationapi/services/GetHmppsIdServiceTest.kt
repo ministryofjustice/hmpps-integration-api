@@ -40,7 +40,16 @@ internal class GetHmppsIdServiceTest(
       }
 
       it("Returns a hmpps id for the given id") {
-        val person = Person(firstName = "Qui-gon", lastName = "Jin", hmppsId = id, identifiers = Identifiers(nomisNumber = nomisNumber))
+        val person =
+          Person(
+            firstName = "Qui-gon",
+            lastName = "Jin",
+            hmppsId = id,
+            identifiers = Identifiers(nomisNumber = nomisNumber),
+            religion = "Agnostic",
+            raceCode = "W1",
+            nationality = "Egyptian",
+          )
         whenever(getPersonService.getPersonWithPrisonFilter(id, filters)).thenReturn(
           Response(
             data = person,
@@ -51,7 +60,15 @@ internal class GetHmppsIdServiceTest(
       }
 
       it("Returns a hmpps id when hmpps id is null but a nomis number is present") {
-        val person = Person(firstName = "Qui-gon", lastName = "Jin", identifiers = Identifiers(nomisNumber = nomisNumber))
+        val person =
+          Person(
+            firstName = "Qui-gon",
+            lastName = "Jin",
+            identifiers = Identifiers(nomisNumber = nomisNumber),
+            religion = "Agnostic",
+            raceCode = "W1",
+            nationality = "Egyptian",
+          )
         whenever(getPersonService.getPersonWithPrisonFilter(id, filters)).thenReturn(
           Response(
             data = person,
@@ -74,7 +91,15 @@ internal class GetHmppsIdServiceTest(
       }
 
       it("Returns an 404 if getPersonWithPrisonFilter() returns a person with no hmppsId") {
-        val personWithoutPrisonId = Person(firstName = "Qui-gon", lastName = "Jin", hmppsId = null)
+        val personWithoutPrisonId =
+          Person(
+            firstName = "Qui-gon",
+            lastName = "Jin",
+            hmppsId = null,
+            religion = "Agnostic",
+            raceCode = "W1",
+            nationality = "Egyptian",
+          )
         whenever(getPersonService.getPersonWithPrisonFilter(id, filters)).thenReturn(
           Response(
             data = personWithoutPrisonId,

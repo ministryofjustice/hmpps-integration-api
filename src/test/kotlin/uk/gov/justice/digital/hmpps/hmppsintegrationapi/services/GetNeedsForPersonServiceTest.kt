@@ -34,7 +34,14 @@ internal class GetNeedsForPersonServiceTest(
       val deliusCrn = "X123456"
 
       val personFromProbationOffenderSearch =
-        Person(firstName = "Phoebe", lastName = "Buffay", identifiers = Identifiers(deliusCrn = deliusCrn))
+        Person(
+          firstName = "Phoebe",
+          lastName = "Buffay",
+          identifiers = Identifiers(deliusCrn = deliusCrn),
+          religion = "Agnostic",
+          raceCode = "W1",
+          nationality = "Egyptian",
+        )
 
       beforeEach {
         Mockito.reset(getPersonService)

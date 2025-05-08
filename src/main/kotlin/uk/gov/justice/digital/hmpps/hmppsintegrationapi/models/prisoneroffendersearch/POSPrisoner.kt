@@ -12,7 +12,10 @@ data class POSPrisoner(
   val middleNames: String? = null,
   val dateOfBirth: LocalDate? = null,
   val gender: String? = null,
+  val religion: String,
   val ethnicity: String? = null,
+  val raceCode: String,
+  val nationality: String,
   val aliases: List<POSPrisonerAlias> = listOf(),
   val prisonerNumber: String? = null,
   val pncNumber: String? = null,
@@ -56,6 +59,9 @@ data class POSPrisoner(
           croNumber = this.croNumber,
         ),
       pncId = this.pncNumber,
+      religion = this.religion,
+      raceCode = this.raceCode,
+      nationality = this.nationality,
     )
 
   fun toPersonInPrison(): PersonInPrison =
@@ -81,6 +87,9 @@ data class POSPrisoner(
       receptionDate = this.receptionDate,
       status = this.status,
       youthOffender = this.youthOffender,
+      religion = this.religion,
+      raceCode = this.raceCode,
+      nationality = this.nationality
     )
 
   fun toPhysicalCharacteristics(): PhysicalCharacteristics =

@@ -34,7 +34,14 @@ internal class GetStatusInformationForPersonServiceTest(
       val nonMatchingStatusInformation = StatusInformation(code = "INVALID", description = "Invalid status information data", startDate = "2010-07-07")
 
       val person =
-        Person(firstName = "Qui-gon", lastName = "Jin", identifiers = Identifiers(deliusCrn = deliusCrn))
+        Person(
+          firstName = "Qui-gon",
+          lastName = "Jin",
+          identifiers = Identifiers(deliusCrn = deliusCrn),
+          religion = "Agnostic",
+          raceCode = "W1",
+          nationality = "Egyptian",
+        )
 
       beforeEach {
         Mockito.reset(nDeliusGateway)

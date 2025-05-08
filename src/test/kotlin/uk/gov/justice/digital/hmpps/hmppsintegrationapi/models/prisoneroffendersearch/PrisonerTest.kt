@@ -28,6 +28,9 @@ class PrisonerTest :
                   POSPrisonerAlias(firstName = "Alias First Name", lastName = "Alias Last Name"),
                 ),
               youthOffender = false,
+              religion = "Agnostic",
+              raceCode = "W1",
+              nationality = "Egyptian",
             )
 
           val person = prisoner.toPerson()

@@ -31,4 +31,10 @@ open class Person(
   val restrictionMessage: String? = null,
   val currentExclusion: Boolean? = null,
   val exclusionMessage: String? = null,
+  @Schema(description = "Religion", example = "Church of England (Anglican)")
+  val religion: String,
+  @Schema(description = "Race code", example = "W1")
+  val raceCode: String,
+  @Schema(description = "Nationality", example = "Egyptian")
+  val nationality: String,
 )

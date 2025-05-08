@@ -34,8 +34,25 @@ class GetFutureVisitsServiceTest(
 ) : DescribeSpec({
     val hmppsId = "G6980GG"
     val nomisNumber = "F6980FF"
-    val person = Person(firstName = "Qui-gon", lastName = "Jin", hmppsId = hmppsId, identifiers = Identifiers(nomisNumber = nomisNumber))
-    val personWithoutNomisNumber = Person(firstName = "Qui-gon", lastName = "Jin", hmppsId = hmppsId)
+    val person =
+      Person(
+        firstName = "Qui-gon",
+        lastName = "Jin",
+        hmppsId = hmppsId,
+        identifiers = Identifiers(nomisNumber = nomisNumber),
+        religion = "Agnostic",
+        raceCode = "W1",
+        nationality = "Egyptian",
+      )
+    val personWithoutNomisNumber =
+      Person(
+        firstName = "Qui-gon",
+        lastName = "Jin",
+        hmppsId = hmppsId,
+        religion = "Agnostic",
+        raceCode = "W1",
+        nationality = "Egyptian",
+      )
     val futureVisitGatewayResponse =
       listOf(
         PVVisit(

@@ -19,4 +19,7 @@ class PersonOnProbation(
     exclusionMessage = person.exclusionMessage,
     currentRestriction = person.currentRestriction,
     restrictionMessage = person.restrictionMessage,
+    religion = person.religion,
+    raceCode = person.raceCode,
+    nationality = person.nationality,
   )

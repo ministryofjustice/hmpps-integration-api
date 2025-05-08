@@ -10,6 +10,9 @@ data class PrisonApiOffender(
   val middleName: String? = null,
   val dateOfBirth: LocalDate? = null,
   val aliases: List<PrisonApiAlias> = listOf(),
+  val religion: String,
+  val raceCode: String,
+  val nationality: String,
 ) {
   fun toPerson(): Person =
     Person(
@@ -17,6 +20,9 @@ data class PrisonApiOffender(
       lastName = this.lastName,
       middleName = this.middleName,
       dateOfBirth = this.dateOfBirth,
+      religion = this.religion,
+      raceCode = this.raceCode,
+      nationality = this.nationality,
       aliases =
         this.aliases.map {
           Alias(

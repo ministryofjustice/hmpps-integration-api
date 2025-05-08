@@ -56,8 +56,22 @@ internal class GetPrisonersServiceTest(
       it("returns the person's data when queried and no prisonId filter is applied") {
         val people =
           listOf(
-            POSPrisoner(firstName = "Qui-gon", lastName = "Jin", youthOffender = false),
-            POSPrisoner(firstName = "John", lastName = "Jin", youthOffender = false),
+            POSPrisoner(
+              firstName = "Qui-gon",
+              lastName = "Jin",
+              youthOffender = false,
+              religion = "Agnostic",
+              raceCode = "W1",
+              nationality = "Egyptian",
+            ),
+            POSPrisoner(
+              firstName = "John",
+              lastName = "Jin",
+              youthOffender = false,
+              religion = "Agnostic",
+              raceCode = "W1",
+              nationality = "Egyptian",
+            ),
           )
         whenever(prisonerOffenderSearchGateway.getPersons("Qui-gon", "Jin", "1966-10-25")).thenReturn(
           Response(
@@ -112,8 +126,22 @@ internal class GetPrisonersServiceTest(
       it("returns the persons data when the person queried for is in a prisonId matching their config") {
         val people =
           listOf(
-            POSPrisoner(firstName = "Qui-gon", lastName = "Jin", youthOffender = false),
-            POSPrisoner(firstName = "John", lastName = "Jin", youthOffender = false),
+            POSPrisoner(
+              firstName = "Qui-gon",
+              lastName = "Jin",
+              youthOffender = false,
+              religion = "Agnostic",
+              raceCode = "W1",
+              nationality = "Egyptian",
+            ),
+            POSPrisoner(
+              firstName = "John",
+              lastName = "Jin",
+              youthOffender = false,
+              religion = "Agnostic",
+              raceCode = "W1",
+              nationality = "Egyptian",
+            ),
           )
         val prisonIds = ConsumerFilters(prisons = listOf("VALID_PRISON"))
         whenever(request.getAttribute("filters")).thenReturn(prisonIds)

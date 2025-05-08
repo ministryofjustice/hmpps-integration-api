@@ -43,7 +43,16 @@ internal class GetLatestSentenceKeyDatesAndAdjustmentsForPersonServiceTest(
       val hmppsId = "A1234AA"
       val nomisNumber = "abc123"
       val filters = ConsumerFilters(null)
-      val person = Person(firstName = "Test", lastName = "Name", hmppsId = hmppsId, identifiers = Identifiers(nomisNumber = nomisNumber))
+      val person =
+        Person(
+          firstName = "Test",
+          lastName = "Name",
+          hmppsId = hmppsId,
+          identifiers = Identifiers(nomisNumber = nomisNumber),
+          religion = "Agnostic",
+          raceCode = "W1",
+          nationality = "Egyptian",
+        )
 
       beforeEach {
         Mockito.reset(prisonApiGateway)

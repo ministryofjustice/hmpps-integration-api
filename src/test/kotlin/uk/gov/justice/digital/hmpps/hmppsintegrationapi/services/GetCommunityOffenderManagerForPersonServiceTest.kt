@@ -34,7 +34,15 @@ class GetCommunityOffenderManagerForPersonServiceTest(
       val deliusCrn = "X224466"
       val filter = null
 
-      val person = Person(firstName = "Sam", lastName = "Smith", identifiers = Identifiers(deliusCrn = deliusCrn))
+      val person =
+        Person(
+          firstName = "Sam",
+          lastName = "Smith",
+          identifiers = Identifiers(deliusCrn = deliusCrn),
+          religion = "Agnostic",
+          raceCode = "W1",
+          nationality = "Egyptian",
+        )
       val communityOffenderManager = CommunityOffenderManager(name = PersonResponsibleOfficerName(forename = "Michael", surname = "Green"), email = "email@email.com", telephoneNumber = "07471234567", team = PersonResponsibleOfficerTeam(code = "Code2", description = "Service description", email = "email2@email2.com", telephoneNumber = "07170987654"))
 
       beforeEach {

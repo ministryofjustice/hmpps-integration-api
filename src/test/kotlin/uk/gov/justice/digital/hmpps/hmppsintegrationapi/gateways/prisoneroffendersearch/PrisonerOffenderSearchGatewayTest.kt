@@ -119,7 +119,10 @@ class PrisonerOffenderSearchGatewayTest(
               "content": [
                 {
                   "firstName": "Obi-Wan",
-                  "lastName": "Kenobi"
+                  "lastName": "Kenobi",
+                  "raceCode":"W1",
+                  "nationality":"Egyptian",
+                  "religion":"Agnostic"
                 }
               ]
             }
@@ -153,7 +156,10 @@ class PrisonerOffenderSearchGatewayTest(
               "content": [
                 {
                   "firstName": "Jar Jar",
-                  "lastName": "Binks"
+                  "lastName": "Binks",
+                  "raceCode":"W1",
+                  "nationality":"Egyptian",
+                  "religion":"Agnostic"
                 }
               ]
             }
@@ -188,7 +194,10 @@ class PrisonerOffenderSearchGatewayTest(
                 {
                   "firstName": "Jar Jar",
                   "lastName": "Binks",
-                  "dateOfBirth": "1975-02-28"
+                  "dateOfBirth": "1975-02-28",
+                  "raceCode":"W1",
+                  "nationality":"Egyptian",
+                  "religion":"Agnostic"
                 }
               ]
             }
@@ -227,6 +236,9 @@ class PrisonerOffenderSearchGatewayTest(
                 {
                   "firstName": "Rich",
                   "lastName": "Roger",
+                  "raceCode":"W1",
+                  "nationality":"Egyptian",
+                  "religion":"Agnostic",
                   "aliases": [
                     {
                       "firstName": "Geralt",
@@ -294,7 +306,10 @@ class PrisonerOffenderSearchGatewayTest(
               "firstName": "JAMES",
               "middleNames": "MARTIN",
               "lastName": "HOWLETT",
-              "maritalStatus": "Widowed"
+              "maritalStatus": "Widowed",
+              "raceCode":"W1",
+              "nationality":"Egyptian",
+              "religion":"Agnostic"
             }
             """.trimIndent(),
           )

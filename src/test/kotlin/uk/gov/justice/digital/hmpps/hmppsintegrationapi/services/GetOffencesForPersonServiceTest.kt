@@ -46,6 +46,9 @@ internal class GetOffencesForPersonServiceTest(
           firstName = "Chandler",
           lastName = "ProbationBing",
           identifiers = Identifiers(deliusCrn = nDeliusCRN, nomisNumber = prisonerNumber),
+          religion = "Agnostic",
+          raceCode = "W1",
+          nationality = "Egyptian",
         )
 
       beforeEach {

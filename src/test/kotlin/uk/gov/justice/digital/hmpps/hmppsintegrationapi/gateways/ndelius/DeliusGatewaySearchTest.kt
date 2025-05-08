@@ -110,40 +110,10 @@ class DeliusGatewaySearchTest(
           [
             {
               "firstName": "Ahsoka",
-              "surname": "Tano"
-            }
-          ]
-          """.trimIndent(),
-        )
-
-        val response = nDeliusGateway.getPersons("Ahsoka", "Tano", null, null)
-
-        response.data.count().shouldBe(1)
-        response.data
-          .first()
-          .firstName
-          .shouldBe("Ahsoka")
-        response.data
-          .first()
-          .lastName
-          .shouldBe("Tano")
-      }
-
-      it("returns person(s) when searching on first name and last name") {
-        nDeliusMockServer.stubForPost(
-          path,
-          """
-        {
-          "firstName": "Ahsoka",
-          "surname": "Tano",
-          "includeAliases": false
-        }
-        """.removeWhitespaceAndNewlines(),
-          """
-          [
-            {
-              "firstName": "Ahsoka",
-              "surname": "Tano"
+              "surname": "Tano",
+              "raceCode":"W1",
+              "nationality":"Egyptian",
+              "religion":"Agnostic"
             }
           ]
           """.trimIndent(),
@@ -175,7 +145,10 @@ class DeliusGatewaySearchTest(
           [
             {
               "firstName": "Ahsoka",
-              "surname": "Tano"
+              "surname": "Tano",
+              "raceCode":"W1",
+              "nationality":"Egyptian",
+              "religion":"Agnostic"
             }
           ]
           """.trimIndent(),
@@ -207,7 +180,10 @@ class DeliusGatewaySearchTest(
           [
             {
               "firstName": "Ahsoka",
-              "surname": "Tano"
+              "surname": "Tano",
+              "raceCode":"W1",
+              "nationality":"Egyptian",
+              "religion":"Agnostic"
             }
           ]
           """.trimIndent(),
@@ -239,7 +215,10 @@ class DeliusGatewaySearchTest(
           [
             {
               "firstName": "Ahsoka",
-              "surname": "Tano"
+              "surname": "Tano",
+              "raceCode":"W1",
+              "nationality":"Egyptian",
+              "religion":"Agnostic"
             }
           ]
           """.trimIndent(),
@@ -271,7 +250,10 @@ class DeliusGatewaySearchTest(
           [
             {
               "firstName": "Ahsoka",
-              "surname": "Tano"
+              "surname": "Tano",
+              "raceCode":"W1",
+              "nationality":"Egyptian",
+              "religion":"Agnostic"
             }
           ]
           """.trimIndent(),
@@ -304,6 +286,9 @@ class DeliusGatewaySearchTest(
             {
               "firstName": "Ahsoka",
               "surname": "Tano",
+              "raceCode":"W1",
+              "nationality":"Egyptian",
+              "religion":"Agnostic",
               "offenderAliases": [
                 {
                   "firstName": "Fulcrum",
@@ -352,6 +337,9 @@ class DeliusGatewaySearchTest(
             "surname": "Bravo",
             "dateOfBirth": "1970-02-07",
             "offenderAliases": [],
+            "raceCode":"W1",
+            "nationality":"Egyptian",
+            "religion":"Agnostic"
           }
         ]
       """,
@@ -368,7 +356,10 @@ class DeliusGatewaySearchTest(
             "firstName": "Jonathan",
             "surname": "Bravo",
             "dateOfBirth": "1970-02-07",
-            "offenderAliases": []
+            "offenderAliases": [],
+            "raceCode":"W1",
+            "nationality":"Egyptian",
+            "religion":"Agnostic"
           }
         ]
         """,
@@ -391,7 +382,10 @@ class DeliusGatewaySearchTest(
             "firstName": "Jonathan",
             "surname": "Bravo",
             "dateOfBirth": "1970-02-07",
-            "offenderAliases": []
+            "offenderAliases": [],
+            "raceCode":"W1",
+            "nationality":"Egyptian",
+            "religion":"Agnostic"
           }
         ]
         """,

@@ -114,7 +114,10 @@ class ProbationOffenderSearchGatewayTest(
           [
             {
               "firstName": "Ahsoka",
-              "surname": "Tano"
+              "surname": "Tano",
+              "raceCode":"W1",
+              "nationality":"Egyptian",
+              "religion":"Agnostic"
             }
           ]
           """.trimIndent(),
@@ -147,7 +150,10 @@ class ProbationOffenderSearchGatewayTest(
           [
             {
               "firstName": "Ahsoka",
-              "surname": "Tano"
+              "surname": "Tano",
+              "raceCode":"W1",
+              "nationality":"Egyptian",
+              "religion":"Agnostic"
             }
           ]
           """.trimIndent(),
@@ -179,7 +185,10 @@ class ProbationOffenderSearchGatewayTest(
           [
             {
               "firstName": "Ahsoka",
-              "surname": "Tano"
+              "surname": "Tano",
+              "raceCode":"W1",
+              "nationality":"Egyptian",
+              "religion":"Agnostic"
             }
           ]
           """.trimIndent(),
@@ -211,7 +220,10 @@ class ProbationOffenderSearchGatewayTest(
           [
             {
               "firstName": "Ahsoka",
-              "surname": "Tano"
+              "surname": "Tano",
+              "raceCode":"W1",
+              "nationality":"Egyptian",
+              "religion":"Agnostic"
             }
           ]
           """.trimIndent(),
@@ -243,7 +255,10 @@ class ProbationOffenderSearchGatewayTest(
           [
             {
               "firstName": "Ahsoka",
-              "surname": "Tano"
+              "surname": "Tano",
+              "raceCode":"W1",
+              "nationality":"Egyptian",
+              "religion":"Agnostic"
             }
           ]
           """.trimIndent(),
@@ -275,7 +290,10 @@ class ProbationOffenderSearchGatewayTest(
           [
             {
               "firstName": "Ahsoka",
-              "surname": "Tano"
+              "surname": "Tano",
+              "raceCode":"W1",
+              "nationality":"Egyptian",
+              "religion":"Agnostic"
             }
           ]
           """.trimIndent(),
@@ -308,6 +326,9 @@ class ProbationOffenderSearchGatewayTest(
             {
               "firstName": "Ahsoka",
               "surname": "Tano",
+              "raceCode":"W1",
+              "nationality":"Egyptian",
+              "religion":"Agnostic",
               "offenderAliases": [
                 {
                   "firstName": "Fulcrum",
@@ -354,6 +375,9 @@ class ProbationOffenderSearchGatewayTest(
             ],
             "surname": "Bravo",
             "dateOfBirth": "1970-02-07",
+            "raceCode":"W1",
+            "nationality":"Egyptian",
+            "religion":"Agnostic",
             "offenderAliases": [
               {
                 "dateOfBirth": "2000-02-07",
@@ -415,7 +439,10 @@ class ProbationOffenderSearchGatewayTest(
             "firstName": "Jonathan",
             "surname": "Bravo",
             "dateOfBirth": "1970-02-07",
-            "offenderAliases": []
+            "offenderAliases": [],
+            "raceCode":"W1",
+            "nationality":"Egyptian",
+            "religion":"Agnostic"
           }
         ]
         """,
@@ -474,6 +501,9 @@ class ProbationOffenderSearchGatewayTest(
             "surname": "Bravo",
             "dateOfBirth": "1970-02-07",
             "offenderAliases": [],
+            "raceCode":"W1",
+            "nationality":"Egyptian",
+            "religion":"Agnostic"
           }
         ]
       """,
@@ -490,7 +520,10 @@ class ProbationOffenderSearchGatewayTest(
             "firstName": "Jonathan",
             "surname": "Bravo",
             "dateOfBirth": "1970-02-07",
-            "offenderAliases": []
+            "offenderAliases": [],
+            "raceCode":"W1",
+            "nationality":"Egyptian",
+            "religion":"Agnostic"
           }
         ]
         """,
@@ -513,7 +546,10 @@ class ProbationOffenderSearchGatewayTest(
             "firstName": "Jonathan",
             "surname": "Bravo",
             "dateOfBirth": "1970-02-07",
-            "offenderAliases": []
+            "offenderAliases": [],
+            "raceCode":"W1",
+            "nationality":"Egyptian",
+            "religion":"Agnostic"
           }
         ]
         """,

@@ -39,7 +39,17 @@ class GetVisitorRestrictionsServiceTest(
       val prisonId = "ABC"
       val contactId = 123456L
       val filters = ConsumerFilters(null)
-      val posPrisoner = POSPrisoner(firstName = "Test", lastName = "Person", prisonId = prisonId, prisonerNumber = hmppsId, youthOffender = false)
+      val posPrisoner =
+        POSPrisoner(
+          firstName = "Test",
+          lastName = "Person",
+          prisonId = prisonId,
+          prisonerNumber = hmppsId,
+          youthOffender = false,
+          religion = "Agnostic",
+          raceCode = "W1",
+          nationality = "Egyptian",
+        )
       val listOfLinkedPrisoners =
         PRLinkedPrisoners(
           prisoners = listOf(PRLinkedPrisoner(prisonerNumber = hmppsId, prisonerContactId = contactId, relationshipTypeCode = "FAM", relationshipTypeDescription = "Family", relationshipToPrisonerCode = "SON", relationshipToPrisonerDescription = "Son", isRelationshipActive = true, firstName = "Test", lastName = "Person", middleNames = null)),

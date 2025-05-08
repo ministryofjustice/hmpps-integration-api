@@ -36,7 +36,14 @@ internal class GetRiskCategoriesForPersonServiceTest(
       val filters = ConsumerFilters(null)
 
       val personFromProbationOffenderSearch =
-        Person(firstName = "Phoebe", lastName = "Buffay", identifiers = Identifiers(nomisNumber = nomisNumber))
+        Person(
+          firstName = "Phoebe",
+          lastName = "Buffay",
+          identifiers = Identifiers(nomisNumber = nomisNumber),
+          religion = "Agnostic",
+          raceCode = "W1",
+          nationality = "Egyptian",
+        )
 
       beforeEach {
         Mockito.reset(getPersonService)
