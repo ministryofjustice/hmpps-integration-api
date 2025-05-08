@@ -32,4 +32,9 @@ enum class HmppsMessageEventType(
     eventTypeCode = "LocationDeactivate",
     description = "A location has been deactivated",
   ),
+  EDUCATION_ASSESSMENT_EVENT_CREATED(
+    type = "education-assessment-event.created",
+    eventTypeCode = "EducationAssessmentEventCreated",
+    description = "An education assessment event has been created",
+  ),
 }

@@ -26,7 +26,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.paginateWith
 
 @RestController
 @RequestMapping("/v1/persons")
-@Tags(Tag(name = "persons"), Tag(name = "alerts"))
+@Tags(Tag(name = "Persons"), Tag(name = "Alerts"))
 class DynamicRisksController(
   @Autowired val getDynamicRisksForPersonService: GetDynamicRisksForPersonService,
   @Autowired val auditService: AuditService,

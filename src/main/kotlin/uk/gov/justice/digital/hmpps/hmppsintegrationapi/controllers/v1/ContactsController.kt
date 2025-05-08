@@ -18,13 +18,13 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetContactServi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 
 @RestController
-@Tag(name = "contacts")
+@Tag(name = "Contacts")
 class ContactsController(
   @Autowired val auditService: AuditService,
   @Autowired val getContactService: GetContactService,
 ) {
   @GetMapping("/v1/contacts/{contactId}")
-  @Tag(name = "visits")
+  @Tag(name = "Visits")
   @Operation(
     summary = "Returns a contact by ID.",
     description = "",

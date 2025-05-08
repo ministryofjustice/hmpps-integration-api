@@ -13,8 +13,8 @@ dependencies {
   runtimeOnly("org.flywaydb:flyway-database-postgresql")
   implementation("org.springframework.boot:spring-boot-starter-webflux")
   implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.1")
-  implementation("io.sentry:sentry-spring-boot-starter-jakarta:8.10.0")
-  implementation("io.sentry:sentry-logback:8.10.0")
+  implementation("io.sentry:sentry-spring-boot-starter-jakarta:8.11.1")
+  implementation("io.sentry:sentry-logback:8.11.1")
   implementation("org.springframework.data:spring-data-commons")
   implementation("org.springframework:spring-aop")
   implementation("org.aspectj:aspectjweaver")
@@ -24,7 +24,7 @@ dependencies {
     exclude("org.springframework.security", "spring-security-crypto")
     exclude("org.springframework.security", "spring-security-web")
   }
-  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.7.0") {
+  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.8") {
     constraints {
       implementation("org.webjars:swagger-ui:5.21.0") // Fix security build HMAI-317
     }

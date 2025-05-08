@@ -55,6 +55,8 @@ hmpps.sqs:
       queueName: "jobsboard-integration"
     visits:
       queueName: "visits"
+    assessmentevents:
+      queueName: "assessmentevents"
 
 feature-flag:
   use-arns-endpoints: true

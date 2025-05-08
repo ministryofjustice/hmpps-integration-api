@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.tags.Tag
+import io.swagger.v3.oas.annotations.tags.Tags
 import jakarta.validation.ValidationException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.GetMapping
@@ -50,7 +51,7 @@ import java.time.format.DateTimeFormatter
 
 @RestController
 @RequestMapping("/v1/persons")
-@Tag(name = "persons")
+@Tag(name = "Persons")
 class PersonController(
   @Autowired val getPersonService: GetPersonService,
   @Autowired val getPersonsService: GetPersonsService,
@@ -130,6 +131,7 @@ class PersonController(
   }
 
   @GetMapping("{hmppsId}/images")
+  @Tags(value = [Tag(name = "Images"), Tag(name = "Reception")])
   @Operation(
     summary = "Returns metadata of images associated with a person sorted by captureDateTime (newest first).",
     description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
@@ -189,7 +191,7 @@ class PersonController(
   }
 
   @GetMapping("{hmppsId}/contacts")
-  @Tag(name = "visits")
+  @Tags(value = [Tag(name = "Visits"), Tag(name = "Contacts"), Tag(name = "Reception")])
   @Operation(
     summary = "Returns a prisoners contacts.",
     description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
@@ -221,7 +223,7 @@ class PersonController(
   }
 
   @GetMapping("{hmppsId}/iep-level")
-  @Tag(name = "visits")
+  @Tag(name = "Visits")
   @Operation(
     summary = "Returns a prisoners IEP level.",
     description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
@@ -252,7 +254,7 @@ class PersonController(
   }
 
   @GetMapping("{hmppsId}/visit-orders")
-  @Tag(name = "visits")
+  @Tags(value = [Tag(name = "Visits"), Tag(name = "Reception")])
   @Operation(
     summary = "Returns the number of remaining visit orders a prisoner has.",
     responses = [
@@ -281,6 +283,7 @@ class PersonController(
   }
 
   @GetMapping("{hmppsId}/number-of-children")
+  @Tag(name = "Reception")
   @Operation(
     summary = "Returns a prisoner's number of children.",
     description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
@@ -310,6 +313,8 @@ class PersonController(
     return DataResponse(data = response.data)
   }
 
+  @GetMapping("{hmppsId}/physical-characteristics")
+  @Tag(name = "Reception")
   @Operation(
     summary = "Gets physical characteristics and distinguishing marks for a prisoner.",
     description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
@@ -320,7 +325,6 @@ class PersonController(
       ApiResponse(responseCode = "500", content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]),
     ],
   )
-  @GetMapping("{hmppsId}/physical-characteristics")
   fun getPhysicalCharacteristicsForPerson(
     @Parameter(description = "A HMPPS identifier") @PathVariable hmppsId: String,
     @RequestAttribute filters: ConsumerFilters?,

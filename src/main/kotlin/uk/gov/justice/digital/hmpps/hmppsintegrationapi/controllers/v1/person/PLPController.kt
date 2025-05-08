@@ -28,7 +28,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditS
  */
 @RestController
 @RequestMapping("/v1/persons")
-@Tags(Tag(name = "persons"))
+@Tags(value = [Tag(name = "Persons"), Tag(name = "PLP")])
 class PLPController(
   private val getInductionScheduleForPersonService: GetInductionScheduleForPersonService,
   private val getReviewScheduleForPersonService: GetReviewScheduleForPersonService,

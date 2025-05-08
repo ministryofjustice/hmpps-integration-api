@@ -24,7 +24,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditS
 
 @RestController
 @RequestMapping("/v1/persons")
-@Tag(name = "persons")
+@Tag(name = "Persons")
 class MappaDetailController(
   @Autowired val getMappaDetailForPersonService: GetMappaDetailForPersonService,
   @Autowired val auditService: AuditService,

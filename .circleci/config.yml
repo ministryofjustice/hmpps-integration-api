@@ -144,13 +144,17 @@ jobs:
           name: Run heartbeat
           command: make heartbeat
   smoke-tests:
-    machine:
-      image: ubuntu-2204:2022.10.2
+    docker:
+      - image: grafana/k6:1.0.0
     steps:
       - checkout
       - run:
           name: Run smoke tests
-          command: make smoke-tests
+          command: |
+            k6 run ./scripts/K6/full-access-smoke-tests.js
+            k6 run ./scripts/K6/limited-access-smoke-tests.js
+            k6 run ./scripts/K6/no-access-with-certs-smoke-tests.js
+            k6 run ./scripts/K6/no-access-without-certs-smoke-tests.js
 
 workflows:
   version: 2

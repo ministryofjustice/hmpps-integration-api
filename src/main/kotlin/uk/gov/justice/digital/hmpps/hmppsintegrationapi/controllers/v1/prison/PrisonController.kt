@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.controllers.v1.prison
 
-import io.swagger.v3.oas.annotations.Hidden
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.media.Content
@@ -8,6 +7,7 @@ import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
+import io.swagger.v3.oas.annotations.tags.Tags
 import jakarta.validation.ValidationException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.GetMapping
@@ -53,7 +53,7 @@ import java.time.format.DateTimeFormatter
 
 @RestController
 @RequestMapping("/v1/prison")
-@Tag(name = "prison")
+@Tag(name = "Prison")
 class PrisonController(
   @Autowired val getPrisonersService: GetPrisonersService,
   @Autowired val getPersonService: GetPersonService,
@@ -66,6 +66,7 @@ class PrisonController(
   @Autowired val locationQueueService: LocationQueueService,
 ) {
   @GetMapping("/prisoners/{hmppsId}")
+  @Tags(value = [Tag(name = "Prisoners"), Tag(name = "Reception")])
   @Operation(
     summary = "Returns a single prisoners details given an hmppsId, does not query for a probation person.",
     description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
@@ -99,6 +100,7 @@ class PrisonController(
   }
 
   @GetMapping("/prisoners")
+  @Tag(name = "Prisoners")
   @Operation(
     summary = "Returns person(s) by search criteria, sorted by date of birth (newest first). Only queries prisoner search.",
     description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
@@ -149,7 +151,7 @@ class PrisonController(
   }
 
   @GetMapping("/{prisonId}/visit/search")
-  @Tag(name = "visits")
+  @Tag(name = "Visits")
   @Operation(
     summary = "Searches for visits by prisonId and criteria.",
     description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
@@ -193,9 +195,8 @@ class PrisonController(
     return response.data.toPaginatedResponse()
   }
 
-  @Hidden // This is currently hidden because the recursive type breaks the docs
   @GetMapping("/{prisonId}/residential-hierarchy")
-  @Tag(name = "residential-areas")
+  @Tag(name = "Residential Areas")
   @Operation(
     summary = "Gets the residential hierarchy for a prison.",
     description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
@@ -238,7 +239,7 @@ class PrisonController(
   }
 
   @GetMapping("/{prisonId}/location/{key}")
-  @Tag(name = "residential-areas")
+  @Tag(name = "Residential Areas")
   @Operation(
     summary = "Gets the location information for a prison location based on a key.",
     description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
@@ -279,7 +280,7 @@ class PrisonController(
   }
 
   @GetMapping("/{prisonId}/residential-details")
-  @Tag(name = "residential-areas")
+  @Tag(name = "Residential Areas")
   @Operation(
     summary = "Gets the residential details for a prison.",
     description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
@@ -322,7 +323,7 @@ class PrisonController(
   }
 
   @GetMapping("/{prisonId}/capacity")
-  @Tag(name = "residential-areas")
+  @Tag(name = "Residential Areas")
   @Operation(
     summary = "Gets the capacity details for a prison.",
     description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",

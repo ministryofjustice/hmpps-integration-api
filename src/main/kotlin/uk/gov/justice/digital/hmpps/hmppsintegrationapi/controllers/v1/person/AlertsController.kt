@@ -26,12 +26,13 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.PaginatedResponse
 
 @RestController
 @RequestMapping("/v1")
-@Tags(Tag(name = "persons"), Tag(name = "alerts"))
+@Tags(Tag(name = "Persons"), Tag(name = "Alerts"))
 class AlertsController(
   @Autowired val getAlertsForPersonService: GetAlertsForPersonService,
   @Autowired val auditService: AuditService,
 ) {
   @GetMapping("/persons/{hmppsId}/alerts")
+  @Tag(name = "Reception")
   @Operation(
     summary = "Returns alerts associated with a person, sorted by dateCreated (newest first).",
     description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",

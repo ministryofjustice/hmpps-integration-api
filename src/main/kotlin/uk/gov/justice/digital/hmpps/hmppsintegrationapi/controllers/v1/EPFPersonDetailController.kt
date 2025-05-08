@@ -19,7 +19,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditS
 
 @RestController
 @RequestMapping("/v1/epf/person-details")
-@Tag(name = "default")
+@Tag(name = "EPF")
 class EPFPersonDetailController(
   @Autowired val getEPFPersonDetailService: GetEPFPersonDetailService,
   @Autowired val auditService: AuditService,
