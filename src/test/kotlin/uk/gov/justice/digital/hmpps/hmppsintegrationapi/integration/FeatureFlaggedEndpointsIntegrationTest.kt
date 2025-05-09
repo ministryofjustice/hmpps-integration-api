@@ -12,6 +12,9 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_RESIDENTIAL_DETAILS_ENDPOINTS
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_RESIDENTIAL_HIERARCHY_ENDPOINTS
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.FeatureNotEnabledException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DeactivateLocationRequest
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DeactivationReason
+import java.time.LocalDate
 
 internal class FeatureFlaggedEndpointsIntegrationTest : IntegrationTestBase() {
   @MockitoBean
@@ -43,7 +46,6 @@ internal class FeatureFlaggedEndpointsIntegrationTest : IntegrationTestBase() {
   @Test
   fun `location details should return 503`() {
     whenever(featureFlagConfig.isEnabled(USE_LOCATION_ENDPOINT)).thenReturn(false)
-
     val prisonId = "MDI"
     val locationId = "MDI-A1-B1-C1"
     val path = "/v1/prison/$prisonId/location/$locationId"
@@ -64,8 +66,16 @@ internal class FeatureFlaggedEndpointsIntegrationTest : IntegrationTestBase() {
   fun `location deactivate should return 503`() {
     whenever(featureFlagConfig.require(USE_LOCATION_DEACTIVATE_ENDPOINT)).thenThrow(FeatureNotEnabledException(""))
     val prisonId = "MDI"
-    val path = "/v1/prison/$prisonId/residential-details?parentPathHierarchy=A"
-    callApi(path)
+    val key = "MDI-A-1-001"
+    val path = "/v1/prison/$prisonId/location/$key/deactivate"
+    val deactivateLocationRequest =
+      DeactivateLocationRequest(
+        deactivationReason = DeactivationReason.DAMAGED,
+        deactivationReasonDescription = "Scheduled maintenance",
+        proposedReactivationDate = LocalDate.now(),
+        planetFmReference = "23423TH/5",
+      )
+    postToApi(path, asJsonString(deactivateLocationRequest))
       .andExpect(status().isServiceUnavailable)
   }
 }
