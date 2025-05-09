@@ -5,13 +5,14 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import software.amazon.awssdk.services.sqs.model.SendMessageRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.ConsumerPrisonAccessService
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.MessageFailedException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.LocationsInsidePrisonGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DeactivateLocationRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HmppsMessage
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HmppsMessageResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.hmpps.sqs.HmppsQueue
 import uk.gov.justice.hmpps.sqs.HmppsQueueService
@@ -42,12 +43,11 @@ class LocationQueueService(
     }
 
     val locationResponse = locationsInsidePrisonGateway.getLocationByKey(key)
-
     if (locationResponse.errors.isNotEmpty()) {
       return Response(data = null, errors = locationResponse.errors)
     }
 
-    val locationId = locationResponse.data?.id ?: throw EntityNotFoundException("Location not found for key in upstream: $key")
+    val locationId = locationResponse.data?.id ?: return Response(data = null, errors = listOf(UpstreamApiError(causedBy = UpstreamApi.LOCATIONS_INSIDE_PRISON, type = UpstreamApiError.Type.ENTITY_NOT_FOUND)))
 
     val hmppsMessage = deactivateLocationRequest.toHmppsMessage(locationId)
     writeMessageToQueue(hmppsMessage, "Could not send deactivate location to queue")
