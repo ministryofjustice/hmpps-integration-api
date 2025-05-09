@@ -6,16 +6,11 @@ import io.kotest.matchers.shouldBe
 import org.awaitility.kotlin.await
 import org.awaitility.kotlin.matches
 import org.awaitility.kotlin.untilCallTo
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
-import software.amazon.awssdk.services.sqs.model.Message
-import software.amazon.awssdk.services.sqs.model.PurgeQueueRequest
-import software.amazon.awssdk.services.sqs.model.ReceiveMessageRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CancelOutcome
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CancelVisitRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CreateVisitRequest
@@ -28,32 +23,9 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitRestri
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitType
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Visitor
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitorSupport
-import uk.gov.justice.hmpps.sqs.HmppsQueueService
-import uk.gov.justice.hmpps.sqs.countAllMessagesOnQueue
 import java.time.LocalDateTime
 
-class VisitsIntegrationTest : IntegrationTestBase() {
-  @Autowired
-  protected lateinit var hmppsQueueService: HmppsQueueService
-
-  internal val testQueue by lazy { hmppsQueueService.findByQueueId("visits") ?: throw RuntimeException("Queue with name visits doesn't exist") }
-  internal val testSqsClient by lazy { testQueue.sqsClient }
-  internal val testQueueUrl by lazy { testQueue.queueUrl }
-
-  fun getNumberOfMessagesCurrentlyOnQueue(): Int = testSqsClient.countAllMessagesOnQueue(testQueueUrl).get()
-
-  fun checkQueueIsEmpty() {
-    await untilCallTo { getNumberOfMessagesCurrentlyOnQueue() } matches { it == 0 }
-    getNumberOfMessagesCurrentlyOnQueue().shouldBe(0)
-  }
-
-  fun getQueueMessages(): List<Message> = testSqsClient.receiveMessage(ReceiveMessageRequest.builder().queueUrl(testQueueUrl).build()).join().messages()
-
-  @BeforeEach
-  fun `clear queues`() {
-    testSqsClient.purgeQueue(PurgeQueueRequest.builder().queueUrl(testQueueUrl).build())
-  }
-
+class VisitsIntegrationTest : IntegrationTestWithQueueBase("visits") {
   @DisplayName("GET /v1/visit/{visitReference}")
   @Nested
   inner class GetVisitByReference {
