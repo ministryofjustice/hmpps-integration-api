@@ -61,6 +61,7 @@ internal class LocationQueueServiceTest(
         )
       val prisonId = "MDI"
       val key = "MDI-123"
+      val who = "automated-test-client"
       val filters = ConsumerFilters(prisons = listOf(prisonId))
       val lipLocation =
         LIPLocation(
@@ -84,14 +85,14 @@ internal class LocationQueueServiceTest(
       beforeTest {
         reset(mockSqsClient, objectMapper)
 
-        whenever(hmppsQueueService.findByQueueId("location")).thenReturn(locationQueue)
+        whenever(hmppsQueueService.findByQueueId("locations")).thenReturn(locationQueue)
         whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<HmppsMessageResponse>(prisonId, filters))
           .thenReturn(Response(data = null, errors = emptyList()))
         whenever(locationsInsidePrisonGateway.getLocationByKey(key)).thenReturn(Response(data = lipLocation))
       }
 
       it("should send deactivate location request successfully when all conditions are met") {
-        val result = locationQueueService.sendDeactivateLocationRequest(deactivateLocationRequest, prisonId, key, filters)
+        val result = locationQueueService.sendDeactivateLocationRequest(deactivateLocationRequest, prisonId, key, who, filters)
         result.data?.message.shouldBe("Deactivate location written to queue")
         result.errors.shouldBeEmpty()
       }
@@ -100,7 +101,7 @@ internal class LocationQueueServiceTest(
         val messageBody = """{"messageId":"1","eventType":"LocationDeactivate","messageAttributes":{}}"""
         whenever(objectMapper.writeValueAsString(any<HmppsMessage>())).thenReturn(messageBody)
 
-        val result = locationQueueService.sendDeactivateLocationRequest(deactivateLocationRequest, prisonId, key, filters)
+        val result = locationQueueService.sendDeactivateLocationRequest(deactivateLocationRequest, prisonId, key, who, filters)
         result.data.shouldBeTypeOf<HmppsMessageResponse>()
 
         verify(mockSqsClient).sendMessage(
@@ -116,7 +117,7 @@ internal class LocationQueueServiceTest(
         whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<HmppsMessageResponse>(prisonId, filters))
           .thenReturn(Response(data = null, errors = listOf(error)))
 
-        val result = locationQueueService.sendDeactivateLocationRequest(deactivateLocationRequest, prisonId, key, filters)
+        val result = locationQueueService.sendDeactivateLocationRequest(deactivateLocationRequest, prisonId, key, who, filters)
         result.data.shouldBe(null)
         result.errors.shouldBe(listOf(error))
       }
@@ -124,7 +125,7 @@ internal class LocationQueueServiceTest(
       it("should return not found error when location is not found for the key") {
         whenever(locationsInsidePrisonGateway.getLocationByKey(key)).thenReturn(Response(data = null))
 
-        val result = locationQueueService.sendDeactivateLocationRequest(deactivateLocationRequest, prisonId, key, filters)
+        val result = locationQueueService.sendDeactivateLocationRequest(deactivateLocationRequest, prisonId, key, who, filters)
         result.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.LOCATIONS_INSIDE_PRISON, UpstreamApiError.Type.ENTITY_NOT_FOUND)))
       }
 
@@ -132,7 +133,7 @@ internal class LocationQueueServiceTest(
         val error = UpstreamApiError(UpstreamApi.LOCATIONS_INSIDE_PRISON, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Location not found")
         whenever(locationsInsidePrisonGateway.getLocationByKey(key)).thenReturn(Response(data = null, errors = listOf(error)))
 
-        val result = locationQueueService.sendDeactivateLocationRequest(deactivateLocationRequest, prisonId, key, filters)
+        val result = locationQueueService.sendDeactivateLocationRequest(deactivateLocationRequest, prisonId, key, who, filters)
         result.data.shouldBe(null)
         result.errors.shouldBe(listOf(error))
       }
