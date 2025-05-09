@@ -146,6 +146,12 @@ authorisation:
       include:
         - "/v1/config/authorisation"
       filters:
+    config-v2-test:
+      include:
+        - "/v2/config/authorisation"
+      filters:
+        prisons:
+          - XYZ
     all-access:
       include:
         - "/.*"
