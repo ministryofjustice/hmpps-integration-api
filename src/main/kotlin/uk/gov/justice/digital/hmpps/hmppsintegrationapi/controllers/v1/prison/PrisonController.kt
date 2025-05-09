@@ -384,9 +384,10 @@ class PrisonController(
     @Parameter(description = "The ID of the prison the location is in") @PathVariable prisonId: String,
     @Parameter(description = "The key of the location") @PathVariable key: String,
     @Valid @RequestBody deactivateLocationRequest: DeactivateLocationRequest,
+    @RequestAttribute clientName: String?,
     @RequestAttribute filters: ConsumerFilters?,
   ): DataResponse<HmppsMessageResponse?> {
-    val response = locationQueueService.sendDeactivateLocationRequest(deactivateLocationRequest, prisonId, key, filters)
+    val response = locationQueueService.sendDeactivateLocationRequest(deactivateLocationRequest, prisonId, key, clientName.orEmpty(), filters)
     if (response.hasError(ENTITY_NOT_FOUND)) {
       throw EntityNotFoundException(response.errors[0].description ?: "Could not find provided location.")
     }

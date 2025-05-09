@@ -21,10 +21,14 @@ data class DeactivateLocationRequest(
   @field:Size(max = 60, message = "Planet FM reference number cannot be more than 60 characters")
   val planetFmReference: String? = null,
 ) {
-  fun toHmppsMessage(locationId: String): HmppsMessage =
+  fun toHmppsMessage(
+    locationId: String,
+    actionedBy: String?,
+  ): HmppsMessage =
     HmppsMessage(
       eventType = HmppsMessageEventType.LOCATION_DEACTIVATE,
       messageAttributes = modelToMap(locationId),
+      who = actionedBy,
     )
 
   private fun modelToMap(locationId: String): Map<String, Any?> =
