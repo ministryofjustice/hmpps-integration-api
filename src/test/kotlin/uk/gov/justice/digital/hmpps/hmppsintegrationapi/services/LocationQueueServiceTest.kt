@@ -32,6 +32,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.locationsInsidePr
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.hmpps.sqs.HmppsQueue
 import uk.gov.justice.hmpps.sqs.HmppsQueueService
+import java.time.LocalDate
 import java.time.LocalDateTime
 
 @ContextConfiguration(
@@ -52,49 +53,46 @@ internal class LocationQueueServiceTest(
           on { sqsClient } doReturn mockSqsClient
           on { queueUrl } doReturn "https://test-queue-url"
         }
+
       val deactivateLocationRequest =
         DeactivateLocationRequest(
-          reason = DeactivationReason.DAMAGED,
-          reasonDescription = "Damaged location",
-          proposedReactivationDate = LocalDateTime.now().plusDays(30),
+          deactivationReason = DeactivationReason.DAMAGED,
+          deactivationReasonDescription = "Smashed window",
+          proposedReactivationDate = LocalDate.now().plusDays(30),
+          planetFmReference = "23423TH/5",
         )
       val prisonId = "MDI"
       val key = "MDI-123"
       val filters = ConsumerFilters(prisons = listOf(prisonId))
-      val locationResponse =
-        Response<LIPLocation>(
-          data =
-            LIPLocation(
-              prisonId = prisonId,
-              id = "123",
-              code = "LOC123",
-              pathHierarchy = "MDI/LOC123",
-              locationType = "CELL",
-              permanentlyInactive = false,
-              active = true,
-              deactivatedByParent = false,
-              topLevelId = "MDI",
-              level = 1,
-              leafLevel = true,
-              lastModifiedBy = "admin",
-              lastModifiedDate = LocalDateTime.now(),
-              key = "MDI-LOC123",
-              isResidential = true,
-            ),
-          errors = emptyList(),
+      val lipLocation =
+        LIPLocation(
+          prisonId = prisonId,
+          id = "123",
+          code = "LOC123",
+          pathHierarchy = "MDI/LOC123",
+          locationType = "CELL",
+          permanentlyInactive = false,
+          active = true,
+          deactivatedByParent = false,
+          topLevelId = "MDI",
+          level = 1,
+          leafLevel = true,
+          lastModifiedBy = "admin",
+          lastModifiedDate = LocalDateTime.now(),
+          key = "MDI-LOC123",
+          isResidential = true,
         )
 
       beforeTest {
         reset(mockSqsClient, objectMapper)
+
         whenever(hmppsQueueService.findByQueueId("location")).thenReturn(locationQueue)
+        whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<HmppsMessageResponse>(prisonId, filters))
+          .thenReturn(Response(data = null, errors = emptyList()))
+        whenever(locationsInsidePrisonGateway.getLocationByKey(key)).thenReturn(Response(data = lipLocation))
       }
 
       it("should send deactivate location request successfully when all conditions are met") {
-
-        whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<HmppsMessageResponse>(prisonId, filters))
-          .thenReturn(Response(data = null, errors = emptyList()))
-        whenever(locationsInsidePrisonGateway.getLocationByKey(key)).thenReturn(locationResponse as Response<LIPLocation?>?)
-
         val result = locationQueueService.sendDeactivateLocationRequest(deactivateLocationRequest, prisonId, key, filters)
 
         result.data?.message.shouldBe("Deactivate location written to queue")
@@ -103,7 +101,6 @@ internal class LocationQueueServiceTest(
 
       it("successfully adds to message queue") {
         val messageBody = """{"messageId":"1","eventType":"LocationDeactivate","messageAttributes":{}}"""
-
         whenever(objectMapper.writeValueAsString(any<HmppsMessage>())).thenReturn(messageBody)
 
         val response = locationQueueService.sendDeactivateLocationRequest(deactivateLocationRequest, prisonId, key, filters)
@@ -119,17 +116,7 @@ internal class LocationQueueServiceTest(
       }
 
       it("should return errors when consumer does not have access to the prison") {
-        val deactivateLocationRequest =
-          DeactivateLocationRequest(
-            reason = DeactivationReason.DAMAGED,
-            reasonDescription = "Damaged location",
-            proposedReactivationDate = LocalDateTime.now().plusDays(30),
-          )
-        val prisonId = "MDI"
-        val key = "MDI-123"
-        val filters = ConsumerFilters(listOf("XYZ"))
         val accessError = UpstreamApiError(UpstreamApi.PRISON_API, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found")
-
         whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<HmppsMessageResponse>(prisonId, filters))
           .thenReturn(Response(data = null, errors = listOf(accessError)))
 
@@ -140,20 +127,7 @@ internal class LocationQueueServiceTest(
       }
 
       it("should throw EntityNotFoundException when location is not found for the key") {
-        val deactivateLocationRequest =
-          DeactivateLocationRequest(
-            reason = DeactivationReason.DAMAGED,
-            reasonDescription = "Damaged location",
-            proposedReactivationDate = LocalDateTime.now().plusDays(30),
-          )
-        val prisonId = "MDI"
-        val key = "MDI-123"
-        val filters = ConsumerFilters(listOf("MDI"))
-        val locationResponse = Response<LIPLocation?>(data = null, errors = emptyList())
-
-        whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<HmppsMessageResponse>(prisonId, filters))
-          .thenReturn(Response(data = null, errors = emptyList()))
-        whenever(locationsInsidePrisonGateway.getLocationByKey(key)).thenReturn(locationResponse)
+        whenever(locationsInsidePrisonGateway.getLocationByKey(key)).thenReturn(Response(data = null))
 
         val exception =
           shouldThrow<EntityNotFoundException> {
@@ -163,19 +137,7 @@ internal class LocationQueueServiceTest(
       }
 
       it("should return errors when location gateway returns errors") {
-        val deactivateLocationRequest =
-          DeactivateLocationRequest(
-            reason = DeactivationReason.DAMAGED,
-            reasonDescription = "Damaged location",
-            proposedReactivationDate = LocalDateTime.now().plusDays(30),
-          )
-        val prisonId = "MDI"
-        val key = "MDI-123"
-        val filters = ConsumerFilters(listOf("MDI"))
         val locationError = UpstreamApiError(UpstreamApi.PRISON_API, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Location not found")
-
-        whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<HmppsMessageResponse>(prisonId, filters))
-          .thenReturn(Response(data = null, errors = emptyList()))
         whenever(locationsInsidePrisonGateway.getLocationByKey(key))
           .thenReturn(Response(data = null, errors = listOf(locationError)))
 

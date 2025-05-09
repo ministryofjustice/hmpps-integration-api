@@ -815,9 +815,10 @@ internal class PrisonControllerTest(
       val path = "/v1/prison/$prisonId/location/$key/deactivate"
       val deactivateLocationRequest =
         DeactivateLocationRequest(
-          reason = DeactivationReason.DAMAGED,
-          reasonDescription = "Scheduled maintenance",
-          proposedReactivationDate = LocalDateTime.now(),
+          deactivationReason = DeactivationReason.DAMAGED,
+          deactivationReasonDescription = "Scheduled maintenance",
+          proposedReactivationDate = LocalDate.now(),
+          planetFmReference = "23423TH/5",
         )
 
       it("returns 200 when location is successfully deactivated") {

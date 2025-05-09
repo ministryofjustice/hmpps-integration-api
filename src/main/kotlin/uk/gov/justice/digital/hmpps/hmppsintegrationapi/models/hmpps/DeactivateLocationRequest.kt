@@ -1,16 +1,25 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps
 
 import io.swagger.v3.oas.annotations.media.Schema
-import java.time.LocalDateTime
+import jakarta.validation.constraints.Size
+import java.time.LocalDate
 
 @Schema(description = "Deactivate location request")
 data class DeactivateLocationRequest(
-  @Schema(description = "Reason", example = "MAINTENANCE", required = true)
-  val reason: DeactivationReason,
-  @Schema(description = "Reason description", example = "Description of a reason. Required if reason is OTHER.", required = false)
-  val reasonDescription: String? = null,
-  @Schema(description = "Proposed reactivation date", example = "2025-01-05", required = true)
-  val proposedReactivationDate: LocalDateTime,
+  @Schema(description = "Reason for temporary deactivation", example = "MOTHBALLED", required = true)
+  val deactivationReason: DeactivationReason,
+  @Schema(
+    description = "Additional information on deactivation, for OTHER DeactivatedReason must be provided",
+    example = "Window broken",
+    required = false,
+  )
+  @field:Size(max = 255, message = "Other deactivation reason cannot be more than 255 characters")
+  val deactivationReasonDescription: String? = null,
+  @Schema(description = "Estimated reactivation date", example = "2025-01-05", required = false)
+  val proposedReactivationDate: LocalDate? = null,
+  @Schema(description = "Planet FM reference number", example = "23423TH/5", required = false)
+  @field:Size(max = 60, message = "Planet FM reference number cannot be more than 60 characters")
+  val planetFmReference: String? = null,
 ) {
   fun toHmppsMessage(locationId: String): HmppsMessage =
     HmppsMessage(
@@ -20,10 +29,11 @@ data class DeactivateLocationRequest(
 
   private fun modelToMap(locationId: String): Map<String, Any?> =
     mapOf(
-      "reason" to this.reason,
-      "reasonDescription" to this.reasonDescription,
+      "id" to locationId,
+      "deactivationReason" to this.deactivationReason,
+      "deactivationReasonDescription" to this.deactivationReasonDescription,
       "proposedReactivationDate" to this.proposedReactivationDate,
-      "locationId" to locationId,
+      "planetFmReference" to this.planetFmReference,
     )
 }
 
