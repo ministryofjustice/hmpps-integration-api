@@ -859,9 +859,8 @@ internal class PrisonControllerTest(
         verify(auditService, times(1)).createEvent(
           "DEACTIVATE_LOCATION",
           mapOf(
-            "reason" to deactivateLocationRequest.reason.toString(),
-            "reasonDescription" to deactivateLocationRequest.reasonDescription,
-            "proposedReactivationDate" to deactivateLocationRequest.proposedReactivationDate.toString(),
+            "prisonId" to prisonId,
+            "key" to key,
           ),
         )
       }

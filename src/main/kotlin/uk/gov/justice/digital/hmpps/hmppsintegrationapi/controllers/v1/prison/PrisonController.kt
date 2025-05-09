@@ -6,8 +6,8 @@ import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.tags.Tag
-import jakarta.validation.Valid
 import io.swagger.v3.oas.annotations.tags.Tags
+import jakarta.validation.Valid
 import jakarta.validation.ValidationException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.GetMapping
@@ -363,7 +363,7 @@ class PrisonController(
   }
 
   @PostMapping("/{prisonId}/location/{key}/deactivate")
-  @Tag(name = "residential-areas")
+  @Tag(name = "Residential Areas")
   @Operation(
     summary = "Temporarily mark a location as inactive.",
     description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
@@ -395,7 +395,7 @@ class PrisonController(
       throw ValidationException("Either invalid prisoner or prison id.")
     }
 
-    auditService.createEvent("DEACTIVATE_LOCATION", mapOf("reason" to deactivateLocationRequest.reason.toString(), "reasonDescription" to deactivateLocationRequest.reasonDescription, "proposedReactivationDate" to deactivateLocationRequest.proposedReactivationDate.toString()))
+    auditService.createEvent("DEACTIVATE_LOCATION", mapOf("prisonId" to prisonId, "key" to key))
 
     return DataResponse(response.data)
   }
