@@ -25,16 +25,16 @@ publish:
 stop:
 	docker compose down
 
-unit-test:
+unit-test:	format
 	./gradlew unitTest
 
-integration-test: serve
+integration-test: format serve
 	./gradlew integrationTest --warning-mode all
 
 heartbeat:
 	./scripts/heartbeat.sh
 
-test: unit-test integration-test
+test: format unit-test integration-test
 
 e2e:
 	./gradlew integrationTest --warning-mode all
