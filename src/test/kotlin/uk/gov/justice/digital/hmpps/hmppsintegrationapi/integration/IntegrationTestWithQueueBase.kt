@@ -12,7 +12,7 @@ import software.amazon.awssdk.services.sqs.model.ReceiveMessageRequest
 import uk.gov.justice.hmpps.sqs.HmppsQueueService
 import uk.gov.justice.hmpps.sqs.countAllMessagesOnQueue
 
-abstract class IntegrationTestWithQueuesBase(
+abstract class IntegrationTestWithQueueBase(
   val queueName: String,
 ) : IntegrationTestBase() {
   @Autowired

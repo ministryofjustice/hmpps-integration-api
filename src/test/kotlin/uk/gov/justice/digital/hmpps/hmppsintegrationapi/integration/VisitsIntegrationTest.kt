@@ -25,7 +25,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Visitor
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitorSupport
 import java.time.LocalDateTime
 
-class VisitsIntegrationTest : IntegrationTestWithQueuesBase("visits") {
+class VisitsIntegrationTest : IntegrationTestWithQueueBase("visits") {
   @DisplayName("GET /v1/visit/{visitReference}")
   @Nested
   inner class GetVisitByReference {
