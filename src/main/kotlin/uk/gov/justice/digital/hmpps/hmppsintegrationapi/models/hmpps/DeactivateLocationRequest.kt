@@ -36,7 +36,7 @@ data class DeactivateLocationRequest(
       "id" to locationId,
       "deactivationReason" to this.deactivationReason,
       "deactivationReasonDescription" to this.deactivationReasonDescription,
-      "proposedReactivationDate" to this.proposedReactivationDate,
+      "proposedReactivationDate" to this.proposedReactivationDate.toString(),
       "planetFmReference" to this.planetFmReference,
     )
 }
