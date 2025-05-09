@@ -31,6 +31,8 @@ hmpps.sqs:
       queueName: "visits"
     assessmentevents:
       queueName: "assessmentevents"
+    locations:
+      queueName: "locations"
 
 feature-flag:
   use-arns-endpoints: true
