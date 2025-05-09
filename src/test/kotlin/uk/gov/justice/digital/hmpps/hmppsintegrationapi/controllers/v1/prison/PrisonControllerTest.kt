@@ -813,6 +813,7 @@ internal class PrisonControllerTest(
       val prisonId = "MDI"
       val key = "A-1-001"
       val path = "/v1/prison/$prisonId/location/$key/deactivate"
+      val who = "automated-test-client"
       val deactivateLocationRequest =
         DeactivateLocationRequest(
           deactivationReason = DeactivationReason.DAMAGED,
@@ -822,7 +823,7 @@ internal class PrisonControllerTest(
         )
 
       it("returns 200 when location is successfully deactivated") {
-        whenever(locationQueueService.sendDeactivateLocationRequest(deactivateLocationRequest, prisonId, key, null)).thenReturn(
+        whenever(locationQueueService.sendDeactivateLocationRequest(deactivateLocationRequest, prisonId, key, who, null)).thenReturn(
           Response(data = HmppsMessageResponse(message = "Deactivate location written to queue")),
         )
 
@@ -834,7 +835,7 @@ internal class PrisonControllerTest(
       }
 
       it("returns 404 when location is not found") {
-        whenever(locationQueueService.sendDeactivateLocationRequest(deactivateLocationRequest, prisonId, key, null)).thenReturn(
+        whenever(locationQueueService.sendDeactivateLocationRequest(deactivateLocationRequest, prisonId, key, who, null)).thenReturn(
           Response(data = null, errors = listOf(UpstreamApiError(type = UpstreamApiError.Type.ENTITY_NOT_FOUND, description = "Location not found", causedBy = UpstreamApi.LOCATIONS_INSIDE_PRISON))),
         )
 
@@ -843,7 +844,7 @@ internal class PrisonControllerTest(
       }
 
       it("returns 400 when invalid request data is provided") {
-        whenever(locationQueueService.sendDeactivateLocationRequest(deactivateLocationRequest, prisonId, key, null)).thenReturn(
+        whenever(locationQueueService.sendDeactivateLocationRequest(deactivateLocationRequest, prisonId, key, who, null)).thenReturn(
           Response(data = null, errors = listOf(UpstreamApiError(type = UpstreamApiError.Type.BAD_REQUEST, description = "Invalid data", causedBy = UpstreamApi.LOCATIONS_INSIDE_PRISON))),
         )
 
@@ -852,7 +853,7 @@ internal class PrisonControllerTest(
       }
 
       it("logs audit event when location is deactivated") {
-        whenever(locationQueueService.sendDeactivateLocationRequest(deactivateLocationRequest, prisonId, key, null)).thenReturn(
+        whenever(locationQueueService.sendDeactivateLocationRequest(deactivateLocationRequest, prisonId, key, who, null)).thenReturn(
           Response(data = HmppsMessageResponse(message = "Deactivate location written to queue")),
         )
 

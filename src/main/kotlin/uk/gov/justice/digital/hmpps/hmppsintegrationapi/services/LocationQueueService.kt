@@ -25,7 +25,7 @@ class LocationQueueService(
   @Autowired private val locationsInsidePrisonGateway: LocationsInsidePrisonGateway,
   @Autowired private val objectMapper: ObjectMapper,
 ) {
-  private val locationQueue by lazy { hmppsQueueService.findByQueueId("location") as HmppsQueue }
+  private val locationQueue by lazy { hmppsQueueService.findByQueueId("locations") as HmppsQueue }
   private val locationQueueSqsClient by lazy { locationQueue.sqsClient }
   private val locationQueueUrl by lazy { locationQueue.queueUrl }
 
@@ -33,6 +33,7 @@ class LocationQueueService(
     deactivateLocationRequest: DeactivateLocationRequest,
     prisonId: String,
     key: String,
+    who: String,
     filters: ConsumerFilters?,
   ): Response<HmppsMessageResponse?> {
     if (filters?.prisons != null) {
@@ -49,7 +50,7 @@ class LocationQueueService(
 
     val locationId = locationResponse.data?.id ?: return Response(data = null, errors = listOf(UpstreamApiError(causedBy = UpstreamApi.LOCATIONS_INSIDE_PRISON, type = UpstreamApiError.Type.ENTITY_NOT_FOUND)))
 
-    val hmppsMessage = deactivateLocationRequest.toHmppsMessage(locationId)
+    val hmppsMessage = deactivateLocationRequest.toHmppsMessage(locationId, actionedBy = who)
     writeMessageToQueue(hmppsMessage, "Could not send deactivate location to queue")
 
     return Response(HmppsMessageResponse(message = "Deactivate location written to queue"))
