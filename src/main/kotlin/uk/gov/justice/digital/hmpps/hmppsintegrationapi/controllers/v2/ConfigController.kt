@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.hmppsintegrationapi.controllers.v2.prison
+package uk.gov.justice.digital.hmpps.hmppsintegrationapi.controllers.v2
 
 import io.swagger.v3.oas.annotations.Hidden
 import org.springframework.boot.context.properties.EnableConfigurationProperties
