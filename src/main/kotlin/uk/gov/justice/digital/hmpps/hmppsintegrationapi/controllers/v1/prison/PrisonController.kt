@@ -392,8 +392,8 @@ class PrisonController(
       throw EntityNotFoundException(response.errors[0].description ?: "Could not find provided location.")
     }
 
-    if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
-      throw ValidationException("Either invalid prisoner or prison id.")
+    if (response.hasError(BAD_REQUEST)) {
+      throw ValidationException(response.errors[0].description ?: "Invalid request.")
     }
 
     auditService.createEvent("DEACTIVATE_LOCATION", mapOf("prisonId" to prisonId, "key" to key))
