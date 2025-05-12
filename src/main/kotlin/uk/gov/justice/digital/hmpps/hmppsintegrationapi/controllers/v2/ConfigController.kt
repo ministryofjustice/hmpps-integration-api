@@ -16,7 +16,7 @@ data class ConfigControllerConsumerConfig(
 )
 
 @Hidden
-@RestController
+@RestController("ConfigControllerV2")
 @EnableConfigurationProperties(AuthorisationConfig::class, GlobalsConfig::class)
 @RequestMapping("/v2/config")
 class ConfigController(
