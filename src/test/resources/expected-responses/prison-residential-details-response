@@ -6,7 +6,7 @@
       "key": "MDI-A-1-001",
       "code": "001",
       "pathHierarchy": "A-1-001",
-      "locationType": "WING",
+      "locationType": "CELL",
       "localName": "Wing A",
       "comments": "Not to be used",
       "capacity": {
@@ -55,7 +55,7 @@
         "key": "MDI-A-1-001",
         "code": "001",
         "pathHierarchy": "A-1-001",
-        "locationType": "WING",
+        "locationType": "CELL",
         "localName": "Wing A",
         "comments": "Not to be used",
         "capacity": {
