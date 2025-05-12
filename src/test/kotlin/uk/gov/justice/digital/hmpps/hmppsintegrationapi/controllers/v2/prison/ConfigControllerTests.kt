@@ -14,8 +14,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.controllers.v2.ConfigController
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.controllers.v2.ConfigControllerConsumerConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ConfigAuthorisation
 
 @WebMvcTest(controllers = [ConfigController::class])
 @ActiveProfiles("test")
@@ -31,7 +31,7 @@ class ConfigControllerTests(
     val result = mockMvc.performAuthorisedWithCN(basePath, "config-v2-test")
     result.response.status.shouldBe(200)
 
-    val actualConfig: Map<String, ConfigControllerConsumerConfig> = objectMapper.readValue(result.response.contentAsString)
+    val actualConfig: Map<String, ConfigAuthorisation> = objectMapper.readValue(result.response.contentAsString)
     actualConfig.shouldHaveKeys("automated-test-client")
 
     actualConfig.shouldHaveKeys("config-v2-test")

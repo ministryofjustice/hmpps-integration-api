@@ -7,13 +7,8 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.AuthorisationConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.GlobalsConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ConfigAuthorisation
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerConfig
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
-
-data class ConfigControllerConsumerConfig(
-  val endpoints: List<String>,
-  val filters: ConsumerFilters?,
-)
 
 @Hidden
 @RestController("ConfigControllerV2")
@@ -24,10 +19,10 @@ class ConfigController(
   var globalsConfig: GlobalsConfig,
 ) {
   @GetMapping("authorisation")
-  fun getAuthorisation(): Map<String, ConfigControllerConsumerConfig> = authorisationConfig.consumers.entries.associate { it.key to mapConsumerToIncludesAndFilters(it.value) }
+  fun getAuthorisation(): Map<String, ConfigAuthorisation> = authorisationConfig.consumers.entries.associate { it.key to mapConsumerToIncludesAndFilters(it.value) }
 
-  private fun mapConsumerToIncludesAndFilters(consumerConfig: ConsumerConfig?): ConfigControllerConsumerConfig =
-    ConfigControllerConsumerConfig(
+  private fun mapConsumerToIncludesAndFilters(consumerConfig: ConsumerConfig?): ConfigAuthorisation =
+    ConfigAuthorisation(
       endpoints = buildEndpointsList(consumerConfig),
       filters = consumerConfig?.filters,
     )
