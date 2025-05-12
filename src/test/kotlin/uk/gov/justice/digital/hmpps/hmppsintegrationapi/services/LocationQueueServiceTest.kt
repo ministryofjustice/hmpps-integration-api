@@ -137,5 +137,13 @@ internal class LocationQueueServiceTest(
         result.data.shouldBe(null)
         result.errors.shouldBe(listOf(error))
       }
+
+      it("should return error when location type is not CELL") {
+        whenever(locationsInsidePrisonGateway.getLocationByKey(key)).thenReturn(Response(data = lipLocation.copy(locationType = "WING")))
+
+        val result = locationQueueService.sendDeactivateLocationRequest(deactivateLocationRequest, prisonId, key, who, filters)
+        result.data.shouldBe(null)
+        result.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.LOCATIONS_INSIDE_PRISON, UpstreamApiError.Type.BAD_REQUEST, "Location type must be a CELL")))
+      }
     },
   )
