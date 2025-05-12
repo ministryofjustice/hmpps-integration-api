@@ -19,6 +19,9 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.MockMvcExtens
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DeactivateLocationRequest
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DeactivationReason
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HmppsMessageResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Location
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.LocationCapacity
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.LocationCertification
@@ -44,6 +47,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPrisonersSer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetResidentialDetailsService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetResidentialHierarchyService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetVisitsService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.LocationQueueService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -61,6 +65,7 @@ internal class PrisonControllerTest(
   @MockitoBean val getLocationByKeyService: GetLocationByKeyService,
   @MockitoBean val getResidentialDetailsService: GetResidentialDetailsService,
   @MockitoBean val getCapacityForPrisonService: GetCapacityForPrisonService,
+  @MockitoBean val locationQueueService: LocationQueueService,
 ) : DescribeSpec({
     val hmppsId = "200313116M"
     val basePath = "/v1/prison"
@@ -801,6 +806,65 @@ internal class PrisonControllerTest(
 
         val result = mockMvc.performAuthorised(path)
         result.response.status.shouldBe(404)
+      }
+    }
+
+    describe("POST /{prisonId}/location/{key}/deactivate") {
+      val prisonId = "MDI"
+      val key = "A-1-001"
+      val path = "/v1/prison/$prisonId/location/$key/deactivate"
+      val who = "automated-test-client"
+      val deactivateLocationRequest =
+        DeactivateLocationRequest(
+          deactivationReason = DeactivationReason.DAMAGED,
+          deactivationReasonDescription = "Scheduled maintenance",
+          proposedReactivationDate = LocalDate.now(),
+          planetFmReference = "23423TH/5",
+        )
+
+      it("returns 200 when location is successfully deactivated") {
+        whenever(locationQueueService.sendDeactivateLocationRequest(deactivateLocationRequest, prisonId, key, who, null)).thenReturn(
+          Response(data = HmppsMessageResponse(message = "Deactivate location written to queue")),
+        )
+
+        val result = mockMvc.performAuthorisedPost(path, deactivateLocationRequest)
+        result.response.status.shouldBe(200)
+        result.response.contentAsJson<DataResponse<HmppsMessageResponse>>().shouldBe(
+          DataResponse(data = HmppsMessageResponse(message = "Deactivate location written to queue")),
+        )
+      }
+
+      it("returns 404 when location is not found") {
+        whenever(locationQueueService.sendDeactivateLocationRequest(deactivateLocationRequest, prisonId, key, who, null)).thenReturn(
+          Response(data = null, errors = listOf(UpstreamApiError(type = UpstreamApiError.Type.ENTITY_NOT_FOUND, description = "Location not found", causedBy = UpstreamApi.LOCATIONS_INSIDE_PRISON))),
+        )
+
+        val result = mockMvc.performAuthorisedPost(path, deactivateLocationRequest)
+        result.response.status.shouldBe(404)
+      }
+
+      it("returns 400 when invalid request data is provided") {
+        whenever(locationQueueService.sendDeactivateLocationRequest(deactivateLocationRequest, prisonId, key, who, null)).thenReturn(
+          Response(data = null, errors = listOf(UpstreamApiError(type = UpstreamApiError.Type.BAD_REQUEST, description = "Invalid data", causedBy = UpstreamApi.LOCATIONS_INSIDE_PRISON))),
+        )
+
+        val result = mockMvc.performAuthorisedPost(path, deactivateLocationRequest)
+        result.response.status.shouldBe(400)
+      }
+
+      it("logs audit event when location is deactivated") {
+        whenever(locationQueueService.sendDeactivateLocationRequest(deactivateLocationRequest, prisonId, key, who, null)).thenReturn(
+          Response(data = HmppsMessageResponse(message = "Deactivate location written to queue")),
+        )
+
+        mockMvc.performAuthorisedPost(path, deactivateLocationRequest)
+        verify(auditService, times(1)).createEvent(
+          "DEACTIVATE_LOCATION",
+          mapOf(
+            "prisonId" to prisonId,
+            "key" to key,
+          ),
+        )
       }
     }
   })

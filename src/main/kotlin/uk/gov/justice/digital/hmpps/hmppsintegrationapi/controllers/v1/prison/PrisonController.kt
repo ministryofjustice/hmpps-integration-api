@@ -7,11 +7,14 @@ import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.tags.Tag
 import io.swagger.v3.oas.annotations.tags.Tags
+import jakarta.validation.Valid
 import jakarta.validation.ValidationException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestAttribute
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
@@ -20,6 +23,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFound
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.ForbiddenByUpstreamServiceException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.featureflag.FeatureFlag
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DeactivateLocationRequest
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HmppsMessageResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Location
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonInPrison
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonCapacity
@@ -39,6 +44,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPrisonersSer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetResidentialDetailsService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetResidentialHierarchyService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetVisitsService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.LocationQueueService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.PaginatedResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.paginateWith
@@ -57,6 +63,7 @@ class PrisonController(
   @Autowired val getCapacityForPrisonService: GetCapacityForPrisonService,
   @Autowired val auditService: AuditService,
   @Autowired val getLocationByKeyService: GetLocationByKeyService,
+  @Autowired val locationQueueService: LocationQueueService,
 ) {
   @GetMapping("/prisoners/{hmppsId}")
   @Tags(value = [Tag(name = "Prisoners"), Tag(name = "Reception")])
@@ -353,6 +360,45 @@ class PrisonController(
     )
 
     return DataResponse(data = response.data)
+  }
+
+  @PostMapping("/{prisonId}/location/{key}/deactivate")
+  @Tag(name = "Residential Areas")
+  @Operation(
+    summary = "Temporarily mark a location as inactive.",
+    description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
+    responses = [
+      ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully posted to upstream APIs."),
+      ApiResponse(
+        responseCode = "400",
+        description = "",
+        content = [Content(schema = Schema(ref = "#/components/schemas/BadRequest"))],
+      ),
+      ApiResponse(responseCode = "403", content = [Content(schema = Schema(ref = "#/components/schemas/ForbiddenResponse"))]),
+      ApiResponse(responseCode = "404", content = [Content(schema = Schema(ref = "#/components/schemas/PersonNotFound"))]),
+      ApiResponse(responseCode = "500", content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]),
+    ],
+  )
+  @FeatureFlag(name = FeatureFlagConfig.USE_LOCATION_DEACTIVATE_ENDPOINT)
+  fun deactivateLocation(
+    @Parameter(description = "The ID of the prison the location is in") @PathVariable prisonId: String,
+    @Parameter(description = "The key of the location") @PathVariable key: String,
+    @Valid @RequestBody deactivateLocationRequest: DeactivateLocationRequest,
+    @RequestAttribute clientName: String?,
+    @RequestAttribute filters: ConsumerFilters?,
+  ): DataResponse<HmppsMessageResponse?> {
+    val response = locationQueueService.sendDeactivateLocationRequest(deactivateLocationRequest, prisonId, key, clientName.orEmpty(), filters)
+    if (response.hasError(ENTITY_NOT_FOUND)) {
+      throw EntityNotFoundException(response.errors[0].description ?: "Could not find provided location.")
+    }
+
+    if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
+      throw ValidationException("Either invalid prisoner or prison id.")
+    }
+
+    auditService.createEvent("DEACTIVATE_LOCATION", mapOf("prisonId" to prisonId, "key" to key))
+
+    return DataResponse(response.data)
   }
 
   private fun isValidISODateFormat(dateString: String): Boolean =

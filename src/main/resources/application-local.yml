@@ -31,6 +31,8 @@ hmpps.sqs:
       queueName: "visits"
     assessmentevents:
       queueName: "assessmentevents"
+    locations:
+      queueName: "locations"
 
 feature-flag:
   use-arns-endpoints: true
@@ -42,6 +44,7 @@ feature-flag:
   use-capacity-endpoint: true
   use-location-endpoint: true
   replace-probation-search: true
+  use-location-deactivate-endpoint: true
 
 authorisation:
   consumers:

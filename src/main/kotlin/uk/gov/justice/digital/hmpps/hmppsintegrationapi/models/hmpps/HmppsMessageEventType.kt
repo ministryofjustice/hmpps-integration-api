@@ -27,6 +27,11 @@ enum class HmppsMessageEventType(
     eventTypeCode = "VisitCancelled",
     description = "An visit has been cancelled",
   ),
+  LOCATION_DEACTIVATE(
+    type = "locations-inside-prison.location.deactivate",
+    eventTypeCode = "LocationDeactivate",
+    description = "A location has been deactivated",
+  ),
   EDUCATION_ASSESSMENT_EVENT_CREATED(
     type = "education-assessment-event.created",
     eventTypeCode = "EducationAssessmentEventCreated",

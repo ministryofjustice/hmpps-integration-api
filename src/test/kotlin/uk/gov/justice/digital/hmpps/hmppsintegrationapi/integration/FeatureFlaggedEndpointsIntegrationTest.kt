@@ -6,11 +6,15 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_IMAGE_ENDPOINTS
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_LOCATION_DEACTIVATE_ENDPOINT
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_LOCATION_ENDPOINT
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_PHYSICAL_CHARACTERISTICS_ENDPOINTS
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_RESIDENTIAL_DETAILS_ENDPOINTS
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_RESIDENTIAL_HIERARCHY_ENDPOINTS
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.FeatureNotEnabledException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DeactivateLocationRequest
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DeactivationReason
+import java.time.LocalDate
 
 internal class FeatureFlaggedEndpointsIntegrationTest : IntegrationTestBase() {
   @MockitoBean
@@ -42,7 +46,6 @@ internal class FeatureFlaggedEndpointsIntegrationTest : IntegrationTestBase() {
   @Test
   fun `location details should return 503`() {
     whenever(featureFlagConfig.isEnabled(USE_LOCATION_ENDPOINT)).thenReturn(false)
-
     val prisonId = "MDI"
     val locationId = "MDI-A1-B1-C1"
     val path = "/v1/prison/$prisonId/location/$locationId"
@@ -56,6 +59,23 @@ internal class FeatureFlaggedEndpointsIntegrationTest : IntegrationTestBase() {
     val prisonId = "MDI"
     val path = "/v1/prison/$prisonId/residential-details?parentPathHierarchy=A"
     callApi(path)
+      .andExpect(status().isServiceUnavailable)
+  }
+
+  @Test
+  fun `location deactivate should return 503`() {
+    whenever(featureFlagConfig.require(USE_LOCATION_DEACTIVATE_ENDPOINT)).thenThrow(FeatureNotEnabledException(""))
+    val prisonId = "MDI"
+    val key = "MDI-A-1-001"
+    val path = "/v1/prison/$prisonId/location/$key/deactivate"
+    val deactivateLocationRequest =
+      DeactivateLocationRequest(
+        deactivationReason = DeactivationReason.DAMAGED,
+        deactivationReasonDescription = "Scheduled maintenance",
+        proposedReactivationDate = LocalDate.now(),
+        planetFmReference = "23423TH/5",
+      )
+    postToApi(path, asJsonString(deactivateLocationRequest))
       .andExpect(status().isServiceUnavailable)
   }
 }
