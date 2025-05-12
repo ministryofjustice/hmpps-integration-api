@@ -87,7 +87,8 @@ const get_endpoints = [
   `/v1/persons/${hmppsId}/images`,
   `/v1/persons/${hmppsId}/images/${imageId}`,
   `/v1/persons/${hmppsId}/case-notes`,
-  "/v1/hmpps/reference-data"
+  "/v1/hmpps/reference-data",
+  "/v2/config/authorisation"
 ];
 
 const broken_endpoints = []
