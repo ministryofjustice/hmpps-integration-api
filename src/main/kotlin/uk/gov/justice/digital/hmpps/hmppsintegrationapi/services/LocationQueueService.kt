@@ -49,6 +49,9 @@ class LocationQueueService(
     }
 
     val locationId = locationResponse.data?.id ?: return Response(data = null, errors = listOf(UpstreamApiError(causedBy = UpstreamApi.LOCATIONS_INSIDE_PRISON, type = UpstreamApiError.Type.ENTITY_NOT_FOUND)))
+    if (locationResponse.data.locationType != "CELL") {
+      return Response(data = null, errors = listOf(UpstreamApiError(causedBy = UpstreamApi.LOCATIONS_INSIDE_PRISON, type = UpstreamApiError.Type.BAD_REQUEST, description = "Location type must be a CELL")))
+    }
 
     val hmppsMessage = deactivateLocationRequest.toHmppsMessage(locationId, actionedBy = who)
     writeMessageToQueue(hmppsMessage, "Could not send deactivate location to queue")
