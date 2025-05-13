@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffender
 data class POSAttributeSearchRequest(
   val joinType: String = "AND",
   val queries: List<POSAttributeSearchQuery>,
+  val pagination: POSPaginationRequest = POSPaginationRequest(),
 )
 
 data class POSAttributeSearchQuery(
