@@ -1,6 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch
 
-data class POSPaginationSort(
+data class POSSort(
   val empty: Boolean,
   val sorted: Boolean,
   val unsorted: Boolean,

@@ -8,7 +8,7 @@ class POSPaginatedPrisoners(
   val last: Boolean,
   val size: Int,
   val number: Int,
-  val sort: POSPaginationSort,
+  val sort: POSSort,
   val numberOfElements: Int,
   val pageable: POSPageable,
   val empty: Boolean,
