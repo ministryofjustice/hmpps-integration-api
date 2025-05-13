@@ -852,6 +852,16 @@ internal class PrisonControllerTest(
         result.response.status.shouldBe(400)
       }
 
+      it("returns 409 when prisoner is in cell") {
+        whenever(locationQueueService.sendDeactivateLocationRequest(deactivateLocationRequest, prisonId, key, who, null)).thenReturn(
+          Response(data = null, errors = listOf(UpstreamApiError(type = UpstreamApiError.Type.CONFLICT, description = "Prisoner in cell", causedBy = UpstreamApi.PRISONER_OFFENDER_SEARCH))),
+        )
+
+        val result = mockMvc.performAuthorisedPost(path, deactivateLocationRequest)
+        result.response.status.shouldBe(409)
+        result.response.contentAsString.contains("Prisoner in cell")
+      }
+
       it("logs audit event when location is deactivated") {
         whenever(locationQueueService.sendDeactivateLocationRequest(deactivateLocationRequest, prisonId, key, who, null)).thenReturn(
           Response(data = HmppsMessageResponse(message = "Deactivate location written to queue")),
