@@ -65,7 +65,7 @@ class PrisonerOffenderSearchGatewayTest(
               "dateOfBirth": "$dateOfBirth",
               "includeAliases": false
             }
-          """.removeWhitespaceAndNewlines(),
+            """.removeWhitespaceAndNewlines(),
             File(
               "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/prisoneroffendersearch/fixtures/GetPrisonersResponse.json",
             ).readText(),
@@ -109,11 +109,11 @@ class PrisonerOffenderSearchGatewayTest(
           prisonerOffenderSearchApiMockServer.stubForPost(
             postPath,
             """
-        {
-          "firstName": "Obi-Wan",
-          "includeAliases": false
-        }
-        """.removeWhitespaceAndNewlines(),
+            {
+              "firstName": "Obi-Wan",
+              "includeAliases": false
+            }
+            """.removeWhitespaceAndNewlines(),
             """
             {
               "content": [
@@ -121,7 +121,33 @@ class PrisonerOffenderSearchGatewayTest(
                   "firstName": "Obi-Wan",
                   "lastName": "Kenobi"
                 }
-              ]
+              ],
+              "pageable": {
+                  "sort": {
+                    "empty": true,
+                    "unsorted": true,
+                    "sorted": false
+                  },
+                  "offset": 0,
+                  "pageSize": 10,
+                  "pageNumber": 0,
+                  "paged": true,
+                  "unpaged": false
+                },
+                "totalPages": 2,
+                "last": false,
+                "totalElements": 4,
+                "size": 10,
+                "number": 0,
+                "sort": {
+                  "empty": true,
+                  "unsorted": true,
+                  "sorted": false
+                },
+                "first": true,
+                "numberOfElements": 10,
+                "empty": false
+              }
             }
             """.trimIndent(),
           )
@@ -143,11 +169,11 @@ class PrisonerOffenderSearchGatewayTest(
           prisonerOffenderSearchApiMockServer.stubForPost(
             postPath,
             """
-        {
-          "lastName": "Binks",
-          "includeAliases": false
-        }
-        """.removeWhitespaceAndNewlines(),
+            {
+              "lastName": "Binks",
+              "includeAliases": false
+            }
+            """.removeWhitespaceAndNewlines(),
             """
             {
               "content": [
@@ -155,7 +181,32 @@ class PrisonerOffenderSearchGatewayTest(
                   "firstName": "Jar Jar",
                   "lastName": "Binks"
                 }
-              ]
+              ],
+              "pageable": {
+                "sort": {
+                  "empty": true,
+                  "unsorted": true,
+                  "sorted": false
+                },
+                "offset": 0,
+                "pageSize": 10,
+                "pageNumber": 0,
+                "paged": true,
+                "unpaged": false
+              },
+              "totalPages": 2,
+              "last": false,
+              "totalElements": 4,
+              "size": 10,
+              "number": 0,
+              "sort": {
+                "empty": true,
+                "unsorted": true,
+                "sorted": false
+              },
+              "first": true,
+              "numberOfElements": 10,
+              "empty": false
             }
             """.trimIndent(),
           )
@@ -177,11 +228,11 @@ class PrisonerOffenderSearchGatewayTest(
           prisonerOffenderSearchApiMockServer.stubForPost(
             postPath,
             """
-        {
-          "includeAliases": false,
-          "dateOfBirth": "1975-02-28"
-        }
-        """.removeWhitespaceAndNewlines(),
+            {
+              "includeAliases": false,
+              "dateOfBirth": "1975-02-28"
+            }
+            """.removeWhitespaceAndNewlines(),
             """
             {
               "content": [
@@ -190,7 +241,32 @@ class PrisonerOffenderSearchGatewayTest(
                   "lastName": "Binks",
                   "dateOfBirth": "1975-02-28"
                 }
-              ]
+              ],
+              "pageable": {
+                "sort": {
+                  "empty": true,
+                  "unsorted": true,
+                  "sorted": false
+                },
+                "offset": 0,
+                "pageSize": 10,
+                "pageNumber": 0,
+                "paged": true,
+                "unpaged": false
+              },
+              "totalPages": 2,
+              "last": false,
+              "totalElements": 4,
+              "size": 10,
+              "number": 0,
+              "sort": {
+                "empty": true,
+                "unsorted": true,
+                "sorted": false
+              },
+              "first": true,
+              "numberOfElements": 10,
+              "empty": false
             }
             """.trimIndent(),
           )
@@ -216,11 +292,11 @@ class PrisonerOffenderSearchGatewayTest(
           prisonerOffenderSearchApiMockServer.stubForPost(
             postPath,
             """
-        {
-          "firstName": "Geralt",
-          "includeAliases": true
-        }
-        """.removeWhitespaceAndNewlines(),
+            {
+              "firstName": "Geralt",
+              "includeAliases": true
+            }
+            """.removeWhitespaceAndNewlines(),
             """
             {
               "content": [
@@ -234,7 +310,33 @@ class PrisonerOffenderSearchGatewayTest(
                     }
                   ]
                 }
-              ]
+              ],
+               "pageable": {
+                  "sort": {
+                    "empty": true,
+                    "unsorted": true,
+                    "sorted": false
+                  },
+                  "offset": 0,
+                  "pageSize": 10,
+                  "pageNumber": 0,
+                  "paged": true,
+                  "unpaged": false
+                },
+                "totalPages": 2,
+                "last": false,
+                "totalElements": 4,
+                "size": 10,
+                "number": 0,
+                "sort": {
+                  "empty": true,
+                  "unsorted": true,
+                  "sorted": false
+                },
+                "first": true,
+                "numberOfElements": 10,
+                "empty": false
+              }
             }
             """.trimIndent(),
           )
@@ -268,12 +370,37 @@ class PrisonerOffenderSearchGatewayTest(
               "lastName": "$lastNameThatDoesNotExist",
               "includeAliases": false
             }
-          """.removeWhitespaceAndNewlines(),
+            """.removeWhitespaceAndNewlines(),
             """
-        {
-          "content": []
-        }
-        """,
+            {
+              "content": [],
+              "pageable": {
+                "sort": {
+                  "empty": true,
+                  "unsorted": true,
+                  "sorted": false
+                },
+                "offset": 0,
+                "pageSize": 10,
+                "pageNumber": 0,
+                "paged": true,
+                "unpaged": false
+              },
+              "totalPages": 2,
+              "last": false,
+              "totalElements": 4,
+              "size": 10,
+              "number": 0,
+              "sort": {
+                "empty": true,
+                "unsorted": true,
+                "sorted": false
+              },
+              "first": true,
+              "numberOfElements": 10,
+              "empty": false
+            }
+            """,
           )
 
           val response = prisonerOffenderSearchGateway.getPersons(firstNameThatDoesNotExist, lastNameThatDoesNotExist, null)
@@ -283,7 +410,6 @@ class PrisonerOffenderSearchGatewayTest(
       }
 
       describe("#getPrisonOffender") {
-
         beforeEach {
           prisonerOffenderSearchApiMockServer.stubForGet(
             getPath,
@@ -321,10 +447,10 @@ class PrisonerOffenderSearchGatewayTest(
           prisonerOffenderSearchApiMockServer.stubForGet(
             getPath,
             """
-        {
-          "developerMessage": "cannot find person"
-        }
-        """,
+            {
+              "developerMessage": "cannot find person"
+            }
+            """,
             HttpStatus.NOT_FOUND,
           )
 
