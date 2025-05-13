@@ -3,41 +3,15 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.prison
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.kotest.assertions.json.shouldContainJsonKeyValue
 import io.kotest.matchers.shouldBe
-import org.awaitility.kotlin.await
-import org.awaitility.kotlin.matches
-import org.awaitility.kotlin.untilCallTo
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
-import software.amazon.awssdk.services.sqs.model.Message
-import software.amazon.awssdk.services.sqs.model.PurgeQueueRequest
-import software.amazon.awssdk.services.sqs.model.ReceiveMessageRequest
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationTestBase
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationTestWithQueueBase
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DeactivateLocationRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DeactivationReason
-import uk.gov.justice.hmpps.sqs.HmppsQueueService
-import uk.gov.justice.hmpps.sqs.countAllMessagesOnQueue
 import java.time.LocalDate
 
-class DeactivateLocationIntegrationTest : IntegrationTestBase() {
-  @Autowired
-  private lateinit var hmppsQueueService: HmppsQueueService
-
-  internal val testQueue by lazy { hmppsQueueService.findByQueueId("locations") ?: throw RuntimeException("Queue with name locations doesn't exist") }
-  internal val testSqsClient by lazy { testQueue.sqsClient }
-  internal val testQueueUrl by lazy { testQueue.queueUrl }
-
-  fun getNumberOfMessagesCurrentlyOnQueue(): Int = testSqsClient.countAllMessagesOnQueue(testQueueUrl).get()
-
-  fun checkQueueIsEmpty() {
-    await untilCallTo { getNumberOfMessagesCurrentlyOnQueue() } matches { it == 0 }
-    getNumberOfMessagesCurrentlyOnQueue().shouldBe(0)
-  }
-
-  fun getQueueMessages(): List<Message> = testSqsClient.receiveMessage(ReceiveMessageRequest.builder().queueUrl(testQueueUrl).build()).join().messages()
-
+class DeactivateLocationIntegrationTest : IntegrationTestWithQueueBase("locations") {
   private val prisonId = "MDI"
   private val key = "MDI-A-1-001"
   private val path = "/v1/prison/$prisonId/location/$key/deactivate"
@@ -48,11 +22,6 @@ class DeactivateLocationIntegrationTest : IntegrationTestBase() {
       proposedReactivationDate = LocalDate.now(),
       planetFmReference = "23423TH/5",
     )
-
-  @BeforeEach
-  fun `clear queues`() {
-    testSqsClient.purgeQueue(PurgeQueueRequest.builder().queueUrl(testQueueUrl).build())
-  }
 
   @Test
   fun `return the response saying message on queue`() {
