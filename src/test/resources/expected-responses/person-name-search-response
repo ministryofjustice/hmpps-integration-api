@@ -65,10 +65,10 @@
   ],
   "pagination": {
     "isLastPage": true,
-    "count": 2,
+    "count": 1,
     "page": 1,
     "perPage": 10,
-    "totalCount": 2,
+    "totalCount": 1,
     "totalPages": 1
   }
 }
