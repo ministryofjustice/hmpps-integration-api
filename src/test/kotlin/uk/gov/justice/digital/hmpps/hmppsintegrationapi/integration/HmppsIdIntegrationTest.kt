@@ -69,7 +69,7 @@ class HmppsIdIntegrationTest : IntegrationTestBase() {
       .andExpect(
         content().json(
           """
-        {"data":{"nomisNumber":"G2996UX"}}
+        {"data":{"nomisNumber":"$nomsId"}}
       """,
         ),
       )

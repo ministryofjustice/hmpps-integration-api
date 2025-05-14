@@ -37,7 +37,6 @@ abstract class IntegrationTestBase {
   final val nomsId = "G2996UX"
   final val invalidNomsId = "G2996UXX"
   final val crn = "AB123123"
-  final val nomsIdNotInDelius = "A1234AA"
   final val specificPrisonCn = "specific-prison"
   final val limitedPrisonsCn = "limited-prisons"
   final val noPrisonsCn = "no-prisons"
@@ -46,6 +45,7 @@ abstract class IntegrationTestBase {
 
   companion object {
     private val nomsId = "G2996UX"
+    private val nomsIdFromProbation = "G5555TT"
 
     private val gatewaysFolder = "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways"
     private val hmppsAuthMockServer = HmppsAuthMockServer()
@@ -65,7 +65,7 @@ abstract class IntegrationTestBase {
         ).readText(),
       )
       prisonerOffenderSearchMockServer.stubForGet(
-        "/prisoner/G5555TT",
+        "/prisoner/$nomsIdFromProbation",
         File(
           "$gatewaysFolder/prisoneroffendersearch/fixtures/PrisonerByIdResponse.json",
         ).readText(),
@@ -74,6 +74,32 @@ abstract class IntegrationTestBase {
         "/prisoner/AB123123",
         File(
           "$gatewaysFolder/prisoneroffendersearch/fixtures/PrisonerByIdResponse.json",
+        ).readText(),
+      )
+      prisonerOffenderSearchMockServer.stubForPost(
+        "/global-search?size=9999",
+        """
+            {
+              "firstName": "JAMES"
+            }
+          """.removeWhitespaceAndNewlines(),
+        File(
+          "$gatewaysFolder/prisoneroffendersearch/fixtures/GetPrisonersResponse.json",
+        ).readText(),
+      )
+
+      prisonerOffenderSearchMockServer.stubForPost(
+        "/global-search?size=9999",
+        """
+            {
+              "firstName": "John",
+              "lastName": "Doe",
+              "dateOfBirth": "1980-01-01",
+              "includeAliases": false
+            }
+          """.removeWhitespaceAndNewlines(),
+        File(
+          "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/prisoneroffendersearch/fixtures/GetPrisonersResponse.json",
         ).readText(),
       )
     }
