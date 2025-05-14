@@ -77,12 +77,12 @@ class HmppsIdIntegrationTest : IntegrationTestBase() {
 
   @Test
   fun `gets the nomis Id for a HMPPSID where the id is a NOMIS id AND is not in delius`() {
-    callApi("/v1/hmpps/id/nomis-number/by-hmpps-id/$nomsIdNotInDelius")
+    callApi("/v1/hmpps/id/nomis-number/by-hmpps-id/AB123123")
       .andExpect(status().isOk)
       .andExpect(
         content().json(
           """
-        {"data":{"nomisNumber":"A1234AA"}}
+        {"data":{"nomisNumber":"G5555TT"}}
       """,
         ),
       )

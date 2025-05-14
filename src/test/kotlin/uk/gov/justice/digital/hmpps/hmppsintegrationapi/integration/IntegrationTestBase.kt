@@ -64,6 +64,18 @@ abstract class IntegrationTestBase {
           "$gatewaysFolder/prisoneroffendersearch/fixtures/PrisonerByIdResponse.json",
         ).readText(),
       )
+      prisonerOffenderSearchMockServer.stubForGet(
+        "/prisoner/G5555TT",
+        File(
+          "$gatewaysFolder/prisoneroffendersearch/fixtures/PrisonerByIdResponse.json",
+        ).readText(),
+      )
+      prisonerOffenderSearchMockServer.stubForGet(
+        "/prisoner/AB123123",
+        File(
+          "$gatewaysFolder/prisoneroffendersearch/fixtures/PrisonerByIdResponse.json",
+        ).readText(),
+      )
     }
 
     @AfterAll
