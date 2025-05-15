@@ -5,6 +5,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationTestBase
+import java.io.File
 
 class PrisonIntegrationTest : IntegrationTestBase() {
   private final val hmppsId = "G2996UX"
@@ -82,6 +83,20 @@ class PrisonIntegrationTest : IntegrationTestBase() {
 
   @Test
   fun `return multiple prisoners when querying by complex parameters`() {
+    prisonerOffenderSearchMockServer.stubForPost(
+      "/global-search?size=9999",
+      """
+            {
+              "firstName": "John",
+              "lastName": "Doe",
+              "includeAliases": false,
+              "dateOfBirth": "1980-01-01"
+            }
+          """.removeWhitespaceAndNewlines(),
+      File(
+        "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/prisoneroffendersearch/fixtures/GetPrisonersResponse.json",
+      ).readText(),
+    )
     callApi("$basePrisonPath/prisoners?first_name=$firstName&last_name=$lastName&date_of_birth=$dateOfBirth")
       .andExpect(status().isOk)
       .andExpect(content().json(getExpectedResponse("prisoners-response")))
