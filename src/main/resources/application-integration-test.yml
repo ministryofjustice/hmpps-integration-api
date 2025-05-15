@@ -25,25 +25,25 @@ services:
   prison-api:
     base-url: http://localhost:4016
   prisoner-offender-search:
-    base-url: http://localhost:4017
+    base-url: http://localhost:4001
   probation-integration-epf:
-    base-url: http://localhost:4018
+    base-url: http://localhost:4017
   probation-offender-search:
-    base-url: http://localhost:4019
+    base-url: http://localhost:4018
   plp:
-    base-url: http://localhost:4020
+    base-url: http://localhost:4019
   non-associations:
-    base-url: http://localhost:4021
+    base-url: http://localhost:4020
   personal-relationships:
-    base-url: http://localhost:4022
+    base-url: http://localhost:4021
   manage-prison-visits:
-    base-url: http://localhost:4023
+    base-url: http://localhost:4022
   incentives:
-    base-url: http://localhost:4024
+    base-url: http://localhost:4023
   alerts:
-    base-url: http://localhost:4025
+    base-url: http://localhost:4024
   locations-inside-prison:
-    base-url: http://localhost:4026
+    base-url: http://localhost:4025
 
 hmpps.sqs:
   provider: localstack

@@ -3,7 +3,9 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.prison
 import org.junit.jupiter.api.Test
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationTestBase
+import java.io.File
 
 class PrisonIntegrationTest : IntegrationTestBase() {
   private final val hmppsId = "G2996UX"
@@ -34,13 +36,68 @@ class PrisonIntegrationTest : IntegrationTestBase() {
   @Test
   fun `return a 200 for empty but successful upstream response`() {
     val deliberateMissVal = "nope"
-    callApi("$basePrisonPath/prisoners?first_name=$deliberateMissVal&last_name=$lastName&dateOfBirth=$dateOfBirth")
+    prisonerOffenderSearchMockServer.stubForPost(
+      "/global-search?size=9999",
+      """
+            {
+              "firstName": "$deliberateMissVal",
+              "lastName": "$lastName",
+              "includeAliases": false,
+              "dateOfBirth": "$dateOfBirth"
+            }
+          """.removeWhitespaceAndNewlines(),
+      """
+      {
+        "content": [],
+        "pageable": {
+          "sort": {
+            "empty": true,
+            "unsorted": true,
+            "sorted": false
+          },
+          "offset": 0,
+          "pageSize": 10,
+          "pageNumber": 0,
+          "paged": true,
+          "unpaged": false
+        },
+        "totalPages": 1,
+        "last": false,
+        "totalElements": 0,
+        "size": 10,
+        "number": 0,
+        "sort": {
+          "empty": true,
+          "unsorted": true,
+          "sorted": false
+        },
+        "first": true,
+        "numberOfElements": 0,
+        "empty": false
+      }
+      """.trimIndent(),
+    )
+    callApi("$basePrisonPath/prisoners?first_name=$deliberateMissVal&last_name=$lastName&date_of_birth=$dateOfBirth")
       .andExpect(status().isOk)
   }
 
   @Test
   fun `return multiple prisoners when querying by complex parameters`() {
-    callApi("$basePrisonPath/prisoners?first_name=$firstName&last_name=$lastName&dateOfBirth=$dateOfBirth")
+    prisonerOffenderSearchMockServer.stubForPost(
+      "/global-search?size=9999",
+      """
+            {
+              "firstName": "John",
+              "lastName": "Doe",
+              "includeAliases": false,
+              "dateOfBirth": "1980-01-01"
+            }
+          """.removeWhitespaceAndNewlines(),
+      File(
+        "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/prisoneroffendersearch/fixtures/GetPrisonersResponse.json",
+      ).readText(),
+    )
+    callApi("$basePrisonPath/prisoners?first_name=$firstName&last_name=$lastName&date_of_birth=$dateOfBirth")
       .andExpect(status().isOk)
       .andExpect(content().json(getExpectedResponse("prisoners-response")))
   }

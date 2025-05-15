@@ -17,7 +17,9 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import java.io.File
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
@@ -35,7 +37,6 @@ abstract class IntegrationTestBase {
   final val nomsId = "G2996UX"
   final val invalidNomsId = "G2996UXX"
   final val crn = "AB123123"
-  final val nomsIdNotInDelius = "A1234AA"
   final val specificPrisonCn = "specific-prison"
   final val limitedPrisonsCn = "limited-prisons"
   final val noPrisonsCn = "no-prisons"
@@ -43,19 +44,39 @@ abstract class IntegrationTestBase {
   final val contactId = 123456L
 
   companion object {
+    private val nomsId = "G2996UX"
+    private val nomsIdFromProbation = "G5555TT"
+
+    private val gatewaysFolder = "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways"
     private val hmppsAuthMockServer = HmppsAuthMockServer()
+    val prisonerOffenderSearchMockServer = ApiMockServer.create(UpstreamApi.PRISONER_OFFENDER_SEARCH)
 
     @BeforeAll
     @JvmStatic
     fun startMockServers() {
       hmppsAuthMockServer.start()
       hmppsAuthMockServer.stubGetOAuthToken("client", "client-secret")
+
+      prisonerOffenderSearchMockServer.start()
+      prisonerOffenderSearchMockServer.stubForGet(
+        "/prisoner/$nomsId",
+        File(
+          "$gatewaysFolder/prisoneroffendersearch/fixtures/PrisonerByIdResponse.json",
+        ).readText(),
+      )
+      prisonerOffenderSearchMockServer.stubForGet(
+        "/prisoner/$nomsIdFromProbation",
+        File(
+          "$gatewaysFolder/prisoneroffendersearch/fixtures/PrisonerByIdResponse.json",
+        ).readText(),
+      )
     }
 
     @AfterAll
     @JvmStatic
     fun stopMockServers() {
       hmppsAuthMockServer.stop()
+      prisonerOffenderSearchMockServer.stop()
     }
   }
 

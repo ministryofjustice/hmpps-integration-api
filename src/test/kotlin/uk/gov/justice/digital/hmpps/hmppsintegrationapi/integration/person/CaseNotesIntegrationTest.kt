@@ -9,7 +9,7 @@ import java.time.LocalDateTime
 class CaseNotesIntegrationTest : IntegrationTestBase() {
   private final val startDate: LocalDateTime = LocalDateTime.now()
   private final val endDate: LocalDateTime = LocalDateTime.now()
-  private final val cnMatchedPrisonerId = "A1234AA"
+  private final val cnMatchedPrisonerId = nomsId
   private final val path = "$basePath/$cnMatchedPrisonerId/case-notes"
 
   @Test

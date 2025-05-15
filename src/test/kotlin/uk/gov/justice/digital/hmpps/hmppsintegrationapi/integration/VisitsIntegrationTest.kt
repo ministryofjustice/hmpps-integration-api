@@ -40,7 +40,7 @@ class VisitsIntegrationTest : IntegrationTestWithQueueBase("visits") {
             """
             {
               "data": {
-                  "prisonerId": "AF34567G",
+                  "prisonerId": $nomsId,
                   "prisonId": "MDI",
                   "prisonName": "Moorland (HMP & YOI)",
                   "visitRoom": "Visits Main Hall",
@@ -82,7 +82,7 @@ class VisitsIntegrationTest : IntegrationTestWithQueueBase("visits") {
   inner class PostVisit {
     private val path = "/v1/visit"
     private val timestamp = "2020-12-04T10:42:43"
-    private val prisonerId = "A1234AB"
+    private val prisonerId = nomsId
 
     private fun getCreateVisitRequest(
       prisonerId: String,
@@ -560,7 +560,7 @@ class VisitsIntegrationTest : IntegrationTestWithQueueBase("visits") {
       queueMessages.size.shouldBe(1)
 
       val messageJson = queueMessages[0].body()
-      val expectedMessage = cancelVisitRequest.toHmppsMessage(defaultCn, visitReference, actionedBy = "AF34567G")
+      val expectedMessage = cancelVisitRequest.toHmppsMessage(defaultCn, visitReference, actionedBy = nomsId)
       messageJson.shouldContainJsonKeyValue("$.eventType", expectedMessage.eventType.eventTypeCode)
       messageJson.shouldContainJsonKeyValue("$.who", defaultCn)
       val objectMapper = jacksonObjectMapper()
