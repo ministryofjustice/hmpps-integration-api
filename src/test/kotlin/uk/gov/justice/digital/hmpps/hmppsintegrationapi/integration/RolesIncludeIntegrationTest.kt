@@ -6,7 +6,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 class RolesIncludeIntegrationTest : IntegrationTestBase() {
   @Test
   fun `should get 200 when path is in the role includes`() {
-    callApiWithCN("/v1/prison/prisoners?first_name=JAMES", "private-prison-only")
+    callApiWithCN("/v1/prison/prisoners/$nomsId", "private-prison-only")
       .andExpect(status().isOk)
   }
 

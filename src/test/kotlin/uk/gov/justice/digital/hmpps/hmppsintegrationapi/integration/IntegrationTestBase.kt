@@ -80,26 +80,14 @@ abstract class IntegrationTestBase {
         "/global-search?size=9999",
         """
             {
-              "firstName": "JAMES"
+              "firstName": "John",
+              "lastName": "Doe",
+              "includeAliases": false,
+              "dateOfBirth": "1980-01-01"
             }
           """.removeWhitespaceAndNewlines(),
         File(
           "$gatewaysFolder/prisoneroffendersearch/fixtures/GetPrisonersResponse.json",
-        ).readText(),
-      )
-
-      prisonerOffenderSearchMockServer.stubForPost(
-        "/global-search?size=9999",
-        """
-            {
-              "firstName": "John",
-              "lastName": "Doe",
-              "dateOfBirth": "1980-01-01",
-              "includeAliases": false
-            }
-          """.removeWhitespaceAndNewlines(),
-        File(
-          "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/prisoneroffendersearch/fixtures/GetPrisonersResponse.json",
         ).readText(),
       )
     }
