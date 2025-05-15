@@ -19,6 +19,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServe
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
+import java.io.File
 
 @ActiveProfiles("test")
 @ContextConfiguration(
@@ -52,63 +53,9 @@ class GetHealthAndMedicationDataGatewayTest(
     it("returns a 200 with the data when data is found") {
       healthAndMedicationMockServer.stubForGet(
         "/prisoners/$hmppsId",
-        """
-        {
-          "dietAndAllergy": {
-            "foodAllergies": {
-              "value": [
-                {
-                  "value": {
-                    "id": "FOOD_ALLERGY_MILK",
-                    "code": "MILK",
-                    "description": "Milk"
-                  },
-                  "comment": "Some other text"
-                }
-              ],
-              "lastModifiedAt": "2024-06-14T10:35:17+0100",
-              "lastModifiedBy": "USER1",
-              "lastModifiedPrisonId": "STI"
-            },
-            "medicalDietaryRequirements": {
-              "value": [
-                {
-                  "value": {
-                    "id": "FOOD_ALLERGY_MILK",
-                    "code": "MILK",
-                    "description": "Milk"
-                  },
-                  "comment": "Some other text"
-                }
-              ],
-              "lastModifiedAt": "2024-06-14T10:35:17+0100",
-              "lastModifiedBy": "USER1",
-              "lastModifiedPrisonId": "STI"
-            },
-            "personalisedDietaryRequirements": {
-              "value": [
-                {
-                  "value": {
-                    "id": "FOOD_ALLERGY_MILK",
-                    "code": "MILK",
-                    "description": "Milk"
-                  },
-                  "comment": "Some other text"
-                }
-              ],
-              "lastModifiedAt": "2024-06-14T10:35:17+0100",
-              "lastModifiedBy": "USER1",
-              "lastModifiedPrisonId": "STI"
-            },
-            "cateringInstructions": {
-              "value": "catering instructions",
-              "lastModifiedAt": "2024-06-14T10:35:17+0100",
-              "lastModifiedBy": "USER1",
-              "lastModifiedPrisonId": "STI"
-            }
-          }
-        }
-        """.trimIndent(),
+        File(
+          "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/healthandmedication/fixtures/GetHealthAndMedicationResponse.json",
+        ).readText(),
       )
 
       val result = healthAndMedicationGateway.getHealthAndMedicationData(hmppsId)
