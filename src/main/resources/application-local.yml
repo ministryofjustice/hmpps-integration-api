@@ -18,6 +18,7 @@ services:
   incentives.base-url: http://localhost:4024
   alerts.base-url: http://localhost:4025
   locations-inside-prison.base-url: http://localhost:4026
+  health-and-medication.base-url: http://localhost:4027
 
 hmpps.sqs:
   provider: localstack
