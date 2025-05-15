@@ -82,6 +82,19 @@ abstract class IntegrationTestBase {
             {
               "firstName": "John",
               "lastName": "Doe",
+              "includeAliases": false
+            }
+          """.removeWhitespaceAndNewlines(),
+        File(
+          "$gatewaysFolder/prisoneroffendersearch/fixtures/GetPrisonersResponse.json",
+        ).readText(),
+      )
+      prisonerOffenderSearchMockServer.stubForPost(
+        "/global-search?size=9999",
+        """
+            {
+              "firstName": "John",
+              "lastName": "Doe",
               "includeAliases": false,
               "dateOfBirth": "1980-01-01"
             }

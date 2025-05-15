@@ -11,8 +11,8 @@ class PersonIntegrationTest : IntegrationTestBase() {
   inner class GetPerson {
     @Test
     fun `returns a list of persons using first name and last name as search parameters`() {
-      val firstName = "Example_First_Name"
-      val lastName = "Example_Last_Name"
+      val firstName = "John"
+      val lastName = "Doe"
       val queryParams = "first_name=$firstName&last_name=$lastName"
 
       callApi("$basePath?$queryParams")
