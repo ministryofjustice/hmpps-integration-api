@@ -47,7 +47,6 @@ services:
   health-and-medication:
     base-url: http://localhost:4027
 
-
 hmpps.sqs:
   provider: localstack
   queues:
