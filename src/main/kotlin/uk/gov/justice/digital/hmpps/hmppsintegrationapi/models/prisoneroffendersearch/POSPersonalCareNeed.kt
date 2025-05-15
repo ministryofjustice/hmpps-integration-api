@@ -9,7 +9,7 @@ data class POSPersonalCareNeed(
   val problemDescription: String?,
   val commentText: String?,
   val startDate: String?,
-  val endDate: String?
+  val endDate: String?,
 ) {
   fun toPersonalCareNeed(): PersonalCareNeeds =
     PersonalCareNeeds(
@@ -19,7 +19,6 @@ data class POSPersonalCareNeed(
       problemDescription = this.problemDescription,
       commentText = this.commentText,
       startDate = this.startDate,
-      endDate = this.endDate
+      endDate = this.endDate,
     )
 }
-

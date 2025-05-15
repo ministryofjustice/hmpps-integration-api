@@ -41,7 +41,7 @@ data class POSPrisoner(
   val tattoos: List<POSBodyMark>? = null,
   val scars: List<POSBodyMark>? = null,
   val marks: List<POSBodyMark>? = null,
-  val personalCareNeeds: List<POSPersonalCareNeed>
+  val personalCareNeeds: List<POSPersonalCareNeed>? = null,
 ) {
   fun toPerson(): Person =
     Person(
@@ -101,7 +101,5 @@ data class POSPrisoner(
       marks = this.marks?.map { it.toBodyMark() },
     )
 
-  fun toPersonalCareNeeds(): List<PersonalCareNeeds> =
-    this.personalCareNeeds.map { it.toPersonalCareNeed() }
-
+  fun toPersonalCareNeeds(): List<PersonalCareNeeds>? = this.personalCareNeeds?.map { it.toPersonalCareNeed() }
 }
