@@ -118,6 +118,7 @@ authorisation:
     event-service:
       include:
         - "/v1/config/authorisation"
+        - "/v2/config/authorisation"
       filters:
     mryall:
       include:

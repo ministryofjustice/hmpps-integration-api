@@ -4,15 +4,30 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationTestBase
+import java.io.File
 
 class PersonIntegrationTest : IntegrationTestBase() {
   @Nested
   inner class GetPerson {
     @Test
     fun `returns a list of persons using first name and last name as search parameters`() {
-      val firstName = "Example_First_Name"
-      val lastName = "Example_Last_Name"
+      prisonerOffenderSearchMockServer.stubForPost(
+        "/global-search?size=9999",
+        """
+            {
+              "firstName": "John",
+              "lastName": "Doe",
+              "includeAliases": false
+            }
+          """.removeWhitespaceAndNewlines(),
+        File(
+          "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/prisoneroffendersearch/fixtures/GetPrisonersResponse.json",
+        ).readText(),
+      )
+      val firstName = "John"
+      val lastName = "Doe"
       val queryParams = "first_name=$firstName&last_name=$lastName"
 
       callApi("$basePath?$queryParams")
