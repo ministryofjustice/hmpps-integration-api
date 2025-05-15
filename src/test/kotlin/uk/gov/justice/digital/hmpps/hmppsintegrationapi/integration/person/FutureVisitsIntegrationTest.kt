@@ -18,7 +18,7 @@ class FutureVisitsIntegrationTest : IntegrationTestBase() {
                 {
                   "applicationReference": "dfs-wjs-eqr",
                   "reference": "v9-d7-ed-7u",
-                  "prisonerId": "AF34567G",
+                  "prisonerId": "$nomsId",
                   "prisonId": "MDI",
                   "prisonName": "Moorland (HMP & YOI)",
                   "sessionTemplateReference": "v9d.7ed.7u",
