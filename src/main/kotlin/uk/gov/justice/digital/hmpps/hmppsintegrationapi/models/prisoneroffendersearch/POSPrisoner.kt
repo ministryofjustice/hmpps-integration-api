@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch
 
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HealthAndDiet
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Identifiers
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonInPrison
@@ -40,6 +41,7 @@ data class POSPrisoner(
   val tattoos: List<POSBodyMark>? = null,
   val scars: List<POSBodyMark>? = null,
   val marks: List<POSBodyMark>? = null,
+  val smoker: String? = null,
 ) {
   fun toPerson(): Person =
     Person(
@@ -97,5 +99,16 @@ data class POSPrisoner(
       tattoos = this.tattoos?.map { it.toBodyMark() },
       scars = this.scars?.map { it.toBodyMark() },
       marks = this.marks?.map { it.toBodyMark() },
+    )
+
+  fun toHealthAndDiet(): HealthAndDiet =
+    HealthAndDiet(
+      smoking =
+        when (this.smoker) {
+          "Y" -> "SMOKER_YES"
+          "N" -> "SMOKER_NO"
+          "V" -> "VAPE"
+          else -> null
+        },
     )
 }
