@@ -70,12 +70,6 @@ abstract class IntegrationTestBase {
           "$gatewaysFolder/prisoneroffendersearch/fixtures/PrisonerByIdResponse.json",
         ).readText(),
       )
-      prisonerOffenderSearchMockServer.stubForGet(
-        "/prisoner/AB123123",
-        File(
-          "$gatewaysFolder/prisoneroffendersearch/fixtures/PrisonerByIdResponse.json",
-        ).readText(),
-      )
       prisonerOffenderSearchMockServer.stubForPost(
         "/global-search?size=9999",
         """
