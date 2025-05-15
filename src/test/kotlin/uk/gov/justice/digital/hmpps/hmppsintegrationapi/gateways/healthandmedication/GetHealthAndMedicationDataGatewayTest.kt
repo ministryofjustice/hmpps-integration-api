@@ -59,6 +59,7 @@ class GetHealthAndMedicationDataGatewayTest(
       )
 
       val result = healthAndMedicationGateway.getHealthAndMedicationData(hmppsId)
+      result.errors.size.shouldBe(0)
       result.data.shouldNotBeNull()
       result.data.dietAndAllergy.foodAllergies.value.size
         .shouldBe(1)
