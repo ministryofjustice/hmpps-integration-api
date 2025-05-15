@@ -22,7 +22,7 @@ class EducationAssessmentsIntegrationTest : IntegrationTestWithQueueBase("assess
   @DisplayName("POST /v1/persons/{hmppsId}/education/assessments/status")
   @Nested
   inner class PostVisit {
-    private val path = "/v1/persons/A1234AB/education/assessments/status"
+    private val path = "/v1/persons/$nomsId/education/assessments/status"
 
     private fun educationAssessmentStatusChangeRequest() =
       EducationAssessmentStatusChangeRequest(
@@ -60,7 +60,7 @@ class EducationAssessmentsIntegrationTest : IntegrationTestWithQueueBase("assess
 
       val expectedMessageAttributes =
         mapOf(
-          "prisonNumber" to "A1234AB",
+          "prisonNumber" to nomsId,
           "status" to educationAssessmentStatusChangeRequest.status,
           "statusChangeDate" to educationAssessmentStatusChangeRequest.statusChangeDate.toString(),
           "detailUrl" to educationAssessmentStatusChangeRequest.detailUrl,
