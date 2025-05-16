@@ -154,7 +154,7 @@ internal class LocationQueueServiceTest(
 
         val result = locationQueueService.sendDeactivateLocationRequest(deactivateLocationRequest, prisonId, key, who, filters)
         result.data.shouldBe(null)
-        result.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.LOCATIONS_INSIDE_PRISON, UpstreamApiError.Type.BAD_REQUEST, "Location already deactivated")))
+        result.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.LOCATIONS_INSIDE_PRISON, UpstreamApiError.Type.CONFLICT, "This cell is already deactivated")))
       }
 
       it("should return error when location is not active") {
@@ -162,7 +162,7 @@ internal class LocationQueueServiceTest(
 
         val result = locationQueueService.sendDeactivateLocationRequest(deactivateLocationRequest, prisonId, key, who, filters)
         result.data.shouldBe(null)
-        result.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.LOCATIONS_INSIDE_PRISON, UpstreamApiError.Type.BAD_REQUEST, "Location already deactivated")))
+        result.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.LOCATIONS_INSIDE_PRISON, UpstreamApiError.Type.CONFLICT, "This cell is already deactivated")))
       }
 
       it("should return error when cell is not empty") {

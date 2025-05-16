@@ -55,8 +55,11 @@ class LocationQueueService(
       return Response(data = null, errors = listOf(UpstreamApiError(causedBy = UpstreamApi.LOCATIONS_INSIDE_PRISON, type = UpstreamApiError.Type.BAD_REQUEST, description = "Location type must be a CELL")))
     }
 
-    val prisonersInCellResponse = getPrisonersInCellService.execute(prisonId, locationResponse.data.pathHierarchy)
+    if (!locationResponse.data.active || locationResponse.data.deactivatedByParent) {
+      return Response(data = null, errors = listOf(UpstreamApiError(causedBy = UpstreamApi.LOCATIONS_INSIDE_PRISON, type = UpstreamApiError.Type.CONFLICT, description = "This cell is already deactivated")))
+    }
 
+    val prisonersInCellResponse = getPrisonersInCellService.execute(prisonId, locationResponse.data.pathHierarchy)
     if (prisonersInCellResponse.errors.isNotEmpty()) {
       return Response(data = null, errors = prisonersInCellResponse.errors)
     }
