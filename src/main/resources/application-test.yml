@@ -151,7 +151,7 @@ authorisation:
         - "/v1/persons/.*/education/assessments/status"
         - "/v1/prison/.*/location/[^/]*$"
         - "/v1/prison/.*/location/.*/deactivate"
-        - "/v1/persons/.*/physical-characteristics"
+        - "/v1/persons/.*/care-needs"
     config-test:
       include:
         - "/v1/config/authorisation"
