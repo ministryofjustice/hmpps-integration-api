@@ -59,7 +59,6 @@ internal class LocationQueueServiceTest(
           deactivationReason = DeactivationReason.DAMAGED,
           deactivationReasonDescription = "Smashed window",
           proposedReactivationDate = LocalDate.now().plusDays(30),
-          planetFmReference = "23423TH/5",
         )
       val prisonId = "MDI"
       val key = "MDI-123"

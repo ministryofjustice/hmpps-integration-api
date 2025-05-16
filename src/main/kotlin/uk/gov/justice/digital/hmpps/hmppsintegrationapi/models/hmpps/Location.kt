@@ -120,8 +120,8 @@ data class Location(
   val deactivatedBy: String?,
   @Schema(description = "Estimated reactivation date for location reactivation", example = "2026-01-24")
   val proposedReactivationDate: String?,
-  @Schema(description = "Planet FM reference number", example = "2323/45M")
-  val planetFmReference: String?,
+  @Schema(description = "External reference")
+  val externalReference: String?,
   @Schema(description = "Current Level within hierarchy, starts at 1, e.g Wing = 1", example = "1", examples = ["1", "2", "3"])
   val level: Int,
   @Schema(description = "Business Key for the parent location", example = "MDI")

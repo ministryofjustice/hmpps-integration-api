@@ -73,7 +73,6 @@ internal class FeatureFlaggedEndpointsIntegrationTest : IntegrationTestBase() {
         deactivationReason = DeactivationReason.DAMAGED,
         deactivationReasonDescription = "Scheduled maintenance",
         proposedReactivationDate = LocalDate.now(),
-        planetFmReference = "23423TH/5",
       )
     postToApi(path, asJsonString(deactivateLocationRequest))
       .andExpect(status().isServiceUnavailable)
