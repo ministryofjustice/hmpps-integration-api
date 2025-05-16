@@ -4,7 +4,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Identifiers
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonInPrison
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PhysicalCharacteristics
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Smoker
 import java.time.LocalDate
 
 data class POSPrisoner(
@@ -100,6 +99,4 @@ data class POSPrisoner(
       scars = this.scars?.map { it.toBodyMark() },
       marks = this.marks?.map { it.toBodyMark() },
     )
-
-  fun toSmoker(): Smoker = Smoker(smoking = this.smoker)
 }

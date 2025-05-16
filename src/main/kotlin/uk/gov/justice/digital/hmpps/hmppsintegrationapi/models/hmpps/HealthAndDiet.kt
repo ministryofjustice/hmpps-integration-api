@@ -1,10 +1,8 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps
 
-import io.swagger.v3.oas.annotations.media.Schema
-
 data class HealthAndDiet(
   val diet: Diet? = null,
-  val smoking: Smoker?,
+  val smoking: String? = null,
 )
 
 data class Diet(
@@ -12,11 +10,6 @@ data class Diet(
   val medicalDietaryRequirements: List<MedicalDietaryRequirement>,
   val personalisedDietaryRequirements: List<PersonalisedDietaryRequirement>,
   val cateringInstructions: CateringInstruction,
-)
-
-data class Smoker(
-  @Schema(description = "Smoker status. Y = Yes, N = No, V = Vapes", example = "Y, N, V")
-  val smoking: String?,
 )
 
 data class FoodAllergy(

@@ -30,7 +30,7 @@ class GetHealthAndDietService(
     val healthAndDiet =
       HealthAndDiet(
         diet = dietResponse.data?.dietAndAllergy?.toDiet(),
-        smoking = smokerResponse.data?.toSmoker(),
+        smoking = smokerResponse.data?.smoker,
       )
 
     return Response(data = healthAndDiet, errors = smokerResponse.errors + dietResponse.errors)
