@@ -72,6 +72,7 @@ feature-flag:
   use-capacity-endpoint: true
   replace-probation-search: true
   use-location-deactivate-endpoint: true
+  use-health-and-diet-endpoint: true
 
 authorisation:
   consumers:

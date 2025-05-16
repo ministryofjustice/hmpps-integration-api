@@ -1,0 +1,34 @@
+{
+  "data": {
+    "diet": {
+      "foodAllergies": [
+        {
+          "id": "",
+          "code": "",
+          "description": "",
+          "comment": null
+        }
+      ],
+      "medicalDietaryRequirements": [
+        {
+          "id": "",
+          "code": "",
+          "description": "",
+          "comment": null
+        }
+      ],
+      "personalisedDietaryRequirements": [
+        {
+          "id": "",
+          "code": "",
+          "description": "",
+          "comment": null
+        }
+      ],
+      "cateringInstructions": {
+        "value": ""
+      }
+    },
+    "smoking": "Y"
+  }
+}
