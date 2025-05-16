@@ -134,7 +134,7 @@ class DeactivateLocationIntegrationTest : IntegrationTestWithQueueBase("location
     queueMessages.size.shouldBe(1)
 
     val messageJson = queueMessages[0].body()
-    val expectedMessage = deactivateLocationRequest.toHmppsMessage(locationId = "2475f250-434a-4257-afe7-b911f1773a4d", defaultCn)
+    val expectedMessage = deactivateLocationRequest.toTestMessage(defaultCn)
     messageJson.shouldContainJsonKeyValue("$.eventType", expectedMessage.eventType.eventTypeCode)
     messageJson.shouldContainJsonKeyValue("$.who", defaultCn)
     val objectMapper = jacksonObjectMapper()

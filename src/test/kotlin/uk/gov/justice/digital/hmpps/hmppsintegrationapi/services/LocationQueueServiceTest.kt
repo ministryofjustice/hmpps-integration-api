@@ -124,7 +124,7 @@ internal class LocationQueueServiceTest(
         val messageBody = """{"messageId": "1", "eventType": "TestEvent", "messageAttributes": {}}"""
         whenever(objectMapper.writeValueAsString(any<HmppsMessage>())).thenReturn(messageBody)
 
-        val result = locationQueueService.sendDeactivateLocationRequest(deactivateLocationRequest, prisonId, key, who, filters)
+        val result = locationQueueService.sendDeactivateLocationRequest(deactivateLocationRequest.copy(externalReference = "TestEvent"), prisonId, key, who, filters)
         result.data.shouldBeTypeOf<HmppsMessageResponse>()
 
         verify(mockSqsClient).sendMessage(

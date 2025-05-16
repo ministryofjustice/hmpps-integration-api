@@ -30,6 +30,13 @@ data class DeactivateLocationRequest(
       who = actionedBy,
     )
 
+  fun toTestMessage(actionedBy: String?): HmppsMessage =
+    HmppsMessage(
+      eventType = HmppsMessageEventType.TEST_EVENT,
+      messageAttributes = emptyMap(),
+      who = actionedBy,
+    )
+
   private fun modelToMap(locationId: String): Map<String, Any?> =
     mapOf(
       "id" to locationId,
