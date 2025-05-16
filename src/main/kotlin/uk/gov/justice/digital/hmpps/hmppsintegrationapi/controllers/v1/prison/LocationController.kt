@@ -83,7 +83,7 @@ class LocationController(
 
   @PostMapping("/{key}/deactivate")
   @Operation(
-    summary = "Temporarily mark a location as inactive.",
+    summary = "Temporarily mark a location as inactive. The location must be a cell.",
     description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
     responses = [
       ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully posted to upstream APIs."),
@@ -100,7 +100,7 @@ class LocationController(
   @FeatureFlag(name = FeatureFlagConfig.USE_LOCATION_DEACTIVATE_ENDPOINT)
   fun deactivateLocation(
     @Parameter(description = "The ID of the prison the location is in") @PathVariable prisonId: String,
-    @Parameter(description = "The key of the location") @PathVariable key: String,
+    @Parameter(description = "The key of the location, must be a cell") @PathVariable key: String,
     @Valid @RequestBody deactivateLocationRequest: DeactivateLocationRequest,
     @RequestAttribute clientName: String?,
     @RequestAttribute filters: ConsumerFilters?,
