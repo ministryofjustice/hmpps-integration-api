@@ -2,7 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps
 
 import io.swagger.v3.oas.annotations.media.Schema
 
-data class PersonalCareNeeds(
+data class PersonalCareNeed(
   @Schema(description = "Type of the problem", example = "MATSTAT")
   val problemType: String? = null,
   @Schema(description = "Code of the problem", example = "ACCU9")

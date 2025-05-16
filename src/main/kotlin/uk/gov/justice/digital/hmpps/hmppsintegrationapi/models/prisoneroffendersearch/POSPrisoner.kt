@@ -3,7 +3,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffender
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Identifiers
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonInPrison
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonalCareNeeds
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonalCareNeed
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PhysicalCharacteristics
 import java.time.LocalDate
 
@@ -101,5 +101,5 @@ data class POSPrisoner(
       marks = this.marks?.map { it.toBodyMark() },
     )
 
-  fun toPersonalCareNeeds(): List<PersonalCareNeeds>? = this.personalCareNeeds?.map { it.toPersonalCareNeed() }
+  fun toPersonalCareNeeds(): List<PersonalCareNeed>? = this.personalCareNeeds?.map { it.toPersonalCareNeed() }
 }
