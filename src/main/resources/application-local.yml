@@ -46,6 +46,7 @@ feature-flag:
   use-location-endpoint: true
   replace-probation-search: true
   use-location-deactivate-endpoint: true
+  use-personal-care-needs-endpoints: true
 
 authorisation:
   consumers:

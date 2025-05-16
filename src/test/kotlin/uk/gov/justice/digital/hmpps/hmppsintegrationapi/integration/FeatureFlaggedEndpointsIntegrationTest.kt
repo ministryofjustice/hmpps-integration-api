@@ -11,6 +11,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_PHYSICAL_CHARACTERISTICS_ENDPOINTS
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_RESIDENTIAL_DETAILS_ENDPOINTS
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_RESIDENTIAL_HIERARCHY_ENDPOINTS
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_PERSONAL_CARE_NEEDS_ENDPOINTS
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.FeatureNotEnabledException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DeactivateLocationRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DeactivationReason
@@ -75,6 +76,14 @@ internal class FeatureFlaggedEndpointsIntegrationTest : IntegrationTestBase() {
         proposedReactivationDate = LocalDate.now(),
       )
     postToApi(path, asJsonString(deactivateLocationRequest))
+      .andExpect(status().isServiceUnavailable)
+  }
+
+  @Test
+  fun `care needs should return 503`() {
+    whenever(featureFlagConfig.require(USE_PERSONAL_CARE_NEEDS_ENDPOINTS)).thenThrow(FeatureNotEnabledException(""))
+    val path = "$basePath/$nomsId/care-needs"
+    callApi(path)
       .andExpect(status().isServiceUnavailable)
   }
 }

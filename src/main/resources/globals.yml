@@ -94,3 +94,4 @@ globals:
         - "/v1/visit/id/by-client-ref/[^/]*$"
         - "/v1/visit/.*/cancel"
         - "/v1/contacts/[^/]*$"
+        - "/v1/persons/.*/physical-characteristics"
