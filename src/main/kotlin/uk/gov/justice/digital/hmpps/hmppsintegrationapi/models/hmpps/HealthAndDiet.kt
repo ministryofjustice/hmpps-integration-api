@@ -1,42 +1,45 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps
 
-class HealthAndDiet(
+import io.swagger.v3.oas.annotations.media.Schema
+
+data class HealthAndDiet(
   val diet: Diet,
-  val smoking: Smoker,
+  val smoking: Smoker?,
 )
 
-class Diet(
+data class Diet(
   val foodAllergies: List<FoodAllergy>,
   val medicalDietaryRequirements: List<MedicalDietaryRequirement>,
   val personalisedDietaryRequirements: List<PersonalisedDietaryRequirement>,
   val cateringInstructions: CateringInstruction,
 )
 
-class Smoker(
-  val smoking: String,
+data class Smoker(
+  @Schema(description = "Smoker status. Y = Yes, N = No, V = Vapes", example = "Y, N, V")
+  val smoking: String?,
 )
 
-class FoodAllergy(
+data class FoodAllergy(
   val id: String,
   val code: String,
   val description: String,
   val comment: String? = null,
 )
 
-class MedicalDietaryRequirement(
+data class MedicalDietaryRequirement(
   val id: String,
   val code: String,
   val description: String,
   val comment: String? = null,
 )
 
-class PersonalisedDietaryRequirement(
+data class PersonalisedDietaryRequirement(
   val id: String,
   val code: String,
   val description: String,
   val comment: String? = null,
 )
 
-class CateringInstruction(
-  val value: String,
+data class CateringInstruction(
+  val value: String?,
 )
