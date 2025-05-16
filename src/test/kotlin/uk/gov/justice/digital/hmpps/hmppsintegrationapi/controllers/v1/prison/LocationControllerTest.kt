@@ -164,7 +164,6 @@ class LocationControllerTest(
           deactivationReason = DeactivationReason.DAMAGED,
           deactivationReasonDescription = "Scheduled maintenance",
           proposedReactivationDate = LocalDate.now(),
-          planetFmReference = "23423TH/5",
         )
 
       it("returns 200 when location is successfully deactivated") {
