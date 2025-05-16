@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 
 import io.kotest.core.spec.style.DescribeSpec
+import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory
@@ -24,6 +25,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.healthandmedicati
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HealthAndDiet
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NomisNumber
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSPrisoner
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import java.time.LocalDate
@@ -144,6 +147,39 @@ internal class GetHealthAndDietServiceTest(
         val healthAndDietResponse = HealthAndDiet(diet = healthAndMedicationResponse.dietAndAllergy.toDiet(), smoking = prisoner.smoker)
         val response = getHealthAndDietService.execute(hmppsId, filters)
         response.data.shouldBe(healthAndDietResponse)
+      }
+
+      it("returns an upstream 404 error when prisoner not found") {
+        whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsId)).thenReturn(
+          Response(
+            data = null,
+            errors =
+              listOf(
+                UpstreamApiError(
+                  causedBy = UpstreamApi.PRISONER_OFFENDER_SEARCH,
+                  type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+                ),
+              ),
+          ),
+        )
+
+        val response = getHealthAndDietService.execute(hmppsId, filters)
+        response.errors.shouldHaveSize(1)
+        response.errors
+          .first()
+          .causedBy
+          .shouldBe(UpstreamApi.PRISONER_OFFENDER_SEARCH)
+        response.errors
+          .first()
+          .type
+          .shouldBe(UpstreamApiError.Type.ENTITY_NOT_FOUND)
+      }
+
+      it("returns an empty data if no health and diet data found") {
+        whenever(healthAndMedicationGateway.getHealthAndMedicationData(nomsId)).thenReturn(Response(data = null))
+        val response = getHealthAndDietService.execute(hmppsId, filters)
+        response.errors.shouldHaveSize(0)
+        response.data.shouldBe(HealthAndDiet(diet = null, smoking = prisoner.smoker))
       }
     },
   )

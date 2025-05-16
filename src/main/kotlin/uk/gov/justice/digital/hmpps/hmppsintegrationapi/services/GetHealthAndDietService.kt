@@ -32,6 +32,9 @@ class GetHealthAndDietService(
       )
 
     val smokerResponse = prisonerOffenderSearchGateway.getPrisonOffender(nomisNumber)
+    if (smokerResponse.errors.isNotEmpty()) {
+      return Response(data = null, errors = smokerResponse.errors)
+    }
     val dietResponse = healthAndMedicationGateway.getHealthAndMedicationData(nomisNumber)
 
     val healthAndDiet =
