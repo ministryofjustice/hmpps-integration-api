@@ -1286,17 +1286,18 @@ internal class PersonControllerTest(
 
       describe("/v1/persons/{hmppsId}/care-needs") {
         val path = "$basePath/$sanitisedHmppsId/care-needs"
-        val careNeeds = listOf(PersonalCareNeed(
-          problemType = "MATSTAT",
-          problemCode = "ACCU9",
-          problemStatus = "ON",
-          problemDescription = "No Disability",
-          commentText = "COMMENT",
-          startDate = "2020-06-21",
-          endDate = null
-        ))
-
-
+        val careNeeds =
+          listOf(
+            PersonalCareNeed(
+              problemType = "MATSTAT",
+              problemCode = "ACCU9",
+              problemStatus = "ON",
+              problemDescription = "No Disability",
+              commentText = "COMMENT",
+              startDate = "2020-06-21",
+              endDate = null,
+            ),
+          )
 
         beforeTest {
           Mockito.reset(getCareNeedsForPersonService)

@@ -27,7 +27,7 @@ class FeatureFlagAspectTest {
         "use-residential-details-endpoints" to false,
         "replace-probation-search" to false,
         "use-capacity-endpoint" to false,
-        "use-personal-care-needs-endpoints" to false
+        "use-personal-care-needs-endpoints" to false,
       ),
     )
   private val featureFlagAspect: FeatureFlagAspect =
