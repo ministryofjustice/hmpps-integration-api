@@ -23,7 +23,6 @@ class DeactivateLocationIntegrationTest : IntegrationTestWithQueueBase("location
       deactivationReason = DeactivationReason.DAMAGED,
       deactivationReasonDescription = "Scheduled maintenance",
       proposedReactivationDate = LocalDate.now(),
-      planetFmReference = "23423TH/5",
     )
   private val cellRequest =
     POSAttributeSearchRequest(
