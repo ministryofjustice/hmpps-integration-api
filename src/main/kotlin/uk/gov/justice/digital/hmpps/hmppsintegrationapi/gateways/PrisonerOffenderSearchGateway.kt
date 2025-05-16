@@ -8,7 +8,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrap
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper.WebClientWrapperResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSGlobalSearch
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSAttributeSearchRequest
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSPaginatedPrisoners
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSPrisoner
 
 @Component
@@ -32,7 +33,7 @@ class PrisonerOffenderSearchGateway(
         .filterValues { it != null }
 
     val result =
-      webClient.request<POSGlobalSearch>(
+      webClient.request<POSPaginatedPrisoners>(
         HttpMethod.POST,
         "/global-search?size=$maxNumberOfResults",
         authenticationHeader(),
@@ -43,9 +44,7 @@ class PrisonerOffenderSearchGateway(
     return when (result) {
       is WebClientWrapperResponse.Success -> {
         Response(
-          data =
-            result.data.content
-              .sortedByDescending { it.dateOfBirth },
+          data = result.data.toPOSPrisoners(),
         )
       }
 
@@ -78,7 +77,7 @@ class PrisonerOffenderSearchGateway(
       ).filterValues { it != null }
 
     val result =
-      webClient.request<POSGlobalSearch>(
+      webClient.request<POSPaginatedPrisoners>(
         HttpMethod.POST,
         "/prisoner-detail",
         authenticationHeader(),
@@ -89,9 +88,7 @@ class PrisonerOffenderSearchGateway(
     return when (result) {
       is WebClientWrapperResponse.Success -> {
         Response(
-          data =
-            result.data.content
-              .sortedByDescending { it.dateOfBirth },
+          data = result.data.toPOSPrisoners(),
         )
       }
 
@@ -116,6 +113,32 @@ class PrisonerOffenderSearchGateway(
     return when (result) {
       is WebClientWrapperResponse.Success -> {
         Response(data = result.data)
+      }
+
+      is WebClientWrapperResponse.Error -> {
+        Response(
+          data = null,
+          errors = result.errors,
+        )
+      }
+    }
+  }
+
+  fun attributeSearch(request: POSAttributeSearchRequest): Response<POSPaginatedPrisoners?> {
+    val result =
+      webClient.request<POSPaginatedPrisoners>(
+        HttpMethod.POST,
+        "/attribute-search",
+        authenticationHeader(),
+        UpstreamApi.PRISONER_OFFENDER_SEARCH,
+        request.toMap(),
+      )
+
+    return when (result) {
+      is WebClientWrapperResponse.Success -> {
+        Response(
+          data = result.data,
+        )
       }
 
       is WebClientWrapperResponse.Error -> {

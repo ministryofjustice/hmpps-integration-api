@@ -23,6 +23,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DeactivateL
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DeactivationReason
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HmppsMessage
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HmppsMessageResponse
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonInPrison
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
@@ -40,6 +41,7 @@ import java.time.LocalDateTime
 internal class LocationQueueServiceTest(
   private val locationQueueService: LocationQueueService,
   @MockitoBean val hmppsQueueService: HmppsQueueService,
+  @MockitoBean val getPrisonersInCellService: GetPrisonersInCellService,
   @MockitoBean val objectMapper: ObjectMapper,
   @MockitoBean val locationsInsidePrisonGateway: LocationsInsidePrisonGateway,
   @MockitoBean val consumerPrisonAccessService: ConsumerPrisonAccessService,
@@ -89,6 +91,7 @@ internal class LocationQueueServiceTest(
         whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<HmppsMessageResponse>(prisonId, filters))
           .thenReturn(Response(data = null, errors = emptyList()))
         whenever(locationsInsidePrisonGateway.getLocationByKey(key)).thenReturn(Response(data = lipLocation))
+        whenever(getPrisonersInCellService.execute(prisonId, lipLocation.pathHierarchy)).thenReturn(Response(data = emptyList()))
       }
 
       it("should send deactivate location request successfully when all conditions are met") {
@@ -144,6 +147,46 @@ internal class LocationQueueServiceTest(
         val result = locationQueueService.sendDeactivateLocationRequest(deactivateLocationRequest, prisonId, key, who, filters)
         result.data.shouldBe(null)
         result.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.LOCATIONS_INSIDE_PRISON, UpstreamApiError.Type.BAD_REQUEST, "Location type must be a CELL")))
+      }
+
+      it("should return error when cell is not empty") {
+        whenever(getPrisonersInCellService.execute(prisonId, lipLocation.pathHierarchy)).thenReturn(
+          Response(
+            data =
+              listOf(
+                PersonInPrison(
+                  firstName = "Barry",
+                  lastName = "Allen",
+                  middleName = "Jonas",
+                  dateOfBirth = LocalDate.parse("2023-03-01"),
+                  gender = "Male",
+                  ethnicity = "Caucasian",
+                  pncId = "PNC123456",
+                  category = "C",
+                  csra = "HIGH",
+                  receptionDate = "2023-05-01",
+                  status = "ACTIVE IN",
+                  prisonId = prisonId,
+                  prisonName = "HMP Leeds",
+                  cellLocation = lipLocation.pathHierarchy,
+                  youthOffender = false,
+                ),
+              ),
+          ),
+        )
+
+        val result = locationQueueService.sendDeactivateLocationRequest(deactivateLocationRequest, prisonId, key, who, filters)
+        result.data.shouldBe(null)
+        result.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.PRISONER_OFFENDER_SEARCH, UpstreamApiError.Type.CONFLICT, "Cell cannot be deactivated as there are prisoners in the cell")))
+      }
+
+      it("should return error when getPrisonersInCellService returns errors") {
+        val errors = UpstreamApiError(UpstreamApi.PRISONER_OFFENDER_SEARCH, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Location not found")
+        whenever(getPrisonersInCellService.execute(prisonId, lipLocation.pathHierarchy)).thenReturn(Response(data = null, errors = listOf(errors)))
+
+        val result = locationQueueService.sendDeactivateLocationRequest(deactivateLocationRequest, prisonId, key, who, filters)
+        result.data.shouldBe(null)
+        result.errors.shouldBe(listOf(errors))
       }
     },
   )

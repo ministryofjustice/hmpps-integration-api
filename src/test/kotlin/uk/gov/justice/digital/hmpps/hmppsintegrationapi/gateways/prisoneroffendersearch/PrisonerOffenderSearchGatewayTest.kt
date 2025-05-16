@@ -1,12 +1,16 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.prisoneroffendersearch
 
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.booleans.shouldBeTrue
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.nulls.shouldBeNull
+import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory
+import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
@@ -14,6 +18,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
+import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffenderSearchGateway
@@ -21,6 +26,9 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServe
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSAttributeSearchMatcher
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSAttributeSearchQuery
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSAttributeSearchRequest
 import java.io.File
 import java.time.LocalDate
 
@@ -34,6 +42,7 @@ class PrisonerOffenderSearchGatewayTest(
   private val prisonerOffenderSearchGateway: PrisonerOffenderSearchGateway,
 ) : DescribeSpec(
     {
+      val objectMapper = jacksonObjectMapper()
       val nomsNumber = "mockNomsNumber"
       val postPath = "/global-search?size=9999"
       val getPath = "/prisoner/$nomsNumber"
@@ -65,7 +74,7 @@ class PrisonerOffenderSearchGatewayTest(
               "dateOfBirth": "$dateOfBirth",
               "includeAliases": false
             }
-          """.removeWhitespaceAndNewlines(),
+            """.removeWhitespaceAndNewlines(),
             File(
               "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/prisoneroffendersearch/fixtures/GetPrisonersResponse.json",
             ).readText(),
@@ -109,11 +118,11 @@ class PrisonerOffenderSearchGatewayTest(
           prisonerOffenderSearchApiMockServer.stubForPost(
             postPath,
             """
-        {
-          "firstName": "Obi-Wan",
-          "includeAliases": false
-        }
-        """.removeWhitespaceAndNewlines(),
+            {
+              "firstName": "Obi-Wan",
+              "includeAliases": false
+            }
+            """.removeWhitespaceAndNewlines(),
             """
             {
               "content": [
@@ -121,7 +130,33 @@ class PrisonerOffenderSearchGatewayTest(
                   "firstName": "Obi-Wan",
                   "lastName": "Kenobi"
                 }
-              ]
+              ],
+              "pageable": {
+                  "sort": {
+                    "empty": true,
+                    "unsorted": true,
+                    "sorted": false
+                  },
+                  "offset": 0,
+                  "pageSize": 10,
+                  "pageNumber": 0,
+                  "paged": true,
+                  "unpaged": false
+                },
+                "totalPages": 2,
+                "last": false,
+                "totalElements": 4,
+                "size": 10,
+                "number": 0,
+                "sort": {
+                  "empty": true,
+                  "unsorted": true,
+                  "sorted": false
+                },
+                "first": true,
+                "numberOfElements": 10,
+                "empty": false
+              }
             }
             """.trimIndent(),
           )
@@ -143,11 +178,11 @@ class PrisonerOffenderSearchGatewayTest(
           prisonerOffenderSearchApiMockServer.stubForPost(
             postPath,
             """
-        {
-          "lastName": "Binks",
-          "includeAliases": false
-        }
-        """.removeWhitespaceAndNewlines(),
+            {
+              "lastName": "Binks",
+              "includeAliases": false
+            }
+            """.removeWhitespaceAndNewlines(),
             """
             {
               "content": [
@@ -155,7 +190,32 @@ class PrisonerOffenderSearchGatewayTest(
                   "firstName": "Jar Jar",
                   "lastName": "Binks"
                 }
-              ]
+              ],
+              "pageable": {
+                "sort": {
+                  "empty": true,
+                  "unsorted": true,
+                  "sorted": false
+                },
+                "offset": 0,
+                "pageSize": 10,
+                "pageNumber": 0,
+                "paged": true,
+                "unpaged": false
+              },
+              "totalPages": 2,
+              "last": false,
+              "totalElements": 4,
+              "size": 10,
+              "number": 0,
+              "sort": {
+                "empty": true,
+                "unsorted": true,
+                "sorted": false
+              },
+              "first": true,
+              "numberOfElements": 10,
+              "empty": false
             }
             """.trimIndent(),
           )
@@ -177,11 +237,11 @@ class PrisonerOffenderSearchGatewayTest(
           prisonerOffenderSearchApiMockServer.stubForPost(
             postPath,
             """
-        {
-          "includeAliases": false,
-          "dateOfBirth": "1975-02-28"
-        }
-        """.removeWhitespaceAndNewlines(),
+            {
+              "includeAliases": false,
+              "dateOfBirth": "1975-02-28"
+            }
+            """.removeWhitespaceAndNewlines(),
             """
             {
               "content": [
@@ -190,7 +250,32 @@ class PrisonerOffenderSearchGatewayTest(
                   "lastName": "Binks",
                   "dateOfBirth": "1975-02-28"
                 }
-              ]
+              ],
+              "pageable": {
+                "sort": {
+                  "empty": true,
+                  "unsorted": true,
+                  "sorted": false
+                },
+                "offset": 0,
+                "pageSize": 10,
+                "pageNumber": 0,
+                "paged": true,
+                "unpaged": false
+              },
+              "totalPages": 2,
+              "last": false,
+              "totalElements": 4,
+              "size": 10,
+              "number": 0,
+              "sort": {
+                "empty": true,
+                "unsorted": true,
+                "sorted": false
+              },
+              "first": true,
+              "numberOfElements": 10,
+              "empty": false
             }
             """.trimIndent(),
           )
@@ -216,11 +301,11 @@ class PrisonerOffenderSearchGatewayTest(
           prisonerOffenderSearchApiMockServer.stubForPost(
             postPath,
             """
-        {
-          "firstName": "Geralt",
-          "includeAliases": true
-        }
-        """.removeWhitespaceAndNewlines(),
+            {
+              "firstName": "Geralt",
+              "includeAliases": true
+            }
+            """.removeWhitespaceAndNewlines(),
             """
             {
               "content": [
@@ -234,7 +319,33 @@ class PrisonerOffenderSearchGatewayTest(
                     }
                   ]
                 }
-              ]
+              ],
+               "pageable": {
+                  "sort": {
+                    "empty": true,
+                    "unsorted": true,
+                    "sorted": false
+                  },
+                  "offset": 0,
+                  "pageSize": 10,
+                  "pageNumber": 0,
+                  "paged": true,
+                  "unpaged": false
+                },
+                "totalPages": 2,
+                "last": false,
+                "totalElements": 4,
+                "size": 10,
+                "number": 0,
+                "sort": {
+                  "empty": true,
+                  "unsorted": true,
+                  "sorted": false
+                },
+                "first": true,
+                "numberOfElements": 10,
+                "empty": false
+              }
             }
             """.trimIndent(),
           )
@@ -268,12 +379,37 @@ class PrisonerOffenderSearchGatewayTest(
               "lastName": "$lastNameThatDoesNotExist",
               "includeAliases": false
             }
-          """.removeWhitespaceAndNewlines(),
+            """.removeWhitespaceAndNewlines(),
             """
-        {
-          "content": []
-        }
-        """,
+            {
+              "content": [],
+              "pageable": {
+                "sort": {
+                  "empty": true,
+                  "unsorted": true,
+                  "sorted": false
+                },
+                "offset": 0,
+                "pageSize": 10,
+                "pageNumber": 0,
+                "paged": true,
+                "unpaged": false
+              },
+              "totalPages": 2,
+              "last": false,
+              "totalElements": 4,
+              "size": 10,
+              "number": 0,
+              "sort": {
+                "empty": true,
+                "unsorted": true,
+                "sorted": false
+              },
+              "first": true,
+              "numberOfElements": 10,
+              "empty": false
+            }
+            """,
           )
 
           val response = prisonerOffenderSearchGateway.getPersons(firstNameThatDoesNotExist, lastNameThatDoesNotExist, null)
@@ -283,7 +419,6 @@ class PrisonerOffenderSearchGatewayTest(
       }
 
       describe("#getPrisonOffender") {
-
         beforeEach {
           prisonerOffenderSearchApiMockServer.stubForGet(
             getPath,
@@ -321,16 +456,126 @@ class PrisonerOffenderSearchGatewayTest(
           prisonerOffenderSearchApiMockServer.stubForGet(
             getPath,
             """
-        {
-          "developerMessage": "cannot find person"
-        }
-        """,
+            {
+              "developerMessage": "cannot find person"
+            }
+            """,
             HttpStatus.NOT_FOUND,
           )
 
           val response = prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber)
 
           response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND).shouldBeTrue()
+        }
+      }
+
+      describe("#attributeSearch") {
+        val prisonId = "MKI"
+        val cellLocation = "A-1-001"
+        val request =
+          POSAttributeSearchRequest(
+            joinType = "AND",
+            queries =
+              listOf(
+                POSAttributeSearchQuery(
+                  joinType = "AND",
+                  matchers =
+                    listOf(
+                      POSAttributeSearchMatcher(
+                        type = "String",
+                        attribute = "prisonId",
+                        condition = "IS",
+                        searchTerm = prisonId,
+                      ),
+                      POSAttributeSearchMatcher(
+                        type = "String",
+                        attribute = "cellLocation",
+                        condition = "IS",
+                        searchTerm = cellLocation,
+                      ),
+                    ),
+                ),
+              ),
+          )
+
+        it("authenticates using HMPPS Auth with credentials") {
+          prisonerOffenderSearchGateway.attributeSearch(request)
+
+          verify(hmppsAuthGateway, times(1)).getClientToken("Prisoner Offender Search")
+        }
+
+        it("returns a prisoner by attributes") {
+          prisonerOffenderSearchApiMockServer.stubForPost(
+            "/attribute-search",
+            objectMapper.writeValueAsString(request),
+            """
+            {
+              "content": [
+                {
+                  "prisonId": "$prisonId",
+                  "firstName": "Rich",
+                  "lastName": "Roger",
+                  "cellLocation": "$cellLocation"
+                }
+              ],
+              "pageable": {
+                "sort": {
+                  "empty": true,
+                  "unsorted": true,
+                  "sorted": false
+                },
+                "offset": 0,
+                "pageSize": 10,
+                "pageNumber": 0,
+                "paged": true,
+                "unpaged": false
+              },
+              "totalPages": 1,
+              "last": false,
+              "totalElements": 1,
+              "size": 10,
+              "number": 0,
+              "sort": {
+                "empty": true,
+                "unsorted": true,
+                "sorted": false
+              },
+              "first": true,
+              "numberOfElements": 1,
+              "empty": false
+            }
+            """.trimIndent(),
+          )
+
+          val response = prisonerOffenderSearchGateway.attributeSearch(request)
+          response.data.shouldNotBeNull()
+          response.data.content.size
+            .shouldBe(1)
+          response.data.content[0]
+            .prisonId
+            .shouldBe(prisonId)
+          response.data.content[0]
+            .cellLocation
+            .shouldBe(cellLocation)
+        }
+
+        it("throws an exception when 400 BAD REQUEST is returned") {
+          prisonerOffenderSearchApiMockServer.stubForPost(
+            "/attribute-search",
+            objectMapper.writeValueAsString(request),
+            """
+            {
+              "status": 400,
+              "developerMessage": "Bad request",
+              "errorCode": 20012,
+              "userMessage": "Bad request",
+              "moreInfo": "Bad request"
+            }
+            """.trimIndent(),
+            HttpStatus.BAD_REQUEST,
+          )
+
+          shouldThrow<WebClientResponseException> { prisonerOffenderSearchGateway.attributeSearch(request) }
         }
       }
     },

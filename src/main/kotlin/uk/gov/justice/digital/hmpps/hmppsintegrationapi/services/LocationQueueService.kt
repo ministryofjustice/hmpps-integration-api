@@ -22,6 +22,7 @@ import uk.gov.justice.hmpps.sqs.eventTypeMessageAttributes
 class LocationQueueService(
   @Autowired private val hmppsQueueService: HmppsQueueService,
   @Autowired private val consumerPrisonAccessService: ConsumerPrisonAccessService,
+  @Autowired private val getPrisonersInCellService: GetPrisonersInCellService,
   @Autowired private val locationsInsidePrisonGateway: LocationsInsidePrisonGateway,
   @Autowired private val objectMapper: ObjectMapper,
 ) {
@@ -49,8 +50,18 @@ class LocationQueueService(
     }
 
     val locationId = locationResponse.data?.id ?: return Response(data = null, errors = listOf(UpstreamApiError(causedBy = UpstreamApi.LOCATIONS_INSIDE_PRISON, type = UpstreamApiError.Type.ENTITY_NOT_FOUND)))
+
     if (locationResponse.data.locationType != "CELL") {
       return Response(data = null, errors = listOf(UpstreamApiError(causedBy = UpstreamApi.LOCATIONS_INSIDE_PRISON, type = UpstreamApiError.Type.BAD_REQUEST, description = "Location type must be a CELL")))
+    }
+
+    val prisonersInCellResponse = getPrisonersInCellService.execute(prisonId, locationResponse.data.pathHierarchy)
+
+    if (prisonersInCellResponse.errors.isNotEmpty()) {
+      return Response(data = null, errors = prisonersInCellResponse.errors)
+    }
+    if (!prisonersInCellResponse.data.isNullOrEmpty()) {
+      return Response(data = null, errors = listOf(UpstreamApiError(causedBy = UpstreamApi.PRISONER_OFFENDER_SEARCH, type = UpstreamApiError.Type.CONFLICT, description = "Cell cannot be deactivated as there are prisoners in the cell")))
     }
 
     val hmppsMessage = deactivateLocationRequest.toHmppsMessage(locationId, actionedBy = who)

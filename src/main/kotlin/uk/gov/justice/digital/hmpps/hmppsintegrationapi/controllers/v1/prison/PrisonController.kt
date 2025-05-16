@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.ConflictFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.ForbiddenByUpstreamServiceException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.featureflag.FeatureFlag
@@ -394,6 +395,10 @@ class PrisonController(
 
     if (response.hasError(BAD_REQUEST)) {
       throw ValidationException(response.errors[0].description ?: "Invalid request.")
+    }
+
+    if (response.hasError(UpstreamApiError.Type.CONFLICT)) {
+      throw ConflictFoundException(response.errors[0].description ?: "Conflict.")
     }
 
     auditService.createEvent("DEACTIVATE_LOCATION", mapOf("prisonId" to prisonId, "key" to key))
