@@ -120,6 +120,14 @@ const post_visit_data = JSON.stringify({
   },
 });
 
+const postLocationDeactivateEndpoint = `/v1/prison/${prisonId}/location/${locationIdKey}/deactivate`;
+const postLocationDeactivateData = {
+  deactivationReason: "DAMAGED",
+  deactivationReasonDescription: "Damaged",
+  proposedReactivationDate: "2025-12-01",
+  externalReference: "TestEvent"
+}
+
 export default function ()  {
   const params = {
     headers: {
@@ -133,6 +141,13 @@ export default function ()  {
     'POST /v1/visit returns 200': (r) => r.status === 200,
   })) {
     exec.test.fail(`${post_visit_endpoint} caused the test to fail`)
+  }
+
+  const postLocationDeactivateRes = http.post(`${baseUrl}${postLocationDeactivateEndpoint}`, postLocationDeactivateData, params);
+  if (!check(postLocationDeactivateRes, {
+    [`POST ${postLocationDeactivateEndpoint} returns 200`]: (r) => r.status === 200,
+  })) {
+    exec.test.fail(`${postLocationDeactivateEndpoint} caused the test to fail`)
   }
 
   for (const endpoint of get_endpoints) {
