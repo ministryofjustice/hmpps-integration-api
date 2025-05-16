@@ -6,6 +6,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HealthAndMedica
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HealthAndDiet
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 @Service
@@ -18,14 +20,19 @@ class GetHealthAndDietService(
     hmppsId: String,
     filters: ConsumerFilters?,
   ): Response<HealthAndDiet?> {
-    val personResponse = getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, filters)
+    val personResponse = getPersonService.getNomisNumberWithPrisonFilter(hmppsId = hmppsId, filters)
 
     if (personResponse.errors.isNotEmpty()) {
       return Response(data = null, errors = personResponse.errors)
     }
+    val nomisNumber =
+      personResponse.data?.nomisNumber ?: return Response(
+        data = HealthAndDiet(),
+        errors = listOf(UpstreamApiError(UpstreamApi.PRISON_API, UpstreamApiError.Type.ENTITY_NOT_FOUND)),
+      )
 
-    val smokerResponse = prisonerOffenderSearchGateway.getPrisonOffender(hmppsId)
-    val dietResponse = healthAndMedicationGateway.getHealthAndMedicationData(hmppsId)
+    val smokerResponse = prisonerOffenderSearchGateway.getPrisonOffender(nomisNumber)
+    val dietResponse = healthAndMedicationGateway.getHealthAndMedicationData(nomisNumber)
 
     val healthAndDiet =
       HealthAndDiet(
