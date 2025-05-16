@@ -85,24 +85,13 @@ internal class GetCareNeedsForPersonServiceTest(
       }
 
       it("should return an entity not found error if person found in person service but no nomis number set for them") {
+        val personWithoutNomis = Person(firstName = "Qui-gon", lastName = "Jin", identifiers = Identifiers(nomisNumber = null))
         whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, filters = filters)).thenReturn(
-          Response(
-            data = null,
-            errors =
-              listOf(
-                UpstreamApiError(
-                  causedBy = UpstreamApi.PRISON_API,
-                  type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-                ),
-              ),
-          ),
+          Response(data = personWithoutNomis)
         )
         val result = getCareNeedsForPersonService.execute(hmppsId = hmppsId, filters)
         result.data.shouldBe(null)
-        result.errors
-          .first()
-          .type
-          .shouldBe(UpstreamApiError.Type.ENTITY_NOT_FOUND)
+        result.errors.first().type.shouldBe(UpstreamApiError.Type.ENTITY_NOT_FOUND)
       }
 
       it("should return a list of errors if person not found") {
