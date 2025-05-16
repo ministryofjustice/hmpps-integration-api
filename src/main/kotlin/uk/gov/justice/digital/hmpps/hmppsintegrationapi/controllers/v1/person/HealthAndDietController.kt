@@ -45,7 +45,7 @@ class HealthAndDietController(
     ],
   )
   @GetMapping("/{hmppsId}/health-and-diet")
-  @FeatureFlag(name = FeatureFlagConfig.HEALTH_AND_DIET_ENDPOINT)
+  @FeatureFlag(name = FeatureFlagConfig.USE_HEALTH_AND_DIET_ENDPOINT)
   fun getHealthAndDiet(
     @Parameter(description = "The HMPPS ID of the person") @PathVariable hmppsId: String,
     @RequestAttribute filters: ConsumerFilters?,
