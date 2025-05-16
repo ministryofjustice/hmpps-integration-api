@@ -42,7 +42,6 @@ class LocationController(
   @Autowired val locationQueueService: LocationQueueService,
 ) {
   @GetMapping("/{key}")
-  @Tag(name = "Residential Areas")
   @Operation(
     summary = "Gets the location information for a prison location based on a key.",
     description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
@@ -83,7 +82,6 @@ class LocationController(
   }
 
   @PostMapping("/{key}/deactivate")
-  @Tag(name = "Residential Areas")
   @Operation(
     summary = "Temporarily mark a location as inactive.",
     description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
