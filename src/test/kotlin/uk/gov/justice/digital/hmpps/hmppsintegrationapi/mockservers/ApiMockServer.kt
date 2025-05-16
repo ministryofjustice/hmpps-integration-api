@@ -10,7 +10,7 @@ import org.springframework.http.HttpStatus
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 
 class ApiMockServer(
-  private val port: Int,
+  port: Int,
 ) : WireMockServer(port) {
   companion object {
     // These ports must match the config in the yaml files
@@ -35,6 +35,7 @@ class ApiMockServer(
         UpstreamApi.INCENTIVES -> ApiMockServer(4008)
         UpstreamApi.PRISONER_ALERTS -> ApiMockServer(4009)
         UpstreamApi.LOCATIONS_INSIDE_PRISON -> ApiMockServer(4000)
+        UpstreamApi.HEALTH_AND_MEDICATION -> ApiMockServer(4001)
       }
   }
 

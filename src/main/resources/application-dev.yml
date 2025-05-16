@@ -37,6 +37,8 @@ services:
     password: ${CLIENT_SECRET}
   locations-inside-prison:
     base-url: https://locations-inside-prison-api-dev.hmpps.service.justice.gov.uk
+  health-and-medication:
+    base-url: https://health-and-medication-api-dev.hmpps.service.justice.gov.uk
 
 feature-flag:
   use-arns-endpoints: true

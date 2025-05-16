@@ -45,6 +45,8 @@ services:
     base-url: http://localhost:4009
   locations-inside-prison:
     base-url: http://localhost:4000
+  health-and-medication:
+    base-url: http://localhost:4001
 
 hmpps.sqs:
   provider: localstack
