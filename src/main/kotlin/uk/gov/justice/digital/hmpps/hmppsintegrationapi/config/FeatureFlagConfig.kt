@@ -29,6 +29,7 @@ data class FeatureFlagConfig(
     const val REPLACE_PROBATION_SEARCH = "replace-probation-search"
     const val USE_CAPACITY_ENDPOINT = "use-capacity-endpoint"
     const val USE_LOCATION_DEACTIVATE_ENDPOINT = "use-location-deactivate-endpoint"
+    const val HEALTH_AND_DIET_ENDPOINT = "health-and-diet-endpoint"
   }
 
   /**
