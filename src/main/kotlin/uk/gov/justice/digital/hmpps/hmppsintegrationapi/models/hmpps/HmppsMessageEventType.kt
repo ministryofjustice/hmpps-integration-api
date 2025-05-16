@@ -7,6 +7,11 @@ enum class HmppsMessageEventType(
   @JsonValue val eventTypeCode: String,
   val description: String,
 ) {
+  TEST_EVENT(
+    type = "test-event",
+    eventTypeCode = "TestEvent",
+    description = "Test Event",
+  ),
   EXPRESSION_OF_INTEREST_CREATED(
     type = "mjma-jobs-board.job.expression-of-interest.created",
     eventTypeCode = "ExpressionOfInterestCreated",

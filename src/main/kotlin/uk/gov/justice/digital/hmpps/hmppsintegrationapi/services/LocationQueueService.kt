@@ -37,6 +37,13 @@ class LocationQueueService(
     who: String,
     filters: ConsumerFilters?,
   ): Response<HmppsMessageResponse?> {
+    if (deactivateLocationRequest.externalReference == "TestEvent") {
+      val testMessage = deactivateLocationRequest.toTestMessage(actionedBy = who)
+      writeMessageToQueue(testMessage, "Could not send deactivate location to queue")
+
+      return Response(HmppsMessageResponse(message = "Deactivate location written to queue"))
+    }
+
     if (filters?.prisons != null) {
       val consumerPrisonFilterCheck = consumerPrisonAccessService.checkConsumerHasPrisonAccess<HmppsMessageResponse>(prisonId, filters)
       if (consumerPrisonFilterCheck.errors.isNotEmpty()) {

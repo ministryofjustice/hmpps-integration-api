@@ -115,6 +115,35 @@ class DeactivateLocationIntegrationTest : IntegrationTestWithQueueBase("location
   }
 
   @Test
+  fun `return the response saying message on queue for test event`() {
+    postToApi(path, asJsonString(deactivateLocationRequest.copy(externalReference = "TestEvent")))
+      .andExpect(status().isOk)
+      .andExpect(
+        content().json(
+          """
+          {
+            "data": {
+              "message": "Deactivate location written to queue"
+            }
+          }
+          """.trimIndent(),
+        ),
+      )
+
+    val queueMessages = getQueueMessages()
+    queueMessages.size.shouldBe(1)
+
+    val messageJson = queueMessages[0].body()
+    val expectedMessage = deactivateLocationRequest.toTestMessage(defaultCn)
+    messageJson.shouldContainJsonKeyValue("$.eventType", expectedMessage.eventType.eventTypeCode)
+    messageJson.shouldContainJsonKeyValue("$.who", defaultCn)
+    val objectMapper = jacksonObjectMapper()
+    val messageAttributes = objectMapper.readTree(messageJson).at("/messageAttributes")
+    val expectedMessageAttributes = objectMapper.readTree(objectMapper.writeValueAsString(expectedMessage.messageAttributes))
+    messageAttributes.shouldBe(expectedMessageAttributes)
+  }
+
+  @Test
   fun `return a 409 when cell is not empty`() {
     prisonerOffenderSearchMockServer.stubForPost(
       "/attribute-search",
