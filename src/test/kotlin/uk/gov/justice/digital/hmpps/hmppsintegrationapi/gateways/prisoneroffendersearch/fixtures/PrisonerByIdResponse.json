@@ -18,6 +18,17 @@
   "maritalStatus": "Widowed",
   "religion": "Church of England (Anglican)",
   "nationality": "Egyptian",
+  "personalCareNeeds": [
+    {
+      "problemType": "MATSTAT",
+      "problemCode": "ACCU9",
+      "problemStatus": "ON",
+      "problemDescription": "string",
+      "commentText": "string",
+      "startDate": "2020-06-21",
+      "endDate": "2025-05-11"
+    }
+  ],
   "status": "ACTIVE IN",
   "lastMovementTypeCode": "CRT",
   "lastMovementReasonCode": "CA",

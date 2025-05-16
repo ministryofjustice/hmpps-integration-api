@@ -47,6 +47,7 @@ const get_endpoints = [
   `/v1/persons/${hmppsId}/reported-adjudications`,
   `/v1/persons/${hmppsId}/number-of-children`,
   `/v1/persons/${hmppsId}/physical-characteristics`,
+  `/v1/persons/${hmppsId}/care-needs`,
   `/v1/pnd/persons/${hmppsId}/alerts`,
   `/v1/prison/prisoners?first_name=john`,
   `/v1/prison/prisoners/${hmppsId}`,

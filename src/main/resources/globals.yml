@@ -46,6 +46,7 @@ globals:
         - "/v1/visit/.*/cancel"
         - "/v1/contacts/[^/]*$"
         - "/v1/prison/.*/location/.*/deactivate"
+        - "/v1/persons/.*/care-needs"
     reference-data-only:
       include:
         - "/v1/hmpps/reference-data"
@@ -94,3 +95,4 @@ globals:
         - "/v1/visit/id/by-client-ref/[^/]*$"
         - "/v1/visit/.*/cancel"
         - "/v1/contacts/[^/]*$"
+        - "/v1/persons/.*/care-needs"
