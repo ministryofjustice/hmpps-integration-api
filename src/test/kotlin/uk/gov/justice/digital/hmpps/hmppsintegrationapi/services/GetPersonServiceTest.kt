@@ -135,7 +135,7 @@ internal class GetPersonServiceTest(
 
       it("returns a person with both probation and prison data when prison data exists") {
         val personFromProbationOffenderSearch = PersonOnProbation(Person("Paula", "First", identifiers = Identifiers(nomisNumber = "A1234AA")), underActiveSupervision = true)
-        val personFromPrisonOffenderSearch = POSPrisoner("Sam", "Mills", youthOffender = false)
+        val personFromPrisonOffenderSearch = POSPrisoner(firstName = "Sam", lastName = "Mills", youthOffender = false)
 
         whenever(probationOffenderSearchGateway.getPerson(hmppsId)).thenReturn(
           Response(data = personFromProbationOffenderSearch),
