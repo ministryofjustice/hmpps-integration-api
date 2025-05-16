@@ -539,7 +539,7 @@ internal class PrisonControllerTest(
               deactivationReasonDescription = null,
               deactivatedBy = null,
               proposedReactivationDate = null,
-              planetFmReference = null,
+              externalReference = null,
               parentLocationKey = null,
             ),
           subLocations = listOf(),

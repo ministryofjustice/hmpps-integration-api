@@ -71,7 +71,7 @@ data class LIPLocation(
       deactivationReasonDescription = this.deactivationReasonDescription,
       deactivatedBy = this.deactivatedBy,
       proposedReactivationDate = this.proposedReactivationDate,
-      planetFmReference = this.planetFmReference,
+      externalReference = this.planetFmReference,
       level = this.level,
       parentLocationKey = this.parentLocation?.key,
       inactiveCells = this.inactiveCells,
