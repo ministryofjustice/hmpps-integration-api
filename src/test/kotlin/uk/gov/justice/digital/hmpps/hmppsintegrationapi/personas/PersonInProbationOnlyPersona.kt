@@ -3,12 +3,13 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.personas
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ContactDetailsWithEmailAndPhone
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Identifiers
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PhoneNumber
+import java.time.LocalDate
 
 val personInProbationOnlyPersona =
   Persona(
     firstName = "John",
     lastName = "Smith",
-    dateOfBirth = "1990-03-01",
+    dateOfBirth = LocalDate.parse("1990-03-01"),
     contactDetails =
       ContactDetailsWithEmailAndPhone(
         phoneNumbers =
