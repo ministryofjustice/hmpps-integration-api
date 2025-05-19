@@ -2,7 +2,6 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffender
 
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Language
 
-
 data class POSLanguage(
   val type: String?,
   val code: String?,
@@ -18,6 +17,6 @@ data class POSLanguage(
       readSkill = this.readSkill,
       writeSkill = this.writeSkill,
       speakSkill = this.speakSkill,
-      interpreterRequested = this.interpreterRequested
+      interpreterRequested = this.interpreterRequested,
     )
 }

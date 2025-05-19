@@ -16,7 +16,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSLanguage
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSPersonalCareNeed
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSPrisoner
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSPrisonerAlias
 import java.time.LocalDate
@@ -59,7 +58,7 @@ internal class GetLanguagesForPersonServiceTest(
                 readSkill = "Y",
                 writeSkill = "Y",
                 speakSkill = "Y",
-                interpreterRequested = true
+                interpreterRequested = true,
               ),
             ),
         )
