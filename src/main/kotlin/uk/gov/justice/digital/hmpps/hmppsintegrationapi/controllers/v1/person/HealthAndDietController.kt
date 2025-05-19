@@ -31,7 +31,7 @@ class HealthAndDietController(
   @Autowired val getHealthAndDietService: GetHealthAndDietService,
 ) {
   @Operation(
-    summary = "Returns Health And Diet information for a person. It should be noted this data could be incomplete.",
+    summary = "Returns Health And Diet information for a person. It should be noted this data could be incomplete and checks as to whether data is valid and up to date should be taken.",
     description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
     responses = [
       ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found a persons health and diet information."),
