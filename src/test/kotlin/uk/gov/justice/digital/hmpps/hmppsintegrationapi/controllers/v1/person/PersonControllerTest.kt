@@ -26,7 +26,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitesp
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.BodyMark
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Contact
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ContactDetailsWithEmailAndPhone
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.IEPLevel
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ImageMetadata
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NomisNumber
@@ -37,7 +36,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonName
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonOnProbation
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonalCareNeed
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PhoneNumber
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PhysicalCharacteristics
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerContact
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerContactRelationship
@@ -61,7 +59,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetVisitOrdersF
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
-import java.time.LocalDate
 import java.time.LocalDateTime
 import kotlin.random.Random
 
@@ -83,44 +80,36 @@ internal class PersonControllerTest(
   @MockitoBean val featureFlagConfig: FeatureFlagConfig,
 ) : DescribeSpec(
     {
+      val mockMvc = IntegrationAPIMockMvc(springMockMvc)
       val hmppsId = "2003/13116M"
       val sanitisedHmppsId = "A1234AA"
       val pncNumber = "2003/13116M"
       val encodedHmppsId = URLEncoder.encode(hmppsId, StandardCharsets.UTF_8)
       val basePath = "/v1/persons"
       val filters = null
-      val firstName = "Barry"
-      val lastName = "Allen"
-      val dateOfBirth = "2023-03-01"
-      val mockMvc = IntegrationAPIMockMvc(springMockMvc)
-      val phoneNumbers: List<PhoneNumber> =
-        listOf(
-          PhoneNumber("07123456789", "Mobile"),
-          PhoneNumber("01611234567", "Landline"),
-        )
-      val emails: List<String> = listOf("barry.allen@starlabs.gov")
+
+      // Test persona
+      val person = personInProbationAndNomisPersona
+      val firstName = person.firstName
+      val lastName = person.lastName
+      val dateOfBirth = person.dateOfBirth
+      val contactDetails = person.contactDetails
+      val identifiers = person.identifiers
 
       describe("GET $basePath") {
         beforeTest {
           Mockito.reset(getPersonsService)
           Mockito.reset(auditService)
-          whenever(getPersonsService.execute(firstName, lastName, null, dateOfBirth)).thenReturn(
+
+          whenever(getPersonsService.execute(firstName, lastName, null, dateOfBirth.toString())).thenReturn(
             Response(
               data =
                 listOf(
                   Person(
-                    firstName = "Barry",
-                    lastName = "Allen",
-                    middleName = "Jonas",
-                    dateOfBirth = LocalDate.parse("2023-03-01"),
-                    contactDetails = ContactDetailsWithEmailAndPhone(phoneNumbers, emails),
-                  ),
-                  Person(
-                    firstName = "Barry",
-                    lastName = "Allen",
-                    middleName = "Rock",
-                    dateOfBirth = LocalDate.parse("2022-07-22"),
-                    contactDetails = ContactDetailsWithEmailAndPhone(phoneNumbers, emails),
+                    firstName = firstName,
+                    lastName = lastName,
+                    dateOfBirth = dateOfBirth,
+                    contactDetails = contactDetails,
                   ),
                 ),
             ),
@@ -129,8 +118,7 @@ internal class PersonControllerTest(
 
         it("gets a person with matching search criteria") {
           mockMvc.performAuthorised("$basePath?first_name=$firstName&last_name=$lastName&pnc_number=$pncNumber&date_of_birth=$dateOfBirth")
-
-          verify(getPersonsService, times(1)).execute(firstName, lastName, pncNumber, dateOfBirth)
+          verify(getPersonsService, times(1)).execute(firstName, lastName, pncNumber, dateOfBirth.toString())
         }
 
         it("gets a person with matching first name") {
@@ -155,13 +143,11 @@ internal class PersonControllerTest(
 
         it("gets a person with matching date of birth") {
           mockMvc.performAuthorised("$basePath?date_of_birth=$dateOfBirth")
-
-          verify(getPersonsService, times(1)).execute(null, null, null, dateOfBirth)
+          verify(getPersonsService, times(1)).execute(null, null, null, dateOfBirth.toString())
         }
 
         it("defaults to not searching within aliases") {
           mockMvc.performAuthorised("$basePath?first_name=$firstName")
-
           verify(getPersonsService, times(1)).execute(firstName, null, null, null)
         }
 
@@ -172,19 +158,19 @@ internal class PersonControllerTest(
             times(1),
           ).createEvent(
             "SEARCH_PERSON",
-            mapOf("firstName" to firstName, "lastName" to lastName, "aliases" to false.toString(), "pncNumber" to pncNumber, "dateOfBirth" to dateOfBirth),
+            mapOf("firstName" to firstName, "lastName" to lastName, "aliases" to false.toString(), "pncNumber" to pncNumber, "dateOfBirth" to dateOfBirth.toString()),
           )
         }
 
         it("returns paginated results") {
-          whenever(getPersonsService.execute(firstName, lastName, null, dateOfBirth)).thenReturn(
+          whenever(getPersonsService.execute(firstName, lastName, null, dateOfBirth.toString())).thenReturn(
             Response(
               data =
                 List(20) { i ->
                   Person(
-                    firstName = "Barry $i",
-                    lastName = "Allen $i",
-                    dateOfBirth = LocalDate.parse("2023-03-01"),
+                    firstName = "${person.firstName} $i",
+                    lastName = "${person.firstName} $i",
+                    dateOfBirth = dateOfBirth,
                   )
                 },
             ),
@@ -194,7 +180,6 @@ internal class PersonControllerTest(
             mockMvc.performAuthorised(
               "$basePath?first_name=$firstName&last_name=$lastName&date_of_birth=$dateOfBirth&page=3&perPage=5",
             )
-
           result.response.contentAsString.shouldContainJsonKeyValue("$.pagination.page", 3)
           result.response.contentAsString.shouldContainJsonKeyValue("$.pagination.totalPages", 4)
         }
@@ -210,26 +195,22 @@ internal class PersonControllerTest(
           )
 
           val result = mockMvc.performAuthorised("$basePath?first_name=$firstNameThatDoesNotExist&last_name=$lastNameThatDoesNotExist")
-
           result.response.contentAsString.shouldContain("\"data\":[]".removeWhitespaceAndNewlines())
         }
 
         it("returns a 200 OK status code") {
           val result = mockMvc.performAuthorised("$basePath?first_name=$firstName&last_name=$lastName&date_of_birth=$dateOfBirth")
-
           result.response.status.shouldBe(HttpStatus.OK.value())
         }
 
         it("returns a 400 BAD REQUEST status code when no search criteria provided") {
           val result = mockMvc.performAuthorised(basePath)
-
           result.response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
           result.response.contentAsString.shouldContain("No query parameters specified.")
         }
 
         it("returns a 400 BAD REQUEST status code when no search criteria provided") {
           val result = mockMvc.performAuthorised("$basePath?date_of_birth=12323423234")
-
           result.response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
           result.response.contentAsString.shouldContain("Invalid date format. Please use yyyy-MM-dd.")
         }
@@ -242,7 +223,7 @@ internal class PersonControllerTest(
         }
 
         it("fails with the appropriate error when an upstream service is down") {
-          whenever(getPersonsService.execute(firstName, lastName, pncNumber, dateOfBirth, false)).doThrow(
+          whenever(getPersonsService.execute(firstName, lastName, pncNumber, dateOfBirth.toString(), false)).doThrow(
             WebClientResponseException(500, "MockError", null, null, null, null),
           )
 
@@ -250,7 +231,6 @@ internal class PersonControllerTest(
             mockMvc.performAuthorised(
               "$basePath?first_name=$firstName&last_name=$lastName&pnc_number=$pncNumber&date_of_birth=$dateOfBirth",
             )
-
           assert(response.response.status == 500)
           assert(
             response.response.contentAsString.equals(
@@ -261,8 +241,7 @@ internal class PersonControllerTest(
       }
 
       describe("GET $basePath/{id}") {
-        val person = personInProbationAndNomisPersona
-        val probationOffenderSearch = PersonOnProbation(Person(person.firstName, person.lastName, identifiers = person.identifiers, currentExclusion = true, exclusionMessage = "An exclusion exists", currentRestriction = false), underActiveSupervision = true)
+        val probationOffenderSearch = PersonOnProbation(Person(firstName, lastName, identifiers = identifiers, currentExclusion = true, exclusionMessage = "An exclusion exists", currentRestriction = false), underActiveSupervision = true)
         val prisonOffenderSearch = POSPrisoner(person.firstName, person.lastName, youthOffender = false, prisonerNumber = person.identifiers.nomisNumber)
         val prisonResponse = Response(data = prisonOffenderSearch, errors = emptyList())
 
@@ -281,7 +260,6 @@ internal class PersonControllerTest(
 
         it("returns a 200 OK status code") {
           val result = mockMvc.performAuthorised("$basePath/$encodedHmppsId")
-
           result.response.status.shouldBe(HttpStatus.OK.value())
         }
 
@@ -291,10 +269,11 @@ internal class PersonControllerTest(
         }
 
         describe("404 Not found") {
+          val idThatDoesNotExist = "9999/11111Z"
+
           beforeTest {
             Mockito.reset(auditService)
           }
-          val idThatDoesNotExist = "9999/11111Z"
 
           it("returns a 404 status code when a person cannot be found in both upstream APIs") {
             whenever(featureFlagConfig.isEnabled(REPLACE_PROBATION_SEARCH)).thenReturn(false)
@@ -423,20 +402,19 @@ internal class PersonControllerTest(
       }
 
       describe("GET $basePath/$sanitisedHmppsId/name") {
-
         beforeTest {
           Mockito.reset(getNameForPersonService)
+          Mockito.reset(auditService)
+
           whenever(getNameForPersonService.execute(sanitisedHmppsId, filters)).thenReturn(
             Response(
-              data = PersonName(firstName = "Sam", lastName = "Smith"),
+              data = PersonName(firstName, lastName),
             ),
           )
-          Mockito.reset(auditService)
         }
 
         it("returns a 200 OK status code") {
           val result = mockMvc.performAuthorised("$basePath/$sanitisedHmppsId/name")
-
           result.response.status.shouldBe(HttpStatus.OK.value())
         }
 
@@ -446,10 +424,11 @@ internal class PersonControllerTest(
         }
 
         describe("404 Not found") {
+          val idThatDoesNotExist = "B5678BB"
+
           beforeTest {
             Mockito.reset(auditService)
           }
-          val idThatDoesNotExist = "B5678BB"
 
           it("returns a 404 status code when a person cannot be found in both upstream APIs") {
             whenever(getNameForPersonService.execute(idThatDoesNotExist, filters)).thenReturn(
@@ -466,7 +445,6 @@ internal class PersonControllerTest(
             )
 
             val result = mockMvc.performAuthorised("$basePath/$idThatDoesNotExist/name")
-
             result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
           }
 
@@ -485,7 +463,6 @@ internal class PersonControllerTest(
             )
 
             val result = mockMvc.performAuthorised("$basePath/$idThatDoesNotExist/name")
-
             result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
           }
         }
@@ -505,28 +482,25 @@ internal class PersonControllerTest(
           )
 
           val result = mockMvc.performAuthorised("$basePath/$sanitisedHmppsId/name")
-
           result.response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
         }
 
         it("gets a person name details with the matching ID") {
           mockMvc.performAuthorised("$basePath/$sanitisedHmppsId/name")
-
           verify(getNameForPersonService, times(1)).execute(sanitisedHmppsId, filters)
         }
 
         it("returns person name with the matching ID") {
           val result = mockMvc.performAuthorised("$basePath/$sanitisedHmppsId/name")
-
           result.response.contentAsString.shouldBe(
             """
             {
-             "data":{
-                   "firstName":"Sam",
-                   "lastName":"Smith"
-             }
-          }
-        """.removeWhitespaceAndNewlines(),
+               "data":{
+                  "firstName": "$firstName",
+                  "lastName": "$lastName"
+               }
+            }
+            """.removeWhitespaceAndNewlines(),
           )
         }
       }
@@ -586,7 +560,6 @@ internal class PersonControllerTest(
 
         it("gets the metadata of images for a person with the matching ID") {
           mockMvc.performAuthorised("$basePath/$sanitisedHmppsId/images")
-
           verify(getImageMetadataForPersonService, times(1)).execute(sanitisedHmppsId, filters)
         }
 
@@ -595,13 +568,13 @@ internal class PersonControllerTest(
           result.response.contentAsString.shouldContain("\"data\":[")
           result.response.contentAsString.shouldContain(
             """
-            "id" : 2461788,
+              "id" : 2461788,
               "active" : true,
               "captureDateTime": "2023-03-01T13:20:00",
               "view": "FACE",
               "orientation": "FRONT",
               "type": "OFF_BKG"
-          """.removeWhitespaceAndNewlines(),
+            """.removeWhitespaceAndNewlines(),
           )
         }
 
@@ -620,7 +593,6 @@ internal class PersonControllerTest(
           )
 
           val result = mockMvc.performAuthorised("$basePath/$sanitisedHmppsId/images")
-
           result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
         }
       }
@@ -629,6 +601,7 @@ internal class PersonControllerTest(
         beforeTest {
           Mockito.reset(getPrisonerContactsService)
           Mockito.reset(auditService)
+
           whenever(getPrisonerContactsService.execute(sanitisedHmppsId, page = 1, size = 10, filter = null)).thenReturn(
             Response(
               data =
@@ -689,7 +662,6 @@ internal class PersonControllerTest(
 
         it("returns a 200 OK status code") {
           val result = mockMvc.performAuthorised("$basePath/$sanitisedHmppsId/contacts")
-
           result.response.status.shouldBe(HttpStatus.OK.value())
         }
 
@@ -712,6 +684,7 @@ internal class PersonControllerTest(
                 ),
             ),
           )
+
           val result = mockMvc.performAuthorised("$basePath/$idThatDoesNotExist/contacts")
           result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
         }
@@ -732,13 +705,11 @@ internal class PersonControllerTest(
           )
 
           val result = mockMvc.performAuthorised("$basePath/$idThatDoesNotExist/contacts")
-
           result.response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
         }
 
         it("verify getPrisonerContactsService is called ") {
           mockMvc.performAuthorised("$basePath/$sanitisedHmppsId/contacts")
-
           verify(getPrisonerContactsService, times(1)).execute(sanitisedHmppsId, page = 1, size = 10, filter = null)
         }
 
@@ -747,49 +718,56 @@ internal class PersonControllerTest(
           result.response.contentAsString.shouldBe(
             """
             {
-             "data":[
-                  {
-                    "contact": {
-                      "contactId": 654321,
-                      "lastName": "Doe",
-                      "firstName": "John",
-                      "middleNames": "William",
-                      "dateOfBirth": "1980-01-01",
-                      "flat": "Flat 1",
-                      "property": "123",
-                      "street": "Baker Street",
-                      "area": "Marylebone",
-                      "cityCode": "25343",
-                      "cityDescription": "Sheffield",
-                      "countyCode": "S.YORKSHIRE",
-                      "countyDescription": "South Yorkshire",
-                      "postCode": "NW1 6XE",
-                      "countryCode": "ENG",
-                      "countryDescription": "England",
-                      "primaryAddress": true,
-                      "mailAddress": true,
-                      "phoneType": "MOB",
-                      "phoneTypeDescription": "Mobile",
-                      "phoneNumber": "+1234567890",
-                      "extNumber": "123"
-                    },
-                    "relationship": {
-                      "relationshipTypeCode": "FRIEND",
-                      "relationshipTypeDescription": "Friend",
-                      "relationshipToPrisonerCode": "FRI",
-                      "relationshipToPrisonerDescription": "Friend of",
-                      "approvedVisitor": true,
-                      "nextOfKin": false,
-                      "emergencyContact": true,
-                      "isRelationshipActive": true,
-                      "currentTerm": true,
-                      "comments": "Close family friend"
-                    }
+              "data":[
+                {
+                  "contact": {
+                    "contactId": 654321,
+                    "lastName": "Doe",
+                    "firstName": "John",
+                    "middleNames": "William",
+                    "dateOfBirth": "1980-01-01",
+                    "flat": "Flat 1",
+                    "property": "123",
+                    "street": "Baker Street",
+                    "area": "Marylebone",
+                    "cityCode": "25343",
+                    "cityDescription": "Sheffield",
+                    "countyCode": "S.YORKSHIRE",
+                    "countyDescription": "South Yorkshire",
+                    "postCode": "NW1 6XE",
+                    "countryCode": "ENG",
+                    "countryDescription": "England",
+                    "primaryAddress": true,
+                    "mailAddress": true,
+                    "phoneType": "MOB",
+                    "phoneTypeDescription": "Mobile",
+                    "phoneNumber": "+1234567890",
+                    "extNumber": "123"
+                  },
+                  "relationship": {
+                    "relationshipTypeCode": "FRIEND",
+                    "relationshipTypeDescription": "Friend",
+                    "relationshipToPrisonerCode": "FRI",
+                    "relationshipToPrisonerDescription": "Friend of",
+                    "approvedVisitor": true,
+                    "nextOfKin": false,
+                    "emergencyContact": true,
+                    "isRelationshipActive": true,
+                    "currentTerm": true,
+                    "comments": "Close family friend"
                   }
-                ],
-                "pagination":{"isLastPage":true,"count":1,"page":1,"perPage":10,"totalCount":1,"totalPages":1}
-          }
-        """.removeWhitespaceAndNewlines(),
+                }
+              ],
+              "pagination": {
+                "isLastPage": true,
+                "count": 1,
+                "page": 1,
+                "perPage": 10,
+                "totalCount": 1,
+                "totalPages": 1
+              }
+            }
+            """.removeWhitespaceAndNewlines(),
           )
         }
 
@@ -890,11 +868,99 @@ internal class PersonControllerTest(
                 ),
             ),
           )
+
           val result = mockMvc.performAuthorised("$basePath/$sanitisedHmppsId/contacts")
           result.response.contentAsString.shouldBe(
             """
-            {"data":[{"contact":{"contactId":654321,"lastName":"Doe","firstName":"John","middleNames":"William","dateOfBirth":"1980-01-01","flat":"Flat 1","property":"123","street":"Baker Street","area":"Marylebone","cityCode":"25343","cityDescription":"Sheffield","countyCode":"S.YORKSHIRE","countyDescription":"South Yorkshire","postCode":"NW1 6XE","countryCode":"ENG","countryDescription":"England","primaryAddress":true,"mailAddress":true,"phoneType":"MOB","phoneTypeDescription":"Mobile","phoneNumber":"+1234567890","extNumber":"123"},"relationship":{"relationshipTypeCode":"FRIEND","relationshipTypeDescription":"Friend","relationshipToPrisonerCode":"FRI","relationshipToPrisonerDescription":"Friend of","approvedVisitor":true,"nextOfKin":false,"emergencyContact":true,"isRelationshipActive":true,"currentTerm":true,"comments":"Close family friend"}},{"contact":{"contactId":1234667,"lastName":"Doe","firstName":"BOB","middleNames":"William","dateOfBirth":"1980-01-01","flat":"Flat 1","property":"123","street":"Baker Street","area":"Marylebone","cityCode":"25343","cityDescription":"Sheffield","countyCode":"S.YORKSHIRE","countyDescription":"South Yorkshire","postCode":"NW1 6XE","countryCode":"ENG","countryDescription":"England","primaryAddress":true,"mailAddress":true,"phoneType":"MOB","phoneTypeDescription":"Mobile","phoneNumber":"+1234567890","extNumber":"123"},"relationship":{"relationshipTypeCode":"ROOMMATE","relationshipTypeDescription":"Friend","relationshipToPrisonerCode":"FRI","relationshipToPrisonerDescription":"Friend of","approvedVisitor":true,"nextOfKin":false,"emergencyContact":true,"isRelationshipActive":true,"currentTerm":true,"comments":"Close family friend"}}],"pagination":{"isLastPage":true,"count":2,"page":1,"perPage":10,"totalCount":2,"totalPages":1}}
-        """.removeWhitespaceAndNewlines(),
+              {
+                "data": [
+                  {
+                    "contact": {
+                      "contactId": 654321,
+                      "lastName": "Doe",
+                      "firstName": "John",
+                      "middleNames": "William",
+                      "dateOfBirth": "1980-01-01",
+                      "flat": "Flat 1",
+                      "property": "123",
+                      "street": "Baker Street",
+                      "area": "Marylebone",
+                      "cityCode": "25343",
+                      "cityDescription": "Sheffield",
+                      "countyCode": "S.YORKSHIRE",
+                      "countyDescription": "South Yorkshire",
+                      "postCode": "NW1 6XE",
+                      "countryCode": "ENG",
+                      "countryDescription": "England",
+                      "primaryAddress": true,
+                      "mailAddress": true,
+                      "phoneType": "MOB",
+                      "phoneTypeDescription": "Mobile",
+                      "phoneNumber": "+1234567890",
+                      "extNumber": "123"
+                    },
+                    "relationship": {
+                      "relationshipTypeCode": "FRIEND",
+                      "relationshipTypeDescription": "Friend",
+                      "relationshipToPrisonerCode": "FRI",
+                      "relationshipToPrisonerDescription": "Friend of",
+                      "approvedVisitor": true,
+                      "nextOfKin": false,
+                      "emergencyContact": true,
+                      "isRelationshipActive": true,
+                      "currentTerm": true,
+                      "comments": "Close family friend"
+                    }
+                  },
+                  {
+                    "contact": {
+                      "contactId": 1234667,
+                      "lastName": "Doe",
+                      "firstName": "BOB",
+                      "middleNames": "William",
+                      "dateOfBirth": "1980-01-01",
+                      "flat": "Flat 1",
+                      "property": "123",
+                      "street": "Baker Street",
+                      "area": "Marylebone",
+                      "cityCode": "25343",
+                      "cityDescription": "Sheffield",
+                      "countyCode": "S.YORKSHIRE",
+                      "countyDescription": "South Yorkshire",
+                      "postCode": "NW1 6XE",
+                      "countryCode": "ENG",
+                      "countryDescription": "England",
+                      "primaryAddress": true,
+                      "mailAddress": true,
+                      "phoneType": "MOB",
+                      "phoneTypeDescription": "Mobile",
+                      "phoneNumber": "+1234567890",
+                      "extNumber": "123"
+                    },
+                    "relationship": {
+                      "relationshipTypeCode": "ROOMMATE",
+                      "relationshipTypeDescription": "Friend",
+                      "relationshipToPrisonerCode": "FRI",
+                      "relationshipToPrisonerDescription": "Friend of",
+                      "approvedVisitor": true,
+                      "nextOfKin": false,
+                      "emergencyContact": true,
+                      "isRelationshipActive": true,
+                      "currentTerm": true,
+                      "comments": "Close family friend"
+                    }
+                  }
+                ],
+                "pagination": {
+                  "isLastPage": true,
+                  "count": 2,
+                  "page": 1,
+                  "perPage": 10,
+                  "totalCount": 2,
+                  "totalPages": 1
+                }
+              }
+            """.removeWhitespaceAndNewlines(),
           )
         }
       }
@@ -930,7 +996,7 @@ internal class PersonControllerTest(
                 "iepLevel": "Standard"
               }
             }
-          """.removeWhitespaceAndNewlines(),
+            """.removeWhitespaceAndNewlines(),
           )
         }
 
@@ -947,6 +1013,7 @@ internal class PersonControllerTest(
                 ),
             ),
           )
+
           val result = mockMvc.performAuthorised(path)
           result.response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
         }
@@ -964,6 +1031,7 @@ internal class PersonControllerTest(
                 ),
             ),
           )
+
           val result = mockMvc.performAuthorised(path)
           result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
         }
@@ -973,6 +1041,7 @@ internal class PersonControllerTest(
         beforeTest {
           Mockito.reset(getPersonsService)
           Mockito.reset(auditService)
+
           val filters = ConsumerFilters(prisons = emptyList())
           whenever(getPersonService.getNomisNumberWithPrisonFilter(sanitisedHmppsId, filters)).thenReturn(Response(NomisNumber("A1234AA")))
         }
@@ -1005,6 +1074,7 @@ internal class PersonControllerTest(
                 ),
             ),
           )
+
           val result = mockMvc.performAuthorised("$basePath/$sanitisedHmppsId/visit-orders")
           result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
         }
@@ -1126,6 +1196,7 @@ internal class PersonControllerTest(
                 ),
             ),
           )
+
           val result = mockMvc.performAuthorised(path)
           result.response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
         }
@@ -1143,13 +1214,14 @@ internal class PersonControllerTest(
                 ),
             ),
           )
+
           val result = mockMvc.performAuthorised(path)
           result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
         }
 
         it("returns 503 service not available when feature flag set to false") {
-//          whenever(featureFlagConfig.usePhysicalCharacteristicsEndpoints).thenReturn(false)
           whenever(featureFlagConfig.require(USE_PHYSICAL_CHARACTERISTICS_ENDPOINTS)).thenThrow(FeatureNotEnabledException(""))
+
           val result = mockMvc.performAuthorised(path)
           result.response.status.shouldBe(HttpStatus.SERVICE_UNAVAILABLE.value())
         }
@@ -1185,7 +1257,7 @@ internal class PersonControllerTest(
                 "numberOfChildren": "2"
               }
             }
-          """.removeWhitespaceAndNewlines(),
+            """.removeWhitespaceAndNewlines(),
           )
         }
 
@@ -1202,6 +1274,7 @@ internal class PersonControllerTest(
                 ),
             ),
           )
+
           val result = mockMvc.performAuthorised(path)
           result.response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
         }
@@ -1219,6 +1292,7 @@ internal class PersonControllerTest(
                 ),
             ),
           )
+
           val result = mockMvc.performAuthorised(path)
           result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
         }
@@ -1228,6 +1302,7 @@ internal class PersonControllerTest(
         beforeTest {
           Mockito.reset(getPersonsService)
           Mockito.reset(auditService)
+
           val filters = ConsumerFilters(prisons = emptyList())
           whenever(getPersonService.getNomisNumberWithPrisonFilter(sanitisedHmppsId, filters)).thenReturn(Response(NomisNumber("A1234AA")))
         }
@@ -1260,6 +1335,7 @@ internal class PersonControllerTest(
                 ),
             ),
           )
+
           val result = mockMvc.performAuthorised("$basePath/$sanitisedHmppsId/visit-orders")
           result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
         }
@@ -1333,7 +1409,7 @@ internal class PersonControllerTest(
                   }
                 ]
               }
-          """.removeWhitespaceAndNewlines(),
+            """.removeWhitespaceAndNewlines(),
           )
         }
 
@@ -1350,6 +1426,7 @@ internal class PersonControllerTest(
                 ),
             ),
           )
+
           val result = mockMvc.performAuthorised(path)
           result.response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
         }
@@ -1367,6 +1444,7 @@ internal class PersonControllerTest(
                 ),
             ),
           )
+
           val result = mockMvc.performAuthorised(path)
           result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
         }
