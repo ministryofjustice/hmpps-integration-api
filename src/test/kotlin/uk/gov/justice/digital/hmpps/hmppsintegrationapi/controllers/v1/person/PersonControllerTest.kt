@@ -28,7 +28,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.BodyMark
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Contact
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ContactDetailsWithEmailAndPhone
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.IEPLevel
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Identifiers
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ImageMetadata
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NomisNumber
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NumberOfChildren
@@ -48,6 +47,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitOrders
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSPrisoner
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.personas.personInProbationAndNomisPersona
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetCareNeedsForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetIEPLevelService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetImageMetadataForPersonService
@@ -261,8 +261,9 @@ internal class PersonControllerTest(
       }
 
       describe("GET $basePath/{id}") {
-        val probationOffenderSearch = PersonOnProbation(Person("Sam", "Smith", identifiers = Identifiers(nomisNumber = "1234ABC"), currentExclusion = true, exclusionMessage = "An exclusion exists", currentRestriction = false), underActiveSupervision = true)
-        val prisonOffenderSearch = POSPrisoner("Kim", "Kardashian", youthOffender = false)
+        val person = personInProbationAndNomisPersona
+        val probationOffenderSearch = PersonOnProbation(Person(person.firstName, person.lastName, identifiers = person.identifiers, currentExclusion = true, exclusionMessage = "An exclusion exists", currentRestriction = false), underActiveSupervision = true)
+        val prisonOffenderSearch = POSPrisoner(person.firstName, person.lastName, youthOffender = false, prisonerNumber = person.identifiers.nomisNumber)
         val prisonResponse = Response(data = prisonOffenderSearch, errors = emptyList())
 
         beforeTest {
@@ -369,56 +370,54 @@ internal class PersonControllerTest(
 
           result.response.contentAsString.shouldBe(
             """
-            {
-             "data":{
-                "prisonerOffenderSearch":{
-                   "firstName":"Kim",
-                   "lastName":"Kardashian",
-                   "middleName":null,
-                   "dateOfBirth":null,
-                   "gender":null,
-                   "ethnicity":null,
-                   "aliases":[
-                   ],
-                   "identifiers":{
-                      "nomisNumber":null,
-                      "croNumber":null,
-                      "deliusCrn":null
-                   },
-                   "pncId":null,
-                   "hmppsId":null,
-                   "contactDetails":null,
-                   "currentRestriction": null,
-                   "restrictionMessage": null,
-                   "currentExclusion": null,
-                   "exclusionMessage": null
-                },
-                "probationOffenderSearch":{
-                   "underActiveSupervision":true,
-                   "firstName":"Sam",
-                   "lastName":"Smith",
-                   "middleName":null,
-                   "dateOfBirth":null,
-                   "gender":null,
-                   "ethnicity":null,
-                   "aliases":[
-                   ],
-                   "identifiers":{
-                      "nomisNumber":"1234ABC",
-                      "croNumber":null,
-                      "deliusCrn":null
-                   },
-                   "pncId":null,
-                   "hmppsId":null,
-                   "contactDetails":null,
-                   "currentRestriction": false,
-                   "restrictionMessage": null,
-                   "currentExclusion": true,
-                   "exclusionMessage": "An exclusion exists"
-                }
-             }
-          }
-        """.removeWhitespaceAndNewlines(),
+             {
+               "data": {
+                  "prisonerOffenderSearch":{
+                     "firstName": "${person.firstName}",
+                     "lastName": "${person.lastName}",
+                     "middleName": null,
+                     "dateOfBirth": null,
+                     "gender": null,
+                     "ethnicity": null,
+                     "aliases": [],
+                     "identifiers":{
+                        "nomisNumber": "${person.identifiers.nomisNumber}",
+                        "croNumber": null,
+                        "deliusCrn": null
+                     },
+                     "pncId": null,
+                     "hmppsId": null,
+                     "contactDetails": null,
+                     "currentRestriction": null,
+                     "restrictionMessage": null,
+                     "currentExclusion": null,
+                     "exclusionMessage": null
+                  },
+                  "probationOffenderSearch": {
+                     "underActiveSupervision": true,
+                     "firstName": "${person.firstName}",
+                     "lastName": "${person.lastName}",
+                     "middleName": null,
+                     "dateOfBirth": null,
+                     "gender": null,
+                     "ethnicity": null,
+                     "aliases": [],
+                     "identifiers": {
+                        "nomisNumber": "${person.identifiers.nomisNumber}",
+                        "croNumber": null,
+                        "deliusCrn": "${person.identifiers.deliusCrn}"
+                     },
+                     "pncId": null,
+                     "hmppsId": null,
+                     "contactDetails": null,
+                     "currentRestriction": false,
+                     "restrictionMessage": null,
+                     "currentExclusion": true,
+                     "exclusionMessage": "An exclusion exists"
+                  }
+               }
+            }
+            """.removeWhitespaceAndNewlines(),
           )
         }
       }
