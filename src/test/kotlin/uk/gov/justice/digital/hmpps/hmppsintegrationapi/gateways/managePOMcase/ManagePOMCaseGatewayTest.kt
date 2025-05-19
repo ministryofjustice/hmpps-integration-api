@@ -5,7 +5,7 @@ import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
-import org.mockito.internal.verification.VerificationModeFactory
+import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
@@ -19,6 +19,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ManagePOMCaseGa
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
+import java.io.File
 
 @ActiveProfiles("test")
 @ContextConfiguration(
@@ -33,26 +34,27 @@ class ManagePOMCaseGatewayTest(
       val nomsNumber = "X1234YZ"
       val path = "/api/allocation/$nomsNumber/primary_pom"
       val managePOMCaseApiMockServer = ApiMockServer.create(UpstreamApi.MANAGE_POM_CASE)
+
       beforeEach {
         managePOMCaseApiMockServer.start()
-
         Mockito.reset(hmppsAuthGateway)
         whenever(hmppsAuthGateway.getClientToken("ManagePOMCase")).thenReturn(
           HmppsAuthMockServer.TOKEN,
         )
       }
+
       afterTest {
         managePOMCaseApiMockServer.stop()
       }
 
       it("authenticates using HMPPS Auth with credentials") {
         managePOMCaseGateway.getPrimaryPOMForNomisNumber(nomsNumber)
-
-        verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("ManagePOMCase")
+        verify(hmppsAuthGateway, times(1)).getClientToken("ManagePOMCase")
       }
 
       it("upstream API returns an error, throw exception") {
         managePOMCaseApiMockServer.stubForGet(path, "", HttpStatus.BAD_REQUEST)
+
         val response =
           shouldThrow<WebClientResponseException> {
             managePOMCaseGateway.getPrimaryPOMForNomisNumber(nomsNumber)
@@ -63,25 +65,15 @@ class ManagePOMCaseGatewayTest(
       it("returns primary offender officer") {
         managePOMCaseApiMockServer.stubForGet(
           path,
-          """
-          {
-            "manager": {
-              "code": 0,
-              "forename": "string",
-              "surname": "string"
-            },
-            "prison": {
-              "code": "string"
-            }
-          }
-        """,
-          HttpStatus.OK,
+          File(
+            "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/managePOMcase/fixtures/GetPrimaryPOMResponse.json",
+          ).readText(),
         )
 
         val response = managePOMCaseGateway.getPrimaryPOMForNomisNumber(nomsNumber)
         response.data.shouldNotBeNull()
-        response.data!!.forename.shouldBe("string")
-        response.data!!.surname.shouldBe("string")
+        response.data.forename.shouldBe("Joe")
+        response.data.surname.shouldBe("Bloggs")
       }
     },
   )
