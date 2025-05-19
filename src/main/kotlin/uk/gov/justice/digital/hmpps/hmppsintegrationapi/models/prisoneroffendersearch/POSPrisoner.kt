@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch
 
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Identifiers
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Language
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonInPrison
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonalCareNeed
@@ -42,6 +43,7 @@ data class POSPrisoner(
   val scars: List<POSBodyMark>? = null,
   val marks: List<POSBodyMark>? = null,
   val personalCareNeeds: List<POSPersonalCareNeed>? = null,
+  val languages: List<POSLanguage>? = null,
 ) {
   fun toPerson(): Person =
     Person(
@@ -102,4 +104,6 @@ data class POSPrisoner(
     )
 
   fun toPersonalCareNeeds(): List<PersonalCareNeed>? = this.personalCareNeeds?.map { it.toPersonalCareNeed() }
+
+  fun toLanguages(): List<Language>? = this.languages?.map { it.toLanguage() }
 }
