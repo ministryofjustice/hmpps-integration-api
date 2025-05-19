@@ -8,6 +8,7 @@ val personInNomisOnlyPersona =
   Persona(
     firstName = "Joe",
     lastName = "Bloggs",
+    dateOfBirth = "1992-04-07",
     contactDetails =
       ContactDetailsWithEmailAndPhone(
         phoneNumbers =

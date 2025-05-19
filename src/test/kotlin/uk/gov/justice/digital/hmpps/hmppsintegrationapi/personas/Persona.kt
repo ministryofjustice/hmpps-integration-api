@@ -6,6 +6,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Identifiers
 data class Persona(
   val firstName: String,
   val lastName: String,
-  val identifiers: Identifiers,
+  val dateOfBirth: String,
   val contactDetails: ContactDetailsWithEmailAndPhone,
+  val identifiers: Identifiers,
 )

@@ -8,6 +8,7 @@ val personInProbationAndNomisPersona =
   Persona(
     firstName = "John",
     lastName = "Doe",
+    dateOfBirth = "1982-05-06",
     contactDetails =
       ContactDetailsWithEmailAndPhone(
         phoneNumbers =

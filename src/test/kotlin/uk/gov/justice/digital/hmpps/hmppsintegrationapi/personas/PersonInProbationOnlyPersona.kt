@@ -8,6 +8,7 @@ val personInProbationOnlyPersona =
   Persona(
     firstName = "John",
     lastName = "Smith",
+    dateOfBirth = "1990-03-01",
     contactDetails =
       ContactDetailsWithEmailAndPhone(
         phoneNumbers =
