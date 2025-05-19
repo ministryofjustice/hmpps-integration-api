@@ -78,7 +78,7 @@ internal class GetLanguagesForPersonServiceTest(
         verify(getPersonService, VerificationModeFactory.times(1)).getPersonWithPrisonFilter(hmppsId = hmppsId, filters = filters)
       }
 
-      it("should return a person's care needs from gateway") {
+      it("should return a person's languages from gateway") {
         val result = getLanguagesForPersonService.execute(hmppsId, filters)
         result.data.shouldBe(languages)
         result.errors.count().shouldBe(0)

@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffenderSearchGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Language
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonalCareNeed
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
@@ -17,7 +18,7 @@ class GetLanguagesForPersonService(
   fun execute(
     hmppsId: String,
     filters: ConsumerFilters? = null,
-  ): Response<List<PersonalCareNeed>?> {
+  ): Response<List<Language>?> {
     val personResponse = getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, filters = filters)
     if (personResponse.errors.isNotEmpty()) {
       return Response(data = null, errors = personResponse.errors)
@@ -27,7 +28,7 @@ class GetLanguagesForPersonService(
     val languages = prisonerOffenderSearchGateway.getPrisonOffender(nomisNumber)
 
     return Response(
-      data = languages.data?.toPersonalCareNeeds(),
+      data = languages.data?.toLanguages(),
       errors = languages.errors,
     )
   }
