@@ -16,8 +16,10 @@ class ApiMockServer(
     // These ports must match the config in the yaml files
     fun create(upstreamApi: UpstreamApi): ApiMockServer =
       when (upstreamApi) {
+        UpstreamApi.PRISONER_OFFENDER_SEARCH -> ApiMockServer(4000)
+        UpstreamApi.HEALTH_AND_MEDICATION -> ApiMockServer(4001)
+        // USE PRISM
         UpstreamApi.PRISON_API -> ApiMockServer(4000)
-        UpstreamApi.PRISONER_OFFENDER_SEARCH -> ApiMockServer(4001)
         UpstreamApi.PROBATION_OFFENDER_SEARCH -> ApiMockServer(4002)
         UpstreamApi.NDELIUS -> ApiMockServer(4003)
         UpstreamApi.ASSESS_RISKS_AND_NEEDS -> ApiMockServer(4004)
@@ -35,7 +37,6 @@ class ApiMockServer(
         UpstreamApi.INCENTIVES -> ApiMockServer(4008)
         UpstreamApi.PRISONER_ALERTS -> ApiMockServer(4009)
         UpstreamApi.LOCATIONS_INSIDE_PRISON -> ApiMockServer(4000)
-        UpstreamApi.HEALTH_AND_MEDICATION -> ApiMockServer(4001)
       }
   }
 

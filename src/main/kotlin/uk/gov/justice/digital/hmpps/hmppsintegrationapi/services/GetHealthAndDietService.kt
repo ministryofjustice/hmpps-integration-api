@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HealthAndMedicationGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffenderSearchGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CateringInstruction
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Diet
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HealthAndDiet
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
@@ -21,7 +23,6 @@ class GetHealthAndDietService(
     filters: ConsumerFilters?,
   ): Response<HealthAndDiet?> {
     val personResponse = getPersonService.getNomisNumberWithPrisonFilter(hmppsId = hmppsId, filters)
-
     if (personResponse.errors.isNotEmpty()) {
       return Response(data = null, errors = personResponse.errors)
     }
@@ -35,14 +36,32 @@ class GetHealthAndDietService(
     if (smokerResponse.errors.isNotEmpty()) {
       return Response(data = null, errors = smokerResponse.errors)
     }
+
     val dietResponse = healthAndMedicationGateway.getHealthAndMedicationData(nomisNumber)
-
-    val healthAndDiet =
-      HealthAndDiet(
-        diet = dietResponse.data?.dietAndAllergy?.toDiet(),
-        smoking = smokerResponse.data?.smoker,
+    if (dietResponse.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
+      return Response(
+        data =
+          HealthAndDiet(
+            diet =
+              Diet(
+                foodAllergies = emptyList(),
+                medicalDietaryRequirements = emptyList(),
+                personalisedDietaryRequirements = emptyList(),
+                cateringInstructions = CateringInstruction(value = null),
+              ),
+            smoking = smokerResponse.data?.smoker,
+          ),
       )
+    } else if (dietResponse.errors.isNotEmpty()) {
+      return Response(data = null, errors = dietResponse.errors)
+    }
 
-    return Response(data = healthAndDiet, errors = smokerResponse.errors + dietResponse.errors)
+    return Response(
+      data =
+        HealthAndDiet(
+          diet = dietResponse.data?.dietAndAllergy?.toDiet(),
+          smoking = smokerResponse.data?.smoker,
+        ),
+    )
   }
 }

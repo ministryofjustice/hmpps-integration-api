@@ -22,6 +22,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.healthandmedicati
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.healthandmedication.HAMPersonalisedDietaryRequirement
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.healthandmedication.HAMPersonalisedDietaryRequirements
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.healthandmedication.HAMReferenceDataValue
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CateringInstruction
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Diet
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HealthAndDiet
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NomisNumber
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
@@ -113,6 +115,7 @@ internal class GetHealthAndDietServiceTest(
                 ),
             ),
         )
+
       beforeEach {
         Mockito.reset(getPersonService)
         Mockito.reset(prisonerOffenderSearchGateway)
@@ -175,11 +178,34 @@ internal class GetHealthAndDietServiceTest(
           .shouldBe(UpstreamApiError.Type.ENTITY_NOT_FOUND)
       }
 
-      it("returns an empty data if no health and diet data found") {
-        whenever(healthAndMedicationGateway.getHealthAndMedicationData(nomsId)).thenReturn(Response(data = null))
+      it("returns data when health and medication gateway returns a 404, but health data will be empty") {
+        whenever(healthAndMedicationGateway.getHealthAndMedicationData(nomsId)).thenReturn(
+          Response(
+            data = null,
+            errors =
+              listOf(
+                UpstreamApiError(
+                  causedBy = UpstreamApi.HEALTH_AND_MEDICATION,
+                  type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+                ),
+              ),
+          ),
+        )
+
         val response = getHealthAndDietService.execute(hmppsId, filters)
         response.errors.shouldHaveSize(0)
-        response.data.shouldBe(HealthAndDiet(diet = null, smoking = prisoner.smoker))
+        response.data.shouldBe(
+          HealthAndDiet(
+            diet =
+              Diet(
+                foodAllergies = emptyList(),
+                medicalDietaryRequirements = emptyList(),
+                personalisedDietaryRequirements = emptyList(),
+                cateringInstructions = CateringInstruction(value = null),
+              ),
+            smoking = prisoner.smoker,
+          ),
+        )
       }
     },
   )

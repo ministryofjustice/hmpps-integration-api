@@ -3,32 +3,32 @@
     "diet": {
       "foodAllergies": [
         {
-          "id": "",
-          "code": "",
-          "description": "",
-          "comment": null
+          "id": "FOOD_ALLERGY_MILK",
+          "code": "MILK",
+          "description": "Milk",
+          "comment": "Some other text"
         }
       ],
       "medicalDietaryRequirements": [
         {
-          "id": "",
-          "code": "",
-          "description": "",
-          "comment": null
+          "id": "FOOD_ALLERGY_MILK",
+          "code": "MILK",
+          "description": "Milk",
+          "comment": "Some other text"
         }
       ],
       "personalisedDietaryRequirements": [
         {
-          "id": "",
-          "code": "",
-          "description": "",
-          "comment": null
+          "id": "FOOD_ALLERGY_MILK",
+          "code": "MILK",
+          "description": "Milk",
+          "comment": "Some other text"
         }
       ],
       "cateringInstructions": {
-        "value": ""
+        "value": "catering instructions"
       }
     },
-    "smoking": "Y"
+    "smoking": null
   }
 }

@@ -50,6 +50,7 @@ abstract class IntegrationTestBase {
     private val gatewaysFolder = "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways"
     private val hmppsAuthMockServer = HmppsAuthMockServer()
     val prisonerOffenderSearchMockServer = ApiMockServer.create(UpstreamApi.PRISONER_OFFENDER_SEARCH)
+    val healthAndMedicationMockServer = ApiMockServer.create(UpstreamApi.HEALTH_AND_MEDICATION)
 
     @BeforeAll
     @JvmStatic
@@ -70,6 +71,14 @@ abstract class IntegrationTestBase {
           "$gatewaysFolder/prisoneroffendersearch/fixtures/PrisonerByIdResponse.json",
         ).readText(),
       )
+
+      healthAndMedicationMockServer.start()
+      healthAndMedicationMockServer.stubForGet(
+        "/prisoners/$nomsId",
+        File(
+          "$gatewaysFolder/healthandmedication/fixtures/GetHealthAndMedicationResponse.json",
+        ).readText(),
+      )
     }
 
     @AfterAll
@@ -77,6 +86,7 @@ abstract class IntegrationTestBase {
     fun stopMockServers() {
       hmppsAuthMockServer.stop()
       prisonerOffenderSearchMockServer.stop()
+      healthAndMedicationMockServer.stop()
     }
   }
 
