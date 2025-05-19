@@ -59,7 +59,6 @@ internal class LocationQueueServiceTest(
           deactivationReason = DeactivationReason.DAMAGED,
           deactivationReasonDescription = "Smashed window",
           proposedReactivationDate = LocalDate.now().plusDays(30),
-          planetFmReference = "23423TH/5",
         )
       val prisonId = "MDI"
       val key = "MDI-123"
@@ -115,6 +114,27 @@ internal class LocationQueueServiceTest(
         )
       }
 
+      it("should send deactivate location test request successfully when all conditions are met") {
+        val result = locationQueueService.sendDeactivateLocationRequest(deactivateLocationRequest.copy(externalReference = "TestEvent"), prisonId, key, who, filters)
+        result.data?.message.shouldBe("Deactivate location written to queue")
+        result.errors.shouldBeEmpty()
+      }
+
+      it("successfully adds test message to message queue") {
+        val messageBody = """{"messageId": "1", "eventType": "TestEvent", "messageAttributes": {}}"""
+        whenever(objectMapper.writeValueAsString(any<HmppsMessage>())).thenReturn(messageBody)
+
+        val result = locationQueueService.sendDeactivateLocationRequest(deactivateLocationRequest.copy(externalReference = "TestEvent"), prisonId, key, who, filters)
+        result.data.shouldBeTypeOf<HmppsMessageResponse>()
+
+        verify(mockSqsClient).sendMessage(
+          argThat<SendMessageRequest> { request: SendMessageRequest? ->
+            request?.queueUrl() == "https://test-queue-url" &&
+              request.messageBody() == messageBody
+          },
+        )
+      }
+
       it("should return errors when consumer does not have access to the prison") {
         val error = UpstreamApiError(UpstreamApi.PRISON_API, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found")
         whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<HmppsMessageResponse>(prisonId, filters))
@@ -147,6 +167,22 @@ internal class LocationQueueServiceTest(
         val result = locationQueueService.sendDeactivateLocationRequest(deactivateLocationRequest, prisonId, key, who, filters)
         result.data.shouldBe(null)
         result.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.LOCATIONS_INSIDE_PRISON, UpstreamApiError.Type.BAD_REQUEST, "Location type must be a CELL")))
+      }
+
+      it("should return error when location is not active due to parent being inactive") {
+        whenever(locationsInsidePrisonGateway.getLocationByKey(key)).thenReturn(Response(data = lipLocation.copy(deactivatedByParent = true)))
+
+        val result = locationQueueService.sendDeactivateLocationRequest(deactivateLocationRequest, prisonId, key, who, filters)
+        result.data.shouldBe(null)
+        result.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.LOCATIONS_INSIDE_PRISON, UpstreamApiError.Type.CONFLICT, "This cell is already deactivated")))
+      }
+
+      it("should return error when location is not active") {
+        whenever(locationsInsidePrisonGateway.getLocationByKey(key)).thenReturn(Response(data = lipLocation.copy(active = false)))
+
+        val result = locationQueueService.sendDeactivateLocationRequest(deactivateLocationRequest, prisonId, key, who, filters)
+        result.data.shouldBe(null)
+        result.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.LOCATIONS_INSIDE_PRISON, UpstreamApiError.Type.CONFLICT, "This cell is already deactivated")))
       }
 
       it("should return error when cell is not empty") {

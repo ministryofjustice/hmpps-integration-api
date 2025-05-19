@@ -50,6 +50,7 @@ feature-flag:
   replace-probation-search: true
   use-location-deactivate-endpoint: false
   use-health-and-diet-endpoint: false
+  use-personal-care-needs-endpoints: false
 
 authorisation:
   consumers:

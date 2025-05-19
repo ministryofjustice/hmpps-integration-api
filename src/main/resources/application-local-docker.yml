@@ -120,3 +120,4 @@ feature-flag:
   replace-probation-search: false
   use-location-deactivate-endpoint: true
   use-health-and-diet-endpoint: true
+  use-personal-care-needs-endpoints: true

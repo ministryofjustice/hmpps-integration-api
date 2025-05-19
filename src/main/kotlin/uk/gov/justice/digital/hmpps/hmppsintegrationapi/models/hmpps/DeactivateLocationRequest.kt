@@ -17,9 +17,8 @@ data class DeactivateLocationRequest(
   val deactivationReasonDescription: String? = null,
   @Schema(description = "Estimated reactivation date", example = "2025-01-05", required = false)
   val proposedReactivationDate: LocalDate? = null,
-  @Schema(description = "Planet FM reference number", example = "23423TH/5", required = false)
-  @field:Size(max = 60, message = "Planet FM reference number cannot be more than 60 characters")
-  val planetFmReference: String? = null,
+  @Schema(description = "External reference", required = false)
+  val externalReference: String? = null,
 ) {
   fun toHmppsMessage(
     locationId: String,
@@ -31,13 +30,20 @@ data class DeactivateLocationRequest(
       who = actionedBy,
     )
 
+  fun toTestMessage(actionedBy: String?): HmppsMessage =
+    HmppsMessage(
+      eventType = HmppsMessageEventType.TEST_EVENT,
+      messageAttributes = emptyMap(),
+      who = actionedBy,
+    )
+
   private fun modelToMap(locationId: String): Map<String, Any?> =
     mapOf(
       "id" to locationId,
       "deactivationReason" to this.deactivationReason,
       "deactivationReasonDescription" to this.deactivationReasonDescription,
       "proposedReactivationDate" to this.proposedReactivationDate.toString(),
-      "planetFmReference" to this.planetFmReference,
+      "planetFmReference" to null,
     )
 }
 

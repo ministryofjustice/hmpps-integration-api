@@ -37,6 +37,13 @@ class LocationQueueService(
     who: String,
     filters: ConsumerFilters?,
   ): Response<HmppsMessageResponse?> {
+    if (deactivateLocationRequest.externalReference == "TestEvent") {
+      val testMessage = deactivateLocationRequest.toTestMessage(actionedBy = who)
+      writeMessageToQueue(testMessage, "Could not send deactivate location to queue")
+
+      return Response(HmppsMessageResponse(message = "Deactivate location written to queue"))
+    }
+
     if (filters?.prisons != null) {
       val consumerPrisonFilterCheck = consumerPrisonAccessService.checkConsumerHasPrisonAccess<HmppsMessageResponse>(prisonId, filters)
       if (consumerPrisonFilterCheck.errors.isNotEmpty()) {
@@ -55,8 +62,11 @@ class LocationQueueService(
       return Response(data = null, errors = listOf(UpstreamApiError(causedBy = UpstreamApi.LOCATIONS_INSIDE_PRISON, type = UpstreamApiError.Type.BAD_REQUEST, description = "Location type must be a CELL")))
     }
 
-    val prisonersInCellResponse = getPrisonersInCellService.execute(prisonId, locationResponse.data.pathHierarchy)
+    if (!locationResponse.data.active || locationResponse.data.deactivatedByParent) {
+      return Response(data = null, errors = listOf(UpstreamApiError(causedBy = UpstreamApi.LOCATIONS_INSIDE_PRISON, type = UpstreamApiError.Type.CONFLICT, description = "This cell is already deactivated")))
+    }
 
+    val prisonersInCellResponse = getPrisonersInCellService.execute(prisonId, locationResponse.data.pathHierarchy)
     if (prisonersInCellResponse.errors.isNotEmpty()) {
       return Response(data = null, errors = prisonersInCellResponse.errors)
     }

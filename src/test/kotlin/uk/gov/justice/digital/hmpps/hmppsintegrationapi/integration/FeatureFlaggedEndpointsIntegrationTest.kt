@@ -8,6 +8,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_IMAGE_ENDPOINTS
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_LOCATION_DEACTIVATE_ENDPOINT
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_LOCATION_ENDPOINT
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_PERSONAL_CARE_NEEDS_ENDPOINTS
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_PHYSICAL_CHARACTERISTICS_ENDPOINTS
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_RESIDENTIAL_DETAILS_ENDPOINTS
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_RESIDENTIAL_HIERARCHY_ENDPOINTS
@@ -73,9 +74,16 @@ internal class FeatureFlaggedEndpointsIntegrationTest : IntegrationTestBase() {
         deactivationReason = DeactivationReason.DAMAGED,
         deactivationReasonDescription = "Scheduled maintenance",
         proposedReactivationDate = LocalDate.now(),
-        planetFmReference = "23423TH/5",
       )
     postToApi(path, asJsonString(deactivateLocationRequest))
+      .andExpect(status().isServiceUnavailable)
+  }
+
+  @Test
+  fun `care needs should return 503`() {
+    whenever(featureFlagConfig.require(USE_PERSONAL_CARE_NEEDS_ENDPOINTS)).thenThrow(FeatureNotEnabledException(""))
+    val path = "$basePath/$nomsId/care-needs"
+    callApi(path)
       .andExpect(status().isServiceUnavailable)
   }
 }
