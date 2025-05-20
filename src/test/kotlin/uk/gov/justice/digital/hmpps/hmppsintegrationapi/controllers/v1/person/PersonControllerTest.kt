@@ -19,6 +19,7 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.REPLACE_PROBATION_SEARCH
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_LANGUAGES_ENDPOINTS
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_PERSONAL_CARE_NEEDS_ENDPOINTS
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_PHYSICAL_CHARACTERISTICS_ENDPOINTS
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.FeatureNotEnabledException
@@ -30,6 +31,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ContactDeta
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.IEPLevel
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Identifiers
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ImageMetadata
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Language
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NomisNumber
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NumberOfChildren
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.OffenderSearchResponse
@@ -51,6 +53,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Consum
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetCareNeedsForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetIEPLevelService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetImageMetadataForPersonService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetLanguagesForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetNameForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetNumberOfChildrenForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService
@@ -80,6 +83,7 @@ internal class PersonControllerTest(
   @MockitoBean val getNumberOfChildrenForPersonService: GetNumberOfChildrenForPersonService,
   @MockitoBean val getPhysicalCharacteristicsForPersonService: GetPhysicalCharacteristicsForPersonService,
   @MockitoBean val getCareNeedsForPersonService: GetCareNeedsForPersonService,
+  @MockitoBean val getLanguagesForPersonService: GetLanguagesForPersonService,
   @MockitoBean val featureFlagConfig: FeatureFlagConfig,
 ) : DescribeSpec(
     {
@@ -1357,6 +1361,93 @@ internal class PersonControllerTest(
 
         it("returns a 404 not found") {
           whenever(getCareNeedsForPersonService.execute(sanitisedHmppsId, filters)).thenReturn(
+            Response(
+              data = null,
+              errors =
+                listOf(
+                  UpstreamApiError(
+                    causedBy = UpstreamApi.PRISONER_OFFENDER_SEARCH,
+                    type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+                  ),
+                ),
+            ),
+          )
+          val result = mockMvc.performAuthorised(path)
+          result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
+        }
+      }
+
+      describe("/v1/persons/{hmppsId}/language") {
+        val path = "$basePath/$sanitisedHmppsId/language"
+        val languages =
+          listOf(
+            Language(
+              type = "PRIM",
+              code = "ENG",
+              readSkill = "Y",
+              writeSkill = "Y",
+              speakSkill = "Y",
+              interpreterRequested = true,
+            ),
+          )
+
+        beforeTest {
+          Mockito.reset(getLanguagesForPersonService)
+          Mockito.reset(auditService)
+
+          whenever(featureFlagConfig.isEnabled(USE_LANGUAGES_ENDPOINTS)).thenReturn(true)
+          whenever(getLanguagesForPersonService.execute(sanitisedHmppsId, filters)).thenReturn(
+            Response(
+              data = languages,
+            ),
+          )
+        }
+
+        it("logs audit") {
+          mockMvc.performAuthorised(path)
+          verify(auditService, times(1)).createEvent("GET_LANGUAGES", mapOf("hmppsId" to sanitisedHmppsId))
+        }
+
+        it("returns a 200 OK status code with data") {
+          val result = mockMvc.performAuthorised(path)
+          result.response.status.shouldBe(HttpStatus.OK.value())
+          result.response.contentAsString.shouldBe(
+            """
+              {
+                "data": [
+                  {
+                    "type": "PRIM",
+                    "code": "ENG",
+                    "readSkill": "Y",
+                    "writeSkill": "Y",
+                    "speakSkill": "Y",
+                    "interpreterRequested": true
+                  }
+                ]
+              }
+          """.removeWhitespaceAndNewlines(),
+          )
+        }
+
+        it("returns a 400 bad request") {
+          whenever(getLanguagesForPersonService.execute(sanitisedHmppsId, filters)).thenReturn(
+            Response(
+              data = null,
+              errors =
+                listOf(
+                  UpstreamApiError(
+                    causedBy = UpstreamApi.PRISONER_OFFENDER_SEARCH,
+                    type = UpstreamApiError.Type.BAD_REQUEST,
+                  ),
+                ),
+            ),
+          )
+          val result = mockMvc.performAuthorised(path)
+          result.response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
+        }
+
+        it("returns a 404 not found") {
+          whenever(getLanguagesForPersonService.execute(sanitisedHmppsId, filters)).thenReturn(
             Response(
               data = null,
               errors =

@@ -28,7 +28,7 @@ class FeatureFlagAspectTest {
         "replace-probation-search" to false,
         "use-capacity-endpoint" to false,
         "use-personal-care-needs-endpoints" to false,
-        "use-languages-endpoints" to false
+        "use-languages-endpoints" to false,
       ),
     )
   private val featureFlagAspect: FeatureFlagAspect =
