@@ -17,6 +17,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ProbationOffend
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSPrisoner
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.personas.personInProbationAndNomisPersona
 
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
@@ -29,10 +30,10 @@ internal class GetPersonsServiceTest(
   @MockitoBean val featureFlag: FeatureFlagConfig,
   private val getPersonsService: GetPersonsService,
 ) : DescribeSpec({
-    val firstName = "Bruce"
-    val lastName = "Wayne"
+    val firstName = personInProbationAndNomisPersona.firstName
+    val lastName = personInProbationAndNomisPersona.lastName
     val pncNumber = "2003/13116M"
-    val dateOfBirth = "2004-04-19"
+    val dateOfBirth = personInProbationAndNomisPersona.dateOfBirth.toString()
 
     beforeEach {
       Mockito.reset(prisonerOffenderSearchGateway)
