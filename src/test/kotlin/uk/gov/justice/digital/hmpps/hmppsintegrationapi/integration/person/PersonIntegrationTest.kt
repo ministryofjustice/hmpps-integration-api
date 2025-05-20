@@ -282,7 +282,7 @@ class PersonIntegrationTest : IntegrationTestBase() {
 
   @Nested
   inner class GetLanguages {
-    val path = "$basePath/$nomsId/language"
+    val path = "$basePath/$nomsId/languages"
 
     @Test
     fun `returns a prisoner's languages`() {
@@ -305,7 +305,7 @@ class PersonIntegrationTest : IntegrationTestBase() {
 
     @Test
     fun `return a 400 when invalid noms passed in`() {
-      callApi("$basePath/$invalidNomsId/language")
+      callApi("$basePath/$invalidNomsId/languages")
         .andExpect(status().isBadRequest)
     }
   }

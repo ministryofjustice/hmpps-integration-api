@@ -381,7 +381,7 @@ class PersonController(
     return DataResponse(response.data)
   }
 
-  @GetMapping("{hmppsId}/language")
+  @GetMapping("{hmppsId}/languages")
   @Tag(name = "Reception")
   @Operation(
     summary = "Gets languages for a prisoner.",

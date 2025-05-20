@@ -1377,8 +1377,8 @@ internal class PersonControllerTest(
         }
       }
 
-      describe("/v1/persons/{hmppsId}/language") {
-        val path = "$basePath/$sanitisedHmppsId/language"
+      describe("/v1/persons/{hmppsId}/languages") {
+        val path = "$basePath/$sanitisedHmppsId/languages"
         val languages =
           listOf(
             Language(

@@ -90,7 +90,7 @@ const get_endpoints = [
   `/v1/persons/${hmppsId}/case-notes`,
   "/v1/hmpps/reference-data",
   "/v2/config/authorisation",
-  "/v1/persons/.*/language"
+  "/v1/persons/.*/languages"
 ];
 
 const broken_endpoints = []

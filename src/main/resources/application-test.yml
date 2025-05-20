@@ -153,7 +153,7 @@ authorisation:
         - "/v1/prison/.*/location/[^/]*$"
         - "/v1/prison/.*/location/.*/deactivate"
         - "/v1/persons/.*/care-needs"
-        - "/v1/persons/.*/language"
+        - "/v1/persons/.*/languages"
     config-test:
       include:
         - "/v1/config/authorisation"

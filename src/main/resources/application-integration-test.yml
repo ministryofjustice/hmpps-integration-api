@@ -150,7 +150,7 @@ authorisation:
         - "/v1/persons/.*/education/assessments/status"
         - "/v1/prison/.*/location/.*/deactivate"
         - "/v1/persons/.*/care-needs"
-        - "/v1/persons/.*/language"
+        - "/v1/persons/.*/languages"
       filters:
     config-test:
       include:

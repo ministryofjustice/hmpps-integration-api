@@ -91,7 +91,7 @@ internal class FeatureFlaggedEndpointsIntegrationTest : IntegrationTestBase() {
   @Test
   fun `languages should return 503`() {
     whenever(featureFlagConfig.require(USE_LANGUAGES_ENDPOINTS)).thenThrow(FeatureNotEnabledException(""))
-    val path = "$basePath/$nomsId/language"
+    val path = "$basePath/$nomsId/languages"
     callApi(path)
       .andExpect(status().isServiceUnavailable)
   }
