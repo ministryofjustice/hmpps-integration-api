@@ -1,10 +1,9 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 
 import io.kotest.core.spec.style.DescribeSpec
-import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
-import org.mockito.internal.verification.VerificationModeFactory
+import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
@@ -12,11 +11,11 @@ import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DynamicRisk
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Identifiers
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.personas.personInProbationAndNomisPersona
 
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
@@ -28,97 +27,89 @@ internal class GetDynamicRisksForPersonServiceTest(
   private val getDynamicRisksForPersonService: GetDynamicRisksForPersonService,
 ) : DescribeSpec(
     {
-      val hmppsId = "1234/56789B"
-      val deliusCrn = "X112233"
+      val persona = personInProbationAndNomisPersona
+      val nomisNumber = persona.identifiers.nomisNumber!!
+      val deliusCrn = persona.identifiers.deliusCrn!!
+      val person = Person(firstName = persona.firstName, lastName = persona.lastName, identifiers = persona.identifiers)
       val dynamicRisk = DynamicRisk(code = "RCCO", description = "Child Concerns", startDate = "2010-07-07")
       val nonMatchingDynamicRisk = DynamicRisk(code = "INVALID", description = "Invalid Dynamic Risk!", startDate = "2010-07-07")
-
-      val person =
-        Person(firstName = "Qui-gon", lastName = "Jin", identifiers = Identifiers(deliusCrn = deliusCrn))
+      val dynamicRisks =
+        listOf(
+          dynamicRisk,
+          nonMatchingDynamicRisk,
+        )
 
       beforeEach {
-        Mockito.reset(nDeliusGateway)
         Mockito.reset(personService)
+        Mockito.reset(nDeliusGateway)
 
         whenever(personService.execute(hmppsId = deliusCrn)).thenReturn(Response(person))
-        whenever(personService.execute(hmppsId = hmppsId)).thenReturn(Response(person))
+        whenever(personService.execute(hmppsId = nomisNumber)).thenReturn(Response(person))
 
-        whenever(nDeliusGateway.getDynamicRisksForPerson(deliusCrn)).thenReturn(
-          Response(
-            data =
-              listOf(
-                dynamicRisk,
-                nonMatchingDynamicRisk,
-              ),
-          ),
-        )
+        whenever(nDeliusGateway.getDynamicRisksForPerson(deliusCrn)).thenReturn(Response(data = dynamicRisks))
       }
 
       it("gets a person from getPersonService") {
-        getDynamicRisksForPersonService.execute(hmppsId)
-
-        verify(personService, VerificationModeFactory.times(1)).execute(hmppsId = hmppsId)
+        getDynamicRisksForPersonService.execute(nomisNumber)
+        verify(personService, times(1)).execute(hmppsId = nomisNumber)
       }
 
       it("gets dynamic risks from NDelius using a Delius crn number") {
-        getDynamicRisksForPersonService.execute(hmppsId)
-
-        verify(nDeliusGateway, VerificationModeFactory.times(1)).getDynamicRisksForPerson(deliusCrn)
+        getDynamicRisksForPersonService.execute(deliusCrn)
+        verify(nDeliusGateway, times(1)).getDynamicRisksForPerson(deliusCrn)
       }
 
       describe("when an upstream API returns an error when looking up a person by a Hmmps Id") {
+        val errors =
+          listOf(
+            UpstreamApiError(
+              causedBy = UpstreamApi.PRISONER_OFFENDER_SEARCH,
+              type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+            ),
+          )
+
         beforeEach {
-          whenever(personService.execute(hmppsId = hmppsId)).thenReturn(
+          whenever(personService.execute(hmppsId = nomisNumber)).thenReturn(
             Response(
               data = null,
-              errors =
-                listOf(
-                  UpstreamApiError(
-                    causedBy = UpstreamApi.PRISONER_OFFENDER_SEARCH,
-                    type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-                  ),
-                ),
+              errors,
             ),
           )
         }
 
         it("records upstream API errors") {
-          val response = getDynamicRisksForPersonService.execute(hmppsId)
-          response.errors.shouldHaveSize(1)
+          val response = getDynamicRisksForPersonService.execute(nomisNumber)
+          response.errors.shouldBe(errors)
         }
 
         it("does not get dynamic risks from NDelius") {
-          getDynamicRisksForPersonService.execute(hmppsId)
-          verify(nDeliusGateway, VerificationModeFactory.times(0)).getDynamicRisksForPerson(id = deliusCrn)
+          getDynamicRisksForPersonService.execute(nomisNumber)
+          verify(nDeliusGateway, times(0)).getDynamicRisksForPerson(id = deliusCrn)
         }
       }
 
       it("records errors when it cannot find dynamic risks for a person") {
+        val errors =
+          listOf(
+            UpstreamApiError(
+              causedBy = UpstreamApi.NDELIUS,
+              type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+            ),
+          )
         whenever(nDeliusGateway.getDynamicRisksForPerson(id = deliusCrn)).thenReturn(
           Response(
             data = emptyList(),
-            errors =
-              listOf(
-                UpstreamApiError(
-                  causedBy = UpstreamApi.NDELIUS,
-                  type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-                ),
-              ),
+            errors,
           ),
         )
 
-        val response = getDynamicRisksForPersonService.execute(hmppsId)
-        response.errors.shouldHaveSize(1)
+        val response = getDynamicRisksForPersonService.execute(nomisNumber)
+        response.errors.shouldBe(errors)
       }
 
       it("returns dynamic risks filtered data") {
-        val response = getDynamicRisksForPersonService.execute(hmppsId)
-
-        response.data.shouldHaveSize(2)
-        response.data[0].code shouldBe "RCCO"
-        response.data[0].description shouldBe "Child Concerns"
-        response.data[1].code shouldBe "INVALID"
-        response.data[1].description shouldBe "Invalid Dynamic Risk!"
+        val response = getDynamicRisksForPersonService.execute(nomisNumber)
+        response.data.shouldBe(dynamicRisks)
       }
     },
   )
