@@ -29,6 +29,16 @@
       "endDate": "2025-05-11"
     }
   ],
+  "languages": [
+    {
+      "type": "PRIM",
+      "code": "ENG",
+      "readSkill": "Y",
+      "writeSkill": "Y",
+      "speakSkill": "Y",
+      "interpreterRequested": true
+    }
+  ],
   "status": "ACTIVE IN",
   "lastMovementTypeCode": "CRT",
   "lastMovementReasonCode": "CA",

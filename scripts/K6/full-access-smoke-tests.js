@@ -88,8 +88,10 @@ const get_endpoints = [
   `/v1/persons/${hmppsId}/images`,
   `/v1/persons/${hmppsId}/images/${imageId}`,
   `/v1/persons/${hmppsId}/case-notes`,
-  "/v1/hmpps/reference-data",
-  "/v2/config/authorisation"
+  `/v1/hmpps/reference-data`,
+  `/v2/config/authorisation`,
+  `/v1/persons/${hmppsId}/health-and-diet`,
+  `/v1/persons/${hmppsId}/languages`
 ];
 
 const broken_endpoints = []

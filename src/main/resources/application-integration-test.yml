@@ -25,7 +25,7 @@ services:
   prison-api:
     base-url: http://localhost:4015
   prisoner-offender-search:
-    base-url: http://localhost:4001
+    base-url: http://localhost:4000
   probation-integration-epf:
     base-url: http://localhost:4016
   probation-offender-search:
@@ -45,7 +45,7 @@ services:
   locations-inside-prison:
     base-url: http://localhost:4024
   health-and-medication:
-    base-url: http://localhost:4026
+    base-url: http://localhost:4001
 
 hmpps.sqs:
   provider: localstack
@@ -73,6 +73,8 @@ feature-flag:
   replace-probation-search: true
   use-location-deactivate-endpoint: true
   use-personal-care-needs-endpoints: true
+  use-health-and-diet-endpoint: true
+  use-languages-endpoints: true
 
 authorisation:
   consumers:
@@ -149,6 +151,8 @@ authorisation:
         - "/v1/persons/.*/education/assessments/status"
         - "/v1/prison/.*/location/.*/deactivate"
         - "/v1/persons/.*/care-needs"
+        - "/v1/persons/.*/health-and-diet"
+        - "/v1/persons/.*/languages"
       filters:
     config-test:
       include:

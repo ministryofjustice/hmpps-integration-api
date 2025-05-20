@@ -279,4 +279,34 @@ class PersonIntegrationTest : IntegrationTestBase() {
         .andExpect(status().isBadRequest)
     }
   }
+
+  @Nested
+  inner class GetLanguages {
+    val path = "$basePath/$nomsId/languages"
+
+    @Test
+    fun `returns a prisoner's languages`() {
+      callApi(path)
+        .andExpect(status().isOk)
+        .andExpect(content().json(getExpectedResponse("person-languages")))
+    }
+
+    @Test
+    fun `return a 404 for person in wrong prison`() {
+      callApiWithCN(path, limitedPrisonsCn)
+        .andExpect(status().isNotFound)
+    }
+
+    @Test
+    fun `return a 404 when no prisons in filter`() {
+      callApiWithCN(path, noPrisonsCn)
+        .andExpect(status().isNotFound)
+    }
+
+    @Test
+    fun `return a 400 when invalid noms passed in`() {
+      callApi("$basePath/$invalidNomsId/languages")
+        .andExpect(status().isBadRequest)
+    }
+  }
 }
