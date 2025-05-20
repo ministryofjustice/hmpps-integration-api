@@ -30,6 +30,7 @@ data class FeatureFlagConfig(
     const val USE_CAPACITY_ENDPOINT = "use-capacity-endpoint"
     const val USE_LOCATION_DEACTIVATE_ENDPOINT = "use-location-deactivate-endpoint"
     const val USE_PERSONAL_CARE_NEEDS_ENDPOINTS = "use-personal-care-needs-endpoints"
+    const val USE_LANGUAGES_ENDPOINTS = "use-languages-endpoints"
   }
 
   /**
