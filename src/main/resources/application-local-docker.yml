@@ -75,6 +75,7 @@ authorisation:
         - "/v1/prison/.*/prisoners/.*/non-associations"
         - "/v1/prison/.*/location/[^/]*$"
         - "/v1/persons/.*/education/assessments/status"
+        - "/v1/persons/.*/health-and-diet"
       filters:
     config-test:
       include:
@@ -118,5 +119,6 @@ feature-flag:
   use-capacity-endpoint: true
   replace-probation-search: false
   use-location-deactivate-endpoint: true
+  use-health-and-diet-endpoint: true
   use-personal-care-needs-endpoints: true
   use-languages-endpoints: true
