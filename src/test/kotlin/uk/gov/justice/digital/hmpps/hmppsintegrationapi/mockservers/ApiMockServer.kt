@@ -25,7 +25,7 @@ class ApiMockServer(
         UpstreamApi.ADJUDICATIONS -> ApiMockServer(4006)
         UpstreamApi.CVL -> ApiMockServer(4007)
         UpstreamApi.CASE_NOTES -> ApiMockServer(4008)
-        UpstreamApi.MANAGE_POM_CASE -> ApiMockServer(4009)
+        UpstreamApi.MANAGE_POM_CASE -> ApiMockServer(4002)
         UpstreamApi.RISK_MANAGEMENT_PLAN -> ApiMockServer(4004)
         UpstreamApi.TEST -> TODO()
         UpstreamApi.PLP -> ApiMockServer(4004)
