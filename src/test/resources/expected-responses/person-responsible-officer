@@ -1,10 +1,10 @@
 {
   "data": {
     "prisonOffenderManager": {
-      "forename": "string",
-      "surname": "string",
+      "forename": "Joe",
+      "surname": "Bloggs",
       "prison": {
-        "code": "string"
+        "code": "MDI"
       }
     },
     "communityOffenderManager": {
