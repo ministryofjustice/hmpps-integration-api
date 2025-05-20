@@ -51,6 +51,7 @@ abstract class IntegrationTestBase {
     private val hmppsAuthMockServer = HmppsAuthMockServer()
     val prisonerOffenderSearchMockServer = ApiMockServer.create(UpstreamApi.PRISONER_OFFENDER_SEARCH)
     val healthAndMedicationMockServer = ApiMockServer.create(UpstreamApi.HEALTH_AND_MEDICATION)
+    val managePomCaseMockServer = ApiMockServer.create(UpstreamApi.MANAGE_POM_CASE)
 
     @BeforeAll
     @JvmStatic
@@ -79,6 +80,12 @@ abstract class IntegrationTestBase {
           "$gatewaysFolder/healthandmedication/fixtures/GetHealthAndMedicationResponse.json",
         ).readText(),
       )
+
+      managePomCaseMockServer.start()
+      managePomCaseMockServer.stubForGet(
+        "/api/allocation/$nomsId/primary_pom",
+        File("$gatewaysFolder/managePOMcase/fixtures/GetPrimaryPOMResponse.json").readText(),
+      )
     }
 
     @AfterAll
@@ -87,6 +94,7 @@ abstract class IntegrationTestBase {
       hmppsAuthMockServer.stop()
       prisonerOffenderSearchMockServer.stop()
       healthAndMedicationMockServer.stop()
+      managePomCaseMockServer.stop()
     }
   }
 

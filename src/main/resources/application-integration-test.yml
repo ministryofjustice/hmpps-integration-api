@@ -19,31 +19,31 @@ services:
   create-and-vary-licence:
     base-url: http://localhost:4013
   manage-pom-case-api:
-    base-url: http://localhost:4014
+    base-url: http://localhost:4002
   ndelius:
-    base-url: http://localhost:4015
+    base-url: http://localhost:4014
   prison-api:
-    base-url: http://localhost:4016
+    base-url: http://localhost:4015
   prisoner-offender-search:
     base-url: http://localhost:4000
   probation-integration-epf:
-    base-url: http://localhost:4017
+    base-url: http://localhost:4016
   probation-offender-search:
-    base-url: http://localhost:4018
+    base-url: http://localhost:4017
   plp:
-    base-url: http://localhost:4019
+    base-url: http://localhost:4018
   non-associations:
-    base-url: http://localhost:4020
+    base-url: http://localhost:4019
   personal-relationships:
-    base-url: http://localhost:4021
+    base-url: http://localhost:4020
   manage-prison-visits:
-    base-url: http://localhost:4022
+    base-url: http://localhost:4021
   incentives:
-    base-url: http://localhost:4023
+    base-url: http://localhost:4022
   alerts:
-    base-url: http://localhost:4024
+    base-url: http://localhost:4023
   locations-inside-prison:
-    base-url: http://localhost:4025
+    base-url: http://localhost:4024
   health-and-medication:
     base-url: http://localhost:4001
 
@@ -72,7 +72,6 @@ feature-flag:
   use-capacity-endpoint: true
   replace-probation-search: true
   use-location-deactivate-endpoint: true
-  use-health-and-diet-endpoint: true
   use-personal-care-needs-endpoints: true
 
 authorisation:
@@ -149,7 +148,6 @@ authorisation:
         - "/v1/persons/.*/images/.*"
         - "/v1/persons/.*/education/assessments/status"
         - "/v1/prison/.*/location/.*/deactivate"
-        - "/v1/persons/.*/health-and-diet"
         - "/v1/persons/.*/care-needs"
       filters:
     config-test:

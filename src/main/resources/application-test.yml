@@ -30,7 +30,7 @@ services:
   case-notes:
     base-url: http://localhost:4008
   manage-pom-case-api:
-    base-url: http://localhost:4009
+    base-url: http://localhost:4002
   plp:
     base-url: http://localhost:4004
   non-associations:

@@ -18,6 +18,7 @@ class ApiMockServer(
       when (upstreamApi) {
         UpstreamApi.PRISONER_OFFENDER_SEARCH -> ApiMockServer(4000)
         UpstreamApi.HEALTH_AND_MEDICATION -> ApiMockServer(4001)
+        UpstreamApi.MANAGE_POM_CASE -> ApiMockServer(4002)
         // USE PRISM
         UpstreamApi.PRISON_API -> ApiMockServer(4000)
         UpstreamApi.PROBATION_OFFENDER_SEARCH -> ApiMockServer(4002)
@@ -27,7 +28,6 @@ class ApiMockServer(
         UpstreamApi.ADJUDICATIONS -> ApiMockServer(4006)
         UpstreamApi.CVL -> ApiMockServer(4007)
         UpstreamApi.CASE_NOTES -> ApiMockServer(4008)
-        UpstreamApi.MANAGE_POM_CASE -> ApiMockServer(4009)
         UpstreamApi.RISK_MANAGEMENT_PLAN -> ApiMockServer(4004)
         UpstreamApi.TEST -> TODO()
         UpstreamApi.PLP -> ApiMockServer(4004)
