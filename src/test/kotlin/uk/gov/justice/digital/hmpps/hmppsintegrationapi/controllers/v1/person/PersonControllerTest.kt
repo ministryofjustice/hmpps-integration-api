@@ -245,8 +245,8 @@ internal class PersonControllerTest(
       }
 
       describe("GET $basePath/{id}") {
-        val probationOffenderSearch = PersonOnProbation(Person("Sam", "Smith", identifiers = Identifiers(nomisNumber = "1234ABC"), currentExclusion = true, exclusionMessage = "An exclusion exists", currentRestriction = false), underActiveSupervision = true)
-        val prisonOffenderSearch = POSPrisoner("Kim", "Kardashian", youthOffender = false)
+        val probationOffenderSearch = PersonOnProbation(Person(firstName, lastName, identifiers = identifiers, currentExclusion = true, exclusionMessage = "An exclusion exists", currentRestriction = false), underActiveSupervision = true)
+        val prisonOffenderSearch = POSPrisoner(firstName = firstName, lastName = lastName, youthOffender = false)
         val prisonResponse = Response(data = prisonOffenderSearch, errors = emptyList())
 
         beforeTest {
@@ -258,7 +258,6 @@ internal class PersonControllerTest(
               probationOffenderSearch = probationOffenderSearch,
               prisonerOffenderSearch = prisonResponse.data.toPerson(),
             )
-
           whenever(getPersonService.getCombinedDataForPerson(hmppsId)).thenReturn(Response(data = personMap))
         }
 
@@ -296,7 +295,6 @@ internal class PersonControllerTest(
 
             val encodedIdThatDoesNotExist = URLEncoder.encode(idThatDoesNotExist, StandardCharsets.UTF_8)
             val result = mockMvc.performAuthorised("$basePath/$encodedIdThatDoesNotExist")
-
             result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
           }
 
@@ -317,7 +315,6 @@ internal class PersonControllerTest(
 
             val encodedIdThatDoesNotExist = URLEncoder.encode(idThatDoesNotExist, StandardCharsets.UTF_8)
             val result = mockMvc.performAuthorised("$basePath/$encodedIdThatDoesNotExist")
-
             result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
           }
 
@@ -337,20 +334,17 @@ internal class PersonControllerTest(
 
             val encodedIdThatDoesNotExist = URLEncoder.encode(idThatDoesNotExist, StandardCharsets.UTF_8)
             val result = mockMvc.performAuthorised("$basePath/$encodedIdThatDoesNotExist")
-
             result.response.status.shouldNotBe(HttpStatus.NOT_FOUND.value())
           }
         }
 
         it("gets a person with the matching ID") {
           mockMvc.performAuthorised("$basePath/$encodedHmppsId")
-
           verify(getPersonService, times(1)).getCombinedDataForPerson(hmppsId)
         }
 
         it("returns a person with the matching ID") {
           val result = mockMvc.performAuthorised("$basePath/$encodedHmppsId")
-
           result.response.contentAsString.shouldBe(
             """
              {
