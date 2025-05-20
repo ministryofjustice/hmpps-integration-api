@@ -1,0 +1,34 @@
+{
+  "data": {
+    "diet": {
+      "foodAllergies": [
+        {
+          "id": "FOOD_ALLERGY_MILK",
+          "code": "MILK",
+          "description": "Milk",
+          "comment": "Some other text"
+        }
+      ],
+      "medicalDietaryRequirements": [
+        {
+          "id": "FOOD_ALLERGY_MILK",
+          "code": "MILK",
+          "description": "Milk",
+          "comment": "Some other text"
+        }
+      ],
+      "personalisedDietaryRequirements": [
+        {
+          "id": "FOOD_ALLERGY_MILK",
+          "code": "MILK",
+          "description": "Milk",
+          "comment": "Some other text"
+        }
+      ],
+      "cateringInstructions": {
+        "value": "catering instructions"
+      }
+    },
+    "smoking": null
+  }
+}

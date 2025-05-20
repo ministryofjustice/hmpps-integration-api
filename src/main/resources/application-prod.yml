@@ -49,6 +49,7 @@ feature-flag:
   use-capacity-endpoint: false
   replace-probation-search: true
   use-location-deactivate-endpoint: false
+  use-health-and-diet-endpoint: false
   use-personal-care-needs-endpoints: false
 
 authorisation:
