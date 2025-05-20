@@ -23,6 +23,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.featureflag.F
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.IEPLevel
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ImageMetadata
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Language
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NumberOfChildren
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.OffenderSearchResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
@@ -39,6 +40,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Consum
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetCareNeedsForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetIEPLevelService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetImageMetadataForPersonService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetLanguagesForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetNameForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetNumberOfChildrenForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService
@@ -66,6 +68,7 @@ class PersonController(
   @Autowired val getNumberOfChildrenForPersonService: GetNumberOfChildrenForPersonService,
   @Autowired val getPhysicalCharacteristicsForPersonService: GetPhysicalCharacteristicsForPersonService,
   @Autowired val getCareNeedsForPersonService: GetCareNeedsForPersonService,
+  @Autowired val getLanguagesForPersonService: GetLanguagesForPersonService,
   @Autowired val auditService: AuditService,
   @Autowired val featureFlag: FeatureFlagConfig,
 ) {
@@ -354,7 +357,7 @@ class PersonController(
     summary = "Gets care needs for a prisoner.",
     description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
     responses = [
-      ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found a person's physical characteristics with the provided HMPPS ID."),
+      ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found a person's care needs with the provided HMPPS ID."),
       ApiResponse(responseCode = "400", content = [Content(schema = Schema(ref = "#/components/schemas/BadRequest"))]),
       ApiResponse(responseCode = "404", content = [Content(schema = Schema(ref = "#/components/schemas/PersonNotFound"))]),
       ApiResponse(responseCode = "500", content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]),
@@ -375,6 +378,36 @@ class PersonController(
     }
 
     auditService.createEvent("GET_PERSON_CARE_NEEDS", mapOf("hmppsId" to hmppsId))
+    return DataResponse(response.data)
+  }
+
+  @GetMapping("{hmppsId}/languages")
+  @Tag(name = "Reception")
+  @Operation(
+    summary = "Gets languages for a prisoner.",
+    description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
+    responses = [
+      ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found a person's Language information with the provided HMPPS ID."),
+      ApiResponse(responseCode = "400", content = [Content(schema = Schema(ref = "#/components/schemas/BadRequest"))]),
+      ApiResponse(responseCode = "404", content = [Content(schema = Schema(ref = "#/components/schemas/PersonNotFound"))]),
+      ApiResponse(responseCode = "500", content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]),
+    ],
+  )
+  @FeatureFlag(name = FeatureFlagConfig.USE_LANGUAGES_ENDPOINTS)
+  fun getLanguagesForPerson(
+    @Parameter(description = "A HMPPS identifier") @PathVariable hmppsId: String,
+    @RequestAttribute filters: ConsumerFilters?,
+  ): DataResponse<List<Language>?> {
+    val response = getLanguagesForPersonService.execute(hmppsId, filters = filters)
+
+    if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
+      throw ValidationException("Bad request from upstream ${response.errors.first().description}")
+    }
+    if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
+      throw EntityNotFoundException("Could not find person with id: $hmppsId")
+    }
+
+    auditService.createEvent("GET_LANGUAGES", mapOf("hmppsId" to hmppsId))
     return DataResponse(response.data)
   }
 

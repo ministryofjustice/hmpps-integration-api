@@ -74,6 +74,7 @@ feature-flag:
   use-location-deactivate-endpoint: true
   use-personal-care-needs-endpoints: true
   use-health-and-diet-endpoint: true
+  use-languages-endpoints: true
 
 authorisation:
   consumers:
@@ -151,6 +152,7 @@ authorisation:
         - "/v1/prison/.*/location/.*/deactivate"
         - "/v1/persons/.*/care-needs"
         - "/v1/persons/.*/health-and-diet"
+        - "/v1/persons/.*/languages"
       filters:
     config-test:
       include:

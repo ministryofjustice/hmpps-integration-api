@@ -51,6 +51,7 @@ feature-flag:
   use-location-deactivate-endpoint: false
   use-health-and-diet-endpoint: false
   use-personal-care-needs-endpoints: false
+  use-languages-endpoints: false
 
 authorisation:
   consumers:
