@@ -6,6 +6,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_IMAGE_ENDPOINTS
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_LANGUAGES_ENDPOINTS
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_LOCATION_DEACTIVATE_ENDPOINT
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_LOCATION_ENDPOINT
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_PERSONAL_CARE_NEEDS_ENDPOINTS
@@ -83,6 +84,14 @@ internal class FeatureFlaggedEndpointsIntegrationTest : IntegrationTestBase() {
   fun `care needs should return 503`() {
     whenever(featureFlagConfig.require(USE_PERSONAL_CARE_NEEDS_ENDPOINTS)).thenThrow(FeatureNotEnabledException(""))
     val path = "$basePath/$nomsId/care-needs"
+    callApi(path)
+      .andExpect(status().isServiceUnavailable)
+  }
+
+  @Test
+  fun `languages should return 503`() {
+    whenever(featureFlagConfig.require(USE_LANGUAGES_ENDPOINTS)).thenThrow(FeatureNotEnabledException(""))
+    val path = "$basePath/$nomsId/language"
     callApi(path)
       .andExpect(status().isServiceUnavailable)
   }
