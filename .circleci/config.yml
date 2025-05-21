@@ -151,7 +151,7 @@ jobs:
       - run:
           name: Install curl
           command: |
-            apk add --no-cache curl
+            sudo apk add --no-cache curl
       - run:
           name: Run smoke tests
           command: |
