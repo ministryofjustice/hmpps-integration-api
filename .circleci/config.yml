@@ -149,9 +149,12 @@ jobs:
     steps:
       - checkout
       - run:
+          name: Install curl
+          command: |
+            apt-get update && apt-get install -y curl
+      - run:
           name: Run smoke tests
           command: |
-            RUN apt-get update && apt-get install -y curl
             k6 run ./scripts/K6/full-access-smoke-tests.js
             k6 run ./scripts/K6/limited-access-smoke-tests.js
             k6 run ./scripts/K6/no-access-with-certs-smoke-tests.js
