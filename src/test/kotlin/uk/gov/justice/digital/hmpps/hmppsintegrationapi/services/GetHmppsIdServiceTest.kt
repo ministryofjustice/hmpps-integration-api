@@ -17,6 +17,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.personas.personInProbationAndNomisPersona
 
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
@@ -30,9 +31,9 @@ internal class GetHmppsIdServiceTest(
   private val getHmppsIdService: GetHmppsIdService,
 ) : DescribeSpec(
     {
-      val id = "A7777ZZ"
-      val nomisNumber = "A6666ZZ"
-      val hmppsId = HmppsId(hmppsId = id)
+      val persona = personInProbationAndNomisPersona
+      val nomisNumber = persona.identifiers.nomisNumber!!
+      val hmppsId = nomisNumber
       val filters = ConsumerFilters(listOf("ABC"))
 
       beforeEach {
@@ -40,47 +41,51 @@ internal class GetHmppsIdServiceTest(
       }
 
       it("Returns a hmpps id for the given id") {
-        val person = Person(firstName = "Qui-gon", lastName = "Jin", hmppsId = id, identifiers = Identifiers(nomisNumber = nomisNumber))
-        whenever(getPersonService.getPersonWithPrisonFilter(id, filters)).thenReturn(
+        val person = Person(firstName = persona.firstName, lastName = persona.lastName, hmppsId = hmppsId)
+        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId, filters)).thenReturn(
           Response(
             data = person,
           ),
         )
-        val result = getHmppsIdService.execute(id, filters)
-        result.shouldBe(Response(data = hmppsId))
+
+        val result = getHmppsIdService.execute(nomisNumber, filters)
+        result.shouldBe(Response(data = HmppsId(hmppsId)))
       }
 
       it("Returns a hmpps id when hmpps id is null but a nomis number is present") {
-        val person = Person(firstName = "Qui-gon", lastName = "Jin", identifiers = Identifiers(nomisNumber = nomisNumber))
-        whenever(getPersonService.getPersonWithPrisonFilter(id, filters)).thenReturn(
+        val person = Person(firstName = persona.firstName, lastName = persona.lastName, identifiers = Identifiers(nomisNumber = nomisNumber))
+        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId, filters)).thenReturn(
           Response(
             data = person,
           ),
         )
-        val result = getHmppsIdService.execute(id, filters)
+
+        val result = getHmppsIdService.execute(nomisNumber, filters)
         result.shouldBe(Response(data = HmppsId(nomisNumber)))
       }
 
       it("Returns an error if getPersonWithPrisonFilter() returns an error") {
         val errors = listOf(UpstreamApiError(causedBy = UpstreamApi.PRISON_API, type = UpstreamApiError.Type.ENTITY_NOT_FOUND, description = "getPersonWithPrisonFilter error"))
-        whenever(getPersonService.getPersonWithPrisonFilter(id, filters)).thenReturn(
+        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId, filters)).thenReturn(
           Response(
             data = null,
             errors = errors,
           ),
         )
-        val result = getHmppsIdService.execute(id, filters)
+
+        val result = getHmppsIdService.execute(nomisNumber, filters)
         result.shouldBe(Response(data = null, errors = errors))
       }
 
-      it("Returns an 404 if getPersonWithPrisonFilter() returns a person with no hmppsId") {
-        val personWithoutPrisonId = Person(firstName = "Qui-gon", lastName = "Jin", hmppsId = null)
-        whenever(getPersonService.getPersonWithPrisonFilter(id, filters)).thenReturn(
+      it("Returns an 404 if getPersonWithPrisonFilter() returns a person with no hmppsId or identifiers") {
+        val personWithNoHmppsIdOrIdentifiers = Person(firstName = persona.firstName, lastName = persona.lastName, hmppsId = null)
+        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId, filters)).thenReturn(
           Response(
-            data = personWithoutPrisonId,
+            data = personWithNoHmppsIdOrIdentifiers,
           ),
         )
-        val result = getHmppsIdService.execute(id, filters)
+
+        val result = getHmppsIdService.execute(nomisNumber, filters)
         result.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.PRISON_API, type = UpstreamApiError.Type.ENTITY_NOT_FOUND)))
       }
     },

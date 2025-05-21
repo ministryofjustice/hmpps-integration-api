@@ -10,12 +10,12 @@ import org.springframework.boot.test.context.ConfigDataApplicationContextInitial
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PersonalRelationshipsGateway
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Identifiers
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.personalRelationships.PRNumberOfChildren
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.personas.personInProbationAndNomisPersona
 
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
@@ -27,9 +27,10 @@ internal class GetNumberOfChildrenForPersonServiceTest(
   private val getNumberOfChildrenForPersonService: GetNumberOfChildrenForPersonService,
 ) : DescribeSpec(
     {
-      val hmppsId = "A1234AA"
-      val prisonerNumber = "Z99999ZZ"
-      val person = Person(firstName = "Qui-gon", lastName = "Jin", identifiers = Identifiers(nomisNumber = prisonerNumber))
+      val persona = personInProbationAndNomisPersona
+      val hmppsId = persona.identifiers.nomisNumber!!
+      val prisonerNumber = hmppsId
+      val person = Person(firstName = persona.firstName, lastName = persona.lastName, identifiers = persona.identifiers)
       val filters = null
       val numberOfChildrenGatewayResponse = PRNumberOfChildren(numberOfChildren = "2", id = 1, active = true, createdTime = "now", createdBy = "me")
       val numberOfChildren = numberOfChildrenGatewayResponse.toNumberOfChildren()
@@ -54,66 +55,63 @@ internal class GetNumberOfChildrenForPersonServiceTest(
       }
 
       it("should return a list of errors if person not found") {
+        val errors =
+          listOf(
+            UpstreamApiError(
+              causedBy = UpstreamApi.PERSONAL_RELATIONSHIPS,
+              type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+            ),
+          )
         whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = "notfound", filters = filters)).thenReturn(
           Response(
             data = null,
-            errors =
-              listOf(
-                UpstreamApiError(
-                  causedBy = UpstreamApi.PERSONAL_RELATIONSHIPS,
-                  type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-                ),
-              ),
+            errors = errors,
           ),
         )
+
         val result = getNumberOfChildrenForPersonService.execute(hmppsId = "notfound", filters)
         result.data.shouldBe(null)
-        result.errors
-          .first()
-          .type
-          .shouldBe(UpstreamApiError.Type.ENTITY_NOT_FOUND)
+        result.errors.shouldBe(errors)
       }
 
       it("should return a list of errors if a bad request is made to getPersonService") {
+        val errors =
+          listOf(
+            UpstreamApiError(
+              causedBy = UpstreamApi.PERSONAL_RELATIONSHIPS,
+              type = UpstreamApiError.Type.BAD_REQUEST,
+            ),
+          )
         whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = "badRequest", filters = filters)).thenReturn(
           Response(
             data = null,
-            errors =
-              listOf(
-                UpstreamApiError(
-                  causedBy = UpstreamApi.PERSONAL_RELATIONSHIPS,
-                  type = UpstreamApiError.Type.BAD_REQUEST,
-                ),
-              ),
+            errors = errors,
           ),
         )
+
         val result = getNumberOfChildrenForPersonService.execute(hmppsId = "badRequest", filters)
         result.data.shouldBe(null)
-        result.errors
-          .first()
-          .type
-          .shouldBe(UpstreamApiError.Type.BAD_REQUEST)
+        result.errors.shouldBe(errors)
       }
 
       it("should return a list of errors if personal relationships gateway returns error") {
+        val errors =
+          listOf(
+            UpstreamApiError(
+              causedBy = UpstreamApi.PERSONAL_RELATIONSHIPS,
+              type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+            ),
+          )
         whenever(personalRelationshipsGateway.getNumberOfChildren(prisonerNumber)).thenReturn(
           Response(
             data = null,
-            errors =
-              listOf(
-                UpstreamApiError(
-                  causedBy = UpstreamApi.PERSONAL_RELATIONSHIPS,
-                  type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-                ),
-              ),
+            errors = errors,
           ),
         )
+
         val result = getNumberOfChildrenForPersonService.execute(hmppsId, filters)
         result.data.shouldBe(null)
-        result.errors
-          .first()
-          .type
-          .shouldBe(UpstreamApiError.Type.ENTITY_NOT_FOUND)
+        result.errors.shouldBe(errors)
       }
     },
   )

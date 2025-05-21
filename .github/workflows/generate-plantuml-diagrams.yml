@@ -20,7 +20,7 @@ jobs:
           sudo apt-get install graphviz
       - name: Install PlantUML
         run: |
-          wget https://github.com/plantuml/plantuml/releases/download/v1.2023.1/plantuml.jar
+          wget https://github.com/plantuml/plantuml/releases/download/v1.2025.2/plantuml.jar
           java -jar plantuml.jar -version
       - name: Generate Diagrams
         run: |
