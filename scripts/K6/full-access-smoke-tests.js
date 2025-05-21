@@ -124,12 +124,12 @@ const post_visit_data = JSON.stringify({
 });
 
 const postLocationDeactivateEndpoint = `/v1/prison/${prisonId}/location/${locationIdKey}/deactivate`;
-const postLocationDeactivateData = {
+const postLocationDeactivateData = JSON.stringify({
   deactivationReason: "DAMAGED",
   deactivationReasonDescription: "Damaged",
   proposedReactivationDate: "2025-12-01",
   externalReference: "TestEvent"
-}
+})
 
 export default function ()  {
   const params = {
