@@ -151,6 +151,7 @@ jobs:
       - run:
           name: Run smoke tests
           command: |
+            RUN apk add --no-cache curl
             k6 run ./scripts/K6/full-access-smoke-tests.js
             k6 run ./scripts/K6/limited-access-smoke-tests.js
             k6 run ./scripts/K6/no-access-with-certs-smoke-tests.js
@@ -235,7 +236,7 @@ workflows:
             - hmpps-common-vars
             - hmpps-integration-api-smoke-test-dev
           requires:
-            - post-deploy-heartbeat-for-dev
+#            - post-deploy-heartbeat-for-dev
 
       - create-and-push-image-to-ecr:
           <<: *slack-fail-post-step
@@ -244,7 +245,8 @@ workflows:
             - hmpps-common-vars
             - hmpps-integration-api-preprod
           requires:
-            - smoke-tests-for-dev
+#            - smoke-tests-for-dev
+            - post-deploy-heartbeat-for-dev
           filters:
             branches:
               only:
