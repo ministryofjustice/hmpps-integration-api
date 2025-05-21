@@ -151,7 +151,9 @@ jobs:
       - run:
           name: Install curl
           command: |
-            sudo apk add --no-cache curl
+            apk update
+            rm -f /var/lib/apk/db.lock
+            apk add --no-cache curl
       - run:
           name: Run smoke tests
           command: |
