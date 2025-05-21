@@ -244,7 +244,7 @@ workflows:
             - hmpps-common-vars
             - hmpps-integration-api-preprod
           requires:
-            - smoke-tests-for-dev
+            - post-deploy-heartbeat-for-dev
           filters:
             branches:
               only:
