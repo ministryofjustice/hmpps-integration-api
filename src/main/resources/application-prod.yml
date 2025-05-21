@@ -43,15 +43,15 @@ feature-flag:
   use-physical-characteristics-endpoints: true
   use-image-endpoints: true
   use-education-assessments-endpoints: false
-  use-residential-hierarchy-endpoints: false
-  use-location-endpoint: false
-  use-residential-details-endpoints: false
-  use-capacity-endpoint: false
+  use-residential-hierarchy-endpoints: true
+  use-location-endpoint: true
+  use-residential-details-endpoints: true
+  use-capacity-endpoint: true
   replace-probation-search: true
   use-location-deactivate-endpoint: false
-  use-health-and-diet-endpoint: false
-  use-personal-care-needs-endpoints: false
-  use-languages-endpoints: false
+  use-health-and-diet-endpoint: true
+  use-personal-care-needs-endpoints: true
+  use-languages-endpoints: true
 
 authorisation:
   consumers:
