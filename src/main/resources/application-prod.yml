@@ -44,7 +44,7 @@ feature-flag:
   use-image-endpoints: true
   use-education-assessments-endpoints: false
   use-residential-hierarchy-endpoints: false
-  use-location-endpoint: false
+  use-location-endpoint: true
   use-residential-details-endpoints: true
   use-capacity-endpoint: true
   replace-probation-search: true
