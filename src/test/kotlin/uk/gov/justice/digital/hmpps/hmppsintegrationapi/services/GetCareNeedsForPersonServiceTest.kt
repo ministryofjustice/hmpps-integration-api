@@ -3,7 +3,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
-import org.mockito.internal.verification.VerificationModeFactory
+import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
@@ -18,6 +18,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSPersonalCareNeed
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSPrisoner
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSPrisonerAlias
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.personas.personInProbationAndNomisPersona
 import java.time.LocalDate
 
 @ContextConfiguration(
@@ -30,10 +31,11 @@ internal class GetCareNeedsForPersonServiceTest(
   private val getCareNeedsForPersonService: GetCareNeedsForPersonService,
 ) : DescribeSpec(
     {
-      val hmppsId = "A1234AA"
-      val prisonerNumber = "Z99999ZZ"
-      val person = Person(firstName = "Qui-gon", lastName = "Jin", identifiers = Identifiers(nomisNumber = prisonerNumber))
+      val persona = personInProbationAndNomisPersona
+      val nomisNumber = persona.identifiers.nomisNumber!!
       val filters = null
+
+      val person = Person(firstName = persona.firstName, lastName = persona.lastName, identifiers = persona.identifiers)
       val careNeedsGatewayResponse =
         POSPrisoner(
           firstName = "First Name",
@@ -69,95 +71,90 @@ internal class GetCareNeedsForPersonServiceTest(
         Mockito.reset(getPersonService)
         Mockito.reset(prisonerOffenderSearchGateway)
 
-        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, filters = filters)).thenReturn(Response(person))
-        whenever(prisonerOffenderSearchGateway.getPrisonOffender(prisonerNumber)).thenReturn(Response(careNeedsGatewayResponse))
+        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = nomisNumber, filters = filters)).thenReturn(Response(person))
+        whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomisNumber)).thenReturn(Response(careNeedsGatewayResponse))
       }
 
       it("performs a search according to hmpps Id") {
-        getCareNeedsForPersonService.execute(hmppsId, filters)
-        verify(getPersonService, VerificationModeFactory.times(1)).getPersonWithPrisonFilter(hmppsId = hmppsId, filters = filters)
+        getCareNeedsForPersonService.execute(nomisNumber, filters)
+        verify(getPersonService, times(1)).getPersonWithPrisonFilter(hmppsId = nomisNumber, filters = filters)
       }
 
       it("should return a person's care needs from gateway") {
-        val result = getCareNeedsForPersonService.execute(hmppsId, filters)
+        val result = getCareNeedsForPersonService.execute(nomisNumber, filters)
         result.data.shouldBe(careNeeds)
         result.errors.count().shouldBe(0)
       }
 
       it("should return an entity not found error if person found in person service but no nomis number set for them") {
-        val personWithoutNomis = Person(firstName = "Qui-gon", lastName = "Jin", identifiers = Identifiers(nomisNumber = null))
-        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, filters = filters)).thenReturn(
+        val personWithoutNomis = Person(firstName = persona.firstName, lastName = persona.lastName, identifiers = Identifiers(nomisNumber = null))
+        whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = nomisNumber, filters = filters)).thenReturn(
           Response(data = personWithoutNomis),
         )
-        val result = getCareNeedsForPersonService.execute(hmppsId = hmppsId, filters)
+
+        val result = getCareNeedsForPersonService.execute(hmppsId = nomisNumber, filters)
         result.data.shouldBe(null)
-        result.errors
-          .first()
-          .type
-          .shouldBe(UpstreamApiError.Type.ENTITY_NOT_FOUND)
+        result.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.PRISONER_OFFENDER_SEARCH, UpstreamApiError.Type.ENTITY_NOT_FOUND)))
       }
 
       it("should return a list of errors if person not found") {
+        val errors =
+          listOf(
+            UpstreamApiError(
+              causedBy = UpstreamApi.PRISONER_OFFENDER_SEARCH,
+              type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+            ),
+          )
         whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = "notfound", filters = filters)).thenReturn(
           Response(
             data = null,
-            errors =
-              listOf(
-                UpstreamApiError(
-                  causedBy = UpstreamApi.PRISONER_OFFENDER_SEARCH,
-                  type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-                ),
-              ),
+            errors,
           ),
         )
+
         val result = getCareNeedsForPersonService.execute(hmppsId = "notfound", filters)
         result.data.shouldBe(null)
-        result.errors
-          .first()
-          .type
-          .shouldBe(UpstreamApiError.Type.ENTITY_NOT_FOUND)
+        result.errors.shouldBe(errors)
       }
 
       it("should return a list of errors if a bad request is made to getPersonService") {
+        val errors =
+          listOf(
+            UpstreamApiError(
+              causedBy = UpstreamApi.PRISONER_OFFENDER_SEARCH,
+              type = UpstreamApiError.Type.BAD_REQUEST,
+            ),
+          )
         whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = "badRequest", filters = filters)).thenReturn(
           Response(
             data = null,
-            errors =
-              listOf(
-                UpstreamApiError(
-                  causedBy = UpstreamApi.PRISONER_OFFENDER_SEARCH,
-                  type = UpstreamApiError.Type.BAD_REQUEST,
-                ),
-              ),
+            errors,
           ),
         )
+
         val result = getCareNeedsForPersonService.execute(hmppsId = "badRequest", filters)
         result.data.shouldBe(null)
-        result.errors
-          .first()
-          .type
-          .shouldBe(UpstreamApiError.Type.BAD_REQUEST)
+        result.errors.shouldBe(errors)
       }
 
       it("should return a list of errors if prisoner offender search gateway returns error") {
-        whenever(prisonerOffenderSearchGateway.getPrisonOffender(prisonerNumber)).thenReturn(
+        val errors =
+          listOf(
+            UpstreamApiError(
+              causedBy = UpstreamApi.PRISONER_OFFENDER_SEARCH,
+              type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+            ),
+          )
+        whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomisNumber)).thenReturn(
           Response(
             data = null,
-            errors =
-              listOf(
-                UpstreamApiError(
-                  causedBy = UpstreamApi.PRISONER_OFFENDER_SEARCH,
-                  type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-                ),
-              ),
+            errors,
           ),
         )
-        val result = getCareNeedsForPersonService.execute(hmppsId, filters)
+
+        val result = getCareNeedsForPersonService.execute(nomisNumber, filters)
         result.data.shouldBe(null)
-        result.errors
-          .first()
-          .type
-          .shouldBe(UpstreamApiError.Type.ENTITY_NOT_FOUND)
+        result.errors.shouldBe(errors)
       }
     },
   )

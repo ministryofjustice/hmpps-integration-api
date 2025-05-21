@@ -36,6 +36,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitExtern
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.VisitorSupport
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.locationsInsidePrison.LIPPrisonSummary
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.personas.personInProbationAndNomisPersona
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetCapacityForPrisonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPrisonersService
@@ -58,7 +59,10 @@ internal class PrisonControllerTest(
   @MockitoBean val getResidentialDetailsService: GetResidentialDetailsService,
   @MockitoBean val getCapacityForPrisonService: GetCapacityForPrisonService,
 ) : DescribeSpec({
-    val hmppsId = "200313116M"
+    val firstName = personInProbationAndNomisPersona.firstName
+    val lastName = personInProbationAndNomisPersona.lastName
+    val dateOfBirth = personInProbationAndNomisPersona.dateOfBirth
+    val hmppsId = personInProbationAndNomisPersona.identifiers.nomisNumber!!
     val basePath = "/v1/prison"
     val mockMvc = IntegrationAPIMockMvc(springMockMvc)
 
@@ -81,10 +85,10 @@ internal class PrisonControllerTest(
           Response(
             data =
               PersonInPrison(
-                firstName = "Barry",
-                lastName = "Allen",
+                firstName = firstName,
+                lastName = lastName,
                 middleName = "Jonas",
-                dateOfBirth = LocalDate.parse("2023-03-01"),
+                dateOfBirth = dateOfBirth,
                 gender = "Male",
                 ethnicity = "Caucasian",
                 pncId = "PNC123456",
@@ -103,31 +107,31 @@ internal class PrisonControllerTest(
         val result = mockMvc.performAuthorised("$basePath/prisoners/$hmppsId")
         result.response.contentAsString.shouldBe(
           """
-            {
-             "data":{
-                   "firstName":"Barry",
-                   "lastName":"Allen",
-                   "middleName":"Jonas",
-                   "dateOfBirth":"2023-03-01",
-                   "gender":"Male",
-                   "ethnicity":"Caucasian",
-                   "aliases":[],
-                   "identifiers":{
-                      "nomisNumber":null,
-                      "croNumber":null,
-                      "deliusCrn":null
-                   },
-                   "pncId": "PNC123456",
-                   "category": "C",
-                   "csra": "HIGH",
-                   "receptionDate": "2023-05-01",
-                   "status": "ACTIVE IN",
-                   "prisonId": "MDI",
-                   "prisonName": "HMP Leeds",
-                   "cellLocation": "A-1-002",
-                   "youthOffender": false
-                }
-             }
+          {
+            "data": {
+              "firstName": "$firstName",
+              "lastName": "$lastName",
+              "middleName": "Jonas",
+              "dateOfBirth": "$dateOfBirth",
+              "gender": "Male",
+              "ethnicity": "Caucasian",
+              "aliases": [],
+              "identifiers": {
+                "nomisNumber": null,
+                "croNumber": null,
+                "deliusCrn": null
+              },
+              "pncId": "PNC123456",
+              "category": "C",
+              "csra": "HIGH",
+              "receptionDate": "2023-05-01",
+              "status": "ACTIVE IN",
+              "prisonId": "MDI",
+              "prisonName": "HMP Leeds",
+              "cellLocation": "A-1-002",
+              "youthOffender": false
+            }
+          }
           """.removeWhitespaceAndNewlines(),
         )
       }
@@ -137,8 +141,8 @@ internal class PrisonControllerTest(
           Response(
             data =
               PersonInPrison(
-                firstName = "Barry",
-                lastName = "Allen",
+                firstName = firstName,
+                lastName = lastName,
                 middleName = "Jonas",
                 dateOfBirth = LocalDate.parse("2023-03-01"),
                 gender = "Male",
@@ -218,20 +222,18 @@ internal class PrisonControllerTest(
     }
 
     describe("GET /prisoners") {
-      val firstName = "Barry"
-      val lastName = "Allen"
-      val dateOfBirth = "2023-03-01"
+
       val path = "$basePath/prisoners?first_name=$firstName&last_name=$lastName&date_of_birth=$dateOfBirth"
 
       it("returns 500 when prison/prisoners throws an unexpected error") {
-        whenever(getPrisonersService.execute("Barry", "Allen", "2023-03-01", false, null)).thenThrow(RuntimeException("Service error"))
+        whenever(getPrisonersService.execute(firstName, lastName, dateOfBirth.toString(), false, null)).thenThrow(RuntimeException("Service error"))
 
         val result = mockMvc.performAuthorised(path)
         result.response.status.shouldBe(500)
       }
 
       it("returns 500 when prisoner query gets no result") {
-        whenever(getPrisonersService.execute("Barry", "Allen", "2023-03-01", false, ConsumerFilters(emptyList()))).thenReturn(
+        whenever(getPrisonersService.execute(firstName, lastName, dateOfBirth.toString(), false, ConsumerFilters(emptyList()))).thenReturn(
           Response(
             data = emptyList(),
             errors =
@@ -250,22 +252,22 @@ internal class PrisonControllerTest(
       }
 
       it("returns a 200 OK status code") {
-        whenever(getPrisonersService.execute(firstName, lastName, dateOfBirth, false, null)).thenReturn(
+        whenever(getPrisonersService.execute(firstName, lastName, dateOfBirth.toString(), false, null)).thenReturn(
           Response(
             data =
               listOf(
                 PersonInPrison(
-                  firstName = "Barry",
-                  lastName = "Allen",
+                  firstName = firstName,
+                  lastName = lastName,
                   middleName = "Jonas",
-                  dateOfBirth = LocalDate.parse("2023-03-01"),
+                  dateOfBirth = dateOfBirth,
                   youthOffender = false,
                 ),
                 PersonInPrison(
-                  firstName = "Barry",
-                  lastName = "Allen",
+                  firstName = firstName,
+                  lastName = lastName,
                   middleName = "Rock",
-                  dateOfBirth = LocalDate.parse("2022-07-22"),
+                  dateOfBirth = dateOfBirth,
                   youthOffender = false,
                 ),
               ),
@@ -277,7 +279,7 @@ internal class PrisonControllerTest(
       }
 
       it("returns 403 when consumer config includes an empty prison filter field") {
-        whenever(getPrisonersService.execute(firstName, lastName, dateOfBirth, false, ConsumerFilters(prisons = emptyList()))).thenReturn(
+        whenever(getPrisonersService.execute(firstName, lastName, dateOfBirth.toString(), false, ConsumerFilters(prisons = emptyList()))).thenReturn(
           Response(
             data = emptyList(),
             errors =

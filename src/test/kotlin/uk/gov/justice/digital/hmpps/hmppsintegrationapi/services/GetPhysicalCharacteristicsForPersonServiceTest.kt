@@ -35,16 +35,15 @@ internal class GetPhysicalCharacteristicsForPersonServiceTest(
 
       val posPrisoner =
         POSPrisoner(
-          firstName = "Obi-Wan",
-          lastName = "Kenobi",
+          firstName = "John",
+          lastName = "Doe",
           middleNames = "Ben",
           dateOfBirth = LocalDate.parse("1975-02-28"),
           gender = "Male",
           ethnicity = "White",
           aliases =
             listOf(
-              POSPrisonerAlias(firstName = "Ben", lastName = "Kenobi"),
-              POSPrisonerAlias(firstName = "Obi", lastName = "Wan"),
+              POSPrisonerAlias(firstName = "Jim", lastName = "Doe"),
             ),
           prisonerNumber = "A1234BC",
           pncNumber = "2003/11985X",
@@ -118,6 +117,7 @@ internal class GetPhysicalCharacteristicsForPersonServiceTest(
             errors = errors,
           ),
         )
+
         val result = getPhysicalCharacteristicsForPersonService.execute(hmppsId = "notfound", filters)
         result.data.shouldBe(null)
         result.errors.shouldBe(errors)
@@ -137,6 +137,7 @@ internal class GetPhysicalCharacteristicsForPersonServiceTest(
             errors = errors,
           ),
         )
+
         val result = getPhysicalCharacteristicsForPersonService.execute(hmppsId = "badRequest", filters)
         result.data.shouldBe(null)
         result.errors.shouldBe(errors)
