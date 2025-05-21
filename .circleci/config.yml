@@ -19,7 +19,7 @@ slack-fail-post-step: &slack-fail-post-step
   post-steps:
     - slack/notify:
         event: fail
-        branch_pattern: main
+        branch_pattern: HMAI-564
         channel: << pipeline.parameters.alerts-slack-channel >>
         custom: |
           {
