@@ -1,0 +1,23 @@
+repos:
+  - repo: local
+    hooks:
+      - id: ktlint-format
+        name: KtLint Format
+        entry: ./gradlew ktlintFormat
+        language: system
+        types: [kotlin]
+        stages: [pre-commit] # Only run on commit
+        always_run: true # Always run, even if no staged files
+        pass_filenames: false # Don't pass filenames, let gradlew handle staged files
+
+      - id: ktlint-check
+        name: KtLint Check
+        entry: ./gradlew ktlintCheck
+        language: system
+        types: [kotlin]
+        stages: [pre-commit]
+        always_run: true
+        pass_filenames: false
+        # This hook will fail the commit if ktlintCheck finds issues.
+        # It's important to put this AFTER ktlint-format if you want formatting
+        # to happen first. Pre-commit runs hooks in the order they appear.
