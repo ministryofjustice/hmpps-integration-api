@@ -99,6 +99,9 @@ jobs:
       - store_test_results:
           path: build/test-results
   integration-tests:
+    executor:
+      name: hmpps/java
+      tag: "21.0"
     machine:
       image: ubuntu-2204:2022.10.2
     steps:
@@ -118,6 +121,9 @@ jobs:
           name: Run integration tests
           command: make integration-test
   create-and-push-image-to-ecr:
+    executor:
+      name: hmpps/java
+      tag: "21.0"
     docker:
       - image: ministryofjustice/cloud-platform-tools
     steps:
@@ -134,7 +140,11 @@ jobs:
       - deploy:
           name: Push application Docker image
           command: make publish
+
   heartbeat:
+    executor:
+      name: hmpps/java
+      tag: "21.0"
     machine:
       image: ubuntu-2204:2022.10.2
     steps:
@@ -143,6 +153,9 @@ jobs:
           name: Run heartbeat
           command: make heartbeat
   smoke-tests:
+    executor:
+      name: hmpps/java
+      tag: "21.0"
     docker:
       - image: grafana/k6:1.0.0
     steps:
@@ -155,6 +168,9 @@ jobs:
             k6 run ./scripts/K6/no-access-with-certs-smoke-tests.js
             k6 run ./scripts/K6/no-access-without-certs-smoke-tests.js
   slack-notify:
+    executor:
+      name: hmpps/java
+      tag: "21.0"
     machine:
       image: ubuntu-2204:2022.10.2
     steps:
