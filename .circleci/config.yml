@@ -69,7 +69,6 @@ slack-fail-smoke-test-post-step: &slack-fail-smoke-test-post-step
         branch_pattern: HMAI-564
         channel: << pipeline.parameters.alerts-slack-channel >>
 
-
 jobs:
   lint-code:
     executor:
