@@ -219,7 +219,7 @@ jobs:
             }
 
 workflows:
-  version: 2
+  version: 2.1
   build-test-and-deploy:
     jobs:
       - lint-code:
