@@ -284,9 +284,8 @@ workflows:
 
       - slack-notify:
           name: slack-notification
-#          requires:
-#            - smoke-tests-for-dev
-          when: on_fail
+          requires:
+            - smoke-tests-for-dev/failure
 
       - create-and-push-image-to-ecr:
           <<: *slack-fail-post-step
