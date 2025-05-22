@@ -19,7 +19,7 @@ slack-fail-post-step: &slack-fail-post-step
   post-steps:
     - slack/notify:
         event: fail
-        branch_pattern: HMAI-564
+        branch_pattern: main
         channel: << pipeline.parameters.alerts-slack-channel >>
         custom: |
           {
@@ -61,6 +61,14 @@ slack-fail-post-step: &slack-fail-post-step
               }
             ]
           }
+
+slack-fail-smoke-test-post-step: &slack-fail-smoke-test-post-step
+  post-steps:
+    - slack/notify:
+        event: fail
+        branch_pattern: HMAI-564
+        channel: << pipeline.parameters.alerts-slack-channel >>
+
 
 jobs:
   lint-code:
@@ -149,12 +157,6 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Install curl
-          command: |
-            apk update
-            rm -f /var/lib/apk/db.lock
-            apk add --no-cache curl
-      - run:
           name: Run smoke tests
           command: |
             k6 run ./scripts/K6/full-access-smoke-tests.js
@@ -235,7 +237,7 @@ workflows:
             - deploy-to-dev
 
       - smoke-tests:
-          <<: *slack-fail-post-step
+          <<: *slack-fail-smoke-test-post-step
           name: smoke-tests-for-dev
           context:
             - hmpps-common-vars
