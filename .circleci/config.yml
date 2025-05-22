@@ -157,7 +157,6 @@ jobs:
   slack-notify:
     machine:
       image: ubuntu-2204:2022.10.2
-    when: on_fail
     steps:
       - slack/notify:
           event: fail
@@ -287,6 +286,7 @@ workflows:
           name: slack-notification
           requires:
             - smoke-tests-for-dev
+          when: on_fail
 
       - create-and-push-image-to-ecr:
           <<: *slack-fail-post-step
