@@ -159,7 +159,7 @@ jobs:
       image: ubuntu-2204:2022.10.2
     steps:
       - slack/notify:
-          #          branch_pattern: main
+          event: fail
           channel: << pipeline.parameters.alerts-slack-channel >>
           custom: |
             {
@@ -286,7 +286,6 @@ workflows:
 
       - slack-notify:
           name: slack-notification
-          event: fail
           requires:
             - smoke-tests-for-dev
 
