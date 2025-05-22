@@ -202,8 +202,6 @@ jobs:
               ]
             }
 
-
-
 workflows:
   version: 2
   build-test-and-deploy:
@@ -297,7 +295,7 @@ workflows:
             - hmpps-integration-api-preprod
           requires:
             #            - smoke-tests-for-dev
-            - post-deploy-heartbeat-for-dev
+            - slack-notification
           filters:
             branches:
               only:
