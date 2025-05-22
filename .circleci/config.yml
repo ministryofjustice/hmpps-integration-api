@@ -154,6 +154,55 @@ jobs:
             k6 run ./scripts/K6/limited-access-smoke-tests.js
             k6 run ./scripts/K6/no-access-with-certs-smoke-tests.js
             k6 run ./scripts/K6/no-access-without-certs-smoke-tests.js
+  slack-notify:
+    machine:
+      image: ubuntu-2204:2022.10.2
+    steps:
+      - slack/notify:
+          #          branch_pattern: main
+          channel: << pipeline.parameters.alerts-slack-channel >>
+          custom: |
+            {
+              "blocks": [
+                {
+                  "type": "header",
+                  "text": {
+                    "type": "plain_text",
+                    "text": ":this-is-fine-fire: ${CIRCLE_JOB} job has failed",
+                    "emoji": true
+                  }
+                },
+                {
+                  "type": "context",
+                  "elements": [
+                    {
+                      "type": "mrkdwn",
+                      "text": "Project: *${CIRCLE_PROJECT_REPONAME}*"
+                    },
+                    {
+                      "type": "mrkdwn",
+                      "text": "Branch: *${CIRCLE_BRANCH}*"
+                    },
+                    {
+                      "type": "mrkdwn",
+                      "text": "Build: *#${CIRCLE_BUILD_NUM}*"
+                    }
+                  ]
+                },
+                {
+                  "type": "actions",
+                  "elements": [
+                    {
+                      "type": "button",
+                      "text": { "type": "plain_text", "text": "View job" },
+                      "url": "${CIRCLE_BUILD_URL}"
+                    }
+                  ]
+                }
+              ]
+            }
+
+
 
 workflows:
   version: 2
@@ -235,52 +284,11 @@ workflows:
           requires:
       #            - post-deploy-heartbeat-for-dev
 
-      - slack/notify:
+      - slack-notify:
+          name: slack-notification
           event: fail
           requires:
             - smoke-tests-for-dev
-#          branch_pattern: main
-          channel: << pipeline.parameters.alerts-slack-channel >>
-          custom: |
-            {
-              "blocks": [
-                {
-                  "type": "header",
-                  "text": {
-                    "type": "plain_text",
-                    "text": ":this-is-fine-fire: ${CIRCLE_JOB} job has failed",
-                    "emoji": true
-                  }
-                },
-                {
-                  "type": "context",
-                  "elements": [
-                    {
-                      "type": "mrkdwn",
-                      "text": "Project: *${CIRCLE_PROJECT_REPONAME}*"
-                    },
-                    {
-                      "type": "mrkdwn",
-                      "text": "Branch: *${CIRCLE_BRANCH}*"
-                    },
-                    {
-                      "type": "mrkdwn",
-                      "text": "Build: *#${CIRCLE_BUILD_NUM}*"
-                    }
-                  ]
-                },
-                {
-                  "type": "actions",
-                  "elements": [
-                    {
-                      "type": "button",
-                      "text": { "type": "plain_text", "text": "View job" },
-                      "url": "${CIRCLE_BUILD_URL}"
-                    }
-                  ]
-                }
-              ]
-            }
 
       - create-and-push-image-to-ecr:
           <<: *slack-fail-post-step
