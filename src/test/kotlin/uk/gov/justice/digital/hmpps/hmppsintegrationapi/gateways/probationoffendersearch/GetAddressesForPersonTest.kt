@@ -125,7 +125,7 @@ class GetAddressesForPersonTest(
         deliusMockServer.stubForGet(
           path,
           "{}",
-          HttpStatus.NOT_FOUND
+          HttpStatus.NOT_FOUND,
         )
 
         val response = deliusGateway.getAddressesForPerson(hmppsId)
@@ -205,7 +205,10 @@ class GetAddressesForPersonTest(
 
         val response = deliusGateway.getAddressesForPerson(hmppsId)
 
-        response.data.first().types.shouldBeEmpty()
+        response.data
+          .first()
+          .types
+          .shouldBeEmpty()
       }
     },
   )
