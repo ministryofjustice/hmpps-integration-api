@@ -3,11 +3,8 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.ConsumerPrisonAccessService
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.REPLACE_PROBATION_SEARCH
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffenderSearchGateway
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ProbationOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NomisNumber
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.OffenderSearchResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
@@ -19,11 +16,9 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Consum
 
 @Service
 class GetPersonService(
-  @Autowired val probationOffenderSearchGateway: ProbationOffenderSearchGateway,
   @Autowired val prisonerOffenderSearchGateway: PrisonerOffenderSearchGateway,
   @Autowired val consumerPrisonAccessService: ConsumerPrisonAccessService,
   private val deliusGateway: NDeliusGateway,
-  private val featureFlag: FeatureFlagConfig,
 ) {
   fun execute(hmppsId: String): Response<Person?> {
     val probationResponse = getProbationResponse(hmppsId)
@@ -270,10 +265,5 @@ class GetPersonService(
     )
   }
 
-  private fun getProbationResponse(hmppsId: String) =
-    if (featureFlag.isEnabled(REPLACE_PROBATION_SEARCH)) {
-      deliusGateway.getPerson(hmppsId)
-    } else {
-      probationOffenderSearchGateway.getPerson(id = hmppsId)
-    }
+  private fun getProbationResponse(hmppsId: String) = deliusGateway.getPerson(hmppsId)
 }

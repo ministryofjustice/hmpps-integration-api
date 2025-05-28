@@ -12,7 +12,6 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.REPLACE_PROBATION_SEARCH
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.generateTestAddress
@@ -37,8 +36,6 @@ class GetAddressesForPersonTest(
       val path = "/case/$hmppsId/addresses"
 
       beforeEach {
-        whenever(featureFlag.isEnabled(REPLACE_PROBATION_SEARCH)).thenReturn(true)
-
         nDeliusMockServer.start()
         nDeliusMockServer.stubForGet(
           path,

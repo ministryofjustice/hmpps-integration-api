@@ -49,7 +49,6 @@ feature-flag:
   use-location-endpoint: true
   use-residential-details-endpoints: true
   use-capacity-endpoint: true
-  replace-probation-search: true
   use-location-deactivate-endpoint: true
   use-health-and-diet-endpoint: true
   use-personal-care-needs-endpoints: true

@@ -3,12 +3,9 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.ConsumerPrisonAccessService
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.REPLACE_PROBATION_SEARCH
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonApiGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffenderSearchGateway
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ProbationOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonProtectedCharacteristics
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
@@ -18,13 +15,11 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonServic
 
 @Service
 class GetProtectedCharacteristicsService(
-  @Autowired val probationOffenderSearchGateway: ProbationOffenderSearchGateway,
   @Autowired val prisonerOffenderSearchGateway: PrisonerOffenderSearchGateway,
   @Autowired val prisonApiGateway: PrisonApiGateway,
   @Autowired val consumerPrisonAccessService: ConsumerPrisonAccessService,
   @Autowired val getPersonService: GetPersonService,
   private val deliusGateway: NDeliusGateway,
-  private val featureFlag: FeatureFlagConfig,
 ) {
   fun execute(
     hmppsId: String,
@@ -38,12 +33,7 @@ class GetProtectedCharacteristicsService(
       )
     }
 
-    val probationOffender =
-      if (featureFlag.isEnabled(REPLACE_PROBATION_SEARCH)) {
-        deliusGateway.getOffender(hmppsId)
-      } else {
-        probationOffenderSearchGateway.getOffender(hmppsId)
-      }
+    val probationOffender = deliusGateway.getOffender(hmppsId)
 
     if (probationOffender.data != null) {
       val prisonOffender =

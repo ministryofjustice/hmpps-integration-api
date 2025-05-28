@@ -95,25 +95,6 @@ class BalancesControllerTest(
         verify(getBalancesForPersonService, times(1)).execute(prisonId, hmppsId, filters = ConsumerFilters(prisons = listOf("XYZ")))
       }
 
-      it("returns a 404 NOT FOUND status code when person isn't found in probation offender search") {
-        whenever(getBalancesForPersonService.execute(prisonId, hmppsId, null)).thenReturn(
-          Response(
-            data = null,
-            errors =
-              listOf(
-                UpstreamApiError(
-                  causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH,
-                  type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-                ),
-              ),
-          ),
-        )
-
-        val result = mockMvc.performAuthorised(balancesPath)
-
-        result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
-      }
-
       it("returns a 404 NOT FOUND status code when person isn't found in delius") {
         whenever(getBalancesForPersonService.execute(prisonId, hmppsId, null)).thenReturn(
           Response(
@@ -223,7 +204,7 @@ class BalancesControllerTest(
             errors =
               listOf(
                 UpstreamApiError(
-                  causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH,
+                  causedBy = UpstreamApi.NDELIUS,
                   type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
                 ),
               ),

@@ -21,7 +21,6 @@ class ApiMockServer(
         UpstreamApi.MANAGE_POM_CASE -> ApiMockServer(4002)
         // USE PRISM
         UpstreamApi.PRISON_API -> ApiMockServer(4000)
-        UpstreamApi.PROBATION_OFFENDER_SEARCH -> ApiMockServer(4002)
         UpstreamApi.NDELIUS -> ApiMockServer(4003)
         UpstreamApi.ASSESS_RISKS_AND_NEEDS -> ApiMockServer(4004)
         UpstreamApi.EFFECTIVE_PROPOSAL_FRAMEWORK -> ApiMockServer(4005)
