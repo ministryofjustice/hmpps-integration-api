@@ -3,8 +3,6 @@ services:
     base-url: https://prison-api.prison.service.justice.gov.uk
   prisoner-offender-search:
     base-url: https://prisoner-search.prison.service.justice.gov.uk
-  probation-offender-search:
-    base-url: https://probation-offender-search.hmpps.service.justice.gov.uk
   ndelius:
     base-url: https://external-api-and-delius.hmpps.service.justice.gov.uk
   assess-risks-and-needs:
