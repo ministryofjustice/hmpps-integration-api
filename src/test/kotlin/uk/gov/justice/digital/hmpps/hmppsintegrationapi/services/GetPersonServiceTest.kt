@@ -16,10 +16,8 @@ import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.ConsumerPrisonAccessService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.REPLACE_PROBATION_SEARCH
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffenderSearchGateway
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ProbationOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NomisNumber
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.OffenderSearchResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
@@ -38,7 +36,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.personas.personInProbati
 )
 internal class GetPersonServiceTest(
   @MockitoBean val prisonerOffenderSearchGateway: PrisonerOffenderSearchGateway,
-  @MockitoBean val probationOffenderSearchGateway: ProbationOffenderSearchGateway,
   @MockitoBean val consumerPrisonAccessService: ConsumerPrisonAccessService,
   @MockitoBean val deliusGateway: NDeliusGateway,
   @MockitoBean val featureFlag: FeatureFlagConfig,
@@ -64,11 +61,8 @@ internal class GetPersonServiceTest(
 
       beforeEach {
         Mockito.reset(prisonerOffenderSearchGateway)
-        Mockito.reset(probationOffenderSearchGateway)
         Mockito.reset(deliusGateway)
         Mockito.reset(featureFlag)
-
-        whenever(featureFlag.isEnabled(REPLACE_PROBATION_SEARCH)).thenReturn(true)
 
         whenever(deliusGateway.getPerson(id = crnNumber)).thenReturn(Response(data = personOnProbation))
         whenever(deliusGateway.getPerson(id = nomsNumber))
@@ -88,11 +82,10 @@ internal class GetPersonServiceTest(
 
       describe("execute()") {
         it("returns a person from Probation Offender Search") {
-          whenever(featureFlag.isEnabled(REPLACE_PROBATION_SEARCH)).thenReturn(false)
-          whenever(probationOffenderSearchGateway.getPerson(id = crnNumber)).thenReturn(Response(data = personOnProbation))
+          whenever(deliusGateway.getPerson(id = crnNumber)).thenReturn(Response(data = personOnProbation))
 
           val result = getPersonService.execute(crnNumber)
-          verify(probationOffenderSearchGateway, times(1)).getPerson(crnNumber)
+          verify(deliusGateway, times(1)).getPerson(crnNumber)
           result.data.shouldBe(personOnProbation)
         }
 
@@ -137,8 +130,7 @@ internal class GetPersonServiceTest(
                 "MockError",
               ),
             )
-          whenever(featureFlag.isEnabled(REPLACE_PROBATION_SEARCH)).thenReturn(false)
-          whenever(probationOffenderSearchGateway.getPerson(id = crnNumber)).thenReturn(Response(data = personOnProbation))
+          whenever(deliusGateway.getPerson(id = crnNumber)).thenReturn(Response(data = personOnProbation))
           whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber)).thenReturn(Response(data = null, errors))
 
           val result = getPersonService.getCombinedDataForPerson(crnNumber)
@@ -257,10 +249,9 @@ internal class GetPersonServiceTest(
         }
 
         it("if filters are present, we get data from probation offender search") {
-          whenever(featureFlag.isEnabled(REPLACE_PROBATION_SEARCH)).thenReturn(false)
           whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber)).thenReturn(Response(data = prisonerWithPrisonId))
           whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<Person>(prisonId, filters)).thenReturn(Response(data = null))
-          whenever(probationOffenderSearchGateway.getPerson(id = nomsNumber)).thenReturn(Response(data = personOnProbation))
+          whenever(deliusGateway.getPerson(id = nomsNumber)).thenReturn(Response(data = personOnProbation))
 
           val result = getPersonService.getPersonWithPrisonFilter(nomsNumber, filters)
           result.data.shouldBe(personOnProbation)
@@ -270,7 +261,7 @@ internal class GetPersonServiceTest(
           val errors = listOf(UpstreamApiError(causedBy = UpstreamApi.PRISON_API, type = UpstreamApiError.Type.ENTITY_NOT_FOUND))
           whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber)).thenReturn(Response(data = prisonerWithPrisonId))
           whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<Person>(prisonId, filters)).thenReturn(Response(data = null))
-          whenever(probationOffenderSearchGateway.getPerson(id = nomsNumber)).thenReturn(
+          whenever(deliusGateway.getPerson(id = nomsNumber)).thenReturn(
             Response(data = null, errors = errors),
           )
 
@@ -302,7 +293,7 @@ internal class GetPersonServiceTest(
         it("if filters are null, probation offender search returns 404, get data from POS gateway") {
           val errors = listOf(UpstreamApiError(causedBy = UpstreamApi.PRISON_API, type = UpstreamApiError.Type.ENTITY_NOT_FOUND))
           whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber)).thenReturn(Response(data = prisonerWithPrisonId))
-          whenever(probationOffenderSearchGateway.getPerson(id = nomsNumber)).thenReturn(
+          whenever(deliusGateway.getPerson(id = nomsNumber)).thenReturn(
             Response(data = null, errors = errors),
           )
 
@@ -317,7 +308,7 @@ internal class GetPersonServiceTest(
         it("if filters are null, probation offender search returns 404, POS gateway returns 404") {
           val errors = listOf(UpstreamApiError(causedBy = UpstreamApi.PRISON_API, type = UpstreamApiError.Type.ENTITY_NOT_FOUND))
           whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber)).thenReturn(Response(data = null, errors = errors))
-          whenever(probationOffenderSearchGateway.getPerson(id = nomsNumber)).thenReturn(
+          whenever(deliusGateway.getPerson(id = nomsNumber)).thenReturn(
             Response(data = null, errors = errors),
           )
 
@@ -363,9 +354,8 @@ internal class GetPersonServiceTest(
         }
 
         it("Crn number passed in - person from probation returns error - return error from probation") {
-          val errors = listOf(UpstreamApiError(causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH, type = UpstreamApiError.Type.INTERNAL_SERVER_ERROR))
-          whenever(featureFlag.isEnabled(REPLACE_PROBATION_SEARCH)).thenReturn(false)
-          whenever(probationOffenderSearchGateway.getPerson(crnNumber)).thenReturn(Response(data = null, errors = errors))
+          val errors = listOf(UpstreamApiError(causedBy = UpstreamApi.NDELIUS, type = UpstreamApiError.Type.INTERNAL_SERVER_ERROR))
+          whenever(deliusGateway.getPerson(crnNumber)).thenReturn(Response(data = null, errors = errors))
 
           val result = getPersonService.getNomisNumber(crnNumber)
           result.errors.shouldBe(errors)
@@ -425,17 +415,15 @@ internal class GetPersonServiceTest(
         }
 
         it("Crn number passed in - person from probation returns error - return error from probation") {
-          val errors = listOf(UpstreamApiError(causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH, type = UpstreamApiError.Type.INTERNAL_SERVER_ERROR))
-          whenever(featureFlag.isEnabled(REPLACE_PROBATION_SEARCH)).thenReturn(false)
-          whenever(probationOffenderSearchGateway.getPerson(crnNumber)).thenReturn(Response(data = null, errors = errors))
+          val errors = listOf(UpstreamApiError(causedBy = UpstreamApi.NDELIUS, type = UpstreamApiError.Type.INTERNAL_SERVER_ERROR))
+          whenever(deliusGateway.getPerson(crnNumber)).thenReturn(Response(data = null, errors = errors))
 
           val result = getPersonService.getNomisNumberWithPrisonFilter(crnNumber, filters = null)
           result.errors.shouldBe(errors)
         }
 
         it("Crn number passed in, filters present - POS returns prison id, return nomis number from probation") {
-          whenever(featureFlag.isEnabled(REPLACE_PROBATION_SEARCH)).thenReturn(false)
-          whenever(probationOffenderSearchGateway.getPerson(crnNumber)).thenReturn(Response(data = personOnProbation, errors = emptyList()))
+          whenever(deliusGateway.getPerson(crnNumber)).thenReturn(Response(data = personOnProbation, errors = emptyList()))
           whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber)).thenReturn(Response(data = prisonerWithPrisonId, errors = emptyList()))
           whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<Person>(prisonId, filters)).thenReturn(Response(data = null))
 
@@ -445,8 +433,7 @@ internal class GetPersonServiceTest(
 
         it("Crn number passed in, filters present - POS returns error, return error from POS") {
           val errors = listOf(UpstreamApiError(causedBy = UpstreamApi.PRISON_API, type = UpstreamApiError.Type.INTERNAL_SERVER_ERROR))
-          whenever(featureFlag.isEnabled(REPLACE_PROBATION_SEARCH)).thenReturn(false)
-          whenever(probationOffenderSearchGateway.getPerson(crnNumber)).thenReturn(Response(data = personOnProbation, errors = emptyList()))
+          whenever(deliusGateway.getPerson(crnNumber)).thenReturn(Response(data = personOnProbation, errors = emptyList()))
           whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber)).thenReturn(Response(data = null, errors = errors))
 
           val result = getPersonService.getNomisNumberWithPrisonFilter(crnNumber, filters)
@@ -455,8 +442,7 @@ internal class GetPersonServiceTest(
 
         it("Crn number passed in, filters present - POS returns prison id, filter check failed - return 404") {
           val errors = listOf(UpstreamApiError(causedBy = UpstreamApi.PRISON_API, type = UpstreamApiError.Type.ENTITY_NOT_FOUND))
-          whenever(featureFlag.isEnabled(REPLACE_PROBATION_SEARCH)).thenReturn(false)
-          whenever(probationOffenderSearchGateway.getPerson(crnNumber)).thenReturn(Response(data = personOnProbation, errors = emptyList()))
+          whenever(deliusGateway.getPerson(crnNumber)).thenReturn(Response(data = personOnProbation, errors = emptyList()))
           whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber)).thenReturn(Response(data = prisonerWithPrisonId, errors = emptyList()))
           whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<Nothing>(prisonId, filters)).thenReturn(Response(data = null, errors = errors))
 

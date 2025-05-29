@@ -15,8 +15,6 @@ services:
     password: client-secret
   prisoner-offender-search:
     base-url: http://localhost:4000
-  probation-offender-search:
-    base-url: http://localhost:4002
   ndelius:
     base-url: http://localhost:4003
   assess-risks-and-needs:
@@ -71,7 +69,6 @@ feature-flag:
   use-location-endpoint: true
   use-residential-details-endpoints: true
   use-capacity-endpoint: true
-  replace-probation-search: true
   use-location-deactivate-endpoint: true
   use-personal-care-needs-endpoints: true
   use-health-and-diet-endpoint: true

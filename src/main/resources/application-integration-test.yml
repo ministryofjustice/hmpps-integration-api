@@ -28,8 +28,6 @@ services:
     base-url: http://localhost:4000
   probation-integration-epf:
     base-url: http://localhost:4016
-  probation-offender-search:
-    base-url: http://localhost:4017
   plp:
     base-url: http://localhost:4018
   non-associations:
@@ -70,7 +68,6 @@ feature-flag:
   use-location-endpoint: true
   use-residential-details-endpoints: true
   use-capacity-endpoint: true
-  replace-probation-search: true
   use-location-deactivate-endpoint: true
   use-personal-care-needs-endpoints: true
   use-health-and-diet-endpoint: true

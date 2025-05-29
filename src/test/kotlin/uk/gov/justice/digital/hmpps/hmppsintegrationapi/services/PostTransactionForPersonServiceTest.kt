@@ -100,7 +100,7 @@ internal class PostTransactionForPersonServiceTest(
       )
     }
 
-    it("posts a transaction and recieves expected response object") {
+    it("posts a transaction and receives expected response object") {
       val result =
         postTransactionForPersonService.execute(
           prisonId,
@@ -119,7 +119,7 @@ internal class PostTransactionForPersonServiceTest(
           errors =
             listOf(
               UpstreamApiError(
-                causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH,
+                causedBy = UpstreamApi.NDELIUS,
                 type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
               ),
             ),
@@ -134,7 +134,7 @@ internal class PostTransactionForPersonServiceTest(
         )
       response
         .hasErrorCausedBy(
-          causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH,
+          causedBy = UpstreamApi.NDELIUS,
           type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
         ).shouldBe(true)
     }

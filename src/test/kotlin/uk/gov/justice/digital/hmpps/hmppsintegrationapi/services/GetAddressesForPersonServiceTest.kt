@@ -11,7 +11,6 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonApiGateway
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ProbationOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Address
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NomisNumber
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
@@ -23,7 +22,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
   classes = [GetAddressesForPersonService::class],
 )
 internal class GetAddressesForPersonServiceTest(
-  @MockitoBean val probationOffenderSearchGateway: ProbationOffenderSearchGateway,
   @MockitoBean val prisonApiGateway: PrisonApiGateway,
   @MockitoBean val personService: GetPersonService,
   @MockitoBean val deliusGateway: NDeliusGateway,
@@ -68,7 +66,6 @@ internal class GetAddressesForPersonServiceTest(
         )
 
       beforeEach {
-        Mockito.reset(probationOffenderSearchGateway)
         Mockito.reset(prisonApiGateway)
         Mockito.reset(personService)
         Mockito.reset(deliusGateway)
@@ -97,7 +94,7 @@ internal class GetAddressesForPersonServiceTest(
 
       it("Nomis number, Delius success, Nomis success → Merge responses ") {
         whenever(personService.getNomisNumberWithPrisonFilter(hmppsId, filters)).thenReturn(Response(NomisNumber(nomisNumber)))
-        whenever(probationOffenderSearchGateway.getAddressesForPerson(hmppsId)).thenReturn(Response(data = listOf(deliusAddress)))
+        whenever(deliusGateway.getAddressesForPerson(hmppsId)).thenReturn(Response(data = listOf(deliusAddress)))
         whenever(prisonApiGateway.getAddressesForPerson(nomisNumber)).thenReturn(Response(data = listOf(nomisAddress)))
 
         val result = getAddressesForPersonService.execute(hmppsId, filters)
@@ -107,7 +104,7 @@ internal class GetAddressesForPersonServiceTest(
 
       it("Nomis number, Delius success, Nomis 404 → Ideally return just Delius response") {
         whenever(personService.getNomisNumberWithPrisonFilter(hmppsId, filters)).thenReturn(Response(NomisNumber(nomisNumber)))
-        whenever(probationOffenderSearchGateway.getAddressesForPerson(hmppsId)).thenReturn(Response(data = listOf(deliusAddress)))
+        whenever(deliusGateway.getAddressesForPerson(hmppsId)).thenReturn(Response(data = listOf(deliusAddress)))
         whenever(prisonApiGateway.getAddressesForPerson(nomisNumber)).thenReturn(
           Response(
             data = emptyList(),
@@ -128,14 +125,14 @@ internal class GetAddressesForPersonServiceTest(
 
       it("Nomis number, Delius 404, nomis success → Return just NOMIS") {
         whenever(personService.getNomisNumberWithPrisonFilter(hmppsId, filters)).thenReturn(Response(NomisNumber(nomisNumber)))
-        whenever(probationOffenderSearchGateway.getAddressesForPerson(hmppsId)).thenReturn(
+        whenever(deliusGateway.getAddressesForPerson(hmppsId)).thenReturn(
           Response(
             data = emptyList(),
             errors =
               listOf(
                 UpstreamApiError(
                   type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-                  causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH,
+                  causedBy = UpstreamApi.NDELIUS,
                 ),
               ),
           ),
@@ -149,7 +146,7 @@ internal class GetAddressesForPersonServiceTest(
 
       it("Nomis number, Delius success, nomis non-404 error → Return NOMIS error") {
         whenever(personService.getNomisNumberWithPrisonFilter(hmppsId, filters)).thenReturn(Response(NomisNumber(nomisNumber)))
-        whenever(probationOffenderSearchGateway.getAddressesForPerson(hmppsId)).thenReturn(Response(listOf(deliusAddress)))
+        whenever(deliusGateway.getAddressesForPerson(hmppsId)).thenReturn(Response(listOf(deliusAddress)))
         whenever(prisonApiGateway.getAddressesForPerson(nomisNumber)).thenReturn(
           Response(
             data = emptyList(),
@@ -169,14 +166,14 @@ internal class GetAddressesForPersonServiceTest(
 
       it("Nomis number, Delius 404, nomis any error (incl. 404) → Return just NOMIS") {
         whenever(personService.getNomisNumberWithPrisonFilter(hmppsId, filters)).thenReturn(Response(NomisNumber(nomisNumber)))
-        whenever(probationOffenderSearchGateway.getAddressesForPerson(hmppsId)).thenReturn(
+        whenever(deliusGateway.getAddressesForPerson(hmppsId)).thenReturn(
           Response(
             data = emptyList(),
             errors =
               listOf(
                 UpstreamApiError(
                   type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-                  causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH,
+                  causedBy = UpstreamApi.NDELIUS,
                 ),
               ),
           ),
@@ -200,26 +197,26 @@ internal class GetAddressesForPersonServiceTest(
 
       it("Nomis number, Delius non-404 error → Return Delius response") {
         whenever(personService.getNomisNumberWithPrisonFilter(hmppsId, filters)).thenReturn(Response(NomisNumber(nomisNumber)))
-        whenever(probationOffenderSearchGateway.getAddressesForPerson(hmppsId)).thenReturn(
+        whenever(deliusGateway.getAddressesForPerson(hmppsId)).thenReturn(
           Response(
             data = emptyList(),
             errors =
               listOf(
                 UpstreamApiError(
                   type = UpstreamApiError.Type.INTERNAL_SERVER_ERROR,
-                  causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH,
+                  causedBy = UpstreamApi.NDELIUS,
                 ),
               ),
           ),
         )
 
         val result = getAddressesForPersonService.execute(hmppsId, filters)
-        result.errors.shouldBe(listOf(UpstreamApiError(type = UpstreamApiError.Type.INTERNAL_SERVER_ERROR, causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH)))
+        result.errors.shouldBe(listOf(UpstreamApiError(type = UpstreamApiError.Type.INTERNAL_SERVER_ERROR, causedBy = UpstreamApi.NDELIUS)))
       }
 
       it("No nomis number, delius success → return Delius") {
         whenever(personService.getNomisNumberWithPrisonFilter(hmppsId, filters)).thenReturn(Response(NomisNumber(null)))
-        whenever(probationOffenderSearchGateway.getAddressesForPerson(hmppsId)).thenReturn(Response(listOf(deliusAddress)))
+        whenever(deliusGateway.getAddressesForPerson(hmppsId)).thenReturn(Response(listOf(deliusAddress)))
 
         val result = getAddressesForPersonService.execute(hmppsId, filters)
         result.errors.shouldBeEmpty()
@@ -228,21 +225,21 @@ internal class GetAddressesForPersonServiceTest(
 
       it("No nomis number, delius any error → return Delius") {
         whenever(personService.getNomisNumberWithPrisonFilter(hmppsId, filters)).thenReturn(Response(NomisNumber(null)))
-        whenever(probationOffenderSearchGateway.getAddressesForPerson(hmppsId)).thenReturn(
+        whenever(deliusGateway.getAddressesForPerson(hmppsId)).thenReturn(
           Response(
             data = emptyList(),
             errors =
               listOf(
                 UpstreamApiError(
                   type = UpstreamApiError.Type.INTERNAL_SERVER_ERROR,
-                  causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH,
+                  causedBy = UpstreamApi.NDELIUS,
                 ),
               ),
           ),
         )
 
         val result = getAddressesForPersonService.execute(hmppsId, filters)
-        result.errors.shouldBe(listOf(UpstreamApiError(type = UpstreamApiError.Type.INTERNAL_SERVER_ERROR, causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH)))
+        result.errors.shouldBe(listOf(UpstreamApiError(type = UpstreamApiError.Type.INTERNAL_SERVER_ERROR, causedBy = UpstreamApi.NDELIUS)))
       }
     },
   )

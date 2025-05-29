@@ -66,8 +66,6 @@ services:
     password: clientsecret
   assess-risks-and-needs:
     base-url: http://localhost:4050
-  probation-offender-search:
-    base-url: http://localhost:4002
   probation-integration-epf:
     base-url: http://localhost:4060
   adjudications:

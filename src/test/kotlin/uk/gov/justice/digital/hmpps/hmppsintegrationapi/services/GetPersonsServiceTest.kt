@@ -10,10 +10,8 @@ import org.springframework.boot.test.context.ConfigDataApplicationContextInitial
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.REPLACE_PROBATION_SEARCH
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerOffenderSearchGateway
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ProbationOffenderSearchGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSPrisoner
@@ -25,7 +23,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.personas.personInProbati
 )
 internal class GetPersonsServiceTest(
   @MockitoBean val prisonerOffenderSearchGateway: PrisonerOffenderSearchGateway,
-  @MockitoBean val probationOffenderSearchGateway: ProbationOffenderSearchGateway,
   @MockitoBean val deliusGateway: NDeliusGateway,
   @MockitoBean val featureFlag: FeatureFlagConfig,
   private val getPersonsService: GetPersonsService,
@@ -37,12 +34,9 @@ internal class GetPersonsServiceTest(
 
     beforeEach {
       Mockito.reset(prisonerOffenderSearchGateway)
-      Mockito.reset(probationOffenderSearchGateway)
       Mockito.reset(deliusGateway)
       Mockito.reset(featureFlag)
 
-      whenever(featureFlag.isEnabled(REPLACE_PROBATION_SEARCH)).thenReturn(false)
-      whenever(probationOffenderSearchGateway.getPersons(firstName, lastName, null, dateOfBirth)).thenReturn(Response(data = emptyList()))
       whenever(prisonerOffenderSearchGateway.getPersons(firstName, lastName, dateOfBirth)).thenReturn(Response(data = emptyList()))
       whenever(deliusGateway.getPersons(firstName, lastName, null, dateOfBirth)).thenReturn(Response(data = emptyList()))
     }
@@ -53,14 +47,7 @@ internal class GetPersonsServiceTest(
       verify(prisonerOffenderSearchGateway, times(1)).getPersons(firstName, lastName, dateOfBirth)
     }
 
-    it("gets person(s) from Probation Offender Search") {
-      getPersonsService.execute(firstName, lastName, null, dateOfBirth)
-
-      verify(probationOffenderSearchGateway, times(1)).getPersons(firstName, lastName, null, dateOfBirth)
-    }
-
     it("gets person(s) from Delius Gateway") {
-      whenever(featureFlag.isEnabled(REPLACE_PROBATION_SEARCH)).thenReturn(true)
       getPersonsService.execute(firstName, lastName, null, dateOfBirth)
 
       verify(deliusGateway, times(1)).getPersons(firstName, lastName, null, dateOfBirth)
@@ -69,13 +56,13 @@ internal class GetPersonsServiceTest(
     it("defaults to not searching within aliases") {
       getPersonsService.execute(firstName, lastName, null, dateOfBirth)
 
-      verify(probationOffenderSearchGateway, times(1)).getPersons(firstName, lastName, null, dateOfBirth, searchWithinAliases = false)
+      verify(deliusGateway, times(1)).getPersons(firstName, lastName, null, dateOfBirth, searchWithinAliases = false)
       verify(prisonerOffenderSearchGateway, times(1)).getPersons(firstName, lastName, dateOfBirth, searchWithinAliases = false)
     }
 
     it("allows searching within aliases") {
       whenever(
-        probationOffenderSearchGateway.getPersons(firstName, lastName, null, dateOfBirth, searchWithinAliases = true),
+        deliusGateway.getPersons(firstName, lastName, null, dateOfBirth, searchWithinAliases = true),
       ).thenReturn(Response(data = emptyList()))
       whenever(
         prisonerOffenderSearchGateway.getPersons(firstName, lastName, dateOfBirth, searchWithinAliases = true),
@@ -83,7 +70,7 @@ internal class GetPersonsServiceTest(
 
       getPersonsService.execute(firstName, lastName, null, dateOfBirth, true)
 
-      verify(probationOffenderSearchGateway, times(1)).getPersons(firstName, lastName, null, dateOfBirth, true)
+      verify(deliusGateway, times(1)).getPersons(firstName, lastName, null, dateOfBirth, true)
       verify(prisonerOffenderSearchGateway, times(1)).getPersons(firstName, lastName, dateOfBirth, true)
     }
 
@@ -92,7 +79,7 @@ internal class GetPersonsServiceTest(
       val responseFromPrisonerOffenderSearch = Response(data = listOf(POSPrisoner(firstName = firstName, lastName = lastName, middleNames = "Gary", youthOffender = false)))
 
       whenever(
-        probationOffenderSearchGateway.getPersons(firstName, lastName, null, dateOfBirth),
+        deliusGateway.getPersons(firstName, lastName, null, dateOfBirth),
       ).thenReturn(responseFromProbationOffenderSearch)
       whenever(
         prisonerOffenderSearchGateway.getPersons(firstName, lastName, dateOfBirth),
@@ -114,7 +101,7 @@ internal class GetPersonsServiceTest(
       val responseFromPrisonerOffenderSearch = Response(data = listOf(POSPrisoner(firstName = firstName, lastName = lastName, middleNames = "Gary", youthOffender = false)))
 
       whenever(
-        probationOffenderSearchGateway.getPersons(firstName, lastName, pncNumber, dateOfBirth),
+        deliusGateway.getPersons(firstName, lastName, pncNumber, dateOfBirth),
       ).thenReturn(responseFromProbationOffenderSearch)
       whenever(prisonerOffenderSearchGateway.getPersons(firstName, lastName, dateOfBirth)).thenReturn(responseFromPrisonerOffenderSearch)
 
@@ -125,7 +112,7 @@ internal class GetPersonsServiceTest(
     }
 
     it("returns an empty list when no person(s) are found") {
-      whenever(probationOffenderSearchGateway.getPersons(firstName, lastName, null, dateOfBirth)).thenReturn(Response(emptyList()))
+      whenever(deliusGateway.getPersons(firstName, lastName, null, dateOfBirth)).thenReturn(Response(emptyList()))
       whenever(prisonerOffenderSearchGateway.getPersons(firstName, lastName, dateOfBirth)).thenReturn(Response(emptyList()))
 
       val response = getPersonsService.execute(firstName, lastName, null, dateOfBirth)

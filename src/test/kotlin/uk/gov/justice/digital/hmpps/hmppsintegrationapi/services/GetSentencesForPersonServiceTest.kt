@@ -89,14 +89,6 @@ internal class GetSentencesForPersonServiceTest(
             causedBy = UpstreamApi.NDELIUS,
           ),
         )
-      val probationOffenderSearch500Error =
-        listOf(
-          UpstreamApiError(
-            type = UpstreamApiError.Type.INTERNAL_SERVER_ERROR,
-            causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH,
-            description = "Mock error from person service",
-          ),
-        )
 
       beforeEach {
         Mockito.reset(prisonApiGateway)
@@ -108,12 +100,12 @@ internal class GetSentencesForPersonServiceTest(
         whenever(getPersonService.getPersonWithPrisonFilter(hmppsId = hmppsId, filters)).thenReturn(
           Response(
             data = null,
-            errors = probationOffenderSearch500Error,
+            errors = nDelius500Error,
           ),
         )
 
         val result = getSentencesForPersonService.execute(hmppsId, filters)
-        result.errors.shouldBe(probationOffenderSearch500Error)
+        result.errors.shouldBe(nDelius500Error)
       }
 
       it("No Nomis number + no Delius crn -> Return entity not found response") {

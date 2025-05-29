@@ -10,7 +10,6 @@ services:
   prison-api.base-url: http://prism:4016
   prisoner-offender-search.base-url: http://prism:4017
   probation-integration-epf.base-url: http://prism:4018
-  probation-offender-search.base-url: http://prism:4019
   plp.base-url: http://prism:4020
   non-associations.base-url: http://prism:4021
   personal-relationships.base-url: http://localhost:4022
@@ -117,7 +116,6 @@ feature-flag:
   use-location-endpoint: true
   use-residential-details-endpoints: true
   use-capacity-endpoint: true
-  replace-probation-search: false
   use-location-deactivate-endpoint: true
   use-health-and-diet-endpoint: true
   use-personal-care-needs-endpoints: true

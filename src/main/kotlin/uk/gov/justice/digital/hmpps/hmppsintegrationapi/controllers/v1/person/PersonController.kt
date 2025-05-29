@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.REPLACE_PROBATION_SEARCH
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.decodeUrlCharacters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.featureflag.FeatureFlag
@@ -126,9 +125,7 @@ class PersonController(
     val hmppsId = encodedHmppsId.decodeUrlCharacters()
     val response = getPersonService.getCombinedDataForPerson(hmppsId)
 
-    val causedBy = if (featureFlag.isEnabled(REPLACE_PROBATION_SEARCH)) UpstreamApi.NDELIUS else UpstreamApi.PROBATION_OFFENDER_SEARCH
-
-    if (response.hasErrorCausedBy(ENTITY_NOT_FOUND, causedBy = causedBy)) {
+    if (response.hasErrorCausedBy(ENTITY_NOT_FOUND, causedBy = UpstreamApi.NDELIUS)) {
       throw EntityNotFoundException("Could not find person with id: $hmppsId")
     }
 

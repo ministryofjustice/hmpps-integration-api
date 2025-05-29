@@ -10,7 +10,6 @@ services:
   prison-api.base-url: http://localhost:4016
   prisoner-offender-search.base-url: http://localhost:4017
   probation-integration-epf.base-url: http://localhost:4018
-  probation-offender-search.base-url: http://localhost:4019
   plp.base-url: http://localhost:4020
   non-associations.base-url: http://localhost:4021
   personal-relationships.base-url: http://localhost:4022
@@ -44,7 +43,6 @@ feature-flag:
   use-residential-details-endpoints: true
   use-capacity-endpoint: true
   use-location-endpoint: true
-  replace-probation-search: true
   use-location-deactivate-endpoint: true
   use-health-and-diet-endpoint: true
   use-personal-care-needs-endpoints: true
