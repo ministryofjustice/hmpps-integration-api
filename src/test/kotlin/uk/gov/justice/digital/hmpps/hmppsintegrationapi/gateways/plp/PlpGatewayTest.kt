@@ -164,18 +164,20 @@ class PlpGatewayTest(
           response.statusCode.shouldBe(HttpStatus.BAD_REQUEST)
         }
 
-//        it("returns reviews") {
-//          plpMockServer.stubForGet(
-//            "/action-plans/$nomsNumber/reviews",
-//            File(
-//              "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/plp/fixtures/GetReviewSchedulesResponse.json",
-//            ).readText(),
-//          )
-//
-//          val response = plpGateway.getReviews(nomsNumber)
-//          response.data.latestReviewSchedule.shouldNotBeNull()
-//          response.data.completedReviews[0].updatedBy.shouldBe("NRUSSELL_GEN")
-//        }
+        it("returns reviews") {
+          plpMockServer.stubForGet(
+            "/action-plans/$nomsNumber/reviews",
+            File(
+              "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/plp/fixtures/GetReviewsResponse.json",
+            ).readText(),
+          )
+
+          val response = plpGateway.getReviews(nomsNumber)
+          response.data.latestReviewSchedule.shouldNotBeNull()
+          response.data.completedReviews[0]
+            .updatedBy
+            .shouldBe("NRUSSELL_GEN")
+        }
       }
     },
   )
