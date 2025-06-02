@@ -1,0 +1,112 @@
+package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.plp
+
+import io.kotest.assertions.throwables.shouldThrow
+import io.kotest.core.spec.style.DescribeSpec
+import io.kotest.matchers.nulls.shouldNotBeNull
+import io.kotest.matchers.shouldBe
+import org.mockito.Mockito
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
+import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
+import org.springframework.http.HttpStatus
+import org.springframework.test.context.ActiveProfiles
+import org.springframework.test.context.ContextConfiguration
+import org.springframework.test.context.bean.override.mockito.MockitoBean
+import org.springframework.web.reactive.function.client.WebClientResponseException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PLPGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
+import java.io.File
+
+@ActiveProfiles("test")
+@ContextConfiguration(
+  initializers = [ConfigDataApplicationContextInitializer::class],
+  classes = [PLPGateway::class],
+)
+class PlpGatewayTest(
+  @MockitoBean val hmppsAuthGateway: HmppsAuthGateway,
+  private val plpGateway: PLPGateway,
+) : DescribeSpec(
+    {
+      val nomsNumber = "X1234YZ"
+      val path = "/inductions/$nomsNumber/induction-schedule"
+      val plpMockServer = ApiMockServer.create(UpstreamApi.PLP)
+
+      beforeEach {
+        plpMockServer.start()
+        Mockito.reset(hmppsAuthGateway)
+        whenever(hmppsAuthGateway.getClientToken("PLP")).thenReturn(
+          HmppsAuthMockServer.TOKEN,
+        )
+      }
+
+      afterTest {
+        plpMockServer.stop()
+      }
+
+      describe("getInductionSchedule") {
+        it("authenticates using HMPPS Auth with credentials") {
+          plpGateway.getInductionSchedule(nomsNumber)
+          verify(hmppsAuthGateway, times(1)).getClientToken("PLP")
+        }
+
+        it("upstream API returns an error, throw exception") {
+          plpMockServer.stubForGet(path, "", HttpStatus.BAD_REQUEST)
+
+          val response =
+            shouldThrow<WebClientResponseException> {
+              plpGateway.getInductionSchedule(nomsNumber)
+            }
+          response.statusCode.shouldBe(HttpStatus.BAD_REQUEST)
+        }
+
+        it("returns induction schedule") {
+          plpMockServer.stubForGet(
+            path,
+            File(
+              "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/plp/fixtures/GetInductionScheduleResponse.json",
+            ).readText(),
+          )
+
+          val response = plpGateway.getInductionSchedule(nomsNumber)
+          response.data.shouldNotBeNull()
+          response.data.status.shouldBe("SCHEDULED")
+          response.data.nomisNumber.shouldBe(nomsNumber)
+        }
+      }
+
+      describe("getInductionSchedule") {
+        it("authenticates using HMPPS Auth with credentials") {
+          plpGateway.getInductionSchedule(nomsNumber)
+          verify(hmppsAuthGateway, times(1)).getClientToken("PLP")
+        }
+
+        it("upstream API returns an error, throw exception") {
+          plpMockServer.stubForGet(path, "", HttpStatus.BAD_REQUEST)
+
+          val response =
+            shouldThrow<WebClientResponseException> {
+              plpGateway.getInductionSchedule(nomsNumber)
+            }
+          response.statusCode.shouldBe(HttpStatus.BAD_REQUEST)
+        }
+
+        it("returns induction schedule") {
+          plpMockServer.stubForGet(
+            path,
+            File(
+              "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/plp/fixtures/GetInductionScheduleResponse.json",
+            ).readText(),
+          )
+
+          val response = plpGateway.getInductionSchedule(nomsNumber)
+          response.data.shouldNotBeNull()
+          response.data.status.shouldBe("SCHEDULED")
+          response.data.nomisNumber.shouldBe(nomsNumber)
+        }
+      }
+    },
+  )
