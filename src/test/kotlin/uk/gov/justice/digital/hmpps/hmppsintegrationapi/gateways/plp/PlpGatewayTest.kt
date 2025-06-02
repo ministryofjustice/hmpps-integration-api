@@ -78,34 +78,38 @@ class PlpGatewayTest(
         }
       }
 
-      describe("getInductionSchedule") {
+      describe("getInductionScheduleHistory") {
         it("authenticates using HMPPS Auth with credentials") {
-          plpGateway.getInductionSchedule(nomsNumber)
+          plpGateway.getInductionScheduleHistory(nomsNumber)
           verify(hmppsAuthGateway, times(1)).getClientToken("PLP")
         }
 
         it("upstream API returns an error, throw exception") {
-          plpMockServer.stubForGet(path, "", HttpStatus.BAD_REQUEST)
+          plpMockServer.stubForGet("$path/history", "", HttpStatus.BAD_REQUEST)
 
           val response =
             shouldThrow<WebClientResponseException> {
-              plpGateway.getInductionSchedule(nomsNumber)
+              plpGateway.getInductionScheduleHistory(nomsNumber)
             }
           response.statusCode.shouldBe(HttpStatus.BAD_REQUEST)
         }
 
-        it("returns induction schedule") {
+        it("returns induction schedule history") {
           plpMockServer.stubForGet(
-            path,
+            "$path/history",
             File(
-              "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/plp/fixtures/GetInductionScheduleResponse.json",
+              "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/plp/fixtures/GetInductionScheduleHistoryResponse.json",
             ).readText(),
           )
 
-          val response = plpGateway.getInductionSchedule(nomsNumber)
+          val response = plpGateway.getInductionScheduleHistory(nomsNumber)
           response.data.shouldNotBeNull()
-          response.data.status.shouldBe("SCHEDULED")
-          response.data.nomisNumber.shouldBe(nomsNumber)
+          response.data.inductionSchedules[0]
+            .status
+            .shouldBe("SCHEDULED")
+          response.data.inductionSchedules[0]
+            .nomisNumber
+            .shouldBe(nomsNumber)
         }
       }
     },
