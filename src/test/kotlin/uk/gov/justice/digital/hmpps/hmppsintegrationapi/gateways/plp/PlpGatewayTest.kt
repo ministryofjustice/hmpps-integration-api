@@ -147,5 +147,35 @@ class PlpGatewayTest(
             .shouldBe("BETWEEN_12_AND_60_MONTHS_TO_SERVE")
         }
       }
+
+      describe("getReviews") {
+        it("authenticates using HMPPS Auth with credentials") {
+          plpGateway.getReviews(nomsNumber)
+          verify(hmppsAuthGateway, times(1)).getClientToken("PLP")
+        }
+
+        it("upstream API returns an error, throw exception") {
+          plpMockServer.stubForGet("/action-plans/$nomsNumber/reviews", "", HttpStatus.BAD_REQUEST)
+
+          val response =
+            shouldThrow<WebClientResponseException> {
+              plpGateway.getReviews(nomsNumber)
+            }
+          response.statusCode.shouldBe(HttpStatus.BAD_REQUEST)
+        }
+
+//        it("returns reviews") {
+//          plpMockServer.stubForGet(
+//            "/action-plans/$nomsNumber/reviews",
+//            File(
+//              "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/plp/fixtures/GetReviewSchedulesResponse.json",
+//            ).readText(),
+//          )
+//
+//          val response = plpGateway.getReviews(nomsNumber)
+//          response.data.latestReviewSchedule.shouldNotBeNull()
+//          response.data.completedReviews[0].updatedBy.shouldBe("NRUSSELL_GEN")
+//        }
+      }
     },
   )
