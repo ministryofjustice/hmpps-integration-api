@@ -43,7 +43,7 @@ services:
   alerts:
     base-url: http://localhost:4022
   locations-inside-prison:
-    base-url: http://localhost:4024
+    base-url: http://localhost:4023
 
 hmpps.sqs:
   provider: localstack
