@@ -3,6 +3,9 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.prison
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.kotest.assertions.json.shouldContainJsonKeyValue
 import io.kotest.matchers.shouldBe
+import org.awaitility.kotlin.await
+import org.awaitility.kotlin.matches
+import org.awaitility.kotlin.untilCallTo
 import org.junit.jupiter.api.Test
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
@@ -100,6 +103,7 @@ class DeactivateLocationIntegrationTest : IntegrationTestWithQueueBase("location
           """.trimIndent(),
         ),
       )
+    await untilCallTo { getNumberOfMessagesCurrentlyOnQueue() } matches { it == 1 }
 
     val queueMessages = getQueueMessages()
     queueMessages.size.shouldBe(1)
@@ -129,6 +133,8 @@ class DeactivateLocationIntegrationTest : IntegrationTestWithQueueBase("location
           """.trimIndent(),
         ),
       )
+
+    await untilCallTo { getNumberOfMessagesCurrentlyOnQueue() } matches { it == 1 }
 
     val queueMessages = getQueueMessages()
     queueMessages.size.shouldBe(1)
