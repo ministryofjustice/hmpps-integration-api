@@ -92,10 +92,21 @@ using IntelliJ but other IDEs will prove similar.
    Upon opening the project, IntelliJ will begin downloading and installing necessary dependencies which may take a few
    minutes.
 
-3. Enable pre-commit hooks for formatting and linting code.
+3. Enable pre-commit hooks for formatting, linting, and secret scanning.
 
-   ```bash
-   ./gradlew addKtlintFormatGitPreCommitHook addKtlintCheckGitPreCommitHook
+   ```
+    # Install pipx if not already installed
+    brew install pipx
+    
+    # Ensure the path to pipx-installed tools is active
+    pipx ensurepath
+    # Restart your terminal after running this
+    
+    # Install pre-commit
+    pipx install pre-commit
+    
+    # Install hooks into .git/hooks
+    pre-commit install
    ```
 
 ## Usage
