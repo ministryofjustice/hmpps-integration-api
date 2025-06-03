@@ -1,23 +1,22 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 
 import io.kotest.core.spec.style.DescribeSpec
-import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
-import org.mockito.internal.verification.VerificationModeFactory
+import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.AssessRisksAndNeedsGateway
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Identifiers
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Need
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Needs
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.personas.personInProbationOnlyPersona
 import java.time.LocalDateTime
 
 @ContextConfiguration(
@@ -30,11 +29,15 @@ internal class GetNeedsForPersonServiceTest(
   private val getNeedsForPersonService: GetNeedsForPersonService,
 ) : DescribeSpec(
     {
-      val hmppsId = "1234/56789B"
-      val deliusCrn = "X123456"
-
       val personFromProbationOffenderSearch =
-        Person(firstName = "Phoebe", lastName = "Buffay", identifiers = Identifiers(deliusCrn = deliusCrn))
+        Person(
+          firstName = personInProbationOnlyPersona.firstName,
+          lastName = personInProbationOnlyPersona.lastName,
+          identifiers = personInProbationOnlyPersona.identifiers,
+        )
+
+      val deliusCrn = personFromProbationOffenderSearch.identifiers.deliusCrn!!
+      val hmppsId = deliusCrn
 
       beforeEach {
         Mockito.reset(getPersonService)
@@ -51,14 +54,13 @@ internal class GetNeedsForPersonServiceTest(
 
       it("gets a person from getPersonService") {
         getNeedsForPersonService.execute(hmppsId)
-
-        verify(getPersonService, VerificationModeFactory.times(1)).execute(hmppsId = hmppsId)
+        verify(getPersonService, times(1)).execute(hmppsId = hmppsId)
       }
 
       it("gets needs for a person from ARN API using a CRN") {
         getNeedsForPersonService.execute(hmppsId)
 
-        verify(assessRisksAndNeedsGateway, VerificationModeFactory.times(1)).getNeedsForPerson(deliusCrn)
+        verify(assessRisksAndNeedsGateway, times(1)).getNeedsForPerson(deliusCrn)
       }
 
       it("returns needs for a person") {
@@ -85,75 +87,56 @@ internal class GetNeedsForPersonServiceTest(
         whenever(assessRisksAndNeedsGateway.getNeedsForPerson(deliusCrn)).thenReturn(Response(data = needs))
 
         val response = getNeedsForPersonService.execute(hmppsId)
-
         response.data.shouldBe(needs)
       }
 
       describe("when an upstream API returns an error") {
-        xdescribe("when a person cannot be found by hmpps ID in probation offender search") {
+        describe("when a person cannot be found by hmpps ID in probation offender search") {
+          val errors =
+            listOf(
+              UpstreamApiError(
+                causedBy = UpstreamApi.PRISONER_OFFENDER_SEARCH,
+                type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+              ),
+            )
+
           beforeEach {
             whenever(getPersonService.execute(hmppsId)).thenReturn(
               Response(
                 data = null,
-                errors =
-                  listOf(
-                    UpstreamApiError(
-                      causedBy = UpstreamApi.PRISONER_OFFENDER_SEARCH,
-                      type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-                    ),
-                    UpstreamApiError(
-                      causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH,
-                      type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-                    ),
-                  ),
+                errors,
               ),
             )
           }
 
-          it("records upstream 404 API error for probation offender search") {
+          it("records upstream error from getPersonService") {
             val response = getNeedsForPersonService.execute(hmppsId)
-
-            response.hasErrorCausedBy(UpstreamApiError.Type.ENTITY_NOT_FOUND, UpstreamApi.PROBATION_OFFENDER_SEARCH).shouldBe(true)
-          }
-
-          it("records upstream 403 API error for probation offender search") {
-            val response = getNeedsForPersonService.execute(hmppsId)
-
-            response.hasErrorCausedBy(UpstreamApiError.Type.FORBIDDEN, UpstreamApi.ASSESS_RISKS_AND_NEEDS).shouldBe(true)
+            response.errors.shouldBe(errors)
           }
 
           it("does not get needs from ARN") {
             getNeedsForPersonService.execute(hmppsId)
-
-            verify(assessRisksAndNeedsGateway, VerificationModeFactory.times(0)).getNeedsForPerson(id = deliusCrn)
+            verify(assessRisksAndNeedsGateway, times(0)).getNeedsForPerson(id = deliusCrn)
           }
         }
 
         it("returns error from ARN API when person/crn cannot be found in ARN") {
+          val errors =
+            listOf(
+              UpstreamApiError(
+                causedBy = UpstreamApi.ASSESS_RISKS_AND_NEEDS,
+                type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+              ),
+            )
           whenever(assessRisksAndNeedsGateway.getNeedsForPerson(deliusCrn)).thenReturn(
             Response(
               data = null,
-              errors =
-                listOf(
-                  UpstreamApiError(
-                    causedBy = UpstreamApi.ASSESS_RISKS_AND_NEEDS,
-                    type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-                  ),
-                ),
+              errors,
             ),
           )
 
           val response = getNeedsForPersonService.execute(hmppsId)
-
-          response.errors.shouldHaveSize(1)
-          response.errors
-            .first()
-            .causedBy
-            .shouldBe(UpstreamApi.ASSESS_RISKS_AND_NEEDS)
-          response.errors
-            .first()
-            .type
-            .shouldBe(UpstreamApiError.Type.ENTITY_NOT_FOUND)
+          response.errors.shouldBe(errors)
         }
       }
     },

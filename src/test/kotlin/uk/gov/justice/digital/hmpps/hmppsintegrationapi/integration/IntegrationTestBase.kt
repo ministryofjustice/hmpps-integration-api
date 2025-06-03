@@ -52,6 +52,7 @@ abstract class IntegrationTestBase {
     val prisonerOffenderSearchMockServer = ApiMockServer.create(UpstreamApi.PRISONER_OFFENDER_SEARCH)
     val healthAndMedicationMockServer = ApiMockServer.create(UpstreamApi.HEALTH_AND_MEDICATION)
     val managePomCaseMockServer = ApiMockServer.create(UpstreamApi.MANAGE_POM_CASE)
+    val plpMockServer = ApiMockServer.create(UpstreamApi.PLP)
 
     @BeforeAll
     @JvmStatic
@@ -86,6 +87,8 @@ abstract class IntegrationTestBase {
         "/api/allocation/$nomsId/primary_pom",
         File("$gatewaysFolder/managePOMcase/fixtures/GetPrimaryPOMResponse.json").readText(),
       )
+
+      plpMockServer.start()
     }
 
     @AfterAll
@@ -95,6 +98,7 @@ abstract class IntegrationTestBase {
       prisonerOffenderSearchMockServer.stop()
       healthAndMedicationMockServer.stop()
       managePomCaseMockServer.stop()
+      plpMockServer.stop()
     }
   }
 

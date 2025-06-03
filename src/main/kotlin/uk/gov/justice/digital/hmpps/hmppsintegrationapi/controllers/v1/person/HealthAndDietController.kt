@@ -44,6 +44,7 @@ class HealthAndDietController(
       ApiResponse(responseCode = "500", content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]),
     ],
   )
+  @Tag(name = "Reception")
   @GetMapping("/{hmppsId}/health-and-diet")
   @FeatureFlag(name = FeatureFlagConfig.USE_HEALTH_AND_DIET_ENDPOINT)
   fun getHealthAndDiet(

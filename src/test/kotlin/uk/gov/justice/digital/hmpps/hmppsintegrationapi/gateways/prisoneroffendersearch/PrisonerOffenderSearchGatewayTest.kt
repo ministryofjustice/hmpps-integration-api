@@ -48,6 +48,10 @@ class PrisonerOffenderSearchGatewayTest(
       val getPath = "/prisoner/$nomsNumber"
       val prisonerOffenderSearchApiMockServer = ApiMockServer.create(UpstreamApi.PRISONER_OFFENDER_SEARCH)
 
+      val firstName = "JAMES"
+      val lastName = "HOWLETT"
+      val dateOfBirth = "1975-02-28"
+
       beforeEach {
         prisonerOffenderSearchApiMockServer.start()
         Mockito.reset(hmppsAuthGateway)
@@ -60,10 +64,6 @@ class PrisonerOffenderSearchGatewayTest(
       }
 
       describe("#getPersons") {
-        val firstName = "JAMES"
-        val lastName = "HOWLETT"
-        val dateOfBirth = "1975-02-28"
-
         beforeEach {
           prisonerOffenderSearchApiMockServer.stubForPost(
             postPath,
@@ -89,7 +89,6 @@ class PrisonerOffenderSearchGatewayTest(
 
         it("returns person(s) when searching on first name, last name and date of birth, in a descending order according to date of birth") {
           val response = prisonerOffenderSearchGateway.getPersons(firstName, lastName, dateOfBirth)
-
           response.data.count().shouldBe(4)
           response.data.forEach {
             it.firstName.shouldBe(firstName)
@@ -119,7 +118,7 @@ class PrisonerOffenderSearchGatewayTest(
             postPath,
             """
             {
-              "firstName": "Obi-Wan",
+              "firstName": "$firstName",
               "includeAliases": false
             }
             """.removeWhitespaceAndNewlines(),
@@ -127,8 +126,8 @@ class PrisonerOffenderSearchGatewayTest(
             {
               "content": [
                 {
-                  "firstName": "Obi-Wan",
-                  "lastName": "Kenobi"
+                  "firstName": "$firstName",
+                  "lastName": "$lastName"
                 }
               ],
               "pageable": {
@@ -161,17 +160,16 @@ class PrisonerOffenderSearchGatewayTest(
             """.trimIndent(),
           )
 
-          val response = prisonerOffenderSearchGateway.getPersons("Obi-Wan", null, null)
-
+          val response = prisonerOffenderSearchGateway.getPersons(firstName, null, null)
           response.data.count().shouldBe(1)
           response.data
             .first()
             .firstName
-            .shouldBe("Obi-Wan")
+            .shouldBe(firstName)
           response.data
             .first()
             .lastName
-            .shouldBe("Kenobi")
+            .shouldBe(lastName)
         }
 
         it("returns person(s) when searching on last name only") {
@@ -179,7 +177,7 @@ class PrisonerOffenderSearchGatewayTest(
             postPath,
             """
             {
-              "lastName": "Binks",
+              "lastName": "$lastName",
               "includeAliases": false
             }
             """.removeWhitespaceAndNewlines(),
@@ -187,8 +185,8 @@ class PrisonerOffenderSearchGatewayTest(
             {
               "content": [
                 {
-                  "firstName": "Jar Jar",
-                  "lastName": "Binks"
+                  "firstName": "$firstName",
+                  "lastName": "$lastName"
                 }
               ],
               "pageable": {
@@ -220,17 +218,16 @@ class PrisonerOffenderSearchGatewayTest(
             """.trimIndent(),
           )
 
-          val response = prisonerOffenderSearchGateway.getPersons(null, "Binks", null)
-
+          val response = prisonerOffenderSearchGateway.getPersons(null, lastName, null)
           response.data.count().shouldBe(1)
           response.data
             .first()
             .firstName
-            .shouldBe("Jar Jar")
+            .shouldBe(firstName)
           response.data
             .first()
             .lastName
-            .shouldBe("Binks")
+            .shouldBe(lastName)
         }
 
         it("returns person(s) when searching on date of birth only") {
@@ -239,16 +236,16 @@ class PrisonerOffenderSearchGatewayTest(
             """
             {
               "includeAliases": false,
-              "dateOfBirth": "1975-02-28"
+              "dateOfBirth": "$dateOfBirth"
             }
             """.removeWhitespaceAndNewlines(),
             """
             {
               "content": [
                 {
-                  "firstName": "Jar Jar",
-                  "lastName": "Binks",
-                  "dateOfBirth": "1975-02-28"
+                  "firstName": "$firstName",
+                  "lastName": "$lastName",
+                  "dateOfBirth": "$dateOfBirth"
                 }
               ],
               "pageable": {
@@ -281,16 +278,15 @@ class PrisonerOffenderSearchGatewayTest(
           )
 
           val response = prisonerOffenderSearchGateway.getPersons(null, null, dateOfBirth)
-
           response.data.count().shouldBe(1)
           response.data
             .first()
             .firstName
-            .shouldBe("Jar Jar")
+            .shouldBe(firstName)
           response.data
             .first()
             .lastName
-            .shouldBe("Binks")
+            .shouldBe(lastName)
           response.data
             .first()
             .dateOfBirth
@@ -302,7 +298,7 @@ class PrisonerOffenderSearchGatewayTest(
             postPath,
             """
             {
-              "firstName": "Geralt",
+              "firstName": "$firstName",
               "includeAliases": true
             }
             """.removeWhitespaceAndNewlines(),
@@ -310,12 +306,12 @@ class PrisonerOffenderSearchGatewayTest(
             {
               "content": [
                 {
-                  "firstName": "Rich",
+                  "firstName": "Richard",
                   "lastName": "Roger",
                   "aliases": [
                     {
-                      "firstName": "Geralt",
-                      "lastName": "Eric du Haute-Bellegarde"
+                      "firstName": "$firstName",
+                      "lastName": "$lastName"
                     }
                   ]
                 }
@@ -350,21 +346,20 @@ class PrisonerOffenderSearchGatewayTest(
             """.trimIndent(),
           )
 
-          val response = prisonerOffenderSearchGateway.getPersons("Geralt", null, null, true)
-
+          val response = prisonerOffenderSearchGateway.getPersons(firstName, null, null, true)
           response.data.count().shouldBe(1)
           response.data
             .first()
             .aliases
             .first()
             .firstName
-            .shouldBe("Geralt")
+            .shouldBe(firstName)
           response.data
             .first()
             .aliases
             .first()
             .lastName
-            .shouldBe("Eric du Haute-Bellegarde")
+            .shouldBe(lastName)
         }
 
         it("returns an empty list of Person if no matching person") {
@@ -413,7 +408,6 @@ class PrisonerOffenderSearchGatewayTest(
           )
 
           val response = prisonerOffenderSearchGateway.getPersons(firstNameThatDoesNotExist, lastNameThatDoesNotExist, null)
-
           response.data.shouldBeEmpty()
         }
       }
@@ -423,12 +417,12 @@ class PrisonerOffenderSearchGatewayTest(
           prisonerOffenderSearchApiMockServer.stubForGet(
             getPath,
             """
-             {
+            {
               "prisonerNumber": "A7796DY",
               "bookingId": "599877",
-              "firstName": "JAMES",
+              "firstName": "$firstName",
               "middleNames": "MARTIN",
-              "lastName": "HOWLETT",
+              "lastName": "$lastName",
               "maritalStatus": "Widowed"
             }
             """.trimIndent(),
@@ -437,18 +431,16 @@ class PrisonerOffenderSearchGatewayTest(
 
         it("authenticates using HMPPS Auth with credentials") {
           prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber)
-
           verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("Prisoner Offender Search")
         }
 
         it("returns reasonable adjustment for a person with the matching ID") {
           val response = prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber)
-
           response.data?.prisonerNumber.shouldBe("A7796DY")
           response.data?.bookingId.shouldBe("599877")
-          response.data?.firstName.shouldBe("JAMES")
+          response.data?.firstName.shouldBe(firstName)
           response.data?.middleNames.shouldBe("MARTIN")
-          response.data?.lastName.shouldBe("HOWLETT")
+          response.data?.lastName.shouldBe(lastName)
           response.data?.maritalStatus.shouldBe("Widowed")
         }
 
@@ -464,7 +456,6 @@ class PrisonerOffenderSearchGatewayTest(
           )
 
           val response = prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber)
-
           response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND).shouldBeTrue()
         }
       }
@@ -500,7 +491,6 @@ class PrisonerOffenderSearchGatewayTest(
 
         it("authenticates using HMPPS Auth with credentials") {
           prisonerOffenderSearchGateway.attributeSearch(request)
-
           verify(hmppsAuthGateway, times(1)).getClientToken("Prisoner Offender Search")
         }
 
@@ -513,8 +503,8 @@ class PrisonerOffenderSearchGatewayTest(
               "content": [
                 {
                   "prisonId": "$prisonId",
-                  "firstName": "Rich",
-                  "lastName": "Roger",
+                  "firstName": "$firstName",
+                  "lastName": "$lastName",
                   "cellLocation": "$cellLocation"
                 }
               ],

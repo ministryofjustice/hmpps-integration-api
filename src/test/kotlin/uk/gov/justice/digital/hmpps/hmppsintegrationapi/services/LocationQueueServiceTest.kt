@@ -29,6 +29,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.locationsInsidePrison.LIPLocation
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.personas.personInProbationAndNomisPersona
 import uk.gov.justice.hmpps.sqs.HmppsQueue
 import uk.gov.justice.hmpps.sqs.HmppsQueueService
 import java.time.LocalDate
@@ -191,10 +192,10 @@ internal class LocationQueueServiceTest(
             data =
               listOf(
                 PersonInPrison(
-                  firstName = "Barry",
-                  lastName = "Allen",
+                  firstName = personInProbationAndNomisPersona.firstName,
+                  lastName = personInProbationAndNomisPersona.lastName,
                   middleName = "Jonas",
-                  dateOfBirth = LocalDate.parse("2023-03-01"),
+                  dateOfBirth = personInProbationAndNomisPersona.dateOfBirth,
                   gender = "Male",
                   ethnicity = "Caucasian",
                   pncId = "PNC123456",

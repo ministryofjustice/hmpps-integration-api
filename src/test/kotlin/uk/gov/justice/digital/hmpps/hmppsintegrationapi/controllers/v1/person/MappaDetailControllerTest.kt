@@ -138,25 +138,6 @@ internal class MappaDetailControllerTest(
           )
         }
 
-        it("returns a 404 NOT FOUND status code when person isn't found in the upstream API") {
-          whenever(getMappaDetailForPersonService.execute(hmppsId)).thenReturn(
-            Response(
-              data = MappaDetail(),
-              errors =
-                listOf(
-                  UpstreamApiError(
-                    causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH,
-                    type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-                  ),
-                ),
-            ),
-          )
-
-          val result = mockMvc.performAuthorised(path)
-
-          result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
-        }
-
         it("returns a 404 NOT FOUND status code when person isn't found in delius") {
           whenever(getMappaDetailForPersonService.execute(hmppsId)).thenReturn(
             Response(

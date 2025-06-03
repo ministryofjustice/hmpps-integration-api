@@ -15,8 +15,12 @@ services:
     password: client-secret
   prisoner-offender-search:
     base-url: http://localhost:4000
-  probation-offender-search:
+  health-and-medication:
+    base-url: http://localhost:4001
+  manage-pom-case-api:
     base-url: http://localhost:4002
+  plp:
+    base-url: http://localhost:4003
   ndelius:
     base-url: http://localhost:4003
   assess-risks-and-needs:
@@ -29,10 +33,6 @@ services:
     base-url: http://localhost:4007
   case-notes:
     base-url: http://localhost:4008
-  manage-pom-case-api:
-    base-url: http://localhost:4002
-  plp:
-    base-url: http://localhost:4004
   non-associations:
     base-url: http://localhost:4005
   personal-relationships:
@@ -45,8 +45,6 @@ services:
     base-url: http://localhost:4009
   locations-inside-prison:
     base-url: http://localhost:4000
-  health-and-medication:
-    base-url: http://localhost:4001
 
 hmpps.sqs:
   provider: localstack
@@ -71,7 +69,6 @@ feature-flag:
   use-location-endpoint: true
   use-residential-details-endpoints: true
   use-capacity-endpoint: true
-  replace-probation-search: true
   use-location-deactivate-endpoint: true
   use-personal-care-needs-endpoints: true
   use-health-and-diet-endpoint: true

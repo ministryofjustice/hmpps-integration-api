@@ -12,13 +12,13 @@ import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.CommunityOffenderManager
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Identifiers
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonResponsibleOfficerName
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonResponsibleOfficerTeam
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.personas.personInProbationOnlyPersona
 
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
@@ -30,12 +30,29 @@ class GetCommunityOffenderManagerForPersonServiceTest(
   private val getCommunityOffenderManagerForPersonService: GetCommunityOffenderManagerForPersonService,
 ) : DescribeSpec(
     {
-      val hmppsId = "1234/56789B"
-      val deliusCrn = "X224466"
-      val filter = null
+      val person =
+        Person(
+          firstName = personInProbationOnlyPersona.firstName,
+          lastName = personInProbationOnlyPersona.lastName,
+          identifiers = personInProbationOnlyPersona.identifiers,
+        )
+      val communityOffenderManager =
+        CommunityOffenderManager(
+          name = PersonResponsibleOfficerName(forename = "Michael", surname = "Green"),
+          email = "michael.green@email.com",
+          telephoneNumber = "07XXXXXXXXX",
+          team =
+            PersonResponsibleOfficerTeam(
+              code = "Code2",
+              description = "Service description",
+              email = "email2@email2.com",
+              telephoneNumber = "07XXXXXXXXX",
+            ),
+        )
 
-      val person = Person(firstName = "Sam", lastName = "Smith", identifiers = Identifiers(deliusCrn = deliusCrn))
-      val communityOffenderManager = CommunityOffenderManager(name = PersonResponsibleOfficerName(forename = "Michael", surname = "Green"), email = "email@email.com", telephoneNumber = "07471234567", team = PersonResponsibleOfficerTeam(code = "Code2", description = "Service description", email = "email2@email2.com", telephoneNumber = "07170987654"))
+      val deliusCrn = person.identifiers.deliusCrn!!
+      val hmppsId = deliusCrn
+      val filter = null
 
       beforeEach {
         Mockito.reset(getPersonService)

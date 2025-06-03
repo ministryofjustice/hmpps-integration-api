@@ -1,10 +1,10 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 
 import io.kotest.core.spec.style.DescribeSpec
-import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory
+import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
@@ -13,12 +13,12 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.NDeliusGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonApiGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.generateTestOffence
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Identifiers
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.personas.personInProbationAndNomisPersona
 
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
@@ -31,10 +31,6 @@ internal class GetOffencesForPersonServiceTest(
   private val getOffencesForPersonService: GetOffencesForPersonService,
 ) : DescribeSpec(
     {
-      val hmppsId = "A1234AA"
-      val prisonerNumber = "Z99999ZZ"
-      val nDeliusCRN = "X123456"
-      val filters = null
       val prisonOffence1 = generateTestOffence(description = "Prison offence 1")
       val prisonOffence2 = generateTestOffence(description = "Prison offence 2")
       val prisonOffence3 = generateTestOffence(description = "Prison offence 3")
@@ -43,10 +39,14 @@ internal class GetOffencesForPersonServiceTest(
       val probationOffence3 = generateTestOffence(description = "Probation offence 3", hoCode = "05802", statuteCode = null)
       val personFromProbationOffenderSearch =
         Person(
-          firstName = "Chandler",
-          lastName = "ProbationBing",
-          identifiers = Identifiers(deliusCrn = nDeliusCRN, nomisNumber = prisonerNumber),
+          firstName = personInProbationAndNomisPersona.firstName,
+          lastName = personInProbationAndNomisPersona.lastName,
+          identifiers = personInProbationAndNomisPersona.identifiers,
         )
+      val nomisNumber = personFromProbationOffenderSearch.identifiers.nomisNumber!!
+      val deliusCrn = personFromProbationOffenderSearch.identifiers.deliusCrn!!
+      val hmppsId = nomisNumber
+      val filters = null
 
       beforeEach {
         Mockito.reset(getPersonService)
@@ -63,8 +63,7 @@ internal class GetOffencesForPersonServiceTest(
             data = personFromProbationOffenderSearch,
           ),
         )
-
-        whenever(prisonApiGateway.getOffencesForPerson(prisonerNumber)).thenReturn(
+        whenever(prisonApiGateway.getOffencesForPerson(nomisNumber)).thenReturn(
           Response(
             data =
               listOf(
@@ -74,8 +73,7 @@ internal class GetOffencesForPersonServiceTest(
               ),
           ),
         )
-
-        whenever(nDeliusGateway.getOffencesForPerson(nDeliusCRN)).thenReturn(
+        whenever(nDeliusGateway.getOffencesForPerson(deliusCrn)).thenReturn(
           Response(
             data =
               listOf(
@@ -95,7 +93,6 @@ internal class GetOffencesForPersonServiceTest(
         )
 
         val result = getOffencesForPersonService.execute(hmppsId, filters)
-
         result.shouldBe(
           Response(data = listOf(prisonOffence1, prisonOffence2, prisonOffence3, probationOffence1, probationOffence2, probationOffence3)),
         )
@@ -103,25 +100,21 @@ internal class GetOffencesForPersonServiceTest(
 
       it("gets a person using a Hmpps ID") {
         getOffencesForPersonService.execute(hmppsId, filters)
-
-        verify(getPersonService, VerificationModeFactory.times(1)).execute(hmppsId = hmppsId)
+        verify(getPersonService, times(1)).execute(hmppsId = hmppsId)
       }
 
       it("gets offences from NOMIS using a prisoner number") {
         getOffencesForPersonService.execute(hmppsId, filters)
-
-        verify(prisonApiGateway, VerificationModeFactory.times(1)).getOffencesForPerson(prisonerNumber)
+        verify(prisonApiGateway, times(1)).getOffencesForPerson(nomisNumber)
       }
 
       it("gets offences from nDelius using a CRN") {
         getOffencesForPersonService.execute(hmppsId, filters)
-
-        verify(nDeliusGateway, VerificationModeFactory.times(1)).getOffencesForPerson(nDeliusCRN)
+        verify(nDeliusGateway, VerificationModeFactory.times(1)).getOffencesForPerson(deliusCrn)
       }
 
       it("combines and returns offences from Nomis and nDelius") {
         val response = getOffencesForPersonService.execute(hmppsId, filters)
-
         response.data.shouldBe(
           listOf(
             prisonOffence1,
@@ -141,8 +134,8 @@ internal class GetOffencesForPersonServiceTest(
             data = personFromProbationOffenderSearch,
           ),
         )
-        val response = getOffencesForPersonService.execute(hmppsId, populatedFilters)
 
+        val response = getOffencesForPersonService.execute(hmppsId, populatedFilters)
         response.data.shouldBe(
           listOf(
             prisonOffence1,
@@ -153,70 +146,69 @@ internal class GetOffencesForPersonServiceTest(
       }
 
       describe("when an upstream API returns an error when looking up a person from a Hmpps ID") {
+        val errors =
+          listOf(
+            UpstreamApiError(
+              causedBy = UpstreamApi.PRISONER_OFFENDER_SEARCH,
+              type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+            ),
+            UpstreamApiError(
+              causedBy = UpstreamApi.NDELIUS,
+              type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+            ),
+          )
+
         beforeEach {
           whenever(getPersonService.execute(hmppsId = hmppsId)).thenReturn(
             Response(
               data = null,
-              errors =
-                listOf(
-                  UpstreamApiError(
-                    causedBy = UpstreamApi.PRISONER_OFFENDER_SEARCH,
-                    type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-                  ),
-                  UpstreamApiError(
-                    causedBy = UpstreamApi.PROBATION_OFFENDER_SEARCH,
-                    type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-                  ),
-                ),
+              errors,
             ),
           )
         }
 
         it("records upstream API errors") {
           val response = getOffencesForPersonService.execute(hmppsId, filters)
-          response.errors.shouldHaveSize(2)
+          response.errors.shouldBe(errors)
         }
 
         it("does not get offences from Nomis") {
           getOffencesForPersonService.execute(hmppsId, filters)
-          verify(prisonApiGateway, VerificationModeFactory.times(0)).getOffencesForPerson(id = prisonerNumber)
+          verify(prisonApiGateway, times(0)).getOffencesForPerson(id = nomisNumber)
         }
 
         it("does not get offences from nDelius") {
           getOffencesForPersonService.execute(hmppsId, filters)
-          verify(nDeliusGateway, VerificationModeFactory.times(0)).getOffencesForPerson(id = nDeliusCRN)
+          verify(nDeliusGateway, times(0)).getOffencesForPerson(id = deliusCrn)
         }
       }
 
       it("records errors when it cannot find offences for a person") {
-        whenever(nDeliusGateway.getOffencesForPerson(id = nDeliusCRN)).thenReturn(
+        val deliusError =
+          UpstreamApiError(
+            causedBy = UpstreamApi.NDELIUS,
+            type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+          )
+        val nomisError =
+          UpstreamApiError(
+            causedBy = UpstreamApi.PRISON_API,
+            type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+          )
+        whenever(nDeliusGateway.getOffencesForPerson(id = deliusCrn)).thenReturn(
           Response(
             data = emptyList(),
-            errors =
-              listOf(
-                UpstreamApiError(
-                  causedBy = UpstreamApi.NDELIUS,
-                  type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-                ),
-              ),
+            errors = listOf(deliusError),
           ),
         )
-
-        whenever(prisonApiGateway.getOffencesForPerson(id = prisonerNumber)).thenReturn(
+        whenever(prisonApiGateway.getOffencesForPerson(id = nomisNumber)).thenReturn(
           Response(
             data = emptyList(),
-            errors =
-              listOf(
-                UpstreamApiError(
-                  causedBy = UpstreamApi.PRISON_API,
-                  type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-                ),
-              ),
+            errors = listOf(nomisError),
           ),
         )
 
         val response = getOffencesForPersonService.execute(hmppsId, filters)
-        response.errors.shouldHaveSize(2)
+        response.errors.shouldBe(listOf(nomisError, deliusError))
       }
     },
   )

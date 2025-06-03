@@ -49,7 +49,6 @@ This solution is dependent on:
 
 - [Prison API](https://github.com/ministryofjustice/prison-api)
 - [Prisoner Search](https://github.com/ministryofjustice/hmpps-prisoner-search)
-- [Probation Offender Search](https://github.com/ministryofjustice/probation-offender-search)
 - [HMPPS Auth](https://github.com/ministryofjustice/hmpps-auth)
 - [Assess Risks and Needs (ARNS)](https://github.com/ministryofjustice/hmpps-assess-risks-and-needs-coordinator-api)
 - [Adjudications](https://github.com/ministryofjustice/hmpps-manage-adjudications-api)

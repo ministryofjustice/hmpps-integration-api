@@ -25,7 +25,6 @@ class FeatureFlagAspectTest {
         "use-physical-characteristics-endpoints" to false,
         "use-residential-hierarchy-endpoints" to false,
         "use-residential-details-endpoints" to false,
-        "replace-probation-search" to false,
         "use-capacity-endpoint" to false,
         "use-personal-care-needs-endpoints" to false,
         "use-languages-endpoints" to false,
