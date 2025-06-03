@@ -97,14 +97,14 @@ using IntelliJ but other IDEs will prove similar.
    ```
     # Install pipx if not already installed
     brew install pipx
-    
+
     # Ensure the path to pipx-installed tools is active
     pipx ensurepath
     # Restart your terminal after running this
-    
+
     # Install pre-commit
     pipx install pre-commit
-    
+
     # Install hooks into .git/hooks
     pre-commit install
    ```
