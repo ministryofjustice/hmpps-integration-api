@@ -7,34 +7,35 @@ import pandas as pd
 
 DEFAULT_URL = "https://prison-api-dev.prison.service.justice.gov.uk/v3/api-docs"
 URLS = [
-#API Docs
-  "https://manage-adjudications-api-dev.hmpps.service.justice.gov.uk/v3/api-docs",
-  "https://assess-risks-and-needs-dev.hmpps.service.justice.gov.uk/v3/api-docs",
-  "https://raw.githubusercontent.com/ministryofjustice/hmpps-complexity-of-need/main/Complexity%20Of%20Need%20API%20Specification.yaml",
-#  "https://court-register-dev.hmpps.service.justice.gov.uk/v3/api-docs",
-  "https://raw.githubusercontent.com/ministryofjustice/curious-API/main/curious-api-specification.yaml",
-  "https://sign-in-dev.hmpps.service.justice.gov.uk/auth/v3/api-docs",
-#  "https://keyworker-api-dev.prison.service.justice.gov.uk/v3/api-docs",
-#  "https://allocation-manager-staging.apps.live-1.cloud-platform.service.justice.gov.uk/api-docs/index.html",
-  "https://community-api.test.probation.service.justice.gov.uk/v3/api-docs/Community%20API",
-#  "https://probation-offender-events-dev.hmpps.service.justice.gov.uk/swagger-ui.html",
-  "https://probation-offender-search-dev.hmpps.service.justice.gov.uk/v3/api-docs",
-  "https://prison-api-dev.prison.service.justice.gov.uk/v3/api-docs", #"https://api-dev.prison.service.justice.gov.uk/v3/api-docs" doesn't work anymore
-  "https://offender-events-dev.prison.service.justice.gov.uk/v3/api-docs",
-  "https://prisoner-search-dev.prison.service.justice.gov.uk/v3/api-docs",
-  "https://offender-dev.aks-dev-1.studio-hosting.service.justice.gov.uk/v3/api-docs",
-  "https://prison-register-dev.hmpps.service.justice.gov.uk/v3/api-docs",
-  "https://hmpps-allocations-dev.hmpps.service.justice.gov.uk/v3/api-docs",
-  "https://probation-teams-dev.prison.service.justice.gov.uk/v3/api-docs",
-  "https://hmpps-interventions-service-dev.apps.live-1.cloud-platform.service.justice.gov.uk/v3/api-docs",
-  "https://restricted-patients-api-dev.hmpps.service.justice.gov.uk/v3/api-docs",
-  "https://hmpps-staff-lookup-service-dev.hmpps.service.justice.gov.uk/v3/api-docs",
-  "https://hmpps-tier-dev.hmpps.service.justice.gov.uk/v3/api-docs",
-  "https://token-verification-api-dev.prison.service.justice.gov.uk/v3/api-docs",
-  "https://hmpps-workload-dev.hmpps.service.justice.gov.uk/v3/api-docs",
+    # API Docs
+    "https://manage-adjudications-api-dev.hmpps.service.justice.gov.uk/v3/api-docs",
+    "https://assess-risks-and-needs-dev.hmpps.service.justice.gov.uk/v3/api-docs",
+    "https://raw.githubusercontent.com/ministryofjustice/hmpps-complexity-of-need/main/Complexity%20Of%20Need%20API%20Specification.yaml",
+    #  "https://court-register-dev.hmpps.service.justice.gov.uk/v3/api-docs",
+    "https://raw.githubusercontent.com/ministryofjustice/curious-API/main/curious-api-specification.yaml",
+    "https://sign-in-dev.hmpps.service.justice.gov.uk/auth/v3/api-docs",
+    #  "https://keyworker-api-dev.prison.service.justice.gov.uk/v3/api-docs",
+    #  "https://allocation-manager-staging.apps.live-1.cloud-platform.service.justice.gov.uk/api-docs/index.html",
+    "https://community-api.test.probation.service.justice.gov.uk/v3/api-docs/Community%20API",
+    #  "https://probation-offender-events-dev.hmpps.service.justice.gov.uk/swagger-ui.html",
+    "https://probation-offender-search-dev.hmpps.service.justice.gov.uk/v3/api-docs",
+    # "https://api-dev.prison.service.justice.gov.uk/v3/api-docs" doesn't work anymore
+    "https://prison-api-dev.prison.service.justice.gov.uk/v3/api-docs",
+    "https://offender-events-dev.prison.service.justice.gov.uk/v3/api-docs",
+    "https://prisoner-search-dev.prison.service.justice.gov.uk/v3/api-docs",
+    "https://offender-dev.aks-dev-1.studio-hosting.service.justice.gov.uk/v3/api-docs",
+    "https://prison-register-dev.hmpps.service.justice.gov.uk/v3/api-docs",
+    "https://hmpps-allocations-dev.hmpps.service.justice.gov.uk/v3/api-docs",
+    "https://probation-teams-dev.prison.service.justice.gov.uk/v3/api-docs",
+    "https://hmpps-interventions-service-dev.apps.live-1.cloud-platform.service.justice.gov.uk/v3/api-docs",
+    "https://restricted-patients-api-dev.hmpps.service.justice.gov.uk/v3/api-docs",
+    "https://hmpps-staff-lookup-service-dev.hmpps.service.justice.gov.uk/v3/api-docs",
+    "https://hmpps-tier-dev.hmpps.service.justice.gov.uk/v3/api-docs",
+    "https://token-verification-api-dev.prison.service.justice.gov.uk/v3/api-docs",
+    "https://hmpps-workload-dev.hmpps.service.justice.gov.uk/v3/api-docs",
 
-#Microservices
-  "https://raw.githubusercontent.com/ministryofjustice/hmpps-complexity-of-need/main/Complexity%20Of%20Need%20API%20Specification.yaml"
+    # Microservices
+    "https://raw.githubusercontent.com/ministryofjustice/hmpps-complexity-of-need/main/Complexity%20Of%20Need%20API%20Specification.yaml"
 ]
 
 OUTPUTS_DIR = "outputs/"
@@ -90,14 +91,16 @@ def extract_data(url=DEFAULT_URL):
         print(f"{url} is not a valid json source, returning empty dictionary object")
         data = '{}'
     except requests.exceptions.Timeout:
-        print(f"Timeout exception caught for {url}, returning empty dictionary object")
+        print(
+            f"Timeout exception caught for {url}, returning empty dictionary object")
         data = '{}'
     except requests.exceptions.TooManyRedirects:
-    # Tell the user their URL was bad and try a different one
-        print(f"TooManyRedirects exception caught for {url}, Returning empty dictionary object")
+        # Tell the user their URL was bad and try a different one
+        print(
+            f"TooManyRedirects exception caught for {url}, Returning empty dictionary object")
         data = '{}'
     except requests.exceptions.RequestException as r_e:
-    # catastrophic error. bail.
+        # catastrophic error. bail.
         raise SystemExit(r_e) from r_e
 
     return data
@@ -154,6 +157,7 @@ def find_parent_schema(response_dict, child_schema):
     data_frame = pd.concat(data_frames, axis=0)
     data_frame = data_frame.reset_index(drop=True)
     return data_frame
+
 
 def get_nested_dictionary_or_value(my_dict, keys, return_value=0):
     """
