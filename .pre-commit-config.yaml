@@ -1,0 +1,25 @@
+repos:
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.17.0
+    hooks:
+      - id: gitleaks
+
+  - repo: local
+    hooks:
+      - id: ktlint-format
+        name: Formatting
+        entry: ./gradlew ktlintFormat
+        language: system
+        types: [kotlin]
+        stages: [pre-commit]
+        always_run: true
+        pass_filenames: false
+
+      - id: ktlint-check
+        name: Linting
+        entry: ./gradlew ktlintCheck
+        language: system
+        types: [kotlin]
+        stages: [pre-commit]
+        always_run: true
+        pass_filenames: false
