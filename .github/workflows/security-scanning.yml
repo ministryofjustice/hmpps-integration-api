@@ -19,7 +19,8 @@ jobs:
         run: echo "PY=$(python -VV | sha256sum | cut -d' ' -f1)" >> $GITHUB_ENV
 
       - name: Cache pre-commit environments
-        uses: actions/cache@@v4.2.3
+        uses: actions/cache@v4.2.3
+
         with:
           path: ~/.cache/pre-commit
           key: pre-commit|${{ env.PY }}|${{ hashFiles('.pre-commit-config.yaml') }}
