@@ -161,6 +161,8 @@ authorisation:
     kilco:
       include:
       filters:
+        prisons:
+          - MKI
       roles:
         - "private-prison"
     meganexus:
@@ -282,3 +284,10 @@ authorisation:
       include:
       filters:
       roles:
+    test:
+      include:
+      filters:
+        prisons:
+          - MKI
+      roles:
+        - "private-prison"
