@@ -151,10 +151,6 @@ authorisation:
         - "/v1/persons/.*/health-and-diet"
         - "/v1/persons/.*/languages"
       filters:
-    config-test:
-      include:
-        - "/v1/config/authorisation"
-      filters:
     config-v2-test:
       include:
         - "/v2/config/authorisation"

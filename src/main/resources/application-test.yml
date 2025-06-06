@@ -153,9 +153,6 @@ authorisation:
         - "/v1/persons/.*/health-and-diet"
         - "/v1/persons/.*/care-needs"
         - "/v1/persons/.*/languages"
-    config-test:
-      include:
-        - "/v1/config/authorisation"
     config-v2-test:
       include:
         - "/v2/config/authorisation"

@@ -76,10 +76,6 @@ authorisation:
         - "/v1/persons/.*/education/assessments/status"
         - "/v1/persons/.*/health-and-diet"
       filters:
-    config-test:
-      include:
-        - "/v1/config/authorisation"
-      filters:
     config-v2-test:
       include:
         - "/v2/config/authorisation"
