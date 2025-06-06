@@ -7,7 +7,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationT
 import java.io.File
 
 class PLPIntegrationTest : IntegrationTestBase() {
-//  @Disabled("Prism generated mock API is returning bad data due to generated schema from other project")
   @Test
   fun `returns a persons induction schedule`() {
     plpMockServer.stubForGet(
