@@ -271,7 +271,6 @@ It details the endpoints the events relate to, and information about what trigge
     * `PrisonerOffenderSearch.Prisoner.RECEIVED`
   * OR `PrisonerOffenderSearch.Prisoner.UPDATED` (when `SENTENCE` category has been changed)
 
-//Need to carry on reviewing from here//
 ### Person Responsible Officer Changed
 
 * **Endpoint:** `/v1/persons/{hmppsId}/person-responsible-officer`
@@ -281,7 +280,7 @@ It details the endpoints the events relate to, and information about what trigge
     * `ProbationCase.PrisonIdentifier.ADDED`
     * `PrisonerOffenderSearch.Prisoner.CREATED`
     * `PrisonerOffenderSearch.Prisoner.RECEIVED`
-  * **Responsible Officer Events:**
+  * **OR Responsible Officer Events:**
     * `Person.Community.Manager.ALLOCATED`
     * `Person.Community.Manager.TRANSFERRED`
     * `Probation.Staff.UPDATED`
@@ -305,7 +304,7 @@ It details the endpoints the events relate to, and information about what trigge
     * `ProbationCase.PrisonIdentifier.ADDED`
     * `PrisonerOffenderSearch.Prisoner.CREATED`
     * `PrisonerOffenderSearch.Prisoner.RECEIVED`
-  * **Adjudication Events:**
+  * **OR Adjudication Events:**
     * `Adjudication.Hearing.CREATED`
     * `Adjudication.Hearing.DELETED`
     * `Adjudication.Hearing.COMPLETED`
@@ -331,7 +330,7 @@ It details the endpoints the events relate to, and information about what trigge
     * `ProbationCase.PrisonIdentifier.ADDED`
     * `PrisonerOffenderSearch.Prisoner.CREATED`
     * `PrisonerOffenderSearch.Prisoner.RECEIVED`
-  * `PrisonerOffenderSearch.Prisoner.UPDATED` (when `PHYSICAL_DETAILS` category is changed)
+  * OR `PrisonerOffenderSearch.Prisoner.UPDATED` (when `PHYSICAL_DETAILS` category has been changed)
 
 ### Person Images Changed
 
@@ -366,7 +365,7 @@ It details the endpoints the events relate to, and information about what trigge
   * **New Prisoner Events:**
     * `PrisonerOffenderSearch.Prisoner.CREATED`
     * `PrisonerOffenderSearch.Prisoner.RECEIVED`
-  * `PrisonOffenderEvents.Prisoner.NonAssociationDetail.CHANGED`
+  * OR `PrisonOffenderEvents.Prisoner.NonAssociationDetail.CHANGED`
 
 ### Prison Visits Changed
 
