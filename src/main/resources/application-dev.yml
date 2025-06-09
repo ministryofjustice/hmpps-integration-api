@@ -187,6 +187,13 @@ authorisation:
         - "/v1/persons/.*/plp-review-schedule"
         - "/v1/persons/.*/addresses"
         - "/v1/persons/.*/person-responsible-officer"
+        - "/v1/prison/.*/visit/search[^/]*$"
+        - "/v1/prison/.*/residential-hierarchy"
+        - "/v1/prison/.*/location/[^/]*$"
+        - "/v1/prison/.*/residential-details"
+        - "/v1/prison/.*/capacity"
+        - "/v1/visit/[^/]*$"
+        - "/v1/persons/.*/visit/future"
       filters:
     serco:
       include:
