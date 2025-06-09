@@ -1,0 +1,20 @@
+---
+title: HMPPS Integration Events
+weight: 1
+owner_slack: "#hmpps-integration-api-alerts"
+last_reviewed_on: 2025-06-09
+review_in: 3 months
+---
+
+# HMPPS Integration Events
+
+HMPPS Integration Events is an events based system which triggers SNS notifications by processing upstream MoJ domain events which are related to the information served by the API. This allows the clients of our API to be notified when a change occurs to a domain that is of interest to them.
+
+Consumers who want to receive Integration Events, will need an SQS queue and Subscription to the Integration Events Topic created. This will provide them with a queue that receives events when they are put on the Integration Event topic.
+
+Email [hmpps-integration-api@digital.justice.gov.uk](mailto:hmpps-integration-api@digital.justice.gov.uk) to request access to this Events service, and any specific events.
+
+## Available Events
+
+
+
