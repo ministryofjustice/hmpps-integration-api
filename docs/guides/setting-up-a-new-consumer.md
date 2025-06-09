@@ -146,10 +146,18 @@ openssl enc -d -aes-256-cbc -pbkdf2 -iter 310000 -md sha256 -salt -in hmpps-inte
 
 Within the [Cloud Platform Environments GitHub repository](https://github.com/ministryofjustice/cloud-platform-environments/tree/main) and the namespace of the environment:
 
-1. Create a branch.
+1. Create a branch for the first pull request (this process requires two pull requests).
 2. Add new client subscriber terraform file. Example: [event-subscriber-mapps.tf](https://github.com/ministryofjustice/cloud-platform-environments/pull/22091/files#diff-4046866c9398b1db59a427052406a08c2adab45aadbc278f16232157a636f451)
 3. Rename client name "mapps" to new client name
 4. Add new client filter list secret. example [secret.tf](https://github.com/ministryofjustice/cloud-platform-environments/pull/22091/files#diff-bc13dba50c430d2a667e5b867d2798770e5e8c48697407d93e2febedb3ff46dc)
+5. At this point, submit the first PR.
+6. Update the secret for the filter policy:
+   1. Login to the [AWS Console](https://user-guide.cloud-platform.service.justice.gov.uk/documentation/getting-started/accessing-the-cloud-console.html), navigate to Secrets Manager and navigate to the secret created in the previous step by search using the secret description. e.g. MAPPS event filter list Pre-prod
+   2. Click on the secret and then click on Retrieve secret value. If this is your first time accessing the new secret, you will see an error Failed to get the secret value.
+   3. Click on Set secret Value, and set the Plaintext value as: {"eventType":["default"]}. Setting filter to default will block subscriber receiving any messages. Event notifier will update the subscriber and AWS secret with actual filter list later.
+   4. Save the change
+5. Create new [Cloud Platform Environments GitHub repository](https://github.com/ministryofjustice/cloud-platform-environments/tree/main) branch for the second pull request.
+6. Update terraform to load the secret value from AWS and update filter_policy value. Follow [Example](https://github.com/ministryofjustice/cloud-platform-environments/pull/22111/files). Note: The name of aws_secretsmanager_secret module has to be same as the secret name created and can be found in AWS secrets manager.
 5. Add a client queue mapping. Example: [locals.tf](https://github.com/ministryofjustice/cloud-platform-environments/blob/6e6ad3d6c8bd070b3ba65ce8568fa79c2cfe4e30/namespaces/live.cloud-platform.service.justice.gov.uk/hmpps-integration-api-dev/resources/locals.tf#L13)
 6. Follow steps 3-8 in [Create an API key](#create-an-api-key) to merge branch to main.
 7. Retrieve the client queue name and ARN with the following command:
@@ -171,13 +179,3 @@ export AWS_SESSION_TOKEN=$(jq -r '.SessionToken' <<< "$temporary_credentials")
 aws sqs get-queue-attributes --attribute-names ApproximateNumberOfMessages --queue-url "https://sqs.eu-west-2.amazonaws.com/754256621582/$client_queue_name" --region eu-west-2 --output text
 > 1234
 ```
-
-### Using AWS secret for filter Policy
-
-1. Login to the [AWS Console](https://user-guide.cloud-platform.service.justice.gov.uk/documentation/getting-started/accessing-the-cloud-console.html), navigate to Secrets Manager and navigate to the secret created in the previous step by search using the secret description. e.g. MAPPS event filter list Pre-prod
-2. Click on the secret and then click on Retrieve secret value. If this is your first time accessing the new secret, you will see an error Failed to get the secret value.
-3. Click on Set secret Value, and set the Plaintext value as: {"eventType":["default"]}. Setting filter to default will block subscriber receiving any messages. Event notifier will update the subscriber and AWS secret with actual filter list later.
-4. Save the change
-5. Create new [Cloud Platform Environments GitHub repository](https://github.com/ministryofjustice/cloud-platform-environments/tree/main) branch
-6. Update terraform to load the secret value from AWS and update filter_policy value. Follow [Example](https://github.com/ministryofjustice/cloud-platform-environments/pull/22111/files). Note: The name of aws_secretsmanager_secret module has to be same as the secret name created from step 4/5 above.
-7. Follow steps 3-8 in [Create an API key](#create-an-api-key) to merge branch to main.
