@@ -92,18 +92,18 @@
               <nav id="toc" class="js-toc-list toc__list" aria-labelledby="toc-heading" data-module="collapsible-navigation">
                       <ul>
   <li>
-    <a href="../../index.html"><span>About</span></a>
-    <ul>
-      <li>
-        <a href="../../index.html#diagrams"><span>Diagrams</span></a>
-      </li>
-    </ul>
-  </li>
-  <li>
     <a href="../../documentation/events/index.html"><span>HMPPS Integration Events</span></a>
     <ul>
       <li>
         <a href="../../documentation/events/index.html#available-events"><span>Available Events</span></a>
+      </li>
+    </ul>
+  </li>
+  <li>
+    <a href="../../index.html"><span>About</span></a>
+    <ul>
+      <li>
+        <a href="../../index.html#diagrams"><span>Diagrams</span></a>
       </li>
     </ul>
   </li>
@@ -527,7 +527,6 @@ It details the endpoints the events relate to, and information about what trigge
 <li>OR <code>PrisonerOffenderSearch.Prisoner.UPDATED</code> (when <code>SENTENCE</code> category has been changed)</li>
 </ul></li>
 </ul>
-<p>//Need to carry on reviewing from here//</p>
 <h3 id="person-responsible-officer-changed">Person Responsible Officer Changed</h3>
 
 <ul>
@@ -540,7 +539,7 @@ It details the endpoints the events relate to, and information about what trigge
 <li><code>ProbationCase.PrisonIdentifier.ADDED</code></li>
 <li><code>PrisonerOffenderSearch.Prisoner.CREATED</code></li>
 <li><code>PrisonerOffenderSearch.Prisoner.RECEIVED</code></li>
-<li><strong>Responsible Officer Events:</strong></li>
+<li><strong>OR Responsible Officer Events:</strong></li>
 <li><code>Person.Community.Manager.ALLOCATED</code></li>
 <li><code>Person.Community.Manager.TRANSFERRED</code></li>
 <li><code>Probation.Staff.UPDATED</code></li>
@@ -572,7 +571,7 @@ It details the endpoints the events relate to, and information about what trigge
 <li><code>ProbationCase.PrisonIdentifier.ADDED</code></li>
 <li><code>PrisonerOffenderSearch.Prisoner.CREATED</code></li>
 <li><code>PrisonerOffenderSearch.Prisoner.RECEIVED</code></li>
-<li><strong>Adjudication Events:</strong></li>
+<li><strong>OR Adjudication Events:</strong></li>
 <li><code>Adjudication.Hearing.CREATED</code></li>
 <li><code>Adjudication.Hearing.DELETED</code></li>
 <li><code>Adjudication.Hearing.COMPLETED</code></li>
@@ -606,7 +605,7 @@ It details the endpoints the events relate to, and information about what trigge
 <li><code>ProbationCase.PrisonIdentifier.ADDED</code></li>
 <li><code>PrisonerOffenderSearch.Prisoner.CREATED</code></li>
 <li><code>PrisonerOffenderSearch.Prisoner.RECEIVED</code></li>
-<li><code>PrisonerOffenderSearch.Prisoner.UPDATED</code> (when <code>PHYSICAL_DETAILS</code> category is changed)</li>
+<li>OR <code>PrisonerOffenderSearch.Prisoner.UPDATED</code> (when <code>PHYSICAL_DETAILS</code> category has been changed)</li>
 </ul></li>
 </ul>
 <h3 id="person-images-changed">Person Images Changed</h3>
@@ -657,7 +656,7 @@ It details the endpoints the events relate to, and information about what trigge
 <li><strong>New Prisoner Events:</strong></li>
 <li><code>PrisonerOffenderSearch.Prisoner.CREATED</code></li>
 <li><code>PrisonerOffenderSearch.Prisoner.RECEIVED</code></li>
-<li><code>PrisonOffenderEvents.Prisoner.NonAssociationDetail.CHANGED</code></li>
+<li>OR <code>PrisonOffenderEvents.Prisoner.NonAssociationDetail.CHANGED</code></li>
 </ul></li>
 </ul>
 <h3 id="prison-visits-changed">Prison Visits Changed</h3>
