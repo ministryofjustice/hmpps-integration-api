@@ -156,17 +156,17 @@ Within the [Cloud Platform Environments GitHub repository](https://github.com/mi
    2. Click on the secret and then click on Retrieve secret value. If this is your first time accessing the new secret, you will see an error Failed to get the secret value.
    3. Click on Set secret Value, and set the Plaintext value as: {"eventType":["default"]}. Setting filter to default will block subscriber receiving any messages. Event notifier will update the subscriber and AWS secret with actual filter list later.
    4. Save the change
-5. Create new [Cloud Platform Environments GitHub repository](https://github.com/ministryofjustice/cloud-platform-environments/tree/main) branch for the second pull request.
-6. Update terraform to load the secret value from AWS and update filter_policy value. Follow [Example](https://github.com/ministryofjustice/cloud-platform-environments/pull/22111/files). Note: The name of aws_secretsmanager_secret module has to be same as the secret name created and can be found in AWS secrets manager.
-5. Add a client queue mapping. Example: [locals.tf](https://github.com/ministryofjustice/cloud-platform-environments/blob/6e6ad3d6c8bd070b3ba65ce8568fa79c2cfe4e30/namespaces/live.cloud-platform.service.justice.gov.uk/hmpps-integration-api-dev/resources/locals.tf#L13)
-6. Follow steps 3-8 in [Create an API key](#create-an-api-key) to merge branch to main.
-7. Retrieve the client queue name and ARN with the following command:
-   ```bash
-   kubectl -n hmpps-integration-api-[environment] get secrets [your queue secret name] -o json
-   # E.g. kubectl -n hmpps-integration-api-dev get secrets event-mapps-queue  -o json
-   ```
-8. Send the client queue name and ARN to the consumer
-9. Follow the steps in the [Integration Events repository](https://github.com/ministryofjustice/hmpps-integration-events/blob/main/docs/guides/setting-up-a-new-consumer.md) to ensure the queue is populated with events.
+7. Create new [Cloud Platform Environments GitHub repository](https://github.com/ministryofjustice/cloud-platform-environments/tree/main) branch for the second pull request.
+8. Update terraform to load the secret value from AWS and update filter_policy value. Follow [Example](https://github.com/ministryofjustice/cloud-platform-environments/pull/22111/files). Note: The name of aws_secretsmanager_secret module has to be same as the secret name created and can be found in AWS secrets manager.
+9. Add a client queue mapping. Example: [locals.tf](https://github.com/ministryofjustice/cloud-platform-environments/blob/6e6ad3d6c8bd070b3ba65ce8568fa79c2cfe4e30/namespaces/live.cloud-platform.service.justice.gov.uk/hmpps-integration-api-dev/resources/locals.tf#L13)
+10. Follow steps 3-8 in [Create an API key](#create-an-api-key) to merge branch to main.
+11. Retrieve the client queue name and ARN with the following command:
+    ```bash
+    kubectl -n hmpps-integration-api-[environment] get secrets [your queue secret name] -o json
+    # E.g. kubectl -n hmpps-integration-api-dev get secrets event-mapps-queue  -o json
+    ```
+12. Send the client queue name and ARN to the consumer
+13. Follow the steps in the [Integration Events repository](https://github.com/ministryofjustice/hmpps-integration-events/blob/main/docs/guides/setting-up-a-new-consumer.md) to ensure the queue is populated with events.
 
 The consumer can use the `POST /token` endpoint in API Gateway to retrieve temporary credentials, then use the SQS APIs or SDKs to receive and delete messages. For example:
 
