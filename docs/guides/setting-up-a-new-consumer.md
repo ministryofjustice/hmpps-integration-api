@@ -150,7 +150,7 @@ Within the [Cloud Platform Environments GitHub repository](https://github.com/mi
 2. Add new client subscriber terraform file. Example: [event-subscriber-mapps.tf](https://github.com/ministryofjustice/cloud-platform-environments/pull/22091/files#diff-4046866c9398b1db59a427052406a08c2adab45aadbc278f16232157a636f451)
 3. Rename client name "mapps" to new client name
 4. Add new client filter list secret. example [secret.tf](https://github.com/ministryofjustice/cloud-platform-environments/pull/22091/files#diff-bc13dba50c430d2a667e5b867d2798770e5e8c48697407d93e2febedb3ff46dc)
-5. At this point, submit the first PR.
+5. At this point, submit the first PR (Follow steps 3-8 in [Create an API key](#create-an-api-key) to merge branch to main.).
 6. Update the secret for the filter policy:
    1. Login to the [AWS Console](https://user-guide.cloud-platform.service.justice.gov.uk/documentation/getting-started/accessing-the-cloud-console.html), navigate to Secrets Manager and navigate to the secret created in the previous step by search using the secret description. e.g. MAPPS event filter list Pre-prod
    2. Click on the secret and then click on Retrieve secret value. If this is your first time accessing the new secret, you will see an error Failed to get the secret value.
