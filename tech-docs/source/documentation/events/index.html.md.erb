@@ -15,6 +15,446 @@ Consumers who want to receive Integration Events, will need an SQS queue and Sub
 Email [hmpps-integration-api@digital.justice.gov.uk](mailto:hmpps-integration-api@digital.justice.gov.uk) to request access to this Events service, and any specific events.
 
 ## Available Events
+Below is a list of all the events that you can currently receive notifications about if something changes.
+It details the endpoints the events relate to, and information about what triggers an event to be sent.
+
+### Dynamic Risks Changed
+
+* **Endpoint:** `/v1/persons/{hmppsId}/risks/dynamic`
+* **Triggered by one of the following domain events:**
+  * `ProbationCase.Registration.ADDED`
+  * `ProbationCase.Registration.UPDATED`
+  * `ProbationCase.Registration.DELETED`
+  * `ProbationCase.Registration.DEREGISTERED`
+  * **As well as one of the following dynamic risks register types being present:**
+    * Child Concerns (`RCCO`)
+      * Safeguarding concerns where a child is at risk from the offender.
+    * Child Protection (`RCPR`)
+      * Child is subject to a protection plan/conference
+    * Risk to Vulnerable Adult (`RVAD`)
+    * Street Gangs (`STRG`)
+      * Involved in serious group offending
+    * ViSOR Record (`AVIS`)
+      * Subject has a ViSOR record
+    * Weapons (`WEAP`)
+      * Known to use/carry weapon
+    * Low Risk of Serious Harm (`RLRH`)
+    * Medium Risk of Serious Harm (`RMRH`)
+    * High Risk of Serious Harm (`RHRH`)
+
+### Probation Status Changed
+
+* **Endpoint:** `/v1/persons/{hmppsId}/status-information`
+* **Triggered By:**
+  * `ProbationCase.Registration.ADDED`
+  * `ProbationCase.Registration.UPDATED`
+  * `ProbationCase.Registration.DELETED`
+  * `ProbationCase.Registration.DEREGISTERED`
+  * **As well as one of the following probation status register types being present:**
+    * Serious Further Offence Review/Investigation (`ASFO`)
+      * Subject to SFO review/investigation
+    * Outstanding Warrant or Summons (`WRSM`)
+
+### MAPPA Detail Changed
+
+* **Endpoint:** `/v1/persons/{hmppsId}/risks/mappadetail`
+* **Triggered By:**
+  * `ProbationCase.Registration.ADDED`
+  * `ProbationCase.Registration.UPDATED`
+  * `ProbationCase.Registration.DELETED`
+  * `ProbationCase.Registration.DEREGISTERED`
+  * **As well as one of the following MAPPA detail register types being present:**
+    * Multi-Agency Public Protection Arrangements (`MAPP`)
+
+### Risk Score Changed
+
+* **Endpoint:** `/v1/persons/{hmppsId}/risks/scores`
+* **Triggered By:**
+  * `ProbationCase.RiskScores.OGRS.MANUAL_CALCULATION`
+  * `RiskAssessment.Scores.OGRS.DETERMINED`
+  * `RiskAssessment.Scores.RSR.DETERMINED`
+
+### Key Dates and Adjustments Prisoner Release
+
+* **Endpoint:** `/v1/persons/{hmppsId}/sentences/latest-key-dates-and-adjustments`
+* **Triggered By:**
+  * **New Person Events:**
+    * `ProbationCase.Engagement.CREATED`
+    * `ProbationCase.PrisonIdentifier.ADDED`
+    * `PrisonerOffenderSearch.Prisoner.CREATED`
+    * `PrisonerOffenderSearch.Prisoner.RECEIVED`
+  * **OR Release/Sentence Events:**
+    * `PrisonerOffenderSearch.Prisoner.RELEASED`
+    * `PrisonOffenderEvents.Prisoner.RELEASED`
+    * `CalculateReleaseDates.Prisoner.CHANGED`
+
+### Licence Condition Changed
+
+* **Endpoint:** `/v1/persons/{hmppsId}/licences/conditions`
+* **Triggered By:**
+  * `CreateAndVaryALicence.Licence.ACTIVATED`
+  * `CreateAndVaryALicence.Licence.INACTIVATED`
+
+### Risk of Serious Harm Changed
+
+* **Endpoint:** `/v1/persons/{hmppsId}/risks/serious-harm`
+* **Triggered By:**
+  * `Assessment.Summary.PRODUCED`
+
+### PLP Induction Schedule Changed
+
+* **Endpoint:** `/v1/persons/{hmppsId}/plp-induction-schedule/history`
+* **Triggered By:**
+  * `PLP.InductionSchedule.UPDATED`
+
+### PLP Review Schedule Changed
+
+* **Endpoint:** `/v1/persons/{hmppsId}/plp-review-schedule`
+* **Triggered By:**
+  * `PLP.ReviewSchedule.UPDATED`
+
+### Person Status Changed
+
+* **Endpoint:** `/v1/persons/{hmppsId}`
+* **Triggered By:**
+  * `ProbationCase.Engagement.CREATED`
+  * `ProbationCase.PrisonIdentifier.ADDED`
+  * `PrisonerOffenderSearch.Prisoner.CREATED`
+  * `PrisonerOffenderSearch.Prisoner.UPDATED`
+  * `PrisonerOffenderSearch.Prisoner.RECEIVED`
+
+### Person Address Changed
+
+* **Endpoint:** `/v1/persons/{hmppsId}/addresses`
+* **Triggered By:**
+  * **New Person Events:**
+    * `ProbationCase.Engagement.CREATED`
+    * `ProbationCase.PrisonIdentifier.ADDED`
+    * `PrisonerOffenderSearch.Prisoner.CREATED`
+    * `PrisonerOffenderSearch.Prisoner.RECEIVED`
+  * **OR Address Events:**
+    * `ProbationCase.Address.CREATED`
+    * `ProbationCase.Address.UPDATED`
+    * `ProbationCase.Address.DELETED`
+
+### Person Contacts Changed
+
+* **Endpoint:** `/v1/persons/{hmppsId}/contacts`
+* **Triggered By:**
+  * **New Person Events:**
+    * `ProbationCase.Engagement.CREATED`
+    * `ProbationCase.PrisonIdentifier.ADDED`
+    * `PrisonerOffenderSearch.Prisoner.CREATED`
+    * `PrisonerOffenderSearch.Prisoner.RECEIVED`
+  * **OR Contact Events:**
+    * `PrisonOffenderEvents.Prisoner.CONTACT_ADDED`
+    * `PrisonOffenderEvents.Prisoner.CONTACT_APPROVED`
+    * `PrisonOffenderEvents.Prisoner.CONTACT_UNAPPROVED`
+    * `PrisonOffenderEvents.Prisoner.CONTACT_REMOVED`
+
+### Person IEP Level Changed
+
+* **Endpoint:** `/v1/persons/{hmppsId}/iep-level`
+* **Triggered By:**
+  * **New Person Events:**
+    * `ProbationCase.Engagement.CREATED`
+    * `ProbationCase.PrisonIdentifier.ADDED`
+    * `PrisonerOffenderSearch.Prisoner.CREATED`
+    * `PrisonerOffenderSearch.Prisoner.RECEIVED`
+  * **OR IEP Review Events:**
+    * `Incentives.IEPReview.INSERTED`
+    * `Incentives.IEPReview.UPDATED`
+    * `Incentives.IEPReview.DELETED`
+
+### Person Visitor Restrictions Changed
+
+* **Endpoint:** `/v1/persons/{hmppsId}/visitor/{contactId}/restrictions`
+* **Triggered By:**
+  * `PrisonOffenderEvents.Prisoner.PersonRestriction.UPSERTED`
+  * `PrisonOffenderEvents.Prisoner.PersonRestriction.DELETED`
+
+### Person Visit Restrictions Changed
+
+* **Endpoint:** `/v1/persons/{hmppsId}/visit-restrictions`
+* **Triggered By:**
+  * **New Person Events:**
+    * `ProbationCase.Engagement.CREATED`
+    * `ProbationCase.PrisonIdentifier.ADDED`
+    * `PrisonerOffenderSearch.Prisoner.CREATED`
+    * `PrisonerOffenderSearch.Prisoner.RECEIVED`
+  * `PrisonOffenderEvents.Prisoner.Restriction.CHANGED`
+
+### Person Future Visits Changed
+
+* **Endpoint:** `/v1/persons/{hmppsId}/visits/future`
+* **Triggered By:**
+  * `PrisonVisit.BOOKED`
+  * `PrisonVisit.CHANGED`
+  * `PrisonVisit.CANCELLED`
+
+### Person Alerts Changed
+
+* **Endpoint:** `/v1/persons/{hmppsId}/alerts`
+* **Triggered By:**
+  * **New Person Events:**
+    * `ProbationCase.Engagement.CREATED`
+    * `ProbationCase.PrisonIdentifier.ADDED`
+    * `PrisonerOffenderSearch.Prisoner.CREATED`
+    * `PrisonerOffenderSearch.Prisoner.RECEIVED`
+  * **OR Alert Events:**
+    * `Person.Alert.CREATED`
+    * `Person.Alert.CHANGED`
+    * `Person.Alert.UPDATED`
+    * `Person.Alert.DELETED`
+
+### Person PND Alerts Changed
+
+* **Endpoint:** `/v1/pnd/persons/{hmppsId}/alerts`
+* **Triggered By:**
+  * **New Person Events:**
+    * `ProbationCase.Engagement.CREATED`
+    * `ProbationCase.PrisonIdentifier.ADDED`
+    * `PrisonerOffenderSearch.Prisoner.CREATED`
+    * `PrisonerOffenderSearch.Prisoner.RECEIVED`
+  * **OR Alert Events:**
+    * `Person.Alert.CREATED`
+    * `Person.Alert.CHANGED`
+    * `Person.Alert.UPDATED`
+    * `Person.Alert.DELETED`
+  * **As well as one of the following PND alert types being present:**
+    * `BECTER`, `HA`, `XA`, `XCA`, `XEL`, `XELH`, `XER`, `XHT`, `XILLENT`, `XIS`, `XR`, `XRF`, `XSA`, `HA2`, `RCS`, `RDV`, `RKC`, `RPB`, `RPC`, `RSS`, `RST`, `RDP`, `REG`, `RLG`, `ROP`, `RRV`, `RTP`, `RYP`, `HS`, `SC`
+
+### Person Case Notes Changed
+
+* **Endpoint:** `/v1/persons/{hmppsId}/case-notes`
+* **Triggered By:**
+  * **New Person Events:**
+    * `ProbationCase.Engagement.CREATED`
+    * `ProbationCase.PrisonIdentifier.ADDED`
+    * `PrisonerOffenderSearch.Prisoner.CREATED`
+    * `PrisonerOffenderSearch.Prisoner.RECEIVED`
+  * **OR Case Note Events:**
+    * `Person.CaseNote.CREATED`
+    * `Person.CaseNote.UPDATED`
+    * `Person.CaseNote.DELETED`
+
+### Person Name Changed
+
+* **Endpoint:** `/v1/persons/{hmppsId}/name`
+* **Triggered By:**
+  * **New Person Events:**
+    * `ProbationCase.Engagement.CREATED`
+    * `ProbationCase.PrisonIdentifier.ADDED`
+    * `PrisonerOffenderSearch.Prisoner.CREATED`
+    * `PrisonerOffenderSearch.Prisoner.RECEIVED`
+  * OR `PrisonerOffenderSearch.Prisoner.UPDATED` (when `PERSONAL_DETAILS` category has been changed)
+
+### Person Cell Location Changed
+
+* **Endpoint:** `/v1/persons/{hmppsId}/cell-location`
+* **Triggered By:**
+  * **New Person Events:**
+    * `ProbationCase.Engagement.CREATED`
+    * `ProbationCase.PrisonIdentifier.ADDED`
+    * `PrisonerOffenderSearch.Prisoner.CREATED`
+    * `PrisonerOffenderSearch.Prisoner.RECEIVED`
+  * OR `PrisonerOffenderSearch.Prisoner.UPDATED` (when `LOCATION` category has been changed)
+
+### Person Sentences Changed
+
+* **Endpoint:** `/v1/persons/{hmppsId}/sentences`
+* **Triggered By:**
+  * **New Person Events:**
+    * `ProbationCase.Engagement.CREATED`
+    * `ProbationCase.PrisonIdentifier.ADDED`
+    * `PrisonerOffenderSearch.Prisoner.CREATED`
+    * `PrisonerOffenderSearch.Prisoner.RECEIVED`
+  * OR `PrisonerOffenderSearch.Prisoner.UPDATED` (when `SENTENCE` category has been changed)
+
+//Need to carry on reviewing from here//
+### Person Responsible Officer Changed
+
+* **Endpoint:** `/v1/persons/{hmppsId}/person-responsible-officer`
+* **Triggered By:**
+  * **New Person Events:**
+    * `ProbationCase.Engagement.CREATED`
+    * `ProbationCase.PrisonIdentifier.ADDED`
+    * `PrisonerOffenderSearch.Prisoner.CREATED`
+    * `PrisonerOffenderSearch.Prisoner.RECEIVED`
+  * **Responsible Officer Events:**
+    * `Person.Community.Manager.ALLOCATED`
+    * `Person.Community.Manager.TRANSFERRED`
+    * `Probation.Staff.UPDATED`
+
+### Person Protected Characteristics Changed
+
+* **Endpoint:** `/v1/persons/{hmppsId}/protected-characteristics`
+* **Triggered By:**
+  * **New Person Events:**
+    * `ProbationCase.Engagement.CREATED`
+    * `ProbationCase.PrisonIdentifier.ADDED`
+    * `PrisonerOffenderSearch.Prisoner.CREATED`
+    * `PrisonerOffenderSearch.Prisoner.RECEIVED`
+
+### Person Reported Adjudications Changed
+
+* **Endpoint:** `/v1/persons/{hmppsId}/reported-adjudications`
+* **Triggered By:**
+  * **New Person Events:**
+    * `ProbationCase.Engagement.CREATED`
+    * `ProbationCase.PrisonIdentifier.ADDED`
+    * `PrisonerOffenderSearch.Prisoner.CREATED`
+    * `PrisonerOffenderSearch.Prisoner.RECEIVED`
+  * **Adjudication Events:**
+    * `Adjudication.Hearing.CREATED`
+    * `Adjudication.Hearing.DELETED`
+    * `Adjudication.Hearing.COMPLETED`
+    * `Adjudication.Punishments.CREATED`
+    * `Adjudication.Report.CREATED`
+
+### Person Number of Children Changed
+
+* **Endpoint:** `/v1/persons/{hmppsId}/number-of-children`
+* **Triggered By:**
+  * **New Person Events:**
+    * `ProbationCase.Engagement.CREATED`
+    * `ProbationCase.PrisonIdentifier.ADDED`
+    * `PrisonerOffenderSearch.Prisoner.CREATED`
+    * `PrisonerOffenderSearch.Prisoner.RECEIVED`
+
+### Person Physical Characteristics Changed
+
+* **Endpoint:** `/v1/persons/{hmppsId}/physical-characteristics`
+* **Triggered By:**
+  * **New Person Events:**
+    * `ProbationCase.Engagement.CREATED`
+    * `ProbationCase.PrisonIdentifier.ADDED`
+    * `PrisonerOffenderSearch.Prisoner.CREATED`
+    * `PrisonerOffenderSearch.Prisoner.RECEIVED`
+  * `PrisonerOffenderSearch.Prisoner.UPDATED` (when `PHYSICAL_DETAILS` category is changed)
+
+### Person Images Changed
+
+* **Endpoint:** `/v1/persons/{hmppsId}/images`
+* **Triggered By:**
+  * **New Person Events:**
+    * `ProbationCase.Engagement.CREATED`
+    * `ProbationCase.PrisonIdentifier.ADDED`
+    * `PrisonerOffenderSearch.Prisoner.CREATED`
+    * `PrisonerOffenderSearch.Prisoner.RECEIVED`
+
+### Prisoners Changed
+
+* **Endpoint:** `/v1/prison/prisoners`
+* **Triggered By:**
+  * `PrisonerOffenderSearch.Prisoner.CREATED`
+  * `PrisonerOffenderSearch.Prisoner.UPDATED`
+  * `PrisonerOffenderSearch.Prisoner.RECEIVED`
+
+### Prisoner Changed
+
+* **Endpoint:** `/v1/prison/prisoners/{hmppsId}`
+* **Triggered By:**
+  * `PrisonerOffenderSearch.Prisoner.CREATED`
+  * `PrisonerOffenderSearch.Prisoner.UPDATED`
+  * `PrisonerOffenderSearch.Prisoner.RECEIVED`
+
+### Prisoner Non-Associations Changed
+
+* **Endpoint:** `/v1/prison/{prisonId}/prisoners/{hmppsId}/non-associations`
+* **Triggered By:**
+  * **New Prisoner Events:**
+    * `PrisonerOffenderSearch.Prisoner.CREATED`
+    * `PrisonerOffenderSearch.Prisoner.RECEIVED`
+  * `PrisonOffenderEvents.Prisoner.NonAssociationDetail.CHANGED`
+
+### Prison Visits Changed
+
+* **Endpoint:** `/v1/prison/{prisonId}/visit/search`
+* **Triggered By:**
+  * `PrisonVisit.BOOKED`
+  * `PrisonVisit.CHANGED`
+  * `PrisonVisit.CANCELLED`
+
+### Prison Residential Hierarchy Changed
+
+* **Endpoint:** `/v1/prison/{prisonId}/residential-hierarchy`
+* **Triggered By:**
+  * `LocationsInsidePrison.Location.CREATED`
+  * `LocationsInsidePrison.Location.AMENDED`
+  * `LocationsInsidePrison.Location.DELETED`
+  * `LocationsInsidePrison.Location.DEACTIVATED`
+  * `LocationsInsidePrison.Location.REACTIVATED`
+
+### Prison Location Changed
+
+* **Endpoint:** `/v1/prison/{prisonId}/location/{locationKey}`
+* **Triggered By:**
+  * `LocationsInsidePrison.Location.CREATED`
+  * `LocationsInsidePrison.Location.AMENDED`
+  * `LocationsInsidePrison.Location.DELETED`
+  * `LocationsInsidePrison.Location.DEACTIVATED`
+  * `LocationsInsidePrison.Location.REACTIVATED`
+
+### Prison Residential Details Changed
+
+* **Endpoint:** `/v1/prison/{prisonId}/residential-details`
+* **Triggered By:**
+  * `LocationsInsidePrison.Location.CREATED`
+  * `LocationsInsidePrison.Location.AMENDED`
+  * `LocationsInsidePrison.Location.DELETED`
+  * `LocationsInsidePrison.Location.DEACTIVATED`
+  * `LocationsInsidePrison.Location.REACTIVATED`
+
+### Prison Capacity Changed
+
+* **Endpoint:** `/v1/prison/{prisonId}/capacity`
+* **Triggered By:**
+  * `LocationsInsidePrison.Location.CREATED`
+  * `LocationsInsidePrison.Location.DELETED`
+  * `LocationsInsidePrison.Location.DEACTIVATED`
+  * `LocationsInsidePrison.Location.REACTIVATED`
+  * `LocationsInsidePrison.SignedOpCapacity.AMENDED`
+
+### Visit Changed
+
+* **Endpoint:** `/v1/visit/{visitReference}`
+* **Triggered By:**
+  * `PrisonVisit.BOOKED`
+  * `PrisonVisit.CHANGED`
+  * `PrisonVisit.CANCELLED`
+
+### Person Health and Diet Changed
+
+* **Endpoint:** `/v1/persons/{hmppsId}/health-and-diet`
+* **Triggered By:**
+  * **New Person Events:**
+    * `ProbationCase.Engagement.CREATED`
+    * `ProbationCase.PrisonIdentifier.ADDED`
+    * `PrisonerOffenderSearch.Prisoner.CREATED`
+    * `PrisonerOffenderSearch.Prisoner.RECEIVED`
+
+### Person Care Needs Changed
+
+* **Endpoint:** `/v1/persons/{hmppsId}/care-needs`
+* **Triggered By:**
+  * **New Person Events:**
+    * `ProbationCase.Engagement.CREATED`
+    * `ProbationCase.PrisonIdentifier.ADDED`
+    * `PrisonerOffenderSearch.Prisoner.CREATED`
+    * `PrisonerOffenderSearch.Prisoner.RECEIVED`
+
+### Person Languages Changed
+
+* **Endpoint:** `/v1/persons/{hmppsId}/languages`
+* **Triggered By:**
+  * **New Person Events:**
+    * `ProbationCase.Engagement.CREATED`
+    * `ProbationCase.PrisonIdentifier.ADDED`
+    * `PrisonerOffenderSearch.Prisoner.CREATED`
+    * `PrisonerOffenderSearch.Prisoner.RECEIVED`
+
+---
 
 
 
