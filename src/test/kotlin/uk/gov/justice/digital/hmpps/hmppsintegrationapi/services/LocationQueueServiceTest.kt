@@ -101,7 +101,7 @@ internal class LocationQueueServiceTest(
       }
 
       it("successfully adds to message queue") {
-        val messageBody = """{"messageId":"1","eventType":"LocationDeactivate","messageAttributes":{}}"""
+        val messageBody = """{"messageId":"1","eventType":"LocationTemporarilyDeactivated","messageAttributes":{}}"""
         whenever(objectMapper.writeValueAsString(any<HmppsMessage>())).thenReturn(messageBody)
 
         val result = locationQueueService.sendDeactivateLocationRequest(deactivateLocationRequest, prisonId, key, who, filters)
