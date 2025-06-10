@@ -5,6 +5,8 @@ import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
+import org.mockito.internal.verification.VerificationModeFactory
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
 import org.springframework.http.HttpStatus
@@ -44,6 +46,12 @@ class GetPrisonRegimeGatewayTest(
 
     afterEach {
       mockServer.stop()
+    }
+
+    it("authenticates using HMPPS Auth with credentials") {
+      activitiesGateway.getPrisonRegime(prisonCode)
+
+      verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("ACTIVITIES")
     }
 
     it("Returns a prison regime") {
