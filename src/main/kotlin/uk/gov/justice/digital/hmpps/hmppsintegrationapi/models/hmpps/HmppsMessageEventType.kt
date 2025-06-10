@@ -34,7 +34,7 @@ enum class HmppsMessageEventType(
   ),
   LOCATION_DEACTIVATE(
     type = "locations-inside-prison.location.deactivate",
-    eventTypeCode = "LocationDeactivate",
+    eventTypeCode = "LocationTemporarilyDeactivated",
     description = "A location has been deactivated",
   ),
   EDUCATION_ASSESSMENT_EVENT_CREATED(
