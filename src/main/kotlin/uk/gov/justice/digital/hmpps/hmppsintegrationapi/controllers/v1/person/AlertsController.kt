@@ -65,6 +65,7 @@ class AlertsController(
   }
 
   @GetMapping("/persons/{hmppsId}/alerts/pnd")
+  @Tag(name = "PND")
   @Operation(
     deprecated = true,
     summary = "Returns alerts associated with a person, sorted by dateCreated (newest first).",
@@ -98,6 +99,7 @@ class AlertsController(
   }
 
   @GetMapping("/pnd/persons/{hmppsId}/alerts")
+  @Tag(name = "PND")
   @Operation(
     summary = "Returns alerts associated with a person, sorted by dateCreated (newest first).",
     description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
