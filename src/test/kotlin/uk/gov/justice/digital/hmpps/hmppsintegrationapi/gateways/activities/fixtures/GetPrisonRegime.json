@@ -1,0 +1,13 @@
+[
+  {
+    "id": 123456,
+    "prisonCode": "MDI",
+    "amStart": "09:00",
+    "amFinish": "12:00",
+    "pmStart": "13:00",
+    "pmFinish": "16:30",
+    "edStart": "18:00",
+    "edFinish": "20:00",
+    "dayOfWeek": "MONDAY"
+  }
+]
