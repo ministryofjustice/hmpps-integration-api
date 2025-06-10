@@ -154,7 +154,7 @@ Within the [Cloud Platform Environments GitHub repository](https://github.com/mi
    2. Click on the secret and then click on Retrieve secret value. If this is your first time accessing the new secret, you will see an error Failed to get the secret value.
    3. Click on Set secret Value, and set the Plaintext value as: {"eventType":["default"]}. Setting filter to default will block subscriber receiving any messages. Event notifier will update the subscriber and AWS secret with actual filter list later.
    4. Save the change
-5. Create new [Cloud Platform Environments GitHub repository](https://github.com/ministryofjustice/cloud-platform-environments/tree/main) branch for the second pull request. 
+5. Create new [Cloud Platform Environments GitHub repository](https://github.com/ministryofjustice/cloud-platform-environments/tree/main) branch for the second pull request.
 6. Add new client subscriber terraform file. Example: [event-subscriber-mapps.tf](https://github.com/ministryofjustice/cloud-platform-environments/pull/22091/files#diff-4046866c9398b1db59a427052406a08c2adab45aadbc278f16232157a636f451)
 7. Rename client name "mapps" to new client name
 8. Update terraform to load the secret value from AWS and update filter_policy value. Follow [Example](https://github.com/ministryofjustice/cloud-platform-environments/pull/22111/files). Note: The name of aws_secretsmanager_secret module has to be same as the secret name created and can be found in AWS secrets manager.
