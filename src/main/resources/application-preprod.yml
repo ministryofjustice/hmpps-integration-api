@@ -35,6 +35,8 @@ services:
     base-url: https://locations-inside-prison-api-preprod.hmpps.service.justice.gov.uk
   health-and-medication:
     base-url: https://health-and-medication-api-preprod.hmpps.service.justice.gov.uk
+  activities:
+    base-url: https://activities-api-preprod.hmpps.service.justice.gov.uk
 
 feature-flag:
   use-arns-endpoints: false
