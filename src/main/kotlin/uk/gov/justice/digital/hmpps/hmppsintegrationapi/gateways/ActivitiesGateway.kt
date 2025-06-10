@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper.WebClientWrapperResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.AScheduledEvents
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesActivitySchedule
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesPrisonRegime
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
@@ -61,6 +62,30 @@ class ActivitiesGateway(
       webClient.requestList<ActivitiesPrisonRegime>(
         HttpMethod.GET,
         "/prison/prison-regime/$prisonCode",
+        authenticationHeader(),
+        UpstreamApi.ACTIVITIES,
+        badRequestAsError = true,
+      )
+
+    return when (result) {
+      is WebClientWrapperResponse.Success -> {
+        Response(data = result.data)
+      }
+
+      is WebClientWrapperResponse.Error -> {
+        Response(
+          data = null,
+          errors = result.errors,
+        )
+      }
+    }
+  }
+
+  fun getActivitiesSchedule(activityId: Long): Response<List<ActivitiesActivitySchedule>?> {
+    val result =
+      webClient.requestList<ActivitiesActivitySchedule>(
+        HttpMethod.GET,
+        "/activities/$activityId/schedules",
         authenticationHeader(),
         UpstreamApi.ACTIVITIES,
         badRequestAsError = true,
