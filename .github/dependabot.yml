@@ -23,9 +23,6 @@ updates:
         patterns:
           - "*"
     ignore:
-      # Ignore this because updating breaks the tech-docs
-      # I am unsure currently what the cause of this is
-      - dependency-name: "middleman"
 
   - package-ecosystem: "github-actions"
     directory: "/"
