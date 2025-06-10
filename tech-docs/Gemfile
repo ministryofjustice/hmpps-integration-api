@@ -3,3 +3,5 @@ source "https://rubygems.org"
 # Include the tech docs gem
 gem 'govuk_tech_docs'
 gem 'middleman', '4.6.0'
+gem 'liquid'
+gem 'slim'

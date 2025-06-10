@@ -95,6 +95,9 @@ GEM
       concurrent-ruby (~> 1.0)
     kramdown (2.5.1)
       rexml (>= 3.3.9)
+    liquid (5.8.7)
+      bigdecimal
+      strscan (>= 3.1.1)
     listen (3.9.0)
       rb-fsevent (~> 0.10, >= 0.10.3)
       rb-inotify (~> 0.9, >= 0.9.10)
@@ -194,10 +197,14 @@ GEM
       sass-embedded (~> 1.78)
     securerandom (0.4.1)
     servolux (0.13.0)
+    slim (5.2.1)
+      temple (~> 0.10.0)
+      tilt (>= 2.1.0)
     sprockets (4.2.2)
       concurrent-ruby (~> 1.0)
       logger
       rack (>= 2.2.4, < 4)
+    strscan (3.1.5)
     temple (0.10.3)
     terser (1.2.5)
       execjs (>= 0.3.0, < 3)
@@ -219,7 +226,9 @@ PLATFORMS
 
 DEPENDENCIES
   govuk_tech_docs
+  liquid
   middleman (= 4.6.0)
+  slim
 
 BUNDLED WITH
    2.3.26
