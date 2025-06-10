@@ -1,6 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities
 
-class ActivitiesSlot(
+data class ActivitiesSlot(
   val id: Long,
   val timeSlot: String,
   val weekNumber: Int,

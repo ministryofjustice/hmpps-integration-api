@@ -1,6 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities
 
-class ActivitiesMinimumEducationLevel(
+data class ActivitiesMinimumEducationLevel(
   val id: Long,
   val educationLevelCode: String,
   val educationLevelDescription: String,
