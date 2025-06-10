@@ -267,7 +267,7 @@ class VisitsController(
   }
 
   @Operation(
-    summary = "Get visit references from given client reference .",
+    summary = "Get visit references from given client reference.",
     description = "<br><br><b>Applicable filters</b>: <ul><li>prisons</li></ul>",
     responses = [
       ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found visit references for a given client reference."),
