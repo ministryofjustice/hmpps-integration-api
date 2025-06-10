@@ -36,6 +36,7 @@ class ApiMockServer(
         UpstreamApi.INCENTIVES -> ApiMockServer(4008)
         UpstreamApi.PRISONER_ALERTS -> ApiMockServer(4009)
         UpstreamApi.LOCATIONS_INSIDE_PRISON -> ApiMockServer(4000)
+        UpstreamApi.ACTIVITIES -> ApiMockServer(4001)
       }
   }
 
