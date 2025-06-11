@@ -105,10 +105,6 @@ authorisation:
         - "/v1/prison/.*/location/[^/]*$"
         - "/v1/persons/.*/education/assessments/status"
       filters:
-    config-test:
-      include:
-        - "/v1/config/authorisation"
-      filters:
     config-v2-test:
       include:
         - "/v2/config/authorisation"
