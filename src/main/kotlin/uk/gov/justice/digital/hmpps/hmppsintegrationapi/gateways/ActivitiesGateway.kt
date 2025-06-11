@@ -9,6 +9,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrap
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesActivitySchedule
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesActivityScheduleDetailed
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesPrisonRegime
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesRunningActivity
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 
@@ -57,6 +58,30 @@ class ActivitiesGateway(
       webClient.requestList<ActivitiesActivitySchedule>(
         HttpMethod.GET,
         "/activities/$activityId/schedules",
+        authenticationHeader(),
+        UpstreamApi.ACTIVITIES,
+        badRequestAsError = true,
+      )
+
+    return when (result) {
+      is WebClientWrapperResponse.Success -> {
+        Response(data = result.data)
+      }
+
+      is WebClientWrapperResponse.Error -> {
+        Response(
+          data = null,
+          errors = result.errors,
+        )
+      }
+    }
+  }
+
+  fun getAllRunningActivities(prisonCode: String): Response<List<ActivitiesRunningActivity>?> {
+    val result =
+      webClient.requestList<ActivitiesRunningActivity>(
+        HttpMethod.GET,
+        "/prison/$prisonCode/activities",
         authenticationHeader(),
         UpstreamApi.ACTIVITIES,
         badRequestAsError = true,
