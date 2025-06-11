@@ -53,10 +53,10 @@ class WebClientWrapperTest :
           mockServer.stubGetTest(
             id,
             """
-          {
-            "sourceName" : "Harold"
-          }
-          """.removeWhitespaceAndNewlines(),
+            {
+              "sourceName" : "Harold"
+            }
+            """.removeWhitespaceAndNewlines(),
           )
 
           val webClient = WebClientWrapper(baseUrl = mockServer.baseUrl())
@@ -71,20 +71,20 @@ class WebClientWrapperTest :
         it("performs a post request where the response is a json object") {
           mockServer.stubPostTest(
             """
-        {
-          "content":
-          [
             {
-              "sourceName": "Paul",
-              "sourceLastName": "Paper"
-            },
-            {
-              "sourceName": "Paul",
-              "sourceLastName": "Card"
+              "content":
+              [
+                {
+                  "sourceName": "Paul",
+                  "sourceLastName": "Paper"
+                },
+                {
+                  "sourceName": "Paul",
+                  "sourceLastName": "Card"
+                }
+              ]
             }
-          ]
-        }
-      """.removeWhitespaceAndNewlines(),
+            """.removeWhitespaceAndNewlines(),
           )
 
           val webClient = WebClientWrapper(baseUrl = mockServer.baseUrl())
@@ -121,15 +121,15 @@ class WebClientWrapperTest :
         it("performs a GET request where the response is an array") {
           mockServer.stubPostTest(
             """
-        [
-          {
-            "sourceName": "Paul"
-          },
-          {
-            "sourceName": "Paul"
-          }
-        ]
-      """.removeWhitespaceAndNewlines(),
+            [
+              {
+                "sourceName": "Paul"
+              },
+              {
+                "sourceName": "Paul"
+              }
+            ]
+            """.removeWhitespaceAndNewlines(),
           )
 
           val webClient = WebClientWrapper(baseUrl = mockServer.baseUrl())
@@ -150,15 +150,15 @@ class WebClientWrapperTest :
         it("performs a post request where the response is an array") {
           mockServer.stubPostTest(
             """
-        [
-          {
-            "sourceName": "Paul"
-          },
-          {
-            "sourceName": "Paul"
-          }
-        ]
-      """.removeWhitespaceAndNewlines(),
+            [
+              {
+                "sourceName": "Paul"
+              },
+              {
+                "sourceName": "Paul"
+              }
+            ]
+            """.removeWhitespaceAndNewlines(),
           )
 
           val webClient = WebClientWrapper(baseUrl = mockServer.baseUrl())
