@@ -1,5 +1,9 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions
 
+import com.github.tomakehurst.wiremock.client.WireMock.equalTo
+import com.github.tomakehurst.wiremock.client.WireMock.equalToJson
+import com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor
+import com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo
 import io.kotest.assertions.fail
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.inspectors.shouldForAll
@@ -12,6 +16,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.TestApiMockS
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import java.io.File
+import kotlin.test.assertTrue
 
 data class StringModel(
   val headers: String,
@@ -41,6 +46,7 @@ class WebClientWrapperTest :
 
     beforeEach {
       mockServer.start()
+      mockServer.resetAll()
     }
 
     afterTest {
@@ -68,7 +74,7 @@ class WebClientWrapperTest :
           }
         }
 
-        it("performs a post request where the response is a json object") {
+        it("performs a POST request where the response is a json object") {
           mockServer.stubPostTest(
             """
             {
@@ -97,6 +103,28 @@ class WebClientWrapperTest :
             testDomainModels.first().lastName.shouldBe("Paper")
             testDomainModels.last().lastName.shouldBe("Card")
           }
+        }
+
+        it("performs a POST request where the request body is an array") {
+          mockServer.stubPostTest("{}")
+
+          val webClient = WebClientWrapper(baseUrl = mockServer.baseUrl())
+          val result =
+            webClient.request<Any>(
+              HttpMethod.POST,
+              "/testPost",
+              headers,
+              UpstreamApi.TEST,
+              listOf("Paul"),
+            )
+
+          mockServer.verify(
+            postRequestedFor(urlEqualTo("/testPost"))
+              .withRequestBody(equalToJson("[\"Paul\"]"))
+              .withHeader("Content-Type", equalTo("application/json")),
+          )
+
+          assertTrue { result is WebClientWrapperResponse.Success }
         }
 
         it("performs a request with multiple headers for .request()") {
@@ -147,7 +175,7 @@ class WebClientWrapperTest :
           }
         }
 
-        it("performs a post request where the response is an array") {
+        it("performs a POST request where the response is an array") {
           mockServer.stubPostTest(
             """
             [
@@ -177,7 +205,29 @@ class WebClientWrapperTest :
           }
         }
 
-        it("performs a request with multiple headers for .requestList()") {
+        it("performs a POST request where the request body is an array") {
+          mockServer.stubPostTest("{}")
+
+          val webClient = WebClientWrapper(baseUrl = mockServer.baseUrl())
+          val result =
+            webClient.requestList<Any>(
+              HttpMethod.POST,
+              "/testPost",
+              headers,
+              UpstreamApi.TEST,
+              listOf("Paul"),
+            )
+
+          mockServer.verify(
+            postRequestedFor(urlEqualTo("/testPost"))
+              .withRequestBody(equalToJson("[\"Paul\"]"))
+              .withHeader("Content-Type", equalTo("application/json")),
+          )
+
+          assertTrue { result is WebClientWrapperResponse.Success }
+        }
+
+        it("performs a GET request with multiple headers") {
           mockServer.stubGetWithHeadersTest()
 
           val headers =
@@ -280,7 +330,7 @@ class WebClientWrapperTest :
       try {
         val webClient = WebClientWrapper(baseUrl = mockServer.baseUrl())
         webClient.request<SearchModel>(HttpMethod.GET, "/test/$id", headers = headers, UpstreamApi.TEST)
-      } catch (e: WebClientResponseException) {
+      } catch (_: WebClientResponseException) {
         fail("Exceeded memory buffer")
       }
     }
