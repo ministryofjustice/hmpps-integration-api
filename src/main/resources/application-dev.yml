@@ -38,7 +38,7 @@ services:
   health-and-medication:
     base-url: https://health-and-medication-api-dev.hmpps.service.justice.gov.uk
   activities:
-    base-url: https://activities-api-dev.hmpps.service.justice.gov.uk
+    base-url: https://activities-api-dev.prison.service.justice.gov.uk
 
 feature-flag:
   use-arns-endpoints: true
