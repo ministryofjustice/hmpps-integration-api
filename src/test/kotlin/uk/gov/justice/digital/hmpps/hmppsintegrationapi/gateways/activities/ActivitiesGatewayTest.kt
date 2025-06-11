@@ -35,7 +35,8 @@ class ActivitiesGatewayTest(
     {
       val objectMapper = jacksonObjectMapper()
       val prisonCode = "MDI"
-      val pathNoParams = "/scheduled-events/prison/$prisonCode"
+      val date = "2022-11-01"
+      val path = "/scheduled-events/prison/$prisonCode?date=$date"
       val activitiesApiMockServer = ApiMockServer.create(UpstreamApi.ACTIVITIES)
       val prisonerNumbers = listOf("A8451DY", "A8452DY", "A8650DY", "A8633DY")
       val requestBodyMap = mapOf("prisonerNumbers" to prisonerNumbers)
@@ -56,24 +57,24 @@ class ActivitiesGatewayTest(
       }
 
       it("authenticates using HMPPS Auth with credentials") {
-        activitiesGateway.getScheduledEvents(prisonCode, prisonerNumbers)
+        activitiesGateway.getScheduledEvents(prisonCode, prisonerNumbers, date, null)
 
         verify(hmppsAuthGateway, times(1))
           .getClientToken("ACTIVITIES")
       }
 
       it("upstream API returns an error, throw exception") {
-        activitiesApiMockServer.stubForPost(pathNoParams, jsonRequest, "", HttpStatus.BAD_REQUEST)
+        activitiesApiMockServer.stubForPost(path, jsonRequest, "", HttpStatus.BAD_REQUEST)
         val response =
           shouldThrow<WebClientResponseException> {
-            activitiesGateway.getScheduledEvents(prisonCode, prisonerNumbers)
+            activitiesGateway.getScheduledEvents(prisonCode, prisonerNumbers, date, null)
           }
         response.statusCode.shouldBe(HttpStatus.BAD_REQUEST)
       }
 
       it("upstream API returns an forbidden error, throw forbidden exception") {
-        activitiesApiMockServer.stubForPost(pathNoParams, jsonRequest, "", HttpStatus.FORBIDDEN)
-        val response = activitiesGateway.getScheduledEvents(prisonCode, prisonerNumbers)
+        activitiesApiMockServer.stubForPost(path, jsonRequest, "", HttpStatus.FORBIDDEN)
+        val response = activitiesGateway.getScheduledEvents(prisonCode, prisonerNumbers, date, null)
         response.errors.shouldHaveSize(1)
         response.errors
           .first()
@@ -86,8 +87,9 @@ class ActivitiesGatewayTest(
       }
 
       it("returns scheduled events") {
-        activitiesApiMockServer.stubForPost(pathNoParams, jsonRequest, File("src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/activities/fixtures/GetScheduledEvents.json").readText(), HttpStatus.OK)
-        val response = activitiesGateway.getScheduledEvents(prisonCode, prisonerNumbers)
+        activitiesApiMockServer.stubForPost(path, jsonRequest, File("src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/activities/fixtures/GetScheduledEvents.json").readText(), HttpStatus.OK)
+        val response = activitiesGateway.getScheduledEvents(prisonCode, prisonerNumbers, date, null)
+        println("Response: $response")
         response.data!!.prisonCode.shouldBe(prisonCode)
       }
     },
