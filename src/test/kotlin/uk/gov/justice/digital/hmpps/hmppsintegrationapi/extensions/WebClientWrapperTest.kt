@@ -41,12 +41,14 @@ data class TestDomainModel(
 class WebClientWrapperTest :
   DescribeSpec({
     val mockServer = TestApiMockServer()
+    lateinit var webClient: WebClientWrapper
+
     val id = "ABC1234"
     val headers = mapOf("foo" to "bar")
 
     beforeEach {
       mockServer.start()
-      mockServer.resetAll()
+      webClient = WebClientWrapper(baseUrl = mockServer.baseUrl())
     }
 
     afterTest {
@@ -65,7 +67,6 @@ class WebClientWrapperTest :
             """.removeWhitespaceAndNewlines(),
           )
 
-          val webClient = WebClientWrapper(baseUrl = mockServer.baseUrl())
           val result = webClient.request<TestModel>(HttpMethod.GET, "/test/$id", headers, UpstreamApi.TEST)
 
           if (result is WebClientWrapperResponse.Success) {
@@ -93,7 +94,6 @@ class WebClientWrapperTest :
             """.removeWhitespaceAndNewlines(),
           )
 
-          val webClient = WebClientWrapper(baseUrl = mockServer.baseUrl())
           val result = webClient.request<SearchModel>(HttpMethod.POST, "/testPost", headers, UpstreamApi.TEST, mapOf("sourceName" to "Paul"))
 
           if (result is WebClientWrapperResponse.Success) {
@@ -108,7 +108,6 @@ class WebClientWrapperTest :
         it("performs a POST request where the request body is an array") {
           mockServer.stubPostTest("{}")
 
-          val webClient = WebClientWrapper(baseUrl = mockServer.baseUrl())
           val result =
             webClient.request<Any>(
               HttpMethod.POST,
@@ -136,7 +135,6 @@ class WebClientWrapperTest :
               "bar" to "baz",
             )
 
-          val webClient = WebClientWrapper(baseUrl = mockServer.baseUrl())
           val result = webClient.request<StringModel>(HttpMethod.GET, "/test", headers = headers, UpstreamApi.TEST)
 
           if (result is WebClientWrapperResponse.Success) {
@@ -160,7 +158,6 @@ class WebClientWrapperTest :
             """.removeWhitespaceAndNewlines(),
           )
 
-          val webClient = WebClientWrapper(baseUrl = mockServer.baseUrl())
           val result =
             webClient.requestList<TestModel>(
               HttpMethod.GET,
@@ -189,7 +186,6 @@ class WebClientWrapperTest :
             """.removeWhitespaceAndNewlines(),
           )
 
-          val webClient = WebClientWrapper(baseUrl = mockServer.baseUrl())
           val result =
             webClient.requestList<TestModel>(
               HttpMethod.POST,
@@ -208,7 +204,6 @@ class WebClientWrapperTest :
         it("performs a POST request where the request body is an array") {
           mockServer.stubPostTest("{}")
 
-          val webClient = WebClientWrapper(baseUrl = mockServer.baseUrl())
           val result =
             webClient.requestList<Any>(
               HttpMethod.POST,
@@ -236,7 +231,6 @@ class WebClientWrapperTest :
               "bar" to "baz",
             )
 
-          val webClient = WebClientWrapper(baseUrl = mockServer.baseUrl())
           val result = webClient.requestList<StringModel>(HttpMethod.GET, "/test", headers = headers, UpstreamApi.TEST)
 
           if (result is WebClientWrapperResponse.Success) {
@@ -252,7 +246,7 @@ class WebClientWrapperTest :
     describe("when webClientWrapperResponse is Error") {
       it("returns an entity not found UpstreamApiError when the request 404's") {
         mockServer.stubPostTest("", HttpStatus.NOT_FOUND)
-        val webClient = WebClientWrapper(baseUrl = mockServer.baseUrl())
+
         val result = webClient.request<TestModel>(HttpMethod.GET, "/test/$id", headers, UpstreamApi.TEST)
 
         if (result is WebClientWrapperResponse.Error) {
@@ -269,7 +263,7 @@ class WebClientWrapperTest :
 
       it("returns a forbidden UpstreamApiError when the request 403's") {
         mockServer.stubPostTest("", HttpStatus.FORBIDDEN)
-        val webClient = WebClientWrapper(baseUrl = mockServer.baseUrl())
+
         val result = webClient.request<TestModel>(HttpMethod.GET, "/test/$id", headers, UpstreamApi.TEST)
 
         if (result is WebClientWrapperResponse.Error) {
@@ -286,7 +280,7 @@ class WebClientWrapperTest :
 
       it("returns a bad request UpstreamApiError when the request 400's") {
         mockServer.stubPostTest("", HttpStatus.BAD_REQUEST)
-        val webClient = WebClientWrapper(baseUrl = mockServer.baseUrl())
+
         val result = webClient.request<TestModel>(HttpMethod.GET, "/test/$id", headers, UpstreamApi.TEST)
 
         if (result is WebClientWrapperResponse.Error) {
@@ -303,7 +297,7 @@ class WebClientWrapperTest :
 
       it("returns a internal server error UpstreamApiError when the request 500's") {
         mockServer.stubPostTest("", HttpStatus.INTERNAL_SERVER_ERROR)
-        val webClient = WebClientWrapper(baseUrl = mockServer.baseUrl())
+
         val result = webClient.request<TestModel>(HttpMethod.GET, "/test/$id", headers, UpstreamApi.TEST)
 
         if (result is WebClientWrapperResponse.Error) {
@@ -328,7 +322,6 @@ class WebClientWrapperTest :
       )
 
       try {
-        val webClient = WebClientWrapper(baseUrl = mockServer.baseUrl())
         webClient.request<SearchModel>(HttpMethod.GET, "/test/$id", headers = headers, UpstreamApi.TEST)
       } catch (_: WebClientResponseException) {
         fail("Exceeded memory buffer")
