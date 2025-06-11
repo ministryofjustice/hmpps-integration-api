@@ -31,12 +31,17 @@ class ActivitiesGateway(
   fun getScheduledEvents(
     prisonCode: String,
     prisonerNumbers: List<String>,
+    date: String,
+    timeSlot: String?,
   ): Response<AScheduledEvents?> {
+    val queryParams = if (timeSlot == null) "?date=$date" else "?date=$date&timeSlot=$timeSlot"
+
     val requestBodyMap = mapOf("prisonerNumbers" to prisonerNumbers)
+
     val result =
       webClient.request<AScheduledEvents>(
         HttpMethod.POST,
-        "/scheduled-events/prison/$prisonCode",
+        "/scheduled-events/prison/$prisonCode$queryParams",
         authenticationHeader(),
         requestBody = requestBodyMap,
         upstreamApi = UpstreamApi.ACTIVITIES,
@@ -44,16 +49,8 @@ class ActivitiesGateway(
       )
 
     return when (result) {
-      is WebClientWrapper.WebClientWrapperResponse.Success -> {
-        Response(data = result.data)
-      }
-
-      is WebClientWrapper.WebClientWrapperResponse.Error -> {
-        Response(
-          data = null,
-          errors = result.errors,
-        )
-      }
+      is WebClientWrapper.WebClientWrapperResponse.Success -> Response(data = result.data)
+      is WebClientWrapper.WebClientWrapperResponse.Error -> Response(data = null, errors = result.errors)
     }
   }
 
