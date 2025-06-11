@@ -139,9 +139,7 @@
           "sunday": true,
           "customStartTime": "string",
           "customEndTime": "string",
-          "daysOfWeek": [
-            "MONDAY"
-          ]
+          "daysOfWeek": ["MONDAY"]
         }
       ],
       "prisonerFirstName": "Joe",
