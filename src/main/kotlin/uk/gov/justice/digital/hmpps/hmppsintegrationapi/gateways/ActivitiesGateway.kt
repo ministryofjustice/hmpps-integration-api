@@ -77,7 +77,7 @@ class ActivitiesGateway(
     }
   }
 
- fun getAllRunningActivities(prisonCode: String): Response<List<ActivitiesRunningActivity>?> {
+  fun getAllRunningActivities(prisonCode: String): Response<List<ActivitiesRunningActivity>?> {
     val result =
       webClient.requestList<ActivitiesRunningActivity>(
         HttpMethod.GET,
@@ -100,7 +100,7 @@ class ActivitiesGateway(
       }
     }
   }
-      
+
   fun getActivityScheduleById(scheduleId: Long): Response<ActivitiesActivityScheduleDetailed?> {
     val result =
       webClient.request<ActivitiesActivityScheduleDetailed>(
