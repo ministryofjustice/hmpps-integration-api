@@ -62,14 +62,7 @@ class WebClientWrapperTest :
     describe("when webClientWrapperResponse is Success") {
       describe("when request") {
         it("performs a GET request where the result is a json object") {
-          mockServer.stubGetTest(
-            getPath,
-            """
-            {
-              "sourceName" : "Harold"
-            }
-            """.removeWhitespaceAndNewlines(),
-          )
+          mockServer.stubGetTest(getPath, """{"sourceName" : "Harold"}""".removeWhitespaceAndNewlines())
 
           val result = webClient.request<TestModel>(HttpMethod.GET, getPath, headers, UpstreamApi.TEST)
           result.shouldBeInstanceOf<WebClientWrapperResponse.Success<TestModel>>()
@@ -106,14 +99,7 @@ class WebClientWrapperTest :
         }
 
         it("performs a POST request where the request body is an array") {
-          mockServer.stubPostTest(
-            postPath,
-            """
-            {
-              "result": "success"
-            }
-            """.removeWhitespaceAndNewlines(),
-          )
+          mockServer.stubPostTest(postPath, """{"result": "success"}""")
 
           val result =
             webClient.request<StringModel>(
@@ -133,14 +119,7 @@ class WebClientWrapperTest :
         }
 
         it("performs a GET request with multiple headers") {
-          mockServer.stubGetTest(
-            getPath,
-            """
-            {
-              "result": "headers matched"
-            }
-            """.removeWhitespaceAndNewlines(),
-          )
+          mockServer.stubGetTest(getPath, """{"result": "headers matched"}""")
 
           val headers =
             mapOf(
@@ -216,14 +195,7 @@ class WebClientWrapperTest :
         }
 
         it("performs a POST request where the request body is an array") {
-          mockServer.stubPostTest(
-            postPath,
-            """
-            {
-              "result": "success"
-            }
-            """.removeWhitespaceAndNewlines(),
-          )
+          mockServer.stubPostTest(postPath, """{"result": "success"}""")
 
           val result =
             webClient.requestList<StringModel>(
@@ -247,14 +219,7 @@ class WebClientWrapperTest :
         }
 
         it("performs a GET request with multiple headers") {
-          mockServer.stubGetTest(
-            getPath,
-            """
-            {
-              "result": "headers matched"
-            }
-            """.removeWhitespaceAndNewlines(),
-          )
+          mockServer.stubGetTest(getPath, """{"result": "headers matched"}""")
 
           val headers =
             mapOf(
