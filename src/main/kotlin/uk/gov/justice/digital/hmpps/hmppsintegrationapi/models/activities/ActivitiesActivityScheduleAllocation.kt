@@ -16,7 +16,7 @@ data class ActivitiesActivityScheduleAllocation(
   val allocatedBy: String?,
   val deallocatedTime: String?,
   val deallocatedBy: String?,
-  val deallocatedReason: String?,
+  val deallocatedReason: ActivitiesReason?,
   val suspendedTime: String?,
   val suspendedBy: String?,
   val suspendedReason: String?,
