@@ -9,10 +9,10 @@ class TestApiMockServer : WireMockServer(WIREMOCK_PORT) {
     private const val WIREMOCK_PORT = 4000
   }
 
-  fun stubGetWithHeadersTest() {
+  fun stubGetWithHeadersTest(path: String) {
     stubFor(
       WireMock
-        .get("/test")
+        .get(path)
         .withHeader("foo", WireMock.equalTo("bar"))
         .withHeader("bar", WireMock.equalTo("baz"))
         .willReturn(
@@ -25,13 +25,13 @@ class TestApiMockServer : WireMockServer(WIREMOCK_PORT) {
   }
 
   fun stubGetTest(
-    id: String,
+    path: String,
     body: String,
     status: HttpStatus = HttpStatus.OK,
   ) {
     stubFor(
       WireMock
-        .get("/test/$id")
+        .get(path)
         .willReturn(
           WireMock
             .aResponse()
@@ -43,11 +43,12 @@ class TestApiMockServer : WireMockServer(WIREMOCK_PORT) {
   }
 
   fun stubPostTest(
+    path: String,
     body: String,
     status: HttpStatus = HttpStatus.OK,
   ) {
     stubFor(
-      WireMock.post("/testPost").willReturn(
+      WireMock.post(path).willReturn(
         WireMock
           .aResponse()
           .withHeader("Content-Type", "application/json")
