@@ -3,7 +3,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities
 data class ActivitiesActivitySchedule(
   val id: Long,
   val description: String,
-  val internalLocation: ActivitiesInternalLocation,
+  val internalLocation: ActivitiesInternalLocation?,
   val capacity: Int,
   val activity: ActivitiesActivity,
   val scheduleWeeks: Int,
