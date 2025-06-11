@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions
 
 import com.github.tomakehurst.wiremock.client.WireMock.equalTo
 import com.github.tomakehurst.wiremock.client.WireMock.equalToJson
+import com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor
 import com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor
 import com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo
 import io.kotest.assertions.fail
@@ -127,7 +128,12 @@ class WebClientWrapperTest :
         }
 
         it("performs a GET request with multiple headers") {
-          mockServer.stubGetWithHeadersTest(getPath)
+          mockServer.stubGetTest(
+            getPath,
+            """
+              { "headers": "headers matched" }
+            """.removeWhitespaceAndNewlines(),
+          )
 
           val headers =
             mapOf(
@@ -136,6 +142,11 @@ class WebClientWrapperTest :
             )
 
           val result = webClient.request<StringModel>(HttpMethod.GET, getPath, headers = headers, UpstreamApi.TEST)
+          mockServer.verify(
+            getRequestedFor(urlEqualTo(getPath))
+              .withHeader("foo", equalTo(headers["foo"]))
+              .withHeader("bar", equalTo(headers["bar"])),
+          )
           result.shouldBeInstanceOf<WebClientWrapperResponse.Success<StringModel>>()
           result.data.headers.shouldBe("headers matched")
         }
@@ -219,7 +230,12 @@ class WebClientWrapperTest :
         }
 
         it("performs a GET request with multiple headers") {
-          mockServer.stubGetWithHeadersTest(getPath)
+          mockServer.stubGetTest(
+            getPath,
+            """
+              { "headers": "headers matched" }
+            """.removeWhitespaceAndNewlines(),
+          )
 
           val headers =
             mapOf(
@@ -228,6 +244,11 @@ class WebClientWrapperTest :
             )
 
           val result = webClient.requestList<StringModel>(HttpMethod.GET, getPath, headers = headers, UpstreamApi.TEST)
+          mockServer.verify(
+            getRequestedFor(urlEqualTo(getPath))
+              .withHeader("foo", equalTo(headers["foo"]))
+              .withHeader("bar", equalTo(headers["bar"])),
+          )
           result.shouldBeInstanceOf<WebClientWrapperResponse.Success<List<StringModel>>>()
           result.data
             .first()

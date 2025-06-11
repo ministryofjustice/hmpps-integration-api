@@ -9,21 +9,6 @@ class TestApiMockServer : WireMockServer(WIREMOCK_PORT) {
     private const val WIREMOCK_PORT = 4000
   }
 
-  fun stubGetWithHeadersTest(path: String) {
-    stubFor(
-      WireMock
-        .get(path)
-        .withHeader("foo", WireMock.equalTo("bar"))
-        .withHeader("bar", WireMock.equalTo("baz"))
-        .willReturn(
-          WireMock
-            .aResponse()
-            .withHeader("Content-Type", "application/json")
-            .withBody("""{"headers":"headers matched"}"""),
-        ),
-    )
-  }
-
   fun stubGetTest(
     path: String,
     body: String,
