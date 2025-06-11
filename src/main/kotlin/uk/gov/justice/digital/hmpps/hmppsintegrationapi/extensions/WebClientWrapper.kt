@@ -77,12 +77,13 @@ class WebClientWrapper(
     headers: Map<String, String>,
     upstreamApi: UpstreamApi,
     requestBody: Map<String, Any?>? = null,
+    requestBodyList: List<Any>? = null,
     forbiddenAsError: Boolean = false,
     badRequestAsError: Boolean = false,
   ): WebClientWrapperResponse<T> =
     try {
       val responseData =
-        getResponseBodySpec(method, uri, headers, requestBody)
+        getResponseBodySpec(method, uri, headers, requestBody, requestBodyList)
           .retrieve()
           .onStatus({ status -> status.value() in CREATE_TRANSACTION_RETRY_HTTP_CODES }) { response -> Mono.error(ResponseException(null, response.statusCode().value())) }
           .bodyToMono(T::class.java)
@@ -104,12 +105,13 @@ class WebClientWrapper(
     headers: Map<String, String>,
     upstreamApi: UpstreamApi,
     requestBody: Map<String, Any?>? = null,
+    requestBodyList: List<Any>? = null,
     forbiddenAsError: Boolean = false,
     badRequestAsError: Boolean = false,
   ): WebClientWrapperResponse<List<T>> =
     try {
       val responseData =
-        getResponseBodySpec(method, uri, headers, requestBody)
+        getResponseBodySpec(method, uri, headers, requestBody, requestBodyList)
           .retrieve()
           .bodyToFlux(T::class.java)
           .collectList()
@@ -125,6 +127,7 @@ class WebClientWrapper(
     uri: String,
     headers: Map<String, String>,
     requestBody: Map<String, Any?>? = null,
+    requestBodyList: List<Any>? = null,
   ): WebClient.RequestBodySpec {
     val responseBodySpec =
       client
@@ -132,8 +135,12 @@ class WebClientWrapper(
         .uri(uri)
         .headers { header -> headers.forEach { requestHeader -> header.set(requestHeader.key, requestHeader.value) } }
 
-    if (method == HttpMethod.POST && requestBody != null) {
-      responseBodySpec.body(BodyInserters.fromValue(requestBody))
+    if (method == HttpMethod.POST) {
+      if (requestBody != null) {
+        responseBodySpec.body(BodyInserters.fromValue(requestBody))
+      } else if (requestBodyList != null) {
+        responseBodySpec.body(BodyInserters.fromValue(requestBodyList))
+      }
     }
 
     return responseBodySpec
