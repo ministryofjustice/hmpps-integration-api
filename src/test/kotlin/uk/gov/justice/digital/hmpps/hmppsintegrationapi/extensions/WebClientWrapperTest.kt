@@ -19,10 +19,9 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.TestApiMockS
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import java.io.File
-import kotlin.test.assertTrue
 
 data class StringModel(
-  val headers: String,
+  val result: String,
 )
 
 data class TestModel(
@@ -107,31 +106,39 @@ class WebClientWrapperTest :
         }
 
         it("performs a POST request where the request body is an array") {
-          mockServer.stubPostTest(postPath, "{}")
+          mockServer.stubPostTest(
+            postPath,
+            """
+            {
+              "result": "success"
+            }
+            """.removeWhitespaceAndNewlines(),
+          )
 
           val result =
-            webClient.request<Any>(
+            webClient.request<StringModel>(
               HttpMethod.POST,
               postPath,
               headers,
               UpstreamApi.TEST,
               listOf("Paul"),
             )
-
           mockServer.verify(
             postRequestedFor(urlEqualTo(postPath))
               .withRequestBody(equalToJson("[\"Paul\"]"))
               .withHeader("Content-Type", equalTo("application/json")),
           )
-
-          assertTrue { result is WebClientWrapperResponse.Success }
+          result.shouldBeInstanceOf<WebClientWrapperResponse.Success<StringModel>>()
+          result.data.result.shouldBe("success")
         }
 
         it("performs a GET request with multiple headers") {
           mockServer.stubGetTest(
             getPath,
             """
-              { "headers": "headers matched" }
+            {
+              "result": "headers matched"
+            }
             """.removeWhitespaceAndNewlines(),
           )
 
@@ -148,7 +155,7 @@ class WebClientWrapperTest :
               .withHeader("bar", equalTo(headers["bar"])),
           )
           result.shouldBeInstanceOf<WebClientWrapperResponse.Success<StringModel>>()
-          result.data.headers.shouldBe("headers matched")
+          result.data.result.shouldBe("headers matched")
         }
       }
 
@@ -209,10 +216,17 @@ class WebClientWrapperTest :
         }
 
         it("performs a POST request where the request body is an array") {
-          mockServer.stubPostTest(postPath, "{}")
+          mockServer.stubPostTest(
+            postPath,
+            """
+            {
+              "result": "success"
+            }
+            """.removeWhitespaceAndNewlines(),
+          )
 
           val result =
-            webClient.requestList<Any>(
+            webClient.requestList<StringModel>(
               HttpMethod.POST,
               postPath,
               headers,
@@ -225,15 +239,20 @@ class WebClientWrapperTest :
               .withRequestBody(equalToJson("[\"Paul\"]"))
               .withHeader("Content-Type", equalTo("application/json")),
           )
-
-          assertTrue { result is WebClientWrapperResponse.Success }
+          result.shouldBeInstanceOf<WebClientWrapperResponse.Success<List<StringModel>>>()
+          result.data
+            .first()
+            .result
+            .shouldBe("success")
         }
 
         it("performs a GET request with multiple headers") {
           mockServer.stubGetTest(
             getPath,
             """
-              { "headers": "headers matched" }
+            {
+              "result": "headers matched"
+            }
             """.removeWhitespaceAndNewlines(),
           )
 
@@ -252,7 +271,7 @@ class WebClientWrapperTest :
           result.shouldBeInstanceOf<WebClientWrapperResponse.Success<List<StringModel>>>()
           result.data
             .first()
-            .headers
+            .result
             .shouldBe("headers matched")
         }
       }
