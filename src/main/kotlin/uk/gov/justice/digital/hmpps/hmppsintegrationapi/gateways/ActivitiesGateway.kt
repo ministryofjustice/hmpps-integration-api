@@ -9,6 +9,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrap
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesActivitySchedule
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesActivityScheduleDetailed
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesPrisonRegime
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesScheduledEvents
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 
@@ -26,6 +27,41 @@ class ActivitiesGateway(
     return mapOf(
       "Authorization" to "Bearer $token",
     )
+  }
+
+  fun getScheduledEvents(
+    prisonCode: String,
+    prisonerNumbers: List<String>,
+    date: String,
+    timeSlot: String?,
+  ): Response<ActivitiesScheduledEvents?> {
+    val queryParams = if (timeSlot == null) "?date=$date" else "?date=$date&timeSlot=$timeSlot"
+
+    val requestBodyMap = mapOf("prisonerNumbers" to prisonerNumbers)
+
+    val result =
+      webClient.request<ActivitiesScheduledEvents>(
+        HttpMethod.POST,
+        "/scheduled-events/prison/$prisonCode$queryParams",
+        authenticationHeader(),
+        requestBody = requestBodyMap,
+        upstreamApi = UpstreamApi.ACTIVITIES,
+        badRequestAsError = true,
+        forbiddenAsError = true,
+      )
+
+    return when (result) {
+      is WebClientWrapperResponse.Success -> {
+        Response(data = result.data)
+      }
+
+      is WebClientWrapperResponse.Error -> {
+        Response(
+          data = null,
+          errors = result.errors,
+        )
+      }
+    }
   }
 
   fun getPrisonRegime(prisonCode: String): Response<List<ActivitiesPrisonRegime>?> {
