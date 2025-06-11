@@ -123,7 +123,7 @@ class WebClientWrapperTest :
           assertTrue { result is WebClientWrapperResponse.Success }
         }
 
-        it("performs a request with multiple headers for .request()") {
+        it("performs a GET request with multiple headers") {
           mockServer.stubGetWithHeadersTest()
 
           val headers =
