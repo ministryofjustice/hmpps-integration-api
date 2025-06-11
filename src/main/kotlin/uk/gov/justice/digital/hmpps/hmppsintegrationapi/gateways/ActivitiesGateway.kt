@@ -6,9 +6,9 @@ import org.springframework.http.HttpMethod
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper.WebClientWrapperResponse
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.AScheduledEvents
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesActivitySchedule
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesPrisonRegime
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesScheduledEvents
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 
@@ -33,24 +33,33 @@ class ActivitiesGateway(
     prisonerNumbers: List<String>,
     date: String,
     timeSlot: String?,
-  ): Response<AScheduledEvents?> {
+  ): Response<ActivitiesScheduledEvents?> {
     val queryParams = if (timeSlot == null) "?date=$date" else "?date=$date&timeSlot=$timeSlot"
 
     val requestBodyMap = mapOf("prisonerNumbers" to prisonerNumbers)
 
     val result =
-      webClient.request<AScheduledEvents>(
+      webClient.request<ActivitiesScheduledEvents>(
         HttpMethod.POST,
         "/scheduled-events/prison/$prisonCode$queryParams",
         authenticationHeader(),
         requestBody = requestBodyMap,
         upstreamApi = UpstreamApi.ACTIVITIES,
+        badRequestAsError = true,
         forbiddenAsError = true,
       )
 
     return when (result) {
-      is WebClientWrapper.WebClientWrapperResponse.Success -> Response(data = result.data)
-      is WebClientWrapper.WebClientWrapperResponse.Error -> Response(data = null, errors = result.errors)
+      is WebClientWrapperResponse.Success -> {
+        Response(data = result.data)
+      }
+
+      is WebClientWrapperResponse.Error -> {
+        Response(
+          data = null,
+          errors = result.errors,
+        )
+      }
     }
   }
 

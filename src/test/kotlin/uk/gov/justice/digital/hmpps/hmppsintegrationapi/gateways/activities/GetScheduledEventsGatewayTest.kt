@@ -1,7 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.activities
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
@@ -14,7 +13,6 @@ import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
-import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ActivitiesGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
@@ -28,7 +26,7 @@ import java.io.File
   initializers = [ConfigDataApplicationContextInitializer::class],
   classes = [ActivitiesGateway::class],
 )
-class ActivitiesGatewayTest(
+class GetScheduledEventsGatewayTest(
   @MockitoBean val hmppsAuthGateway: HmppsAuthGateway,
   private val activitiesGateway: ActivitiesGateway,
 ) : DescribeSpec(
@@ -63,13 +61,10 @@ class ActivitiesGatewayTest(
           .getClientToken("ACTIVITIES")
       }
 
-      it("upstream API returns an error, throw exception") {
+      it("upstream API returns a bad request error, throw exception") {
         activitiesApiMockServer.stubForPost(path, jsonRequest, "", HttpStatus.BAD_REQUEST)
-        val response =
-          shouldThrow<WebClientResponseException> {
-            activitiesGateway.getScheduledEvents(prisonCode, prisonerNumbers, date, null)
-          }
-        response.statusCode.shouldBe(HttpStatus.BAD_REQUEST)
+        val result = activitiesGateway.getScheduledEvents(prisonCode, prisonerNumbers, date, null)
+        result.errors.shouldBe(listOf(UpstreamApiError(causedBy = UpstreamApi.ACTIVITIES, type = UpstreamApiError.Type.BAD_REQUEST)))
       }
 
       it("upstream API returns an forbidden error, throw forbidden exception") {

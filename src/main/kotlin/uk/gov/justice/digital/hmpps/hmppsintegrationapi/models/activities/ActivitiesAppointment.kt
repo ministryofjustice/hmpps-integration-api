@@ -1,6 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities
 
-data class AAppointment(
+data class ActivitiesAppointment(
   val prisonCode: String?,
   val eventSource: String?,
   val eventType: String?,
