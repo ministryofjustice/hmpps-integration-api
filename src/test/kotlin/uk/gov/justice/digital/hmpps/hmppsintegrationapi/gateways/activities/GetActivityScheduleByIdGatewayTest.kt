@@ -62,6 +62,20 @@ class GetActivityScheduleByIdGatewayTest(
         val result = activitiesGateway.getActivityScheduleById(scheduleId)
         result.errors.shouldBeEmpty()
         result.data.shouldNotBeNull()
+        result.data.id.shouldBe(123456)
+        result.data.instances.size
+          .shouldBe(1)
+        result.data.allocations.size
+          .shouldBe(1)
+        result.data.suspensions.size
+          .shouldBe(1)
+        result.data.internalLocation.shouldNotBeNull()
+        result.data.internalLocation.id
+          .shouldBe(98877667)
+        result.data.activity.id
+          .shouldBe(123456)
+        result.data.slots.size
+          .shouldBe(1)
       }
 
       it("Returns a bad request error") {
