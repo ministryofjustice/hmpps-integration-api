@@ -1,0 +1,236 @@
+{
+  "id": 123456,
+  "instances": [
+    {
+      "id": 123456,
+      "date": "2022-09-30",
+      "startTime": "09:00",
+      "endTime": "10:00",
+      "timeSlot": "AM",
+      "cancelled": false,
+      "cancelledTime": "2022-09-29T11:20:00",
+      "cancelledBy": "Adam Smith",
+      "attendances": [
+        {
+          "id": 123456,
+          "scheduleInstanceId": 123456,
+          "prisonerNumber": "A1234AA",
+          "attendanceReason": {
+            "id": 1,
+            "code": "SICK",
+            "description": "Sick",
+            "attended": true,
+            "capturePay": true,
+            "captureMoreDetail": true,
+            "captureCaseNote": true,
+            "captureIncentiveLevelWarning": false,
+            "captureOtherText": false,
+            "displayInAbsence": false,
+            "displaySequence": 1,
+            "notes": "Maps to ACCAB in NOMIS"
+          },
+          "comment": "Prisoner was too unwell to attend the activity.",
+          "recordedTime": "2023-09-10T09:30:00",
+          "recordedBy": "A.JONES",
+          "status": "WAITING",
+          "payAmount": 100,
+          "bonusAmount": 50,
+          "pieces": 0,
+          "issuePayment": true,
+          "incentiveLevelWarningIssued": true,
+          "otherAbsenceReason": "Prisoner has a valid reason to miss the activity.",
+          "caseNoteText": "Prisoner has refused to attend the activity without a valid reason to miss the activity.",
+          "attendanceHistory": [
+            {
+              "id": 123456,
+              "attendanceReason": {
+                "id": 1,
+                "code": "SICK",
+                "description": "Sick",
+                "attended": true,
+                "capturePay": true,
+                "captureMoreDetail": true,
+                "captureCaseNote": true,
+                "captureIncentiveLevelWarning": false,
+                "captureOtherText": false,
+                "displayInAbsence": false,
+                "displaySequence": 1,
+                "notes": "Maps to ACCAB in NOMIS"
+              },
+              "comment": "Prisoner was too unwell to attend the activity.",
+              "recordedTime": "2023-09-10T09:30:00",
+              "recordedBy": "A.JONES",
+              "issuePayment": true,
+              "incentiveLevelWarningIssued": true,
+              "otherAbsenceReason": "Prisoner has a valid reason to miss the activity.",
+              "caseNoteText": "Prisoner has refused to attend the activity without a valid reason to miss the activity."
+            }
+          ],
+          "editable": true,
+          "payable": true
+        }
+      ]
+    }
+  ],
+  "allocations": [
+    {
+      "id": 123456,
+      "prisonerNumber": "A1234AA",
+      "bookingId": 10001,
+      "activitySummary": "string",
+      "activityId": 0,
+      "scheduleId": 0,
+      "scheduleDescription": "string",
+      "isUnemployment": true,
+      "prisonPayBand": {
+        "id": 123456,
+        "displaySequence": 1,
+        "alias": "Low",
+        "description": "Pay band 1",
+        "nomisPayBand": 1,
+        "prisonCode": "MDI",
+        "createdTime": "2025-06-11T09:05:01.364Z",
+        "createdBy": "string",
+        "updatedTime": "2025-06-11T09:05:01.364Z",
+        "updatedBy": "string"
+      },
+      "startDate": "2022-09-10",
+      "endDate": "2023-09-10",
+      "allocatedTime": "2022-09-01T09:00:00",
+      "allocatedBy": "Mr Blogs",
+      "deallocatedTime": "2022-09-02T09:00:00",
+      "deallocatedBy": "Mrs Blogs",
+      "deallocatedReason": {
+        "code": "RELEASED",
+        "description": "Released from prison"
+      },
+      "suspendedTime": "2022-09-02T09:00:00",
+      "suspendedBy": "Mrs Blogs",
+      "suspendedReason": "Temporarily released from prison",
+      "status": "ACTIVE",
+      "plannedDeallocation": {
+        "id": 24,
+        "plannedDate": "2023-07-31",
+        "plannedBy": "ADMIN",
+        "plannedReason": {
+          "code": "RELEASED",
+          "description": "PLANNED"
+        },
+        "plannedAt": "2023-07-10 14:54"
+      },
+      "plannedSuspension": {
+        "plannedStartDate": "2023-07-31",
+        "plannedEndDate": "2023-07-31",
+        "caseNoteId": 123456,
+        "plannedBy": "ADMIN",
+        "plannedAt": "2023-07-10 14:54",
+        "paid": true
+      },
+      "exclusions": [
+        {
+          "weekNumber": 1,
+          "timeSlot": "AM",
+          "monday": true,
+          "tuesday": true,
+          "wednesday": true,
+          "thursday": true,
+          "friday": true,
+          "saturday": true,
+          "sunday": true,
+          "customStartTime": "string",
+          "customEndTime": "string",
+          "daysOfWeek": [
+            "MONDAY"
+          ]
+        }
+      ],
+      "prisonerFirstName": "Joe",
+      "prisonerLastName": "Bloggs",
+      "prisonerStatus": "ACTIVE IN",
+      "prisonerPrisonCode": "MDI",
+      "cellLocation": "string",
+      "earliestReleaseDate": {
+        "releaseDate": "2027-09-20",
+        "isTariffDate": true,
+        "isIndeterminateSentence": true,
+        "isImmigrationDetainee": true,
+        "isConvictedUnsentenced": true,
+        "isRemand": true
+      },
+      "nonAssociations": true
+    }
+  ],
+  "description": "Entry level Maths 1",
+  "suspensions": [
+    {
+      "suspendedFrom": "2022-09-02",
+      "suspendedUntil": "2022-09-02"
+    }
+  ],
+  "internalLocation": {
+    "id": 98877667,
+    "code": "EDU-ROOM-1",
+    "description": "Education - R1",
+    "dpsLocationId": "b7602cc8-e769-4cbb-8194-62d8e655992a"
+  },
+  "capacity": 10,
+  "activity": {
+    "id": 123456,
+    "prisonCode": "PVI",
+    "attendanceRequired": false,
+    "inCell": false,
+    "onWing": false,
+    "offWing": false,
+    "pieceWork": false,
+    "outsideWork": false,
+    "payPerSession": "H",
+    "summary": "Maths level 1",
+    "description": "A basic maths course suitable for introduction to the subject",
+    "category": {
+      "id": 1,
+      "code": "LEISURE_SOCIAL",
+      "name": "Leisure and social",
+      "description": "Such as association, library time and social clubs, like music or art"
+    },
+    "riskLevel": "high",
+    "minimumEducationLevel": [
+      {
+        "id": 123456,
+        "educationLevelCode": "Basic",
+        "educationLevelDescription": "Basic",
+        "studyAreaCode": "ENGLA",
+        "studyAreaDescription": "English Language"
+      }
+    ],
+    "endDate": "2022-12-21",
+    "capacity": 0,
+    "allocated": 0,
+    "createdTime": "2022-09-01T09:01:02",
+    "activityState": "live",
+    "paid": true
+  },
+  "scheduleWeeks": 1,
+  "slots": [
+    {
+      "id": 123456,
+      "timeSlot": "AM",
+      "weekNumber": 1,
+      "startTime": "9:00",
+      "endTime": "11:30",
+      "daysOfWeek": "[Mon,Tue,Wed]",
+      "mondayFlag": true,
+      "tuesdayFlag": true,
+      "wednesdayFlag": true,
+      "thursdayFlag": false,
+      "fridayFlag": false,
+      "saturdayFlag": false,
+      "sundayFlag": false
+    }
+  ],
+  "startDate": "2022-09-21",
+  "endDate": "2022-10-21",
+  "runsOnBankHoliday": true,
+  "updatedTime": "2022-09-01T09:01:02",
+  "updatedBy": "Adam Smith",
+  "usePrisonRegimeTime": true
+}
