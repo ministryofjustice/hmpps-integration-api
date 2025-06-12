@@ -56,7 +56,6 @@ feature-flag:
   use-prison-regime-endpoint: true
   use-prison-activities-endpoint: true
 
-
 authorisation:
   consumers:
     mapps:
