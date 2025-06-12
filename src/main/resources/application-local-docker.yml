@@ -76,6 +76,7 @@ authorisation:
         - "/v1/prison/.*/location/[^/]*$"
         - "/v1/persons/.*/education/assessments/status"
         - "/v1/persons/.*/health-and-diet"
+        - "/v1/prison/.*/activities"
       filters:
     config-v2-test:
       include:
