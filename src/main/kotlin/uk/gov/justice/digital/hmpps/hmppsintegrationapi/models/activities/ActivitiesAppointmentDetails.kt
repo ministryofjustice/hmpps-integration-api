@@ -9,7 +9,7 @@ data class ActivitiesAppointmentDetails(
   val attendees: List<ActivitiesAttendee>,
   val category: ActivitiesAppointmentCategory,
   val customName: String?,
-  val internalLocation: ActivitiesInternalLocation?,
+  val internalLocation: ActivitiesAppointmentInternalLocation?,
   val inCell: Boolean,
   val startDate: String,
   val startTime: String,

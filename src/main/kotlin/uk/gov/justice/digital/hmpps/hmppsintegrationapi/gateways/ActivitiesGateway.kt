@@ -136,7 +136,7 @@ class ActivitiesGateway(
       )
 
     val result =
-      webClient.request<List<ActivitiesAppointmentDetails>>(
+      webClient.requestList<ActivitiesAppointmentDetails>(
         HttpMethod.POST,
         "/appointments/$prisonCode/search",
         authenticationHeader(),
