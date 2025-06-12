@@ -11,6 +11,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_LOCATION_ENDPOINT
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_PERSONAL_CARE_NEEDS_ENDPOINTS
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_PHYSICAL_CHARACTERISTICS_ENDPOINTS
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_PRISON_REGIME_ENDPOINT
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_RESIDENTIAL_DETAILS_ENDPOINTS
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_RESIDENTIAL_HIERARCHY_ENDPOINTS
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.FeatureNotEnabledException
@@ -92,6 +93,15 @@ internal class FeatureFlaggedEndpointsIntegrationTest : IntegrationTestBase() {
   fun `languages should return 503`() {
     whenever(featureFlagConfig.require(USE_LANGUAGES_ENDPOINTS)).thenThrow(FeatureNotEnabledException(""))
     val path = "$basePath/$nomsId/languages"
+    callApi(path)
+      .andExpect(status().isServiceUnavailable)
+  }
+
+  @Test
+  fun `prison regime should return 503`() {
+    whenever(featureFlagConfig.require(USE_PRISON_REGIME_ENDPOINT)).thenThrow(FeatureNotEnabledException(""))
+    val prisonId = "MDI"
+    val path = "/v1/prison/$prisonId/prison-regime"
     callApi(path)
       .andExpect(status().isServiceUnavailable)
   }
