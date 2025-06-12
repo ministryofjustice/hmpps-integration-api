@@ -69,6 +69,15 @@ class OpenAPIConfig {
               ),
             ),
           ).addSchemas(
+            "PrisonNotFound",
+            Schema<ErrorResponse>().description("Failed to find a prison with the provided prison ID.").properties(
+              mapOf(
+                "status" to Schema<Int>().type("number").example(404),
+                "userMessage" to Schema<String>().type("string").example("404 Not found error: Could not find prison with prison ID: MDI."),
+                "developerMessage" to Schema<String>().type("string").example("Could not find prison with prison with ID: MDI."),
+              ),
+            ),
+          ).addSchemas(
             "InternalServerError",
             Schema<ErrorResponse>().description("An upstream service was not responding, so we cannot verify the accuracy of any data we did get.").properties(
               mapOf(
