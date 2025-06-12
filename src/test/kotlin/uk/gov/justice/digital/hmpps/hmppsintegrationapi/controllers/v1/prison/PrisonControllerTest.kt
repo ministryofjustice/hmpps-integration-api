@@ -25,6 +25,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.LocationCer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PaginatedVisits
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonInPrison
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonCapacity
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonRegime
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ResidentialDetails
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ResidentialHierarchyItem
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
@@ -39,11 +40,13 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Consum
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.personas.personInProbationAndNomisPersona
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetCapacityForPrisonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPrisonRegimeService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPrisonersService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetResidentialDetailsService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetResidentialHierarchyService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetVisitsService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
+import java.time.DayOfWeek
 import java.time.LocalDate
 
 @WebMvcTest(controllers = [PrisonController::class])
@@ -58,6 +61,7 @@ internal class PrisonControllerTest(
   @MockitoBean val getResidentialHierarchyService: GetResidentialHierarchyService,
   @MockitoBean val getResidentialDetailsService: GetResidentialDetailsService,
   @MockitoBean val getCapacityForPrisonService: GetCapacityForPrisonService,
+  @MockitoBean val getPrisonRegimeService: GetPrisonRegimeService,
 ) : DescribeSpec({
     val firstName = personInProbationAndNomisPersona.firstName
     val lastName = personInProbationAndNomisPersona.lastName
@@ -648,7 +652,7 @@ internal class PrisonControllerTest(
         )
       }
 
-      it("returns 400 when getCapacityForPrisonService returns not found") {
+      it("returns 400 when getCapacityForPrisonService returns bad request") {
         whenever(getCapacityForPrisonService.execute(prisonId, filters)).thenReturn(
           Response(
             data = null,
@@ -675,6 +679,84 @@ internal class PrisonControllerTest(
                 UpstreamApiError(
                   type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
                   causedBy = UpstreamApi.LOCATIONS_INSIDE_PRISON,
+                ),
+              ),
+          ),
+        )
+
+        val result = mockMvc.performAuthorised(path)
+        result.response.status.shouldBe(404)
+      }
+    }
+
+    describe("GET /{prisonId}/prison-regime") {
+      val prisonId = "ABC"
+      val filters = null
+      val path = "$basePath/$prisonId/prison-regime"
+
+      val prisonRegime =
+        PrisonRegime(
+          amStart = "09:00",
+          amFinish = "12:00",
+          pmStart = "13:00",
+          pmFinish = "17:00",
+          edStart = "18:00",
+          edFinish = "21:00",
+          dayOfWeek = DayOfWeek.MONDAY,
+        )
+
+      beforeEach {
+        Mockito.reset(getPrisonRegimeService)
+      }
+
+      it("should return 200 when success") {
+        whenever(getPrisonRegimeService.execute(prisonId, filters)).thenReturn(Response(data = listOf(prisonRegime)))
+
+        val result = mockMvc.performAuthorised(path)
+        result.response.status.shouldBe(HttpStatus.OK.value())
+        result.response.contentAsJson<DataResponse<List<PrisonRegime>>>().shouldBe(DataResponse(data = listOf(prisonRegime)))
+      }
+
+      it("should call the audit service") {
+        whenever(getPrisonRegimeService.execute(prisonId, filters)).thenReturn(Response(data = listOf(prisonRegime)))
+
+        mockMvc.performAuthorised(path)
+        verify(
+          auditService,
+          times(1),
+        ).createEvent(
+          "GET_PRISON_REGIME",
+          mapOf("prisonId" to prisonId),
+        )
+      }
+
+      it("returns 400 when getPrisonRegimeService returns bad request") {
+        whenever(getPrisonRegimeService.execute(prisonId, filters)).thenReturn(
+          Response(
+            data = null,
+            errors =
+              listOf(
+                UpstreamApiError(
+                  type = UpstreamApiError.Type.BAD_REQUEST,
+                  causedBy = UpstreamApi.ACTIVITIES,
+                ),
+              ),
+          ),
+        )
+
+        val result = mockMvc.performAuthorised(path)
+        result.response.status.shouldBe(400)
+      }
+
+      it("returns 404 when getPrisonRegimeService returns not found") {
+        whenever(getPrisonRegimeService.execute(prisonId, filters)).thenReturn(
+          Response(
+            data = null,
+            errors =
+              listOf(
+                UpstreamApiError(
+                  type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+                  causedBy = UpstreamApi.ACTIVITIES,
                 ),
               ),
           ),
