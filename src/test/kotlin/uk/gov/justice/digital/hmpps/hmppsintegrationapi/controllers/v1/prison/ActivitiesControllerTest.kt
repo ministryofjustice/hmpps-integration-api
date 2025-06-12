@@ -51,7 +51,6 @@ class ActivitiesControllerTest(
             activityName = "Maths level 1",
             category =
               ActivityCategory(
-                id = 1,
                 code = "LEISURE_SOCIAL",
                 name = "Leisure and social",
                 description = "Such as association, library time and social clubs, like music or art",

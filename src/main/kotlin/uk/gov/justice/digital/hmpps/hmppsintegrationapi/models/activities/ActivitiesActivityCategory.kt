@@ -10,7 +10,6 @@ data class ActivitiesActivityCategory(
 ) {
   fun toActivityCategory() =
     ActivityCategory(
-      id = this.id,
       code = this.code,
       name = this.name,
       description = this.description,
