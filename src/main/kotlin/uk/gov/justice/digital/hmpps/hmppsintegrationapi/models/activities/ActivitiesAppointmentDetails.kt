@@ -1,0 +1,28 @@
+package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities
+
+data class ActivitiesAppointmentDetails(
+  val appointmentSeriesId: Long,
+  val appointmentId: Long,
+  val appointmentType: String,
+  val prisonCode: String,
+  val appointmentName: String,
+  val attendees: List<ActivitiesAttendee>,
+  val category: ActivitiesAppointmentCategory,
+  val customName: String?,
+  val internalLocation: ActivitiesInternalLocation?,
+  val inCell: Boolean,
+  val startDate: String,
+  val startTime: String,
+  val endTime: String?,
+  val timeSlot: String,
+  val isRepeat: Boolean,
+  val sequenceNumber: Int,
+  val maxSequenceNumber: Int,
+  val isEdited: Boolean,
+  val isCancelled: Boolean,
+  val isExpired: Boolean,
+  val createdTime: String,
+  val updatedTime: String?,
+  val cancelledTime: String?,
+  val cancelledBy: String?,
+)
