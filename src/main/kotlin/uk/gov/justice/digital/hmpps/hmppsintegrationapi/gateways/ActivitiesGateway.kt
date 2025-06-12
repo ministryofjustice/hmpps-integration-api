@@ -8,6 +8,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrap
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper.WebClientWrapperResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesActivitySchedule
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesActivityScheduleDetailed
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesAppointmentDetails
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesPrisonRegime
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesRunningActivity
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
@@ -108,6 +109,39 @@ class ActivitiesGateway(
         "/prison/$prisonCode/activities",
         authenticationHeader(),
         UpstreamApi.ACTIVITIES,
+        badRequestAsError = true,
+      )
+
+    return when (result) {
+      is WebClientWrapperResponse.Success -> {
+        Response(data = result.data)
+      }
+
+      is WebClientWrapperResponse.Error -> {
+        Response(
+          data = null,
+          errors = result.errors,
+        )
+      }
+    }
+  }
+
+  fun getAppointments(
+    prisonCode: String,
+    startDate: String,
+  ): Response<List<ActivitiesAppointmentDetails>?> {
+    val requestBodyMap =
+      mapOf(
+        "startDate" to startDate,
+      )
+
+    val result =
+      webClient.requestList<ActivitiesAppointmentDetails>(
+        HttpMethod.POST,
+        "/appointments/$prisonCode/search",
+        authenticationHeader(),
+        requestBody = requestBodyMap,
+        upstreamApi = UpstreamApi.ACTIVITIES,
         badRequestAsError = true,
       )
 
