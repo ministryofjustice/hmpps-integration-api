@@ -129,14 +129,14 @@ class ActivitiesGateway(
   fun getAppointments(
     prisonCode: String,
     startDate: String,
-  ): Response<ActivitiesAppointmentDetails?> {
+  ): Response<List<ActivitiesAppointmentDetails>?> {
     val requestBodyMap =
       mapOf(
         "startDate" to startDate,
       )
 
     val result =
-      webClient.request<ActivitiesAppointmentDetails>(
+      webClient.request<List<ActivitiesAppointmentDetails>>(
         HttpMethod.POST,
         "/appointments/$prisonCode/search",
         authenticationHeader(),
