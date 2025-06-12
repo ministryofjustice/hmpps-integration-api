@@ -32,6 +32,7 @@ data class FeatureFlagConfig(
     const val USE_PERSONAL_CARE_NEEDS_ENDPOINTS = "use-personal-care-needs-endpoints"
     const val USE_LANGUAGES_ENDPOINTS = "use-languages-endpoints"
     const val USE_PRISON_REGIME_ENDPOINT = "use-prison-regime-endpoint"
+    const val USE_PRISON_ACTIVITIES_ENDPOINT = "use-prison-activities-endpoint"
   }
 
   /**
