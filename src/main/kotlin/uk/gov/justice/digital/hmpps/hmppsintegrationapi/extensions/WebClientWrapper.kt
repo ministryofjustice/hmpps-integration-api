@@ -51,7 +51,7 @@ class WebClientWrapper(
     uri: String,
     headers: Map<String, String>,
     upstreamApi: UpstreamApi,
-    requestBody: Map<String, Any?>? = null,
+    requestBody: Any? = null,
     forbiddenAsError: Boolean = false,
     badRequestAsError: Boolean = false,
   ): WebClientWrapperResponse<T> =
@@ -76,7 +76,7 @@ class WebClientWrapper(
     uri: String,
     headers: Map<String, String>,
     upstreamApi: UpstreamApi,
-    requestBody: Map<String, Any?>? = null,
+    requestBody: Any? = null,
     forbiddenAsError: Boolean = false,
     badRequestAsError: Boolean = false,
   ): WebClientWrapperResponse<T> =
@@ -103,7 +103,7 @@ class WebClientWrapper(
     uri: String,
     headers: Map<String, String>,
     upstreamApi: UpstreamApi,
-    requestBody: Map<String, Any?>? = null,
+    requestBody: Any? = null,
     forbiddenAsError: Boolean = false,
     badRequestAsError: Boolean = false,
   ): WebClientWrapperResponse<List<T>> =
@@ -124,7 +124,7 @@ class WebClientWrapper(
     method: HttpMethod,
     uri: String,
     headers: Map<String, String>,
-    requestBody: Map<String, Any?>? = null,
+    requestBody: Any? = null,
   ): WebClient.RequestBodySpec {
     val responseBodySpec =
       client

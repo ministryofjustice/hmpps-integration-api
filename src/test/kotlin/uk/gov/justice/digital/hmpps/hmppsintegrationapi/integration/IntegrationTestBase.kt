@@ -47,12 +47,13 @@ abstract class IntegrationTestBase {
     private val nomsId = "G2996UX"
     private val nomsIdFromProbation = "G5555TT"
 
-    private val gatewaysFolder = "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways"
+    val gatewaysFolder = "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways"
     private val hmppsAuthMockServer = HmppsAuthMockServer()
     val prisonerOffenderSearchMockServer = ApiMockServer.create(UpstreamApi.PRISONER_OFFENDER_SEARCH)
     val healthAndMedicationMockServer = ApiMockServer.create(UpstreamApi.HEALTH_AND_MEDICATION)
     val managePomCaseMockServer = ApiMockServer.create(UpstreamApi.MANAGE_POM_CASE)
     val plpMockServer = ApiMockServer.create(UpstreamApi.PLP)
+    val activitiesMockServer = ApiMockServer.create(UpstreamApi.ACTIVITIES)
 
     @BeforeAll
     @JvmStatic
@@ -89,6 +90,8 @@ abstract class IntegrationTestBase {
       )
 
       plpMockServer.start()
+
+      activitiesMockServer.start()
     }
 
     @AfterAll
@@ -99,6 +102,7 @@ abstract class IntegrationTestBase {
       healthAndMedicationMockServer.stop()
       managePomCaseMockServer.stop()
       plpMockServer.stop()
+      activitiesMockServer.stop()
     }
   }
 

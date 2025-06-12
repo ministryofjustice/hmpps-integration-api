@@ -60,6 +60,7 @@ const get_endpoints = [
   `/v1/prison/${prisonId}/location/${locationIdKey}`,
   `/v1/prison/${prisonId}/residential-details`,
   `/v1/prison/${prisonId}/capacity`,
+  `/v1/prison/${prisonId}/prison-regime`,
   `/v1/contacts/${clientReference}`,
   `/v1/persons?first_name=john`,
   `/v1/persons/${deliusCrn}`,

@@ -54,35 +54,11 @@ class ActivitiesGateway(
     }
   }
 
-  fun getActivitiesSchedule(activityId: Long): Response<List<ActivitiesActivitySchedule>?> {
+  fun getActivitySchedules(activityId: Long): Response<List<ActivitiesActivitySchedule>?> {
     val result =
       webClient.requestList<ActivitiesActivitySchedule>(
         HttpMethod.GET,
         "/activities/$activityId/schedules",
-        authenticationHeader(),
-        UpstreamApi.ACTIVITIES,
-        badRequestAsError = true,
-      )
-
-    return when (result) {
-      is WebClientWrapperResponse.Success -> {
-        Response(data = result.data)
-      }
-
-      is WebClientWrapperResponse.Error -> {
-        Response(
-          data = null,
-          errors = result.errors,
-        )
-      }
-    }
-  }
-
-  fun getAllRunningActivities(prisonCode: String): Response<List<ActivitiesRunningActivity>?> {
-    val result =
-      webClient.requestList<ActivitiesRunningActivity>(
-        HttpMethod.GET,
-        "/prison/$prisonCode/activities",
         authenticationHeader(),
         UpstreamApi.ACTIVITIES,
         badRequestAsError = true,
@@ -107,6 +83,30 @@ class ActivitiesGateway(
       webClient.request<ActivitiesActivityScheduleDetailed>(
         HttpMethod.GET,
         "/schedules/$scheduleId",
+        authenticationHeader(),
+        UpstreamApi.ACTIVITIES,
+        badRequestAsError = true,
+      )
+
+    return when (result) {
+      is WebClientWrapperResponse.Success -> {
+        Response(data = result.data)
+      }
+
+      is WebClientWrapperResponse.Error -> {
+        Response(
+          data = null,
+          errors = result.errors,
+        )
+      }
+    }
+  }
+
+  fun getAllRunningActivities(prisonCode: String): Response<List<ActivitiesRunningActivity>?> {
+    val result =
+      webClient.requestList<ActivitiesRunningActivity>(
+        HttpMethod.GET,
+        "/prison/$prisonCode/activities",
         authenticationHeader(),
         UpstreamApi.ACTIVITIES,
         badRequestAsError = true,

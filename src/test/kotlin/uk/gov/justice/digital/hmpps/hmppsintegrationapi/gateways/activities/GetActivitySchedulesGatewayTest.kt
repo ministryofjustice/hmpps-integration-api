@@ -33,7 +33,7 @@ import java.time.LocalDateTime
   initializers = [ConfigDataApplicationContextInitializer::class],
   classes = [ActivitiesGateway::class],
 )
-class GetActivitiesScheduleGatewayTest(
+class GetActivitySchedulesGatewayTest(
   @MockitoBean val hmppsAuthGateway: HmppsAuthGateway,
   private val activitiesGateway: ActivitiesGateway,
 ) : DescribeSpec(
@@ -55,7 +55,7 @@ class GetActivitiesScheduleGatewayTest(
       }
 
       it("authenticates using HMPPS Auth with credentials") {
-        activitiesGateway.getActivitiesSchedule(activityId)
+        activitiesGateway.getActivitySchedules(activityId)
 
         verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("ACTIVITIES")
       }
@@ -66,7 +66,7 @@ class GetActivitiesScheduleGatewayTest(
           File("src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/activities/fixtures/GetActivitiesSchedule.json").readText(),
         )
 
-        val result = activitiesGateway.getActivitiesSchedule(activityId)
+        val result = activitiesGateway.getActivitySchedules(activityId)
         result.errors.shouldBeEmpty()
         result.data.shouldNotBeNull()
         result.data[0].shouldBe(
@@ -152,7 +152,7 @@ class GetActivitiesScheduleGatewayTest(
           HttpStatus.BAD_REQUEST,
         )
 
-        val result = activitiesGateway.getActivitiesSchedule(activityId)
+        val result = activitiesGateway.getActivitySchedules(activityId)
         result.errors.shouldBe(listOf(UpstreamApiError(causedBy = UpstreamApi.ACTIVITIES, type = UpstreamApiError.Type.BAD_REQUEST)))
       }
     },

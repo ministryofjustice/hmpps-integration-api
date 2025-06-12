@@ -44,6 +44,8 @@ services:
     base-url: http://localhost:4022
   locations-inside-prison:
     base-url: http://localhost:4023
+  activities:
+    base-url: http://localhost:4004
 
 hmpps.sqs:
   provider: localstack
@@ -72,6 +74,7 @@ feature-flag:
   use-personal-care-needs-endpoints: true
   use-health-and-diet-endpoint: true
   use-languages-endpoints: true
+  use-prison-regime-endpoint: true
 
 authorisation:
   consumers:
@@ -132,6 +135,7 @@ authorisation:
         - "/v1/prison/.*/residential-hierarchy"
         - "/v1/prison/.*/residential-details"
         - "/v1/prison/.*/capacity"
+        - "/v1/prison/.*/prison-regime"
         - "/v1/persons/.*/visitor/.*/restrictions"
         - "/v1/visit/[^/]*$"
         - "/v1/visit"
@@ -150,6 +154,7 @@ authorisation:
         - "/v1/persons/.*/care-needs"
         - "/v1/persons/.*/health-and-diet"
         - "/v1/persons/.*/languages"
+        - "/v1/prison/.*/prison-regime"
       filters:
     config-v2-test:
       include:

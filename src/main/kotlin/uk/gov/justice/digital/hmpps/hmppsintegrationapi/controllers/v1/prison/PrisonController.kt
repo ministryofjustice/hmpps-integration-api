@@ -22,6 +22,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.featureflag.F
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonInPrison
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonCapacity
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonRegime
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ResidentialDetails
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ResidentialHierarchyItem
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
@@ -33,6 +34,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.interfaces.
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetCapacityForPrisonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPrisonRegimeService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPrisonersService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetResidentialDetailsService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetResidentialHierarchyService
@@ -54,6 +56,7 @@ class PrisonController(
   @Autowired val getResidentialDetailsService: GetResidentialDetailsService,
   @Autowired val getCapacityForPrisonService: GetCapacityForPrisonService,
   @Autowired val auditService: AuditService,
+  private val getPrisonRegimeService: GetPrisonRegimeService,
 ) {
   @GetMapping("/prisoners/{hmppsId}")
   @Tags(value = [Tag(name = "Prisoners"), Tag(name = "Reception")])
@@ -305,6 +308,41 @@ class PrisonController(
 
     auditService.createEvent(
       "GET_CAPACITY_DETAILS",
+      mapOf("prisonId" to prisonId),
+    )
+
+    return DataResponse(data = response.data)
+  }
+
+  @GetMapping("/{prisonId}/prison-regime")
+  @Tag(name = "Activities")
+  @Operation(
+    summary = "Gets the prison regime for a prison.",
+    description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
+    responses = [
+      ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully performed the query on upstream APIs. An empty list is returned when no results are found."),
+      ApiResponse(responseCode = "403", content = [Content(schema = Schema(ref = "#/components/schemas/ForbiddenResponse"))]),
+      ApiResponse(responseCode = "404", content = [Content(schema = Schema(ref = "#/components/schemas/PrisonNotFound"))]),
+      ApiResponse(responseCode = "500", content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]),
+    ],
+  )
+  @FeatureFlag(name = FeatureFlagConfig.USE_PRISON_REGIME_ENDPOINT)
+  fun getPrisonRegime(
+    @Parameter(description = "The ID of the prison to be queried against") @PathVariable prisonId: String,
+    @RequestAttribute filters: ConsumerFilters?,
+  ): DataResponse<List<PrisonRegime>?> {
+    val response = getPrisonRegimeService.execute(prisonId, filters)
+
+    if (response.hasError(BAD_REQUEST)) {
+      throw ValidationException("Invalid query parameters.")
+    }
+
+    if (response.hasError(ENTITY_NOT_FOUND)) {
+      throw EntityNotFoundException("Could not find prison regime with supplied query parameters.")
+    }
+
+    auditService.createEvent(
+      "GET_PRISON_REGIME",
       mapOf("prisonId" to prisonId),
     )
 

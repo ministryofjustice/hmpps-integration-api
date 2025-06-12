@@ -53,6 +53,7 @@ feature-flag:
   use-health-and-diet-endpoint: true
   use-personal-care-needs-endpoints: true
   use-languages-endpoints: true
+  use-prison-regime-endpoint: true
 
 authorisation:
   consumers:
@@ -193,6 +194,7 @@ authorisation:
         - "/v1/prison/.*/location/[^/]*$"
         - "/v1/prison/.*/residential-details"
         - "/v1/prison/.*/capacity"
+        - "/v1/prison/.*/prison-regime"
         - "/v1/visit/[^/]*$"
         - "/v1/persons/.*/visit/future"
       filters:
