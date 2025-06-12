@@ -76,6 +76,7 @@ feature-flag:
   use-health-and-diet-endpoint: true
   use-languages-endpoints: true
   use-prison-regime-endpoint: true
+  use-prison-activities-endpoint: true
 
 authorisation:
   consumers:
