@@ -10,7 +10,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 @Service
-class GetActivitySchedulesService(
+class GetActivitiesScheduleService(
   @Autowired val activitiesGateway: ActivitiesGateway,
   @Autowired val consumerPrisonAccessService: ConsumerPrisonAccessService,
 ) {
