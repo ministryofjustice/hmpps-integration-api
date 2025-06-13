@@ -1,5 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities
 
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ActivitySchedule
+
 data class ActivitiesActivitySchedule(
   val id: Long,
   val description: String,
@@ -11,4 +13,17 @@ data class ActivitiesActivitySchedule(
   val startDate: String,
   val endDate: String?,
   val usePrisonRegimeTime: Boolean,
-)
+) {
+  fun toActivitySchedule() =
+    ActivitySchedule(
+      id = this.id,
+      description = this.description,
+      internalLocation = this.internalLocation,
+      capacity = this.capacity,
+      scheduleWeeks = this.scheduleWeeks,
+      slots = this.slots,
+      startDate = this.startDate,
+      endDate = this.endDate,
+      usePrisonRegimeTime = this.usePrisonRegimeTime,
+    )
+}

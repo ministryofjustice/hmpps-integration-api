@@ -118,6 +118,14 @@ internal class FeatureFlaggedEndpointsIntegrationTest : IntegrationTestBase() {
   }
 
   @Test
+  fun `activities schedule should return 503`() {
+    whenever(featureFlagConfig.require(USE_PRISON_ACTIVITIES_ENDPOINT)).thenThrow(FeatureNotEnabledException(""))
+    val activityId = 123456L
+    val path = "/v1/activities/$activityId/schedules"
+    callApi(path)
+      .andExpect(status().isServiceUnavailable)
+  }
+
   fun `prison pay bands should return 503`() {
     whenever(featureFlagConfig.require(USE_PRISON_PAY_BANDS_ENDPOINT)).thenThrow(FeatureNotEnabledException(""))
     val prisonId = "MDI"
