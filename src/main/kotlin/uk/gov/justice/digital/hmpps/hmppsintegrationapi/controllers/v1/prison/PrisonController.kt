@@ -19,7 +19,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.ForbiddenByUpstreamServiceException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.featureflag.FeatureFlag
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ActivitySchedule
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonInPrison
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonCapacity
@@ -33,7 +32,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Visit
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.interfaces.toPaginatedResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetActivitiesScheduleService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetCapacityForPrisonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPrisonRegimeService
@@ -57,7 +55,6 @@ class PrisonController(
   @Autowired val getResidentialHierarchyService: GetResidentialHierarchyService,
   @Autowired val getResidentialDetailsService: GetResidentialDetailsService,
   @Autowired val getCapacityForPrisonService: GetCapacityForPrisonService,
-  @Autowired val getActivitiesScheduleService: GetActivitiesScheduleService,
   @Autowired val auditService: AuditService,
   private val getPrisonRegimeService: GetPrisonRegimeService,
 ) {
@@ -347,42 +344,6 @@ class PrisonController(
     auditService.createEvent(
       "GET_PRISON_REGIME",
       mapOf("prisonId" to prisonId),
-    )
-
-    return DataResponse(data = response.data)
-  }
-
-  @GetMapping("/v1/activities/{activityId/schedules")
-  @Tag(name = "Activities")
-  @Operation(
-    summary = "Gets the activities schedule for a prison.",
-    description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
-    responses = [
-      ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully performed the query on upstream APIs. An empty list is returned when no results are found."),
-      ApiResponse(responseCode = "403", content = [Content(schema = Schema(ref = "#/components/schemas/ForbiddenResponse"))]),
-      ApiResponse(responseCode = "404", content = [Content(schema = Schema(ref = "#/components/schemas/PrisonNotFound"))]),
-      ApiResponse(responseCode = "500", content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]),
-    ],
-  )
-  @FeatureFlag(name = FeatureFlagConfig.USE_ACTIVITIES_SCHEDULE_ENDPOINT)
-  fun getActivitySchedules(
-    @Parameter(description = "The ID of the prison") @PathVariable prisonId: String,
-    @Parameter(description = "The ID of the activity") @PathVariable activityId: Long,
-    @RequestAttribute filters: ConsumerFilters?,
-  ): DataResponse<List<ActivitySchedule>?> {
-    val response = getActivitiesScheduleService.execute(prisonId, activityId, filters)
-
-    if (response.hasError(BAD_REQUEST)) {
-      throw ValidationException("Invalid query parameters.")
-    }
-
-    if (response.hasError(ENTITY_NOT_FOUND)) {
-      throw EntityNotFoundException("Could not find prison regime with supplied query parameters.")
-    }
-
-    auditService.createEvent(
-      "GET_ACTIVITY_SCHEDULES",
-      mapOf("prisonId" to prisonId, "activityId" to activityId.toString()),
     )
 
     return DataResponse(data = response.data)

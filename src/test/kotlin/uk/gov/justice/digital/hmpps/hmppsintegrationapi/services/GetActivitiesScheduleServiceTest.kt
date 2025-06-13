@@ -36,6 +36,81 @@ class GetActivitiesScheduleServiceTest(
       val prisonId = "MDI"
       val filters = ConsumerFilters(prisons = listOf(prisonId))
       val activityId = 123456L
+      val activitiesActivitySchedule =
+        listOf(
+          ActivitiesActivitySchedule(
+            id = 1001L,
+            description = "Morning Education Class",
+            internalLocation =
+              ActivitiesInternalLocation(
+                id = 201,
+                code = "EDU-ROOM1",
+                description = "Education Room 1",
+                dpsLocationId = "MDI-EDU-ROOM1",
+              ),
+            capacity = 25,
+            activity =
+              ActivitiesActivity(
+                id = 2001L,
+                prisonCode = "MDI",
+                attendanceRequired = true,
+                inCell = false,
+                onWing = false,
+                offWing = true,
+                pieceWork = false,
+                outsideWork = true,
+                payPerSession = "F",
+                summary = "Gardening Project",
+                description = "Maintain the prison gardens and grow vegetables.",
+                category =
+                  ActivitiesActivityCategory(
+                    id = 4L,
+                    code = "GAR",
+                    name = "Gardening",
+                    description = "Horticultural activities",
+                  ),
+                riskLevel = "LOW",
+                minimumEducationLevel =
+                  listOf(
+                    ActivitiesMinimumEducationLevel(
+                      id = 10L,
+                      educationLevelCode = "ENTRY",
+                      educationLevelDescription = "Entry Level",
+                      studyAreaCode = "HORT",
+                      studyAreaDescription = "Horticulture",
+                    ),
+                  ),
+                endDate = "2024-12-31",
+                capacity = 15,
+                allocated = 12,
+                createdTime = LocalDateTime.now(),
+                activityState = "LIVE",
+                paid = true,
+              ),
+            scheduleWeeks = 2,
+            slots =
+              listOf(
+                ActivitiesSlot(
+                  id = 101L,
+                  timeSlot = "AM",
+                  weekNumber = 1,
+                  startTime = "09:00",
+                  endTime = "12:00",
+                  daysOfWeek = "Mon,Wed,Fri",
+                  mondayFlag = true,
+                  tuesdayFlag = false,
+                  wednesdayFlag = true,
+                  thursdayFlag = false,
+                  fridayFlag = true,
+                  saturdayFlag = false,
+                  sundayFlag = false,
+                ),
+              ),
+            startDate = "2024-01-15",
+            endDate = "2024-07-15",
+            usePrisonRegimeTime = true,
+          ),
+        )
 
       beforeEach {
         Mockito.reset(consumerPrisonAccessService, activitiesGateway)
@@ -44,85 +119,9 @@ class GetActivitiesScheduleServiceTest(
       }
 
       it("should return an activity schedule") {
-        val activitiesActivitySchedule =
-          listOf(
-            ActivitiesActivitySchedule(
-              id = 1001L,
-              description = "Morning Education Class",
-              internalLocation =
-                ActivitiesInternalLocation(
-                  id = 201,
-                  code = "EDU-ROOM1",
-                  description = "Education Room 1",
-                  dpsLocationId = "MDI-EDU-ROOM1",
-                ),
-              capacity = 25,
-              activity =
-                ActivitiesActivity(
-                  id = 2001L,
-                  prisonCode = "LPI",
-                  attendanceRequired = true,
-                  inCell = false,
-                  onWing = false,
-                  offWing = true,
-                  pieceWork = false,
-                  outsideWork = true,
-                  payPerSession = "F",
-                  summary = "Gardening Project",
-                  description = "Maintain the prison gardens and grow vegetables.",
-                  category =
-                    ActivitiesActivityCategory(
-                      id = 4L,
-                      code = "GAR",
-                      name = "Gardening",
-                      description = "Horticultural activities",
-                    ),
-                  riskLevel = "LOW",
-                  minimumEducationLevel =
-                    listOf(
-                      ActivitiesMinimumEducationLevel(
-                        id = 10L,
-                        educationLevelCode = "ENTRY",
-                        educationLevelDescription = "Entry Level",
-                        studyAreaCode = "HORT",
-                        studyAreaDescription = "Horticulture",
-                      ),
-                    ),
-                  endDate = "2024-12-31",
-                  capacity = 15,
-                  allocated = 12,
-                  createdTime = LocalDateTime.now(),
-                  activityState = "LIVE",
-                  paid = true,
-                ),
-              scheduleWeeks = 2,
-              slots =
-                listOf(
-                  ActivitiesSlot(
-                    id = 101L,
-                    timeSlot = "AM",
-                    weekNumber = 1,
-                    startTime = "09:00",
-                    endTime = "12:00",
-                    daysOfWeek = "Mon,Wed,Fri",
-                    mondayFlag = true,
-                    tuesdayFlag = false,
-                    wednesdayFlag = true,
-                    thursdayFlag = false,
-                    fridayFlag = true,
-                    saturdayFlag = false,
-                    sundayFlag = false,
-                  ),
-                ),
-              startDate = "2024-01-15",
-              endDate = "2024-07-15",
-              usePrisonRegimeTime = true,
-            ),
-          )
-
         whenever(activitiesGateway.getActivitySchedules(activityId)).thenReturn(Response(data = activitiesActivitySchedule))
 
-        val result = getActivitiesScheduleService.execute(prisonId, activityId, filters)
+        val result = getActivitiesScheduleService.execute(activityId, filters)
         result.data.shouldBe(activitiesActivitySchedule.map { it.toActivitySchedule() })
         result.errors.shouldBeEmpty()
       }
@@ -136,9 +135,10 @@ class GetActivitiesScheduleServiceTest(
               description = "Error from consumer prison access check",
             ),
           )
+        whenever(activitiesGateway.getActivitySchedules(activityId)).thenReturn(Response(data = activitiesActivitySchedule))
         whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<Any>(prisonId, filters, upstreamServiceType = UpstreamApi.ACTIVITIES)).thenReturn(Response(data = null, errors = errors))
 
-        val result = getActivitiesScheduleService.execute(prisonId, activityId, filters)
+        val result = getActivitiesScheduleService.execute(activityId, filters)
         result.data.shouldBeNull()
         result.errors.shouldBe(errors)
       }
@@ -154,7 +154,7 @@ class GetActivitiesScheduleServiceTest(
           )
         whenever(activitiesGateway.getActivitySchedules(activityId)).thenReturn(Response(data = null, errors = errors))
 
-        val result = getActivitiesScheduleService.execute(prisonId, activityId, filters)
+        val result = getActivitiesScheduleService.execute(activityId, filters)
         result.data.shouldBeNull()
         result.errors.shouldBe(errors)
       }

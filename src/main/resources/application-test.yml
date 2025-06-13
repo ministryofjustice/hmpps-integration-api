@@ -143,6 +143,7 @@ authorisation:
         - "/v1/prison/.*/residential-details"
         - "/v1/prison/.*/capacity"
         - "/v1/prison/.*/prison-regime"
+        - "/v1/activities/.*/schedules"
         - "/v1/prison/.*/activities"
         - "/v1/persons/.*/visitor/.*/restrictions"
         - "/v1/visit/[^/]*$"

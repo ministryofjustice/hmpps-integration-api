@@ -196,6 +196,7 @@ authorisation:
         - "/v1/prison/.*/residential-details"
         - "/v1/prison/.*/capacity"
         - "/v1/prison/.*/prison-regime"
+        - "/v1/activities/.*/schedules"
         - "/v1/visit/[^/]*$"
         - "/v1/persons/.*/visit/future"
       filters:

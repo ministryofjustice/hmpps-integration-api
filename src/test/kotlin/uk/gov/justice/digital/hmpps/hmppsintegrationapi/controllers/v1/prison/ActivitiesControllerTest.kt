@@ -15,13 +15,14 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.MockMvcExtensions.contentAsJson
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ActivityCategory
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesInternalLocation
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesSlot
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ActivitySchedule
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.RunningActivity
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPrisonActivitiesService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetActivitiesScheduleService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 
 @WebMvcTest(controllers = [ActivitiesController::class])
@@ -30,93 +31,117 @@ class ActivitiesControllerTest(
   @Autowired var springMockMvc: MockMvc,
   @Autowired val request: HttpServletRequest,
   @MockitoBean val auditService: AuditService,
-  @MockitoBean val getPrisonActivitiesService: GetPrisonActivitiesService,
+  @MockitoBean val getActivitiesScheduleService: GetActivitiesScheduleService,
 ) : DescribeSpec(
     {
-      val basePath = "/v1/prison"
+      val basePath = "/v1/activities"
       val mockMvc = IntegrationAPIMockMvc(springMockMvc)
 
       afterTest {
         Mockito.reset(auditService)
       }
 
-      describe("GET /v1/prison/{prisonId}/activities") {
-        val prisonId = "ABC"
+      describe("GET /{activityId}/schedules") {
+        val activityId = 123456L
         val filters = null
-        val path = "$basePath/$prisonId/activities"
+        val path = "$basePath/$activityId/schedules"
 
-        val runningActivity =
-          RunningActivity(
-            id = 123456L,
-            activityName = "Maths level 1",
-            category =
-              ActivityCategory(
-                code = "LEISURE_SOCIAL",
-                name = "Leisure and social",
-                description = "Such as association, library time and social clubs, like music or art",
+        val activitiesSchedule =
+          ActivitySchedule(
+            id = 1001L,
+            description = "Morning Education Class",
+            internalLocation =
+              ActivitiesInternalLocation(
+                id = 201,
+                code = "EDU-ROOM1",
+                description = "Education Room 1",
+                dpsLocationId = "MDI-EDU-ROOM1",
               ),
-            capacity = 10,
-            allocated = 2,
-            waitlisted = 2,
-            activityState = "LIVE",
+            capacity = 25,
+            scheduleWeeks = 2,
+            slots =
+              listOf(
+                ActivitiesSlot(
+                  id = 101L,
+                  timeSlot = "AM",
+                  weekNumber = 1,
+                  startTime = "09:00",
+                  endTime = "12:00",
+                  daysOfWeek = "Mon,Wed,Fri",
+                  mondayFlag = true,
+                  tuesdayFlag = false,
+                  wednesdayFlag = true,
+                  thursdayFlag = false,
+                  fridayFlag = true,
+                  saturdayFlag = false,
+                  sundayFlag = false,
+                ),
+              ),
+            startDate = "2024-01-15",
+            endDate = "2024-07-15",
+            usePrisonRegimeTime = true,
           )
 
         beforeEach {
-          Mockito.reset(getPrisonActivitiesService)
+          Mockito.reset(getActivitiesScheduleService)
         }
 
         it("should return 200 when success") {
-          whenever(getPrisonActivitiesService.execute(prisonId, filters)).thenReturn(Response(data = listOf(runningActivity)))
+          whenever(getActivitiesScheduleService.execute(activityId, filters))
+            .thenReturn(Response(data = listOf(activitiesSchedule)))
 
           val result = mockMvc.performAuthorised(path)
           result.response.status.shouldBe(HttpStatus.OK.value())
-          result.response.contentAsJson<DataResponse<List<RunningActivity>>>().shouldBe(DataResponse(data = listOf(runningActivity)))
+          result.response
+            .contentAsJson<DataResponse<List<ActivitySchedule>>>()
+            .shouldBe(DataResponse(data = listOf(activitiesSchedule)))
         }
 
         it("should call the audit service") {
-          whenever(getPrisonActivitiesService.execute(prisonId, filters)).thenReturn(Response(data = listOf(runningActivity)))
+          whenever(getActivitiesScheduleService.execute(activityId, filters))
+            .thenReturn(Response(data = listOf(activitiesSchedule)))
 
           mockMvc.performAuthorised(path)
-          verify(
-            auditService,
-            times(1),
-          ).createEvent(
-            "GET_PRISON_ACTIVITIES",
-            mapOf("prisonId" to prisonId),
+
+          verify(auditService, times(1)).createEvent(
+            "GET_ACTIVITY_SCHEDULES",
+            mapOf("activityId" to activityId.toString()),
           )
         }
 
-        it("returns 400 when getPrisonActivityService returns bad request") {
-          whenever(getPrisonActivitiesService.execute(prisonId, filters)).thenReturn(
-            Response(
-              data = null,
-              errors =
-                listOf(
-                  UpstreamApiError(
-                    type = UpstreamApiError.Type.BAD_REQUEST,
-                    causedBy = UpstreamApi.ACTIVITIES,
+        it("returns 400 when getActivitiesScheduleService returns bad request") {
+          whenever(getActivitiesScheduleService.execute(activityId, filters))
+            .thenReturn(
+              Response(
+                data = null,
+                errors =
+                  listOf(
+                    UpstreamApiError(
+                      type = UpstreamApiError.Type.BAD_REQUEST,
+                      causedBy = UpstreamApi.ACTIVITIES,
+                    ),
                   ),
-                ),
-            ),
-          )
+              ),
+            )
 
           val result = mockMvc.performAuthorised(path)
           result.response.status.shouldBe(400)
         }
 
-        it("returns 404 when getPrisonRegimeService returns not found") {
-          whenever(getPrisonActivitiesService.execute(prisonId, filters)).thenReturn(
-            Response(
-              data = null,
-              errors =
-                listOf(
-                  UpstreamApiError(
-                    type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-                    causedBy = UpstreamApi.ACTIVITIES,
+        it("returns 404 when getActivitiesScheduleService returns not found") {
+          whenever(getActivitiesScheduleService.execute(activityId, filters))
+            .thenReturn(
+              Response(
+                data = null,
+                errors =
+                  listOf(
+                    UpstreamApiError(
+                      type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+                      causedBy = UpstreamApi.ACTIVITIES,
+                    ),
                   ),
-                ),
-            ),
-          )
+              ),
+            )
 
           val result = mockMvc.performAuthorised(path)
           result.response.status.shouldBe(404)

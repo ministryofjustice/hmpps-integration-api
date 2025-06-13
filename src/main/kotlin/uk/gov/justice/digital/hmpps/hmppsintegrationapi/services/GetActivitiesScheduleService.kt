@@ -15,16 +15,26 @@ class GetActivitiesScheduleService(
   @Autowired val consumerPrisonAccessService: ConsumerPrisonAccessService,
 ) {
   fun execute(
-    prisonId: String,
     activityId: Long,
     filters: ConsumerFilters?,
   ): Response<List<ActivitySchedule>?> {
-    val consumerPrisonFilterCheck = consumerPrisonAccessService.checkConsumerHasPrisonAccess<List<ActivitySchedule>>(prisonId, filters, upstreamServiceType = UpstreamApi.ACTIVITIES)
+    val activitiesScheduleResponse = activitiesGateway.getActivitySchedules(activityId)
+    if (activitiesScheduleResponse.errors.isNotEmpty()) {
+      return Response(
+        data = null,
+        errors = activitiesScheduleResponse.errors,
+      )
+    }
+
+    val prisonCode =
+      activitiesScheduleResponse.data
+        ?.get(0)
+        ?.activity
+        ?.prisonCode
+    val consumerPrisonFilterCheck = consumerPrisonAccessService.checkConsumerHasPrisonAccess<List<ActivitySchedule>>(prisonCode, filters, upstreamServiceType = UpstreamApi.ACTIVITIES)
     if (consumerPrisonFilterCheck.errors.isNotEmpty()) {
       return consumerPrisonFilterCheck
     }
-
-    val activitiesScheduleResponse = activitiesGateway.getActivitySchedules(activityId)
 
     return Response(
       data = activitiesScheduleResponse.data?.map { it.toActivitySchedule() },
