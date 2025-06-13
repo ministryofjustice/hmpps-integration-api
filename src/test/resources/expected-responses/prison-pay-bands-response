@@ -1,0 +1,9 @@
+{
+  "data": [
+    {
+      "id": 123456,
+      "alias": "Low",
+      "description": "Pay band 1"
+    }
+  ]
+}

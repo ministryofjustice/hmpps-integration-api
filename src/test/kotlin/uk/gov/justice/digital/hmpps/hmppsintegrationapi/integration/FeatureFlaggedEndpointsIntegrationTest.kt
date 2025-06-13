@@ -12,6 +12,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_PERSONAL_CARE_NEEDS_ENDPOINTS
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_PHYSICAL_CHARACTERISTICS_ENDPOINTS
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_PRISON_ACTIVITIES_ENDPOINT
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_PRISON_PAY_BANDS_ENDPOINT
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_PRISON_REGIME_ENDPOINT
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_RESIDENTIAL_DETAILS_ENDPOINTS
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_RESIDENTIAL_HIERARCHY_ENDPOINTS
@@ -121,6 +122,14 @@ internal class FeatureFlaggedEndpointsIntegrationTest : IntegrationTestBase() {
     whenever(featureFlagConfig.require(USE_PRISON_ACTIVITIES_ENDPOINT)).thenThrow(FeatureNotEnabledException(""))
     val activityId = 123456L
     val path = "/v1/activities/$activityId/schedules"
+    callApi(path)
+      .andExpect(status().isServiceUnavailable)
+  }
+
+  fun `prison pay bands should return 503`() {
+    whenever(featureFlagConfig.require(USE_PRISON_PAY_BANDS_ENDPOINT)).thenThrow(FeatureNotEnabledException(""))
+    val prisonId = "MDI"
+    val path = "/v1/prison/$prisonId/prison-pay-bands"
     callApi(path)
       .andExpect(status().isServiceUnavailable)
   }

@@ -78,6 +78,7 @@ feature-flag:
   use-prison-regime-endpoint: true
   use-activities-schedule-endpoint: true
   use-prison-activities-endpoint: true
+  use-prison-pay-bands-endpoint: true
 
 authorisation:
   consumers:
@@ -146,6 +147,7 @@ authorisation:
         - "/v1/prison/.*/prison-regime"
         - "/v1/activities/.*/schedules"
         - "/v1/prison/.*/activities"
+        - "/v1/prison/.*/prison-pay-bands"
         - "/v1/persons/.*/visitor/.*/restrictions"
         - "/v1/visit/[^/]*$"
         - "/v1/visit"
