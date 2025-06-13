@@ -23,6 +23,7 @@ const plpHmppsId = "A5502DZ";
 const deliusCrn = "X725642";
 const risksCrn = "X756352";
 const prisonId = "MKI";
+const alternativeprisonId = "RSI";
 const visitReference = "qd-lh-gy-lx";
 const clientReference = "123456";
 const contactId = "1898610";
@@ -60,7 +61,8 @@ const get_endpoints = [
   `/v1/prison/${prisonId}/location/${locationIdKey}`,
   `/v1/prison/${prisonId}/residential-details`,
   `/v1/prison/${prisonId}/capacity`,
-  `/v1/prison/${prisonId}/prison-regime`,
+  `/v1/prison/${alternativeprisonId}/prison-regime`,
+  `/v1/prison/${alternativeprisonId}/activities`,
   `/v1/contacts/${clientReference}`,
   `/v1/persons?first_name=john`,
   `/v1/persons/${deliusCrn}`,

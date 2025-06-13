@@ -8,6 +8,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrap
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper.WebClientWrapperResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesActivitySchedule
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesActivityScheduleDetailed
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesAppointmentDetails
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesPrisonRegime
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesRunningActivity
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
@@ -53,11 +54,35 @@ class ActivitiesGateway(
     }
   }
 
-  fun getActivitiesSchedule(activityId: Long): Response<List<ActivitiesActivitySchedule>?> {
+  fun getActivitySchedules(activityId: Long): Response<List<ActivitiesActivitySchedule>?> {
     val result =
       webClient.requestList<ActivitiesActivitySchedule>(
         HttpMethod.GET,
         "/activities/$activityId/schedules",
+        authenticationHeader(),
+        UpstreamApi.ACTIVITIES,
+        badRequestAsError = true,
+      )
+
+    return when (result) {
+      is WebClientWrapperResponse.Success -> {
+        Response(data = result.data)
+      }
+
+      is WebClientWrapperResponse.Error -> {
+        Response(
+          data = null,
+          errors = result.errors,
+        )
+      }
+    }
+  }
+
+  fun getActivityScheduleById(scheduleId: Long): Response<ActivitiesActivityScheduleDetailed?> {
+    val result =
+      webClient.request<ActivitiesActivityScheduleDetailed>(
+        HttpMethod.GET,
+        "/schedules/$scheduleId",
         authenticationHeader(),
         UpstreamApi.ACTIVITIES,
         badRequestAsError = true,
@@ -101,13 +126,22 @@ class ActivitiesGateway(
     }
   }
 
-  fun getActivityScheduleById(scheduleId: Long): Response<ActivitiesActivityScheduleDetailed?> {
+  fun getAppointments(
+    prisonCode: String,
+    startDate: String,
+  ): Response<List<ActivitiesAppointmentDetails>?> {
+    val requestBodyMap =
+      mapOf(
+        "startDate" to startDate,
+      )
+
     val result =
-      webClient.request<ActivitiesActivityScheduleDetailed>(
-        HttpMethod.GET,
-        "/schedules/$scheduleId",
+      webClient.requestList<ActivitiesAppointmentDetails>(
+        HttpMethod.POST,
+        "/appointments/$prisonCode/search",
         authenticationHeader(),
-        UpstreamApi.ACTIVITIES,
+        requestBody = requestBodyMap,
+        upstreamApi = UpstreamApi.ACTIVITIES,
         badRequestAsError = true,
       )
 
