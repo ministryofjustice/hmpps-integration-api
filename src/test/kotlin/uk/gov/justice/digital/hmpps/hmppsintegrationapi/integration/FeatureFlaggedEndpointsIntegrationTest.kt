@@ -115,4 +115,13 @@ internal class FeatureFlaggedEndpointsIntegrationTest : IntegrationTestBase() {
     callApi(path)
       .andExpect(status().isServiceUnavailable)
   }
+
+  @Test
+  fun `activities schedule should return 503`() {
+    whenever(featureFlagConfig.require(USE_PRISON_ACTIVITIES_ENDPOINT)).thenThrow(FeatureNotEnabledException(""))
+    val activityId = 123456L
+    val path = "/v1/activities/$activityId/schedules"
+    callApi(path)
+      .andExpect(status().isServiceUnavailable)
+  }
 }
