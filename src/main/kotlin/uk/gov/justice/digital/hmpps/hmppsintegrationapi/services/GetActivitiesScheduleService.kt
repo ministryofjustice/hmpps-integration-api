@@ -24,7 +24,7 @@ class GetActivitiesScheduleService(
       return consumerPrisonFilterCheck
     }
 
-    val activitiesScheduleResponse = activitiesGateway.getActivitiesSchedule(activityId)
+    val activitiesScheduleResponse = activitiesGateway.getActivitySchedules(activityId)
 
     return Response(
       data = activitiesScheduleResponse.data?.map { it.toActivitySchedule() },

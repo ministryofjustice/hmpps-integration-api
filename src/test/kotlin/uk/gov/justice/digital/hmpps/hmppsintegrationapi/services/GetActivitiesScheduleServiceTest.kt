@@ -120,7 +120,7 @@ class GetActivitiesScheduleServiceTest(
             ),
           )
 
-        whenever(activitiesGateway.getActivitiesSchedule(activityId)).thenReturn(Response(data = activitiesActivitySchedule))
+        whenever(activitiesGateway.getActivitySchedules(activityId)).thenReturn(Response(data = activitiesActivitySchedule))
 
         val result = getActivitiesScheduleService.execute(prisonId, activityId, filters)
         result.data.shouldBe(activitiesActivitySchedule.map { it.toActivitySchedule() })
@@ -152,7 +152,7 @@ class GetActivitiesScheduleServiceTest(
               description = "Error from gateway",
             ),
           )
-        whenever(activitiesGateway.getActivitiesSchedule(activityId)).thenReturn(Response(data = null, errors = errors))
+        whenever(activitiesGateway.getActivitySchedules(activityId)).thenReturn(Response(data = null, errors = errors))
 
         val result = getActivitiesScheduleService.execute(prisonId, activityId, filters)
         result.data.shouldBeNull()
