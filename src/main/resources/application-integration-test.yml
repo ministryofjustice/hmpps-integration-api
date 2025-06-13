@@ -76,6 +76,7 @@ feature-flag:
   use-languages-endpoints: true
   use-prison-regime-endpoint: true
   use-prison-activities-endpoint: true
+  use-activities-schedule-endpoint: true
 
 authorisation:
   consumers:
