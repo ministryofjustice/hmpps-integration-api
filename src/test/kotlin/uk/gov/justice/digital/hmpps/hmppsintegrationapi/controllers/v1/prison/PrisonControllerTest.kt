@@ -25,6 +25,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.LocationCer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PaginatedVisits
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonInPrison
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonCapacity
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonPayBand
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonRegime
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ResidentialDetails
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ResidentialHierarchyItem
@@ -40,6 +41,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Consum
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.personas.personInProbationAndNomisPersona
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetCapacityForPrisonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPrisonPayBandsService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPrisonRegimeService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPrisonersService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetResidentialDetailsService
@@ -62,6 +64,7 @@ internal class PrisonControllerTest(
   @MockitoBean val getResidentialDetailsService: GetResidentialDetailsService,
   @MockitoBean val getCapacityForPrisonService: GetCapacityForPrisonService,
   @MockitoBean val getPrisonRegimeService: GetPrisonRegimeService,
+  @MockitoBean val getPrisonPayBandsService: GetPrisonPayBandsService,
 ) : DescribeSpec({
     val firstName = personInProbationAndNomisPersona.firstName
     val lastName = personInProbationAndNomisPersona.lastName
@@ -750,6 +753,80 @@ internal class PrisonControllerTest(
 
       it("returns 404 when getPrisonRegimeService returns not found") {
         whenever(getPrisonRegimeService.execute(prisonId, filters)).thenReturn(
+          Response(
+            data = null,
+            errors =
+              listOf(
+                UpstreamApiError(
+                  type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+                  causedBy = UpstreamApi.ACTIVITIES,
+                ),
+              ),
+          ),
+        )
+
+        val result = mockMvc.performAuthorised(path)
+        result.response.status.shouldBe(404)
+      }
+    }
+
+    describe("GET /{prisonId}/prison-pay-bands") {
+      val prisonId = "ABC"
+      val filters = null
+      val path = "$basePath/$prisonId/prison-pay-bands"
+
+      val prisonPayBand =
+        PrisonPayBand(
+          id = 123456,
+          alias = "Low",
+          description = "Pay band 1",
+        )
+
+      beforeEach {
+        Mockito.reset(getPrisonPayBandsService)
+      }
+
+      it("should return 200 when success") {
+        whenever(getPrisonPayBandsService.execute(prisonId, filters)).thenReturn(Response(data = listOf(prisonPayBand)))
+
+        val result = mockMvc.performAuthorised(path)
+        result.response.status.shouldBe(HttpStatus.OK.value())
+        result.response.contentAsJson<DataResponse<List<PrisonPayBand>>>().shouldBe(DataResponse(data = listOf(prisonPayBand)))
+      }
+
+      it("should call the audit service") {
+        whenever(getPrisonPayBandsService.execute(prisonId, filters)).thenReturn(Response(data = listOf(prisonPayBand)))
+
+        mockMvc.performAuthorised(path)
+        verify(
+          auditService,
+          times(1),
+        ).createEvent(
+          "GET_PRISON_PAY_BANDS",
+          mapOf("prisonId" to prisonId),
+        )
+      }
+
+      it("returns 400 when getPrisonPayBandsService returns bad request") {
+        whenever(getPrisonPayBandsService.execute(prisonId, filters)).thenReturn(
+          Response(
+            data = null,
+            errors =
+              listOf(
+                UpstreamApiError(
+                  type = UpstreamApiError.Type.BAD_REQUEST,
+                  causedBy = UpstreamApi.ACTIVITIES,
+                ),
+              ),
+          ),
+        )
+
+        val result = mockMvc.performAuthorised(path)
+        result.response.status.shouldBe(400)
+      }
+
+      it("returns 404 when getPrisonPayBandsService returns not found") {
+        whenever(getPrisonPayBandsService.execute(prisonId, filters)).thenReturn(
           Response(
             data = null,
             errors =

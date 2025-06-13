@@ -1,0 +1,14 @@
+[
+  {
+    "id": 123456,
+    "displaySequence": 1,
+    "alias": "Low",
+    "description": "Pay band 1",
+    "nomisPayBand": 1,
+    "prisonCode": "MDI",
+    "createdTime": "2025-06-13T14:25:19.385Z",
+    "createdBy": "string",
+    "updatedTime": "2025-06-13T14:25:19.385Z",
+    "updatedBy": "string"
+  }
+]
