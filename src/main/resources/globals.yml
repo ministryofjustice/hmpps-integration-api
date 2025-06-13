@@ -42,6 +42,7 @@ globals:
         - "/v1/prison/.*/capacity"
         - "/v1/prison/.*/prison-regime"
         - "/v1/prison/.*/activities"
+        - "/v1/prison/.*/prison-pay-bands"
         - "/v1/visit/[^/]*$"
         - "/v1/visit"
         - "/v1/visit/id/by-client-ref/[^/]*$"

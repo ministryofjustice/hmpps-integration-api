@@ -77,6 +77,7 @@ authorisation:
         - "/v1/persons/.*/education/assessments/status"
         - "/v1/persons/.*/health-and-diet"
         - "/v1/prison/.*/activities"
+        - "/v1/prison/.*/prison-pay-bands"
       filters:
     config-v2-test:
       include:
@@ -120,3 +121,4 @@ feature-flag:
   use-languages-endpoints: true
   use-prison-regime-endpoint: true
   use-prison-activities-endpoint: true
+  use-prison-pay-bands-endpoint: true

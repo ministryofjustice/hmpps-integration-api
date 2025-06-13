@@ -22,6 +22,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.featureflag.F
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonInPrison
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonCapacity
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonPayBand
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonRegime
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ResidentialDetails
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ResidentialHierarchyItem
@@ -34,6 +35,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.interfaces.
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetCapacityForPrisonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPrisonPayBandsService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPrisonRegimeService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPrisonersService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetResidentialDetailsService
@@ -56,7 +58,8 @@ class PrisonController(
   @Autowired val getResidentialDetailsService: GetResidentialDetailsService,
   @Autowired val getCapacityForPrisonService: GetCapacityForPrisonService,
   @Autowired val auditService: AuditService,
-  private val getPrisonRegimeService: GetPrisonRegimeService,
+  @Autowired val getPrisonRegimeService: GetPrisonRegimeService,
+  @Autowired val getPrisonPayBandsService: GetPrisonPayBandsService,
 ) {
   @GetMapping("/prisoners/{hmppsId}")
   @Tags(value = [Tag(name = "Prisoners"), Tag(name = "Reception")])
@@ -80,7 +83,7 @@ class PrisonController(
   ): DataResponse<PersonInPrison?> {
     val response = getPersonService.getPrisoner(hmppsId, filters)
 
-    if (response.hasErrorCausedBy(UpstreamApiError.Type.BAD_REQUEST, causedBy = UpstreamApi.PRISON_API)) {
+    if (response.hasErrorCausedBy(BAD_REQUEST, causedBy = UpstreamApi.PRISON_API)) {
       throw ValidationException("Invalid HMPPS ID: $hmppsId")
     }
     if (response.hasErrorCausedBy(ENTITY_NOT_FOUND, causedBy = UpstreamApi.PRISONER_OFFENDER_SEARCH)) {
@@ -172,7 +175,7 @@ class PrisonController(
   ): PaginatedResponse<Visit> {
     val response = getVisitsService.execute(hmppsId, prisonId, fromDate, toDate, visitStatus, page, size, filters)
 
-    if (response.hasErrorCausedBy(UpstreamApiError.Type.BAD_REQUEST, causedBy = UpstreamApi.MANAGE_PRISON_VISITS)) {
+    if (response.hasErrorCausedBy(BAD_REQUEST, causedBy = UpstreamApi.MANAGE_PRISON_VISITS)) {
       throw ValidationException("Invalid query parameters.")
     }
 
@@ -258,7 +261,7 @@ class PrisonController(
   ): DataResponse<ResidentialDetails?> {
     val response = getResidentialDetailsService.execute(prisonId, parentPathHierarchy, filters)
 
-    if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
+    if (response.hasError(BAD_REQUEST)) {
       throw ValidationException("Invalid query parameters.")
     }
 
@@ -343,6 +346,41 @@ class PrisonController(
 
     auditService.createEvent(
       "GET_PRISON_REGIME",
+      mapOf("prisonId" to prisonId),
+    )
+
+    return DataResponse(data = response.data)
+  }
+
+  @GetMapping("/{prisonId}/prison-pay-bands")
+  @Tag(name = "Activities")
+  @Operation(
+    summary = "Gets the prison pay bands for a prison.",
+    description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
+    responses = [
+      ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully performed the query on upstream APIs. An empty list is returned when no results are found."),
+      ApiResponse(responseCode = "403", content = [Content(schema = Schema(ref = "#/components/schemas/ForbiddenResponse"))]),
+      ApiResponse(responseCode = "404", content = [Content(schema = Schema(ref = "#/components/schemas/PrisonNotFound"))]),
+      ApiResponse(responseCode = "500", content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]),
+    ],
+  )
+  @FeatureFlag(name = FeatureFlagConfig.USE_PRISON_PAY_BANDS_ENDPOINT)
+  fun getPrisonPayBands(
+    @Parameter(description = "The ID of the prison to be queried against") @PathVariable prisonId: String,
+    @RequestAttribute filters: ConsumerFilters?,
+  ): DataResponse<List<PrisonPayBand>?> {
+    val response = getPrisonPayBandsService.execute(prisonId, filters)
+
+    if (response.hasError(BAD_REQUEST)) {
+      throw ValidationException("Invalid query parameters.")
+    }
+
+    if (response.hasError(ENTITY_NOT_FOUND)) {
+      throw EntityNotFoundException("Could not find prison pay bands with supplied query parameters.")
+    }
+
+    auditService.createEvent(
+      "GET_PRISON_PAY_BANDS",
       mapOf("prisonId" to prisonId),
     )
 

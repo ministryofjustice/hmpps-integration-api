@@ -55,6 +55,7 @@ feature-flag:
   use-languages-endpoints: true
   use-prison-regime-endpoint: true
   use-prison-activities-endpoint: true
+  use-prison-pay-bands-endpoint: true
 
 authorisation:
   consumers:

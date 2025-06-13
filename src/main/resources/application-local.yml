@@ -50,6 +50,7 @@ feature-flag:
   use-languages-endpoints: true
   use-prison-regime-endpoint: true
   use-prison-activities-endpoint: true
+  use-prison-pay-bands-endpoint: true
 
 authorisation:
   consumers:
@@ -105,6 +106,7 @@ authorisation:
         - "/v1/prison/.*/prisoners/.*/transactions"
         - "/v1/prison/.*/prisoners/.*/non-associations"
         - "/v1/prison/.*/location/[^/]*$"
+        - "/v1/prison/.*/prison-pay-bands"
         - "/v1/persons/.*/education/assessments/status"
       filters:
     config-v2-test:
