@@ -32,7 +32,7 @@ class ActivitiesController(
 ) {
   @GetMapping("/{activityId}/schedules")
   @Operation(
-    summary = "Gets the activities schedule for a prison.",
+    summary = "Gets the schedule for an activity.",
     description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
     responses = [
       ApiResponse(
