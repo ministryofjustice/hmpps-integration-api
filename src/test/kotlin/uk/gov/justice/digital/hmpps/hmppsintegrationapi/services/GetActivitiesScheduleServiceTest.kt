@@ -96,7 +96,7 @@ class GetActivitiesScheduleServiceTest(
                   weekNumber = 1,
                   startTime = "09:00",
                   endTime = "12:00",
-                  daysOfWeek = "Mon,Wed,Fri",
+                  daysOfWeek = listOf("Mon", "Wed", "Fri"),
                   mondayFlag = true,
                   tuesdayFlag = false,
                   wednesdayFlag = true,
