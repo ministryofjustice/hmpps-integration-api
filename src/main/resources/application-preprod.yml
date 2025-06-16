@@ -52,6 +52,7 @@ feature-flag:
   use-personal-care-needs-endpoints: true
   use-languages-endpoints: true
   use-prison-regime-endpoint: true
+  use-activities-schedule-endpoint: false
   use-prison-activities-endpoint: true
   use-prison-pay-bands-endpoint: true
 

@@ -76,6 +76,7 @@ feature-flag:
   use-languages-endpoints: true
   use-prison-regime-endpoint: true
   use-prison-activities-endpoint: true
+  use-activities-schedule-endpoint: true
   use-prison-pay-bands-endpoint: true
 
 authorisation:
@@ -137,7 +138,7 @@ authorisation:
         - "/v1/prison/.*/residential-hierarchy"
         - "/v1/prison/.*/residential-details"
         - "/v1/prison/.*/capacity"
-        - "/v1/prison/.*/prison-regime"
+        - "/v1/activities/.*/schedules"
         - "/v1/prison/.*/activities"
         - "/v1/prison/.*/prison-pay-bands"
         - "/v1/persons/.*/visitor/.*/restrictions"
@@ -159,6 +160,7 @@ authorisation:
         - "/v1/persons/.*/health-and-diet"
         - "/v1/persons/.*/languages"
         - "/v1/prison/.*/prison-regime"
+        - "/v1/activities/.*/schedules"
       filters:
     config-v2-test:
       include:
