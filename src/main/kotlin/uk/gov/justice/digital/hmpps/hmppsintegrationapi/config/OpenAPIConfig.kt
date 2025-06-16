@@ -78,6 +78,15 @@ class OpenAPIConfig {
               ),
             ),
           ).addSchemas(
+            "NotFoundError",
+            Schema<ErrorResponse>().description("The requested resource could not be found.").properties(
+              mapOf(
+                "status" to Schema<Int>().type("number").example(404),
+                "userMessage" to Schema<String>().type("string").example("404 Not found error: The requested resource could not be found."),
+                "developerMessage" to Schema<String>().type("string").example("Resource not found for the given identifier."),
+              ),
+            ),
+          ).addSchemas(
             "InternalServerError",
             Schema<ErrorResponse>().description("An upstream service was not responding, so we cannot verify the accuracy of any data we did get.").properties(
               mapOf(

@@ -46,7 +46,7 @@ class ActivitiesController(
       ),
       ApiResponse(
         responseCode = "404",
-        content = [Content(schema = Schema(ref = "#/components/schemas/PrisonNotFound"))],
+        content = [Content(schema = Schema(ref = "#/components/schemas/NotFoundError"))],
       ),
       ApiResponse(
         responseCode = "500",
