@@ -29,7 +29,7 @@ const clientReference = "123456";
 const contactId = "1898610";
 const imageId = "1988315";
 const locationIdKey = "MKI-A";
-const activityId = 123456
+const activityId = 1162
 
 const get_endpoints = [
   `/v1/hmpps/id/by-nomis-number/${hmppsId}`,
