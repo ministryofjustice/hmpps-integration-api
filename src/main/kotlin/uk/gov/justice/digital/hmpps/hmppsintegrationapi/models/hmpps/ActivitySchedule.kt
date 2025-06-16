@@ -6,7 +6,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.Activi
 
 data class ActivitySchedule(
   @Schema(example = "1162")
-  val id: Long,
+  val scheduleId: Long,
   @Schema(example = "Monday AM Houseblock 3")
   val description: String,
   val internalLocation: ActivitiesInternalLocation?,
