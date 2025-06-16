@@ -6,7 +6,7 @@ data class ActivitiesSlot(
   val weekNumber: Int,
   val startTime: String,
   val endTime: String,
-  val daysOfWeek: String,
+  val daysOfWeek: List<String>,
   val mondayFlag: Boolean,
   val tuesdayFlag: Boolean,
   val wednesdayFlag: Boolean,
