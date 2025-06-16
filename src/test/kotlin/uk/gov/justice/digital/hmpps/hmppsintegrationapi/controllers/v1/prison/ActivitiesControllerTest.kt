@@ -16,11 +16,11 @@ import org.springframework.test.web.servlet.MockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.controllers.v1.ActivitiesController
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.MockMvcExtensions.contentAsJson
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesInternalLocation
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesSlot
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ActivitySchedule
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.InternalLocation
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Slot
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetActivitiesScheduleService
@@ -52,17 +52,15 @@ class ActivitiesControllerTest(
             scheduleId = 1001L,
             description = "Morning Education Class",
             internalLocation =
-              ActivitiesInternalLocation(
-                id = 201,
+              InternalLocation(
                 code = "EDU-ROOM1",
                 description = "Education Room 1",
-                dpsLocationId = "MDI-EDU-ROOM1",
               ),
             capacity = 25,
             scheduleWeeks = 2,
             slots =
               listOf(
-                ActivitiesSlot(
+                Slot(
                   id = 101L,
                   timeSlot = "AM",
                   weekNumber = 1,
