@@ -2,7 +2,6 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.ConsumerPrisonAccessService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ActivitiesGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Attendance
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
@@ -13,8 +12,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Consum
 @Service
 class GetAttendanceByIdService(
   @Autowired val activitiesGateway: ActivitiesGateway,
-  @Autowired val consumerPrisonAccessService: ConsumerPrisonAccessService,
-  private val getPersonService: GetPersonService,
+  @Autowired val getPersonService: GetPersonService,
 ) {
   fun execute(
     attendanceId: Long,
