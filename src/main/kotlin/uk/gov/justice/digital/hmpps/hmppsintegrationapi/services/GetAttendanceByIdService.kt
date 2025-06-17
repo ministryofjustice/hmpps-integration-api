@@ -11,7 +11,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 @Service
-class GetActivityByIdService(
+class GetAttendanceByIdService(
   @Autowired val activitiesGateway: ActivitiesGateway,
   @Autowired val consumerPrisonAccessService: ConsumerPrisonAccessService,
   private val getPersonService: GetPersonService,
