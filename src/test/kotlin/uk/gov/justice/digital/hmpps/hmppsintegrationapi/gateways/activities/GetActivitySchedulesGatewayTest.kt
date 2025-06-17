@@ -128,7 +128,7 @@ class GetActivitySchedulesGatewayTest(
                   weekNumber = 1,
                   startTime = "9:00",
                   endTime = "11:30",
-                  daysOfWeek = "[Mon,Tue,Wed]",
+                  daysOfWeek = listOf("Mon", "Tue", "Wed"),
                   mondayFlag = true,
                   tuesdayFlag = true,
                   wednesdayFlag = true,
