@@ -4,7 +4,7 @@ data class ActivitiesAttendance(
   val id: Long,
   val scheduledInstanceId: Long,
   val prisonerNumber: String,
-  val attendanceReason: ActivitiesActivityAttendanceReason?,
+  val attendanceReason: ActivitiesAttendanceReason?,
   val comment: String?,
   val recordedTime: String?,
   val recordedBy: String?,
@@ -16,7 +16,7 @@ data class ActivitiesAttendance(
   val incentiveLevelWarningIssued: Boolean?,
   val otherAbsenceReason: String?,
   val caseNoteText: String?,
-  val attendanceHistory: List<ActivitiesActivityAttendanceHistory?>,
+  val attendanceHistory: List<ActivitiesAttendanceHistory?>,
   val editable: Boolean,
   val payable: Boolean,
 )

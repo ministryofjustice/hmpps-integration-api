@@ -9,5 +9,5 @@ data class ActivitiesActivityScheduleInstance(
   val cancelled: Boolean,
   val cancelledTime: String?,
   val cancelledBy: String?,
-  val attendances: List<ActivitiesActivityAttendance>,
+  val attendances: List<ActivitiesAttendance>,
 )
