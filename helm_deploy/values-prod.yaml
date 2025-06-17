@@ -35,5 +35,7 @@ generic-prometheus-alerts:
     - "book-a-prison-visit-prod-hmpps_prison_visits_write_events_dlq"
     - "locations-inside-prison-prod-update_from_external_system_events_queue"
     - "locations-inside-prison-prod-update_from_external_system_events_dlq"
+    - "activities-and-appointments-prod-update_from_external_system_events_queue"
+    - "activities-and-appointments-prod-update_from_external_system_events_dlq"
   sqsAlertsOldestThreshold: 1
   sqsAlertsTotalMessagesThreshold: 1
