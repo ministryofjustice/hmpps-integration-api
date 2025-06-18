@@ -108,7 +108,7 @@ class ActivitiesController(
       ),
     ],
   )
-  @FeatureFlag(name = FeatureFlagConfig.Companion.USE_ACTIVITIES_SCHEDULE_ENDPOINT)
+  @FeatureFlag(name = FeatureFlagConfig.Companion.USE_UPDATE_ATTENDANCE_ENDPOINT)
   fun putAttendance(
     @RequestAttribute filters: ConsumerFilters?,
     @RequestAttribute clientName: String,
