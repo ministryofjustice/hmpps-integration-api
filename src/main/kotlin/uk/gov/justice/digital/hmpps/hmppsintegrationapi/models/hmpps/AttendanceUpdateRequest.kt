@@ -2,13 +2,13 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps
 
 import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.validation.constraints.NotEmpty
-import jakarta.validation.constraints.NotNull
+import jakarta.validation.constraints.Positive
 import jakarta.validation.constraints.Size
 import kotlin.collections.List
 
 @Schema(description = "Request object for updating an attendance record")
 data class AttendanceUpdateRequest(
-  @field:NotNull(message = "Attendance ID must be supplied")
+  @field:Positive(message = "Attendance ID must be supplied")
   @Schema(description = "The internally-generated ID for this attendance", example = "123456")
   val id: Long,
   @field:NotEmpty(message = "Prison Id")
