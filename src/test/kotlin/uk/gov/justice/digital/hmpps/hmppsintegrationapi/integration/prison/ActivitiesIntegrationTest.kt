@@ -4,23 +4,21 @@ import org.junit.jupiter.api.Test
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationTestBase
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationTestBase.Companion.activitiesMockServer
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationTestBase.Companion.gatewaysFolder
 import java.io.File
 
 class ActivitiesIntegrationTest : IntegrationTestBase() {
-  private val prisonId = "MDI"
-  private val path = "/v1/prison/$prisonId/activities"
+  private val activityId = 123456L
+  private val path = "/v1/activities/$activityId/schedules"
 
   @Test
-  fun `return the prison activities details`() {
+  fun `return the activity schedule details`() {
     activitiesMockServer.stubForGet(
-      "/prison/$prisonId/activities",
-      File("$gatewaysFolder/activities/fixtures/GetAllRunningActivities.json").readText(),
+      "/activities/$activityId/schedules",
+      File("$gatewaysFolder/activities/fixtures/GetActivitiesSchedule.json").readText(),
     )
     callApi(path)
       .andExpect(status().isOk)
-      .andExpect(content().json(getExpectedResponse("prison-activities-response")))
+      .andExpect(content().json(getExpectedResponse("activities-schedule-response")))
   }
 
   @Test
