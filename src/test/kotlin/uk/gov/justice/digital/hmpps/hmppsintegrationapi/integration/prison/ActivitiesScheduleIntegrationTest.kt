@@ -8,7 +8,9 @@ import java.io.File
 
 class ActivitiesScheduleIntegrationTest : IntegrationTestBase() {
   private val activityId = 123456L
+  private val stringActivityId = "AAAAAAAA"
   private val path = "/v1/activities/$activityId/schedules"
+  private val badRequestPath = "/v1/activities/$stringActivityId/schedules"
 
   @Test
   fun `return the activity schedule details`() {
@@ -31,5 +33,11 @@ class ActivitiesScheduleIntegrationTest : IntegrationTestBase() {
   fun `return a 404 no prisons in filter`() {
     callApiWithCN(path, noPrisonsCn)
       .andExpect(status().isNotFound)
+  }
+
+  @Test
+  fun `return a 400 Bad Request when a string is provided as the activity ID`() {
+    callApi(badRequestPath)
+      .andExpect(status().isBadRequest)
   }
 }

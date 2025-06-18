@@ -17,6 +17,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.MissingServletRequestParameterException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.ConflictFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
@@ -53,6 +54,20 @@ class HmppsIntegrationApiExceptionHandler {
           developerMessage = "Validation issues in request body",
           userMessage = "Validation issues in request body",
           validationErrors = e.allErrors.mapNotNull { it.defaultMessage },
+        ),
+      )
+  }
+
+  @ExceptionHandler(MethodArgumentTypeMismatchException::class)
+  fun handleTypeMismatch(e: MethodArgumentTypeMismatchException): ResponseEntity<ErrorResponse> {
+    logAndCapture("Type mismatch for parameter '${e.name}'", e)
+    return ResponseEntity
+      .status(HttpStatus.BAD_REQUEST)
+      .body(
+        ErrorResponse(
+          status = HttpStatus.BAD_REQUEST,
+          developerMessage = "Type mismatch: ${e.message}",
+          userMessage = "Invalid input type for '${e.name}'. Expected a number.",
         ),
       )
   }
