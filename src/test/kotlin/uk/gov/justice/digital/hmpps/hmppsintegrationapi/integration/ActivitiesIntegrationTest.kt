@@ -1,9 +1,7 @@
-package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.prison
+package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration
 
 import org.junit.jupiter.api.Test
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationTestBase
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import java.io.File
 
 class ActivitiesIntegrationTest : IntegrationTestBase() {
@@ -17,19 +15,19 @@ class ActivitiesIntegrationTest : IntegrationTestBase() {
       File("$gatewaysFolder/activities/fixtures/GetActivitiesSchedule.json").readText(),
     )
     callApi(path)
-      .andExpect(status().isOk)
-      .andExpect(content().json(getExpectedResponse("activities-schedule-response")))
+      .andExpect(MockMvcResultMatchers.status().isOk)
+      .andExpect(MockMvcResultMatchers.content().json(getExpectedResponse("activities-schedule-response")))
   }
 
   @Test
   fun `return a 404 when prison not in the allowed prisons`() {
     callApiWithCN(path, limitedPrisonsCn)
-      .andExpect(status().isNotFound)
+      .andExpect(MockMvcResultMatchers.status().isNotFound)
   }
 
   @Test
   fun `return a 404 no prisons in filter`() {
     callApiWithCN(path, noPrisonsCn)
-      .andExpect(status().isNotFound)
+      .andExpect(MockMvcResultMatchers.status().isNotFound)
   }
 }
