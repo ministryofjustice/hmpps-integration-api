@@ -95,6 +95,11 @@ class ActivitiesController(
         description = "Successfully performed the query on upstream APIs. An empty list is returned when no results are found.",
       ),
       ApiResponse(
+        responseCode = "400",
+        description = "The request body provided has a field in an invalid format.",
+        content = [Content(schema = Schema(ref = "#/components/schemas/BadRequest"))],
+      ),
+      ApiResponse(
         responseCode = "403",
         content = [Content(schema = Schema(ref = "#/components/schemas/ForbiddenResponse"))],
       ),
