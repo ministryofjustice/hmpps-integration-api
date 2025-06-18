@@ -293,3 +293,8 @@ authorisation:
           - MKI
       roles:
         - "private-prison"
+    sleach:
+      include:
+      filters:
+      roles:
+        - "full-access"
