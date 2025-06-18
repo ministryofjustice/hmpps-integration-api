@@ -276,8 +276,9 @@ authorisation:
       filters:
     smoke-test-full-access:
       include:
-        - "/.*"
       filters:
+      roles:
+        - "full-access"
     smoke-test-limited-access:
       include:
       filters:
