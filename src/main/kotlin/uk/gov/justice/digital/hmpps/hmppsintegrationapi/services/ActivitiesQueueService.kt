@@ -11,6 +11,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HmppsMessag
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HmppsMessageResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.toHmppsMessage
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.toTestMessage
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.hmpps.sqs.HmppsQueue
 import uk.gov.justice.hmpps.sqs.HmppsQueueService
@@ -33,6 +34,13 @@ class ActivitiesQueueService(
     filters: ConsumerFilters?,
   ): Response<HmppsMessageResponse?> {
     for (attendanceUpdateRequest in attendanceUpdateRequests) {
+      if (attendanceUpdateRequest.status == "TestEvent") {
+        val testMessage = attendanceUpdateRequests.toTestMessage(actionedBy = who)
+        writeMessageToQueue(testMessage, "Could not send attendance update to queue")
+
+        return Response(HmppsMessageResponse(message = "Attendance update written to queue"))
+      }
+
       val consumerPrisonFilterCheck = consumerPrisonAccessService.checkConsumerHasPrisonAccess<HmppsMessageResponse>(attendanceUpdateRequest.prisonId, filters)
       if (consumerPrisonFilterCheck.errors.isNotEmpty()) {
         return consumerPrisonFilterCheck

@@ -54,3 +54,10 @@ fun List<AttendanceUpdateRequest>.toHmppsMessage(actionedBy: String): HmppsMessa
       ),
     who = actionedBy,
   )
+
+fun List<AttendanceUpdateRequest>.toTestMessage(actionedBy: String?): HmppsMessage =
+  HmppsMessage(
+    eventType = HmppsMessageEventType.TEST_EVENT,
+    messageAttributes = emptyMap(),
+    who = actionedBy,
+  )

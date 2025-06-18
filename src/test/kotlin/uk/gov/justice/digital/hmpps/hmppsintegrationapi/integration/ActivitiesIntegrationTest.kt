@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.AttendanceUpdateRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.toHmppsMessage
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.toTestMessage
 import java.io.File
 
 class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
@@ -95,6 +96,38 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
 
       val messageJson = queueMessages[0].body()
       val expectedMessage = attendanceUpdateRequests.toHmppsMessage(defaultCn)
+      messageJson.shouldContainJsonKeyValue("$.eventType", expectedMessage.eventType.eventTypeCode)
+      messageJson.shouldContainJsonKeyValue("$.who", defaultCn)
+      val objectMapper = jacksonObjectMapper()
+      val messageAttributes = objectMapper.readTree(messageJson).at("/messageAttributes")
+      val expectedMessageAttributes = objectMapper.readTree(objectMapper.writeValueAsString(expectedMessage.messageAttributes))
+      messageAttributes.shouldBe(expectedMessageAttributes)
+    }
+
+    @Test
+    fun `successfully adds test message to queue`() {
+      val requestBody = asJsonString(attendanceUpdateRequests.map { it.copy(status = "TestEvent") })
+      putApi(path, requestBody)
+        .andExpect(MockMvcResultMatchers.status().isOk)
+        .andExpect(
+          MockMvcResultMatchers.content().json(
+            """
+            {
+              "data": {
+                "message": "Attendance update written to queue"
+              }
+            }
+            """.trimIndent(),
+          ),
+        )
+
+      await untilCallTo { getNumberOfMessagesCurrentlyOnQueue() } matches { it == 1 }
+
+      val queueMessages = getQueueMessages()
+      queueMessages.size.shouldBe(1)
+
+      val messageJson = queueMessages[0].body()
+      val expectedMessage = attendanceUpdateRequests.toTestMessage(defaultCn)
       messageJson.shouldContainJsonKeyValue("$.eventType", expectedMessage.eventType.eventTypeCode)
       messageJson.shouldContainJsonKeyValue("$.who", defaultCn)
       val objectMapper = jacksonObjectMapper()

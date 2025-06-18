@@ -9,6 +9,7 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.argThat
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.reset
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -53,7 +54,7 @@ class ActivitiesQueueServiceTest(
       val who = "automated-test-client"
 
       beforeTest {
-        reset(mockSqsClient, objectMapper)
+        reset(mockSqsClient, objectMapper, consumerPrisonAccessService)
 
         whenever(hmppsQueueService.findByQueueId("activities")).thenReturn(activitiesQueue)
         whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<HmppsMessageResponse>(prisonId, filters))
@@ -86,6 +87,29 @@ class ActivitiesQueueServiceTest(
           result.data.shouldBeTypeOf<HmppsMessageResponse>()
           result.data.message.shouldBe("Attendance update written to queue")
           result.errors.shouldBeEmpty()
+
+          verify(mockSqsClient).sendMessage(
+            argThat<SendMessageRequest> { request: SendMessageRequest? ->
+              request?.queueUrl() == "https://test-queue-url" &&
+                request.messageBody() == messageBody
+            },
+          )
+        }
+
+        it("should send attendance update test request") {
+          val result = activitiesQueueService.sendAttendanceUpdateRequest(attendanceUpdateRequests.map { it.copy(status = "TestEvent") }, who, filters)
+          result.data?.message.shouldBe("Attendance update written to queue")
+          result.errors.shouldBeEmpty()
+
+          verify(consumerPrisonAccessService, never()).checkConsumerHasPrisonAccess<Any>(any(), any(), any())
+        }
+
+        it("successfully adds test message to message queue") {
+          val messageBody = """{"messageId": "1", "eventType": "TestEvent", "messageAttributes": {}}"""
+          whenever(objectMapper.writeValueAsString(any<HmppsMessage>())).thenReturn(messageBody)
+
+          val result = activitiesQueueService.sendAttendanceUpdateRequest(attendanceUpdateRequests.map { it.copy(status = "TestEvent") }, who, filters)
+          result.data.shouldBeTypeOf<HmppsMessageResponse>()
 
           verify(mockSqsClient).sendMessage(
             argThat<SendMessageRequest> { request: SendMessageRequest? ->
