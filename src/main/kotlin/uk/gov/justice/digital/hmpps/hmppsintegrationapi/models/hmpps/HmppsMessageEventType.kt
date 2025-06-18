@@ -42,4 +42,9 @@ enum class HmppsMessageEventType(
     eventTypeCode = "EducationAssessmentEventCreated",
     description = "An education assessment event has been created",
   ),
+  MARK_PRISONER_ATTENDANCE(
+    type = "mark-prisoner-attendance",
+    eventTypeCode = "MarkPrisonerAttendance",
+    description = "A prisoners attendance has been marked",
+  ),
 }

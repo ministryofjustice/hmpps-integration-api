@@ -16,6 +16,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_PRISON_REGIME_ENDPOINT
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_RESIDENTIAL_DETAILS_ENDPOINTS
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_RESIDENTIAL_HIERARCHY_ENDPOINTS
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_UPDATE_ATTENDANCE_ENDPOINT
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.FeatureNotEnabledException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DeactivateLocationRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DeactivationReason
@@ -126,11 +127,36 @@ internal class FeatureFlaggedEndpointsIntegrationTest : IntegrationTestBase() {
       .andExpect(status().isServiceUnavailable)
   }
 
+  @Test
   fun `prison pay bands should return 503`() {
     whenever(featureFlagConfig.require(USE_PRISON_PAY_BANDS_ENDPOINT)).thenThrow(FeatureNotEnabledException(""))
     val prisonId = "MDI"
     val path = "/v1/prison/$prisonId/prison-pay-bands"
     callApi(path)
+      .andExpect(status().isServiceUnavailable)
+  }
+
+  @Test
+  fun `put attendance should return 503`() {
+    whenever(featureFlagConfig.require(USE_UPDATE_ATTENDANCE_ENDPOINT)).thenThrow(FeatureNotEnabledException(""))
+    val path = "/v1/activities/schedule/attendance"
+    val requestBody =
+      """
+      [
+        {
+          "id": 123456,
+          "prisonId": "MDI",
+          "status": "WAITING",
+          "attendanceReason": "ATTENDED",
+          "comment": "Prisoner has COVID-19",
+          "issuePayment": true,
+          "caseNote": "Prisoner refused to attend the scheduled activity without reasonable excuse",
+          "incentiveLevelWarningIssued": true,
+          "otherAbsenceReason": "Prisoner has another reason for missing the activity"
+        }
+      ]
+      """.trimIndent()
+    putApi(path, requestBody)
       .andExpect(status().isServiceUnavailable)
   }
 }
