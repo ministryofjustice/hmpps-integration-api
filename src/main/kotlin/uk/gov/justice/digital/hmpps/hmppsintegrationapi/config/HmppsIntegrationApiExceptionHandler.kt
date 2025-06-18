@@ -45,7 +45,7 @@ class HmppsIntegrationApiExceptionHandler {
 
   // Exceptions thrown by the @Valid annotation on request body
   @ExceptionHandler(value = [MethodArgumentNotValidException::class, HandlerMethodValidationException::class])
-  fun handleMethodArgumentNotValidException(e: HandlerMethodValidationException): ResponseEntity<ValidationErrorResponse> {
+  fun handleMethodArgumentNotValidException(e: MethodArgumentNotValidException): ResponseEntity<ValidationErrorResponse> {
     logAndCapture("Validation issues in request body: {}", e)
     return ResponseEntity
       .status(BAD_REQUEST)
