@@ -26,7 +26,7 @@ get_ca() {
 generate_client() {
   openssl genrsa -out $environment-$client-client.key 2048
   openssl req -new -key $environment-$client-client.key -out $environment-$client-client.csr -subj "/C=GB/ST=$region/L=$region/O=$organisation/CN=$client"
-  openssl x509 -req -in $environment-$client-client.csr -CA truststore.pem -CAkey truststore.key -set_serial 01 -out $environment-$client-client.pem -days 365 -sha256
+  openssl x509 -req -in $environment-$client-client.csr -CA truststore.pem -CAkey truststore.key -out $environment-$client-client.pem -days 365 -sha256
 }
 
 clean_ca() {
