@@ -54,6 +54,7 @@ feature-flag:
   use-activities-schedule-endpoint: true
   use-prison-activities-endpoint: true
   use-prison-pay-bands-endpoint: true
+  use-update-attendance-endpoint: true
 
 authorisation:
   consumers:
@@ -111,6 +112,7 @@ authorisation:
         - "/v1/prison/.*/location/[^/]*$"
         - "/v1/prison/.*/prison-pay-bands"
         - "/v1/persons/.*/education/assessments/status"
+        - "/v1/activities/schedule/attendance"
       filters:
     config-v2-test:
       include:

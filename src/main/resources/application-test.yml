@@ -81,6 +81,7 @@ feature-flag:
   use-activities-schedule-endpoint: true
   use-prison-activities-endpoint: true
   use-prison-pay-bands-endpoint: true
+  use-update-attendance-endpoint: true
 
 authorisation:
   consumers:
@@ -165,6 +166,7 @@ authorisation:
         - "/v1/persons/.*/health-and-diet"
         - "/v1/persons/.*/care-needs"
         - "/v1/persons/.*/languages"
+        - "/v1/activities/schedule/attendance"
     config-v2-test:
       include:
         - "/v2/config/authorisation"

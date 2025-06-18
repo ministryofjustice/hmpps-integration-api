@@ -17,6 +17,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.MissingServletRequestParameterException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
+import org.springframework.web.method.annotation.HandlerMethodValidationException
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.ConflictFoundException
@@ -71,6 +72,22 @@ class HmppsIntegrationApiExceptionHandler {
         ),
       )
   }
+
+  @ExceptionHandler(HandlerMethodValidationException::class)
+  fun handleHandlerMethodValidationException(e: HandlerMethodValidationException): ResponseEntity<ValidationErrorResponse> {
+    logAndCapture("Validation issues in request body: {}", e)
+    return ResponseEntity
+      .status(BAD_REQUEST)
+      .body(
+        ValidationErrorResponse(
+          developerMessage = "Validation issues in request body",
+          userMessage = "Validation issues in request body",
+          validationErrors = e.allErrors.mapNotNull { it.defaultMessage },
+        ),
+      )
+  }
+
+  // Custom exceptions
 
   @ExceptionHandler(EntityNotFoundException::class)
   fun handle(e: EntityNotFoundException): ResponseEntity<ErrorResponse> {

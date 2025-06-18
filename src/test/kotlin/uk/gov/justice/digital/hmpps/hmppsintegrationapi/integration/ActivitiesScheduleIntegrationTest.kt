@@ -1,9 +1,8 @@
-package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.prison
+package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration
 
 import org.junit.jupiter.api.Test
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationTestBase
 import java.io.File
 
 class ActivitiesScheduleIntegrationTest : IntegrationTestBase() {

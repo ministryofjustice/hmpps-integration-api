@@ -137,6 +137,19 @@ const postLocationDeactivateData = JSON.stringify({
   externalReference: "TestEvent"
 })
 
+const putAttendanceEndpoint = `/v1/activities/schedule/attendance`
+const putAttendanceData = JSON.stringify([{
+  id: 123456,
+  prisonId: "MDI",
+  status: "TestEvent",
+  attendanceReason: "ATTENDED",
+  comment: "Prisoner has COVID-19",
+  issuePayment: true,
+  caseNote: "Prisoner refused to attend the scheduled activity without reasonable excuse",
+  incentiveLevelWarningIssued: true,
+  otherAbsenceReason: "Prisoner has another reason for missing the activity"
+}])
+
 export default function ()  {
   const params = {
     headers: {
@@ -157,6 +170,13 @@ export default function ()  {
     [`POST ${postLocationDeactivateEndpoint} returns 200`]: (r) => r.status === 200,
   })) {
     exec.test.fail(`${postLocationDeactivateEndpoint} caused the test to fail`)
+  }
+
+  const putAttendanceRes = http.put(`${baseUrl}${putAttendanceEndpoint}`, putAttendanceData, params);
+  if (!check(putAttendanceRes, {
+    [`PUT ${putAttendanceEndpoint} returns 200`]: (r) => r.status === 200,
+  })) {
+    exec.test.fail(`${putAttendanceEndpoint} caused the test to fail`)
   }
 
   for (const endpoint of get_endpoints) {

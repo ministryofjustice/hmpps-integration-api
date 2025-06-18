@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.hmppsintegrationapi.controllers.v1.prison
+package uk.gov.justice.digital.hmpps.hmppsintegrationapi.controllers.v1
 
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
@@ -17,12 +17,15 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.controllers.v1.Activitie
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.MockMvcExtensions.contentAsJson
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ActivitySchedule
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.AttendanceUpdateRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HmppsMessageResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.InternalLocation
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Slot
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.ActivitiesQueueService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetActivitiesScheduleService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 
@@ -33,6 +36,7 @@ class ActivitiesControllerTest(
   @Autowired val request: HttpServletRequest,
   @MockitoBean val auditService: AuditService,
   @MockitoBean val getActivitiesScheduleService: GetActivitiesScheduleService,
+  @MockitoBean val activitiesQueueService: ActivitiesQueueService,
 ) : DescribeSpec(
     {
       val basePath = "/v1/activities"
@@ -143,6 +147,98 @@ class ActivitiesControllerTest(
             )
 
           val result = mockMvc.performAuthorised(path)
+          result.response.status.shouldBe(404)
+        }
+      }
+
+      describe("PUT /v1/activities/schedule/attendance") {
+        val path = "$basePath/schedule/attendance"
+        val who = "automated-test-client"
+        var filters = null
+        val attendanceUpdateRequests =
+          listOf(
+            AttendanceUpdateRequest(
+              id = 123456L,
+              prisonId = "MDI",
+              status = "WAITING",
+              attendanceReason = "ATTENDED",
+              comment = "Prisoner has COVID-19",
+              issuePayment = true,
+              caseNote = "Prisoner refused to attend the scheduled activity without reasonable excuse",
+              incentiveLevelWarningIssued = true,
+              otherAbsenceReason = "Prisoner has another reason for missing the activity",
+            ),
+            AttendanceUpdateRequest(
+              id = 234567L,
+              prisonId = "MDI",
+              status = "WAITING",
+              attendanceReason = "ATTENDED",
+              comment = "Prisoner has COVID-19",
+              issuePayment = true,
+              caseNote = "Prisoner refused to attend the scheduled activity without reasonable excuse",
+              incentiveLevelWarningIssued = true,
+              otherAbsenceReason = "Prisoner has another reason for missing the activity",
+            ),
+          )
+
+        it("should return 200 when success") {
+          whenever(activitiesQueueService.sendAttendanceUpdateRequest(attendanceUpdateRequests, who, filters))
+            .thenReturn(Response(data = HmppsMessageResponse("Attendance updated successfully")))
+
+          val result = mockMvc.performAuthorisedPut(path, attendanceUpdateRequests)
+          result.response.status.shouldBe(HttpStatus.OK.value())
+          result.response
+            .contentAsJson<DataResponse<HmppsMessageResponse>>()
+            .shouldBe(DataResponse(data = HmppsMessageResponse("Attendance updated successfully")))
+        }
+
+        it("should call the audit service") {
+          whenever(activitiesQueueService.sendAttendanceUpdateRequest(attendanceUpdateRequests, who, filters))
+            .thenReturn(Response(data = HmppsMessageResponse("Attendance updated successfully")))
+
+          mockMvc.performAuthorisedPut(path, attendanceUpdateRequests)
+
+          verify(auditService, times(1)).createEvent(
+            "PUT_ATTENDANCE",
+            mapOf("attendanceIds" to "123456, 234567"),
+          )
+        }
+
+        it("returns 400 when activitiesQueueService returns bad request") {
+          whenever(activitiesQueueService.sendAttendanceUpdateRequest(attendanceUpdateRequests, who, filters))
+            .thenReturn(
+              Response(
+                data = null,
+                errors =
+                  listOf(
+                    UpstreamApiError(
+                      type = UpstreamApiError.Type.BAD_REQUEST,
+                      causedBy = UpstreamApi.ACTIVITIES,
+                    ),
+                  ),
+              ),
+            )
+
+          val result = mockMvc.performAuthorisedPut(path, attendanceUpdateRequests)
+          result.response.status.shouldBe(400)
+        }
+
+        it("returns 404 when activitiesQueueService returns not found") {
+          whenever(activitiesQueueService.sendAttendanceUpdateRequest(attendanceUpdateRequests, who, filters))
+            .thenReturn(
+              Response(
+                data = null,
+                errors =
+                  listOf(
+                    UpstreamApiError(
+                      type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+                      causedBy = UpstreamApi.ACTIVITIES,
+                    ),
+                  ),
+              ),
+            )
+
+          val result = mockMvc.performAuthorisedPut(path, attendanceUpdateRequests)
           result.response.status.shouldBe(404)
         }
       }
