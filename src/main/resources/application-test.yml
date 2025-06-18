@@ -165,6 +165,7 @@ authorisation:
         - "/v1/persons/.*/health-and-diet"
         - "/v1/persons/.*/care-needs"
         - "/v1/persons/.*/languages"
+        - "/v1/activities/schedule/attendance"
     config-v2-test:
       include:
         - "/v2/config/authorisation"

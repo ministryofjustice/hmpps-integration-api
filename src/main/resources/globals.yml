@@ -53,6 +53,7 @@ globals:
         - "/v1/persons/.*/health-and-diet"
         - "/v1/persons/.*/care-needs"
         - "/v1/persons/.*/languages"
+        - "/v1/activities/schedule/attendance"
     police:
       include:
         - "/v1/persons"
@@ -122,3 +123,4 @@ globals:
         - "/v1/persons/.*/health-and-diet"
         - "/v1/persons/.*/care-needs"
         - "/v1/persons/.*/languages"
+        - "/v1/activities/schedule/attendance"

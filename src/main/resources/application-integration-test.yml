@@ -163,6 +163,7 @@ authorisation:
         - "/v1/persons/.*/languages"
         - "/v1/prison/.*/prison-regime"
         - "/v1/activities/.*/schedules"
+        - "/v1/activities/schedule/attendance"
       filters:
     config-v2-test:
       include:
