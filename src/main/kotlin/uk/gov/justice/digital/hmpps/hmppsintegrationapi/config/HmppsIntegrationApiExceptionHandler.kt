@@ -67,7 +67,7 @@ class HmppsIntegrationApiExceptionHandler {
         ErrorResponse(
           status = HttpStatus.BAD_REQUEST,
           developerMessage = "Type mismatch: ${e.message}",
-          userMessage = "Invalid input type for '${e.name}'. Expected a number.",
+          userMessage = "Invalid input type for '${e.name}'",
         ),
       )
   }
