@@ -44,7 +44,8 @@ class HmppsIntegrationApiExceptionHandler {
   }
 
   // Exceptions thrown by the @Valid annotation on request body
-  @ExceptionHandler(value = [MethodArgumentNotValidException::class, HandlerMethodValidationException::class])
+
+  @ExceptionHandler(MethodArgumentNotValidException::class)
   fun handleMethodArgumentNotValidException(e: MethodArgumentNotValidException): ResponseEntity<ValidationErrorResponse> {
     logAndCapture("Validation issues in request body: {}", e)
     return ResponseEntity
@@ -57,6 +58,22 @@ class HmppsIntegrationApiExceptionHandler {
         ),
       )
   }
+
+  @ExceptionHandler(HandlerMethodValidationException::class)
+  fun handleHandlerMethodValidationException(e: HandlerMethodValidationException): ResponseEntity<ValidationErrorResponse> {
+    logAndCapture("Validation issues in request body: {}", e)
+    return ResponseEntity
+      .status(BAD_REQUEST)
+      .body(
+        ValidationErrorResponse(
+          developerMessage = "Validation issues in request body",
+          userMessage = "Validation issues in request body",
+          validationErrors = e.allErrors.mapNotNull { it.defaultMessage },
+        ),
+      )
+  }
+
+  // Custom exceptions
 
   @ExceptionHandler(EntityNotFoundException::class)
   fun handle(e: EntityNotFoundException): ResponseEntity<ErrorResponse> {
