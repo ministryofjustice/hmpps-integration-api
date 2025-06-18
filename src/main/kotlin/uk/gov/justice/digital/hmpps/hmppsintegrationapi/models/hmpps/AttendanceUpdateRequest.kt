@@ -10,7 +10,7 @@ import kotlin.collections.List
 data class AttendanceUpdateRequest(
   @field:NotNull(message = "Attendance ID must be supplied")
   @Schema(description = "The internally-generated ID for this attendance", example = "123456")
-  val id: Long?,
+  val id: Long,
   @field:NotEmpty(message = "Prison Id")
   @Schema(description = "The prison ID", example = "MDI")
   val prisonId: String,

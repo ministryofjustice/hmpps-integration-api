@@ -18,6 +18,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean
 import software.amazon.awssdk.services.sqs.SqsAsyncClient
 import software.amazon.awssdk.services.sqs.model.SendMessageRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.ConsumerPrisonAccessService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Attendance
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.AttendanceUpdateRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HmppsMessage
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HmppsMessageResponse
@@ -37,6 +38,7 @@ class ActivitiesQueueServiceTest(
   @MockitoBean val hmppsQueueService: HmppsQueueService,
   @MockitoBean val objectMapper: ObjectMapper,
   @MockitoBean val consumerPrisonAccessService: ConsumerPrisonAccessService,
+  @MockitoBean val getAttendanceByIdService: GetAttendanceByIdService,
 ) : DescribeSpec(
     {
       val mockSqsClient = mock<SqsAsyncClient>()
@@ -77,6 +79,8 @@ class ActivitiesQueueServiceTest(
         it("successfully adds to message queue") {
           val messageBody = """{"messageId": "1", "eventType": "MarkPrisonerAttendance", "messageAttributes": {}, who: "$who"}"""
           whenever(objectMapper.writeValueAsString(any<HmppsMessage>())).thenReturn(messageBody)
+          whenever(getAttendanceByIdService.execute(attendanceUpdateRequests[0].id, filters))
+            .thenReturn(Response(data = Attendance(id = 123456L, scheduledInstanceId = 1L, prisonerNumber = "A1234AA", status = "WAITING", editable = true, payable = true)))
 
           val result = activitiesQueueService.sendAttendanceUpdateRequest(attendanceUpdateRequests = attendanceUpdateRequests, who = who, filters = filters)
           result.data.shouldBeTypeOf<HmppsMessageResponse>()
@@ -94,6 +98,16 @@ class ActivitiesQueueServiceTest(
         it("should return errors when consumer does not have access to the prison") {
           val error = UpstreamApiError(UpstreamApi.PRISON_API, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found")
           whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<HmppsMessageResponse>(prisonId, filters))
+            .thenReturn(Response(data = null, errors = listOf(error)))
+
+          val result = activitiesQueueService.sendAttendanceUpdateRequest(attendanceUpdateRequests = attendanceUpdateRequests, who = who, filters = filters)
+          result.data.shouldBe(null)
+          result.errors.shouldBe(listOf(error))
+        }
+
+        it("should return errors when getAttendanceByIdService returns errors") {
+          val error = UpstreamApiError(UpstreamApi.ACTIVITIES, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found")
+          whenever(getAttendanceByIdService.execute(attendanceUpdateRequests[0].id, filters))
             .thenReturn(Response(data = null, errors = listOf(error)))
 
           val result = activitiesQueueService.sendAttendanceUpdateRequest(attendanceUpdateRequests = attendanceUpdateRequests, who = who, filters = filters)

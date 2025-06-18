@@ -21,6 +21,7 @@ class ActivitiesQueueService(
   @Autowired private val hmppsQueueService: HmppsQueueService,
   @Autowired private val objectMapper: ObjectMapper,
   @Autowired private val consumerPrisonAccessService: ConsumerPrisonAccessService,
+  @Autowired private val getAttendanceByIdService: GetAttendanceByIdService,
 ) {
   private val activitiesQueue by lazy { hmppsQueueService.findByQueueId("activities") as HmppsQueue }
   private val activitiesQueueSqsClient by lazy { activitiesQueue.sqsClient }
@@ -37,7 +38,10 @@ class ActivitiesQueueService(
         return consumerPrisonFilterCheck
       }
 
-      // TODO: Get attendance record - check if exists and also check the prison id is allowed
+      val attendanceRecordResponse = getAttendanceByIdService.execute(attendanceUpdateRequest.id, filters)
+      if (attendanceRecordResponse.errors.isNotEmpty()) {
+        return Response(data = null, errors = attendanceRecordResponse.errors)
+      }
     }
 
     val hmppsMessage = attendanceUpdateRequests.toHmppsMessage(who)
