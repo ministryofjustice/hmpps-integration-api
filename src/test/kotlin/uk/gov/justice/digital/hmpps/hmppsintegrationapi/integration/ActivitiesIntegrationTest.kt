@@ -8,7 +8,7 @@ import java.io.File
 
 class ActivitiesIntegrationTest : IntegrationTestBase() {
   @Nested
-  @DisplayName("Get activity schedules")
+  @DisplayName("GET /v1/activities/{activityId}/schedules")
   inner class GetActivitySchedules {
     val activityId = 123456L
     val path = "/v1/activities/$activityId/schedules"
@@ -38,7 +38,7 @@ class ActivitiesIntegrationTest : IntegrationTestBase() {
   }
 
   @Nested
-  @DisplayName("Put attendance")
+  @DisplayName("PUT /v1/activities/schedule/attendance")
   inner class PutAttendance {
     val path = "/v1/activities/schedule/attendance"
     val attendanceId = 123456L
