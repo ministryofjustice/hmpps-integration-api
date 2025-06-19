@@ -1,0 +1,16 @@
+[
+  {
+    "id": 1,
+    "code": "SICK",
+    "description": "Sick",
+    "attended": true,
+    "capturePay": true,
+    "captureMoreDetail": true,
+    "captureCaseNote": true,
+    "captureIncentiveLevelWarning": false,
+    "captureOtherText": false,
+    "displayInAbsence": false,
+    "displaySequence": 1,
+    "notes": "Maps to ACCAB in NOMIS"
+  }
+]
