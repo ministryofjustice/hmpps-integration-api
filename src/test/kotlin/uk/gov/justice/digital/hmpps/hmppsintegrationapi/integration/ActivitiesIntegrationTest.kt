@@ -48,6 +48,36 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
   }
 
   @Nested
+  @DisplayName("GET /v1/activities/schedule/{scheduleId}")
+  inner class GetScheduleDetails {
+    val scheduleId = 123456L
+    val path = "/v1/activities/schedule/$scheduleId"
+
+    @Test
+    fun `return the activity schedule details`() {
+      activitiesMockServer.stubForGet(
+        path = "/schedules/$scheduleId",
+        File("$gatewaysFolder/activities/fixtures/GetActivityScheduleById.json").readText(),
+      )
+      callApi(path)
+        .andExpect(MockMvcResultMatchers.status().isOk)
+        .andExpect(MockMvcResultMatchers.content().json(getExpectedResponse("activities-schedule-detailed-response")))
+    }
+
+    @Test
+    fun `return a 404 when prison not in the allowed prisons`() {
+      callApiWithCN(path, limitedPrisonsCn)
+        .andExpect(MockMvcResultMatchers.status().isNotFound)
+    }
+
+    @Test
+    fun `return a 404 no prisons in filter`() {
+      callApiWithCN(path, noPrisonsCn)
+        .andExpect(MockMvcResultMatchers.status().isNotFound)
+    }
+  }
+
+  @Nested
   @DisplayName("PUT /v1/activities/schedule/attendance")
   inner class PutAttendance {
     val path = "/v1/activities/schedule/attendance"

@@ -123,7 +123,7 @@ class ActivitiesController(
     }
 
     if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
-      throw EntityNotFoundException("Could not find prison regime with supplied query parameters.")
+      throw EntityNotFoundException("Could not find schedule details for supplied schedule id: $scheduleId.")
     }
 
     auditService.createEvent(
