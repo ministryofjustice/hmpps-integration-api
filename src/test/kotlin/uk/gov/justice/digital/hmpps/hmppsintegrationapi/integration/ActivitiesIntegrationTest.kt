@@ -20,8 +20,10 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
   @Nested
   @DisplayName("GET /v1/activities/{activityId}/schedules")
   inner class GetActivitySchedules {
-    val activityId = 123456L
-    val path = "/v1/activities/$activityId/schedules"
+    private val activityId = 123456L
+    private val stringActivityId = "AAAAAAAA"
+    private val path = "/v1/activities/$activityId/schedules"
+    private val badRequestPath = "/v1/activities/$stringActivityId/schedules"
 
     @Test
     fun `return the activity schedule details`() {
@@ -44,6 +46,12 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
     fun `return a 404 no prisons in filter`() {
       callApiWithCN(path, noPrisonsCn)
         .andExpect(MockMvcResultMatchers.status().isNotFound)
+    }
+
+    @Test
+    fun `return a 400 Bad Request when a string is provided as the activity ID`() {
+      callApi(badRequestPath)
+        .andExpect(MockMvcResultMatchers.status().isBadRequest)
     }
   }
 
