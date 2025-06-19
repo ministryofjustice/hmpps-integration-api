@@ -22,7 +22,6 @@ data class ActivitiesActivityScheduleInstance(
       timeSlot = this.timeSlot,
       cancelled = this.cancelled,
       cancelledTime = this.cancelledTime,
-      cancelledBy = this.cancelledBy,
       attendances = this.attendances.map { it.toAttendance() },
     )
 }
