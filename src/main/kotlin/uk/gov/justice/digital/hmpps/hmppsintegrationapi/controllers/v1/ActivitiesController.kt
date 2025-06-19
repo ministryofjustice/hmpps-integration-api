@@ -20,6 +20,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.featureflag.FeatureFlag
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ActivitySchedule
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ActivityScheduleDetailed
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.AttendanceUpdateRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HmppsMessageResponse
@@ -27,6 +28,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.ActivitiesQueueService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetActivitiesScheduleService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetScheduleDetailsService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 
 @RestController
@@ -36,6 +38,7 @@ class ActivitiesController(
   @Autowired val getActivitiesScheduleService: GetActivitiesScheduleService,
   @Autowired val auditService: AuditService,
   private val activitiesQueueService: ActivitiesQueueService,
+  private val getScheduleDetailsService: GetScheduleDetailsService,
 ) {
   @GetMapping("/{activityId}/schedules")
   @Operation(
@@ -79,6 +82,53 @@ class ActivitiesController(
     auditService.createEvent(
       "GET_ACTIVITY_SCHEDULES",
       mapOf("activityId" to activityId.toString()),
+    )
+
+    return DataResponse(data = response.data)
+  }
+
+  @GetMapping("/schedule/{scheduleId}")
+  @Operation(
+    summary = "Gets the schedule details for an activity.",
+    description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
+    responses = [
+      ApiResponse(
+        responseCode = "200",
+        useReturnTypeSchema = true,
+        description = "Successfully performed the query on upstream APIs.",
+      ),
+      ApiResponse(
+        responseCode = "403",
+        content = [Content(schema = Schema(ref = "#/components/schemas/ForbiddenResponse"))],
+      ),
+      ApiResponse(
+        responseCode = "404",
+        content = [Content(schema = Schema(ref = "#/components/schemas/NotFoundError"))],
+      ),
+      ApiResponse(
+        responseCode = "500",
+        content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))],
+      ),
+    ],
+  )
+  @FeatureFlag(name = FeatureFlagConfig.USE_SCHEDULE_DETAIL_ENDPOINT)
+  fun getScheduleDetails(
+    @Parameter(description = "The ID of the schedule") @PathVariable scheduleId: Long,
+    @RequestAttribute filters: ConsumerFilters?,
+  ): DataResponse<ActivityScheduleDetailed?> {
+    val response = getScheduleDetailsService.execute(scheduleId, filters)
+
+    if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
+      throw ValidationException("Invalid query parameters.")
+    }
+
+    if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
+      throw EntityNotFoundException("Could not find prison regime with supplied query parameters.")
+    }
+
+    auditService.createEvent(
+      "GET_SCHEDULE_DETAILS",
+      mapOf("scheduleId" to scheduleId.toString()),
     )
 
     return DataResponse(data = response.data)
