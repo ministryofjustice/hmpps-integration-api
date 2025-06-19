@@ -56,6 +56,7 @@ feature-flag:
   use-prison-activities-endpoint: true
   use-prison-pay-bands-endpoint: true
   use-update-attendance-endpoint: false
+  use-schedule-detail-endpoint: false
 
 authorisation:
   consumers:
