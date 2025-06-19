@@ -18,15 +18,18 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.ForbiddenByUpstreamServiceException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.featureflag.FeatureFlag
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ActivitySchedule
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.AttendanceUpdateRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HmppsMessageResponse
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ReasonForAttendance
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.ActivitiesQueueService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetActivitiesScheduleService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetAttendanceReasonsService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 
 @RestController
@@ -34,6 +37,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditS
 @Tag(name = "Activities")
 class ActivitiesController(
   @Autowired val getActivitiesScheduleService: GetActivitiesScheduleService,
+  @Autowired val getAttendanceReasonsService: GetAttendanceReasonsService,
   @Autowired val auditService: AuditService,
   private val activitiesQueueService: ActivitiesQueueService,
 ) {
@@ -132,6 +136,42 @@ class ActivitiesController(
     auditService.createEvent(
       "PUT_ATTENDANCE",
       mapOf("attendanceIds" to attendanceUpdateRequests.joinToString(", ") { it.id.toString() }),
+    )
+
+    return DataResponse(data = response.data)
+  }
+
+  @GetMapping("/attendance-reasons")
+  @Operation(
+    summary = "Gets possible reasons for attendance.",
+    description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
+    responses = [
+      ApiResponse(
+        responseCode = "200",
+        useReturnTypeSchema = true,
+        description = "Successfully performed the query on upstream APIs. An empty list is returned when no results are found.",
+      ),
+      ApiResponse(
+        responseCode = "403",
+        content = [Content(schema = Schema(ref = "#/components/schemas/ForbiddenResponse"))],
+      ),
+      ApiResponse(
+        responseCode = "500",
+        content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))],
+      ),
+    ],
+  )
+  @FeatureFlag(name = FeatureFlagConfig.Companion.USE_ATTENDANCE_REASONS_ENDPOINT)
+  fun getAttendanceReasons(): DataResponse<List<ReasonForAttendance>?> {
+    val response = getAttendanceReasonsService.execute()
+
+    if (response.hasError(UpstreamApiError.Type.FORBIDDEN)) {
+      throw ForbiddenByUpstreamServiceException("Access denied to attendance reasons.")
+    }
+
+    auditService.createEvent(
+      "GET_ATTENDANCE_REASONS",
+      mapOf(),
     )
 
     return DataResponse(data = response.data)
