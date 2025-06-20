@@ -16,9 +16,11 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ActivitiesGatew
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.AppointmentSearchRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import java.io.File
+import java.time.LocalDate
 
 @ActiveProfiles("test")
 @ContextConfiguration(
@@ -32,15 +34,20 @@ class GetAppointmentsGatewayTest(
     {
       val objectMapper = jacksonObjectMapper()
       val prisonCode = "MDI"
-      val startDate = "2025-06-12"
       val path = "/appointments/$prisonCode/search"
       val activitiesApiMockServer = ApiMockServer.create(UpstreamApi.ACTIVITIES)
-      val requestBodyMap =
-        mapOf(
-          "startDate" to startDate,
+      val appointmentSearchRequest =
+        AppointmentSearchRequest(
+          appointmentType = "INDIVIDUAL",
+          startDate = LocalDate.parse("2025-01-01"),
+          endDate = LocalDate.parse("2025-01-31"),
+          timeSlots = listOf("AM", "PM"),
+          categoryCode = "GYMW",
+          inCell = false,
+          prisonerNumbers = listOf("A1234AA"),
         )
 
-      val jsonRequest = objectMapper.writeValueAsString(requestBodyMap)
+      val jsonRequest = objectMapper.writeValueAsString(appointmentSearchRequest.toApiConformingMap())
 
       beforeEach {
         activitiesApiMockServer.start()
@@ -56,7 +63,7 @@ class GetAppointmentsGatewayTest(
       }
 
       it("authenticates using HMPPS Auth with credentials") {
-        activitiesGateway.getAppointments(prisonCode, startDate)
+        activitiesGateway.getAppointments(prisonCode, appointmentSearchRequest)
 
         verify(hmppsAuthGateway, times(1))
           .getClientToken("ACTIVITIES")
@@ -64,13 +71,13 @@ class GetAppointmentsGatewayTest(
 
       it("upstream API returns a bad request error, throw exception") {
         activitiesApiMockServer.stubForPost(path, jsonRequest, "", HttpStatus.BAD_REQUEST)
-        val result = activitiesGateway.getAppointments(prisonCode, startDate)
+        val result = activitiesGateway.getAppointments(prisonCode, appointmentSearchRequest)
         result.errors.shouldBe(listOf(UpstreamApiError(causedBy = UpstreamApi.ACTIVITIES, type = UpstreamApiError.Type.BAD_REQUEST)))
       }
 
       it("returns appointments") {
         activitiesApiMockServer.stubForPost(path, jsonRequest, File("src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/activities/fixtures/GetAppointments.json").readText(), HttpStatus.OK)
-        val response = activitiesGateway.getAppointments(prisonCode, startDate)
+        val response = activitiesGateway.getAppointments(prisonCode, appointmentSearchRequest)
         response.data!![0].appointmentId.shouldBe(123456)
       }
     },
