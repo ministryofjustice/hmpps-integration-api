@@ -244,4 +244,21 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
       checkQueueIsEmpty()
     }
   }
+
+  @Nested
+  @DisplayName("GET /v1/activities/attendance-reasons")
+  inner class GetAttendanceReasons {
+    private val path = "/v1/activities/attendance-reasons"
+
+    @Test
+    fun `return the attendance reasons`() {
+      activitiesMockServer.stubForGet(
+        "/attendance-reasons",
+        File("$gatewaysFolder/activities/fixtures/GetAttendanceReasons.json").readText(),
+      )
+      callApi(path)
+        .andExpect(MockMvcResultMatchers.status().isOk)
+        .andExpect(MockMvcResultMatchers.content().json(getExpectedResponse("reasons-for-attendance")))
+    }
+  }
 }

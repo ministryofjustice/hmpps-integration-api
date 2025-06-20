@@ -55,6 +55,7 @@ globals:
         - "/v1/persons/.*/care-needs"
         - "/v1/persons/.*/languages"
         - "/v1/activities/schedule/attendance"
+        - "/v1/activities/attendance-reasons"
     police:
       include:
         - "/v1/persons"
@@ -79,6 +80,7 @@ globals:
         # Provides access to all endpoints
         - "/.*"
         # Provides access to all events on queue
+        - "/v1/activities/attendance-reasons"
         - "/v1/contacts/[^/]*$"
         - "/v1/persons/.*/addresses"
         - "/v1/persons/.*/alerts"

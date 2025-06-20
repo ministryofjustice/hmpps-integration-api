@@ -10,6 +10,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.Activi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesActivityScheduleDetailed
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesAppointmentDetails
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesAttendance
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesAttendanceReason
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesPrisonPayBand
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesPrisonRegime
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesRunningActivity
@@ -193,6 +194,30 @@ class ActivitiesGateway(
         authenticationHeader(),
         UpstreamApi.ACTIVITIES,
         badRequestAsError = true,
+      )
+
+    return when (result) {
+      is WebClientWrapperResponse.Success -> {
+        Response(data = result.data)
+      }
+
+      is WebClientWrapperResponse.Error -> {
+        Response(
+          data = null,
+          errors = result.errors,
+        )
+      }
+    }
+  }
+
+  fun getAttendanceReasons(): Response<List<ActivitiesAttendanceReason>?> {
+    val result =
+      webClient.requestList<ActivitiesAttendanceReason>(
+        HttpMethod.GET,
+        "/attendance-reasons",
+        authenticationHeader(),
+        UpstreamApi.ACTIVITIES,
+        forbiddenAsError = true,
       )
 
     return when (result) {

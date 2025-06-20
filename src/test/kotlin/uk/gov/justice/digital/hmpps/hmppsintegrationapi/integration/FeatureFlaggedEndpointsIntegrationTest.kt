@@ -5,6 +5,7 @@ import org.mockito.kotlin.whenever
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_ATTENDANCE_REASONS_ENDPOINT
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_IMAGE_ENDPOINTS
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_LANGUAGES_ENDPOINTS
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_LOCATION_DEACTIVATE_ENDPOINT
@@ -158,6 +159,14 @@ internal class FeatureFlaggedEndpointsIntegrationTest : IntegrationTestBase() {
       ]
       """.trimIndent()
     putApi(path, requestBody)
+      .andExpect(status().isServiceUnavailable)
+  }
+
+  @Test
+  fun `attendance reasons should return 503`() {
+    whenever(featureFlagConfig.require(USE_ATTENDANCE_REASONS_ENDPOINT)).thenThrow(FeatureNotEnabledException(""))
+    val path = "/v1/activities/attendance-reasons"
+    callApi(path)
       .andExpect(status().isServiceUnavailable)
   }
 
