@@ -43,4 +43,31 @@ data class PrisonerDeallocationRequest(
   val caseNote: AddCaseNoteRequest? = null,
   @Schema(description = "The scheduled instance id required when de-allocation is a session later today")
   val scheduleInstanceId: Long? = null,
-)
+) {
+  private fun modelToMap(scheduleId: Long): Map<String, Any?> =
+    mapOf(
+      "scheduleId" to scheduleId,
+      "prisonerNumbers" to listOf(prisonerNumber),
+      "reasonCode" to reasonCode,
+      "endDate" to endDate,
+      "caseNote" to caseNote?.let { mapOf("type" to it.type, "text" to it.text) },
+      "scheduleInstanceId" to scheduleInstanceId,
+    )
+
+  fun toHmppsMessage(
+    actionedBy: String,
+    scheduleId: Long,
+  ): HmppsMessage =
+    HmppsMessage(
+      eventType = HmppsMessageEventType.DEALLOCATE_PRISONER_FROM_ACTIVITY_SCHEDULE,
+      messageAttributes = this.modelToMap(scheduleId),
+      who = actionedBy,
+    )
+
+  fun toTestMessage(actionedBy: String?): HmppsMessage =
+    HmppsMessage(
+      eventType = HmppsMessageEventType.TEST_EVENT,
+      messageAttributes = emptyMap(),
+      who = actionedBy,
+    )
+}
