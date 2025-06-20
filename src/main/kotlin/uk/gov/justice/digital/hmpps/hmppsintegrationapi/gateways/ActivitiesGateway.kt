@@ -13,6 +13,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.Activi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesPrisonPayBand
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesPrisonRegime
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesRunningActivity
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.AppointmentSearchRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 
@@ -154,19 +155,14 @@ class ActivitiesGateway(
 
   fun getAppointments(
     prisonCode: String,
-    startDate: String,
+    appointmentSearchRequest: AppointmentSearchRequest,
   ): Response<List<ActivitiesAppointmentDetails>?> {
-    val requestBodyMap =
-      mapOf(
-        "startDate" to startDate,
-      )
-
     val result =
       webClient.requestList<ActivitiesAppointmentDetails>(
         HttpMethod.POST,
         "/appointments/$prisonCode/search",
         authenticationHeader(),
-        requestBody = requestBodyMap,
+        requestBody = appointmentSearchRequest.toApiConformingMap(),
         upstreamApi = UpstreamApi.ACTIVITIES,
         badRequestAsError = true,
       )
