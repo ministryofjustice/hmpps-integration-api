@@ -1,9 +1,0 @@
-[
-  {
-    "id": 1,
-    "code": "SICK",
-    "description": "Sick",
-    "attended": true,
-    "notes": "Maps to ACCAB in NOMIS"
-  }
-]

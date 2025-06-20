@@ -169,7 +169,7 @@ internal class FeatureFlaggedEndpointsIntegrationTest : IntegrationTestBase() {
     callApi(path)
       .andExpect(status().isServiceUnavailable)
   }
-  
+
   @Test
   fun `get schedule details should return 503`() {
     whenever(featureFlagConfig.require(USE_SCHEDULE_DETAIL_ENDPOINT)).thenThrow(FeatureNotEnabledException(""))

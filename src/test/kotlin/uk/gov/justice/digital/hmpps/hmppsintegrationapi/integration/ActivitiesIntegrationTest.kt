@@ -254,7 +254,7 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
     fun `return the attendance reasons`() {
       activitiesMockServer.stubForGet(
         "/attendance-reasons",
-        File("$gatewaysFolder/activities/fixtures/GetReasonsForAttendance.json").readText(),
+        File("$gatewaysFolder/activities/fixtures/GetAttendanceReasons.json").readText(),
       )
       callApi(path)
         .andExpect(MockMvcResultMatchers.status().isOk)
