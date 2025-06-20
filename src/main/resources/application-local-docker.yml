@@ -74,3 +74,4 @@ feature-flag:
   use-prison-pay-bands-endpoint: true
   use-update-attendance-endpoint: true
   use-schedule-detail-endpoint: true
+  use-search-appointments-endpoint: true
