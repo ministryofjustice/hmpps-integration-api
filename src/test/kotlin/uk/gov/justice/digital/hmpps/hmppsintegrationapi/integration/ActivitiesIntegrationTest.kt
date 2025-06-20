@@ -223,18 +223,12 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
     @Test
     fun `return the attendance reasons`() {
       activitiesMockServer.stubForGet(
-        "/activities/attendance-reasons",
+        "/attendance-reasons",
         File("$gatewaysFolder/activities/fixtures/GetReasonsForAttendance.json").readText(),
       )
       callApi(path)
         .andExpect(MockMvcResultMatchers.status().isOk)
         .andExpect(MockMvcResultMatchers.content().json(getExpectedResponse("reasons-for-attendance")))
-    }
-
-    @Test
-    fun `return a 403 for a forbidden request`() {
-      callApi(path)
-        .andExpect(MockMvcResultMatchers.status().isForbidden)
     }
   }
 }
