@@ -172,7 +172,7 @@ class ActivitiesControllerTest(
             instances =
               listOf(
                 ActivityScheduleInstance(
-                  scheduleInstanceId = scheduleId,
+                  id = scheduleId,
                   date = "2022-10-20",
                   startTime = "09:00",
                   endTime = "12:00",
