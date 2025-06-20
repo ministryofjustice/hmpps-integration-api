@@ -65,7 +65,7 @@ class ActivitiesControllerTest(
 
         val activitiesSchedule =
           ActivitySchedule(
-            scheduleId = 1001L,
+            id = 1001L,
             description = "Morning Education Class",
             internalLocation =
               InternalLocation(
