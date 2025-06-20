@@ -97,7 +97,8 @@ const get_endpoints = [
   `/v2/config/authorisation`,
   `/v1/persons/${hmppsId}/health-and-diet`,
   `/v1/persons/${hmppsId}/languages`,
-  `/v1/activities/${activityId}/schedules`
+  `/v1/activities/${activityId}/schedules`,
+  `/v1/activities/attendance-reasons`
 ];
 
 const broken_endpoints = []
