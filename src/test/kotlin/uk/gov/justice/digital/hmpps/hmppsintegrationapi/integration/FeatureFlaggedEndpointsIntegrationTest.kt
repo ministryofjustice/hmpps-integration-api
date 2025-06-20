@@ -17,6 +17,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_PRISON_REGIME_ENDPOINT
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_RESIDENTIAL_DETAILS_ENDPOINTS
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_RESIDENTIAL_HIERARCHY_ENDPOINTS
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_SCHEDULE_DETAIL_ENDPOINT
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_UPDATE_ATTENDANCE_ENDPOINT
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.FeatureNotEnabledException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DeactivateLocationRequest
@@ -165,6 +166,15 @@ internal class FeatureFlaggedEndpointsIntegrationTest : IntegrationTestBase() {
   fun `attendance reasons should return 503`() {
     whenever(featureFlagConfig.require(USE_ATTENDANCE_REASONS_ENDPOINT)).thenThrow(FeatureNotEnabledException(""))
     val path = "/v1/activities/attendance-reasons"
+    callApi(path)
+      .andExpect(status().isServiceUnavailable)
+  }
+  
+  @Test
+  fun `get schedule details should return 503`() {
+    whenever(featureFlagConfig.require(USE_SCHEDULE_DETAIL_ENDPOINT)).thenThrow(FeatureNotEnabledException(""))
+    val scheduleId = 1234L
+    val path = "/v1/activities/schedule/$scheduleId"
     callApi(path)
       .andExpect(status().isServiceUnavailable)
   }

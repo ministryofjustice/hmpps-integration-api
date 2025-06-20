@@ -13,15 +13,21 @@ import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.controllers.v1.ActivitiesController
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.MockMvcExtensions.contentAsJson
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ActivitySchedule
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ActivityScheduleAllocation
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ActivityScheduleDetailed
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ActivityScheduleInstance
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ActivityScheduleSuspension
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Attendance
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.AttendanceUpdateRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Exclusion
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HmppsMessageResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.InternalLocation
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ReasonForAttendance
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonPayBand
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Slot
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
@@ -29,7 +35,9 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.ActivitiesQueueService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetActivitiesScheduleService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetAttendanceReasonsService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetScheduleDetailsService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
+import java.time.DayOfWeek
 
 @WebMvcTest(controllers = [ActivitiesController::class])
 @ActiveProfiles("test")
@@ -39,6 +47,7 @@ class ActivitiesControllerTest(
   @MockitoBean val auditService: AuditService,
   @MockitoBean val getActivitiesScheduleService: GetActivitiesScheduleService,
   @MockitoBean val getAttendanceReasonsService: GetAttendanceReasonsService,
+  @MockitoBean val getScheduleDetailsService: GetScheduleDetailsService,
   @MockitoBean val activitiesQueueService: ActivitiesQueueService,
 ) : DescribeSpec(
     {
@@ -136,6 +145,177 @@ class ActivitiesControllerTest(
 
         it("returns 404 when getActivitiesScheduleService returns not found") {
           whenever(getActivitiesScheduleService.execute(activityId, filters))
+            .thenReturn(
+              Response(
+                data = null,
+                errors =
+                  listOf(
+                    UpstreamApiError(
+                      type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+                      causedBy = UpstreamApi.ACTIVITIES,
+                    ),
+                  ),
+              ),
+            )
+
+          val result = mockMvc.performAuthorised(path)
+          result.response.status.shouldBe(404)
+        }
+      }
+
+      describe("GET /schedule/{scheduleId}") {
+        val scheduleId = 123456L
+        val filters = null
+        val path = "$basePath/schedule/$scheduleId"
+        val activityScheduleDetailed =
+          ActivityScheduleDetailed(
+            instances =
+              listOf(
+                ActivityScheduleInstance(
+                  scheduleInstanceId = scheduleId,
+                  date = "2022-10-20",
+                  startTime = "09:00",
+                  endTime = "12:00",
+                  timeSlot = "AM",
+                  cancelled = false,
+                  cancelledTime = null,
+                  attendances =
+                    listOf(
+                      Attendance(
+                        id = 123L,
+                        scheduledInstanceId = scheduleId,
+                        prisonerNumber = "A1234AA",
+                        status = "ACTIVE",
+                        editable = true,
+                        payable = false,
+                      ),
+                    ),
+                ),
+              ),
+            allocations =
+              listOf(
+                ActivityScheduleAllocation(
+                  prisonerNumber = "A1234AA",
+                  activitySummary = "Summary",
+                  isUnemployment = true,
+                  prisonPayBand =
+                    PrisonPayBand(
+                      id = 123456L,
+                      alias = "pay band",
+                      description = "pay band description",
+                    ),
+                  startDate = "2022-10-20",
+                  endDate = null,
+                  allocatedTime = null,
+                  deallocatedTime = null,
+                  deallocatedReason = null,
+                  suspendedTime = null,
+                  suspendedReason = null,
+                  status = "ACTIVE",
+                  plannedDeallocation = null,
+                  plannedSuspension = null,
+                  exclusions =
+                    listOf(
+                      Exclusion(
+                        weekNumber = 1,
+                        timeSlot = "AM",
+                        monday = true,
+                        tuesday = true,
+                        wednesday = true,
+                        thursday = true,
+                        friday = true,
+                        saturday = true,
+                        sunday = true,
+                        customStartTime = null,
+                        customEndTime = null,
+                        daysOfWeek = listOf(DayOfWeek.SUNDAY),
+                      ),
+                    ),
+                ),
+              ),
+            suspensions =
+              listOf(
+                ActivityScheduleSuspension(
+                  suspendedFrom = "2022-10-20",
+                  suspendedUntil = "2022-10-21",
+                ),
+              ),
+            description = "Morning Education Class",
+            internalLocation = 123,
+            capacity = 25,
+            scheduleWeeks = 2,
+            slots =
+              listOf(
+                Slot(
+                  id = 101L,
+                  timeSlot = "AM",
+                  weekNumber = 1,
+                  startTime = "09:00",
+                  endTime = "12:00",
+                  daysOfWeek = listOf("Mon", "Wed", "Fri"),
+                  mondayFlag = true,
+                  tuesdayFlag = false,
+                  wednesdayFlag = true,
+                  thursdayFlag = false,
+                  fridayFlag = true,
+                  saturdayFlag = false,
+                  sundayFlag = false,
+                ),
+              ),
+            startDate = "2024-01-15",
+            endDate = "2024-07-15",
+            usePrisonRegimeTime = true,
+            runsOnBankHoliday = false,
+          )
+
+        beforeEach {
+          Mockito.reset(getScheduleDetailsService)
+        }
+
+        it("should return 200 when success") {
+          whenever(getScheduleDetailsService.execute(scheduleId, filters))
+            .thenReturn(Response(data = activityScheduleDetailed))
+
+          val result = mockMvc.performAuthorised(path)
+          result.response.status.shouldBe(HttpStatus.OK.value())
+          result.response
+            .contentAsJson<DataResponse<ActivityScheduleDetailed>>()
+            .shouldBe(DataResponse(data = activityScheduleDetailed))
+        }
+
+        it("should call the audit service") {
+          whenever(getScheduleDetailsService.execute(scheduleId, filters))
+            .thenReturn(Response(data = activityScheduleDetailed))
+
+          mockMvc.performAuthorised(path)
+
+          verify(auditService, times(1)).createEvent(
+            "GET_SCHEDULE_DETAILS",
+            mapOf("scheduleId" to scheduleId.toString()),
+          )
+        }
+
+        it("returns 400 when getActivitiesScheduleService returns bad request") {
+          whenever(getScheduleDetailsService.execute(scheduleId, filters))
+            .thenReturn(
+              Response(
+                data = null,
+                errors =
+                  listOf(
+                    UpstreamApiError(
+                      type = UpstreamApiError.Type.BAD_REQUEST,
+                      causedBy = UpstreamApi.ACTIVITIES,
+                    ),
+                  ),
+              ),
+            )
+
+          val result = mockMvc.performAuthorised(path)
+          result.response.status.shouldBe(400)
+        }
+
+        it("returns 404 when getActivitiesScheduleService returns not found") {
+          whenever(getScheduleDetailsService.execute(scheduleId, filters))
             .thenReturn(
               Response(
                 data = null,

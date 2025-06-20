@@ -30,7 +30,6 @@ data class ActivitiesAttendance(
       attendanceReason = this.attendanceReason?.toAttendanceReason(),
       comment = this.comment,
       recordedTime = this.recordedTime,
-      recordedBy = this.recordedBy,
       status = this.status,
       payAmount = this.payAmount,
       bonusAmount = this.bonusAmount,

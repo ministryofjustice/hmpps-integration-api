@@ -16,8 +16,6 @@ data class Attendance(
   val comment: String? = null,
   @Schema(description = "The date and time the attendance was updated", example = "2023-09-10T09:30:00")
   val recordedTime: String? = null,
-  @Schema(description = "The person who updated the attendance", example = "A.JONES")
-  val recordedBy: String? = null,
   @Schema(description = "WAITING or COMPLETED", example = "WAITING")
   val status: String,
   @Schema(description = "The amount in pence to pay the prisoner for the activity", example = "100")

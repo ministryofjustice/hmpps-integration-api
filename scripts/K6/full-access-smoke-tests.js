@@ -30,6 +30,7 @@ const contactId = "1898610";
 const imageId = "1988315";
 const locationIdKey = "MKI-A";
 const activityId = 1162
+const scheduleId = 1
 
 const get_endpoints = [
   `/v1/hmpps/id/by-nomis-number/${hmppsId}`,
@@ -98,7 +99,8 @@ const get_endpoints = [
   `/v1/persons/${hmppsId}/health-and-diet`,
   `/v1/persons/${hmppsId}/languages`,
   `/v1/activities/${activityId}/schedules`,
-  `/v1/activities/attendance-reasons`
+  `/v1/activities/attendance-reasons`,
+  `/v1/activities/schedule/${scheduleId}`
 ];
 
 const broken_endpoints = []
