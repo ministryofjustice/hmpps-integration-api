@@ -241,7 +241,6 @@ class ActivitiesControllerTest(
                 ),
               ),
             description = "Morning Education Class",
-            internalLocation = 123,
             capacity = 25,
             scheduleWeeks = 2,
             slots =

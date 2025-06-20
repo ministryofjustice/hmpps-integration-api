@@ -26,7 +26,6 @@ data class ActivitiesActivityScheduleDetailed(
       allocations = this.allocations.map { it.toActivityScheduleAllocation() },
       description = this.description,
       suspensions = this.suspensions.map { it.toActivityScheduleSuspension() },
-      internalLocation = this.internalLocation?.id,
       capacity = this.capacity,
       scheduleWeeks = this.scheduleWeeks,
       slots = this.slots.map { it.toSlot() },
