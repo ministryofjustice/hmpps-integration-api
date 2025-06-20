@@ -26,7 +26,7 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
     private val badRequestPath = "/v1/activities/$stringActivityId/schedules"
 
     @Test
-    fun `return the activity schedule details`() {
+    fun `return the activity's schedule`() {
       activitiesMockServer.stubForGet(
         "/activities/$activityId/schedules",
         File("$gatewaysFolder/activities/fixtures/GetActivitiesSchedule.json").readText(),

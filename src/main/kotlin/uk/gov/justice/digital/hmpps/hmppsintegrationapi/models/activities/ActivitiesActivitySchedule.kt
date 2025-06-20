@@ -18,7 +18,7 @@ data class ActivitiesActivitySchedule(
 ) {
   fun toActivitySchedule() =
     ActivitySchedule(
-      scheduleId = this.id,
+      id = this.id,
       description = this.description,
       internalLocation = this.internalLocation?.let { InternalLocation(it.code, it.description) },
       capacity = this.capacity,

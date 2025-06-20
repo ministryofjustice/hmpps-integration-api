@@ -28,7 +28,6 @@ data class ActivitiesAttendanceReason(
       captureIncentiveLevelWarning = this.captureIncentiveLevelWarning,
       captureOtherText = this.captureOtherText,
       displayInAbsence = this.displayInAbsence,
-      displaySequence = this.displaySequence,
       notes = this.notes,
     )
 

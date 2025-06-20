@@ -11,8 +11,6 @@ data class AttendanceHistory(
   val comment: String?,
   @Schema(description = "The date and time the attendance was updated", example = "2023-09-10T09:30:00")
   val recordedTime: String,
-  @Schema(description = "The person who updated the attendance", example = "A.JONES")
-  val recordedBy: String,
   @Schema(description = "Should payment be issued for SICK, REST or OTHER", example = "true")
   val issuePayment: Boolean?,
   @Schema(description = "Was an incentive level warning issued for REFUSED", example = "true")

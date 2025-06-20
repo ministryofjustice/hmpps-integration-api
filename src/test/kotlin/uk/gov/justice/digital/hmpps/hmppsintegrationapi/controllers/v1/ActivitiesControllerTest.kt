@@ -65,7 +65,7 @@ class ActivitiesControllerTest(
 
         val activitiesSchedule =
           ActivitySchedule(
-            scheduleId = 1001L,
+            id = 1001L,
             description = "Morning Education Class",
             internalLocation =
               InternalLocation(
@@ -172,7 +172,7 @@ class ActivitiesControllerTest(
             instances =
               listOf(
                 ActivityScheduleInstance(
-                  scheduleInstanceId = scheduleId,
+                  id = scheduleId,
                   date = "2022-10-20",
                   startTime = "09:00",
                   endTime = "12:00",
@@ -241,7 +241,6 @@ class ActivitiesControllerTest(
                 ),
               ),
             description = "Morning Education Class",
-            internalLocation = 123,
             capacity = 25,
             scheduleWeeks = 2,
             slots =

@@ -15,7 +15,7 @@ data class ActivitiesActivityScheduleInstance(
 ) {
   fun toActivityScheduleInstance() =
     ActivityScheduleInstance(
-      scheduleInstanceId = this.id,
+      id = this.id,
       date = this.date,
       startTime = this.startTime,
       endTime = this.endTime,
