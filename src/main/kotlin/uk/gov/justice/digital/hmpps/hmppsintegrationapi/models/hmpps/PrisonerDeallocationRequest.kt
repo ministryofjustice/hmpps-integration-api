@@ -6,7 +6,6 @@ import jakarta.annotation.Nullable
 import jakarta.validation.Valid
 import jakarta.validation.constraints.FutureOrPresent
 import jakarta.validation.constraints.NotEmpty
-import jakarta.validation.constraints.NotNull
 import java.time.LocalDate
 
 @Schema(
@@ -35,8 +34,7 @@ data class PrisonerDeallocationRequest(
   )
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
   @field:FutureOrPresent(message = "End date must not be in the past")
-  @NotNull(message = "The end date for the deallocation request must supplied.")
-  val endDate: LocalDate?,
+  val endDate: LocalDate,
   @Schema(description = "Describes a case note to be added to the prisoner's profile as part of the deallocation.")
   @field:Valid
   @field:Nullable
