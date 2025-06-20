@@ -98,6 +98,11 @@ class ActivitiesController(
         description = "Successfully performed the query on upstream APIs.",
       ),
       ApiResponse(
+        responseCode = "400",
+        description = "Invalid query parameters.",
+        content = [Content(schema = Schema(ref = "#/components/schemas/BadRequest"))],
+      ),
+      ApiResponse(
         responseCode = "403",
         content = [Content(schema = Schema(ref = "#/components/schemas/ForbiddenResponse"))],
       ),
