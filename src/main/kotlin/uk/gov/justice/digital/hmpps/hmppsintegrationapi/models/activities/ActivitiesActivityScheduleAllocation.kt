@@ -1,5 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities
 
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ActivityScheduleAllocation
+
 data class ActivitiesActivityScheduleAllocation(
   val id: Long,
   val prisonerNumber: String,
@@ -32,4 +34,23 @@ data class ActivitiesActivityScheduleAllocation(
   val cellLocation: String? = null,
   val earliestReleaseDate: ActivitiesEarliestReleaseDate? = null,
   val nonAssociations: Boolean? = null,
-)
+) {
+  fun toActivityScheduleAllocation() =
+    ActivityScheduleAllocation(
+      prisonerNumber = this.prisonerNumber,
+      activitySummary = this.activitySummary,
+      isUnemployment = this.isUnemployment,
+      prisonPayBand = this.prisonPayBand?.toPrisonPayBand(),
+      startDate = this.startDate,
+      endDate = this.endDate,
+      allocatedTime = this.allocatedTime,
+      deallocatedTime = this.deallocatedTime,
+      deallocatedReason = this.deallocatedReason?.toActivityReason(),
+      suspendedTime = this.suspendedTime,
+      suspendedReason = this.suspendedReason,
+      status = this.status,
+      plannedDeallocation = this.plannedDeallocation?.toPlannedDeallocation(),
+      plannedSuspension = this.plannedSuspension?.toPlannedSuspension(),
+      exclusions = this.exclusions.map { it.toExclusion() },
+    )
+}
