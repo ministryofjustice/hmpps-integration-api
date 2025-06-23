@@ -173,7 +173,7 @@ class ActivitiesQueueServiceTest(
             instances =
               listOf(
                 ActivityScheduleInstance(
-                  scheduleInstanceId = scheduleId,
+                  id = scheduleId,
                   date = "2022-10-20",
                   startTime = "09:00",
                   endTime = "12:00",
@@ -242,7 +242,6 @@ class ActivitiesQueueServiceTest(
                 ),
               ),
             description = "Morning Education Class",
-            internalLocation = 123,
             capacity = 25,
             scheduleWeeks = 2,
             slots =
