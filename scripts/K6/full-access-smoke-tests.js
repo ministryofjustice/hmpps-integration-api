@@ -153,6 +153,18 @@ const putAttendanceData = JSON.stringify([{
   otherAbsenceReason: "Prisoner has another reason for missing the activity"
 }])
 
+const putDeallocationEndpoint = `/v1/activities/schedule/${scheduleId}/deallocate`
+const putDeallocationData = JSON.stringify([{
+  prisonerNumber: hmppsId,
+  reasonCode: "TestEvent",
+  endDate: "2025-05-23",
+  caseNote: {
+    type: "GEN",
+    text: "Case note text"
+  },
+  scheduleInstanceId: 1234
+}])
+
 export default function ()  {
   const params = {
     headers: {
@@ -180,6 +192,13 @@ export default function ()  {
     [`PUT ${putAttendanceEndpoint} returns 200`]: (r) => r.status === 200,
   })) {
     exec.test.fail(`${putAttendanceEndpoint} caused the test to fail`)
+  }
+
+  const putDeallocationRes = http.put(`${baseUrl}${putDeallocationEndpoint}`, putDeallocationData, params);
+  if (!check(putDeallocationRes, {
+    [`PUT ${putDeallocationEndpoint} returns 200`]: (r) => r.status === 200,
+  })) {
+    exec.test.fail(`${putDeallocationEndpoint} caused the test to fail`)
   }
 
   for (const endpoint of get_endpoints) {
