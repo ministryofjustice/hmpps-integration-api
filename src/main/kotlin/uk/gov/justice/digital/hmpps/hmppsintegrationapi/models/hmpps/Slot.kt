@@ -13,7 +13,7 @@ data class Slot(
   val startTime: String,
   @Schema(example = "11:30", description = "End time of the slot")
   val endTime: String,
-  @Schema(example = "[Mon,Tue,Wed]", description = "String representation of the days this slot occurs on")
+  @Schema(example = "['Mon', 'Tue', 'Wed']", description = "String representation of the days this slot occurs on")
   val daysOfWeek: List<String>,
   @Schema(example = "true", description = "Flag indicating slot occurs on Monday")
   val mondayFlag: Boolean,
