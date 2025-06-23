@@ -7,7 +7,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_ATTENDANCE_REASONS_ENDPOINT
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_LANGUAGES_ENDPOINTS
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_LOCATION_DEACTIVATE_ENDPOINT
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_PERSONAL_CARE_NEEDS_ENDPOINTS
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_PRISON_ACTIVITIES_ENDPOINT
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_PRISON_PAY_BANDS_ENDPOINT
@@ -15,29 +14,10 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_SCHEDULE_DETAIL_ENDPOINT
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_UPDATE_ATTENDANCE_ENDPOINT
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.FeatureNotEnabledException
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DeactivateLocationRequest
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DeactivationReason
-import java.time.LocalDate
 
 internal class FeatureFlaggedEndpointsIntegrationTest : IntegrationTestBase() {
   @MockitoBean
   private lateinit var featureFlagConfig: FeatureFlagConfig
-
-  @Test
-  fun `location deactivate should return 503`() {
-    whenever(featureFlagConfig.require(USE_LOCATION_DEACTIVATE_ENDPOINT)).thenThrow(FeatureNotEnabledException(""))
-    val prisonId = "MDI"
-    val key = "MDI-A-1-001"
-    val path = "/v1/prison/$prisonId/location/$key/deactivate"
-    val deactivateLocationRequest =
-      DeactivateLocationRequest(
-        deactivationReason = DeactivationReason.DAMAGED,
-        deactivationReasonDescription = "Scheduled maintenance",
-        proposedReactivationDate = LocalDate.now(),
-      )
-    postToApi(path, asJsonString(deactivateLocationRequest))
-      .andExpect(status().isServiceUnavailable)
-  }
 
   @Test
   fun `care needs should return 503`() {

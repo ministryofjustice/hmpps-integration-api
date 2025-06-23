@@ -21,7 +21,6 @@ data class FeatureFlagConfig(
   companion object {
     const val USE_ARNS_ENDPOINTS = "use-arns-endpoints"
     const val USE_EDUCATION_ASSESSMENTS_ENDPOINTS = "use-education-assessments-endpoints"
-    const val USE_LOCATION_DEACTIVATE_ENDPOINT = "use-location-deactivate-endpoint"
     const val USE_HEALTH_AND_DIET_ENDPOINT = "use-health-and-diet-endpoint"
     const val USE_PERSONAL_CARE_NEEDS_ENDPOINTS = "use-personal-care-needs-endpoints"
     const val USE_LANGUAGES_ENDPOINTS = "use-languages-endpoints"

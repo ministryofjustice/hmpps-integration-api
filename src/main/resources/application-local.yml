@@ -40,7 +40,6 @@ hmpps.sqs:
 feature-flag:
   use-arns-endpoints: true
   use-education-assessments-endpoints: true
-  use-location-deactivate-endpoint: true
   use-health-and-diet-endpoint: true
   use-personal-care-needs-endpoints: true
   use-languages-endpoints: true
