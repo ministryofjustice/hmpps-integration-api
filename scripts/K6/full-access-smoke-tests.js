@@ -139,6 +139,11 @@ const postLocationDeactivateData = JSON.stringify({
   externalReference: "TestEvent"
 })
 
+const postSearchAppointmentsEndpoint = `/v1/prison/${alternativeprisonId}/appointments/search`;
+const postSearchAppointmentsData = JSON.stringify({
+  startDate: "2025-06-16",
+})
+
 const putAttendanceEndpoint = `/v1/activities/schedule/attendance`
 const putAttendanceData = JSON.stringify([{
   id: 123456,
@@ -172,6 +177,13 @@ export default function ()  {
     [`POST ${postLocationDeactivateEndpoint} returns 200`]: (r) => r.status === 200,
   })) {
     exec.test.fail(`${postLocationDeactivateEndpoint} caused the test to fail`)
+  }
+
+  const postSearchAppointmentsRes = http.post(`${baseUrl}${postSearchAppointmentsEndpoint}`, postSearchAppointmentsData, params);
+  if (!check(postSearchAppointmentsRes, {
+    [`POST ${postSearchAppointmentsEndpoint} returns 200`]: (r) => r.status === 200,
+  })) {
+    exec.test.fail(`${postSearchAppointmentsEndpoint} caused the test to fail`)
   }
 
   const putAttendanceRes = http.put(`${baseUrl}${putAttendanceEndpoint}`, putAttendanceData, params);
