@@ -6,7 +6,6 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_ATTENDANCE_REASONS_ENDPOINT
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_PRISON_ACTIVITIES_ENDPOINT
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_PRISON_PAY_BANDS_ENDPOINT
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_SCHEDULE_DETAIL_ENDPOINT
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_UPDATE_ATTENDANCE_ENDPOINT
@@ -15,24 +14,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.FeatureNotEnab
 internal class FeatureFlaggedEndpointsIntegrationTest : IntegrationTestBase() {
   @MockitoBean
   private lateinit var featureFlagConfig: FeatureFlagConfig
-
-  @Test
-  fun `prison activities should return 503`() {
-    whenever(featureFlagConfig.require(USE_PRISON_ACTIVITIES_ENDPOINT)).thenThrow(FeatureNotEnabledException(""))
-    val prisonId = "MDI"
-    val path = "/v1/prison/$prisonId/activities"
-    callApi(path)
-      .andExpect(status().isServiceUnavailable)
-  }
-
-  @Test
-  fun `activities schedule should return 503`() {
-    whenever(featureFlagConfig.require(USE_PRISON_ACTIVITIES_ENDPOINT)).thenThrow(FeatureNotEnabledException(""))
-    val activityId = 123456L
-    val path = "/v1/activities/$activityId/schedules"
-    callApi(path)
-      .andExpect(status().isServiceUnavailable)
-  }
 
   @Test
   fun `prison pay bands should return 503`() {

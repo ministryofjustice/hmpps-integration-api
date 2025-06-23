@@ -68,7 +68,6 @@ class ActivitiesController(
       ),
     ],
   )
-  @FeatureFlag(name = FeatureFlagConfig.Companion.USE_ACTIVITIES_SCHEDULE_ENDPOINT)
   fun getActivitySchedules(
     @Parameter(description = "The ID of the activity") @PathVariable activityId: Long,
     @RequestAttribute filters: ConsumerFilters?,
