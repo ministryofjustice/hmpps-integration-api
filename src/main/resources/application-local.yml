@@ -40,7 +40,6 @@ hmpps.sqs:
 feature-flag:
   use-arns-endpoints: true
   use-education-assessments-endpoints: true
-  use-personal-care-needs-endpoints: true
   use-languages-endpoints: true
   use-prison-regime-endpoint: true
   use-activities-schedule-endpoint: true
