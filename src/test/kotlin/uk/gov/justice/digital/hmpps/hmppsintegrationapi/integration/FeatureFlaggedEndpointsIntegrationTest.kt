@@ -61,7 +61,6 @@ internal class FeatureFlaggedEndpointsIntegrationTest : IntegrationTestBase() {
       {
         "appointmentType": "INDIVIDUAL",
         "startDate": "2025-06-16",
-
         "endDate": "2025-06-16",
         "timeSlots": [
           "AM",
