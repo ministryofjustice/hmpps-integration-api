@@ -66,23 +66,8 @@ hmpps.sqs:
 
 feature-flag:
   use-arns-endpoints: true
-  use-physical-characteristics-endpoints: true
-  use-image-endpoints: true
   use-education-assessments-endpoints: true
-  use-residential-hierarchy-endpoints: true
-  use-location-endpoint: true
-  use-residential-details-endpoints: true
-  use-capacity-endpoint: true
-  use-location-deactivate-endpoint: true
-  use-personal-care-needs-endpoints: true
-  use-health-and-diet-endpoint: true
-  use-languages-endpoints: true
-  use-prison-regime-endpoint: true
-  use-activities-schedule-endpoint: true
-  use-prison-activities-endpoint: true
-  use-prison-pay-bands-endpoint: true
   use-update-attendance-endpoint: true
-  use-attendance-reasons-endpoint: true
   use-schedule-detail-endpoint: true
   use-search-appointments-endpoint: true
   use-deallocation-endpoint: true
