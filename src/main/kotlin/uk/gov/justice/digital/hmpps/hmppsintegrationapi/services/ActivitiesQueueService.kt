@@ -69,6 +69,13 @@ class ActivitiesQueueService(
     who: String,
     filters: ConsumerFilters?,
   ): Response<HmppsMessageResponse?> {
+    if (prisonerDeallocationRequest.reasonCode == "TestEvent") {
+      val testMessage = prisonerDeallocationRequest.toTestMessage(actionedBy = who)
+      writeMessageToQueue(testMessage, "Could not send prisoner deallocation to queue")
+
+      return Response(HmppsMessageResponse(message = "Prisoner deallocation written to queue"))
+    }
+
     val getScheduleResponse = getScheduleDetailsService.execute(scheduleId, filters)
     if (getScheduleResponse.errors.isNotEmpty()) {
       return Response(data = null, errors = getScheduleResponse.errors)

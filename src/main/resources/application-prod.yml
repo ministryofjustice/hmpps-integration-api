@@ -43,6 +43,7 @@ feature-flag:
   use-education-assessments-endpoints: false
   use-update-attendance-endpoint: false
   use-schedule-detail-endpoint: false
+  use-deallocation-endpoint: false
 
 authorisation:
   consumers:

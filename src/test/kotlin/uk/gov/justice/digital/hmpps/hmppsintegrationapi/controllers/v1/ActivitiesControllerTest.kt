@@ -20,6 +20,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ActivitySch
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ActivityScheduleDetailed
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ActivityScheduleInstance
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ActivityScheduleSuspension
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.AddCaseNoteRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Attendance
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.AttendanceUpdateRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
@@ -27,6 +28,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Exclusion
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HmppsMessageResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.InternalLocation
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonPayBand
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerDeallocationRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ReasonForAttendance
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Slot
@@ -38,6 +40,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetAttendanceRe
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetScheduleDetailsService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 import java.time.DayOfWeek
+import java.time.LocalDate
 
 @WebMvcTest(controllers = [ActivitiesController::class])
 @ActiveProfiles("test")
@@ -425,7 +428,7 @@ class ActivitiesControllerTest(
         }
       }
 
-      describe("/v1/activities/attendance-reasons") {
+      describe("GET /v1/activities/attendance-reasons") {
         val path = "$basePath/attendance-reasons"
         val reasonForAttendance =
           ReasonForAttendance(
@@ -475,6 +478,86 @@ class ActivitiesControllerTest(
             )
           val result = mockMvc.performAuthorised(path)
           result.response.status.shouldBe(403)
+        }
+      }
+
+      describe("PUT /v1/activities/schedule/{scheduleId}/deallocate") {
+        val scheduleId = 123456L
+        val path = "$basePath/schedule/$scheduleId/deallocate"
+        val who = "automated-test-client"
+        var filters = null
+        val prisonerDeallocationRequest =
+          PrisonerDeallocationRequest(
+            prisonerNumber = "A1234AA",
+            reasonCode = "RELEASED",
+            endDate = LocalDate.now(),
+            caseNote =
+              AddCaseNoteRequest(
+                type = "GEN",
+                text = "Case note text",
+              ),
+            scheduleInstanceId = 1234L,
+          )
+
+        it("should return 200 when success") {
+          whenever(activitiesQueueService.sendPrisonerDeallocationRequest(scheduleId, prisonerDeallocationRequest, who, filters))
+            .thenReturn(Response(data = HmppsMessageResponse("Prisoner deallocation written to queue")))
+
+          val result = mockMvc.performAuthorisedPut(path, prisonerDeallocationRequest)
+          result.response.status.shouldBe(HttpStatus.OK.value())
+          result.response
+            .contentAsJson<DataResponse<HmppsMessageResponse>>()
+            .shouldBe(DataResponse(data = HmppsMessageResponse("Prisoner deallocation written to queue")))
+        }
+
+        it("should call the audit service") {
+          whenever(activitiesQueueService.sendPrisonerDeallocationRequest(scheduleId, prisonerDeallocationRequest, who, filters))
+            .thenReturn(Response(data = HmppsMessageResponse("Prisoner deallocation written to queue")))
+
+          mockMvc.performAuthorisedPut(path, prisonerDeallocationRequest)
+
+          verify(auditService, times(1)).createEvent(
+            "PUT_DEALLOCATE_PRISONER_FROM_ACTIVITY",
+            mapOf("scheduleId" to scheduleId.toString()),
+          )
+        }
+
+        it("returns 400 when activitiesQueueService returns bad request") {
+          whenever(activitiesQueueService.sendPrisonerDeallocationRequest(scheduleId, prisonerDeallocationRequest, who, filters))
+            .thenReturn(
+              Response(
+                data = null,
+                errors =
+                  listOf(
+                    UpstreamApiError(
+                      type = UpstreamApiError.Type.BAD_REQUEST,
+                      causedBy = UpstreamApi.ACTIVITIES,
+                    ),
+                  ),
+              ),
+            )
+
+          val result = mockMvc.performAuthorisedPut(path, prisonerDeallocationRequest)
+          result.response.status.shouldBe(400)
+        }
+
+        it("returns 404 when activitiesQueueService returns not found") {
+          whenever(activitiesQueueService.sendPrisonerDeallocationRequest(scheduleId, prisonerDeallocationRequest, who, filters))
+            .thenReturn(
+              Response(
+                data = null,
+                errors =
+                  listOf(
+                    UpstreamApiError(
+                      type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+                      causedBy = UpstreamApi.ACTIVITIES,
+                    ),
+                  ),
+              ),
+            )
+
+          val result = mockMvc.performAuthorisedPut(path, prisonerDeallocationRequest)
+          result.response.status.shouldBe(404)
         }
       }
     },
