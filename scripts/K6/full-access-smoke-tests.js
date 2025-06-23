@@ -31,6 +31,11 @@ const imageId = "1988315";
 const locationIdKey = "MKI-A";
 const activityId = 1162
 const scheduleId = 1
+const today = new Date();
+const year = today.getFullYear();
+const month = (today.getMonth() + 1).toString().padStart(2, '0');
+const day = today.getDate().toString().padStart(2, '0');
+const todayFormatted = `${year}-${month}-${day}`
 
 const get_endpoints = [
   `/v1/hmpps/id/by-nomis-number/${hmppsId}`,
@@ -157,7 +162,7 @@ const putDeallocationEndpoint = `/v1/activities/schedule/${scheduleId}/deallocat
 const putDeallocationData = JSON.stringify([{
   prisonerNumber: hmppsId,
   reasonCode: "TestEvent",
-  endDate: "2025-05-23",
+  endDate: todayFormatted,
   caseNote: {
     type: "GEN",
     text: "Case note text"
