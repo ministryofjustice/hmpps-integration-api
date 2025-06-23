@@ -21,7 +21,6 @@ class FeatureFlagAspectTest {
       mapOf(
         "use-arns-endpoints" to true,
         "use-education-assessments-endpoints" to false,
-        "use-residential-details-endpoints" to false,
         "use-capacity-endpoint" to false,
         "use-personal-care-needs-endpoints" to false,
         "use-languages-endpoints" to false,

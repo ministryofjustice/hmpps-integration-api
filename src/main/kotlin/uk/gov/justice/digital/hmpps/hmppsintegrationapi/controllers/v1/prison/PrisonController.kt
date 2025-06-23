@@ -250,7 +250,6 @@ class PrisonController(
       ApiResponse(responseCode = "500", content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]),
     ],
   )
-  @FeatureFlag(name = FeatureFlagConfig.USE_RESIDENTIAL_DETAILS_ENDPOINTS)
   fun getResidentialDetails(
     @Parameter(description = "The ID of the prison to be queried against") @PathVariable prisonId: String,
     @Parameter(description = "Parent location path hierarchy, can be a Wing code, or landing code", example = "A-1")
