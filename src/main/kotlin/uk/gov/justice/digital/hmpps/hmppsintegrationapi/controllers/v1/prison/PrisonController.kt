@@ -292,7 +292,6 @@ class PrisonController(
       ApiResponse(responseCode = "500", content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]),
     ],
   )
-  @FeatureFlag(name = FeatureFlagConfig.USE_CAPACITY_ENDPOINT)
   fun getCapacityDetails(
     @Parameter(description = "The ID of the prison to be queried against") @PathVariable prisonId: String,
     @RequestAttribute filters: ConsumerFilters?,

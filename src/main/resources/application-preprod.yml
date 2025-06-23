@@ -41,7 +41,6 @@ services:
 feature-flag:
   use-arns-endpoints: false
   use-education-assessments-endpoints: false
-  use-capacity-endpoint: true
   use-location-deactivate-endpoint: true
   use-health-and-diet-endpoint: true
   use-personal-care-needs-endpoints: true
