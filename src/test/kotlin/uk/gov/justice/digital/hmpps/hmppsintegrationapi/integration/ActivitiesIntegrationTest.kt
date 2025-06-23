@@ -1,5 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration
 
+import com.fasterxml.jackson.databind.SerializationFeature
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.kotest.assertions.json.shouldContainJsonKeyValue
 import io.kotest.matchers.shouldBe
@@ -11,10 +13,13 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.http.HttpStatus
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.AddCaseNoteRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.AttendanceUpdateRequest
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerDeallocationRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.toHmppsMessage
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.toTestMessage
 import java.io.File
+import java.time.LocalDate
 
 class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
   @Nested
@@ -259,6 +264,189 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
       callApi(path)
         .andExpect(MockMvcResultMatchers.status().isOk)
         .andExpect(MockMvcResultMatchers.content().json(getExpectedResponse("reasons-for-attendance")))
+    }
+  }
+
+  @Nested
+  @DisplayName("PUT /v1/activities/{scheduleId}/deallocate")
+  inner class PutDeallocateFromSchedule {
+    val scheduleId = 123456L
+    val path = "/v1/activities/schedule/$scheduleId/deallocate"
+    val prisonerDeallocationRequest =
+      PrisonerDeallocationRequest(
+        prisonerNumber = "A1234AA",
+        reasonCode = "RELEASED",
+        endDate = LocalDate.now(),
+        caseNote =
+          AddCaseNoteRequest(
+            type = "GEN",
+            text = "Case note text",
+          ),
+        scheduleInstanceId = 1234L,
+      )
+
+    @Test
+    fun `successfully adds to queue`() {
+      activitiesMockServer.stubForGet(
+        "/schedules/$scheduleId",
+        File("$gatewaysFolder/activities/fixtures/GetActivityScheduleById.json").readText().replace("\"endDate\": \"2022-10-21\"", "\"endDate\": \"${LocalDate.now()}\""),
+      )
+
+      val requestBody = asJsonString(prisonerDeallocationRequest)
+      putApi(path, requestBody)
+        .andExpect(MockMvcResultMatchers.status().isOk)
+        .andExpect(
+          MockMvcResultMatchers.content().json(
+            """
+            {
+              "data": {
+                "message": "Prisoner deallocation written to queue"
+              }
+            }
+            """.trimIndent(),
+          ),
+        )
+
+      await untilCallTo { getNumberOfMessagesCurrentlyOnQueue() } matches { it == 1 }
+
+      val queueMessages = getQueueMessages()
+      queueMessages.size.shouldBe(1)
+
+      val messageJson = queueMessages[0].body()
+      val expectedMessage = prisonerDeallocationRequest.toHmppsMessage(defaultCn, scheduleId)
+      messageJson.shouldContainJsonKeyValue("$.eventType", expectedMessage.eventType.eventTypeCode)
+      messageJson.shouldContainJsonKeyValue("$.who", defaultCn)
+      val objectMapper = jacksonObjectMapper()
+      val messageAttributes = objectMapper.readTree(messageJson).at("/messageAttributes")
+      val expectedMessageAttributes =
+        objectMapper.readTree(
+          objectMapper
+            .registerModule(JavaTimeModule())
+            .disable(
+              SerializationFeature.WRITE_DATES_AS_TIMESTAMPS,
+            ).writeValueAsString(expectedMessage.messageAttributes),
+        )
+      messageAttributes.shouldBe(expectedMessageAttributes)
+    }
+
+    @Test
+    fun `successfully adds test message to queue`() {
+      val requestBody = asJsonString(prisonerDeallocationRequest.copy(reasonCode = "TestEvent"))
+      putApi(path, requestBody)
+        .andExpect(MockMvcResultMatchers.status().isOk)
+        .andExpect(
+          MockMvcResultMatchers.content().json(
+            """
+            {
+              "data": {
+                "message": "Prisoner deallocation written to queue"
+              }
+            }
+            """.trimIndent(),
+          ),
+        )
+
+      await untilCallTo { getNumberOfMessagesCurrentlyOnQueue() } matches { it == 1 }
+
+      val queueMessages = getQueueMessages()
+      queueMessages.size.shouldBe(1)
+
+      val messageJson = queueMessages[0].body()
+      val expectedMessage = prisonerDeallocationRequest.toTestMessage(defaultCn)
+      messageJson.shouldContainJsonKeyValue("$.eventType", expectedMessage.eventType.eventTypeCode)
+      messageJson.shouldContainJsonKeyValue("$.who", defaultCn)
+      val objectMapper = jacksonObjectMapper()
+      val messageAttributes = objectMapper.readTree(messageJson).at("/messageAttributes")
+      val expectedMessageAttributes = objectMapper.readTree(objectMapper.writeValueAsString(expectedMessage.messageAttributes))
+      messageAttributes.shouldBe(expectedMessageAttributes)
+    }
+
+    @Test
+    fun `return a 404 when prison not in the allowed prisons`() {
+      val requestBody = asJsonString(prisonerDeallocationRequest)
+      putApiWithCN(path, requestBody, limitedPrisonsCn)
+        .andExpect(MockMvcResultMatchers.status().isNotFound)
+
+      checkQueueIsEmpty()
+    }
+
+    @Test
+    fun `return a 404 no prisons in filter`() {
+      val requestBody = asJsonString(prisonerDeallocationRequest)
+      putApiWithCN(path, requestBody, noPrisonsCn)
+        .andExpect(MockMvcResultMatchers.status().isNotFound)
+
+      checkQueueIsEmpty()
+    }
+
+    @Test
+    fun `return a 404 when schedule record does not exist`() {
+      activitiesMockServer.stubForGet(
+        "/schedules/$scheduleId",
+        "",
+        HttpStatus.NOT_FOUND,
+      )
+
+      val requestBody = asJsonString(prisonerDeallocationRequest)
+      putApi(path, requestBody)
+        .andExpect(MockMvcResultMatchers.status().isNotFound)
+
+      checkQueueIsEmpty()
+    }
+
+    @Test
+    fun `return a 404 no allocations are found for the prisoner`() {
+      activitiesMockServer.stubForGet(
+        "/schedules/$scheduleId",
+        File("$gatewaysFolder/activities/fixtures/GetActivityScheduleById.json").readText().replace("\"prisonerNumber\": \"A1234AA\"", "\"prisonerNumber\": \"A1234AB\""),
+      )
+
+      val requestBody = asJsonString(prisonerDeallocationRequest)
+      putApi(path, requestBody)
+        .andExpect(MockMvcResultMatchers.status().isNotFound)
+
+      checkQueueIsEmpty()
+    }
+
+    @Test
+    fun `return a 400 if passed in end date is after the schedule end date`() {
+      activitiesMockServer.stubForGet(
+        "/schedules/$scheduleId",
+        File("$gatewaysFolder/activities/fixtures/GetActivityScheduleById.json").readText(),
+      )
+
+      val requestBody = asJsonString(prisonerDeallocationRequest)
+      putApi(path, requestBody)
+        .andExpect(MockMvcResultMatchers.status().isBadRequest)
+
+      checkQueueIsEmpty()
+    }
+
+    @Test
+    fun `return a 400 when prisonerNumber is blank`() {
+      val requestBody = asJsonString(prisonerDeallocationRequest.copy(prisonerNumber = ""))
+      putApi(path, requestBody)
+        .andExpect(MockMvcResultMatchers.status().isBadRequest)
+
+      checkQueueIsEmpty()
+    }
+
+    @Test
+    fun `return a 400 when reasonCode is blank`() {
+      val requestBody = asJsonString(prisonerDeallocationRequest.copy(reasonCode = ""))
+      putApi(path, requestBody)
+        .andExpect(MockMvcResultMatchers.status().isBadRequest)
+
+      checkQueueIsEmpty()
+    }
+
+    @Test
+    fun `return a 400 when endDate is in the past`() {
+      val requestBody = asJsonString(prisonerDeallocationRequest.copy(endDate = LocalDate.now().minusDays(1)))
+      putApi(path, requestBody)
+        .andExpect(MockMvcResultMatchers.status().isBadRequest)
+
+      checkQueueIsEmpty()
     }
   }
 }
