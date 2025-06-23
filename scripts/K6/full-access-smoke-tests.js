@@ -159,7 +159,7 @@ const putAttendanceData = JSON.stringify([{
 }])
 
 const putDeallocationEndpoint = `/v1/activities/schedule/${scheduleId}/deallocate`
-const putDeallocationData = JSON.stringify([{
+const putDeallocationData = JSON.stringify({
   prisonerNumber: hmppsId,
   reasonCode: "TestEvent",
   endDate: todayFormatted,
@@ -168,7 +168,7 @@ const putDeallocationData = JSON.stringify([{
     text: "Case note text"
   },
   scheduleInstanceId: 1234
-}])
+})
 
 export default function ()  {
   const params = {
