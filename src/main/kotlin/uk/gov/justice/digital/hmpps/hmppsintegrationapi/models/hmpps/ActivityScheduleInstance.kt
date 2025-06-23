@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema
 
 data class ActivityScheduleInstance(
   @Schema(description = "The internally-generated ID for this scheduled instance", example = "123456")
-  val scheduleInstanceId: Long,
+  val id: Long,
   @Schema(description = "The specific date for this scheduled instance", example = "2020-01-31")
   val date: String,
   @Schema(description = "The start time for this scheduled instance", example = "09:00")

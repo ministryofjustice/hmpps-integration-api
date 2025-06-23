@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema
 
 data class ActivitySchedule(
   @Schema(example = "1162", description = "Unique ID of the activity schedule")
-  val scheduleId: Long,
+  val id: Long,
   @Schema(example = "Monday AM Houseblock 3", description = "Description of the scheduled activity")
   val description: String,
   val internalLocation: InternalLocation?,

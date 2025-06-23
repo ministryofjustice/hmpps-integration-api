@@ -21,8 +21,6 @@ data class AttendanceReason(
   val captureOtherText: Boolean,
   @Schema(description = "A flag to show whether or not the reason should be displayed in the UI as an option for non attendance", example = "false")
   val displayInAbsence: Boolean,
-  @Schema(description = "The sequence in which the reason should be displayed in the UI", example = "1")
-  val displaySequence: Int?,
   @Schema(description = "Any internal notes to explain the use of the reason", example = "Maps to ACCAB in NOMIS")
   val notes: String,
 )

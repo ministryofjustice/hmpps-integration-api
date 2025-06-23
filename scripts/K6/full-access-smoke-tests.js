@@ -31,6 +31,11 @@ const imageId = "1988315";
 const locationIdKey = "MKI-A";
 const activityId = 1162
 const scheduleId = 1
+const today = new Date();
+const year = today.getFullYear();
+const month = (today.getMonth() + 1).toString().padStart(2, '0');
+const day = today.getDate().toString().padStart(2, '0');
+const todayFormatted = `${year}-${month}-${day}`
 
 const get_endpoints = [
   `/v1/hmpps/id/by-nomis-number/${hmppsId}`,
@@ -99,6 +104,7 @@ const get_endpoints = [
   `/v1/persons/${hmppsId}/health-and-diet`,
   `/v1/persons/${hmppsId}/languages`,
   `/v1/activities/${activityId}/schedules`,
+  `/v1/activities/attendance-reasons`,
   `/v1/activities/schedule/${scheduleId}`
 ];
 
@@ -157,6 +163,18 @@ const putAttendanceData = JSON.stringify([{
   otherAbsenceReason: "Prisoner has another reason for missing the activity"
 }])
 
+const putDeallocationEndpoint = `/v1/activities/schedule/${scheduleId}/deallocate`
+const putDeallocationData = JSON.stringify([{
+  prisonerNumber: hmppsId,
+  reasonCode: "TestEvent",
+  endDate: todayFormatted,
+  caseNote: {
+    type: "GEN",
+    text: "Case note text"
+  },
+  scheduleInstanceId: 1234
+}])
+
 export default function ()  {
   const params = {
     headers: {
@@ -191,6 +209,13 @@ export default function ()  {
     [`PUT ${putAttendanceEndpoint} returns 200`]: (r) => r.status === 200,
   })) {
     exec.test.fail(`${putAttendanceEndpoint} caused the test to fail`)
+  }
+
+  const putDeallocationRes = http.put(`${baseUrl}${putDeallocationEndpoint}`, putDeallocationData, params);
+  if (!check(putDeallocationRes, {
+    [`PUT ${putDeallocationEndpoint} returns 200`]: (r) => r.status === 200,
+  })) {
+    exec.test.fail(`${putDeallocationEndpoint} caused the test to fail`)
   }
 
   for (const endpoint of get_endpoints) {

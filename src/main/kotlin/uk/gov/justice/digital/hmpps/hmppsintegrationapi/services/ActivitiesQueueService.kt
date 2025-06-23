@@ -9,13 +9,17 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.MessageFailedE
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.AttendanceUpdateRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HmppsMessage
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HmppsMessageResponse
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerDeallocationRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.toHmppsMessage
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.toTestMessage
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.hmpps.sqs.HmppsQueue
 import uk.gov.justice.hmpps.sqs.HmppsQueueService
 import uk.gov.justice.hmpps.sqs.eventTypeMessageAttributes
+import java.time.LocalDate
 
 @Service
 class ActivitiesQueueService(
@@ -23,6 +27,7 @@ class ActivitiesQueueService(
   @Autowired private val objectMapper: ObjectMapper,
   @Autowired private val consumerPrisonAccessService: ConsumerPrisonAccessService,
   @Autowired private val getAttendanceByIdService: GetAttendanceByIdService,
+  @Autowired private val getScheduleDetailsService: GetScheduleDetailsService,
 ) {
   private val activitiesQueue by lazy { hmppsQueueService.findByQueueId("activities") as HmppsQueue }
   private val activitiesQueueSqsClient by lazy { activitiesQueue.sqsClient }
@@ -56,6 +61,39 @@ class ActivitiesQueueService(
     writeMessageToQueue(hmppsMessage, "Could not send attendance update to queue")
 
     return Response(HmppsMessageResponse(message = "Attendance update written to queue"))
+  }
+
+  fun sendPrisonerDeallocationRequest(
+    scheduleId: Long,
+    prisonerDeallocationRequest: PrisonerDeallocationRequest,
+    who: String,
+    filters: ConsumerFilters?,
+  ): Response<HmppsMessageResponse?> {
+    if (prisonerDeallocationRequest.reasonCode == "TestEvent") {
+      val testMessage = prisonerDeallocationRequest.toTestMessage(actionedBy = who)
+      writeMessageToQueue(testMessage, "Could not send prisoner deallocation to queue")
+
+      return Response(HmppsMessageResponse(message = "Prisoner deallocation written to queue"))
+    }
+
+    val getScheduleResponse = getScheduleDetailsService.execute(scheduleId, filters)
+    if (getScheduleResponse.errors.isNotEmpty()) {
+      return Response(data = null, errors = getScheduleResponse.errors)
+    }
+
+    val schedule = getScheduleResponse.data ?: return Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.ACTIVITIES, UpstreamApiError.Type.ENTITY_NOT_FOUND)))
+
+    schedule.allocations.filter { it.prisonerNumber == prisonerDeallocationRequest.prisonerNumber && it.status != "ENDED" }.ifEmpty { null }
+      ?: return Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.ACTIVITIES, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Allocations not found for prisoner: ${prisonerDeallocationRequest.prisonerNumber}")))
+
+    if (prisonerDeallocationRequest.endDate.isAfter(LocalDate.parse(schedule.endDate))) {
+      return Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.ACTIVITIES, UpstreamApiError.Type.BAD_REQUEST, "Passed in end date cannot be after the end date of the schedule: ${schedule.endDate}")))
+    }
+
+    val hmppsMessage = prisonerDeallocationRequest.toHmppsMessage(who, scheduleId)
+    writeMessageToQueue(hmppsMessage, "Could not send prisoner deallocation to queue")
+
+    return Response(HmppsMessageResponse(message = "Prisoner deallocation written to queue"))
   }
 
   private fun writeMessageToQueue(

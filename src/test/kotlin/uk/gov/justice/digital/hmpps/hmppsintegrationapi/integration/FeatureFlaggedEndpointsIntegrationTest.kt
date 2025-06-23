@@ -5,6 +5,8 @@ import org.mockito.kotlin.whenever
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_ATTENDANCE_REASONS_ENDPOINT
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_DEALLOCATION_ENDPOINT
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_IMAGE_ENDPOINTS
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_LANGUAGES_ENDPOINTS
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_LOCATION_DEACTIVATE_ENDPOINT
@@ -20,8 +22,10 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_SEARCH_APPOINTMENTS_ENDPOINT
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_UPDATE_ATTENDANCE_ENDPOINT
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.FeatureNotEnabledException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.AddCaseNoteRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DeactivateLocationRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DeactivationReason
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerDeallocationRequest
 import java.time.LocalDate
 
 internal class FeatureFlaggedEndpointsIntegrationTest : IntegrationTestBase() {
@@ -163,6 +167,14 @@ internal class FeatureFlaggedEndpointsIntegrationTest : IntegrationTestBase() {
   }
 
   @Test
+  fun `attendance reasons should return 503`() {
+    whenever(featureFlagConfig.require(USE_ATTENDANCE_REASONS_ENDPOINT)).thenThrow(FeatureNotEnabledException(""))
+    val path = "/v1/activities/attendance-reasons"
+    callApi(path)
+      .andExpect(status().isServiceUnavailable)
+  }
+
+  @Test
   fun `get schedule details should return 503`() {
     whenever(featureFlagConfig.require(USE_SCHEDULE_DETAIL_ENDPOINT)).thenThrow(FeatureNotEnabledException(""))
     val scheduleId = 1234L
@@ -196,6 +208,27 @@ internal class FeatureFlaggedEndpointsIntegrationTest : IntegrationTestBase() {
       }
       """.trimIndent()
     postToApi(path, requestBody)
+    .andExpect(status().isServiceUnavailable)
+  }
+  
+  @Test
+  fun `put deallocate should return 503`() {
+    whenever(featureFlagConfig.require(USE_DEALLOCATION_ENDPOINT)).thenThrow(FeatureNotEnabledException(""))
+    val path = "/v1/activities/schedule/1234/deallocate"
+    val prisonerDeallocationRequest =
+      PrisonerDeallocationRequest(
+        prisonerNumber = "A1234AA",
+        reasonCode = "RELEASED",
+        endDate = LocalDate.now(),
+        caseNote =
+          AddCaseNoteRequest(
+            type = "GEN",
+            text = "Case note text",
+          ),
+        scheduleInstanceId = 1234L,
+      )
+
+    putApi(path, asJsonString(prisonerDeallocationRequest))
       .andExpect(status().isServiceUnavailable)
   }
 }

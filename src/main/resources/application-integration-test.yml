@@ -81,8 +81,10 @@ feature-flag:
   use-activities-schedule-endpoint: true
   use-prison-pay-bands-endpoint: true
   use-update-attendance-endpoint: true
+  use-attendance-reasons-endpoint: true
   use-schedule-detail-endpoint: true
   use-search-appointments-endpoint: true
+  use-deallocation-endpoint: true
 
 authorisation:
   consumers:

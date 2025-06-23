@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities
 
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.AttendanceReason
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ReasonForAttendance
 
 data class ActivitiesAttendanceReason(
   val id: Long,
@@ -27,7 +28,15 @@ data class ActivitiesAttendanceReason(
       captureIncentiveLevelWarning = this.captureIncentiveLevelWarning,
       captureOtherText = this.captureOtherText,
       displayInAbsence = this.displayInAbsence,
-      displaySequence = this.displaySequence,
+      notes = this.notes,
+    )
+
+  fun toReasonForAttendance(): ReasonForAttendance =
+    ReasonForAttendance(
+      id = this.id,
+      code = this.code,
+      description = this.description,
+      attended = this.attended,
       notes = this.notes,
     )
 }

@@ -47,4 +47,9 @@ enum class HmppsMessageEventType(
     eventTypeCode = "MarkPrisonerAttendance",
     description = "A prisoners attendance has been marked",
   ),
+  DEALLOCATE_PRISONER_FROM_ACTIVITY_SCHEDULE(
+    type = "deallocate-prisoner-from-activity-schedule",
+    eventTypeCode = "DeallocatePrisonerFromActivitySchedule",
+    description = "A prisoner has been deallocated from an activity schedule",
+  ),
 }
