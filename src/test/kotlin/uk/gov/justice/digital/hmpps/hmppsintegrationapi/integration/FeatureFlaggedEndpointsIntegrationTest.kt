@@ -14,7 +14,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_PRISON_PAY_BANDS_ENDPOINT
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_PRISON_REGIME_ENDPOINT
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_RESIDENTIAL_DETAILS_ENDPOINTS
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_RESIDENTIAL_HIERARCHY_ENDPOINTS
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_SCHEDULE_DETAIL_ENDPOINT
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_UPDATE_ATTENDANCE_ENDPOINT
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.FeatureNotEnabledException
@@ -25,15 +24,6 @@ import java.time.LocalDate
 internal class FeatureFlaggedEndpointsIntegrationTest : IntegrationTestBase() {
   @MockitoBean
   private lateinit var featureFlagConfig: FeatureFlagConfig
-
-  @Test
-  fun `residential summary should return 503`() {
-    whenever(featureFlagConfig.require(USE_RESIDENTIAL_HIERARCHY_ENDPOINTS)).thenThrow(FeatureNotEnabledException(""))
-    val prisonId = "MDI"
-    val path = "/v1/prison/$prisonId/residential-hierarchy"
-    callApi(path)
-      .andExpect(status().isServiceUnavailable)
-  }
 
   @Test
   fun `location details should return 503`() {

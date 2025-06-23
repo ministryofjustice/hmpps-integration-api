@@ -41,7 +41,6 @@ services:
 feature-flag:
   use-arns-endpoints: false
   use-education-assessments-endpoints: false
-  use-residential-hierarchy-endpoints: true
   use-location-endpoint: true
   use-residential-details-endpoints: true
   use-capacity-endpoint: true
