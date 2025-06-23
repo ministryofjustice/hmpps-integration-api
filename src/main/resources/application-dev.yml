@@ -42,7 +42,6 @@ services:
 
 feature-flag:
   use-arns-endpoints: true
-  use-physical-characteristics-endpoints: true
   use-image-endpoints: true
   use-education-assessments-endpoints: true
   use-residential-hierarchy-endpoints: true

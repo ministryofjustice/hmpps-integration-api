@@ -333,8 +333,6 @@ class PersonController(
     @Parameter(description = "A HMPPS identifier") @PathVariable hmppsId: String,
     @RequestAttribute filters: ConsumerFilters?,
   ): DataResponse<PhysicalCharacteristics?> {
-    featureFlag.require(FeatureFlagConfig.USE_PHYSICAL_CHARACTERISTICS_ENDPOINTS)
-
     val response = getPhysicalCharacteristicsForPersonService.execute(hmppsId, filters = filters)
 
     if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
