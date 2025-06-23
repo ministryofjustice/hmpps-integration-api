@@ -19,7 +19,6 @@ data class ActivitiesAttendanceHistory(
       attendanceReason = this.attendanceReason.toAttendanceReason(),
       comment = this.comment,
       recordedTime = this.recordedTime,
-      recordedBy = this.recordedBy,
       issuePayment = this.issuePayment,
       incentiveLevelWarningIssued = this.incentiveLevelWarningIssued,
       otherAbsenceReason = this.otherAbsenceReason,

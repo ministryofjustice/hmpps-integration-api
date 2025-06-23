@@ -11,8 +11,6 @@ data class ActivityScheduleDetailed(
   val description: String,
   @Schema(description = "Indicates the dates between which the schedule has been suspended")
   val suspensions: List<ActivityScheduleSuspension>,
-  @Schema(description = "The NOMIS internal location id for this schedule")
-  val internalLocation: Int?,
   @Schema(description = "The maximum number of prisoners allowed for a scheduled instance of this schedule", example = "10")
   val capacity: Int,
   @Schema(description = "The number of weeks in the schedule", example = "3")
