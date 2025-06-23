@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.decodeUrlCharacters
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.featureflag.FeatureFlag
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.IEPLevel
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ImageMetadata
@@ -333,8 +332,6 @@ class PersonController(
     @Parameter(description = "A HMPPS identifier") @PathVariable hmppsId: String,
     @RequestAttribute filters: ConsumerFilters?,
   ): DataResponse<PhysicalCharacteristics?> {
-    featureFlag.require(FeatureFlagConfig.USE_PHYSICAL_CHARACTERISTICS_ENDPOINTS)
-
     val response = getPhysicalCharacteristicsForPersonService.execute(hmppsId, filters = filters)
 
     if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
@@ -360,7 +357,6 @@ class PersonController(
       ApiResponse(responseCode = "500", content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]),
     ],
   )
-  @FeatureFlag(name = FeatureFlagConfig.USE_PERSONAL_CARE_NEEDS_ENDPOINTS)
   fun getCareNeedsForPerson(
     @Parameter(description = "A HMPPS identifier") @PathVariable hmppsId: String,
     @RequestAttribute filters: ConsumerFilters?,
@@ -390,7 +386,6 @@ class PersonController(
       ApiResponse(responseCode = "500", content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]),
     ],
   )
-  @FeatureFlag(name = FeatureFlagConfig.USE_LANGUAGES_ENDPOINTS)
   fun getLanguagesForPerson(
     @Parameter(description = "A HMPPS identifier") @PathVariable hmppsId: String,
     @RequestAttribute filters: ConsumerFilters?,

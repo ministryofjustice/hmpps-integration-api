@@ -20,14 +20,8 @@ class FeatureFlagAspectTest {
     FeatureFlagConfig(
       mapOf(
         "use-arns-endpoints" to true,
-        "use-image-endpoints" to false,
         "use-education-assessments-endpoints" to false,
-        "use-physical-characteristics-endpoints" to false,
-        "use-residential-hierarchy-endpoints" to false,
-        "use-residential-details-endpoints" to false,
-        "use-capacity-endpoint" to false,
-        "use-personal-care-needs-endpoints" to false,
-        "use-languages-endpoints" to false,
+        "use-schedule-detail-endpoint" to false,
       ),
     )
   private val featureFlagAspect: FeatureFlagAspect =
@@ -45,7 +39,7 @@ class FeatureFlagAspectTest {
   @Test
   fun `test feature flag disabled then throw feature flag not enabled exception`() {
     assertThrows<FeatureNotEnabledException> {
-      featureFlagAspect.checkFeatureFlag(proceedingJoinPoint, FeatureFlag(FeatureFlagConfig.USE_PHYSICAL_CHARACTERISTICS_ENDPOINTS))
+      featureFlagAspect.checkFeatureFlag(proceedingJoinPoint, FeatureFlag(FeatureFlagConfig.USE_SCHEDULE_DETAIL_ENDPOINT))
     }
     verify(proceedingJoinPoint, times(0)).proceed()
     verifyNoMoreInteractions(proceedingJoinPoint)

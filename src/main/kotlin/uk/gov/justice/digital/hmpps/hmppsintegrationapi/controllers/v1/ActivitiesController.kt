@@ -69,7 +69,6 @@ class ActivitiesController(
       ),
     ],
   )
-  @FeatureFlag(name = FeatureFlagConfig.Companion.USE_ACTIVITIES_SCHEDULE_ENDPOINT)
   fun getActivitySchedules(
     @Parameter(description = "The ID of the activity") @PathVariable activityId: Long,
     @RequestAttribute filters: ConsumerFilters?,
@@ -217,7 +216,6 @@ class ActivitiesController(
       ),
     ],
   )
-  @FeatureFlag(name = FeatureFlagConfig.Companion.USE_ATTENDANCE_REASONS_ENDPOINT)
   fun getAttendanceReasons(): DataResponse<List<ReasonForAttendance>?> {
     val response = getAttendanceReasonsService.execute()
 

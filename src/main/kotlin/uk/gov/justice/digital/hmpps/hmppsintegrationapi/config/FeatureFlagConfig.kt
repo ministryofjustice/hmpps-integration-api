@@ -20,23 +20,8 @@ data class FeatureFlagConfig(
 ) {
   companion object {
     const val USE_ARNS_ENDPOINTS = "use-arns-endpoints"
-    const val USE_PHYSICAL_CHARACTERISTICS_ENDPOINTS = "use-physical-characteristics-endpoints"
-    const val USE_IMAGE_ENDPOINTS = "use-image-endpoints"
     const val USE_EDUCATION_ASSESSMENTS_ENDPOINTS = "use-education-assessments-endpoints"
-    const val USE_RESIDENTIAL_HIERARCHY_ENDPOINTS = "use-residential-hierarchy-endpoints"
-    const val USE_LOCATION_ENDPOINT = "use-location-endpoint"
-    const val USE_RESIDENTIAL_DETAILS_ENDPOINTS = "use-residential-details-endpoints"
-    const val USE_CAPACITY_ENDPOINT = "use-capacity-endpoint"
-    const val USE_LOCATION_DEACTIVATE_ENDPOINT = "use-location-deactivate-endpoint"
-    const val USE_HEALTH_AND_DIET_ENDPOINT = "use-health-and-diet-endpoint"
-    const val USE_PERSONAL_CARE_NEEDS_ENDPOINTS = "use-personal-care-needs-endpoints"
-    const val USE_LANGUAGES_ENDPOINTS = "use-languages-endpoints"
-    const val USE_PRISON_REGIME_ENDPOINT = "use-prison-regime-endpoint"
-    const val USE_PRISON_ACTIVITIES_ENDPOINT = "use-prison-activities-endpoint"
-    const val USE_ACTIVITIES_SCHEDULE_ENDPOINT = "use-activities-schedule-endpoint"
-    const val USE_PRISON_PAY_BANDS_ENDPOINT = "use-prison-pay-bands-endpoint"
     const val USE_UPDATE_ATTENDANCE_ENDPOINT = "use-update-attendance-endpoint"
-    const val USE_ATTENDANCE_REASONS_ENDPOINT = "use-attendance-reasons-endpoint"
     const val USE_SCHEDULE_DETAIL_ENDPOINT = "use-schedule-detail-endpoint"
     const val USE_DEALLOCATION_ENDPOINT = "use-deallocation-endpoint"
   }
