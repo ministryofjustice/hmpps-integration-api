@@ -20,7 +20,6 @@ data class FeatureFlagConfig(
 ) {
   companion object {
     const val USE_ARNS_ENDPOINTS = "use-arns-endpoints"
-    const val USE_IMAGE_ENDPOINTS = "use-image-endpoints"
     const val USE_EDUCATION_ASSESSMENTS_ENDPOINTS = "use-education-assessments-endpoints"
     const val USE_RESIDENTIAL_HIERARCHY_ENDPOINTS = "use-residential-hierarchy-endpoints"
     const val USE_LOCATION_ENDPOINT = "use-location-endpoint"

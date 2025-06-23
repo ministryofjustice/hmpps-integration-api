@@ -20,7 +20,6 @@ class FeatureFlagAspectTest {
     FeatureFlagConfig(
       mapOf(
         "use-arns-endpoints" to true,
-        "use-image-endpoints" to false,
         "use-education-assessments-endpoints" to false,
         "use-residential-hierarchy-endpoints" to false,
         "use-residential-details-endpoints" to false,
