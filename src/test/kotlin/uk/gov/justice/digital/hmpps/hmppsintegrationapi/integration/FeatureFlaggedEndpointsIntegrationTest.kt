@@ -8,7 +8,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_ATTENDANCE_REASONS_ENDPOINT
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_LANGUAGES_ENDPOINTS
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_LOCATION_DEACTIVATE_ENDPOINT
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_LOCATION_ENDPOINT
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_PERSONAL_CARE_NEEDS_ENDPOINTS
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_PRISON_ACTIVITIES_ENDPOINT
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_PRISON_PAY_BANDS_ENDPOINT
@@ -24,16 +23,6 @@ import java.time.LocalDate
 internal class FeatureFlaggedEndpointsIntegrationTest : IntegrationTestBase() {
   @MockitoBean
   private lateinit var featureFlagConfig: FeatureFlagConfig
-
-  @Test
-  fun `location details should return 503`() {
-    whenever(featureFlagConfig.isEnabled(USE_LOCATION_ENDPOINT)).thenReturn(false)
-    val prisonId = "MDI"
-    val locationId = "MDI-A1-B1-C1"
-    val path = "/v1/prison/$prisonId/location/$locationId"
-    callApi(path)
-      .andExpect(status().isServiceUnavailable)
-  }
 
   @Test
   fun `residential details should return 503`() {

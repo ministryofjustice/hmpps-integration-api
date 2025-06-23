@@ -57,7 +57,6 @@ class LocationController(
       ApiResponse(responseCode = "500", content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]),
     ],
   )
-  @FeatureFlag(name = FeatureFlagConfig.USE_LOCATION_ENDPOINT)
   fun getLocationInformation(
     @Parameter(description = "The ID of the prison to be queried against") @PathVariable prisonId: String,
     @Parameter(description = "The key of the location to be queried against in the format of (PrisonId-locationKey") @PathVariable key: String,
