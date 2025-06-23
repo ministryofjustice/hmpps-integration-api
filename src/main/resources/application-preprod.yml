@@ -42,7 +42,6 @@ feature-flag:
   use-arns-endpoints: false
   use-education-assessments-endpoints: false
   use-update-attendance-endpoint: false
-  use-attendance-reasons-endpoint: true
   use-schedule-detail-endpoint: false
 
 authorisation:
