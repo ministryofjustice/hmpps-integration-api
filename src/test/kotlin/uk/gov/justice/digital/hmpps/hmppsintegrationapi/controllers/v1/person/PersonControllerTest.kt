@@ -18,7 +18,6 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_LANGUAGES_ENDPOINTS
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.BodyMark
@@ -1413,7 +1412,6 @@ internal class PersonControllerTest(
             Mockito.reset(getLanguagesForPersonService)
             Mockito.reset(auditService)
 
-            whenever(featureFlagConfig.isEnabled(USE_LANGUAGES_ENDPOINTS)).thenReturn(true)
             whenever(getLanguagesForPersonService.execute(sanitisedHmppsId, filters)).thenReturn(
               Response(
                 data = languages,

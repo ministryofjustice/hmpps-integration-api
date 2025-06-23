@@ -41,7 +41,6 @@ services:
 feature-flag:
   use-arns-endpoints: false
   use-education-assessments-endpoints: false
-  use-languages-endpoints: true
   use-prison-regime-endpoint: true
   use-activities-schedule-endpoint: true
   use-prison-activities-endpoint: true
