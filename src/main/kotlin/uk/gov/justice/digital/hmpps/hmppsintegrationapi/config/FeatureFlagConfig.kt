@@ -38,6 +38,7 @@ data class FeatureFlagConfig(
     const val USE_UPDATE_ATTENDANCE_ENDPOINT = "use-update-attendance-endpoint"
     const val USE_ATTENDANCE_REASONS_ENDPOINT = "use-attendance-reasons-endpoint"
     const val USE_SCHEDULE_DETAIL_ENDPOINT = "use-schedule-detail-endpoint"
+    const val USE_DEALLOCATION_ENDPOINT = "use-deallocation-endpoint"
   }
 
   /**
