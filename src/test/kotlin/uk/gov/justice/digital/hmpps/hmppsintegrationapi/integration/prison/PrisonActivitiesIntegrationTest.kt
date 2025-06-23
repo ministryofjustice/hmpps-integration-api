@@ -6,7 +6,9 @@ import org.junit.jupiter.api.Test
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationTestBase
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.AppointmentSearchRequest
 import java.io.File
+import java.time.LocalDate
 
 class PrisonActivitiesIntegrationTest : IntegrationTestBase() {
   private val prisonId = "MDI"
@@ -44,6 +46,16 @@ class PrisonActivitiesIntegrationTest : IntegrationTestBase() {
   @DisplayName("POST search appointments")
   inner class SearchAppointments {
     private val path = "/v1/prison/$prisonId/appointments/search"
+    val appointmentSearchRequest =
+      AppointmentSearchRequest(
+        appointmentType = "INDIVIDUAL",
+        startDate = LocalDate.parse("2025-06-16"),
+        endDate = LocalDate.parse("2025-06-16"),
+        timeSlots = listOf("AM", "PM", "ED"),
+        categoryCode = "GYMW",
+        inCell = false,
+        prisonerNumbers = listOf("A1234BC"),
+      )
     val requestBody =
       """
       {
@@ -74,6 +86,13 @@ class PrisonActivitiesIntegrationTest : IntegrationTestBase() {
       postToApi(path, requestBody)
         .andExpect(status().isOk)
         .andExpect(content().json(getExpectedResponse("search-appointments-response")))
+    }
+
+    @Test
+    fun `return a 400 when request body is blank, at least startDate should be provided`() {
+      val requestBody = "{}"
+      postToApi(path, requestBody)
+        .andExpect(status().isBadRequest)
     }
 
     @Test
