@@ -286,6 +286,21 @@ class ActivitiesQueueServiceTest(
           )
         }
 
+        it("successfully adds test message to message queue") {
+          val messageBody = """{"messageId": "1", "eventType": "TestEvent", "messageAttributes": {}}"""
+          whenever(objectMapper.writeValueAsString(any<HmppsMessage>())).thenReturn(messageBody)
+
+          val result = activitiesQueueService.sendPrisonerDeallocationRequest(scheduleId, prisonerDeallocationRequest.copy(reasonCode = "TestEvent"), who, filters)
+          result.data.shouldBeTypeOf<HmppsMessageResponse>()
+
+          verify(mockSqsClient).sendMessage(
+            argThat<SendMessageRequest> { request: SendMessageRequest? ->
+              request?.queueUrl() == "https://test-queue-url" &&
+                request.messageBody() == messageBody
+            },
+          )
+        }
+
         it("returns an error if getScheduleDetailsService has an error") {
           val error = UpstreamApiError(UpstreamApi.ACTIVITIES, UpstreamApiError.Type.ENTITY_NOT_FOUND, "error from getScheduleDetailsService")
           whenever(getScheduleDetailsService.execute(scheduleId, filters)).thenReturn(Response(data = null, errors = listOf(error)))
