@@ -13,9 +13,7 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestAttribute
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.featureflag.FeatureFlag
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HealthAndDiet
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
@@ -46,7 +44,6 @@ class HealthAndDietController(
   )
   @Tag(name = "Reception")
   @GetMapping("/{hmppsId}/health-and-diet")
-  @FeatureFlag(name = FeatureFlagConfig.USE_HEALTH_AND_DIET_ENDPOINT)
   fun getHealthAndDiet(
     @Parameter(description = "The HMPPS ID of the person") @PathVariable hmppsId: String,
     @RequestAttribute filters: ConsumerFilters?,
