@@ -208,9 +208,9 @@ internal class FeatureFlaggedEndpointsIntegrationTest : IntegrationTestBase() {
       }
       """.trimIndent()
     postToApi(path, requestBody)
-    .andExpect(status().isServiceUnavailable)
+      .andExpect(status().isServiceUnavailable)
   }
-  
+
   @Test
   fun `put deallocate should return 503`() {
     whenever(featureFlagConfig.require(USE_DEALLOCATION_ENDPOINT)).thenThrow(FeatureNotEnabledException(""))
