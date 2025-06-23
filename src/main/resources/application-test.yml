@@ -84,6 +84,7 @@ feature-flag:
   use-update-attendance-endpoint: true
   use-attendance-reasons-endpoint: true
   use-schedule-detail-endpoint: true
+  use-deallocation-endpoint: true
 
 authorisation:
   consumers:
