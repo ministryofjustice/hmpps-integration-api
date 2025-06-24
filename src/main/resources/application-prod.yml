@@ -81,4 +81,4 @@ authorisation:
       include:
       filters:
       roles:
-        - "reference-data-only"
+        - "police"
