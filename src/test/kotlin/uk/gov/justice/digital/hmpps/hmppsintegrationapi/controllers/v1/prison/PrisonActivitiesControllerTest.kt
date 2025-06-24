@@ -25,14 +25,21 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.Activi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesSlot
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ActivityCategory
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ActivityScheduledInstanceForPrisoner
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.AppointmentCategory
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.AppointmentDetails
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.AppointmentSearchRequest
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Attendee
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.InternalLocation
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.RunningActivity
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPrisonActivitiesService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetScheduledInstancesForPrisonerService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.SearchAppointmentsService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
+import java.time.LocalDate
 import java.time.LocalDateTime
 
 @WebMvcTest(controllers = [PrisonActivitiesController::class])
@@ -43,6 +50,7 @@ class PrisonActivitiesControllerTest(
   @MockitoBean val auditService: AuditService,
   @MockitoBean val getPrisonActivitiesService: GetPrisonActivitiesService,
   @MockitoBean val getScheduledInstancesForPrisonerService: GetScheduledInstancesForPrisonerService,
+  @MockitoBean val searchAppointmentsService: SearchAppointmentsService,
 ) : DescribeSpec(
     {
       val basePath = "/v1/prison"
@@ -325,6 +333,121 @@ class PrisonActivitiesControllerTest(
           )
 
           val result = mockMvc.performAuthorised(path)
+          result.response.status.shouldBe(404)
+        }
+      }
+
+      describe("POST /v1/prison/{prisonId}/appointments/search") {
+        val prisonId = "ABC"
+        val filters = null
+        val path = "$basePath/$prisonId/appointments/search"
+        val exampleRequest =
+          AppointmentSearchRequest(
+            appointmentType = "INDIVIDUAL",
+            startDate = LocalDate.parse("2025-01-01"),
+            endDate = LocalDate.parse("2025-01-31"),
+            timeSlots = listOf("AM", "PM"),
+            categoryCode = "GYMW",
+            inCell = false,
+            prisonerNumbers = listOf("A1234AA"),
+          )
+
+        val appointmentDetails =
+          listOf(
+            AppointmentDetails(
+              appointmentType = "INDIVIDUAL",
+              appointmentId = 123456,
+              prisonId = "SKI",
+              appointmentName = "string",
+              attendees =
+                listOf(
+                  Attendee(
+                    prisonerNumber = "A1234BC",
+                  ),
+                ),
+              category =
+                AppointmentCategory(
+                  code = "CHAP",
+                  description = "Chaplaincy",
+                ),
+              customName = "Meeting with the governor",
+              internalLocation =
+                InternalLocation(
+                  code = "SKI",
+                  description = "Chapel",
+                ),
+              inCell = false,
+              startDate = "2025-06-12",
+              startTime = "13:00",
+              endTime = "13:30",
+              timeSlot = "AM",
+              isRepeat = false,
+              sequenceNumber = 3,
+              maxSequenceNumber = 6,
+              isEdited = false,
+              isCancelled = false,
+              isExpired = false,
+            ),
+          )
+
+        beforeEach {
+          Mockito.reset(searchAppointmentsService)
+        }
+
+        it("should return 200 when success") {
+          whenever(searchAppointmentsService.execute(prisonId, exampleRequest, filters)).thenReturn(Response(data = appointmentDetails))
+
+          val result = mockMvc.performAuthorisedPost(path, exampleRequest)
+          result.response.status.shouldBe(HttpStatus.OK.value())
+          result.response.contentAsJson<DataResponse<List<AppointmentDetails>>>().shouldBe(DataResponse(data = appointmentDetails))
+        }
+
+        it("should call the audit service") {
+          whenever(searchAppointmentsService.execute(prisonId, exampleRequest, filters)).thenReturn(Response(data = appointmentDetails))
+
+          mockMvc.performAuthorisedPost(path, exampleRequest)
+          verify(
+            auditService,
+            times(1),
+          ).createEvent(
+            "SEARCH_APPOINTMENTS",
+            mapOf("prisonId" to prisonId, "startDate" to exampleRequest.startDate.toString()),
+          )
+        }
+
+        it("returns 400 when searchAppointmentsService returns bad request") {
+          whenever(searchAppointmentsService.execute(prisonId, exampleRequest, filters)).thenReturn(
+            Response(
+              data = null,
+              errors =
+                listOf(
+                  UpstreamApiError(
+                    type = UpstreamApiError.Type.BAD_REQUEST,
+                    causedBy = UpstreamApi.ACTIVITIES,
+                  ),
+                ),
+            ),
+          )
+
+          val result = mockMvc.performAuthorisedPost(path, exampleRequest)
+          result.response.status.shouldBe(400)
+        }
+
+        it("returns 404 when searchAppointmentsService returns not found") {
+          whenever(searchAppointmentsService.execute(prisonId, exampleRequest, filters)).thenReturn(
+            Response(
+              data = null,
+              errors =
+                listOf(
+                  UpstreamApiError(
+                    type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+                    causedBy = UpstreamApi.ACTIVITIES,
+                  ),
+                ),
+            ),
+          )
+
+          val result = mockMvc.performAuthorisedPost(path, exampleRequest)
           result.response.status.shouldBe(404)
         }
       }

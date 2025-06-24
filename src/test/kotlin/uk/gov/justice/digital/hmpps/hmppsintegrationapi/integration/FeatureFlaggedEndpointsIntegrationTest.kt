@@ -8,6 +8,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_DEALLOCATION_ENDPOINT
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_SCHEDULED_INSTANCES_ENDPOINT
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_SCHEDULE_DETAIL_ENDPOINT
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_SEARCH_APPOINTMENTS_ENDPOINT
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_UPDATE_ATTENDANCE_ENDPOINT
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.FeatureNotEnabledException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.AddCaseNoteRequest
@@ -48,6 +49,33 @@ internal class FeatureFlaggedEndpointsIntegrationTest : IntegrationTestBase() {
     val scheduleId = 1234L
     val path = "/v1/activities/schedule/$scheduleId"
     callApi(path)
+      .andExpect(status().isServiceUnavailable)
+  }
+
+  @Test
+  fun `post search appointments should return 503`() {
+    val prisonId = "MDI"
+    whenever(featureFlagConfig.require(USE_SEARCH_APPOINTMENTS_ENDPOINT)).thenThrow(FeatureNotEnabledException(""))
+    val path = "/v1/prison/$prisonId/appointments/search"
+    val requestBody =
+      """
+      {
+        "appointmentType": "INDIVIDUAL",
+        "startDate": "2025-06-16",
+        "endDate": "2025-06-16",
+        "timeSlots": [
+          "AM",
+          "PM",
+          "ED"
+        ],
+        "categoryCode": "GYMW",
+        "inCell": false,
+        "prisonerNumbers": [
+          "A1234BC"
+        ]
+      }
+      """.trimIndent()
+    postToApi(path, requestBody)
       .andExpect(status().isServiceUnavailable)
   }
 
