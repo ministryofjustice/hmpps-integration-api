@@ -243,12 +243,22 @@ class ActivitiesGateway(
     slot: String?,
     cancelled: Boolean?,
   ): Response<List<ActivitiesActivityScheduledInstancesForPrisoner>?> {
+    val queryParams =
+      buildList {
+        add("startDate=$startDate")
+        add("endDate=$endDate")
+        slot?.let { add("slot=$it") }
+        cancelled?.let { add("cancelled=$it") }
+      }.joinToString("&")
+
+    val uri = "/prisons/$prisonCode/$prisonerId/scheduled-instances?$queryParams"
+
     val result =
       webClient.requestList<ActivitiesActivityScheduledInstancesForPrisoner>(
-        HttpMethod.GET,
-        "/prisons/$prisonCode/$prisonerId/scheduled-instances",
-        authenticationHeader(),
-        UpstreamApi.ACTIVITIES,
+        method = HttpMethod.GET,
+        uri = uri,
+        headers = authenticationHeader(),
+        upstreamApi = UpstreamApi.ACTIVITIES,
         badRequestAsError = true,
       )
 

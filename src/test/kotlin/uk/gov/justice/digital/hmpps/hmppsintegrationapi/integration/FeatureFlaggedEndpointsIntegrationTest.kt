@@ -6,6 +6,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_DEALLOCATION_ENDPOINT
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_SCHEDULED_INSTANCES_ENDPOINT
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_SCHEDULE_DETAIL_ENDPOINT
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_UPDATE_ATTENDANCE_ENDPOINT
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.FeatureNotEnabledException
@@ -68,6 +69,16 @@ internal class FeatureFlaggedEndpointsIntegrationTest : IntegrationTestBase() {
       )
 
     putApi(path, asJsonString(prisonerDeallocationRequest))
+      .andExpect(status().isServiceUnavailable)
+  }
+
+  @Test
+  fun `get scheduled instances for prisoner should return 503`() {
+    whenever(featureFlagConfig.require(USE_SCHEDULED_INSTANCES_ENDPOINT)).thenThrow(FeatureNotEnabledException(""))
+    val prisonCode = "MDI"
+    val prisonerId = "A1234AA"
+    val path = "/v1/prison/$prisonCode/$prisonerId/scheduled-instances?startDate=2022-09-10&endDate=2023-09-10"
+    callApi(path)
       .andExpect(status().isServiceUnavailable)
   }
 }
