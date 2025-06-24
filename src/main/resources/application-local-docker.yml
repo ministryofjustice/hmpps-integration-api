@@ -61,3 +61,4 @@ feature-flag:
   use-update-attendance-endpoint: true
   use-schedule-detail-endpoint: true
   use-deallocation-endpoint: true
+  use-scheduled-instances-endpoint: true

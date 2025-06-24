@@ -12,14 +12,19 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestAttribute
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.featureflag.FeatureFlag
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ActivityScheduledInstanceForPrisoner
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.RunningActivity
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError.Type.BAD_REQUEST
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError.Type.ENTITY_NOT_FOUND
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPrisonActivitiesService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetScheduledInstancesForPrisonerService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 
 @RestController
@@ -27,6 +32,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditS
 @Tag(name = "Activities")
 class PrisonActivitiesController(
   @Autowired val getPrisonActivitiesService: GetPrisonActivitiesService,
+  @Autowired val getScheduledInstancesForPrisonerService: GetScheduledInstancesForPrisonerService,
   @Autowired val auditService: AuditService,
 ) {
   @GetMapping("/{prisonId}/activities")
@@ -57,6 +63,62 @@ class PrisonActivitiesController(
     auditService.createEvent(
       "GET_PRISON_ACTIVITIES",
       mapOf("prisonId" to prisonId),
+    )
+
+    return DataResponse(data = response.data)
+  }
+
+  @FeatureFlag(name = FeatureFlagConfig.Companion.USE_SCHEDULED_INSTANCES_ENDPOINT)
+  @GetMapping("/{prisonCode}/{prisonerId}/scheduled-instances")
+  @Operation(
+    summary = "Returns all scheduled instances for a prisoner given a prisonCode and prisonerId",
+    description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
+    responses = [
+      ApiResponse(
+        responseCode = "200",
+        useReturnTypeSchema = true,
+        description = "Successfully performed the query on upstream APIs. An empty list is returned when no results are found.",
+      ),
+      ApiResponse(
+        responseCode = "403",
+        content = [Content(schema = Schema(ref = "#/components/schemas/ForbiddenResponse"))],
+      ),
+      ApiResponse(
+        responseCode = "404",
+        content = [Content(schema = Schema(ref = "#/components/schemas/NotFoundError"))],
+      ),
+      ApiResponse(
+        responseCode = "500",
+        content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))],
+      ),
+    ],
+  )
+  fun getScheduledInstancesForPrisoner(
+    @Parameter(description = "The ID of the prison to be queried against") @PathVariable prisonCode: String,
+    @Parameter(description = "The ID of the prisoner to be queried against") @PathVariable prisonerId: String,
+    @Parameter(description = "The start date of the search range (YYYY-MM-DD)", required = true)
+    @RequestParam startDate: String,
+    @Parameter(description = "The end date of the search range (YYYY-MM-DD)", required = true)
+    @RequestParam endDate: String,
+    @Parameter(description = "Optional time slot filter", required = false)
+    @RequestParam(required = false) slot: String? = null,
+    @Parameter(description = "Include cancelled sessions", required = false)
+    @RequestParam(required = false) cancelled: Boolean? = null,
+    @RequestAttribute filters: ConsumerFilters?,
+  ): DataResponse<List<ActivityScheduledInstanceForPrisoner>?> {
+    val response = getScheduledInstancesForPrisonerService.execute(prisonCode, prisonerId, startDate, endDate, slot, cancelled, filters)
+
+    if (response.hasError(BAD_REQUEST)) {
+      throw ValidationException("Invalid query parameters.")
+    }
+
+    if (response.hasError(ENTITY_NOT_FOUND)) {
+      throw EntityNotFoundException("Could not find scheduled instances with supplied query parameters.")
+    }
+
+    auditService.createEvent(
+      "GET_SCHEDULED_INSTANCES_FOR_PRISONER",
+      mapOf("prisonCode" to prisonCode, "prisonerId" to prisonerId, "startDate" to startDate, "endDate" to endDate, "slot" to slot, "cancelled" to cancelled.toString()),
     )
 
     return DataResponse(data = response.data)
