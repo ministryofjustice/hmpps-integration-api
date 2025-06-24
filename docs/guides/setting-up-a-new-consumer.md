@@ -140,6 +140,12 @@ openssl pkeyutl -decrypt -inkey hmpps-integration-api-cred-exchange-private-key.
 openssl enc -d -aes-256-cbc -pbkdf2 -iter 310000 -md sha256 -salt -in hmpps-integration-api-preprod.tar.gz.enc -out hmpps-integration-api-preprod.tar.gz -pass file:./symmetric.key
 ```
 
+## Renewing a consumer's certificates
+
+To renew a consumer's certificates, complete section 1 ("Generate credentials for the consumer"). Do not create a new API key. The previous API key has no expiry. The current certificate will not be invalidated when a new certificate is generated.
+
+Complete section 2 to send the new certificate to the consumer.
+
 ## Create new consumer subscriber queue for events
 
 ### Create basic infrastructure
