@@ -8,6 +8,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrap
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper.WebClientWrapperResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesActivitySchedule
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesActivityScheduleDetailed
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesActivityScheduledInstancesForPrisoner
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesAppointmentDetails
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesAttendance
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesAttendanceReason
@@ -218,6 +219,37 @@ class ActivitiesGateway(
         authenticationHeader(),
         UpstreamApi.ACTIVITIES,
         forbiddenAsError = true,
+      )
+
+    return when (result) {
+      is WebClientWrapperResponse.Success -> {
+        Response(data = result.data)
+      }
+
+      is WebClientWrapperResponse.Error -> {
+        Response(
+          data = null,
+          errors = result.errors,
+        )
+      }
+    }
+  }
+
+  fun getScheduledInstancesForPrisoner(
+    prisonCode: String,
+    prisonerId: String,
+    startDate: String,
+    endDate: String,
+    slot: String?,
+    cancelled: Boolean?,
+  ): Response<List<ActivitiesActivityScheduledInstancesForPrisoner>?> {
+    val result =
+      webClient.requestList<ActivitiesActivityScheduledInstancesForPrisoner>(
+        HttpMethod.GET,
+        "/prisons/$prisonCode/$prisonerId/scheduled-instances",
+        authenticationHeader(),
+        UpstreamApi.ACTIVITIES,
+        badRequestAsError = true,
       )
 
     return when (result) {
