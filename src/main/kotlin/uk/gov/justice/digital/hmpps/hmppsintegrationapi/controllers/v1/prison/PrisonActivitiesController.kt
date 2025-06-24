@@ -78,7 +78,7 @@ class PrisonActivitiesController(
   @FeatureFlag(name = FeatureFlagConfig.Companion.USE_SCHEDULED_INSTANCES_ENDPOINT)
   @GetMapping("/{prisonCode}/{prisonerId}/scheduled-instances")
   @Operation(
-    summary = "Returns all scheduled instances for a prisoner given a prisonCode and prisonerId",
+    summary = "Returns all scheduled instances for a prisoner given a prisonCode and prisonerId, and other required parameters.",
     description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
     responses = [
       ApiResponse(
