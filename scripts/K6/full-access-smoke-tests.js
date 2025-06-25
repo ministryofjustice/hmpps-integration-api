@@ -147,8 +147,14 @@ const postLocationDeactivateData = JSON.stringify({
 
 const postSearchAppointmentsEndpoint = `/v1/prison/${alternativeprisonId}/appointments/search`;
 const postSearchAppointmentsData = JSON.stringify({
+  appointmentType: "INDIVIDUAL",
   startDate: "2025-06-16",
-})
+  endDate: "2025-06-16",
+  timeSlots: ["AM", "PM", "ED"],
+  categoryCode: "GYMW",
+  inCell: false,
+  prisonerNumbers: ["A1234BC"]
+});
 
 const putAttendanceEndpoint = `/v1/activities/schedule/attendance`
 const putAttendanceData = JSON.stringify([{
