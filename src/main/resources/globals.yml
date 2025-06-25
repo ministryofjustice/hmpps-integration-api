@@ -58,6 +58,7 @@ globals:
         - "/v1/activities/schedule/attendance"
         - "/v1/activities/attendance-reasons"
         - "/v1/activities/schedule/.*/deallocate"
+        - "v1/activities/deallocation-reasons"
     police:
       include:
         - "/v1/persons"
@@ -134,3 +135,4 @@ globals:
         - "/v1/visit/[^/]*$"
         - "/v1/visit/id/by-client-ref/[^/]*$"
         - "/v1/activities/schedule/.*/deallocate"
+        - "v1/activities/deallocation-reasons"
