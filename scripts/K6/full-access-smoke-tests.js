@@ -201,6 +201,7 @@ export default function ()  {
   if (!check(postSearchAppointmentsRes, {
     [`POST ${postSearchAppointmentsEndpoint} returns 200`]: (r) => r.status === 200,
   })) {
+    console.log(postSearchAppointmentsData)
     exec.test.fail(`${postSearchAppointmentsEndpoint} caused the test to fail`)
   }
 
