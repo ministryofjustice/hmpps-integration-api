@@ -288,6 +288,7 @@ class ActivitiesController(
     return DataResponse(data = response.data)
   }
 
+  @FeatureFlag(name = FeatureFlagConfig.Companion.USE_DEALLOCATION_REASONS_ENDPOINT)
   @GetMapping("/deallocation-reasons")
   @Operation(
     summary = "Gets possible reasons for deallocation.",

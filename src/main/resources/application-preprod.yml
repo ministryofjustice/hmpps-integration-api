@@ -45,6 +45,7 @@ feature-flag:
   use-schedule-detail-endpoint: false
   use-search-appointments-endpoint: false
   use-deallocation-endpoint: false
+  use-deallocation-reasons-endpoint: false
 
 authorisation:
   consumers:
