@@ -219,14 +219,14 @@ workflows:
           slack_channel_name: << pipeline.parameters.releases-slack-channel >>
           slack_notification: false
 
-#      - heartbeat:
-#          <<: *slack-fail-post-step
-#          name: post-deploy-heartbeat-for-dev
-#          context:
-#            - hmpps-common-vars
-#            - hmpps-integration-api-heartbeat-dev
-#          requires:
-#            - deploy-to-dev
+      - heartbeat:
+          <<: *slack-fail-post-step
+          name: post-deploy-heartbeat-for-dev
+          context:
+            - hmpps-common-vars
+            - hmpps-integration-api-heartbeat-dev
+          requires:
+            - deploy-to-dev
 
       - smoke-tests:
           <<: *slack-fail-post-step
@@ -234,8 +234,8 @@ workflows:
           context:
             - hmpps-common-vars
             - hmpps-integration-api-smoke-test-dev
-          requires:
-            - post-deploy-heartbeat-for-dev
+#          requires:
+#            - post-deploy-heartbeat-for-dev
 
       - create-and-push-image-to-ecr:
           <<: *slack-fail-post-step
