@@ -24,6 +24,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ActivitySch
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ActivityScheduleDetailed
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.AttendanceUpdateRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DeallocationReason
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HmppsMessageResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerDeallocationRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ReasonForAttendance
@@ -32,6 +33,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Consum
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.ActivitiesQueueService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetActivitiesScheduleService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetAttendanceReasonsService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetDeallocationReasonsService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetScheduleDetailsService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 
@@ -41,6 +43,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditS
 class ActivitiesController(
   @Autowired val getActivitiesScheduleService: GetActivitiesScheduleService,
   @Autowired val getAttendanceReasonsService: GetAttendanceReasonsService,
+  @Autowired val getDeallocationReasonsService: GetDeallocationReasonsService,
   @Autowired val auditService: AuditService,
   private val activitiesQueueService: ActivitiesQueueService,
   private val getScheduleDetailsService: GetScheduleDetailsService,
@@ -280,6 +283,41 @@ class ActivitiesController(
     auditService.createEvent(
       "PUT_DEALLOCATE_PRISONER_FROM_ACTIVITY",
       mapOf("scheduleId" to scheduleId.toString()),
+    )
+
+    return DataResponse(data = response.data)
+  }
+
+  @GetMapping("/deallocation-reasons")
+  @Operation(
+    summary = "Gets possible reasons for deallocation.",
+    description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
+    responses = [
+      ApiResponse(
+        responseCode = "200",
+        useReturnTypeSchema = true,
+        description = "Successfully performed the query on upstream APIs. An empty list is returned when no results are found.",
+      ),
+      ApiResponse(
+        responseCode = "403",
+        content = [Content(schema = Schema(ref = "#/components/schemas/ForbiddenResponse"))],
+      ),
+      ApiResponse(
+        responseCode = "500",
+        content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))],
+      ),
+    ],
+  )
+  fun getDeallocationReasons(): DataResponse<List<DeallocationReason>?> {
+    val response = getDeallocationReasonsService.execute()
+
+    if (response.hasError(UpstreamApiError.Type.FORBIDDEN)) {
+      throw ForbiddenByUpstreamServiceException("Access denied to deallocation reasons.")
+    }
+
+    auditService.createEvent(
+      "GET_DEALLOCATION_REASONS",
+      mapOf(),
     )
 
     return DataResponse(data = response.data)
