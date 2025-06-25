@@ -105,7 +105,8 @@ const get_endpoints = [
   `/v1/persons/${hmppsId}/languages`,
   `/v1/activities/${activityId}/schedules`,
   `/v1/activities/attendance-reasons`,
-  `/v1/activities/schedule/${scheduleId}`
+  `/v1/activities/schedule/${scheduleId}`,
+  `/v1/activities/deallocation-reasons`
 ];
 
 const broken_endpoints = []
