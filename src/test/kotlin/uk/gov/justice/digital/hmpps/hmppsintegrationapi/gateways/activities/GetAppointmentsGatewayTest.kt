@@ -80,5 +80,16 @@ class GetAppointmentsGatewayTest(
         val response = activitiesGateway.getAppointments(prisonCode, appointmentSearchRequest)
         response.data!![0].appointmentId.shouldBe(123456)
       }
+
+      it("does not serialize endDate when null to avoid sending 'null' as string") {
+        val request =
+          AppointmentSearchRequest(
+            startDate = LocalDate.parse("2025-06-16"),
+          )
+
+        val generatedJson = objectMapper.writeValueAsString(request.toApiConformingMap())
+
+        generatedJson.contains("endDate") shouldBe false
+      }
     },
   )
