@@ -347,7 +347,7 @@ class PrisonController(
   }
 
   @GetMapping("/{prisonId}/prison-pay-bands")
-  @Tag(name = "Activities")
+  @Tags(value = [Tag("Activities"), Tag("Reference Data")])
   @Operation(
     summary = "Gets the prison pay bands for a prison.",
     description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
