@@ -197,6 +197,7 @@ class ActivitiesController(
   }
 
   @GetMapping("/attendance-reasons")
+  @Tag(name = "Reference Data")
   @Operation(
     summary = "Gets possible reasons for attendance.",
     description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
