@@ -71,7 +71,7 @@ const get_endpoints = [
   `/v1/prison/${alternativeprisonId}/prison-regime`,
   `/v1/prison/${alternativeprisonId}/activities`,
   `/v1/prison/${alternativeprisonId}/prison-pay-bands`,
-  `/v1/contacts/${clientReference}`,
+  `/v1/contacts/${contactId}`,
   `/v1/persons?first_name=john`,
   `/v1/persons/${deliusCrn}`,
   `/v1/persons/${hmppsId}/licences/conditions`,
