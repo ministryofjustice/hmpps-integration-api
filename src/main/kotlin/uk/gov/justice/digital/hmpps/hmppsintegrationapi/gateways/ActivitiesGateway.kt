@@ -259,13 +259,13 @@ class ActivitiesGateway(
   fun getWaitingListApplications(
     prisonCode: String,
     activitiesWaitingListSearchRequest: ActivitiesWaitingListSearchRequest,
-    page: Int = 0,
+    page: Int = 1,
     pageSize: Int = 50,
   ): Response<ActivitiesPagedWaitingListApplication?> {
     val result =
       webClient.request<ActivitiesPagedWaitingListApplication>(
         HttpMethod.POST,
-        "/waiting-list-applications/$prisonCode/search?page=$page&pageSize=$pageSize",
+        "/waiting-list-applications/$prisonCode/search?page=${page - 1}&pageSize=$pageSize",
         authenticationHeader(),
         UpstreamApi.ACTIVITIES,
         requestBody = activitiesWaitingListSearchRequest.toApiConformingMap(),

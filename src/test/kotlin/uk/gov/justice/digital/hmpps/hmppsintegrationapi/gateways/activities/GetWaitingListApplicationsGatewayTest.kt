@@ -52,7 +52,7 @@ class GetWaitingListApplicationsGatewayTest(
         )
       val objectMapper = jacksonObjectMapper()
       val jsonRequest = objectMapper.writeValueAsString(activitiesWaitingListSearchRequest.toApiConformingMap())
-      val page = 0
+      val page = 1
       val pageSize = 50
 
       beforeEach {
@@ -76,7 +76,7 @@ class GetWaitingListApplicationsGatewayTest(
 
       it("Returns an activity schedule") {
         mockServer.stubForPost(
-          "/waiting-list-applications/$prisonCode/search?page=$page&pageSize=$pageSize",
+          "/waiting-list-applications/$prisonCode/search?page=${page - 1}&pageSize=$pageSize",
           reqBody = jsonRequest,
           File("src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/activities/fixtures/GetWaitingListApplications.json").readText(),
         )
@@ -152,7 +152,7 @@ class GetWaitingListApplicationsGatewayTest(
 
       it("Returns a bad request error") {
         mockServer.stubForPost(
-          "/waiting-list-applications/$prisonCode/search?page=$page&pageSize=$pageSize",
+          "/waiting-list-applications/$prisonCode/search?page=${page - 1}&pageSize=$pageSize",
           reqBody = jsonRequest,
           status = HttpStatus.BAD_REQUEST,
           resBody = "{}",
