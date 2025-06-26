@@ -147,8 +147,8 @@ const postLocationDeactivateData = JSON.stringify({
 
 const postSearchAppointmentsEndpoint = `/v1/prison/${alternativeprisonId}/appointments/search`;
 const postSearchAppointmentsData = JSON.stringify({
-  startDate: "2025-06-16",
-})
+  startDate: "2025-06-16"
+});
 
 const putAttendanceEndpoint = `/v1/activities/schedule/attendance`
 const putAttendanceData = JSON.stringify([{
@@ -197,14 +197,13 @@ export default function ()  {
     exec.test.fail(`${postLocationDeactivateEndpoint} caused the test to fail`)
   }
 
-  /** REMOVED AS ENDPOINT IS GIVING 400 ERROR CODES
   const postSearchAppointmentsRes = http.post(`${baseUrl}${postSearchAppointmentsEndpoint}`, postSearchAppointmentsData, params);
   if (!check(postSearchAppointmentsRes, {
     [`POST ${postSearchAppointmentsEndpoint} returns 200`]: (r) => r.status === 200,
   })) {
     exec.test.fail(`${postSearchAppointmentsEndpoint} caused the test to fail`)
   }
-  */
+
   const putAttendanceRes = http.put(`${baseUrl}${putAttendanceEndpoint}`, putAttendanceData, params);
   if (!check(putAttendanceRes, {
     [`PUT ${putAttendanceEndpoint} returns 200`]: (r) => r.status === 200,
