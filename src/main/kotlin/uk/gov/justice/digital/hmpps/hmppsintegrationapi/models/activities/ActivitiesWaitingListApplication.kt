@@ -22,5 +22,5 @@ data class ActivitiesWaitingListApplication(
   val updatedTime: LocalDateTime?,
   val updatedBy: String?,
   val earliestReleaseDate: ActivitiesEarliestReleaseDate,
-  val nonAssocations: Boolean?,
+  val nonAssociations: Boolean?,
 )

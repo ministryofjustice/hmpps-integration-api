@@ -7,6 +7,7 @@ data class ActivitiesPagedWaitingListApplication(
   val last: Boolean?,
   val size: Int?,
   val content: List<ActivitiesWaitingListApplication>?,
+  val number: Int?,
   val sort: ActivitiesSort?,
   val numberOfElements: Int?,
   val pageable: ActivitiesPageable?,

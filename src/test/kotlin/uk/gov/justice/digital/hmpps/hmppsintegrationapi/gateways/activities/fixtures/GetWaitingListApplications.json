@@ -19,9 +19,9 @@
       "requestedBy": "Fred Bloggs",
       "comments": "The prisoner has specifically requested to attend this activity",
       "declinedReason": "The prisoner has specifically requested to attend this activity",
-      "creationTime": "2023-00-03T12:00:00",
+      "creationTime": "2023-01-03T12:00:00",
       "createdBy": "Jon Doe",
-      "updatedTime": "2023-00-04T16:30:00",
+      "updatedTime": "2023-01-04T16:30:00",
       "updatedBy": "Jane Doe",
       "earliestReleaseDate": {
         "releaseDate": "2027-09-20",

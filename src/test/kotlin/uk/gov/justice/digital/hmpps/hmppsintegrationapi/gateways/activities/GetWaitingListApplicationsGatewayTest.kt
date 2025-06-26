@@ -1,11 +1,12 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.activities
 
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
-import org.mockito.internal.verification.VerificationModeFactory
+import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
@@ -17,15 +18,16 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ActivitiesGatew
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesActivity
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesActivityCategory
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesActivitySchedule
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesInternalLocation
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesMinimumEducationLevel
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesSlot
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesEarliestReleaseDate
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesPageable
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesPagedWaitingListApplication
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesSort
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesWaitingListApplication
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesWaitingListSearchRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import java.io.File
+import java.time.LocalDate
 import java.time.LocalDateTime
 
 @ActiveProfiles("test")
@@ -40,6 +42,18 @@ class GetWaitingListApplicationsGatewayTest(
     {
       val mockServer = ApiMockServer.create(UpstreamApi.ACTIVITIES)
       val prisonCode = "MDI"
+      val activitiesWaitingListSearchRequest =
+        ActivitiesWaitingListSearchRequest(
+          applicationDateFrom = LocalDate.now(),
+          applicationDateTo = LocalDate.now().plusDays(1),
+          activityId = 123456L,
+          prisonerNumbers = listOf("A1234AA"),
+          status = listOf("DECLINED", "PENDING"),
+        )
+      val objectMapper = jacksonObjectMapper()
+      val jsonRequest = objectMapper.writeValueAsString(activitiesWaitingListSearchRequest.toApiConformingMap())
+      val page = 0
+      val pageSize = 50
 
       beforeEach {
         mockServer.start()
@@ -55,104 +69,96 @@ class GetWaitingListApplicationsGatewayTest(
       }
 
       it("authenticates using HMPPS Auth with credentials") {
-        activitiesGateway.getActivitySchedules(activityId)
+        activitiesGateway.getWaitingListApplications(prisonCode, activitiesWaitingListSearchRequest, page, pageSize)
 
-        verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("ACTIVITIES")
+        verify(hmppsAuthGateway, times(1)).getClientToken("ACTIVITIES")
       }
 
       it("Returns an activity schedule") {
-        mockServer.stubForGet(
-          "/activities/$activityId/schedules",
-          File("src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/activities/fixtures/GetActivitiesSchedule.json").readText(),
+        mockServer.stubForPost(
+          "/waiting-list-applications/$prisonCode/search?page=$page&pageSize=$pageSize",
+          reqBody = jsonRequest,
+          File("src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/activities/fixtures/GetWaitingListApplications.json").readText(),
         )
 
-        val result = activitiesGateway.getActivitySchedules(activityId)
+        val result = activitiesGateway.getWaitingListApplications(prisonCode, activitiesWaitingListSearchRequest, page, pageSize)
         result.errors.shouldBeEmpty()
         result.data.shouldNotBeNull()
-        result.data[0].shouldBe(
-          ActivitiesActivitySchedule(
-            id = activityId,
-            description = "Monday AM Houseblock 3",
-            internalLocation =
-              ActivitiesInternalLocation(
-                id = 98877667,
-                code = "EDU-ROOM-1",
-                description = "Education - R1",
-                dpsLocationId = "b7602cc8-e769-4cbb-8194-62d8e655992a",
-              ),
-            capacity = 10,
-            activity =
-              ActivitiesActivity(
-                id = 123456,
-                prisonCode = "PVI",
-                attendanceRequired = false,
-                inCell = false,
-                onWing = false,
-                offWing = false,
-                pieceWork = false,
-                outsideWork = false,
-                payPerSession = "H",
-                summary = "Maths level 1",
-                description = "A basic maths course suitable for introduction to the subject",
-                category =
-                  ActivitiesActivityCategory(
-                    id = 1,
-                    code = "LEISURE_SOCIAL",
-                    name = "Leisure and social",
-                    description = "Such as association, library time and social clubs, like music or art",
-                  ),
-                riskLevel = "high",
-                minimumEducationLevel =
-                  listOf(
-                    ActivitiesMinimumEducationLevel(
-                      id = 123456,
-                      educationLevelCode = "Basic",
-                      educationLevelDescription = "Basic",
-                      studyAreaCode = "ENGLA",
-                      studyAreaDescription = "English Language",
-                    ),
-                  ),
-                endDate = "2022-12-21",
-                capacity = 0,
-                allocated = 0,
-                createdTime = LocalDateTime.parse("2022-09-01T09:01:02"),
-                activityState = "live",
-                paid = true,
-              ),
-            scheduleWeeks = 1,
-            slots =
+        result.data.shouldBe(
+          ActivitiesPagedWaitingListApplication(
+            totalPages = 0,
+            totalElements = 0,
+            first = true,
+            last = true,
+            size = 0,
+            content =
               listOf(
-                ActivitiesSlot(
-                  id = 123456,
-                  timeSlot = "AM",
-                  weekNumber = 1,
-                  startTime = "9:00",
-                  endTime = "11:30",
-                  daysOfWeek = listOf("Mon", "Tue", "Wed"),
-                  mondayFlag = true,
-                  tuesdayFlag = true,
-                  wednesdayFlag = true,
-                  thursdayFlag = false,
-                  fridayFlag = false,
-                  saturdayFlag = false,
-                  sundayFlag = false,
+                ActivitiesWaitingListApplication(
+                  id = 111111L,
+                  activityId = 1000,
+                  scheduleId = 222222,
+                  allocationId = 333333,
+                  prisonCode = "PVI",
+                  prisonerNumber = "A1234AA",
+                  bookingId = 10001,
+                  status = "PENDING",
+                  statusUpdatedTime = LocalDateTime.parse("2023-06-04T16:30:00"),
+                  requestedDate = LocalDate.parse("2023-06-23"),
+                  requestedBy = "Fred Bloggs",
+                  comments = "The prisoner has specifically requested to attend this activity",
+                  declinedReason = "The prisoner has specifically requested to attend this activity",
+                  creationTime = LocalDateTime.parse("2023-01-03T12:00:00"),
+                  createdBy = "Jon Doe",
+                  updatedTime = LocalDateTime.parse("2023-01-04T16:30:00"),
+                  updatedBy = "Jane Doe",
+                  earliestReleaseDate =
+                    ActivitiesEarliestReleaseDate(
+                      releaseDate = "2027-09-20",
+                      isTariffDate = true,
+                      isIndeterminateSentence = true,
+                      isImmigrationDetainee = true,
+                      isConvictedUnsentenced = true,
+                      isRemand = true,
+                    ),
+                  nonAssociations = true,
                 ),
               ),
-            startDate = "2022-09-21",
-            endDate = "2022-10-21",
-            usePrisonRegimeTime = true,
+            number = 0,
+            sort =
+              ActivitiesSort(
+                empty = true,
+                sorted = true,
+                unsorted = true,
+              ),
+            numberOfElements = 0,
+            pageable =
+              ActivitiesPageable(
+                offset = 0,
+                sort =
+                  ActivitiesSort(
+                    empty = true,
+                    sorted = true,
+                    unsorted = true,
+                  ),
+                pageSize = 0,
+                paged = true,
+                pageNumber = 0,
+                unpaged = true,
+              ),
+            empty = true,
           ),
         )
       }
 
       it("Returns a bad request error") {
-        mockServer.stubForGet(
-          "/activities/$activityId/schedules",
-          "{}",
-          HttpStatus.BAD_REQUEST,
+        mockServer.stubForPost(
+          "/waiting-list-applications/$prisonCode/search?page=$page&pageSize=$pageSize",
+          reqBody = jsonRequest,
+          status = HttpStatus.BAD_REQUEST,
+          resBody = "{}",
         )
 
-        val result = activitiesGateway.getActivitySchedules(activityId)
+        val result = activitiesGateway.getWaitingListApplications(prisonCode, activitiesWaitingListSearchRequest, page, pageSize)
         result.errors.shouldBe(listOf(UpstreamApiError(causedBy = UpstreamApi.ACTIVITIES, type = UpstreamApiError.Type.BAD_REQUEST)))
       }
     },
