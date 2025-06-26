@@ -449,4 +449,21 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
       checkQueueIsEmpty()
     }
   }
+
+  @Nested
+  @DisplayName("GET /v1/activities/deallocation-reasons")
+  inner class GetDeallocationReasons {
+    private val path = "/v1/activities/deallocation-reasons"
+
+    @Test
+    fun `return the deallocation reasons`() {
+      activitiesMockServer.stubForGet(
+        "/allocations/deallocation-reasons",
+        File("$gatewaysFolder/activities/fixtures/GetDeallocationReasons.json").readText(),
+      )
+      callApi(path)
+        .andExpect(MockMvcResultMatchers.status().isOk)
+        .andExpect(MockMvcResultMatchers.content().json(getExpectedResponse("deallocation-reasons")))
+    }
+  }
 }

@@ -62,3 +62,4 @@ feature-flag:
   use-schedule-detail-endpoint: true
   use-search-appointments-endpoint: true
   use-deallocation-endpoint: true
+  use-deallocation-reasons-endpoint: true

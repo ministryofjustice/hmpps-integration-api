@@ -24,6 +24,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.AddCaseNote
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Attendance
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.AttendanceUpdateRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DeallocationReason
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Exclusion
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HmppsMessageResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.InternalLocation
@@ -37,6 +38,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.ActivitiesQueueService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetActivitiesScheduleService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetAttendanceReasonsService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetDeallocationReasonsService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetScheduleDetailsService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 import java.time.DayOfWeek
@@ -50,6 +52,7 @@ class ActivitiesControllerTest(
   @MockitoBean val auditService: AuditService,
   @MockitoBean val getActivitiesScheduleService: GetActivitiesScheduleService,
   @MockitoBean val getAttendanceReasonsService: GetAttendanceReasonsService,
+  @MockitoBean val getDeallocationReasonsService: GetDeallocationReasonsService,
   @MockitoBean val getScheduleDetailsService: GetScheduleDetailsService,
   @MockitoBean val activitiesQueueService: ActivitiesQueueService,
 ) : DescribeSpec(
@@ -558,6 +561,56 @@ class ActivitiesControllerTest(
 
           val result = mockMvc.performAuthorisedPut(path, prisonerDeallocationRequest)
           result.response.status.shouldBe(404)
+        }
+      }
+
+      describe("GET /v1/activities/deallocation-reasons") {
+        val path = "$basePath/deallocation-reasons"
+        val deallocationReason =
+          DeallocationReason(
+            code = "RELEASED",
+            description = "Released from prison",
+          )
+
+        it("should return 200 when successful") {
+          whenever(getDeallocationReasonsService.execute())
+            .thenReturn(Response(data = listOf(deallocationReason)))
+
+          val result = mockMvc.performAuthorised(path)
+          result.response.status.shouldBe(HttpStatus.OK.value())
+          result.response
+            .contentAsJson<DataResponse<List<DeallocationReason>>>()
+            .shouldBe(DataResponse(data = listOf(deallocationReason)))
+        }
+
+        it("should call the audit service") {
+          whenever(getDeallocationReasonsService.execute())
+            .thenReturn(Response(data = listOf(deallocationReason)))
+
+          mockMvc.performAuthorised(path)
+
+          verify(auditService, times(1)).createEvent(
+            "GET_DEALLOCATION_REASONS",
+            mapOf(),
+          )
+        }
+
+        it("returns 403 when getDeallocationReasonsService returns forbidden") {
+          whenever(getDeallocationReasonsService.execute())
+            .thenReturn(
+              Response(
+                data = null,
+                errors =
+                  listOf(
+                    UpstreamApiError(
+                      type = UpstreamApiError.Type.FORBIDDEN,
+                      causedBy = UpstreamApi.ACTIVITIES,
+                    ),
+                  ),
+              ),
+            )
+          val result = mockMvc.performAuthorised(path)
+          result.response.status.shouldBe(403)
         }
       }
     },

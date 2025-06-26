@@ -6,6 +6,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_DEALLOCATION_ENDPOINT
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_DEALLOCATION_REASONS_ENDPOINT
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_SCHEDULE_DETAIL_ENDPOINT
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_SEARCH_APPOINTMENTS_ENDPOINT
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_UPDATE_ATTENDANCE_ENDPOINT
@@ -96,6 +97,14 @@ internal class FeatureFlaggedEndpointsIntegrationTest : IntegrationTestBase() {
       )
 
     putApi(path, asJsonString(prisonerDeallocationRequest))
+      .andExpect(status().isServiceUnavailable)
+  }
+
+  @Test
+  fun `get deallocation reasons should return 503`() {
+    whenever(featureFlagConfig.require(USE_DEALLOCATION_REASONS_ENDPOINT)).thenThrow(FeatureNotEnabledException(""))
+    val path = "/v1/activities/deallocation-reasons"
+    callApi(path)
       .andExpect(status().isServiceUnavailable)
   }
 }
