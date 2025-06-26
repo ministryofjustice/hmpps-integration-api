@@ -25,7 +25,7 @@ const risksCrn = "X756352";
 const prisonId = "MKI";
 const alternativeprisonId = "RSI";
 const visitReference = "qd-lh-gy-lx";
-const clientReference = "123456";
+const clientVisitReference = "SMOKE_TEST_CLIENT_REF";
 const contactId = "1898610";
 const imageId = "1988315";
 const locationIdKey = "MKI-A";
@@ -89,7 +89,7 @@ const get_endpoints = [
   `/v1/hmpps/id/nomis-number/${hmppsId}`,
   `/v1/persons/${hmppsId}/visit/future`,
   `/v1/visit/${visitReference}`,
-  // `/v1/visit/id/by-client-ref/${clientReference}`, REMOVED AS THIS ENDPOINT IS TIMING OUT AS TOO MANY VISITS SHARE THIS ID
+  `/v1/visit/id/by-client-ref/${clientVisitReference}`,
   `/v1/prison/${prisonId}/visit/search?visitStatus=BOOKED`,
   `/v1/persons/${deliusCrn}/protected-characteristics`,
   `/v1/epf/person-details/${deliusCrn}/1`,
