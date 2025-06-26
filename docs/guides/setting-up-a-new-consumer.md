@@ -12,6 +12,7 @@ per environment. This document is split into two parts:
 
 ## Prerequisites
 
+- [AWS CLI](https://aws.amazon.com/cli/)
 - [kubectl](https://kubernetes.io/docs/tasks/tools/#kubectl)
 - [Access to Cloud Platform’s Kubernetes cluster](https://user-guide.cloud-platform.service.justice.gov.uk/documentation/getting-started/kubectl-config.html#installing-kubectl)
 
