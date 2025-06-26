@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities
 
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.WaitingListApplication
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -23,4 +24,24 @@ data class ActivitiesWaitingListApplication(
   val updatedBy: String?,
   val earliestReleaseDate: ActivitiesEarliestReleaseDate,
   val nonAssociations: Boolean?,
-)
+) {
+  fun toWaitingListApplication(): WaitingListApplication =
+    WaitingListApplication(
+      id = id,
+      activityId = activityId,
+      scheduleId = scheduleId,
+      allocationId = allocationId,
+      prisonId = prisonCode,
+      prisonerNumber = prisonerNumber,
+      bookingId = bookingId,
+      status = status,
+      statusUpdatedTime = statusUpdatedTime,
+      requestedDate = requestedDate,
+      comments = comments,
+      declinedReason = declinedReason,
+      creationTime = creationTime,
+      updatedTime = updatedTime,
+      earliestReleaseDate = earliestReleaseDate.toEarliestReleaseDate(),
+      nonAssociations = nonAssociations,
+    )
+}
