@@ -12,9 +12,11 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.Activi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesAttendance
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesAttendanceReason
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesDeallocationReason
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesPagedWaitingListApplication
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesPrisonPayBand
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesPrisonRegime
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesRunningActivity
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesWaitingListSearchRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.AppointmentSearchRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
@@ -240,6 +242,36 @@ class ActivitiesGateway(
         UpstreamApi.ACTIVITIES,
         forbiddenAsError = true,
       )
+    return when (result) {
+      is WebClientWrapperResponse.Success -> {
+        Response(data = result.data)
+      }
+
+      is WebClientWrapperResponse.Error -> {
+        Response(
+          data = null,
+          errors = result.errors,
+        )
+      }
+    }
+  }
+
+  fun getWaitingListApplications(
+    prisonCode: String,
+    activitiesWaitingListSearchRequest: ActivitiesWaitingListSearchRequest,
+    page: Int = 1,
+    pageSize: Int = 50,
+  ): Response<ActivitiesPagedWaitingListApplication?> {
+    val result =
+      webClient.request<ActivitiesPagedWaitingListApplication>(
+        HttpMethod.POST,
+        "/waiting-list-applications/$prisonCode/search?page=${page - 1}&pageSize=$pageSize",
+        authenticationHeader(),
+        UpstreamApi.ACTIVITIES,
+        requestBody = activitiesWaitingListSearchRequest.toApiConformingMap(),
+        badRequestAsError = true,
+      )
+
     return when (result) {
       is WebClientWrapperResponse.Success -> {
         Response(data = result.data)
