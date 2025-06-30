@@ -90,28 +90,19 @@ authorisation:
       filters:
     specific-prison:
       roles:
-        - "private-prison"
-      include:
-        - "/v1/hmpps/id/nomis-number/[^/]*$"
-        - "/v1/persons/.*/sentences/latest-key-dates-and-adjustments"
+        - "full-access"
       filters:
         prisons:
           - MDI
     limited-prisons:
       roles:
-        - "private-prison"
-      include:
-        - "/v1/hmpps/id/nomis-number/[^/]*$"
-        - "/v1/persons/.*/sentences/latest-key-dates-and-adjustments"
+        - "full-access"
       filters:
         prisons:
           - ABC
     no-prisons:
       roles:
-        - "private-prison"
-      include:
-        - "/v1/hmpps/id/nomis-number/[^/]*$"
-        - "/v1/persons/.*/sentences/latest-key-dates-and-adjustments"
+        - "full-access"
       filters:
         prisons:
     private-prison-only:
