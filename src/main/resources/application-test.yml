@@ -91,13 +91,13 @@ authorisation:
       roles:
     limited-prisons:
       roles:
-        - "private-prison"
+        - "full-access"
       filters:
         prisons:
           - XYZ
     empty-prisons:
       roles:
-        - "private-prison"
+        - "full-access"
       filters:
         prisons:
     private-prison-only:
