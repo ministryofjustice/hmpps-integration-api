@@ -125,7 +125,7 @@ tar cvfz hmpps-integration-api-preprod.tar.gz preprod/preprod-client.key preprod
 openssl enc -aes-256-cbc -pbkdf2 -iter 310000 -md sha256 -salt -in hmpps-integration-api-preprod.tar.gz -out hmpps-integration-api-preprod.tar.gz.enc -pass file:./symmetric.key
 ```
 
-Be sure to record the client's technical contact details in the 
+Be sure to record the client's technical contact details in the
 [relevant client page](https://dsdmoj.atlassian.net/wiki/spaces/HIA/pages/5544181873/Clients)
 (create a new client page if required). This will be needed when the
 certificate expires and must be renewed.
@@ -145,7 +145,6 @@ openssl pkeyutl -decrypt -inkey hmpps-integration-api-cred-exchange-private-key.
 # Decrypt access credentials using symmetric key
 openssl enc -d -aes-256-cbc -pbkdf2 -iter 310000 -md sha256 -salt -in hmpps-integration-api-preprod.tar.gz.enc -out hmpps-integration-api-preprod.tar.gz -pass file:./symmetric.key
 ```
-
 
 ## Create new consumer subscriber queue for events
 
