@@ -52,4 +52,9 @@ enum class HmppsMessageEventType(
     eventTypeCode = "DeallocatePrisonerFromActivitySchedule",
     description = "A prisoner has been deallocated from an activity schedule",
   ),
+  ALLOCATE_PRISONER_TO_ACTIVITY_SCHEDULE(
+    type = "allocate-prisoner-to-activity-schedule",
+    eventTypeCode = "DeallocatePrisonerToActivitySchedule",
+    description = "A prisoner has been allocated to an activity schedule",
+  ),
 }
