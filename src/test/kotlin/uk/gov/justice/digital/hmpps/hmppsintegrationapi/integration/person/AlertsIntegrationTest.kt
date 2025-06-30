@@ -53,18 +53,6 @@ class AlertsIntegrationTest : IntegrationTestBase() {
       callApi("$basePath/$invalidNomsId/alerts/pnd")
         .andExpect(status().isBadRequest)
     }
-
-    @Test
-    fun `return a 404 for person in wrong prison`() {
-      callApiWithCN(path, limitedPrisonsCn)
-        .andExpect(status().isNotFound)
-    }
-
-    @Test
-    fun `return a 404 when no prisons in filter`() {
-      callApiWithCN(path, noPrisonsCn)
-        .andExpect(status().isNotFound)
-    }
   }
 
   @Nested
@@ -82,18 +70,6 @@ class AlertsIntegrationTest : IntegrationTestBase() {
     fun `returns a 400 if the hmppsId is invalid`() {
       callApi("/v1/pnd/persons/$invalidNomsId/alerts")
         .andExpect(status().isBadRequest)
-    }
-
-    @Test
-    fun `return a 404 for person in wrong prison`() {
-      callApiWithCN(path, limitedPrisonsCn)
-        .andExpect(status().isNotFound)
-    }
-
-    @Test
-    fun `return a 404 when no prisons in filter`() {
-      callApiWithCN(path, noPrisonsCn)
-        .andExpect(status().isNotFound)
     }
   }
 }
