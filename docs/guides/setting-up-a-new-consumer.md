@@ -125,6 +125,11 @@ tar cvfz hmpps-integration-api-preprod.tar.gz preprod/preprod-client.key preprod
 openssl enc -aes-256-cbc -pbkdf2 -iter 310000 -md sha256 -salt -in hmpps-integration-api-preprod.tar.gz -out hmpps-integration-api-preprod.tar.gz.enc -pass file:./symmetric.key
 ```
 
+Be sure to record the client's technical contact details in the
+[relevant client page](https://dsdmoj.atlassian.net/wiki/spaces/HIA/pages/5544181873/Clients)
+(create a new client page if required). This will be needed when the
+certificate expires and must be renewed.
+
 ### Alternatively
 
 If the client's public key is named `hmpps-integration-api-cred-exchange-public-key.pem`, change directory into the `scripts/client_certificates` directory and run the `zip.sh` command. This should complete the above steps.
@@ -140,12 +145,6 @@ openssl pkeyutl -decrypt -inkey hmpps-integration-api-cred-exchange-private-key.
 # Decrypt access credentials using symmetric key
 openssl enc -d -aes-256-cbc -pbkdf2 -iter 310000 -md sha256 -salt -in hmpps-integration-api-preprod.tar.gz.enc -out hmpps-integration-api-preprod.tar.gz -pass file:./symmetric.key
 ```
-
-## Renewing a consumer's certificates
-
-To renew a consumer's certificates, complete section 1 ("Generate credentials for the consumer"). Do not create a new API key. The previous API key has no expiry. The current certificate will not be invalidated when a new certificate is generated.
-
-Complete section 2 to send the new certificate to the consumer.
 
 ## Create new consumer subscriber queue for events
 
