@@ -7,6 +7,7 @@ import software.amazon.awssdk.services.sqs.model.SendMessageRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.ConsumerPrisonAccessService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.MessageFailedException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ActivitiesGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesActivityScheduleDetailed
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.AttendanceUpdateRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HmppsMessage
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HmppsMessageResponse
@@ -109,217 +110,167 @@ class ActivitiesQueueService(
     filters: ConsumerFilters?,
   ): Response<HmppsMessageResponse?> {
     val today = LocalDate.now()
-    if (prisonerAllocationRequest.startDate!! < today) {
-      return Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.ACTIVITIES, UpstreamApiError.Type.BAD_REQUEST, "Allocation start date must not be in the past")))
+
+    validateAllocationDates(prisonerAllocationRequest, today)?.let { return it }
+    validateScheduleInstanceIfToday(prisonerAllocationRequest, today)?.let { return it }
+    validateExclusionTimes(prisonerAllocationRequest)?.let { return it }
+
+    val scheduleResponse = activitiesGateway.getActivityScheduleById(scheduleId)
+    if (scheduleResponse.errors.isNotEmpty()) return Response(data = null, errors = scheduleResponse.errors)
+    val schedule = scheduleResponse.data!!
+
+    validatePayBand(schedule, prisonerAllocationRequest, filters)?.let { return it }
+    validateAllocationWithinScheduleDates(schedule, prisonerAllocationRequest)?.let { return it }
+    validatePrisonerNotAlreadyAllocated(schedule, prisonerAllocationRequest)?.let { return it }
+    validateExclusionSlots(schedule, prisonerAllocationRequest, scheduleId)?.let { return it }
+    validateWaitingListApplications(schedule.activity.prisonCode, prisonerAllocationRequest.prisonerNumber!!, filters)?.let { return it }
+
+    val message = prisonerAllocationRequest.toHmppsMessage(who, scheduleId)
+    writeMessageToQueue(message, "Could not send prisoner allocation to queue")
+    return Response(HmppsMessageResponse(message = "Prisoner allocation written to queue"))
+  }
+
+  private fun validateAllocationDates(
+    request: PrisonerAllocationRequest,
+    today: LocalDate,
+  ): Response<HmppsMessageResponse?>? {
+    if (request.startDate!! < today) {
+      return badRequest("Allocation start date must not be in the past")
     }
 
-    if (prisonerAllocationRequest.endDate != null && prisonerAllocationRequest.startDate > prisonerAllocationRequest.endDate) {
-      return Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.ACTIVITIES, UpstreamApiError.Type.BAD_REQUEST, "Allocation start date must be the same as or before the end date")))
+    if (request.endDate != null && request.startDate > request.endDate) {
+      return badRequest("Allocation start date must be the same as or before the end date")
     }
 
-    if (prisonerAllocationRequest.startDate == today && prisonerAllocationRequest.scheduleInstanceId == null) {
-      return Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.ACTIVITIES, UpstreamApiError.Type.BAD_REQUEST, "scheduleInstanceId must be provided when allocation start date is today")))
+    return null
+  }
+
+  private fun validateScheduleInstanceIfToday(
+    request: PrisonerAllocationRequest,
+    today: LocalDate,
+  ): Response<HmppsMessageResponse?>? =
+    if (request.startDate == today && request.scheduleInstanceId == null) {
+      badRequest("scheduleInstanceId must be provided when allocation start date is today")
+    } else {
+      null
     }
 
-    if (prisonerAllocationRequest.exclusions?.any { it.startTime > it.endTime } == true) {
-      return Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.ACTIVITIES, UpstreamApiError.Type.BAD_REQUEST, "Exclusion start time cannot be after custom end time")))
+  private fun validateExclusionTimes(request: PrisonerAllocationRequest): Response<HmppsMessageResponse?>? {
+    if (request.exclusions?.any { it.startTime > it.endTime } == true) {
+      return badRequest("Exclusion start time cannot be after custom end time")
     }
+    return null
+  }
 
-    val getScheduleByIdResponse = activitiesGateway.getActivityScheduleById(scheduleId)
-
-    if (getScheduleByIdResponse.errors.isNotEmpty()) {
-      return Response(data = null, errors = getScheduleByIdResponse.errors)
-    }
-
-    val isPaid = getScheduleByIdResponse.data?.activity?.paid
-    val payBandId = prisonerAllocationRequest.payBandId
+  private fun validatePayBand(
+    schedule: ActivitiesActivityScheduleDetailed,
+    request: PrisonerAllocationRequest,
+    filters: ConsumerFilters?,
+  ): Response<HmppsMessageResponse?>? {
+    val isPaid = schedule.activity.paid
+    val payBandId = request.payBandId
 
     if (isPaid == true && payBandId == null) {
-      return Response(
-        data = null,
-        errors =
-          listOf(
-            UpstreamApiError(
-              UpstreamApi.ACTIVITIES,
-              UpstreamApiError.Type.BAD_REQUEST,
-              "Allocation must have a pay band when the activity is paid",
-            ),
-          ),
-      )
+      return badRequest("Allocation must have a pay band when the activity is paid")
     }
 
     if (isPaid == false && payBandId != null) {
-      return Response(
-        data = null,
-        errors =
-          listOf(
-            UpstreamApiError(
-              UpstreamApi.ACTIVITIES,
-              UpstreamApiError.Type.BAD_REQUEST,
-              "Allocation cannot have a pay band when the activity is unpaid",
-            ),
-          ),
-      )
+      return badRequest("Allocation cannot have a pay band when the activity is unpaid")
     }
-    val prisonCode = getScheduleByIdResponse.data!!.activity.prisonCode
-    if (isPaid == true && payBandId != null) {
-      val payBandsResponse = getPrisonPayBandsService.execute(prisonCode, filters)
-      if (payBandsResponse.errors.isNotEmpty()) return Response(data = null, errors = payBandsResponse.errors)
 
-      val isValid = payBandsResponse.data!!.any { it.id == payBandId }
-      if (!isValid) {
-        return Response(
-          data = null,
-          errors =
-            listOf(
-              UpstreamApiError(
-                UpstreamApi.ACTIVITIES,
-                UpstreamApiError.Type.BAD_REQUEST,
-                "Pay band '$payBandId' does not exist for prison '$prisonCode'",
-              ),
-            ),
-        )
+    if (isPaid == true && payBandId != null) {
+      val payBandsResponse = getPrisonPayBandsService.execute(schedule.activity.prisonCode, filters)
+      if (payBandsResponse.errors.isNotEmpty()) return Response(data = null, errors = payBandsResponse.errors)
+      if (payBandsResponse.data!!.none { it.id == payBandId }) {
+        return badRequest("Pay band '$payBandId' does not exist for prison '${schedule.activity.prisonCode}'")
       }
     }
+    return null
+  }
 
-    val scheduleStart = LocalDate.parse(getScheduleByIdResponse.data.startDate)
-    val scheduleEnd = LocalDate.parse(getScheduleByIdResponse.data.endDate)
+  private fun validateAllocationWithinScheduleDates(
+    schedule: ActivitiesActivityScheduleDetailed,
+    request: PrisonerAllocationRequest,
+  ): Response<HmppsMessageResponse?>? {
+    val scheduleStart = LocalDate.parse(schedule.startDate)
+    val scheduleEnd = LocalDate.parse(schedule.endDate)
 
-    if (prisonerAllocationRequest.startDate < scheduleStart) {
-      return Response(
-        data = null,
-        errors =
-          listOf(
-            UpstreamApiError(
-              UpstreamApi.ACTIVITIES,
-              UpstreamApiError.Type.BAD_REQUEST,
-              "Allocation start date must not be before the activity schedule start date ($scheduleStart)",
-            ),
-          ),
-      )
+    if (request.startDate!! < scheduleStart) {
+      return badRequest("Allocation start date must not be before the activity schedule start date ($scheduleStart)")
     }
 
-    if (prisonerAllocationRequest.endDate != null && prisonerAllocationRequest.endDate > scheduleEnd) {
-      return Response(
-        data = null,
-        errors =
-          listOf(
-            UpstreamApiError(
-              UpstreamApi.ACTIVITIES,
-              UpstreamApiError.Type.BAD_REQUEST,
-              "Allocation end date must not be after the activity schedule end date ($scheduleEnd)",
-            ),
-          ),
-      )
+    if (request.endDate != null && request.endDate > scheduleEnd) {
+      return badRequest("Allocation end date must not be after the activity schedule end date ($scheduleEnd)")
     }
 
-    if (prisonerAllocationRequest.startDate > scheduleEnd) {
-      return Response(
-        data = null,
-        errors =
-          listOf(
-            UpstreamApiError(
-              UpstreamApi.ACTIVITIES,
-              UpstreamApiError.Type.BAD_REQUEST,
-              "Allocation start date cannot be after the activity schedule end date ($scheduleEnd)",
-            ),
-          ),
-      )
+    if (request.startDate > scheduleEnd) {
+      return badRequest("Allocation start date cannot be after the activity schedule end date ($scheduleEnd)")
     }
 
-    val prisonerNumber = prisonerAllocationRequest.prisonerNumber
-    val description = getScheduleByIdResponse.data.description
-    val prisonerStatus =
-      getScheduleByIdResponse.data.allocations
-        .find { it.prisonerNumber == prisonerNumber }
-        ?.status
-    val isPrisonerAlreadyInSchedule = getScheduleByIdResponse.data.allocations.none { it.prisonerNumber == prisonerNumber }
+    return null
+  }
 
-    if (!isPrisonerAlreadyInSchedule && prisonerStatus != "ENDED") {
-      return Response(
-        data = null,
-        errors =
-          listOf(
-            UpstreamApiError(
-              UpstreamApi.ACTIVITIES,
-              UpstreamApiError.Type.BAD_REQUEST,
-              "Prisoner with $prisonerNumber is already allocated to schedule $description.",
-            ),
-          ),
-      )
+  private fun validatePrisonerNotAlreadyAllocated(
+    schedule: ActivitiesActivityScheduleDetailed,
+    request: PrisonerAllocationRequest,
+  ): Response<HmppsMessageResponse?>? {
+    val prisonerNumber = request.prisonerNumber
+    val status = schedule.allocations.find { it.prisonerNumber == prisonerNumber }?.status
+    val alreadyAllocated = schedule.allocations.none { it.prisonerNumber == prisonerNumber }
+
+    return if (!alreadyAllocated && status != "ENDED") {
+      badRequest("Prisoner with $prisonerNumber is already allocated to schedule ${schedule.description}.")
+    } else {
+      null
     }
+  }
 
-    prisonerAllocationRequest.exclusions?.forEach { exclusion ->
-      val noMatchingSlot =
-        getScheduleByIdResponse.data.slots.none {
+  private fun validateExclusionSlots(
+    schedule: ActivitiesActivityScheduleDetailed,
+    request: PrisonerAllocationRequest,
+    scheduleId: Long,
+  ): Response<HmppsMessageResponse?>? {
+    request.exclusions?.forEach { exclusion ->
+      val noMatch =
+        schedule.slots.none {
           it.weekNumber == exclusion.weekNumber &&
             it.timeSlot == exclusion.timeSlot &&
             it.daysOfWeek.containsAll(exclusion.daysOfWeek)
         }
-
-      if (noMatchingSlot) {
-        return Response(
-          data = null,
-          errors =
-            listOf(
-              UpstreamApiError(
-                UpstreamApi.ACTIVITIES,
-                UpstreamApiError.Type.BAD_REQUEST,
-                "No ${exclusion.timeSlot} slots in week number ${exclusion.weekNumber} for schedule $scheduleId",
-              ),
-            ),
-        )
+      if (noMatch) {
+        return badRequest("No ${exclusion.timeSlot} slots in week number ${exclusion.weekNumber} for schedule $scheduleId")
       }
     }
-    val pendingWaitingListSearchRequest = WaitingListSearchRequest(prisonerNumbers = listOf(prisonerNumber!!), status = listOf("PENDING"))
-    val approvedWaitingListSearchRequest = WaitingListSearchRequest(prisonerNumbers = listOf(prisonerNumber), status = listOf("APPROVED"))
-    val pendingWaitListApplicationsResponse = getWaitingListApplicationsService.execute(prisonCode, pendingWaitingListSearchRequest, filters)
-    val approvedWaitListApplicationsResponse = getWaitingListApplicationsService.execute(prisonCode, approvedWaitingListSearchRequest, filters)
-
-    if (pendingWaitListApplicationsResponse.errors.isNotEmpty()) {
-      return Response(data = null, errors = pendingWaitListApplicationsResponse.errors)
-    }
-
-    if (approvedWaitListApplicationsResponse.errors.isNotEmpty()) {
-      return Response(data = null, errors = approvedWaitListApplicationsResponse.errors)
-    }
-
-    val pendingWaitingListApplications = pendingWaitListApplicationsResponse.data?.content
-    val approvedWaitingListApplications = approvedWaitListApplicationsResponse.data?.content
-
-    if (!pendingWaitingListApplications.isNullOrEmpty()) {
-      return Response(
-        data = null,
-        errors =
-          listOf(
-            UpstreamApiError(
-              UpstreamApi.ACTIVITIES,
-              UpstreamApiError.Type.CONFLICT,
-              "Prisoner has a PENDING waiting list application. It must be APPROVED before they can be allocated.",
-            ),
-          ),
-      )
-    }
-
-    if (approvedWaitingListApplications != null && approvedWaitingListApplications.size > 1) {
-      return Response(
-        data = null,
-        errors =
-          listOf(
-            UpstreamApiError(
-              UpstreamApi.ACTIVITIES,
-              UpstreamApiError.Type.CONFLICT,
-              "Prisoner has more than one APPROVED waiting list application. A prisoner can only have one approved waiting list application.",
-            ),
-          ),
-      )
-    }
-
-    val hmppsMessage = prisonerAllocationRequest.toHmppsMessage(who, scheduleId)
-    writeMessageToQueue(hmppsMessage, "Could not send prisoner allocation to queue")
-
-    return Response(HmppsMessageResponse(message = "Prisoner allocation written to queue"))
+    return null
   }
+
+  private fun validateWaitingListApplications(
+    prisonCode: String,
+    prisonerNumber: String,
+    filters: ConsumerFilters?,
+  ): Response<HmppsMessageResponse?>? {
+    val pendingReq = WaitingListSearchRequest(prisonerNumbers = listOf(prisonerNumber), status = listOf("PENDING"))
+    val approvedReq = WaitingListSearchRequest(prisonerNumbers = listOf(prisonerNumber), status = listOf("APPROVED"))
+    val pending = getWaitingListApplicationsService.execute(prisonCode, pendingReq, filters)
+    val approved = getWaitingListApplicationsService.execute(prisonCode, approvedReq, filters)
+
+    if (pending.errors.isNotEmpty()) return Response(data = null, errors = pending.errors)
+    if (approved.errors.isNotEmpty()) return Response(data = null, errors = approved.errors)
+
+    if (!pending.data?.content.isNullOrEmpty()) {
+      return conflict("Prisoner has a PENDING waiting list application. It must be APPROVED before they can be allocated.")
+    }
+
+    if ((approved.data?.content?.size ?: 0) > 1) {
+      return conflict("Prisoner has more than one APPROVED waiting list application. A prisoner can only have one approved waiting list application.")
+    }
+
+    return null
+  }
+
+  private fun badRequest(message: String) = Response<HmppsMessageResponse?>(data = null, errors = listOf(UpstreamApiError(UpstreamApi.ACTIVITIES, UpstreamApiError.Type.BAD_REQUEST, message)))
+
+  private fun conflict(message: String) = Response<HmppsMessageResponse?>(data = null, errors = listOf(UpstreamApiError(UpstreamApi.ACTIVITIES, UpstreamApiError.Type.CONFLICT, message)))
 
   private fun writeMessageToQueue(
     hmppsMessage: HmppsMessage,
