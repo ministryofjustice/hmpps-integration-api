@@ -182,7 +182,6 @@ class ActivitiesQueueService(
       }
     }
 
-//    Allocation Start date and end date must be within the start and end date of an activity
     val scheduleStart = LocalDate.parse(getScheduleByIdResponse.data.startDate)
     val scheduleEnd = LocalDate.parse(getScheduleByIdResponse.data.endDate)
 
@@ -214,20 +213,6 @@ class ActivitiesQueueService(
       )
     }
 
-    if (prisonerAllocationRequest.endDate != null && prisonerAllocationRequest.endDate < prisonerAllocationRequest.startDate) {
-      return Response(
-        data = null,
-        errors =
-          listOf(
-            UpstreamApiError(
-              UpstreamApi.ACTIVITIES,
-              UpstreamApiError.Type.BAD_REQUEST,
-              "Allocation end date cannot be before allocation start date",
-            ),
-          ),
-      )
-    }
-
     if (prisonerAllocationRequest.startDate > scheduleEnd) {
       return Response(
         data = null,
@@ -236,7 +221,7 @@ class ActivitiesQueueService(
             UpstreamApiError(
               UpstreamApi.ACTIVITIES,
               UpstreamApiError.Type.BAD_REQUEST,
-              "Allocation start date cannot be after the activity end date ($scheduleEnd)",
+              "Allocation start date cannot be after the activity schedule end date ($scheduleEnd)",
             ),
           ),
       )

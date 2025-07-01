@@ -20,6 +20,12 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean
 import software.amazon.awssdk.services.sqs.SqsAsyncClient
 import software.amazon.awssdk.services.sqs.model.SendMessageRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.ConsumerPrisonAccessService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ActivitiesGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesActivity
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesActivityCategory
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesActivityScheduleAllocation
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesActivityScheduleDetailed
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesSlot
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ActivityScheduleAllocation
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ActivityScheduleDetailed
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ActivityScheduleInstance
@@ -27,20 +33,26 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ActivitySch
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.AddCaseNoteRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Attendance
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.AttendanceUpdateRequest
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.EarliestReleaseDate
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Exclusion
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HmppsMessage
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HmppsMessageResponse
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PaginatedWaitingListApplications
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonPayBand
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerAllocationRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerDeallocationRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Slot
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.WaitingListApplication
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.WaitingListSearchRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.hmpps.sqs.HmppsQueue
 import uk.gov.justice.hmpps.sqs.HmppsQueueService
 import java.time.DayOfWeek
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
@@ -53,6 +65,9 @@ class ActivitiesQueueServiceTest(
   @MockitoBean val consumerPrisonAccessService: ConsumerPrisonAccessService,
   @MockitoBean val getAttendanceByIdService: GetAttendanceByIdService,
   @MockitoBean private val getScheduleDetailsService: GetScheduleDetailsService,
+  @MockitoBean private val getPrisonPayBandsService: GetPrisonPayBandsService,
+  @MockitoBean private val getWaitingListApplicationsService: GetWaitingListApplicationsService,
+  @MockitoBean private val activitiesGateway: ActivitiesGateway,
 ) : DescribeSpec(
     {
       val mockSqsClient = mock<SqsAsyncClient>()
@@ -343,6 +358,523 @@ class ActivitiesQueueServiceTest(
           val result = activitiesQueueService.sendPrisonerDeallocationRequest(scheduleId, invalidPrisonerDeallocationRequest, who, filters)
           result.data.shouldBeNull()
           result.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.ACTIVITIES, UpstreamApiError.Type.BAD_REQUEST, "Passed in end date cannot be after the end date of the schedule: ${activityScheduleDetailed.endDate}")))
+        }
+      }
+
+      describe("Prisoner allocation") {
+        val scheduleId = 123456L
+        val prisonerNumber = "A1234AA"
+        val activitiesActivityScheduleDetailed =
+          ActivitiesActivityScheduleDetailed(
+            id = scheduleId,
+            instances = emptyList(),
+            allocations =
+              listOf(
+                ActivitiesActivityScheduleAllocation(
+                  id = 1L,
+                  prisonerNumber = prisonerNumber,
+                  bookingId = 10001L,
+                  activitySummary = "Basic Education",
+                  activityId = 2001L,
+                  scheduleId = scheduleId,
+                  scheduleDescription = "Morning Education",
+                  isUnemployment = false,
+                  prisonPayBand = null,
+                  startDate = LocalDate.now().toString(),
+                  endDate = null,
+                  allocatedTime = null,
+                  allocatedBy = null,
+                  deallocatedTime = null,
+                  deallocatedBy = null,
+                  deallocatedReason = null,
+                  suspendedTime = null,
+                  suspendedBy = null,
+                  suspendedReason = null,
+                  status = "ACTIVE",
+                  plannedDeallocation = null,
+                  plannedSuspension = null,
+                  exclusions = emptyList(),
+                ),
+              ),
+            description = "Maths Level 1",
+            suspensions = emptyList(),
+            internalLocation = null,
+            capacity = 10,
+            activity =
+              ActivitiesActivity(
+                id = 2001L,
+                prisonCode = "MDI",
+                attendanceRequired = false,
+                inCell = false,
+                onWing = false,
+                offWing = false,
+                pieceWork = false,
+                outsideWork = false,
+                payPerSession = "H",
+                summary = "Maths class",
+                description = null,
+                category = ActivitiesActivityCategory(id = 1L, code = "EDUCATION", name = "Education", description = "Educational activities"),
+                riskLevel = "low",
+                minimumEducationLevel = emptyList(),
+                endDate = LocalDate.now().plusMonths(1).toString(),
+                capacity = 10,
+                allocated = 1,
+                createdTime = LocalDateTime.now(),
+                activityState = "LIVE",
+                paid = true,
+              ),
+            scheduleWeeks = 2,
+            slots =
+              listOf(
+                ActivitiesSlot(
+                  id = 1L,
+                  timeSlot = "AM",
+                  weekNumber = 1,
+                  startTime = "09:00",
+                  endTime = "11:00",
+                  daysOfWeek = listOf("Mon", "Tue", "Wed"),
+                  mondayFlag = true,
+                  tuesdayFlag = true,
+                  wednesdayFlag = true,
+                  thursdayFlag = false,
+                  fridayFlag = false,
+                  saturdayFlag = false,
+                  sundayFlag = false,
+                ),
+              ),
+            startDate = LocalDate.now().toString(),
+            endDate = LocalDate.now().plusMonths(6).toString(),
+            runsOnBankHoliday = false,
+            updatedTime = null,
+            updatedBy = null,
+            usePrisonRegimeTime = true,
+          )
+
+        val prisonPayBand =
+          listOf(
+            PrisonPayBand(
+              id = 1L,
+              alias = "pay band",
+              description = "pay band description",
+            ),
+          )
+
+        val paginatedWaitingListApplications =
+          PaginatedWaitingListApplications(
+            content =
+              listOf(
+                WaitingListApplication(
+                  id = 1L,
+                  activityId = 100L,
+                  scheduleId = 200L,
+                  allocationId = null,
+                  prisonId = "MDI",
+                  prisonerNumber = "A1234AA",
+                  bookingId = 300L,
+                  status = "PENDING",
+                  statusUpdatedTime = null,
+                  requestedDate = LocalDate.now(),
+                  comments = null,
+                  declinedReason = null,
+                  creationTime = LocalDateTime.now(),
+                  updatedTime = null,
+                  earliestReleaseDate =
+                    EarliestReleaseDate(
+                      releaseDate = LocalDate.now().plusMonths(6).toString(),
+                      isTariffDate = false,
+                      isIndeterminateSentence = false,
+                      isImmigrationDetainee = false,
+                      isConvictedUnsentenced = false,
+                      isRemand = false,
+                    ),
+                  nonAssociations = null,
+                ),
+              ),
+            totalPages = 1,
+            totalCount = 1L,
+            isLastPage = true,
+            count = 1,
+            page = 1,
+            perPage = 10,
+          )
+
+        beforeTest {
+          whenever(activitiesGateway.getActivityScheduleById(scheduleId))
+            .thenReturn(Response(data = activitiesActivityScheduleDetailed))
+
+          whenever(getPrisonPayBandsService.execute(prisonId, filters))
+            .thenReturn(Response(data = prisonPayBand))
+        }
+        it("Returns an error if allocation start date is in the past") {
+          val allocationRequest =
+            PrisonerAllocationRequest(
+              prisonerNumber = prisonerNumber,
+              startDate = LocalDate.now().minusMonths(1),
+              endDate = LocalDate.now().plusMonths(1),
+            )
+
+          val result = activitiesQueueService.sendPrisonerAllocationRequest(scheduleId, allocationRequest, who, filters)
+          result.data.shouldBeNull()
+          result.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.ACTIVITIES, UpstreamApiError.Type.BAD_REQUEST, "Allocation start date must not be in the past")))
+        }
+
+        it("Returns an error if allocation start date is not the same as or before the end date") {
+          val allocationRequest =
+            PrisonerAllocationRequest(
+              prisonerNumber = prisonerNumber,
+              startDate = LocalDate.now().plusMonths(1),
+              endDate = LocalDate.now(),
+            )
+
+          val result = activitiesQueueService.sendPrisonerAllocationRequest(scheduleId, allocationRequest, who, filters)
+          result.data.shouldBeNull()
+          result.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.ACTIVITIES, UpstreamApiError.Type.BAD_REQUEST, "Allocation start date must be the same as or before the end date")))
+        }
+
+        it("Returns an error if scheduleInstanceId is not provided when allocation start date is today") {
+          val allocationRequest =
+            PrisonerAllocationRequest(
+              prisonerNumber = prisonerNumber,
+              startDate = LocalDate.now(),
+              endDate = LocalDate.now().plusMonths(1),
+            )
+
+          val result = activitiesQueueService.sendPrisonerAllocationRequest(scheduleId, allocationRequest, who, filters)
+          result.data.shouldBeNull()
+          result.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.ACTIVITIES, UpstreamApiError.Type.BAD_REQUEST, "scheduleInstanceId must be provided when allocation start date is today")))
+        }
+
+        it("Returns an error if exclusion start time is after custom end time") {
+          val allocationRequest =
+            PrisonerAllocationRequest(
+              prisonerNumber = prisonerNumber,
+              startDate = LocalDate.now().plusDays(1),
+              endDate = LocalDate.now().plusMonths(1),
+              exclusions =
+                listOf(
+                  Slot(
+                    id = 101L,
+                    timeSlot = "AM",
+                    weekNumber = 1,
+                    startTime = "12:00",
+                    endTime = "09:00",
+                    daysOfWeek = listOf("Mon", "Wed", "Fri"),
+                    mondayFlag = true,
+                    tuesdayFlag = false,
+                    wednesdayFlag = true,
+                    thursdayFlag = false,
+                    fridayFlag = true,
+                    saturdayFlag = false,
+                    sundayFlag = false,
+                  ),
+                ),
+            )
+
+          val result = activitiesQueueService.sendPrisonerAllocationRequest(scheduleId, allocationRequest, who, filters)
+          result.data.shouldBeNull()
+          result.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.ACTIVITIES, UpstreamApiError.Type.BAD_REQUEST, "Exclusion start time cannot be after custom end time")))
+        }
+
+        it("Returns an error if the activities gateway returns an error") {
+          val allocationRequest =
+            PrisonerAllocationRequest(
+              prisonerNumber = prisonerNumber,
+              startDate = LocalDate.now().plusMonths(1),
+              endDate = LocalDate.now().plusMonths(2),
+            )
+
+          val error = UpstreamApiError(UpstreamApi.ACTIVITIES, UpstreamApiError.Type.BAD_REQUEST, "error from activities gateway")
+          whenever(activitiesGateway.getActivityScheduleById(scheduleId))
+            .thenReturn(Response(data = null, errors = listOf(error)))
+
+          val result = activitiesQueueService.sendPrisonerAllocationRequest(scheduleId, allocationRequest, who, filters)
+          result.data.shouldBeNull()
+          result.errors.shouldBe(listOf(error))
+        }
+
+        it("Returns an error when the allocation does not have a pay band when the activity is paid") {
+          val allocationRequest =
+            PrisonerAllocationRequest(
+              prisonerNumber = prisonerNumber,
+              startDate = LocalDate.now().plusMonths(1),
+              endDate = LocalDate.now().plusMonths(2),
+            )
+
+          val error = UpstreamApiError(UpstreamApi.ACTIVITIES, UpstreamApiError.Type.BAD_REQUEST, "Allocation must have a pay band when the activity is paid")
+          whenever(activitiesGateway.getActivityScheduleById(scheduleId))
+            .thenReturn(Response(data = activitiesActivityScheduleDetailed))
+
+          val result = activitiesQueueService.sendPrisonerAllocationRequest(scheduleId, allocationRequest, who, filters)
+          result.data.shouldBeNull()
+          result.errors.shouldBe(listOf(error))
+        }
+
+        it("Returns an error when the allocation has a pay band when the activity is not paid") {
+          val allocationRequest =
+            PrisonerAllocationRequest(
+              prisonerNumber = prisonerNumber,
+              startDate = LocalDate.now().plusMonths(1),
+              endDate = LocalDate.now().plusMonths(2),
+              payBandId = 1L,
+            )
+
+          val activitiesActivityScheduleDetailed = activitiesActivityScheduleDetailed.copy(activity = activitiesActivityScheduleDetailed.activity.copy(paid = false))
+          val error = UpstreamApiError(UpstreamApi.ACTIVITIES, UpstreamApiError.Type.BAD_REQUEST, "Allocation cannot have a pay band when the activity is unpaid")
+          whenever(activitiesGateway.getActivityScheduleById(scheduleId))
+            .thenReturn(Response(data = activitiesActivityScheduleDetailed))
+
+          val result = activitiesQueueService.sendPrisonerAllocationRequest(scheduleId, allocationRequest, who, filters)
+          result.data.shouldBeNull()
+          result.errors.shouldBe(listOf(error))
+        }
+
+        it("Returns an error if the prisonPayBandsService returns an error") {
+          val allocationRequest =
+            PrisonerAllocationRequest(
+              prisonerNumber = prisonerNumber,
+              startDate = LocalDate.now().plusMonths(1),
+              endDate = LocalDate.now().plusMonths(2),
+              payBandId = 1L,
+            )
+
+          val error = UpstreamApiError(UpstreamApi.ACTIVITIES, UpstreamApiError.Type.BAD_REQUEST, "error from prisonPayBandsService")
+          whenever(getPrisonPayBandsService.execute(prisonId, filters))
+            .thenReturn(Response(data = null, errors = listOf(error)))
+
+          val result = activitiesQueueService.sendPrisonerAllocationRequest(scheduleId, allocationRequest, who, filters)
+          result.data.shouldBeNull()
+          result.errors.shouldBe(listOf(error))
+        }
+
+        it("Returns an error if the prisoner allocation start date is before the schedule start date") {
+          val allocationRequest =
+            PrisonerAllocationRequest(
+              prisonerNumber = prisonerNumber,
+              startDate = LocalDate.now().plusMonths(1),
+              endDate = LocalDate.now().plusMonths(3),
+              payBandId = 1L,
+            )
+
+          val activitiesActivityScheduleDetailed = activitiesActivityScheduleDetailed.copy(startDate = LocalDate.now().plusMonths(2).toString(), allocations = emptyList())
+          val scheduleStart = LocalDate.parse(activitiesActivityScheduleDetailed.startDate)
+          val error = UpstreamApiError(UpstreamApi.ACTIVITIES, UpstreamApiError.Type.BAD_REQUEST, "Allocation start date must not be before the activity schedule start date ($scheduleStart)")
+          whenever(activitiesGateway.getActivityScheduleById(scheduleId))
+            .thenReturn(Response(data = activitiesActivityScheduleDetailed))
+
+          val result = activitiesQueueService.sendPrisonerAllocationRequest(scheduleId, allocationRequest, who, filters)
+          result.data.shouldBeNull()
+          result.errors.shouldBe(listOf(error))
+        }
+
+        it("Returns an error if the prisoner allocation end date is after the schedule end date") {
+          val allocationRequest =
+            PrisonerAllocationRequest(
+              prisonerNumber = prisonerNumber,
+              startDate = LocalDate.now().plusMonths(1),
+              endDate = LocalDate.now().plusMonths(7),
+              payBandId = 1L,
+            )
+
+          val scheduleEnd = LocalDate.parse(activitiesActivityScheduleDetailed.endDate)
+          val error = UpstreamApiError(UpstreamApi.ACTIVITIES, UpstreamApiError.Type.BAD_REQUEST, "Allocation end date must not be after the activity schedule end date ($scheduleEnd)")
+
+          val result = activitiesQueueService.sendPrisonerAllocationRequest(scheduleId, allocationRequest, who, filters)
+          result.data.shouldBeNull()
+          result.errors.shouldBe(listOf(error))
+        }
+
+        it("Returns an error if prisoner is already allocated and status is not ENDED") {
+          val allocationRequest =
+            PrisonerAllocationRequest(
+              prisonerNumber = prisonerNumber,
+              startDate = LocalDate.now().plusMonths(1),
+              payBandId = 1L,
+            )
+
+          val description = activitiesActivityScheduleDetailed.description
+          val error = UpstreamApiError(UpstreamApi.ACTIVITIES, UpstreamApiError.Type.BAD_REQUEST, "Prisoner with $prisonerNumber is already allocated to schedule $description.")
+
+          val result = activitiesQueueService.sendPrisonerAllocationRequest(scheduleId, allocationRequest, who, filters)
+          result.data.shouldBeNull()
+          result.errors.shouldBe(listOf(error))
+        }
+
+        it("Returns an error if no matching slot exists for an exclusion") {
+          val allocationRequest =
+            PrisonerAllocationRequest(
+              prisonerNumber = prisonerNumber,
+              startDate = LocalDate.now().plusMonths(1),
+              payBandId = 1L,
+              exclusions =
+                listOf(
+                  Slot(
+                    id = 1L,
+                    timeSlot = "PM",
+                    weekNumber = 2,
+                    startTime = "09:00",
+                    endTime = "11:00",
+                    daysOfWeek = listOf("Mon", "Tue", "Wed"),
+                    mondayFlag = true,
+                    tuesdayFlag = false,
+                    wednesdayFlag = true,
+                    thursdayFlag = false,
+                    fridayFlag = false,
+                    saturdayFlag = false,
+                    sundayFlag = false,
+                  ),
+                ),
+            )
+
+          val exclusion = allocationRequest.exclusions?.get(0)
+          val activitiesActivityScheduleDetailed = activitiesActivityScheduleDetailed.copy(allocations = emptyList())
+          val error = UpstreamApiError(UpstreamApi.ACTIVITIES, UpstreamApiError.Type.BAD_REQUEST, "No ${exclusion?.timeSlot} slots in week number ${exclusion?.weekNumber} for schedule $scheduleId")
+          whenever(activitiesGateway.getActivityScheduleById(scheduleId))
+            .thenReturn(Response(data = activitiesActivityScheduleDetailed))
+
+          val result = activitiesQueueService.sendPrisonerAllocationRequest(scheduleId, allocationRequest, who, filters)
+          result.data.shouldBeNull()
+          result.errors.shouldBe(listOf(error))
+        }
+
+        it("Returns an error if getWaitingListApplicationsService returns an error") {
+          val allocationRequest =
+            PrisonerAllocationRequest(
+              prisonerNumber = prisonerNumber,
+              startDate = LocalDate.now().plusMonths(1),
+              payBandId = 1L,
+              exclusions =
+                listOf(
+                  Slot(
+                    id = 1L,
+                    timeSlot = "AM",
+                    weekNumber = 1,
+                    startTime = "09:00",
+                    endTime = "11:00",
+                    daysOfWeek = listOf("Mon", "Tue", "Wed"),
+                    mondayFlag = true,
+                    tuesdayFlag = true,
+                    wednesdayFlag = true,
+                    thursdayFlag = false,
+                    fridayFlag = false,
+                    saturdayFlag = false,
+                    sundayFlag = false,
+                  ),
+                ),
+            )
+
+          val activitiesActivityScheduleDetailed = activitiesActivityScheduleDetailed.copy(allocations = emptyList())
+          val pendingWaitingListSearchRequest = WaitingListSearchRequest(prisonerNumbers = listOf(prisonerNumber), status = listOf("PENDING"))
+          val error = UpstreamApiError(UpstreamApi.ACTIVITIES, UpstreamApiError.Type.BAD_REQUEST, "error from getWaitingListApplicationsService")
+
+          whenever(activitiesGateway.getActivityScheduleById(scheduleId))
+            .thenReturn(Response(data = activitiesActivityScheduleDetailed))
+
+          whenever(getWaitingListApplicationsService.execute(prisonId, pendingWaitingListSearchRequest, filters))
+            .thenReturn(Response(data = null, errors = listOf(error)))
+
+          val result = activitiesQueueService.sendPrisonerAllocationRequest(scheduleId, allocationRequest, who, filters)
+          result.data.shouldBeNull()
+          result.errors.shouldBe(listOf(error))
+        }
+
+        it("Returns an error if prisoner has a PENDING waiting list application") {
+          val allocationRequest =
+            PrisonerAllocationRequest(
+              prisonerNumber = prisonerNumber,
+              startDate = LocalDate.now().plusMonths(1),
+              payBandId = 1L,
+              exclusions =
+                listOf(
+                  Slot(
+                    id = 1L,
+                    timeSlot = "AM",
+                    weekNumber = 1,
+                    startTime = "09:00",
+                    endTime = "11:00",
+                    daysOfWeek = listOf("Mon", "Tue", "Wed"),
+                    mondayFlag = true,
+                    tuesdayFlag = true,
+                    wednesdayFlag = true,
+                    thursdayFlag = false,
+                    fridayFlag = false,
+                    saturdayFlag = false,
+                    sundayFlag = false,
+                  ),
+                ),
+            )
+
+          val activitiesActivityScheduleDetailed = activitiesActivityScheduleDetailed.copy(allocations = emptyList())
+          val pendingWaitingListSearchRequest = WaitingListSearchRequest(prisonerNumbers = listOf(prisonerNumber), status = listOf("PENDING"))
+          val approvedWaitingListSearchRequest = WaitingListSearchRequest(prisonerNumbers = listOf(prisonerNumber), status = listOf("APPROVED"))
+          val error = UpstreamApiError(UpstreamApi.ACTIVITIES, UpstreamApiError.Type.CONFLICT, "Prisoner has a PENDING waiting list application. It must be APPROVED before they can be allocated.")
+
+          whenever(activitiesGateway.getActivityScheduleById(scheduleId))
+            .thenReturn(Response(data = activitiesActivityScheduleDetailed))
+
+          whenever(getWaitingListApplicationsService.execute(prisonId, pendingWaitingListSearchRequest, filters))
+            .thenReturn(Response(data = paginatedWaitingListApplications))
+
+          whenever(getWaitingListApplicationsService.execute(prisonId, approvedWaitingListSearchRequest, filters))
+            .thenReturn(Response(data = null))
+
+          val result = activitiesQueueService.sendPrisonerAllocationRequest(scheduleId, allocationRequest, who, filters)
+          result.data.shouldBeNull()
+          result.errors.shouldBe(listOf(error))
+        }
+
+        it("Returns an error if prisoner has more than one APPROVED waiting list application") {
+          val allocationRequest =
+            PrisonerAllocationRequest(
+              prisonerNumber = prisonerNumber,
+              startDate = LocalDate.now().plusMonths(1),
+              payBandId = 1L,
+              exclusions =
+                listOf(
+                  Slot(
+                    id = 1L,
+                    timeSlot = "AM",
+                    weekNumber = 1,
+                    startTime = "09:00",
+                    endTime = "11:00",
+                    daysOfWeek = listOf("Mon", "Tue", "Wed"),
+                    mondayFlag = true,
+                    tuesdayFlag = true,
+                    wednesdayFlag = true,
+                    thursdayFlag = false,
+                    fridayFlag = false,
+                    saturdayFlag = false,
+                    sundayFlag = false,
+                  ),
+                ),
+            )
+
+          val activitiesActivityScheduleDetailed = activitiesActivityScheduleDetailed.copy(allocations = emptyList())
+          val pendingWaitingListSearchRequest = WaitingListSearchRequest(prisonerNumbers = listOf(prisonerNumber), status = listOf("PENDING"))
+          val approvedWaitingListSearchRequest = WaitingListSearchRequest(prisonerNumbers = listOf(prisonerNumber), status = listOf("APPROVED"))
+          val pendingResponse = paginatedWaitingListApplications.copy(content = emptyList(), totalPages = 0, totalCount = 0L, count = 0)
+          val approvedResponse =
+            paginatedWaitingListApplications.copy(
+              content =
+                listOf(
+                  paginatedWaitingListApplications.content.first().copy(status = "APPROVED"),
+                  paginatedWaitingListApplications.content.first().copy(id = 2L, status = "APPROVED"),
+                ),
+            )
+
+          val error = UpstreamApiError(UpstreamApi.ACTIVITIES, UpstreamApiError.Type.CONFLICT, "Prisoner has more than one APPROVED waiting list application. A prisoner can only have one approved waiting list application.")
+
+          whenever(activitiesGateway.getActivityScheduleById(scheduleId))
+            .thenReturn(Response(data = activitiesActivityScheduleDetailed))
+
+          whenever(getWaitingListApplicationsService.execute(prisonId, pendingWaitingListSearchRequest, filters))
+            .thenReturn(Response(data = pendingResponse))
+
+          whenever(getWaitingListApplicationsService.execute(prisonId, approvedWaitingListSearchRequest, filters))
+            .thenReturn(Response(data = approvedResponse))
+
+          val result = activitiesQueueService.sendPrisonerAllocationRequest(scheduleId, allocationRequest, who, filters)
+          result.data.shouldBeNull()
+          result.errors.shouldBe(listOf(error))
         }
       }
     },
