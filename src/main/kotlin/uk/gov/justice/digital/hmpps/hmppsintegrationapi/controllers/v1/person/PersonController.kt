@@ -226,7 +226,7 @@ class PersonController(
   }
 
   @GetMapping("{hmppsId}/iep-level")
-  @Tag(name = "Visits")
+  @Tags(value = [Tag("Visits"), Tag("Activities")])
   @Operation(
     summary = "Returns a prisoners IEP level.",
     description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
