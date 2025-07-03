@@ -828,7 +828,7 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
             endDate = null,
             exclusions =
               prisonerAllocationRequest.exclusions
-                ?.mapIndexed { i, exclusion -> if (i == 0) exclusion.copy(monday = false, tuesday = false, wednesday = false) else exclusion },
+                ?.mapIndexed { i, exclusion -> if (i == 0) exclusion.copy(monday = false, tuesday = false, wednesday = false, friday = true) else exclusion },
           ),
         )
 
