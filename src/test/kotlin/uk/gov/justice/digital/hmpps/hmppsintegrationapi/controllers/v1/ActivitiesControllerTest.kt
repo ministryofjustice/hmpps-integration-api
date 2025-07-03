@@ -29,6 +29,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Exclusion
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HmppsMessageResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.InternalLocation
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonPayBand
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerAllocationRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerDeallocationRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ReasonForAttendance
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
@@ -611,6 +612,118 @@ class ActivitiesControllerTest(
             )
           val result = mockMvc.performAuthorised(path)
           result.response.status.shouldBe(403)
+        }
+      }
+
+      describe("POST /v1/activities/schedule/{scheduleId}/allocate") {
+        val scheduleId = 123456L
+        val prisonerNumber = "A1234AA"
+        val path = "$basePath/schedule/$scheduleId/allocate"
+        val who = "automated-test-client"
+        var filters = null
+        val prisonerAllocationRequest =
+          PrisonerAllocationRequest(
+            prisonerNumber = prisonerNumber,
+            startDate = LocalDate.now().plusMonths(1),
+            payBandId = 1L,
+            exclusions =
+              listOf(
+                Slot(
+                  id = 1L,
+                  timeSlot = "AM",
+                  weekNumber = 1,
+                  startTime = "09:00",
+                  endTime = "11:00",
+                  daysOfWeek = listOf("Mon", "Tue", "Wed"),
+                  mondayFlag = true,
+                  tuesdayFlag = true,
+                  wednesdayFlag = true,
+                  thursdayFlag = false,
+                  fridayFlag = false,
+                  saturdayFlag = false,
+                  sundayFlag = false,
+                ),
+              ),
+          )
+
+        it("should return 200 when success") {
+          whenever(activitiesQueueService.sendPrisonerAllocationRequest(scheduleId, prisonerAllocationRequest, who, filters))
+            .thenReturn(Response(data = HmppsMessageResponse("Prisoner allocation written to queue")))
+
+          val result = mockMvc.performAuthorisedPost(path, prisonerAllocationRequest)
+          result.response.status.shouldBe(HttpStatus.OK.value())
+          result.response
+            .contentAsJson<DataResponse<HmppsMessageResponse>>()
+            .shouldBe(DataResponse(data = HmppsMessageResponse("Prisoner allocation written to queue")))
+        }
+
+        it("should call the audit service") {
+          whenever(activitiesQueueService.sendPrisonerAllocationRequest(scheduleId, prisonerAllocationRequest, who, filters))
+            .thenReturn(Response(data = HmppsMessageResponse("Prisoner deallocation written to queue")))
+
+          mockMvc.performAuthorisedPost(path, prisonerAllocationRequest)
+
+          verify(auditService, times(1)).createEvent(
+            "POST_ALLOCATION_PRISONER_TO_ACTIVITY",
+            mapOf("scheduleId" to scheduleId.toString()),
+          )
+        }
+
+        it("returns 400 when activitiesQueueService returns bad request") {
+          whenever(activitiesQueueService.sendPrisonerAllocationRequest(scheduleId, prisonerAllocationRequest, who, filters))
+            .thenReturn(
+              Response(
+                data = null,
+                errors =
+                  listOf(
+                    UpstreamApiError(
+                      type = UpstreamApiError.Type.BAD_REQUEST,
+                      causedBy = UpstreamApi.ACTIVITIES,
+                    ),
+                  ),
+              ),
+            )
+
+          val result = mockMvc.performAuthorisedPost(path, prisonerAllocationRequest)
+          result.response.status.shouldBe(400)
+        }
+
+        it("returns 404 when activitiesQueueService returns not found") {
+          whenever(activitiesQueueService.sendPrisonerAllocationRequest(scheduleId, prisonerAllocationRequest, who, filters))
+            .thenReturn(
+              Response(
+                data = null,
+                errors =
+                  listOf(
+                    UpstreamApiError(
+                      type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+                      causedBy = UpstreamApi.ACTIVITIES,
+                    ),
+                  ),
+              ),
+            )
+
+          val result = mockMvc.performAuthorisedPost(path, prisonerAllocationRequest)
+          result.response.status.shouldBe(404)
+        }
+
+        it("returns 409 when activitiesQueueService returns conflict") {
+          whenever(activitiesQueueService.sendPrisonerAllocationRequest(scheduleId, prisonerAllocationRequest, who, filters))
+            .thenReturn(
+              Response(
+                data = null,
+                errors =
+                  listOf(
+                    UpstreamApiError(
+                      type = UpstreamApiError.Type.CONFLICT,
+                      causedBy = UpstreamApi.ACTIVITIES,
+                    ),
+                  ),
+              ),
+            )
+
+          val result = mockMvc.performAuthorisedPost(path, prisonerAllocationRequest)
+          result.response.status.shouldBe(409)
         }
       }
     },

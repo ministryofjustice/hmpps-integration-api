@@ -45,6 +45,7 @@ feature-flag:
   use-search-appointments-endpoint: true
   use-deallocation-endpoint: true
   use-deallocation-reasons-endpoint: true
+  use-allocation-endpoint: true
 
 authorisation:
   consumers:

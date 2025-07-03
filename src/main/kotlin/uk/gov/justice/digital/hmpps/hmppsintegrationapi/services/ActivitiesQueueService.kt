@@ -193,7 +193,7 @@ class ActivitiesQueueService(
     request: PrisonerAllocationRequest,
   ): Response<HmppsMessageResponse?>? {
     val scheduleStart = LocalDate.parse(schedule.startDate)
-    val scheduleEnd = LocalDate.parse(schedule.endDate)
+    val scheduleEnd = schedule.endDate?.let { LocalDate.parse(it) }
 
     if (request.startDate!! < scheduleStart) {
       return badRequest("Allocation start date must not be before the activity schedule start date ($scheduleStart)")
@@ -230,12 +230,20 @@ class ActivitiesQueueService(
     request: PrisonerAllocationRequest,
     scheduleId: Long,
   ): Response<HmppsMessageResponse?>? {
+    val daySet = setOf("MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN")
+
+    fun normaliseDays(days: List<String>) =
+      days.map {
+        val day = it.take(3).uppercase()
+        if (daySet.contains(day)) day else it
+      }
+
     request.exclusions?.forEach { exclusion ->
       val noMatch =
         schedule.slots.none {
           it.weekNumber == exclusion.weekNumber &&
             it.timeSlot == exclusion.timeSlot &&
-            it.daysOfWeek.containsAll(exclusion.daysOfWeek)
+            normaliseDays(it.daysOfWeek).containsAll(normaliseDays(exclusion.daysOfWeek))
         }
       if (noMatch) {
         return badRequest("No ${exclusion.timeSlot} slots in week number ${exclusion.weekNumber} for schedule $scheduleId")

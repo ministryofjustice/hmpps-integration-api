@@ -876,6 +876,61 @@ class ActivitiesQueueServiceTest(
           result.data.shouldBeNull()
           result.errors.shouldBe(listOf(error))
         }
+
+        it("successfully adds to message queue") {
+          val allocationRequest =
+            PrisonerAllocationRequest(
+              prisonerNumber = prisonerNumber,
+              startDate = LocalDate.now().plusMonths(1),
+              payBandId = 1L,
+              exclusions =
+                listOf(
+                  Slot(
+                    id = 1L,
+                    timeSlot = "AM",
+                    weekNumber = 1,
+                    startTime = "09:00",
+                    endTime = "11:00",
+                    daysOfWeek = listOf("Mon", "Tue", "Wed"),
+                    mondayFlag = true,
+                    tuesdayFlag = true,
+                    wednesdayFlag = true,
+                    thursdayFlag = false,
+                    fridayFlag = false,
+                    saturdayFlag = false,
+                    sundayFlag = false,
+                  ),
+                ),
+            )
+
+          val activitiesActivityScheduleDetailed = activitiesActivityScheduleDetailed.copy(allocations = emptyList())
+          val pendingWaitingListSearchRequest = WaitingListSearchRequest(prisonerNumbers = listOf(prisonerNumber), status = listOf("PENDING"))
+          val approvedWaitingListSearchRequest = WaitingListSearchRequest(prisonerNumbers = listOf(prisonerNumber), status = listOf("APPROVED"))
+          val response = paginatedWaitingListApplications.copy(content = emptyList(), totalPages = 0, totalCount = 0L, count = 0)
+
+          whenever(activitiesGateway.getActivityScheduleById(scheduleId))
+            .thenReturn(Response(data = activitiesActivityScheduleDetailed))
+
+          whenever(getWaitingListApplicationsService.execute(prisonId, pendingWaitingListSearchRequest, filters))
+            .thenReturn(Response(data = response))
+
+          whenever(getWaitingListApplicationsService.execute(prisonId, approvedWaitingListSearchRequest, filters))
+            .thenReturn(Response(data = response))
+          val messageBody = """{"messageId": "1", "eventType": "AllocatePrisonerFromActivitySchedule", "messageAttributes": {}, who: "$who"}"""
+          whenever(objectMapper.writeValueAsString(any<HmppsMessage>())).thenReturn(messageBody)
+
+          val result = activitiesQueueService.sendPrisonerAllocationRequest(scheduleId, allocationRequest, who, filters)
+          result.data.shouldBeTypeOf<HmppsMessageResponse>()
+          result.data.message.shouldBe("Prisoner allocation written to queue")
+          result.errors.shouldBeEmpty()
+
+          verify(mockSqsClient).sendMessage(
+            argThat<SendMessageRequest> { request: SendMessageRequest? ->
+              request?.queueUrl() == "https://test-queue-url" &&
+                request.messageBody() == messageBody
+            },
+          )
+        }
       }
     },
   )

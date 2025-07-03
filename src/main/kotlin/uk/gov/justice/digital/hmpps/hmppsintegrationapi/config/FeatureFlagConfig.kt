@@ -26,6 +26,7 @@ data class FeatureFlagConfig(
     const val USE_SEARCH_APPOINTMENTS_ENDPOINT = "use-search-appointments-endpoint"
     const val USE_DEALLOCATION_ENDPOINT = "use-deallocation-endpoint"
     const val USE_DEALLOCATION_REASONS_ENDPOINT = "use-deallocation-reasons-endpoint"
+    const val USE_ALLOCATION_ENDPOINT = "use-allocation-endpoint"
   }
 
   /**
