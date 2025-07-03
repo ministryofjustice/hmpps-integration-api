@@ -222,10 +222,9 @@ class ActivitiesQueueService(
     request: PrisonerAllocationRequest,
   ): Response<HmppsMessageResponse?>? {
     val prisonerNumber = request.prisonerNumber
-    val status = schedule.allocations.find { it.prisonerNumber == prisonerNumber }?.status
-    val alreadyAllocated = schedule.allocations.none { it.prisonerNumber == prisonerNumber }
+    val allocation = schedule.allocations.find { it.prisonerNumber == prisonerNumber }
 
-    return if (!alreadyAllocated && status != "ENDED") {
+    return if (allocation != null && allocation.status != "ENDED") {
       badRequest("Prisoner with $prisonerNumber is already allocated to schedule ${schedule.description}.")
     } else {
       null
