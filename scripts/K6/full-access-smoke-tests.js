@@ -177,7 +177,7 @@ const putDeallocationData = JSON.stringify({
 })
 
 const postAllocationEndpoint = `/v1/activities/schedule/${scheduleId}/allocate`
-const postAllocationData = JSON.stringify([{
+const postAllocationData = JSON.stringify({
   prisonerNumber: hmppsId,
   startDate: "2024-08-08",
   endDate: "2024-09-08",
@@ -198,9 +198,9 @@ const postAllocationData = JSON.stringify([{
       saturdayFlag: false,
       sundayFlag: false
     }
-  ]
-}])
-
+  ],
+  testEvent: "TestEvent"
+})
 
 export default function ()  {
   const params = {
