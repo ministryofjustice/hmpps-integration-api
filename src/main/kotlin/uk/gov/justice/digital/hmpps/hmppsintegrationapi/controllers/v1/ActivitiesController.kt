@@ -353,6 +353,10 @@ class ActivitiesController(
         content = [Content(schema = Schema(ref = "#/components/schemas/NotFoundError"))],
       ),
       ApiResponse(
+        responseCode = "409",
+        content = [Content(schema = Schema(ref = "#/components/schemas/ConflictResponse"))],
+      ),
+      ApiResponse(
         responseCode = "500",
         content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))],
       ),
