@@ -337,7 +337,7 @@ class ActivitiesController(
       ApiResponse(
         responseCode = "200",
         useReturnTypeSchema = true,
-        description = "Prisoner678 allocation written to queue.",
+        description = "Prisoner allocation written to queue.",
       ),
       ApiResponse(
         responseCode = "400",
