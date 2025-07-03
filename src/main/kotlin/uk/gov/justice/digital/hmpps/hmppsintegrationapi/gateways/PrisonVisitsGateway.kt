@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways
 
-import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
@@ -155,10 +154,5 @@ class PrisonVisitsGateway(
     return mapOf(
       "Authorization" to "Bearer $token",
     )
-  }
-
-  fun mapToVisits(result: WebClientWrapperResponse.Success<List<PVVisit>?>): List<PVVisit> {
-    val mappedResult: List<PVVisit> = mapper.convertValue(result.data, object : TypeReference<List<PVVisit>>() {})
-    return mappedResult
   }
 }
