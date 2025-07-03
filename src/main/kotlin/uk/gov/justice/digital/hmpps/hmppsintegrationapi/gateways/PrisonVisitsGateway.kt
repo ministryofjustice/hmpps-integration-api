@@ -99,7 +99,7 @@ class PrisonVisitsGateway(
 
   fun getFutureVisits(prisonerId: String): Response<List<PVVisit>?> {
     val result =
-      webClient.request<List<PVVisit>?>(
+      webClient.requestList<PVVisit>(
         HttpMethod.GET,
         "/visits/search/future/$prisonerId",
         authenticationHeader(),
@@ -110,7 +110,7 @@ class PrisonVisitsGateway(
     return when (result) {
       is WebClientWrapperResponse.Success -> {
         Response(
-          data = mapToVisits(result),
+          data = result.data,
         )
       }
 
