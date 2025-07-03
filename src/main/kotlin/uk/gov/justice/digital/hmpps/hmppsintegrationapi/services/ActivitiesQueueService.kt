@@ -109,6 +109,13 @@ class ActivitiesQueueService(
     who: String,
     filters: ConsumerFilters?,
   ): Response<HmppsMessageResponse?> {
+    if (prisonerAllocationRequest.testEvent == "TestEvent") {
+      val testMessage = prisonerAllocationRequest.toTestMessage(actionedBy = who)
+      writeMessageToQueue(testMessage, "Could not send prisoner allocation to queue")
+
+      return Response(HmppsMessageResponse(message = "Prisoner allocation written to queue"))
+    }
+
     val today = LocalDate.now()
 
     validateAllocationDates(prisonerAllocationRequest, today)?.let { return it }

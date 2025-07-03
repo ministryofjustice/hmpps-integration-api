@@ -1007,5 +1007,37 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
         .andExpect(MockMvcResultMatchers.jsonPath("$.userMessage").value("Conflict: Prisoner has more than one APPROVED waiting list application. A prisoner can only have one approved waiting list application."))
       checkQueueIsEmpty()
     }
+
+    @Test
+    fun `successfully adds test message to queue`() {
+      val requestBody = asJsonString(prisonerAllocationRequest.copy(testEvent = "TestEvent"))
+      postToApi(path, requestBody)
+        .andExpect(MockMvcResultMatchers.status().isOk)
+        .andExpect(
+          MockMvcResultMatchers.content().json(
+            """
+            {
+              "data": {
+                "message": "Prisoner allocation written to queue"
+              }
+            }
+            """.trimIndent(),
+          ),
+        )
+
+      await untilCallTo { getNumberOfMessagesCurrentlyOnQueue() } matches { it == 1 }
+
+      val queueMessages = getQueueMessages()
+      queueMessages.size.shouldBe(1)
+
+      val messageJson = queueMessages[0].body()
+      val expectedMessage = prisonerAllocationRequest.toTestMessage(defaultCn)
+      messageJson.shouldContainJsonKeyValue("$.eventType", expectedMessage.eventType.eventTypeCode)
+      messageJson.shouldContainJsonKeyValue("$.who", defaultCn)
+      val objectMapper = jacksonObjectMapper()
+      val messageAttributes = objectMapper.readTree(messageJson).at("/messageAttributes")
+      val expectedMessageAttributes = objectMapper.readTree(objectMapper.writeValueAsString(expectedMessage.messageAttributes))
+      messageAttributes.shouldBe(expectedMessageAttributes)
+    }
   }
 }

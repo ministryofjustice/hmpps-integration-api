@@ -931,6 +931,46 @@ class ActivitiesQueueServiceTest(
             },
           )
         }
+
+        it("successfully adds test message to message queue") {
+          val allocationRequest =
+            PrisonerAllocationRequest(
+              prisonerNumber = prisonerNumber,
+              startDate = LocalDate.now().plusMonths(1),
+              payBandId = 1L,
+              exclusions =
+                listOf(
+                  Slot(
+                    id = 1L,
+                    timeSlot = "AM",
+                    weekNumber = 1,
+                    startTime = "09:00",
+                    endTime = "11:00",
+                    daysOfWeek = listOf("Mon", "Tue", "Wed"),
+                    mondayFlag = true,
+                    tuesdayFlag = true,
+                    wednesdayFlag = true,
+                    thursdayFlag = false,
+                    fridayFlag = false,
+                    saturdayFlag = false,
+                    sundayFlag = false,
+                  ),
+                ),
+              testEvent = "TestEvent",
+            )
+          val messageBody = """{"messageId": "1", "eventType": "TestEvent", "messageAttributes": {}}"""
+          whenever(objectMapper.writeValueAsString(any<HmppsMessage>())).thenReturn(messageBody)
+
+          val result = activitiesQueueService.sendPrisonerAllocationRequest(scheduleId, allocationRequest, who, filters)
+          result.data.shouldBeTypeOf<HmppsMessageResponse>()
+
+          verify(mockSqsClient).sendMessage(
+            argThat<SendMessageRequest> { request: SendMessageRequest? ->
+              request?.queueUrl() == "https://test-queue-url" &&
+                request.messageBody() == messageBody
+            },
+          )
+        }
       }
     },
   )

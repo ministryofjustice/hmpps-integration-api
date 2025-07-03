@@ -36,6 +36,8 @@ data class PrisonerAllocationRequest(
   val exclusions: List<Slot>? = null,
   @Schema(description = "The scheduled instance id required when allocation starts today")
   val scheduleInstanceId: Long? = null,
+  @Schema(description = "For internal use only")
+  val testEvent: String? = null,
 ) {
   private fun modelToMap(scheduleId: Long): Map<String, Any?> =
     mapOf(
