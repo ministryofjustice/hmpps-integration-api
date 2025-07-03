@@ -15,12 +15,13 @@ import org.springframework.http.HttpStatus
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.AddCaseNoteRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.AttendanceUpdateRequest
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Exclusion
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerAllocationRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerDeallocationRequest
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Slot
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.toHmppsMessage
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.toTestMessage
 import java.io.File
+import java.time.DayOfWeek
 import java.time.LocalDate
 
 class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
@@ -484,20 +485,19 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
         payBandId = 123456L,
         exclusions =
           listOf(
-            Slot(
-              id = 1L,
+            Exclusion(
               timeSlot = "AM",
               weekNumber = 1,
-              startTime = "09:00",
-              endTime = "11:00",
-              daysOfWeek = listOf("Mon", "Tue", "Wed"),
-              mondayFlag = true,
-              tuesdayFlag = true,
-              wednesdayFlag = true,
-              thursdayFlag = false,
-              fridayFlag = false,
-              saturdayFlag = false,
-              sundayFlag = false,
+              customStartTime = "09:00",
+              customEndTime = "11:00",
+              daysOfWeek = setOf(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY),
+              monday = true,
+              tuesday = true,
+              wednesday = true,
+              thursday = false,
+              friday = false,
+              saturday = false,
+              sunday = false,
             ),
           ),
       )
@@ -637,20 +637,19 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
     @Test
     fun `return 400 when exclusion start time is after end time`() {
       val invalidExclusion =
-        Slot(
-          id = 1L,
+        Exclusion(
           timeSlot = "AM",
           weekNumber = 1,
-          startTime = "12:00",
-          endTime = "11:00",
-          daysOfWeek = listOf("Mon"),
-          mondayFlag = true,
-          tuesdayFlag = false,
-          wednesdayFlag = false,
-          thursdayFlag = false,
-          fridayFlag = false,
-          saturdayFlag = false,
-          sundayFlag = false,
+          customStartTime = "11:00",
+          customEndTime = "09:00",
+          daysOfWeek = setOf(DayOfWeek.MONDAY),
+          monday = false,
+          tuesday = false,
+          wednesday = false,
+          thursday = false,
+          friday = true,
+          saturday = false,
+          sunday = false,
         )
       val requestBody = asJsonString(prisonerAllocationRequest.copy(exclusions = listOf(invalidExclusion)))
       postToApi(path, requestBody)
@@ -684,7 +683,6 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
       )
       val requestBody = asJsonString(prisonerAllocationRequest)
       postToApi(path, requestBody)
-        .andExpect(MockMvcResultMatchers.status().isBadRequest)
         .andExpect(MockMvcResultMatchers.status().isBadRequest)
         .andExpect(MockMvcResultMatchers.jsonPath("$.userMessage").value("Invalid query parameters: Allocation cannot have a pay band when the activity is unpaid"))
       checkQueueIsEmpty()
@@ -830,7 +828,7 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
             endDate = null,
             exclusions =
               prisonerAllocationRequest.exclusions
-                ?.mapIndexed { i, slot -> if (i == 0) slot.copy(daysOfWeek = listOf("Fri")) else slot },
+                ?.mapIndexed { i, exclusion -> if (i == 0) exclusion.copy(monday = false, tuesday = false, wednesday = false) else exclusion },
           ),
         )
 
@@ -922,71 +920,8 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
       )
 
       val responseBody =
-        File("$gatewaysFolder/activities/fixtures/GetWaitingListApplications.json")
+        File("$gatewaysFolder/activities/fixtures/GetWaitingListApplicationsMultipleApproved.json")
           .readText()
-          .replace(
-            Regex("\"content\": \\[.*?]", RegexOption.DOT_MATCHES_ALL),
-            """
-            "content": [
-              {
-                "id": 111111,
-                "activityId": 1000,
-                "scheduleId": 222222,
-                "allocationId": 333333,
-                "prisonCode": "PVI",
-                "prisonerNumber": "A1234AA",
-                "bookingId": 10001,
-                "status": "APPROVED",
-                "statusUpdatedTime": "2023-06-04T16:30:00",
-                "requestedDate": "2023-06-23",
-                "requestedBy": "Fred Bloggs",
-                "comments": "The prisoner has specifically requested to attend this activity",
-                "declinedReason": "The prisoner has specifically requested to attend this activity",
-                "creationTime": "2023-01-03T12:00:00",
-                "createdBy": "Jon Doe",
-                "updatedTime": "2023-01-04T16:30:00",
-                "updatedBy": "Jane Doe",
-                "earliestReleaseDate": {
-                  "releaseDate": "2027-09-20",
-                  "isTariffDate": true,
-                  "isIndeterminateSentence": true,
-                  "isImmigrationDetainee": true,
-                  "isConvictedUnsentenced": true,
-                  "isRemand": true
-                },
-                "nonAssociations": true
-              },
-              {
-                "id": 222222,
-                "activityId": 1000,
-                "scheduleId": 222222,
-                "allocationId": 333333,
-                "prisonCode": "PVI",
-                "prisonerNumber": "A1234AA",
-                "bookingId": 10001,
-                "status": "APPROVED",
-                "statusUpdatedTime": "2023-06-05T16:30:00",
-                "requestedDate": "2023-06-24",
-                "requestedBy": "Fred Bloggs",
-                "comments": "The prisoner wants to attend this activity",
-                "declinedReason": "No decline",
-                "creationTime": "2023-01-04T12:00:00",
-                "createdBy": "Jon Doe",
-                "updatedTime": "2023-01-05T16:30:00",
-                "updatedBy": "Jane Doe",
-                "earliestReleaseDate": {
-                  "releaseDate": "2027-10-20",
-                  "isTariffDate": true,
-                  "isIndeterminateSentence": true,
-                  "isImmigrationDetainee": true,
-                  "isConvictedUnsentenced": true,
-                  "isRemand": true
-                },
-                "nonAssociations": true
-              }
-            ]
-            """.trimIndent(),
-          )
 
       activitiesMockServer.stubForPost(
         "/waiting-list-applications/$prisonCode/search?page=0&pageSize=50",

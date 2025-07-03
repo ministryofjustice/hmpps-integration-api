@@ -13,9 +13,10 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_UPDATE_ATTENDANCE_ENDPOINT
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.FeatureNotEnabledException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.AddCaseNoteRequest
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Exclusion
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerAllocationRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerDeallocationRequest
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Slot
+import java.time.DayOfWeek
 import java.time.LocalDate
 
 internal class FeatureFlaggedEndpointsIntegrationTest : IntegrationTestBase() {
@@ -125,20 +126,19 @@ internal class FeatureFlaggedEndpointsIntegrationTest : IntegrationTestBase() {
         payBandId = 123456L,
         exclusions =
           listOf(
-            Slot(
-              id = 1L,
+            Exclusion(
               timeSlot = "AM",
               weekNumber = 1,
-              startTime = "09:00",
-              endTime = "11:00",
-              daysOfWeek = listOf("Mon", "Tue", "Wed"),
-              mondayFlag = true,
-              tuesdayFlag = true,
-              wednesdayFlag = true,
-              thursdayFlag = false,
-              fridayFlag = false,
-              saturdayFlag = false,
-              sundayFlag = false,
+              customStartTime = "09:00",
+              customEndTime = "11:00",
+              daysOfWeek = setOf(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY),
+              monday = true,
+              tuesday = true,
+              wednesday = true,
+              thursday = false,
+              friday = false,
+              saturday = false,
+              sunday = false,
             ),
           ),
       )

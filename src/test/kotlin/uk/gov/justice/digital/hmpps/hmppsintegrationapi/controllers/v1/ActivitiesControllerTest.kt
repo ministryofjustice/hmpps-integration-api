@@ -235,7 +235,7 @@ class ActivitiesControllerTest(
                         sunday = true,
                         customStartTime = null,
                         customEndTime = null,
-                        daysOfWeek = listOf(DayOfWeek.SUNDAY),
+                        daysOfWeek = setOf(DayOfWeek.SUNDAY),
                       ),
                     ),
                 ),
@@ -628,20 +628,19 @@ class ActivitiesControllerTest(
             payBandId = 1L,
             exclusions =
               listOf(
-                Slot(
-                  id = 1L,
+                Exclusion(
                   timeSlot = "AM",
                   weekNumber = 1,
-                  startTime = "09:00",
-                  endTime = "11:00",
-                  daysOfWeek = listOf("Mon", "Tue", "Wed"),
-                  mondayFlag = true,
-                  tuesdayFlag = true,
-                  wednesdayFlag = true,
-                  thursdayFlag = false,
-                  fridayFlag = false,
-                  saturdayFlag = false,
-                  sundayFlag = false,
+                  customStartTime = "09:00",
+                  customEndTime = "11:00",
+                  daysOfWeek = setOf(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY),
+                  monday = true,
+                  tuesday = true,
+                  wednesday = true,
+                  thursday = false,
+                  friday = false,
+                  saturday = false,
+                  sunday = false,
                 ),
               ),
           )
@@ -659,12 +658,12 @@ class ActivitiesControllerTest(
 
         it("should call the audit service") {
           whenever(activitiesQueueService.sendPrisonerAllocationRequest(scheduleId, prisonerAllocationRequest, who, filters))
-            .thenReturn(Response(data = HmppsMessageResponse("Prisoner deallocation written to queue")))
+            .thenReturn(Response(data = HmppsMessageResponse("Prisoner allocation written to queue")))
 
           mockMvc.performAuthorisedPost(path, prisonerAllocationRequest)
 
           verify(auditService, times(1)).createEvent(
-            "POST_ALLOCATION_PRISONER_TO_ACTIVITY",
+            "POST_ALLOCATION",
             mapOf("scheduleId" to scheduleId.toString()),
           )
         }

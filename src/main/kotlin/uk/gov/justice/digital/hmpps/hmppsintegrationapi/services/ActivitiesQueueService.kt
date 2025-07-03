@@ -163,7 +163,7 @@ class ActivitiesQueueService(
     }
 
   private fun validateExclusionTimes(request: PrisonerAllocationRequest): Response<HmppsMessageResponse?>? {
-    if (request.exclusions?.any { it.startTime > it.endTime } == true) {
+    if (request.exclusions?.any { it.customStartTime != null && it.customEndTime != null && it.customStartTime > it.customEndTime } == true) {
       return badRequest("Exclusion start time cannot be after custom end time")
     }
     return null
@@ -177,15 +177,15 @@ class ActivitiesQueueService(
     val isPaid = schedule.activity.paid
     val payBandId = request.payBandId
 
-    if (isPaid == true && payBandId == null) {
+    if (isPaid && payBandId == null) {
       return badRequest("Allocation must have a pay band when the activity is paid")
     }
 
-    if (isPaid == false && payBandId != null) {
+    if (!isPaid && payBandId != null) {
       return badRequest("Allocation cannot have a pay band when the activity is unpaid")
     }
 
-    if (isPaid == true && payBandId != null) {
+    if (isPaid && payBandId != null) {
       val payBandsResponse = getPrisonPayBandsService.execute(schedule.activity.prisonCode, filters)
       if (payBandsResponse.errors.isNotEmpty()) return Response(data = null, errors = payBandsResponse.errors)
       if (payBandsResponse.data!!.none { it.id == payBandId }) {
@@ -236,20 +236,12 @@ class ActivitiesQueueService(
     request: PrisonerAllocationRequest,
     scheduleId: Long,
   ): Response<HmppsMessageResponse?>? {
-    val daySet = setOf("MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN")
-
-    fun normaliseDays(days: List<String>) =
-      days.map {
-        val day = it.take(3).uppercase()
-        if (daySet.contains(day)) day else it
-      }
-
     request.exclusions?.forEach { exclusion ->
       val noMatch =
         schedule.slots.none {
           it.weekNumber == exclusion.weekNumber &&
             it.timeSlot == exclusion.timeSlot &&
-            normaliseDays(it.daysOfWeek).containsAll(normaliseDays(exclusion.daysOfWeek))
+            it.getDaysOfWeek().containsAll(exclusion.toDaysOfWeek())
         }
       if (noMatch) {
         return badRequest("No ${exclusion.timeSlot} slots in week number ${exclusion.weekNumber} for schedule $scheduleId")

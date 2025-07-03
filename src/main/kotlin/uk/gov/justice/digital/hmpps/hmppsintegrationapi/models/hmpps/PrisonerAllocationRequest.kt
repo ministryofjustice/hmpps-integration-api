@@ -18,7 +18,7 @@ data class PrisonerAllocationRequest(
   @Schema(description = "The prisoner number (Nomis ID)", example = "A1234AA")
   @field:NotBlank(message = "Prisoner number must be supplied")
   @field:Size(max = 7, message = "Prisoner number cannot be more than 7 characters")
-  val prisonerNumber: String?,
+  val prisonerNumber: String,
   @Schema(
     description = "Where a prison uses pay bands to differentiate earnings, this is the pay band code given to this prisoner. Can be null for unpaid activities.",
     example = "1",
@@ -28,12 +28,12 @@ data class PrisonerAllocationRequest(
   @JsonFormat(pattern = "yyyy-MM-dd")
   @field:NotNull(message = "Start date must be supplied")
   @field:FutureOrPresent(message = "Start date must not be in the past")
-  val startDate: LocalDate? = null,
+  val startDate: LocalDate,
   @Schema(description = "The date when the prisoner will stop attending the activity", example = "2023-09-10")
   @JsonFormat(pattern = "yyyy-MM-dd")
   val endDate: LocalDate? = null,
   @Schema(description = "The days and times that the prisoner is excluded from this activity's schedule")
-  val exclusions: List<Slot>? = null,
+  val exclusions: List<Exclusion>? = null,
   @Schema(description = "The scheduled instance id required when allocation starts today")
   val scheduleInstanceId: Long? = null,
   @Schema(description = "For internal use only")
@@ -49,19 +49,18 @@ data class PrisonerAllocationRequest(
       "exclusions" to
         exclusions?.map {
           mapOf(
-            "id" to it.id,
             "timeSlot" to it.timeSlot,
             "weekNumber" to it.weekNumber,
-            "startTime" to it.startTime,
-            "endTime" to it.endTime,
-            "daysOfWeek" to it.daysOfWeek,
-            "mondayFlag" to it.mondayFlag,
-            "tuesdayFlag" to it.tuesdayFlag,
-            "wednesdayFlag" to it.wednesdayFlag,
-            "thursdayFlag" to it.thursdayFlag,
-            "fridayFlag" to it.fridayFlag,
-            "saturdayFlag" to it.saturdayFlag,
-            "sundayFlag" to it.sundayFlag,
+            "monday" to it.monday,
+            "tuesday" to it.tuesday,
+            "wednesday" to it.wednesday,
+            "thursday" to it.thursday,
+            "friday" to it.friday,
+            "saturday" to it.saturday,
+            "sunday" to it.sunday,
+            "customStartTime" to it.customStartTime,
+            "customEndTime" to it.customEndTime,
+            "daysOfWeek" to it.toDaysOfWeek(),
           )
         },
       "scheduleInstanceId" to scheduleInstanceId,
