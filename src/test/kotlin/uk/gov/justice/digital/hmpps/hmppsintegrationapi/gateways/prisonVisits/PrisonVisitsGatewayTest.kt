@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonVisitsGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
@@ -85,25 +86,25 @@ class PrisonVisitsGatewayTest(
               "startTimestamp": "2018-12-01T13:45:00",
               "endTimestamp": "2018-12-01T13:45:00",
               "visitNotes": [
-              {
-                "type": "VISITOR_CONCERN",
-                "text": "Visitor is concerned that his mother in-law is coming!"
-              }
+                {
+                  "type": "VISITOR_CONCERN",
+                  "text": "Visitor is concerned that his mother in-law is coming!"
+                }
               ],
               "visitContact": {
-              "name": "John Smith",
-              "telephone": "01234 567890",
-              "email": "email@example.com"
-            },
+                "name": "John Smith",
+                "telephone": "01234 567890",
+                "email": "email@example.com"
+              },
               "visitors": [
-              {
-                "nomisPersonId": 1234,
-                "visitContact": true
-              }
+                {
+                  "nomisPersonId": 1234,
+                  "visitContact": true
+                }
               ],
               "visitorSupport": {
-              "description": "visually impaired assistance"
-            },
+                "description": "visually impaired assistance"
+              },
               "createdTimestamp": "2018-12-01T13:45:00",
               "modifiedTimestamp": "2018-12-01T13:45:00",
               "firstBookedDateTime": "2018-12-01T13:45:00"
@@ -219,13 +220,12 @@ class PrisonVisitsGatewayTest(
               "visit_1",
               "visit_2"
             ]
-            """.trimIndent()
+            """.removeWhitespaceAndNewlines()
 
           prisonVisitsApiMockServer.stubForGet(path, body = exampleData, HttpStatus.OK)
 
           val response = prisonVisitsGateway.getVisitReferencesByClientReference(clientReference)
           response.data.shouldNotBeNull()
-          response.data.visitReferences.shouldBe(1)
           response.data.visitReferences.shouldBe(listOf("visit_1", "visit_2"))
         }
 
