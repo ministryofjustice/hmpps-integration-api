@@ -176,6 +176,32 @@ const putDeallocationData = JSON.stringify({
   scheduleInstanceId: 1234
 })
 
+const postAllocationEndpoint = `/v1/activities/schedule/${scheduleId}/allocate`
+const postAllocationData = JSON.stringify({
+  prisonerNumber: hmppsId,
+  startDate: "2024-08-08",
+  endDate: "2024-09-08",
+  payBandId: 123456,
+  exclusions: [
+    {
+      id: 1,
+      timeSlot: "AM",
+      weekNumber: 1,
+      startTime: "09:00",
+      endTime: "11:00",
+      daysOfWeek: ["Mon", "Tue", "Wed"],
+      mondayFlag: true,
+      tuesdayFlag: true,
+      wednesdayFlag: true,
+      thursdayFlag: false,
+      fridayFlag: false,
+      saturdayFlag: false,
+      sundayFlag: false
+    }
+  ],
+  testEvent: "TestEvent"
+})
+
 export default function ()  {
   const params = {
     headers: {
@@ -217,6 +243,13 @@ export default function ()  {
     [`PUT ${putDeallocationEndpoint} returns 200`]: (r) => r.status === 200,
   })) {
     exec.test.fail(`${putDeallocationEndpoint} caused the test to fail`)
+  }
+
+  const postAllocationRes = http.put(`${baseUrl}${postAllocationEndpoint}`, postAllocationData, params);
+  if (!check(postAllocationRes, {
+    [`POST ${postAllocationEndpoint} returns 200`]: (r) => r.status === 200,
+  })) {
+    exec.test.fail(`${postAllocationEndpoint} caused the test to fail`)
   }
 
   for (const endpoint of get_endpoints) {

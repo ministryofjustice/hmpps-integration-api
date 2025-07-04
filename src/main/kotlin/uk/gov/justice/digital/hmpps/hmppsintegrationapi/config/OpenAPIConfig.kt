@@ -113,6 +113,17 @@ class OpenAPIConfig {
                 "developerMessage" to Schema<String>().type("string").example("Forbidden to complete action by upstream service"),
               ),
             ),
+          ).addSchemas(
+            "ConflictResponse",
+            Schema<ErrorResponse>().description("Action could not be completed due to a conflict").properties(
+              mapOf(
+                "status" to Schema<Int>().type("integer").example(409),
+                "userMessage" to Schema<String>().type("string").example("Action could not be completed because of a conflict with the current resource state."),
+                "developerMessage" to Schema<String>().type("string").example("Resource already exists or state transition is not allowed."),
+                "conflictField" to Schema<String>().type("string").example("username"),
+                "timestamp" to Schema<String>().type("string").example("2025-07-03T10:00:00Z"),
+              ),
+            ),
           )
       }
     }

@@ -30,6 +30,6 @@ data class ActivitiesExclusion(
       sunday = this.sunday,
       customStartTime = this.customStartTime,
       customEndTime = this.customEndTime,
-      daysOfWeek = this.daysOfWeek,
+      daysOfWeek = this.daysOfWeek.toSet(),
     )
 }

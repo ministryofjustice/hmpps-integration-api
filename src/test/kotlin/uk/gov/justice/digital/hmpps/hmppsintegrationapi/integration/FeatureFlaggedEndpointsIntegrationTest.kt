@@ -5,6 +5,7 @@ import org.mockito.kotlin.whenever
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_ALLOCATION_ENDPOINT
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_DEALLOCATION_ENDPOINT
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_DEALLOCATION_REASONS_ENDPOINT
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_SCHEDULE_DETAIL_ENDPOINT
@@ -12,7 +13,10 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_UPDATE_ATTENDANCE_ENDPOINT
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.FeatureNotEnabledException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.AddCaseNoteRequest
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Exclusion
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerAllocationRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerDeallocationRequest
+import java.time.DayOfWeek
 import java.time.LocalDate
 
 internal class FeatureFlaggedEndpointsIntegrationTest : IntegrationTestBase() {
@@ -105,6 +109,41 @@ internal class FeatureFlaggedEndpointsIntegrationTest : IntegrationTestBase() {
     whenever(featureFlagConfig.require(USE_DEALLOCATION_REASONS_ENDPOINT)).thenThrow(FeatureNotEnabledException(""))
     val path = "/v1/activities/deallocation-reasons"
     callApi(path)
+      .andExpect(status().isServiceUnavailable)
+  }
+
+  @Test
+  fun `post allocate should return 503`() {
+    whenever(featureFlagConfig.require(USE_ALLOCATION_ENDPOINT)).thenThrow(FeatureNotEnabledException(""))
+    val scheduleId = 123456L
+    val prisonerNumber = "A1234AA"
+    val path = "/v1/activities/schedule/$scheduleId/allocate"
+    val prisonerAllocationRequest =
+      PrisonerAllocationRequest(
+        prisonerNumber = prisonerNumber,
+        startDate = LocalDate.now().plusMonths(1),
+        endDate = LocalDate.now().plusMonths(2),
+        payBandId = 123456L,
+        exclusions =
+          listOf(
+            Exclusion(
+              timeSlot = "AM",
+              weekNumber = 1,
+              customStartTime = "09:00",
+              customEndTime = "11:00",
+              daysOfWeek = setOf(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY),
+              monday = true,
+              tuesday = true,
+              wednesday = true,
+              thursday = false,
+              friday = false,
+              saturday = false,
+              sunday = false,
+            ),
+          ),
+      )
+
+    postToApi(path, asJsonString(prisonerAllocationRequest))
       .andExpect(status().isServiceUnavailable)
   }
 }
