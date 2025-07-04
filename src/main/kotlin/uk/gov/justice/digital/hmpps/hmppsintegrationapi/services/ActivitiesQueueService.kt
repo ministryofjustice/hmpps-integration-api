@@ -206,12 +206,14 @@ class ActivitiesQueueService(
       return badRequest("Allocation start date must not be before the activity schedule start date ($scheduleStart)")
     }
 
-    if (request.endDate != null && request.endDate > scheduleEnd) {
-      return badRequest("Allocation end date must not be after the activity schedule end date ($scheduleEnd)")
-    }
+    if (scheduleEnd != null) {
+      if (request.endDate != null && request.endDate > scheduleEnd) {
+        return badRequest("Allocation end date must not be after the activity schedule end date ($scheduleEnd)")
+      }
 
-    if (request.startDate > scheduleEnd) {
-      return badRequest("Allocation start date cannot be after the activity schedule end date ($scheduleEnd)")
+      if (request.startDate > scheduleEnd) {
+        return badRequest("Allocation start date cannot be after the activity schedule end date ($scheduleEnd)")
+      }
     }
 
     return null
