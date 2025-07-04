@@ -12,6 +12,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.Activi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesAttendance
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesAttendanceReason
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesDeallocationReason
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesHistoricalAttendance
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesPagedWaitingListApplication
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesPrisonPayBand
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesPrisonRegime
@@ -269,6 +270,36 @@ class ActivitiesGateway(
         authenticationHeader(),
         UpstreamApi.ACTIVITIES,
         requestBody = activitiesWaitingListSearchRequest.toApiConformingMap(),
+        badRequestAsError = true,
+      )
+
+    return when (result) {
+      is WebClientWrapperResponse.Success -> {
+        Response(data = result.data)
+      }
+
+      is WebClientWrapperResponse.Error -> {
+        Response(
+          data = null,
+          errors = result.errors,
+        )
+      }
+    }
+  }
+
+  fun getHistoricalAttendances(
+    prisonerNumber: String,
+    startDate: String,
+    endDate: String,
+    prisonCode: String?,
+  ): Response<List<ActivitiesHistoricalAttendance>?> {
+    val prisonCodeParam = prisonCode?.let { "&prisonCode=$it" } ?: ""
+    val result =
+      webClient.requestList<ActivitiesHistoricalAttendance>(
+        HttpMethod.GET,
+        "/integration-api/attendances/$prisonerNumber?startDate=$startDate&endDate=$endDate$prisonCodeParam",
+        authenticationHeader(),
+        UpstreamApi.ACTIVITIES,
         badRequestAsError = true,
       )
 
