@@ -244,12 +244,12 @@ export default function ()  {
     exec.test.fail(`${putDeallocationEndpoint} caused the test to fail`)
   }
 
-  // const postAllocationRes = http.put(`${baseUrl}${postAllocationEndpoint}`, postAllocationData, params);
-  // if (!check(postAllocationRes, {
-  //   [`POST ${postAllocationEndpoint} returns 200`]: (r) => r.status === 200,
-  // })) {
-  //   exec.test.fail(`${postAllocationEndpoint} caused the test to fail`)
-  // }
+  const postAllocationRes = http.put(`${baseUrl}${postAllocationEndpoint}`, postAllocationData, params);
+  if (!check(postAllocationRes, {
+    [`POST ${postAllocationEndpoint} returns 200`]: (r) => r.status === 200,
+  })) {
+    exec.test.fail(`${postAllocationEndpoint} caused the test to fail`)
+  }
 
   for (const endpoint of get_endpoints) {
     const res = http.get(`${baseUrl}${endpoint}`, params);
