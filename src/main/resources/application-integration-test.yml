@@ -46,6 +46,8 @@ services:
     base-url: http://localhost:4023
   activities:
     base-url: http://localhost:4004
+  education-and-work-plan:
+    base-url: http://localhost:4029
 
 hmpps.sqs:
   provider: localstack
