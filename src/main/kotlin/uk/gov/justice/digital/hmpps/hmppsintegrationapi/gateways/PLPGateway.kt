@@ -125,7 +125,7 @@ class PLPGateway(
         HttpMethod.GET,
         "/assessments/$prisonerNumber/required",
         authenticationHeader(),
-        UpstreamApi.EDUCATION_AND_WORK_PLAN,
+        UpstreamApi.PLP,
       )
 
     return when (result) {

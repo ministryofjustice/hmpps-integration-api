@@ -89,7 +89,7 @@ class EducationAssessmentServiceTest :
 
       it("should throw a EntityNotFoundException for a upstream entity not found error") {
         val invalidHmppsId = "X0000"
-        val upstreamApiError = UpstreamApiError(UpstreamApi.EDUCATION_AND_WORK_PLAN, UpstreamApiError.Type.ENTITY_NOT_FOUND)
+        val upstreamApiError = UpstreamApiError(UpstreamApi.PLP, UpstreamApiError.Type.ENTITY_NOT_FOUND)
         whenever(mockGetPersonService.getNomisNumber(invalidHmppsId)).thenReturn(Response(null, listOf<UpstreamApiError>(upstreamApiError)))
 
         shouldThrow<EntityNotFoundException> {
@@ -99,7 +99,7 @@ class EducationAssessmentServiceTest :
 
       it("should throw a ValidationException for a upstream bad request error") {
         val invalidHmppsId = "X0000"
-        val upstreamApiError = UpstreamApiError(UpstreamApi.EDUCATION_AND_WORK_PLAN, UpstreamApiError.Type.BAD_REQUEST)
+        val upstreamApiError = UpstreamApiError(UpstreamApi.PLP, UpstreamApiError.Type.BAD_REQUEST)
         whenever(mockGetPersonService.getNomisNumber(invalidHmppsId)).thenReturn(Response(null, listOf<UpstreamApiError>(upstreamApiError)))
 
         shouldThrow<ValidationException> {
