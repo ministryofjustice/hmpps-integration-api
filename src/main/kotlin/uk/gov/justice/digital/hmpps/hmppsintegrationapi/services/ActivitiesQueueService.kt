@@ -130,7 +130,7 @@ class ActivitiesQueueService(
     validateAllocationWithinScheduleDates(schedule, prisonerAllocationRequest)?.let { return it }
     validatePrisonerNotAlreadyAllocated(schedule, prisonerAllocationRequest)?.let { return it }
     validateExclusionSlots(schedule, prisonerAllocationRequest, scheduleId)?.let { return it }
-    validateWaitingListApplications(schedule.activity.prisonCode, prisonerAllocationRequest.prisonerNumber!!, filters)?.let { return it }
+    validateWaitingListApplications(schedule.activity.prisonCode, prisonerAllocationRequest.prisonerNumber, filters)?.let { return it }
 
     val message = prisonerAllocationRequest.toHmppsMessage(who, scheduleId)
     writeMessageToQueue(message, "Could not send prisoner allocation to queue")
@@ -141,7 +141,7 @@ class ActivitiesQueueService(
     request: PrisonerAllocationRequest,
     today: LocalDate,
   ): Response<HmppsMessageResponse?>? {
-    if (request.startDate!! < today) {
+    if (request.startDate < today) {
       return badRequest("Allocation start date must not be in the past")
     }
 
@@ -202,7 +202,7 @@ class ActivitiesQueueService(
     val scheduleStart = LocalDate.parse(schedule.startDate)
     val scheduleEnd = schedule.endDate?.let { LocalDate.parse(it) }
 
-    if (request.startDate!! < scheduleStart) {
+    if (request.startDate < scheduleStart) {
       return badRequest("Allocation start date must not be before the activity schedule start date ($scheduleStart)")
     }
 
