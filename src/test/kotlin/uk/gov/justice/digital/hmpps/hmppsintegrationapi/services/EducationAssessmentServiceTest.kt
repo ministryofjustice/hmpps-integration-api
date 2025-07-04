@@ -13,11 +13,15 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.reset
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.springframework.http.HttpStatus
+import org.springframework.web.reactive.function.client.WebClientResponseException
 import software.amazon.awssdk.services.sqs.SqsAsyncClient
 import software.amazon.awssdk.services.sqs.model.SendMessageRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.MessageFailedException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.MockMvcExtensions
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PLPGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.education.EducationAssessmentSummaryResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.EducationAssessmentStatus
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.EducationAssessmentStatusChangeRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HmppsMessage
@@ -38,6 +42,7 @@ class EducationAssessmentServiceTest :
     val mockGetPersonService = mock<GetPersonService>()
     val mockQueueService = mock<HmppsQueueService>()
     val mockObjectMapper = mock<ObjectMapper>()
+    val mockPlpGateway = mock<PLPGateway>()
     val mockSqsClient = mock<SqsAsyncClient>()
 
     val assessmentEventsQueue =
@@ -55,11 +60,72 @@ class EducationAssessmentServiceTest :
       )
 
     val queId = "assessmentevents"
-    val service = EducationAssessmentService(mockGetPersonService, mockQueueService, mockObjectMapper)
+    val service =
+      EducationAssessmentService(
+        mockGetPersonService,
+        mockQueueService,
+        mockObjectMapper,
+        mockPlpGateway,
+      )
 
     beforeTest {
       reset(mockQueueService, mockSqsClient, mockObjectMapper)
       whenever(mockQueueService.findByQueueId(queId)).thenReturn(assessmentEventsQueue)
+    }
+
+    describe("getEducationAssessmentStatus") {
+      val validHmppsId = "H1234"
+
+      beforeTest {
+        whenever(mockGetPersonService.getNomisNumber(validHmppsId)).thenReturn(Response(NomisNumber(validHmppsId)))
+      }
+
+      it("should return a education assessment summary if the api calls are successful") {
+        val gatewayResponse = Response<EducationAssessmentSummaryResponse?>(EducationAssessmentSummaryResponse(true))
+        whenever(mockPlpGateway.getEducationAssessmentSummary(any())).thenReturn(gatewayResponse)
+
+        service.getEducationAssessmentStatus(validHmppsId).shouldBe(gatewayResponse)
+      }
+
+      it("should throw a EntityNotFoundException for a upstream entity not found error") {
+        val invalidHmppsId = "X0000"
+        val upstreamApiError = UpstreamApiError(UpstreamApi.PLP, UpstreamApiError.Type.ENTITY_NOT_FOUND)
+        whenever(mockGetPersonService.getNomisNumber(invalidHmppsId)).thenReturn(Response(null, listOf<UpstreamApiError>(upstreamApiError)))
+
+        shouldThrow<EntityNotFoundException> {
+          service.getEducationAssessmentStatus(invalidHmppsId)
+        }
+      }
+
+      it("should throw a ValidationException for a upstream bad request error") {
+        val invalidHmppsId = "X0000"
+        val upstreamApiError = UpstreamApiError(UpstreamApi.PLP, UpstreamApiError.Type.BAD_REQUEST)
+        whenever(mockGetPersonService.getNomisNumber(invalidHmppsId)).thenReturn(Response(null, listOf<UpstreamApiError>(upstreamApiError)))
+
+        shouldThrow<ValidationException> {
+          service.getEducationAssessmentStatus(invalidHmppsId)
+        }
+      }
+
+      it("should throw a ValidationException if getNomisNumber does not return a nomis number") {
+        val invalidHmppsId = "X0000"
+        whenever(mockGetPersonService.getNomisNumber(invalidHmppsId)).thenReturn(Response(null, listOf()))
+
+        shouldThrow<ValidationException> {
+          service.getEducationAssessmentStatus(invalidHmppsId)
+        }
+      }
+
+      it("should allow any WebClientResponse exceptions to bubble up") {
+        val exception = WebClientResponseException(403, "Forbidden", null, null, null)
+        whenever(mockPlpGateway.getEducationAssessmentSummary(any())).thenThrow(exception)
+
+        val response =
+          shouldThrow<WebClientResponseException> {
+            service.getEducationAssessmentStatus(validHmppsId)
+          }
+        response.statusCode.shouldBe(HttpStatus.FORBIDDEN)
+      }
     }
 
     describe("sendAssessmentEvent") {
