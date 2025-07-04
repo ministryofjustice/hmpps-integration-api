@@ -1,0 +1,26 @@
+{
+  "createdBy": "asmith_gen",
+  "createdByDisplayName": "Alex Smith",
+  "createdAt": "2023-06-19T09:39:44Z",
+  "createdAtPrison": "BXI",
+  "updatedBy": "asmith_gen",
+  "updatedByDisplayName": "Alex Smith",
+  "updatedAt": "2023-06-19T09:39:44Z",
+  "updatedAtPrison": "BXI",
+  "reference": "814ade0a-a3b2-46a3-862f-79211ba13f7b",
+  "educationLevel": "PRIMARY_SCHOOL",
+  "qualifications": [
+    {
+      "reference": "814ade0a-a3b2-46a3-862f-79211ba13f7b",
+      "subject": "Maths GCSE",
+      "level": "ENTRY_LEVEL",
+      "grade": "Distinction",
+      "createdBy": "asmith_gen",
+      "createdAt": "2023-06-19T09:39:44Z",
+      "createdAtPrison": "BXI",
+      "updatedBy": "asmith_gen",
+      "updatedAt": "2023-06-19T09:39:44Z",
+      "updatedAtPrison": "BXI"
+    }
+  ]
+}
