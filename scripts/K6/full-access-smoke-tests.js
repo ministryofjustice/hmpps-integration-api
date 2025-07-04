@@ -179,24 +179,23 @@ const putDeallocationData = JSON.stringify({
 const postAllocationEndpoint = `/v1/activities/schedule/${scheduleId}/allocate`
 const postAllocationData = JSON.stringify({
   prisonerNumber: hmppsId,
-  startDate: "2024-08-08",
-  endDate: "2024-09-08",
+  startDate: todayFormatted,
+  endDate: todayFormatted,
   payBandId: 123456,
   exclusions: [
     {
-      id: 1,
       timeSlot: "AM",
       weekNumber: 1,
-      startTime: "09:00",
-      endTime: "11:00",
-      daysOfWeek: ["Mon", "Tue", "Wed"],
-      mondayFlag: true,
-      tuesdayFlag: true,
-      wednesdayFlag: true,
-      thursdayFlag: false,
-      fridayFlag: false,
-      saturdayFlag: false,
-      sundayFlag: false
+      monday: true,
+      tuesday: true,
+      wednesday: true,
+      thursday: false,
+      friday: false,
+      saturday: false,
+      sunday: false,
+      customStartTime: "09:00",
+      customEndTime: "11:00",
+      daysOfWeek: ["MONDAY", "TUESDAY", "WEDNESDAY"]
     }
   ],
   testEvent: "TestEvent"
