@@ -20,7 +20,7 @@ import software.amazon.awssdk.services.sqs.model.SendMessageRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.MessageFailedException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.MockMvcExtensions
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.EducationAndWorkPlanGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PLPGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.education.EducationAssessmentSummaryResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.EducationAssessmentStatus
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.EducationAssessmentStatusChangeRequest
@@ -42,7 +42,7 @@ class EducationAssessmentServiceTest :
     val mockGetPersonService = mock<GetPersonService>()
     val mockQueueService = mock<HmppsQueueService>()
     val mockObjectMapper = mock<ObjectMapper>()
-    val mockEducationAndWorkPlanGateway = mock<EducationAndWorkPlanGateway>()
+    val mockPlpGateway = mock<PLPGateway>()
     val mockSqsClient = mock<SqsAsyncClient>()
 
     val assessmentEventsQueue =
@@ -65,7 +65,7 @@ class EducationAssessmentServiceTest :
         mockGetPersonService,
         mockQueueService,
         mockObjectMapper,
-        mockEducationAndWorkPlanGateway,
+        mockPlpGateway,
       )
 
     beforeTest {
@@ -82,7 +82,7 @@ class EducationAssessmentServiceTest :
 
       it("should return a education assessment summary if the api calls are successful") {
         val gatewayResponse = Response<EducationAssessmentSummaryResponse?>(EducationAssessmentSummaryResponse(true))
-        whenever(mockEducationAndWorkPlanGateway.getEducationAssessmentSummary(any())).thenReturn(gatewayResponse)
+        whenever(mockPlpGateway.getEducationAssessmentSummary(any())).thenReturn(gatewayResponse)
 
         service.getEducationAssessmentStatus(validHmppsId).shouldBe(gatewayResponse)
       }
@@ -118,7 +118,7 @@ class EducationAssessmentServiceTest :
 
       it("should allow any WebClientResponse exceptions to bubble up") {
         val exception = WebClientResponseException(403, "Forbidden", null, null, null)
-        whenever(mockEducationAndWorkPlanGateway.getEducationAssessmentSummary(any())).thenThrow(exception)
+        whenever(mockPlpGateway.getEducationAssessmentSummary(any())).thenThrow(exception)
 
         val response =
           shouldThrow<WebClientResponseException> {

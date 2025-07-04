@@ -94,8 +94,6 @@ services:
     base-url: http://localhost:4027
   activities:
     base-url: http://localhost:4028
-  education-and-work-plan:
-    base-url: http://localhost:4029
 
 sentry:
   traces-sample-rate: "0.05"

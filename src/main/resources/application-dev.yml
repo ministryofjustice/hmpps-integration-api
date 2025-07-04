@@ -39,12 +39,11 @@ services:
     base-url: https://health-and-medication-api-dev.hmpps.service.justice.gov.uk
   activities:
     base-url: https://activities-api-dev.prison.service.justice.gov.uk
-  education-and-work-plan:
-    base-url: https://learningandworkprogress-api-dev.hmpps.service.justice.gov.uk
 
 feature-flag:
   use-arns-endpoints: true
   use-education-assessments-endpoints: true
+  use-eswe-curious-endpoints: true
   use-update-attendance-endpoint: true
   use-schedule-detail-endpoint: true
   use-search-appointments-endpoint: true

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.education.EducationAssessmentSummaryResponse
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.EducationAssessmentStatusChangeRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HmppsMessageResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
@@ -48,11 +49,11 @@ class EducationAssessmentsController(
   )
   fun getEducationAssessmentSummary(
     @Parameter(description = "A HMPPS person identifier", example = "A1234AA") @PathVariable hmppsId: String,
-  ): Response<EducationAssessmentSummaryResponse?> {
-    featureFlag.require(FeatureFlagConfig.USE_EDUCATION_ASSESSMENTS_ENDPOINTS)
+  ): DataResponse<EducationAssessmentSummaryResponse?> {
+    featureFlag.require(FeatureFlagConfig.USE_ESWE_CURIOUS_ENDPOINTS)
     auditService.createEvent("GET EDUCATION ASSESSMENT SUMMARY EVENT", mapOf("hmppsId" to hmppsId))
 
-    return educationAssessmentService.getEducationAssessmentStatus(hmppsId)
+    return DataResponse(educationAssessmentService.getEducationAssessmentStatus(hmppsId).data)
   }
 
   /**

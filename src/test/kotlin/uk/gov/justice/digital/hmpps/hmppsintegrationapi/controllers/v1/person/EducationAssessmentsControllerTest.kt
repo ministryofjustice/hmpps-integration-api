@@ -58,10 +58,10 @@ class EducationAssessmentsControllerTest(
           verify(auditService, times(1)).createEvent("GET EDUCATION ASSESSMENT SUMMARY EVENT", mapOf("hmppsId" to validHmppsId))
         }
 
-        describe("if the education endpoint feature flag is off") {
+        describe("if the eswe curious feature flag is off") {
 
           it("should return 503 service unavailable") {
-            whenever(featureFlagConfig.require(FeatureFlagConfig.USE_EDUCATION_ASSESSMENTS_ENDPOINTS)).thenThrow(FeatureNotEnabledException(FeatureFlagConfig.USE_EDUCATION_ASSESSMENTS_ENDPOINTS))
+            whenever(featureFlagConfig.require(FeatureFlagConfig.USE_ESWE_CURIOUS_ENDPOINTS)).thenThrow(FeatureNotEnabledException(FeatureFlagConfig.USE_ESWE_CURIOUS_ENDPOINTS))
 
             val response = mockMvc.performAuthorised(apiPath).response
 
@@ -69,7 +69,7 @@ class EducationAssessmentsControllerTest(
 
             val errorResponse = response.contentAsJson<ErrorResponse>()
             assertThat(errorResponse.status).isEqualTo(503)
-            assertThat(errorResponse.userMessage).isEqualTo("${FeatureFlagConfig.USE_EDUCATION_ASSESSMENTS_ENDPOINTS} not enabled")
+            assertThat(errorResponse.userMessage).isEqualTo("${FeatureFlagConfig.USE_ESWE_CURIOUS_ENDPOINTS} not enabled")
           }
         }
 

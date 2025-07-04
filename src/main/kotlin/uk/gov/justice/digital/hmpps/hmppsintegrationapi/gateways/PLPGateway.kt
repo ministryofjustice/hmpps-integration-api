@@ -6,6 +6,7 @@ import org.springframework.http.HttpMethod
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper.WebClientWrapperResponse
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.education.EducationAssessmentSummaryResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ActionPlanReviewsResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.InductionSchedule
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.InductionSchedules
@@ -112,6 +113,29 @@ class PLPGateway(
       is WebClientWrapperResponse.Error -> {
         Response(
           data = ActionPlanReviewsResponse(completedReviews = listOf()),
+          errors = result.errors,
+        )
+      }
+    }
+  }
+
+  fun getEducationAssessmentSummary(prisonerNumber: String): Response<EducationAssessmentSummaryResponse?> {
+    val result =
+      webClient.request<EducationAssessmentSummaryResponse>(
+        HttpMethod.GET,
+        "/assessments/$prisonerNumber/required",
+        authenticationHeader(),
+        UpstreamApi.EDUCATION_AND_WORK_PLAN,
+      )
+
+    return when (result) {
+      is WebClientWrapperResponse.Success -> {
+        Response(data = result.data)
+      }
+
+      is WebClientWrapperResponse.Error -> {
+        Response(
+          data = null,
           errors = result.errors,
         )
       }
