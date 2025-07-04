@@ -179,8 +179,8 @@ const putDeallocationData = JSON.stringify({
 const postAllocationEndpoint = `/v1/activities/schedule/${scheduleId}/allocate`
 const postAllocationData = JSON.stringify({
   prisonerNumber: hmppsId,
-  startDate: "2024-08-08",
-  endDate: "2024-09-08",
+  startDate: todayFormatted,
+  endDate: todayFormatted,
   payBandId: 123456,
   exclusions: [
     {
