@@ -663,7 +663,7 @@ class ActivitiesControllerTest(
           mockMvc.performAuthorisedPost(path, prisonerAllocationRequest)
 
           verify(auditService, times(1)).createEvent(
-            "POST_ALLOCATION",
+            "POST_ALLOCATE_PRISONER_TO_ACTIVITY",
             mapOf("scheduleId" to scheduleId.toString()),
           )
         }

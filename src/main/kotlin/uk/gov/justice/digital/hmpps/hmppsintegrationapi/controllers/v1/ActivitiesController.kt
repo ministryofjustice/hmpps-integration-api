@@ -384,7 +384,7 @@ class ActivitiesController(
     }
 
     auditService.createEvent(
-      "POST_ALLOCATION",
+      "POST_ALLOCATE_PRISONER_TO_ACTIVITY",
       mapOf("scheduleId" to scheduleId.toString()),
     )
 
