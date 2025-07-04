@@ -45,92 +45,9 @@ class EducationAssessmentsControllerTest(
       val notFoundHmppsId = "B1234BC"
       val invalidHmppsId = "C1234BC"
 
-      beforeEach {
-        Mockito.reset(featureFlagConfig, educationAssessmentService, auditService)
-      }
-
-      describe("Get a persons education assessment summary") {
-        val apiPath = "/v1/persons/$validHmppsId/education/assessments"
-
-        it("should audit the request") {
-          val response = mockMvc.performAuthorised(apiPath).response
-
-          verify(auditService, times(1)).createEvent("GET EDUCATION ASSESSMENT SUMMARY EVENT", mapOf("hmppsId" to validHmppsId))
-        }
-
-        describe("if the eswe curious feature flag is off") {
-
-          it("should return 503 service unavailable") {
-            whenever(featureFlagConfig.require(FeatureFlagConfig.USE_ESWE_CURIOUS_ENDPOINTS)).thenThrow(FeatureNotEnabledException(FeatureFlagConfig.USE_ESWE_CURIOUS_ENDPOINTS))
-
-            val response = mockMvc.performAuthorised(apiPath).response
-
-            response.status.shouldBe(HttpStatus.SERVICE_UNAVAILABLE.value())
-
-            val errorResponse = response.contentAsJson<ErrorResponse>()
-            assertThat(errorResponse.status).isEqualTo(503)
-            assertThat(errorResponse.userMessage).isEqualTo("${FeatureFlagConfig.USE_ESWE_CURIOUS_ENDPOINTS} not enabled")
-          }
-        }
-
-        describe("if the education endpoint feature flag is on") {
-
-          it("should return 200 given a valid request and response") {
-            whenever(educationAssessmentService.getEducationAssessmentStatus(validHmppsId)).thenReturn(Response(data = EducationAssessmentSummaryResponse(true)))
-
-            val response = mockMvc.performAuthorised(apiPath).response
-
-            response.status.shouldBe(HttpStatus.OK.value())
-            response.contentAsJson<Response<EducationAssessmentSummaryResponse>>().shouldBe(Response(EducationAssessmentSummaryResponse(true)))
-          }
-
-          it("should return a 400 for a validation exception") {
-            whenever(educationAssessmentService.getEducationAssessmentStatus(validHmppsId)).thenThrow(ValidationException("Invalid HMPPS ID: $validHmppsId"))
-
-            val response = mockMvc.performAuthorised(apiPath).response
-
-            response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
-
-            val errorResponse = response.contentAsJson<ErrorResponse>()
-            assertThat(errorResponse.status).isEqualTo(400)
-            assertThat(errorResponse.userMessage).isEqualTo("Invalid HMPPS ID: $validHmppsId")
-          }
-
-          it("should return a 403 if the request is not authorised") {
-            val response = mockMvc.performUnAuthorised(apiPath).response
-
-            response.status.shouldBe(HttpStatus.FORBIDDEN.value())
-          }
-
-          it("should return a 404 for a entity not found exception") {
-            whenever(educationAssessmentService.getEducationAssessmentStatus(validHmppsId)).thenThrow(EntityNotFoundException("Could not find person with id: $validHmppsId"))
-
-            val response = mockMvc.performAuthorised(apiPath).response
-
-            response.status.shouldBe(HttpStatus.NOT_FOUND.value())
-
-            val errorResponse = response.contentAsJson<ErrorResponse>()
-            assertThat(errorResponse.status).isEqualTo(404)
-            assertThat(errorResponse.userMessage).isEqualTo("Could not find person with id: $validHmppsId")
-          }
-
-          it("should return a 500 for any WebClientResponse exceptions") {
-            val exception = WebClientResponseException(403, "Forbidden", null, null, null)
-            whenever(educationAssessmentService.getEducationAssessmentStatus(validHmppsId)).thenThrow(exception)
-
-            val response = mockMvc.performAuthorised(apiPath).response
-
-            response.status.shouldBe(HttpStatus.INTERNAL_SERVER_ERROR.value())
-
-            val errorResponse = response.contentAsJson<ErrorResponse>()
-            assertThat(errorResponse.status).isEqualTo(500)
-          }
-        }
-      }
+      fun apiPath(hmppsId: String = validHmppsId) = "/v1/persons/$hmppsId/education/assessments/status"
 
       describe("Notify that a given person/offender has had a change of status to their Education Assessments") {
-        fun apiPath(hmppsId: String = validHmppsId) = "/v1/persons/$hmppsId/education/assessments/status"
-
         it("should return 200 given a valid request body") {
           // Given
           val requestBody =
@@ -280,6 +197,89 @@ class EducationAssessmentsControllerTest(
           val errorResponse = response.contentAsJson<ValidationErrorResponse>()
           assertThat(errorResponse.status).isEqualTo(400)
           assertThat(errorResponse.validationErrors).isEqualTo(listOf("A requestId must be provided"))
+        }
+      }
+
+      describe("Get a persons education assessment summary") {
+        beforeEach {
+          Mockito.reset(featureFlagConfig, educationAssessmentService, auditService)
+        }
+
+        val path = "/v1/persons/$validHmppsId/education/assessments"
+
+        it("should audit the request") {
+          val response = mockMvc.performAuthorised(path).response
+
+          verify(auditService, times(1)).createEvent("GET EDUCATION ASSESSMENT SUMMARY EVENT", mapOf("hmppsId" to validHmppsId))
+        }
+
+        describe("if the eswe curious feature flag is off") {
+
+          it("should return 503 service unavailable") {
+            whenever(featureFlagConfig.require(FeatureFlagConfig.USE_ESWE_CURIOUS_ENDPOINTS)).thenThrow(FeatureNotEnabledException(FeatureFlagConfig.USE_ESWE_CURIOUS_ENDPOINTS))
+
+            val response = mockMvc.performAuthorised(path).response
+
+            response.status.shouldBe(HttpStatus.SERVICE_UNAVAILABLE.value())
+
+            val errorResponse = response.contentAsJson<ErrorResponse>()
+            assertThat(errorResponse.status).isEqualTo(503)
+            assertThat(errorResponse.userMessage).isEqualTo("${FeatureFlagConfig.USE_ESWE_CURIOUS_ENDPOINTS} not enabled")
+          }
+        }
+
+        describe("if the education endpoint feature flag is on") {
+
+          it("should return 200 given a valid request and response") {
+            whenever(educationAssessmentService.getEducationAssessmentStatus(validHmppsId)).thenReturn(Response(data = EducationAssessmentSummaryResponse(true)))
+
+            val response = mockMvc.performAuthorised(path).response
+
+            response.status.shouldBe(HttpStatus.OK.value())
+            response.contentAsJson<Response<EducationAssessmentSummaryResponse>>().shouldBe(Response(EducationAssessmentSummaryResponse(true)))
+          }
+
+          it("should return a 400 for a validation exception") {
+            whenever(educationAssessmentService.getEducationAssessmentStatus(validHmppsId)).thenThrow(ValidationException("Invalid HMPPS ID: $validHmppsId"))
+
+            val response = mockMvc.performAuthorised(path).response
+
+            response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
+
+            val errorResponse = response.contentAsJson<ErrorResponse>()
+            assertThat(errorResponse.status).isEqualTo(400)
+            assertThat(errorResponse.userMessage).isEqualTo("Invalid HMPPS ID: $validHmppsId")
+          }
+
+          it("should return a 403 if the request is not authorised") {
+            val response = mockMvc.performUnAuthorised(path).response
+
+            response.status.shouldBe(HttpStatus.FORBIDDEN.value())
+          }
+
+          it("should return a 404 for a entity not found exception") {
+            whenever(educationAssessmentService.getEducationAssessmentStatus(validHmppsId)).thenThrow(EntityNotFoundException("Could not find person with id: $validHmppsId"))
+
+            val response = mockMvc.performAuthorised(path).response
+
+            response.status.shouldBe(HttpStatus.NOT_FOUND.value())
+
+            val errorResponse = response.contentAsJson<ErrorResponse>()
+            assertThat(errorResponse.status).isEqualTo(404)
+            assertThat(errorResponse.userMessage).isEqualTo("Could not find person with id: $validHmppsId")
+          }
+
+          it("should return a 500 for any WebClientResponse exceptions") {
+            val exception = WebClientResponseException(403, "Forbidden", null, null, null)
+            whenever(educationAssessmentService.getEducationAssessmentStatus(validHmppsId)).thenThrow(exception)
+
+            val response = mockMvc.performAuthorised(path).response
+
+            response.status.shouldBe(HttpStatus.INTERNAL_SERVER_ERROR.value())
+
+            val errorResponse = response.contentAsJson<ErrorResponse>()
+            assertThat(errorResponse.status).isEqualTo(500)
+          }
         }
       }
     },

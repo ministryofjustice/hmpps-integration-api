@@ -78,7 +78,6 @@ class EducationAssessmentService(
     }
 
     val nomisNumber = personResponse.data?.nomisNumber ?: run { throw ValidationException("Invalid HMPPS ID: $hmppsId") }
-
     val assessmentEvent =
       AssessmentEvent(
         prisonNumber = nomisNumber,
