@@ -83,3 +83,8 @@ authorisation:
       filters:
       roles:
         - "police"
+    pmcphee:
+      include:
+      filters:
+      roles:
+        - "police"
