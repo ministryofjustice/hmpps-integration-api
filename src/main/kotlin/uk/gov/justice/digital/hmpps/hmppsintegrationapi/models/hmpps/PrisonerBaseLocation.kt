@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps
 
+import com.fasterxml.jackson.annotation.JsonProperty
 import io.swagger.v3.oas.annotations.media.Schema
 import java.time.LocalDate
 
@@ -16,12 +17,22 @@ data class PrisonerBaseLocation(
   val receptionDate: LocalDate? = null,
 )
 
+@Schema
 enum class LastMovementType(
   val value: String,
 ) {
+  @JsonProperty("Admission")
   ADMISSION("Admission"),
+
+  @JsonProperty("Release")
   RELEASE("Release"),
+
+  @JsonProperty("Transfers")
   TRANSFERS("Transfers"),
+
+  @JsonProperty("Court")
   COURT("Court"),
+
+  @JsonProperty("Temporary Absence")
   TEMPORARY_ABSENCE("Temporary Absence"),
 }
