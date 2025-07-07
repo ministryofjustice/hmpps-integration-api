@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.plp
 
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerEducation
 import java.time.LocalDateTime
 
 data class PLPPrisonerEducation(
@@ -14,4 +15,10 @@ data class PLPPrisonerEducation(
   val reference: String,
   val educationLevel: String,
   val qualifications: List<PLPQualification>,
-)
+) {
+  fun toPrisonerEducation() =
+    PrisonerEducation(
+      educationLevel = this.educationLevel,
+      qualifications = this.qualifications.map { it.toQualification() },
+    )
+}
