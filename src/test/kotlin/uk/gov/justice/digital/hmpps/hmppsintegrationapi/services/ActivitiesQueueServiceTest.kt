@@ -363,6 +363,30 @@ class ActivitiesQueueServiceTest(
       describe("Prisoner allocation") {
         val scheduleId = 123456L
         val prisonerNumber = "A1234AA"
+        val allocationRequest =
+          PrisonerAllocationRequest(
+            prisonerNumber = prisonerNumber,
+            startDate = LocalDate.now().plusMonths(1),
+            payBandId = 1L,
+            exclusions =
+              listOf(
+                Exclusion(
+                  timeSlot = "AM",
+                  weekNumber = 1,
+                  customStartTime = "09:00",
+                  customEndTime = "11:00",
+                  daysOfWeek = setOf(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY),
+                  monday = true,
+                  tuesday = true,
+                  wednesday = true,
+                  thursday = false,
+                  friday = false,
+                  saturday = false,
+                  sunday = false,
+                ),
+              ),
+          )
+
         val activitiesActivityScheduleDetailed =
           ActivitiesActivityScheduleDetailed(
             id = scheduleId,
@@ -504,6 +528,7 @@ class ActivitiesQueueServiceTest(
           whenever(getPrisonPayBandsService.execute(prisonId, filters))
             .thenReturn(Response(data = prisonPayBand))
         }
+
         it("Returns an error if allocation start date is in the past") {
           val allocationRequest =
             PrisonerAllocationRequest(
@@ -734,30 +759,6 @@ class ActivitiesQueueServiceTest(
         }
 
         it("Returns an error if getWaitingListApplicationsService returns an error") {
-          val allocationRequest =
-            PrisonerAllocationRequest(
-              prisonerNumber = prisonerNumber,
-              startDate = LocalDate.now().plusMonths(1),
-              payBandId = 1L,
-              exclusions =
-                listOf(
-                  Exclusion(
-                    timeSlot = "AM",
-                    weekNumber = 1,
-                    customStartTime = "09:00",
-                    customEndTime = "11:00",
-                    daysOfWeek = setOf(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY),
-                    monday = true,
-                    tuesday = true,
-                    wednesday = true,
-                    thursday = false,
-                    friday = false,
-                    saturday = false,
-                    sunday = false,
-                  ),
-                ),
-            )
-
           val activitiesActivityScheduleDetailed = activitiesActivityScheduleDetailed.copy(allocations = emptyList())
           val pendingWaitingListSearchRequest = WaitingListSearchRequest(prisonerNumbers = listOf(prisonerNumber), status = listOf("PENDING"))
           val error = UpstreamApiError(UpstreamApi.ACTIVITIES, UpstreamApiError.Type.BAD_REQUEST, "error from getWaitingListApplicationsService")
@@ -774,30 +775,6 @@ class ActivitiesQueueServiceTest(
         }
 
         it("Returns an error if prisoner has a PENDING waiting list application") {
-          val allocationRequest =
-            PrisonerAllocationRequest(
-              prisonerNumber = prisonerNumber,
-              startDate = LocalDate.now().plusMonths(1),
-              payBandId = 1L,
-              exclusions =
-                listOf(
-                  Exclusion(
-                    timeSlot = "AM",
-                    weekNumber = 1,
-                    customStartTime = "09:00",
-                    customEndTime = "11:00",
-                    daysOfWeek = setOf(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY),
-                    monday = true,
-                    tuesday = true,
-                    wednesday = true,
-                    thursday = false,
-                    friday = false,
-                    saturday = false,
-                    sunday = false,
-                  ),
-                ),
-            )
-
           val activitiesActivityScheduleDetailed = activitiesActivityScheduleDetailed.copy(allocations = emptyList())
           val pendingWaitingListSearchRequest = WaitingListSearchRequest(prisonerNumbers = listOf(prisonerNumber), status = listOf("PENDING"))
           val approvedWaitingListSearchRequest = WaitingListSearchRequest(prisonerNumbers = listOf(prisonerNumber), status = listOf("APPROVED"))
@@ -818,30 +795,6 @@ class ActivitiesQueueServiceTest(
         }
 
         it("Returns an error if prisoner has more than one APPROVED waiting list application") {
-          val allocationRequest =
-            PrisonerAllocationRequest(
-              prisonerNumber = prisonerNumber,
-              startDate = LocalDate.now().plusMonths(1),
-              payBandId = 1L,
-              exclusions =
-                listOf(
-                  Exclusion(
-                    timeSlot = "AM",
-                    weekNumber = 1,
-                    customStartTime = "09:00",
-                    customEndTime = "11:00",
-                    daysOfWeek = setOf(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY),
-                    monday = true,
-                    tuesday = true,
-                    wednesday = true,
-                    thursday = false,
-                    friday = false,
-                    saturday = false,
-                    sunday = false,
-                  ),
-                ),
-            )
-
           val activitiesActivityScheduleDetailed = activitiesActivityScheduleDetailed.copy(allocations = emptyList())
           val pendingWaitingListSearchRequest = WaitingListSearchRequest(prisonerNumbers = listOf(prisonerNumber), status = listOf("PENDING"))
           val approvedWaitingListSearchRequest = WaitingListSearchRequest(prisonerNumbers = listOf(prisonerNumber), status = listOf("APPROVED"))
@@ -872,30 +825,6 @@ class ActivitiesQueueServiceTest(
         }
 
         it("successfully adds to message queue") {
-          val allocationRequest =
-            PrisonerAllocationRequest(
-              prisonerNumber = prisonerNumber,
-              startDate = LocalDate.now().plusMonths(1),
-              payBandId = 1L,
-              exclusions =
-                listOf(
-                  Exclusion(
-                    timeSlot = "AM",
-                    weekNumber = 1,
-                    customStartTime = "09:00",
-                    customEndTime = "11:00",
-                    daysOfWeek = setOf(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY),
-                    monday = true,
-                    tuesday = true,
-                    wednesday = true,
-                    thursday = false,
-                    friday = false,
-                    saturday = false,
-                    sunday = false,
-                  ),
-                ),
-            )
-
           val activitiesActivityScheduleDetailed = activitiesActivityScheduleDetailed.copy(allocations = emptyList())
           val pendingWaitingListSearchRequest = WaitingListSearchRequest(prisonerNumbers = listOf(prisonerNumber), status = listOf("PENDING"))
           val approvedWaitingListSearchRequest = WaitingListSearchRequest(prisonerNumbers = listOf(prisonerNumber), status = listOf("APPROVED"))
@@ -909,6 +838,38 @@ class ActivitiesQueueServiceTest(
 
           whenever(getWaitingListApplicationsService.execute(prisonId, approvedWaitingListSearchRequest, filters))
             .thenReturn(Response(data = response))
+
+          val messageBody = """{"messageId": "1", "eventType": "AllocatePrisonerFromActivitySchedule", "messageAttributes": {}, who: "$who"}"""
+          whenever(objectMapper.writeValueAsString(any<HmppsMessage>())).thenReturn(messageBody)
+
+          val result = activitiesQueueService.sendPrisonerAllocationRequest(scheduleId, allocationRequest, who, filters)
+          result.data.shouldBeTypeOf<HmppsMessageResponse>()
+          result.data.message.shouldBe("Prisoner allocation written to queue")
+          result.errors.shouldBeEmpty()
+
+          verify(mockSqsClient).sendMessage(
+            argThat<SendMessageRequest> { request: SendMessageRequest? ->
+              request?.queueUrl() == "https://test-queue-url" &&
+                request.messageBody() == messageBody
+            },
+          )
+        }
+
+        it("successfully adds to message queue when the schedule does not have an end date") {
+          val activitiesActivityScheduleDetailed = activitiesActivityScheduleDetailed.copy(allocations = emptyList())
+          val pendingWaitingListSearchRequest = WaitingListSearchRequest(prisonerNumbers = listOf(prisonerNumber), status = listOf("PENDING"))
+          val approvedWaitingListSearchRequest = WaitingListSearchRequest(prisonerNumbers = listOf(prisonerNumber), status = listOf("APPROVED"))
+          val response = paginatedWaitingListApplications.copy(content = emptyList(), totalPages = 0, totalCount = 0L, count = 0)
+
+          whenever(activitiesGateway.getActivityScheduleById(scheduleId))
+            .thenReturn(Response(data = activitiesActivityScheduleDetailed.copy(endDate = null)))
+
+          whenever(getWaitingListApplicationsService.execute(prisonId, pendingWaitingListSearchRequest, filters))
+            .thenReturn(Response(data = response))
+
+          whenever(getWaitingListApplicationsService.execute(prisonId, approvedWaitingListSearchRequest, filters))
+            .thenReturn(Response(data = response))
+
           val messageBody = """{"messageId": "1", "eventType": "AllocatePrisonerFromActivitySchedule", "messageAttributes": {}, who: "$who"}"""
           whenever(objectMapper.writeValueAsString(any<HmppsMessage>())).thenReturn(messageBody)
 
