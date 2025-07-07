@@ -34,11 +34,7 @@ class PrisonerBaseLocationGateway(
         val inPrison = it.inOutStatus == "IN"
         PrisonerBaseLocation(
           inPrison = inPrison,
-          prisonId =
-            when (inPrison) {
-              true -> it.prisonId
-              else -> null
-            },
+          prisonId = if (inPrison) it.prisonId else null,
           lastPrisonId = it.lastPrisonId,
           lastMovementType = it.lastMovementTypeCode?.let { translateLastMovementType(it) },
           receptionDate = it.receptionDate?.let { LocalDate.parse(it, DateTimeFormatter.ISO_DATE) },
