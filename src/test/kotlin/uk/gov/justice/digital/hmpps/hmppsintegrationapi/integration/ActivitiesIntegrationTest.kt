@@ -472,14 +472,13 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
 
   @Nested
   @DisplayName("POST /v1/activities/{scheduleId}/allocate")
-  inner class PostAllocateFromSchedule {
+  inner class PostAllocateToSchedule {
     val scheduleId = 123456L
-    val prisonerNumber = "A1234AA"
     val path = "/v1/activities/schedule/$scheduleId/allocate"
     val prisonCode = "MDI"
     val prisonerAllocationRequest =
       PrisonerAllocationRequest(
-        prisonerNumber = prisonerNumber,
+        prisonerNumber = nomsId,
         startDate = LocalDate.now().plusMonths(1),
         endDate = LocalDate.now().plusMonths(2),
         payBandId = 123456L,
@@ -523,7 +522,7 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
         "/waiting-list-applications/$prisonCode/search?page=0&pageSize=50",
         """
         {
-          "prisonerNumbers": ["$prisonerNumber"],
+          "prisonerNumbers": ["$nomsId"],
           "status": ["PENDING"]
         }
         """.trimIndent(),
@@ -534,7 +533,7 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
         "/waiting-list-applications/$prisonCode/search?page=0&pageSize=50",
         """
         {
-          "prisonerNumbers": ["$prisonerNumber"],
+          "prisonerNumbers": ["$nomsId"],
           "status": ["APPROVED"]
         }
         """.trimIndent(),
@@ -799,7 +798,7 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
       val requestBody = asJsonString(prisonerAllocationRequest.copy(startDate = LocalDate.now().plusDays(5), endDate = null))
       postToApi(path, requestBody)
         .andExpect(MockMvcResultMatchers.status().isBadRequest)
-        .andExpect(MockMvcResultMatchers.jsonPath("$.userMessage").value("Invalid query parameters: Prisoner with $prisonerNumber is already allocated to schedule Entry level Maths 1."))
+        .andExpect(MockMvcResultMatchers.jsonPath("$.userMessage").value("Invalid query parameters: Prisoner with $nomsId is already allocated to schedule Entry level Maths 1."))
 
       checkQueueIsEmpty()
     }
@@ -859,7 +858,7 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
         "/waiting-list-applications/$prisonCode/search?page=0&pageSize=50",
         """
         {
-          "prisonerNumbers": ["$prisonerNumber"],
+          "prisonerNumbers": ["$nomsId"],
           "status": ["PENDING"]
         }
         """.trimIndent(),
@@ -870,7 +869,7 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
         "/waiting-list-applications/$prisonCode/search?page=0&pageSize=50",
         """
         {
-          "prisonerNumbers": ["$prisonerNumber"],
+          "prisonerNumbers": ["$nomsId"],
           "status": ["APPROVED"]
         }
         """.trimIndent(),
@@ -912,7 +911,7 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
         "/waiting-list-applications/$prisonCode/search?page=0&pageSize=50",
         """
         {
-          "prisonerNumbers": ["$prisonerNumber"],
+          "prisonerNumbers": ["$nomsId"],
           "status": ["PENDING"]
         }
         """.trimIndent(),
@@ -925,7 +924,7 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
 
       activitiesMockServer.stubForPost(
         "/waiting-list-applications/$prisonCode/search?page=0&pageSize=50",
-        """{ "prisonerNumbers": ["$prisonerNumber"], "status": ["APPROVED"] }""",
+        """{ "prisonerNumbers": ["$nomsId"], "status": ["APPROVED"] }""",
         responseBody,
       )
 
