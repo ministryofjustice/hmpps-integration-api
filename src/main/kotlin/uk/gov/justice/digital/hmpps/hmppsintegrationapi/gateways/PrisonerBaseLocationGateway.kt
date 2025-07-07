@@ -31,9 +31,14 @@ class PrisonerBaseLocationGateway(
     // to be refactored: translate from reference data, at domain service
     val baseLocation =
       prisonResponse.data?.let {
+        val inPrison = it.inOutStatus == "IN"
         PrisonerBaseLocation(
-          inPrison = it.inOutStatus == "IN",
-          prisonId = it.prisonId,
+          inPrison = inPrison,
+          prisonId =
+            when (inPrison) {
+              true -> it.prisonId
+              else -> null
+            },
           lastPrisonId = it.lastPrisonId,
           lastMovementType = it.lastMovementTypeCode?.let { translateLastMovementType(it) },
           receptionDate = it.receptionDate?.let { LocalDate.parse(it, DateTimeFormatter.ISO_DATE) },
