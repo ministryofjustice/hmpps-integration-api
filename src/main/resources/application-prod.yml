@@ -48,6 +48,7 @@ feature-flag:
   use-deallocation-endpoint: false
   use-deallocation-reasons-endpoint: true
   use-allocation-endpoint: false
+  use-education-endpoint: false
 
 authorisation:
   consumers:
