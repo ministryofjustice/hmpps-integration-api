@@ -426,7 +426,7 @@ class ActivitiesQueueServiceTest(
             activity =
               ActivitiesActivity(
                 id = 2001L,
-                prisonCode = "MDI",
+                prisonCode = prisonId,
                 attendanceRequired = false,
                 inCell = false,
                 onWing = false,
@@ -491,7 +491,7 @@ class ActivitiesQueueServiceTest(
                   activityId = 100L,
                   scheduleId = 200L,
                   allocationId = null,
-                  prisonId = "MDI",
+                  prisonId = prisonId,
                   prisonerNumber = "A1234AA",
                   bookingId = 300L,
                   status = "PENDING",
@@ -613,6 +613,16 @@ class ActivitiesQueueServiceTest(
           val result = activitiesQueueService.sendPrisonerAllocationRequest(scheduleId, allocationRequest, who, filters)
           result.data.shouldBeNull()
           result.errors.shouldBe(listOf(error))
+        }
+
+        it("should return errors when consumer does not have access to the prison") {
+          val errors = listOf(UpstreamApiError(UpstreamApi.ACTIVITIES, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found"))
+          whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<HmppsMessageResponse>(prisonId, filters))
+            .thenReturn(Response(data = null, errors))
+
+          val result = activitiesQueueService.sendPrisonerAllocationRequest(scheduleId, allocationRequest, who, filters)
+          result.data.shouldBe(null)
+          result.errors.shouldBe(errors)
         }
 
         it("Returns an error when the allocation does not have a pay band when the activity is paid") {
