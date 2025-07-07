@@ -23,7 +23,6 @@ class GetStatusInformationForPersonService(
         allNDeliusPersonStatus.data.filter {
           it.code in
             listOf(
-              "ASFO",
               "WRSM",
             )
         }
