@@ -11,7 +11,7 @@
     "capacity": 10,
     "activity": {
       "id": 123456,
-      "prisonCode": "PVI",
+      "prisonCode": "MDI",
       "attendanceRequired": false,
       "inCell": false,
       "onWing": false,
