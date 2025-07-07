@@ -38,7 +38,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Exclusion
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HmppsMessage
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HmppsMessageResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PaginatedWaitingListApplications
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonInPrison
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonPayBand
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerAllocationRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerDeallocationRequest
@@ -87,10 +87,12 @@ class ActivitiesQueueServiceTest(
 
       val persona = personInProbationAndNomisPersona
       val person =
-        Person(
+        PersonInPrison(
           firstName = persona.firstName,
           lastName = persona.lastName,
           identifiers = persona.identifiers,
+          prisonId = prisonId,
+          youthOffender = false,
         )
 
       beforeTest {
@@ -534,7 +536,7 @@ class ActivitiesQueueServiceTest(
           )
 
         beforeTest {
-          whenever(getPersonService.getPersonWithPrisonFilter(prisonerNumber, filters)).thenReturn(
+          whenever(getPersonService.getPrisoner(prisonerNumber, filters)).thenReturn(
             Response(data = person),
           )
 
@@ -616,7 +618,7 @@ class ActivitiesQueueServiceTest(
 
         it("Returns an error if the getPersonService returns an error") {
           val errors = listOf(UpstreamApiError(UpstreamApi.PRISON_API, UpstreamApiError.Type.ENTITY_NOT_FOUND, "error from getPersonService"))
-          whenever(activitiesGateway.getActivityScheduleById(scheduleId))
+          whenever(getPersonService.getPrisoner(prisonerNumber, filters))
             .thenReturn(Response(data = null, errors))
 
           val result = activitiesQueueService.sendPrisonerAllocationRequest(scheduleId, allocationRequest, who, filters)
@@ -639,6 +641,15 @@ class ActivitiesQueueServiceTest(
           val result = activitiesQueueService.sendPrisonerAllocationRequest(scheduleId, allocationRequest, who, filters)
           result.data.shouldBeNull()
           result.errors.shouldBe(listOf(error))
+        }
+
+        it("Returns an error if the activities gateway returns an schedule belonging to a different prison to the prisoner") {
+          whenever(getPersonService.getPrisoner(prisonerNumber, filters))
+            .thenReturn(Response(data = person.copy(prisonId = "XYZ")))
+
+          val result = activitiesQueueService.sendPrisonerAllocationRequest(scheduleId, allocationRequest, who, filters)
+          result.data.shouldBeNull()
+          result.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.ACTIVITIES, UpstreamApiError.Type.BAD_REQUEST, "Unable to allocate prisoner with prisoner number $prisonerNumber, prisoner is not active at prison ${activitiesActivityScheduleDetailed.activity.prisonCode}.")))
         }
 
         it("should return errors when consumer does not have access to the prison for the schedule") {

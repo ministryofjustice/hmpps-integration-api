@@ -123,7 +123,7 @@ class ActivitiesQueueService(
     validateScheduleInstanceIfToday(prisonerAllocationRequest, today)?.let { return it }
     validateExclusionTimes(prisonerAllocationRequest)?.let { return it }
 
-    val personResponse = getPersonService.getPersonWithPrisonFilter(prisonerAllocationRequest.prisonerNumber, filters)
+    val personResponse = getPersonService.getPrisoner(prisonerAllocationRequest.prisonerNumber, filters)
     if (personResponse.errors.isNotEmpty()) {
       return Response(data = null, errors = personResponse.errors)
     }
@@ -131,7 +131,15 @@ class ActivitiesQueueService(
     val scheduleResponse = activitiesGateway.getActivityScheduleById(scheduleId)
     if (scheduleResponse.errors.isNotEmpty()) return Response(data = null, errors = scheduleResponse.errors)
     val schedule = scheduleResponse.data!!
+
     val prisonCode = schedule.activity.prisonCode
+    if (prisonCode != personResponse.data?.prisonId) {
+      return Response(
+        data = null,
+        errors = listOf(UpstreamApiError(UpstreamApi.ACTIVITIES, UpstreamApiError.Type.BAD_REQUEST, "Unable to allocate prisoner with prisoner number ${prisonerAllocationRequest.prisonerNumber}, prisoner is not active at prison $prisonCode.")),
+      )
+    }
+
     val consumerPrisonFilterCheck = consumerPrisonAccessService.checkConsumerHasPrisonAccess<HmppsMessageResponse>(prisonCode, filters, upstreamServiceType = UpstreamApi.ACTIVITIES)
     if (consumerPrisonFilterCheck.errors.isNotEmpty()) {
       return consumerPrisonFilterCheck
