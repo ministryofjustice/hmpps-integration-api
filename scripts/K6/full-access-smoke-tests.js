@@ -244,7 +244,7 @@ export default function ()  {
     exec.test.fail(`${putDeallocationEndpoint} caused the test to fail`)
   }
 
-  const postAllocationRes = http.put(`${baseUrl}${postAllocationEndpoint}`, postAllocationData, params);
+  const postAllocationRes = http.post(`${baseUrl}${postAllocationEndpoint}`, postAllocationData, params);
   if (!check(postAllocationRes, {
     [`POST ${postAllocationEndpoint} returns 200`]: (r) => r.status === 200,
   })) {
