@@ -140,6 +140,13 @@ class ActivitiesQueueService(
       )
     }
 
+    if (prisonerAllocationRequest.scheduleInstanceId != null && !schedule.instances.map { it.id }.contains(prisonerAllocationRequest.scheduleInstanceId)) {
+      return Response(
+        data = null,
+        errors = listOf(UpstreamApiError(UpstreamApi.ACTIVITIES, UpstreamApiError.Type.BAD_REQUEST, "scheduleInstanceId not found on schedule")),
+      )
+    }
+
     val consumerPrisonFilterCheck = consumerPrisonAccessService.checkConsumerHasPrisonAccess<HmppsMessageResponse>(prisonCode, filters, upstreamServiceType = UpstreamApi.ACTIVITIES)
     if (consumerPrisonFilterCheck.errors.isNotEmpty()) {
       return consumerPrisonFilterCheck
