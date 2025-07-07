@@ -29,6 +29,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonName
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonalCareNeed
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PhysicalCharacteristics
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerContact
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerEducation
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError.Type.ENTITY_NOT_FOUND
@@ -45,6 +46,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonServic
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonsService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPhysicalCharacteristicsForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPrisonerContactsService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPrisonerEducationService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetVisitOrdersForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.util.PaginatedResponse
@@ -67,6 +69,7 @@ class PersonController(
   @Autowired val getPhysicalCharacteristicsForPersonService: GetPhysicalCharacteristicsForPersonService,
   @Autowired val getCareNeedsForPersonService: GetCareNeedsForPersonService,
   @Autowired val getLanguagesForPersonService: GetLanguagesForPersonService,
+  @Autowired val getPrisonerEducationService: GetPrisonerEducationService,
   @Autowired val auditService: AuditService,
   @Autowired val featureFlag: FeatureFlagConfig,
 ) {
@@ -400,6 +403,35 @@ class PersonController(
     }
 
     auditService.createEvent("GET_LANGUAGES", mapOf("hmppsId" to hmppsId))
+    return DataResponse(response.data)
+  }
+
+  @GetMapping("{hmppsId}/education")
+  @Tag(name = "Activities")
+  @Operation(
+    summary = "Gets a prisoners education which includes their level of education, and a collection of qualifications that have been achieved.",
+    description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
+    responses = [
+      ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found a person's education information with the provided HMPPS ID."),
+      ApiResponse(responseCode = "400", content = [Content(schema = Schema(ref = "#/components/schemas/BadRequest"))]),
+      ApiResponse(responseCode = "404", content = [Content(schema = Schema(ref = "#/components/schemas/PersonNotFound"))]),
+      ApiResponse(responseCode = "500", content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]),
+    ],
+  )
+  fun getEducationForPerson(
+    @Parameter(description = "A HMPPS identifier") @PathVariable hmppsId: String,
+    @RequestAttribute filters: ConsumerFilters?,
+  ): DataResponse<PrisonerEducation?> {
+    val response = getPrisonerEducationService.execute(hmppsId, filters = filters)
+
+    if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
+      throw ValidationException("Bad request from upstream ${response.errors.first().description}")
+    }
+    if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
+      throw EntityNotFoundException("Entity not found ${response.errors.first().description}")
+    }
+
+    auditService.createEvent("GET_PRISONER_EDUCATION", mapOf("hmppsId" to hmppsId))
     return DataResponse(response.data)
   }
 
