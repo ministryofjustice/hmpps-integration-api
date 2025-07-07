@@ -13,6 +13,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.InductionSc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ReviewSchedules
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.plp.PLPPrisonerEducation
 
 @Component
 class PLPGateway(
@@ -119,6 +120,29 @@ class PLPGateway(
     }
   }
 
+  fun getPrisonerEducation(prisonerNumber: String): Response<PLPPrisonerEducation?> {
+    val result =
+      webClient.request<PLPPrisonerEducation>(
+        HttpMethod.GET,
+        "/person/$prisonerNumber/education",
+        authenticationHeader(),
+        UpstreamApi.PLP,
+      )
+    return when (result) {
+      is WebClientWrapperResponse.Success -> {
+        return Response(
+          data = result.data,
+        )
+      }
+      is WebClientWrapperResponse.Error -> {
+        Response(
+          data = null,
+          errors = result.errors,
+        )
+      }
+    }
+  }
+
   fun getEducationAssessmentSummary(prisonerNumber: String): Response<EducationAssessmentSummaryResponse?> {
     val result =
       webClient.request<EducationAssessmentSummaryResponse>(
@@ -132,7 +156,6 @@ class PLPGateway(
       is WebClientWrapperResponse.Success -> {
         Response(data = result.data)
       }
-
       is WebClientWrapperResponse.Error -> {
         Response(
           data = null,

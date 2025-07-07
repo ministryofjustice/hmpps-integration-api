@@ -36,6 +36,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonalCar
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PhysicalCharacteristics
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerContact
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerContactRelationship
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerEducation
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Qualification
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
@@ -53,6 +55,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonServic
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonsService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPhysicalCharacteristicsForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPrisonerContactsService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPrisonerEducationService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetVisitOrdersForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 import java.net.URLEncoder
@@ -76,6 +79,7 @@ internal class PersonControllerTest(
   @MockitoBean val getPhysicalCharacteristicsForPersonService: GetPhysicalCharacteristicsForPersonService,
   @MockitoBean val getCareNeedsForPersonService: GetCareNeedsForPersonService,
   @MockitoBean val getLanguagesForPersonService: GetLanguagesForPersonService,
+  @MockitoBean val getPrisonerEducationService: GetPrisonerEducationService,
   @MockitoBean val featureFlagConfig: FeatureFlagConfig,
 ) : DescribeSpec(
     {
@@ -1171,313 +1175,400 @@ internal class PersonControllerTest(
           val result = mockMvc.performAuthorised(path)
           result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
         }
+      }
 
-        describe("/v1/persons/{hmppsId}/number-of-children") {
-          val path = "$basePath/$sanitisedHmppsId/number-of-children"
-          val numberOfChildren = NumberOfChildren(numberOfChildren = "2")
+      describe("/v1/persons/{hmppsId}/number-of-children") {
+        val path = "$basePath/$sanitisedHmppsId/number-of-children"
+        val numberOfChildren = NumberOfChildren(numberOfChildren = "2")
 
-          beforeTest {
-            Mockito.reset(getNumberOfChildrenForPersonService)
-            Mockito.reset(auditService)
+        beforeTest {
+          Mockito.reset(getNumberOfChildrenForPersonService)
+          Mockito.reset(auditService)
 
-            whenever(getNumberOfChildrenForPersonService.execute(sanitisedHmppsId, filters)).thenReturn(
-              Response(
-                data = numberOfChildren,
+          whenever(getNumberOfChildrenForPersonService.execute(sanitisedHmppsId, filters)).thenReturn(
+            Response(
+              data = numberOfChildren,
+            ),
+          )
+        }
+
+        it("logs audit") {
+          mockMvc.performAuthorised(path)
+          verify(auditService, times(1)).createEvent("GET_PRISONER_NUMBER_OF_CHILDREN", mapOf("hmppsId" to sanitisedHmppsId))
+        }
+
+        it("returns a 200 OK status code with data") {
+          val result = mockMvc.performAuthorised(path)
+          result.response.status.shouldBe(HttpStatus.OK.value())
+          result.response.contentAsString.shouldBe(
+            """
+          {
+            "data": {
+              "numberOfChildren": "2"
+            }
+          }
+          """.removeWhitespaceAndNewlines(),
+          )
+        }
+
+        it("returns a 400 bad request") {
+          whenever(getNumberOfChildrenForPersonService.execute(sanitisedHmppsId, filters)).thenReturn(
+            Response(
+              data = null,
+              errors =
+                listOf(
+                  UpstreamApiError(
+                    causedBy = UpstreamApi.PERSONAL_RELATIONSHIPS,
+                    type = UpstreamApiError.Type.BAD_REQUEST,
+                  ),
+                ),
+            ),
+          )
+
+          val result = mockMvc.performAuthorised(path)
+          result.response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
+        }
+
+        it("returns a 404 not found") {
+          whenever(getNumberOfChildrenForPersonService.execute(sanitisedHmppsId, filters)).thenReturn(
+            Response(
+              data = null,
+              errors =
+                listOf(
+                  UpstreamApiError(
+                    causedBy = UpstreamApi.PERSONAL_RELATIONSHIPS,
+                    type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+                  ),
+                ),
+            ),
+          )
+
+          val result = mockMvc.performAuthorised(path)
+          result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
+        }
+      }
+
+      describe("GET $basePath/$sanitisedHmppsId/visit-orders") {
+        beforeTest {
+          Mockito.reset(getPersonsService)
+          Mockito.reset(auditService)
+
+          val filters = ConsumerFilters(prisons = emptyList())
+          whenever(getPersonService.getNomisNumberWithPrisonFilter(sanitisedHmppsId, filters)).thenReturn(Response(NomisNumber("A1234AA")))
+        }
+
+        it("returns a prisoners visit orders") {
+          whenever(getVisitOrdersForPersonService.execute(sanitisedHmppsId)).thenReturn(
+            Response(
+              data =
+                VisitOrders(
+                  remainingVisitOrders = 10,
+                  remainingPrivilegeVisitOrders = 5,
+                ),
+            ),
+          )
+
+          val result = mockMvc.performAuthorised("$basePath/$sanitisedHmppsId/visit-orders")
+          result.response.contentAsString.shouldBe("""{"data":{"remainingVisitOrders":10,"remainingPrivilegeVisitOrders":5}}""")
+        }
+
+        it("returns a 404 when no prisoner visit orders found") {
+          whenever(getVisitOrdersForPersonService.execute(sanitisedHmppsId)).thenReturn(
+            Response(
+              data = null,
+              errors =
+                listOf(
+                  UpstreamApiError(
+                    causedBy = UpstreamApi.PRISON_API,
+                    type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+                  ),
+                ),
+            ),
+          )
+
+          val result = mockMvc.performAuthorised("$basePath/$sanitisedHmppsId/visit-orders")
+          result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
+        }
+
+        it("returns a 400 when invalid hmppsid") {
+          whenever(getVisitOrdersForPersonService.execute(sanitisedHmppsId)).thenReturn(
+            Response(
+              data = null,
+              errors =
+                listOf(
+                  UpstreamApiError(
+                    causedBy = UpstreamApi.PRISON_API,
+                    type = UpstreamApiError.Type.BAD_REQUEST,
+                  ),
+                ),
+            ),
+          )
+
+          val result = mockMvc.performAuthorised("$basePath/$sanitisedHmppsId/visit-orders")
+          result.response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
+        }
+      }
+
+      describe("/v1/persons/{hmppsId}/care-needs") {
+        val path = "$basePath/$sanitisedHmppsId/care-needs"
+        val careNeeds =
+          listOf(
+            PersonalCareNeed(
+              problemType = "MATSTAT",
+              problemCode = "ACCU9",
+              problemStatus = "ON",
+              problemDescription = "No Disability",
+              commentText = "COMMENT",
+              startDate = "2020-06-21",
+              endDate = null,
+            ),
+          )
+
+        beforeTest {
+          Mockito.reset(getCareNeedsForPersonService)
+          Mockito.reset(auditService)
+
+          whenever(getCareNeedsForPersonService.execute(sanitisedHmppsId, filters)).thenReturn(
+            Response(
+              data = careNeeds,
+            ),
+          )
+        }
+
+        it("logs audit") {
+          mockMvc.performAuthorised(path)
+          verify(auditService, times(1)).createEvent("GET_PERSON_CARE_NEEDS", mapOf("hmppsId" to sanitisedHmppsId))
+        }
+
+        it("returns a 200 OK status code with data") {
+          val result = mockMvc.performAuthorised(path)
+          result.response.status.shouldBe(HttpStatus.OK.value())
+          result.response.contentAsString.shouldBe(
+            """
+            {
+              "data": [
+                {
+                  "problemType": "MATSTAT",
+                  "problemCode": "ACCU9",
+                  "problemStatus": "ON",
+                  "problemDescription": "No Disability",
+                  "commentText": "COMMENT",
+                  "startDate": "2020-06-21",
+                  "endDate": null
+                }
+              ]
+            }
+          """.removeWhitespaceAndNewlines(),
+          )
+        }
+
+        it("returns a 400 bad request") {
+          whenever(getCareNeedsForPersonService.execute(sanitisedHmppsId, filters)).thenReturn(
+            Response(
+              data = null,
+              errors =
+                listOf(
+                  UpstreamApiError(
+                    causedBy = UpstreamApi.PRISONER_OFFENDER_SEARCH,
+                    type = UpstreamApiError.Type.BAD_REQUEST,
+                  ),
+                ),
+            ),
+          )
+
+          val result = mockMvc.performAuthorised(path)
+          result.response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
+        }
+
+        it("returns a 404 not found") {
+          whenever(getCareNeedsForPersonService.execute(sanitisedHmppsId, filters)).thenReturn(
+            Response(
+              data = null,
+              errors =
+                listOf(
+                  UpstreamApiError(
+                    causedBy = UpstreamApi.PRISONER_OFFENDER_SEARCH,
+                    type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+                  ),
+                ),
+            ),
+          )
+
+          val result = mockMvc.performAuthorised(path)
+          result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
+        }
+      }
+
+      describe("/v1/persons/{hmppsId}/languages") {
+        val path = "$basePath/$sanitisedHmppsId/languages"
+        val languages =
+          listOf(
+            Language(
+              type = "PRIM",
+              code = "ENG",
+              readSkill = "Y",
+              writeSkill = "Y",
+              speakSkill = "Y",
+              interpreterRequested = true,
+            ),
+          )
+
+        beforeTest {
+          Mockito.reset(getLanguagesForPersonService)
+          Mockito.reset(auditService)
+
+          whenever(getLanguagesForPersonService.execute(sanitisedHmppsId, filters)).thenReturn(
+            Response(
+              data = languages,
+            ),
+          )
+        }
+
+        it("logs audit") {
+          mockMvc.performAuthorised(path)
+          verify(auditService, times(1)).createEvent("GET_LANGUAGES", mapOf("hmppsId" to sanitisedHmppsId))
+        }
+
+        it("returns a 200 OK status code with data") {
+          val result = mockMvc.performAuthorised(path)
+          result.response.status.shouldBe(HttpStatus.OK.value())
+          result.response.contentAsString.shouldBe(
+            """
+            {
+              "data": [
+                {
+                  "type": "PRIM",
+                  "code": "ENG",
+                  "readSkill": "Y",
+                  "writeSkill": "Y",
+                  "speakSkill": "Y",
+                  "interpreterRequested": true
+                }
+              ]
+            }
+        """.removeWhitespaceAndNewlines(),
+          )
+        }
+
+        it("returns a 400 bad request") {
+          whenever(getLanguagesForPersonService.execute(sanitisedHmppsId, filters)).thenReturn(
+            Response(
+              data = null,
+              errors =
+                listOf(
+                  UpstreamApiError(
+                    causedBy = UpstreamApi.PRISONER_OFFENDER_SEARCH,
+                    type = UpstreamApiError.Type.BAD_REQUEST,
+                  ),
+                ),
+            ),
+          )
+          val result = mockMvc.performAuthorised(path)
+          result.response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
+        }
+
+        it("returns a 404 not found") {
+          whenever(getLanguagesForPersonService.execute(sanitisedHmppsId, filters)).thenReturn(
+            Response(
+              data = null,
+              errors =
+                listOf(
+                  UpstreamApiError(
+                    causedBy = UpstreamApi.PRISONER_OFFENDER_SEARCH,
+                    type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+                  ),
+                ),
+            ),
+          )
+          val result = mockMvc.performAuthorised(path)
+          result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
+        }
+      }
+
+      describe("/v1/persons/{hmppsId}/education") {
+        val path = "$basePath/$sanitisedHmppsId/education"
+        val education =
+          PrisonerEducation(
+            educationLevel = "PRIMARY_SCHOOL",
+            qualifications =
+              listOf(
+                Qualification(
+                  subject = "Maths GCSE",
+                  level = "ENTRY_LEVEL",
+                  grade = "Distinction",
+                ),
               ),
-            )
-          }
+          )
 
-          it("logs audit") {
-            mockMvc.performAuthorised(path)
-            verify(auditService, times(1)).createEvent("GET_PRISONER_NUMBER_OF_CHILDREN", mapOf("hmppsId" to sanitisedHmppsId))
-          }
+        beforeTest {
+          Mockito.reset(getLanguagesForPersonService)
+          Mockito.reset(auditService)
 
-          it("returns a 200 OK status code with data") {
-            val result = mockMvc.performAuthorised(path)
-            result.response.status.shouldBe(HttpStatus.OK.value())
-            result.response.contentAsString.shouldBe(
-              """
+          whenever(getPrisonerEducationService.execute(sanitisedHmppsId, filters)).thenReturn(
+            Response(
+              data = education,
+            ),
+          )
+        }
+
+        it("logs audit") {
+          mockMvc.performAuthorised(path)
+          verify(auditService, times(1)).createEvent("GET_PRISONER_EDUCATION", mapOf("hmppsId" to sanitisedHmppsId))
+        }
+
+        it("returns a 200 OK status code with data") {
+          val result = mockMvc.performAuthorised(path)
+          result.response.status.shouldBe(HttpStatus.OK.value())
+          result.response.contentAsString.shouldBe(
+            """
             {
               "data": {
-                "numberOfChildren": "2"
-              }
+              "educationLevel": "PRIMARY_SCHOOL",
+              "qualifications": [
+                {
+                  "subject": "Maths GCSE",
+                  "level": "ENTRY_LEVEL",
+                  "grade": "Distinction"
+                }
+              ]
             }
-            """.removeWhitespaceAndNewlines(),
-            )
-          }
-
-          it("returns a 400 bad request") {
-            whenever(getNumberOfChildrenForPersonService.execute(sanitisedHmppsId, filters)).thenReturn(
-              Response(
-                data = null,
-                errors =
-                  listOf(
-                    UpstreamApiError(
-                      causedBy = UpstreamApi.PERSONAL_RELATIONSHIPS,
-                      type = UpstreamApiError.Type.BAD_REQUEST,
-                    ),
-                  ),
-              ),
-            )
-
-            val result = mockMvc.performAuthorised(path)
-            result.response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
-          }
-
-          it("returns a 404 not found") {
-            whenever(getNumberOfChildrenForPersonService.execute(sanitisedHmppsId, filters)).thenReturn(
-              Response(
-                data = null,
-                errors =
-                  listOf(
-                    UpstreamApiError(
-                      causedBy = UpstreamApi.PERSONAL_RELATIONSHIPS,
-                      type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-                    ),
-                  ),
-              ),
-            )
-
-            val result = mockMvc.performAuthorised(path)
-            result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
-          }
+            }
+        """.removeWhitespaceAndNewlines(),
+          )
         }
 
-        describe("GET $basePath/$sanitisedHmppsId/visit-orders") {
-          beforeTest {
-            Mockito.reset(getPersonsService)
-            Mockito.reset(auditService)
-
-            val filters = ConsumerFilters(prisons = emptyList())
-            whenever(getPersonService.getNomisNumberWithPrisonFilter(sanitisedHmppsId, filters)).thenReturn(Response(NomisNumber("A1234AA")))
-          }
-
-          it("returns a prisoners visit orders") {
-            whenever(getVisitOrdersForPersonService.execute(sanitisedHmppsId)).thenReturn(
-              Response(
-                data =
-                  VisitOrders(
-                    remainingVisitOrders = 10,
-                    remainingPrivilegeVisitOrders = 5,
+        it("returns a 400 bad request") {
+          whenever(getPrisonerEducationService.execute(sanitisedHmppsId, filters)).thenReturn(
+            Response(
+              data = null,
+              errors =
+                listOf(
+                  UpstreamApiError(
+                    causedBy = UpstreamApi.PRISONER_OFFENDER_SEARCH,
+                    type = UpstreamApiError.Type.BAD_REQUEST,
                   ),
-              ),
-            )
-
-            val result = mockMvc.performAuthorised("$basePath/$sanitisedHmppsId/visit-orders")
-            result.response.contentAsString.shouldBe("""{"data":{"remainingVisitOrders":10,"remainingPrivilegeVisitOrders":5}}""")
-          }
-
-          it("returns a 404 when no prisoner visit orders found") {
-            whenever(getVisitOrdersForPersonService.execute(sanitisedHmppsId)).thenReturn(
-              Response(
-                data = null,
-                errors =
-                  listOf(
-                    UpstreamApiError(
-                      causedBy = UpstreamApi.PRISON_API,
-                      type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-                    ),
-                  ),
-              ),
-            )
-
-            val result = mockMvc.performAuthorised("$basePath/$sanitisedHmppsId/visit-orders")
-            result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
-          }
-
-          it("returns a 400 when invalid hmppsid") {
-            whenever(getVisitOrdersForPersonService.execute(sanitisedHmppsId)).thenReturn(
-              Response(
-                data = null,
-                errors =
-                  listOf(
-                    UpstreamApiError(
-                      causedBy = UpstreamApi.PRISON_API,
-                      type = UpstreamApiError.Type.BAD_REQUEST,
-                    ),
-                  ),
-              ),
-            )
-
-            val result = mockMvc.performAuthorised("$basePath/$sanitisedHmppsId/visit-orders")
-            result.response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
-          }
+                ),
+            ),
+          )
+          val result = mockMvc.performAuthorised(path)
+          result.response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
         }
 
-        describe("/v1/persons/{hmppsId}/care-needs") {
-          val path = "$basePath/$sanitisedHmppsId/care-needs"
-          val careNeeds =
-            listOf(
-              PersonalCareNeed(
-                problemType = "MATSTAT",
-                problemCode = "ACCU9",
-                problemStatus = "ON",
-                problemDescription = "No Disability",
-                commentText = "COMMENT",
-                startDate = "2020-06-21",
-                endDate = null,
-              ),
-            )
-
-          beforeTest {
-            Mockito.reset(getCareNeedsForPersonService)
-            Mockito.reset(auditService)
-
-            whenever(getCareNeedsForPersonService.execute(sanitisedHmppsId, filters)).thenReturn(
-              Response(
-                data = careNeeds,
-              ),
-            )
-          }
-
-          it("logs audit") {
-            mockMvc.performAuthorised(path)
-            verify(auditService, times(1)).createEvent("GET_PERSON_CARE_NEEDS", mapOf("hmppsId" to sanitisedHmppsId))
-          }
-
-          it("returns a 200 OK status code with data") {
-            val result = mockMvc.performAuthorised(path)
-            result.response.status.shouldBe(HttpStatus.OK.value())
-            result.response.contentAsString.shouldBe(
-              """
-              {
-                "data": [
-                  {
-                    "problemType": "MATSTAT",
-                    "problemCode": "ACCU9",
-                    "problemStatus": "ON",
-                    "problemDescription": "No Disability",
-                    "commentText": "COMMENT",
-                    "startDate": "2020-06-21",
-                    "endDate": null
-                  }
-                ]
-              }
-            """.removeWhitespaceAndNewlines(),
-            )
-          }
-
-          it("returns a 400 bad request") {
-            whenever(getCareNeedsForPersonService.execute(sanitisedHmppsId, filters)).thenReturn(
-              Response(
-                data = null,
-                errors =
-                  listOf(
-                    UpstreamApiError(
-                      causedBy = UpstreamApi.PRISONER_OFFENDER_SEARCH,
-                      type = UpstreamApiError.Type.BAD_REQUEST,
-                    ),
+        it("returns a 404 not found") {
+          whenever(getPrisonerEducationService.execute(sanitisedHmppsId, filters)).thenReturn(
+            Response(
+              data = null,
+              errors =
+                listOf(
+                  UpstreamApiError(
+                    causedBy = UpstreamApi.PRISONER_OFFENDER_SEARCH,
+                    type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
                   ),
-              ),
-            )
-
-            val result = mockMvc.performAuthorised(path)
-            result.response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
-          }
-
-          it("returns a 404 not found") {
-            whenever(getCareNeedsForPersonService.execute(sanitisedHmppsId, filters)).thenReturn(
-              Response(
-                data = null,
-                errors =
-                  listOf(
-                    UpstreamApiError(
-                      causedBy = UpstreamApi.PRISONER_OFFENDER_SEARCH,
-                      type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-                    ),
-                  ),
-              ),
-            )
-
-            val result = mockMvc.performAuthorised(path)
-            result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
-          }
-        }
-
-        describe("/v1/persons/{hmppsId}/languages") {
-          val path = "$basePath/$sanitisedHmppsId/languages"
-          val languages =
-            listOf(
-              Language(
-                type = "PRIM",
-                code = "ENG",
-                readSkill = "Y",
-                writeSkill = "Y",
-                speakSkill = "Y",
-                interpreterRequested = true,
-              ),
-            )
-
-          beforeTest {
-            Mockito.reset(getLanguagesForPersonService)
-            Mockito.reset(auditService)
-
-            whenever(getLanguagesForPersonService.execute(sanitisedHmppsId, filters)).thenReturn(
-              Response(
-                data = languages,
-              ),
-            )
-          }
-
-          it("logs audit") {
-            mockMvc.performAuthorised(path)
-            verify(auditService, times(1)).createEvent("GET_LANGUAGES", mapOf("hmppsId" to sanitisedHmppsId))
-          }
-
-          it("returns a 200 OK status code with data") {
-            val result = mockMvc.performAuthorised(path)
-            result.response.status.shouldBe(HttpStatus.OK.value())
-            result.response.contentAsString.shouldBe(
-              """
-              {
-                "data": [
-                  {
-                    "type": "PRIM",
-                    "code": "ENG",
-                    "readSkill": "Y",
-                    "writeSkill": "Y",
-                    "speakSkill": "Y",
-                    "interpreterRequested": true
-                  }
-                ]
-              }
-          """.removeWhitespaceAndNewlines(),
-            )
-          }
-
-          it("returns a 400 bad request") {
-            whenever(getLanguagesForPersonService.execute(sanitisedHmppsId, filters)).thenReturn(
-              Response(
-                data = null,
-                errors =
-                  listOf(
-                    UpstreamApiError(
-                      causedBy = UpstreamApi.PRISONER_OFFENDER_SEARCH,
-                      type = UpstreamApiError.Type.BAD_REQUEST,
-                    ),
-                  ),
-              ),
-            )
-            val result = mockMvc.performAuthorised(path)
-            result.response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
-          }
-
-          it("returns a 404 not found") {
-            whenever(getLanguagesForPersonService.execute(sanitisedHmppsId, filters)).thenReturn(
-              Response(
-                data = null,
-                errors =
-                  listOf(
-                    UpstreamApiError(
-                      causedBy = UpstreamApi.PRISONER_OFFENDER_SEARCH,
-                      type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-                    ),
-                  ),
-              ),
-            )
-            val result = mockMvc.performAuthorised(path)
-            result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
-          }
+                ),
+            ),
+          )
+          val result = mockMvc.performAuthorised(path)
+          result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
         }
       }
     },

@@ -21,6 +21,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServe
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.education.EducationAssessmentSummaryResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import java.io.File
 
 @ActiveProfiles("test")
@@ -179,6 +180,36 @@ class PlpGatewayTest(
           response.data.completedReviews[0]
             .updatedBy
             .shouldBe("NRUSSELL_GEN")
+        }
+      }
+
+      describe("getPrisonerEducation") {
+        it("authenticates using HMPPS Auth with credentials") {
+          plpGateway.getPrisonerEducation(nomsNumber)
+          verify(hmppsAuthGateway, times(1)).getClientToken("PLP")
+        }
+
+        it("upstream API returns an error, throw exception") {
+          plpMockServer.stubForGet("/person/$nomsNumber/education", "", HttpStatus.NOT_FOUND)
+
+          val response = plpGateway.getPrisonerEducation(nomsNumber)
+          response.data.shouldBe(null)
+          response.errors.shouldBe(listOf(UpstreamApiError(causedBy = UpstreamApi.PLP, type = UpstreamApiError.Type.ENTITY_NOT_FOUND, description = null)))
+        }
+
+        it("returns prisoner education") {
+          plpMockServer.stubForGet(
+            "/person/$nomsNumber/education",
+            File(
+              "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/plp/fixtures/GetPrisonerEducationResponse.json",
+            ).readText(),
+          )
+
+          val response = plpGateway.getPrisonerEducation(nomsNumber)
+          response.data.shouldNotBeNull()
+          response.data.createdAtPrison
+            .shouldBe("BXI")
+          response.data.createdBy.shouldBe("asmith_gen")
         }
       }
 
