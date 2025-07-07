@@ -125,6 +125,11 @@ class ActivitiesQueueService(
     val scheduleResponse = activitiesGateway.getActivityScheduleById(scheduleId)
     if (scheduleResponse.errors.isNotEmpty()) return Response(data = null, errors = scheduleResponse.errors)
     val schedule = scheduleResponse.data!!
+    val prisonCode = schedule.activity.prisonCode
+    val consumerPrisonFilterCheck = consumerPrisonAccessService.checkConsumerHasPrisonAccess<HmppsMessageResponse>(prisonCode, filters, upstreamServiceType = UpstreamApi.ACTIVITIES)
+    if (consumerPrisonFilterCheck.errors.isNotEmpty()) {
+      return consumerPrisonFilterCheck
+    }
 
     validatePayBand(schedule, prisonerAllocationRequest, filters)?.let { return it }
     validateAllocationWithinScheduleDates(schedule, prisonerAllocationRequest)?.let { return it }
