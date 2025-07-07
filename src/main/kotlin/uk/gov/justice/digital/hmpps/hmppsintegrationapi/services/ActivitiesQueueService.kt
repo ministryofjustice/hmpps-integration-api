@@ -29,6 +29,7 @@ import java.time.LocalDate
 class ActivitiesQueueService(
   @Autowired private val hmppsQueueService: HmppsQueueService,
   @Autowired private val objectMapper: ObjectMapper,
+  @Autowired private val getPersonService: GetPersonService,
   @Autowired private val consumerPrisonAccessService: ConsumerPrisonAccessService,
   @Autowired private val getAttendanceByIdService: GetAttendanceByIdService,
   @Autowired private val getScheduleDetailsService: GetScheduleDetailsService,
@@ -121,6 +122,11 @@ class ActivitiesQueueService(
     validateAllocationDates(prisonerAllocationRequest, today)?.let { return it }
     validateScheduleInstanceIfToday(prisonerAllocationRequest, today)?.let { return it }
     validateExclusionTimes(prisonerAllocationRequest)?.let { return it }
+
+    val personResponse = getPersonService.getPersonWithPrisonFilter(prisonerAllocationRequest.prisonerNumber, filters)
+    if (personResponse.errors.isNotEmpty()) {
+      return Response(data = null, errors = personResponse.errors)
+    }
 
     val scheduleResponse = activitiesGateway.getActivityScheduleById(scheduleId)
     if (scheduleResponse.errors.isNotEmpty()) return Response(data = null, errors = scheduleResponse.errors)

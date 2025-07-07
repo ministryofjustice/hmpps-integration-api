@@ -38,6 +38,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Exclusion
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HmppsMessage
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HmppsMessageResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PaginatedWaitingListApplications
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Person
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonPayBand
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerAllocationRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerDeallocationRequest
@@ -48,6 +49,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.WaitingListApplication
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.WaitingListSearchRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.personas.personInProbationAndNomisPersona
 import uk.gov.justice.hmpps.sqs.HmppsQueue
 import uk.gov.justice.hmpps.sqs.HmppsQueueService
 import java.time.DayOfWeek
@@ -62,6 +64,7 @@ class ActivitiesQueueServiceTest(
   private val activitiesQueueService: ActivitiesQueueService,
   @MockitoBean val hmppsQueueService: HmppsQueueService,
   @MockitoBean val objectMapper: ObjectMapper,
+  @MockitoBean val getPersonService: GetPersonService,
   @MockitoBean val consumerPrisonAccessService: ConsumerPrisonAccessService,
   @MockitoBean val getAttendanceByIdService: GetAttendanceByIdService,
   @MockitoBean private val getScheduleDetailsService: GetScheduleDetailsService,
@@ -78,8 +81,17 @@ class ActivitiesQueueServiceTest(
         }
 
       val prisonId = "MDI"
+      val prisonerNumber = "A1234AA"
       val filters = ConsumerFilters(prisons = listOf(prisonId))
       val who = "automated-test-client"
+
+      val persona = personInProbationAndNomisPersona
+      val person =
+        Person(
+          firstName = persona.firstName,
+          lastName = persona.lastName,
+          identifiers = persona.identifiers,
+        )
 
       beforeTest {
         reset(mockSqsClient, objectMapper, consumerPrisonAccessService)
@@ -111,7 +123,7 @@ class ActivitiesQueueServiceTest(
           val messageBody = """{"messageId": "1", "eventType": "MarkPrisonerAttendance", "messageAttributes": {}, who: "$who"}"""
           whenever(objectMapper.writeValueAsString(any<HmppsMessage>())).thenReturn(messageBody)
           whenever(getAttendanceByIdService.execute(attendanceUpdateRequests[0].id, filters))
-            .thenReturn(Response(data = Attendance(id = 123456L, scheduledInstanceId = 1L, prisonerNumber = "A1234AA", status = "WAITING", editable = true, payable = true)))
+            .thenReturn(Response(data = Attendance(id = 123456L, scheduledInstanceId = 1L, prisonerNumber, status = "WAITING", editable = true, payable = true)))
 
           val result = activitiesQueueService.sendAttendanceUpdateRequest(attendanceUpdateRequests = attendanceUpdateRequests, who = who, filters = filters)
           result.data.shouldBeTypeOf<HmppsMessageResponse>()
@@ -172,7 +184,6 @@ class ActivitiesQueueServiceTest(
 
       describe("Prisoner deallocation") {
         val scheduleId = 123456L
-        val prisonerNumber = "A1234AA"
         val prisonerDeallocationRequest =
           PrisonerDeallocationRequest(
             prisonerNumber = prisonerNumber,
@@ -202,7 +213,7 @@ class ActivitiesQueueServiceTest(
                       Attendance(
                         id = 123L,
                         scheduledInstanceId = scheduleId,
-                        prisonerNumber = "A1234AA",
+                        prisonerNumber = prisonerNumber,
                         status = "ACTIVE",
                         editable = true,
                         payable = false,
@@ -364,7 +375,6 @@ class ActivitiesQueueServiceTest(
 
       describe("Prisoner allocation") {
         val scheduleId = 123456L
-        val prisonerNumber = "A1234AA"
         val allocationRequest =
           PrisonerAllocationRequest(
             prisonerNumber = prisonerNumber,
@@ -494,7 +504,7 @@ class ActivitiesQueueServiceTest(
                   scheduleId = 200L,
                   allocationId = null,
                   prisonId = prisonId,
-                  prisonerNumber = "A1234AA",
+                  prisonerNumber = prisonerNumber,
                   bookingId = 300L,
                   status = "PENDING",
                   statusUpdatedTime = null,
@@ -524,6 +534,10 @@ class ActivitiesQueueServiceTest(
           )
 
         beforeTest {
+          whenever(getPersonService.getPersonWithPrisonFilter(prisonerNumber, filters)).thenReturn(
+            Response(data = person),
+          )
+
           whenever(activitiesGateway.getActivityScheduleById(scheduleId))
             .thenReturn(Response(data = activitiesActivityScheduleDetailed))
 
@@ -598,6 +612,16 @@ class ActivitiesQueueServiceTest(
           val result = activitiesQueueService.sendPrisonerAllocationRequest(scheduleId, allocationRequest, who, filters)
           result.data.shouldBeNull()
           result.errors.shouldBe(listOf(UpstreamApiError(UpstreamApi.ACTIVITIES, UpstreamApiError.Type.BAD_REQUEST, "Exclusion start time cannot be after custom end time")))
+        }
+
+        it("Returns an error if the getPersonService returns an error") {
+          val errors = listOf(UpstreamApiError(UpstreamApi.PRISON_API, UpstreamApiError.Type.ENTITY_NOT_FOUND, "error from getPersonService"))
+          whenever(activitiesGateway.getActivityScheduleById(scheduleId))
+            .thenReturn(Response(data = null, errors))
+
+          val result = activitiesQueueService.sendPrisonerAllocationRequest(scheduleId, allocationRequest, who, filters)
+          result.data.shouldBeNull()
+          result.errors.shouldBe(errors)
         }
 
         it("Returns an error if the activities gateway returns an error") {
