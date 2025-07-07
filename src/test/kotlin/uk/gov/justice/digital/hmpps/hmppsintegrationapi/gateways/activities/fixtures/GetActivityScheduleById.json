@@ -14,7 +14,7 @@
         {
           "id": 123456,
           "scheduleInstanceId": 123456,
-          "prisonerNumber": "A1234AA",
+          "prisonerNumber": "G2996UX",
           "attendanceReason": {
             "id": 1,
             "code": "SICK",
@@ -75,7 +75,7 @@
   "allocations": [
     {
       "id": 123456,
-      "prisonerNumber": "A1234AA",
+      "prisonerNumber": "G2996UX",
       "bookingId": 10001,
       "activitySummary": "string",
       "activityId": 0,
@@ -174,7 +174,7 @@
   "capacity": 10,
   "activity": {
     "id": 123456,
-    "prisonCode": "PVI",
+    "prisonCode": "MDI",
     "attendanceRequired": false,
     "inCell": false,
     "onWing": false,

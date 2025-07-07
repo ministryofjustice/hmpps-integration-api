@@ -43,6 +43,7 @@ services:
 feature-flag:
   use-arns-endpoints: true
   use-education-assessments-endpoints: true
+  use-eswe-curious-endpoints: true
   use-update-attendance-endpoint: true
   use-schedule-detail-endpoint: true
   use-search-appointments-endpoint: true
@@ -160,14 +161,18 @@ authorisation:
         - "/v1/hmpps/id/by-nomis-number/[^/]*$"
         - "/v1/hmpps/id/nomis-number/by-hmpps-id/[^/]*$"
         - "/v1/persons/.*/education/assessments/status"
+        - "/v1/persons/[^/]*$"
         - "/v1/persons/[^/]+/prisoner-base-location"
+        - "/v1/persons/.*/education/assessments"
       filters:
     moj-esw:
       include:
         - "/v1/persons/[^/]+/expression-of-interest/jobs/[^/]+$"
         - "/v1/hmpps/id/by-nomis-number/[^/]*$"
         - "/v1/hmpps/id/nomis-number/by-hmpps-id/[^/]*$"
+        - "/v1/persons/[^/]*$"
         - "/v1/persons/[^/]+/prisoner-base-location"
+        - "/v1/persons/.*/education/assessments"
       filters:
     bmadley:
       include:
