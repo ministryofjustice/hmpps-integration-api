@@ -5,6 +5,7 @@ import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
+import org.mockito.internal.verification.VerificationModeFactory
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -18,6 +19,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGatewa
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PLPGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.education.EducationAssessmentSummaryResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import java.io.File
@@ -208,6 +210,39 @@ class PlpGatewayTest(
           response.data.createdAtPrison
             .shouldBe("BXI")
           response.data.createdBy.shouldBe("asmith_gen")
+        }
+      }
+
+      describe("getEducationAssessmentSummary") {
+        val prisonerNumber = "123"
+        val path = "/assessments/$prisonerNumber/required"
+
+        it("authenticates using HMPPS Auth with credentials") {
+          plpGateway.getEducationAssessmentSummary(prisonerNumber)
+
+          verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("PLP")
+        }
+
+        it("upstream API returns an error, throw exception") {
+          plpMockServer.stubForGet(path, "", HttpStatus.BAD_REQUEST)
+          val response =
+            shouldThrow<WebClientResponseException> {
+              plpGateway.getEducationAssessmentSummary(prisonerNumber)
+            }
+          response.statusCode.shouldBe(HttpStatus.BAD_REQUEST)
+        }
+
+        it("returns EducationAssessmentSummaryResponse") {
+          plpMockServer.stubForGet(
+            path,
+            """
+                {
+                  "basicSkillsAssessmentRequired": true
+                }""",
+            HttpStatus.OK,
+          )
+          val response = plpGateway.getEducationAssessmentSummary(prisonerNumber)
+          response.data.shouldBe(EducationAssessmentSummaryResponse(true))
         }
       }
     },

@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service
 import software.amazon.awssdk.services.sqs.model.SendMessageRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.MessageFailedException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PLPGateway
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.education.EducationAssessmentSummaryResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.EducationAssessmentStatus
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.EducationAssessmentStatusChangeRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HmppsMessage
@@ -25,6 +27,7 @@ class EducationAssessmentService(
   private val getPersonService: GetPersonService,
   private val hmppsQueueService: HmppsQueueService,
   private val objectMapper: ObjectMapper,
+  private val plpGateway: PLPGateway,
 ) {
   private val assessmentEventsQueue by lazy { hmppsQueueService.findByQueueId("assessmentevents") as HmppsQueue }
   private val assessmentEventsQueueSqsClient by lazy { assessmentEventsQueue.sqsClient }
@@ -32,6 +35,29 @@ class EducationAssessmentService(
 
   companion object {
     private val logger: Logger = LoggerFactory.getLogger(this::class.java)
+  }
+
+  fun getEducationAssessmentStatus(hmppsId: String): Response<EducationAssessmentSummaryResponse?> {
+    logger.debug("AssessmentStatus: Attempting to get assessment summary for hmppsId: $hmppsId")
+    val personResponse = getPersonService.getNomisNumber(hmppsId = hmppsId)
+
+    if (personResponse.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
+      logger.debug("AssessmentStatus: Could not find nomis number for hmppsId: $hmppsId")
+      throw EntityNotFoundException("Could not find person with id: $hmppsId")
+    }
+
+    if (personResponse.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
+      logger.debug("AssessmentStatus: Invalid hmppsId: $hmppsId")
+      throw ValidationException("Invalid HMPPS ID: $hmppsId")
+    }
+
+    val nomisNumber =
+      personResponse.data?.nomisNumber ?: run {
+        logger.debug("AssessmentStatus: nomis number missing from response for hmppsId: $hmppsId")
+        throw ValidationException("Invalid HMPPS ID: $hmppsId")
+      }
+
+    return plpGateway.getEducationAssessmentSummary(nomisNumber)
   }
 
   fun sendEducationAssessmentEvent(

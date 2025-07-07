@@ -4,20 +4,27 @@ import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import jakarta.validation.ValidationException
 import org.assertj.core.api.Assertions.assertThat
+import org.mockito.Mockito
+import org.mockito.Mockito.times
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
+import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.ErrorResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.ValidationErrorResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.FeatureNotEnabledException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.MockMvcExtensions.contentAsJson
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.education.EducationAssessmentSummaryResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.EducationAssessmentStatus
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.EducationAssessmentStatusChangeRequest
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.EducationAssessmentService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 import java.net.URI
@@ -190,6 +197,89 @@ class EducationAssessmentsControllerTest(
           val errorResponse = response.contentAsJson<ValidationErrorResponse>()
           assertThat(errorResponse.status).isEqualTo(400)
           assertThat(errorResponse.validationErrors).isEqualTo(listOf("A requestId must be provided"))
+        }
+      }
+
+      describe("Get a persons education assessment summary") {
+        beforeEach {
+          Mockito.reset(featureFlagConfig, educationAssessmentService, auditService)
+        }
+
+        val path = "/v1/persons/$validHmppsId/education/assessments"
+
+        it("should audit the request") {
+          val response = mockMvc.performAuthorised(path).response
+
+          verify(auditService, times(1)).createEvent("GET EDUCATION ASSESSMENT SUMMARY EVENT", mapOf("hmppsId" to validHmppsId))
+        }
+
+        describe("if the eswe curious feature flag is off") {
+
+          it("should return 503 service unavailable") {
+            whenever(featureFlagConfig.require(FeatureFlagConfig.USE_ESWE_CURIOUS_ENDPOINTS)).thenThrow(FeatureNotEnabledException(FeatureFlagConfig.USE_ESWE_CURIOUS_ENDPOINTS))
+
+            val response = mockMvc.performAuthorised(path).response
+
+            response.status.shouldBe(HttpStatus.SERVICE_UNAVAILABLE.value())
+
+            val errorResponse = response.contentAsJson<ErrorResponse>()
+            assertThat(errorResponse.status).isEqualTo(503)
+            assertThat(errorResponse.userMessage).isEqualTo("${FeatureFlagConfig.USE_ESWE_CURIOUS_ENDPOINTS} not enabled")
+          }
+        }
+
+        describe("if the education endpoint feature flag is on") {
+
+          it("should return 200 given a valid request and response") {
+            whenever(educationAssessmentService.getEducationAssessmentStatus(validHmppsId)).thenReturn(Response(data = EducationAssessmentSummaryResponse(true)))
+
+            val response = mockMvc.performAuthorised(path).response
+
+            response.status.shouldBe(HttpStatus.OK.value())
+            response.contentAsJson<Response<EducationAssessmentSummaryResponse>>().shouldBe(Response(EducationAssessmentSummaryResponse(true)))
+          }
+
+          it("should return a 400 for a validation exception") {
+            whenever(educationAssessmentService.getEducationAssessmentStatus(validHmppsId)).thenThrow(ValidationException("Invalid HMPPS ID: $validHmppsId"))
+
+            val response = mockMvc.performAuthorised(path).response
+
+            response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
+
+            val errorResponse = response.contentAsJson<ErrorResponse>()
+            assertThat(errorResponse.status).isEqualTo(400)
+            assertThat(errorResponse.userMessage).isEqualTo("Invalid HMPPS ID: $validHmppsId")
+          }
+
+          it("should return a 403 if the request is not authorised") {
+            val response = mockMvc.performUnAuthorised(path).response
+
+            response.status.shouldBe(HttpStatus.FORBIDDEN.value())
+          }
+
+          it("should return a 404 for a entity not found exception") {
+            whenever(educationAssessmentService.getEducationAssessmentStatus(validHmppsId)).thenThrow(EntityNotFoundException("Could not find person with id: $validHmppsId"))
+
+            val response = mockMvc.performAuthorised(path).response
+
+            response.status.shouldBe(HttpStatus.NOT_FOUND.value())
+
+            val errorResponse = response.contentAsJson<ErrorResponse>()
+            assertThat(errorResponse.status).isEqualTo(404)
+            assertThat(errorResponse.userMessage).isEqualTo("Could not find person with id: $validHmppsId")
+          }
+
+          it("should return a 500 for any WebClientResponse exceptions") {
+            val exception = WebClientResponseException(403, "Forbidden", null, null, null)
+            whenever(educationAssessmentService.getEducationAssessmentStatus(validHmppsId)).thenThrow(exception)
+
+            val response = mockMvc.performAuthorised(path).response
+
+            response.status.shouldBe(HttpStatus.INTERNAL_SERVER_ERROR.value())
+
+            val errorResponse = response.contentAsJson<ErrorResponse>()
+            assertThat(errorResponse.status).isEqualTo(500)
+          }
         }
       }
     },
