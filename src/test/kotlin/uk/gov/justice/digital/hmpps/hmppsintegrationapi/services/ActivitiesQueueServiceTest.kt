@@ -87,6 +87,8 @@ class ActivitiesQueueServiceTest(
         whenever(hmppsQueueService.findByQueueId("activities")).thenReturn(activitiesQueue)
         whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<HmppsMessageResponse>(prisonId, filters))
           .thenReturn(Response(data = null, errors = emptyList()))
+        whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<HmppsMessageResponse>(prisonId, filters, upstreamServiceType = UpstreamApi.ACTIVITIES))
+          .thenReturn(Response(data = null, errors = emptyList()))
       }
 
       describe("Mark prisoner attendance") {
@@ -615,9 +617,9 @@ class ActivitiesQueueServiceTest(
           result.errors.shouldBe(listOf(error))
         }
 
-        it("should return errors when consumer does not have access to the prison") {
+        it("should return errors when consumer does not have access to the prison for the schedule") {
           val errors = listOf(UpstreamApiError(UpstreamApi.ACTIVITIES, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Not found"))
-          whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<HmppsMessageResponse>(prisonId, filters))
+          whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<HmppsMessageResponse>(prisonId, filters, upstreamServiceType = UpstreamApi.ACTIVITIES))
             .thenReturn(Response(data = null, errors))
 
           val result = activitiesQueueService.sendPrisonerAllocationRequest(scheduleId, allocationRequest, who, filters)
