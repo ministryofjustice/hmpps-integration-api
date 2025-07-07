@@ -277,7 +277,7 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
     val path = "/v1/activities/schedule/$scheduleId/deallocate"
     val prisonerDeallocationRequest =
       PrisonerDeallocationRequest(
-        prisonerNumber = "A1234AA",
+        prisonerNumber = nomsId,
         reasonCode = "RELEASED",
         endDate = LocalDate.now(),
         caseNote =
@@ -401,7 +401,7 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
     fun `return a 404 no allocations are found for the prisoner`() {
       activitiesMockServer.stubForGet(
         "/schedules/$scheduleId",
-        File("$gatewaysFolder/activities/fixtures/GetActivityScheduleById.json").readText().replace("\"prisonerNumber\": \"A1234AA\"", "\"prisonerNumber\": \"A1234AB\""),
+        File("$gatewaysFolder/activities/fixtures/GetActivityScheduleById.json").readText().replace("\"prisonerNumber\": \"$nomsId\"", "\"prisonerNumber\": \"A1234AB\""),
       )
 
       val requestBody = asJsonString(prisonerDeallocationRequest)
