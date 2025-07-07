@@ -10,9 +10,11 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Consum
 class GetActivitiesSuitabilityCriteriaService(
   @Autowired val activitiesGateway: ActivitiesGateway,
   @Autowired val consumerPrisonAccessService: ConsumerPrisonAccessService,
+  private val getActivitiesScheduleService: GetActivitiesScheduleService,
 ) {
   fun execute(
     activityId: Long,
     filters: ConsumerFilters? = null,
-  ) {}
+  ) {
+  }
 }
