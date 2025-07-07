@@ -1,0 +1,9 @@
+{
+  "data": {
+    "inPrison": true,
+    "prisonId": "MDI",
+    "lastPrisonId": "MDI",
+    "lastMovementType": "Admission",
+    "receptionDate": "2023-05-01"
+  }
+}

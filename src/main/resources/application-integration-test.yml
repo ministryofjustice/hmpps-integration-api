@@ -72,7 +72,7 @@ feature-flag:
   use-deallocation-endpoint: true
   use-deallocation-reasons-endpoint: true
   use-allocation-endpoint: true
-  use-prisoner-base-location-endpoint: false
+  use-prisoner-base-location-endpoint: true
 
 authorisation:
   consumers:
