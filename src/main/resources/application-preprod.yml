@@ -80,6 +80,9 @@ authorisation:
         - "/v1/persons/[^/]+/expression-of-interest/jobs/[^/]+$"
         - "/v1/hmpps/id/by-nomis-number/[^/]*$"
         - "/v1/hmpps/id/nomis-number/by-hmpps-id/[^/]*$"
+        - "/v1/persons/[^/]*$"
+        - "/v1/persons/.*/prisoner-base-location"
+        - "/v1/persons/.*/education/assessments"
     pnd:
       include:
       filters:
