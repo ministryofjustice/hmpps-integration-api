@@ -12,6 +12,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.ConsumerPrisonAccessService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ActivitiesGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesActivityScheduledInstanceForPrisoner
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NomisNumber
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
@@ -26,6 +27,7 @@ import java.time.LocalTime
 class GetScheduledInstancesForPrisonerServiceTest(
   @MockitoBean val activitiesGateway: ActivitiesGateway,
   @MockitoBean val consumerPrisonAccessService: ConsumerPrisonAccessService,
+  @MockitoBean val getPersonService: GetPersonService,
   val getScheduledInstancesForPrisonerService: GetScheduledInstancesForPrisonerService,
 ) : DescribeSpec(
     {
@@ -62,6 +64,7 @@ class GetScheduledInstancesForPrisonerServiceTest(
         Mockito.reset(consumerPrisonAccessService, activitiesGateway)
 
         whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<Any>(prisonCode, filters, upstreamServiceType = UpstreamApi.ACTIVITIES)).thenReturn(Response(data = null, errors = emptyList()))
+        whenever(getPersonService.getNomisNumberWithPrisonFilter(prisonerId, filters)).thenReturn(Response(data = NomisNumber(prisonerId)))
       }
 
       it("should return scheduled instances for a prisoner") {
@@ -83,6 +86,22 @@ class GetScheduledInstancesForPrisonerServiceTest(
           )
 
         whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<Any>(prisonCode, filters, upstreamServiceType = UpstreamApi.ACTIVITIES)).thenReturn(Response(data = null, errors = errors))
+
+        val result = getScheduledInstancesForPrisonerService.execute(prisonCode, prisonerId, "2022-09-10", "2023-09-10", null, filters)
+        result.data.shouldBeNull()
+        result.errors.shouldBe(errors)
+      }
+
+      it("should return an error if getPersonService returns an error") {
+        val errors =
+          listOf(
+            UpstreamApiError(
+              causedBy = UpstreamApi.PRISONER_OFFENDER_SEARCH,
+              type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+              description = "Error from getPersonService",
+            ),
+          )
+        whenever(getPersonService.getNomisNumberWithPrisonFilter(prisonerId, filters)).thenReturn(Response(data = null, errors = errors))
 
         val result = getScheduledInstancesForPrisonerService.execute(prisonCode, prisonerId, "2022-09-10", "2023-09-10", null, filters)
         result.data.shouldBeNull()

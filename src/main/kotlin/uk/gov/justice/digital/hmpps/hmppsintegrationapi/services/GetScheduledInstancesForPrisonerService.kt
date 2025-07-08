@@ -13,6 +13,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Consum
 class GetScheduledInstancesForPrisonerService(
   @Autowired private val activitiesGateway: ActivitiesGateway,
   @Autowired val consumerPrisonAccessService: ConsumerPrisonAccessService,
+  @Autowired val getPersonService: GetPersonService,
 ) {
   fun execute(
     prisonId: String,
@@ -27,7 +28,16 @@ class GetScheduledInstancesForPrisonerService(
       return consumerPrisonFilterCheck
     }
 
-    val response = activitiesGateway.getScheduledInstancesForPrisoner(prisonId, hmppsId, startDate, endDate, slot)
+    val personResponse = getPersonService.getNomisNumberWithPrisonFilter(hmppsId = hmppsId, filters)
+    val nomisNumber = personResponse.data?.nomisNumber
+    if (nomisNumber == null) {
+      return Response(
+        data = null,
+        errors = personResponse.errors,
+      )
+    }
+
+    val response = activitiesGateway.getScheduledInstancesForPrisoner(prisonId, nomisNumber, startDate, endDate, slot)
     if (response.errors.isNotEmpty()) {
       return Response(data = null, errors = response.errors)
     }
