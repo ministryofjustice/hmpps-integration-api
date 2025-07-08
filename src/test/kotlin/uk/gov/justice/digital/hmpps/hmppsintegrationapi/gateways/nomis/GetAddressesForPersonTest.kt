@@ -101,13 +101,21 @@ class GetAddressesForPersonTest(
         response.data.count().shouldBeGreaterThan(0)
       }
 
-
       it("returns only the usages that have an addressUsage code") {
         val response = prisonApiGateway.getAddressesForPerson(offenderNo)
 
-        response.data[0].types.count().shouldBeExactly(2)
-        response.data[0].types[0].code.equals("A99")
-        response.data[0].types[1].code.equals("B99")
+        response.data[0]
+          .types
+          .count()
+          .shouldBeExactly(2)
+        response.data[0]
+          .types[0]
+          .code
+          .equals("A99")
+        response.data[0]
+          .types[1]
+          .code
+          .equals("B99")
       }
 
       it("returns an empty list when no addresses are found") {
