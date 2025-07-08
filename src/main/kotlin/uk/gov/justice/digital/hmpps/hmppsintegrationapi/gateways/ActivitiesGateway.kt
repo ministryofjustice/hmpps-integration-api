@@ -16,6 +16,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.Activi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesPrisonPayBand
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesPrisonRegime
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesRunningActivity
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesSuitabilityCriteria
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesWaitingListSearchRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.AppointmentSearchRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
@@ -119,6 +120,29 @@ class ActivitiesGateway(
         badRequestAsError = true,
       )
 
+    return when (result) {
+      is WebClientWrapperResponse.Success -> {
+        Response(data = result.data)
+      }
+
+      is WebClientWrapperResponse.Error -> {
+        Response(
+          data = null,
+          errors = result.errors,
+        )
+      }
+    }
+  }
+
+  fun getActivitySuitabilityCriteria(scheduleId: Long): Response<ActivitiesSuitabilityCriteria?> {
+    val result =
+      webClient.request<ActivitiesSuitabilityCriteria>(
+        HttpMethod.GET,
+        "/integration-api/activities/schedule/$scheduleId/suitability-criteria",
+        authenticationHeader(),
+        UpstreamApi.ACTIVITIES,
+        badRequestAsError = true,
+      )
     return when (result) {
       is WebClientWrapperResponse.Success -> {
         Response(data = result.data)

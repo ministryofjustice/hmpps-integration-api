@@ -50,6 +50,7 @@ feature-flag:
   use-allocation-endpoint: true
   use-education-endpoint: false
   use-prisoner-base-location-endpoint: false
+  use-suitability-endpoint: false
 
 authorisation:
   consumers:

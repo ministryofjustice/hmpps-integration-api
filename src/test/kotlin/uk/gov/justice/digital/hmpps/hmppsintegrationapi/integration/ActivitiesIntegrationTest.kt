@@ -94,6 +94,40 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
   }
 
   @Nested
+  @DisplayName("GET /v1/activities/schedule/{scheduleId}/suitability-criteria")
+  inner class GetActivityScheduleSuitabilityCriteria {
+    val scheduleId = 123456L
+    val path = "/v1/activities/schedule/$scheduleId/suitability-criteria"
+
+    @Test
+    fun `return the suitability criteria details`() {
+      activitiesMockServer.stubForGet(
+        path = "/schedules/$scheduleId",
+        File("$gatewaysFolder/activities/fixtures/GetActivityScheduleById.json").readText(),
+      )
+      activitiesMockServer.stubForGet(
+        path = "/integration-api/activities/schedule/$scheduleId/suitability-criteria",
+        File("$gatewaysFolder/activities/fixtures/GetActivitySuitabilityCriteria.json").readText(),
+      )
+      callApi(path)
+        .andExpect(MockMvcResultMatchers.status().isOk)
+        .andExpect(MockMvcResultMatchers.content().json(getExpectedResponse("activities-suitability-criteria")))
+    }
+
+    @Test
+    fun `return a 404 when prison not in the allowed prisons`() {
+      callApiWithCN(path, limitedPrisonsCn)
+        .andExpect(MockMvcResultMatchers.status().isNotFound)
+    }
+
+    @Test
+    fun `return a 404 no prisons in filter`() {
+      callApiWithCN(path, noPrisonsCn)
+        .andExpect(MockMvcResultMatchers.status().isNotFound)
+    }
+  }
+
+  @Nested
   @DisplayName("PUT /v1/activities/schedule/attendance")
   inner class PutAttendance {
     val path = "/v1/activities/schedule/attendance"

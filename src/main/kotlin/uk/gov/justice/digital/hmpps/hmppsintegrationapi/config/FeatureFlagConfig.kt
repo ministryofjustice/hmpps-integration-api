@@ -30,6 +30,7 @@ data class FeatureFlagConfig(
     const val USE_ALLOCATION_ENDPOINT = "use-allocation-endpoint"
     const val USE_EDUCATION_ENDPOINT = "use-education-endpoint"
     const val USE_PRISONER_BASE_LOCATION_ENDPOINT = "use-prisoner-base-location-endpoint"
+    const val USE_SUITABILITY_ENDPOINT = "use-suitability-endpoint"
   }
 
   /**
