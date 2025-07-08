@@ -108,7 +108,7 @@ class GetAddressesForPersonTest(
         response.data[0]
           .types
           .count()
-          .shouldBeExactly(2)
+          .shouldBeExactly(3)
         response.data[0]
           .types[0]
           .code
@@ -117,6 +117,10 @@ class GetAddressesForPersonTest(
           .types[1]
           .code
           .shouldBe("B99")
+        response.data[0]
+          .types[2]
+          .code
+          .shouldBe("BUS")
       }
 
       it("returns an empty list when no addresses are found") {
