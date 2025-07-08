@@ -33,8 +33,8 @@ class GetScheduledInstancesForPrisonerGatewayTest(
 ) : DescribeSpec(
     {
       val mockServer = ApiMockServer.create(UpstreamApi.ACTIVITIES)
-      val prisonerId = "A1234AA"
       val prisonCode = "MKI"
+      val prisonerNumber = "A1234AA"
       val activitiesActivityScheduledInstanceForPerson =
         listOf(
           ActivitiesActivityScheduledInstanceForPrisoner(
@@ -44,7 +44,7 @@ class GetScheduledInstancesForPrisonerGatewayTest(
             sessionDate = LocalDate.now(),
             startTime = LocalTime.of(9, 0),
             endTime = LocalTime.of(12, 0),
-            prisonerNumber = prisonerId,
+            prisonerNumber = prisonerNumber,
             bookingId = 123456L,
             inCell = false,
             onWing = false,
@@ -73,18 +73,18 @@ class GetScheduledInstancesForPrisonerGatewayTest(
       }
 
       it("authenticates using HMPPS Auth with credentials") {
-        activitiesGateway.getScheduledInstancesForPrisoner(prisonCode, prisonerId, "2022-09-10", "2023-09-10", null)
+        activitiesGateway.getScheduledInstancesForPrisoner(prisonCode, prisonerNumber, "2022-09-10", "2023-09-10", null)
 
         verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("ACTIVITIES")
       }
 
       it("Returns scheduled instances for prisoner") {
         mockServer.stubForGet(
-          "/integration-api/prisons/$prisonCode/$prisonerId/scheduled-instances?startDate=2022-09-10&endDate=2023-09-10",
+          "/integration-api/prisons/$prisonCode/$prisonerNumber/scheduled-instances?startDate=2022-09-10&endDate=2023-09-10",
           File("src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/activities/fixtures/GetActivitiesScheduledInstanceForPrisoner.json").readText(),
         )
 
-        val result = activitiesGateway.getScheduledInstancesForPrisoner(prisonCode, prisonerId, "2022-09-10", "2023-09-10", null)
+        val result = activitiesGateway.getScheduledInstancesForPrisoner(prisonCode, prisonerNumber, "2022-09-10", "2023-09-10", null)
         result.errors.shouldBeEmpty()
         result.data.shouldNotBeNull()
         result.data[0].scheduledInstanceId.shouldBe(activitiesActivityScheduledInstanceForPerson[0].scheduledInstanceId)
@@ -92,12 +92,12 @@ class GetScheduledInstancesForPrisonerGatewayTest(
 
       it("Returns a bad request error") {
         mockServer.stubForGet(
-          "/integration-api/prisons/$prisonCode/$prisonerId/scheduled-instances?startDate=2022-09-10&endDate=2023-09-10",
+          "/integration-api/prisons/$prisonCode/$prisonerNumber/scheduled-instances?startDate=2022-09-10&endDate=2023-09-10",
           "{}",
           HttpStatus.BAD_REQUEST,
         )
 
-        val result = activitiesGateway.getScheduledInstancesForPrisoner(prisonCode, prisonerId, "2022-09-10", "2023-09-10", null)
+        val result = activitiesGateway.getScheduledInstancesForPrisoner(prisonCode, prisonerNumber, "2022-09-10", "2023-09-10", null)
         result.errors.shouldBe(listOf(UpstreamApiError(causedBy = UpstreamApi.ACTIVITIES, type = UpstreamApiError.Type.BAD_REQUEST)))
       }
     },
