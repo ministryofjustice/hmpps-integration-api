@@ -8,7 +8,7 @@ import java.time.LocalTime
 @Schema(description = "Describes a scheduled activity for a prisoner")
 data class ActivityScheduledInstanceForPrisoner(
   @Schema(description = "Unique ID of the scheduled instance", example = "123456")
-  val scheduledInstanceId: Long,
+  val id: Long,
   @Schema(description = "The id of the activity", example = "1")
   val activityId: Int,
   @Schema(description = "Date of the scheduled instance", example = "2022-10-20")

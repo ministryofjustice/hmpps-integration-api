@@ -37,7 +37,7 @@ data class ActivitiesActivityScheduledInstanceForPrisoner(
 ) {
   fun toActivityScheduledInstanceForPrisoner() =
     ActivityScheduledInstanceForPrisoner(
-      scheduledInstanceId = this.scheduledInstanceId,
+      id = this.scheduledInstanceId,
       activityId = this.activityId,
       sessionDate = this.sessionDate,
       startTime = this.startTime,

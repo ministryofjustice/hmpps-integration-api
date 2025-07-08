@@ -144,7 +144,7 @@ class PrisonActivitiesControllerTest(
         val activityScheduledInstanceForPerson =
           listOf(
             ActivityScheduledInstanceForPrisoner(
-              scheduledInstanceId = 123456L,
+              id = 123456L,
               sessionDate = LocalDate.now(),
               startTime = LocalTime.of(9, 0),
               endTime = LocalTime.of(12, 0),
