@@ -104,6 +104,7 @@ globals:
         - "/v1/persons/.*/number-of-children"
         - "/v1/persons/.*/offences"
         - "/v1/persons/.*/person-responsible-officer"
+        - "/v1/persons/.*/prisoner-base-location"
         - "/v1/persons/.*/physical-characteristics"
         - "/v1/persons/.*/plp-induction-schedule"
         - "/v1/persons/.*/plp-review-schedule"

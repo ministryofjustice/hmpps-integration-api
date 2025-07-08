@@ -67,3 +67,4 @@ feature-flag:
   use-deallocation-reasons-endpoint: true
   use-allocation-endpoint: true
   use-education-endpoint: true
+  use-prisoner-base-location-endpoint: true

@@ -52,6 +52,7 @@ feature-flag:
   use-deallocation-reasons-endpoint: true
   use-allocation-endpoint: true
   use-education-endpoint: true
+  use-prisoner-base-location-endpoint: true
 
 authorisation:
   consumers:
@@ -163,7 +164,7 @@ authorisation:
         - "/v1/hmpps/id/nomis-number/by-hmpps-id/[^/]*$"
         - "/v1/persons/.*/education/assessments/status"
         - "/v1/persons/[^/]*$"
-        - "/v1/persons/.*/prisoner-base-location"
+        - "/v1/persons/[^/]+/prisoner-base-location"
         - "/v1/persons/.*/education/assessments"
       filters:
     moj-esw:
@@ -172,7 +173,7 @@ authorisation:
         - "/v1/hmpps/id/by-nomis-number/[^/]*$"
         - "/v1/hmpps/id/nomis-number/by-hmpps-id/[^/]*$"
         - "/v1/persons/[^/]*$"
-        - "/v1/persons/.*/prisoner-base-location"
+        - "/v1/persons/[^/]+/prisoner-base-location"
         - "/v1/persons/.*/education/assessments"
       filters:
     bmadley:
