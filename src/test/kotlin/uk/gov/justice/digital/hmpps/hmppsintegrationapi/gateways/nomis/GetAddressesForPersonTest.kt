@@ -71,6 +71,11 @@ class GetAddressesForPersonTest(
                   "activeFlag": false
                 },
                 {
+                  "addressId": 8681821,
+                  "addressUsageDescription": "Do not use. No addressUsage code",
+                  "activeFlag": false
+                },
+                {
                   "addressId": 8681879,
                   "addressUsage": "B99",
                   "addressUsageDescription": "Glass Elevator",
