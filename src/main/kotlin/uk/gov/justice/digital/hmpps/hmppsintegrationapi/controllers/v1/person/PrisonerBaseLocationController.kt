@@ -24,7 +24,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditS
 
 @RestController
 @RequestMapping("/v1/persons")
-@Tags(value = [Tag(name = "Persons")])
+@Tags(value = [Tag(name = "Persons"), Tag(name = "Education")])
 class PrisonerBaseLocationController(
   private val featureFlag: FeatureFlagConfig,
   private val getPrisonerBaseLocationForPersonService: GetPrisonerBaseLocationForPersonService,
