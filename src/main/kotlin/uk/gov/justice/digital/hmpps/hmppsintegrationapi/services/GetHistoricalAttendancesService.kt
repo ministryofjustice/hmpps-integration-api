@@ -2,7 +2,6 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.ConsumerPrisonAccessService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ActivitiesGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HistoricalAttendance
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
@@ -11,21 +10,24 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Consum
 @Service
 class GetHistoricalAttendancesService(
   @Autowired val activitiesGateway: ActivitiesGateway,
-  @Autowired val consumerPrisonAccessService: ConsumerPrisonAccessService,
+  @Autowired val getPersonService: GetPersonService,
 ) {
   fun execute(
     prisonerNumber: String,
     startDate: String,
     endDate: String,
-    prisonCode: String?,
+    prisonId: String?,
     filters: ConsumerFilters?,
   ): Response<List<HistoricalAttendance>?> {
-    val checkAccess = consumerPrisonAccessService.checkConsumerHasPrisonAccess<Any>(prisonCode, filters)
-    if (checkAccess.errors.isNotEmpty()) {
-      return Response(data = null, errors = checkAccess.errors)
+    val getPersonServiceResponse = getPersonService.getPersonWithPrisonFilter(prisonerNumber, filters)
+    if (getPersonServiceResponse.errors.isNotEmpty()) {
+      return Response(
+        data = null,
+        errors = getPersonServiceResponse.errors,
+      )
     }
 
-    val historicalAttendanceResponse = activitiesGateway.getHistoricalAttendances(prisonerNumber, startDate, endDate, prisonCode)
+    val historicalAttendanceResponse = activitiesGateway.getHistoricalAttendances(prisonerNumber, startDate, endDate, prisonId)
     if (historicalAttendanceResponse.errors.isNotEmpty()) {
       return Response(
         data = null,
