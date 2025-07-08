@@ -5,6 +5,7 @@ import io.kotest.matchers.booleans.shouldBeTrue
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.ints.shouldBeExactly
 import io.kotest.matchers.ints.shouldBeGreaterThan
+import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory
 import org.mockito.kotlin.verify
@@ -111,11 +112,11 @@ class GetAddressesForPersonTest(
         response.data[0]
           .types[0]
           .code
-          .equals("A99")
+          .shouldBe("A99")
         response.data[0]
           .types[1]
           .code
-          .equals("B99")
+          .shouldBe("B99")
       }
 
       it("returns an empty list when no addresses are found") {
