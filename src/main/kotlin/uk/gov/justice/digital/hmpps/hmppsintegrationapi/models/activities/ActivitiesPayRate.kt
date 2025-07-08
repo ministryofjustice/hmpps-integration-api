@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities
 
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PayRate
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonPayBand
 
 data class ActivitiesPayRate(
@@ -10,4 +11,14 @@ data class ActivitiesPayRate(
   val rate: Int,
   val pieceRate: Int,
   val pieceRateItems: Int,
-)
+) {
+  fun toPayRate() =
+    PayRate(
+      incentiveCode = this.incentiveNomisCode,
+      incentiveLevel = this.incentiveLevel,
+      prisonPayBand = this.prisonPayBand,
+      rate = this.rate,
+      pieceRate = this.pieceRate,
+      pieceRateItems = this.pieceRateItems,
+    )
+}

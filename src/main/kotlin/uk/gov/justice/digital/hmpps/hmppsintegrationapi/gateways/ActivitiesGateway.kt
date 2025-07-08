@@ -134,11 +134,11 @@ class ActivitiesGateway(
     }
   }
 
-  fun getActivitySuitabilityCriteria(activityId: Long): Response<ActivitiesSuitabilityCriteria?> {
+  fun getActivitySuitabilityCriteria(scheduleId: Long): Response<ActivitiesSuitabilityCriteria?> {
     val result =
       webClient.request<ActivitiesSuitabilityCriteria>(
         HttpMethod.GET,
-        "/integration-api/activities/$activityId/suitability-criteria",
+        "/integration-api/activities/schedules/$scheduleId/suitability-criteria",
         authenticationHeader(),
         UpstreamApi.ACTIVITIES,
         badRequestAsError = true,

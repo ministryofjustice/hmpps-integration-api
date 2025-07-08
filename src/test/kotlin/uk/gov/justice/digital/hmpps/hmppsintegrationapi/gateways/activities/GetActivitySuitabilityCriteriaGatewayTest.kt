@@ -32,7 +32,7 @@ class GetActivitySuitabilityCriteriaGatewayTest(
 ) : DescribeSpec(
     {
       val mockServer = ApiMockServer.create(UpstreamApi.ACTIVITIES)
-      val activityId = 123456L
+      val scheduleId = 123456L
 
       beforeEach {
         mockServer.start()
@@ -48,18 +48,18 @@ class GetActivitySuitabilityCriteriaGatewayTest(
       }
 
       it("authenticates using HMPPS Auth with credentials") {
-        activitiesGateway.getActivitySuitabilityCriteria(activityId)
+        activitiesGateway.getActivitySuitabilityCriteria(scheduleId)
 
         verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("ACTIVITIES")
       }
 
       it("Returns an activity suitability criteria") {
         mockServer.stubForGet(
-          "/integration-api/activities/$activityId/suitability-criteria",
+          "/integration-api/activities/schedules/$scheduleId/suitability-criteria",
           File("src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/activities/fixtures/GetActivitySuitabilityCriteria.json").readText(),
         )
 
-        val result = activitiesGateway.getActivitySuitabilityCriteria(activityId)
+        val result = activitiesGateway.getActivitySuitabilityCriteria(scheduleId)
         result.errors.shouldBeEmpty()
         result.data.shouldNotBeNull()
         result.data.riskLevel.shouldBe("medium")
@@ -72,12 +72,12 @@ class GetActivitySuitabilityCriteriaGatewayTest(
 
       it("Returns a bad request error") {
         mockServer.stubForGet(
-          "/integration-api/activities/$activityId/suitability-criteria",
+          "/integration-api/activities/schedules/$scheduleId/suitability-criteria",
           "{}",
           HttpStatus.BAD_REQUEST,
         )
 
-        val result = activitiesGateway.getActivitySuitabilityCriteria(activityId)
+        val result = activitiesGateway.getActivitySuitabilityCriteria(scheduleId)
         result.errors.shouldBe(listOf(UpstreamApiError(causedBy = UpstreamApi.ACTIVITIES, type = UpstreamApiError.Type.BAD_REQUEST)))
       }
     },
