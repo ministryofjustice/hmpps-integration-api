@@ -54,6 +54,7 @@ globals:
         - "/v1/persons/.*/health-and-diet"
         - "/v1/persons/.*/care-needs"
         - "/v1/persons/.*/languages"
+        - "/v1/persons/.*/education"
         - "/v1/activities/schedule/attendance"
         - "/v1/activities/attendance-reasons"
         - "/v1/activities/schedule/.*/deallocate"

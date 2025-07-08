@@ -29,6 +29,7 @@ import java.time.LocalDate
 class ActivitiesQueueService(
   @Autowired private val hmppsQueueService: HmppsQueueService,
   @Autowired private val objectMapper: ObjectMapper,
+  @Autowired private val getPersonService: GetPersonService,
   @Autowired private val consumerPrisonAccessService: ConsumerPrisonAccessService,
   @Autowired private val getAttendanceByIdService: GetAttendanceByIdService,
   @Autowired private val getScheduleDetailsService: GetScheduleDetailsService,
@@ -93,7 +94,7 @@ class ActivitiesQueueService(
     schedule.allocations.filter { it.prisonerNumber == prisonerDeallocationRequest.prisonerNumber && it.status != "ENDED" }.ifEmpty { null }
       ?: return Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.ACTIVITIES, UpstreamApiError.Type.ENTITY_NOT_FOUND, "Allocations not found for prisoner: ${prisonerDeallocationRequest.prisonerNumber}")))
 
-    if (prisonerDeallocationRequest.endDate.isAfter(LocalDate.parse(schedule.endDate))) {
+    if (schedule.endDate != null && prisonerDeallocationRequest.endDate.isAfter(LocalDate.parse(schedule.endDate))) {
       return Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.ACTIVITIES, UpstreamApiError.Type.BAD_REQUEST, "Passed in end date cannot be after the end date of the schedule: ${schedule.endDate}")))
     }
 
@@ -122,15 +123,40 @@ class ActivitiesQueueService(
     validateScheduleInstanceIfToday(prisonerAllocationRequest, today)?.let { return it }
     validateExclusionTimes(prisonerAllocationRequest)?.let { return it }
 
+    val personResponse = getPersonService.getPrisoner(prisonerAllocationRequest.prisonerNumber, filters)
+    if (personResponse.errors.isNotEmpty()) {
+      return Response(data = null, errors = personResponse.errors)
+    }
+
     val scheduleResponse = activitiesGateway.getActivityScheduleById(scheduleId)
     if (scheduleResponse.errors.isNotEmpty()) return Response(data = null, errors = scheduleResponse.errors)
     val schedule = scheduleResponse.data!!
+
+    val prisonCode = schedule.activity.prisonCode
+    if (prisonCode != personResponse.data?.prisonId) {
+      return Response(
+        data = null,
+        errors = listOf(UpstreamApiError(UpstreamApi.ACTIVITIES, UpstreamApiError.Type.BAD_REQUEST, "Unable to allocate prisoner with prisoner number ${prisonerAllocationRequest.prisonerNumber}, prisoner is not active at prison $prisonCode.")),
+      )
+    }
+
+    if (prisonerAllocationRequest.scheduleInstanceId != null && !schedule.instances.map { it.id }.contains(prisonerAllocationRequest.scheduleInstanceId)) {
+      return Response(
+        data = null,
+        errors = listOf(UpstreamApiError(UpstreamApi.ACTIVITIES, UpstreamApiError.Type.BAD_REQUEST, "scheduleInstanceId not found on schedule")),
+      )
+    }
+
+    val consumerPrisonFilterCheck = consumerPrisonAccessService.checkConsumerHasPrisonAccess<HmppsMessageResponse>(prisonCode, filters, upstreamServiceType = UpstreamApi.ACTIVITIES)
+    if (consumerPrisonFilterCheck.errors.isNotEmpty()) {
+      return consumerPrisonFilterCheck
+    }
 
     validatePayBand(schedule, prisonerAllocationRequest, filters)?.let { return it }
     validateAllocationWithinScheduleDates(schedule, prisonerAllocationRequest)?.let { return it }
     validatePrisonerNotAlreadyAllocated(schedule, prisonerAllocationRequest)?.let { return it }
     validateExclusionSlots(schedule, prisonerAllocationRequest, scheduleId)?.let { return it }
-    validateWaitingListApplications(schedule.activity.prisonCode, prisonerAllocationRequest.prisonerNumber!!, filters)?.let { return it }
+    validateWaitingListApplications(schedule.activity.prisonCode, prisonerAllocationRequest.prisonerNumber, filters)?.let { return it }
 
     val message = prisonerAllocationRequest.toHmppsMessage(who, scheduleId)
     writeMessageToQueue(message, "Could not send prisoner allocation to queue")
@@ -141,7 +167,7 @@ class ActivitiesQueueService(
     request: PrisonerAllocationRequest,
     today: LocalDate,
   ): Response<HmppsMessageResponse?>? {
-    if (request.startDate!! < today) {
+    if (request.startDate < today) {
       return badRequest("Allocation start date must not be in the past")
     }
 
@@ -202,16 +228,18 @@ class ActivitiesQueueService(
     val scheduleStart = LocalDate.parse(schedule.startDate)
     val scheduleEnd = schedule.endDate?.let { LocalDate.parse(it) }
 
-    if (request.startDate!! < scheduleStart) {
+    if (request.startDate < scheduleStart) {
       return badRequest("Allocation start date must not be before the activity schedule start date ($scheduleStart)")
     }
 
-    if (request.endDate != null && request.endDate > scheduleEnd) {
-      return badRequest("Allocation end date must not be after the activity schedule end date ($scheduleEnd)")
-    }
+    if (scheduleEnd != null) {
+      if (request.endDate != null && request.endDate > scheduleEnd) {
+        return badRequest("Allocation end date must not be after the activity schedule end date ($scheduleEnd)")
+      }
 
-    if (request.startDate > scheduleEnd) {
-      return badRequest("Allocation start date cannot be after the activity schedule end date ($scheduleEnd)")
+      if (request.startDate > scheduleEnd) {
+        return badRequest("Allocation start date cannot be after the activity schedule end date ($scheduleEnd)")
+      }
     }
 
     return null

@@ -103,6 +103,7 @@ const get_endpoints = [
   `/v2/config/authorisation`,
   `/v1/persons/${hmppsId}/health-and-diet`,
   `/v1/persons/${hmppsId}/languages`,
+  `/v1/persons/${plpHmppsId}/education`,
   `/v1/activities/${activityId}/schedules`,
   `/v1/activities/attendance-reasons`,
   `/v1/activities/schedule/${scheduleId}`,
@@ -244,12 +245,12 @@ export default function ()  {
     exec.test.fail(`${putDeallocationEndpoint} caused the test to fail`)
   }
 
-  // const postAllocationRes = http.put(`${baseUrl}${postAllocationEndpoint}`, postAllocationData, params);
-  // if (!check(postAllocationRes, {
-  //   [`POST ${postAllocationEndpoint} returns 200`]: (r) => r.status === 200,
-  // })) {
-  //   exec.test.fail(`${postAllocationEndpoint} caused the test to fail`)
-  // }
+  const postAllocationRes = http.post(`${baseUrl}${postAllocationEndpoint}`, postAllocationData, params);
+  if (!check(postAllocationRes, {
+    [`POST ${postAllocationEndpoint} returns 200`]: (r) => r.status === 200,
+  })) {
+    exec.test.fail(`${postAllocationEndpoint} caused the test to fail`)
+  }
 
   for (const endpoint of get_endpoints) {
     const res = http.get(`${baseUrl}${endpoint}`, params);

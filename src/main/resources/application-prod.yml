@@ -39,14 +39,16 @@ services:
     base-url: https://activities-api.prison.service.justice.gov.uk
 
 feature-flag:
-  use-arns-endpoints: false
+  use-arns-endpoints: true
   use-education-assessments-endpoints: false
+  use-eswe-curious-endpoints: false
   use-update-attendance-endpoint: false
   use-schedule-detail-endpoint: true
   use-search-appointments-endpoint: true
   use-deallocation-endpoint: false
   use-deallocation-reasons-endpoint: true
   use-allocation-endpoint: true
+  use-education-endpoint: false
 
 authorisation:
   consumers:

@@ -84,7 +84,7 @@ class GetActivitySchedulesGatewayTest(
             activity =
               ActivitiesActivity(
                 id = 123456,
-                prisonCode = "PVI",
+                prisonCode = "MDI",
                 attendanceRequired = false,
                 inCell = false,
                 onWing = false,

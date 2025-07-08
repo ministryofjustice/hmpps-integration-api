@@ -21,12 +21,14 @@ data class FeatureFlagConfig(
   companion object {
     const val USE_ARNS_ENDPOINTS = "use-arns-endpoints"
     const val USE_EDUCATION_ASSESSMENTS_ENDPOINTS = "use-education-assessments-endpoints"
+    const val USE_ESWE_CURIOUS_ENDPOINTS = "use-eswe-curious-endpoints"
     const val USE_UPDATE_ATTENDANCE_ENDPOINT = "use-update-attendance-endpoint"
     const val USE_SCHEDULE_DETAIL_ENDPOINT = "use-schedule-detail-endpoint"
     const val USE_SEARCH_APPOINTMENTS_ENDPOINT = "use-search-appointments-endpoint"
     const val USE_DEALLOCATION_ENDPOINT = "use-deallocation-endpoint"
     const val USE_DEALLOCATION_REASONS_ENDPOINT = "use-deallocation-reasons-endpoint"
     const val USE_ALLOCATION_ENDPOINT = "use-allocation-endpoint"
+    const val USE_EDUCATION_ENDPOINT = "use-education-endpoint"
   }
 
   /**
