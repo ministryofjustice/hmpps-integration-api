@@ -38,7 +38,7 @@ class GetScheduledInstancesForPrisonerGatewayTest(
       val activitiesActivityScheduledInstanceForPerson =
         listOf(
           ActivitiesActivityScheduledInstanceForPrisoner(
-            scheduledInstanceId = 123456L,
+            scheduledInstanceId = 1,
             allocationId = 1L,
             prisonCode = prisonCode,
             sessionDate = LocalDate.now(),
@@ -92,7 +92,7 @@ class GetScheduledInstancesForPrisonerGatewayTest(
 
       it("Returns a bad request error") {
         mockServer.stubForGet(
-          "/prisons/$prisonCode/$prisonerId/scheduled-instances?startDate=2022-09-10&endDate=2023-09-10",
+          "/integration-api/prisons/$prisonCode/$prisonerId/scheduled-instances?startDate=2022-09-10&endDate=2023-09-10",
           "{}",
           HttpStatus.BAD_REQUEST,
         )

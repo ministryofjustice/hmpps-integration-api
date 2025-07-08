@@ -254,6 +254,7 @@ class ActivitiesGateway(
         uri = "/integration-api/prisons/$prisonCode/$prisonerId/scheduled-instances?$queryParams",
         headers = authenticationHeader(),
         upstreamApi = UpstreamApi.ACTIVITIES,
+        badRequestAsError = true,
         forbiddenAsError = true,
       )
 
