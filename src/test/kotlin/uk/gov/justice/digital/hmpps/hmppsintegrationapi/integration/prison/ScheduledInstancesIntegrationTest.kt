@@ -8,13 +8,12 @@ import java.io.File
 
 class ScheduledInstancesIntegrationTest : IntegrationTestBase() {
   private val prisonId = "MDI"
-  private val hmppsId = "A1234AA"
-  private val path = "/v1/prison/$prisonId/prisoners/$hmppsId/scheduled-instances?startDate=2022-09-10&endDate=2023-09-10"
+  private val path = "/v1/prison/$prisonId/prisoners/$nomsId/scheduled-instances?startDate=2022-09-10&endDate=2023-09-10"
 
   @Test
   fun `return the scheduled instances`() {
     activitiesMockServer.stubForGet(
-      "/integration-api/prisons/$prisonId/$hmppsId/scheduled-instances?startDate=2022-09-10&endDate=2023-09-10",
+      "/integration-api/prisons/$prisonId/$nomsId/scheduled-instances?startDate=2022-09-10&endDate=2023-09-10",
       File("$gatewaysFolder/activities/fixtures/GetActivitiesScheduledInstanceForPrisoner.json").readText(),
     )
     callApi(path)
