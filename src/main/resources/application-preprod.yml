@@ -47,6 +47,7 @@ feature-flag:
   use-deallocation-endpoint: false
   use-deallocation-reasons-endpoint: true
   use-allocation-endpoint: false
+  use-historical-attendances-endpoint: false
 
 authorisation:
   consumers:

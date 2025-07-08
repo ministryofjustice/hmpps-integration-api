@@ -59,6 +59,7 @@ globals:
         - "/v1/activities/schedule/.*/deallocate"
         - "/v1/activities/deallocation-reasons"
         - "/v1/activities/schedule/.*/allocate"
+        - "/v1/prison/prisoners/.*/activities/attendances"
     police:
       include:
         - "/v1/persons"
@@ -137,3 +138,4 @@ globals:
         - "/v1/activities/schedule/.*/deallocate"
         - "/v1/activities/deallocation-reasons"
         - "/v1/activities/schedule/.*/allocate"
+        - "/v1/prison/prisoners/.*/activities/attendances"
