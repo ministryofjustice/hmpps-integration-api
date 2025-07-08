@@ -78,13 +78,17 @@ class PrisonActivitiesController(
   @FeatureFlag(name = FeatureFlagConfig.Companion.USE_SCHEDULED_INSTANCES_ENDPOINT)
   @GetMapping("/{prisonId}/prisoners/{hmppsId}/scheduled-instances")
   @Operation(
-    summary = "Returns all scheduled instances for a prisoner given a prisonCode and prisonerId, and other required parameters.",
+    summary = "Returns all scheduled instances for a prisoner given a prisonId and hmppsId.",
     description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
     responses = [
       ApiResponse(
         responseCode = "200",
         useReturnTypeSchema = true,
         description = "Successfully performed the query on upstream APIs. An empty list is returned when no results are found.",
+      ),
+      ApiResponse(
+        responseCode = "400",
+        content = [Content(schema = Schema(ref = "#/components/schemas/BadRequest"))],
       ),
       ApiResponse(
         responseCode = "403",
@@ -135,6 +139,7 @@ class PrisonActivitiesController(
     description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
     responses = [
       ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found data from parameters provided."),
+      ApiResponse(responseCode = "400", content = [Content(schema = Schema(ref = "#/components/schemas/BadRequest"))]),
       ApiResponse(responseCode = "403", content = [Content(schema = Schema(ref = "#/components/schemas/ForbiddenResponse"))]),
       ApiResponse(responseCode = "404", content = [Content(schema = Schema(ref = "#/components/schemas/PrisonNotFound"))]),
       ApiResponse(responseCode = "500", content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]),
