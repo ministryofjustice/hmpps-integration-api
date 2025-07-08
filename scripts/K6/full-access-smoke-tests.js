@@ -107,7 +107,7 @@ const get_endpoints = [
   `/v1/activities/${activityId}/schedules`,
   `/v1/activities/attendance-reasons`,
   `/v1/activities/schedule/${scheduleId}`,
-  `/v1/prison/${prisonId}/${hmppsId}/scheduled-instances?startDate=2022-09-10&endDate=2023-09-10`,
+  `/v1/prison/${prisonId}/prisoners/${hmppsId}/scheduled-instances?startDate=2022-09-10&endDate=2023-09-10`,
   `/v1/activities/deallocation-reasons`
 ];
 
