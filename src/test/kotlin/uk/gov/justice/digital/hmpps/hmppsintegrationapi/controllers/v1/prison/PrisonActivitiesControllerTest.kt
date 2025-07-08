@@ -21,11 +21,13 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Appointment
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.AppointmentSearchRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Attendee
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HistoricalAttendance
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.InternalLocation
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.RunningActivity
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetHistoricalAttendancesService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPrisonActivitiesService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.SearchAppointmentsService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
@@ -39,6 +41,7 @@ class PrisonActivitiesControllerTest(
   @MockitoBean val auditService: AuditService,
   @MockitoBean val getPrisonActivitiesService: GetPrisonActivitiesService,
   @MockitoBean val searchAppointmentsService: SearchAppointmentsService,
+  @MockitoBean val getHistoricalAttendancesService: GetHistoricalAttendancesService,
 ) : DescribeSpec(
     {
       val basePath = "/v1/prison"
@@ -242,6 +245,85 @@ class PrisonActivitiesControllerTest(
           )
 
           val result = mockMvc.performAuthorisedPost(path, exampleRequest)
+          result.response.status.shouldBe(404)
+        }
+      }
+
+      describe("GET /v1/prison/prisoners/{hmppsId}/activities/attendances") {
+        val hmppsId = "A1234AA"
+        val startDate = "2023-09-10"
+        val endDate = "2023-10-10"
+        val prisonId = "MDI"
+        val filters = null
+        val historicalAttendance =
+          HistoricalAttendance(
+            id = 1L,
+            scheduleInstanceId = 1001L,
+            prisonerNumber = "A1234AA",
+            status = "WAITING",
+            editable = true,
+            payable = true,
+          )
+        val path = "$basePath/prisoners/$hmppsId/activities/attendances?startDate=$startDate&endDate=$endDate&prisonId=$prisonId"
+
+        beforeEach {
+          Mockito.reset(getHistoricalAttendancesService)
+        }
+
+        it("should return 200 when success") {
+          whenever(getHistoricalAttendancesService.execute(hmppsId, startDate, endDate, prisonId, filters)).thenReturn(Response(data = listOf(historicalAttendance)))
+
+          val result = mockMvc.performAuthorised(path)
+          result.response.status.shouldBe(HttpStatus.OK.value())
+          result.response.contentAsJson<DataResponse<List<HistoricalAttendance>>>().shouldBe(DataResponse(data = listOf(historicalAttendance)))
+        }
+
+        it("should call the audit service") {
+          whenever(getHistoricalAttendancesService.execute(hmppsId, startDate, endDate, prisonId, filters)).thenReturn(Response(data = listOf(historicalAttendance)))
+
+          mockMvc.performAuthorised(path)
+          verify(
+            auditService,
+            times(1),
+          ).createEvent(
+            "GET_PRISON_ATTENDANCES",
+            mapOf("hmppsId" to hmppsId, "startDate" to startDate, "endDate" to endDate),
+          )
+        }
+
+        it("returns 400 when getHistoricalAttendancesService returns bad request") {
+          whenever(getHistoricalAttendancesService.execute(hmppsId, startDate, endDate, prisonId, filters)).thenReturn(
+            Response(
+              data = null,
+              errors =
+                listOf(
+                  UpstreamApiError(
+                    type = UpstreamApiError.Type.BAD_REQUEST,
+                    causedBy = UpstreamApi.ACTIVITIES,
+                  ),
+                ),
+            ),
+          )
+
+          val result = mockMvc.performAuthorised(path)
+          result.response.status.shouldBe(400)
+        }
+
+        it("returns 404 when getHistoricalAttendancesService returns not found") {
+          whenever(getHistoricalAttendancesService.execute(hmppsId, startDate, endDate, prisonId, filters)).thenReturn(
+            Response(
+              data = null,
+              errors =
+                listOf(
+                  UpstreamApiError(
+                    type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+                    causedBy = UpstreamApi.ACTIVITIES,
+                  ),
+                ),
+            ),
+          )
+
+          val result = mockMvc.performAuthorised(path)
           result.response.status.shouldBe(404)
         }
       }

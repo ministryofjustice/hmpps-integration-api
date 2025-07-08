@@ -22,10 +22,12 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.featureflag.F
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.AppointmentDetails
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.AppointmentSearchRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HistoricalAttendance
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.RunningActivity
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError.Type.BAD_REQUEST
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError.Type.ENTITY_NOT_FOUND
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetHistoricalAttendancesService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPrisonActivitiesService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.SearchAppointmentsService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
@@ -36,6 +38,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditS
 class PrisonActivitiesController(
   @Autowired val getPrisonActivitiesService: GetPrisonActivitiesService,
   @Autowired val auditService: AuditService,
+  @Autowired val getHistoricalAttendancesService: GetHistoricalAttendancesService,
   private val searchAppointmentsService: SearchAppointmentsService,
 ) {
   @GetMapping("/{prisonId}/activities")
@@ -101,6 +104,43 @@ class PrisonActivitiesController(
     auditService.createEvent(
       "SEARCH_APPOINTMENTS",
       mapOf("prisonId" to prisonId, "startDate" to request.startDate.toString()),
+    )
+
+    return DataResponse(data = response.data)
+  }
+
+  @GetMapping("/prisoners/{hmppsId}/activities/attendances")
+  @Operation(
+    summary = "Returns a list of prisoner attendance activities for a given date range",
+    description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
+    responses = [
+      ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found historical attendances."),
+      ApiResponse(responseCode = "403", content = [Content(schema = Schema(ref = "#/components/schemas/ForbiddenResponse"))]),
+      ApiResponse(responseCode = "404", content = [Content(schema = Schema(ref = "#/components/schemas/NotFoundError"))]),
+      ApiResponse(responseCode = "500", content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]),
+    ],
+  )
+  @FeatureFlag(name = FeatureFlagConfig.USE_HISTORICAL_ATTENDANCES_ENDPOINT)
+  fun getHistoricalAttendances(
+    @Parameter(description = "The ID of the prisoner to be queried against") @PathVariable hmppsId: String,
+    @RequestAttribute startDate: String,
+    @RequestAttribute endDate: String,
+    @RequestAttribute prisonId: String?,
+    @RequestAttribute filters: ConsumerFilters?,
+  ): DataResponse<List<HistoricalAttendance>?> {
+    val response = getHistoricalAttendancesService.execute(hmppsId, startDate, endDate, prisonId, filters)
+
+    if (response.hasError(BAD_REQUEST)) {
+      throw ValidationException("Invalid query parameters.")
+    }
+
+    if (response.hasError(ENTITY_NOT_FOUND)) {
+      throw EntityNotFoundException("Could not find attendances with supplied query parameters.")
+    }
+
+    auditService.createEvent(
+      "GET_PRISON_ATTENDANCES",
+      mapOf("hmppsId" to hmppsId, "startDate" to startDate, "endDate" to endDate),
     )
 
     return DataResponse(data = response.data)
