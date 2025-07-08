@@ -12,7 +12,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_PRISONER_BASE_LOCATION_ENDPOINT
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_SCHEDULE_DETAIL_ENDPOINT
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_SEARCH_APPOINTMENTS_ENDPOINT
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_SUITABILITY_ENDPOINT
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_UPDATE_ATTENDANCE_ENDPOINT
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.FeatureNotEnabledException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.AddCaseNoteRequest
@@ -55,15 +54,6 @@ internal class FeatureFlaggedEndpointsIntegrationTest : IntegrationTestBase() {
     whenever(featureFlagConfig.require(USE_SCHEDULE_DETAIL_ENDPOINT)).thenThrow(FeatureNotEnabledException(""))
     val scheduleId = 1234L
     val path = "/v1/activities/schedule/$scheduleId"
-    callApi(path)
-      .andExpect(status().isServiceUnavailable)
-  }
-
-  @Test
-  fun `get activity schedule suitability criteria should return 503`() {
-    whenever(featureFlagConfig.require(USE_SUITABILITY_ENDPOINT)).thenThrow(FeatureNotEnabledException(""))
-    val scheduleId = 1234L
-    val path = "/v1/activities/schedule/$scheduleId/suitability-criteria"
     callApi(path)
       .andExpect(status().isServiceUnavailable)
   }

@@ -31,12 +31,10 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HmppsMessag
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerAllocationRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerDeallocationRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ReasonForAttendance
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SuitabilityCriteria
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.ActivitiesQueueService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetActivitiesScheduleService
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetActivitiesSuitabilityCriteriaService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetAttendanceReasonsService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetDeallocationReasonsService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetScheduleDetailsService
@@ -52,7 +50,6 @@ class ActivitiesController(
   @Autowired val auditService: AuditService,
   private val activitiesQueueService: ActivitiesQueueService,
   private val getScheduleDetailsService: GetScheduleDetailsService,
-  private val getActivitiesSuitabilityCriteriaService: GetActivitiesSuitabilityCriteriaService,
 ) {
   @GetMapping("/{activityId}/schedules")
   @Operation(
@@ -146,58 +143,6 @@ class ActivitiesController(
 
     auditService.createEvent(
       "GET_SCHEDULE_DETAILS",
-      mapOf("scheduleId" to scheduleId.toString()),
-    )
-
-    return DataResponse(data = response.data)
-  }
-
-  @GetMapping("/schedule/{scheduleId}/suitability-criteria")
-  @Operation(
-    summary = "Gets the suitability criteria for allocating prisoners to a particular activity schedule",
-    description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
-    responses = [
-      ApiResponse(
-        responseCode = "200",
-        useReturnTypeSchema = true,
-        description = "Successfully performed the query on upstream APIs.",
-      ),
-      ApiResponse(
-        responseCode = "400",
-        description = "Invalid query parameters.",
-        content = [Content(schema = Schema(ref = "#/components/schemas/BadRequest"))],
-      ),
-      ApiResponse(
-        responseCode = "403",
-        content = [Content(schema = Schema(ref = "#/components/schemas/ForbiddenResponse"))],
-      ),
-      ApiResponse(
-        responseCode = "404",
-        content = [Content(schema = Schema(ref = "#/components/schemas/NotFoundError"))],
-      ),
-      ApiResponse(
-        responseCode = "500",
-        content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))],
-      ),
-    ],
-  )
-  @FeatureFlag(name = FeatureFlagConfig.USE_SUITABILITY_ENDPOINT)
-  fun getActivityScheduleSuitabilityCriteria(
-    @Parameter(description = "The ID of the schedule") @PathVariable scheduleId: Long,
-    @RequestAttribute filters: ConsumerFilters?,
-  ): DataResponse<SuitabilityCriteria?> {
-    val response = getActivitiesSuitabilityCriteriaService.execute(scheduleId, filters)
-
-    if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
-      throw ValidationException("Invalid query parameters.")
-    }
-
-    if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
-      throw EntityNotFoundException("Could not find suitability criteria for supplied schedule id: $scheduleId.")
-    }
-
-    auditService.createEvent(
-      "GET_ACTIVITY_SCHEDULE_SUITABILITY_CRITERIA",
       mapOf("scheduleId" to scheduleId.toString()),
     )
 
