@@ -240,25 +240,23 @@ class ActivitiesGateway(
     startDate: String,
     endDate: String,
     slot: String?,
-    cancelled: Boolean?,
   ): Response<List<ActivitiesActivityScheduledInstancesForPrisoner>?> {
     val queryParams =
       buildList {
         add("startDate=$startDate")
         add("endDate=$endDate")
         slot?.let { add("slot=$it") }
-        cancelled?.let { add("cancelled=$it") }
       }.joinToString("&")
 
     val result =
       webClient.requestList<ActivitiesActivityScheduledInstancesForPrisoner>(
         method = HttpMethod.GET,
-        uri = "/prisons/$prisonCode/$prisonerId/scheduled-instances?$queryParams",
+        uri = "/integration-api/prisons/$prisonCode/$prisonerId/scheduled-instances?$queryParams",
         headers = authenticationHeader(),
         upstreamApi = UpstreamApi.ACTIVITIES,
         forbiddenAsError = true,
       )
-      
+
     return when (result) {
       is WebClientWrapperResponse.Success -> {
         Response(data = result.data)
@@ -272,7 +270,7 @@ class ActivitiesGateway(
       }
     }
   }
-  
+
   fun getDeallocationReasons(): Response<List<ActivitiesDeallocationReason>?> {
     val result =
       webClient.requestList<ActivitiesDeallocationReason>(
@@ -282,7 +280,7 @@ class ActivitiesGateway(
         UpstreamApi.ACTIVITIES,
         forbiddenAsError = true,
       )
-      
+
     return when (result) {
       is WebClientWrapperResponse.Success -> {
         Response(data = result.data)

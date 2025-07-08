@@ -109,11 +109,9 @@ class PrisonActivitiesController(
     @RequestParam endDate: String,
     @Parameter(description = "Optional time slot filter", required = false)
     @RequestParam(required = false) slot: String? = null,
-    @Parameter(description = "Include cancelled sessions", required = false)
-    @RequestParam(required = false) cancelled: Boolean? = null,
     @RequestAttribute filters: ConsumerFilters?,
   ): DataResponse<List<ActivityScheduledInstanceForPrisoner>?> {
-    val response = getScheduledInstancesForPrisonerService.execute(prisonCode, prisonerId, startDate, endDate, slot, cancelled, filters)
+    val response = getScheduledInstancesForPrisonerService.execute(prisonCode, prisonerId, startDate, endDate, slot, filters)
 
     if (response.hasError(BAD_REQUEST)) {
       throw ValidationException("Invalid query parameters.")
@@ -125,7 +123,7 @@ class PrisonActivitiesController(
 
     auditService.createEvent(
       "GET_SCHEDULED_INSTANCES_FOR_PRISONER",
-      mapOf("prisonCode" to prisonCode, "prisonerId" to prisonerId, "startDate" to startDate, "endDate" to endDate, "slot" to slot, "cancelled" to cancelled.toString()),
+      mapOf("prisonCode" to prisonCode, "prisonerId" to prisonerId, "startDate" to startDate, "endDate" to endDate, "slot" to slot),
     )
 
     return DataResponse(data = response.data)

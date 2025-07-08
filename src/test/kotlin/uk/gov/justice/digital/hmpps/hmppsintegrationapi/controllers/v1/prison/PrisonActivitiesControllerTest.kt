@@ -280,7 +280,7 @@ class PrisonActivitiesControllerTest(
         }
 
         it("should return 200 when success") {
-          whenever(getScheduledInstancesForPrisonerService.execute(prisonCode, prisonerId, "2022-09-10", "2023-09-10", null, null, filters)).thenReturn(Response(data = activityScheduledInstanceForPerson))
+          whenever(getScheduledInstancesForPrisonerService.execute(prisonCode, prisonerId, "2022-09-10", "2023-09-10", null, filters)).thenReturn(Response(data = activityScheduledInstanceForPerson))
 
           val result = mockMvc.performAuthorised(path)
           result.response.status.shouldBe(HttpStatus.OK.value())
@@ -288,7 +288,7 @@ class PrisonActivitiesControllerTest(
         }
 
         it("should call the audit service") {
-          whenever(getScheduledInstancesForPrisonerService.execute(prisonCode, prisonerId, "2022-09-10", "2023-09-10", null, null, filters)).thenReturn(Response(data = activityScheduledInstanceForPerson))
+          whenever(getScheduledInstancesForPrisonerService.execute(prisonCode, prisonerId, "2022-09-10", "2023-09-10", null, filters)).thenReturn(Response(data = activityScheduledInstanceForPerson))
 
           mockMvc.performAuthorised(path)
           verify(
@@ -301,7 +301,7 @@ class PrisonActivitiesControllerTest(
         }
 
         it("returns 400 when getScheduledInstancesForPrisonerService returns bad request") {
-          whenever(getScheduledInstancesForPrisonerService.execute(prisonCode, prisonerId, "2022-09-10", "2023-09-10", null, null, filters)).thenReturn(
+          whenever(getScheduledInstancesForPrisonerService.execute(prisonCode, prisonerId, "2022-09-10", "2023-09-10", null, filters)).thenReturn(
             Response(
               data = null,
               errors =
@@ -319,7 +319,7 @@ class PrisonActivitiesControllerTest(
         }
 
         it("returns 404 when getScheduledInstancesForPrisonerService returns not found") {
-          whenever(getScheduledInstancesForPrisonerService.execute(prisonCode, prisonerId, "2022-09-10", "2023-09-10", null, null, filters)).thenReturn(
+          whenever(getScheduledInstancesForPrisonerService.execute(prisonCode, prisonerId, "2022-09-10", "2023-09-10", null, filters)).thenReturn(
             Response(
               data = null,
               errors =

@@ -171,9 +171,9 @@ class GetScheduledInstancesForPrisonerServiceTest(
       }
 
       it("should return scheduled instances for a prisoner") {
-        whenever(activitiesGateway.getScheduledInstancesForPrisoner(prisonCode, prisonerId, "2022-09-10", "2023-09-10", null, null)).thenReturn(Response(data = activitiesActivityScheduledInstanceForPerson))
+        whenever(activitiesGateway.getScheduledInstancesForPrisoner(prisonCode, prisonerId, "2022-09-10", "2023-09-10", null)).thenReturn(Response(data = activitiesActivityScheduledInstanceForPerson))
 
-        val result = getScheduledInstancesForPrisonerService.execute(prisonCode, prisonerId, "2022-09-10", "2023-09-10", null, null, filters)
+        val result = getScheduledInstancesForPrisonerService.execute(prisonCode, prisonerId, "2022-09-10", "2023-09-10", null, filters)
         result.data.shouldBe(activityScheduledInstanceForPerson)
         result.errors.shouldBeEmpty()
       }
@@ -190,7 +190,7 @@ class GetScheduledInstancesForPrisonerServiceTest(
 
         whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<Any>(prisonCode, filters, upstreamServiceType = UpstreamApi.ACTIVITIES)).thenReturn(Response(data = null, errors = errors))
 
-        val result = getScheduledInstancesForPrisonerService.execute(prisonCode, prisonerId, "2022-09-10", "2023-09-10", null, null, filters)
+        val result = getScheduledInstancesForPrisonerService.execute(prisonCode, prisonerId, "2022-09-10", "2023-09-10", null, filters)
         result.data.shouldBeNull()
         result.errors.shouldBe(errors)
       }
@@ -204,9 +204,9 @@ class GetScheduledInstancesForPrisonerServiceTest(
               description = "Error from gateway",
             ),
           )
-        whenever(activitiesGateway.getScheduledInstancesForPrisoner(prisonCode, prisonerId, "2022-09-10", "2023-09-10", null, null)).thenReturn(Response(data = null, errors = errors))
+        whenever(activitiesGateway.getScheduledInstancesForPrisoner(prisonCode, prisonerId, "2022-09-10", "2023-09-10", null)).thenReturn(Response(data = null, errors = errors))
 
-        val result = getScheduledInstancesForPrisonerService.execute(prisonCode, prisonerId, "2022-09-10", "2023-09-10", null, null, filters)
+        val result = getScheduledInstancesForPrisonerService.execute(prisonCode, prisonerId, "2022-09-10", "2023-09-10", null, filters)
         result.data.shouldBeNull()
         result.errors.shouldBe(errors)
       }

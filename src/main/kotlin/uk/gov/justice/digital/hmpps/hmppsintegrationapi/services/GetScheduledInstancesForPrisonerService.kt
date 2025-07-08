@@ -20,7 +20,6 @@ class GetScheduledInstancesForPrisonerService(
     startDate: String,
     endDate: String,
     slot: String?,
-    cancelled: Boolean?,
     filters: ConsumerFilters?,
   ): Response<List<ActivityScheduledInstanceForPrisoner>?> {
     val consumerPrisonFilterCheck = consumerPrisonAccessService.checkConsumerHasPrisonAccess<List<ActivityScheduledInstanceForPrisoner>?>(prisonCode, filters, upstreamServiceType = UpstreamApi.ACTIVITIES)
@@ -28,7 +27,7 @@ class GetScheduledInstancesForPrisonerService(
       return consumerPrisonFilterCheck
     }
 
-    val response = activitiesGateway.getScheduledInstancesForPrisoner(prisonCode, prisonerId, startDate, endDate, slot, cancelled)
+    val response = activitiesGateway.getScheduledInstancesForPrisoner(prisonCode, prisonerId, startDate, endDate, slot)
     if (response.errors.isNotEmpty()) {
       return Response(data = null, errors = response.errors)
     }
