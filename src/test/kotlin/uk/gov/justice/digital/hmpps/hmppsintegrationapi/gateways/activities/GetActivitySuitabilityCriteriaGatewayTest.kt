@@ -55,7 +55,7 @@ class GetActivitySuitabilityCriteriaGatewayTest(
 
       it("Returns an activity suitability criteria") {
         mockServer.stubForGet(
-          "/integration-api/activities/schedules/$scheduleId/suitability-criteria",
+          "/integration-api/activities/schedule/$scheduleId/suitability-criteria",
           File("src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/activities/fixtures/GetActivitySuitabilityCriteria.json").readText(),
         )
 
@@ -72,7 +72,7 @@ class GetActivitySuitabilityCriteriaGatewayTest(
 
       it("Returns a bad request error") {
         mockServer.stubForGet(
-          "/integration-api/activities/schedules/$scheduleId/suitability-criteria",
+          "/integration-api/activities/schedule/$scheduleId/suitability-criteria",
           "{}",
           HttpStatus.BAD_REQUEST,
         )
