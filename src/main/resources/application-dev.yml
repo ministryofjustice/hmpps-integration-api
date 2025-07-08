@@ -43,6 +43,7 @@ services:
 feature-flag:
   use-arns-endpoints: true
   use-education-assessments-endpoints: true
+  use-eswe-curious-endpoints: true
   use-update-attendance-endpoint: true
   use-schedule-detail-endpoint: true
   use-search-appointments-endpoint: true
@@ -50,6 +51,8 @@ feature-flag:
   use-deallocation-reasons-endpoint: true
   use-allocation-endpoint: true
   use-historical-attendances-endpoint: true
+  use-education-endpoint: true
+  use-prisoner-base-location-endpoint: true
 
 authorisation:
   consumers:

@@ -64,8 +64,8 @@ class GetStatusInformationForPersonTest(
         response.data.shouldBe(
           listOf(
             StatusInformation(
-              code = "ASFO",
-              description = "Serious Further Offence - Subject to SFO review/investigation",
+              code = "WRSM",
+              description = "Warrant/Summons - Outstanding warrant or summons",
               startDate = "2020-12-04",
               reviewDate = "2030-07-25",
               notes = "No notes.",
