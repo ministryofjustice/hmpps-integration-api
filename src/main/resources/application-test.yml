@@ -74,6 +74,7 @@ feature-flag:
   use-deallocation-endpoint: true
   use-deallocation-reasons-endpoint: true
   use-allocation-endpoint: true
+  use-suitability-endpoint: true
 
 authorisation:
   consumers:

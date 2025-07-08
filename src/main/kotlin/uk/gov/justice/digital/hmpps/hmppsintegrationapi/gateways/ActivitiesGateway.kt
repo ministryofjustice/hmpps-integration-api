@@ -138,7 +138,7 @@ class ActivitiesGateway(
     val result =
       webClient.request<ActivitiesSuitabilityCriteria>(
         HttpMethod.GET,
-        "/integration-api/activities/schedules/$scheduleId/suitability-criteria",
+        "/integration-api/activities/schedule/$scheduleId/suitability-criteria",
         authenticationHeader(),
         UpstreamApi.ACTIVITIES,
         badRequestAsError = true,
