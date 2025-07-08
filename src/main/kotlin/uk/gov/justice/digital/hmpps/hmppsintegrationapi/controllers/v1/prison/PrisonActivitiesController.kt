@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestAttribute
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
@@ -123,9 +124,9 @@ class PrisonActivitiesController(
   @FeatureFlag(name = FeatureFlagConfig.USE_HISTORICAL_ATTENDANCES_ENDPOINT)
   fun getHistoricalAttendances(
     @Parameter(description = "The ID of the prisoner to be queried against") @PathVariable hmppsId: String,
-    @RequestAttribute startDate: String,
-    @RequestAttribute endDate: String,
-    @RequestAttribute prisonId: String?,
+    @RequestParam startDate: String,
+    @RequestParam endDate: String,
+    @RequestParam prisonId: String?,
     @RequestAttribute filters: ConsumerFilters?,
   ): DataResponse<List<HistoricalAttendance>?> {
     val response = getHistoricalAttendancesService.execute(hmppsId, startDate, endDate, prisonId, filters)
