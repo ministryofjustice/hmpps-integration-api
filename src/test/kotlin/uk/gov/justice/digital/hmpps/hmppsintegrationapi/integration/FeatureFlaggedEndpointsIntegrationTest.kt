@@ -8,6 +8,8 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_ALLOCATION_ENDPOINT
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_DEALLOCATION_ENDPOINT
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_DEALLOCATION_REASONS_ENDPOINT
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_EDUCATION_ENDPOINT
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_PRISONER_BASE_LOCATION_ENDPOINT
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_SCHEDULE_DETAIL_ENDPOINT
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_SEARCH_APPOINTMENTS_ENDPOINT
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_SUITABILITY_ENDPOINT
@@ -62,6 +64,15 @@ internal class FeatureFlaggedEndpointsIntegrationTest : IntegrationTestBase() {
     whenever(featureFlagConfig.require(USE_SUITABILITY_ENDPOINT)).thenThrow(FeatureNotEnabledException(""))
     val scheduleId = 1234L
     val path = "/v1/activities/schedule/$scheduleId/suitability-criteria"
+    callApi(path)
+      .andExpect(status().isServiceUnavailable)
+  }
+
+  @Test
+  fun `get education for person should return 503`() {
+    whenever(featureFlagConfig.require(USE_EDUCATION_ENDPOINT)).thenThrow(FeatureNotEnabledException(""))
+    val hmppsId = "A1234AA"
+    val path = "/v1/persons/$hmppsId/education"
     callApi(path)
       .andExpect(status().isServiceUnavailable)
   }
@@ -154,6 +165,16 @@ internal class FeatureFlaggedEndpointsIntegrationTest : IntegrationTestBase() {
       )
 
     postToApi(path, asJsonString(prisonerAllocationRequest))
+      .andExpect(status().isServiceUnavailable)
+  }
+
+  @Test
+  fun `get prisoner base location should return 503`() {
+    whenever(featureFlagConfig.require(USE_PRISONER_BASE_LOCATION_ENDPOINT)).thenThrow(FeatureNotEnabledException(""))
+    val prisonNumber = "A1234AA"
+    val path = "/v1/persons/$prisonNumber/prisoner-base-location"
+
+    callApi(path)
       .andExpect(status().isServiceUnavailable)
   }
 }

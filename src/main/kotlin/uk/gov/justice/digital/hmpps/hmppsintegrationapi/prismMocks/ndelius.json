@@ -811,11 +811,11 @@
         "properties": {
           "code": {
             "type": "string",
-            "example": "ASFO"
+            "example": "WRSM"
           },
           "description": {
             "type": "string",
-            "example": "Serious Further Offence - Subject to SFO review/investigation"
+            "example": "Warrant/Summons - Outstanding warrant or summons"
           },
           "startDate": {
             "type": "string",

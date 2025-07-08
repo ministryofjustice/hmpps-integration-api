@@ -57,13 +57,6 @@ internal class StatusInformationControllerTest(
               data =
                 listOf(
                   StatusInformation(
-                    code = "ASFO",
-                    description = "Serious Further Offence - Subject to SFO review/investigation",
-                    startDate = "2022-10-18",
-                    reviewDate = "2025-12-22",
-                    notes = "To review later on in the year.",
-                  ),
-                  StatusInformation(
                     code = "WRSM",
                     description = "Warrant/Summons - Outstanding warrant or summons",
                     startDate = "2022-09-01",
@@ -103,13 +96,6 @@ internal class StatusInformationControllerTest(
             """
           "data": [
             {
-              "code": "ASFO",
-              "description": "Serious Further Offence - Subject to SFO review/investigation",
-              "startDate": "2022-10-18",
-              "reviewDate": "2025-12-22",
-              "notes": "To review later on in the year."
-            },
-            {
               "code": "WRSM",
               "description": "Warrant/Summons - Outstanding warrant or summons",
               "startDate": "2022-09-01",
@@ -130,13 +116,6 @@ internal class StatusInformationControllerTest(
               data =
                 listOf(
                   StatusInformation(
-                    code = "ASFO",
-                    description = "Serious Further Offence - Subject to SFO review/investigation",
-                    startDate = "2022-10-18",
-                    reviewDate = "2025-12-22",
-                    notes = "To review later on in the year.",
-                  ),
-                  StatusInformation(
                     code = "WRSM",
                     description = "Warrant/Summons - Outstanding warrant or summons",
                     startDate = "2022-09-01",
@@ -152,13 +131,6 @@ internal class StatusInformationControllerTest(
           result.response.contentAsString.shouldContain(
             """
           "data": [
-            {
-              "code": "ASFO",
-              "description": "Serious Further Offence - Subject to SFO review/investigation",
-              "startDate": "2022-10-18",
-              "reviewDate": "2025-12-22",
-              "notes": "${Redactor.REDACTED}"
-            },
             {
               "code": "WRSM",
               "description": "Warrant/Summons - Outstanding warrant or summons",

@@ -1,0 +1,12 @@
+{
+  "data": {
+    "educationLevel": "PRIMARY_SCHOOL",
+    "qualifications": [
+      {
+        "subject": "Maths GCSE",
+        "level": "ENTRY_LEVEL",
+        "grade": "Distinction"
+      }
+    ]
+  }
+}
