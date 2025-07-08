@@ -8,7 +8,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrap
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper.WebClientWrapperResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesActivitySchedule
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesActivityScheduleDetailed
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesActivityScheduledInstancesForPrisoner
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesActivityScheduledInstanceForPrisoner
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesAppointmentDetails
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesAttendance
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesAttendanceReason
@@ -240,7 +240,7 @@ class ActivitiesGateway(
     startDate: String,
     endDate: String,
     slot: String?,
-  ): Response<List<ActivitiesActivityScheduledInstancesForPrisoner>?> {
+  ): Response<List<ActivitiesActivityScheduledInstanceForPrisoner>?> {
     val queryParams =
       buildList {
         add("startDate=$startDate")
@@ -249,7 +249,7 @@ class ActivitiesGateway(
       }.joinToString("&")
 
     val result =
-      webClient.requestList<ActivitiesActivityScheduledInstancesForPrisoner>(
+      webClient.requestList<ActivitiesActivityScheduledInstanceForPrisoner>(
         method = HttpMethod.GET,
         uri = "/integration-api/prisons/$prisonCode/$prisonerId/scheduled-instances?$queryParams",
         headers = authenticationHeader(),

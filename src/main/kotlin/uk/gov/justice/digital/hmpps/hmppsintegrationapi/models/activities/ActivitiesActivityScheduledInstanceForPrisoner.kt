@@ -2,7 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities
 
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ActivityScheduledInstanceForPrisoner
 
-data class ActivitiesActivityScheduledInstancesForPrisoner(
+data class ActivitiesActivityScheduledInstanceForPrisoner(
   val id: Long,
   val date: String,
   val startTime: String,

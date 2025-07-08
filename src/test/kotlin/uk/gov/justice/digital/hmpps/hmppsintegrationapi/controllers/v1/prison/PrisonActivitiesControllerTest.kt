@@ -18,7 +18,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMo
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesActivity
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesActivityCategory
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesActivitySchedule
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesActivityScheduledInstancesForPrisoner
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesActivityScheduledInstanceForPrisoner
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesAdvanceAttendance
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesAttendance
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesMinimumEducationLevel
@@ -151,7 +151,7 @@ class PrisonActivitiesControllerTest(
 
         val activitiesActivityScheduledInstanceForPerson =
           listOf(
-            ActivitiesActivityScheduledInstancesForPrisoner(
+            ActivitiesActivityScheduledInstanceForPrisoner(
               id = 123456L,
               date = "2022-10-20",
               startTime = "09:00",
