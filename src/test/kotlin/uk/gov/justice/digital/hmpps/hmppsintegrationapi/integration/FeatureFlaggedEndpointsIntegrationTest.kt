@@ -118,9 +118,9 @@ internal class FeatureFlaggedEndpointsIntegrationTest : IntegrationTestBase() {
   @Test
   fun `get scheduled instances for prisoner should return 503`() {
     whenever(featureFlagConfig.require(USE_SCHEDULED_INSTANCES_ENDPOINT)).thenThrow(FeatureNotEnabledException(""))
-    val prisonCode = "MDI"
-    val prisonerId = "A1234AA"
-    val path = "/v1/prison/$prisonCode/$prisonerId/scheduled-instances?startDate=2022-09-10&endDate=2023-09-10"
+    val prisonId = "MDI"
+    val hmppsId = "A1234AA"
+    val path = "/v1/prison/$prisonId/prisoners/$hmppsId/scheduled-instances?startDate=2022-09-10&endDate=2023-09-10"
     callApi(path)
       .andExpect(status().isServiceUnavailable)
   }

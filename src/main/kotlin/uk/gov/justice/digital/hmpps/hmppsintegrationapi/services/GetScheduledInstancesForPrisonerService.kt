@@ -15,19 +15,19 @@ class GetScheduledInstancesForPrisonerService(
   @Autowired val consumerPrisonAccessService: ConsumerPrisonAccessService,
 ) {
   fun execute(
-    prisonCode: String,
-    prisonerId: String,
+    prisonId: String,
+    hmppsId: String,
     startDate: String,
     endDate: String,
     slot: String?,
     filters: ConsumerFilters?,
   ): Response<List<ActivityScheduledInstanceForPrisoner>?> {
-    val consumerPrisonFilterCheck = consumerPrisonAccessService.checkConsumerHasPrisonAccess<List<ActivityScheduledInstanceForPrisoner>?>(prisonCode, filters, upstreamServiceType = UpstreamApi.ACTIVITIES)
+    val consumerPrisonFilterCheck = consumerPrisonAccessService.checkConsumerHasPrisonAccess<List<ActivityScheduledInstanceForPrisoner>?>(prisonId, filters, upstreamServiceType = UpstreamApi.ACTIVITIES)
     if (consumerPrisonFilterCheck.errors.isNotEmpty()) {
       return consumerPrisonFilterCheck
     }
 
-    val response = activitiesGateway.getScheduledInstancesForPrisoner(prisonCode, prisonerId, startDate, endDate, slot)
+    val response = activitiesGateway.getScheduledInstancesForPrisoner(prisonId, hmppsId, startDate, endDate, slot)
     if (response.errors.isNotEmpty()) {
       return Response(data = null, errors = response.errors)
     }

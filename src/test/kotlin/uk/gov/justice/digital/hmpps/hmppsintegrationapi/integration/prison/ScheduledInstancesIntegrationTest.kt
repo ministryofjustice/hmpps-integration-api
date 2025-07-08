@@ -7,14 +7,14 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationT
 import java.io.File
 
 class ScheduledInstancesIntegrationTest : IntegrationTestBase() {
-  private val prisonCode = "MDI"
-  private val prisonerId = "A1234AA"
-  private val path = "/v1/prison/$prisonCode/$prisonerId/scheduled-instances?startDate=2022-09-10&endDate=2023-09-10"
+  private val prisonId = "MDI"
+  private val hmppsId = "A1234AA"
+  private val path = "/v1/prison/$prisonId/prisoners/$hmppsId/scheduled-instances?startDate=2022-09-10&endDate=2023-09-10"
 
   @Test
   fun `return the scheduled instances`() {
     activitiesMockServer.stubForGet(
-      "/prisons/$prisonCode/$prisonerId/scheduled-instances?startDate=2022-09-10&endDate=2023-09-10",
+      "/integration-api/prisons/$prisonId/$hmppsId/scheduled-instances?startDate=2022-09-10&endDate=2023-09-10",
       File("$gatewaysFolder/activities/fixtures/GetActivitiesScheduledInstanceForPrisoner.json").readText(),
     )
     callApi(path)

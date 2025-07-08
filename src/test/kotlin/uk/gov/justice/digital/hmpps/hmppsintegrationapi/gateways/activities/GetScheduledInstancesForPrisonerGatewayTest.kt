@@ -186,7 +186,7 @@ class GetScheduledInstancesForPrisonerGatewayTest(
 
       it("Returns scheduled instances for prisoner") {
         mockServer.stubForGet(
-          "/prisons/$prisonCode/$prisonerId/scheduled-instances?startDate=2022-09-10&endDate=2023-09-10",
+          "/integration-api/prisons/$prisonCode/$prisonerId/scheduled-instances?startDate=2022-09-10&endDate=2023-09-10",
           File("src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/activities/fixtures/GetActivitiesScheduledInstanceForPrisoner.json").readText(),
         )
 

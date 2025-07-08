@@ -143,11 +143,11 @@ class PrisonActivitiesControllerTest(
         }
       }
 
-      describe("GET /v1/prison/{prisonCode}/{prisonerId}/scheduled-instances") {
-        val prisonerId = "A1234AA"
-        val prisonCode = "MKI"
+      describe("GET /v1/prison/{prisonId}/prisoners/{hmppsId}/scheduled-instances") {
+        val prisonId = "MKI"
+        val hmppsId = "A1234AA"
         val filters = null
-        val path = "$basePath/$prisonCode/$prisonerId/scheduled-instances?startDate=2022-09-10&endDate=2023-09-10"
+        val path = "$basePath/$prisonId/prisoners/$hmppsId/scheduled-instances?startDate=2022-09-10&endDate=2023-09-10"
 
         val activitiesActivityScheduledInstanceForPerson =
           listOf(
@@ -280,7 +280,7 @@ class PrisonActivitiesControllerTest(
         }
 
         it("should return 200 when success") {
-          whenever(getScheduledInstancesForPrisonerService.execute(prisonCode, prisonerId, "2022-09-10", "2023-09-10", null, filters)).thenReturn(Response(data = activityScheduledInstanceForPerson))
+          whenever(getScheduledInstancesForPrisonerService.execute(prisonId, hmppsId, "2022-09-10", "2023-09-10", null, filters)).thenReturn(Response(data = activityScheduledInstanceForPerson))
 
           val result = mockMvc.performAuthorised(path)
           result.response.status.shouldBe(HttpStatus.OK.value())
@@ -288,7 +288,7 @@ class PrisonActivitiesControllerTest(
         }
 
         it("should call the audit service") {
-          whenever(getScheduledInstancesForPrisonerService.execute(prisonCode, prisonerId, "2022-09-10", "2023-09-10", null, filters)).thenReturn(Response(data = activityScheduledInstanceForPerson))
+          whenever(getScheduledInstancesForPrisonerService.execute(prisonId, hmppsId, "2022-09-10", "2023-09-10", null, filters)).thenReturn(Response(data = activityScheduledInstanceForPerson))
 
           mockMvc.performAuthorised(path)
           verify(
@@ -296,12 +296,12 @@ class PrisonActivitiesControllerTest(
             times(1),
           ).createEvent(
             "GET_SCHEDULED_INSTANCES_FOR_PRISONER",
-            mapOf("prisonCode" to prisonCode, "prisonerId" to prisonerId, "startDate" to "2022-09-10", "endDate" to "2023-09-10", "slot" to null, "cancelled" to null.toString()),
+            mapOf("prisonId" to prisonId, "hmppsId" to hmppsId, "startDate" to "2022-09-10", "endDate" to "2023-09-10", "slot" to null),
           )
         }
 
         it("returns 400 when getScheduledInstancesForPrisonerService returns bad request") {
-          whenever(getScheduledInstancesForPrisonerService.execute(prisonCode, prisonerId, "2022-09-10", "2023-09-10", null, filters)).thenReturn(
+          whenever(getScheduledInstancesForPrisonerService.execute(prisonId, hmppsId, "2022-09-10", "2023-09-10", null, filters)).thenReturn(
             Response(
               data = null,
               errors =
@@ -319,7 +319,7 @@ class PrisonActivitiesControllerTest(
         }
 
         it("returns 404 when getScheduledInstancesForPrisonerService returns not found") {
-          whenever(getScheduledInstancesForPrisonerService.execute(prisonCode, prisonerId, "2022-09-10", "2023-09-10", null, filters)).thenReturn(
+          whenever(getScheduledInstancesForPrisonerService.execute(prisonId, hmppsId, "2022-09-10", "2023-09-10", null, filters)).thenReturn(
             Response(
               data = null,
               errors =

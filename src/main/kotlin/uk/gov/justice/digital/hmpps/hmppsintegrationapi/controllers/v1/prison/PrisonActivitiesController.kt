@@ -76,7 +76,7 @@ class PrisonActivitiesController(
   }
 
   @FeatureFlag(name = FeatureFlagConfig.Companion.USE_SCHEDULED_INSTANCES_ENDPOINT)
-  @GetMapping("/{prisonCode}/{prisonerId}/scheduled-instances")
+  @GetMapping("/{prisonId}/prisoners/{hmppsId}/scheduled-instances")
   @Operation(
     summary = "Returns all scheduled instances for a prisoner given a prisonCode and prisonerId, and other required parameters.",
     description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
@@ -101,8 +101,8 @@ class PrisonActivitiesController(
     ],
   )
   fun getScheduledInstancesForPrisoner(
-    @Parameter(description = "The ID of the prison to be queried against") @PathVariable prisonCode: String,
-    @Parameter(description = "The ID of the prisoner to be queried against") @PathVariable prisonerId: String,
+    @Parameter(description = "The ID of the prison to be queried against") @PathVariable prisonId: String,
+    @Parameter(description = "The ID of the prisoner to be queried against") @PathVariable hmppsId: String,
     @Parameter(description = "The start date of the search range (YYYY-MM-DD)", required = true)
     @RequestParam startDate: String,
     @Parameter(description = "The end date of the search range (YYYY-MM-DD)", required = true)
@@ -111,7 +111,7 @@ class PrisonActivitiesController(
     @RequestParam(required = false) slot: String? = null,
     @RequestAttribute filters: ConsumerFilters?,
   ): DataResponse<List<ActivityScheduledInstanceForPrisoner>?> {
-    val response = getScheduledInstancesForPrisonerService.execute(prisonCode, prisonerId, startDate, endDate, slot, filters)
+    val response = getScheduledInstancesForPrisonerService.execute(prisonId, hmppsId, startDate, endDate, slot, filters)
 
     if (response.hasError(BAD_REQUEST)) {
       throw ValidationException("Invalid query parameters.")
@@ -123,7 +123,7 @@ class PrisonActivitiesController(
 
     auditService.createEvent(
       "GET_SCHEDULED_INSTANCES_FOR_PRISONER",
-      mapOf("prisonCode" to prisonCode, "prisonerId" to prisonerId, "startDate" to startDate, "endDate" to endDate, "slot" to slot),
+      mapOf("prisonId" to prisonId, "hmppsId" to hmppsId, "startDate" to startDate, "endDate" to endDate, "slot" to slot),
     )
 
     return DataResponse(data = response.data)
