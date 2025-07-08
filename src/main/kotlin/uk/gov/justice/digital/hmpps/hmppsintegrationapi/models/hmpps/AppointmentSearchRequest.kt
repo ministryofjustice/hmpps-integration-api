@@ -83,7 +83,7 @@ data class AppointmentSearchRequest(
     mapOf(
       "appointmentType" to appointmentType,
       "startDate" to startDate.toString(),
-      "endDate" to endDate.toString(),
+      "endDate" to endDate?.toString(),
       "timeSlots" to timeSlots,
       "categoryCode" to categoryCode,
       "inCell" to inCell,

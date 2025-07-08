@@ -12,6 +12,7 @@ per environment. This document is split into two parts:
 
 ## Prerequisites
 
+- [AWS CLI](https://aws.amazon.com/cli/)
 - [kubectl](https://kubernetes.io/docs/tasks/tools/#kubectl)
 - [Access to Cloud Platform’s Kubernetes cluster](https://user-guide.cloud-platform.service.justice.gov.uk/documentation/getting-started/kubectl-config.html#installing-kubectl)
 
@@ -123,6 +124,11 @@ tar cvfz hmpps-integration-api-preprod.tar.gz preprod/preprod-client.key preprod
 # Encrypt using symmetric key
 openssl enc -aes-256-cbc -pbkdf2 -iter 310000 -md sha256 -salt -in hmpps-integration-api-preprod.tar.gz -out hmpps-integration-api-preprod.tar.gz.enc -pass file:./symmetric.key
 ```
+
+Be sure to record the client's technical contact details in the
+[relevant client page](https://dsdmoj.atlassian.net/wiki/spaces/HIA/pages/5544181873/Clients)
+(create a new client page if required). This will be needed when the
+certificate expires and must be renewed.
 
 ### Alternatively
 

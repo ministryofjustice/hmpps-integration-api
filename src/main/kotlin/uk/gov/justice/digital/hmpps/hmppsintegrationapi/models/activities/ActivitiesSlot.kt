@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities
 
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Slot
+import java.time.DayOfWeek
 
 data class ActivitiesSlot(
   val id: Long,
@@ -32,5 +33,16 @@ data class ActivitiesSlot(
       fridayFlag = this.fridayFlag,
       saturdayFlag = this.saturdayFlag,
       sundayFlag = this.sundayFlag,
+    )
+
+  fun getDaysOfWeek(): Set<DayOfWeek> =
+    setOfNotNull(
+      DayOfWeek.MONDAY.takeIf { mondayFlag },
+      DayOfWeek.TUESDAY.takeIf { tuesdayFlag },
+      DayOfWeek.WEDNESDAY.takeIf { wednesdayFlag },
+      DayOfWeek.THURSDAY.takeIf { thursdayFlag },
+      DayOfWeek.FRIDAY.takeIf { fridayFlag },
+      DayOfWeek.SATURDAY.takeIf { saturdayFlag },
+      DayOfWeek.SUNDAY.takeIf { sundayFlag },
     )
 }

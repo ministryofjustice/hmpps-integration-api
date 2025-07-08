@@ -25,7 +25,7 @@ const risksCrn = "X756352";
 const prisonId = "MKI";
 const alternativeprisonId = "RSI";
 const visitReference = "qd-lh-gy-lx";
-const clientReference = "123456";
+const clientVisitReference = "SMOKE_TEST_CLIENT_REF";
 const contactId = "1898610";
 const imageId = "1988315";
 const locationIdKey = "MKI-A";
@@ -71,7 +71,7 @@ const get_endpoints = [
   `/v1/prison/${alternativeprisonId}/prison-regime`,
   `/v1/prison/${alternativeprisonId}/activities`,
   `/v1/prison/${alternativeprisonId}/prison-pay-bands`,
-  `/v1/contacts/${clientReference}`,
+  `/v1/contacts/${contactId}`,
   `/v1/persons?first_name=john`,
   `/v1/persons/${deliusCrn}`,
   `/v1/persons/${hmppsId}/licences/conditions`,
@@ -89,7 +89,7 @@ const get_endpoints = [
   `/v1/hmpps/id/nomis-number/${hmppsId}`,
   `/v1/persons/${hmppsId}/visit/future`,
   `/v1/visit/${visitReference}`,
-  `/v1/visit/id/by-client-ref/${clientReference}`,
+  `/v1/visit/id/by-client-ref/${clientVisitReference}`,
   `/v1/prison/${prisonId}/visit/search?visitStatus=BOOKED`,
   `/v1/persons/${deliusCrn}/protected-characteristics`,
   `/v1/epf/person-details/${deliusCrn}/1`,
@@ -103,10 +103,12 @@ const get_endpoints = [
   `/v2/config/authorisation`,
   `/v1/persons/${hmppsId}/health-and-diet`,
   `/v1/persons/${hmppsId}/languages`,
+  `/v1/persons/${plpHmppsId}/education`,
   `/v1/activities/${activityId}/schedules`,
   `/v1/activities/attendance-reasons`,
   `/v1/activities/schedule/${scheduleId}`,
-  `/v1/prison/${prisonId}/${hmppsId}/scheduled-instances?startDate=2022-09-10&endDate=2023-09-10`
+  `/v1/prison/${prisonId}/${hmppsId}/scheduled-instances?startDate=2022-09-10&endDate=2023-09-10`,
+  `/v1/activities/deallocation-reasons`
 ];
 
 const broken_endpoints = []
@@ -148,8 +150,8 @@ const postLocationDeactivateData = JSON.stringify({
 
 const postSearchAppointmentsEndpoint = `/v1/prison/${alternativeprisonId}/appointments/search`;
 const postSearchAppointmentsData = JSON.stringify({
-  startDate: "2025-06-16",
-})
+  startDate: "2025-06-16"
+});
 
 const putAttendanceEndpoint = `/v1/activities/schedule/attendance`
 const putAttendanceData = JSON.stringify([{
@@ -174,6 +176,31 @@ const putDeallocationData = JSON.stringify({
     text: "Case note text"
   },
   scheduleInstanceId: 1234
+})
+
+const postAllocationEndpoint = `/v1/activities/schedule/${scheduleId}/allocate`
+const postAllocationData = JSON.stringify({
+  prisonerNumber: hmppsId,
+  startDate: todayFormatted,
+  endDate: todayFormatted,
+  payBandId: 123456,
+  exclusions: [
+    {
+      timeSlot: "AM",
+      weekNumber: 1,
+      monday: true,
+      tuesday: true,
+      wednesday: true,
+      thursday: false,
+      friday: false,
+      saturday: false,
+      sunday: false,
+      customStartTime: "09:00",
+      customEndTime: "11:00",
+      daysOfWeek: ["MONDAY", "TUESDAY", "WEDNESDAY"]
+    }
+  ],
+  testEvent: "TestEvent"
 })
 
 export default function ()  {
@@ -217,6 +244,13 @@ export default function ()  {
     [`PUT ${putDeallocationEndpoint} returns 200`]: (r) => r.status === 200,
   })) {
     exec.test.fail(`${putDeallocationEndpoint} caused the test to fail`)
+  }
+
+  const postAllocationRes = http.post(`${baseUrl}${postAllocationEndpoint}`, postAllocationData, params);
+  if (!check(postAllocationRes, {
+    [`POST ${postAllocationEndpoint} returns 200`]: (r) => r.status === 200,
+  })) {
+    exec.test.fail(`${postAllocationEndpoint} caused the test to fail`)
   }
 
   for (const endpoint of get_endpoints) {

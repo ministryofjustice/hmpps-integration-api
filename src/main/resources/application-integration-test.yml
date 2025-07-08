@@ -66,11 +66,15 @@ hmpps.sqs:
 feature-flag:
   use-arns-endpoints: true
   use-education-assessments-endpoints: true
+  use-eswe-curious-endpoints: true
   use-update-attendance-endpoint: true
   use-schedule-detail-endpoint: true
   use-search-appointments-endpoint: true
   use-deallocation-endpoint: true
   use-scheduled-instances-endpoint: true
+  use-deallocation-reasons-endpoint: true
+  use-allocation-endpoint: true
+  use-education-endpoint: true
 
 authorisation:
   consumers:
@@ -90,28 +94,19 @@ authorisation:
       filters:
     specific-prison:
       roles:
-        - "private-prison"
-      include:
-        - "/v1/hmpps/id/nomis-number/[^/]*$"
-        - "/v1/persons/.*/sentences/latest-key-dates-and-adjustments"
+        - "full-access"
       filters:
         prisons:
           - MDI
     limited-prisons:
       roles:
-        - "private-prison"
-      include:
-        - "/v1/hmpps/id/nomis-number/[^/]*$"
-        - "/v1/persons/.*/sentences/latest-key-dates-and-adjustments"
+        - "full-access"
       filters:
         prisons:
           - ABC
     no-prisons:
       roles:
-        - "private-prison"
-      include:
-        - "/v1/hmpps/id/nomis-number/[^/]*$"
-        - "/v1/persons/.*/sentences/latest-key-dates-and-adjustments"
+        - "full-access"
       filters:
         prisons:
     private-prison-only:

@@ -21,8 +21,8 @@ data class PRDetailedContact(
   val addresses: List<Address>,
   val phoneNumbers: List<PhoneNumber>,
   val emailAddresses: List<EmailAddress>,
-  val genderCode: String,
-  val genderDescription: String,
+  val genderCode: String?,
+  val genderDescription: String?,
 ) {
   fun toDetailedContact(): DetailedContact =
     DetailedContact(

@@ -6,6 +6,7 @@ import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory
+import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
@@ -13,6 +14,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonVisitsGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServer
@@ -30,12 +32,6 @@ class PrisonVisitsGatewayTest(
   private val prisonVisitsGateway: PrisonVisitsGateway,
 ) : DescribeSpec(
     {
-      val visitReference = "123456"
-      val path = "/visits/$visitReference"
-
-      val prisonerId = "AF34567G"
-      val futuresPath = "/visits/search/future/$prisonerId"
-
       val prisonVisitsApiMockServer = ApiMockServer.create(UpstreamApi.MANAGE_PRISON_VISITS)
 
       beforeEach {
@@ -49,80 +45,88 @@ class PrisonVisitsGatewayTest(
         prisonVisitsApiMockServer.stop()
       }
 
-      it("authenticates using HMPPS Auth with credentials for linked prisoners api") {
-        prisonVisitsGateway.getVisitByReference(visitReference)
+      describe("getVisitByReference") {
+        val visitReference = "123456"
+        val path = "/visits/$visitReference"
 
-        verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("MANAGE-PRISON-VISITS")
-      }
+        it("authenticates using HMPPS Auth with credentials for linked prisoners api") {
+          prisonVisitsGateway.getVisitByReference(visitReference)
 
-      it("returns a 404 when visit is not found") {
-        prisonVisitsApiMockServer.stubForGet(path, body = "", HttpStatus.NOT_FOUND)
+          verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("MANAGE-PRISON-VISITS")
+        }
 
-        val response = prisonVisitsGateway.getVisitByReference(visitReference)
-        response.errors.shouldHaveSize(1)
-        response.errors
-          .first()
-          .causedBy
-          .shouldBe(UpstreamApi.MANAGE_PRISON_VISITS)
-        response.errors
-          .first()
-          .type
-          .shouldBe(UpstreamApiError.Type.ENTITY_NOT_FOUND)
-      }
+        it("returns a 404 when visit is not found") {
+          prisonVisitsApiMockServer.stubForGet(path, body = "", HttpStatus.NOT_FOUND)
 
-      it("returns a 200 when visit is found") {
-        val exampleData =
-          """
-          {
-            "prisonerId": "AF34567G",
-            "prisonId": "MDI",
-            "prisonName": "Moorland (HMP & YOI)",
-            "sessionTemplateReference": "v9d.7ed.7u",
-            "visitRoom": "Visits Main Hall",
-            "visitType": "SOCIAL",
-            "visitStatus": "RESERVED",
-            "outcomeStatus": "VISITOR_CANCELLED",
-            "visitRestriction": "OPEN",
-            "startTimestamp": "2018-12-01T13:45:00",
-            "endTimestamp": "2018-12-01T13:45:00",
-            "visitNotes": [
+          val response = prisonVisitsGateway.getVisitByReference(visitReference)
+          response.errors.shouldHaveSize(1)
+          response.errors
+            .first()
+            .causedBy
+            .shouldBe(UpstreamApi.MANAGE_PRISON_VISITS)
+          response.errors
+            .first()
+            .type
+            .shouldBe(UpstreamApiError.Type.ENTITY_NOT_FOUND)
+        }
+
+        it("returns a 200 when visit is found") {
+          val exampleData =
+            """
             {
-              "type": "VISITOR_CONCERN",
-              "text": "Visitor is concerned that his mother in-law is coming!"
+              "prisonerId": "AF34567G",
+              "prisonId": "MDI",
+              "prisonName": "Moorland (HMP & YOI)",
+              "sessionTemplateReference": "v9d.7ed.7u",
+              "visitRoom": "Visits Main Hall",
+              "visitType": "SOCIAL",
+              "visitStatus": "RESERVED",
+              "outcomeStatus": "VISITOR_CANCELLED",
+              "visitRestriction": "OPEN",
+              "startTimestamp": "2018-12-01T13:45:00",
+              "endTimestamp": "2018-12-01T13:45:00",
+              "visitNotes": [
+                {
+                  "type": "VISITOR_CONCERN",
+                  "text": "Visitor is concerned that his mother in-law is coming!"
+                }
+              ],
+              "visitContact": {
+                "name": "John Smith",
+                "telephone": "01234 567890",
+                "email": "email@example.com"
+              },
+              "visitors": [
+                {
+                  "nomisPersonId": 1234,
+                  "visitContact": true
+                }
+              ],
+              "visitorSupport": {
+                "description": "visually impaired assistance"
+              },
+              "createdTimestamp": "2018-12-01T13:45:00",
+              "modifiedTimestamp": "2018-12-01T13:45:00",
+              "firstBookedDateTime": "2018-12-01T13:45:00"
             }
-            ],
-            "visitContact": {
-            "name": "John Smith",
-            "telephone": "01234 567890",
-            "email": "email@example.com"
-          },
-            "visitors": [
-            {
-              "nomisPersonId": 1234,
-              "visitContact": true
-            }
-            ],
-            "visitorSupport": {
-            "description": "visually impaired assistance"
-          },
-            "createdTimestamp": "2018-12-01T13:45:00",
-            "modifiedTimestamp": "2018-12-01T13:45:00",
-            "firstBookedDateTime": "2018-12-01T13:45:00"
-          }
-          """.trimIndent()
+            """.trimIndent()
 
-        prisonVisitsApiMockServer.stubForGet(path, body = exampleData, HttpStatus.OK)
+          prisonVisitsApiMockServer.stubForGet(path, body = exampleData, HttpStatus.OK)
 
-        val response = prisonVisitsGateway.getVisitByReference(visitReference)
-        response.data.shouldNotBeNull()
-        response.data?.prisonerId.shouldBe("AF34567G")
+          val response = prisonVisitsGateway.getVisitByReference(visitReference)
+          response.data.shouldNotBeNull()
+          response.data.prisonerId.shouldBe("AF34567G")
+        }
       }
 
       describe("future visits") {
+        val prisonerId = "AF34567G"
+        val path = "/visits/search/future/$prisonerId"
+
         it("authenticates using HMPPS Auth with credentials for linked prisoners api") {
           prisonVisitsGateway.getFutureVisits(prisonerId)
 
-          verify(hmppsAuthGateway, VerificationModeFactory.times(1)).getClientToken("MANAGE-PRISON-VISITS")
+          verify(hmppsAuthGateway, times(1)).getClientToken("MANAGE-PRISON-VISITS")
         }
 
         it("returns a 200 when a future visit is found") {
@@ -170,19 +174,19 @@ class PrisonVisitsGatewayTest(
             ]
             """.trimIndent()
 
-          prisonVisitsApiMockServer.stubForGet(futuresPath, body = exampleData, HttpStatus.OK)
+          prisonVisitsApiMockServer.stubForGet(path, body = exampleData, HttpStatus.OK)
 
           val response = prisonVisitsGateway.getFutureVisits(prisonerId)
           response.data.shouldNotBeNull()
-          response.data!!.size.shouldBe(1)
-          response.data!!
+          response.data.size.shouldBe(1)
+          response.data
             .first()
             .prisonerId
             .shouldBe(prisonerId)
         }
 
         it("returns an empty list when no future visits found") {
-          prisonVisitsApiMockServer.stubForGet(futuresPath, body = "[]", HttpStatus.OK)
+          prisonVisitsApiMockServer.stubForGet(path, body = "[]", HttpStatus.OK)
 
           val response = prisonVisitsGateway.getFutureVisits(prisonerId)
           response.data.shouldNotBeNull()
@@ -190,12 +194,47 @@ class PrisonVisitsGatewayTest(
         }
 
         it("returns a 400 response when prisoner Id is invalid") {
-          prisonVisitsApiMockServer.stubForGet(futuresPath, body = "", HttpStatus.BAD_REQUEST)
+          prisonVisitsApiMockServer.stubForGet(path, body = "", HttpStatus.BAD_REQUEST)
 
           val response = prisonVisitsGateway.getFutureVisits(prisonerId)
           response.data.shouldBe(null)
           response.errors.shouldHaveSize(1)
           response.errors.first().shouldBe(UpstreamApiError(causedBy = UpstreamApi.MANAGE_PRISON_VISITS, type = UpstreamApiError.Type.BAD_REQUEST))
+        }
+      }
+
+      describe("getVisitReferencesByClientReference") {
+        val clientReference = "1234567"
+        val path = "/visits/external-system/$clientReference"
+
+        it("authenticates using HMPPS Auth with credentials for linked prisoners api") {
+          prisonVisitsGateway.getVisitReferencesByClientReference(clientReference)
+
+          verify(hmppsAuthGateway, times(1)).getClientToken("MANAGE-PRISON-VISITS")
+        }
+
+        it("returns a 200 when a visit references are found") {
+          val exampleData =
+            """
+            [
+              "visit_1",
+              "visit_2"
+            ]
+            """.removeWhitespaceAndNewlines()
+
+          prisonVisitsApiMockServer.stubForGet(path, body = exampleData, HttpStatus.OK)
+
+          val response = prisonVisitsGateway.getVisitReferencesByClientReference(clientReference)
+          response.data.shouldNotBeNull()
+          response.data.visitReferences.shouldBe(listOf("visit_1", "visit_2"))
+        }
+
+        it("returns an empty list when no visit references found") {
+          prisonVisitsApiMockServer.stubForGet(path, body = "[]", HttpStatus.OK)
+
+          val response = prisonVisitsGateway.getVisitReferencesByClientReference(clientReference)
+          response.data.shouldNotBeNull()
+          response.data.visitReferences.shouldBe(emptyList())
         }
       }
     },

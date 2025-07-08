@@ -11,12 +11,14 @@ import jakarta.validation.ValidationException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestAttribute
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.ConflictFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.ForbiddenByUpstreamServiceException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.featureflag.FeatureFlag
@@ -24,7 +26,9 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ActivitySch
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ActivityScheduleDetailed
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.AttendanceUpdateRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DeallocationReason
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HmppsMessageResponse
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerAllocationRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerDeallocationRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ReasonForAttendance
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
@@ -32,6 +36,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.Consum
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.ActivitiesQueueService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetActivitiesScheduleService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetAttendanceReasonsService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetDeallocationReasonsService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetScheduleDetailsService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 
@@ -41,6 +46,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditS
 class ActivitiesController(
   @Autowired val getActivitiesScheduleService: GetActivitiesScheduleService,
   @Autowired val getAttendanceReasonsService: GetAttendanceReasonsService,
+  @Autowired val getDeallocationReasonsService: GetDeallocationReasonsService,
   @Autowired val auditService: AuditService,
   private val activitiesQueueService: ActivitiesQueueService,
   private val getScheduleDetailsService: GetScheduleDetailsService,
@@ -197,6 +203,7 @@ class ActivitiesController(
   }
 
   @GetMapping("/attendance-reasons")
+  @Tag(name = "Reference Data")
   @Operation(
     summary = "Gets possible reasons for attendance.",
     description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
@@ -279,6 +286,105 @@ class ActivitiesController(
 
     auditService.createEvent(
       "PUT_DEALLOCATE_PRISONER_FROM_ACTIVITY",
+      mapOf("scheduleId" to scheduleId.toString()),
+    )
+
+    return DataResponse(data = response.data)
+  }
+
+  @FeatureFlag(name = FeatureFlagConfig.Companion.USE_DEALLOCATION_REASONS_ENDPOINT)
+  @Tag(name = "Reference Data")
+  @GetMapping("/deallocation-reasons")
+  @Operation(
+    summary = "Gets possible reasons for deallocation.",
+    description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
+    responses = [
+      ApiResponse(
+        responseCode = "200",
+        useReturnTypeSchema = true,
+        description = "Successfully performed the query on upstream APIs. An empty list is returned when no results are found.",
+      ),
+      ApiResponse(
+        responseCode = "403",
+        content = [Content(schema = Schema(ref = "#/components/schemas/ForbiddenResponse"))],
+      ),
+      ApiResponse(
+        responseCode = "500",
+        content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))],
+      ),
+    ],
+  )
+  fun getDeallocationReasons(): DataResponse<List<DeallocationReason>?> {
+    val response = getDeallocationReasonsService.execute()
+
+    if (response.hasError(UpstreamApiError.Type.FORBIDDEN)) {
+      throw ForbiddenByUpstreamServiceException("Access denied to deallocation reasons.")
+    }
+
+    auditService.createEvent(
+      "GET_DEALLOCATION_REASONS",
+      mapOf(),
+    )
+
+    return DataResponse(data = response.data)
+  }
+
+  @PostMapping("/schedule/{scheduleId}/allocate")
+  @Operation(
+    summary = "Allocate prisoner to activity.",
+    description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
+    responses = [
+      ApiResponse(
+        responseCode = "200",
+        useReturnTypeSchema = true,
+        description = "Prisoner allocation written to queue.",
+      ),
+      ApiResponse(
+        responseCode = "400",
+        description = "The request body provided has a field in an invalid format.",
+        content = [Content(schema = Schema(ref = "#/components/schemas/BadRequest"))],
+      ),
+      ApiResponse(
+        responseCode = "403",
+        content = [Content(schema = Schema(ref = "#/components/schemas/ForbiddenResponse"))],
+      ),
+      ApiResponse(
+        responseCode = "404",
+        content = [Content(schema = Schema(ref = "#/components/schemas/NotFoundError"))],
+      ),
+      ApiResponse(
+        responseCode = "409",
+        content = [Content(schema = Schema(ref = "#/components/schemas/ConflictResponse"))],
+      ),
+      ApiResponse(
+        responseCode = "500",
+        content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))],
+      ),
+    ],
+  )
+  @FeatureFlag(name = FeatureFlagConfig.Companion.USE_ALLOCATION_ENDPOINT)
+  fun postAllocationEndpoint(
+    @Parameter(description = "The ID of the schedule") @PathVariable scheduleId: Long,
+    @RequestAttribute filters: ConsumerFilters?,
+    @RequestAttribute clientName: String,
+    @RequestBody @Valid prisonerAllocationRequest: PrisonerAllocationRequest,
+  ): DataResponse<HmppsMessageResponse?> {
+    val response = activitiesQueueService.sendPrisonerAllocationRequest(scheduleId, prisonerAllocationRequest, clientName, filters)
+
+    if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
+      throw ValidationException("Invalid query parameters: ${response.errors[0].description}")
+    }
+
+    if (response.hasError(UpstreamApiError.Type.CONFLICT)) {
+      throw ConflictFoundException("Conflict: ${response.errors[0].description}")
+    }
+
+    if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
+      throw EntityNotFoundException("Could not find records for supplied requests: ${response.errors[0].description}")
+    }
+
+    auditService.createEvent(
+      "POST_ALLOCATE_PRISONER_TO_ACTIVITY",
       mapOf("scheduleId" to scheduleId.toString()),
     )
 

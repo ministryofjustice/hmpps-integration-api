@@ -7,7 +7,7 @@ RUN mkdir /prismMocks
 COPY src/main/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/prismMocks /prismMocks
 ADD https://manage-adjudications-api-dev.hmpps.service.justice.gov.uk/v3/api-docs /tmp/adjudications.json
 RUN swagger-cli bundle -r -o /prismMocks/adjudications.json /tmp/adjudications.json
-ADD https://ministryofjustice.github.io/hmpps-probation-integration-services/tech-docs/projects/effective-proposal-framework-and-delius/api-docs.json /prismMocks/probation-integration-epf.json
+ADD https://ministryofjustice.github.io/hmpps-probation-integration-services/tech-docs/projects/effective-proposal-framework-and-delius/assets/api-docs.json /prismMocks/probation-integration-epf.json
 
 RUN swagger-cli bundle -r -o /prismMocks/adjudications.json /tmp/adjudications.json
 

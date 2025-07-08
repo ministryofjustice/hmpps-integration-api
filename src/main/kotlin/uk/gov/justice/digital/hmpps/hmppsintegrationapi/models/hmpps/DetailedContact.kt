@@ -34,9 +34,9 @@ data class DetailedContact(
   @Schema(description = "All email addresses for the contact")
   val emailAddresses: List<ContactEmailAddress>,
   @Schema(description = "The NOMIS code for the contacts gender. See reference data with group code 'GENDER'")
-  val genderCode: String,
+  val genderCode: String?,
   @Schema(description = "The description of gender code. See reference data with group code 'GENDER'")
-  val genderDescription: String,
+  val genderDescription: String?,
 )
 
 data class ContactAddress(

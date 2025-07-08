@@ -26,11 +26,11 @@ get_ca() {
 generate_client() {
   openssl genrsa -out $environment-$client-client.key 2048
   openssl req -new -key $environment-$client-client.key -out $environment-$client-client.csr -subj "/C=GB/ST=$region/L=$region/O=$organisation/CN=$client"
-  openssl x509 -req -in $environment-$client-client.csr -CA truststore.pem -CAkey truststore.key -out $environment-$client-client.pem -days 365 -sha256
+  openssl x509 -req -in $environment-$client-client.csr -CA truststore.pem -CAkey truststore.key -out $environment-$client-client.pem -days 365 -sha256 -CAcreateserial
 }
 
 clean_ca() {
-  rm -fr truststore.pem truststore.key
+  rm -fr truststore.pem truststore.key truststore.srl
 }
 
 success_message() {
@@ -58,7 +58,13 @@ upload_backup() {
   aws configure set aws_secret_access_key ""
 }
 
+verify_deps() {
+  aws --version
+  kubectl version
+}
+
 main() {
+  verify_deps
   clean
   read_certificate_arguments
   get_ca

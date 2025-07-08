@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.tags.Tag
+import io.swagger.v3.oas.annotations.tags.Tags
 import jakarta.validation.ValidationException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.GetMapping
@@ -67,7 +68,7 @@ class SentencesController(
   }
 
   @GetMapping("{encodedHmppsId}/sentences/latest-key-dates-and-adjustments")
-  @Tag(name = "Reception")
+  @Tags(value = [Tag("Reception"), Tag("Activities")])
   @Operation(
     summary = "Returns the key dates and adjustments about a person's release from prison for their latest sentence.",
     description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
