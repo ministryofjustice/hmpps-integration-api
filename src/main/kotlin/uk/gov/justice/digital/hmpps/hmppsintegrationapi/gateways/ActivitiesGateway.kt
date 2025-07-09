@@ -8,6 +8,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrap
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper.WebClientWrapperResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesActivitySchedule
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesActivityScheduleDetailed
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesActivityScheduledInstanceForPrisoner
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesAppointmentDetails
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesAttendance
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesAttendanceReason
@@ -257,6 +258,44 @@ class ActivitiesGateway(
     }
   }
 
+  fun getScheduledInstancesForPrisoner(
+    prisonCode: String,
+    prisonerNumber: String,
+    startDate: String,
+    endDate: String,
+    slot: String?,
+  ): Response<List<ActivitiesActivityScheduledInstanceForPrisoner>?> {
+    val queryParams =
+      buildList {
+        add("startDate=$startDate")
+        add("endDate=$endDate")
+        slot?.let { add("slot=$it") }
+      }.joinToString("&")
+
+    val result =
+      webClient.requestList<ActivitiesActivityScheduledInstanceForPrisoner>(
+        method = HttpMethod.GET,
+        uri = "/integration-api/prisons/$prisonCode/$prisonerNumber/scheduled-instances?$queryParams",
+        headers = authenticationHeader(),
+        upstreamApi = UpstreamApi.ACTIVITIES,
+        badRequestAsError = true,
+        forbiddenAsError = true,
+      )
+
+    return when (result) {
+      is WebClientWrapperResponse.Success -> {
+        Response(data = result.data)
+      }
+
+      is WebClientWrapperResponse.Error -> {
+        Response(
+          data = null,
+          errors = result.errors,
+        )
+      }
+    }
+  }
+
   fun getDeallocationReasons(): Response<List<ActivitiesDeallocationReason>?> {
     val result =
       webClient.requestList<ActivitiesDeallocationReason>(
@@ -266,6 +305,7 @@ class ActivitiesGateway(
         UpstreamApi.ACTIVITIES,
         forbiddenAsError = true,
       )
+
     return when (result) {
       is WebClientWrapperResponse.Success -> {
         Response(data = result.data)

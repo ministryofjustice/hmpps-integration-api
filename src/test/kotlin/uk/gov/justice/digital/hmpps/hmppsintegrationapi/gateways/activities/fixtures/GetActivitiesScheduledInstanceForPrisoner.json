@@ -1,0 +1,32 @@
+[
+  {
+    "scheduledInstanceId": 1,
+    "allocationId": 1,
+    "prisonCode": "MDI",
+    "sessionDate": "2022-09-30",
+    "startTime": "09:00",
+    "endTime": "10:00",
+    "prisonerNumber": "G2996UX",
+    "bookingId": 10001,
+    "inCell": false,
+    "onWing": false,
+    "offWing": false,
+    "internalLocationId": 10001,
+    "dpsLocationId": "b7602cc8-e769-4cbb-8194-62d8e655992a",
+    "internalLocationCode": "5-A-SIDE COM",
+    "internalLocationDescription": "MDI-GYM-5-A-SIDE COM",
+    "scheduleDescription": "string",
+    "activityId": 1,
+    "activityCategory": "string",
+    "activitySummary": "Math Level 1",
+    "cancelled": false,
+    "suspended": false,
+    "autoSuspended": false,
+    "timeSlot": "AM",
+    "issuePayment": true,
+    "attendanceStatus": "WAITING",
+    "attendanceReasonCode": "SICK",
+    "paidActivity": false,
+    "possibleAdvanceAttendance": true
+  }
+]
