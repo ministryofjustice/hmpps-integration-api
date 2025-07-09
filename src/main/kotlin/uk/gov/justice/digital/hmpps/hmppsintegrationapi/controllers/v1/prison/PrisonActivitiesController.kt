@@ -84,7 +84,7 @@ class PrisonActivitiesController(
       ApiResponse(
         responseCode = "200",
         useReturnTypeSchema = true,
-        description = "Successfully performed the query on upstream APIs. An empty list is returned when no results are found.",
+        description = "Successfully performed the query on upstream APIs. Zero or more scheduled instances found.",
       ),
       ApiResponse(
         responseCode = "400",
