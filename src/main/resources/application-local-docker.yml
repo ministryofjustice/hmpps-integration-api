@@ -71,3 +71,4 @@ feature-flag:
   use-historical-attendances-endpoint: true
   use-suitability-endpoint: true
   use-waiting-list-endpoint: true
+  use-alerts-api-filter: true

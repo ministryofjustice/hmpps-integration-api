@@ -54,6 +54,7 @@ feature-flag:
   use-historical-attendances-endpoint: true
   use-suitability-endpoint: true
   use-waiting-list-endpoint: false
+  use-alerts-api-filter: false
 
 authorisation:
   consumers:

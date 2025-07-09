@@ -9,6 +9,8 @@ import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_ALERTS_API_FILTER
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerAlertsGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NomisNumber
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
@@ -31,6 +33,7 @@ import java.util.UUID
 internal class GetAlertsForPersonServiceTest(
   @MockitoBean val prisonerAlertsGateway: PrisonerAlertsGateway,
   @MockitoBean val personService: GetPersonService,
+  @MockitoBean val featureFlagConfig: FeatureFlagConfig,
   private val getAlertsForPersonService: GetAlertsForPersonService,
 ) : DescribeSpec(
     {
@@ -182,9 +185,44 @@ internal class GetAlertsForPersonServiceTest(
       }
 
       describe("getAlertsForPnd") {
-        it("returns PND filtered data") {
+        it("returns PND filtered data with out codes in query string when feature flag disabled") {
+          whenever(featureFlagConfig.isEnabled(USE_ALERTS_API_FILTER)).thenReturn(false)
           val response = getAlertsForPersonService.execute(hmppsId, filters, page, perPage, pndOnly = true)
           response.data?.content.shouldBe(listOf(alert.toAlert()))
+        }
+
+        it("returns PND unfiltered data with codes in query string when feature flag is enabled") {
+          whenever(featureFlagConfig.isEnabled(USE_ALERTS_API_FILTER)).thenReturn(true)
+          whenever(prisonerAlertsGateway.getPrisonerAlerts(hmppsId, page, perPage, PAPaginatedAlerts.PND_ALERT_CODES)).thenReturn(
+            Response(
+              data = paginatedAlerts,
+            ),
+          )
+          val response = getAlertsForPersonService.execute(hmppsId, filters, page, perPage, pndOnly = true)
+          response.data?.content.shouldBe(listOf(alert.toAlert(), nonMatchingAlert.toAlert()))
+        }
+      }
+      describe("getAlertsForNonPnd") {
+        it("continues to return unfiltered data for non pnd requests without codes in query string when feature flag is enabled") {
+          whenever(featureFlagConfig.isEnabled(USE_ALERTS_API_FILTER)).thenReturn(true)
+          whenever(prisonerAlertsGateway.getPrisonerAlerts(hmppsId, page, perPage)).thenReturn(
+            Response(
+              data = paginatedAlerts,
+            ),
+          )
+          val response = getAlertsForPersonService.execute(hmppsId, filters, page, perPage, pndOnly = false)
+          response.data?.content.shouldBe(listOf(alert.toAlert(), nonMatchingAlert.toAlert()))
+        }
+
+        it("continues to return unfiltered data for non pnd requests without codes in query string when feature flag is disabled") {
+          whenever(featureFlagConfig.isEnabled(USE_ALERTS_API_FILTER)).thenReturn(false)
+          whenever(prisonerAlertsGateway.getPrisonerAlerts(hmppsId, page, perPage)).thenReturn(
+            Response(
+              data = paginatedAlerts,
+            ),
+          )
+          val response = getAlertsForPersonService.execute(hmppsId, filters, page, perPage, pndOnly = false)
+          response.data?.content.shouldBe(listOf(alert.toAlert(), nonMatchingAlert.toAlert()))
         }
       }
     },
