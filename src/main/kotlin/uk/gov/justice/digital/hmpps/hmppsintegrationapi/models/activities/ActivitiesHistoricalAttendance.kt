@@ -8,6 +8,8 @@ data class ActivitiesHistoricalAttendance(
   val prisonerNumber: String,
   val attendanceReason: ActivitiesAttendanceReason? = null,
   val comment: String? = null,
+  val recordedTime: String? = null,
+  val recordedBy: String? = null,
   val status: String,
   val payAmount: Int? = null,
   val bonusAmount: Int? = null,

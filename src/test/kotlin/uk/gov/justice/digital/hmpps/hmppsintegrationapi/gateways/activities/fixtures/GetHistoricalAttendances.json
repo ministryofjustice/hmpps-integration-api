@@ -18,6 +18,8 @@
       "notes": "Maps to ACCAB in NOMIS"
     },
     "comment": "Prisoner was too unwell to attend the activity.",
+    "recordedTime": "2023-09-10T09:30:00",
+    "recordedBy": "A.JONES",
     "status": "WAITING",
     "payAmount": 100,
     "bonusAmount": 50,
