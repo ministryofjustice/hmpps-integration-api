@@ -113,6 +113,7 @@ const get_endpoints = [
   `/v1/prison/${prisonId}/prisoners/${hmppsId}/scheduled-instances?startDate=2022-09-10&endDate=2023-09-10`,
   `/v1/activities/deallocation-reasons`
   `/v1/prison/prisoners/${hmppsId}/activities/attendances?startDate=${startDate}&endDate=${endDate}&prisonId=${prisonId}`
+  `/v1/activities/schedule/${scheduleId}/waiting-list-applications`
 ];
 
 const broken_endpoints = []
