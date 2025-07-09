@@ -51,6 +51,7 @@ feature-flag:
   use-education-endpoint: false
   use-prisoner-base-location-endpoint: false
   use-historical-attendances-endpoint: false
+  use-suitability-endpoint: false
 
 authorisation:
   consumers:

@@ -28,16 +28,20 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Deallocatio
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Exclusion
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HmppsMessageResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.InternalLocation
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.MinimumEducationLevel
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PayRate
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonPayBand
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerAllocationRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerDeallocationRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ReasonForAttendance
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Slot
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SuitabilityCriteria
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.ActivitiesQueueService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetActivitiesScheduleService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetActivitiesSuitabilityCriteriaService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetAttendanceReasonsService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetDeallocationReasonsService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetScheduleDetailsService
@@ -56,6 +60,7 @@ class ActivitiesControllerTest(
   @MockitoBean val getDeallocationReasonsService: GetDeallocationReasonsService,
   @MockitoBean val getScheduleDetailsService: GetScheduleDetailsService,
   @MockitoBean val activitiesQueueService: ActivitiesQueueService,
+  @MockitoBean val getActivitiesSuitabilityCriteriaService: GetActivitiesSuitabilityCriteriaService,
 ) : DescribeSpec(
     {
       val basePath = "/v1/activities"
@@ -322,6 +327,105 @@ class ActivitiesControllerTest(
 
         it("returns 404 when getActivitiesScheduleService returns not found") {
           whenever(getScheduleDetailsService.execute(scheduleId, filters))
+            .thenReturn(
+              Response(
+                data = null,
+                errors =
+                  listOf(
+                    UpstreamApiError(
+                      type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+                      causedBy = UpstreamApi.ACTIVITIES,
+                    ),
+                  ),
+              ),
+            )
+
+          val result = mockMvc.performAuthorised(path)
+          result.response.status.shouldBe(404)
+        }
+      }
+
+      describe("GET /schedule/{scheduleId}/suitability-criteria") {
+        val scheduleId = 123456L
+        val filters = null
+        val path = "$basePath/schedule/$scheduleId/suitability-criteria"
+        val suitabilityCriteria =
+          SuitabilityCriteria(
+            riskLevel = "medium",
+            isPaid = true,
+            payRate =
+              PayRate(
+                incentiveCode = "BAS",
+                incentiveLevel = "Basic",
+                prisonPayBand =
+                  PrisonPayBand(
+                    id = 123456L,
+                    alias = "Low",
+                    description = "Pay band 1",
+                  ),
+                rate = 150,
+                pieceRate = 150,
+                pieceRateItems = 10,
+              ),
+            minimumEducationLevel =
+              listOf(
+                MinimumEducationLevel(
+                  educationLevelCode = "Basic",
+                  educationLevelDescription = "Basic",
+                  studyAreaCode = "ENGLA",
+                  studyAreaDescription = "English Language",
+                ),
+              ),
+          )
+
+        beforeEach {
+          Mockito.reset(getActivitiesSuitabilityCriteriaService)
+        }
+
+        it("should return 200 when success") {
+          whenever(getActivitiesSuitabilityCriteriaService.execute(scheduleId, filters))
+            .thenReturn(Response(data = suitabilityCriteria))
+
+          val result = mockMvc.performAuthorised(path)
+          result.response.status.shouldBe(HttpStatus.OK.value())
+          result.response
+            .contentAsJson<DataResponse<SuitabilityCriteria>>()
+            .shouldBe(DataResponse(data = suitabilityCriteria))
+        }
+
+        it("should call the audit service") {
+          whenever(getActivitiesSuitabilityCriteriaService.execute(scheduleId, filters))
+            .thenReturn(Response(data = suitabilityCriteria))
+
+          mockMvc.performAuthorised(path)
+
+          verify(auditService, times(1)).createEvent(
+            "GET_ACTIVITY_SCHEDULE_SUITABILITY_CRITERIA",
+            mapOf("scheduleId" to scheduleId.toString()),
+          )
+        }
+
+        it("returns 400 when getActivitiesSuitabilityCriteriaService returns bad request") {
+          whenever(getActivitiesSuitabilityCriteriaService.execute(scheduleId, filters))
+            .thenReturn(
+              Response(
+                data = null,
+                errors =
+                  listOf(
+                    UpstreamApiError(
+                      type = UpstreamApiError.Type.BAD_REQUEST,
+                      causedBy = UpstreamApi.ACTIVITIES,
+                    ),
+                  ),
+              ),
+            )
+
+          val result = mockMvc.performAuthorised(path)
+          result.response.status.shouldBe(400)
+        }
+
+        it("returns 404 when getActivitiesSuitabilityCriteriaService returns not found") {
+          whenever(getActivitiesSuitabilityCriteriaService.execute(scheduleId, filters))
             .thenReturn(
               Response(
                 data = null,
