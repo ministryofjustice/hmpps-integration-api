@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpMethod
 import org.springframework.stereotype.Component
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_ALERTS_API_FILTER
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper.WebClientWrapperResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
@@ -18,6 +20,9 @@ class PrisonerAlertsGateway(
 
   @Autowired
   lateinit var hmppsAuthGateway: HmppsAuthGateway
+
+  @Autowired
+  lateinit var featureConfig: FeatureFlagConfig
 
   private fun authenticationHeader(): Map<String, String> {
     val token = hmppsAuthGateway.getClientToken("PRISONER_ALERTS")
@@ -34,11 +39,18 @@ class PrisonerAlertsGateway(
     prisonerNumber: String,
     page: Int,
     size: Int,
+    typeFilters: List<String> = emptyList(),
   ): Response<PAPaginatedAlerts?> {
+    val passFilters = featureConfig.isEnabled(USE_ALERTS_API_FILTER) && typeFilters.isNotEmpty()
+    val uri = "/prisoners/$prisonerNumber/alerts?page=${page - 1}&size=$size"
     val result =
       webClient.request<PAPaginatedAlerts>(
         HttpMethod.GET,
-        "/prisoners/$prisonerNumber/alerts?page=${page - 1}&size=$size",
+        if (passFilters) {
+          "$uri&alertCode=${typeFilters.joinToString(",")}"
+        } else {
+          uri
+        },
         authenticationHeader(),
         UpstreamApi.PRISONER_ALERTS,
         badRequestAsError = true,
