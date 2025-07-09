@@ -36,6 +36,8 @@ const year = today.getFullYear();
 const month = (today.getMonth() + 1).toString().padStart(2, '0');
 const day = today.getDate().toString().padStart(2, '0');
 const todayFormatted = `${year}-${month}-${day}`
+const startDate = "2022-01-01"
+const endDate = "2022-02-01"
 
 const get_endpoints = [
   `/v1/hmpps/id/by-nomis-number/${hmppsId}`,
@@ -110,6 +112,7 @@ const get_endpoints = [
   `/v1/activities/schedule/${scheduleId}`,
   `/v1/prison/${prisonId}/prisoners/${hmppsId}/scheduled-instances?startDate=2022-09-10&endDate=2023-09-10`,
   `/v1/activities/deallocation-reasons`
+  `/v1/prison/prisoners/${hmppsId}/activities/attendances?startDate=${startDate}&endDate=${endDate}&prisonId=${prisonId}`
 ];
 
 const broken_endpoints = []
