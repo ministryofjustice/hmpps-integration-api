@@ -96,7 +96,7 @@ class PrisonActivitiesController(
       ),
       ApiResponse(
         responseCode = "404",
-        content = [Content(schema = Schema(ref = "#/components/schemas/NotFoundError"))],
+        content = [Content(schema = Schema(ref = "#/components/schemas/PersonNotFound"))],
       ),
       ApiResponse(
         responseCode = "500",
