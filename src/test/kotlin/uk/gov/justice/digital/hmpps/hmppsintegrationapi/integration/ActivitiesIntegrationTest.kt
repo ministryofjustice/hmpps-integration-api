@@ -1007,5 +1007,47 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
       val expectedMessageAttributes = objectMapper.readTree(objectMapper.writeValueAsString(expectedMessage.messageAttributes))
       messageAttributes.shouldBe(expectedMessageAttributes)
     }
+
+    @Nested
+    @DisplayName("GET /v1/activities/schedule/{scheduleId}/waiting-list-applications")
+    inner class GetWaitingListApplicationsById {
+      private val scheduleId = 111111L
+      private val path = "/v1/activities/schedule/$scheduleId/waiting-list-applications"
+      private val badRequestPath = "/v1//activities/schedule/AAA/waiting-list-applications"
+
+      @Test
+      fun `return waiting list applications`() {
+        activitiesMockServer.stubForGet(
+          "/schedules/$scheduleId/waiting-list-applications",
+          File("$gatewaysFolder/activities/fixtures/GetWaitingListApplicationsById.json").readText(),
+        )
+
+        activitiesMockServer.stubForGet(
+          "/schedules/$scheduleId",
+          File("$gatewaysFolder/activities/fixtures/GetActivityScheduleById.json").readText(),
+        )
+        callApi(path)
+          .andExpect(MockMvcResultMatchers.status().isOk)
+          .andExpect(MockMvcResultMatchers.content().json(getExpectedResponse("waiting-list-applications-response")))
+      }
+
+      @Test
+      fun `return a 404 when prison not in the allowed prisons`() {
+        callApiWithCN(path, limitedPrisonsCn)
+          .andExpect(MockMvcResultMatchers.status().isNotFound)
+      }
+
+      @Test
+      fun `return a 404 no prisons in filter`() {
+        callApiWithCN(path, noPrisonsCn)
+          .andExpect(MockMvcResultMatchers.status().isNotFound)
+      }
+
+      @Test
+      fun `return a 400 Bad Request when a string is provided as the schedule ID`() {
+        callApi(badRequestPath)
+          .andExpect(MockMvcResultMatchers.status().isBadRequest)
+      }
+    }
   }
 }
