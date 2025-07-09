@@ -13,10 +13,6 @@ data class HistoricalAttendance(
   val attendanceReason: AttendanceReason? = null,
   @Schema(description = "Free text to allow comments to be put against the attendance", example = "Prisoner was too unwell to attend the activity.")
   val comment: String? = null,
-  @Schema(description = "The date and time the attendance was updated", example = "2023-09-10T09:30:00")
-  val recordedTime: String? = null,
-  @Schema(description = "The username of the person who recorded the attendance", example = "A.JONES")
-  val recordedBy: String? = null,
   @Schema(description = "The attendance status", example = "WAITING")
   val status: String,
   @Schema(description = "The amount of pay awarded", example = "100")
