@@ -63,7 +63,8 @@ class GetActivitySuitabilityCriteriaGatewayTest(
         result.errors.shouldBeEmpty()
         result.data.shouldNotBeNull()
         result.data.riskLevel.shouldBe("medium")
-        result.data.payRate.id
+        result.data.payRates[0]
+          .id
           .shouldBe(123456)
         result.data.minimumEducationLevel[0]
           .id

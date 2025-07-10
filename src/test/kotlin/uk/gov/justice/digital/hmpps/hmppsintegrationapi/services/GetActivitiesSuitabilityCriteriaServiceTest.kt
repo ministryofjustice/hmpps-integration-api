@@ -24,12 +24,12 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.Activi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesPrisonPayBand
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesSlot
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesSuitabilityCriteria
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonPayBand
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import java.time.DayOfWeek
+import java.time.LocalDate
 import java.time.LocalDateTime
 
 @ContextConfiguration(
@@ -225,20 +225,30 @@ class GetActivitiesSuitabilityCriteriaServiceTest(
         ActivitiesSuitabilityCriteria(
           riskLevel = "medium",
           isPaid = true,
-          payRate =
-            ActivitiesPayRate(
-              id = 123456L,
-              incentiveNomisCode = "BAS",
-              incentiveLevel = "Basic",
-              prisonPayBand =
-                PrisonPayBand(
-                  id = 123456L,
-                  alias = "Low",
-                  description = "Pay band 1",
-                ),
-              rate = 150,
-              pieceRate = 150,
-              pieceRateItems = 10,
+          payRates =
+            listOf(
+              ActivitiesPayRate(
+                id = 123456L,
+                incentiveNomisCode = "BAS",
+                incentiveLevel = "Basic",
+                prisonPayBand =
+                  ActivitiesPrisonPayBand(
+                    id = 123456,
+                    displaySequence = 1,
+                    alias = "Low",
+                    description = "Pay band 1",
+                    nomisPayBand = 1,
+                    prisonCode = "MDI",
+                    createdTime = "2025-06-11T09:05:01.364Z",
+                    createdBy = "string",
+                    updatedTime = "2025-06-11T09:05:01.364Z",
+                    updatedBy = "string",
+                  ),
+                rate = 150,
+                pieceRate = 150,
+                pieceRateItems = 10,
+                startDate = LocalDate.now(),
+              ),
             ),
           minimumEducationLevel =
             listOf(

@@ -353,19 +353,22 @@ class ActivitiesControllerTest(
           SuitabilityCriteria(
             riskLevel = "medium",
             isPaid = true,
-            payRate =
-              PayRate(
-                incentiveCode = "BAS",
-                incentiveLevel = "Basic",
-                prisonPayBand =
-                  PrisonPayBand(
-                    id = 123456L,
-                    alias = "Low",
-                    description = "Pay band 1",
-                  ),
-                rate = 150,
-                pieceRate = 150,
-                pieceRateItems = 10,
+            payRates =
+              listOf(
+                PayRate(
+                  incentiveCode = "BAS",
+                  incentiveLevel = "Basic",
+                  prisonPayBand =
+                    PrisonPayBand(
+                      id = 123456L,
+                      alias = "Low",
+                      description = "Pay band 1",
+                    ),
+                  rate = 150,
+                  pieceRate = 150,
+                  pieceRateItems = 10,
+                  startDate = LocalDate.of(2021, 1, 1),
+                ),
               ),
             minimumEducationLevel =
               listOf(
