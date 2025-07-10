@@ -68,7 +68,7 @@ class PrisonerAlertsGateway(
     prisonerNumber: String,
     page: Int,
     size: Int,
-    alertCodes: List<String>,
+    alertCodes: List<String> = emptyList(),
   ): Response<PAPaginatedAlerts?> {
     val uri = "/prisoners/$prisonerNumber/alerts?page=${page - 1}&size=$size"
     val result =
