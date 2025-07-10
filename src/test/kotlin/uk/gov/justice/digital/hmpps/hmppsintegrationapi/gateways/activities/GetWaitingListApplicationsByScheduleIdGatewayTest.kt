@@ -1,5 +1,8 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.activities
 
+import com.github.tomakehurst.wiremock.client.WireMock.equalTo
+import com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor
+import com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.nulls.shouldNotBeNull
@@ -37,6 +40,7 @@ class GetWaitingListApplicationsByScheduleIdGatewayTest(
     {
       val mockServer = ApiMockServer.create(UpstreamApi.ACTIVITIES)
       val scheduleId = 123456L
+      val prisonCode = "MDI"
 
       beforeEach {
         mockServer.start()
@@ -52,15 +56,16 @@ class GetWaitingListApplicationsByScheduleIdGatewayTest(
       }
 
       it("authenticates using HMPPS Auth with credentials") {
-        activitiesGateway.getWaitingListApplicationsByScheduleId(scheduleId)
+        activitiesGateway.getWaitingListApplicationsByScheduleId(scheduleId, prisonCode)
 
         verify(hmppsAuthGateway, times(1)).getClientToken("ACTIVITIES")
       }
 
       it("Returns a waiting list application") {
-        mockServer.stubForGet("/schedules/$scheduleId/waiting-list-applications", File("src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/activities/fixtures/GetWaitingListApplicationsByScheduleId.json").readText(), HttpStatus.OK)
+        val path = "/schedules/$scheduleId/waiting-list-applications"
+        mockServer.stubForGet(path, File("src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/activities/fixtures/GetWaitingListApplicationsByScheduleId.json").readText(), HttpStatus.OK)
 
-        val result = activitiesGateway.getWaitingListApplicationsByScheduleId(scheduleId)
+        val result = activitiesGateway.getWaitingListApplicationsByScheduleId(scheduleId, prisonCode)
         result.errors.shouldBeEmpty()
         result.data.shouldNotBeNull()
         result.data.shouldBe(
@@ -96,12 +101,17 @@ class GetWaitingListApplicationsByScheduleIdGatewayTest(
             ),
           ),
         )
+
+        mockServer.verify(
+          getRequestedFor(urlEqualTo(path))
+            .withHeader("Caseload-Id", equalTo(prisonCode)),
+        )
       }
 
       it("Returns a bad request error") {
         mockServer.stubForGet("/schedules/$scheduleId/waiting-list-applications", File("src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/activities/fixtures/GetWaitingListApplicationsByScheduleId.json").readText(), HttpStatus.BAD_REQUEST)
 
-        val result = activitiesGateway.getWaitingListApplicationsByScheduleId(scheduleId)
+        val result = activitiesGateway.getWaitingListApplicationsByScheduleId(scheduleId, prisonCode)
         result.errors.shouldBe(listOf(UpstreamApiError(causedBy = UpstreamApi.ACTIVITIES, type = UpstreamApiError.Type.BAD_REQUEST)))
       }
     },

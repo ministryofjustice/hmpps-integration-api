@@ -382,12 +382,15 @@ class ActivitiesGateway(
     }
   }
 
-  fun getWaitingListApplicationsByScheduleId(scheduleId: Long): Response<List<ActivitiesWaitingListApplication>?> {
+  fun getWaitingListApplicationsByScheduleId(
+    scheduleId: Long,
+    prisonCode: String,
+  ): Response<List<ActivitiesWaitingListApplication>?> {
     val result =
       webClient.requestList<ActivitiesWaitingListApplication>(
         HttpMethod.GET,
         "/schedules/$scheduleId/waiting-list-applications",
-        authenticationHeader(),
+        authenticationHeader() + mapOf("Caseload-Id" to prisonCode),
         UpstreamApi.ACTIVITIES,
         badRequestAsError = true,
       )
