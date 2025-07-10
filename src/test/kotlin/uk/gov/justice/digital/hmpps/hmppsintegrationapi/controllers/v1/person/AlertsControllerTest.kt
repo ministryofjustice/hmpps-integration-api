@@ -16,6 +16,8 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.web.reactive.function.client.WebClientResponseException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_ALERTS_API_FILTER
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Alert
@@ -23,6 +25,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PaginatedAl
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonerAlerts.PAPaginatedAlerts
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetAlertsForPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetPersonService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
@@ -35,6 +38,7 @@ internal class AlertsControllerTest(
   @MockitoBean val getPersonService: GetPersonService,
   @MockitoBean val getAlertsForPersonService: GetAlertsForPersonService,
   @MockitoBean val auditService: AuditService,
+  @MockitoBean val featureFlagConfig: FeatureFlagConfig,
 ) : DescribeSpec(
     {
       val hmppsId = "A1234AA"
@@ -73,12 +77,14 @@ internal class AlertsControllerTest(
         beforeTest {
           Mockito.reset(getAlertsForPersonService)
           Mockito.reset(auditService)
+          Mockito.reset(featureFlagConfig)
 
           whenever(getAlertsForPersonService.execute(hmppsId, filters, page, perPage)).thenReturn(
             Response(
               data = toPaginatedAlerts(listOf(alert)),
             ),
           )
+          whenever(featureFlagConfig.isEnabled(USE_ALERTS_API_FILTER)).thenReturn(false)
         }
 
         it("returns a 200 OK status code") {
@@ -180,12 +186,14 @@ internal class AlertsControllerTest(
         beforeTest {
           Mockito.reset(getAlertsForPersonService)
           Mockito.reset(auditService)
+          Mockito.reset(featureFlagConfig)
 
           whenever(getAlertsForPersonService.execute(hmppsId, filters, page, perPage, pndOnly = true)).thenReturn(
             Response(
               data = toPaginatedAlerts(listOf(alert)),
             ),
           )
+          whenever(featureFlagConfig.isEnabled(USE_ALERTS_API_FILTER)).thenReturn(false)
         }
 
         it("returns a 200 OK status code for PND") {
@@ -206,6 +214,25 @@ internal class AlertsControllerTest(
           mockMvc.performAuthorised(pndPath)
 
           verify(getAlertsForPersonService, times(1)).execute(hmppsId, filters, page, perPage, pndOnly = true)
+        }
+      }
+      describe("GET with alert codes $pndPath") {
+        beforeTest {
+          Mockito.reset(getAlertsForPersonService)
+          Mockito.reset(auditService)
+          Mockito.reset(featureFlagConfig)
+
+          whenever(getAlertsForPersonService.execute(hmppsId, filters, page, perPage, pndOnly = true)).thenReturn(
+            Response(
+              data = toPaginatedAlerts(listOf(alert)),
+            ),
+          )
+          whenever(featureFlagConfig.isEnabled(USE_ALERTS_API_FILTER)).thenReturn(true)
+        }
+        it("gets the alerts for PND with code filter for a person with the matching ID") {
+          mockMvc.performAuthorised(pndPath)
+
+          verify(getAlertsForPersonService, times(1)).getAlerts(hmppsId, filters, page, perPage, PAPaginatedAlerts.PND_ALERT_CODES)
         }
       }
     },

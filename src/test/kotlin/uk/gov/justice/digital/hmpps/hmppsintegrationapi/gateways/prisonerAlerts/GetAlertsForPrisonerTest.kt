@@ -13,8 +13,6 @@ import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_ALERTS_API_FILTER
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.HmppsAuthGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerAlertsGateway
@@ -31,7 +29,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonerAlerts.PA
 )
 class GetAlertsForPrisonerTest(
   @MockitoBean val hmppsAuthGateway: HmppsAuthGateway,
-  @MockitoBean val featureFlagConfig: FeatureFlagConfig,
   private val prisonerAlertsGateway: PrisonerAlertsGateway,
 ) : DescribeSpec(
     {
@@ -109,7 +106,6 @@ class GetAlertsForPrisonerTest(
       }
 
       beforeEach {
-        whenever(featureFlagConfig.getConfigFlagValue(USE_ALERTS_API_FILTER)).thenReturn(false)
         apiMockServer.start()
         apiMockServer.stubForGet(
           path,
@@ -150,12 +146,10 @@ class GetAlertsForPrisonerTest(
         response.hasErrorCausedBy(UpstreamApiError.Type.ENTITY_NOT_FOUND, UpstreamApi.PRISONER_ALERTS)
       }
 
-      it("should request for alerts with codes in query params when the code list is present and feature flag is enabled") {
-        // Enable the api filter config
-        whenever(featureFlagConfig.isEnabled(USE_ALERTS_API_FILTER)).thenReturn(true)
+      it("should request for alerts with codes in query params when the code list is present") {
         // Create a stub with the expected path with a distinct uuid
         generateStubForAlertCodeParams()
-        val response = prisonerAlertsGateway.getPrisonerAlerts(prisonerNumber, page, size, PAPaginatedAlerts.PND_ALERT_CODES)
+        val response = prisonerAlertsGateway.getPrisonerAlertsForCodes(prisonerNumber, page, size, PAPaginatedAlerts.PND_ALERT_CODES)
         // If the path has resolved to a stub and returned the json with the uuid, the request has used the path without codes
         response.data.shouldNotBeNull()
         response.data!!
@@ -165,38 +159,10 @@ class GetAlertsForPrisonerTest(
           .shouldBe("9ff5babb-b859-4d2c-b42f-4d054df19e91")
       }
 
-      it("should request for alerts without codes in query params when the code list is present and feature flag is disabled") {
-        // Disable the api filter config
-        whenever(featureFlagConfig.isEnabled(USE_ALERTS_API_FILTER)).thenReturn(false)
+      it("should request for alerts without codes in query params when the code list is empty") {
         // Create a stub with the expected path with a distinct uuid
         generateStubForAlertCodeParams()
-        val response = prisonerAlertsGateway.getPrisonerAlerts(prisonerNumber, page, size, PAPaginatedAlerts.PND_ALERT_CODES)
-        // If the path has NOT resolved to a stub and returned the json with the uuid, the request has used the path without alert codes
-        response.data.shouldNotBeNull()
-        response.data!!
-          .content
-          .first()
-          .alertUuid
-          .shouldBe("8cdadcf3-b003-4116-9956-c99bd8df6a00")
-      }
-
-      it("should request for alerts without codes in query params when the code list is not present and feature flag is enabled") {
-        // Enable the api filter config
-        whenever(featureFlagConfig.isEnabled(USE_ALERTS_API_FILTER)).thenReturn(true)
-        val response = prisonerAlertsGateway.getPrisonerAlerts(prisonerNumber, page, size)
-        // If the path has NOT resolved to a stub and returned the json with the uuid, the request has used the path without alert codes
-        response.data.shouldNotBeNull()
-        response.data!!
-          .content
-          .first()
-          .alertUuid
-          .shouldBe("8cdadcf3-b003-4116-9956-c99bd8df6a00")
-      }
-
-      it("should request for alerts without codes in query params when the code list is not present and feature flag is disabled") {
-        // Enable the api filter config
-        whenever(featureFlagConfig.isEnabled(USE_ALERTS_API_FILTER)).thenReturn(false)
-        val response = prisonerAlertsGateway.getPrisonerAlerts(prisonerNumber, page, size)
+        val response = prisonerAlertsGateway.getPrisonerAlertsForCodes(prisonerNumber, page, size, emptyList())
         // If the path has NOT resolved to a stub and returned the json with the uuid, the request has used the path without alert codes
         response.data.shouldNotBeNull()
         response.data!!

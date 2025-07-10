@@ -4,8 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpMethod
 import org.springframework.stereotype.Component
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_ALERTS_API_FILTER
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper.WebClientWrapperResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
@@ -20,9 +18,6 @@ class PrisonerAlertsGateway(
 
   @Autowired
   lateinit var hmppsAuthGateway: HmppsAuthGateway
-
-  @Autowired
-  lateinit var featureConfig: FeatureFlagConfig
 
   private fun authenticationHeader(): Map<String, String> {
     val token = hmppsAuthGateway.getClientToken("PRISONER_ALERTS")
@@ -39,15 +34,50 @@ class PrisonerAlertsGateway(
     prisonerNumber: String,
     page: Int,
     size: Int,
-    typeFilters: List<String> = emptyList(),
   ): Response<PAPaginatedAlerts?> {
-    val passFilters = featureConfig.isEnabled(USE_ALERTS_API_FILTER) && typeFilters.isNotEmpty()
+    val result =
+      webClient.request<PAPaginatedAlerts>(
+        HttpMethod.GET,
+        "/prisoners/$prisonerNumber/alerts?page=${page - 1}&size=$size",
+        authenticationHeader(),
+        UpstreamApi.PRISONER_ALERTS,
+        badRequestAsError = true,
+      )
+
+    return when (result) {
+      is WebClientWrapperResponse.Success -> {
+        return Response(
+          data = result.data,
+        )
+      }
+
+      is WebClientWrapperResponse.Error -> {
+        Response(
+          data = null,
+          errors = result.errors,
+        )
+      }
+    }
+  }
+
+  /**
+   * @param page page number (1 based)
+   * @param size records per page
+   * @param alertCodes alert codes to return, will return all if empty
+   */
+  fun getPrisonerAlertsForCodes(
+    prisonerNumber: String,
+    page: Int,
+    size: Int,
+    alertCodes: List<String> = emptyList(),
+  ): Response<PAPaginatedAlerts?> {
+    val passFilters = alertCodes.isNotEmpty()
     val uri = "/prisoners/$prisonerNumber/alerts?page=${page - 1}&size=$size"
     val result =
       webClient.request<PAPaginatedAlerts>(
         HttpMethod.GET,
         if (passFilters) {
-          "$uri&alertCode=${typeFilters.joinToString(",")}"
+          "$uri&alertCode=${alertCodes.joinToString(",")}"
         } else {
           uri
         },
