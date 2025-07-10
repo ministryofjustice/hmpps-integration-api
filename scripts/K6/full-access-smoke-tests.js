@@ -112,7 +112,8 @@ const get_endpoints = [
   `/v1/activities/schedule/${scheduleId}`,
   `/v1/prison/${prisonId}/prisoners/${hmppsId}/scheduled-instances?startDate=${startDate}&endDate=${endDate}`,
   `/v1/activities/deallocation-reasons`,
-  `/v1/prison/prisoners/${hmppsId}/activities/attendances?startDate=${startDate}&endDate=${endDate}&prisonId=${prisonId}`
+  `/v1/prison/prisoners/${hmppsId}/activities/attendances?startDate=${startDate}&endDate=${endDate}&prisonId=${prisonId}`,
+  `/v1/activities/schedule/${scheduleId}/waiting-list-applications`,
 ];
 
 const broken_endpoints = []

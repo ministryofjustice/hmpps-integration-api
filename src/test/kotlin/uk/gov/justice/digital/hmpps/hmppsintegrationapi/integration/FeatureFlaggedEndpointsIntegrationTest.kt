@@ -16,6 +16,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_SEARCH_APPOINTMENTS_ENDPOINT
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_SUITABILITY_ENDPOINT
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_UPDATE_ATTENDANCE_ENDPOINT
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_WAITING_LIST_ENDPOINT
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.FeatureNotEnabledException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.AddCaseNoteRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Exclusion
@@ -197,6 +198,16 @@ internal class FeatureFlaggedEndpointsIntegrationTest : IntegrationTestBase() {
     val endDate = "2022-02-01"
     val prisonId = "MDI"
     val path = "/v1/prison/prisoners/$nomsId/activities/attendances?startDate=$startDate&endDate=$endDate&prisonId=$prisonId"
+    callApi(path)
+      .andExpect(status().isServiceUnavailable)
+  }
+
+  @Test
+  fun `get waiting list applications by schedule ID should return 503`() {
+    whenever(featureFlagConfig.require(USE_WAITING_LIST_ENDPOINT)).thenThrow(FeatureNotEnabledException(""))
+    val scheduleId = 123456L
+    val filters = null
+    val path = "/v1/activities/schedule/$scheduleId/waiting-list-applications"
     callApi(path)
       .andExpect(status().isServiceUnavailable)
   }

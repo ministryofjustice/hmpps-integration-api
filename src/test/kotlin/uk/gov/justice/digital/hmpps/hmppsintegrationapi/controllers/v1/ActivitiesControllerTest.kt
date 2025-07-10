@@ -25,6 +25,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Attendance
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.AttendanceUpdateRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DataResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.DeallocationReason
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.EarliestReleaseDate
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Exclusion
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HmppsMessageResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.InternalLocation
@@ -39,15 +40,18 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Slot
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SuitabilityCriteria
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.WaitingListApplication
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.ActivitiesQueueService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetActivitiesScheduleService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetActivitiesSuitabilityCriteriaService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetAttendanceReasonsService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetDeallocationReasonsService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetScheduleDetailsService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetWaitingListApplicationsByScheduleIdService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 import java.time.DayOfWeek
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 @WebMvcTest(controllers = [ActivitiesController::class])
 @ActiveProfiles("test")
@@ -61,6 +65,7 @@ class ActivitiesControllerTest(
   @MockitoBean val getScheduleDetailsService: GetScheduleDetailsService,
   @MockitoBean val activitiesQueueService: ActivitiesQueueService,
   @MockitoBean val getActivitiesSuitabilityCriteriaService: GetActivitiesSuitabilityCriteriaService,
+  @MockitoBean val getWaitingListApplicationsByScheduleIdService: GetWaitingListApplicationsByScheduleIdService,
 ) : DescribeSpec(
     {
       val basePath = "/v1/activities"
@@ -830,6 +835,100 @@ class ActivitiesControllerTest(
 
           val result = mockMvc.performAuthorisedPost(path, prisonerAllocationRequest)
           result.response.status.shouldBe(409)
+        }
+      }
+
+      describe("GET /v1/activities/schedule/{scheduleId}/waiting-list-applications") {
+        val scheduleId = 123456L
+        val filters = null
+        val path = "$basePath/schedule/$scheduleId/waiting-list-applications"
+        val waitingListApplications =
+          listOf(
+            WaitingListApplication(
+              id = 111111L,
+              activityId = 1000,
+              scheduleId = 222222,
+              allocationId = 333333,
+              prisonerNumber = "A1234AA",
+              bookingId = 10001,
+              status = "PENDING",
+              statusUpdatedTime = LocalDateTime.parse("2023-06-04T16:30:00"),
+              requestedDate = LocalDate.parse("2023-06-23"),
+              comments = "The prisoner has specifically requested to attend this activity",
+              declinedReason = "The prisoner has specifically requested to attend this activity",
+              creationTime = LocalDateTime.parse("2023-01-03T12:00:00"),
+              updatedTime = LocalDateTime.parse("2023-01-04T16:30:00"),
+              prisonId = "MKI",
+              earliestReleaseDate =
+                EarliestReleaseDate(
+                  releaseDate = "2027-09-20",
+                  isTariffDate = true,
+                  isIndeterminateSentence = true,
+                  isImmigrationDetainee = true,
+                  isConvictedUnsentenced = true,
+                  isRemand = true,
+                ),
+              nonAssociations = true,
+            ),
+          )
+
+        it("should return 200 when successful") {
+          whenever(getWaitingListApplicationsByScheduleIdService.execute(scheduleId, filters))
+            .thenReturn(Response(data = waitingListApplications))
+
+          val result = mockMvc.performAuthorised(path)
+          result.response.status.shouldBe(HttpStatus.OK.value())
+          result.response
+            .contentAsJson<DataResponse<List<WaitingListApplication>>>()
+            .shouldBe(DataResponse(data = waitingListApplications))
+        }
+
+        it("should call the audit service") {
+          whenever(getWaitingListApplicationsByScheduleIdService.execute(scheduleId, filters))
+            .thenReturn(Response(data = waitingListApplications))
+
+          mockMvc.performAuthorised(path)
+
+          verify(auditService, times(1)).createEvent(
+            "GET_WAITING_LIST_APPLICATIONS_BY_ID",
+            mapOf("scheduleId" to scheduleId.toString()),
+          )
+        }
+
+        it("returns 400 when getWaitingListApplicationsByIdService returns bad request") {
+          whenever(getWaitingListApplicationsByScheduleIdService.execute(scheduleId, filters))
+            .thenReturn(
+              Response(
+                data = null,
+                errors =
+                  listOf(
+                    UpstreamApiError(
+                      type = UpstreamApiError.Type.BAD_REQUEST,
+                      causedBy = UpstreamApi.ACTIVITIES,
+                    ),
+                  ),
+              ),
+            )
+          val result = mockMvc.performAuthorised(path)
+          result.response.status.shouldBe(400)
+        }
+
+        it("returns 404 when getWaitingListApplicationsByIdService returns not found") {
+          whenever(getWaitingListApplicationsByScheduleIdService.execute(scheduleId, filters))
+            .thenReturn(
+              Response(
+                data = null,
+                errors =
+                  listOf(
+                    UpstreamApiError(
+                      type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+                      causedBy = UpstreamApi.ACTIVITIES,
+                    ),
+                  ),
+              ),
+            )
+          val result = mockMvc.performAuthorised(path)
+          result.response.status.shouldBe(404)
         }
       }
     },

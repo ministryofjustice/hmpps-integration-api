@@ -63,6 +63,7 @@ globals:
         - "/v1/activities/deallocation-reasons"
         - "/v1/activities/schedule/.*/allocate"
         - "/v1/prison/prisoners/.*/activities/attendances"
+        - "/v1/activities/schedule/.*/waiting-list-applications"
     police:
       include:
         - "/v1/persons"
@@ -144,3 +145,4 @@ globals:
         - "/v1/activities/deallocation-reasons"
         - "/v1/activities/schedule/.*/allocate"
         - "/v1/prison/prisoners/.*/activities/attendances"
+        - "/v1/activities/schedule/.*/waiting-list-applications"
