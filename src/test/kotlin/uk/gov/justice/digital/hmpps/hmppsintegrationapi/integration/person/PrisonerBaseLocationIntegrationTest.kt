@@ -37,6 +37,18 @@ class PrisonerBaseLocationIntegrationTest : IntegrationTestBase() {
       .andExpect(status().isBadRequest)
   }
 
+  @Test
+  fun `return a 404 for person in wrong prison`() {
+    callApiWithCN(makePathPrisonerBaseLocation(knownNomisNumber), limitedPrisonsCn)
+      .andExpect(status().isNotFound)
+  }
+
+  @Test
+  fun `return a 404 when no prisons in filter`() {
+    callApiWithCN(makePathPrisonerBaseLocation(knownNomisNumber), noPrisonsCn)
+      .andExpect(status().isNotFound)
+  }
+
   private fun makePathPrisonerBaseLocation(hmppsId: String) = "$basePath/$hmppsId/prisoner-base-location"
 
   private fun readFixtures(fileName: String): String = File("$FIXTURES_DIR/$fileName").readText()
