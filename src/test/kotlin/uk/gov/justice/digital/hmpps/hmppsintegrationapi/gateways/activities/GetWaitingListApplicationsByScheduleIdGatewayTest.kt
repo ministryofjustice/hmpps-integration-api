@@ -1,5 +1,8 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.activities
 
+import com.github.tomakehurst.wiremock.client.WireMock.equalTo
+import com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor
+import com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.nulls.shouldNotBeNull
@@ -59,7 +62,8 @@ class GetWaitingListApplicationsByScheduleIdGatewayTest(
       }
 
       it("Returns a waiting list application") {
-        mockServer.stubForGet("/schedules/$scheduleId/waiting-list-applications", File("src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/activities/fixtures/GetWaitingListApplicationsByScheduleId.json").readText(), HttpStatus.OK)
+        val path = "/schedules/$scheduleId/waiting-list-applications"
+        mockServer.stubForGet(path, File("src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/activities/fixtures/GetWaitingListApplicationsByScheduleId.json").readText(), HttpStatus.OK)
 
         val result = activitiesGateway.getWaitingListApplicationsByScheduleId(scheduleId, prisonCode)
         result.errors.shouldBeEmpty()
@@ -96,6 +100,11 @@ class GetWaitingListApplicationsByScheduleIdGatewayTest(
               nonAssociations = true,
             ),
           ),
+        )
+
+        mockServer.verify(
+          getRequestedFor(urlEqualTo(path))
+            .withHeader("Caseload-Id", equalTo(prisonCode)),
         )
       }
 
