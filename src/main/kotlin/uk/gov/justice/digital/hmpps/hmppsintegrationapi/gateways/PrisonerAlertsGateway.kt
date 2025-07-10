@@ -62,20 +62,19 @@ class PrisonerAlertsGateway(
   /**
    * @param page page number (1 based)
    * @param size records per page
-   * @param alertCodes alert codes to return, will return all if empty
+   * @param alertCodes The alert codes to return in the response. If empty then all codes will be returned
    */
   fun getPrisonerAlertsForCodes(
     prisonerNumber: String,
     page: Int,
     size: Int,
-    alertCodes: List<String> = emptyList(),
+    alertCodes: List<String>,
   ): Response<PAPaginatedAlerts?> {
-    val passFilters = alertCodes.isNotEmpty()
     val uri = "/prisoners/$prisonerNumber/alerts?page=${page - 1}&size=$size"
     val result =
       webClient.request<PAPaginatedAlerts>(
         HttpMethod.GET,
-        if (passFilters) {
+        if (alertCodes.isNotEmpty()) {
           "$uri&alertCode=${alertCodes.joinToString(",")}"
         } else {
           uri
