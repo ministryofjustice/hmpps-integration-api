@@ -11,6 +11,7 @@ import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.ConsumerPrisonAccessService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.PrisonerBaseLocationGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.LastMovementType
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.NomisNumber
@@ -27,6 +28,7 @@ import java.time.LocalDate
 )
 internal class GetPrisonerBaseLocationForPersonServiceTest(
   @MockitoBean val getPersonService: GetPersonService,
+  @MockitoBean val consumerPrisonAccessService: ConsumerPrisonAccessService,
   @MockitoBean val prisonerBaseLocationGateway: PrisonerBaseLocationGateway,
   private val getPrisonerBaseLocationForPersonService: GetPrisonerBaseLocationForPersonService,
 ) : DescribeSpec(
@@ -34,11 +36,15 @@ internal class GetPrisonerBaseLocationForPersonServiceTest(
       val knownNomisNumber = "A1234BC"
       val anotherNomisNumber = "B2222CD"
 
+      val knownPrisonId = "MDI"
+      val anotherPrisonId = "ABC"
+      val releasedPrisonId = "OUT"
+
       val prisonerBaseLocationReceived =
         PrisonerBaseLocation(
           inPrison = true,
-          prisonId = "MDI",
-          lastPrisonId = "MDI",
+          prisonId = knownPrisonId,
+          lastPrisonId = knownPrisonId,
           lastMovementType = LastMovementType.ADMISSION,
           receptionDate = LocalDate.of(2025, 9, 30),
         )
@@ -46,7 +52,16 @@ internal class GetPrisonerBaseLocationForPersonServiceTest(
       val prisonerBaseLocationReleased =
         PrisonerBaseLocation(
           inPrison = false,
-          lastPrisonId = "MDI",
+          lastPrisonId = releasedPrisonId,
+          lastMovementType = LastMovementType.ADMISSION,
+          receptionDate = LocalDate.of(2025, 9, 30),
+        )
+
+      val prisonerBaseLocationInvalidPrison =
+        PrisonerBaseLocation(
+          inPrison = true,
+          prisonId = anotherPrisonId,
+          lastPrisonId = anotherPrisonId,
           lastMovementType = LastMovementType.ADMISSION,
           receptionDate = LocalDate.of(2025, 9, 30),
         )
@@ -60,11 +75,13 @@ internal class GetPrisonerBaseLocationForPersonServiceTest(
 
       fun prisonerNotFoundErrorResponse(): Response<NomisNumber?> = Response(data = null, errors = listOf(UpstreamApiError(causedBy = UpstreamApi.PRISONER_OFFENDER_SEARCH, type = UpstreamApiError.Type.ENTITY_NOT_FOUND)))
 
-      fun prisonerBaseLocationNotFoundErrorResponse(): Response<PrisonerBaseLocation?> = Response(data = null, errors = listOf(UpstreamApiError(causedBy = UpstreamApi.PRISONER_OFFENDER_SEARCH, type = UpstreamApiError.Type.ENTITY_NOT_FOUND)))
+      fun prisonerBaseLocationNotFoundErrorResponse(): Response<PrisonerBaseLocation?> = Response(data = null, errors = listOf(UpstreamApiError(causedBy = UpstreamApi.PRISON_API, type = UpstreamApiError.Type.ENTITY_NOT_FOUND)))
 
       fun nomisNumberNotFoundNDeliusErrorResponse(): Response<NomisNumber?> = Response(data = null, errors = listOf(UpstreamApiError(causedBy = UpstreamApi.NDELIUS, type = UpstreamApiError.Type.ENTITY_NOT_FOUND)))
 
       fun nomisNumberMissingResponse(): Response<NomisNumber?> = Response(data = null, errors = listOf(UpstreamApiError(causedBy = UpstreamApi.PRISON_API, type = UpstreamApiError.Type.ENTITY_NOT_FOUND)))
+
+      fun prisonAccessDeniedResponse(): Response<PrisonerBaseLocation?> = Response(data = null, errors = listOf(UpstreamApiError(causedBy = UpstreamApi.PRISON_API, type = UpstreamApiError.Type.ENTITY_NOT_FOUND)))
 
       fun givenLocationIsFound(
         nomisNumber: String,
@@ -74,16 +91,19 @@ internal class GetPrisonerBaseLocationForPersonServiceTest(
       fun givenLocationIsNotFound(nomisNumber: String? = null) = whenever(prisonerBaseLocationGateway.getPrisonerBaseLocation(nomisNumber ?: any())).thenReturn(prisonerBaseLocationNotFoundErrorResponse())
 
       beforeEach {
-        Mockito.reset(getPersonService)
-        Mockito.reset(prisonerBaseLocationGateway)
+        Mockito.reset(getPersonService, consumerPrisonAccessService, prisonerBaseLocationGateway)
 
         lenient().whenever(getPersonService.getNomisNumberWithPrisonFilter(knownHmppsId, filters)).thenReturn(Response(data = NomisNumber(knownNomisNumber)))
         lenient().whenever(getPersonService.getNomisNumberWithPrisonFilter(anotherHmppsId, filters)).thenReturn(Response(data = NomisNumber(anotherNomisNumber)))
         lenient().whenever(getPersonService.getNomisNumberWithPrisonFilter(unknownHmppsId, filters)).thenReturn(prisonerNotFoundErrorResponse())
+
+        lenient().whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<PrisonerBaseLocation>(knownPrisonId, filters)).thenReturn(Response(data = null, errors = emptyList()))
+        lenient().whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<PrisonerBaseLocation>(releasedPrisonId, filters)).thenReturn(Response(data = null, errors = emptyList()))
+        lenient().whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<PrisonerBaseLocation>(anotherPrisonId, filters)).thenReturn(prisonAccessDeniedResponse())
       }
 
       it("calls getNomisNumberWithPrisonFilter") {
-        givenLocationIsFound(anotherNomisNumber, prisonerBaseLocationReleased)
+        givenLocationIsFound(knownNomisNumber, prisonerBaseLocationReceived)
         getPrisonerBaseLocationForPersonService.execute(hmppsId, filters)
         verify(getPersonService, times(1)).getNomisNumberWithPrisonFilter(hmppsId, filters)
       }
@@ -127,6 +147,24 @@ internal class GetPrisonerBaseLocationForPersonServiceTest(
 
         val response = getPrisonerBaseLocationForPersonService.execute(anotherHmppsId, filters)
         response.errors shouldBe errorResponse.errors
+      }
+
+      it("returns location when last known prison ID is OUT") {
+        givenLocationIsFound(knownNomisNumber, prisonerBaseLocationReleased)
+        val expectedLocation = prisonerBaseLocationReleased.copy()
+
+        val response = getPrisonerBaseLocationForPersonService.execute(hmppsId, filters)
+        println("response = $response")
+        response.data shouldBe expectedLocation
+      }
+
+      it("returns error when last known prison ID is another prisoner ID - not in filters") {
+        givenLocationIsFound(knownNomisNumber, prisonerBaseLocationInvalidPrison)
+        val errorresponse = prisonAccessDeniedResponse()
+
+        val response = getPrisonerBaseLocationForPersonService.execute(hmppsId, filters)
+        println("response = $response")
+        response.errors shouldBe errorresponse.errors
       }
     },
   )
