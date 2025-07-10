@@ -8,7 +8,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.WaitingList
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 
 @Service
-class GetWaitingListApplicationsByIdService(
+class GetWaitingListApplicationsByScheduleIdService(
   @Autowired val activitiesGateway: ActivitiesGateway,
   @Autowired val getScheduleDetailsService: GetScheduleDetailsService,
 ) {
@@ -21,7 +21,7 @@ class GetWaitingListApplicationsByIdService(
       return Response(data = null, errors = checkPrisonCode.errors)
     }
 
-    val waitingListApplicationResponse = activitiesGateway.getWaitingListApplicationsById(scheduleId)
+    val waitingListApplicationResponse = activitiesGateway.getWaitingListApplicationsByScheduleId(scheduleId)
     if (waitingListApplicationResponse.errors.isNotEmpty()) {
       return Response(
         data = null,

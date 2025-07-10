@@ -1010,7 +1010,7 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
 
     @Nested
     @DisplayName("GET /v1/activities/schedule/{scheduleId}/waiting-list-applications")
-    inner class GetWaitingListApplicationsById {
+    inner class GetWaitingListApplicationsByScheduleId {
       private val scheduleId = 111111L
       private val path = "/v1/activities/schedule/$scheduleId/waiting-list-applications"
       private val badRequestPath = "/v1//activities/schedule/AAA/waiting-list-applications"
@@ -1019,7 +1019,7 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
       fun `return waiting list applications`() {
         activitiesMockServer.stubForGet(
           "/schedules/$scheduleId/waiting-list-applications",
-          File("$gatewaysFolder/activities/fixtures/GetWaitingListApplicationsById.json").readText(),
+          File("$gatewaysFolder/activities/fixtures/GetWaitingListApplicationsByScheduleId.json").readText(),
         )
 
         activitiesMockServer.stubForGet(

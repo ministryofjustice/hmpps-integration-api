@@ -41,7 +41,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetActivitiesSu
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetAttendanceReasonsService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetDeallocationReasonsService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetScheduleDetailsService
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetWaitingListApplicationsByIdService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetWaitingListApplicationsByScheduleIdService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 
 @RestController
@@ -51,7 +51,7 @@ class ActivitiesController(
   @Autowired val getActivitiesScheduleService: GetActivitiesScheduleService,
   @Autowired val getAttendanceReasonsService: GetAttendanceReasonsService,
   @Autowired val getDeallocationReasonsService: GetDeallocationReasonsService,
-  @Autowired val getWaitingListApplicationsByIdService: GetWaitingListApplicationsByIdService,
+  @Autowired val getWaitingListApplicationsByScheduleIdService: GetWaitingListApplicationsByScheduleIdService,
   @Autowired val auditService: AuditService,
   private val activitiesQueueService: ActivitiesQueueService,
   private val getScheduleDetailsService: GetScheduleDetailsService,
@@ -478,11 +478,11 @@ class ActivitiesController(
     ],
   )
   @FeatureFlag(name = FeatureFlagConfig.Companion.USE_WAITING_LIST_ENDPOINT)
-  fun getWaitingListApplicationsById(
+  fun getWaitingListApplicationsByScheduleId(
     @Parameter(description = "The ID of the schedule") @PathVariable scheduleId: Long,
     @RequestAttribute filters: ConsumerFilters?,
   ): DataResponse<List<WaitingListApplication>?> {
-    val response = getWaitingListApplicationsByIdService.execute(scheduleId, filters)
+    val response = getWaitingListApplicationsByScheduleIdService.execute(scheduleId, filters)
 
     if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
       throw ValidationException("Invalid query parameters.")

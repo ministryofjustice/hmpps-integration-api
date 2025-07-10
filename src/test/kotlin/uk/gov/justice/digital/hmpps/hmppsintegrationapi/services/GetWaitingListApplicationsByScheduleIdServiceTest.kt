@@ -33,12 +33,12 @@ import java.time.LocalDateTime
 
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
-  classes = [GetWaitingListApplicationsByIdService::class],
+  classes = [GetWaitingListApplicationsByScheduleIdService::class],
 )
-class GetWaitingListApplicationsByIdServiceTest(
+class GetWaitingListApplicationsByScheduleIdServiceTest(
   @MockitoBean val activitiesGateway: ActivitiesGateway,
   @MockitoBean val getScheduleDetailsService: GetScheduleDetailsService,
-  val getWaitingListApplicationsByIdService: GetWaitingListApplicationsByIdService,
+  val getWaitingListApplicationsByScheduleIdService: GetWaitingListApplicationsByScheduleIdService,
 ) : DescribeSpec(
     {
       val scheduleId = 123456L
@@ -258,10 +258,10 @@ class GetWaitingListApplicationsByIdServiceTest(
         whenever(getScheduleDetailsService.execute(scheduleId, filters)).thenReturn(Response(data = activitySchedule.toActivityScheduleDetailed(), errors = emptyList()))
       }
 
-      it("Returns historical attendances") {
-        whenever(activitiesGateway.getWaitingListApplicationsById(scheduleId)).thenReturn(Response(data = gatewayResponse))
+      it("Returns a list of waiting list applications") {
+        whenever(activitiesGateway.getWaitingListApplicationsByScheduleId(scheduleId)).thenReturn(Response(data = gatewayResponse))
 
-        val result = getWaitingListApplicationsByIdService.execute(scheduleId, filters)
+        val result = getWaitingListApplicationsByScheduleIdService.execute(scheduleId, filters)
         result.data.shouldBe(gatewayResponse.map { it.toWaitingListApplication() })
         result.errors.shouldBeEmpty()
       }
@@ -277,7 +277,7 @@ class GetWaitingListApplicationsByIdServiceTest(
           )
         whenever(getScheduleDetailsService.execute(scheduleId, filters)).thenReturn(Response(data = null, errors = errors))
 
-        val result = getWaitingListApplicationsByIdService.execute(scheduleId, filters)
+        val result = getWaitingListApplicationsByScheduleIdService.execute(scheduleId, filters)
         result.data.shouldBeNull()
         result.errors.shouldBe(errors)
       }
@@ -291,9 +291,9 @@ class GetWaitingListApplicationsByIdServiceTest(
               description = "Error from gateway",
             ),
           )
-        whenever(activitiesGateway.getWaitingListApplicationsById(scheduleId)).thenReturn(Response(data = null, errors = errors))
+        whenever(activitiesGateway.getWaitingListApplicationsByScheduleId(scheduleId)).thenReturn(Response(data = null, errors = errors))
 
-        val result = getWaitingListApplicationsByIdService.execute(scheduleId, filters)
+        val result = getWaitingListApplicationsByScheduleIdService.execute(scheduleId, filters)
         result.data.shouldBeNull()
         result.errors.shouldBe(errors)
       }

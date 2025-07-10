@@ -47,7 +47,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetActivitiesSu
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetAttendanceReasonsService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetDeallocationReasonsService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetScheduleDetailsService
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetWaitingListApplicationsByIdService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetWaitingListApplicationsByScheduleIdService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 import java.time.DayOfWeek
 import java.time.LocalDate
@@ -65,7 +65,7 @@ class ActivitiesControllerTest(
   @MockitoBean val getScheduleDetailsService: GetScheduleDetailsService,
   @MockitoBean val activitiesQueueService: ActivitiesQueueService,
   @MockitoBean val getActivitiesSuitabilityCriteriaService: GetActivitiesSuitabilityCriteriaService,
-  @MockitoBean val getWaitingListApplicationsByIdService: GetWaitingListApplicationsByIdService,
+  @MockitoBean val getWaitingListApplicationsByScheduleIdService: GetWaitingListApplicationsByScheduleIdService,
 ) : DescribeSpec(
     {
       val basePath = "/v1/activities"
@@ -870,7 +870,7 @@ class ActivitiesControllerTest(
           )
 
         it("should return 200 when successful") {
-          whenever(getWaitingListApplicationsByIdService.execute(scheduleId, filters))
+          whenever(getWaitingListApplicationsByScheduleIdService.execute(scheduleId, filters))
             .thenReturn(Response(data = waitingListApplications))
 
           val result = mockMvc.performAuthorised(path)
@@ -881,7 +881,7 @@ class ActivitiesControllerTest(
         }
 
         it("should call the audit service") {
-          whenever(getWaitingListApplicationsByIdService.execute(scheduleId, filters))
+          whenever(getWaitingListApplicationsByScheduleIdService.execute(scheduleId, filters))
             .thenReturn(Response(data = waitingListApplications))
 
           mockMvc.performAuthorised(path)
@@ -892,8 +892,26 @@ class ActivitiesControllerTest(
           )
         }
 
+        it("returns 400 when getWaitingListApplicationsByIdService returns bad request") {
+          whenever(getWaitingListApplicationsByScheduleIdService.execute(scheduleId, filters))
+            .thenReturn(
+              Response(
+                data = null,
+                errors =
+                  listOf(
+                    UpstreamApiError(
+                      type = UpstreamApiError.Type.BAD_REQUEST,
+                      causedBy = UpstreamApi.ACTIVITIES,
+                    ),
+                  ),
+              ),
+            )
+          val result = mockMvc.performAuthorised(path)
+          result.response.status.shouldBe(400)
+        }
+
         it("returns 404 when getWaitingListApplicationsByIdService returns not found") {
-          whenever(getWaitingListApplicationsByIdService.execute(scheduleId, filters))
+          whenever(getWaitingListApplicationsByScheduleIdService.execute(scheduleId, filters))
             .thenReturn(
               Response(
                 data = null,

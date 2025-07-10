@@ -30,7 +30,7 @@ import java.time.LocalDateTime
   initializers = [ConfigDataApplicationContextInitializer::class],
   classes = [ActivitiesGateway::class],
 )
-class GetWaitingListApplicationsByIdGatewayTest(
+class GetWaitingListApplicationsByScheduleIdGatewayTest(
   @MockitoBean val hmppsAuthGateway: HmppsAuthGateway,
   private val activitiesGateway: ActivitiesGateway,
 ) : DescribeSpec(
@@ -52,7 +52,7 @@ class GetWaitingListApplicationsByIdGatewayTest(
       }
 
       it("authenticates using HMPPS Auth with credentials") {
-        activitiesGateway.getWaitingListApplicationsById(scheduleId)
+        activitiesGateway.getWaitingListApplicationsByScheduleId(scheduleId)
 
         verify(hmppsAuthGateway, times(1)).getClientToken("ACTIVITIES")
       }
@@ -60,7 +60,7 @@ class GetWaitingListApplicationsByIdGatewayTest(
       it("Returns a waiting list application") {
         mockServer.stubForGet("/schedules/$scheduleId/waiting-list-applications", File("src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/activities/fixtures/GetWaitingListApplicationsById.json").readText(), HttpStatus.OK)
 
-        val result = activitiesGateway.getWaitingListApplicationsById(scheduleId)
+        val result = activitiesGateway.getWaitingListApplicationsByScheduleId(scheduleId)
         result.errors.shouldBeEmpty()
         result.data.shouldNotBeNull()
         result.data.shouldBe(
@@ -101,7 +101,7 @@ class GetWaitingListApplicationsByIdGatewayTest(
       it("Returns a bad request error") {
         mockServer.stubForGet("/schedules/$scheduleId/waiting-list-applications", File("src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/activities/fixtures/GetWaitingListApplicationsById.json").readText(), HttpStatus.BAD_REQUEST)
 
-        val result = activitiesGateway.getWaitingListApplicationsById(scheduleId)
+        val result = activitiesGateway.getWaitingListApplicationsByScheduleId(scheduleId)
         result.errors.shouldBe(listOf(UpstreamApiError(causedBy = UpstreamApi.ACTIVITIES, type = UpstreamApiError.Type.BAD_REQUEST)))
       }
     },
