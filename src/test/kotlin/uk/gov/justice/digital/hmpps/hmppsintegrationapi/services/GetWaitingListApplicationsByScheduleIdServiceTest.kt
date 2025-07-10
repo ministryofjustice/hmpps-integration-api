@@ -9,6 +9,7 @@ import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.ConsumerPrisonAccessService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ActivitiesGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesActivity
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesActivityCategory
@@ -37,11 +38,12 @@ import java.time.LocalDateTime
 )
 class GetWaitingListApplicationsByScheduleIdServiceTest(
   @MockitoBean val activitiesGateway: ActivitiesGateway,
-  @MockitoBean val getScheduleDetailsService: GetScheduleDetailsService,
+  @MockitoBean val consumerPrisonAccessService: ConsumerPrisonAccessService,
   val getWaitingListApplicationsByScheduleIdService: GetWaitingListApplicationsByScheduleIdService,
 ) : DescribeSpec(
     {
       val scheduleId = 123456L
+      val prisonCode = "MDI"
       val filters = null
       val gatewayResponse =
         listOf(
@@ -50,7 +52,7 @@ class GetWaitingListApplicationsByScheduleIdServiceTest(
             activityId = 1000,
             scheduleId = 222222,
             allocationId = 333333,
-            prisonCode = "PVI",
+            prisonCode = prisonCode,
             prisonerNumber = "A1234AA",
             bookingId = 10001,
             status = "PENDING",
@@ -133,7 +135,7 @@ class GetWaitingListApplicationsByScheduleIdServiceTest(
                     alias = "Prison",
                     description = "pay band description",
                     nomisPayBand = 1,
-                    prisonCode = "MDI",
+                    prisonCode = prisonCode,
                     createdTime = null,
                     createdBy = null,
                     updatedTime = null,
@@ -190,7 +192,7 @@ class GetWaitingListApplicationsByScheduleIdServiceTest(
           activity =
             ActivitiesActivity(
               id = 123L,
-              prisonCode = "MDI",
+              prisonCode = prisonCode,
               attendanceRequired = true,
               inCell = true,
               onWing = true,
@@ -253,20 +255,37 @@ class GetWaitingListApplicationsByScheduleIdServiceTest(
         )
 
       beforeEach {
-        Mockito.reset(getScheduleDetailsService, activitiesGateway)
+        Mockito.reset(activitiesGateway, consumerPrisonAccessService)
 
-        whenever(getScheduleDetailsService.execute(scheduleId, filters)).thenReturn(Response(data = activitySchedule.toActivityScheduleDetailed(), errors = emptyList()))
+        whenever(activitiesGateway.getActivityScheduleById(scheduleId)).thenReturn(Response(data = activitySchedule, errors = emptyList()))
+        whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<Any>(prisonCode, filters, upstreamServiceType = UpstreamApi.ACTIVITIES)).thenReturn(Response(data = null))
       }
 
       it("Returns a list of waiting list applications") {
-        whenever(activitiesGateway.getWaitingListApplicationsByScheduleId(scheduleId)).thenReturn(Response(data = gatewayResponse))
+        whenever(activitiesGateway.getWaitingListApplicationsByScheduleId(scheduleId, prisonCode)).thenReturn(Response(data = gatewayResponse))
 
         val result = getWaitingListApplicationsByScheduleIdService.execute(scheduleId, filters)
         result.data.shouldBe(gatewayResponse.map { it.toWaitingListApplication() })
         result.errors.shouldBeEmpty()
       }
 
-      it("should return an error if getScheduleDetailsService returns an error") {
+      it("should return an error if consumerPrisonAccessService returns an error") {
+        val errors =
+          listOf(
+            UpstreamApiError(
+              causedBy = UpstreamApi.ACTIVITIES,
+              type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+              description = "Error from consumerPrisonAccessService",
+            ),
+          )
+        whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<Any>(prisonCode, filters, upstreamServiceType = UpstreamApi.ACTIVITIES)).thenReturn(Response(data = null, errors = errors))
+
+        val result = getWaitingListApplicationsByScheduleIdService.execute(scheduleId, filters)
+        result.data.shouldBeNull()
+        result.errors.shouldBe(errors)
+      }
+
+      it("should return an error if gateway.getActivityScheduleById returns an error") {
         val errors =
           listOf(
             UpstreamApiError(
@@ -275,14 +294,14 @@ class GetWaitingListApplicationsByScheduleIdServiceTest(
               description = "Error from getScheduleDetailsService",
             ),
           )
-        whenever(getScheduleDetailsService.execute(scheduleId, filters)).thenReturn(Response(data = null, errors = errors))
+        whenever(activitiesGateway.getActivityScheduleById(scheduleId)).thenReturn(Response(data = null, errors = errors))
 
         val result = getWaitingListApplicationsByScheduleIdService.execute(scheduleId, filters)
         result.data.shouldBeNull()
         result.errors.shouldBe(errors)
       }
 
-      it("should return an error if gateway returns an error") {
+      it("should return an error if gateway.getWaitingListApplicationsByScheduleId returns an error") {
         val errors =
           listOf(
             UpstreamApiError(
@@ -291,7 +310,7 @@ class GetWaitingListApplicationsByScheduleIdServiceTest(
               description = "Error from gateway",
             ),
           )
-        whenever(activitiesGateway.getWaitingListApplicationsByScheduleId(scheduleId)).thenReturn(Response(data = null, errors = errors))
+        whenever(activitiesGateway.getWaitingListApplicationsByScheduleId(scheduleId, prisonCode)).thenReturn(Response(data = null, errors = errors))
 
         val result = getWaitingListApplicationsByScheduleIdService.execute(scheduleId, filters)
         result.data.shouldBeNull()
