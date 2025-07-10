@@ -22,7 +22,6 @@ class GetAlertsForPersonService(
     pndOnly: Boolean = false,
   ): Response<PaginatedAlerts?> {
     val personResponse = getPersonService.getNomisNumberWithPrisonFilter(hmppsId, filters)
-
     if (personResponse.errors.isNotEmpty()) {
       return Response(data = null, errors = personResponse.errors)
     }

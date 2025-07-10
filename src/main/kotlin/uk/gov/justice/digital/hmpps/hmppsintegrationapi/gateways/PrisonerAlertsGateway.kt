@@ -50,7 +50,6 @@ class PrisonerAlertsGateway(
           data = result.data,
         )
       }
-
       is WebClientWrapperResponse.Error -> {
         Response(
           data = null,
