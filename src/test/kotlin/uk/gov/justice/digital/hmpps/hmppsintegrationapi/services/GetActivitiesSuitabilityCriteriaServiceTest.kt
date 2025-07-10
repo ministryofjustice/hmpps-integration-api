@@ -225,7 +225,7 @@ class GetActivitiesSuitabilityCriteriaServiceTest(
         ActivitiesSuitabilityCriteria(
           riskLevel = "medium",
           isPaid = true,
-          payRate =
+          payRates =
             listOf(
               ActivitiesPayRate(
                 id = 123456L,

@@ -353,7 +353,7 @@ class ActivitiesControllerTest(
           SuitabilityCriteria(
             riskLevel = "medium",
             isPaid = true,
-            payRate =
+            payRates =
               listOf(
                 PayRate(
                   incentiveCode = "BAS",
@@ -367,6 +367,7 @@ class ActivitiesControllerTest(
                   rate = 150,
                   pieceRate = 150,
                   pieceRateItems = 10,
+                  startDate = LocalDate.of(2021, 1, 1),
                 ),
               ),
             minimumEducationLevel =

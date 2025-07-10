@@ -1,7 +1,7 @@
 {
   "riskLevel": "medium",
   "isPaid": true,
-  "payRate": [
+  "payRates": [
     {
       "id": 123456,
       "incentiveNomisCode": "BAS",

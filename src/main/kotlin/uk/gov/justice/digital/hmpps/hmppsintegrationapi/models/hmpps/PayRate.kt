@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps
 
 import io.swagger.v3.oas.annotations.media.Schema
+import java.time.LocalDate
 
 data class PayRate(
   @Schema(description = "The code for the incentive/earned privilege level", example = "BAS")
@@ -15,4 +16,6 @@ data class PayRate(
   val pieceRate: Int?,
   @Schema(description = "Where payment is related to the number of items produced in a batch of a product, this is the batch size that attract 1 x pieceRate", example = "10")
   val pieceRateItems: Int?,
+  @Schema(description = "The effective start date for this pay rate", example = "2024-06-18")
+  val startDate: LocalDate?,
 )

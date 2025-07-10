@@ -21,5 +21,6 @@ data class ActivitiesPayRate(
       rate = this.rate,
       pieceRate = this.pieceRate,
       pieceRateItems = this.pieceRateItems,
+      startDate = this.startDate,
     )
 }
