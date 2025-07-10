@@ -2,7 +2,7 @@
   "data": {
     "riskLevel": "medium",
     "isPaid": true,
-    "payRate": {
+    "payRate": [{
       "incentiveCode": "BAS",
       "incentiveLevel": "Basic",
       "prisonPayBand": {
@@ -13,7 +13,7 @@
       "rate": 150,
       "pieceRate": 150,
       "pieceRateItems": 10
-    },
+    }],
     "minimumEducationLevel": [
       {
         "educationLevelCode": "Basic",
