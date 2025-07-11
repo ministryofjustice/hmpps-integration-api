@@ -180,7 +180,7 @@ class PrisonActivitiesController(
       ApiResponse(responseCode = "200", useReturnTypeSchema = true, description = "Successfully found historical attendances."),
       ApiResponse(responseCode = "400", content = [Content(schema = Schema(ref = "#/components/schemas/BadRequest"))]),
       ApiResponse(responseCode = "403", content = [Content(schema = Schema(ref = "#/components/schemas/ForbiddenResponse"))]),
-      ApiResponse(responseCode = "404", content = [Content(schema = Schema(ref = "#/components/schemas/NotFoundError"))]),
+      ApiResponse(responseCode = "404", content = [Content(schema = Schema(ref = "#/components/schemas/PersonNotFoundError"))]),
       ApiResponse(responseCode = "500", content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))]),
     ],
   )
@@ -199,7 +199,7 @@ class PrisonActivitiesController(
     }
 
     if (response.hasError(ENTITY_NOT_FOUND)) {
-      throw EntityNotFoundException("Could not find attendances with supplied query parameters.")
+      throw EntityNotFoundException("Could not find attendances for prisoner.")
     }
 
     auditService.createEvent(
