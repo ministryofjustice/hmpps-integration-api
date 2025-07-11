@@ -39,7 +39,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.EarliestRel
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Exclusion
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HmppsMessage
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.HmppsMessageResponse
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PaginatedWaitingListApplications
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PersonInPrison
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonPayBand
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerAllocationRequest
@@ -49,7 +48,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Slot
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.WaitingListApplication
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.WaitingListSearchRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.personas.personInProbationAndNomisPersona
 import uk.gov.justice.hmpps.sqs.HmppsQueue
@@ -71,7 +69,7 @@ class ActivitiesQueueServiceTest(
   @MockitoBean val getAttendanceByIdService: GetAttendanceByIdService,
   @MockitoBean private val getScheduleDetailsService: GetScheduleDetailsService,
   @MockitoBean private val getPrisonPayBandsService: GetPrisonPayBandsService,
-  @MockitoBean private val getWaitingListApplicationsService: GetWaitingListApplicationsService,
+  @MockitoBean private val getWaitingListApplicationsByScheduleIdService: GetWaitingListApplicationsByScheduleIdService,
   @MockitoBean private val activitiesGateway: ActivitiesGateway,
 ) : DescribeSpec(
     {
@@ -519,48 +517,33 @@ class ActivitiesQueueServiceTest(
             ),
           )
 
-        val paginatedWaitingListApplications =
-          PaginatedWaitingListApplications(
-            content =
-              listOf(
-                WaitingListApplication(
-                  id = 1L,
-                  activityId = 100L,
-                  scheduleId = 200L,
-                  allocationId = null,
-                  prisonId = prisonId,
-                  prisonerNumber = prisonerNumber,
-                  bookingId = 300L,
-                  status = "PENDING",
-                  statusUpdatedTime = null,
-                  requestedDate = LocalDate.now(),
-                  comments = null,
-                  declinedReason = null,
-                  creationTime = LocalDateTime.now(),
-                  updatedTime = null,
-                  earliestReleaseDate =
-                    EarliestReleaseDate(
-                      releaseDate = LocalDate.now().plusMonths(6).toString(),
-                      isTariffDate = false,
-                      isIndeterminateSentence = false,
-                      isImmigrationDetainee = false,
-                      isConvictedUnsentenced = false,
-                      isRemand = false,
-                    ),
-                  nonAssociations = null,
-                ),
+        val pendingWaitingApplication =
+          WaitingListApplication(
+            id = 1L,
+            activityId = 100L,
+            scheduleId = 200L,
+            allocationId = null,
+            prisonId = prisonId,
+            prisonerNumber = prisonerNumber,
+            bookingId = 300L,
+            status = "PENDING",
+            statusUpdatedTime = null,
+            requestedDate = LocalDate.now(),
+            comments = null,
+            declinedReason = null,
+            creationTime = LocalDateTime.now(),
+            updatedTime = null,
+            earliestReleaseDate =
+              EarliestReleaseDate(
+                releaseDate = LocalDate.now().plusMonths(6).toString(),
+                isTariffDate = false,
+                isIndeterminateSentence = false,
+                isImmigrationDetainee = false,
+                isConvictedUnsentenced = false,
+                isRemand = false,
               ),
-            totalPages = 1,
-            totalCount = 1L,
-            isLastPage = true,
-            count = 1,
-            page = 1,
-            perPage = 10,
+            nonAssociations = null,
           )
-
-        val pendingWaitingListSearchRequest = WaitingListSearchRequest(prisonerNumbers = listOf(prisonerNumber), status = listOf("PENDING"))
-        val approvedWaitingListSearchRequest = WaitingListSearchRequest(prisonerNumbers = listOf(prisonerNumber), status = listOf("APPROVED"))
-        val waitingListResponse = paginatedWaitingListApplications.copy(content = emptyList(), totalPages = 0, totalCount = 0L, count = 0)
 
         beforeTest {
           Mockito.reset(getPersonService, activitiesGateway, getPrisonPayBandsService)
@@ -575,11 +558,8 @@ class ActivitiesQueueServiceTest(
           whenever(getPrisonPayBandsService.execute(prisonId, filters))
             .thenReturn(Response(data = prisonPayBand))
 
-          whenever(getWaitingListApplicationsService.execute(prisonId, pendingWaitingListSearchRequest, filters))
-            .thenReturn(Response(data = waitingListResponse))
-
-          whenever(getWaitingListApplicationsService.execute(prisonId, approvedWaitingListSearchRequest, filters))
-            .thenReturn(Response(data = waitingListResponse))
+          whenever(getWaitingListApplicationsByScheduleIdService.execute(scheduleId, filters))
+            .thenReturn(Response(data = emptyList()))
         }
 
         it("Returns an error if allocation start date is in the past") {
@@ -912,13 +892,12 @@ class ActivitiesQueueServiceTest(
         }
 
         it("Returns an error if getWaitingListApplicationsService returns an error") {
-          val pendingWaitingListSearchRequest = WaitingListSearchRequest(prisonerNumbers = listOf(prisonerNumber), status = listOf("PENDING"))
           val error = UpstreamApiError(UpstreamApi.ACTIVITIES, UpstreamApiError.Type.BAD_REQUEST, "error from getWaitingListApplicationsService")
 
           whenever(activitiesGateway.getActivityScheduleById(scheduleId))
             .thenReturn(Response(data = activitiesActivityScheduleDetailed))
 
-          whenever(getWaitingListApplicationsService.execute(prisonId, pendingWaitingListSearchRequest, filters))
+          whenever(getWaitingListApplicationsByScheduleIdService.execute(scheduleId, filters))
             .thenReturn(Response(data = null, errors = listOf(error)))
 
           val result = activitiesQueueService.sendPrisonerAllocationRequest(scheduleId, allocationRequest, who, filters)
@@ -927,18 +906,13 @@ class ActivitiesQueueServiceTest(
         }
 
         it("Returns an error if prisoner has a PENDING waiting list application") {
-          val pendingWaitingListSearchRequest = WaitingListSearchRequest(prisonerNumbers = listOf(prisonerNumber), status = listOf("PENDING"))
-          val approvedWaitingListSearchRequest = WaitingListSearchRequest(prisonerNumbers = listOf(prisonerNumber), status = listOf("APPROVED"))
           val error = UpstreamApiError(UpstreamApi.ACTIVITIES, UpstreamApiError.Type.CONFLICT, "Prisoner has a PENDING waiting list application. It must be APPROVED before they can be allocated.")
 
           whenever(activitiesGateway.getActivityScheduleById(scheduleId))
             .thenReturn(Response(data = activitiesActivityScheduleDetailed))
 
-          whenever(getWaitingListApplicationsService.execute(prisonId, pendingWaitingListSearchRequest, filters))
-            .thenReturn(Response(data = paginatedWaitingListApplications))
-
-          whenever(getWaitingListApplicationsService.execute(prisonId, approvedWaitingListSearchRequest, filters))
-            .thenReturn(Response(data = null))
+          whenever(getWaitingListApplicationsByScheduleIdService.execute(scheduleId, filters))
+            .thenReturn(Response(data = listOf(pendingWaitingApplication)))
 
           val result = activitiesQueueService.sendPrisonerAllocationRequest(scheduleId, allocationRequest, who, filters)
           result.data.shouldBeNull()
@@ -946,20 +920,14 @@ class ActivitiesQueueServiceTest(
         }
 
         it("Returns an error if prisoner has more than one APPROVED waiting list application") {
-          val pendingResponse = paginatedWaitingListApplications.copy(content = emptyList(), totalPages = 0, totalCount = 0L, count = 0)
-          val approvedResponse =
-            paginatedWaitingListApplications.copy(
-              content =
-                listOf(
-                  paginatedWaitingListApplications.content.first().copy(status = "APPROVED"),
-                  paginatedWaitingListApplications.content.first().copy(id = 2L, status = "APPROVED"),
-                ),
+          val approvedWaitingListApplications =
+            listOf(
+              pendingWaitingApplication.copy(status = "APPROVED"),
+              pendingWaitingApplication.copy(id = 2L, status = "APPROVED"),
             )
-          whenever(getWaitingListApplicationsService.execute(prisonId, pendingWaitingListSearchRequest, filters))
-            .thenReturn(Response(data = pendingResponse))
 
-          whenever(getWaitingListApplicationsService.execute(prisonId, approvedWaitingListSearchRequest, filters))
-            .thenReturn(Response(data = approvedResponse))
+          whenever(getWaitingListApplicationsByScheduleIdService.execute(scheduleId, filters))
+            .thenReturn(Response(data = approvedWaitingListApplications))
 
           val error = UpstreamApiError(UpstreamApi.ACTIVITIES, UpstreamApiError.Type.CONFLICT, "Prisoner has more than one APPROVED waiting list application. A prisoner can only have one approved waiting list application.")
           val result = activitiesQueueService.sendPrisonerAllocationRequest(scheduleId, allocationRequest, who, filters)

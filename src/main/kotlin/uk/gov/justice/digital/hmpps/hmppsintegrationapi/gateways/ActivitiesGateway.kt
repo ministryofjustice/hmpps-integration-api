@@ -389,7 +389,7 @@ class ActivitiesGateway(
     val result =
       webClient.requestList<ActivitiesWaitingListApplication>(
         HttpMethod.GET,
-        "/schedules/$scheduleId/waiting-list-applications",
+        "/integration-api/schedules/$scheduleId/waiting-list-applications",
         authenticationHeader() + mapOf("Caseload-Id" to prisonCode),
         UpstreamApi.ACTIVITIES,
         badRequestAsError = true,

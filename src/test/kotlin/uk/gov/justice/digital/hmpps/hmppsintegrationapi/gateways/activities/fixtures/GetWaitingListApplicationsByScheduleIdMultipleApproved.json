@@ -1,0 +1,58 @@
+[
+  {
+    "id": 111111,
+    "activityId": 1000,
+    "scheduleId": 222222,
+    "allocationId": 333333,
+    "prisonCode": "MDI",
+    "prisonerNumber": "G2996UX",
+    "bookingId": 10001,
+    "status": "APPROVED",
+    "statusUpdatedTime": "2023-06-04T16:30:00",
+    "requestedDate": "2023-06-23",
+    "requestedBy": "Fred Bloggs",
+    "comments": "The prisoner has specifically requested to attend this activity",
+    "declinedReason": "The prisoner has specifically requested to attend this activity",
+    "creationTime": "2023-01-03T12:00:00",
+    "createdBy": "Jon Doe",
+    "updatedTime": "2023-01-04T16:30:00",
+    "updatedBy": "Jane Doe",
+    "earliestReleaseDate": {
+      "releaseDate": "2027-09-20",
+      "isTariffDate": true,
+      "isIndeterminateSentence": true,
+      "isImmigrationDetainee": true,
+      "isConvictedUnsentenced": true,
+      "isRemand": true
+    },
+    "nonAssociations": true
+  },
+  {
+    "id": 111111,
+    "activityId": 1000,
+    "scheduleId": 222222,
+    "allocationId": 333333,
+    "prisonCode": "MDI",
+    "prisonerNumber": "G2996UX",
+    "bookingId": 10001,
+    "status": "APPROVED",
+    "statusUpdatedTime": "2023-06-04T16:30:00",
+    "requestedDate": "2023-06-23",
+    "requestedBy": "Fred Bloggs",
+    "comments": "The prisoner has specifically requested to attend this activity",
+    "declinedReason": "The prisoner has specifically requested to attend this activity",
+    "creationTime": "2023-01-03T12:00:00",
+    "createdBy": "Jon Doe",
+    "updatedTime": "2023-01-04T16:30:00",
+    "updatedBy": "Jane Doe",
+    "earliestReleaseDate": {
+      "releaseDate": "2027-09-20",
+      "isTariffDate": true,
+      "isIndeterminateSentence": true,
+      "isImmigrationDetainee": true,
+      "isConvictedUnsentenced": true,
+      "isRemand": true
+    },
+    "nonAssociations": true
+  }
+]
