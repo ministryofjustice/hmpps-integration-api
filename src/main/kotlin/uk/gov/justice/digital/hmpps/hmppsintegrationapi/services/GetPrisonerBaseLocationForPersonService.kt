@@ -20,7 +20,7 @@ class GetPrisonerBaseLocationForPersonService(
     hmppsId: String,
     filters: ConsumerFilters?,
   ): Response<PrisonerBaseLocation?> {
-    val personResponse = getPersonService.getNomisNumberWithPrisonFilter(hmppsId, filters)
+    val personResponse = getPersonService.getNomisNumber(hmppsId)
     if (personResponse.errors.isNotEmpty()) {
       return Response(data = null, errors = personResponse.errors)
     }
@@ -32,12 +32,13 @@ class GetPrisonerBaseLocationForPersonService(
       )
 
     val prisonerBaseLocationResponse = prisonerBaseLocationGateway.getPrisonerBaseLocation(nomisNumber)
-    val prisonId =
-      prisonerBaseLocationResponse.data?.lastPrisonId
-        ?: return Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.PRISON_API, UpstreamApiError.Type.ENTITY_NOT_FOUND)))
+    if (prisonerBaseLocationResponse.errors.isNotEmpty()) {
+      return Response(data = null, errors = prisonerBaseLocationResponse.errors)
+    }
 
-    if (prisonId == "OUT") {
-      return prisonerBaseLocationResponse
+    val prisonId = if (prisonerBaseLocationResponse.data?.prisonId == "OUT") prisonerBaseLocationResponse.data.lastPrisonId else prisonerBaseLocationResponse.data?.prisonId
+    if (prisonId == null) {
+      return Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.PRISON_API, UpstreamApiError.Type.ENTITY_NOT_FOUND)))
     }
 
     val consumerPrisonFilterCheck = consumerPrisonAccessService.checkConsumerHasPrisonAccess<PrisonerBaseLocation>(prisonId, filters)
