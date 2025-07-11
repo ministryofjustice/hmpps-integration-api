@@ -52,7 +52,7 @@ feature-flag:
   use-education-endpoint: true
   use-prisoner-base-location-endpoint: false
   use-historical-attendances-endpoint: false
-  use-suitability-endpoint: false
+  use-suitability-endpoint: true
   use-waiting-list-endpoint: false
 
 authorisation:

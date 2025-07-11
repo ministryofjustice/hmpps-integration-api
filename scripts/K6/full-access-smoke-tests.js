@@ -10,7 +10,7 @@ export const options = {
   tlsAuth: [
     {
       domains: ["dev.integration-api.hmpps.service.justice.gov.uk"],
-      cert,
+                      cert,
       key,
     },
   ],
@@ -114,6 +114,7 @@ const get_endpoints = [
   `/v1/activities/deallocation-reasons`,
   `/v1/prison/prisoners/${hmppsId}/activities/attendances?startDate=${startDate}&endDate=${endDate}&prisonId=${prisonId}`,
   `/v1/activities/schedule/${scheduleId}/waiting-list-applications`,
+  `/v1/activities/schedule/${scheduleId}/suitability-criteria`
 ];
 
 const broken_endpoints = []
