@@ -35,6 +35,7 @@ data class AttendanceUpdateRequest(
       "attendanceReason" to this.attendanceReason,
       "comment" to this.comment,
       "issuePayment" to this.issuePayment,
+      "caseNote" to null,
       "incentiveLevelWarningIssued" to this.incentiveLevelWarningIssued,
       "otherAbsenceReason" to this.otherAbsenceReason,
     )
