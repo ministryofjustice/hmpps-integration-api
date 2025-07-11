@@ -64,6 +64,7 @@ globals:
         - "/v1/activities/schedule/.*/allocate"
         - "/v1/prison/prisoners/.*/activities/attendances"
         - "/v1/activities/schedule/.*/waiting-list-applications"
+        - "/v1/status"
     police:
       include:
         - "/v1/persons"
@@ -80,9 +81,11 @@ globals:
         - "/v1/persons/.*/person-responsible-officer"
         - "/v1/persons/.*/status-information"
         - "/v1/hmpps/reference-data"
+        - "/v1/status"
     reference-data-only:
       include:
         - "/v1/hmpps/reference-data"
+        - "/v1/status"
     full-access:
       include:
         # Provides access to all endpoints
@@ -146,3 +149,4 @@ globals:
         - "/v1/activities/schedule/.*/allocate"
         - "/v1/prison/prisoners/.*/activities/attendances"
         - "/v1/activities/schedule/.*/waiting-list-applications"
+        - "/v1/status"
