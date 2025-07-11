@@ -55,6 +55,7 @@ feature-flag:
   use-suitability-endpoint: true
   use-waiting-list-endpoint: false
   use-alerts-api-filter: false
+  error-on-no-lao-context: false
 
 authorisation:
   consumers:

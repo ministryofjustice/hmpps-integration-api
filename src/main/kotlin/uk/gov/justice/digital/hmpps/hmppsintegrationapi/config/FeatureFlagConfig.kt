@@ -35,6 +35,7 @@ data class FeatureFlagConfig(
     const val USE_HISTORICAL_ATTENDANCES_ENDPOINT = "use-historical-attendances-endpoint"
     const val USE_WAITING_LIST_ENDPOINT = "use-waiting-list-endpoint"
     const val USE_ALERTS_API_FILTER = "use-alerts-api-filter"
+    const val ERROR_ON_NO_LAO_CONTEXT = "error-on-no-lao-context"
   }
 
   /**
