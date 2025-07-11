@@ -36,7 +36,7 @@ class GetPrisonerBaseLocationForPersonService(
       return Response(data = null, errors = prisonerBaseLocationResponse.errors)
     }
 
-    val prisonId = if (prisonerBaseLocationResponse.data?.prisonId == "OUT") prisonerBaseLocationResponse.data.lastPrisonId else prisonerBaseLocationResponse.data?.prisonId
+    val prisonId = prisonerBaseLocationResponse.data?.run { if (inPrison == true) prisonId else lastPrisonId }
     if (prisonId == null) {
       return Response(data = null, errors = listOf(UpstreamApiError(UpstreamApi.PRISON_API, UpstreamApiError.Type.ENTITY_NOT_FOUND)))
     }

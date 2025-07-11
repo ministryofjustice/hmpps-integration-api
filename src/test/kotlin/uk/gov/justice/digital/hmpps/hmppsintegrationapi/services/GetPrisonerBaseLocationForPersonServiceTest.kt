@@ -52,7 +52,6 @@ internal class GetPrisonerBaseLocationForPersonServiceTest(
       val prisonerBaseLocationReleased =
         PrisonerBaseLocation(
           inPrison = false,
-          prisonId = releasedPrisonId,
           lastPrisonId = knownPrisonId,
           lastMovementType = LastMovementType.ADMISSION,
           receptionDate = LocalDate.of(2025, 9, 30),
@@ -141,14 +140,14 @@ internal class GetPrisonerBaseLocationForPersonServiceTest(
         response.errors shouldBe errorResponse.errors
       }
 
-      it("returns location when prison ID is OUT") {
+      it("returns location when last prison ID matches filter and prisoner inPrison is false") {
         whenever(prisonerBaseLocationGateway.getPrisonerBaseLocation(knownNomisNumber)).thenReturn(Response(data = prisonerBaseLocationReleased))
 
         getPrisonerBaseLocationForPersonService.execute(knownHmppsId, filters)
         verify(consumerPrisonAccessService, times(1)).checkConsumerHasPrisonAccess<Any>(prisonerBaseLocationReleased.lastPrisonId, filters)
       }
 
-      it("returns error when prison ID is not OUT") {
+      it("returns location when prison ID matches filter and prisoner inPrison is true") {
         whenever(prisonerBaseLocationGateway.getPrisonerBaseLocation(anotherNomisNumber)).thenReturn(Response(data = prisonerBaseLocationReceived))
 
         getPrisonerBaseLocationForPersonService.execute(anotherHmppsId, filters)
