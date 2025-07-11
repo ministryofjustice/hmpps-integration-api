@@ -53,7 +53,7 @@ class AlertsController(
     @Parameter(description = "The maximum number of results for a page", schema = Schema(minimum = "1")) @RequestParam(required = false, defaultValue = "10", name = "perPage") perPage: Int,
     @RequestAttribute filters: ConsumerFilters?,
   ): PaginatedResponse<Alert> {
-    val response = getAlertsForPersonService.execute(hmppsId, filters, page, perPage)
+    val response = if (featureFlagConfig.isEnabled(USE_ALERTS_API_FILTER)) getAlertsForPersonService.getAlerts(hmppsId, filters, page, perPage, emptyList()) else getAlertsForPersonService.execute(hmppsId, filters, page, perPage)
 
     if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
       throw EntityNotFoundException("Could not find person with id: $hmppsId")
@@ -87,7 +87,7 @@ class AlertsController(
     @Parameter(description = "The maximum number of results for a page", schema = Schema(minimum = "1")) @RequestParam(required = false, defaultValue = "10", name = "perPage") perPage: Int,
     @RequestAttribute filters: ConsumerFilters?,
   ): PaginatedResponse<Alert> {
-    val response = if (featureFlagConfig.isEnabled(USE_ALERTS_API_FILTER)) getAlertsForPersonService.getAlerts(hmppsId, filters, page, perPage, PAPaginatedAlerts.PND_ALERT_CODES) else getAlertsForPersonService.execute(hmppsId, filters, page, perPage, pndOnly = true)
+    val response = getAlertsForPersonService.execute(hmppsId, filters, page, perPage, pndOnly = true)
 
     if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
       throw EntityNotFoundException("Could not find person with id: $hmppsId")

@@ -182,6 +182,115 @@ internal class AlertsControllerTest(
         }
       }
 
+      describe("GET $path and api filter feature enabled") {
+        beforeTest {
+          Mockito.reset(getAlertsForPersonService)
+          Mockito.reset(auditService)
+          Mockito.reset(featureFlagConfig)
+
+          whenever(getAlertsForPersonService.getAlerts(hmppsId, filters, page, perPage, emptyList())).thenReturn(
+            Response(
+              data = toPaginatedAlerts(listOf(alert)),
+            ),
+          )
+          whenever(featureFlagConfig.isEnabled(USE_ALERTS_API_FILTER)).thenReturn(true)
+        }
+
+        it("returns a 200 OK status code") {
+          val result = mockMvc.performAuthorised(path)
+
+          result.response.status.shouldBe(HttpStatus.OK.value())
+        }
+
+        it("logs audit") {
+          mockMvc.performAuthorised(path)
+
+          verify(
+            auditService,
+            VerificationModeFactory.times(1),
+          ).createEvent("GET_PERSON_ALERTS", mapOf("hmppsId" to hmppsId))
+        }
+
+        it("gets the alerts for a person with the matching ID") {
+          mockMvc.performAuthorised(path)
+
+          verify(getAlertsForPersonService, VerificationModeFactory.times(1)).getAlerts(hmppsId, filters, page, perPage, emptyList())
+        }
+
+        it("returns the alerts for a person with the matching ID") {
+          val result = mockMvc.performAuthorised(path)
+
+          result.response.contentAsString.shouldContain(
+            """
+          "data": [
+            {
+              "offenderNo": "A7777ZZ",
+              "type": "X",
+              "typeDescription": "Security",
+              "code": "XNR",
+              "codeDescription": "Not For Release",
+              "comment": "IS91",
+              "dateCreated": "2022-08-01",
+              "dateExpired": "2023-08-01",
+              "expired": false,
+              "active": true
+            }
+          ]
+        """.removeWhitespaceAndNewlines(),
+          )
+        }
+
+        it("returns a 404 NOT FOUND status code when person isn't found in the upstream API") {
+          whenever(getAlertsForPersonService.getAlerts(hmppsId, filters, page, perPage, emptyList())).thenReturn(
+            Response(
+              data = null,
+              errors =
+                listOf(
+                  UpstreamApiError(
+                    causedBy = UpstreamApi.PRISON_API,
+                    type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+                  ),
+                ),
+            ),
+          )
+
+          val result = mockMvc.performAuthorised(path)
+          result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
+        }
+
+        it("returns a 400 Bad request status code when nomis id is invalid in the upstream API") {
+          whenever(getAlertsForPersonService.getAlerts(hmppsId, filters, page, perPage, emptyList())).thenReturn(
+            Response(
+              data = null,
+              errors =
+                listOf(
+                  UpstreamApiError(
+                    causedBy = UpstreamApi.PRISON_API,
+                    type = UpstreamApiError.Type.BAD_REQUEST,
+                  ),
+                ),
+            ),
+          )
+
+          val result = mockMvc.performAuthorised(path)
+          result.response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
+        }
+
+        it("fails with the appropriate error when an upstream service is down") {
+          whenever(getAlertsForPersonService.getAlerts(hmppsId, filters, page, perPage, emptyList())).doThrow(
+            WebClientResponseException(500, "MockError", null, null, null, null),
+          )
+
+          val response = mockMvc.performAuthorised(path)
+          assert(response.response.status == 500)
+          assert(
+            response.response.contentAsString.equals(
+              "{\"status\":500,\"errorCode\":null,\"userMessage\":\"500 MockError\",\"developerMessage\":\"Unable to complete request as an upstream service is not responding\",\"moreInfo\":null}",
+            ),
+          )
+        }
+      }
+
       describe("GET $pndPath") {
         beforeTest {
           Mockito.reset(getAlertsForPersonService)
