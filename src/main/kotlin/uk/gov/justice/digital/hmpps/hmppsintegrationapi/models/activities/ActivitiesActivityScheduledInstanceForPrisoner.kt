@@ -30,7 +30,7 @@ data class ActivitiesActivityScheduledInstanceForPrisoner(
   val autoSuspended: Boolean = false,
   val timeSlot: String,
   val issuePayment: Boolean? = null,
-  val attendanceStatus: String,
+  val attendanceStatus: String? = null,
   val attendanceReasonCode: String? = null,
   val paidActivity: Boolean,
   val possibleAdvanceAttendance: Boolean,

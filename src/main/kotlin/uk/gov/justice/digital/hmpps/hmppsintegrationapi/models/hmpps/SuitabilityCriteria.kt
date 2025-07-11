@@ -8,7 +8,7 @@ data class SuitabilityCriteria(
   @Schema(description = "Whether the activity is a paid activity", example = "true")
   val isPaid: Boolean,
   @Schema(description = "The pay rate by incentive level and pay band that can apply to this activity")
-  val payRate: PayRate,
+  val payRates: List<PayRate>,
   @Schema(description = "The list of minimum education levels that can apply to this activity")
   val minimumEducationLevel: List<MinimumEducationLevel>,
 )

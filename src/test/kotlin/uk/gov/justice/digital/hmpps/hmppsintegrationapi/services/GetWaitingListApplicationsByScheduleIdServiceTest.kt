@@ -9,6 +9,7 @@ import org.mockito.kotlin.whenever
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.bean.override.mockito.MockitoBean
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.common.ConsumerPrisonAccessService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.ActivitiesGateway
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesActivity
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesActivityCategory
@@ -17,34 +18,66 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.Activi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesActivityScheduleInstance
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesActivityScheduleSuspension
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesAttendance
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesEarliestReleaseDate
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesExclusion
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesInternalLocation
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesMinimumEducationLevel
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesPayRate
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesPrisonPayBand
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesSlot
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesSuitabilityCriteria
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesWaitingListApplication
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalDateTime
 
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
-  classes = [GetActivitiesSuitabilityCriteriaService::class],
+  classes = [GetWaitingListApplicationsByScheduleIdService::class],
 )
-class GetActivitiesSuitabilityCriteriaServiceTest(
+class GetWaitingListApplicationsByScheduleIdServiceTest(
   @MockitoBean val activitiesGateway: ActivitiesGateway,
-  @MockitoBean val getScheduleDetailsService: GetScheduleDetailsService,
-  val getActivitiesSuitabilityCriteriaService: GetActivitiesSuitabilityCriteriaService,
+  @MockitoBean val consumerPrisonAccessService: ConsumerPrisonAccessService,
+  val getWaitingListApplicationsByScheduleIdService: GetWaitingListApplicationsByScheduleIdService,
 ) : DescribeSpec(
     {
-      val prisonId = "MDI"
-      val filters = ConsumerFilters(prisons = listOf(prisonId))
       val scheduleId = 123456L
+      val prisonCode = "MDI"
+      val filters = null
+      val gatewayResponse =
+        listOf(
+          ActivitiesWaitingListApplication(
+            id = 111111L,
+            activityId = 1000,
+            scheduleId = 222222,
+            allocationId = 333333,
+            prisonCode = prisonCode,
+            prisonerNumber = "A1234AA",
+            bookingId = 10001,
+            status = "PENDING",
+            statusUpdatedTime = LocalDateTime.parse("2023-06-04T16:30:00"),
+            requestedDate = LocalDate.parse("2023-06-23"),
+            requestedBy = "Fred Bloggs",
+            comments = "The prisoner has specifically requested to attend this activity",
+            declinedReason = "The prisoner has specifically requested to attend this activity",
+            creationTime = LocalDateTime.parse("2023-01-03T12:00:00"),
+            createdBy = "Jon Doe",
+            updatedTime = LocalDateTime.parse("2023-01-04T16:30:00"),
+            updatedBy = "Jane Doe",
+            earliestReleaseDate =
+              ActivitiesEarliestReleaseDate(
+                releaseDate = "2027-09-20",
+                isTariffDate = true,
+                isIndeterminateSentence = true,
+                isImmigrationDetainee = true,
+                isConvictedUnsentenced = true,
+                isRemand = true,
+              ),
+            nonAssociations = true,
+          ),
+        )
+
       val activitySchedule =
         ActivitiesActivityScheduleDetailed(
           id = 123L,
@@ -102,7 +135,7 @@ class GetActivitiesSuitabilityCriteriaServiceTest(
                     alias = "Prison",
                     description = "pay band description",
                     nomisPayBand = 1,
-                    prisonCode = prisonId,
+                    prisonCode = prisonCode,
                     createdTime = null,
                     createdBy = null,
                     updatedTime = null,
@@ -159,7 +192,7 @@ class GetActivitiesSuitabilityCriteriaServiceTest(
           activity =
             ActivitiesActivity(
               id = 123L,
-              prisonCode = prisonId,
+              prisonCode = prisonCode,
               attendanceRequired = true,
               inCell = true,
               onWing = true,
@@ -221,79 +254,54 @@ class GetActivitiesSuitabilityCriteriaServiceTest(
           usePrisonRegimeTime = true,
         )
 
-      val suitabilityCriteria =
-        ActivitiesSuitabilityCriteria(
-          riskLevel = "medium",
-          isPaid = true,
-          payRates =
-            listOf(
-              ActivitiesPayRate(
-                id = 123456L,
-                incentiveNomisCode = "BAS",
-                incentiveLevel = "Basic",
-                prisonPayBand =
-                  ActivitiesPrisonPayBand(
-                    id = 123456,
-                    displaySequence = 1,
-                    alias = "Low",
-                    description = "Pay band 1",
-                    nomisPayBand = 1,
-                    prisonCode = "MDI",
-                    createdTime = "2025-06-11T09:05:01.364Z",
-                    createdBy = "string",
-                    updatedTime = "2025-06-11T09:05:01.364Z",
-                    updatedBy = "string",
-                  ),
-                rate = 150,
-                pieceRate = 150,
-                pieceRateItems = 10,
-                startDate = LocalDate.now(),
-              ),
-            ),
-          minimumEducationLevel =
-            listOf(
-              ActivitiesMinimumEducationLevel(
-                id = 123456L,
-                educationLevelCode = "BASIC",
-                educationLevelDescription = "Basic",
-                studyAreaCode = "ENGLA",
-                studyAreaDescription = "English Language",
-              ),
-            ),
-        )
-
       beforeEach {
-        Mockito.reset(getScheduleDetailsService, activitiesGateway)
+        Mockito.reset(activitiesGateway, consumerPrisonAccessService)
 
-        whenever(getScheduleDetailsService.execute(scheduleId, filters)).thenReturn(Response(data = activitySchedule.toActivityScheduleDetailed(), errors = emptyList()))
+        whenever(activitiesGateway.getActivityScheduleById(scheduleId)).thenReturn(Response(data = activitySchedule, errors = emptyList()))
+        whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<Any>(prisonCode, filters, upstreamServiceType = UpstreamApi.ACTIVITIES)).thenReturn(Response(data = null))
       }
 
-      it("should return suitability criteria") {
-        whenever(activitiesGateway.getActivitySuitabilityCriteria(scheduleId)).thenReturn(Response(data = suitabilityCriteria))
+      it("Returns a list of waiting list applications") {
+        whenever(activitiesGateway.getWaitingListApplicationsByScheduleId(scheduleId, prisonCode)).thenReturn(Response(data = gatewayResponse))
 
-        val result = getActivitiesSuitabilityCriteriaService.execute(scheduleId, filters)
-        result.data.shouldBe(suitabilityCriteria.toSuitabilityCriteria())
+        val result = getWaitingListApplicationsByScheduleIdService.execute(scheduleId, filters)
+        result.data.shouldBe(gatewayResponse.map { it.toWaitingListApplication() })
         result.errors.shouldBeEmpty()
       }
 
-      it("should return an error if filter check fails") {
+      it("should return an error if consumerPrisonAccessService returns an error") {
         val errors =
           listOf(
             UpstreamApiError(
               causedBy = UpstreamApi.ACTIVITIES,
               type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-              description = "Error from consumer prison access check",
+              description = "Error from consumerPrisonAccessService",
             ),
           )
-        whenever(activitiesGateway.getActivitySuitabilityCriteria(scheduleId)).thenReturn(Response(data = suitabilityCriteria))
-        whenever(getScheduleDetailsService.execute(scheduleId, filters)).thenReturn(Response(data = null, errors = errors))
+        whenever(consumerPrisonAccessService.checkConsumerHasPrisonAccess<Any>(prisonCode, filters, upstreamServiceType = UpstreamApi.ACTIVITIES)).thenReturn(Response(data = null, errors = errors))
 
-        val result = getActivitiesSuitabilityCriteriaService.execute(scheduleId, filters)
+        val result = getWaitingListApplicationsByScheduleIdService.execute(scheduleId, filters)
         result.data.shouldBeNull()
         result.errors.shouldBe(errors)
       }
 
-      it("should return an error if gateway returns an error") {
+      it("should return an error if gateway.getActivityScheduleById returns an error") {
+        val errors =
+          listOf(
+            UpstreamApiError(
+              causedBy = UpstreamApi.ACTIVITIES,
+              type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
+              description = "Error from getScheduleDetailsService",
+            ),
+          )
+        whenever(activitiesGateway.getActivityScheduleById(scheduleId)).thenReturn(Response(data = null, errors = errors))
+
+        val result = getWaitingListApplicationsByScheduleIdService.execute(scheduleId, filters)
+        result.data.shouldBeNull()
+        result.errors.shouldBe(errors)
+      }
+
+      it("should return an error if gateway.getWaitingListApplicationsByScheduleId returns an error") {
         val errors =
           listOf(
             UpstreamApiError(
@@ -302,9 +310,9 @@ class GetActivitiesSuitabilityCriteriaServiceTest(
               description = "Error from gateway",
             ),
           )
-        whenever(activitiesGateway.getActivitySuitabilityCriteria(scheduleId)).thenReturn(Response(data = null, errors = errors))
+        whenever(activitiesGateway.getWaitingListApplicationsByScheduleId(scheduleId, prisonCode)).thenReturn(Response(data = null, errors = errors))
 
-        val result = getActivitiesSuitabilityCriteriaService.execute(scheduleId, filters)
+        val result = getWaitingListApplicationsByScheduleIdService.execute(scheduleId, filters)
         result.data.shouldBeNull()
         result.errors.shouldBe(errors)
       }

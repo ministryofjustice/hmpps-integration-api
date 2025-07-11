@@ -33,6 +33,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerDea
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ReasonForAttendance
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.SuitabilityCriteria
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.WaitingListApplication
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.ActivitiesQueueService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetActivitiesScheduleService
@@ -40,6 +41,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetActivitiesSu
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetAttendanceReasonsService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetDeallocationReasonsService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetScheduleDetailsService
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.GetWaitingListApplicationsByScheduleIdService
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.services.internal.AuditService
 
 @RestController
@@ -49,6 +51,7 @@ class ActivitiesController(
   @Autowired val getActivitiesScheduleService: GetActivitiesScheduleService,
   @Autowired val getAttendanceReasonsService: GetAttendanceReasonsService,
   @Autowired val getDeallocationReasonsService: GetDeallocationReasonsService,
+  @Autowired val getWaitingListApplicationsByScheduleIdService: GetWaitingListApplicationsByScheduleIdService,
   @Autowired val auditService: AuditService,
   private val activitiesQueueService: ActivitiesQueueService,
   private val getScheduleDetailsService: GetScheduleDetailsService,
@@ -440,6 +443,57 @@ class ActivitiesController(
 
     auditService.createEvent(
       "POST_ALLOCATE_PRISONER_TO_ACTIVITY",
+      mapOf("scheduleId" to scheduleId.toString()),
+    )
+
+    return DataResponse(data = response.data)
+  }
+
+  @GetMapping("/schedule/{scheduleId}/waiting-list-applications")
+  @Operation(
+    summary = "Gets the waiting list applications for an activity.",
+    description = "<b>Applicable filters</b>: <ul><li>prisons</li></ul>",
+    responses = [
+      ApiResponse(
+        responseCode = "200",
+        useReturnTypeSchema = true,
+        description = "Successfully performed the query on upstream APIs. An empty list is returned when no results are found.",
+      ),
+      ApiResponse(
+        responseCode = "400",
+        content = [Content(schema = Schema(ref = "#/components/schemas/BadRequest"))],
+      ),
+      ApiResponse(
+        responseCode = "403",
+        content = [Content(schema = Schema(ref = "#/components/schemas/ForbiddenResponse"))],
+      ),
+      ApiResponse(
+        responseCode = "404",
+        content = [Content(schema = Schema(ref = "#/components/schemas/NotFoundError"))],
+      ),
+      ApiResponse(
+        responseCode = "500",
+        content = [Content(schema = Schema(ref = "#/components/schemas/InternalServerError"))],
+      ),
+    ],
+  )
+  @FeatureFlag(name = FeatureFlagConfig.Companion.USE_WAITING_LIST_ENDPOINT)
+  fun getWaitingListApplicationsByScheduleId(
+    @Parameter(description = "The ID of the schedule") @PathVariable scheduleId: Long,
+    @RequestAttribute filters: ConsumerFilters?,
+  ): DataResponse<List<WaitingListApplication>?> {
+    val response = getWaitingListApplicationsByScheduleIdService.execute(scheduleId, filters)
+
+    if (response.hasError(UpstreamApiError.Type.BAD_REQUEST)) {
+      throw ValidationException("Invalid query parameters.")
+    }
+
+    if (response.hasError(UpstreamApiError.Type.ENTITY_NOT_FOUND)) {
+      throw EntityNotFoundException("Could not find waiting list applications with supplied query parameters.")
+    }
+
+    auditService.createEvent(
+      "GET_WAITING_LIST_APPLICATIONS_BY_ID",
       mapOf("scheduleId" to scheduleId.toString()),
     )
 

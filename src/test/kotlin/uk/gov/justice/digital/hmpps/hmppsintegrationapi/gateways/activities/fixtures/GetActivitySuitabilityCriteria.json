@@ -1,19 +1,29 @@
 {
   "riskLevel": "medium",
   "isPaid": true,
-  "payRate": {
-    "id": 123456,
-    "incentiveNomisCode": "BAS",
-    "incentiveLevel": "Basic",
-    "prisonPayBand": {
+  "payRates": [
+    {
       "id": 123456,
-      "alias": "Low",
-      "description": "Pay band 1"
-    },
-    "rate": 150,
-    "pieceRate": 150,
-    "pieceRateItems": 10
-  },
+      "incentiveNomisCode": "BAS",
+      "incentiveLevel": "Basic",
+      "prisonPayBand": {
+        "id": 123456,
+        "displaySequence": 1,
+        "alias": "Low",
+        "description": "Pay band 1",
+        "nomisPayBand": 1,
+        "prisonCode": "MDI",
+        "createdTime": "2025-06-11T09:05:01.364Z",
+        "createdBy": "string",
+        "updatedTime": "2025-06-11T09:05:01.364Z",
+        "updatedBy": "string"
+      },
+      "rate": 150,
+      "pieceRate": 150,
+      "pieceRateItems": 10,
+      "startDate": "2022-09-29T11:20:00"
+    }
+  ],
   "minimumEducationLevel": [
     {
       "id": 123456,
