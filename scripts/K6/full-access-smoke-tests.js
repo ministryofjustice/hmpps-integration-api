@@ -20,6 +20,7 @@ const baseUrl = "https://dev.integration-api.hmpps.service.justice.gov.uk";
 const hmppsId = "A8451DY";
 const alternativeHmppsId = "G6333VK";
 const plpHmppsId = "A5502DZ";
+const attendancesHmppsId = "G4328GK";
 const deliusCrn = "X725642";
 const risksCrn = "X756352";
 const prisonId = "MKI";
@@ -38,6 +39,8 @@ const day = today.getDate().toString().padStart(2, '0');
 const todayFormatted = `${year}-${month}-${day}`
 const startDate = "2022-01-01"
 const endDate = "2022-02-01"
+const attendancesStartDate = "2025-07-04"
+const attendancesEndDate = "2025-07-11"
 
 const get_endpoints = [
   `/v1/hmpps/id/by-nomis-number/${hmppsId}`,
@@ -112,7 +115,7 @@ const get_endpoints = [
   `/v1/activities/schedule/${scheduleId}`,
   `/v1/prison/${prisonId}/prisoners/${hmppsId}/scheduled-instances?startDate=${startDate}&endDate=${endDate}`,
   `/v1/activities/deallocation-reasons`,
-  `/v1/prison/prisoners/${hmppsId}/activities/attendances?startDate=${startDate}&endDate=${endDate}&prisonId=${prisonId}`
+  `/v1/prison/prisoners/${attendancesHmppsId}/activities/attendances?startDate=${attendancesStartDate}&endDate=${attendancesEndDate}`
 ];
 
 const broken_endpoints = []
