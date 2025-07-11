@@ -2,8 +2,6 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps
 
 import com.fasterxml.jackson.annotation.JsonFormat
 import io.swagger.v3.oas.annotations.media.Schema
-import jakarta.annotation.Nullable
-import jakarta.validation.Valid
 import jakarta.validation.constraints.FutureOrPresent
 import jakarta.validation.constraints.NotEmpty
 import java.time.LocalDate
@@ -35,10 +33,6 @@ data class PrisonerDeallocationRequest(
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
   @field:FutureOrPresent(message = "End date must not be in the past")
   val endDate: LocalDate,
-  @Schema(description = "Describes a case note to be added to the prisoner's profile as part of the deallocation.")
-  @field:Valid
-  @field:Nullable
-  val caseNote: AddCaseNoteRequest? = null,
   @Schema(description = "The scheduled instance id required when de-allocation is a session later today")
   val scheduleInstanceId: Long? = null,
 ) {
@@ -48,7 +42,6 @@ data class PrisonerDeallocationRequest(
       "prisonerNumbers" to listOf(prisonerNumber),
       "reasonCode" to reasonCode,
       "endDate" to endDate,
-      "caseNote" to caseNote?.let { mapOf("type" to it.type, "text" to it.text) },
       "scheduleInstanceId" to scheduleInstanceId,
     )
 

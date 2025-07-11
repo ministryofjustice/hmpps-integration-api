@@ -18,7 +18,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_UPDATE_ATTENDANCE_ENDPOINT
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_WAITING_LIST_ENDPOINT
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.FeatureNotEnabledException
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.AddCaseNoteRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Exclusion
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerAllocationRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerDeallocationRequest
@@ -116,11 +115,6 @@ internal class FeatureFlaggedEndpointsIntegrationTest : IntegrationTestBase() {
         prisonerNumber = "A1234AA",
         reasonCode = "RELEASED",
         endDate = LocalDate.now(),
-        caseNote =
-          AddCaseNoteRequest(
-            type = "GEN",
-            text = "Case note text",
-          ),
         scheduleInstanceId = 1234L,
       )
 

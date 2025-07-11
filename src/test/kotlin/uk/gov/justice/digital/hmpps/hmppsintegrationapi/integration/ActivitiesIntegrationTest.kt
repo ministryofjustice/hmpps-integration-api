@@ -16,7 +16,6 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.http.HttpStatus
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.AddCaseNoteRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.AttendanceUpdateRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Exclusion
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerAllocationRequest
@@ -319,11 +318,6 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
         prisonerNumber = nomsId,
         reasonCode = "RELEASED",
         endDate = LocalDate.now(),
-        caseNote =
-          AddCaseNoteRequest(
-            type = "GEN",
-            text = "Case note text",
-          ),
         scheduleInstanceId = 1234L,
       )
 

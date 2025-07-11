@@ -33,7 +33,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ActivitySch
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ActivityScheduleDetailed
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ActivityScheduleInstance
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.ActivityScheduleSuspension
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.AddCaseNoteRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Attendance
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.AttendanceUpdateRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.EarliestReleaseDate
@@ -194,11 +193,6 @@ class ActivitiesQueueServiceTest(
             prisonerNumber = prisonerNumber,
             reasonCode = "RELEASED",
             endDate = LocalDate.now(),
-            caseNote =
-              AddCaseNoteRequest(
-                type = "GEN",
-                text = "Case note text",
-              ),
             scheduleInstanceId = 1234L,
           )
         val activityScheduleDetailed =
