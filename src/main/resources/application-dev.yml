@@ -56,6 +56,7 @@ feature-flag:
   use-prisoner-base-location-endpoint: true
   use-suitability-endpoint: true
   use-waiting-list-endpoint: true
+  use-no-lao-context-exception: true
 
 authorisation:
   consumers:

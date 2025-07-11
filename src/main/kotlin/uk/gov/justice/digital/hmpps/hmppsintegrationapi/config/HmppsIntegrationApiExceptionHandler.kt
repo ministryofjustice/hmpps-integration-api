@@ -26,6 +26,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.FeatureNotEnab
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.ForbiddenByUpstreamServiceException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.HmppsAuthFailedException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.LimitedAccessException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.LimitedAccessFailedException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.MessageFailedException
 
 @RestControllerAdvice
@@ -209,6 +210,20 @@ class HmppsIntegrationApiExceptionHandler {
       .body(
         ErrorResponse(
           status = BAD_REQUEST,
+          developerMessage = e.message,
+          userMessage = e.message,
+        ),
+      )
+  }
+
+  @ExceptionHandler(LimitedAccessFailedException::class)
+  fun handleLimitedAccessFailedException(e: LimitedAccessFailedException): ResponseEntity<ErrorResponse> {
+    logAndCapture("Limited access failure exception: {}", e)
+    return ResponseEntity
+      .status(INTERNAL_SERVER_ERROR)
+      .body(
+        ErrorResponse(
+          status = INTERNAL_SERVER_ERROR,
           developerMessage = e.message,
           userMessage = e.message,
         ),
