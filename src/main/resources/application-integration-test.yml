@@ -90,7 +90,6 @@ authorisation:
     config-v2-test:
       include:
         - "/v2/config/authorisation"
-        - "/v1/status"
       filters:
         prisons:
           - XYZ
