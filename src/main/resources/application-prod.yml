@@ -54,6 +54,7 @@ feature-flag:
   use-historical-attendances-endpoint: false
   use-suitability-endpoint: false
   use-waiting-list-endpoint: false
+  use-no-lao-context-exception: false
 
 authorisation:
   consumers:
