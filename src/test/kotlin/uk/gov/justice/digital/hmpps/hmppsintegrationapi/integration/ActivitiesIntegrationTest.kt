@@ -145,7 +145,6 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
           attendanceReason = "ATTENDED",
           comment = "Prisoner has COVID-19",
           issuePayment = true,
-          caseNote = "Prisoner refused to attend the scheduled activity without reasonable excuse",
           incentiveLevelWarningIssued = true,
           otherAbsenceReason = "Prisoner has another reason for missing the activity",
         ),
@@ -275,15 +274,6 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
     @Test
     fun `return a 400 when status is blank`() {
       val requestBody = asJsonString(attendanceUpdateRequests.map { it.copy(status = "") })
-      putApi(path, requestBody)
-        .andExpect(MockMvcResultMatchers.status().isBadRequest)
-
-      checkQueueIsEmpty()
-    }
-
-    @Test
-    fun `return a 400 when case notes exceeds max length`() {
-      val requestBody = asJsonString(attendanceUpdateRequests.map { it.copy(caseNote = "a".repeat(3801)) })
       putApi(path, requestBody)
         .andExpect(MockMvcResultMatchers.status().isBadRequest)
 
