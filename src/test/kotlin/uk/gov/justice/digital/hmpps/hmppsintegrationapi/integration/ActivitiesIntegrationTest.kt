@@ -3,6 +3,9 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.github.tomakehurst.wiremock.client.WireMock.equalTo
+import com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor
+import com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo
 import io.kotest.assertions.json.shouldContainJsonKeyValue
 import io.kotest.matchers.shouldBe
 import org.awaitility.kotlin.await
@@ -13,7 +16,6 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.http.HttpStatus
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.AddCaseNoteRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.AttendanceUpdateRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Exclusion
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerAllocationRequest
@@ -25,6 +27,8 @@ import java.time.DayOfWeek
 import java.time.LocalDate
 
 class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
+  private val prisonCode = "MDI"
+
   @Nested
   @DisplayName("GET /v1/activities/{activityId}/schedules")
   inner class GetActivitySchedules {
@@ -78,6 +82,40 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
       callApi(path)
         .andExpect(MockMvcResultMatchers.status().isOk)
         .andExpect(MockMvcResultMatchers.content().json(getExpectedResponse("activities-schedule-detailed-response")))
+    }
+
+    @Test
+    fun `return a 404 when prison not in the allowed prisons`() {
+      callApiWithCN(path, limitedPrisonsCn)
+        .andExpect(MockMvcResultMatchers.status().isNotFound)
+    }
+
+    @Test
+    fun `return a 404 no prisons in filter`() {
+      callApiWithCN(path, noPrisonsCn)
+        .andExpect(MockMvcResultMatchers.status().isNotFound)
+    }
+  }
+
+  @Nested
+  @DisplayName("GET /v1/activities/schedule/{scheduleId}/suitability-criteria")
+  inner class GetActivityScheduleSuitabilityCriteria {
+    val scheduleId = 123456L
+    val path = "/v1/activities/schedule/$scheduleId/suitability-criteria"
+
+    @Test
+    fun `return the suitability criteria details`() {
+      activitiesMockServer.stubForGet(
+        path = "/schedules/$scheduleId",
+        File("$gatewaysFolder/activities/fixtures/GetActivityScheduleById.json").readText(),
+      )
+      activitiesMockServer.stubForGet(
+        path = "/integration-api/activities/schedule/$scheduleId/suitability-criteria",
+        File("$gatewaysFolder/activities/fixtures/GetActivitySuitabilityCriteria.json").readText(),
+      )
+      callApi(path)
+        .andExpect(MockMvcResultMatchers.status().isOk)
+        .andExpect(MockMvcResultMatchers.content().json(getExpectedResponse("activities-suitability-criteria")))
     }
 
     @Test
@@ -280,11 +318,6 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
         prisonerNumber = nomsId,
         reasonCode = "RELEASED",
         endDate = LocalDate.now(),
-        caseNote =
-          AddCaseNoteRequest(
-            type = "GEN",
-            text = "Case note text",
-          ),
         scheduleInstanceId = 1234L,
       )
 
@@ -475,7 +508,6 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
   inner class PostAllocateToSchedule {
     val scheduleId = 123456L
     val path = "/v1/activities/schedule/$scheduleId/allocate"
-    val prisonCode = "MDI"
     val prisonerAllocationRequest =
       PrisonerAllocationRequest(
         prisonerNumber = nomsId,
@@ -972,6 +1004,54 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
       val messageAttributes = objectMapper.readTree(messageJson).at("/messageAttributes")
       val expectedMessageAttributes = objectMapper.readTree(objectMapper.writeValueAsString(expectedMessage.messageAttributes))
       messageAttributes.shouldBe(expectedMessageAttributes)
+    }
+  }
+
+  @Nested
+  @DisplayName("GET /v1/activities/schedule/{scheduleId}/waiting-list-applications")
+  inner class GetWaitingListApplicationsByScheduleId {
+    private val scheduleId = 111111L
+    private val path = "/v1/activities/schedule/$scheduleId/waiting-list-applications"
+    private val badRequestPath = "/v1//activities/schedule/AAA/waiting-list-applications"
+
+    @Test
+    fun `return waiting list applications`() {
+      activitiesMockServer.stubForGet(
+        "/schedules/$scheduleId",
+        File("$gatewaysFolder/activities/fixtures/GetActivityScheduleById.json").readText(),
+      )
+
+      activitiesMockServer.stubForGet(
+        "/schedules/$scheduleId/waiting-list-applications",
+        File("$gatewaysFolder/activities/fixtures/GetWaitingListApplicationsByScheduleId.json").readText(),
+      )
+
+      callApi(path)
+        .andExpect(MockMvcResultMatchers.status().isOk)
+        .andExpect(MockMvcResultMatchers.content().json(getExpectedResponse("waiting-list-applications-response")))
+
+      activitiesMockServer.verify(
+        getRequestedFor(urlEqualTo("/schedules/$scheduleId/waiting-list-applications"))
+          .withHeader("Caseload-Id", equalTo(prisonCode)),
+      )
+    }
+
+    @Test
+    fun `return a 404 when prison not in the allowed prisons`() {
+      callApiWithCN(path, limitedPrisonsCn)
+        .andExpect(MockMvcResultMatchers.status().isNotFound)
+    }
+
+    @Test
+    fun `return a 404 no prisons in filter`() {
+      callApiWithCN(path, noPrisonsCn)
+        .andExpect(MockMvcResultMatchers.status().isNotFound)
+    }
+
+    @Test
+    fun `return a 400 Bad Request when a string is provided as the schedule ID`() {
+      callApi(badRequestPath)
+        .andExpect(MockMvcResultMatchers.status().isBadRequest)
     }
   }
 }

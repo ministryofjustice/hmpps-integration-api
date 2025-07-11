@@ -34,7 +34,7 @@ internal class GetStatusInformationForPersonServiceTest(
       val deliusCrn = persona.identifiers.deliusCrn!!
       val person =
         Person(firstName = persona.firstName, lastName = persona.lastName, identifiers = Identifiers(deliusCrn = deliusCrn))
-      val statusInformation = StatusInformation(code = "ASFO", description = "Serious Further Offence - Subject to SFO review/investigation", startDate = "2013-10-17")
+      val statusInformation = StatusInformation(code = "WRSM", description = "Warrant/Summons - Outstanding warrant or summons", startDate = "2013-10-17")
       val nonMatchingStatusInformation = StatusInformation(code = "INVALID", description = "Invalid status information data", startDate = "2010-07-07")
       val statusInformationList =
         listOf(

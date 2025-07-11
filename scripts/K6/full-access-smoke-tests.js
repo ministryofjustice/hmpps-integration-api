@@ -10,7 +10,7 @@ export const options = {
   tlsAuth: [
     {
       domains: ["dev.integration-api.hmpps.service.justice.gov.uk"],
-      cert,
+                      cert,
       key,
     },
   ],
@@ -36,6 +36,8 @@ const year = today.getFullYear();
 const month = (today.getMonth() + 1).toString().padStart(2, '0');
 const day = today.getDate().toString().padStart(2, '0');
 const todayFormatted = `${year}-${month}-${day}`
+const startDate = "2022-01-01"
+const endDate = "2022-02-01"
 
 const get_endpoints = [
   `/v1/hmpps/id/by-nomis-number/${hmppsId}`,
@@ -103,10 +105,16 @@ const get_endpoints = [
   `/v2/config/authorisation`,
   `/v1/persons/${hmppsId}/health-and-diet`,
   `/v1/persons/${hmppsId}/languages`,
+  `/v1/persons/${plpHmppsId}/education`,
+  `/v1/persons/${hmppsId}/prisoner-base-location`,
   `/v1/activities/${activityId}/schedules`,
   `/v1/activities/attendance-reasons`,
   `/v1/activities/schedule/${scheduleId}`,
-  `/v1/activities/deallocation-reasons`
+  `/v1/prison/${prisonId}/prisoners/${hmppsId}/scheduled-instances?startDate=${startDate}&endDate=${endDate}`,
+  `/v1/activities/deallocation-reasons`,
+  `/v1/prison/prisoners/${hmppsId}/activities/attendances?startDate=${startDate}&endDate=${endDate}&prisonId=${prisonId}`,
+  `/v1/activities/schedule/${scheduleId}/waiting-list-applications`,
+  `/v1/activities/schedule/${scheduleId}/suitability-criteria`
 ];
 
 const broken_endpoints = []

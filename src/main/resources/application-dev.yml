@@ -48,8 +48,14 @@ feature-flag:
   use-schedule-detail-endpoint: true
   use-search-appointments-endpoint: true
   use-deallocation-endpoint: true
+  use-scheduled-instances-endpoint: true
   use-deallocation-reasons-endpoint: true
   use-allocation-endpoint: true
+  use-historical-attendances-endpoint: true
+  use-education-endpoint: true
+  use-prisoner-base-location-endpoint: true
+  use-suitability-endpoint: true
+  use-waiting-list-endpoint: true
 
 authorisation:
   consumers:
@@ -161,7 +167,7 @@ authorisation:
         - "/v1/hmpps/id/nomis-number/by-hmpps-id/[^/]*$"
         - "/v1/persons/.*/education/assessments/status"
         - "/v1/persons/[^/]*$"
-        - "/v1/persons/.*/prisoner-base-location"
+        - "/v1/persons/[^/]+/prisoner-base-location"
         - "/v1/persons/.*/education/assessments"
       filters:
     moj-esw:
@@ -170,7 +176,7 @@ authorisation:
         - "/v1/hmpps/id/by-nomis-number/[^/]*$"
         - "/v1/hmpps/id/nomis-number/by-hmpps-id/[^/]*$"
         - "/v1/persons/[^/]*$"
-        - "/v1/persons/.*/prisoner-base-location"
+        - "/v1/persons/[^/]+/prisoner-base-location"
         - "/v1/persons/.*/education/assessments"
       filters:
     bmadley:

@@ -46,8 +46,14 @@ feature-flag:
   use-schedule-detail-endpoint: true
   use-search-appointments-endpoint: true
   use-deallocation-endpoint: true
+  use-scheduled-instances-endpoint: true
   use-deallocation-reasons-endpoint: true
-  use-allocation-endpoint: false
+  use-allocation-endpoint: true
+  use-education-endpoint: true
+  use-prisoner-base-location-endpoint: false
+  use-historical-attendances-endpoint: false
+  use-suitability-endpoint: true
+  use-waiting-list-endpoint: false
 
 authorisation:
   consumers:

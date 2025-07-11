@@ -8,14 +8,18 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrap
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper.WebClientWrapperResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesActivitySchedule
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesActivityScheduleDetailed
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesActivityScheduledInstanceForPrisoner
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesAppointmentDetails
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesAttendance
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesAttendanceReason
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesDeallocationReason
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesHistoricalAttendance
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesPagedWaitingListApplication
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesPrisonPayBand
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesPrisonRegime
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesRunningActivity
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesSuitabilityCriteria
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesWaitingListApplication
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.activities.ActivitiesWaitingListSearchRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.AppointmentSearchRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
@@ -133,6 +137,29 @@ class ActivitiesGateway(
     }
   }
 
+  fun getActivitySuitabilityCriteria(scheduleId: Long): Response<ActivitiesSuitabilityCriteria?> {
+    val result =
+      webClient.request<ActivitiesSuitabilityCriteria>(
+        HttpMethod.GET,
+        "/integration-api/activities/schedule/$scheduleId/suitability-criteria",
+        authenticationHeader(),
+        UpstreamApi.ACTIVITIES,
+        badRequestAsError = true,
+      )
+    return when (result) {
+      is WebClientWrapperResponse.Success -> {
+        Response(data = result.data)
+      }
+
+      is WebClientWrapperResponse.Error -> {
+        Response(
+          data = null,
+          errors = result.errors,
+        )
+      }
+    }
+  }
+
   fun getAllRunningActivities(prisonCode: String): Response<List<ActivitiesRunningActivity>?> {
     val result =
       webClient.requestList<ActivitiesRunningActivity>(
@@ -233,6 +260,44 @@ class ActivitiesGateway(
     }
   }
 
+  fun getScheduledInstancesForPrisoner(
+    prisonCode: String,
+    prisonerNumber: String,
+    startDate: String,
+    endDate: String,
+    slot: String?,
+  ): Response<List<ActivitiesActivityScheduledInstanceForPrisoner>?> {
+    val queryParams =
+      buildList {
+        add("startDate=$startDate")
+        add("endDate=$endDate")
+        slot?.let { add("slot=$it") }
+      }.joinToString("&")
+
+    val result =
+      webClient.requestList<ActivitiesActivityScheduledInstanceForPrisoner>(
+        method = HttpMethod.GET,
+        uri = "/integration-api/prisons/$prisonCode/$prisonerNumber/scheduled-instances?$queryParams",
+        headers = authenticationHeader(),
+        upstreamApi = UpstreamApi.ACTIVITIES,
+        badRequestAsError = true,
+        forbiddenAsError = true,
+      )
+
+    return when (result) {
+      is WebClientWrapperResponse.Success -> {
+        Response(data = result.data)
+      }
+
+      is WebClientWrapperResponse.Error -> {
+        Response(
+          data = null,
+          errors = result.errors,
+        )
+      }
+    }
+  }
+
   fun getDeallocationReasons(): Response<List<ActivitiesDeallocationReason>?> {
     val result =
       webClient.requestList<ActivitiesDeallocationReason>(
@@ -242,6 +307,7 @@ class ActivitiesGateway(
         UpstreamApi.ACTIVITIES,
         forbiddenAsError = true,
       )
+
     return when (result) {
       is WebClientWrapperResponse.Success -> {
         Response(data = result.data)
@@ -269,6 +335,63 @@ class ActivitiesGateway(
         authenticationHeader(),
         UpstreamApi.ACTIVITIES,
         requestBody = activitiesWaitingListSearchRequest.toApiConformingMap(),
+        badRequestAsError = true,
+      )
+
+    return when (result) {
+      is WebClientWrapperResponse.Success -> {
+        Response(data = result.data)
+      }
+
+      is WebClientWrapperResponse.Error -> {
+        Response(
+          data = null,
+          errors = result.errors,
+        )
+      }
+    }
+  }
+
+  fun getHistoricalAttendances(
+    prisonerNumber: String,
+    startDate: String,
+    endDate: String,
+    prisonCode: String?,
+  ): Response<List<ActivitiesHistoricalAttendance>?> {
+    val prisonCodeParam = prisonCode?.let { "&prisonCode=$it" } ?: ""
+    val result =
+      webClient.requestList<ActivitiesHistoricalAttendance>(
+        HttpMethod.GET,
+        "/integration-api/attendances/$prisonerNumber?startDate=$startDate&endDate=$endDate$prisonCodeParam",
+        authenticationHeader(),
+        UpstreamApi.ACTIVITIES,
+        badRequestAsError = true,
+      )
+
+    return when (result) {
+      is WebClientWrapperResponse.Success -> {
+        Response(data = result.data)
+      }
+
+      is WebClientWrapperResponse.Error -> {
+        Response(
+          data = null,
+          errors = result.errors,
+        )
+      }
+    }
+  }
+
+  fun getWaitingListApplicationsByScheduleId(
+    scheduleId: Long,
+    prisonCode: String,
+  ): Response<List<ActivitiesWaitingListApplication>?> {
+    val result =
+      webClient.requestList<ActivitiesWaitingListApplication>(
+        HttpMethod.GET,
+        "/schedules/$scheduleId/waiting-list-applications",
+        authenticationHeader() + mapOf("Caseload-Id" to prisonCode),
+        UpstreamApi.ACTIVITIES,
         badRequestAsError = true,
       )
 

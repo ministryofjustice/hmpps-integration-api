@@ -107,4 +107,35 @@ class PrisonActivitiesIntegrationTest : IntegrationTestBase() {
         .andExpect(status().isNotFound)
     }
   }
+
+  @Nested
+  @DisplayName("GET /v1/prison/prisoners/{hmppsId}/activities/attendances ")
+  inner class GetHistoricalAttendances {
+    private val startDate = "2022-01-01"
+    private val endDate = "2022-02-01"
+    val path = "/v1/prison/prisoners/$nomsId/activities/attendances?startDate=$startDate&endDate=$endDate&prisonId=$prisonId"
+
+    @Test
+    fun `return the historical attendances`() {
+      activitiesMockServer.stubForGet(
+        "/integration-api/attendances/$nomsId?startDate=$startDate&endDate=$endDate&prisonCode=$prisonId",
+        File("$gatewaysFolder/activities/fixtures/GetHistoricalAttendances.json").readText(),
+      )
+      callApi(path)
+        .andExpect(status().isOk)
+        .andExpect(content().json(getExpectedResponse("historical-attendances-response")))
+    }
+
+    @Test
+    fun `return a 404 when prison not in the allowed prisons`() {
+      callApiWithCN(path, limitedPrisonsCn)
+        .andExpect(status().isNotFound)
+    }
+
+    @Test
+    fun `return a 404 no prisons in filter`() {
+      callApiWithCN(path, noPrisonsCn)
+        .andExpect(status().isNotFound)
+    }
+  }
 }

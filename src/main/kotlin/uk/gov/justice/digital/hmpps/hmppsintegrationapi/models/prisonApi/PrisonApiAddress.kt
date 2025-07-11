@@ -41,7 +41,7 @@ data class PrisonApiAddress(
     addressType: String?,
   ): List<Address.Type> {
     val result =
-      addressUsages.map { it.toAddressType() }.plus(
+      addressUsages.filter { it.addressUsage != null }.map { it.toAddressType() }.plus(
         Address.Type(
           code = addressType,
           description = getAddressDescriptionFromType(addressType),
@@ -60,7 +60,7 @@ data class PrisonApiAddress(
     }
 
   data class AddressUsage(
-    val addressUsage: String,
+    val addressUsage: String?,
     val addressUsageDescription: String?,
   ) {
     fun toAddressType() =

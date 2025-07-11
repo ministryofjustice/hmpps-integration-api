@@ -3,7 +3,9 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.gateways.nomis
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.booleans.shouldBeTrue
 import io.kotest.matchers.collections.shouldBeEmpty
+import io.kotest.matchers.ints.shouldBeExactly
 import io.kotest.matchers.ints.shouldBeGreaterThan
+import io.kotest.matchers.shouldBe
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory
 import org.mockito.kotlin.verify
@@ -64,6 +66,16 @@ class GetAddressesForPersonTest(
                   "activeFlag": false
                 },
                 {
+                  "addressId": 8681811,
+                  "addressUsageDescription": "Do not use. No addressUsage code",
+                  "activeFlag": false
+                },
+                {
+                  "addressId": 8681821,
+                  "addressUsageDescription": "Do not use. No addressUsage code",
+                  "activeFlag": false
+                },
+                {
                   "addressId": 8681879,
                   "addressUsage": "B99",
                   "addressUsageDescription": "Glass Elevator",
@@ -93,6 +105,27 @@ class GetAddressesForPersonTest(
         val response = prisonApiGateway.getAddressesForPerson(offenderNo)
 
         response.data.count().shouldBeGreaterThan(0)
+      }
+
+      it("returns only the usages that have an addressUsage code") {
+        val response = prisonApiGateway.getAddressesForPerson(offenderNo)
+
+        response.data[0]
+          .types
+          .count()
+          .shouldBeExactly(3)
+        response.data[0]
+          .types[0]
+          .code
+          .shouldBe("A99")
+        response.data[0]
+          .types[1]
+          .code
+          .shouldBe("B99")
+        response.data[0]
+          .types[2]
+          .code
+          .shouldBe("BUS")
       }
 
       it("returns an empty list when no addresses are found") {

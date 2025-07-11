@@ -8,11 +8,16 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_ALLOCATION_ENDPOINT
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_DEALLOCATION_ENDPOINT
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_DEALLOCATION_REASONS_ENDPOINT
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_EDUCATION_ENDPOINT
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_HISTORICAL_ATTENDANCES_ENDPOINT
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_PRISONER_BASE_LOCATION_ENDPOINT
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_SCHEDULED_INSTANCES_ENDPOINT
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_SCHEDULE_DETAIL_ENDPOINT
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_SEARCH_APPOINTMENTS_ENDPOINT
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_SUITABILITY_ENDPOINT
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_UPDATE_ATTENDANCE_ENDPOINT
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.USE_WAITING_LIST_ENDPOINT
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.FeatureNotEnabledException
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.AddCaseNoteRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Exclusion
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerAllocationRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerDeallocationRequest
@@ -57,6 +62,24 @@ internal class FeatureFlaggedEndpointsIntegrationTest : IntegrationTestBase() {
   }
 
   @Test
+  fun `get activity schedule suitability criteria should return 503`() {
+    whenever(featureFlagConfig.require(USE_SUITABILITY_ENDPOINT)).thenThrow(FeatureNotEnabledException(""))
+    val scheduleId = 1234L
+    val path = "/v1/activities/schedule/$scheduleId/suitability-criteria"
+    callApi(path)
+      .andExpect(status().isServiceUnavailable)
+  }
+
+  @Test
+  fun `get education for person should return 503`() {
+    whenever(featureFlagConfig.require(USE_EDUCATION_ENDPOINT)).thenThrow(FeatureNotEnabledException(""))
+    val hmppsId = "A1234AA"
+    val path = "/v1/persons/$hmppsId/education"
+    callApi(path)
+      .andExpect(status().isServiceUnavailable)
+  }
+
+  @Test
   fun `post search appointments should return 503`() {
     val prisonId = "MDI"
     whenever(featureFlagConfig.require(USE_SEARCH_APPOINTMENTS_ENDPOINT)).thenThrow(FeatureNotEnabledException(""))
@@ -92,15 +115,20 @@ internal class FeatureFlaggedEndpointsIntegrationTest : IntegrationTestBase() {
         prisonerNumber = "A1234AA",
         reasonCode = "RELEASED",
         endDate = LocalDate.now(),
-        caseNote =
-          AddCaseNoteRequest(
-            type = "GEN",
-            text = "Case note text",
-          ),
         scheduleInstanceId = 1234L,
       )
 
     putApi(path, asJsonString(prisonerDeallocationRequest))
+      .andExpect(status().isServiceUnavailable)
+  }
+
+  @Test
+  fun `get scheduled instances for prisoner should return 503`() {
+    whenever(featureFlagConfig.require(USE_SCHEDULED_INSTANCES_ENDPOINT)).thenThrow(FeatureNotEnabledException(""))
+    val prisonId = "MDI"
+    val hmppsId = "A1234AA"
+    val path = "/v1/prison/$prisonId/prisoners/$hmppsId/scheduled-instances?startDate=2022-09-10&endDate=2023-09-10"
+    callApi(path)
       .andExpect(status().isServiceUnavailable)
   }
 
@@ -144,6 +172,37 @@ internal class FeatureFlaggedEndpointsIntegrationTest : IntegrationTestBase() {
       )
 
     postToApi(path, asJsonString(prisonerAllocationRequest))
+      .andExpect(status().isServiceUnavailable)
+  }
+
+  @Test
+  fun `get prisoner base location should return 503`() {
+    whenever(featureFlagConfig.require(USE_PRISONER_BASE_LOCATION_ENDPOINT)).thenThrow(FeatureNotEnabledException(""))
+    val prisonNumber = "A1234AA"
+    val path = "/v1/persons/$prisonNumber/prisoner-base-location"
+
+    callApi(path)
+      .andExpect(status().isServiceUnavailable)
+  }
+
+  @Test
+  fun `get historical attendances should return 503`() {
+    whenever(featureFlagConfig.require(USE_HISTORICAL_ATTENDANCES_ENDPOINT)).thenThrow(FeatureNotEnabledException(""))
+    val startDate = "2022-01-01"
+    val endDate = "2022-02-01"
+    val prisonId = "MDI"
+    val path = "/v1/prison/prisoners/$nomsId/activities/attendances?startDate=$startDate&endDate=$endDate&prisonId=$prisonId"
+    callApi(path)
+      .andExpect(status().isServiceUnavailable)
+  }
+
+  @Test
+  fun `get waiting list applications by schedule ID should return 503`() {
+    whenever(featureFlagConfig.require(USE_WAITING_LIST_ENDPOINT)).thenThrow(FeatureNotEnabledException(""))
+    val scheduleId = 123456L
+    val filters = null
+    val path = "/v1/activities/schedule/$scheduleId/waiting-list-applications"
+    callApi(path)
       .andExpect(status().isServiceUnavailable)
   }
 }
