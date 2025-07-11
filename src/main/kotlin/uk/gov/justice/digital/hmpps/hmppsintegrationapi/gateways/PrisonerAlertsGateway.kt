@@ -58,4 +58,44 @@ class PrisonerAlertsGateway(
       }
     }
   }
+
+  /**
+   * @param page page number (1 based)
+   * @param size records per page
+   * @param alertCodes The alert codes to return in the response. If empty then all codes will be returned
+   */
+  fun getPrisonerAlertsForCodes(
+    prisonerNumber: String,
+    page: Int,
+    size: Int,
+    alertCodes: List<String> = emptyList(),
+  ): Response<PAPaginatedAlerts?> {
+    val uri = "/prisoners/$prisonerNumber/alerts?page=${page - 1}&size=$size"
+    val result =
+      webClient.request<PAPaginatedAlerts>(
+        HttpMethod.GET,
+        if (alertCodes.isNotEmpty()) {
+          "$uri&alertCode=${alertCodes.joinToString(",")}"
+        } else {
+          uri
+        },
+        authenticationHeader(),
+        UpstreamApi.PRISONER_ALERTS,
+        badRequestAsError = true,
+      )
+
+    return when (result) {
+      is WebClientWrapperResponse.Success -> {
+        return Response(
+          data = result.data,
+        )
+      }
+      is WebClientWrapperResponse.Error -> {
+        Response(
+          data = null,
+          errors = result.errors,
+        )
+      }
+    }
+  }
 }

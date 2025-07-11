@@ -41,4 +41,33 @@ class GetAlertsForPersonService(
       data = alertsResponse.data?.toPaginatedAlerts(pndOnly),
     )
   }
+
+  fun getAlerts(
+    hmppsId: String,
+    filters: ConsumerFilters?,
+    page: Int,
+    perPage: Int,
+    alertCodes: List<String> = emptyList(),
+  ): Response<PaginatedAlerts?> {
+    val personResponse = getPersonService.getNomisNumberWithPrisonFilter(hmppsId, filters)
+
+    if (personResponse.errors.isNotEmpty()) {
+      return Response(data = null, errors = personResponse.errors)
+    }
+
+    val nomisNumber =
+      personResponse.data?.nomisNumber ?: return Response(
+        data = null,
+        errors = listOf(UpstreamApiError(UpstreamApi.PRISON_API, UpstreamApiError.Type.ENTITY_NOT_FOUND)),
+      )
+
+    val alertsResponse = prisonerAlertsGateway.getPrisonerAlertsForCodes(nomisNumber, page, size = perPage, alertCodes)
+    if (alertsResponse.errors.isNotEmpty()) {
+      return Response(data = null, errors = alertsResponse.errors)
+    }
+
+    return Response(
+      data = alertsResponse.data?.toPaginatedAlertsFilterApplied(),
+    )
+  }
 }

@@ -20,6 +20,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.ApiMockServe
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.HmppsAuthMockServer
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisonerAlerts.PAPaginatedAlerts
 
 @ActiveProfiles("test")
 @ContextConfiguration(
@@ -37,11 +38,8 @@ class GetAlertsForPrisonerTest(
       val size = 10
       val path = "/prisoners/$prisonerNumber/alerts?page=${page - 1}&size=$size"
 
-      beforeEach {
-        apiMockServer.start()
-        apiMockServer.stubForGet(
-          path,
-          """
+      fun responseJson(uuid: String) =
+        """
           {
             "totalElements": 9007199254740991,
             "totalPages": 1073741824,
@@ -50,7 +48,7 @@ class GetAlertsForPrisonerTest(
             "size": 1073741824,
             "content": [
               {
-                "alertUuid": "8cdadcf3-b003-4116-9956-c99bd8df6a00",
+                "alertUuid": "$uuid",
                 "prisonNumber": "A1234AA",
                 "alertCode": {
                   "alertTypeCode": "A",
@@ -96,7 +94,22 @@ class GetAlertsForPrisonerTest(
             },
             "empty": true
           }
-          """.removeWhitespaceAndNewlines(),
+          """.removeWhitespaceAndNewlines()
+
+      fun generateStubForAlertCodeParams() {
+        val uuid = "9ff5babb-b859-4d2c-b42f-4d054df19e91"
+        val pathWithCodes = "$path&alertCode=${PAPaginatedAlerts.PND_ALERT_CODES.joinToString(",")}"
+        apiMockServer.stubForGet(
+          pathWithCodes,
+          responseJson(uuid),
+        )
+      }
+
+      beforeEach {
+        apiMockServer.start()
+        apiMockServer.stubForGet(
+          path,
+          responseJson("8cdadcf3-b003-4116-9956-c99bd8df6a00"),
         )
 
         Mockito.reset(hmppsAuthGateway)
@@ -131,6 +144,32 @@ class GetAlertsForPrisonerTest(
 
         val response = prisonerAlertsGateway.getPrisonerAlerts(prisonerNumber, page, size)
         response.hasErrorCausedBy(UpstreamApiError.Type.ENTITY_NOT_FOUND, UpstreamApi.PRISONER_ALERTS)
+      }
+
+      it("should request for alerts with codes in query params when the code list is present") {
+        // Create a stub with the expected path with a distinct uuid
+        generateStubForAlertCodeParams()
+        val response = prisonerAlertsGateway.getPrisonerAlertsForCodes(prisonerNumber, page, size, PAPaginatedAlerts.PND_ALERT_CODES)
+        // If the path has resolved to a stub and returned the json with the uuid, the request has used the path without codes
+        response.data.shouldNotBeNull()
+        response.data!!
+          .content
+          .first()
+          .alertUuid
+          .shouldBe("9ff5babb-b859-4d2c-b42f-4d054df19e91")
+      }
+
+      it("should request for alerts without codes in query params when the code list is empty") {
+        // Create a stub with the expected path with a distinct uuid
+        generateStubForAlertCodeParams()
+        val response = prisonerAlertsGateway.getPrisonerAlertsForCodes(prisonerNumber, page, size, emptyList())
+        // If the path has NOT resolved to a stub and returned the json with the uuid, the request has used the path without alert codes
+        response.data.shouldNotBeNull()
+        response.data!!
+          .content
+          .first()
+          .alertUuid
+          .shouldBe("8cdadcf3-b003-4116-9956-c99bd8df6a00")
       }
     },
   )
