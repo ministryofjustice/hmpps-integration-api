@@ -3,7 +3,6 @@ package uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps
 import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.validation.constraints.NotEmpty
 import jakarta.validation.constraints.Positive
-import jakarta.validation.constraints.Size
 import kotlin.collections.List
 
 @Schema(description = "Request object for updating an attendance record")
@@ -23,9 +22,6 @@ data class AttendanceUpdateRequest(
   val comment: String?,
   @Schema(description = "Should payment be issued for SICK, REST or OTHER. Will be ignored if the activity is unpaid.", example = "true")
   val issuePayment: Boolean?,
-  @Schema(description = "Case note provided for REFUSED", example = "Prisoner refused to attend the scheduled activity without reasonable excuse")
-  @field:Size(max = 3800, message = "The case note must not exceed {max} characters")
-  val caseNote: String?,
   @Schema(description = "Was an incentive level warning issued for REFUSED", example = "true")
   val incentiveLevelWarningIssued: Boolean?,
   @Schema(description = "The absence reason for OTHER", example = "Prisoner has another reason for missing the activity")
@@ -39,7 +35,6 @@ data class AttendanceUpdateRequest(
       "attendanceReason" to this.attendanceReason,
       "comment" to this.comment,
       "issuePayment" to this.issuePayment,
-      "caseNote" to this.caseNote,
       "incentiveLevelWarningIssued" to this.incentiveLevelWarningIssued,
       "otherAbsenceReason" to this.otherAbsenceReason,
     )
