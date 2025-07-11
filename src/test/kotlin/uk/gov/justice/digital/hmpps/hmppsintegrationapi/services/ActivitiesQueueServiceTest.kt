@@ -117,7 +117,6 @@ class ActivitiesQueueServiceTest(
               attendanceReason = "SICK",
               comment = "Prisoner ill",
               issuePayment = true,
-              caseNote = "case note",
               incentiveLevelWarningIssued = false,
               otherAbsenceReason = "other reason",
             ),
