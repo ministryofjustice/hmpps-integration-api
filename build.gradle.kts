@@ -34,6 +34,7 @@ dependencies {
   testImplementation("org.mockito:mockito-core:5.18.0")
   testImplementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.19.1")
   testImplementation("org.awaitility:awaitility-kotlin:4.3.0")
+  testImplementation("com.atlassian.oai:swagger-request-validator-wiremock:2.44.0")
 
   annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
   testImplementation(kotlin("test"))
