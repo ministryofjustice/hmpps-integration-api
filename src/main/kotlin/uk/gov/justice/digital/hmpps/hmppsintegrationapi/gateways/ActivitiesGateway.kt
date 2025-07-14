@@ -331,7 +331,7 @@ class ActivitiesGateway(
     val result =
       webClient.request<ActivitiesPagedWaitingListApplication>(
         HttpMethod.POST,
-        "/waiting-list-applications/$prisonCode/search?page=${page - 1}&pageSize=$pageSize",
+        "/integration-api/waiting-list-applications/$prisonCode/search?page=${page - 1}&pageSize=$pageSize",
         authenticationHeader(),
         UpstreamApi.ACTIVITIES,
         requestBody = activitiesWaitingListSearchRequest.toApiConformingMap(),
