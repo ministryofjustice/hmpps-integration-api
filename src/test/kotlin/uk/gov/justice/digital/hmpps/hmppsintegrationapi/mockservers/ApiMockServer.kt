@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers
 
+import com.atlassian.oai.validator.wiremock.OpenApiValidationListener
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 import com.github.tomakehurst.wiremock.client.WireMock.equalToJson
@@ -12,6 +13,7 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 
 class ApiMockServer(
   config: WireMockConfiguration,
+  private val validationListener: OpenApiValidationListener? = null,
 ) : WireMockServer(config) {
   companion object {
     // These ports must match the config in the yaml files
@@ -22,7 +24,7 @@ class ApiMockServer(
           UpstreamApi.HEALTH_AND_MEDICATION -> ApiMockServerConfig(4001)
           UpstreamApi.MANAGE_POM_CASE -> ApiMockServerConfig(4002)
           UpstreamApi.PLP -> ApiMockServerConfig(4003)
-          UpstreamApi.ACTIVITIES -> ApiMockServerConfig(4004)
+          UpstreamApi.ACTIVITIES -> ApiMockServerConfig(4004, "activities/OpenAPISpec.json")
           // USE PRISM
           UpstreamApi.PRISON_API -> ApiMockServerConfig(4000)
           UpstreamApi.NDELIUS -> ApiMockServerConfig(4003)
@@ -42,8 +44,25 @@ class ApiMockServer(
         }
 
       val wireMockConfig = WireMockConfiguration.wireMockConfig().port(apiMockerServerConfig.port)
+
+      if (apiMockerServerConfig.configPath != null) {
+        val specPath = "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/${apiMockerServerConfig.configPath}"
+        val validationListener = OpenApiValidationListener(specPath)
+        return ApiMockServer(wireMockConfig, validationListener)
+      }
+
       return ApiMockServer(wireMockConfig)
     }
+  }
+
+  init {
+    if (validationListener != null) {
+      super.addMockServiceRequestListener(validationListener)
+    }
+  }
+
+  fun assertValidationPassed() {
+    this.validationListener?.assertValidationPassed()
   }
 
   fun stubForGet(

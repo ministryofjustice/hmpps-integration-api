@@ -143,6 +143,8 @@ class GetActivitySchedulesGatewayTest(
             usePrisonRegimeTime = true,
           ),
         )
+
+        mockServer.assertValidationPassed()
       }
 
       it("Returns a bad request error") {
