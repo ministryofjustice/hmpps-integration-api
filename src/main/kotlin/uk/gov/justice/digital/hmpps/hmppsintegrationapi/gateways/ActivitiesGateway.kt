@@ -45,7 +45,7 @@ class ActivitiesGateway(
     val result =
       webClient.requestList<ActivitiesPrisonRegime>(
         HttpMethod.GET,
-        "/prison/prison-regime/$prisonCode",
+        "/integration-api/prison/prison-regime/$prisonCode",
         authenticationHeader(),
         UpstreamApi.ACTIVITIES,
         badRequestAsError = true,
