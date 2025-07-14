@@ -540,26 +540,9 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
         File("$gatewaysFolder/activities/fixtures/GetPrisonPayBands.json").readText(),
       )
 
-      activitiesMockServer.stubForPost(
-        "/waiting-list-applications/$prisonCode/search?page=0&pageSize=50",
-        """
-        {
-          "prisonerNumbers": ["$nomsId"],
-          "status": ["PENDING"]
-        }
-        """.trimIndent(),
-        File("$gatewaysFolder/activities/fixtures/GetWaitingListApplicationsEmpty.json").readText(),
-      )
-
-      activitiesMockServer.stubForPost(
-        "/waiting-list-applications/$prisonCode/search?page=0&pageSize=50",
-        """
-        {
-          "prisonerNumbers": ["$nomsId"],
-          "status": ["APPROVED"]
-        }
-        """.trimIndent(),
-        File("$gatewaysFolder/activities/fixtures/GetWaitingListApplications.json").readText().replace("\"status\": \"PENDING\"", "\"status\": \"APPROVED\""),
+      activitiesMockServer.stubForGet(
+        "/integration-api/schedules/$scheduleId/waiting-list-applications",
+        "[]",
       )
 
       val requestBody = asJsonString(prisonerAllocationRequest)
@@ -876,26 +859,9 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
         File("$gatewaysFolder/activities/fixtures/GetPrisonPayBands.json").readText(),
       )
 
-      activitiesMockServer.stubForPost(
-        "/waiting-list-applications/$prisonCode/search?page=0&pageSize=50",
-        """
-        {
-          "prisonerNumbers": ["$nomsId"],
-          "status": ["PENDING"]
-        }
-        """.trimIndent(),
-        File("$gatewaysFolder/activities/fixtures/GetWaitingListApplications.json").readText(),
-      )
-
-      activitiesMockServer.stubForPost(
-        "/waiting-list-applications/$prisonCode/search?page=0&pageSize=50",
-        """
-        {
-          "prisonerNumbers": ["$nomsId"],
-          "status": ["APPROVED"]
-        }
-        """.trimIndent(),
-        File("$gatewaysFolder/activities/fixtures/GetWaitingListApplications.json").readText().replace("\"status\": \"PENDING\"", "\"status\": \"APPROVED\""),
+      activitiesMockServer.stubForGet(
+        "/integration-api/schedules/$scheduleId/waiting-list-applications",
+        File("$gatewaysFolder/activities/fixtures/GetWaitingListApplicationsByScheduleId.json").readText(),
       )
 
       val requestBody =
@@ -929,25 +895,9 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
         File("$gatewaysFolder/activities/fixtures/GetPrisonPayBands.json").readText(),
       )
 
-      activitiesMockServer.stubForPost(
-        "/waiting-list-applications/$prisonCode/search?page=0&pageSize=50",
-        """
-        {
-          "prisonerNumbers": ["$nomsId"],
-          "status": ["PENDING"]
-        }
-        """.trimIndent(),
-        File("$gatewaysFolder/activities/fixtures/GetWaitingListApplicationsEmpty.json").readText(),
-      )
-
-      val responseBody =
-        File("$gatewaysFolder/activities/fixtures/GetWaitingListApplicationsMultipleApproved.json")
-          .readText()
-
-      activitiesMockServer.stubForPost(
-        "/waiting-list-applications/$prisonCode/search?page=0&pageSize=50",
-        """{ "prisonerNumbers": ["$nomsId"], "status": ["APPROVED"] }""",
-        responseBody,
+      activitiesMockServer.stubForGet(
+        "/integration-api/schedules/$scheduleId/waiting-list-applications",
+        File("$gatewaysFolder/activities/fixtures/GetWaitingListApplicationsByScheduleIdMultipleApproved.json").readText(),
       )
 
       val requestBody =
@@ -1012,7 +962,7 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
       )
 
       activitiesMockServer.stubForGet(
-        "/schedules/$scheduleId/waiting-list-applications",
+        "/integration-api/schedules/$scheduleId/waiting-list-applications",
         File("$gatewaysFolder/activities/fixtures/GetWaitingListApplicationsByScheduleId.json").readText(),
       )
 
@@ -1021,7 +971,7 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
         .andExpect(MockMvcResultMatchers.content().json(getExpectedResponse("waiting-list-applications-response")))
 
       activitiesMockServer.verify(
-        getRequestedFor(urlEqualTo("/schedules/$scheduleId/waiting-list-applications"))
+        getRequestedFor(urlEqualTo("/integration-api/schedules/$scheduleId/waiting-list-applications"))
           .withHeader("Caseload-Id", equalTo(prisonCode)),
       )
     }

@@ -16,7 +16,6 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.PrisonerDea
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
-import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.WaitingListSearchRequest
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.toHmppsMessage
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.toTestMessage
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
@@ -34,7 +33,7 @@ class ActivitiesQueueService(
   @Autowired private val getAttendanceByIdService: GetAttendanceByIdService,
   @Autowired private val getScheduleDetailsService: GetScheduleDetailsService,
   @Autowired private val getPrisonPayBandsService: GetPrisonPayBandsService,
-  @Autowired private val getWaitingListApplicationsService: GetWaitingListApplicationsService,
+  @Autowired private val getWaitingListApplicationsByScheduleIdService: GetWaitingListApplicationsByScheduleIdService,
   @Autowired val activitiesGateway: ActivitiesGateway,
 ) {
   private val activitiesQueue by lazy { hmppsQueueService.findByQueueId("activities") as HmppsQueue }
@@ -156,7 +155,7 @@ class ActivitiesQueueService(
     validateAllocationWithinScheduleDates(schedule, prisonerAllocationRequest)?.let { return it }
     validatePrisonerNotAlreadyAllocated(schedule, prisonerAllocationRequest)?.let { return it }
     validateExclusionSlots(schedule, prisonerAllocationRequest, scheduleId)?.let { return it }
-    validateWaitingListApplications(schedule.activity.prisonCode, prisonerAllocationRequest.prisonerNumber, filters)?.let { return it }
+    validateWaitingListApplications(scheduleId, prisonerAllocationRequest.prisonerNumber, filters)?.let { return it }
 
     val message = prisonerAllocationRequest.toHmppsMessage(who, scheduleId)
     writeMessageToQueue(message, "Could not send prisoner allocation to queue")
@@ -279,23 +278,22 @@ class ActivitiesQueueService(
   }
 
   private fun validateWaitingListApplications(
-    prisonCode: String,
+    scheduleId: Long,
     prisonerNumber: String,
     filters: ConsumerFilters?,
   ): Response<HmppsMessageResponse?>? {
-    val pendingReq = WaitingListSearchRequest(prisonerNumbers = listOf(prisonerNumber), status = listOf("PENDING"))
-    val approvedReq = WaitingListSearchRequest(prisonerNumbers = listOf(prisonerNumber), status = listOf("APPROVED"))
-    val pending = getWaitingListApplicationsService.execute(prisonCode, pendingReq, filters)
-    val approved = getWaitingListApplicationsService.execute(prisonCode, approvedReq, filters)
+    val waitingListsResposne = getWaitingListApplicationsByScheduleIdService.execute(scheduleId, filters)
+    if (waitingListsResposne.errors.isNotEmpty()) {
+      return Response(data = null, errors = waitingListsResposne.errors)
+    }
 
-    if (pending.errors.isNotEmpty()) return Response(data = null, errors = pending.errors)
-    if (approved.errors.isNotEmpty()) return Response(data = null, errors = approved.errors)
-
-    if (!pending.data?.content.isNullOrEmpty()) {
+    val hasPending = waitingListsResposne.data?.any { it.prisonerNumber == prisonerNumber && it.status == "PENDING" } ?: false
+    if (hasPending) {
       return conflict("Prisoner has a PENDING waiting list application. It must be APPROVED before they can be allocated.")
     }
 
-    if ((approved.data?.content?.size ?: 0) > 1) {
+    val approvedWaitingListApplications = waitingListsResposne.data?.filter { it.prisonerNumber == prisonerNumber && it.status == "APPROVED" }.orEmpty()
+    if (approvedWaitingListApplications.size > 1) {
       return conflict("Prisoner has more than one APPROVED waiting list application. A prisoner can only have one approved waiting list application.")
     }
 
