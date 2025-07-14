@@ -21,7 +21,7 @@ class PrisonActivitiesIntegrationTest : IntegrationTestBase() {
     @Test
     fun `return the prison activities details`() {
       activitiesMockServer.stubForGet(
-        "/prison/$prisonId/activities",
+        "/integration-api/prison/$prisonId/activities",
         File("$gatewaysFolder/activities/fixtures/GetAllRunningActivities.json").readText(),
       )
       callApi(path)

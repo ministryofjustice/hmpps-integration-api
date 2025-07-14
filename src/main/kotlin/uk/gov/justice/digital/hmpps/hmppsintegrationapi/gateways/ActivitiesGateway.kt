@@ -164,7 +164,7 @@ class ActivitiesGateway(
     val result =
       webClient.requestList<ActivitiesRunningActivity>(
         HttpMethod.GET,
-        "/prison/$prisonCode/activities",
+        "/integration-api/prison/$prisonCode/activities",
         authenticationHeader(),
         UpstreamApi.ACTIVITIES,
         badRequestAsError = true,
