@@ -18,6 +18,7 @@ export const options = {
 
 const baseUrl = "https://dev.integration-api.hmpps.service.justice.gov.uk";
 const hmppsId = "A8451DY";
+const visitsHmppsId = "A8452DY"
 const alternativeHmppsId = "G6333VK";
 const plpHmppsId = "A5502DZ";
 const attendancesHmppsId = "G4328GK";
@@ -92,7 +93,7 @@ const get_endpoints = [
   `/v1/persons/${hmppsId}/risks/scores`,
   `/v1/persons/${hmppsId}/risks/dynamic`,
   `/v1/hmpps/id/nomis-number/${hmppsId}`,
-  `/v1/persons/${hmppsId}/visit/future`,
+  `/v1/persons/${visitsHmppsId}/visit/future`,
   `/v1/visit/${visitReference}`,
   `/v1/visit/id/by-client-ref/${clientVisitReference}`,
   `/v1/prison/${prisonId}/visit/search?visitStatus=BOOKED`,
