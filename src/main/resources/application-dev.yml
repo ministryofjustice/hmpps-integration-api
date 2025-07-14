@@ -85,10 +85,12 @@ authorisation:
         - "/v1/persons/.*/person-responsible-officer"
         - "/v1/persons/.*/risk-management-plan"
         - "/v1/hmpps/reference-data"
+        - "/v1/status"
       filters:
     ctrlo:
       include:
         - "/v1/epf/person-details/.*/[^/]*$"
+        - "/v1/status"
       filters:
     moj-pes:
       include:
@@ -97,15 +99,18 @@ authorisation:
         - "/v1/hmpps/id/by-nomis-number/[^/]*$"
         - "/v1/hmpps/id/nomis-number/by-hmpps-id/[^/]*$"
         - "/v1/persons/.*/cell-location"
+        - "/v1/status"
       filters:
     kubernetes-health-check-client:
       include:
         - "/health/liveness"
         - "/health/readiness"
+        - "/v1/status"
       filters:
     heartbeat:
       include:
         - "/v1/persons/[^/]*$"
+        - "/v1/status"
       filters:
     pnd:
       include:
@@ -115,6 +120,7 @@ authorisation:
     event-service:
       include:
         - "/v2/config/authorisation"
+        - "/v1/status"
       filters:
     mryall:
       include:
@@ -151,6 +157,7 @@ authorisation:
         - "/v1/prison/.*/prisoners/.*/accounts/.*/transactions"
         - "/v1/prison/.*/prisoners/.*/transactions/[^/]*$"
         - "/v1/prison/.*/prisoners/.*/transactions"
+        - "/v1/status"
       filters:
     kilco:
       include:
@@ -171,6 +178,7 @@ authorisation:
         - "/v1/persons/[^/]*$"
         - "/v1/persons/[^/]+/prisoner-base-location"
         - "/v1/persons/.*/education/assessments"
+        - "/v1/status"
       filters:
     moj-esw:
       include:
@@ -180,6 +188,7 @@ authorisation:
         - "/v1/persons/[^/]*$"
         - "/v1/persons/[^/]+/prisoner-base-location"
         - "/v1/persons/.*/education/assessments"
+        - "/v1/status"
       filters:
     bmadley:
       include:
@@ -193,6 +202,7 @@ authorisation:
         - "/v1/prison/prisoners"
         - "/v1/persons/.*/sentences/latest-key-dates-and-adjustments"
         - "/v1/hmpps/id/by-nomis-number/[^/]*$"
+        - "/v1/status"
       filters:
     unilink:
       include:
@@ -206,6 +216,7 @@ authorisation:
         - "/v1/hmpps/id/nomis-number/by-hmpps-id/[^/]*$"
         - "/v1/persons/.*/cell-location"
         - "/v1/prison/prisoners/[^/]*$" # This has been provided for testing purposes. Approval needed before access can be provided in prod.
+        - "/v1/status"
       filters:
     abritton:
       include:
@@ -231,6 +242,7 @@ authorisation:
         - "/v1/persons/.*/person-responsible-officer"
         - "/v1/persons/.*/risk-management-plan"
         - "/v1/hmpps/reference-data"
+        - "/v1/status"
       filters:
     jbetton:
       include:
@@ -256,6 +268,7 @@ authorisation:
         - "/v1/persons/.*/person-responsible-officer"
         - "/v1/persons/.*/risk-management-plan"
         - "/v1/hmpps/reference-data"
+        - "/v1/status"
       filters:
     smoke-test-full-access:
       include:

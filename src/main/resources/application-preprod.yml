@@ -62,6 +62,7 @@ authorisation:
     ctrlo:
       include:
         - "/v1/epf/person-details/.*/[^/]*$"
+        - "/v1/status"
       filters:
     moj-pes:
       include:
@@ -70,15 +71,18 @@ authorisation:
         - "/v1/hmpps/id/by-nomis-number/[^/]*$"
         - "/v1/hmpps/id/nomis-number/by-hmpps-id/[^/]*$"
         - "/v1/persons/.*/cell-location"
+        - "/v1/status"
       filters:
     kubernetes-health-check-client:
       include:
         - "/health/liveness"
         - "/health/readiness"
+        - "/v1/status"
       filters:
     event-service:
       include:
         - "/v2/config/authorisation"
+        - "/v1/status"
       filters:
     meganexus:
       include:
@@ -88,6 +92,7 @@ authorisation:
         - "/v1/persons/[^/]+/expression-of-interest/jobs/[^/]+$"
         - "/v1/hmpps/id/by-nomis-number/[^/]*$"
         - "/v1/hmpps/id/nomis-number/by-hmpps-id/[^/]*$"
+        - "/v1/status"
     pnd:
       include:
       filters:
