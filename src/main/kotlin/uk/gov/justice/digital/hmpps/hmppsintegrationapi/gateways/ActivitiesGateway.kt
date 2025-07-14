@@ -240,7 +240,7 @@ class ActivitiesGateway(
     val result =
       webClient.requestList<ActivitiesAttendanceReason>(
         HttpMethod.GET,
-        "/attendance-reasons",
+        "/integration-api/attendance-reasons",
         authenticationHeader(),
         UpstreamApi.ACTIVITIES,
         forbiddenAsError = true,

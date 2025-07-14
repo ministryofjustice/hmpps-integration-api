@@ -289,7 +289,7 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
     @Test
     fun `return the attendance reasons`() {
       activitiesMockServer.stubForGet(
-        "/attendance-reasons",
+        "/integration-api/attendance-reasons",
         File("$gatewaysFolder/activities/fixtures/GetAttendanceReasons.json").readText(),
       )
       callApi(path)
