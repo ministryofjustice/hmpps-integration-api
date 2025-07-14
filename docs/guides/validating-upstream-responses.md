@@ -2,8 +2,8 @@
 
 We currently have 2 ways of mocking and validating upstream responses
 
-* Wiremock + Atlassian OpenApi Wiremock Validator
-* Prism 
+- Wiremock + Atlassian OpenApi Wiremock Validator
+- Prism
 
 ## Wiremock + Atlassian OpenApi Wiremock Validator
 
@@ -11,11 +11,11 @@ This is currently our preferred method of mocking upstream dependencies.
 It involves storing fixtures (example responses) from upstream endpoints and using `WireMock` to return these when our tests make a call to the upstream.
 As well as doing any assertions we want to do in our tests, we can also validate that the fixture matches the schema for the mocked endpoint in the OpenAPI spec.
 
-### Example usage 
+### Example usage
 
 A full example can be found in `src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/mockservers/ApiMockServerTest.kt`.
 
-To set up a new upstream mock, you first need to set the name of the OpenAPI spec in the config. 
+To set up a new upstream mock, you first need to set the name of the OpenAPI spec in the config.
 The file is expected to be in the `src/test/resources/openapi-specs` directory.
 
 ```kotlin
@@ -26,7 +26,7 @@ when (upstreamApi) {
 }
 ```
 
-A test file should look something like this 
+A test file should look something like this
 
 ```kotlin
 val mockServer = ApiMockServer.create(UpstreamApi.TEST)
@@ -51,7 +51,7 @@ it("correctly validates against spec") {
   // Call the method under test which will call the "/pet/1" upstream method
 
   // Do any assertions required on the output
-  
+
   // Assert that the OpenAPI validation on the mock server passed, else the test will fail
   mockServer.assertValidationPassed()
 }
