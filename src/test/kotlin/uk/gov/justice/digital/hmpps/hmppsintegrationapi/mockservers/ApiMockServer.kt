@@ -24,7 +24,8 @@ class ApiMockServer(
           UpstreamApi.HEALTH_AND_MEDICATION -> ApiMockServerConfig(4001)
           UpstreamApi.MANAGE_POM_CASE -> ApiMockServerConfig(4002)
           UpstreamApi.PLP -> ApiMockServerConfig(4003)
-          UpstreamApi.ACTIVITIES -> ApiMockServerConfig(4004, "activities/OpenAPISpec.json")
+          UpstreamApi.ACTIVITIES -> ApiMockServerConfig(4004, "activities.json")
+          UpstreamApi.TEST -> ApiMockServerConfig(4005, "test.json")
           // USE PRISM
           UpstreamApi.PRISON_API -> ApiMockServerConfig(4000)
           UpstreamApi.NDELIUS -> ApiMockServerConfig(4003)
@@ -34,7 +35,6 @@ class ApiMockServer(
           UpstreamApi.CVL -> ApiMockServerConfig(4007)
           UpstreamApi.CASE_NOTES -> ApiMockServerConfig(4008)
           UpstreamApi.RISK_MANAGEMENT_PLAN -> ApiMockServerConfig(4004)
-          UpstreamApi.TEST -> TODO()
           UpstreamApi.NON_ASSOCIATIONS -> ApiMockServerConfig(4005)
           UpstreamApi.PERSONAL_RELATIONSHIPS -> ApiMockServerConfig(4006)
           UpstreamApi.MANAGE_PRISON_VISITS -> ApiMockServerConfig(4007)
@@ -46,7 +46,7 @@ class ApiMockServer(
       val wireMockConfig = WireMockConfiguration.wireMockConfig().port(apiMockerServerConfig.port)
 
       if (apiMockerServerConfig.configPath != null) {
-        val specPath = "src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/${apiMockerServerConfig.configPath}"
+        val specPath = "src/test/resources/openapi-specs/${apiMockerServerConfig.configPath}"
         val validationListener = OpenApiValidationListener(specPath)
         return ApiMockServer(wireMockConfig, validationListener)
       }
