@@ -40,7 +40,7 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
     @Test
     fun `return the activity's schedule`() {
       activitiesMockServer.stubForGet(
-        "/activities/$activityId/schedules",
+        "/integration-api/activities/$activityId/schedules",
         File("$gatewaysFolder/activities/fixtures/GetActivitiesSchedule.json").readText(),
       )
       callApi(path)

@@ -93,7 +93,7 @@ class ActivitiesGateway(
     val result =
       webClient.requestList<ActivitiesActivitySchedule>(
         HttpMethod.GET,
-        "/activities/$activityId/schedules",
+        "/integration-api/activities/$activityId/schedules",
         authenticationHeader(),
         UpstreamApi.ACTIVITIES,
         badRequestAsError = true,
