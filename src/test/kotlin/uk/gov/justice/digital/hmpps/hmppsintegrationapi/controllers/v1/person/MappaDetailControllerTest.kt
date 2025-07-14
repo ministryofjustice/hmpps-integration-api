@@ -5,6 +5,7 @@ import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory
+import org.mockito.kotlin.any
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
@@ -15,6 +16,8 @@ import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.ERROR_ON_NO_LAO_CONTEXT
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.removeWhitespaceAndNewlines
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.GetCaseAccess
@@ -38,16 +41,21 @@ internal class MappaDetailControllerTest(
   @MockitoBean val getMappaDetailForPersonService: GetMappaDetailForPersonService,
   @MockitoBean val auditService: AuditService,
   @MockitoBean val getCaseAccess: GetCaseAccess,
+  @MockitoBean val featureFlagConfig: FeatureFlagConfig,
 ) : DescribeSpec(
     {
       val hmppsId = "9999/11111A"
       val encodedHmppsId = URLEncoder.encode(hmppsId, StandardCharsets.UTF_8)
       val path = "/v1/persons/$encodedHmppsId/risks/mappadetail"
       val mockMvc = IntegrationAPIMockMvc(springMockMvc)
+      val laoOkCrn = "R654321"
+      val laoFailureCrn = "R754321"
 
       describe("GET $path") {
         beforeTest {
           Mockito.reset(getMappaDetailForPersonService)
+          whenever(getCaseAccess.getAccessFor(any())).thenReturn(CaseAccess(laoOkCrn, false, false, "", ""))
+          whenever(getCaseAccess.getAccessFor("R754321")).thenReturn(null)
           whenever(getMappaDetailForPersonService.execute(hmppsId)).thenReturn(
             Response(
               MappaDetail(
@@ -193,6 +201,18 @@ internal class MappaDetailControllerTest(
           val result = mockMvc.performAuthorised(path)
 
           result.response.status.shouldBe(HttpStatus.BAD_REQUEST.value())
+        }
+
+        it("fails with the appropriate error when LAO context has failed to be retrieved") {
+          whenever(featureFlagConfig.isEnabled(ERROR_ON_NO_LAO_CONTEXT)).thenReturn(true)
+          val response = mockMvc.performAuthorised("/v1/persons/$laoFailureCrn/risks/mappadetail")
+
+          assert(response.response.status == 500)
+          assert(
+            response.response.contentAsString.equals(
+              "{\"status\":500,\"errorCode\":null,\"userMessage\":\"LAO Check failed\",\"developerMessage\":\"LAO Check failed\",\"moreInfo\":null}",
+            ),
+          )
         }
       }
     },

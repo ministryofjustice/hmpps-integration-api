@@ -19,6 +19,8 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.web.reactive.function.client.WebClientResponseException
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig.Companion.ERROR_ON_NO_LAO_CONTEXT
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.GetCaseAccess
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.limitedaccess.redactor.LaoRedactorAspect
@@ -40,17 +42,21 @@ class RiskManagementControllerTest(
   @MockitoBean val getRiskManagementService: GetRiskManagementPlansForCrnService,
   @MockitoBean val auditService: AuditService,
   @MockitoBean val getCaseAccess: GetCaseAccess,
+  @MockitoBean val featureFlagConfig: FeatureFlagConfig,
 ) : DescribeSpec({
     val hmppsId = "D1974X"
     val encodedHmppsId = URLEncoder.encode(hmppsId, StandardCharsets.UTF_8)
     val basePath = "/v1/persons/hmppsId/risk-management-plan"
     val mockMvc = IntegrationAPIMockMvc(springMockMvc)
+    val laoOkCrn = "R654321"
+    val laoFailureCrn = "R754321"
 
     describe("GET $basePath") {
       beforeTest {
         Mockito.reset(getRiskManagementService)
         Mockito.reset(auditService)
-
+        whenever(getCaseAccess.getAccessFor(any())).thenReturn(CaseAccess(laoOkCrn, false, false, "", ""))
+        whenever(getCaseAccess.getAccessFor("R754321")).thenReturn(null)
         whenever(getRiskManagementService.execute(hmppsId)).thenReturn(
           Response(
             data =
@@ -192,6 +198,18 @@ class RiskManagementControllerTest(
         assert(
           response.response.contentAsString.equals(
             "{\"status\":500,\"errorCode\":null,\"userMessage\":\"500 MockError\",\"developerMessage\":\"Unable to complete request as an upstream service is not responding\",\"moreInfo\":null}",
+          ),
+        )
+      }
+
+      it("fails with the appropriate error when LAO context has failed to be retrieved") {
+        whenever(featureFlagConfig.isEnabled(ERROR_ON_NO_LAO_CONTEXT)).thenReturn(true)
+        val response = mockMvc.performAuthorised("/v1/persons/$laoFailureCrn/risk-management-plan")
+
+        assert(response.response.status == 500)
+        assert(
+          response.response.contentAsString.equals(
+            "{\"status\":500,\"errorCode\":null,\"userMessage\":\"LAO Check failed\",\"developerMessage\":\"LAO Check failed\",\"moreInfo\":null}",
           ),
         )
       }
