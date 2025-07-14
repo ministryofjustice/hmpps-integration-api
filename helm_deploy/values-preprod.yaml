@@ -17,7 +17,7 @@ generic-service:
 
   env:
     SPRING_PROFILES_ACTIVE: preprod
-    SENTRY_ENV: preprod
+    SENTRY_ENVIRONMENT: preprod
 
   namespace_secrets:
     hmpps-auth:
