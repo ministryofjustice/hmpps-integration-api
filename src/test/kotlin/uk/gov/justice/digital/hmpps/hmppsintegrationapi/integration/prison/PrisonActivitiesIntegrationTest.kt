@@ -79,7 +79,7 @@ class PrisonActivitiesIntegrationTest : IntegrationTestBase() {
     @Test
     fun `return the appointments details`() {
       activitiesMockServer.stubForPost(
-        "/appointments/$prisonId/search",
+        "/integration-api/appointments/$prisonId/search",
         reqBody = requestBody,
         File("$gatewaysFolder/activities/fixtures/GetAppointments.json").readText(),
       )

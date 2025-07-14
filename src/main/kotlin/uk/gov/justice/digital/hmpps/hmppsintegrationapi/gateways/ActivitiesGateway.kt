@@ -191,7 +191,7 @@ class ActivitiesGateway(
     val result =
       webClient.requestList<ActivitiesAppointmentDetails>(
         HttpMethod.POST,
-        "/appointments/$prisonCode/search",
+        "/integration-api/appointments/$prisonCode/search",
         authenticationHeader(),
         requestBody = appointmentSearchRequest.toApiConformingMap(),
         upstreamApi = UpstreamApi.ACTIVITIES,
