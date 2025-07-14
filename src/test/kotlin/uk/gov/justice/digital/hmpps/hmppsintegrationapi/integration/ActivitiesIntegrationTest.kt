@@ -536,7 +536,7 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
       )
 
       activitiesMockServer.stubForGet(
-        "/prison/$prisonCode/prison-pay-bands",
+        "/integration-api/prison/$prisonCode/prison-pay-bands",
         File("$gatewaysFolder/activities/fixtures/GetPrisonPayBands.json").readText(),
       )
 
@@ -699,7 +699,7 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
         File("$gatewaysFolder/activities/fixtures/GetActivityScheduleById.json").readText().replace("\"prisonCode\": \"PVI\"", "\"prisonCode\": \"$prisonCode\""),
       )
       activitiesMockServer.stubForGet(
-        "/prison/$prisonCode/prison-pay-bands",
+        "/integration-api/prison/$prisonCode/prison-pay-bands",
         "[]",
       )
       val requestBody = asJsonString(prisonerAllocationRequest)
@@ -721,7 +721,7 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
       )
 
       activitiesMockServer.stubForGet(
-        "/prison/$prisonCode/prison-pay-bands",
+        "/integration-api/prison/$prisonCode/prison-pay-bands",
         File("$gatewaysFolder/activities/fixtures/GetPrisonPayBands.json").readText(),
       )
       val requestBody = asJsonString(prisonerAllocationRequest.copy(startDate = LocalDate.now().plusDays(1)))
@@ -743,7 +743,7 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
       )
 
       activitiesMockServer.stubForGet(
-        "/prison/$prisonCode/prison-pay-bands",
+        "/integration-api/prison/$prisonCode/prison-pay-bands",
         File("$gatewaysFolder/activities/fixtures/GetPrisonPayBands.json").readText(),
       )
 
@@ -772,7 +772,7 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
       )
 
       activitiesMockServer.stubForGet(
-        "/prison/$prisonCode/prison-pay-bands",
+        "/integration-api/prison/$prisonCode/prison-pay-bands",
         File("$gatewaysFolder/activities/fixtures/GetPrisonPayBands.json").readText(),
       )
 
@@ -796,7 +796,7 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
       )
 
       activitiesMockServer.stubForGet(
-        "/prison/$prisonCode/prison-pay-bands",
+        "/integration-api/prison/$prisonCode/prison-pay-bands",
         File("$gatewaysFolder/activities/fixtures/GetPrisonPayBands.json").readText(),
       )
 
@@ -821,7 +821,7 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
       )
 
       activitiesMockServer.stubForGet(
-        "/prison/$prisonCode/prison-pay-bands",
+        "/integration-api/prison/$prisonCode/prison-pay-bands",
         File("$gatewaysFolder/activities/fixtures/GetPrisonPayBands.json").readText(),
       )
 
@@ -855,7 +855,7 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
       )
 
       activitiesMockServer.stubForGet(
-        "/prison/$prisonCode/prison-pay-bands",
+        "/integration-api/prison/$prisonCode/prison-pay-bands",
         File("$gatewaysFolder/activities/fixtures/GetPrisonPayBands.json").readText(),
       )
 
@@ -891,7 +891,7 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
       )
 
       activitiesMockServer.stubForGet(
-        "/prison/$prisonCode/prison-pay-bands",
+        "/integration-api/prison/$prisonCode/prison-pay-bands",
         File("$gatewaysFolder/activities/fixtures/GetPrisonPayBands.json").readText(),
       )
 
