@@ -34,6 +34,7 @@ data class FeatureFlagConfig(
     const val USE_SUITABILITY_ENDPOINT = "use-suitability-endpoint"
     const val USE_HISTORICAL_ATTENDANCES_ENDPOINT = "use-historical-attendances-endpoint"
     const val USE_WAITING_LIST_ENDPOINT = "use-waiting-list-endpoint"
+    const val USE_ALERTS_API_FILTER = "use-alerts-api-filter"
   }
 
   /**
