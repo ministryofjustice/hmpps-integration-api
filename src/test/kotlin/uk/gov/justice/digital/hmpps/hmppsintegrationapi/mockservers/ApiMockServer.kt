@@ -61,6 +61,10 @@ class ApiMockServer(
     }
   }
 
+  fun resetValidator() {
+    this.validationListener?.reset()
+  }
+
   fun assertValidationPassed() {
     this.validationListener?.assertValidationPassed()
   }
