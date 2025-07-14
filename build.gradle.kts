@@ -34,7 +34,22 @@ dependencies {
   testImplementation("org.mockito:mockito-core:5.18.0")
   testImplementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.19.1")
   testImplementation("org.awaitility:awaitility-kotlin:4.3.0")
-  testImplementation("com.atlassian.oai:swagger-request-validator-wiremock:2.44.9")
+  testImplementation("com.atlassian.oai:swagger-request-validator-wiremock:2.44.9") {
+    // Exclude WireMock artifacts
+    exclude(group = "com.github.tomakehurst", module = "wiremock")
+    exclude(group = "com.github.tomakehurst", module = "wiremock-jre8")
+    exclude(group = "com.github.tomakehurst", module = "wiremock-standalone")
+
+    // Exclude Jetty components to prevent the validator from pulling in conflicting versions
+    exclude(group = "org.eclipse.jetty")
+    exclude(group = "javax.servlet")
+  }
+  // Explicitly add all necessary Jetty and Servlet dependencies
+  testImplementation("javax.servlet:javax.servlet-api:4.0.1")
+  testImplementation("org.eclipse.jetty:jetty-util:12.0.12")
+  testImplementation("org.eclipse.jetty:jetty-server:12.0.12")
+  testImplementation("org.eclipse.jetty:jetty-http:12.0.12")
+  testImplementation("org.eclipse.jetty:jetty-io:12.0.12")
 
   annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
   testImplementation(kotlin("test"))
