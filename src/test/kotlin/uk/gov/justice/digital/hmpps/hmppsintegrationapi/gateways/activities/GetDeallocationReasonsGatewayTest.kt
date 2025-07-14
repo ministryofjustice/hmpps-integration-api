@@ -33,7 +33,7 @@ class GetDeallocationReasonsGatewayTest(
 ) : DescribeSpec(
     {
       val mockServer = ApiMockServer.create(UpstreamApi.ACTIVITIES)
-      val path = "/allocations/deallocation-reasons"
+      val path = "/integration-api/allocations/deallocation-reasons"
 
       beforeEach {
         mockServer.start()

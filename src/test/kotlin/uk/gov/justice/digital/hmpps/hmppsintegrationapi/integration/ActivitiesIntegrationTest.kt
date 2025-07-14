@@ -484,7 +484,7 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
     @Test
     fun `return the deallocation reasons`() {
       activitiesMockServer.stubForGet(
-        "/allocations/deallocation-reasons",
+        "/integration-api/allocations/deallocation-reasons",
         File("$gatewaysFolder/activities/fixtures/GetDeallocationReasons.json").readText(),
       )
       callApi(path)

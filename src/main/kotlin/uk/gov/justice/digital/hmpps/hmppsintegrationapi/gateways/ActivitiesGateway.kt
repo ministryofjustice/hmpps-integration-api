@@ -302,7 +302,7 @@ class ActivitiesGateway(
     val result =
       webClient.requestList<ActivitiesDeallocationReason>(
         HttpMethod.GET,
-        "/allocations/deallocation-reasons",
+        "/integration-api/allocations/deallocation-reasons",
         authenticationHeader(),
         UpstreamApi.ACTIVITIES,
         forbiddenAsError = true,
@@ -362,7 +362,7 @@ class ActivitiesGateway(
     val result =
       webClient.requestList<ActivitiesHistoricalAttendance>(
         HttpMethod.GET,
-        "/integration-api/attendances/$prisonerNumber?startDate=$startDate&endDate=$endDate$prisonCodeParam",
+        "/integration-api/attendances/prisoner/$prisonerNumber?startDate=$startDate&endDate=$endDate$prisonCodeParam",
         authenticationHeader(),
         UpstreamApi.ACTIVITIES,
         badRequestAsError = true,
