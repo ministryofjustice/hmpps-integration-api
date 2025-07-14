@@ -20,7 +20,7 @@ class AlertsWithApiQueryFeatureIntegrationTest : IntegrationTestBase() {
 
     @BeforeEach
     fun setup() {
-      whenever(featureFlagConfig.isEnabled(USE_ALERTS_API_FILTER)).thenReturn(false)
+      whenever(featureFlagConfig.isEnabled(USE_ALERTS_API_FILTER)).thenReturn(true)
     }
 
     @Test
@@ -55,7 +55,7 @@ class AlertsWithApiQueryFeatureIntegrationTest : IntegrationTestBase() {
 
     @BeforeEach
     fun setup() {
-      whenever(featureFlagConfig.isEnabled(USE_ALERTS_API_FILTER)).thenReturn(false)
+      whenever(featureFlagConfig.isEnabled(USE_ALERTS_API_FILTER)).thenReturn(true)
     }
 
     @Test
