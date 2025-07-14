@@ -11,6 +11,7 @@ import io.kotest.matchers.shouldBe
 import org.awaitility.kotlin.await
 import org.awaitility.kotlin.matches
 import org.awaitility.kotlin.untilCallTo
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -28,6 +29,11 @@ import java.time.LocalDate
 
 class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
   private val prisonCode = "MDI"
+
+  @AfterEach
+  fun resetValidators() {
+    activitiesMockServer.resetValidator()
+  }
 
   @Nested
   @DisplayName("GET /v1/activities/{activityId}/schedules")
