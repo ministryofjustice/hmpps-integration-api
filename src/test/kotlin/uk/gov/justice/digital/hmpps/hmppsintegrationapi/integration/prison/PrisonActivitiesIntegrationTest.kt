@@ -118,7 +118,7 @@ class PrisonActivitiesIntegrationTest : IntegrationTestBase() {
     @Test
     fun `return the historical attendances`() {
       activitiesMockServer.stubForGet(
-        "/integration-api/attendances/$nomsId?startDate=$startDate&endDate=$endDate&prisonCode=$prisonId",
+        "/integration-api/attendances/prisoner/$nomsId?startDate=$startDate&endDate=$endDate&prisonCode=$prisonId",
         File("$gatewaysFolder/activities/fixtures/GetHistoricalAttendances.json").readText(),
       )
       callApi(path)

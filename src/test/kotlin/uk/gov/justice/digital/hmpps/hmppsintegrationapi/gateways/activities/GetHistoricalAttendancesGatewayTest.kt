@@ -38,7 +38,7 @@ class GetHistoricalAttendancesGatewayTest(
       val prisonCode = "MDI"
       val prisonCodeParam = "&prisonCode=$prisonCode"
       val mockServer = ApiMockServer.create(UpstreamApi.ACTIVITIES)
-      val path = "/integration-api/attendances/$prisonerNumber?startDate=$startDate&endDate=$endDate$prisonCodeParam"
+      val path = "/integration-api/attendances/prisoner/$prisonerNumber?startDate=$startDate&endDate=$endDate$prisonCodeParam"
 
       beforeEach {
         mockServer.start()
