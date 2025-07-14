@@ -5,9 +5,7 @@
     "id": 1,
     "name": "Dogs"
   },
-  "photoUrls": [
-    "string"
-  ],
+  "photoUrls": ["string"],
   "tags": [
     {
       "id": 0,
