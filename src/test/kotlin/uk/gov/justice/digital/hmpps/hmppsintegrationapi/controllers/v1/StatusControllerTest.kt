@@ -10,6 +10,7 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.MockMvcExtensions.contentAsJson
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.helpers.IntegrationAPIMockMvc
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Status
 
 @WebMvcTest(controllers = [StatusController::class])
@@ -27,7 +28,7 @@ class StatusControllerTest(
         it("should return 200 with status ok") {
           val result = mockMvc.performAuthorised(path)
           result.response.status.shouldBe(HttpStatus.OK.value())
-          result.response.contentAsJson<Status>().shouldBe(Status(status = "ok"))
+          result.response.contentAsJson<Response<Status>>().shouldBe(Response(data = Status(status = "ok")))
         }
       }
     },

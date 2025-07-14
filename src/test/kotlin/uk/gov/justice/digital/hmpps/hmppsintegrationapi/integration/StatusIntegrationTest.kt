@@ -12,7 +12,7 @@ class StatusIntegrationTest : IntegrationTestBase() {
       .andExpect(
         content().json(
           """
-        {"status":"ok"}
+        {"data":{"status":"ok"},"errors":[]}
         """,
         ),
       )

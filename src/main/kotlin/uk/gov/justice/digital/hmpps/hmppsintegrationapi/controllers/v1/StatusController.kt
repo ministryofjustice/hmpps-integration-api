@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Status
 
 @RestController
@@ -19,5 +20,5 @@ class StatusController {
     ],
   )
   @GetMapping
-  fun getStatus(): Status = Status()
+  fun getStatus(): Response<Status> = Response(data = Status())
 }
