@@ -88,6 +88,11 @@ class AlertsWithApiQueryFeatureIntegrationTest : IntegrationTestBase() {
   inner class GetPndAlerts {
     val path = "/v1/pnd/persons/$nomsId/alerts"
 
+    @BeforeEach
+    fun setup() {
+      whenever(featureFlagConfig.isEnabled(USE_ALERTS_API_FILTER)).thenReturn(true)
+    }
+
     @Test
     fun `returns PND alerts for a person`() {
       callApi(path)
