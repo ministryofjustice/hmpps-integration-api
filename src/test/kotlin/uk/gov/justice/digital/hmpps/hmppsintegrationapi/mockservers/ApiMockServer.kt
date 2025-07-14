@@ -16,33 +16,33 @@ class ApiMockServer(
   companion object {
     // These ports must match the config in the yaml files
     fun create(upstreamApi: UpstreamApi): ApiMockServer {
-      val port =
+      val apiMockerServerConfig =
         when (upstreamApi) {
-          UpstreamApi.PRISONER_OFFENDER_SEARCH -> 4000
-          UpstreamApi.HEALTH_AND_MEDICATION -> 4001
-          UpstreamApi.MANAGE_POM_CASE -> 4002
-          UpstreamApi.PLP -> 4003
-          UpstreamApi.ACTIVITIES -> 4004
+          UpstreamApi.PRISONER_OFFENDER_SEARCH -> ApiMockServerConfig(4000)
+          UpstreamApi.HEALTH_AND_MEDICATION -> ApiMockServerConfig(4001)
+          UpstreamApi.MANAGE_POM_CASE -> ApiMockServerConfig(4002)
+          UpstreamApi.PLP -> ApiMockServerConfig(4003)
+          UpstreamApi.ACTIVITIES -> ApiMockServerConfig(4004)
           // USE PRISM
-          UpstreamApi.PRISON_API -> 4000
-          UpstreamApi.NDELIUS -> 4003
-          UpstreamApi.ASSESS_RISKS_AND_NEEDS -> 4004
-          UpstreamApi.EFFECTIVE_PROPOSAL_FRAMEWORK -> 4005
-          UpstreamApi.ADJUDICATIONS -> 4006
-          UpstreamApi.CVL -> 4007
-          UpstreamApi.CASE_NOTES -> 4008
-          UpstreamApi.RISK_MANAGEMENT_PLAN -> 4004
+          UpstreamApi.PRISON_API -> ApiMockServerConfig(4000)
+          UpstreamApi.NDELIUS -> ApiMockServerConfig(4003)
+          UpstreamApi.ASSESS_RISKS_AND_NEEDS -> ApiMockServerConfig(4004)
+          UpstreamApi.EFFECTIVE_PROPOSAL_FRAMEWORK -> ApiMockServerConfig(4005)
+          UpstreamApi.ADJUDICATIONS -> ApiMockServerConfig(4006)
+          UpstreamApi.CVL -> ApiMockServerConfig(4007)
+          UpstreamApi.CASE_NOTES -> ApiMockServerConfig(4008)
+          UpstreamApi.RISK_MANAGEMENT_PLAN -> ApiMockServerConfig(4004)
           UpstreamApi.TEST -> TODO()
-          UpstreamApi.NON_ASSOCIATIONS -> 4005
-          UpstreamApi.PERSONAL_RELATIONSHIPS -> 4006
-          UpstreamApi.MANAGE_PRISON_VISITS -> 4007
-          UpstreamApi.INCENTIVES -> 4008
-          UpstreamApi.PRISONER_ALERTS -> 4009
-          UpstreamApi.LOCATIONS_INSIDE_PRISON -> 4000
+          UpstreamApi.NON_ASSOCIATIONS -> ApiMockServerConfig(4005)
+          UpstreamApi.PERSONAL_RELATIONSHIPS -> ApiMockServerConfig(4006)
+          UpstreamApi.MANAGE_PRISON_VISITS -> ApiMockServerConfig(4007)
+          UpstreamApi.INCENTIVES -> ApiMockServerConfig(4008)
+          UpstreamApi.PRISONER_ALERTS -> ApiMockServerConfig(4009)
+          UpstreamApi.LOCATIONS_INSIDE_PRISON -> ApiMockServerConfig(4000)
         }
 
-      val config = WireMockConfiguration.wireMockConfig().port(port)
-      return ApiMockServer(config)
+      val wireMockConfig = WireMockConfiguration.wireMockConfig().port(apiMockerServerConfig.port)
+      return ApiMockServer(wireMockConfig)
     }
   }
 
