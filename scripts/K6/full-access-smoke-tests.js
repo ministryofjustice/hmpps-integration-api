@@ -110,6 +110,7 @@ const get_endpoints = [
   `/v1/persons/${hmppsId}/health-and-diet`,
   `/v1/persons/${hmppsId}/languages`,
   `/v1/persons/${plpHmppsId}/education`,
+  `/v1/persons/${hmppsId}/education/assessments`,
   `/v1/persons/${hmppsId}/prisoner-base-location`,
   `/v1/activities/${activityId}/schedules`,
   `/v1/activities/attendance-reasons`,
