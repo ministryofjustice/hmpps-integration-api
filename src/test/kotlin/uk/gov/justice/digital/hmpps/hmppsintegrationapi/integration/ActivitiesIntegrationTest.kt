@@ -153,7 +153,7 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
     @Test
     fun `successfully adds to queue`() {
       activitiesMockServer.stubForGet(
-        "/attendances/$attendanceId",
+        "/integration-api/attendances/$attendanceId",
         File("$gatewaysFolder/activities/fixtures/GetAttendanceById.json").readText(),
       )
 
@@ -241,7 +241,7 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
     fun `return a 404 when attendance record does not exist`() {
       val invalidAttendanceId = 234567L
       activitiesMockServer.stubForGet(
-        "/attendances/$invalidAttendanceId",
+        "/integration-api/attendances/$invalidAttendanceId",
         "",
         HttpStatus.NOT_FOUND,
       )

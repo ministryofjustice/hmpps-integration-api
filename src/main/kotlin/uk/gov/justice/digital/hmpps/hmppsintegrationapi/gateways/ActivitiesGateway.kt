@@ -216,7 +216,7 @@ class ActivitiesGateway(
     val result =
       webClient.request<ActivitiesAttendance>(
         HttpMethod.GET,
-        "/attendances/$attendanceId",
+        "/integration-api/attendances/$attendanceId",
         authenticationHeader(),
         UpstreamApi.ACTIVITIES,
         badRequestAsError = true,
