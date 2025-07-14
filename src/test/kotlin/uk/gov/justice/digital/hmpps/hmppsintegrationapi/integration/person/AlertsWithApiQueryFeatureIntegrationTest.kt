@@ -20,7 +20,7 @@ class AlertsWithApiQueryFeatureIntegrationTest : IntegrationTestBase() {
 
     @BeforeEach
     fun setup() {
-      whenever(featureFlagConfig.isEnabled(USE_ALERTS_API_FILTER)).thenReturn(true)
+      whenever(featureFlagConfig.isEnabled(USE_ALERTS_API_FILTER)).thenReturn(false)
     }
 
     @Test
@@ -50,54 +50,19 @@ class AlertsWithApiQueryFeatureIntegrationTest : IntegrationTestBase() {
   }
 
   @Nested
-  inner class GetAlertsPnd {
-    val path = "$basePath/$nomsId/alerts/pnd"
-
-    @BeforeEach
-    fun setup() {
-      whenever(featureFlagConfig.isEnabled(USE_ALERTS_API_FILTER)).thenReturn(true)
-    }
-
-    @Test
-    fun `returns PND alerts for a person`() {
-      callApi(path)
-        .andExpect(status().isOk)
-        .andExpect(content().json(getExpectedResponse("person-alerts-pnd")))
-    }
-
-    @Test
-    fun `returns a 400 if the hmppsId is invalid`() {
-      callApi("$basePath/$invalidNomsId/alerts/pnd")
-        .andExpect(status().isBadRequest)
-    }
-
-    @Test
-    fun `return a 404 for person in wrong prison`() {
-      callApiWithCN(path, limitedPrisonsCn)
-        .andExpect(status().isNotFound)
-    }
-
-    @Test
-    fun `return a 404 when no prisons in filter`() {
-      callApiWithCN(path, noPrisonsCn)
-        .andExpect(status().isNotFound)
-    }
-  }
-
-  @Nested
   inner class GetPndAlerts {
     val path = "/v1/pnd/persons/$nomsId/alerts"
 
     @BeforeEach
     fun setup() {
-      whenever(featureFlagConfig.isEnabled(USE_ALERTS_API_FILTER)).thenReturn(true)
+      whenever(featureFlagConfig.isEnabled(USE_ALERTS_API_FILTER)).thenReturn(false)
     }
 
     @Test
-    fun `returns PND alerts for a person`() {
+    fun `returns unfiltered PND alerts for a person`() {
       callApi(path)
         .andExpect(status().isOk)
-        .andExpect(content().json(getExpectedResponse("person-alerts-pnd")))
+        .andExpect(content().json(getExpectedResponse("person-alerts")))
     }
 
     @Test
