@@ -7,7 +7,7 @@ const cert = encoding.b64decode(__ENV.LIMITED_ACCESS_CERT, 'std', 's');
 const key = encoding.b64decode(__ENV.LIMITED_ACCESS_KEY, 'std', 's');
 
 const baseUrl = 'https://dev.integration-api.hmpps.service.justice.gov.uk';
-const hmppsId = 'A4433DZ';
+const hmppsId = "A8451DY";
 const allowed_endpoint = `/v1/persons/${hmppsId}/name`;
 const not_allowed_endpoint = `/v1/persons?first_name=john`;
 
