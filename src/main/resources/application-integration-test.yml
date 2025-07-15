@@ -128,7 +128,7 @@ authorisation:
       filters:
     redacted-client:
       include:
-      - "/v1/persons/[^/]*$"
+        - "/v1/persons/[^/]*$"
 
 redaction:
   client-names:
