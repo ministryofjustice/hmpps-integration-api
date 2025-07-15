@@ -291,9 +291,10 @@ Note, this will only specifically enable the `RequestLogger`.
 
 ## Related repositories
 
-| Name                                                                                                   | Purpose                                                                |
-| ------------------------------------------------------------------------------------------------------ |------------------------------------------------------------------------|
-| [HMPPS Integration API Documentation](https://github.com/ministryofjustice/hmpps-integration-api-docs) | Previously provided documentation for API consumers. No longer in use. |
+| Name                                                                                                   | Purpose                                                                                                                                        |
+|--------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------|
+| [HMPPS Integration Events](https://github.com/ministryofjustice/hmpps-integration-events)              | Creates integration events triggered by upstream MoJ domain events. |
+| [HMPPS Integration API Documentation](https://github.com/ministryofjustice/hmpps-integration-api-docs) | Previously provided documentation for API consumers. No longer in use.                                                                         |
 
 ## License
 
