@@ -17,7 +17,7 @@ export const options = {
 };
 
 const baseUrl = "https://dev.integration-api.hmpps.service.justice.gov.uk";
-const hmppsId = "A4433DZ";
+const hmppsId = "A8451DY";
 const visitsHmppsId = "A8452DY"
 const alternativeHmppsId = "G6333VK";
 const plpHmppsId = "A5502DZ";
@@ -80,18 +80,18 @@ const get_endpoints = [
   `/v1/contacts/${contactId}`,
   `/v1/persons?first_name=john`,
   `/v1/persons/${deliusCrn}`,
-  `/v1/persons/${hmppsId}/licences/conditions`,
+  `/v1/persons/${hmppsIdWithLaoContext}/licences/conditions`,
   `/v1/persons/${hmppsId}/needs`,
-  `/v1/persons/${hmppsId}/risks/mappadetail`,
-  `/v1/persons/${hmppsId}/risks/scores`,
+  `/v1/persons/${hmppsIdWithLaoContext}/risks/mappadetail`,
+  `/v1/persons/${hmppsIdWithLaoContext}/risks/scores`,
   `/v1/persons/${hmppsId}/plp-induction-schedule`,
   `/v1/persons/${hmppsId}/plp-induction-schedule/history`,
   `/v1/persons/${plpHmppsId}/plp-review-schedule`,
-  `/v1/persons/${hmppsId}/status-information`,
+  `/v1/persons/${hmppsIdWithLaoContext}/status-information`,
   `/v1/persons/${hmppsId}/sentences/latest-key-dates-and-adjustments`,
-  `/v1/persons/${hmppsId}/risks/serious-harm`,
-  `/v1/persons/${hmppsId}/risks/scores`,
-  `/v1/persons/${hmppsId}/risks/dynamic`,
+  `/v1/persons/${hmppsIdWithLaoContext}/risks/serious-harm`,
+  `/v1/persons/${hmppsIdWithLaoContext}/risks/scores`,
+  `/v1/persons/${hmppsIdWithLaoContext}/risks/dynamic`,
   `/v1/hmpps/id/nomis-number/${hmppsId}`,
   `/v1/persons/${visitsHmppsId}/visit/future`,
   `/v1/visit/${visitReference}`,
