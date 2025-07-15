@@ -151,7 +151,6 @@ using [docker-compose](https://docs.docker.com/compose/).
     ```
 
     Each service is then accessible at:
-
     - [http://localhost:8080](http://localhost:8080) for this application
     - [http://localhost:4010](http://localhost:4010) to [http://localhost:40XX]() for mocked HMPPS APIs
     - [http://localhost:9090](http://localhost:9090) for the HMPPS Auth service
