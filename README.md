@@ -291,9 +291,9 @@ Note, this will only specifically enable the `RequestLogger`.
 
 ## Related repositories
 
-| Name                                                                                                   | Purpose                                   |
-| ------------------------------------------------------------------------------------------------------ | ----------------------------------------- |
-| [HMPPS Integration API Documentation](https://github.com/ministryofjustice/hmpps-integration-api-docs) | Provides documentation for API consumers. |
+| Name                                                                                                   | Purpose                                                                |
+| ------------------------------------------------------------------------------------------------------ |------------------------------------------------------------------------|
+| [HMPPS Integration API Documentation](https://github.com/ministryofjustice/hmpps-integration-api-docs) | Previously provided documentation for API consumers. No longer in use. |
 
 ## License
 
