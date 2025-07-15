@@ -86,12 +86,8 @@ data class ContactAddress(
   val comments: String?,
   @Schema(description = "Phone numbers that are related to this address")
   val phoneNumbers: List<ContactPhoneNumber>,
-  @Schema(description = "The id of the user who created the contact", example = "JD000001")
-  val createdBy: String,
   @Schema(description = "The timestamp of when the contact was created", example = "2024-01-01T00:00:00Z")
   val createdTime: String,
-  @Schema(description = "The id of the user who created the contact address", example = "JD000001")
-  val updatedBy: String?,
   @Schema(description = "The timestamp of when the contact address was last updated", example = "2024-01-01T00:00:00Z")
   val updatedTime: String?,
 )
