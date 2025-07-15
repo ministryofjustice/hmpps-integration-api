@@ -18,6 +18,7 @@ export const options = {
 
 const baseUrl = "https://dev.integration-api.hmpps.service.justice.gov.uk";
 const hmppsId = "A8451DY";
+const hmppsIdWithLaoContext = "A4433DZ";
 const visitsHmppsId = "A8452DY"
 const alternativeHmppsId = "G6333VK";
 const plpHmppsId = "A5502DZ";

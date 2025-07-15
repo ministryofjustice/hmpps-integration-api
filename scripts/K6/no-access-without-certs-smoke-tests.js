@@ -4,7 +4,6 @@ import exec from 'k6/execution';
 
 const baseUrl = 'https://dev.integration-api.hmpps.service.justice.gov.uk';
 const hmppsId = "A8451DY";
-const hmppsIdWithLaoContext = "A4433DZ";
 const allowedEndpoint = `/v1/persons/${hmppsId}/name`;
 
 export default function () {
