@@ -1,4 +1,5 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
   id("uk.gov.justice.hmpps.gradle-spring-boot") version "8.3.1"
@@ -63,9 +64,10 @@ tasks {
     }
   }
 
-  withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+  withType<KotlinCompile> {
     compilerOptions {
       jvmTarget = JvmTarget.JVM_21
+      freeCompilerArgs.add("-Xannotation-default-target=param-property")
     }
   }
 }
