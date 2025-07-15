@@ -116,3 +116,6 @@ authorisation:
         - "private-prison"
       include:
       filters:
+    redacted-client:
+      include:
+        - "/v1/persons/[^/]*$"

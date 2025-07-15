@@ -126,3 +126,10 @@ authorisation:
         - "reference-data-only"
       include:
       filters:
+    redacted-client:
+      include:
+      - "/v1/persons/[^/]*$"
+
+redaction:
+  client-names:
+    - redacted-client

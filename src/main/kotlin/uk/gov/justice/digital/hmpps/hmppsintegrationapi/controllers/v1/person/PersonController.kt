@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.RedactionConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.decodeUrlCharacters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.featureflag.FeatureFlag
@@ -73,6 +74,7 @@ class PersonController(
   @Autowired val getPrisonerEducationService: GetPrisonerEducationService,
   @Autowired val auditService: AuditService,
   @Autowired val featureFlag: FeatureFlagConfig,
+  @Autowired val redactionConfig: RedactionConfig,
 ) {
   @GetMapping
   @Operation(
@@ -458,9 +460,9 @@ class PersonController(
     offenderData: OffenderSearchResponse,
     clientName: String? = null,
   ) = offenderData.let { data ->
-    val targetConsumerIds = setOf("meganexus", "moj-esw")
+    val targetConsumers = redactionConfig.clientNames
     when {
-      !targetConsumerIds.contains(clientName) -> data
+      !targetConsumers.contains(clientName) -> data
 
       else -> {
         val prisonerOffenderSearch =

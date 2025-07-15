@@ -302,3 +302,8 @@ authorisation:
       filters:
       roles:
         - "full-access"
+
+redaction:
+  client-names:
+    - meganexus
+    - moj-esw
