@@ -34,7 +34,7 @@ class GetAppointmentsGatewayTest(
     {
       val objectMapper = jacksonObjectMapper()
       val prisonCode = "MDI"
-      val path = "/appointments/$prisonCode/search"
+      val path = "/integration-api/appointments/$prisonCode/search"
       val activitiesApiMockServer = ApiMockServer.create(UpstreamApi.ACTIVITIES)
       val appointmentSearchRequest =
         AppointmentSearchRequest(

@@ -33,7 +33,7 @@ class GetAttendanceGatewayTest(
     {
       val mockServer = ApiMockServer.create(UpstreamApi.ACTIVITIES)
       val attendanceId = 123456L
-      val path = "/attendances/$attendanceId"
+      val path = "/integration-api/attendances/$attendanceId"
 
       beforeEach {
         mockServer.start()

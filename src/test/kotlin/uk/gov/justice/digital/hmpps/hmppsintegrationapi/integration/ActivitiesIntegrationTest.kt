@@ -40,7 +40,7 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
     @Test
     fun `return the activity's schedule`() {
       activitiesMockServer.stubForGet(
-        "/activities/$activityId/schedules",
+        "/integration-api/activities/$activityId/schedules",
         File("$gatewaysFolder/activities/fixtures/GetActivitiesSchedule.json").readText(),
       )
       callApi(path)
@@ -76,7 +76,7 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
     @Test
     fun `return the activity schedule details`() {
       activitiesMockServer.stubForGet(
-        path = "/schedules/$scheduleId",
+        path = "/integration-api/schedules/$scheduleId",
         File("$gatewaysFolder/activities/fixtures/GetActivityScheduleById.json").readText(),
       )
       callApi(path)
@@ -106,7 +106,7 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
     @Test
     fun `return the suitability criteria details`() {
       activitiesMockServer.stubForGet(
-        path = "/schedules/$scheduleId",
+        path = "/integration-api/schedules/$scheduleId",
         File("$gatewaysFolder/activities/fixtures/GetActivityScheduleById.json").readText(),
       )
       activitiesMockServer.stubForGet(
@@ -153,7 +153,7 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
     @Test
     fun `successfully adds to queue`() {
       activitiesMockServer.stubForGet(
-        "/attendances/$attendanceId",
+        "/integration-api/attendances/$attendanceId",
         File("$gatewaysFolder/activities/fixtures/GetAttendanceById.json").readText(),
       )
 
@@ -241,7 +241,7 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
     fun `return a 404 when attendance record does not exist`() {
       val invalidAttendanceId = 234567L
       activitiesMockServer.stubForGet(
-        "/attendances/$invalidAttendanceId",
+        "/integration-api/attendances/$invalidAttendanceId",
         "",
         HttpStatus.NOT_FOUND,
       )
@@ -289,7 +289,7 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
     @Test
     fun `return the attendance reasons`() {
       activitiesMockServer.stubForGet(
-        "/attendance-reasons",
+        "/integration-api/attendance-reasons",
         File("$gatewaysFolder/activities/fixtures/GetAttendanceReasons.json").readText(),
       )
       callApi(path)
@@ -314,7 +314,7 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
     @Test
     fun `successfully adds to queue`() {
       activitiesMockServer.stubForGet(
-        "/schedules/$scheduleId",
+        "/integration-api/schedules/$scheduleId",
         File("$gatewaysFolder/activities/fixtures/GetActivityScheduleById.json").readText().replace("\"endDate\": \"2022-10-21\"", "\"endDate\": \"${LocalDate.now()}\""),
       )
 
@@ -408,7 +408,7 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
     @Test
     fun `return a 404 when schedule record does not exist`() {
       activitiesMockServer.stubForGet(
-        "/schedules/$scheduleId",
+        "/integration-api/schedules/$scheduleId",
         "",
         HttpStatus.NOT_FOUND,
       )
@@ -423,7 +423,7 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
     @Test
     fun `return a 404 no allocations are found for the prisoner`() {
       activitiesMockServer.stubForGet(
-        "/schedules/$scheduleId",
+        "/integration-api/schedules/$scheduleId",
         File("$gatewaysFolder/activities/fixtures/GetActivityScheduleById.json").readText().replace("\"prisonerNumber\": \"$nomsId\"", "\"prisonerNumber\": \"A1234AB\""),
       )
 
@@ -437,7 +437,7 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
     @Test
     fun `return a 400 if passed in end date is after the schedule end date`() {
       activitiesMockServer.stubForGet(
-        "/schedules/$scheduleId",
+        "/integration-api/schedules/$scheduleId",
         File("$gatewaysFolder/activities/fixtures/GetActivityScheduleById.json").readText(),
       )
 
@@ -484,7 +484,7 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
     @Test
     fun `return the deallocation reasons`() {
       activitiesMockServer.stubForGet(
-        "/allocations/deallocation-reasons",
+        "/integration-api/allocations/deallocation-reasons",
         File("$gatewaysFolder/activities/fixtures/GetDeallocationReasons.json").readText(),
       )
       callApi(path)
@@ -526,7 +526,7 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
     @Test
     fun `successfully adds to queue`() {
       activitiesMockServer.stubForGet(
-        "/schedules/$scheduleId",
+        "/integration-api/schedules/$scheduleId",
         File("$gatewaysFolder/activities/fixtures/GetActivityScheduleById.json")
           .readText()
           .replace("\"prisonCode\": \"PVI\"", "\"prisonCode\": \"$prisonCode\"")
@@ -536,7 +536,7 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
       )
 
       activitiesMockServer.stubForGet(
-        "/prison/$prisonCode/prison-pay-bands",
+        "/integration-api/prison/$prisonCode/prison-pay-bands",
         File("$gatewaysFolder/activities/fixtures/GetPrisonPayBands.json").readText(),
       )
 
@@ -665,7 +665,7 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
     @Test
     fun `return 400 when paid activity and payBandId is missing`() {
       activitiesMockServer.stubForGet(
-        "/schedules/$scheduleId",
+        "/integration-api/schedules/$scheduleId",
         File("$gatewaysFolder/activities/fixtures/GetActivityScheduleById.json")
           .readText()
           .replace("\"paid\": false", "\"paid\": true"),
@@ -680,7 +680,7 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
     @Test
     fun `return 400 when unpaid activity and payBandId is present`() {
       activitiesMockServer.stubForGet(
-        "/schedules/$scheduleId",
+        "/integration-api/schedules/$scheduleId",
         File("$gatewaysFolder/activities/fixtures/GetActivityScheduleById.json")
           .readText()
           .replace("\"paid\": true", "\"paid\": false"),
@@ -695,11 +695,11 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
     @Test
     fun `return 400 when pay band does not exist for the prison`() {
       activitiesMockServer.stubForGet(
-        "/schedules/$scheduleId",
+        "/integration-api/schedules/$scheduleId",
         File("$gatewaysFolder/activities/fixtures/GetActivityScheduleById.json").readText().replace("\"prisonCode\": \"PVI\"", "\"prisonCode\": \"$prisonCode\""),
       )
       activitiesMockServer.stubForGet(
-        "/prison/$prisonCode/prison-pay-bands",
+        "/integration-api/prison/$prisonCode/prison-pay-bands",
         "[]",
       )
       val requestBody = asJsonString(prisonerAllocationRequest)
@@ -713,7 +713,7 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
     fun `return 400 when allocation start date is before schedule start date`() {
       val scheduleStart = LocalDate.now().plusDays(5)
       activitiesMockServer.stubForGet(
-        "/schedules/$scheduleId",
+        "/integration-api/schedules/$scheduleId",
         File("$gatewaysFolder/activities/fixtures/GetActivityScheduleById.json")
           .readText()
           .replace("\"prisonCode\": \"PVI\"", "\"prisonCode\": \"$prisonCode\"")
@@ -721,7 +721,7 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
       )
 
       activitiesMockServer.stubForGet(
-        "/prison/$prisonCode/prison-pay-bands",
+        "/integration-api/prison/$prisonCode/prison-pay-bands",
         File("$gatewaysFolder/activities/fixtures/GetPrisonPayBands.json").readText(),
       )
       val requestBody = asJsonString(prisonerAllocationRequest.copy(startDate = LocalDate.now().plusDays(1)))
@@ -735,7 +735,7 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
     fun `return 400 when allocation end date is after schedule end date`() {
       val scheduleEnd = LocalDate.now().plusDays(10)
       activitiesMockServer.stubForGet(
-        "/schedules/$scheduleId",
+        "/integration-api/schedules/$scheduleId",
         File("$gatewaysFolder/activities/fixtures/GetActivityScheduleById.json")
           .readText()
           .replace("\"prisonCode\": \"PVI\"", "\"prisonCode\": \"$prisonCode\"")
@@ -743,7 +743,7 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
       )
 
       activitiesMockServer.stubForGet(
-        "/prison/$prisonCode/prison-pay-bands",
+        "/integration-api/prison/$prisonCode/prison-pay-bands",
         File("$gatewaysFolder/activities/fixtures/GetPrisonPayBands.json").readText(),
       )
 
@@ -764,7 +764,7 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
     fun `return 400 when allocation start date is after schedule end date`() {
       val scheduleEnd = LocalDate.now().plusDays(5)
       activitiesMockServer.stubForGet(
-        "/schedules/$scheduleId",
+        "/integration-api/schedules/$scheduleId",
         File("$gatewaysFolder/activities/fixtures/GetActivityScheduleById.json")
           .readText()
           .replace("\"prisonCode\": \"PVI\"", "\"prisonCode\": \"$prisonCode\"")
@@ -772,7 +772,7 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
       )
 
       activitiesMockServer.stubForGet(
-        "/prison/$prisonCode/prison-pay-bands",
+        "/integration-api/prison/$prisonCode/prison-pay-bands",
         File("$gatewaysFolder/activities/fixtures/GetPrisonPayBands.json").readText(),
       )
 
@@ -786,7 +786,7 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
     @Test
     fun `return 400 when prisoner is already allocated to the schedule`() {
       activitiesMockServer.stubForGet(
-        "/schedules/$scheduleId",
+        "/integration-api/schedules/$scheduleId",
         File("$gatewaysFolder/activities/fixtures/GetActivityScheduleById.json")
           .readText()
           .replace("\"prisonCode\": \"PVI\"", "\"prisonCode\": \"$prisonCode\"")
@@ -796,7 +796,7 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
       )
 
       activitiesMockServer.stubForGet(
-        "/prison/$prisonCode/prison-pay-bands",
+        "/integration-api/prison/$prisonCode/prison-pay-bands",
         File("$gatewaysFolder/activities/fixtures/GetPrisonPayBands.json").readText(),
       )
 
@@ -811,7 +811,7 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
     @Test
     fun `return 400 when exclusion slot does not exist in schedule`() {
       activitiesMockServer.stubForGet(
-        "/schedules/$scheduleId",
+        "/integration-api/schedules/$scheduleId",
         File("$gatewaysFolder/activities/fixtures/GetActivityScheduleById.json")
           .readText()
           .replace("\"prisonCode\": \"PVI\"", "\"prisonCode\": \"$prisonCode\"")
@@ -821,7 +821,7 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
       )
 
       activitiesMockServer.stubForGet(
-        "/prison/$prisonCode/prison-pay-bands",
+        "/integration-api/prison/$prisonCode/prison-pay-bands",
         File("$gatewaysFolder/activities/fixtures/GetPrisonPayBands.json").readText(),
       )
 
@@ -845,7 +845,7 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
     @Test
     fun `return 409 when prisoner has a PENDING waiting list application`() {
       activitiesMockServer.stubForGet(
-        "/schedules/$scheduleId",
+        "/integration-api/schedules/$scheduleId",
         File("$gatewaysFolder/activities/fixtures/GetActivityScheduleById.json")
           .readText()
           .replace("\"prisonCode\": \"PVI\"", "\"prisonCode\": \"$prisonCode\"")
@@ -855,7 +855,7 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
       )
 
       activitiesMockServer.stubForGet(
-        "/prison/$prisonCode/prison-pay-bands",
+        "/integration-api/prison/$prisonCode/prison-pay-bands",
         File("$gatewaysFolder/activities/fixtures/GetPrisonPayBands.json").readText(),
       )
 
@@ -881,7 +881,7 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
     @Test
     fun `return 409 when prisoner has more than one APPROVED waiting list application`() {
       activitiesMockServer.stubForGet(
-        "/schedules/$scheduleId",
+        "/integration-api/schedules/$scheduleId",
         File("$gatewaysFolder/activities/fixtures/GetActivityScheduleById.json")
           .readText()
           .replace("\"prisonCode\": \"PVI\"", "\"prisonCode\": \"$prisonCode\"")
@@ -891,7 +891,7 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
       )
 
       activitiesMockServer.stubForGet(
-        "/prison/$prisonCode/prison-pay-bands",
+        "/integration-api/prison/$prisonCode/prison-pay-bands",
         File("$gatewaysFolder/activities/fixtures/GetPrisonPayBands.json").readText(),
       )
 
@@ -957,7 +957,7 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
     @Test
     fun `return waiting list applications`() {
       activitiesMockServer.stubForGet(
-        "/schedules/$scheduleId",
+        "/integration-api/schedules/$scheduleId",
         File("$gatewaysFolder/activities/fixtures/GetActivityScheduleById.json").readText(),
       )
 

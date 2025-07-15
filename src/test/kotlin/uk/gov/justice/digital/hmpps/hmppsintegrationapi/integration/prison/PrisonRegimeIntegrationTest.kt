@@ -13,7 +13,7 @@ class PrisonRegimeIntegrationTest : IntegrationTestBase() {
   @Test
   fun `return the prison regime details`() {
     activitiesMockServer.stubForGet(
-      "/prison/prison-regime/$prisonId",
+      "/integration-api/prison/prison-regime/$prisonId",
       File("$gatewaysFolder/activities/fixtures/GetPrisonRegime.json").readText(),
     )
     callApi(path)

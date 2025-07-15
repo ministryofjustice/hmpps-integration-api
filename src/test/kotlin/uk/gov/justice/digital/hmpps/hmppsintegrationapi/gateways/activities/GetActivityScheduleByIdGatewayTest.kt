@@ -55,7 +55,7 @@ class GetActivityScheduleByIdGatewayTest(
 
       it("Returns an activity schedule") {
         mockServer.stubForGet(
-          "/schedules/$scheduleId",
+          "/integration-api/schedules/$scheduleId",
           File("src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/activities/fixtures/GetActivityScheduleById.json").readText(),
         )
 
@@ -80,7 +80,7 @@ class GetActivityScheduleByIdGatewayTest(
 
       it("Returns a bad request error") {
         mockServer.stubForGet(
-          "/schedules/$scheduleId",
+          "/integration-api/schedules/$scheduleId",
           "{}",
           HttpStatus.BAD_REQUEST,
         )
