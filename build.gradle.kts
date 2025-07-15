@@ -49,6 +49,7 @@ repositories {
 
 tasks {
   register<Test>("unitTest") {
+    group = "verification"
     filter {
       excludeTestsMatching("uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration*")
     }
@@ -56,6 +57,7 @@ tasks {
 
   register<Test>("integrationTest") {
     description = "Runs the integration tests, make sure that dependencies are available first by running `make serve`."
+    group = "verification"
     testClassesDirs = sourceSets["test"].output.classesDirs
     classpath = sourceSets["main"].output + configurations["testRuntimeClasspath"] + sourceSets["test"].output
     filter {

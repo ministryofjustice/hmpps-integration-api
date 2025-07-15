@@ -104,7 +104,6 @@ internal class GetPrisonerBaseLocationForPersonServiceTest(
         val expectedLocation = prisonerBaseLocationReceived.copy()
 
         val response = getPrisonerBaseLocationForPersonService.execute(hmppsId, filters)
-        println("response = $response")
         response.data shouldBe expectedLocation
       }
 
