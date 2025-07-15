@@ -1,5 +1,4 @@
 version: 2.1
-
 orbs:
   hmpps: ministryofjustice/hmpps@8
   slack: circleci/slack@4.12.1
@@ -15,52 +14,57 @@ parameters:
     type: string
     default: hmpps-integration-api-alerts
 
-slack-fail-post-step: &slack-fail-post-step
-  post-steps:
-    - slack/notify:
-        event: fail
-        branch_pattern: main
-        channel: << pipeline.parameters.alerts-slack-channel >>
-        custom: |
-          {
-            "blocks": [
-              {
-                "type": "header",
-                "text": {
-                  "type": "plain_text",
-                  "text": ":this-is-fine-fire: ${CIRCLE_JOB} job has failed",
-                  "emoji": true
+commands:
+  slack-fail-notify:
+    parameters:
+      job_name:
+        type: string
+        default: "${CIRCLE_JOB}"
+    steps:
+      - slack/notify:
+          event: fail
+          branch_pattern: main
+          channel: << pipeline.parameters.alerts-slack-channel >>
+          custom: |
+            {
+              "blocks": [
+                {
+                  "type": "header",
+                  "text": {
+                    "type": "plain_text",
+                    "text": ":this-is-fine-fire: << parameters.job_name >> job has failed",
+                    "emoji": true
+                  }
+                },
+                {
+                  "type": "context",
+                  "elements": [
+                    {
+                      "type": "mrkdwn",
+                      "text": "Project: *${CIRCLE_PROJECT_REPONAME}*"
+                    },
+                    {
+                      "type": "mrkdwn",
+                      "text": "Branch: *${CIRCLE_BRANCH}*"
+                    },
+                    {
+                      "type": "mrkdwn",
+                      "text": "Build: *#${CIRCLE_BUILD_NUM}*"
+                    }
+                  ]
+                },
+                {
+                  "type": "actions",
+                  "elements": [
+                    {
+                      "type": "button",
+                      "text": { "type": "plain_text", "text": "View job" },
+                      "url": "${CIRCLE_BUILD_URL}"
+                    }
+                  ]
                 }
-              },
-              {
-                "type": "context",
-                "elements": [
-                  {
-                    "type": "mrkdwn",
-                    "text": "Project: *${CIRCLE_PROJECT_REPONAME}*"
-                  },
-                  {
-                    "type": "mrkdwn",
-                    "text": "Branch: *${CIRCLE_BRANCH}*"
-                  },
-                  {
-                    "type": "mrkdwn",
-                    "text": "Build: *#${CIRCLE_BUILD_NUM}*"
-                  }
-                ]
-              },
-              {
-                "type": "actions",
-                "elements": [
-                  {
-                    "type": "button",
-                    "text": { "type": "plain_text", "text": "View job" },
-                    "url": "${CIRCLE_BUILD_URL}"
-                  }
-                ]
-              }
-            ]
-          }
+              ]
+            }
 
 jobs:
   lint-code:
@@ -71,15 +75,19 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - gradle-{{ checksum "build.gradle.kts" }}
-            - gradle-
+            - "gradle-{{ checksum \"build.gradle.kts\" }}"
+            - "gradle-"
       - run:
-          name: Lint code
+          name: "Lint code"
           command: make lint
       - save_cache:
           paths:
-            - ~/.gradle
-          key: gradle-{{ checksum "build.gradle.kts" }}
+            - "~/.gradle"
+          key: "gradle-{{ checksum \"build.gradle.kts\" }}"
+    post-steps:
+      - slack-fail-notify:
+          job_name: "Lint code"
+
   unit-tests:
     executor:
       name: hmpps/java
@@ -88,17 +96,21 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - gradle-{{ checksum "build.gradle.kts" }}
-            - gradle-
+            - "gradle-{{ checksum \"build.gradle.kts\" }}"
+            - "gradle-"
       - run:
-          name: Run unit tests
+          name: "Run unit tests"
           command: make unit-test
       - save_cache:
           paths:
-            - ~/.gradle
-          key: gradle-{{ checksum "build.gradle.kts" }}
+            - "~/.gradle"
+          key: "gradle-{{ checksum \"build.gradle.kts\" }}"
       - store_test_results:
           path: build/test-results
+    post-steps:
+      - slack-fail-notify:
+          job_name: "Unit tests"
+
   integration-tests:
     machine:
       image: ubuntu-2204:2022.10.2
@@ -106,18 +118,22 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - gradle-{{ checksum "build.gradle.kts" }}
-            - gradle-
+            - "gradle-{{ checksum \"build.gradle.kts\" }}"
+            - "gradle-"
       - run:
-          name: Install OpenJDK 21
+          name: "Install OpenJDK 21"
           command: |
-            sudo apt-get update && sudo apt-get install openjdk-21-jdk
+            sudo apt-get update && sudo apt-get install -y openjdk-21-jdk
             sudo update-alternatives --set java /usr/lib/jvm/java-21-openjdk-amd64/bin/java
             sudo update-alternatives --set javac /usr/lib/jvm/java-21-openjdk-amd64/bin/javac
             java -version
       - run:
-          name: Run integration tests
+          name: "Run integration tests"
           command: make integration-test
+    post-steps:
+      - slack-fail-notify:
+          job_name: "Integration tests"
+
   create-and-push-image-to-ecr:
     docker:
       - image: ministryofjustice/cloud-platform-tools
@@ -126,38 +142,47 @@ jobs:
       - setup_remote_docker:
           docker_layer_caching: true
       - run:
-          name: Build application Docker image
+          name: "Build application Docker image"
           command: make build
       - hmpps/create_app_version
       - aws-cli/setup:
-          role_arn: $ECR_ROLE_TO_ASSUME
-          region: AWS_DEFAULT_REGION
+          role_arn: "$ECR_ROLE_TO_ASSUME"
+          region: "AWS_DEFAULT_REGION"
       - deploy:
-          name: Push application Docker image
+          name: "Push application Docker image"
           command: make publish
+    post-steps:
+      - slack-fail-notify:
+          job_name: "Create and push image to ECR"
+
   heartbeat:
     machine:
       image: ubuntu-2204:2022.10.2
     steps:
       - checkout
       - run:
-          name: Run heartbeat
+          name: "Run heartbeat"
           command: make heartbeat
+    post-steps:
+      - slack-fail-notify:
+          job_name: "Heartbeat"
+
   smoke-tests:
     docker:
       - image: grafana/k6:1.0.0
     steps:
       - checkout
       - run:
-          name: Run smoke tests
+          name: "Run smoke tests"
           command: |
             k6 run ./scripts/K6/full-access-smoke-tests.js
             k6 run ./scripts/K6/limited-access-smoke-tests.js
             k6 run ./scripts/K6/no-access-with-certs-smoke-tests.js
             k6 run ./scripts/K6/no-access-without-certs-smoke-tests.js
+
   notify-slack-on-smoke-test-fail:
     docker:
-      - image: ubuntu-2204:2022.10.2
+      - image: cimg/base:stable
     steps:
       - slack/notify:
           event: fail
@@ -210,30 +235,27 @@ workflows:
       - lint-code:
           context:
             - hmpps-common-vars
-          <<: *slack-fail-post-step
       - unit-tests:
           context:
             - hmpps-common-vars
-          <<: *slack-fail-post-step
       - integration-tests:
           context:
             - hmpps-common-vars
-          <<: *slack-fail-post-step
       - hmpps/helm_lint:
           context:
             - hmpps-common-vars
-          <<: *slack-fail-post-step
           name: lint-helm-charts
           env: dev
+          post-steps:
+            - slack-fail-notify:
+                job_name: "Helm lint"
       - hmpps/build_multiplatform_docker:
           name: build_docker
           filters:
             branches:
               only:
                 - main
-
       - create-and-push-image-to-ecr:
-          <<: *slack-fail-post-step
           name: create-and-push-image-to-dev-ecr
           context:
             - hmpps-integration-api-dev
@@ -248,9 +270,10 @@ workflows:
             branches:
               only:
                 - main
-
+          post-steps:
+            - slack-fail-notify:
+                job_name: "Create and push image to DEV ECR"
       - hmpps/deploy_env:
-          <<: *slack-fail-post-step
           name: deploy-to-dev
           context:
             - hmpps-integration-api-dev
@@ -261,53 +284,57 @@ workflows:
             branches:
               only:
                 - main
-          env: "dev"
-          helm_timeout: 5m
-          slack_channel_name: << pipeline.parameters.releases-slack-channel >>
+          env: dev
+          helm_timeout: "5m"
+          slack_channel_name: "<< pipeline.parameters.releases-slack-channel >>"
           slack_notification: false
-
+          post-steps:
+            - slack-fail-notify:
+                job_name: "Deploy to DEV"
       - heartbeat:
-          <<: *slack-fail-post-step
           name: post-deploy-heartbeat-for-dev
           context:
             - hmpps-common-vars
             - hmpps-integration-api-heartbeat-dev
           requires:
             - deploy-to-dev
-
+          post-steps:
+            - slack-fail-notify:
+                job_name: "Post-deploy heartbeat for DEV"
       - smoke-tests:
           name: smoke-tests-for-dev
           context:
             - hmpps-common-vars
             - hmpps-integration-api-smoke-test-dev
-      #          requires:
-      #            - post-deploy-heartbeat-for-dev
-
+#          requires:
+#            - post-deploy-heartbeat-for-dev
       - notify-slack-on-smoke-test-fail:
           name: notify-slack-on-smoke-test-fail-workflow-step
+          context:
+            - hmpps-common-vars
+            - hmpps-integration-api-smoke-test-dev
           requires:
             - smoke-tests-for-dev
           filters:
-            #            branches:
-            #              only: main
+#            branches:
+#              only: main
           results:
             - fail
-
       - create-and-push-image-to-ecr:
-          <<: *slack-fail-post-step
           name: create-and-push-image-to-preprod-ecr
           context:
             - hmpps-common-vars
             - hmpps-integration-api-preprod
           requires:
-            #            - smoke-tests-for-
             - post-deploy-heartbeat-for-dev
           filters:
             branches:
               only:
                 - main
+          post-steps:
+            - slack-fail-notify:
+                job_name: "Create and push image to PREPROD ECR"
       - hmpps/deploy_env:
-          <<: *slack-fail-post-step
           name: deploy-to-preprod
           context:
             - hmpps-integration-api-preprod
@@ -318,25 +345,28 @@ workflows:
             branches:
               only:
                 - main
-          env: "preprod"
-          helm_timeout: 5m
-          slack_channel_name: << pipeline.parameters.releases-slack-channel >>
+          env: preprod
+          helm_timeout: "5m"
+          slack_channel_name: "<< pipeline.parameters.releases-slack-channel >>"
           slack_notification: false
-
+          post-steps:
+            - slack-fail-notify:
+                job_name: "Deploy to PREPROD"
       - create-and-push-image-to-ecr:
-          <<: *slack-fail-post-step
           name: create-and-push-image-to-prod-ecr
           context:
-            - hmpps-integration-api-prod
             - hmpps-common-vars
+            - hmpps-integration-api-prod
           requires:
             - deploy-to-preprod
           filters:
             branches:
               only:
                 - main
+          post-steps:
+            - slack-fail-notify:
+                job_name: "Create and push image to PROD ECR"
       - hmpps/deploy_env:
-          <<: *slack-fail-post-step
           name: deploy-to-prod
           context:
             - hmpps-integration-api-prod
@@ -347,10 +377,14 @@ workflows:
             branches:
               only:
                 - main
-          env: "prod"
-          helm_timeout: 5m
-          slack_channel_name: << pipeline.parameters.releases-slack-channel >>
+          env: prod
+          helm_timeout: "5m"
+          slack_channel_name: "<< pipeline.parameters.releases-slack-channel >>"
           slack_notification: false
+          post-steps:
+            - slack-fail-notify:
+                job_name: "Deploy to PROD"
+
   security:
     triggers:
       - schedule:
@@ -362,18 +396,28 @@ workflows:
     jobs:
       - hmpps/gradle_owasp_dependency_check:
           jdk_tag: "21.0"
-          slack_channel: << pipeline.parameters.alerts-slack-channel >>
+          slack_channel: "<< pipeline.parameters.alerts-slack-channel >>"
           context:
             - hmpps-common-vars
+          post-steps:
+            - slack-fail-notify:
+                job_name: "OWASP Dependency Check"
       - hmpps/veracode_pipeline_scan:
-          slack_channel: << pipeline.parameters.alerts-slack-channel >>
+          slack_channel: "<< pipeline.parameters.alerts-slack-channel >>"
           context:
             - veracode-credentials
             - hmpps-common-vars
+          post-steps:
+            - slack-fail-notify:
+                job_name: "Veracode Pipeline Scan"
       - hmpps/trivy_latest_scan:
-          slack_channel: << pipeline.parameters.alerts-slack-channel >>
+          slack_channel: "<< pipeline.parameters.alerts-slack-channel >>"
           context:
             - hmpps-common-vars
+          post-steps:
+            - slack-fail-notify:
+                job_name: "Trivy Scan"
+
   security-weekly:
     triggers:
       - schedule:
@@ -384,7 +428,10 @@ workflows:
                 - main
     jobs:
       - hmpps/veracode_policy_scan:
-          slack_channel: << pipeline.parameters.alerts-slack-channel >>
+          slack_channel: "<< pipeline.parameters.alerts-slack-channel >>"
           context:
             - veracode-credentials
             - hmpps-common-vars
+          post-steps:
+            - slack-fail-notify:
+                job_name: "Veracode Policy Scan"
