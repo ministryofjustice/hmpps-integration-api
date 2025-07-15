@@ -1,12 +1,15 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions
 
+import io.netty.channel.ChannelOption
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
+import org.springframework.http.client.reactive.ReactorClientHttpConnector
 import org.springframework.web.reactive.function.BodyInserters
 import org.springframework.web.reactive.function.client.ExchangeStrategies
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import reactor.core.publisher.Mono
+import reactor.netty.http.client.HttpClient
 import reactor.util.retry.Retry
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.ResponseException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
@@ -22,10 +25,17 @@ class WebClientWrapper(
   val MAX_RETRY_ATTEMPTS = 3L
   val MIN_BACKOFF_DURATION = Duration.ofSeconds(3)
 
+  val httpClient =
+    HttpClient
+      .create()
+      .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 10000)
+      .responseTimeout(Duration.ofSeconds(15))
+
   val client: WebClient =
     WebClient
       .builder()
       .baseUrl(baseUrl)
+      .clientConnector(ReactorClientHttpConnector(httpClient))
       .exchangeStrategies(
         ExchangeStrategies
           .builder()
