@@ -159,10 +159,9 @@ jobs:
     docker:
       - image: ubuntu-2204:2022.10.2
     steps:
-        - slack/notify:
+      - slack/notify:
           event: fail
-#          branch_pattern: main
-          channel: << pipeline.parameters.alerts-slack-channel >>
+          channel: "<< pipeline.parameters.alerts-slack-channel >>"
           custom: |
             {
               "blocks": [
@@ -285,15 +284,12 @@ workflows:
 #            - post-deploy-heartbeat-for-dev
 
       - notify-slack-on-smoke-test-fail:
-          name: notify-slack-on-smoke-test-fail
-          context:
-            - hmpps-common-vars
-            - hmpps-integration-api-smoke-test-dev
+          name: notify-slack-on-smoke-test-fail-workflow-step
           requires:
             - smoke-tests-for-dev
           filters:
-            branches:
-              only: main
+#            branches:
+#              only: main
             results:
               - fail
 
