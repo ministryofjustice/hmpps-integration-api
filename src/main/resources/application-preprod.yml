@@ -53,7 +53,7 @@ feature-flag:
   use-prisoner-base-location-endpoint: false
   use-historical-attendances-endpoint: true
   use-suitability-endpoint: true
-  use-waiting-list-endpoint: false
+  use-waiting-list-endpoint: true
   use-alerts-api-filter: false
   error-on-no-lao-context: false
 
