@@ -162,46 +162,46 @@ jobs:
       - slack/notify:
           event: fail
           channel: "<< pipeline.parameters.alerts-slack-channel >>"
-          custom: |
-            {
-              "blocks": [
-                {
-                  "type": "header",
-                  "text": {
-                    "type": "plain_text",
-                    "text": ":this-is-fine-fire: ${CIRCLE_JOB} job has failed",
-                    "emoji": true
-                  }
-                },
-                {
-                  "type": "context",
-                  "elements": [
-                    {
-                      "type": "mrkdwn",
-                      "text": "Project: *${CIRCLE_PROJECT_REPONAME}*"
-                    },
-                    {
-                      "type": "mrkdwn",
-                      "text": "Branch: *${CIRCLE_BRANCH}*"
-                    },
-                    {
-                      "type": "mrkdwn",
-                      "text": "Build: *#${CIRCLE_BUILD_NUM}*"
-                    }
-                  ]
-                },
-                {
-                  "type": "actions",
-                  "elements": [
-                    {
-                      "type": "button",
-                      "text": { "type": "plain_text", "text": "View job" },
-                      "url": "${CIRCLE_BUILD_URL}"
-                    }
-                  ]
+        custom: |
+          {
+            "blocks": [
+              {
+                "type": "header",
+                "text": {
+                  "type": "plain_text",
+                  "text": ":this-is-fine-fire: ${CIRCLE_JOB} job has failed",
+                  "emoji": true
                 }
-              ]
-            }
+              },
+              {
+                "type": "context",
+                "elements": [
+                  {
+                    "type": "mrkdwn",
+                    "text": "Project: *${CIRCLE_PROJECT_REPONAME}*"
+                  },
+                  {
+                    "type": "mrkdwn",
+                    "text": "Branch: *${CIRCLE_BRANCH}*"
+                  },
+                  {
+                    "type": "mrkdwn",
+                    "text": "Build: *#${CIRCLE_BUILD_NUM}*"
+                  }
+                ]
+              },
+              {
+                "type": "actions",
+                "elements": [
+                  {
+                    "type": "button",
+                    "text": { "type": "plain_text", "text": "View job" },
+                    "url": "${CIRCLE_BUILD_URL}"
+                  }
+                ]
+              }
+            ]
+          }
 
 workflows:
   version: 2
@@ -280,8 +280,8 @@ workflows:
           context:
             - hmpps-common-vars
             - hmpps-integration-api-smoke-test-dev
-#          requires:
-#            - post-deploy-heartbeat-for-dev
+      #          requires:
+      #            - post-deploy-heartbeat-for-dev
 
       - notify-slack-on-smoke-test-fail:
           name: notify-slack-on-smoke-test-fail-workflow-step
@@ -300,7 +300,7 @@ workflows:
             - hmpps-common-vars
             - hmpps-integration-api-preprod
           requires:
-#            - smoke-tests-for-
+            #            - smoke-tests-for-
             - post-deploy-heartbeat-for-dev
           filters:
             branches:
