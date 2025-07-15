@@ -155,6 +155,54 @@ jobs:
             k6 run ./scripts/K6/limited-access-smoke-tests.js
             k6 run ./scripts/K6/no-access-with-certs-smoke-tests.js
             k6 run ./scripts/K6/no-access-without-certs-smoke-tests.js
+  notify-slack-on-smoke-test-fail:
+    docker:
+      - image: ubuntu-2204:2022.10.2
+    steps:
+        - slack/notify:
+          event: fail
+#          branch_pattern: main
+          channel: << pipeline.parameters.alerts-slack-channel >>
+          custom: |
+            {
+              "blocks": [
+                {
+                  "type": "header",
+                  "text": {
+                    "type": "plain_text",
+                    "text": ":this-is-fine-fire: ${CIRCLE_JOB} job has failed",
+                    "emoji": true
+                  }
+                },
+                {
+                  "type": "context",
+                  "elements": [
+                    {
+                      "type": "mrkdwn",
+                      "text": "Project: *${CIRCLE_PROJECT_REPONAME}*"
+                    },
+                    {
+                      "type": "mrkdwn",
+                      "text": "Branch: *${CIRCLE_BRANCH}*"
+                    },
+                    {
+                      "type": "mrkdwn",
+                      "text": "Build: *#${CIRCLE_BUILD_NUM}*"
+                    }
+                  ]
+                },
+                {
+                  "type": "actions",
+                  "elements": [
+                    {
+                      "type": "button",
+                      "text": { "type": "plain_text", "text": "View job" },
+                      "url": "${CIRCLE_BUILD_URL}"
+                    }
+                  ]
+                }
+              ]
+            }
 
 workflows:
   version: 2
@@ -229,13 +277,25 @@ workflows:
             - deploy-to-dev
 
       - smoke-tests:
-          <<: *slack-fail-post-step
           name: smoke-tests-for-dev
           context:
             - hmpps-common-vars
             - hmpps-integration-api-smoke-test-dev
+#          requires:
+#            - post-deploy-heartbeat-for-dev
+
+      - notify-slack-on-smoke-test-fail:
+          name: notify-slack-on-smoke-test-fail
+          context:
+            - hmpps-common-vars
+            - hmpps-integration-api-smoke-test-dev
           requires:
-            - post-deploy-heartbeat-for-dev
+            - smoke-tests-for-dev
+          filters:
+            branches:
+              only: main
+            results:
+              - fail
 
       - create-and-push-image-to-ecr:
           <<: *slack-fail-post-step
@@ -244,7 +304,8 @@ workflows:
             - hmpps-common-vars
             - hmpps-integration-api-preprod
           requires:
-            - smoke-tests-for-dev
+#            - smoke-tests-for-
+            - post-deploy-heartbeat-for-dev
           filters:
             branches:
               only:
