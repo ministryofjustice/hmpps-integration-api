@@ -124,6 +124,7 @@ class PersonController(
   )
   fun getPerson(
     @Parameter(description = "A URL-encoded HMPPS identifier", example = "2008%2F0545166T") @PathVariable encodedHmppsId: String,
+    @RequestAttribute clientName: String,
   ): DataResponse<OffenderSearchResponse> {
     val hmppsId = encodedHmppsId.decodeUrlCharacters()
     val response = getPersonService.getCombinedDataForPerson(hmppsId)
@@ -133,7 +134,12 @@ class PersonController(
     }
 
     auditService.createEvent("GET_PERSON_DETAILS", mapOf("hmppsId" to hmppsId))
-    val data = response.data
+    val data =
+      if (featureFlag.isEnabled(FeatureFlagConfig.SIMPLE_REDACTION)) { // simple redaction: to be refactored in later releases
+        redactPersonData(response.data, clientName)
+      } else {
+        response.data
+      }
     return DataResponse(data)
   }
 
@@ -444,4 +450,41 @@ class PersonController(
     } catch (e: Exception) {
       false
     }
+
+  /***
+   * This simple redaction method is to be replaced by "flexible redaction" in coming releases
+   */
+  private fun redactPersonData(
+    offenderData: OffenderSearchResponse,
+    clientName: String? = null,
+  ) = offenderData.let { data ->
+    val targetConsumerIds = setOf("meganexus", "moj-esw")
+    when {
+      !targetConsumerIds.contains(clientName) -> data
+
+      else -> {
+        val prisonerOffenderSearch =
+          data.prisonerOffenderSearch?.run {
+            copy(
+              middleName = REDACTED,
+              aliases = aliases.map { it.copy(middleName = REDACTED) }.toList(),
+              identifiers = identifiers.copy(croNumber = REDACTED, deliusCrn = REDACTED),
+              pncId = REDACTED,
+              contactDetails = null,
+              currentRestriction = null,
+              restrictionMessage = REDACTED,
+              currentExclusion = null,
+              exclusionMessage = REDACTED,
+            )
+          }
+
+        data.copy(
+          prisonerOffenderSearch = prisonerOffenderSearch,
+          probationOffenderSearch = null,
+        )
+      }
+    }
+  }
 }
+
+private const val REDACTED = "**REDACTED**"

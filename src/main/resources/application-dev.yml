@@ -58,6 +58,7 @@ feature-flag:
   use-waiting-list-endpoint: true
   use-alerts-api-filter: true
   error-on-no-lao-context: true
+  simple-redaction: true
 
 authorisation:
   consumers:
