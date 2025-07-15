@@ -75,7 +75,7 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - "gradle-{{ checksum \"build.gradle.kts\" }}"
+            - 'gradle-{{ checksum "build.gradle.kts" }}'
             - "gradle-"
       - run:
           name: "Lint code"
@@ -83,7 +83,7 @@ jobs:
       - save_cache:
           paths:
             - "~/.gradle"
-          key: "gradle-{{ checksum \"build.gradle.kts\" }}"
+          key: 'gradle-{{ checksum "build.gradle.kts" }}'
     post-steps:
       - slack-fail-notify:
           job_name: "Lint code"
@@ -96,7 +96,7 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - "gradle-{{ checksum \"build.gradle.kts\" }}"
+            - 'gradle-{{ checksum "build.gradle.kts" }}'
             - "gradle-"
       - run:
           name: "Run unit tests"
@@ -104,7 +104,7 @@ jobs:
       - save_cache:
           paths:
             - "~/.gradle"
-          key: "gradle-{{ checksum \"build.gradle.kts\" }}"
+          key: 'gradle-{{ checksum "build.gradle.kts" }}'
       - store_test_results:
           path: build/test-results
     post-steps:
@@ -118,7 +118,7 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - "gradle-{{ checksum \"build.gradle.kts\" }}"
+            - 'gradle-{{ checksum "build.gradle.kts" }}'
             - "gradle-"
       - run:
           name: "Install OpenJDK 21"
@@ -306,8 +306,8 @@ workflows:
           context:
             - hmpps-common-vars
             - hmpps-integration-api-smoke-test-dev
-#          requires:
-#            - post-deploy-heartbeat-for-dev
+      #          requires:
+      #            - post-deploy-heartbeat-for-dev
       - notify-slack-on-smoke-test-fail:
           name: notify-slack-on-smoke-test-fail-workflow-step
           context:
@@ -316,8 +316,8 @@ workflows:
           requires:
             - smoke-tests-for-dev
           filters:
-#            branches:
-#              only: main
+          #            branches:
+          #              only: main
           results:
             - fail
       - create-and-push-image-to-ecr:
