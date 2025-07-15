@@ -18,7 +18,7 @@ A full example can be found in `src/test/kotlin/uk/gov/justice/digital/hmpps/hmp
 To set up a new upstream mock, you first need to set the name of the OpenAPI spec in the config.
 The file is expected to be in the `src/test/resources/openapi-specs` directory.
 
-Note that in the below example, `test.json` is used only for testing purposes and will not need to be refreshed alongside the other spec files. 
+Note that in the below example, `test.json` is used only for testing purposes and will not need to be refreshed alongside the other spec files.
 
 ```kotlin
 // src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/mockservers/ApiMockServer.kt
