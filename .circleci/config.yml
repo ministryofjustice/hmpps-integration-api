@@ -288,8 +288,8 @@ workflows:
           requires:
             - smoke-tests-for-dev
           filters:
-#            branches:
-#              only: main
+            #            branches:
+            #              only: main
           results:
             - fail
 
