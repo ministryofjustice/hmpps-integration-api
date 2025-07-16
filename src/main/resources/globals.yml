@@ -150,3 +150,4 @@ globals:
         - "/v1/prison/prisoners/.*/activities/attendances"
         - "/v1/activities/schedule/.*/waiting-list-applications"
         - "/v1/status"
+        - "/v1/persons/.*/san-plan-creation-schedule"

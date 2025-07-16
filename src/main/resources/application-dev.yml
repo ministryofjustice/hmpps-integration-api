@@ -19,6 +19,8 @@ services:
     base-url: https://dev.moic.service.justice.gov.uk
   plp:
     base-url: https://learningandworkprogress-api-dev.hmpps.service.justice.gov.uk
+  san:
+    base-url: http://support-for-additional-needs-api-dev.hmpps.service.justice.gov.uk
   non-associations:
     base-url: https://non-associations-api-dev.hmpps.service.justice.gov.uk
   personal-relationships:
@@ -58,6 +60,7 @@ feature-flag:
   use-waiting-list-endpoint: true
   use-alerts-api-filter: true
   error-on-no-lao-context: true
+  use-san-endpoint: true
 
 authorisation:
   consumers:
@@ -179,6 +182,7 @@ authorisation:
         - "/v1/persons/[^/]+/prisoner-base-location"
         - "/v1/persons/.*/education/assessments"
         - "/v1/status"
+        - "/v1/persons/.*/san-plan-creation-schedule"
       filters:
     moj-esw:
       include:

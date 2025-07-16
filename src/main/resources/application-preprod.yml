@@ -19,6 +19,8 @@ services:
     base-url: https://preprod.moic.service.justice.gov.uk
   plp:
     base-url: https://learningandworkprogress-api-preprod.hmpps.service.justice.gov.uk
+  san:
+    base-url: https://support-for-additional-needs-api-preprod.hmpps.service.justice.gov.uk
   non-associations:
     base-url: https://non-associations-api-preprod.hmpps.service.justice.gov.uk
   manage-prison-visits:
@@ -56,6 +58,7 @@ feature-flag:
   use-waiting-list-endpoint: true
   use-alerts-api-filter: false
   error-on-no-lao-context: false
+  use-san-endpoint: false
 
 authorisation:
   consumers:

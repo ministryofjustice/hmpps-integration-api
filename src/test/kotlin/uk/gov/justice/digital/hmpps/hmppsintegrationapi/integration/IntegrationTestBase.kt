@@ -53,6 +53,7 @@ abstract class IntegrationTestBase {
     val healthAndMedicationMockServer = ApiMockServer.create(UpstreamApi.HEALTH_AND_MEDICATION)
     val managePomCaseMockServer = ApiMockServer.create(UpstreamApi.MANAGE_POM_CASE)
     val plpMockServer = ApiMockServer.create(UpstreamApi.PLP)
+    val sanMockServer = ApiMockServer.create(UpstreamApi.SAN)
     val activitiesMockServer = ApiMockServer.create(UpstreamApi.ACTIVITIES)
 
     @BeforeAll
@@ -90,7 +91,7 @@ abstract class IntegrationTestBase {
       )
 
       plpMockServer.start()
-
+      sanMockServer.start()
       activitiesMockServer.start()
     }
 
@@ -102,6 +103,7 @@ abstract class IntegrationTestBase {
       healthAndMedicationMockServer.stop()
       managePomCaseMockServer.stop()
       plpMockServer.stop()
+      sanMockServer.stop()
       activitiesMockServer.stop()
     }
   }

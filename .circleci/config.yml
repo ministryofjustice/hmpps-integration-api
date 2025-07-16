@@ -98,7 +98,9 @@ jobs:
             - ~/.gradle
           key: gradle-{{ checksum "build.gradle.kts" }}
       - store_test_results:
-          path: build/test-results
+          path: build/reports/tests/unitTest
+      - store_artifacts:
+          path: build/reports/tests/unitTest
   integration-tests:
     machine:
       image: ubuntu-2204:2022.10.2
@@ -118,6 +120,10 @@ jobs:
       - run:
           name: Run integration tests
           command: make integration-test
+      - store_test_results:
+          path: build/reports/tests/integrationTest
+      - store_artifacts:
+          path: build/reports/tests/integrationTest
   create-and-push-image-to-ecr:
     docker:
       - image: ministryofjustice/cloud-platform-tools

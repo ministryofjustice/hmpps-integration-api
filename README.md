@@ -68,6 +68,7 @@ This solution is dependent on:
 - [Locations Inside Prison](https://github.com/ministryofjustice/hmpps-locations-inside-prison-api)
 - [Activities Management](https://github.com/ministryofjustice/hmpps-activities-management-api)
 - [Health and Medication](https://github.com/ministryofjustice/hmpps-health-and-medication-api)
+- [Support for additional needs](https://github.com/ministryofjustice/hmpps-support-additional-needs-api)
 
 These things depend upon this solution:
 
