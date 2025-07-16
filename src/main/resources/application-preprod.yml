@@ -42,7 +42,7 @@ feature-flag:
   use-arns-endpoints: true
   use-education-assessments-endpoints: false
   use-eswe-curious-endpoints: false
-  use-update-attendance-endpoint: false
+  use-update-attendance-endpoint: true
   use-schedule-detail-endpoint: true
   use-search-appointments-endpoint: true
   use-deallocation-endpoint: true
@@ -53,7 +53,7 @@ feature-flag:
   use-prisoner-base-location-endpoint: false
   use-historical-attendances-endpoint: true
   use-suitability-endpoint: true
-  use-waiting-list-endpoint: false
+  use-waiting-list-endpoint: true
   use-alerts-api-filter: false
   error-on-no-lao-context: false
 

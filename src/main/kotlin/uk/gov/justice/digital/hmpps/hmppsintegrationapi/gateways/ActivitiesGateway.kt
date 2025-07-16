@@ -45,7 +45,7 @@ class ActivitiesGateway(
     val result =
       webClient.requestList<ActivitiesPrisonRegime>(
         HttpMethod.GET,
-        "/prison/prison-regime/$prisonCode",
+        "/integration-api/prison/prison-regime/$prisonCode",
         authenticationHeader(),
         UpstreamApi.ACTIVITIES,
         badRequestAsError = true,
@@ -69,7 +69,7 @@ class ActivitiesGateway(
     val result =
       webClient.requestList<ActivitiesPrisonPayBand>(
         HttpMethod.GET,
-        "/prison/$prisonCode/prison-pay-bands",
+        "/integration-api/prison/$prisonCode/prison-pay-bands",
         authenticationHeader(),
         UpstreamApi.ACTIVITIES,
         badRequestAsError = true,
@@ -93,7 +93,7 @@ class ActivitiesGateway(
     val result =
       webClient.requestList<ActivitiesActivitySchedule>(
         HttpMethod.GET,
-        "/activities/$activityId/schedules",
+        "/integration-api/activities/$activityId/schedules",
         authenticationHeader(),
         UpstreamApi.ACTIVITIES,
         badRequestAsError = true,
@@ -117,7 +117,7 @@ class ActivitiesGateway(
     val result =
       webClient.request<ActivitiesActivityScheduleDetailed>(
         HttpMethod.GET,
-        "/schedules/$scheduleId",
+        "/integration-api/schedules/$scheduleId",
         authenticationHeader(),
         UpstreamApi.ACTIVITIES,
         badRequestAsError = true,
@@ -164,7 +164,7 @@ class ActivitiesGateway(
     val result =
       webClient.requestList<ActivitiesRunningActivity>(
         HttpMethod.GET,
-        "/prison/$prisonCode/activities",
+        "/integration-api/prison/$prisonCode/activities",
         authenticationHeader(),
         UpstreamApi.ACTIVITIES,
         badRequestAsError = true,
@@ -191,7 +191,7 @@ class ActivitiesGateway(
     val result =
       webClient.requestList<ActivitiesAppointmentDetails>(
         HttpMethod.POST,
-        "/appointments/$prisonCode/search",
+        "/integration-api/appointments/$prisonCode/search",
         authenticationHeader(),
         requestBody = appointmentSearchRequest.toApiConformingMap(),
         upstreamApi = UpstreamApi.ACTIVITIES,
@@ -216,7 +216,7 @@ class ActivitiesGateway(
     val result =
       webClient.request<ActivitiesAttendance>(
         HttpMethod.GET,
-        "/attendances/$attendanceId",
+        "/integration-api/attendances/$attendanceId",
         authenticationHeader(),
         UpstreamApi.ACTIVITIES,
         badRequestAsError = true,
@@ -240,7 +240,7 @@ class ActivitiesGateway(
     val result =
       webClient.requestList<ActivitiesAttendanceReason>(
         HttpMethod.GET,
-        "/attendance-reasons",
+        "/integration-api/attendance-reasons",
         authenticationHeader(),
         UpstreamApi.ACTIVITIES,
         forbiddenAsError = true,
@@ -302,7 +302,7 @@ class ActivitiesGateway(
     val result =
       webClient.requestList<ActivitiesDeallocationReason>(
         HttpMethod.GET,
-        "/allocations/deallocation-reasons",
+        "/integration-api/allocations/deallocation-reasons",
         authenticationHeader(),
         UpstreamApi.ACTIVITIES,
         forbiddenAsError = true,
@@ -331,7 +331,7 @@ class ActivitiesGateway(
     val result =
       webClient.request<ActivitiesPagedWaitingListApplication>(
         HttpMethod.POST,
-        "/waiting-list-applications/$prisonCode/search?page=${page - 1}&pageSize=$pageSize",
+        "/integration-api/waiting-list-applications/$prisonCode/search?page=${page - 1}&pageSize=$pageSize",
         authenticationHeader(),
         UpstreamApi.ACTIVITIES,
         requestBody = activitiesWaitingListSearchRequest.toApiConformingMap(),
@@ -362,7 +362,7 @@ class ActivitiesGateway(
     val result =
       webClient.requestList<ActivitiesHistoricalAttendance>(
         HttpMethod.GET,
-        "/integration-api/attendances/$prisonerNumber?startDate=$startDate&endDate=$endDate$prisonCodeParam",
+        "/integration-api/attendances/prisoner/$prisonerNumber?startDate=$startDate&endDate=$endDate$prisonCodeParam",
         authenticationHeader(),
         UpstreamApi.ACTIVITIES,
         badRequestAsError = true,

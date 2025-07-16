@@ -33,7 +33,7 @@ class GetAttendanceReasonsGatewayTest(
 ) : DescribeSpec(
     {
       val mockServer = ApiMockServer.create(UpstreamApi.ACTIVITIES)
-      val path = "/attendance-reasons"
+      val path = "/integration-api/attendance-reasons"
 
       beforeEach {
         mockServer.start()

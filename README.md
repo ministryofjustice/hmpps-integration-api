@@ -49,6 +49,9 @@ This solution is dependent on:
 
 - [Prison API](https://github.com/ministryofjustice/prison-api)
 - [Prisoner Search](https://github.com/ministryofjustice/hmpps-prisoner-search)
+- [Probation Offender Search](https://github.com/ministryofjustice/probation-offender-search)
+- [External API and nDelius](https://github.com/ministryofjustice/hmpps-probation-integration-services/tree/main/projects/external-api-and-delius)
+- [Effective proposal framework and Delius](https://github.com/ministryofjustice/hmpps-probation-integration-services/tree/main/projects/effective-proposal-framework-and-delius)
 - [HMPPS Auth](https://github.com/ministryofjustice/hmpps-auth)
 - [Assess Risks and Needs (ARNS)](https://github.com/ministryofjustice/hmpps-assess-risks-and-needs-coordinator-api)
 - [Adjudications](https://github.com/ministryofjustice/hmpps-manage-adjudications-api)
@@ -62,6 +65,9 @@ This solution is dependent on:
 - [Prisoner Alerts](https://github.com/ministryofjustice/hmpps-alerts-api)
 - [Manage Prison Visits](https://github.com/ministryofjustice/hmpps-manage-prison-visits-orchestration)
 - [Risk Management](https://github.com/ministryofjustice/hmpps-assess-risks-and-needs)
+- [Locations Inside Prison](https://github.com/ministryofjustice/hmpps-locations-inside-prison-api)
+- [Activities Management](https://github.com/ministryofjustice/hmpps-activities-management-api)
+- [Health and Medication](https://github.com/ministryofjustice/hmpps-health-and-medication-api)
 
 These things depend upon this solution:
 
@@ -145,7 +151,6 @@ using [docker-compose](https://docs.docker.com/compose/).
     ```
 
     Each service is then accessible at:
-
     - [http://localhost:8080](http://localhost:8080) for this application
     - [http://localhost:4010](http://localhost:4010) to [http://localhost:40XX]() for mocked HMPPS APIs
     - [http://localhost:9090](http://localhost:9090) for the HMPPS Auth service
@@ -278,17 +283,20 @@ Note, this will only specifically enable the `RequestLogger`.
 
 ## Developer guides
 
+- [Certificate Renewal](/docs/guides/certificate-renewal.md)
 - [Creating an environment](/docs/guides/creating-an-environment.md)
-- [Setting up a CircleCI context for deployment](/docs/guides/setting-up-circleci-context-for-deployment.md)
+- [Renew mutual TLS server certificate](/docs/guides/renew-mutual-tls-server-certificate.md)
 - [Setting up a new consumer](/docs/guides/setting-up-a-new-consumer.md)
+- [Setting up a CircleCI context for deployment](/docs/guides/setting-up-circleci-context-for-deployment.md)
 - [Updating diagrams](/docs/guides/updating-diagrams.md)
 - [Useful commands](/docs/guides/useful-commands.md)
 
 ## Related repositories
 
-| Name                                                                                                   | Purpose                                   |
-| ------------------------------------------------------------------------------------------------------ | ----------------------------------------- |
-| [HMPPS Integration API Documentation](https://github.com/ministryofjustice/hmpps-integration-api-docs) | Provides documentation for API consumers. |
+| Name                                                                                                   | Purpose                                                                |
+| ------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------- |
+| [HMPPS Integration Events](https://github.com/ministryofjustice/hmpps-integration-events)              | Creates integration events triggered by upstream MoJ domain events.    |
+| [HMPPS Integration API Documentation](https://github.com/ministryofjustice/hmpps-integration-api-docs) | Previously provided documentation for API consumers. No longer in use. |
 
 ## License
 

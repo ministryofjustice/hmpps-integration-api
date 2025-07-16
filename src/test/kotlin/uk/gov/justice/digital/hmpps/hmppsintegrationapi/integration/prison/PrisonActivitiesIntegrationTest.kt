@@ -21,7 +21,7 @@ class PrisonActivitiesIntegrationTest : IntegrationTestBase() {
     @Test
     fun `return the prison activities details`() {
       activitiesMockServer.stubForGet(
-        "/prison/$prisonId/activities",
+        "/integration-api/prison/$prisonId/activities",
         File("$gatewaysFolder/activities/fixtures/GetAllRunningActivities.json").readText(),
       )
       callApi(path)
@@ -79,7 +79,7 @@ class PrisonActivitiesIntegrationTest : IntegrationTestBase() {
     @Test
     fun `return the appointments details`() {
       activitiesMockServer.stubForPost(
-        "/appointments/$prisonId/search",
+        "/integration-api/appointments/$prisonId/search",
         reqBody = requestBody,
         File("$gatewaysFolder/activities/fixtures/GetAppointments.json").readText(),
       )
@@ -118,7 +118,7 @@ class PrisonActivitiesIntegrationTest : IntegrationTestBase() {
     @Test
     fun `return the historical attendances`() {
       activitiesMockServer.stubForGet(
-        "/integration-api/attendances/$nomsId?startDate=$startDate&endDate=$endDate&prisonCode=$prisonId",
+        "/integration-api/attendances/prisoner/$nomsId?startDate=$startDate&endDate=$endDate&prisonCode=$prisonId",
         File("$gatewaysFolder/activities/fixtures/GetHistoricalAttendances.json").readText(),
       )
       callApi(path)

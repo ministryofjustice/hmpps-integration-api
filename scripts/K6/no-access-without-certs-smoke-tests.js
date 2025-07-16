@@ -3,7 +3,7 @@ const { check } = require('k6');
 import exec from 'k6/execution';
 
 const baseUrl = 'https://dev.integration-api.hmpps.service.justice.gov.uk';
-const hmppsId = 'A4433DZ';
+const hmppsId = "A8451DY";
 const allowedEndpoint = `/v1/persons/${hmppsId}/name`;
 
 export default function () {
