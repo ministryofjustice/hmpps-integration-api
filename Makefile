@@ -31,9 +31,6 @@ unit-test:
 integration-test: serve
 	./gradlew integrationTest --warning-mode all
 
-heartbeat:
-	./scripts/heartbeat.sh
-
 test: unit-test integration-test
 
 e2e:

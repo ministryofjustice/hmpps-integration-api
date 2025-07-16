@@ -9,5 +9,4 @@ examples of where each may be useful. This ensures contributors are well-equippe
 - [Kubernetes](kubernetes.md): Pod specific application logs
 - [Kibana](kibana.md): Kubernetes application logs
 - [Sentry](sentry.md): Error logs
-- [Heartbeat](heartbeat.md): Health checking service which runs during the deployment pipeline and on an interval.
 - [Gateway API Log](gateway-api-log.md): Gateway API logs.

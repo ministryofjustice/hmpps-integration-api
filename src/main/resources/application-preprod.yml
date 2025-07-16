@@ -103,3 +103,6 @@ authorisation:
       filters:
       roles:
         - "police"
+    smoke-test:
+      include:
+        - "/v1/status"
