@@ -53,7 +53,12 @@ class WebClientWrapperTest :
 
     beforeEach {
       mockServer.start()
-      webClient = WebClientWrapper(baseUrl = mockServer.baseUrl())
+      webClient =
+        WebClientWrapper(
+          baseUrl = mockServer.baseUrl(),
+          connectTimeoutMillis = 500,
+          responseTimeoutSeconds = 1,
+        )
     }
 
     afterTest {
@@ -298,7 +303,7 @@ class WebClientWrapperTest :
       }
 
       it("throws a timeout error if response is too slow") {
-        mockServer.stubGetTest(getPath, """{"result": "timeout"}""", delayMillis = 20000)
+        mockServer.stubGetTest(getPath, """{"result": "timeout"}""", delayMillis = 2000)
 
         val exception =
           shouldThrow<WebClientRequestException> {
@@ -308,7 +313,12 @@ class WebClientWrapperTest :
       }
 
       it("throws a connect timeout error if server is unreachable") {
-        val timeoutWebClient = WebClientWrapper("http://10.255.255.1:81")
+        val timeoutWebClient =
+          WebClientWrapper(
+            "http://10.255.255.1:81",
+            connectTimeoutMillis = 300,
+            responseTimeoutSeconds = 2,
+          )
 
         val exception =
           shouldThrow<WebClientRequestException> {

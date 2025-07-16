@@ -20,6 +20,8 @@ import java.time.Duration
 @Suppress("ktlint:standard:property-naming")
 class WebClientWrapper(
   val baseUrl: String,
+  connectTimeoutMillis: Int = 10_000,
+  responseTimeoutSeconds: Long = 15,
 ) {
   val CREATE_TRANSACTION_RETRY_HTTP_CODES = listOf(502, 503, 504, 522, 599, 499, 408)
   val MAX_RETRY_ATTEMPTS = 3L
@@ -28,8 +30,8 @@ class WebClientWrapper(
   val httpClient =
     HttpClient
       .create()
-      .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 10000)
-      .responseTimeout(Duration.ofSeconds(15))
+      .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, connectTimeoutMillis)
+      .responseTimeout(Duration.ofSeconds(responseTimeoutSeconds))
 
   val client: WebClient =
     WebClient
