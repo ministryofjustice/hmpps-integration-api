@@ -283,9 +283,11 @@ Note, this will only specifically enable the `RequestLogger`.
 
 ## Developer guides
 
+- [Certificate Renewal](/docs/guides/certificate-renewal.md)
 - [Creating an environment](/docs/guides/creating-an-environment.md)
-- [Setting up a CircleCI context for deployment](/docs/guides/setting-up-circleci-context-for-deployment.md)
+- [Renew mutual TLS server certificate](/docs/guides/renew-mutual-tls-server-certificate.md)
 - [Setting up a new consumer](/docs/guides/setting-up-a-new-consumer.md)
+- [Setting up a CircleCI context for deployment](/docs/guides/setting-up-circleci-context-for-deployment.md)
 - [Updating diagrams](/docs/guides/updating-diagrams.md)
 - [Useful commands](/docs/guides/useful-commands.md)
 
