@@ -8,7 +8,7 @@
         "endTime": "10:00",
         "timeSlot": "AM",
         "cancelled": false,
-        "cancelledTime": "2022-09-29T11:20:00",
+        "cancelledTime": "2022-09-29T11:20:00Z",
         "attendances": [
           {
             "id": 123456,
@@ -27,7 +27,7 @@
               "notes": "Maps to ACCAB in NOMIS"
             },
             "comment": "Prisoner was too unwell to attend the activity.",
-            "recordedTime": "2023-09-10T09:30:00",
+            "recordedTime": "2023-09-10T09:30:00Z",
             "status": "WAITING",
             "payAmount": 100,
             "bonusAmount": 50,
@@ -52,7 +52,7 @@
                   "notes": "Maps to ACCAB in NOMIS"
                 },
                 "comment": "Prisoner was too unwell to attend the activity.",
-                "recordedTime": "2023-09-10T09:30:00",
+                "recordedTime": "2023-09-10T09:30:00Z",
                 "issuePayment": true,
                 "incentiveLevelWarningIssued": true,
                 "otherAbsenceReason": "Prisoner has a valid reason to miss the activity.",
@@ -77,13 +77,13 @@
         },
         "startDate": "2022-09-10",
         "endDate": "2023-09-10",
-        "allocatedTime": "2022-09-01T09:00:00",
-        "deallocatedTime": "2022-09-02T09:00:00",
+        "allocatedTime": "2022-09-01T09:00:00Z",
+        "deallocatedTime": "2022-09-02T09:00:00Z",
         "deallocatedReason": {
           "code": "RELEASED",
           "description": "Released from prison"
         },
-        "suspendedTime": "2022-09-02T09:00:00",
+        "suspendedTime": "2022-09-02T09:00:00Z",
         "suspendedReason": "Temporarily released from prison",
         "status": "ACTIVE",
         "plannedDeallocation": {
