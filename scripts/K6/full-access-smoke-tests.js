@@ -10,7 +10,7 @@ export const options = {
   tlsAuth: [
     {
       domains: ["dev.integration-api.hmpps.service.justice.gov.uk"],
-                      cert,
+      cert,
       key,
     },
   ],
@@ -33,7 +33,7 @@ const contactId = "1898610";
 const imageId = "1988315";
 const locationIdKey = "MKI-A";
 const activityId = 1162
-const scheduleId = 1
+const scheduleId = 518
 const today = new Date();
 const year = today.getFullYear();
 const month = (today.getMonth() + 1).toString().padStart(2, '0');
