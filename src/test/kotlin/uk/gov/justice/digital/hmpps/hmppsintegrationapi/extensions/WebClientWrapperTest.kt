@@ -13,6 +13,7 @@ import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeInstanceOf
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
+import org.springframework.web.reactive.function.client.WebClientRequestException
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.WebClientWrapper.WebClientWrapperResponse
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.mockservers.TestApiMockServer
@@ -52,7 +53,12 @@ class WebClientWrapperTest :
 
     beforeEach {
       mockServer.start()
-      webClient = WebClientWrapper(baseUrl = mockServer.baseUrl())
+      webClient =
+        WebClientWrapper(
+          baseUrl = mockServer.baseUrl(),
+          connectTimeoutMillis = 500,
+          responseTimeoutSeconds = 1,
+        )
     }
 
     afterTest {
@@ -294,6 +300,36 @@ class WebClientWrapperTest :
         shouldThrow<WebClientResponseException.InternalServerError> {
           webClient.request<TestModel>(HttpMethod.GET, getPath, headers, UpstreamApi.TEST)
         }
+      }
+
+      it("throws a timeout error if response is too slow") {
+        mockServer.stubGetTest(getPath, """{"result": "timeout"}""", delayMillis = 2000)
+
+        val exception =
+          shouldThrow<WebClientRequestException> {
+            webClient.request<StringModel>(HttpMethod.GET, getPath, headers, UpstreamApi.TEST)
+          }
+        exception.cause?.javaClass?.simpleName shouldBe "ReadTimeoutException"
+      }
+
+      it("throws a connect timeout error if server is unreachable") {
+        val timeoutWebClient =
+          WebClientWrapper(
+            "http://10.255.255.1:81",
+            connectTimeoutMillis = 300,
+            responseTimeoutSeconds = 2,
+          )
+
+        val exception =
+          shouldThrow<WebClientRequestException> {
+            timeoutWebClient.request<StringModel>(
+              HttpMethod.GET,
+              "/test",
+              headers,
+              UpstreamApi.TEST,
+            )
+          }
+        exception.cause?.javaClass?.simpleName shouldBe "ConnectTimeoutException"
       }
     }
 

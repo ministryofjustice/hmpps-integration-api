@@ -13,6 +13,7 @@ class TestApiMockServer : WireMockServer(WIREMOCK_PORT) {
     path: String,
     body: String,
     status: HttpStatus = HttpStatus.OK,
+    delayMillis: Int = 0,
   ) {
     stubFor(
       WireMock
@@ -22,7 +23,8 @@ class TestApiMockServer : WireMockServer(WIREMOCK_PORT) {
             .aResponse()
             .withHeader("Content-Type", "application/json")
             .withStatus(status.value())
-            .withBody(body.trimIndent()),
+            .withBody(body.trimIndent())
+            .withFixedDelay(delayMillis),
         ),
     )
   }
@@ -31,6 +33,7 @@ class TestApiMockServer : WireMockServer(WIREMOCK_PORT) {
     path: String,
     body: String,
     status: HttpStatus = HttpStatus.OK,
+    delayMillis: Int = 0,
   ) {
     stubFor(
       WireMock.post(path).willReturn(
@@ -38,7 +41,8 @@ class TestApiMockServer : WireMockServer(WIREMOCK_PORT) {
           .aResponse()
           .withHeader("Content-Type", "application/json")
           .withStatus(status.value())
-          .withBody(body.trimIndent()),
+          .withBody(body.trimIndent())
+          .withFixedDelay(delayMillis),
       ),
     )
   }
