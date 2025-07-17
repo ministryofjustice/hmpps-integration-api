@@ -18,6 +18,8 @@ services:
     base-url: http://localhost:4002
   plp:
     base-url: http://localhost:4003
+  san:
+    base-url: http://localhost:4200
   adjudications:
     base-url: http://localhost:4010
   assess-risks-and-needs:
@@ -81,6 +83,7 @@ feature-flag:
   use-waiting-list-endpoint: true
   use-alerts-api-filter: true
   error-on-no-lao-context: true
+  san-endpoint-enabled: true
   simple-redaction: true
 
 authorisation:

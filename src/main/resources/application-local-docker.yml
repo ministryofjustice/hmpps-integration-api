@@ -11,6 +11,7 @@ services:
   prisoner-offender-search.base-url: http://prism:4017
   probation-integration-epf.base-url: http://prism:4018
   plp.base-url: http://prism:4020
+  san.base-url: http://localhost:4200
   non-associations.base-url: http://prism:4021
   personal-relationships.base-url: http://localhost:4022
   manage-prison-visits.base-url: http://localhost:4023
@@ -73,4 +74,5 @@ feature-flag:
   use-waiting-list-endpoint: true
   use-alerts-api-filter: true
   error-on-no-lao-context: true
+  san-endpoint-enabled: true
   simple-redaction: true

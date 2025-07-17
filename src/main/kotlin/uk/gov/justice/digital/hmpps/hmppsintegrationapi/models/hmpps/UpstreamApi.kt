@@ -21,4 +21,5 @@ enum class UpstreamApi {
   LOCATIONS_INSIDE_PRISON,
   HEALTH_AND_MEDICATION,
   ACTIVITIES,
+  SAN,
 }

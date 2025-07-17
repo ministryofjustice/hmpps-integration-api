@@ -127,7 +127,6 @@ class GetPersonService(
             return consumerPrisonFilterCheck
           }
         }
-
         return Response(data = NomisNumber(hmppsId))
       }
 

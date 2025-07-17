@@ -19,6 +19,8 @@ services:
     base-url: https://preprod.moic.service.justice.gov.uk
   plp:
     base-url: https://learningandworkprogress-api-preprod.hmpps.service.justice.gov.uk
+  san:
+    base-url: https://support-for-additional-needs-api-preprod.hmpps.service.justice.gov.uk
   non-associations:
     base-url: https://non-associations-api-preprod.hmpps.service.justice.gov.uk
   manage-prison-visits:
@@ -55,6 +57,7 @@ feature-flag:
   use-suitability-endpoint: true
   use-waiting-list-endpoint: true
   use-alerts-api-filter: true
+  san-endpoint-enabled: false
   error-on-no-lao-context: true
   simple-redaction: false
 
@@ -87,13 +90,9 @@ authorisation:
       filters:
     meganexus:
       include:
-        - "/v1/persons/.*/plp-induction-schedule"
-        - "/v1/persons/.*/plp-induction-schedule/history"
-        - "/v1/persons/.*/plp-review-schedule"
-        - "/v1/persons/[^/]+/expression-of-interest/jobs/[^/]+$"
-        - "/v1/hmpps/id/by-nomis-number/[^/]*$"
-        - "/v1/hmpps/id/nomis-number/by-hmpps-id/[^/]*$"
-        - "/v1/status"
+      filters:
+      roles:
+        - "curious"
     pnd:
       include:
       filters:

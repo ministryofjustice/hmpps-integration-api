@@ -19,6 +19,8 @@ services:
     base-url: https://dev.moic.service.justice.gov.uk
   plp:
     base-url: https://learningandworkprogress-api-dev.hmpps.service.justice.gov.uk
+  san:
+    base-url: http://support-for-additional-needs-api-dev.hmpps.service.justice.gov.uk
   non-associations:
     base-url: https://non-associations-api-dev.hmpps.service.justice.gov.uk
   personal-relationships:
@@ -58,6 +60,7 @@ feature-flag:
   use-waiting-list-endpoint: true
   use-alerts-api-filter: true
   error-on-no-lao-context: true
+  san-endpoint-enabled: true
   simple-redaction: true
 
 authorisation:
@@ -164,18 +167,9 @@ authorisation:
         - "private-prison"
     meganexus:
       include:
-        - "/v1/persons/.*/plp-induction-schedule"
-        - "/v1/persons/.*/plp-induction-schedule/history"
-        - "/v1/persons/.*/plp-review-schedule"
-        - "/v1/persons/[^/]+/expression-of-interest/jobs/[^/]+$"
-        - "/v1/hmpps/id/by-nomis-number/[^/]*$"
-        - "/v1/hmpps/id/nomis-number/by-hmpps-id/[^/]*$"
-        - "/v1/persons/.*/education/assessments/status"
-        - "/v1/persons/[^/]*$"
-        - "/v1/persons/[^/]+/prisoner-base-location"
-        - "/v1/persons/.*/education/assessments"
-        - "/v1/status"
       filters:
+      roles:
+        - "curious"
     moj-esw:
       include:
         - "/v1/persons/[^/]+/expression-of-interest/jobs/[^/]+$"
