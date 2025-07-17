@@ -16,7 +16,7 @@ class SanPlanCreationScheduleIntegrationTest : IntegrationTestBase() {
       ).readText(),
     )
 
-    callApi("$basePath/$nomsId/san-plan-creation-schedule")
+    callApi("$basePath/$nomsId/education/san/plan-creation-schedule")
       .andExpect(status().isOk)
       .andExpect(
         content().json(

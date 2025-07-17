@@ -121,7 +121,7 @@ const get_endpoints = [
   `/v1/activities/schedule/${scheduleId}/waiting-list-applications`,
   `/v1/activities/schedule/${scheduleId}/suitability-criteria`,
   `/v1/status`,
-  `/v1/person/${hmppsId}/san-plan-creation-schedule`
+  `/v1/person/${hmppsId}/education/san/plan-creation-schedule`
 ];
 
 const broken_endpoints = []

@@ -182,7 +182,7 @@ authorisation:
         - "/v1/persons/[^/]+/prisoner-base-location"
         - "/v1/persons/.*/education/assessments"
         - "/v1/status"
-        - "/v1/persons/.*/san-plan-creation-schedule"
+        - "/v1/persons/.*/education/san/plan-creation-schedule"
       filters:
     moj-esw:
       include:

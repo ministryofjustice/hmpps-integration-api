@@ -31,7 +31,7 @@ class SANController(
   private val auditService: AuditService,
 ) {
   @FeatureFlag(name = FeatureFlagConfig.USE_SAN_ENDPOINT)
-  @GetMapping("{hmppsId}/san-plan-creation-schedule")
+  @GetMapping("{hmppsId}/education/san/plan-creation-schedule")
   @Operation(
     summary = "Returns the history of changes to the Support Additional Needs (SAN) Plan Creation Schedule associated with a person.",
     responses = [
