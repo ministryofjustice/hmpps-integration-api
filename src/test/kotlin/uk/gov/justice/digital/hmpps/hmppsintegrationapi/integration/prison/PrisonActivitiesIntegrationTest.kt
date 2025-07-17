@@ -27,6 +27,8 @@ class PrisonActivitiesIntegrationTest : IntegrationTestBase() {
       callApi(path)
         .andExpect(status().isOk)
         .andExpect(content().json(getExpectedResponse("prison-activities-response")))
+
+      activitiesMockServer.assertValidationPassed()
     }
 
     @Test
