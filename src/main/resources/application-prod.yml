@@ -96,6 +96,7 @@ authorisation:
         - "/v1/hmpps/id/by-nomis-number/[^/]*$"
         - "/v1/hmpps/id/nomis-number/by-hmpps-id/[^/]*$"
         - "/v1/status"
+        - "/v1/persons/.*/education/san/plan-creation-schedule"
     pnd:
       include:
       filters:
