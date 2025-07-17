@@ -58,7 +58,7 @@ feature-flag:
   use-waiting-list-endpoint: true
   use-alerts-api-filter: true
   error-on-no-lao-context: false
-  use-san-endpoint: false
+  san-endpoint-enabled: false
 
 authorisation:
   consumers:

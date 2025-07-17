@@ -60,7 +60,7 @@ feature-flag:
   use-waiting-list-endpoint: true
   use-alerts-api-filter: true
   error-on-no-lao-context: true
-  use-san-endpoint: true
+  san-endpoint-enabled: true
 
 authorisation:
   consumers:
