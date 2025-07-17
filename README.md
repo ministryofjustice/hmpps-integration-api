@@ -290,6 +290,7 @@ Note, this will only specifically enable the `RequestLogger`.
 - [Setting up a CircleCI context for deployment](/docs/guides/setting-up-circleci-context-for-deployment.md)
 - [Updating diagrams](/docs/guides/updating-diagrams.md)
 - [Useful commands](/docs/guides/useful-commands.md)
+- [Validating Upstream Responses](/docs/guides/validating-upstream-responses.md)
 
 ## Related repositories
 
