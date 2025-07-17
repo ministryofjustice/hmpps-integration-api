@@ -51,6 +51,7 @@ class GetHistoricalAttendancesGatewayTest(
 
       afterEach {
         mockServer.stop()
+        mockServer.resetValidator()
       }
 
       it("authenticates using HMPPS Auth with credentials") {
@@ -69,6 +70,8 @@ class GetHistoricalAttendancesGatewayTest(
         result.errors.shouldBeEmpty()
         result.data.shouldNotBeNull()
         result.data[0].prisonerNumber.shouldBe(prisonerNumber)
+
+        mockServer.assertValidationPassed()
       }
 
       it("upstream API returns a bad request error, throw bad request exception") {
