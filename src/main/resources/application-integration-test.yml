@@ -81,6 +81,7 @@ feature-flag:
   use-waiting-list-endpoint: true
   use-alerts-api-filter: true
   error-on-no-lao-context: true
+  simple-redaction: true
 
 authorisation:
   consumers:
@@ -125,3 +126,10 @@ authorisation:
         - "reference-data-only"
       include:
       filters:
+    redacted-client:
+      include:
+        - "/v1/persons/[^/]*$"
+
+redaction:
+  client-names:
+    - redacted-client

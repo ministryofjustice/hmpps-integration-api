@@ -58,6 +58,7 @@ feature-flag:
   use-waiting-list-endpoint: true
   use-alerts-api-filter: true
   error-on-no-lao-context: true
+  simple-redaction: true
 
 authorisation:
   consumers:
@@ -296,3 +297,8 @@ authorisation:
       filters:
       roles:
         - "full-access"
+
+redaction:
+  client-names:
+    - meganexus
+    - moj-esw

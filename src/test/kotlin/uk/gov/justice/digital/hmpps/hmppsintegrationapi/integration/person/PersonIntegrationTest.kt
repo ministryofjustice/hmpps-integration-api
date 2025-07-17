@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.person
 
+import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
@@ -40,6 +41,19 @@ class PersonIntegrationTest : IntegrationTestBase() {
       callApi("$basePath/$pnc")
         .andExpect(status().isOk)
         .andExpect(content().json(getExpectedResponse("person-offender-and-probation-search-response")))
+    }
+
+    @Nested
+    @DisplayName("And Redaction is required")
+    inner class AndRedactionIsRequired {
+      private val clientNameWithRedaction = "redacted-client"
+
+      @Test
+      fun `return a person from Prisoner Offender Search with some data redacted`() {
+        callApiWithCN("$basePath/$pnc", clientNameWithRedaction)
+          .andExpect(status().isOk)
+          .andExpect(content().json(getExpectedResponse("person-offender-and-probation-search-redacted-response")))
+      }
     }
   }
 
