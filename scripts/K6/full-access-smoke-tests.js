@@ -53,7 +53,6 @@ const get_endpoints = [
   `/v1/persons/${alternativeHmppsId}/visit-orders`,
   `/v1/persons/${hmppsId}/visit-restrictions`,
   `/v1/persons/${hmppsId}/alerts`,
-  `/v1/persons/${hmppsId}/alerts/pnd`,
   `/v1/persons/${hmppsId}/name`,
   `/v1/persons/${hmppsId}/cell-location`,
   `/v1/persons/${hmppsId}/risks/categories`,

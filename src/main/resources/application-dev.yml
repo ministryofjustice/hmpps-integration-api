@@ -130,7 +130,6 @@ authorisation:
         - "/v1/persons/.*/adjudications"
         - "/v1/persons/.*/alerts"
         - "/v1/pnd/persons/.*/alerts"
-        - "/v1/persons/.*/alerts/pnd"
         - "/v1/persons/.*/case-notes"
         - "/v1/persons/.*/images"
         - "/v1/persons/.*/licences/conditions"
