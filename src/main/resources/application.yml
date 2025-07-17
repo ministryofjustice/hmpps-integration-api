@@ -78,6 +78,8 @@ services:
     base-url: http://localhost:4090
   plp:
     base-url: http://localhost:4100
+  san:
+    base-url: http://localhost:4200
   non-associations:
     base-url: http://localhost:4021
   personal-relationships:

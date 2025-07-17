@@ -82,6 +82,20 @@ globals:
         - "/v1/persons/.*/status-information"
         - "/v1/hmpps/reference-data"
         - "/v1/status"
+    curious:
+      include:
+        - "/v1/persons/.*/plp-induction-schedule"
+        - "/v1/persons/.*/plp-induction-schedule/history"
+        - "/v1/persons/.*/plp-review-schedule"
+        - "/v1/persons/[^/]+/expression-of-interest/jobs/[^/]+$"
+        - "/v1/hmpps/id/by-nomis-number/[^/]*$"
+        - "/v1/hmpps/id/nomis-number/by-hmpps-id/[^/]*$"
+        - "/v1/persons/.*/education/assessments/status"
+        - "/v1/persons/[^/]*$"
+        - "/v1/persons/[^/]+/prisoner-base-location"
+        - "/v1/persons/.*/education/assessments"
+        - "/v1/status"
+        - "/v1/persons/.*/education/san/plan-creation-schedule"
     reference-data-only:
       include:
         - "/v1/hmpps/reference-data"
@@ -150,3 +164,4 @@ globals:
         - "/v1/prison/prisoners/.*/activities/attendances"
         - "/v1/activities/schedule/.*/waiting-list-applications"
         - "/v1/status"
+        - "/v1/persons/.*/education/san/plan-creation-schedule"

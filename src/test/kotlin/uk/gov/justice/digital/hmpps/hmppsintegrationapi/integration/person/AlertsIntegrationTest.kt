@@ -75,7 +75,7 @@ class AlertsIntegrationTest : IntegrationTestBase() {
     fun `returns PND alerts for a person`() {
       callApi(path)
         .andExpect(status().isOk)
-        .andExpect(content().json(getExpectedResponse("person-alerts-pnd")))
+        .andExpect(content().json(getExpectedResponse("person-alerts")))
     }
 
     @Test

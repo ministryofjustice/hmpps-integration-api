@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.FeatureFlagConfig
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.config.RedactionConfig
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.EntityNotFoundException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.decodeUrlCharacters
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions.featureflag.FeatureFlag
@@ -73,6 +74,7 @@ class PersonController(
   @Autowired val getPrisonerEducationService: GetPrisonerEducationService,
   @Autowired val auditService: AuditService,
   @Autowired val featureFlag: FeatureFlagConfig,
+  @Autowired val redactionConfig: RedactionConfig,
 ) {
   @GetMapping
   @Operation(
@@ -124,6 +126,7 @@ class PersonController(
   )
   fun getPerson(
     @Parameter(description = "A URL-encoded HMPPS identifier", example = "2008%2F0545166T") @PathVariable encodedHmppsId: String,
+    @RequestAttribute clientName: String,
   ): DataResponse<OffenderSearchResponse> {
     val hmppsId = encodedHmppsId.decodeUrlCharacters()
     val response = getPersonService.getCombinedDataForPerson(hmppsId)
@@ -133,7 +136,12 @@ class PersonController(
     }
 
     auditService.createEvent("GET_PERSON_DETAILS", mapOf("hmppsId" to hmppsId))
-    val data = response.data
+    val data =
+      if (featureFlag.isEnabled(FeatureFlagConfig.SIMPLE_REDACTION)) { // simple redaction: to be refactored in later releases
+        redactPersonData(response.data, clientName)
+      } else {
+        response.data
+      }
     return DataResponse(data)
   }
 
@@ -444,4 +452,41 @@ class PersonController(
     } catch (e: Exception) {
       false
     }
+
+  /***
+   * This simple redaction method is to be replaced by "flexible redaction" in coming releases
+   */
+  private fun redactPersonData(
+    offenderData: OffenderSearchResponse,
+    clientName: String? = null,
+  ) = offenderData.let { data ->
+    val targetConsumers = redactionConfig.clientNames
+    when {
+      !targetConsumers.contains(clientName) -> data
+
+      else -> {
+        val prisonerOffenderSearch =
+          data.prisonerOffenderSearch?.run {
+            copy(
+              middleName = REDACTED,
+              aliases = aliases.map { it.copy(middleName = REDACTED) }.toList(),
+              identifiers = identifiers.copy(croNumber = REDACTED, deliusCrn = REDACTED),
+              pncId = REDACTED,
+              contactDetails = null,
+              currentRestriction = null,
+              restrictionMessage = REDACTED,
+              currentExclusion = null,
+              exclusionMessage = REDACTED,
+            )
+          }
+
+        data.copy(
+          prisonerOffenderSearch = prisonerOffenderSearch,
+          probationOffenderSearch = null,
+        )
+      }
+    }
+  }
 }
+
+private const val REDACTED = "**REDACTED**"

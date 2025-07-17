@@ -71,7 +71,7 @@ These include:
 - Documentation up for review
 - Security scan results (Trivy, OWASP, Vera)
 - Application exceptions from Sentry
-- Failed CircleCI automated tests, image builds, deployments and [system heartbeat](./monitoring-and-alerting/heartbeat.md)
+- Failed CircleCI automated tests, image builds, deployments
 
 ## Impact of an outage
 

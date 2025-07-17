@@ -1,7 +1,7 @@
 # HMPPS Integration API <!-- omit in toc -->
 
 [![CircleCI](https://circleci.com/gh/ministryofjustice/hmpps-integration-api/tree/main.svg?style=svg)](https://circleci.com/gh/ministryofjustice/hmpps-integration-api)
-[![API docs](https://img.shields.io/badge/API_docs_-view-85EA2D.svg?logo=swagger)](https://ministryofjustice.github.io/hmpps-integration-api-docs/)
+[![API docs](https://img.shields.io/badge/API_docs_-view-85EA2D.svg?logo=swagger)](https://ministryofjustice.github.io/hmpps-integration-api)
 [![repo standards badge](https://img.shields.io/badge/dynamic/json?color=blue&style=flat&logo=github&label=MOJ%20Compliant&query=%24.result&url=https%3A%2F%2Foperations-engineering-reports.cloud-platform.service.justice.gov.uk%2Fapi%2Fv1%2Fcompliant_public_repositories%2Fhmpps-integration-api)](https://operations-engineering-reports.cloud-platform.service.justice.gov.uk/public-github-repositories.html#hmpps-integration-api "Link to report")
 
 ## Contents <!-- omit in toc -->
@@ -68,6 +68,7 @@ This solution is dependent on:
 - [Locations Inside Prison](https://github.com/ministryofjustice/hmpps-locations-inside-prison-api)
 - [Activities Management](https://github.com/ministryofjustice/hmpps-activities-management-api)
 - [Health and Medication](https://github.com/ministryofjustice/hmpps-health-and-medication-api)
+- [Support for additional needs](https://github.com/ministryofjustice/hmpps-support-additional-needs-api)
 
 These things depend upon this solution:
 
@@ -290,6 +291,7 @@ Note, this will only specifically enable the `RequestLogger`.
 - [Setting up a CircleCI context for deployment](/docs/guides/setting-up-circleci-context-for-deployment.md)
 - [Updating diagrams](/docs/guides/updating-diagrams.md)
 - [Useful commands](/docs/guides/useful-commands.md)
+- [Validating Upstream Responses](/docs/guides/validating-upstream-responses.md)
 
 ## Related repositories
 
