@@ -126,6 +126,8 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
       callApi(path)
         .andExpect(MockMvcResultMatchers.status().isOk)
         .andExpect(MockMvcResultMatchers.content().json(getExpectedResponse("activities-suitability-criteria")))
+
+      activitiesMockServer.assertValidationPassed()
     }
 
     @Test
