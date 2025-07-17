@@ -22,7 +22,7 @@ class ApiMockServer(
         when (upstreamApi) {
           UpstreamApi.PRISONER_OFFENDER_SEARCH -> ApiMockServerConfig(4000)
           UpstreamApi.HEALTH_AND_MEDICATION -> ApiMockServerConfig(4001)
-          UpstreamApi.MANAGE_POM_CASE -> ApiMockServerConfig(4002)
+          UpstreamApi.MANAGE_POM_CASE -> ApiMockServerConfig(4002, "manage-POM.json")
           UpstreamApi.PLP -> ApiMockServerConfig(4003)
           UpstreamApi.ACTIVITIES -> ApiMockServerConfig(4004, "activities.json")
           UpstreamApi.TEST -> ApiMockServerConfig(4005, "test.json")
