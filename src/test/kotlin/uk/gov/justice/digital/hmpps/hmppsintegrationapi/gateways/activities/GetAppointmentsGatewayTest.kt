@@ -77,7 +77,7 @@ class GetAppointmentsGatewayTest(
       }
 
       it("returns appointments") {
-        activitiesApiMockServer.stubForPost(path, jsonRequest, File("src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/activities/fixtures/GetAppointments.json").readText(), HttpStatus.OK)
+        activitiesApiMockServer.stubForPost(path, jsonRequest, File("src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/activities/fixtures/GetAppointments.json").readText(), HttpStatus.ACCEPTED)
         val response = activitiesGateway.getAppointments(prisonCode, appointmentSearchRequest)
         response.data!![0].appointmentId.shouldBe(123456)
 
