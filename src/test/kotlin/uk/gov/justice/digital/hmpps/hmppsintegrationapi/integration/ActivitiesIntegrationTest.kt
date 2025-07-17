@@ -992,6 +992,8 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
         getRequestedFor(urlEqualTo("/integration-api/schedules/$scheduleId/waiting-list-applications"))
           .withHeader("Caseload-Id", equalTo(prisonCode)),
       )
+
+      activitiesMockServer.assertValidationPassed()
     }
 
     @Test
