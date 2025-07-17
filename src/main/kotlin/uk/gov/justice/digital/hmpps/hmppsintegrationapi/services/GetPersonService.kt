@@ -187,24 +187,18 @@ class GetPersonService(
     }
   }
 
-  fun getCombinedDataForPerson(hmppsId: String): Response<OffenderSearchResponse> {
+  fun getCombinedDataForPerson(hmppsId: String): Response<OffenderSearchResponse?> {
     val probationResponse = getProbationResponse(hmppsId)
 
     val prisonResponse =
-      probationResponse.data?.identifiers?.nomisNumber?.let {
-        prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber = it)
-      }
+      (probationResponse.data?.identifiers?.nomisNumber ?: hmppsId.takeIf { identifyHmppsId(it) == IdentifierType.NOMS })
+        ?.let { nomsNumber -> prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber) }
 
-    val data =
-      OffenderSearchResponse(
-        prisonerOffenderSearch = prisonResponse?.data?.toPerson(),
-        probationOffenderSearch = probationResponse.data,
-      )
-
-    return Response(
-      data = data,
-      errors = (prisonResponse?.errors ?: emptyList()) + probationResponse.errors,
-    )
+    val combinedErrors = probationResponse.errors + (prisonResponse?.errors ?: emptyList())
+    val probationData = probationResponse.data
+    val prisonData = prisonResponse?.data?.toPerson()
+    val data = if (probationData == null && prisonData == null) null else OffenderSearchResponse(prisonData, probationData)
+    return Response(data = data, errors = combinedErrors)
   }
 
   fun getPersonFromNomis(nomisNumber: String) = prisonerOffenderSearchGateway.getPrisonOffender(nomisNumber)

@@ -148,6 +148,7 @@ internal class GetPersonServiceTest(
           it("returns a person with both Probation and Prison data, when found in Prison") {
             val result = getPersonService.getCombinedDataForPerson(hmppsId)
 
+            result.data.shouldNotBeNull()
             with(result.data.prisonerOffenderSearch) {
               this.shouldNotBeNull()
               firstName shouldBe prisoner.firstName
@@ -180,6 +181,7 @@ internal class GetPersonServiceTest(
           it("returns a person with Probation data, without error") {
             val result = getPersonService.getCombinedDataForPerson(hmppsId)
 
+            result.data.shouldNotBeNull()
             result.data.probationOffenderSearch shouldBe person
             result.data.prisonerOffenderSearch.shouldBeNull()
             result.errors.shouldBeEmpty()
@@ -197,15 +199,15 @@ internal class GetPersonServiceTest(
             val result = getPersonService.getCombinedDataForPerson(hmppsId)
 
             result.errors shouldBe notFoundErrors(UpstreamApi.NDELIUS)
-            result.data shouldBe OffenderSearchResponse(prisonerOffenderSearch = null, probationOffenderSearch = null)
+            result.data.shouldBeNull()
             verify(prisonerOffenderSearchGateway, never()).getPrisonOffender(any())
           }
         }
 
         describe("Given a person not found in Probation, and hmppsId is noms number") {
-          val hmppsId = nomsNumber
           val prisoner = prisonerInPrisonOnly
           val nomisNumber = prisoner.prisonerNumber!!
+          val hmppsId = nomisNumber
 
           beforeEach {
             givenPersonNotFoundInProbation(id = hmppsId)
@@ -215,8 +217,9 @@ internal class GetPersonServiceTest(
             givenPrisonerFound(nomisNumber, prisoner)
             val result = getPersonService.getCombinedDataForPerson(hmppsId)
 
+            result.data.shouldNotBeNull()
             result.data.probationOffenderSearch.shouldBeNull()
-            result.errors.shouldBe(emptyList())
+            result.errors shouldBe notFoundErrors(UpstreamApi.NDELIUS)
             with(result.data.prisonerOffenderSearch) {
               this.shouldNotBeNull()
               firstName shouldBe prisoner.firstName
@@ -226,14 +229,11 @@ internal class GetPersonServiceTest(
           }
 
           it("returns errors when prisoner is not found") {
-            givenPrisonerNotFound()
+            givenPrisonerNotFound(nomisNumber)
             val result = getPersonService.getCombinedDataForPerson(hmppsId)
 
-            result.errors shouldBe notFoundErrors(UpstreamApi.PRISONER_OFFENDER_SEARCH)
-            with(result.data) {
-              prisonerOffenderSearch.shouldBeNull()
-              probationOffenderSearch.shouldBeNull()
-            }
+            result.data.shouldBeNull()
+            result.errors shouldBe notFoundErrors(UpstreamApi.NDELIUS, UpstreamApi.PRISONER_OFFENDER_SEARCH)
           }
         }
       }
