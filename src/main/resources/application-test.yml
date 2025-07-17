@@ -85,6 +85,7 @@ feature-flag:
   use-alerts-api-filter: true
   error-on-no-lao-context: true
   san-endpoint-enabled: true
+  simple-redaction: true
 
 authorisation:
   consumers:
@@ -118,3 +119,6 @@ authorisation:
         - "private-prison"
       include:
       filters:
+    redacted-client:
+      include:
+        - "/v1/persons/[^/]*$"

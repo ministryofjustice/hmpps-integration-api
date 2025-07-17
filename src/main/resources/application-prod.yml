@@ -59,6 +59,7 @@ feature-flag:
   use-alerts-api-filter: true
   san-endpoint-enabled: false
   error-on-no-lao-context: true
+  simple-redaction: false
 
 authorisation:
   consumers:
@@ -97,3 +98,6 @@ authorisation:
       filters:
       roles:
         - "police"
+    smoke-test:
+      include:
+        - "/v1/status"
