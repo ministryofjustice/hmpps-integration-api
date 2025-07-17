@@ -40,8 +40,8 @@
       "endDate": "2022-12-21",
       "capacity": 0,
       "allocated": 0,
-      "createdTime": "2022-09-01T09:01:02",
-      "activityState": "live",
+      "createdTime": "2022-09-01T09:01:02Z",
+      "activityState": "LIVE",
       "paid": true
     },
     "scheduleWeeks": 1,

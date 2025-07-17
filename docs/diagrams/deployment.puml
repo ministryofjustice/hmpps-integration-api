@@ -50,7 +50,7 @@
             }
 
             Container(dev_heartbeat, "Post-Deploy Heartbeat", "Bash")
-            Container(smoketest, "Smoke Test", "Bash")
+            Container(smoketest, "Smoke Test", "K6")
         }
 
         Boundary(preprod_build_and_deploy, "Pre-Production"){

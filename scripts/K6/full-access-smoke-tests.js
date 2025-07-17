@@ -10,7 +10,7 @@ export const options = {
   tlsAuth: [
     {
       domains: ["dev.integration-api.hmpps.service.justice.gov.uk"],
-                      cert,
+      cert,
       key,
     },
   ],
@@ -18,6 +18,7 @@ export const options = {
 
 const baseUrl = "https://dev.integration-api.hmpps.service.justice.gov.uk";
 const hmppsId = "A8451DY";
+const hmppsIdWithLaoContext = "A4433DZ";
 const visitsHmppsId = "A8452DY"
 const alternativeHmppsId = "G6333VK";
 const plpHmppsId = "A5502DZ";
@@ -32,7 +33,7 @@ const contactId = "1898610";
 const imageId = "1988315";
 const locationIdKey = "MKI-A";
 const activityId = 1162
-const scheduleId = 1
+const scheduleId = 518
 const today = new Date();
 const year = today.getFullYear();
 const month = (today.getMonth() + 1).toString().padStart(2, '0');
@@ -80,18 +81,18 @@ const get_endpoints = [
   `/v1/contacts/${contactId}`,
   `/v1/persons?first_name=john`,
   `/v1/persons/${deliusCrn}`,
-  `/v1/persons/${hmppsId}/licences/conditions`,
+  `/v1/persons/${hmppsIdWithLaoContext}/licences/conditions`,
   `/v1/persons/${hmppsId}/needs`,
-  `/v1/persons/${hmppsId}/risks/mappadetail`,
-  `/v1/persons/${hmppsId}/risks/scores`,
+  `/v1/persons/${hmppsIdWithLaoContext}/risks/mappadetail`,
+  `/v1/persons/${hmppsIdWithLaoContext}/risks/scores`,
   `/v1/persons/${hmppsId}/plp-induction-schedule`,
   `/v1/persons/${hmppsId}/plp-induction-schedule/history`,
   `/v1/persons/${plpHmppsId}/plp-review-schedule`,
-  `/v1/persons/${hmppsId}/status-information`,
+  `/v1/persons/${hmppsIdWithLaoContext}/status-information`,
   `/v1/persons/${hmppsId}/sentences/latest-key-dates-and-adjustments`,
-  `/v1/persons/${hmppsId}/risks/serious-harm`,
-  `/v1/persons/${hmppsId}/risks/scores`,
-  `/v1/persons/${hmppsId}/risks/dynamic`,
+  `/v1/persons/${hmppsIdWithLaoContext}/risks/serious-harm`,
+  `/v1/persons/${hmppsIdWithLaoContext}/risks/scores`,
+  `/v1/persons/${hmppsIdWithLaoContext}/risks/dynamic`,
   `/v1/hmpps/id/nomis-number/${hmppsId}`,
   `/v1/persons/${visitsHmppsId}/visit/future`,
   `/v1/visit/${visitReference}`,
@@ -126,7 +127,7 @@ const broken_endpoints = []
 
 const post_visit_endpoint = "/v1/visit";
 const post_visit_data = JSON.stringify({
-  prisonerId: "A8451DY",
+  prisonerId: "A4433DZ",
   prisonId: "MKI",
   clientVisitReference: "123456",
   visitRoom: "A1",

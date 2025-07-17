@@ -33,7 +33,7 @@ class GetAllRunningActivitiesGatewayTest(
     {
       val mockServer = ApiMockServer.create(UpstreamApi.ACTIVITIES)
       val prisonCode = "MDI"
-      val path = "/prison/$prisonCode/activities"
+      val path = "/integration-api/prison/$prisonCode/activities"
 
       beforeEach {
         mockServer.start()

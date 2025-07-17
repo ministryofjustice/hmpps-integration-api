@@ -14,9 +14,9 @@ Nodes are spread across multiple (up to 3) Availability Zones.
 Health checks are run by Kubernetes to assess the health of each node. If a node fails 3 times in a row, it is declared unhealthy and a new one put in to take its place.
 Kubernetes with auto heal and prevent any corrupt nodes from replacing existing healthy ones.
 
-## Heartbeat
+## Smoke Tests
 
-In addition to health checks, there is also a "Heartbeat" which ensures pods are healthy after a deployment.
+In addition to health checks, Smoke Tests are executed after a deployment to each environment. In the dev environment a range of endpoints are tested. In the higher environments (preprod and prod), only the v1/status endpoints are called to check that the service is running.
 Please see [Heartbeat](./monitoring-and-alerting/heartbeat.md)
 
 ## Distributed Denial of Service (DDOS) protection

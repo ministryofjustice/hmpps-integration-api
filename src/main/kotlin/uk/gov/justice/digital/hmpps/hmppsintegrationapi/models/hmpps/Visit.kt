@@ -26,9 +26,9 @@ data class Visit(
   val outcomeStatus: String?,
   @Schema(description = "Visit Restriction", example = "OPEN")
   val visitRestriction: String,
-  @Schema(description = "The date and time of the visit")
+  @Schema(description = "The date and time of the visit", example = "2018-12-01T13:45:00")
   val startTimestamp: String,
-  @Schema(description = "The finishing date and time of the visit")
+  @Schema(description = "The finishing date and time of the visit", example = "2018-12-01T14:45:00")
   val endTimestamp: String,
   @Schema(description = "Visit Notes")
   val visitNotes: List<VisitNotes>,
@@ -40,11 +40,11 @@ data class Visit(
   val visitorSupport: VisitorSupport?,
   @Schema(description = "External system details associated with the visit")
   val visitExternalSystemDetails: VisitExternalSystemDetails?,
-  @Schema(description = "The visit created date and time")
+  @Schema(description = "The visit created date and time", example = "2018-12-01T13:45:00")
   val createdTimestamp: String,
-  @Schema(description = "The visit modified date and time")
+  @Schema(description = "The visit modified date and time", example = "2018-12-01T13:45:00")
   val modifiedTimestamp: String,
-  @Schema(description = "Date the visit was first booked or migrated")
+  @Schema(description = "Date the visit was first booked or migrated", example = "2018-12-01T13:45:00")
   val firstBookedDateTime: String?,
 )
 

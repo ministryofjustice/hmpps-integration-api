@@ -16,7 +16,7 @@ generic-service:
   env:
     SPRING_PROFILES_ACTIVE: prod
     APPLICATIONINSIGHTS_CONFIGURATION_FILE: applicationinsights.json
-    SENTRY_ENV: prod
+    SENTRY_ENVIRONMENT: prod
 
   namespace_secrets:
     hmpps-auth:

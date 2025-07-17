@@ -135,15 +135,7 @@ jobs:
       - deploy:
           name: Push application Docker image
           command: make publish
-  heartbeat:
-    machine:
-      image: ubuntu-2204:2022.10.2
-    steps:
-      - checkout
-      - run:
-          name: Run heartbeat
-          command: make heartbeat
-  smoke-tests:
+  smoke-tests-dev:
     docker:
       - image: grafana/k6:1.0.0
     steps:
@@ -155,6 +147,15 @@ jobs:
             k6 run ./scripts/K6/limited-access-smoke-tests.js
             k6 run ./scripts/K6/no-access-with-certs-smoke-tests.js
             k6 run ./scripts/K6/no-access-without-certs-smoke-tests.js
+  smoke-tests-higher-envs:
+    docker:
+      - image: grafana/k6:1.0.0
+    steps:
+      - checkout
+      - run:
+          name: Run smoke tests
+          command: |
+            k6 run ./scripts/K6/smoke-tests-higher-envs.js
 
 workflows:
   version: 2
@@ -219,23 +220,14 @@ workflows:
           slack_channel_name: << pipeline.parameters.releases-slack-channel >>
           slack_notification: false
 
-      - heartbeat:
-          <<: *slack-fail-post-step
-          name: post-deploy-heartbeat-for-dev
-          context:
-            - hmpps-common-vars
-            - hmpps-integration-api-heartbeat-dev
-          requires:
-            - deploy-to-dev
-
-      - smoke-tests:
+      - smoke-tests-dev:
           <<: *slack-fail-post-step
           name: smoke-tests-for-dev
           context:
             - hmpps-common-vars
             - hmpps-integration-api-smoke-test-dev
           requires:
-            - post-deploy-heartbeat-for-dev
+            - deploy-to-dev
 
       - create-and-push-image-to-ecr:
           <<: *slack-fail-post-step
@@ -266,6 +258,14 @@ workflows:
           slack_channel_name: << pipeline.parameters.releases-slack-channel >>
           slack_notification: false
 
+      - smoke-tests-higher-envs:
+          <<: *slack-fail-post-step
+          name: smoke-tests-for-preprod
+          context:
+            - hmpps-common-vars
+            - hmpps-integration-api-smoke-test-preprod
+          requires:
+            - deploy-to-preprod
       - create-and-push-image-to-ecr:
           <<: *slack-fail-post-step
           name: create-and-push-image-to-prod-ecr
@@ -273,7 +273,7 @@ workflows:
             - hmpps-integration-api-prod
             - hmpps-common-vars
           requires:
-            - deploy-to-preprod
+            - smoke-tests-for-preprod
           filters:
             branches:
               only:

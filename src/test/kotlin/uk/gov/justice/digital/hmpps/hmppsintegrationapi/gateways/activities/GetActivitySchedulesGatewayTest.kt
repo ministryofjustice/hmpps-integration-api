@@ -52,6 +52,7 @@ class GetActivitySchedulesGatewayTest(
 
       afterEach {
         mockServer.stop()
+        mockServer.resetValidator()
       }
 
       it("authenticates using HMPPS Auth with credentials") {
@@ -62,7 +63,7 @@ class GetActivitySchedulesGatewayTest(
 
       it("Returns an activity schedule") {
         mockServer.stubForGet(
-          "/activities/$activityId/schedules",
+          "/integration-api/activities/$activityId/schedules",
           File("src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/activities/fixtures/GetActivitiesSchedule.json").readText(),
         )
 
@@ -116,7 +117,7 @@ class GetActivitySchedulesGatewayTest(
                 capacity = 0,
                 allocated = 0,
                 createdTime = LocalDateTime.parse("2022-09-01T09:01:02"),
-                activityState = "live",
+                activityState = "LIVE",
                 paid = true,
               ),
             scheduleWeeks = 1,
@@ -143,11 +144,13 @@ class GetActivitySchedulesGatewayTest(
             usePrisonRegimeTime = true,
           ),
         )
+
+        mockServer.assertValidationPassed()
       }
 
       it("Returns a bad request error") {
         mockServer.stubForGet(
-          "/activities/$activityId/schedules",
+          "/integration-api/activities/$activityId/schedules",
           "{}",
           HttpStatus.BAD_REQUEST,
         )

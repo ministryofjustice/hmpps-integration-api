@@ -102,9 +102,7 @@ data class Address(
       noFixedAddress = this.noFixedAddress,
       comments = this.comments,
       phoneNumbers = this.phoneNumbers.map { it.toContactPhoneNumber() },
-      createdBy = this.createdBy,
       createdTime = this.createdTime,
-      updatedBy = this.updatedBy,
       updatedTime = this.updatedTime,
     )
 }

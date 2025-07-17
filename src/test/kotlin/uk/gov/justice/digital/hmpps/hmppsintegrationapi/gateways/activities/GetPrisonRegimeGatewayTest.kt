@@ -56,7 +56,7 @@ class GetPrisonRegimeGatewayTest(
 
     it("Returns a prison regime") {
       mockServer.stubForGet(
-        "/prison/prison-regime/$prisonCode",
+        "/integration-api/prison/prison-regime/$prisonCode",
         File("src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/activities/fixtures/GetPrisonRegime.json").readText(),
       )
 
@@ -81,7 +81,7 @@ class GetPrisonRegimeGatewayTest(
 
     it("Returns a bad request error") {
       mockServer.stubForGet(
-        "/prison/prison-regime/$prisonCode",
+        "/integration-api/prison/prison-regime/$prisonCode",
         "{}",
         HttpStatus.BAD_REQUEST,
       )
