@@ -107,11 +107,6 @@ authorisation:
         - "/health/readiness"
         - "/v1/status"
       filters:
-    heartbeat:
-      include:
-        - "/v1/persons/[^/]*$"
-        - "/v1/status"
-      filters:
     pnd:
       include:
       filters:
