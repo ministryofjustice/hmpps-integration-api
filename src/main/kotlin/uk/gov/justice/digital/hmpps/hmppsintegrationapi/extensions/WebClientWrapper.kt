@@ -1,12 +1,15 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.extensions
 
+import io.netty.channel.ChannelOption
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
+import org.springframework.http.client.reactive.ReactorClientHttpConnector
 import org.springframework.web.reactive.function.BodyInserters
 import org.springframework.web.reactive.function.client.ExchangeStrategies
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import reactor.core.publisher.Mono
+import reactor.netty.http.client.HttpClient
 import reactor.util.retry.Retry
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.exception.ResponseException
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.Response
@@ -17,15 +20,24 @@ import java.time.Duration
 @Suppress("ktlint:standard:property-naming")
 class WebClientWrapper(
   val baseUrl: String,
+  connectTimeoutMillis: Int = 10_000,
+  responseTimeoutSeconds: Long = 15,
 ) {
   val CREATE_TRANSACTION_RETRY_HTTP_CODES = listOf(502, 503, 504, 522, 599, 499, 408)
   val MAX_RETRY_ATTEMPTS = 3L
   val MIN_BACKOFF_DURATION = Duration.ofSeconds(3)
 
+  val httpClient =
+    HttpClient
+      .create()
+      .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, connectTimeoutMillis)
+      .responseTimeout(Duration.ofSeconds(responseTimeoutSeconds))
+
   val client: WebClient =
     WebClient
       .builder()
       .baseUrl(baseUrl)
+      .clientConnector(ReactorClientHttpConnector(httpClient))
       .exchangeStrategies(
         ExchangeStrategies
           .builder()
