@@ -1,0 +1,1256 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "HMPPS Health And Medication Api",
+    "contact": {
+      "name": "HMPPS Digital Studio",
+      "email": "feedback@digital.justice.gov.uk"
+    },
+    "version": "2025-06-30.125.ee9bfaf"
+  },
+  "servers": [
+    {
+      "url": "https://health-and-medication-api-dev.hmpps.service.justice.gov.uk",
+      "description": "Development"
+    },
+    {
+      "url": "https://health-and-medication-api-preprod.hmpps.service.justice.gov.uk",
+      "description": "Pre-Production"
+    },
+    {
+      "url": "https://health-and-medication-api.hmpps.service.justice.gov.uk",
+      "description": "Production"
+    },
+    {
+      "url": "http://localhost:8080",
+      "description": "Local"
+    }
+  ],
+  "security": [
+    {
+      "bearer-jwt": [
+        "read",
+        "write"
+      ]
+    }
+  ],
+  "tags": [
+    {
+      "name": "Reference Data Domains",
+      "description": "Reference Data Domains for Health and Medication data"
+    },
+    {
+      "name": "Reference Data Codes",
+      "description": "Reference Data Codes for Health and Medication data"
+    }
+  ],
+  "paths": {
+    "/prisoners/{prisonerNumber}/smoker": {
+      "put": {
+        "tags": [
+          "Health and Medication Data"
+        ],
+        "summary": "Updates the smoker status for a prisoner",
+        "description": "Requires role `ROLE_HEALTH_AND_MEDICATION_API__HEALTH_AND_MEDICATION_DATA__RW`",
+        "operationId": "updateSmokerStatus",
+        "parameters": [
+          {
+            "name": "prisonerNumber",
+            "in": "path",
+            "description": "The prisoner number",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "The prisoner number",
+              "example": "A1234AA"
+            },
+            "example": "A1234AA"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateSmokerStatusRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "No content"
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized to access this endpoint",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Missing required role. Requires ROLE_HEALTH_AND_MEDICATION_API__HEALTH_AND_MEDICATION_DATA__RW",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/prisoners/{prisonerNumber}/diet-and-allergy": {
+      "put": {
+        "tags": [
+          "Health and Medication Data"
+        ],
+        "summary": "Updates the diet and allergy data for a prisoner",
+        "description": "Requires role `ROLE_HEALTH_AND_MEDICATION_API__HEALTH_AND_MEDICATION_DATA__RW`",
+        "operationId": "updateDietAndAllergyData",
+        "parameters": [
+          {
+            "name": "prisonerNumber",
+            "in": "path",
+            "description": "The prisoner number",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "The prisoner number",
+              "example": "A1234AA"
+            },
+            "example": "A1234AA"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateDietAndAllergyRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Returns the updated diet and allergy data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DietAndAllergyResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized to access this endpoint",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Missing required role. Requires ROLE_HEALTH_AND_MEDICATION_API__HEALTH_AND_MEDICATION_DATA__RW",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/prisons/{prisonId}": {
+      "post": {
+        "tags": [
+          "Bulk Health and Medication Data by Agency"
+        ],
+        "description": "Requires role `ROLE_HEALTH_AND_MEDICATION_API__HEALTH_AND_MEDICATION_DATA__RO`",
+        "operationId": "postHealthAndMedicationData",
+        "parameters": [
+          {
+            "name": "prisonId",
+            "in": "path",
+            "description": "The prisoner number",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "The prisoner number",
+              "example": "A1234AA"
+            },
+            "example": "A1234AA"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HealthAndMedicationForPrisonRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Returns Health and Medication Data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthAndMedicationForPrisonResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized to access this endpoint",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Missing required role. Requires ROLE_HEALTH_AND_MEDICATION_API__HEALTH_AND_MEDICATION_DATA__RO",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Data not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/subject-access-request": {
+      "get": {
+        "tags": [
+          "Subject Access Request"
+        ],
+        "summary": "Provides content for a prisoner to satisfy the needs of a subject access request on their behalf",
+        "description": "Requires role SAR_DATA_ACCESS or additional role as specified by hmpps.sar.additionalAccessRole configuration.",
+        "operationId": "getSarContentByReference",
+        "parameters": [
+          {
+            "name": "prn",
+            "in": "query",
+            "description": "NOMIS Prison Reference Number",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "crn",
+            "in": "query",
+            "description": "nDelius Case Reference Number",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "fromDate",
+            "in": "query",
+            "description": "Optional parameter denoting minimum date of event occurrence which should be returned in the response",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "toDate",
+            "in": "query",
+            "description": "Optional parameter denoting maximum date of event occurrence which should be returned in the response",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Request successfully processed - content found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HmppsSubjectAccessRequestContent"
+                }
+              }
+            }
+          },
+          "204": {
+            "description": "Request successfully processed - no content found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "209": {
+            "description": "Subject Identifier is not recognised by this service",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "The client does not have authorisation to make this request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden, requires an appropriate role",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unexpected error occurred",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/reference-data/domains": {
+      "get": {
+        "tags": [
+          "Reference Data Domains"
+        ],
+        "summary": "Get all reference data domains",
+        "description": "Returns the list of reference data domains. By default this endpoint only returns active reference data domains. The `includeInactive` parameter can be used to return all reference data domains. Requires role `ROLE_HEALTH_AND_MEDICATION_API__REFERENCE_DATA__RO`",
+        "operationId": "getReferenceDataDomains",
+        "parameters": [
+          {
+            "name": "includeInactive",
+            "in": "query",
+            "description": "Include inactive reference data domains. Defaults to false.",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "includeSubDomains",
+            "in": "query",
+            "description": "Include sub-domains at the top level. Defaults to false",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Reference data domains found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ReferenceDataDomainDto"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorised, requires a valid Oauth2 token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/reference-data/domains/{domain}": {
+      "get": {
+        "tags": [
+          "Reference Data Domains"
+        ],
+        "summary": "Get a reference data domain",
+        "description": "Returns the reference data domain, including all reference data codes linked to that domain. Requires role `ROLE_HEALTH_AND_MEDICATION_API__REFERENCE_DATA__RO`",
+        "operationId": "getReferenceDataDomain",
+        "parameters": [
+          {
+            "name": "domain",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Reference data domain retrieved",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReferenceDataDomainDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorised, requires a valid Oauth2 token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found, the reference data domain was not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/reference-data/domains/{domain}/codes": {
+      "get": {
+        "tags": [
+          "Reference Data Codes"
+        ],
+        "summary": "Get all reference data codes for {domain}",
+        "description": "Returns the list of reference data codes within {domain}. By default this endpoint only returns active reference data codes. The `includeInactive` parameter can be used to return all reference data codes. Requires role `ROLE_HEALTH_AND_MEDICATION_API__REFERENCE_DATA__RO`",
+        "operationId": "getReferenceDataCodes",
+        "parameters": [
+          {
+            "name": "domain",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "includeInactive",
+            "in": "query",
+            "description": "Include inactive reference data codes. Defaults to false. Requires role `ROLE_HEALTH_AND_MEDICATION_API__REFERENCE_DATA__RO`",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Reference data codes found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ReferenceDataCodeDto"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorised, requires a valid Oauth2 token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found, the reference data domain was not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/reference-data/domains/{domain}/codes/{code}": {
+      "get": {
+        "tags": [
+          "Reference Data Codes"
+        ],
+        "summary": "Get a reference data code",
+        "description": "Returns the reference data code.",
+        "operationId": "getReferenceDataCode",
+        "parameters": [
+          {
+            "name": "domain",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "code",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Reference data code retrieved",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReferenceDataCodeDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorised, requires a valid Oauth2 token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found, the reference data code was not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/prisoners/{prisonerNumber}": {
+      "get": {
+        "tags": [
+          "Health and Medication Data"
+        ],
+        "description": "Requires role `ROLE_HEALTH_AND_MEDICATION_API__HEALTH_AND_MEDICATION_DATA__RO`",
+        "operationId": "getHealthAndMedicationData",
+        "parameters": [
+          {
+            "name": "prisonerNumber",
+            "in": "path",
+            "description": "The prisoner number",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "The prisoner number",
+              "example": "A1234AA"
+            },
+            "example": "A1234AA"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns Health and Medication Data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthAndMedicationResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized to access this endpoint",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Missing required role. Requires ROLE_HEALTH_AND_MEDICATION_API__HEALTH_AND_MEDICATION_DATA__RO",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Data not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "errorCode": {
+            "type": "string"
+          },
+          "userMessage": {
+            "type": "string"
+          },
+          "developerMessage": {
+            "type": "string"
+          },
+          "moreInfo": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "UpdateSmokerStatusRequest": {
+        "type": "object",
+        "description": "Update to prisoner's smoker status",
+        "properties": {
+          "smokerStatus": {
+            "type": "string",
+            "description": "Smoker status. Valid `ReferenceDataCode.id` options for `smokerStatus` can be retrieved by querying `GET /reference-data/domains/SMOKER`.",
+            "example": "SMOKER_NO"
+          }
+        },
+        "required": [
+          "smokerStatus"
+        ]
+      },
+      "ReferenceDataIdSelection": {
+        "type": "object",
+        "description": "Reference data code ID selection with comment",
+        "properties": {
+          "value": {
+            "type": "string",
+            "description": "Selected reference data code ID"
+          },
+          "comment": {
+            "type": "string",
+            "description": "User supplied comment about this selection",
+            "example": "Some other text"
+          }
+        },
+        "required": [
+          "value"
+        ]
+      },
+      "UpdateDietAndAllergyRequest": {
+        "type": "object",
+        "description": "Request object for creating or updating diet and allergy information for a prisoner.",
+        "properties": {
+          "foodAllergies": {
+            "type": "array",
+            "description": "The list of food allergies the prisoner has with an optional comment text.  Valid `ReferenceDataCode.id` options for `foodAllergies` can be retrieved by querying `GET /reference-data/domains/FOOD_ALLERGY`.",
+            "example": [
+              {
+                "value": "FOOD_ALLERGY_EGG"
+              },
+              {
+                "value": "FOOD_ALLERGY_OTHER",
+                "comment": "Kohlrabi"
+              }
+            ],
+            "items": {
+              "$ref": "#/components/schemas/ReferenceDataIdSelection"
+            }
+          },
+          "medicalDietaryRequirements": {
+            "type": "array",
+            "description": "The list of medical dietary requirements the prisoner has with an optional comment text.  Valid `ReferenceDataCode.id` options for `medicalDietaryRequirements` can be retrieved by querying `GET /reference-data/domains/MEDICAL_DIET`.",
+            "example": [
+              {
+                "value": "MEDICAL_DIET_LOW_CHOLESTEROL"
+              },
+              {
+                "value": "MEDICAL_DIET_OTHER",
+                "comment": "Some other diet"
+              }
+            ],
+            "items": {
+              "$ref": "#/components/schemas/ReferenceDataIdSelection"
+            }
+          },
+          "personalisedDietaryRequirements": {
+            "type": "array",
+            "description": "The list of personalised dietary requirements the prisoner has with an optional comment text.  Valid `ReferenceDataCode.id` options for `personalisedDietaryRequirements` can be retrieved by querying `GET /reference-data/domains/PERSONALISED_DIET`.",
+            "example": [
+              {
+                "value": "PERSONALISED_DIET_VEGAN"
+              },
+              {
+                "value": "PERSONALISED_DIET_OTHER",
+                "comment": "Some other diet"
+              }
+            ],
+            "items": {
+              "$ref": "#/components/schemas/ReferenceDataIdSelection"
+            }
+          },
+          "cateringInstructions": {
+            "type": "string",
+            "description": "A description of specific catering instructions required by the prisoner.",
+            "example": "Some specific instructions."
+          }
+        },
+        "required": [
+          "cateringInstructions",
+          "foodAllergies",
+          "medicalDietaryRequirements",
+          "personalisedDietaryRequirements"
+        ]
+      },
+      "DietAndAllergyResponse": {
+        "type": "object",
+        "description": "Diet and allergy data",
+        "properties": {
+          "foodAllergies": {
+            "$ref": "#/components/schemas/ValueWithMetadataListReferenceDataSelection",
+            "description": "Food allergies"
+          },
+          "medicalDietaryRequirements": {
+            "$ref": "#/components/schemas/ValueWithMetadataListReferenceDataSelection",
+            "description": "Medical dietary requirements"
+          },
+          "personalisedDietaryRequirements": {
+            "$ref": "#/components/schemas/ValueWithMetadataListReferenceDataSelection",
+            "description": "Personalised dietary requirements"
+          },
+          "cateringInstructions": {
+            "$ref": "#/components/schemas/ValueWithMetadataString",
+            "description": "Catering instructions"
+          }
+        }
+      },
+      "ReferenceDataSelection": {
+        "type": "object",
+        "description": "Reference data selection with comment",
+        "properties": {
+          "value": {
+            "$ref": "#/components/schemas/ReferenceDataValue",
+            "description": "Selected reference data details"
+          },
+          "comment": {
+            "type": "string",
+            "description": "User supplied comment about this selection",
+            "example": "Some other text"
+          }
+        },
+        "required": [
+          "value"
+        ]
+      },
+      "ReferenceDataValue": {
+        "type": "object",
+        "description": "Reference Data Value - a reference data code selected as the value for a field",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Id",
+            "example": "FOOD_ALLERGY_MILK"
+          },
+          "code": {
+            "type": "string",
+            "description": "Code",
+            "example": "MILK"
+          },
+          "description": {
+            "type": "string",
+            "description": "Description of the reference data code",
+            "example": "Milk"
+          }
+        },
+        "required": [
+          "code",
+          "description",
+          "id"
+        ]
+      },
+      "ValueWithMetadataListReferenceDataSelection": {
+        "type": "object",
+        "properties": {
+          "value": {
+            "type": "array",
+            "description": "Value",
+            "items": {
+              "$ref": "#/components/schemas/ReferenceDataSelection"
+            }
+          },
+          "lastModifiedAt": {
+            "type": "string",
+            "format": "yyyy-MM-dd'T'HH:mm:ssX",
+            "description": "Timestamp this field was last modified",
+            "example": "2024-06-14T10:35:17+0100"
+          },
+          "lastModifiedBy": {
+            "type": "string",
+            "description": "Username of the user that last modified this field",
+            "example": "USER1"
+          },
+          "lastModifiedPrisonId": {
+            "type": "string",
+            "description": "The id code of the active prison at the time of the update",
+            "example": "STI"
+          }
+        },
+        "required": [
+          "lastModifiedAt",
+          "lastModifiedBy",
+          "lastModifiedPrisonId"
+        ]
+      },
+      "ValueWithMetadataString": {
+        "type": "object",
+        "properties": {
+          "value": {
+            "type": "string",
+            "description": "Value"
+          },
+          "lastModifiedAt": {
+            "type": "string",
+            "format": "yyyy-MM-dd'T'HH:mm:ssX",
+            "description": "Timestamp this field was last modified",
+            "example": "2024-06-14T10:35:17+0100"
+          },
+          "lastModifiedBy": {
+            "type": "string",
+            "description": "Username of the user that last modified this field",
+            "example": "USER1"
+          },
+          "lastModifiedPrisonId": {
+            "type": "string",
+            "description": "The id code of the active prison at the time of the update",
+            "example": "STI"
+          }
+        },
+        "required": [
+          "lastModifiedAt",
+          "lastModifiedBy",
+          "lastModifiedPrisonId"
+        ]
+      },
+      "HealthAndMedicationForPrisonRequest": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1
+          },
+          "size": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1
+          },
+          "sort": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "page",
+          "size",
+          "sort"
+        ]
+      },
+      "HealthAndMedicationForPrisonDto": {
+        "type": "object",
+        "properties": {
+          "prisonerNumber": {
+            "type": "string"
+          },
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "location": {
+            "type": "string"
+          },
+          "health": {
+            "$ref": "#/components/schemas/HealthAndMedicationResponse"
+          }
+        },
+        "required": [
+          "health",
+          "prisonerNumber"
+        ]
+      },
+      "HealthAndMedicationForPrisonResponse": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/HealthAndMedicationForPrisonDto"
+            }
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/PageMeta"
+          }
+        },
+        "required": [
+          "content",
+          "metadata"
+        ]
+      },
+      "HealthAndMedicationResponse": {
+        "type": "object",
+        "description": "Prisoner health and medication data",
+        "properties": {
+          "dietAndAllergy": {
+            "$ref": "#/components/schemas/DietAndAllergyResponse",
+            "description": "Diet and allergy"
+          }
+        }
+      },
+      "PageMeta": {
+        "type": "object",
+        "properties": {
+          "first": {
+            "type": "boolean"
+          },
+          "last": {
+            "type": "boolean"
+          },
+          "numberOfElements": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "offset": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "pageNumber": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "size": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalElements": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalPages": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "required": [
+          "first",
+          "last",
+          "numberOfElements",
+          "offset",
+          "pageNumber",
+          "size",
+          "totalElements",
+          "totalPages"
+        ]
+      },
+      "HmppsSubjectAccessRequestContent": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "description": "The content of the subject access request response"
+          }
+        },
+        "required": [
+          "content"
+        ]
+      },
+      "ReferenceDataCodeDto": {
+        "type": "object",
+        "description": "Reference Data Code",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Id",
+            "example": "FOOD_ALLERGY_MILK"
+          },
+          "domain": {
+            "type": "string",
+            "description": "Short code for the reference data domain",
+            "example": "FOOD_ALLERGY"
+          },
+          "code": {
+            "type": "string",
+            "description": "Short code for reference data code",
+            "example": "MILK"
+          },
+          "description": {
+            "type": "string",
+            "description": "Description of the reference data code",
+            "example": "Milk"
+          },
+          "listSequence": {
+            "type": "integer",
+            "format": "int32",
+            "description": "The sequence number of the reference data code. Used for ordering reference data correctly in lists and dropdowns. 0 is default order by description.",
+            "example": 3
+          },
+          "isActive": {
+            "type": "boolean",
+            "description": "Indicates that the reference data code is active and can be used. Inactive reference data codes are not returned by default in the API",
+            "example": true
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "yyyy-MM-dd'T'HH:mm:ssX",
+            "description": "The date and time the reference data code was created",
+            "example": "2024-06-14T10:35:17+0100"
+          },
+          "createdBy": {
+            "type": "string",
+            "description": "The username of the user who created the reference data code",
+            "example": "USER1234"
+          },
+          "lastModifiedAt": {
+            "type": "string",
+            "format": "yyyy-MM-dd'T'HH:mm:ssX",
+            "description": "The date and time the reference data code was last modified",
+            "example": "2024-06-14T10:35:17+0100"
+          },
+          "lastModifiedBy": {
+            "type": "string",
+            "description": "The username of the user who last modified the reference data code",
+            "example": "USER1234"
+          },
+          "deactivatedAt": {
+            "type": "string",
+            "format": "yyyy-MM-dd'T'HH:mm:ssX",
+            "description": "The date and time the reference data code was deactivated",
+            "example": "2024-06-14T10:35:17+0100"
+          },
+          "deactivatedBy": {
+            "type": "string",
+            "description": "The username of the user who deactivated the reference data code",
+            "example": "USER1234"
+          }
+        },
+        "required": [
+          "code",
+          "createdAt",
+          "createdBy",
+          "description",
+          "domain",
+          "id",
+          "isActive",
+          "listSequence"
+        ]
+      },
+      "ReferenceDataDomainDto": {
+        "type": "object",
+        "description": "Reference Data Domain",
+        "properties": {
+          "code": {
+            "type": "string",
+            "description": "Short code for the reference data domain",
+            "example": "FOOD_ALLERGY"
+          },
+          "description": {
+            "type": "string",
+            "description": "Description of the reference data domain",
+            "example": "Food allergy"
+          },
+          "listSequence": {
+            "type": "integer",
+            "format": "int32",
+            "description": "The sequence number of the reference data domain. Used for ordering domains correctly in lists. 0 is default order by description.",
+            "example": 3
+          },
+          "isActive": {
+            "type": "boolean",
+            "description": "Indicates that the reference data domain is active and can be used. Inactive reference data domains are not returned by default in the API",
+            "example": true
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "yyyy-MM-dd'T'HH:mm:ssX",
+            "description": "The date and time the reference data domain was created",
+            "example": "2024-06-14T10:35:17+0100"
+          },
+          "createdBy": {
+            "type": "string",
+            "description": "The username of the user who created the reference data domain",
+            "example": "USER1234"
+          },
+          "lastModifiedAt": {
+            "type": "string",
+            "format": "yyyy-MM-dd'T'HH:mm:ssX",
+            "description": "The date and time the reference data domain was last modified",
+            "example": "2024-06-14T10:35:17+0100"
+          },
+          "lastModifiedBy": {
+            "type": "string",
+            "description": "The username of the user who last modified the reference data domain",
+            "example": "USER1234"
+          },
+          "deactivatedAt": {
+            "type": "string",
+            "format": "yyyy-MM-dd'T'HH:mm:ssX",
+            "description": "The date and time the reference data domain was deactivated",
+            "example": "2024-06-14T10:35:17+0100"
+          },
+          "deactivatedBy": {
+            "type": "string",
+            "description": "The username of the user who deactivated the reference data domain",
+            "example": "USER1234"
+          },
+          "referenceDataCodes": {
+            "type": "array",
+            "description": "The reference data codes associated with this reference data domain",
+            "items": {
+              "$ref": "#/components/schemas/ReferenceDataCodeDto"
+            }
+          },
+          "subDomains": {
+            "type": "array",
+            "description": "Reference data domains that are considered sub-domains of this domain",
+            "items": {
+              "$ref": "#/components/schemas/ReferenceDataDomainDto"
+            }
+          }
+        },
+        "required": [
+          "code",
+          "createdAt",
+          "createdBy",
+          "description",
+          "isActive",
+          "listSequence",
+          "referenceDataCodes",
+          "subDomains"
+        ]
+      }
+    },
+    "securitySchemes": {
+      "bearer-jwt": {
+        "type": "http",
+        "name": "Authorization",
+        "in": "header",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      },
+      "hmpps-auth": {
+        "type": "oauth2",
+        "flows": {
+          "clientCredentials": {
+            "tokenUrl": "https://sign-in-dev.hmpps.service.justice.gov.uk/auth/oauth/token",
+            "scopes": {
+              "read": "Allows read of data",
+              "write": "Allows write of data"
+            }
+          },
+          "authorizationCode": {
+            "authorizationUrl": "https://sign-in-dev.hmpps.service.justice.gov.uk/auth/oauth/authorize",
+            "tokenUrl": "https://sign-in-dev.hmpps.service.justice.gov.uk/auth/oauth/token",
+            "scopes": {
+              "read": "Allows read of data",
+              "write": "Allows write of data"
+            }
+          }
+        },
+        "openIdConnectUrl": "https://sign-in-dev.hmpps.service.justice.gov.uk/auth/.well-known/openid-configuration"
+      }
+    }
+  }
+}
