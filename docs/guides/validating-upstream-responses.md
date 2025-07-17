@@ -3,7 +3,7 @@
 We currently have 2 ways of mocking and validating upstream responses
 
 - Wiremock + Atlassian OpenApi Wiremock Validator
-- Prism
+- Prism (old method but still in use)
 
 ## Wiremock + Atlassian OpenApi Wiremock Validator
 
