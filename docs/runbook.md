@@ -1,29 +1,36 @@
 # HMPPS Integration API Runbook
+
 This is a runbook to document how this service is supported, as described in: [MOJ Runbooks](https://technical-guidance.service.justice.gov.uk/documentation/standards/documenting-how-your-service-is-supported.html#what-you-should-include-in-your-service-39-s-runbook)
 
 Last review date: 15/12/2023
 
 ## About the service
-This service is composed of a set of long-lived API interfaces to share person related MOJ data with external consumers. 
+
+This service is composed of a set of long-lived API interfaces to share person related MOJ data with external consumers.
 Prison (Nomis, DPS) and probation (Delius) data is combined from upstream APIs into one cohesive response while masking the source.
 
-### Tech stack 
-Containerised Kotlin Spring Boot application running on Cloud Platform’s Kubernetes cluster (eu-west-2). 
+### Tech stack
+
+Containerised Kotlin Spring Boot application running on Cloud Platform’s Kubernetes cluster (eu-west-2).
 
 AWS API Gateway sits in front of this service with [mutual TLS authentication](https://docs.aws.amazon.com/apigateway/latest/developerguide/rest-api-mutual-tls.html). It does not persist any data and is purely a Facade API.
 
 ## Service URLs
+
 - Development: https://dev.integration-api.hmpps.service.justice.gov.uk
 - Pre-Production: https://preprod.integration-api.hmpps.service.justice.gov.uk
 - Production: https://integration-api.hmpps.service.justice.gov.uk
 
 ## Incident response hours
+
 Office hours, usually 9am-6pm on working days.
 
 ## Incident contact details
+
 [hmpps-integration-api@digital.justice.gov.uk](mailto:hmpps-integration-api@digital.justice.gov.uk)
 
 ## Service team contact
+
 The service team can be reached on MOJ Slack: [#ask-hmpps-integration-api](https://moj.enterprise.slack.com/archives/C04D46K9QTU)
 
 ## Other URLs
@@ -59,7 +66,8 @@ There is no change request process and the delivery team pushes to production re
 
 There are a number of automatic alerts set up to be delivered into Slack [#hmpps-integration-api-alerts](https://moj.enterprise.slack.com/archives/C052TUCR12L)
 
-These include: 
+These include:
+
 - Documentation up for review
 - Security scan results (Trivy, OWASP, Vera)
 - Application exceptions from Sentry
@@ -71,7 +79,7 @@ Since we have a variety of consumers, the impact will be different for each of t
 
 ## Restrictions on access
 
-Consumers need to be onboarded and go through a mutual TLS authentication. They also need to send a pre-shared key (AWS API Gateway API Key) as a header for identification before being allowed to access the service. 
+Consumers need to be onboarded and go through a mutual TLS authentication. They also need to send a pre-shared key (AWS API Gateway API Key) as a header for identification before being allowed to access the service.
 
 Once authenticated, there is an authorisation step at the application level to ensure the consumers are allowed to access the requested resources.
 There are no IP restrictions in place.
@@ -81,7 +89,7 @@ There are no IP restrictions in place.
 ### Errors reported to Slack from our monitoring dashboards
 
 There are a number of errors that can be raised on Slack, too many to capture in this document.
-  Below are some of the more common errors that could be raised, along with some basic guidance to troubleshoot.
+Below are some of the more common errors that could be raised, along with some basic guidance to troubleshoot.
 
 #### API Gateway errors
 
@@ -92,6 +100,7 @@ To see the error in the API Gateway logs, which will contain more details, log i
 If it's a 403 Unauthorised error, it indicates that the request is unauthenticated to access the requested resource.
 
 Establish who is trying to access the service, then check:
+
 - Mutual TLS authentication, ensure certificates are valid.
 - Check that the API key is correct by checking against the value for the consumer in Kubernetes secrets under `consumer-api-keys`.
 - Check that the client certificate contains the correct Common Name (CN), and that it has been added to the Spring Boot application properties, listing allowed paths.
@@ -100,7 +109,7 @@ If it's a 404 error, check what path was requested and why the API was unable to
 
 #### API GW 5xx Errors
 
-Establish what sort of 5xx error has occurred by checking the logs. 
+Establish what sort of 5xx error has occurred by checking the logs.
 For general debugging of 500 errors, please see [troubleshoot 5xx errors for API Gateway](https://repost.aws/knowledge-center/api-gateway-5xx-error)
 
 #### API GW Client Error, API GW ExecutionError, API GW integrationError
@@ -139,6 +148,6 @@ First trigger a deployment through the build pipeline to rebuild the application
 
 #### less than 2 pods running
 
-At any given time (for any environment), there should be at least 2 pods running for high availability. 
+At any given time (for any environment), there should be at least 2 pods running for high availability.
 The service also has a zero downtime deployment strategy in place, which means that old pods are gracefully terminated before traffic is redirected to new pods.
 Check whether any recent obvious updates have been made that could have caused this regression. Roll back or forward with a fix if necessary and trigger another deployment through the build pipeline.
