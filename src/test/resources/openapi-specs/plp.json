@@ -1,0 +1,5014 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Education and Work Plan API",
+    "version": "1.24.0",
+    "description": "Education and Work Plan API",
+    "contact": {
+      "name": "Learning and Work Progress team",
+      "email": "learningandworkprogress@digital.justice.gov.uk"
+    }
+  },
+  "servers": [
+    {
+      "url": "/"
+    }
+  ],
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "paths": {
+    "/person/{prisonNumber}/education": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/prisonNumberPathParameter"
+        }
+      ],
+      "description": "API endpoints to create, read and update an individual's education.  \n\nPersonal Learning Plans currently considers \"education\" as meaning an individual's level of education and\nachieved qualifications. Typically the term \"qualifications\" is used to refer to things like formal school,\ncollege and university education. It can in theory include other education providers, but specifically excludes\neducation that has been taken and delivered whilst in-prison. In-prison education is mastered and returned by\nthe Curious API.\n\nAn individual's education record contains their level of education and their achieved qualifications.\nAn individual cannot have more than one record of education.\n",
+      "get": {
+        "summary": "Returns an individual's education record.",
+        "description": "Returns an individual's education which includes their level of education, and a collection of \nqualifications that have been achieved.\n\n**Role Requirements:**\nAccess to this endpoint requires one of the following roles:\n  - `ROLE_EDUCATION_AND_WORK_PLAN__EDUCATION__RO` (Read-Only)\n  - `ROLE_EDUCATION_AND_WORK_PLAN__EDUCATION__RW` (Read-Write)\n",
+        "operationId": "get-education",
+        "tags": [
+          "Education"
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Education"
+          },
+          "404": {
+            "$ref": "#/components/responses/404ErrorResponse"
+          }
+        }
+      },
+      "post": {
+        "summary": "Creates a record of an individual's education.",
+        "description": "Creates a record of an individual's education which includes their level of education, and a\ncollection of qualifications that have been achieved.  \n\nA `CONFLICT 409` response is returned if there is already an education record for the individual.\n\n**Role Requirements:**\nAccess to this endpoint requires one of the following roles:\n  - `ROLE_EDUCATION_AND_WORK_PLAN__EDUCATION__RW` (Read-Write)\n",
+        "operationId": "create-education",
+        "tags": [
+          "Education"
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/CreateEducation"
+        },
+        "responses": {
+          "201": {
+            "description": "The Education record was created successfully."
+          },
+          "400": {
+            "$ref": "#/components/responses/400ErrorResponse"
+          },
+          "409": {
+            "$ref": "#/components/responses/409ErrorResponse"
+          }
+        }
+      },
+      "put": {
+        "summary": "Updates an individual's education.",
+        "description": "Updates an individual's education.  \n\nThe entire education record is updated as one. Updating just the level of education, or individual\nqualifications (including adding, removing or updating) is not currently supported.\n\nA `NOT_FOUND 404` response is returned if the specified individual does not currently have an education record.\n\n**Role Requirements:**\nAccess to this endpoint requires one of the following roles:\n  - `ROLE_EDUCATION_AND_WORK_PLAN__EDUCATION__RW` (Read-Write)\n",
+        "operationId": "update-education",
+        "tags": [
+          "Education"
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/UpdateEducation"
+        },
+        "responses": {
+          "204": {
+            "description": "The Education record was successfully updated."
+          },
+          "400": {
+            "$ref": "#/components/responses/400ErrorResponse"
+          },
+          "404": {
+            "$ref": "#/components/responses/404ErrorResponse"
+          }
+        }
+      }
+    },
+    "/action-plans": {
+      "post": {
+        "summary": "Retrieves a list of Action Plans for a given list of Prisoners.",
+        "description": "Retrieves a list of Action Plans for a given list of Prisoners. This is a POST, rather than a GET, to allow a long list of prison numbers.\n\n**Role Requirements:**\nAccess to this endpoint requires one of the following roles:\n  - `ROLE_EDUCATION_AND_WORK_PLAN__ACTIONPLANS__RW` (Read-Write)\n",
+        "tags": [
+          "Action Plans"
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/ActionPlanSummaryList"
+          },
+          "400": {
+            "$ref": "#/components/responses/400ErrorResponse"
+          }
+        },
+        "operationId": "get-action-plans",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/GetActionPlanSummaries"
+        }
+      }
+    },
+    "/action-plans/{prisonNumber}": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/prisonNumberPathParameter"
+        }
+      ],
+      "post": {
+        "summary": "Creates an Action Plan.",
+        "description": "Creates an Action Plan with at least one or more Goals.\n**Role Requirements:**\nAccess to this endpoint requires one of the following roles:\n  - `ROLE_EDUCATION_AND_WORK_PLAN__ACTIONPLANS__RW` (Read-Write)\n",
+        "tags": [
+          "Action Plans"
+        ],
+        "responses": {
+          "201": {
+            "description": "The Action Plan was created successfully."
+          },
+          "400": {
+            "$ref": "#/components/responses/400ErrorResponse"
+          },
+          "404": {
+            "$ref": "#/components/responses/404ErrorResponse"
+          }
+        },
+        "operationId": "create-action-plan",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/CreateActionPlan"
+        }
+      },
+      "get": {
+        "summary": "Return a Prisoner's Action Plan",
+        "description": "Return a Prisoner's Action Plan with the goals ordered in chronological order (oldest first). If the prisoner does not yet have any goals set, a 404 is returned.\n\n**Role Requirements:**  \nAccess to this endpoint requires one of the following roles:\n  - `ROLE_EDUCATION_AND_WORK_PLAN__ACTIONPLANS__RO` (Read-Only)\n  - `ROLE_EDUCATION_AND_WORK_PLAN__ACTIONPLANS__RW` (Read-Write)\n",
+        "tags": [
+          "Action Plans"
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/ActionPlan"
+          },
+          "404": {
+            "$ref": "#/components/responses/404ErrorResponse"
+          }
+        },
+        "operationId": "get-action-plan-by-prison-number"
+      }
+    },
+    "/action-plans/{prisonNumber}/reviews": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/prisonNumberPathParameter"
+        }
+      ],
+      "get": {
+        "summary": "Lists all Action Plan Reviews (past and scheduled) for a prisoner",
+        "description": "Returns all Action Plan Reviews for the specified prisoner. The response data will contain all previously\ncompleted reviews (if any), plus the next scheduled review.\n\nThe prisoner must have an Action Plan (consisting of their completed Induction plus at least 1 Goal) in order to\nhave any Reviews. If the prisoner does not yet have an Action Plan a 404 is returned.\n\nGiven a prisoner has an Action Plan they will have exactly 1 scheduled review, and zero or more completed reviews.\n\n**Role Requirements:**\nAccess to this endpoint requires one of the following roles:\n  - `ROLE_EDUCATION_AND_WORK_PLAN__REVIEWS__RO` (Read-Only)\n  - `ROLE_EDUCATION_AND_WORK_PLAN__REVIEWS__RW` (Read-Write)\n",
+        "tags": [
+          "Action Plan Reviews"
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/GetActionPlanReviews"
+          },
+          "404": {
+            "$ref": "#/components/responses/404ErrorResponse"
+          }
+        },
+        "operationId": "get-action-plan-review"
+      },
+      "post": {
+        "summary": "Creates an Action Plan Review for a prisoner",
+        "description": "Submits and records an Action Plan Reviews for the specified prisoner.\n\nThe prisoner must have an Action Plan (consisting of their completed Induction plus at least 1 Goal) in order to\nhave a Review. If the prisoner does not yet have an Action Plan a 404 is returned.\n\nGiven a prisoner has an Action Plan they will have exactly 1 scheduled review, and zero or more completed reviews.\n\n**Role Requirements:**\nAccess to this endpoint requires the following role:\n  - `ROLE_EDUCATION_AND_WORK_PLAN__REVIEWS__RW` (Read-Write)\n",
+        "tags": [
+          "Action Plan Reviews"
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/CreateActionPlanReview"
+        },
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/CreateActionPlanReview"
+          },
+          "400": {
+            "$ref": "#/components/responses/400ErrorResponse"
+          },
+          "404": {
+            "$ref": "#/components/responses/404ErrorResponse"
+          }
+        },
+        "operationId": "create-action-plan-review"
+      }
+    },
+    "/action-plans/{prisonNumber}/reviews/schedule-status": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/prisonNumberPathParameter"
+        }
+      ],
+      "put": {
+        "summary": "updates the status for the current review schedule.",
+        "description": "This is used to exempt or remove an exemption from a review schedule.\n\n**Role Requirements:**\nAccess to this endpoint requires one of the following roles:\n  - `ROLE_EDUCATION_AND_WORK_PLAN__REVIEWS__RW` (Read-Write)\n",
+        "tags": [
+          "Action Plan Reviews"
+        ],
+        "responses": {
+          "204": {
+            "description": "The review schedule status update request was processed successfully."
+          },
+          "404": {
+            "$ref": "#/components/responses/404ErrorResponse"
+          },
+          "409": {
+            "description": "Invalid review schedule status change."
+          }
+        },
+        "operationId": "update-review-schedule-status",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/UpdateReviewScheduleStatus"
+        }
+      }
+    },
+    "/action-plans/{prisonNumber}/reviews/review-schedules": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/prisonNumberPathParameter"
+        }
+      ],
+      "get": {
+        "summary": "Lists all Action Plan Review Schedules (past and scheduled) for a prisoner",
+        "description": "Returns all Action Plan Review schedules for the specified prisoner. \n\nThe data will be returned as a list ordered by last updated date then by version number. \n\nIt is possible for a review schedule to be updated therefore this endpoint will return all versions of a\nreview schedule - the highest version number will be the most recent schedule. \n      \n**Role Requirements:**\nAccess to this endpoint requires one of the following roles:\n  - `ROLE_EDUCATION_AND_WORK_PLAN__REVIEWS__RO` (Read-Only)\n  - `ROLE_EDUCATION_AND_WORK_PLAN__REVIEWS__RW` (Read-Write)\n",
+        "tags": [
+          "Action Plan Reviews"
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/GetActionPlanReviewSchedules"
+          },
+          "404": {
+            "$ref": "#/components/responses/404ErrorResponse"
+          }
+        },
+        "operationId": "get-action-plan-review-schedules"
+      }
+    },
+    "/inductions/{prisonerNumber}/induction-schedule": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/prisonNumberPathParameter"
+        }
+      ],
+      "put": {
+        "summary": "updates the status for the induction schedule.",
+        "description": "This is used to exempt or remove an exemption from a induction schedule.\n\n**Role Requirements:**\nAccess to this endpoint requires the following role:\n  - `ROLE_EDUCATION_AND_WORK_PLAN__INDUCTIONS__RW` (Read-Write)\n",
+        "tags": [
+          "Action Plan Inductions"
+        ],
+        "responses": {
+          "204": {
+            "description": "The induction schedule status update request was processed successfully."
+          },
+          "404": {
+            "$ref": "#/components/responses/404ErrorResponse"
+          },
+          "409": {
+            "description": "Invalid induction schedule status change."
+          }
+        },
+        "operationId": "update-induction-schedule-status",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/UpdateInductionScheduleStatus"
+        }
+      }
+    },
+    "/inductions/{prisonerNumber}/induction-schedule/history": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/prisonNumberPathParameter"
+        }
+      ],
+      "get": {
+        "summary": "Lists Induction Schedule history for a prisoner",
+        "description": "It is possible for an induction schedule to be updated therefore this endpoint will return all versions of a\ninduction schedule - the highest version number will be the most recent. \n\n**Role Requirements:**\nAccess to this endpoint requires one of the following roles:\n  - `ROLE_EDUCATION_AND_WORK_PLAN__REVIEWS__RO` (Read-Only)\n  - `ROLE_EDUCATION_AND_WORK_PLAN__REVIEWS__RW` (Read-Write)\n",
+        "tags": [
+          "Action Plan Inductions"
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/GetInductionSchedules"
+          },
+          "404": {
+            "$ref": "#/components/responses/404ErrorResponse"
+          }
+        },
+        "operationId": "get-induction-schedule-history"
+      }
+    },
+    "/action-plans/{prisonNumber}/goals": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/prisonNumberPathParameter"
+        }
+      ],
+      "get": {
+        "summary": "Lists the Goals for a prisoner with an optional filter on Goal status",
+        "description": "Returns Goals for the specified prisoner, optionally filtered on Goal status with the `status` query string parameter.  \nThe optional `status` query string parameter can be one or more of the supported Goal statuses (see the `GoalStatus` schema definition for valid statuses).  \nIf specifying multiple statuses these can either be a comma delimited list in a single `status` query string parameter, or multiple instances of the `status` query string parameter can be used.    \n\n* If the `status` query string parameter is used and the prisoner has Goals but none that match the specified status(es) a 200 response is returned with an empty `goals` collection.  \n* If the specified prisoner has no Goals at all, irrespective of whether the `status` query string parameter was used, a 404 response is returned.  \n* If the `status` query string parameter is used with one or more invalid values a 400 response is returned (see the `GoalStatus` schema definition for valid statuses).\n\n**Role Requirements:**\nAccess to this endpoint requires one of the following roles:\n  - `ROLE_EDUCATION_AND_WORK_PLAN__GOALS__RO` (Read-Only)\n  - `ROLE_EDUCATION_AND_WORK_PLAN__GOALS__RW` (Read-Write)\n",
+        "parameters": [
+          {
+            "name": "status",
+            "description": "Returned Goals will be filtered by the specified Goal status. Multiple values can be specified by comma delimiting them.",
+            "examples": {
+              "Single value": {
+                "description": "A single status value",
+                "value": "ACTIVE"
+              },
+              "Multiple values": {
+                "description": "Multiple status values specified as a comma delimited list",
+                "value": "ACTIVE,COMPLETED"
+              }
+            },
+            "schema": {
+              "$ref": "#/components/schemas/GoalStatus"
+            },
+            "in": "query",
+            "required": false
+          }
+        ],
+        "tags": [
+          "Goals"
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/GetGoals"
+          },
+          "400": {
+            "$ref": "#/components/responses/400ErrorResponse"
+          },
+          "404": {
+            "$ref": "#/components/responses/404ErrorResponse"
+          }
+        },
+        "operationId": "get-goals"
+      },
+      "post": {
+        "summary": "Creates one or more Goals.",
+        "description": "Creates one or more Goals and saves them to the Prisoner's Action Plan. Returns a 404 if the Prisoner does not have an Action Plan.\n\n**Role Requirements:**\nAccess to this endpoint requires one of the following roles:\n  - `ROLE_EDUCATION_AND_WORK_PLAN__GOALS__RW` (Read-Write)\n",
+        "tags": [
+          "Goals"
+        ],
+        "responses": {
+          "201": {
+            "description": "The Goal(s) were created successfully."
+          },
+          "400": {
+            "$ref": "#/components/responses/400ErrorResponse"
+          },
+          "404": {
+            "$ref": "#/components/responses/404ErrorResponse"
+          }
+        },
+        "operationId": "create-goals",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/CreateGoals"
+        }
+      }
+    },
+    "/action-plans/{prisonNumber}/goals/{goalReference}": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/prisonNumberPathParameter"
+        },
+        {
+          "$ref": "#/components/parameters/goalReferencePathParameter"
+        }
+      ],
+      "get": {
+        "summary": "Returns a single goal identified by the prisoner and the goal reference.",
+        "description": "Returns a single Goal identified by the specified prison number and goal reference.  \n\n* If the goal identified by both the prison number and goal reference is found a 200 response is returned with the goal as the response body.  \n* If a goal that matches both the prison number and goal reference cannot be found a 404 response is returned.\n\n**Role Requirements:**\nAccess to this endpoint requires one of the following roles:\n  - `ROLE_EDUCATION_AND_WORK_PLAN__GOALS__RO` (Read-Only)\n  - `ROLE_EDUCATION_AND_WORK_PLAN__GOALS__RW` (Read-Write)\n",
+        "tags": [
+          "Goals"
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Goal"
+          },
+          "404": {
+            "$ref": "#/components/responses/404ErrorResponse"
+          }
+        },
+        "operationId": "get-prisoner-goal"
+      },
+      "put": {
+        "summary": "Updates a Goal",
+        "description": "Updates a single Goal and its list of Steps (including their sequential order if relevant). Note that the whole of a Goal's data should be provided, otherwise the absence of any data (such as a Step) will result in it being removed.\n\n**Role Requirements:**\nAccess to this endpoint requires one of the following roles:\n  - `ROLE_EDUCATION_AND_WORK_PLAN__GOALS__RW` (Read-Write)\n",
+        "tags": [
+          "Goals"
+        ],
+        "responses": {
+          "204": {
+            "description": "The Goal was updated successfully."
+          },
+          "400": {
+            "$ref": "#/components/responses/400ErrorResponse"
+          },
+          "404": {
+            "$ref": "#/components/responses/404ErrorResponse"
+          }
+        },
+        "operationId": "update-goal",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/UpdateGoal"
+        }
+      }
+    },
+    "/action-plans/{prisonNumber}/goals/{goalReference}/archive": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/prisonNumberPathParameter"
+        },
+        {
+          "$ref": "#/components/parameters/goalReferencePathParameter"
+        }
+      ],
+      "put": {
+        "summary": "Archives a Goal",
+        "description": "Changes a goals status to 'ARCHIVED' and records the archival reason.\n\n**Role Requirements:**\nAccess to this endpoint requires one of the following roles:\n  - `ROLE_EDUCATION_AND_WORK_PLAN__GOALS__RW` (Read-Write)\n",
+        "tags": [
+          "Goals"
+        ],
+        "responses": {
+          "204": {
+            "description": "The Goal was archived successfully."
+          },
+          "400": {
+            "$ref": "#/components/responses/400ErrorResponse"
+          },
+          "404": {
+            "$ref": "#/components/responses/404ErrorResponse"
+          },
+          "409": {
+            "$ref": "#/components/responses/409ErrorResponse"
+          }
+        },
+        "operationId": "archive-goal",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/ArchiveGoal"
+        }
+      }
+    },
+    "/action-plans/{prisonNumber}/goals/{goalReference}/unarchive": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/prisonNumberPathParameter"
+        },
+        {
+          "$ref": "#/components/parameters/goalReferencePathParameter"
+        }
+      ],
+      "put": {
+        "summary": "Unarchives a Goal",
+        "description": "Changes an archived goals status back to 'ACTIVE'\n\n**Role Requirements:**\n        Access to this endpoint requires one of the following roles:\n          - `ROLE_EDUCATION_AND_WORK_PLAN__GOALS__RW` (Read-Write)\n",
+        "tags": [
+          "Goals"
+        ],
+        "responses": {
+          "204": {
+            "description": "The Goal was unarchived successfully."
+          },
+          "400": {
+            "$ref": "#/components/responses/400ErrorResponse"
+          },
+          "404": {
+            "$ref": "#/components/responses/404ErrorResponse"
+          },
+          "409": {
+            "$ref": "#/components/responses/409ErrorResponse"
+          }
+        },
+        "operationId": "unarchive-goal",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/UnarchiveGoal"
+        }
+      }
+    },
+    "/action-plans/{prisonNumber}/goals/{goalReference}/complete": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/prisonNumberPathParameter"
+        },
+        {
+          "$ref": "#/components/parameters/goalReferencePathParameter"
+        }
+      ],
+      "put": {
+        "summary": "Completes a Goal",
+        "description": "Changes a goals status to 'COMPLETE' and records the completion note.\n\n**Role Requirements:**\nAccess to this endpoint requires one of the following roles:\n  - `ROLE_EDUCATION_AND_WORK_PLAN__GOALS__RW` (Read-Write)\n",
+        "tags": [
+          "Goals"
+        ],
+        "responses": {
+          "204": {
+            "description": "The Goal was completed successfully."
+          },
+          "400": {
+            "$ref": "#/components/responses/400ErrorResponse"
+          },
+          "404": {
+            "$ref": "#/components/responses/404ErrorResponse"
+          },
+          "409": {
+            "$ref": "#/components/responses/409ErrorResponse"
+          }
+        },
+        "operationId": "complete-goal",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/CompleteGoal"
+        }
+      }
+    },
+    "/timelines/{prisonNumber}": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/prisonNumberPathParameter"
+        },
+        {
+          "name": "inductions",
+          "in": "query",
+          "description": "Filter events related to inductions.",
+          "required": false,
+          "schema": {
+            "type": "boolean"
+          }
+        },
+        {
+          "name": "reviews",
+          "in": "query",
+          "description": "Filter events related to reviews.",
+          "required": false,
+          "schema": {
+            "type": "boolean"
+          }
+        },
+        {
+          "name": "goals",
+          "in": "query",
+          "description": "Filter events related to goals.",
+          "required": false,
+          "schema": {
+            "type": "boolean"
+          }
+        },
+        {
+          "name": "prisonEvents",
+          "in": "query",
+          "description": "Filter prison events.",
+          "required": false,
+          "schema": {
+            "type": "boolean"
+          }
+        },
+        {
+          "name": "prisonId",
+          "in": "query",
+          "description": "Filter events by a specific prison id.",
+          "required": false,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "eventsSince",
+          "in": "query",
+          "description": "Filter events that occurred after this date.",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "format": "date"
+          }
+        }
+      ],
+      "get": {
+        "summary": "Return a Prisoner's Timeline.",
+        "description": "Returns a Prisoner's Timeline data, consisting of one or more 'events' of interest in chronological order. For example, it could include events such as when they completed an Induction, or updated a Goal. The prisonNumber is the unique identifier of the Timeline.\n\n**Role Requirements:**\n        Access to this endpoint requires one of the following roles:\n          - `ROLE_EDUCATION_AND_WORK_PLAN__TIMELINE__RO` (Read-Only)\n",
+        "tags": [
+          "Timelines"
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Timeline"
+          },
+          "404": {
+            "$ref": "#/components/responses/404ErrorResponse"
+          }
+        },
+        "operationId": "get-timeline-by-prison-number"
+      }
+    },
+    "/ciag/induction/list": {
+      "post": {
+        "deprecated": true,
+        "summary": "Returns summary CIAG Inductions for a specified list of prisoners.",
+        "description": "Given a list of prisoner identifiers (Prison Numbers) returns summary CIAG Induction data for each specified\nprisoner. If the returned data does not include summary data for a given prisoner it can be inferred that the\nprisoner does not have a CIAG Induction.\nThis endpoint has been migrated from the `hmpps-ciag-careers-induction-api` and the data structure has been \nkept the same in order to prevent breaking the UI when it points to this endpoint.\n\n**Role Requirements:**\nAccess to this endpoint requires one of the following roles:\n  - `ROLE_EDUCATION_AND_WORK_PLAN__INDUCTIONS__RO` (Read-Only)\n  - `ROLE_EDUCATION_AND_WORK_PLAN__INDUCTIONS__RW` (Read-Write)\n",
+        "tags": [
+          "Legacy Inductions"
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/CiagInductionSummaryList"
+          },
+          "400": {
+            "$ref": "#/components/responses/400ErrorResponse"
+          }
+        },
+        "operationId": "get-ciag-prisoner-induction-summaries",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/GetCiagInductionSummaries"
+        }
+      }
+    },
+    "/inductions/{prisonNumber}": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/prisonNumberPathParameter"
+        }
+      ],
+      "post": {
+        "summary": "Creates an Induction for a Prisoner.",
+        "description": "Creates an Induction for a Prisoner (if it does not already exist).\n\n**Role Requirements:**\nAccess to this endpoint requires one of the following roles:\n  - `ROLE_EDUCATION_AND_WORK_PLAN__INDUCTIONS__RW` (Read-Write)\n",
+        "tags": [
+          "Inductions"
+        ],
+        "responses": {
+          "201": {
+            "description": "The Induction was created successfully."
+          },
+          "400": {
+            "$ref": "#/components/responses/400ErrorResponse"
+          }
+        },
+        "operationId": "create-prisoner-induction",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/CreateInduction"
+        }
+      },
+      "get": {
+        "summary": "Return a Prisoner's Induction.",
+        "description": "Returns a Prisoner's Induction.\n",
+        "tags": [
+          "Inductions"
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Induction"
+          },
+          "404": {
+            "$ref": "#/components/responses/404ErrorResponse"
+          }
+        },
+        "operationId": "get-prisoner-induction"
+      },
+      "put": {
+        "summary": "Updates an Induction for a Prisoner.",
+        "description": "Provides the ability to update a Prisoner's Induction. If a field (or \"child\" object) is provided in the request,\nit will completely overwrite the existing value. Conversely, if a field is not included in the request, then\nthe existing value will remain untouched (including its updatedAt/updatedBy values).\n\n**Role Requirements:**\nAccess to this endpoint requires one of the following roles:\n  - `ROLE_EDUCATION_AND_WORK_PLAN__INDUCTIONS__RW` (Read-Write)\n",
+        "tags": [
+          "Inductions"
+        ],
+        "responses": {
+          "204": {
+            "description": "Induction updated successfully."
+          },
+          "400": {
+            "$ref": "#/components/responses/400ErrorResponse"
+          },
+          "404": {
+            "$ref": "#/components/responses/404ErrorResponse"
+          }
+        },
+        "operationId": "update-prisoner-induction",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/UpdateInduction"
+        }
+      }
+    },
+    "/inductions/{prisonNumber}/induction-schedule": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/prisonNumberPathParameter"
+        }
+      ],
+      "get": {
+        "summary": "Return a Prisoner's Induction schedule.",
+        "description": "Returns a Prisoner's Induction schedule.\n\n**Role Requirements:**\nAccess to this endpoint requires one of the following roles:\n  - `ROLE_EDUCATION_AND_WORK_PLAN__INDUCTIONS__RO` (Read-Only)\n  - `ROLE_EDUCATION_AND_WORK_PLAN__INDUCTIONS__RW` (Read-Write)\n",
+        "tags": [
+          "Inductions"
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/InductionSchedule"
+          },
+          "404": {
+            "$ref": "#/components/responses/404ErrorResponse"
+          }
+        },
+        "operationId": "get-prisoner-induction-schedule"
+      }
+    },
+    "/subject-access-request": {
+      "get": {
+        "summary": "Retrieves PLP SAR data",
+        "tags": [
+          "Subject Access Request"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/prnQueryStringParameter"
+          },
+          {
+            "$ref": "#/components/parameters/fromDate"
+          },
+          {
+            "$ref": "#/components/parameters/toDate"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/SarContentFound"
+          },
+          "204": {
+            "description": "Request successfully processed - no content found"
+          },
+          "209": {
+            "description": "Subject Identifier is not recognised by this service"
+          },
+          "400": {
+            "$ref": "#/components/responses/400ErrorResponse"
+          },
+          "401": {
+            "description": "The client does not have authorisation to make this request"
+          }
+        }
+      }
+    },
+    "/session/{prisonId}/summary": {
+      "get": {
+        "summary": "Get summary of reviews and inductions sessions for a prison",
+        "tags": [
+          "Session reporting"
+        ],
+        "description": "Returns counts of overdue, due, and exempt reviews and inductions for a given prison.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/prisonIdInPathParameter"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/SessionSummary"
+          }
+        }
+      }
+    },
+    "/session/summary": {
+      "post": {
+        "summary": "Retrieve a list of session summary details for a given list of prison numbers",
+        "tags": [
+          "Session reporting"
+        ],
+        "description": "Returns details of overdue, due, and exempt reviews and inductions for a given list of prison numbers.",
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "required": true,
+            "description": "Filter session summaries by status. Valid values are DUE, OVERDUE, or ON_HOLD.",
+            "schema": {
+              "$ref": "#/components/schemas/SessionStatusType"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Session"
+          }
+        },
+        "requestBody": {
+          "$ref": "#/components/requestBodies/GetSessionSummaries"
+        }
+      }
+    },
+    "/search/prisons/{prisonId}/people": {
+      "get": {
+        "summary": "Search people using prisonId and then filtering on various fields across prisoner search and PLP",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/prisonIdInPathParameter"
+          },
+          {
+            "name": "prisonerNameOrNumber",
+            "in": "query",
+            "description": "Search by prisoner name or prison number",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "hasActionPlan",
+            "in": "query",
+            "description": "Filter by whether the prisoner has an action plan",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "releaseDateBefore",
+            "in": "query",
+            "description": "Filter by release date before the given date",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "releaseDateAfter",
+            "in": "query",
+            "description": "Filter by release date after the given date",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "actionPlanLastUpdatedBefore",
+            "in": "query",
+            "description": "return action plans last updated date before the given date",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "actionPlanLastUpdatedAfter",
+            "in": "query",
+            "description": "Filter by action plans last updated date after the given date",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "nextActionDateBefore",
+            "in": "query",
+            "description": "Filter by next action date before the given date. The next action date can be a review or induction.",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "nextActionDateAfter",
+            "in": "query",
+            "description": "Filter by next action date after the given date. The next action date can be a review or induction.",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "sortBy",
+            "in": "query",
+            "description": "Column to sort by",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "prisonerName",
+                "cellLocation",
+                "releaseDate",
+                "nextActionDate",
+                "planLastUpdated",
+                "hasPlan"
+              ]
+            }
+          },
+          {
+            "name": "sortDirection",
+            "in": "query",
+            "description": "Sort direction (ascending or descending)",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "asc",
+                "desc"
+              ]
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Page number for pagination",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1
+            }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "description": "Number of items per page",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 10
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PrisonerSearchCriteria"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/PersonSearchResponse"
+          },
+          "400": {
+            "$ref": "#/components/responses/400ErrorResponse"
+          }
+        }
+      }
+    },
+    "/assessments/{prisonNumber}/required": {
+      "get": {
+        "summary": "Returns education assessments' eligibility of a prisoner",
+        "description": "Returns eligibility to education assessment of a prisoner\n\n**Role Requirements**: Access to this endpoint requires one of the following roles:\n* `ROLE_EDUCATION_AND_WORK_PLAN__ASSESSMENTS__RO` (Read-Only)\n",
+        "tags": [
+          "Assessments"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/prisonNumberPathParameter"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/AssessmentRequiredResponse"
+          },
+          "400": {
+            "description": "The failure status is set when the request is invalid. An error response will be provided.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "missingReceptionDate": {
+                    "summary": "Reception date is missing",
+                    "value": {
+                      "status": 400,
+                      "userMessage": "Reception date for Prisoner [A1234BC] is missing."
+                    }
+                  },
+                  "missingSentenceStartDate": {
+                    "summary": "Sentence start date is missing",
+                    "value": {
+                      "status": 400,
+                      "userMessage": "Sentence start date for Prisoner [A1234BC] is missing."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/404ErrorResponse"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "schemas": {
+      "PrisonId": {
+        "type": "string",
+        "description": "The Prison identifier.",
+        "example": "BXI",
+        "pattern": "^[A-Z]{3}$"
+      },
+      "ErrorResponse": {
+        "title": "ErrorResponse",
+        "description": "A generic response body object describing errors in a web request, and can be used to communicate several\ndifferent types of error condition such as (but not limited to) `400 BAD REQUEST`, `409 CONFLICT` etc.\n",
+        "properties": {
+          "status": {
+            "description": "The HTTP status code.",
+            "type": "integer",
+            "example": 400
+          },
+          "errorCode": {
+            "description": "An optional application specific error code.",
+            "type": "string"
+          },
+          "userMessage": {
+            "description": "An optional human readable description of the error.",
+            "type": "string",
+            "example": "No Action Plan found for prisoner [A1234BC]"
+          },
+          "developerMessage": {
+            "description": "An optional error message that may have more technical information for developers.",
+            "type": "string"
+          },
+          "moreInfo": {
+            "description": "Optional more detailed information about the error.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "AuditedResource": {
+        "title": "AuditedResource",
+        "type": "object",
+        "properties": {
+          "createdBy": {
+            "type": "string",
+            "description": "The DPS username of the person who created this resource.",
+            "example": "asmith_gen"
+          },
+          "createdByDisplayName": {
+            "type": "string",
+            "description": "The display name of the person who created this resource.",
+            "example": "Alex Smith"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "An ISO-8601 timestamp representing when this resource was created.",
+            "example": "2023-06-19T09:39:44Z"
+          },
+          "createdAtPrison": {
+            "type": "string",
+            "description": "The identifier of the prison that the prisoner was resident at when this resource was created.",
+            "example": "BXI"
+          },
+          "updatedBy": {
+            "type": "string",
+            "description": "The DPS username of the person who last updated this resource.",
+            "example": "asmith_gen"
+          },
+          "updatedByDisplayName": {
+            "type": "string",
+            "description": "The display name of the person who last updated this resource.",
+            "example": "Alex Smith"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "An ISO-8601 timestamp representing when this resource was last updated. This will be the same as the created date if it has not yet been updated.",
+            "example": "2023-06-19T09:39:44Z"
+          },
+          "updatedAtPrison": {
+            "type": "string",
+            "description": "The identifier of the prison that the prisoner was resident at when this resource was updated.",
+            "example": "BXI"
+          }
+        },
+        "required": [
+          "createdBy",
+          "createdByDisplayName",
+          "createdAt",
+          "createdAtPrison",
+          "updatedBy",
+          "updatedByDisplayName",
+          "updatedAt",
+          "updatedAtPrison"
+        ]
+      },
+      "ActionPlanSummaryListResponse": {
+        "title": "ActionPlanSummaryListResponse",
+        "type": "object",
+        "description": "Contains a list of Action Plan summaries.",
+        "properties": {
+          "actionPlanSummaries": {
+            "type": "array",
+            "description": "A List of prisoners' Action Plan summaries. Can be empty but not null.",
+            "items": {
+              "$ref": "#/components/schemas/ActionPlanSummaryResponse"
+            }
+          }
+        },
+        "required": [
+          "actionPlanSummaries"
+        ]
+      },
+      "ActionPlanSummaryResponse": {
+        "title": "ActionPlanSummaryResponse",
+        "type": "object",
+        "description": "A subset of data regarding a prisoner's Action plan.",
+        "properties": {
+          "reference": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The Action Plan's unique reference",
+            "example": "814ade0a-a3b2-46a3-862f-79211ba13f7b"
+          },
+          "prisonNumber": {
+            "type": "string",
+            "description": "The ID of the prisoner",
+            "example": "A1234BC"
+          }
+        },
+        "required": [
+          "reference",
+          "prisonNumber"
+        ]
+      },
+      "ActionPlanResponse": {
+        "title": "ActionPlanResponse",
+        "type": "object",
+        "description": "A Prisoner's Action Plan containing a list of one or more Goals.",
+        "properties": {
+          "reference": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The Action Plan's unique reference",
+            "example": "814ade0a-a3b2-46a3-862f-79211ba13f7b"
+          },
+          "prisonNumber": {
+            "type": "string",
+            "description": "The ID of the prisoner",
+            "example": "A1234BC"
+          },
+          "goals": {
+            "type": "array",
+            "description": "A List of at least one or more Goals.",
+            "items": {
+              "$ref": "#/components/schemas/GoalResponse"
+            }
+          }
+        },
+        "required": [
+          "reference",
+          "prisonNumber",
+          "goals"
+        ]
+      },
+      "GetGoalsResponse": {
+        "title": "GetGoalsResponse",
+        "description": "A Prisoner's goals matching the specific criteria of the request.",
+        "type": "object",
+        "properties": {
+          "goals": {
+            "type": "array",
+            "description": "A List containing zero or more Goals.",
+            "items": {
+              "$ref": "#/components/schemas/GoalResponse"
+            }
+          }
+        },
+        "required": [
+          "goals"
+        ]
+      },
+      "GoalResponse": {
+        "title": "GoalResponse",
+        "type": "object",
+        "description": "An individual Goal that a Prisoner aims to complete as part of their Action Plan. The goal will be active to start with.",
+        "properties": {
+          "goalReference": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The Goal's unique reference",
+            "example": "c88a6c48-97e2-4c04-93b5-98619966447b"
+          },
+          "title": {
+            "type": "string",
+            "description": "A title explaining the aim of the goal.",
+            "example": "Improve communication skills"
+          },
+          "targetCompletionDate": {
+            "type": "string",
+            "format": "date",
+            "description": "An optional ISO-8601 date representing the target completion date of the Goal.",
+            "example": "2023-12-19"
+          },
+          "status": {
+            "$ref": "#/components/schemas/GoalStatus"
+          },
+          "steps": {
+            "type": "array",
+            "minItems": 1,
+            "description": "A List of at least one Step.",
+            "items": {
+              "$ref": "#/components/schemas/StepResponse"
+            }
+          },
+          "notes": {
+            "type": "string",
+            "description": "Some additional notes related to the Goal. This is deprecated - use the`goalNotes` list instead",
+            "example": "Pay close attention to Peter's behaviour.",
+            "deprecated": true
+          },
+          "createdBy": {
+            "type": "string",
+            "description": "The DPS username of the person who created the goal.",
+            "example": "asmith_gen"
+          },
+          "createdByDisplayName": {
+            "type": "string",
+            "description": "The display name of the person who created the goal.",
+            "example": "Alex Smith"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "An ISO-8601 timestamp representing when the Goal was created.",
+            "example": "2023-06-19T09:39:44Z"
+          },
+          "createdAtPrison": {
+            "type": "string",
+            "description": "The identifier of the prison that the prisoner was resident at when the Goal was created.",
+            "example": "BXI"
+          },
+          "updatedBy": {
+            "type": "string",
+            "description": "The DPS username of the person who last updated the goal.",
+            "example": "asmith_gen"
+          },
+          "updatedByDisplayName": {
+            "type": "string",
+            "description": "The display name of the person who last updated the goal.",
+            "example": "Alex Smith"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "An ISO-8601 timestamp representing when the Goal was last updated. This will be the same as the created date if it has not yet been updated.",
+            "example": "2023-06-19T09:39:44Z"
+          },
+          "updatedAtPrison": {
+            "type": "string",
+            "description": "The identifier of the prison that the prisoner was resident at when the Goal was updated.",
+            "example": "BXI"
+          },
+          "archiveReason": {
+            "$ref": "#/components/schemas/ReasonToArchiveGoal"
+          },
+          "archiveReasonOther": {
+            "type": "string",
+            "description": "Describes the reason for archiving if 'OTHER' is selected, it is mandatory in this scenario."
+          },
+          "goalNotes": {
+            "type": "array",
+            "description": "A List of at Notes associated with the Goal. Will be an empty array if the goal has no Notes",
+            "items": {
+              "$ref": "#/components/schemas/NoteResponse"
+            }
+          }
+        },
+        "required": [
+          "goalReference",
+          "title",
+          "targetCompletionDate",
+          "status",
+          "steps",
+          "createdBy",
+          "createdByDisplayName",
+          "createdAt",
+          "createdAtPrison",
+          "updatedBy",
+          "updatedByDisplayName",
+          "updatedAt",
+          "updatedAtPrison",
+          "goalNotes"
+        ]
+      },
+      "StepResponse": {
+        "title": "StepResponse",
+        "type": "object",
+        "description": "A Step within a Goal that must be completed in order for the overall Goal to be completed.",
+        "properties": {
+          "stepReference": {
+            "type": "string",
+            "format": "uuid",
+            "description": "A unique reference for the Step",
+            "example": "d38a6c41-13d1-1d05-13c2-24619966119b"
+          },
+          "title": {
+            "type": "string",
+            "description": "A title describing the step",
+            "example": "Book communication skills course"
+          },
+          "status": {
+            "$ref": "#/components/schemas/StepStatus"
+          },
+          "sequenceNumber": {
+            "type": "integer",
+            "description": "The number (position) of the Step within the overall Goal.",
+            "example": 1
+          }
+        },
+        "required": [
+          "stepReference",
+          "title",
+          "status",
+          "sequenceNumber"
+        ]
+      },
+      "TimelineResponse": {
+        "title": "TimelineResponse",
+        "type": "object",
+        "description": "A Prisoner's Timeline consisting of one or more 'events' of interest in chronological order. For example, it could include events such as when they completed an Induction, or completed a Goal.",
+        "properties": {
+          "reference": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The Timeline's unique reference.",
+            "example": "c88a6c48-97e2-4c04-93b5-98619966447b"
+          },
+          "prisonNumber": {
+            "type": "string",
+            "description": "The ID of the prisoner.",
+            "example": "A1234BC"
+          },
+          "events": {
+            "type": "array",
+            "minItems": 1,
+            "description": "A List of at least one TimelineEventResponse.",
+            "items": {
+              "$ref": "#/components/schemas/TimelineEventResponse"
+            }
+          }
+        },
+        "required": [
+          "reference",
+          "prisonNumber",
+          "events"
+        ]
+      },
+      "TimelineEventResponse": {
+        "title": "TimelineEventResponse",
+        "type": "object",
+        "description": "An 'event' of interest that has occurred during a Prisoner's time in Prison. For example, it could be when they completed an Induction, or created a Goal.",
+        "properties": {
+          "reference": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The Timeline event's unique reference",
+            "example": "c88a6c48-97e2-4c04-93b5-98619966447b"
+          },
+          "sourceReference": {
+            "type": "string",
+            "description": "A reference to the originating entity that was created, or updated during this event, such as a Prisoner's Goal or Induction. Typically this will be a UUID, but does not have to be.",
+            "example": "c88a6c48-97e2-4c04-93b5-98619966447b"
+          },
+          "eventType": {
+            "$ref": "#/components/schemas/TimelineEventType"
+          },
+          "contextualInfo": {
+            "type": "object",
+            "description": "An object containing properties of contextual information that's relevant to the event in question.\nFor example a property called `GOAL_TITLE` with value being the title of a Goal that was completed.\nThe object may contain any number of properties. The API spec does not define the property names, but there\nis a defined set as part of the domain:\n- GOAL_TITLE\n- STEP_TITLE\n- PRISON_TRANSFERRED_FROM\n",
+            "additionalProperties": {
+              "type": "string"
+            },
+            "example": {
+              "GOAL_TITLE": "Learn French"
+            }
+          },
+          "prisonId": {
+            "$ref": "#/components/schemas/PrisonId"
+          },
+          "actionedBy": {
+            "type": "string",
+            "description": "The username of the person who caused this event. Set to 'system' if the event was not actioned by a DPS user.",
+            "example": "asmith_gen"
+          },
+          "actionedByDisplayName": {
+            "type": "string",
+            "description": "The display name of the person who caused this event, if applicable.",
+            "example": "Alex Smith"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "description": "An ISO-8601 timestamp representing when the event occurred.",
+            "example": "2023-06-19T09:39:44Z"
+          },
+          "correlationId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "A correlationId for this and any other TimelineEvents that occurred at the same time (i.e. within same atomic action). For example, this could be an update to a Goal, plus one or more of its child Steps. If required, this allows a client to easily group the events together.",
+            "example": "113d1833-0ce1-45ad-ab44-878c9d589358"
+          }
+        },
+        "required": [
+          "reference",
+          "sourceReference",
+          "eventType",
+          "contextualInfo",
+          "prisonId",
+          "actionedBy",
+          "timestamp",
+          "correlationId"
+        ]
+      },
+      "CiagInductionSummaryListResponse": {
+        "title": "CiagInductionSummaryListResponse",
+        "type": "object",
+        "description": "Contains a list of CIAG Induction summaries. Migrated from hmpps-ciag-careers-induction-api.",
+        "properties": {
+          "ciagProfileList": {
+            "type": "array",
+            "description": "A List of prisoners' CIAG Induction summaries. Can be empty but not null.",
+            "items": {
+              "$ref": "#/components/schemas/CiagInductionSummaryResponse"
+            }
+          }
+        },
+        "required": [
+          "ciagProfileList"
+        ]
+      },
+      "CiagInductionSummaryResponse": {
+        "title": "CiagInductionSummaryResponse",
+        "type": "object",
+        "description": "A subset of data regarding a prisoner's CIAG Induction. Migrated from hmpps-ciag-careers-induction-api.",
+        "properties": {
+          "offenderId": {
+            "type": "string",
+            "pattern": "^[A-Z]\\\\d{4}[A-Z]{2}$",
+            "description": "The ID of the Prisoner. AKA the prison number.",
+            "example": "A1234BC"
+          },
+          "desireToWork": {
+            "type": "boolean",
+            "description": "Whether the Prisoner wishes to work or not."
+          },
+          "hopingToGetWork": {
+            "$ref": "#/components/schemas/HopingToWork"
+          },
+          "createdBy": {
+            "type": "string",
+            "description": "The DPS username of the person who created the Induction.",
+            "example": "asmith_gen"
+          },
+          "createdDateTime": {
+            "type": "string",
+            "format": "date-time",
+            "description": "An ISO-8601 timestamp representing when the Induction was created.",
+            "example": "2023-06-19T09:39:44Z"
+          },
+          "modifiedBy": {
+            "type": "string",
+            "description": "The DPS username of the person who last updated the Induction.",
+            "example": "asmith_gen"
+          },
+          "modifiedDateTime": {
+            "type": "string",
+            "format": "date-time",
+            "description": "An ISO-8601 timestamp representing when the Goal was last updated. This will be the same as the created date if it has not yet been updated.",
+            "example": "2023-06-19T09:39:44Z"
+          }
+        },
+        "required": [
+          "offenderId",
+          "desireToWork",
+          "hopingToGetWork",
+          "createdBy",
+          "createdDateTime",
+          "modifiedBy",
+          "modifiedDateTime"
+        ]
+      },
+      "InductionResponse": {
+        "title": "InductionResponse",
+        "type": "object",
+        "description": "A Prisoner's Induction containing information, such as their education history and future work interests.",
+        "properties": {
+          "reference": {
+            "type": "string",
+            "format": "uuid",
+            "description": "A unique reference for this Induction.",
+            "example": "814ade0a-a3b2-46a3-862f-79211ba13f7b"
+          },
+          "prisonNumber": {
+            "type": "string",
+            "description": "The ID of the prisoner",
+            "example": "A1234BC"
+          },
+          "workOnRelease": {
+            "$ref": "#/components/schemas/WorkOnReleaseResponse"
+          },
+          "previousQualifications": {
+            "$ref": "#/components/schemas/PreviousQualificationsResponse"
+          },
+          "previousTraining": {
+            "$ref": "#/components/schemas/PreviousTrainingResponse"
+          },
+          "previousWorkExperiences": {
+            "$ref": "#/components/schemas/PreviousWorkExperiencesResponse"
+          },
+          "inPrisonInterests": {
+            "$ref": "#/components/schemas/InPrisonInterestsResponse"
+          },
+          "personalSkillsAndInterests": {
+            "$ref": "#/components/schemas/PersonalSkillsAndInterestsResponse"
+          },
+          "futureWorkInterests": {
+            "$ref": "#/components/schemas/FutureWorkInterestsResponse"
+          },
+          "createdBy": {
+            "type": "string",
+            "description": "The DPS username of the person who created the Induction.",
+            "example": "asmith_gen"
+          },
+          "createdByDisplayName": {
+            "type": "string",
+            "description": "The display name of the person who created the Induction.",
+            "example": "Alex Smith"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "An ISO-8601 timestamp representing when the Induction was created.",
+            "example": "2023-06-19T09:39:44Z"
+          },
+          "createdAtPrison": {
+            "type": "string",
+            "description": "The identifier of the prison that the prisoner was resident at when the Induction was created.",
+            "example": "BXI"
+          },
+          "updatedBy": {
+            "type": "string",
+            "description": "The DPS username of the person who last updated the Induction.",
+            "example": "asmith_gen"
+          },
+          "updatedByDisplayName": {
+            "type": "string",
+            "description": "The display name of the person who last updated the Induction.",
+            "example": "Alex Smith"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "An ISO-8601 timestamp representing when the Induction was last updated. This will be the same as the created date if it has not yet been updated.",
+            "example": "2023-06-19T09:39:44Z"
+          },
+          "updatedAtPrison": {
+            "type": "string",
+            "description": "The identifier of the prison that the prisoner was resident at when the Induction was updated.",
+            "example": "BXI"
+          }
+        },
+        "required": [
+          "reference",
+          "prisonNumber",
+          "workOnRelease",
+          "createdBy",
+          "createdByDisplayName",
+          "createdAt",
+          "createdAtPrison",
+          "updatedBy",
+          "updatedByDisplayName",
+          "updatedAt",
+          "updatedAtPrison"
+        ]
+      },
+      "WorkOnReleaseResponse": {
+        "title": "WorkOnReleaseResponse",
+        "type": "object",
+        "description": "A Prisoner's views on obtaining work after release.",
+        "properties": {
+          "reference": {
+            "type": "string",
+            "format": "uuid",
+            "description": "A unique reference for this WorkOnReleaseResponse.",
+            "example": "814ade0a-a3b2-46a3-862f-79211ba13f7b"
+          },
+          "hopingToWork": {
+            "$ref": "#/components/schemas/HopingToWork"
+          },
+          "affectAbilityToWork": {
+            "type": "array",
+            "description": "Factors affecting the Prisoner's ability to work. Can be empty but not null.",
+            "items": {
+              "$ref": "#/components/schemas/AffectAbilityToWork"
+            }
+          },
+          "affectAbilityToWorkOther": {
+            "type": "string",
+            "description": "A specific factor affecting the Prisoner's ability to work. This is mandatory when 'affectAbilityToWork' includes 'OTHER'.",
+            "maxLength": 512
+          },
+          "createdBy": {
+            "type": "string",
+            "description": "The DPS username of the person who created this resource.",
+            "example": "asmith_gen"
+          },
+          "createdByDisplayName": {
+            "type": "string",
+            "description": "The display name of the person who created this resource.",
+            "example": "Alex Smith"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "An ISO-8601 timestamp representing when this resource was created.",
+            "example": "2023-06-19T09:39:44Z"
+          },
+          "createdAtPrison": {
+            "type": "string",
+            "description": "The identifier of the prison that the prisoner was resident at when this resource was created.",
+            "example": "BXI"
+          },
+          "updatedBy": {
+            "type": "string",
+            "description": "The DPS username of the person who last updated this resource.",
+            "example": "asmith_gen"
+          },
+          "updatedByDisplayName": {
+            "type": "string",
+            "description": "The display name of the person who last updated this resource.",
+            "example": "Alex Smith"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "An ISO-8601 timestamp representing when this resource was last updated. This will be the same as the created date if it has not yet been updated.",
+            "example": "2023-06-19T09:39:44Z"
+          },
+          "updatedAtPrison": {
+            "type": "string",
+            "description": "The identifier of the prison that the prisoner was resident at when this resource was updated.",
+            "example": "BXI"
+          }
+        },
+        "required": [
+          "reference",
+          "hopingToWork",
+          "notHopingToWorkReasons",
+          "affectAbilityToWork",
+          "createdBy",
+          "createdByDisplayName",
+          "createdAt",
+          "createdAtPrison",
+          "updatedBy",
+          "updatedByDisplayName",
+          "updatedAt",
+          "updatedAtPrison"
+        ]
+      },
+      "PreviousQualificationsResponse": {
+        "title": "PreviousQualificationsResponse",
+        "type": "object",
+        "description": "Represents a Prisoner's qualifications (if applicable).",
+        "properties": {
+          "reference": {
+            "type": "string",
+            "format": "uuid",
+            "description": "A unique reference for this PreviousQualificationsResponse.",
+            "example": "814ade0a-a3b2-46a3-862f-79211ba13f7b"
+          },
+          "educationLevel": {
+            "$ref": "#/components/schemas/EducationLevel"
+          },
+          "qualifications": {
+            "type": "array",
+            "description": "A list of the Prisoner's previous qualifications. Can be empty but not null.",
+            "items": {
+              "$ref": "#/components/schemas/AchievedQualificationResponse"
+            }
+          },
+          "createdBy": {
+            "type": "string",
+            "description": "The DPS username of the person who created this resource.",
+            "example": "asmith_gen"
+          },
+          "createdByDisplayName": {
+            "type": "string",
+            "description": "The display name of the person who created this resource.",
+            "example": "Alex Smith"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "An ISO-8601 timestamp representing when this resource was created.",
+            "example": "2023-06-19T09:39:44Z"
+          },
+          "createdAtPrison": {
+            "type": "string",
+            "description": "The identifier of the prison that the prisoner was resident at when this resource was created.",
+            "example": "BXI"
+          },
+          "updatedBy": {
+            "type": "string",
+            "description": "The DPS username of the person who last updated this resource.",
+            "example": "asmith_gen"
+          },
+          "updatedByDisplayName": {
+            "type": "string",
+            "description": "The display name of the person who last updated this resource.",
+            "example": "Alex Smith"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "An ISO-8601 timestamp representing when this resource was last updated. This will be the same as the created date if it has not yet been updated.",
+            "example": "2023-06-19T09:39:44Z"
+          },
+          "updatedAtPrison": {
+            "type": "string",
+            "description": "The identifier of the prison that the prisoner was resident at when this resource was updated.",
+            "example": "BXI"
+          }
+        },
+        "required": [
+          "reference",
+          "educationLevel",
+          "qualifications",
+          "createdBy",
+          "createdByDisplayName",
+          "createdAt",
+          "createdAtPrison",
+          "updatedBy",
+          "updatedByDisplayName",
+          "updatedAt",
+          "updatedAtPrison"
+        ]
+      },
+      "PreviousTrainingResponse": {
+        "title": "PreviousTrainingResponse",
+        "type": "object",
+        "description": "Represents a Prisoner's previous training (if applicable).",
+        "properties": {
+          "reference": {
+            "type": "string",
+            "format": "uuid",
+            "description": "A unique reference for this PreviousTrainingResponse.",
+            "example": "814ade0a-a3b2-46a3-862f-79211ba13f7b"
+          },
+          "trainingTypes": {
+            "type": "array",
+            "description": "Any additional training that the Prisoner has completed in the past. Can be empty, but never null.",
+            "items": {
+              "$ref": "#/components/schemas/TrainingType"
+            }
+          },
+          "trainingTypeOther": {
+            "type": "string",
+            "description": "A specific type of training that does not fit the given 'trainingTypes'. Mandatory when 'trainingTypes' includes 'OTHER'.",
+            "maxLength": 512
+          },
+          "createdBy": {
+            "type": "string",
+            "description": "The DPS username of the person who created this resource.",
+            "example": "asmith_gen"
+          },
+          "createdByDisplayName": {
+            "type": "string",
+            "description": "The display name of the person who created this resource.",
+            "example": "Alex Smith"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "An ISO-8601 timestamp representing when this resource was created.",
+            "example": "2023-06-19T09:39:44Z"
+          },
+          "createdAtPrison": {
+            "type": "string",
+            "description": "The identifier of the prison that the prisoner was resident at when this resource was created.",
+            "example": "BXI"
+          },
+          "updatedBy": {
+            "type": "string",
+            "description": "The DPS username of the person who last updated this resource.",
+            "example": "asmith_gen"
+          },
+          "updatedByDisplayName": {
+            "type": "string",
+            "description": "The display name of the person who last updated this resource.",
+            "example": "Alex Smith"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "An ISO-8601 timestamp representing when this resource was last updated. This will be the same as the created date if it has not yet been updated.",
+            "example": "2023-06-19T09:39:44Z"
+          },
+          "updatedAtPrison": {
+            "type": "string",
+            "description": "The identifier of the prison that the prisoner was resident at when this resource was updated.",
+            "example": "BXI"
+          }
+        },
+        "required": [
+          "reference",
+          "trainingTypes",
+          "createdBy",
+          "createdByDisplayName",
+          "createdAt",
+          "createdAtPrison",
+          "updatedBy",
+          "updatedByDisplayName",
+          "updatedAt",
+          "updatedAtPrison"
+        ]
+      },
+      "PreviousWorkExperiencesResponse": {
+        "title": "PreviousWorkExperiencesResponse",
+        "type": "object",
+        "description": "Represents a Prisoner's previous work experience (if applicable).",
+        "properties": {
+          "reference": {
+            "type": "string",
+            "format": "uuid",
+            "description": "A unique reference for this PreviousWorkExperiencesResponse.",
+            "example": "814ade0a-a3b2-46a3-862f-79211ba13f7b"
+          },
+          "hasWorkedBefore": {
+            "$ref": "#/components/schemas/HasWorkedBefore"
+          },
+          "hasWorkedBeforeNotRelevantReason": {
+            "type": "string",
+            "description": "The reason why the whether the prisoner has worked before is not relevant. Only populated when 'hasWorkedBefore' is 'NOT_RELEVANT'.",
+            "example": "Chris has declined to talk about his previous work experience as he is not looking for work on release because he is of retirement age.",
+            "maxLength": 512
+          },
+          "experiences": {
+            "type": "array",
+            "description": "A list of the Prisoner's previous work experiences.",
+            "items": {
+              "$ref": "#/components/schemas/PreviousWorkExperience"
+            }
+          },
+          "createdBy": {
+            "type": "string",
+            "description": "The DPS username of the person who created this resource.",
+            "example": "asmith_gen"
+          },
+          "createdByDisplayName": {
+            "type": "string",
+            "description": "The display name of the person who created this resource.",
+            "example": "Alex Smith"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "An ISO-8601 timestamp representing when this resource was created.",
+            "example": "2023-06-19T09:39:44Z"
+          },
+          "createdAtPrison": {
+            "type": "string",
+            "description": "The identifier of the prison that the prisoner was resident at when this resource was created.",
+            "example": "BXI"
+          },
+          "updatedBy": {
+            "type": "string",
+            "description": "The DPS username of the person who last updated this resource.",
+            "example": "asmith_gen"
+          },
+          "updatedByDisplayName": {
+            "type": "string",
+            "description": "The display name of the person who last updated this resource.",
+            "example": "Alex Smith"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "An ISO-8601 timestamp representing when this resource was last updated. This will be the same as the created date if it has not yet been updated.",
+            "example": "2023-06-19T09:39:44Z"
+          },
+          "updatedAtPrison": {
+            "type": "string",
+            "description": "The identifier of the prison that the prisoner was resident at when this resource was updated.",
+            "example": "BXI"
+          }
+        },
+        "required": [
+          "reference",
+          "hasWorkedBefore",
+          "experiences",
+          "createdBy",
+          "createdByDisplayName",
+          "createdAt",
+          "createdAtPrison",
+          "updatedBy",
+          "updatedByDisplayName",
+          "updatedAt",
+          "updatedAtPrison"
+        ]
+      },
+      "InPrisonInterestsResponse": {
+        "title": "InPrisonInterestsResponse",
+        "type": "object",
+        "description": "Represents a Prisoner's in-prison interests (if applicable).",
+        "properties": {
+          "reference": {
+            "type": "string",
+            "format": "uuid",
+            "description": "A unique reference for this InPrisonInterestsResponse.",
+            "example": "814ade0a-a3b2-46a3-862f-79211ba13f7b"
+          },
+          "inPrisonWorkInterests": {
+            "type": "array",
+            "description": "A list of in-prison work that the Prisoner is interested in.",
+            "items": {
+              "$ref": "#/components/schemas/InPrisonWorkInterest"
+            }
+          },
+          "inPrisonTrainingInterests": {
+            "type": "array",
+            "description": "A list of in-prison training that the Prisoner is interested in.",
+            "items": {
+              "$ref": "#/components/schemas/InPrisonTrainingInterest"
+            }
+          },
+          "createdBy": {
+            "type": "string",
+            "description": "The DPS username of the person who created this resource.",
+            "example": "asmith_gen"
+          },
+          "createdByDisplayName": {
+            "type": "string",
+            "description": "The display name of the person who created this resource.",
+            "example": "Alex Smith"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "An ISO-8601 timestamp representing when this resource was created.",
+            "example": "2023-06-19T09:39:44Z"
+          },
+          "createdAtPrison": {
+            "type": "string",
+            "description": "The identifier of the prison that the prisoner was resident at when this resource was created.",
+            "example": "BXI"
+          },
+          "updatedBy": {
+            "type": "string",
+            "description": "The DPS username of the person who last updated this resource.",
+            "example": "asmith_gen"
+          },
+          "updatedByDisplayName": {
+            "type": "string",
+            "description": "The display name of the person who last updated this resource.",
+            "example": "Alex Smith"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "An ISO-8601 timestamp representing when this resource was last updated. This will be the same as the created date if it has not yet been updated.",
+            "example": "2023-06-19T09:39:44Z"
+          },
+          "updatedAtPrison": {
+            "type": "string",
+            "description": "The identifier of the prison that the prisoner was resident at when this resource was updated.",
+            "example": "BXI"
+          }
+        },
+        "required": [
+          "reference",
+          "inPrisonWorkInterests",
+          "inPrisonTrainingInterests",
+          "createdBy",
+          "createdByDisplayName",
+          "createdAt",
+          "createdAtPrison",
+          "updatedBy",
+          "updatedByDisplayName",
+          "updatedAt",
+          "updatedAtPrison"
+        ]
+      },
+      "PersonalSkillsAndInterestsResponse": {
+        "title": "PersonalSkillsAndInterestsResponse",
+        "type": "object",
+        "description": "Represents a Prisoner's personal skills and interests (if applicable).",
+        "properties": {
+          "reference": {
+            "type": "string",
+            "format": "uuid",
+            "description": "A unique reference for this PersonalSkillsAndInterestsResponse.",
+            "example": "814ade0a-a3b2-46a3-862f-79211ba13f7b"
+          },
+          "skills": {
+            "type": "array",
+            "description": "One or more skills that the Prisoner feels they have.",
+            "items": {
+              "$ref": "#/components/schemas/PersonalSkill"
+            }
+          },
+          "interests": {
+            "type": "array",
+            "description": "One or more interests that the Prisoner feels they have.",
+            "items": {
+              "$ref": "#/components/schemas/PersonalInterest"
+            }
+          },
+          "createdBy": {
+            "type": "string",
+            "description": "The DPS username of the person who created this resource.",
+            "example": "asmith_gen"
+          },
+          "createdByDisplayName": {
+            "type": "string",
+            "description": "The display name of the person who created this resource.",
+            "example": "Alex Smith"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "An ISO-8601 timestamp representing when this resource was created.",
+            "example": "2023-06-19T09:39:44Z"
+          },
+          "createdAtPrison": {
+            "type": "string",
+            "description": "The identifier of the prison that the prisoner was resident at when this resource was created.",
+            "example": "BXI"
+          },
+          "updatedBy": {
+            "type": "string",
+            "description": "The DPS username of the person who last updated this resource.",
+            "example": "asmith_gen"
+          },
+          "updatedByDisplayName": {
+            "type": "string",
+            "description": "The display name of the person who last updated this resource.",
+            "example": "Alex Smith"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "An ISO-8601 timestamp representing when this resource was last updated. This will be the same as the created date if it has not yet been updated.",
+            "example": "2023-06-19T09:39:44Z"
+          },
+          "updatedAtPrison": {
+            "type": "string",
+            "description": "The identifier of the prison that the prisoner was resident at when this resource was updated.",
+            "example": "BXI"
+          }
+        },
+        "required": [
+          "reference",
+          "skills",
+          "interests",
+          "createdBy",
+          "createdByDisplayName",
+          "createdAt",
+          "createdAtPrison",
+          "updatedBy",
+          "updatedByDisplayName",
+          "updatedAt",
+          "updatedAtPrison"
+        ]
+      },
+      "FutureWorkInterestsResponse": {
+        "title": "FutureWorkInterestsResponse",
+        "type": "object",
+        "description": "Represents a Prisoner's future work interests (if applicable).",
+        "properties": {
+          "reference": {
+            "type": "string",
+            "format": "uuid",
+            "description": "A unique reference for this FutureWorkInterestsResponse.",
+            "example": "814ade0a-a3b2-46a3-862f-79211ba13f7b"
+          },
+          "interests": {
+            "type": "array",
+            "description": "One or more future work interests that the Prisoner has.",
+            "items": {
+              "$ref": "#/components/schemas/FutureWorkInterest"
+            }
+          },
+          "createdBy": {
+            "type": "string",
+            "description": "The DPS username of the person who created this resource.",
+            "example": "asmith_gen"
+          },
+          "createdByDisplayName": {
+            "type": "string",
+            "description": "The display name of the person who created this resource.",
+            "example": "Alex Smith"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "An ISO-8601 timestamp representing when this resource was created.",
+            "example": "2023-06-19T09:39:44Z"
+          },
+          "createdAtPrison": {
+            "type": "string",
+            "description": "The identifier of the prison that the prisoner was resident at when this resource was created.",
+            "example": "BXI"
+          },
+          "updatedBy": {
+            "type": "string",
+            "description": "The DPS username of the person who last updated this resource.",
+            "example": "asmith_gen"
+          },
+          "updatedByDisplayName": {
+            "type": "string",
+            "description": "The display name of the person who last updated this resource.",
+            "example": "Alex Smith"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "An ISO-8601 timestamp representing when this resource was last updated. This will be the same as the created date if it has not yet been updated.",
+            "example": "2023-06-19T09:39:44Z"
+          },
+          "updatedAtPrison": {
+            "type": "string",
+            "description": "The identifier of the prison that the prisoner was resident at when this resource was updated.",
+            "example": "BXI"
+          }
+        },
+        "required": [
+          "reference",
+          "interests",
+          "createdBy",
+          "createdByDisplayName",
+          "createdAt",
+          "createdAtPrison",
+          "updatedBy",
+          "updatedByDisplayName",
+          "updatedAt",
+          "updatedAtPrison"
+        ]
+      },
+      "InductionScheduleResponse": {
+        "title": "InductionScheduleResponse",
+        "type": "object",
+        "description": "Represents an induction schedule response .",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/AuditedResource"
+          }
+        ],
+        "properties": {
+          "reference": {
+            "type": "string",
+            "format": "uuid",
+            "description": "A unique reference for this InductionScheduleResponse.",
+            "example": "814ade0a-a3b2-46a3-862f-79211ba13f7b"
+          },
+          "prisonNumber": {
+            "type": "string",
+            "description": "The ID of the prisoner",
+            "example": "A1234BC"
+          },
+          "deadlineDate": {
+            "type": "string",
+            "format": "date",
+            "description": "The deadline for the induction to be completed",
+            "example": "2023-06-19"
+          },
+          "scheduleCalculationRule": {
+            "$ref": "#/components/schemas/InductionScheduleCalculationRule"
+          },
+          "scheduleStatus": {
+            "$ref": "#/components/schemas/InductionScheduleStatus"
+          },
+          "inductionPerformedBy": {
+            "type": "string",
+            "description": "The name of the person who completed the review.",
+            "example": "John smith"
+          },
+          "inductionPerformedByRole": {
+            "type": "string",
+            "description": "The role of the person who completed the review.",
+            "example": "Peer Mentor"
+          },
+          "inductionPerformedAt": {
+            "type": "string",
+            "format": "date",
+            "description": "the date when this resource was updated.",
+            "example": "2023-06-19"
+          },
+          "inductionPerformedAtPrison": {
+            "type": "string",
+            "description": "The prison that the induction was performed at.",
+            "example": "BCI"
+          },
+          "exemptionReason": {
+            "type": "string",
+            "description": "An optional reason as to why the induction Schedule is exempted.\n\nOnly relevant and processed when the `status` field is one of the `EXEMPTION_` statuses.  \nThis field is not mandatory, even when the `status` field is one of the `EXEMPTION_` statuses.\n"
+          },
+          "version": {
+            "type": "integer",
+            "description": "the version number of this schedule (the highest number is the most recent version of this induction schedule)"
+          }
+        },
+        "required": [
+          "reference",
+          "prisonNumber",
+          "deadlineDate",
+          "scheduleCalculationRule",
+          "scheduleStatus"
+        ]
+      },
+      "EducationResponse": {
+        "title": "EducationResponse",
+        "type": "object",
+        "description": "Represents an education record.",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/AuditedResource"
+          }
+        ],
+        "properties": {
+          "reference": {
+            "type": "string",
+            "format": "uuid",
+            "description": "A unique reference for this EducationResponse.",
+            "example": "814ade0a-a3b2-46a3-862f-79211ba13f7b"
+          },
+          "educationLevel": {
+            "$ref": "#/components/schemas/EducationLevel"
+          },
+          "qualifications": {
+            "type": "array",
+            "description": "A list of achieved qualifications. Can be empty but not null.",
+            "items": {
+              "$ref": "#/components/schemas/AchievedQualificationResponse"
+            }
+          }
+        },
+        "required": [
+          "reference",
+          "educationLevel",
+          "qualifications"
+        ]
+      },
+      "GetActionPlanSummariesRequest": {
+        "title": "GetActionPlanSummariesRequest",
+        "type": "object",
+        "description": "A request to retrieve a list of prisoner Action Plan summaries.",
+        "properties": {
+          "prisonNumbers": {
+            "type": "array",
+            "description": "A List of prison numbers whose Action Plans should be retrieved.",
+            "items": {
+              "type": "string",
+              "example": "A1234BC",
+              "pattern": "^[A-Z]\\d{4}[A-Z]{2}$"
+            }
+          }
+        },
+        "required": [
+          "prisonNumbers"
+        ]
+      },
+      "PrisonerSearchCriteria": {
+        "title": "Prisoner search Criteria",
+        "type": "object",
+        "properties": {
+          "prisonerNameOrNumber": {
+            "type": "string",
+            "description": "Search by prisoner name or prison number"
+          },
+          "hasActionPlan": {
+            "type": "boolean",
+            "description": "Filter by whether the prisoner has an action plan"
+          },
+          "releaseDateBefore": {
+            "type": "string",
+            "format": "date",
+            "description": "Filter by release date before the given date"
+          },
+          "releaseDateAfter": {
+            "type": "string",
+            "format": "date",
+            "description": "Filter by release date after the given date"
+          },
+          "actionPlanLastUpdatedBefore": {
+            "type": "string",
+            "format": "date",
+            "description": "Filter by action plans last updated before the given date"
+          },
+          "actionPlanLastUpdatedAfter": {
+            "type": "string",
+            "format": "date",
+            "description": "Filter by action plans last updated after the given date"
+          },
+          "nextActionDateBefore": {
+            "type": "string",
+            "format": "date",
+            "description": "Filter by next action date before the given date"
+          },
+          "nextActionDateAfter": {
+            "type": "string",
+            "format": "date",
+            "description": "Filter by next action date after the given date"
+          },
+          "sortBy": {
+            "type": "string",
+            "enum": [
+              "prisonerName",
+              "cellLocation",
+              "releaseDate",
+              "nextActionDate",
+              "planLastUpdated",
+              "hasPlan"
+            ],
+            "default": "prisonerName",
+            "description": "Column to sort by"
+          },
+          "sortDirection": {
+            "type": "string",
+            "enum": [
+              "asc",
+              "desc"
+            ],
+            "default": "asc",
+            "description": "Sort direction (ascending or descending)"
+          },
+          "page": {
+            "type": "integer",
+            "minimum": 1,
+            "default": 1,
+            "description": "Page number for pagination"
+          },
+          "pageSize": {
+            "type": "integer",
+            "minimum": 1,
+            "default": 10,
+            "description": "Number of items per page"
+          }
+        }
+      },
+      "CreateActionPlanRequest": {
+        "title": "CreateActionPlanRequest",
+        "type": "object",
+        "description": "A request to create an Action Plan with at least one or more Goals that a Prisoner aims to complete.",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/CreateGoalsRequest"
+          }
+        ]
+      },
+      "CreateGoalRequest": {
+        "title": "CreateGoalRequest",
+        "type": "object",
+        "description": "A request to create an individual Goal that a Prisoner aims to complete as part of their Action Plan. The goal's status will be set to 'ACTIVE'.",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "A title explaining the aim of the goal.",
+            "example": "Improve communication skills"
+          },
+          "targetCompletionDate": {
+            "type": "string",
+            "format": "date",
+            "x-constraints": "NotInPast",
+            "description": "An optional ISO-8601 date representing the target completion date of the Goal.",
+            "example": "2023-12-19"
+          },
+          "steps": {
+            "type": "array",
+            "minItems": 1,
+            "description": "A List of at least one Step.",
+            "items": {
+              "$ref": "#/components/schemas/CreateStepRequest"
+            }
+          },
+          "notes": {
+            "type": "string",
+            "description": "Some additional notes related to the Goal.",
+            "example": "Pay close attention to Peter's behaviour."
+          },
+          "prisonId": {
+            "$ref": "#/components/schemas/PrisonId"
+          }
+        },
+        "required": [
+          "title",
+          "targetCompletionDate",
+          "steps",
+          "prisonId"
+        ]
+      },
+      "CreateGoalsRequest": {
+        "title": "CreateGoalsRequest",
+        "type": "object",
+        "description": "A request to create one or more Goals that a Prisoner aims to complete as part of their Action Plan. The status of each goal will be set to 'ACTIVE'.",
+        "properties": {
+          "goals": {
+            "type": "array",
+            "minItems": 1,
+            "description": "A List of at least one Goal.",
+            "items": {
+              "$ref": "#/components/schemas/CreateGoalRequest"
+            }
+          }
+        },
+        "required": [
+          "goals"
+        ]
+      },
+      "UpdateGoalRequest": {
+        "title": "UpdateGoalRequest",
+        "type": "object",
+        "description": "A request to update an individual Goal that a Prisoner aims to complete as part of their Action Plan.",
+        "properties": {
+          "goalReference": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The Goal's unique reference. This is used as an identifier to update the required Goal. It is not possible or supported to update the `goalReference`.",
+            "example": "c88a6c48-97e2-4c04-93b5-98619966447b"
+          },
+          "title": {
+            "type": "string",
+            "description": "A title explaining the aim of the goal.",
+            "example": "Improve communication skills"
+          },
+          "targetCompletionDate": {
+            "type": "string",
+            "format": "date",
+            "description": "An optional ISO-8601 date representing the target completion date of the Goal.",
+            "example": "2023-12-19"
+          },
+          "steps": {
+            "type": "array",
+            "minItems": 1,
+            "description": "A List of at least one Step.",
+            "items": {
+              "$ref": "#/components/schemas/UpdateStepRequest"
+            }
+          },
+          "notes": {
+            "type": "string",
+            "description": "Some additional notes related to the Goal.",
+            "example": "Pay close attention to Peter's behaviour."
+          },
+          "prisonId": {
+            "$ref": "#/components/schemas/PrisonId"
+          }
+        },
+        "required": [
+          "goalReference",
+          "title",
+          "targetCompletionDate",
+          "status",
+          "steps",
+          "prisonId"
+        ]
+      },
+      "CreateStepRequest": {
+        "title": "CreateStepRequest",
+        "type": "object",
+        "description": "A request to create a Step within a Goal. Note that new Steps are created with an implicit status of NOT_STARTED.",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "A title describing the step",
+            "example": "Book first aid course"
+          },
+          "sequenceNumber": {
+            "type": "integer",
+            "description": "The number (position) of the Step within the overall Goal.",
+            "example": 1
+          }
+        },
+        "required": [
+          "title",
+          "sequenceNumber"
+        ]
+      },
+      "UpdateStepRequest": {
+        "title": "UpdateStepRequest",
+        "type": "object",
+        "description": "A request to update a Step within a Goal.",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/CreateStepRequest"
+          }
+        ],
+        "properties": {
+          "stepReference": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Optional reference number for the Step.\nThe Step's unique reference. This is used as an identifier to update the required Step. It is not possible or supported to update the `stepReference` for an existing step.\nIf the Step reference is not supplied this will be treated as a new Step and will be added to the Goal.\n",
+            "example": "d38a6c41-13d1-1d05-13c2-24619966119b"
+          },
+          "status": {
+            "$ref": "#/components/schemas/StepStatus"
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "ArchiveGoalRequest": {
+        "title": "ArchiveGoalRequest",
+        "type": "object",
+        "description": "A request to archive an individual Goal.",
+        "properties": {
+          "goalReference": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The Goal's unique reference. This is used as an identifier to archive the required Goal.",
+            "example": "c88a6c48-97e2-4c04-93b5-98619966447b"
+          },
+          "reason": {
+            "$ref": "#/components/schemas/ReasonToArchiveGoal"
+          },
+          "reasonOther": {
+            "type": "string",
+            "description": "Describes the reason for archiving if 'OTHER' is selected, it is mandatory in this scenario."
+          },
+          "note": {
+            "type": "string",
+            "description": "An optional note to accompany the archive"
+          },
+          "prisonId": {
+            "$ref": "#/components/schemas/PrisonId"
+          }
+        },
+        "required": [
+          "goalReference",
+          "reason",
+          "prisonId"
+        ]
+      },
+      "CompleteGoalRequest": {
+        "title": "CompleteGoalRequest",
+        "type": "object",
+        "description": "A request to complete an individual Goal.",
+        "properties": {
+          "goalReference": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The Goal's unique reference. This is used as an identifier to complete the required Goal.",
+            "example": "c88a6c48-97e2-4c04-93b5-98619966447b"
+          },
+          "note": {
+            "type": "string",
+            "description": "An optional note to accompany the completion"
+          },
+          "prisonId": {
+            "$ref": "#/components/schemas/PrisonId"
+          }
+        },
+        "required": [
+          "goalReference",
+          "prisonId"
+        ]
+      },
+      "NoteResponse": {
+        "title": "NoteResponse",
+        "type": "object",
+        "description": "An object representing a note.",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/AuditedResource"
+          }
+        ],
+        "properties": {
+          "reference": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The Notes unique reference. This is used as an identifier to archive the required Note.",
+            "example": "c88a6c48-97e2-4c04-93b5-98619966447b"
+          },
+          "content": {
+            "type": "string",
+            "example": "Peter would like to work in the library to help with his English levels."
+          },
+          "type": {
+            "$ref": "#/components/schemas/NoteType"
+          }
+        },
+        "required": [
+          "reference",
+          "content",
+          "type"
+        ]
+      },
+      "SessionStatusType": {
+        "title": "Session type",
+        "description": "Enum of the different session status types.",
+        "type": "string",
+        "enum": [
+          "ON_HOLD",
+          "DUE",
+          "OVERDUE"
+        ]
+      },
+      "NoteType": {
+        "title": "NoteType",
+        "description": "Enum describing the various note types.",
+        "type": "string",
+        "example": "GOAL",
+        "enum": [
+          "GOAL",
+          "GOAL_ARCHIVAL",
+          "GOAL_COMPLETION",
+          "REVIEW",
+          "INDUCTION"
+        ]
+      },
+      "UnarchiveGoalRequest": {
+        "title": "UnarchiveGoalRequest",
+        "type": "object",
+        "description": "A request to unarchive an individual Goal.",
+        "properties": {
+          "goalReference": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The Goal's unique reference. This is used as an identifier to unarchive the required Goal.",
+            "example": "c88a6c48-97e2-4c04-93b5-98619966447b"
+          },
+          "prisonId": {
+            "$ref": "#/components/schemas/PrisonId"
+          }
+        },
+        "required": [
+          "goalReference",
+          "prisonId"
+        ]
+      },
+      "GoalStatus": {
+        "title": "GoalStatus",
+        "description": "Enum describing the various statuses of a Goal's lifecycle.",
+        "type": "string",
+        "enum": [
+          "ACTIVE",
+          "COMPLETED",
+          "ARCHIVED"
+        ]
+      },
+      "StepStatus": {
+        "title": "StepStatus",
+        "description": "Enum describing the various statuses of a Step's lifecycle.",
+        "type": "string",
+        "enum": [
+          "NOT_STARTED",
+          "ACTIVE",
+          "COMPLETE"
+        ]
+      },
+      "TimelineEventType": {
+        "title": "TimelineEventType",
+        "description": "The type of a Timeline Event.",
+        "type": "string",
+        "enum": [
+          "INDUCTION_CREATED",
+          "INDUCTION_UPDATED",
+          "INDUCTION_SCHEDULE_CREATED",
+          "INDUCTION_SCHEDULE_UPDATED",
+          "INDUCTION_SCHEDULE_STATUS_UPDATED",
+          "ACTION_PLAN_CREATED",
+          "GOAL_CREATED",
+          "GOAL_UPDATED",
+          "GOAL_COMPLETED",
+          "GOAL_ARCHIVED",
+          "GOAL_UNARCHIVED",
+          "STEP_UPDATED",
+          "STEP_NOT_STARTED",
+          "STEP_STARTED",
+          "STEP_COMPLETED",
+          "ACTION_PLAN_REVIEW_COMPLETED",
+          "ACTION_PLAN_REVIEW_SCHEDULE_CREATED",
+          "ACTION_PLAN_REVIEW_SCHEDULE_STATUS_UPDATED",
+          "PRISON_ADMISSION",
+          "PRISON_RELEASE",
+          "PRISON_TRANSFER"
+        ]
+      },
+      "ReasonToArchiveGoal": {
+        "title": "ReasonToArchiveGoal",
+        "description": "Enum describing the various reasons a goal might be archived",
+        "type": "string",
+        "enum": [
+          "PRISONER_NO_LONGER_WANTS_TO_WORK_TOWARDS_GOAL",
+          "PRISONER_NO_LONGER_WANTS_TO_WORK_WITH_CIAG",
+          "SUITABLE_ACTIVITIES_NOT_AVAILABLE_IN_THIS_PRISON",
+          "OTHER"
+        ]
+      },
+      "PreviousWorkExperience": {
+        "description": "The details of an individual work experience.",
+        "type": "object",
+        "properties": {
+          "experienceType": {
+            "$ref": "#/components/schemas/WorkType"
+          },
+          "experienceTypeOther": {
+            "type": "string",
+            "description": "A type of work experience, which is not listed in 'experienceType' Enum. Mandatory when 'experienceType' is 'OTHER'.",
+            "maxLength": 256
+          },
+          "role": {
+            "type": "string",
+            "description": "The role the Prisoner had.",
+            "maxLength": 256
+          },
+          "details": {
+            "type": "string",
+            "description": "Any additional details of the work experience.",
+            "maxLength": 512
+          }
+        },
+        "required": [
+          "experienceType"
+        ]
+      },
+      "InPrisonWorkInterest": {
+        "title": "InPrisonWorkInterest",
+        "description": "Detail about a prisoner's in-prison work interest.",
+        "type": "object",
+        "properties": {
+          "workType": {
+            "$ref": "#/components/schemas/InPrisonWorkType"
+          },
+          "workTypeOther": {
+            "type": "string",
+            "description": "A specific type of in-prison work that does not fit the given 'workType' values. Mandatory when 'workType' is 'OTHER'.",
+            "maxLength": 255
+          }
+        },
+        "required": [
+          "workType"
+        ]
+      },
+      "InPrisonTrainingInterest": {
+        "title": "InPrisonTrainingInterest",
+        "description": "Detail about a prisoner's in-prison training interest.",
+        "type": "object",
+        "properties": {
+          "trainingType": {
+            "$ref": "#/components/schemas/InPrisonTrainingType"
+          },
+          "trainingTypeOther": {
+            "type": "string",
+            "description": "A specific type of in-prison training that does not fit the given 'trainingType' values. Mandatory when 'trainingType' is 'OTHER'.",
+            "maxLength": 255
+          }
+        },
+        "required": [
+          "trainingType"
+        ]
+      },
+      "PersonalSkill": {
+        "title": "PersonalSkill",
+        "description": "A Prisoner's personal skill.",
+        "type": "object",
+        "properties": {
+          "skillType": {
+            "$ref": "#/components/schemas/PersonalSkillType"
+          },
+          "skillTypeOther": {
+            "type": "string",
+            "description": "A specific type of personal skill that does not fit the given 'skillType' values. Mandatory when 'skillType' is 'OTHER'.",
+            "maxLength": 255
+          }
+        },
+        "required": [
+          "skillType"
+        ]
+      },
+      "PersonalInterest": {
+        "title": "PersonalInterest",
+        "description": "A Prisoner's personal interest.",
+        "type": "object",
+        "properties": {
+          "interestType": {
+            "$ref": "#/components/schemas/PersonalInterestType"
+          },
+          "interestTypeOther": {
+            "type": "string",
+            "description": "A specific type of personal interest that does not fit the given 'interestType' values. Mandatory when 'interestType' is 'OTHER'.",
+            "maxLength": 255
+          }
+        },
+        "required": [
+          "interestType"
+        ]
+      },
+      "FutureWorkInterest": {
+        "title": "FutureWorkInterest",
+        "description": "A Prisoner's future work interest.",
+        "type": "object",
+        "properties": {
+          "workType": {
+            "$ref": "#/components/schemas/WorkType"
+          },
+          "workTypeOther": {
+            "type": "string",
+            "description": "A specific type of work interest that does not fit the given 'workType' values. Mandatory when 'workType' is 'OTHER'.",
+            "maxLength": 255
+          },
+          "role": {
+            "type": "string",
+            "description": "The role within a Prisoner's area of work interest.",
+            "maxLength": 512
+          }
+        },
+        "required": [
+          "workType"
+        ]
+      },
+      "HopingToWork": {
+        "title": "HopingToWork",
+        "type": "string",
+        "description": "Whether the Prisoner hopes to get work.",
+        "enum": [
+          "YES",
+          "NO",
+          "NOT_SURE"
+        ]
+      },
+      "AffectAbilityToWork": {
+        "title": "AffectAbilityToWork",
+        "description": "Factors affecting a prisoner's ability to work.",
+        "type": "string",
+        "enum": [
+          "LIMITED_BY_OFFENCE",
+          "CARING_RESPONSIBILITIES",
+          "NEEDS_WORK_ADJUSTMENTS_DUE_TO_HEALTH",
+          "UNABLE_TO_WORK_DUE_TO_HEALTH",
+          "LACKS_CONFIDENCE_OR_MOTIVATION",
+          "REFUSED_SUPPORT_WITH_NO_REASON",
+          "RETIRED",
+          "NO_RIGHT_TO_WORK",
+          "NOT_SURE",
+          "OTHER",
+          "NONE"
+        ]
+      },
+      "PersonalSkillType": {
+        "title": "PersonalSkillType",
+        "type": "string",
+        "description": "Represents a Prisoner's personal skill.",
+        "enum": [
+          "COMMUNICATION",
+          "POSITIVE_ATTITUDE",
+          "RESILIENCE",
+          "SELF_MANAGEMENT",
+          "TEAMWORK",
+          "THINKING_AND_PROBLEM_SOLVING",
+          "WILLINGNESS_TO_LEARN",
+          "OTHER",
+          "NONE"
+        ]
+      },
+      "PersonalInterestType": {
+        "title": "PersonalInterestType",
+        "type": "string",
+        "description": "Represents a Prisoner's personal interest.",
+        "enum": [
+          "COMMUNITY",
+          "CRAFTS",
+          "CREATIVE",
+          "DIGITAL",
+          "KNOWLEDGE_BASED",
+          "MUSICAL",
+          "OUTDOOR",
+          "NATURE_AND_ANIMALS",
+          "SOCIAL",
+          "SOLO_ACTIVITIES",
+          "SOLO_SPORTS",
+          "TEAM_SPORTS",
+          "WELLNESS",
+          "OTHER",
+          "NONE"
+        ]
+      },
+      "EducationLevel": {
+        "title": "EducationLevel",
+        "type": "string",
+        "description": "An enumeration of education levels.",
+        "enum": [
+          "PRIMARY_SCHOOL",
+          "SECONDARY_SCHOOL_LEFT_BEFORE_TAKING_EXAMS",
+          "SECONDARY_SCHOOL_TOOK_EXAMS",
+          "FURTHER_EDUCATION_COLLEGE",
+          "UNDERGRADUATE_DEGREE_AT_UNIVERSITY",
+          "POSTGRADUATE_DEGREE_AT_UNIVERSITY",
+          "NO_FORMAL_EDUCATION",
+          "NOT_SURE"
+        ]
+      },
+      "TrainingType": {
+        "title": "TrainingType",
+        "type": "string",
+        "description": "Additional training types that a Prisoner may have done.",
+        "enum": [
+          "CSCS_CARD",
+          "FIRST_AID_CERTIFICATE",
+          "FOOD_HYGIENE_CERTIFICATE",
+          "FULL_UK_DRIVING_LICENCE",
+          "HEALTH_AND_SAFETY",
+          "HGV_LICENCE",
+          "MACHINERY_TICKETS",
+          "MANUAL_HANDLING",
+          "TRADE_COURSE",
+          "OTHER",
+          "NONE"
+        ]
+      },
+      "InPrisonWorkType": {
+        "title": "InPrisonWorkType",
+        "type": "string",
+        "description": "Types of work that can be done whilst in prison.",
+        "enum": [
+          "CLEANING_AND_HYGIENE",
+          "COMPUTERS_OR_DESK_BASED",
+          "GARDENING_AND_OUTDOORS",
+          "KITCHENS_AND_COOKING",
+          "MAINTENANCE",
+          "PRISON_LAUNDRY",
+          "PRISON_LIBRARY",
+          "TEXTILES_AND_SEWING",
+          "WELDING_AND_METALWORK",
+          "WOODWORK_AND_JOINERY",
+          "OTHER"
+        ]
+      },
+      "InPrisonTrainingType": {
+        "title": "InPrisonTrainingType",
+        "type": "string",
+        "description": "The types of training that can be done whilst in prison.",
+        "enum": [
+          "BARBERING_AND_HAIRDRESSING",
+          "CATERING",
+          "COMMUNICATION_SKILLS",
+          "ENGLISH_LANGUAGE_SKILLS",
+          "FORKLIFT_DRIVING",
+          "INTERVIEW_SKILLS",
+          "MACHINERY_TICKETS",
+          "NUMERACY_SKILLS",
+          "RUNNING_A_BUSINESS",
+          "SOCIAL_AND_LIFE_SKILLS",
+          "WELDING_AND_METALWORK",
+          "WOODWORK_AND_JOINERY",
+          "OTHER"
+        ]
+      },
+      "WorkType": {
+        "title": "WorkType",
+        "description": "The various categories of work that a Prisoner may have worked in, or be interested in working in the future.",
+        "type": "string",
+        "enum": [
+          "OUTDOOR",
+          "CONSTRUCTION",
+          "DRIVING",
+          "BEAUTY",
+          "HOSPITALITY",
+          "TECHNICAL",
+          "MANUFACTURING",
+          "OFFICE",
+          "RETAIL",
+          "SPORTS",
+          "WAREHOUSING",
+          "WASTE_MANAGEMENT",
+          "EDUCATION_TRAINING",
+          "CLEANING_AND_MAINTENANCE",
+          "OTHER"
+        ]
+      },
+      "HasWorkedBefore": {
+        "title": "HasWorkedBefore",
+        "description": "Whether the prisoner has worked before or it may not be relevant in some scenarios.",
+        "type": "string",
+        "enum": [
+          "YES",
+          "NO",
+          "NOT_RELEVANT"
+        ]
+      },
+      "CreateAchievedQualificationRequest": {
+        "title": "CreateAchievedQualificationRequest",
+        "type": "object",
+        "description": "A request object to create a qualification that a Prisoner has achieved.",
+        "properties": {
+          "subject": {
+            "type": "string",
+            "description": "The subject of the qualification.",
+            "example": "Maths GCSE",
+            "maxLength": 100
+          },
+          "level": {
+            "$ref": "#/components/schemas/QualificationLevel"
+          },
+          "grade": {
+            "type": "string",
+            "description": "The grade which was achieved (if known/relevant).  \nNote: This is a free format value and there is no type or enum. Therefore values can be \"A\", \"B\", \"C\" etc,\nbut also \"1\", \"2\", \"3\", \"Pass\", \"Distinction\", \"Merit\", \"First class honours\" etc. It is up to the consumer\nto interpret this data as necessary.\n",
+            "example": "Distinction",
+            "maxLength": 50
+          }
+        },
+        "required": [
+          "subject",
+          "level",
+          "grade"
+        ]
+      },
+      "CreateOrUpdateAchievedQualificationRequest": {
+        "title": "CreateOrUpdateAchievedQualificationRequest",
+        "type": "object",
+        "description": "A request object to create or update a qualification that a Prisoner has achieved.  \nIf the object contains a reference field the corresponding qualification will be updated, or created as a new\nqualification if the corresponding qualification cannot be found.  \nIf the object does not contain a reference field a new qualification will be created.\n",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/CreateAchievedQualificationRequest"
+          }
+        ],
+        "properties": {
+          "reference": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The unique reference for this Achieved Qualification if this request object is being used to update the qualification",
+            "example": "814ade0a-a3b2-46a3-862f-79211ba13f7b"
+          }
+        }
+      },
+      "QualificationLevel": {
+        "title": "QualificationLevel",
+        "type": "string",
+        "description": "The level of an educational qualification.  \nThe levels represent the [gov.uk qualification levels](https://www.gov.uk/what-different-qualification-levels-mean/list-of-qualification-levels).\n",
+        "enum": [
+          "ENTRY_LEVEL",
+          "LEVEL_1",
+          "LEVEL_2",
+          "LEVEL_3",
+          "LEVEL_4",
+          "LEVEL_5",
+          "LEVEL_6",
+          "LEVEL_7",
+          "LEVEL_8"
+        ]
+      },
+      "AchievedQualificationResponse": {
+        "title": "AchievedQualificationResponse",
+        "type": "object",
+        "description": "A qualification that a Prisoner has achieved, including the audit fields of who created/updated it and when.",
+        "properties": {
+          "reference": {
+            "type": "string",
+            "format": "uuid",
+            "description": "A unique reference for this Achieved Qualification.",
+            "example": "814ade0a-a3b2-46a3-862f-79211ba13f7b"
+          },
+          "subject": {
+            "type": "string",
+            "description": "The subject of the qualification.",
+            "example": "Maths GCSE",
+            "maxLength": 100
+          },
+          "level": {
+            "$ref": "#/components/schemas/QualificationLevel"
+          },
+          "grade": {
+            "type": "string",
+            "description": "The grade which was achieved (if known/relevant).  \nNote: This is a free format value and there is no type or enum. Therefore values can be \"A\", \"B\", \"C\" etc,\nbut also \"1\", \"2\", \"3\", \"Pass\", \"Distinction\", \"Merit\", \"First class honours\" etc. It is up to the consumer\nto interpret this data as necessary.\n",
+            "example": "Distinction",
+            "maxLength": 50
+          },
+          "createdBy": {
+            "type": "string",
+            "description": "The DPS username of the person who created this resource.",
+            "example": "asmith_gen"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "An ISO-8601 timestamp representing when this resource was created.",
+            "example": "2023-06-19T09:39:44Z"
+          },
+          "createdAtPrison": {
+            "type": "string",
+            "description": "The identifier of the prison that the prisoner was resident at when this resource was created.",
+            "example": "BXI"
+          },
+          "updatedBy": {
+            "type": "string",
+            "description": "The DPS username of the person who last updated this resource.",
+            "example": "asmith_gen"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "An ISO-8601 timestamp representing when this resource was last updated. This will be the same as the created date if it has not yet been updated.",
+            "example": "2023-06-19T09:39:44Z"
+          },
+          "updatedAtPrison": {
+            "type": "string",
+            "description": "The identifier of the prison that the prisoner was resident at when this resource was updated.",
+            "example": "BXI"
+          }
+        },
+        "required": [
+          "reference",
+          "subject",
+          "level",
+          "grade",
+          "createdBy",
+          "createdAt",
+          "createdAtPrison",
+          "updatedBy",
+          "updatedAt",
+          "updatedAtPrison"
+        ]
+      },
+      "GetCiagInductionSummariesRequest": {
+        "title": "GetCiagInductionSummariesRequest",
+        "type": "object",
+        "description": "A request to retrieve a list of prisoner CIAG Induction summaries. Migrated from hmpps-ciag-careers-induction-api.",
+        "properties": {
+          "offenderIds": {
+            "type": "array",
+            "description": "A List of prison numbers whose CIAG Inductions should be retrieved.",
+            "items": {
+              "type": "string",
+              "pattern": "^[A-Z]\\d{4}[A-Z]{2}$",
+              "example": "A1234BC"
+            }
+          }
+        },
+        "required": [
+          "offenderIds"
+        ]
+      },
+      "PrisonerIdsRequest": {
+        "title": "PrisonerIdsRequest",
+        "type": "object",
+        "description": "A request object to provide a list of prison numbers.",
+        "properties": {
+          "prisonNumbers": {
+            "type": "array",
+            "description": "A List of prison numbers.",
+            "items": {
+              "type": "string",
+              "pattern": "^[A-Z]\\d{4}[A-Z]{2}$",
+              "example": "A1234BC"
+            }
+          }
+        },
+        "required": [
+          "prisonNumbers"
+        ]
+      },
+      "CreateInductionRequest": {
+        "title": "CreateInductionRequest",
+        "description": "A request to create an Induction.",
+        "type": "object",
+        "properties": {
+          "prisonId": {
+            "$ref": "#/components/schemas/PrisonId"
+          },
+          "workOnRelease": {
+            "$ref": "#/components/schemas/CreateWorkOnReleaseRequest"
+          },
+          "previousQualifications": {
+            "$ref": "#/components/schemas/CreatePreviousQualificationsRequest"
+          },
+          "previousTraining": {
+            "$ref": "#/components/schemas/CreatePreviousTrainingRequest"
+          },
+          "previousWorkExperiences": {
+            "$ref": "#/components/schemas/CreatePreviousWorkExperiencesRequest"
+          },
+          "inPrisonInterests": {
+            "$ref": "#/components/schemas/CreateInPrisonInterestsRequest"
+          },
+          "personalSkillsAndInterests": {
+            "$ref": "#/components/schemas/CreatePersonalSkillsAndInterestsRequest"
+          },
+          "futureWorkInterests": {
+            "$ref": "#/components/schemas/CreateFutureWorkInterestsRequest"
+          },
+          "note": {
+            "type": "string",
+            "description": "The notes taken when conducting the prisoner's Induction.",
+            "example": "Peter is excited to be part of the programme."
+          },
+          "conductedAt": {
+            "type": "string",
+            "format": "date",
+            "description": "An ISO-8601 date representing the date that this Induction was conducted on.",
+            "example": "2023-12-19"
+          },
+          "conductedBy": {
+            "type": "string",
+            "description": "The name of the person who actually conducted the Induction session with the Prisoner. \n\nOnly populated if the person who conducted the Induction was not the person who keyed it into the system.\n",
+            "example": "Albert Mozzarella"
+          },
+          "conductedByRole": {
+            "type": "string",
+            "description": "The role of the person who actually conducted the Induction session with the Prisoner.\n\nOnly populated if the person who conducted the Induction was not the person who keyed it into the system.\n",
+            "example": "Peer mentor"
+          }
+        },
+        "required": [
+          "prisonId",
+          "workOnRelease"
+        ]
+      },
+      "CreateWorkOnReleaseRequest": {
+        "title": "CreateWorkOnReleaseRequest",
+        "type": "object",
+        "description": "A request to create a Prisoner's views on obtaining work after release.",
+        "properties": {
+          "hopingToWork": {
+            "$ref": "#/components/schemas/HopingToWork"
+          },
+          "affectAbilityToWork": {
+            "type": "array",
+            "description": "Factors affecting the Prisoner's ability to work.",
+            "items": {
+              "$ref": "#/components/schemas/AffectAbilityToWork"
+            }
+          },
+          "affectAbilityToWorkOther": {
+            "type": "string",
+            "description": "A specific factor affecting the Prisoner's ability to work. This is mandatory when 'affectAbilityToWork' includes 'OTHER'.",
+            "maxLength": 512
+          }
+        },
+        "required": [
+          "hopingToWork"
+        ]
+      },
+      "CreatePreviousQualificationsRequest": {
+        "title": "CreatePreviousQualificationsRequest",
+        "type": "object",
+        "description": "A request to create a Prisoner's qualifications.",
+        "properties": {
+          "educationLevel": {
+            "$ref": "#/components/schemas/EducationLevel"
+          },
+          "qualifications": {
+            "type": "array",
+            "description": "A list of the Prisoner's previous qualifications.  \nThese can either be new qualfications without a reference field, or for any qualifications with a reference field they\nwill be treated as updates.\n",
+            "items": {
+              "$ref": "#/components/schemas/CreateOrUpdateAchievedQualificationRequest"
+            }
+          }
+        }
+      },
+      "CreatePreviousTrainingRequest": {
+        "title": "CreatePreviousTrainingRequest",
+        "type": "object",
+        "description": "A request to create a Prisoner's previous training.",
+        "properties": {
+          "trainingTypes": {
+            "type": "array",
+            "description": "Any additional training that the Prisoner has completed in the past. Must not be empty ('NONE' is an option).",
+            "items": {
+              "$ref": "#/components/schemas/TrainingType"
+            }
+          },
+          "trainingTypeOther": {
+            "type": "string",
+            "description": "A specific type of training that does not fit the given 'trainingTypes'. Mandatory when 'trainingTypes' includes 'OTHER'.",
+            "maxLength": 512
+          }
+        },
+        "required": [
+          "trainingTypes"
+        ]
+      },
+      "CreatePreviousWorkExperiencesRequest": {
+        "title": "CreatePreviousWorkExperiencesRequest",
+        "type": "object",
+        "description": "A request to create a Prisoner's previous work experience.",
+        "properties": {
+          "hasWorkedBefore": {
+            "$ref": "#/components/schemas/HasWorkedBefore"
+          },
+          "hasWorkedBeforeNotRelevantReason": {
+            "type": "string",
+            "description": "The reason why the whether the prisoner has worked before is not relevant. Mandatory when 'hasWorkedBefore' is 'NOT_RELEVANT'",
+            "example": "Chris has declined to talk about his previous work experience as he is not looking for work on release because he is of retirement age.",
+            "maxLength": 512
+          },
+          "experiences": {
+            "type": "array",
+            "description": "A list of the Prisoner's previous work experiences.",
+            "items": {
+              "$ref": "#/components/schemas/PreviousWorkExperience"
+            }
+          }
+        },
+        "required": [
+          "hasWorkedBefore"
+        ]
+      },
+      "CreateInPrisonInterestsRequest": {
+        "title": "CreateInPrisonInterestsRequest",
+        "type": "object",
+        "description": "A request to create a Prisoner's in-prison interests. If this object is provided in the request, then at least one type of in-prison work/interest is required ('OTHER' can be provided with a reason).",
+        "properties": {
+          "inPrisonWorkInterests": {
+            "type": "array",
+            "description": "A list of in-prison work that the Prisoner is interested in.",
+            "items": {
+              "$ref": "#/components/schemas/InPrisonWorkInterest"
+            }
+          },
+          "inPrisonTrainingInterests": {
+            "type": "array",
+            "description": "A list of in-prison training that the Prisoner is interested in.",
+            "items": {
+              "$ref": "#/components/schemas/InPrisonTrainingInterest"
+            }
+          }
+        },
+        "required": [
+          "inPrisonWorkInterests",
+          "inPrisonTrainingInterests"
+        ]
+      },
+      "CreatePersonalSkillsAndInterestsRequest": {
+        "title": "CreatePersonalSkillsAndInterestsRequest",
+        "type": "object",
+        "description": "A request to create a Prisoner's personal skills and interests. If this object is provided in the request, then at least one type of skill/interest is required (even if it's just 'NONE').",
+        "properties": {
+          "skills": {
+            "type": "array",
+            "description": "One or more skills that the Prisoner feels they have.",
+            "items": {
+              "$ref": "#/components/schemas/PersonalSkill"
+            }
+          },
+          "interests": {
+            "type": "array",
+            "description": "One or more interests that the Prisoner feels they have.",
+            "items": {
+              "$ref": "#/components/schemas/PersonalInterest"
+            }
+          }
+        },
+        "required": [
+          "skills",
+          "interests"
+        ]
+      },
+      "CreateFutureWorkInterestsRequest": {
+        "title": "CreateFutureWorkInterestsRequest",
+        "type": "object",
+        "description": "A request to create a Prisoner's future work interests.",
+        "properties": {
+          "interests": {
+            "type": "array",
+            "description": "One or more future work interests that the Prisoner has.",
+            "items": {
+              "$ref": "#/components/schemas/FutureWorkInterest"
+            }
+          }
+        },
+        "required": [
+          "interests"
+        ]
+      },
+      "UpdateInductionRequest": {
+        "title": "UpdateInductionRequest",
+        "description": "A request to update a Prisoner's Induction.",
+        "type": "object",
+        "properties": {
+          "reference": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The Induction's unique reference.",
+            "example": "c88a6c48-97e2-4c04-93b5-98619966447b"
+          },
+          "prisonId": {
+            "$ref": "#/components/schemas/PrisonId"
+          },
+          "workOnRelease": {
+            "$ref": "#/components/schemas/UpdateWorkOnReleaseRequest"
+          },
+          "previousQualifications": {
+            "$ref": "#/components/schemas/UpdatePreviousQualificationsRequest"
+          },
+          "previousTraining": {
+            "$ref": "#/components/schemas/UpdatePreviousTrainingRequest"
+          },
+          "previousWorkExperiences": {
+            "$ref": "#/components/schemas/UpdatePreviousWorkExperiencesRequest"
+          },
+          "inPrisonInterests": {
+            "$ref": "#/components/schemas/UpdateInPrisonInterestsRequest"
+          },
+          "personalSkillsAndInterests": {
+            "$ref": "#/components/schemas/UpdatePersonalSkillsAndInterestsRequest"
+          },
+          "futureWorkInterests": {
+            "$ref": "#/components/schemas/UpdateFutureWorkInterestsRequest"
+          }
+        },
+        "required": [
+          "reference",
+          "prisonId"
+        ]
+      },
+      "UpdateWorkOnReleaseRequest": {
+        "description": "A request to update a Prisoner's views on obtaining work after release.",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/CreateWorkOnReleaseRequest"
+          }
+        ],
+        "properties": {
+          "reference": {
+            "type": "string",
+            "format": "uuid",
+            "description": "A unique reference for a WorkOnRelease resource.",
+            "example": "c88a6c48-97e2-4c04-93b5-98619966447b"
+          }
+        },
+        "required": [
+          "reference"
+        ]
+      },
+      "UpdatePreviousQualificationsRequest": {
+        "description": "A request to update a Prisoner's qualifications.",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/CreatePreviousQualificationsRequest"
+          }
+        ],
+        "properties": {
+          "reference": {
+            "type": "string",
+            "format": "uuid",
+            "description": "A unique reference for a PreviousQualifications resource (if it already exists).",
+            "example": "c88a6c48-97e2-4c04-93b5-98619966447b"
+          }
+        }
+      },
+      "UpdatePreviousTrainingRequest": {
+        "description": "A request to update a Prisoner's previous training.",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/CreatePreviousTrainingRequest"
+          }
+        ],
+        "properties": {
+          "reference": {
+            "type": "string",
+            "format": "uuid",
+            "description": "A unique reference for a PreviousTraining resource (if it already exists).",
+            "example": "c88a6c48-97e2-4c04-93b5-98619966447b"
+          }
+        }
+      },
+      "UpdatePreviousWorkExperiencesRequest": {
+        "description": "A request to update a Prisoner's previous work experience.",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/CreatePreviousWorkExperiencesRequest"
+          }
+        ],
+        "properties": {
+          "reference": {
+            "type": "string",
+            "format": "uuid",
+            "description": "A unique reference for a PreviousWorkExperiences resource (if it already exists).",
+            "example": "c88a6c48-97e2-4c04-93b5-98619966447b"
+          }
+        }
+      },
+      "UpdateInPrisonInterestsRequest": {
+        "description": "A request to update a Prisoner's in-prison interests. If this object is provided in the request, then at least one type of in-prison work/interest is required ('OTHER' can be provided with a reason).",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/CreateInPrisonInterestsRequest"
+          }
+        ],
+        "properties": {
+          "reference": {
+            "type": "string",
+            "format": "uuid",
+            "description": "A unique reference for a InPrisonInterests resource (if it already exists).",
+            "example": "c88a6c48-97e2-4c04-93b5-98619966447b"
+          }
+        }
+      },
+      "UpdatePersonalSkillsAndInterestsRequest": {
+        "description": "A request to update a Prisoner's personal skills and interests. If this object is provided in the request, then at least one type of skill/interest is required (even if it's just 'NONE').",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/CreatePersonalSkillsAndInterestsRequest"
+          }
+        ],
+        "properties": {
+          "reference": {
+            "type": "string",
+            "format": "uuid",
+            "description": "A unique reference for a PersonalSkillsAndInterests resource (if it already exists).",
+            "example": "c88a6c48-97e2-4c04-93b5-98619966447b"
+          }
+        }
+      },
+      "UpdateFutureWorkInterestsRequest": {
+        "description": "A request to update a Prisoner's future work interests.",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/CreateFutureWorkInterestsRequest"
+          }
+        ],
+        "properties": {
+          "reference": {
+            "type": "string",
+            "format": "uuid",
+            "description": "A unique reference for a FutureWorkInterests resource (if it already exists).",
+            "example": "c88a6c48-97e2-4c04-93b5-98619966447b"
+          }
+        }
+      },
+      "SubjectAccessRequestContent": {
+        "properties": {
+          "induction": {
+            "$ref": "#/components/schemas/InductionResponse"
+          },
+          "goals": {
+            "uniqueItems": true,
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GoalResponse"
+            }
+          },
+          "education": {
+            "$ref": "#/components/schemas/EducationResponse"
+          },
+          "completedReviews": {
+            "type": "array",
+            "description": "A List containing zero or more CompletedReviews.",
+            "items": {
+              "$ref": "#/components/schemas/CompletedActionPlanReviewResponse"
+            }
+          }
+        }
+      },
+      "SarSuccessResponse": {
+        "properties": {
+          "content": {
+            "$ref": "#/components/schemas/SubjectAccessRequestContent"
+          }
+        }
+      },
+      "CreateEducationRequest": {
+        "title": "CreateEducationRequest",
+        "description": "A request to create an individual's education record.",
+        "type": "object",
+        "properties": {
+          "prisonId": {
+            "$ref": "#/components/schemas/PrisonId"
+          },
+          "educationLevel": {
+            "$ref": "#/components/schemas/EducationLevel"
+          },
+          "qualifications": {
+            "type": "array",
+            "description": "A list of achieved qualifications that should be created as part of the education record.",
+            "items": {
+              "$ref": "#/components/schemas/CreateAchievedQualificationRequest"
+            }
+          }
+        },
+        "required": [
+          "prisonId",
+          "educationLevel",
+          "qualifications"
+        ]
+      },
+      "UpdateEducationRequest": {
+        "description": "A request to update an individual's education record.",
+        "type": "object",
+        "properties": {
+          "reference": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The unique reference of the prisoner's Education record.",
+            "example": "c88a6c48-97e2-4c04-93b5-98619966447b"
+          },
+          "prisonId": {
+            "$ref": "#/components/schemas/PrisonId"
+          },
+          "educationLevel": {
+            "$ref": "#/components/schemas/EducationLevel"
+          },
+          "qualifications": {
+            "type": "array",
+            "description": "A list of achieved qualifications that should be updated or created as part of the education record.",
+            "items": {
+              "$ref": "#/components/schemas/CreateOrUpdateAchievedQualificationRequest"
+            }
+          }
+        },
+        "required": [
+          "reference",
+          "prisonId",
+          "educationLevel",
+          "qualifications"
+        ]
+      },
+      "CreateActionPlanReviewRequest": {
+        "title": "CreateActionPlanReviewRequest",
+        "description": "A request to create and record an Action Plan Review for a prisoner.",
+        "type": "object",
+        "properties": {
+          "prisonId": {
+            "$ref": "#/components/schemas/PrisonId"
+          },
+          "note": {
+            "type": "string",
+            "description": "The notes taken by the Reviewer when conducting the prisoner's Review.",
+            "example": "Now he has settled into prison life Peter's attitude has improved and he is making excellent progress towards his goals."
+          },
+          "conductedAt": {
+            "type": "string",
+            "format": "date",
+            "description": "An ISO-8601 date representing the date that this Review was conducted on.",
+            "example": "2023-12-19"
+          },
+          "conductedBy": {
+            "type": "string",
+            "description": "The name of the person who actually conducted the Review session with the Prisoner. \n\nOnly populated if the person who conducted the Review was not the person who keyed it into the system.\n",
+            "example": "Albert Mozzarella"
+          },
+          "conductedByRole": {
+            "type": "string",
+            "description": "The role of the person who actually conducted the Review session with the Prisoner.\n\nOnly populated if the person who conducted the Review was not the person who keyed it into the system.\n",
+            "example": "Peer mentor"
+          }
+        },
+        "required": [
+          "prisonId",
+          "note",
+          "conductedAt"
+        ]
+      },
+      "UpdateReviewScheduleStatusRequest": {
+        "title": "UpdateReviewScheduleStatusRequest",
+        "description": "A request to update the status of the current review schedule for example to set an exemption.",
+        "type": "object",
+        "properties": {
+          "prisonId": {
+            "$ref": "#/components/schemas/PrisonId"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ReviewScheduleStatus"
+          },
+          "exemptionReason": {
+            "type": "string",
+            "description": "An optional reason as to why the Review Schedule is exempted.\n\nOnly relevant and processed when the `status` field is one of the `EXEMPTION_` statuses.  \nThis field is not mandatory, even when the `status` field is one of the `EXEMPTION_` statuses.\n"
+          }
+        },
+        "required": [
+          "prisonId",
+          "status"
+        ]
+      },
+      "CreateActionPlanReviewResponse": {
+        "title": "CreateActionPlanReviewResponse",
+        "description": "Response body detailing whether this was the prisoner's last review before release, and the latest scheduled review.",
+        "properties": {
+          "wasLastReviewBeforeRelease": {
+            "type": "boolean",
+            "example": false,
+            "description": "Indicates whether the Review just submitted was the prisoner's last review before release."
+          },
+          "latestReviewSchedule": {
+            "$ref": "#/components/schemas/ScheduledActionPlanReviewResponse"
+          }
+        },
+        "required": [
+          "wasLastReviewBeforeRelease",
+          "latestReviewSchedule"
+        ]
+      },
+      "ActionPlanReviewsResponse": {
+        "title": "ActionPlanReviewsResponse",
+        "description": "The latest review schedule and a list of zero or more completed reviews for a prisoner.",
+        "type": "object",
+        "properties": {
+          "latestReviewSchedule": {
+            "$ref": "#/components/schemas/ScheduledActionPlanReviewResponse"
+          },
+          "completedReviews": {
+            "type": "array",
+            "description": "A List containing zero or more CompletedReviews.",
+            "items": {
+              "$ref": "#/components/schemas/CompletedActionPlanReviewResponse"
+            }
+          }
+        },
+        "required": [
+          "latestReviewSchedule",
+          "completedReviews"
+        ]
+      },
+      "ActionPlanReviewSchedulesResponse": {
+        "title": "ActionPlanReviewSchedulesResponse",
+        "description": "A list of review schedules for a prisoner.",
+        "type": "object",
+        "properties": {
+          "reviewSchedules": {
+            "type": "array",
+            "description": "A List containing zero or more ReviewSchedules.",
+            "items": {
+              "$ref": "#/components/schemas/ScheduledActionPlanReviewResponse"
+            }
+          }
+        },
+        "required": [
+          "reviewSchedules"
+        ]
+      },
+      "InductionSchedulesResponse": {
+        "title": "InductionSchedulesResponse",
+        "description": "A list of induction schedules for a prisoner.",
+        "type": "object",
+        "properties": {
+          "inductionSchedules": {
+            "type": "array",
+            "description": "A List containing zero or more InductionSchedules.",
+            "items": {
+              "$ref": "#/components/schemas/InductionScheduleResponse"
+            }
+          }
+        },
+        "required": [
+          "inductionSchedules"
+        ]
+      },
+      "SessionResponses": {
+        "title": "SessionResponse",
+        "description": "A list of session responses.",
+        "type": "object",
+        "properties": {
+          "sessions": {
+            "type": "array",
+            "description": "A List containing zero or more SessionResponse.",
+            "items": {
+              "$ref": "#/components/schemas/SessionResponse"
+            }
+          }
+        },
+        "required": [
+          "sessions"
+        ]
+      },
+      "PersonSearchResult": {
+        "title": "personSearchResult",
+        "description": "a list of results and pagination information",
+        "type": "object",
+        "properties": {
+          "pagination": {
+            "$ref": "#/components/schemas/Pagination"
+          },
+          "people": {
+            "type": "array",
+            "description": "A List containing zero or more PersonResponse.",
+            "items": {
+              "$ref": "#/components/schemas/PersonResponse"
+            }
+          }
+        },
+        "required": [
+          "people",
+          "pagination"
+        ]
+      },
+      "Pagination": {
+        "description": "Pagination details for search results.",
+        "type": "object",
+        "properties": {
+          "totalElements": {
+            "type": "integer",
+            "description": "Total number of elements matching the criteria"
+          },
+          "totalPages": {
+            "type": "integer",
+            "description": "Total number of pages"
+          },
+          "page": {
+            "type": "integer",
+            "description": "Current page number"
+          },
+          "last": {
+            "type": "boolean",
+            "description": "Indicates this is the last page"
+          },
+          "first": {
+            "type": "boolean",
+            "description": "Indicates this is the first page"
+          },
+          "pageSize": {
+            "type": "integer",
+            "description": "Number of items per page"
+          }
+        },
+        "required": [
+          "totalElements",
+          "totalPages",
+          "page",
+          "last",
+          "first",
+          "pageSize"
+        ]
+      },
+      "PersonResponse": {
+        "title": "PersonResponse",
+        "description": "Person response data",
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Smith, Bob"
+          },
+          "prisonNumber": {
+            "type": "string",
+            "example": "A1234BC"
+          },
+          "dateOfBirth": {
+            "type": "string",
+            "format": "date",
+            "example": "01/12/1999"
+          },
+          "cellLocation": {
+            "type": "string",
+            "example": "B-3-047"
+          },
+          "releaseDate": {
+            "type": "string",
+            "format": "date",
+            "example": "01/11/2035"
+          },
+          "releaseType": {
+            "type": "string",
+            "nullable": true
+          },
+          "nextActionDate": {
+            "type": "string",
+            "format": "date",
+            "nullable": true,
+            "example": "20/11/2026"
+          },
+          "hasPlan": {
+            "type": "boolean"
+          },
+          "planLastUpdated": {
+            "type": "string",
+            "format": "date",
+            "nullable": true,
+            "description": "An ISO-8601 timestamp representing when this resource was last updated. This will be the same as the created date if it has not yet been updated.",
+            "example": "2023-06-19T09:39:44Z"
+          }
+        },
+        "required": [
+          "name",
+          "prisonNumber",
+          "dateOfBirth",
+          "hasPlan"
+        ]
+      },
+      "SessionResponse": {
+        "title": "SessionResponse",
+        "description": "Session response data",
+        "type": "object",
+        "properties": {
+          "sessionType": {
+            "type": "string",
+            "enum": [
+              "REVIEW",
+              "INDUCTION"
+            ]
+          },
+          "prisonNumber": {
+            "type": "string",
+            "description": "The ID of the prisoner",
+            "example": "A1234BC"
+          },
+          "exemptionReason": {
+            "type": "string",
+            "description": "if applicable this will be the reason for the exemption",
+            "example": "could not attend due to illness"
+          },
+          "exemptionDate": {
+            "type": "string",
+            "format": "date",
+            "description": "if applicable this will be the date of the exemption",
+            "example": "2023-06-19"
+          },
+          "deadlineDate": {
+            "type": "string",
+            "format": "date",
+            "description": "The deadline for the induction to be completed",
+            "example": "2023-06-19"
+          },
+          "reference": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The unique reference of this session",
+            "example": "c88a6c48-97e2-4c04-93b5-98619966447b"
+          }
+        },
+        "required": [
+          "reference",
+          "deadlineDate",
+          "sessionType",
+          "prisonNumber"
+        ]
+      },
+      "SessionSummaryResponse": {
+        "title": "SessionSummaryResponse",
+        "description": "Summary data for the specified prison",
+        "type": "object",
+        "properties": {
+          "overdueReviews": {
+            "type": "integer",
+            "example": 0,
+            "description": "Number of overdue reviews"
+          },
+          "overdueInductions": {
+            "type": "integer",
+            "example": 0,
+            "description": "Number of overdue inductions"
+          },
+          "dueReviews": {
+            "type": "integer",
+            "example": 1,
+            "description": "Number of due reviews"
+          },
+          "dueInductions": {
+            "type": "integer",
+            "example": 0,
+            "description": "Number of due inductions"
+          },
+          "exemptReviews": {
+            "type": "integer",
+            "example": 0,
+            "description": "Number of exempt reviews"
+          },
+          "exemptInductions": {
+            "type": "integer",
+            "example": 0,
+            "description": "Number of exempt inductions"
+          }
+        }
+      },
+      "CompletedActionPlanReviewResponse": {
+        "title": "CompletedActionPlanReviewResponse",
+        "type": "object",
+        "description": "An individual Completed Review of a Prisoner's Action Plan.",
+        "properties": {
+          "reference": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The unique reference of this Review",
+            "example": "c88a6c48-97e2-4c04-93b5-98619966447b"
+          },
+          "reviewScheduleReference": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The unique reference of the review schedule that corresponds to this Review",
+            "example": "c88a6c48-97e2-4c04-93b5-98619966447b"
+          },
+          "deadlineDate": {
+            "type": "string",
+            "format": "date",
+            "description": "An ISO-8601 date representing the deadline for this Review to have been completed by.",
+            "example": "2023-12-19"
+          },
+          "completedDate": {
+            "type": "string",
+            "format": "date",
+            "description": "An ISO-8601 date representing the date that this Review was completed on.\n\nClients can infer whether this Review was completed on time or not by comparing the deadlineDate and completedDate.\n",
+            "example": "2023-12-04"
+          },
+          "note": {
+            "$ref": "#/components/schemas/NoteResponse"
+          },
+          "createdBy": {
+            "type": "string",
+            "description": "The DPS username of the person who entered the Review in the system.",
+            "example": "asmith_gen"
+          },
+          "createdByDisplayName": {
+            "type": "string",
+            "description": "The display name of the person who entered the Review in the system.",
+            "example": "Alex Smith"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "An ISO-8601 timestamp representing when the Review was entered in the system.",
+            "example": "2023-06-19T09:39:44Z"
+          },
+          "createdAtPrison": {
+            "type": "string",
+            "description": "The identifier of the prison that the prisoner was resident at when the Review was entered in the system.",
+            "example": "BXI"
+          },
+          "updatedBy": {
+            "type": "string",
+            "description": "The DPS username of the person who updated the Review in the system.",
+            "example": "asmith_gen"
+          },
+          "updatedByDisplayName": {
+            "type": "string",
+            "description": "The display name of the person who updated the Review in the system.",
+            "example": "Alex Smith"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "An ISO-8601 timestamp representing when the Review was updated in the system.",
+            "example": "2023-06-19T09:39:44Z"
+          },
+          "updatedAtPrison": {
+            "type": "string",
+            "description": "The identifier of the prison that the prisoner was resident at when the Review was updated in the system.",
+            "example": "BXI"
+          },
+          "conductedBy": {
+            "type": "string",
+            "description": "The name of the person who actually conducted the Review session with the Prisoner. \n\nOnly populated if the person who conducted the Review was not the person who keyed it into the system.\n",
+            "example": "Albert Mozzarella"
+          },
+          "conductedByRole": {
+            "type": "string",
+            "description": "The role of the person who actually conducted the Review session with the Prisoner.\n\nOnly populated if the person who conducted the Review was not the person who keyed it into the system.\n",
+            "example": "Peer mentor"
+          },
+          "preRelease": {
+            "type": "boolean",
+            "default": false,
+            "description": "This was the last review before the prisoner was due to be released."
+          }
+        },
+        "required": [
+          "reference",
+          "deadlineDate",
+          "completedDate",
+          "note",
+          "createdBy",
+          "createdByDisplayName",
+          "createdAt",
+          "createdAtPrison",
+          "preRelease"
+        ]
+      },
+      "ScheduledActionPlanReviewResponse": {
+        "title": "ScheduledActionPlanReviewResponse",
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/AuditedResource"
+          }
+        ],
+        "description": "A Scheduled Review of a Prisoner's Action Plan.\n\nA DPS user will create a new Review Schedule (and therefore they will be recorded in the `createdBy...` fields)\nwhen they complete a prisoner's Induction or their previous Review. IE. completing an Induction will create\nthe prisoner's first Review Schedule. Completing their Review will create their next Review Schedule.\n",
+        "properties": {
+          "reference": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The unique reference of this Review",
+            "example": "c88a6c48-97e2-4c04-93b5-98619966447b"
+          },
+          "reviewDateFrom": {
+            "type": "string",
+            "format": "date",
+            "description": "An ISO-8601 date representing date that the Review window starts.\n\nA prisoner's Review should be conducted within a given timeframe and this field represents the date that the\nReview window starts from.\n",
+            "example": "2023-11-19"
+          },
+          "reviewDateTo": {
+            "type": "string",
+            "format": "date",
+            "description": "An ISO-8601 date representing date that the Review window ends. This is the Review deadline date.\n\nA prisoner's Review should be conducted within a given timeframe and this field represents the date that the\nReview window ends, and that the Review should be completed by.\n",
+            "example": "2023-12-19"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ReviewScheduleStatus"
+          },
+          "calculationRule": {
+            "$ref": "#/components/schemas/ReviewScheduleCalculationRule"
+          },
+          "exemptionReason": {
+            "type": "string",
+            "description": "An optional reason as to why the Review Schedule is exempted.\n\nOnly present when the `status` field is one of the `EXEMPTION_` statuses and the user entered an exemption \nreason when marking the Review as Exempted.\n"
+          },
+          "version": {
+            "type": "integer",
+            "description": "the version number of this schedule (the highest number is the most recent version of this review schedule)"
+          }
+        },
+        "required": [
+          "reference",
+          "reviewDateFrom",
+          "reviewDateTo",
+          "status",
+          "calculationRule"
+        ]
+      },
+      "UpdateInductionScheduleStatusRequest": {
+        "title": "UpdateInductionScheduleStatusRequest",
+        "description": "A request to update the status of the Induction schedule for example to set an exemption.",
+        "type": "object",
+        "properties": {
+          "prisonId": {
+            "$ref": "#/components/schemas/PrisonId"
+          },
+          "status": {
+            "$ref": "#/components/schemas/InductionScheduleStatus"
+          },
+          "exemptionReason": {
+            "type": "string",
+            "description": "An optional reason as to why the Induction Schedule is exempted.\n\nOnly relevant and processed when the `status` field is one of the `EXEMPTION_` statuses.  \nThis field is not mandatory, even when the `status` field is one of the `EXEMPTION_` statuses.\n"
+          }
+        },
+        "required": [
+          "prisonId",
+          "status"
+        ]
+      },
+      "ReviewScheduleStatus": {
+        "title": "ReviewScheduleStatus",
+        "description": "Enum of the various Review Schedule statuses.",
+        "type": "string",
+        "enum": [
+          "SCHEDULED",
+          "EXEMPT_PRISONER_DRUG_OR_ALCOHOL_DEPENDENCY",
+          "EXEMPT_PRISONER_OTHER_HEALTH_ISSUES",
+          "EXEMPT_PRISONER_FAILED_TO_ENGAGE",
+          "EXEMPT_PRISONER_ESCAPED_OR_ABSCONDED",
+          "EXEMPT_PRISONER_SAFETY_ISSUES",
+          "EXEMPT_PRISON_REGIME_CIRCUMSTANCES",
+          "EXEMPT_PRISON_STAFF_REDEPLOYMENT",
+          "EXEMPT_PRISON_OPERATION_OR_SECURITY_ISSUE",
+          "EXEMPT_SECURITY_ISSUE_RISK_TO_STAFF",
+          "EXEMPT_SYSTEM_TECHNICAL_ISSUE",
+          "EXEMPT_PRISONER_TRANSFER",
+          "EXEMPT_PRISONER_RELEASE",
+          "EXEMPT_PRISONER_DEATH",
+          "EXEMPT_PRISONER_MERGE",
+          "EXEMPT_UNKNOWN",
+          "COMPLETED"
+        ]
+      },
+      "ReviewScheduleCalculationRule": {
+        "title": "ReviewScheduleCalculationRule",
+        "description": "Enum of the rules that are used to calculate a prisoner's Review Schedule",
+        "type": "string",
+        "enum": [
+          "PRISONER_READMISSION",
+          "PRISONER_TRANSFER",
+          "BETWEEN_RELEASE_AND_3_MONTHS_TO_SERVE",
+          "BETWEEN_3_MONTHS_AND_3_MONTHS_7_DAYS_TO_SERVE",
+          "BETWEEN_3_MONTHS_8_DAYS_AND_6_MONTHS_TO_SERVE",
+          "BETWEEN_6_AND_12_MONTHS_TO_SERVE",
+          "BETWEEN_12_AND_60_MONTHS_TO_SERVE",
+          "MORE_THAN_60_MONTHS_TO_SERVE",
+          "INDETERMINATE_SENTENCE",
+          "PRISONER_ON_REMAND",
+          "PRISONER_UN_SENTENCED"
+        ]
+      },
+      "InductionScheduleCalculationRule": {
+        "title": "InductionScheduleCalculationRule",
+        "description": "Enum of the rules that are used to calculate a prisoner's Induction Schedule",
+        "type": "string",
+        "enum": [
+          "NEW_PRISON_ADMISSION",
+          "EXISTING_PRISONER"
+        ]
+      },
+      "InductionScheduleStatus": {
+        "title": "InductionScheduleStatus",
+        "description": "Enum of the various Induction Schedule statuses.",
+        "type": "string",
+        "enum": [
+          "PENDING_INITIAL_SCREENING_AND_ASSESSMENTS_FROM_CURIOUS",
+          "SCHEDULED",
+          "EXEMPT_PRISONER_DRUG_OR_ALCOHOL_DEPENDENCY",
+          "EXEMPT_PRISONER_OTHER_HEALTH_ISSUES",
+          "EXEMPT_PRISONER_FAILED_TO_ENGAGE",
+          "EXEMPT_PRISONER_ESCAPED_OR_ABSCONDED",
+          "EXEMPT_PRISONER_SAFETY_ISSUES",
+          "EXEMPT_PRISON_REGIME_CIRCUMSTANCES",
+          "EXEMPT_PRISON_STAFF_REDEPLOYMENT",
+          "EXEMPT_PRISON_OPERATION_OR_SECURITY_ISSUE",
+          "EXEMPT_SECURITY_ISSUE_RISK_TO_STAFF",
+          "EXEMPT_SYSTEM_TECHNICAL_ISSUE",
+          "EXEMPT_PRISONER_TRANSFER",
+          "EXEMPT_PRISONER_RELEASE",
+          "EXEMPT_PRISONER_DEATH",
+          "EXEMPT_PRISONER_MERGE",
+          "EXEMPT_SCREENING_AND_ASSESSMENT_IN_PROGRESS",
+          "EXEMPT_SCREENING_AND_ASSESSMENT_INCOMPLETE",
+          "COMPLETED"
+        ]
+      },
+      "EducationAssessmentRequired": {
+        "title": "EducationAssessmentRequired",
+        "description": "Eligibility of education assessment",
+        "properties": {
+          "basicSkillsAssessmentRequired": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "responses": {
+      "400ErrorResponse": {
+        "description": "Error response for a HTTP 400 describing fields in the request payload that are in error.",
+        "headers": {
+          "Access-Control-Allow-Origin": {
+            "schema": {
+              "type": "string"
+            }
+          },
+          "Access-Control-Allow-Methods": {
+            "schema": {
+              "type": "string"
+            }
+          },
+          "Access-Control-Allow-Headers": {
+            "schema": {
+              "type": "string"
+            }
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            },
+            "example": {
+              "status": 400,
+              "userMessage": "Error on field goal.targetCompletionDate: rejected value [2023-06-01] cannot be in the past"
+            }
+          }
+        }
+      },
+      "404ErrorResponse": {
+        "description": "Error response for a HTTP 404 describing the problem with the request.\n",
+        "headers": {
+          "Access-Control-Allow-Origin": {
+            "schema": {
+              "type": "string"
+            }
+          },
+          "Access-Control-Allow-Methods": {
+            "schema": {
+              "type": "string"
+            }
+          },
+          "Access-Control-Allow-Headers": {
+            "schema": {
+              "type": "string"
+            }
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            },
+            "example": {
+              "status": 404,
+              "userMessage": "The prisoner with prisonNumber=[A1234BC] not found"
+            }
+          }
+        }
+      },
+      "409ErrorResponse": {
+        "description": "Error response for a HTTP 409 describing the problem with the request.\n",
+        "headers": {
+          "Access-Control-Allow-Origin": {
+            "schema": {
+              "type": "string"
+            }
+          },
+          "Access-Control-Allow-Methods": {
+            "schema": {
+              "type": "string"
+            }
+          },
+          "Access-Control-Allow-Headers": {
+            "schema": {
+              "type": "string"
+            }
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            },
+            "example": {
+              "status": 409,
+              "userMessage": "A Goal with reference [c88a6c48-97e2-4c04-93b5-98619966447b] has an unexpected status = ARCHIVED"
+            }
+          }
+        }
+      },
+      "ActionPlanSummaryList": {
+        "description": "Response body containing the a list of Action Plan summaries that make up a Prisoner's Action Plan.",
+        "headers": {
+          "Access-Control-Allow-Origin": {
+            "schema": {
+              "type": "string"
+            }
+          },
+          "Access-Control-Allow-Methods": {
+            "schema": {
+              "type": "string"
+            }
+          },
+          "Access-Control-Allow-Headers": {
+            "schema": {
+              "type": "string"
+            }
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ActionPlanSummaryListResponse"
+            }
+          }
+        }
+      },
+      "ActionPlan": {
+        "description": "Response body containing the Goals that make up a Prisoner's Action Plan.",
+        "headers": {
+          "Access-Control-Allow-Origin": {
+            "schema": {
+              "type": "string"
+            }
+          },
+          "Access-Control-Allow-Methods": {
+            "schema": {
+              "type": "string"
+            }
+          },
+          "Access-Control-Allow-Headers": {
+            "schema": {
+              "type": "string"
+            }
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ActionPlanResponse"
+            }
+          }
+        }
+      },
+      "GetGoals": {
+        "description": "Response body containing zero or more Goals",
+        "headers": {
+          "Access-Control-Allow-Origin": {
+            "schema": {
+              "type": "string"
+            }
+          },
+          "Access-Control-Allow-Methods": {
+            "schema": {
+              "type": "string"
+            }
+          },
+          "Access-Control-Allow-Headers": {
+            "schema": {
+              "type": "string"
+            }
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/GetGoalsResponse"
+            }
+          }
+        }
+      },
+      "Goal": {
+        "description": "Response body containing a single Goal within a Prisoner's Action Plan.",
+        "headers": {
+          "Access-Control-Allow-Origin": {
+            "schema": {
+              "type": "string"
+            }
+          },
+          "Access-Control-Allow-Methods": {
+            "schema": {
+              "type": "string"
+            }
+          },
+          "Access-Control-Allow-Headers": {
+            "schema": {
+              "type": "string"
+            }
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/GoalResponse"
+            }
+          }
+        }
+      },
+      "Timeline": {
+        "description": "Response body containing a Prisoner's Timeline.",
+        "headers": {
+          "Access-Control-Allow-Origin": {
+            "schema": {
+              "type": "string"
+            }
+          },
+          "Access-Control-Allow-Methods": {
+            "schema": {
+              "type": "string"
+            }
+          },
+          "Access-Control-Allow-Headers": {
+            "schema": {
+              "type": "string"
+            }
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/TimelineResponse"
+            }
+          }
+        }
+      },
+      "CiagInductionSummaryList": {
+        "description": "Response body containing the a list of CIAG Induction summaries.",
+        "headers": {
+          "Access-Control-Allow-Origin": {
+            "schema": {
+              "type": "string"
+            }
+          },
+          "Access-Control-Allow-Methods": {
+            "schema": {
+              "type": "string"
+            }
+          },
+          "Access-Control-Allow-Headers": {
+            "schema": {
+              "type": "string"
+            }
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/CiagInductionSummaryListResponse"
+            }
+          }
+        }
+      },
+      "Induction": {
+        "description": "Response body containing a Prisoner's Induction.",
+        "headers": {
+          "Access-Control-Allow-Origin": {
+            "schema": {
+              "type": "string"
+            }
+          },
+          "Access-Control-Allow-Methods": {
+            "schema": {
+              "type": "string"
+            }
+          },
+          "Access-Control-Allow-Headers": {
+            "schema": {
+              "type": "string"
+            }
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/InductionResponse"
+            }
+          }
+        }
+      },
+      "InductionSchedule": {
+        "description": "Response body containing a Prisoner's Induction Schedule.",
+        "headers": {
+          "Access-Control-Allow-Origin": {
+            "schema": {
+              "type": "string"
+            }
+          },
+          "Access-Control-Allow-Methods": {
+            "schema": {
+              "type": "string"
+            }
+          },
+          "Access-Control-Allow-Headers": {
+            "schema": {
+              "type": "string"
+            }
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/InductionScheduleResponse"
+            }
+          }
+        }
+      },
+      "SarContentFound": {
+        "description": "Request successfully processed - content found",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/SarSuccessResponse"
+            }
+          }
+        }
+      },
+      "Education": {
+        "description": "An individual's education record.\n",
+        "headers": {
+          "Access-Control-Allow-Origin": {
+            "schema": {
+              "type": "string"
+            }
+          },
+          "Access-Control-Allow-Methods": {
+            "schema": {
+              "type": "string"
+            }
+          },
+          "Access-Control-Allow-Headers": {
+            "schema": {
+              "type": "string"
+            }
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/EducationResponse"
+            }
+          }
+        }
+      },
+      "GetActionPlanReviews": {
+        "description": "Response body containing the next scheduled review and a list of zero or more completed reviews.",
+        "headers": {
+          "Access-Control-Allow-Origin": {
+            "schema": {
+              "type": "string"
+            }
+          },
+          "Access-Control-Allow-Methods": {
+            "schema": {
+              "type": "string"
+            }
+          },
+          "Access-Control-Allow-Headers": {
+            "schema": {
+              "type": "string"
+            }
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ActionPlanReviewsResponse"
+            }
+          }
+        }
+      },
+      "GetActionPlanReviewSchedules": {
+        "description": "Response body containing the a list of review schedules.",
+        "headers": {
+          "Access-Control-Allow-Origin": {
+            "schema": {
+              "type": "string"
+            }
+          },
+          "Access-Control-Allow-Methods": {
+            "schema": {
+              "type": "string"
+            }
+          },
+          "Access-Control-Allow-Headers": {
+            "schema": {
+              "type": "string"
+            }
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ActionPlanReviewSchedulesResponse"
+            }
+          }
+        }
+      },
+      "CreateActionPlanReview": {
+        "description": "Response body detailing whether this was the prisoner's last review before release, and if not the next scheduled review.",
+        "headers": {
+          "Access-Control-Allow-Origin": {
+            "schema": {
+              "type": "string"
+            }
+          },
+          "Access-Control-Allow-Methods": {
+            "schema": {
+              "type": "string"
+            }
+          },
+          "Access-Control-Allow-Headers": {
+            "schema": {
+              "type": "string"
+            }
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/CreateActionPlanReviewResponse"
+            }
+          }
+        }
+      },
+      "GetInductionSchedules": {
+        "description": "Response body containing a list of induction schedules.",
+        "headers": {
+          "Access-Control-Allow-Origin": {
+            "schema": {
+              "type": "string"
+            }
+          },
+          "Access-Control-Allow-Methods": {
+            "schema": {
+              "type": "string"
+            }
+          },
+          "Access-Control-Allow-Headers": {
+            "schema": {
+              "type": "string"
+            }
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/InductionSchedulesResponse"
+            }
+          }
+        }
+      },
+      "SessionSummary": {
+        "description": "Response body containing a session summary response.",
+        "headers": {
+          "Access-Control-Allow-Origin": {
+            "schema": {
+              "type": "string"
+            }
+          },
+          "Access-Control-Allow-Methods": {
+            "schema": {
+              "type": "string"
+            }
+          },
+          "Access-Control-Allow-Headers": {
+            "schema": {
+              "type": "string"
+            }
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/SessionSummaryResponse"
+            }
+          }
+        }
+      },
+      "Session": {
+        "description": "Response body containing a session response.",
+        "headers": {
+          "Access-Control-Allow-Origin": {
+            "schema": {
+              "type": "string"
+            }
+          },
+          "Access-Control-Allow-Methods": {
+            "schema": {
+              "type": "string"
+            }
+          },
+          "Access-Control-Allow-Headers": {
+            "schema": {
+              "type": "string"
+            }
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/SessionResponses"
+            }
+          }
+        }
+      },
+      "PersonSearchResponse": {
+        "description": "Response body containing a Search results response.",
+        "headers": {
+          "Access-Control-Allow-Origin": {
+            "schema": {
+              "type": "string"
+            }
+          },
+          "Access-Control-Allow-Methods": {
+            "schema": {
+              "type": "string"
+            }
+          },
+          "Access-Control-Allow-Headers": {
+            "schema": {
+              "type": "string"
+            }
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/PersonSearchResult"
+            }
+          }
+        }
+      },
+      "AssessmentRequiredResponse": {
+        "description": "Return an indicator whether the assessment is required or not.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/EducationAssessmentRequired"
+            },
+            "examples": {
+              "assessmentRequired": {
+                "summary": "assessment is required",
+                "value": {
+                  "basicSkillsAssessmentRequired": true
+                }
+              },
+              "assessmentNotRequired": {
+                "summary": "assessment is NOT required",
+                "value": {
+                  "basicSkillsAssessmentRequired": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "requestBodies": {
+      "GetActionPlanSummaries": {
+        "description": "Request body to retrieve a list of Action Plan summaries for one or more Prisoners.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/GetActionPlanSummariesRequest"
+            }
+          }
+        }
+      },
+      "CreateActionPlan": {
+        "description": "Request body to create an Action Plan with at least one or more Goals.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/CreateActionPlanRequest"
+            }
+          }
+        }
+      },
+      "CreateGoals": {
+        "description": "Request body to create one or more Goals.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/CreateGoalsRequest"
+            }
+          }
+        }
+      },
+      "UpdateGoal": {
+        "description": "Request body to update a single Goal.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UpdateGoalRequest"
+            }
+          }
+        }
+      },
+      "ArchiveGoal": {
+        "description": "Request body to archive a single Goal.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ArchiveGoalRequest"
+            }
+          }
+        }
+      },
+      "UnarchiveGoal": {
+        "description": "Request body to unarchive a single Goal.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UnarchiveGoalRequest"
+            }
+          }
+        }
+      },
+      "CompleteGoal": {
+        "description": "Request body to complete a single Goal.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/CompleteGoalRequest"
+            }
+          }
+        }
+      },
+      "GetCiagInductionSummaries": {
+        "description": "Request body to retrieve a list of CIAG Induction summaries for one or more Prisoners.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/GetCiagInductionSummariesRequest"
+            }
+          }
+        }
+      },
+      "GetSessionSummaries": {
+        "description": "Request body to retrieve a list of Session summaries for one or more Prisoners.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/PrisonerIdsRequest"
+            }
+          }
+        }
+      },
+      "CreateInduction": {
+        "description": "Request body to create a Prisoner's Induction.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/CreateInductionRequest"
+            }
+          }
+        }
+      },
+      "UpdateInduction": {
+        "description": "Request body to update a Prisoner's Induction.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UpdateInductionRequest"
+            }
+          }
+        }
+      },
+      "CreateEducation": {
+        "description": "Request body to create an individual's education record.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/CreateEducationRequest"
+            }
+          }
+        }
+      },
+      "UpdateEducation": {
+        "description": "Request body to update an individual's education record.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UpdateEducationRequest"
+            }
+          }
+        }
+      },
+      "CreateActionPlanReview": {
+        "description": "Request body to create and record an Action Plan Review.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/CreateActionPlanReviewRequest"
+            }
+          }
+        }
+      },
+      "UpdateReviewScheduleStatus": {
+        "description": "Request body to update a review schedule status.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UpdateReviewScheduleStatusRequest"
+            }
+          }
+        }
+      },
+      "UpdateInductionScheduleStatus": {
+        "description": "Request body to update a induction schedule status.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UpdateInductionScheduleStatusRequest"
+            }
+          }
+        }
+      }
+    },
+    "parameters": {
+      "prisonIdInPathParameter": {
+        "name": "prisonId",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$",
+          "example": "BXI"
+        },
+        "description": "The ID of the prison"
+      },
+      "prisonNumberPathParameter": {
+        "name": "prisonNumber",
+        "description": "The NOMIS Prison Reference Number of the Prisoner that the operation is being performed on.",
+        "schema": {
+          "type": "string",
+          "pattern": "^[A-Z]\\d{4}[A-Z]{2}$"
+        },
+        "example": "A1234BC",
+        "in": "path",
+        "required": true
+      },
+      "goalReferencePathParameter": {
+        "name": "goalReference",
+        "description": "The Goal's unique reference",
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "example": "c88a6c48-97e2-4c04-93b5-98619966447b",
+        "in": "path",
+        "required": true
+      },
+      "prnQueryStringParameter": {
+        "name": "prn",
+        "description": "The NOMIS Prison Reference Number of the Prisoner that the operation is being performed on.",
+        "schema": {
+          "type": "string",
+          "pattern": "^[A-Z]\\d{4}[A-Z]{2}$"
+        },
+        "example": "A1234BC",
+        "in": "query",
+        "required": true
+      },
+      "fromDate": {
+        "name": "fromDate",
+        "in": "query",
+        "description": "Optional parameter denoting minimum date of event occurrence which should be returned in the response",
+        "schema": {
+          "type": "string",
+          "format": "date"
+        }
+      },
+      "toDate": {
+        "name": "toDate",
+        "in": "query",
+        "description": "Optional parameter denoting maximum date of event occurrence which should be returned in the response",
+        "schema": {
+          "type": "string",
+          "format": "date"
+        }
+      }
+    }
+  }
+}
