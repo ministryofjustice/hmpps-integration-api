@@ -506,6 +506,8 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
       callApi(path)
         .andExpect(MockMvcResultMatchers.status().isOk)
         .andExpect(MockMvcResultMatchers.content().json(getExpectedResponse("deallocation-reasons")))
+
+      activitiesMockServer.assertValidationPassed()
     }
   }
 

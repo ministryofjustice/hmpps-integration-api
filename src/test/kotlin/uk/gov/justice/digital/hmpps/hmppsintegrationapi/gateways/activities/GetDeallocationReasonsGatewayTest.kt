@@ -46,6 +46,7 @@ class GetDeallocationReasonsGatewayTest(
 
       afterEach {
         mockServer.stop()
+        mockServer.resetValidator()
       }
 
       it("authenticates using HMPPS Auth with credentials") {
@@ -64,6 +65,8 @@ class GetDeallocationReasonsGatewayTest(
         result.errors.shouldBeEmpty()
         result.data.shouldNotBeNull()
         result.data[0].code.shouldBe("RELEASED")
+
+        mockServer.assertValidationPassed()
       }
 
       it("upstream API returns an forbidden error, throw forbidden exception") {
