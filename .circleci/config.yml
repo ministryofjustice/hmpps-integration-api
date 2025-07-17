@@ -294,6 +294,14 @@ workflows:
           helm_timeout: 5m
           slack_channel_name: << pipeline.parameters.releases-slack-channel >>
           slack_notification: false
+      - smoke-tests-higher-envs:
+          <<: *slack-fail-post-step
+          name: smoke-tests-for-prod
+          context:
+            - hmpps-common-vars
+            - hmpps-integration-api-smoke-test-prod
+          requires:
+            - deploy-to-prod
   security:
     triggers:
       - schedule:
