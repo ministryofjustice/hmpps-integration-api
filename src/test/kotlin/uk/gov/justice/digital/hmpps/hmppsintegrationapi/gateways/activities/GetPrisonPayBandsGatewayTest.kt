@@ -45,6 +45,7 @@ class GetPrisonPayBandsGatewayTest(
 
     afterEach {
       mockServer.stop()
+      mockServer.resetValidator()
     }
 
     it("authenticates using HMPPS Auth with credentials") {
@@ -77,6 +78,8 @@ class GetPrisonPayBandsGatewayTest(
           updatedBy = "string",
         ),
       )
+
+      mockServer.assertValidationPassed()
     }
 
     it("Returns a bad request error") {
