@@ -46,6 +46,7 @@ class GetAllRunningActivitiesGatewayTest(
 
       afterEach {
         mockServer.stop()
+        mockServer.resetValidator()
       }
 
       it("authenticates using HMPPS Auth with credentials") {
@@ -64,6 +65,8 @@ class GetAllRunningActivitiesGatewayTest(
         result.errors.shouldBeEmpty()
         result.data.shouldNotBeNull()
         result.data[0].id.shouldBe(123456)
+
+        mockServer.assertValidationPassed()
       }
 
       it("Returns a bad request error") {

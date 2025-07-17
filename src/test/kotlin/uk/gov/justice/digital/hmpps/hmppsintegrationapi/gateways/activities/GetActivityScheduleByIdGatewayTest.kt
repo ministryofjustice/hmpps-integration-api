@@ -45,6 +45,7 @@ class GetActivityScheduleByIdGatewayTest(
 
       afterEach {
         mockServer.stop()
+        mockServer.resetValidator()
       }
 
       it("authenticates using HMPPS Auth with credentials") {
@@ -76,6 +77,8 @@ class GetActivityScheduleByIdGatewayTest(
           .shouldBe(123456)
         result.data.slots.size
           .shouldBe(1)
+
+        mockServer.assertValidationPassed()
       }
 
       it("Returns a bad request error") {

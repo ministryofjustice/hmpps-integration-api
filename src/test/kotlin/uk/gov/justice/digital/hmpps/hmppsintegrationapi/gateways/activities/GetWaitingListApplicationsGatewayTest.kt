@@ -66,6 +66,7 @@ class GetWaitingListApplicationsGatewayTest(
 
       afterEach {
         mockServer.stop()
+        mockServer.resetValidator()
       }
 
       it("authenticates using HMPPS Auth with credentials") {
@@ -148,6 +149,8 @@ class GetWaitingListApplicationsGatewayTest(
             empty = true,
           ),
         )
+
+        mockServer.assertValidationPassed()
       }
 
       it("Returns a bad request error") {

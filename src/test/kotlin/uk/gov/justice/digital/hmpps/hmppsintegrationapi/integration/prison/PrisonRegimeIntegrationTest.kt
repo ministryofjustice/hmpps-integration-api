@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.prison
 
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
@@ -10,6 +11,11 @@ class PrisonRegimeIntegrationTest : IntegrationTestBase() {
   private val prisonId = "MDI"
   private val path = "/v1/prison/$prisonId/prison-regime"
 
+  @AfterEach
+  fun resetValidators() {
+    activitiesMockServer.resetValidator()
+  }
+
   @Test
   fun `return the prison regime details`() {
     activitiesMockServer.stubForGet(
@@ -19,6 +25,8 @@ class PrisonRegimeIntegrationTest : IntegrationTestBase() {
     callApi(path)
       .andExpect(status().isOk)
       .andExpect(content().json(getExpectedResponse("prison-regime-response")))
+
+    activitiesMockServer.assertValidationPassed()
   }
 
   @Test

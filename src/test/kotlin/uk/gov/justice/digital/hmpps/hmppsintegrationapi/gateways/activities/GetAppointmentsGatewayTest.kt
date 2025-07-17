@@ -60,6 +60,7 @@ class GetAppointmentsGatewayTest(
 
       afterTest {
         activitiesApiMockServer.stop()
+        activitiesApiMockServer.resetValidator()
       }
 
       it("authenticates using HMPPS Auth with credentials") {
@@ -76,9 +77,11 @@ class GetAppointmentsGatewayTest(
       }
 
       it("returns appointments") {
-        activitiesApiMockServer.stubForPost(path, jsonRequest, File("src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/activities/fixtures/GetAppointments.json").readText(), HttpStatus.OK)
+        activitiesApiMockServer.stubForPost(path, jsonRequest, File("src/test/kotlin/uk/gov/justice/digital/hmpps/hmppsintegrationapi/gateways/activities/fixtures/GetAppointments.json").readText(), HttpStatus.ACCEPTED)
         val response = activitiesGateway.getAppointments(prisonCode, appointmentSearchRequest)
         response.data!![0].appointmentId.shouldBe(123456)
+
+        activitiesApiMockServer.assertValidationPassed()
       }
 
       it("does not serialize endDate when null to avoid sending 'null' as string") {

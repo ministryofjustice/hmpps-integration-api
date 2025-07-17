@@ -1,8 +1,10 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.prison
 
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import org.springframework.http.HttpStatus
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationTestBase
@@ -12,6 +14,11 @@ import java.time.LocalDate
 
 class PrisonActivitiesIntegrationTest : IntegrationTestBase() {
   private val prisonId = "MDI"
+
+  @AfterEach
+  fun resetValidators() {
+    activitiesMockServer.resetValidator()
+  }
 
   @Nested
   @DisplayName("GET prison-activities")
@@ -27,6 +34,8 @@ class PrisonActivitiesIntegrationTest : IntegrationTestBase() {
       callApi(path)
         .andExpect(status().isOk)
         .andExpect(content().json(getExpectedResponse("prison-activities-response")))
+
+      activitiesMockServer.assertValidationPassed()
     }
 
     @Test
@@ -82,10 +91,13 @@ class PrisonActivitiesIntegrationTest : IntegrationTestBase() {
         "/integration-api/appointments/$prisonId/search",
         reqBody = requestBody,
         File("$gatewaysFolder/activities/fixtures/GetAppointments.json").readText(),
+        status = HttpStatus.ACCEPTED,
       )
       postToApi(path, requestBody)
-        .andExpect(status().isOk)
+        .andExpect(status().is2xxSuccessful)
         .andExpect(content().json(getExpectedResponse("search-appointments-response")))
+
+      activitiesMockServer.assertValidationPassed()
     }
 
     @Test
@@ -124,6 +136,8 @@ class PrisonActivitiesIntegrationTest : IntegrationTestBase() {
       callApi(path)
         .andExpect(status().isOk)
         .andExpect(content().json(getExpectedResponse("historical-attendances-response")))
+
+      activitiesMockServer.assertValidationPassed()
     }
 
     @Test

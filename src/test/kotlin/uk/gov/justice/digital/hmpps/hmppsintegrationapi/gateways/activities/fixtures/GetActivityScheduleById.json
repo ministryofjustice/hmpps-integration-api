@@ -8,7 +8,7 @@
       "endTime": "10:00",
       "timeSlot": "AM",
       "cancelled": false,
-      "cancelledTime": "2022-09-29T11:20:00",
+      "cancelledTime": "2022-09-29T11:20:00Z",
       "cancelledBy": "Adam Smith",
       "attendances": [
         {
@@ -30,7 +30,7 @@
             "notes": "Maps to ACCAB in NOMIS"
           },
           "comment": "Prisoner was too unwell to attend the activity.",
-          "recordedTime": "2023-09-10T09:30:00",
+          "recordedTime": "2023-09-10T09:30:00Z",
           "recordedBy": "A.JONES",
           "status": "WAITING",
           "payAmount": 100,
@@ -58,7 +58,7 @@
                 "notes": "Maps to ACCAB in NOMIS"
               },
               "comment": "Prisoner was too unwell to attend the activity.",
-              "recordedTime": "2023-09-10T09:30:00",
+              "recordedTime": "2023-09-10T09:30:00Z",
               "recordedBy": "A.JONES",
               "issuePayment": true,
               "incentiveLevelWarningIssued": true,
@@ -68,6 +68,25 @@
           ],
           "editable": true,
           "payable": true
+        }
+      ],
+      "advanceAttendances": [
+        {
+          "id": 123456,
+          "scheduleInstanceId": 123456,
+          "prisonerNumber": "A1234AA",
+          "issuePayment": true,
+          "payAmount": 100,
+          "recordedTime": "2023-09-10T09:30:00Z",
+          "recordedBy": "A.JONES",
+          "attendanceHistory": [
+            {
+              "id": 123456,
+              "issuePayment": true,
+              "recordedTime": "2023-09-10T09:30:00Z",
+              "recordedBy": "A.JONES"
+            }
+          ]
         }
       ]
     }
@@ -96,15 +115,15 @@
       },
       "startDate": "2022-09-10",
       "endDate": "2023-09-10",
-      "allocatedTime": "2022-09-01T09:00:00",
+      "allocatedTime": "2022-09-01T09:00:00Z",
       "allocatedBy": "Mr Blogs",
-      "deallocatedTime": "2022-09-02T09:00:00",
+      "deallocatedTime": "2022-09-02T09:00:00Z",
       "deallocatedBy": "Mrs Blogs",
       "deallocatedReason": {
         "code": "RELEASED",
         "description": "Released from prison"
       },
-      "suspendedTime": "2022-09-02T09:00:00",
+      "suspendedTime": "2022-09-02T09:00:00Z",
       "suspendedBy": "Mrs Blogs",
       "suspendedReason": "Temporarily released from prison",
       "status": "ACTIVE",
@@ -116,14 +135,14 @@
           "code": "RELEASED",
           "description": "PLANNED"
         },
-        "plannedAt": "2023-07-10 14:54"
+        "plannedAt": "2023-07-10T14:54:00Z"
       },
       "plannedSuspension": {
         "plannedStartDate": "2023-07-31",
         "plannedEndDate": "2023-07-31",
         "caseNoteId": 123456,
         "plannedBy": "ADMIN",
-        "plannedAt": "2023-07-10 14:54",
+        "plannedAt": "2023-07-10T14:54:00Z",
         "paid": true
       },
       "exclusions": [
@@ -203,8 +222,8 @@
     "endDate": "2022-12-21",
     "capacity": 0,
     "allocated": 0,
-    "createdTime": "2022-09-01T09:01:02",
-    "activityState": "live",
+    "createdTime": "2022-09-01T09:01:02Z",
+    "activityState": "LIVE",
     "paid": true
   },
   "scheduleWeeks": 1,
@@ -228,7 +247,7 @@
   "startDate": "2022-09-21",
   "endDate": "2022-10-21",
   "runsOnBankHoliday": true,
-  "updatedTime": "2022-09-01T09:01:02",
+  "updatedTime": "2022-09-01T09:01:02Z",
   "updatedBy": "Adam Smith",
   "usePrisonRegimeTime": true
 }

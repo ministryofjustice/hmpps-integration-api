@@ -70,6 +70,7 @@ class GetScheduledInstancesForPrisonerGatewayTest(
 
       afterEach {
         mockServer.stop()
+        mockServer.resetValidator()
       }
 
       it("authenticates using HMPPS Auth with credentials") {
@@ -88,6 +89,8 @@ class GetScheduledInstancesForPrisonerGatewayTest(
         result.errors.shouldBeEmpty()
         result.data.shouldNotBeNull()
         result.data[0].scheduledInstanceId.shouldBe(activitiesActivityScheduledInstanceForPerson[0].scheduledInstanceId)
+
+        mockServer.assertValidationPassed()
       }
 
       it("Returns a bad request error") {

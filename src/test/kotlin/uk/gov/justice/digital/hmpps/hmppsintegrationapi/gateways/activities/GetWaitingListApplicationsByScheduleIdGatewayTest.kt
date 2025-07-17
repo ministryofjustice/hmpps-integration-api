@@ -53,6 +53,7 @@ class GetWaitingListApplicationsByScheduleIdGatewayTest(
 
       afterEach {
         mockServer.stop()
+        mockServer.resetValidator()
       }
 
       it("authenticates using HMPPS Auth with credentials") {
@@ -106,6 +107,8 @@ class GetWaitingListApplicationsByScheduleIdGatewayTest(
           getRequestedFor(urlEqualTo(path))
             .withHeader("Caseload-Id", equalTo(prisonCode)),
         )
+
+        mockServer.assertValidationPassed()
       }
 
       it("Returns a bad request error") {

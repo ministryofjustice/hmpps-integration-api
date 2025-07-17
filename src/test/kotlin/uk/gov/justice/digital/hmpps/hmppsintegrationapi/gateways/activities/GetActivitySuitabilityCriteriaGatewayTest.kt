@@ -45,6 +45,7 @@ class GetActivitySuitabilityCriteriaGatewayTest(
 
       afterEach {
         mockServer.stop()
+        mockServer.resetValidator()
       }
 
       it("authenticates using HMPPS Auth with credentials") {
@@ -69,6 +70,8 @@ class GetActivitySuitabilityCriteriaGatewayTest(
         result.data.minimumEducationLevel[0]
           .id
           .shouldBe(123456)
+
+        mockServer.assertValidationPassed()
       }
 
       it("Returns a bad request error") {

@@ -90,6 +90,8 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
       callApi(path)
         .andExpect(MockMvcResultMatchers.status().isOk)
         .andExpect(MockMvcResultMatchers.content().json(getExpectedResponse("activities-schedule-detailed-response")))
+
+      activitiesMockServer.assertValidationPassed()
     }
 
     @Test
@@ -124,6 +126,8 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
       callApi(path)
         .andExpect(MockMvcResultMatchers.status().isOk)
         .andExpect(MockMvcResultMatchers.content().json(getExpectedResponse("activities-suitability-criteria")))
+
+      activitiesMockServer.assertValidationPassed()
     }
 
     @Test
@@ -193,6 +197,8 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
       val messageAttributes = objectMapper.readTree(messageJson).at("/messageAttributes")
       val expectedMessageAttributes = objectMapper.readTree(objectMapper.writeValueAsString(expectedMessage.messageAttributes))
       messageAttributes.shouldBe(expectedMessageAttributes)
+
+      activitiesMockServer.assertValidationPassed()
     }
 
     @Test
@@ -303,6 +309,8 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
       callApi(path)
         .andExpect(MockMvcResultMatchers.status().isOk)
         .andExpect(MockMvcResultMatchers.content().json(getExpectedResponse("reasons-for-attendance")))
+
+      activitiesMockServer.assertValidationPassed()
     }
   }
 
@@ -361,6 +369,8 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
             ).writeValueAsString(expectedMessage.messageAttributes),
         )
       messageAttributes.shouldBe(expectedMessageAttributes)
+
+      activitiesMockServer.assertValidationPassed()
     }
 
     @Test
@@ -393,6 +403,8 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
       val messageAttributes = objectMapper.readTree(messageJson).at("/messageAttributes")
       val expectedMessageAttributes = objectMapper.readTree(objectMapper.writeValueAsString(expectedMessage.messageAttributes))
       messageAttributes.shouldBe(expectedMessageAttributes)
+
+      activitiesMockServer.assertValidationPassed()
     }
 
     @Test
@@ -498,6 +510,8 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
       callApi(path)
         .andExpect(MockMvcResultMatchers.status().isOk)
         .andExpect(MockMvcResultMatchers.content().json(getExpectedResponse("deallocation-reasons")))
+
+      activitiesMockServer.assertValidationPassed()
     }
   }
 
@@ -588,6 +602,8 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
             ).writeValueAsString(expectedMessage.messageAttributes),
         )
       messageAttributes.shouldBe(expectedMessageAttributes)
+
+      activitiesMockServer.assertValidationPassed()
     }
 
     @Test
@@ -952,6 +968,8 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
       val messageAttributes = objectMapper.readTree(messageJson).at("/messageAttributes")
       val expectedMessageAttributes = objectMapper.readTree(objectMapper.writeValueAsString(expectedMessage.messageAttributes))
       messageAttributes.shouldBe(expectedMessageAttributes)
+
+      activitiesMockServer.assertValidationPassed()
     }
   }
 
@@ -982,6 +1000,8 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
         getRequestedFor(urlEqualTo("/integration-api/schedules/$scheduleId/waiting-list-applications"))
           .withHeader("Caseload-Id", equalTo(prisonCode)),
       )
+
+      activitiesMockServer.assertValidationPassed()
     }
 
     @Test
