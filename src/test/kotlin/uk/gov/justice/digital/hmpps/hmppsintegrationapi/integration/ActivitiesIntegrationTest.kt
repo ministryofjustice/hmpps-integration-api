@@ -309,6 +309,8 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
       callApi(path)
         .andExpect(MockMvcResultMatchers.status().isOk)
         .andExpect(MockMvcResultMatchers.content().json(getExpectedResponse("reasons-for-attendance")))
+
+      activitiesMockServer.assertValidationPassed()
     }
   }
 
