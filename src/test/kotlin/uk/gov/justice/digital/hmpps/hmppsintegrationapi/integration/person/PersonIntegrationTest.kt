@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.person
 
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -10,6 +11,11 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.IntegrationT
 import java.io.File
 
 class PersonIntegrationTest : IntegrationTestBase() {
+  @AfterEach
+  fun resetValidators() {
+    prisonerOffenderSearchMockServer.resetValidator()
+  }
+
   @Nested
   inner class GetPerson {
     @Test
@@ -34,6 +40,8 @@ class PersonIntegrationTest : IntegrationTestBase() {
       callApi("$basePath?$queryParams")
         .andExpect(status().isOk)
         .andExpect(content().json(getExpectedResponse("person-name-search-response")))
+
+      prisonerOffenderSearchMockServer.assertValidationPassed()
     }
 
     @Test
@@ -41,6 +49,8 @@ class PersonIntegrationTest : IntegrationTestBase() {
       callApi("$basePath/$pnc")
         .andExpect(status().isOk)
         .andExpect(content().json(getExpectedResponse("person-offender-and-probation-search-response")))
+
+      prisonerOffenderSearchMockServer.assertValidationPassed()
     }
 
     @Nested
@@ -53,6 +63,8 @@ class PersonIntegrationTest : IntegrationTestBase() {
         callApiWithCN("$basePath/$pnc", clientNameWithRedaction)
           .andExpect(status().isOk)
           .andExpect(content().json(getExpectedResponse("person-offender-and-probation-search-redacted-response")))
+
+        prisonerOffenderSearchMockServer.assertValidationPassed()
       }
     }
   }

@@ -6,6 +6,7 @@ import io.kotest.matchers.shouldBe
 import org.awaitility.kotlin.await
 import org.awaitility.kotlin.matches
 import org.awaitility.kotlin.untilCallTo
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
@@ -52,6 +53,11 @@ class DeactivateLocationIntegrationTest : IntegrationTestWithQueueBase("location
           ),
         ),
     )
+
+  @AfterEach
+  fun resetValidators() {
+    prisonerOffenderSearchMockServer.resetValidator()
+  }
 
   @Test
   fun `return the response saying message on queue`() {
@@ -116,6 +122,8 @@ class DeactivateLocationIntegrationTest : IntegrationTestWithQueueBase("location
     val messageAttributes = objectMapper.readTree(messageJson).at("/messageAttributes")
     val expectedMessageAttributes = objectMapper.readTree(objectMapper.writeValueAsString(expectedMessage.messageAttributes))
     messageAttributes.shouldBe(expectedMessageAttributes)
+
+    prisonerOffenderSearchMockServer.assertValidationPassed()
   }
 
   @Test
