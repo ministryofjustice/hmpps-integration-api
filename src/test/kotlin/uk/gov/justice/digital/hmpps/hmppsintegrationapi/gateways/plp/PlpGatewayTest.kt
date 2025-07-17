@@ -48,6 +48,7 @@ class PlpGatewayTest(
 
       afterTest {
         plpMockServer.stop()
+        plpMockServer.resetValidator()
       }
 
       describe("getInductionSchedule") {
@@ -78,6 +79,8 @@ class PlpGatewayTest(
           response.data.shouldNotBeNull()
           response.data.status.shouldBe("SCHEDULED")
           response.data.nomisNumber.shouldBe(nomsNumber)
+
+          plpMockServer.assertValidationPassed()
         }
       }
 
@@ -113,6 +116,8 @@ class PlpGatewayTest(
           response.data.inductionSchedules[0]
             .nomisNumber
             .shouldBe(nomsNumber)
+
+          plpMockServer.assertValidationPassed()
         }
       }
 
@@ -148,6 +153,8 @@ class PlpGatewayTest(
           response.data.reviewSchedules[0]
             .calculationRule
             .shouldBe("BETWEEN_12_AND_60_MONTHS_TO_SERVE")
+
+          plpMockServer.assertValidationPassed()
         }
       }
 
@@ -180,6 +187,8 @@ class PlpGatewayTest(
           response.data.completedReviews[0]
             .updatedBy
             .shouldBe("NRUSSELL_GEN")
+
+          plpMockServer.assertValidationPassed()
         }
       }
 
@@ -210,6 +219,8 @@ class PlpGatewayTest(
           response.data.createdAtPrison
             .shouldBe("BXI")
           response.data.createdBy.shouldBe("asmith_gen")
+
+          plpMockServer.assertValidationPassed()
         }
       }
 
@@ -243,6 +254,8 @@ class PlpGatewayTest(
           )
           val response = plpGateway.getEducationAssessmentSummary(prisonerNumber)
           response.data.shouldBe(EducationAssessmentSummaryResponse(true))
+
+          plpMockServer.assertValidationPassed()
         }
       }
     },
