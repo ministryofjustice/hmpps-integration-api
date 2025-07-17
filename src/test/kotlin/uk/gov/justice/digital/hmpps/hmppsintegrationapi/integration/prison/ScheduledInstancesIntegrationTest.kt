@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.integration.prison
 
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
@@ -10,6 +11,11 @@ class ScheduledInstancesIntegrationTest : IntegrationTestBase() {
   private val prisonId = "MDI"
   private val path = "/v1/prison/$prisonId/prisoners/$nomsId/scheduled-instances?startDate=2022-09-10&endDate=2023-09-10"
 
+  @AfterEach
+  fun resetValidators() {
+    activitiesMockServer.resetValidator()
+  }
+
   @Test
   fun `return the scheduled instances`() {
     activitiesMockServer.stubForGet(
@@ -19,6 +25,8 @@ class ScheduledInstancesIntegrationTest : IntegrationTestBase() {
     callApi(path)
       .andExpect(status().isOk)
       .andExpect(content().json(getExpectedResponse("scheduled-instances-response")))
+
+    activitiesMockServer.assertValidationPassed()
   }
 
   @Test

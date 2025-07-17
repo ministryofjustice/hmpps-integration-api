@@ -15,15 +15,15 @@ import java.time.LocalDate
 class PrisonActivitiesIntegrationTest : IntegrationTestBase() {
   private val prisonId = "MDI"
 
+  @AfterEach
+  fun resetValidators() {
+    activitiesMockServer.resetValidator()
+  }
+
   @Nested
   @DisplayName("GET prison-activities")
   inner class GetPrisonActivities {
     private val path = "/v1/prison/$prisonId/activities"
-
-    @AfterEach
-    fun resetValidators() {
-      activitiesMockServer.resetValidator()
-    }
 
     @Test
     fun `return the prison activities details`() {
