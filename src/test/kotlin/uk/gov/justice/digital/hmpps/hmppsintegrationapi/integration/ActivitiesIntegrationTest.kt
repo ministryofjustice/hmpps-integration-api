@@ -369,6 +369,8 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
             ).writeValueAsString(expectedMessage.messageAttributes),
         )
       messageAttributes.shouldBe(expectedMessageAttributes)
+
+      activitiesMockServer.assertValidationPassed()
     }
 
     @Test
@@ -401,6 +403,8 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
       val messageAttributes = objectMapper.readTree(messageJson).at("/messageAttributes")
       val expectedMessageAttributes = objectMapper.readTree(objectMapper.writeValueAsString(expectedMessage.messageAttributes))
       messageAttributes.shouldBe(expectedMessageAttributes)
+
+      activitiesMockServer.assertValidationPassed()
     }
 
     @Test
@@ -598,6 +602,8 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
             ).writeValueAsString(expectedMessage.messageAttributes),
         )
       messageAttributes.shouldBe(expectedMessageAttributes)
+
+      activitiesMockServer.assertValidationPassed()
     }
 
     @Test
@@ -962,6 +968,8 @@ class ActivitiesIntegrationTest : IntegrationTestWithQueueBase("activities") {
       val messageAttributes = objectMapper.readTree(messageJson).at("/messageAttributes")
       val expectedMessageAttributes = objectMapper.readTree(objectMapper.writeValueAsString(expectedMessage.messageAttributes))
       messageAttributes.shouldBe(expectedMessageAttributes)
+
+      activitiesMockServer.assertValidationPassed()
     }
   }
 
