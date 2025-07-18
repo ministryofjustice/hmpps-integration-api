@@ -42,6 +42,7 @@ class GetHealthAndMedicationDataGatewayTest(
 
     afterTest {
       healthAndMedicationMockServer.stop()
+      healthAndMedicationMockServer.resetValidator()
     }
 
     it("authenticates using HMPPS Auth with credentials") {
@@ -69,6 +70,8 @@ class GetHealthAndMedicationDataGatewayTest(
         .shouldBe(1)
       result.data.dietAndAllergy.cateringInstructions.value
         .shouldBe("catering instructions")
+
+      healthAndMedicationMockServer.assertValidationPassed()
     }
 
     it("returns an error when a 400 status code is returned") {
