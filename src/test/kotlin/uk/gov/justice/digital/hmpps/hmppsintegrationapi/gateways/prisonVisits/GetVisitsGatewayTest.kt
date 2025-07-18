@@ -180,7 +180,7 @@ class GetVisitsGatewayTest(
                    "visitRoom":"Visits Main Hall",
                    "visitType":"SOCIAL",
                    "visitStatus":"RESERVED",
-                   "visitSubStatus":"AUTO_APPROVED",`
+                   "visitSubStatus":"AUTO_APPROVED",
                    "outcomeStatus":"VISITOR_CANCELLED",
                    "visitRestriction":"OPEN",
                    "startTimestamp":"2018-12-01T13:45:00",
