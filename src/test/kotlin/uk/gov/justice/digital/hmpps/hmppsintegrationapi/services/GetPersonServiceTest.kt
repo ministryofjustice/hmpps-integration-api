@@ -3,11 +3,15 @@
 package uk.gov.justice.digital.hmpps.hmppsintegrationapi.services
 
 import io.kotest.core.spec.style.DescribeSpec
+import io.kotest.matchers.collections.shouldBeEmpty
+import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeTypeOf
 import org.mockito.Mockito
 import org.mockito.internal.verification.VerificationModeFactory
+import org.mockito.kotlin.any
+import org.mockito.kotlin.never
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -28,7 +32,9 @@ import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApi
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.hmpps.UpstreamApiError
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.prisoneroffendersearch.POSPrisoner
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.models.roleconfig.ConsumerFilters
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.personas.personInNomisOnlyPersona
 import uk.gov.justice.digital.hmpps.hmppsintegrationapi.personas.personInProbationAndNomisPersona
+import uk.gov.justice.digital.hmpps.hmppsintegrationapi.personas.personInProbationOnlyPersona
 
 @ContextConfiguration(
   initializers = [ConfigDataApplicationContextInitializer::class],
@@ -48,16 +54,44 @@ internal class GetPersonServiceTest(
       val filters = ConsumerFilters(listOf(prisonId))
       val blankConsumerFilters = ConsumerFilters(null)
 
-      val persona = personInProbationAndNomisPersona
-      val personOnProbation = PersonOnProbation(Person(firstName = persona.firstName, lastName = persona.lastName, identifiers = persona.identifiers), underActiveSupervision = true)
-      val personOnProbationMissingNomisNumber = PersonOnProbation(Person(firstName = persona.firstName, lastName = persona.lastName), underActiveSupervision = true)
-      val prisoner = POSPrisoner(firstName = persona.firstName, lastName = persona.lastName, dateOfBirth = persona.dateOfBirth, prisonerNumber = persona.identifiers.nomisNumber, youthOffender = false)
+      val personaInProbationAndPrison = personInProbationAndNomisPersona
+      val personOnProbation = personaInProbationAndPrison.run { PersonOnProbation(Person(firstName = firstName, lastName = lastName, identifiers = identifiers), underActiveSupervision = true) }
+      val personOnProbationMissingNomisNumber = personaInProbationAndPrison.run { PersonOnProbation(Person(firstName = firstName, lastName = lastName), underActiveSupervision = true) }
+      val prisoner = personaInProbationAndPrison.run { POSPrisoner(firstName = firstName, lastName = lastName, dateOfBirth = dateOfBirth, prisonerNumber = identifiers.nomisNumber, youthOffender = false) }
       val prisonerWithPrisonId = POSPrisoner(firstName = prisoner.firstName, lastName = prisoner.lastName, prisonId = prisonId, youthOffender = false)
       val prisonerWithWrongPrisonId = POSPrisoner(firstName = prisoner.firstName, lastName = prisoner.lastName, prisonId = wrongPrisonId, youthOffender = false)
+
+      val personOnProbationOnly = personInProbationOnlyPersona.run { PersonOnProbation(Person(firstName = firstName, lastName = lastName, identifiers = identifiers), underActiveSupervision = true) }
+      val personInPrisonOnly = personInNomisOnlyPersona.run { Person(firstName = firstName, lastName = lastName, identifiers = identifiers) }
+      val prisonerInPrisonOnly = personInPrisonOnly.run { POSPrisoner(firstName = firstName, lastName = lastName, dateOfBirth = dateOfBirth, prisonerNumber = identifiers.nomisNumber, youthOffender = false) }
 
       val nomsNumber = prisoner.prisonerNumber!!
       val nomsNumberForPrisonerWithWrongPrisonId = "A1234AA"
       val crnNumber = personOnProbation.identifiers.deliusCrn!!
+      val unknownCrnNumber = "X999999"
+      val unknownNomsNumber = "X9999YZ"
+
+      fun notFoundErrors(vararg upstreamApi: UpstreamApi) = upstreamApi.map { UpstreamApiError(causedBy = it, type = UpstreamApiError.Type.ENTITY_NOT_FOUND, description = "MockError") }.toList()
+
+      fun givenPersonFoundInProbation(
+        id: String = crnNumber,
+        person: PersonOnProbation? = personOnProbation,
+        errors: List<UpstreamApiError> = emptyList(),
+      ) = whenever(deliusGateway.getPerson(id)).thenReturn(Response(data = person, errors = errors))
+
+      fun givenPersonNotFoundInProbation(
+        id: String = unknownCrnNumber,
+        errors: List<UpstreamApiError> = notFoundErrors(UpstreamApi.NDELIUS),
+      ) = whenever(deliusGateway.getPerson(id)).thenReturn(Response(data = null, errors = errors))
+
+      fun givenPrisonerFound(
+        nomisNumber: String = nomsNumber,
+        posPrisoner: POSPrisoner = prisoner,
+      ) = whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomisNumber)).thenReturn(Response(data = posPrisoner))
+
+      fun givenPrisonerNotFound(nomisNumber: String = unknownNomsNumber) =
+        whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomisNumber))
+          .thenReturn(Response(data = null, errors = notFoundErrors(UpstreamApi.PRISONER_OFFENDER_SEARCH)))
 
       beforeEach {
         Mockito.reset(prisonerOffenderSearchGateway)
@@ -108,34 +142,99 @@ internal class GetPersonServiceTest(
       }
 
       describe("getCombinedDataForPerson()") {
-        it("returns a person with both probation and prison data when prison data exists") {
-          val result = getPersonService.getCombinedDataForPerson(crnNumber)
-          result.data.prisonerOffenderSearch.shouldNotBeNull()
-          result.data.prisonerOffenderSearch.firstName
-            .shouldBe(prisoner.firstName)
-          result.data.prisonerOffenderSearch.lastName
-            .shouldBe(prisoner.lastName)
-          result.data.prisonerOffenderSearch.dateOfBirth
-            .shouldBe(prisoner.dateOfBirth)
-          result.data.probationOffenderSearch.shouldBe(personOnProbation)
-          result.errors.shouldBe(emptyList())
+        describe("Given a person found in Probation, and hmppsId is CRN") {
+          val hmppsId = crnNumber
+
+          it("returns a person with both Probation and Prison data, when found in Prison") {
+            val result = getPersonService.getCombinedDataForPerson(hmppsId)
+
+            result.data.shouldNotBeNull()
+            with(result.data.prisonerOffenderSearch) {
+              this.shouldNotBeNull()
+              firstName shouldBe prisoner.firstName
+              lastName shouldBe prisoner.lastName
+              dateOfBirth shouldBe prisoner.dateOfBirth
+            }
+            result.data.probationOffenderSearch shouldBe personOnProbation
+            result.errors.shouldBeEmpty()
+          }
+
+          it("returns a person with Probation data and Prison error, when not found in Prison") {
+            val nomsNumberNotFound = personOnProbation.identifiers.nomisNumber!!
+            givenPrisonerNotFound(nomsNumberNotFound)
+            val result = getPersonService.getCombinedDataForPerson(hmppsId)
+
+            result.data shouldBe OffenderSearchResponse(prisonerOffenderSearch = null, probationOffenderSearch = personOnProbation)
+            result.errors shouldBe notFoundErrors(UpstreamApi.PRISONER_OFFENDER_SEARCH)
+          }
         }
 
-        it("returns errors when unable to retrieve prison data and data when probation data is available") {
-          val errors =
-            listOf(
-              UpstreamApiError(
-                UpstreamApi.PRISONER_OFFENDER_SEARCH,
-                UpstreamApiError.Type.ENTITY_NOT_FOUND,
-                "MockError",
-              ),
-            )
-          whenever(deliusGateway.getPerson(id = crnNumber)).thenReturn(Response(data = personOnProbation))
-          whenever(prisonerOffenderSearchGateway.getPrisonOffender(nomsNumber)).thenReturn(Response(data = null, errors))
+        describe("Given a person found in Probation only, and hmppsId is CRN") {
+          val person = personOnProbationOnly
+          val crnNumber = person.identifiers.deliusCrn!!
+          val hmppsId = crnNumber
 
-          val result = getPersonService.getCombinedDataForPerson(crnNumber)
-          result.data.shouldBe(OffenderSearchResponse(prisonerOffenderSearch = null, probationOffenderSearch = personOnProbation))
-          result.errors.shouldBe(errors)
+          beforeEach {
+            givenPersonFoundInProbation(id = hmppsId, person = person)
+          }
+
+          it("returns a person with Probation data, without error") {
+            val result = getPersonService.getCombinedDataForPerson(hmppsId)
+
+            result.data.shouldNotBeNull()
+            result.data.probationOffenderSearch shouldBe person
+            result.data.prisonerOffenderSearch.shouldBeNull()
+            result.errors.shouldBeEmpty()
+          }
+        }
+
+        describe("Given a person not found in Probation, and hmppsId is CRN") {
+          val hmppsId = unknownCrnNumber
+
+          beforeEach {
+            givenPersonNotFoundInProbation(id = hmppsId)
+          }
+
+          it("returns not found error") {
+            val result = getPersonService.getCombinedDataForPerson(hmppsId)
+
+            result.errors shouldBe notFoundErrors(UpstreamApi.NDELIUS)
+            result.data.shouldBeNull()
+            verify(prisonerOffenderSearchGateway, never()).getPrisonOffender(any())
+          }
+        }
+
+        describe("Given a person not found in Probation, and hmppsId is noms number") {
+          val prisoner = prisonerInPrisonOnly
+          val nomisNumber = prisoner.prisonerNumber!!
+          val hmppsId = nomisNumber
+
+          beforeEach {
+            givenPersonNotFoundInProbation(id = hmppsId)
+          }
+
+          it("returns a person with Prison data only, if found in Prison") {
+            givenPrisonerFound(nomisNumber, prisoner)
+            val result = getPersonService.getCombinedDataForPerson(hmppsId)
+
+            result.data.shouldNotBeNull()
+            result.data.probationOffenderSearch.shouldBeNull()
+            result.errors shouldBe notFoundErrors(UpstreamApi.NDELIUS)
+            with(result.data.prisonerOffenderSearch) {
+              this.shouldNotBeNull()
+              firstName shouldBe prisoner.firstName
+              lastName shouldBe prisoner.lastName
+              dateOfBirth shouldBe prisoner.dateOfBirth
+            }
+          }
+
+          it("returns errors when prisoner is not found") {
+            givenPrisonerNotFound(nomisNumber)
+            val result = getPersonService.getCombinedDataForPerson(hmppsId)
+
+            result.data.shouldBeNull()
+            result.errors shouldBe notFoundErrors(UpstreamApi.NDELIUS, UpstreamApi.PRISONER_OFFENDER_SEARCH)
+          }
         }
       }
 
