@@ -17,7 +17,7 @@ data class PVVisit(
   val visitRoom: String,
   val visitType: String,
   val visitStatus: String,
-  val visitSubStatus: String,
+  val visitSubStatus: String?,
   val outcomeStatus: String?,
   val visitRestriction: String,
   val startTimestamp: String,

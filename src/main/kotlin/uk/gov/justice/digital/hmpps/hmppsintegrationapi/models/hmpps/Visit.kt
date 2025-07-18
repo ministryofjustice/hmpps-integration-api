@@ -23,7 +23,7 @@ data class Visit(
   @Schema(description = "Visit Status", example = "BOOKED")
   val visitStatus: String,
   @Schema(description = "Visit Sub Status", example = "AUTO_APPROVED")
-  val visitSubStatus: String,
+  val visitSubStatus: String?,
   @Schema(description = "Outcome Status of Visit", example = "ADMINISTRATIVE_CANCELLATION")
   val outcomeStatus: String?,
   @Schema(description = "Visit Restriction", example = "OPEN")
