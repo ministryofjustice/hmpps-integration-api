@@ -31,9 +31,7 @@
         "summary": "Returns an individual's education record.",
         "description": "Returns an individual's education which includes their level of education, and a collection of \nqualifications that have been achieved.\n\n**Role Requirements:**\nAccess to this endpoint requires one of the following roles:\n  - `ROLE_EDUCATION_AND_WORK_PLAN__EDUCATION__RO` (Read-Only)\n  - `ROLE_EDUCATION_AND_WORK_PLAN__EDUCATION__RW` (Read-Write)\n",
         "operationId": "get-education",
-        "tags": [
-          "Education"
-        ],
+        "tags": ["Education"],
         "responses": {
           "200": {
             "$ref": "#/components/responses/Education"
@@ -47,9 +45,7 @@
         "summary": "Creates a record of an individual's education.",
         "description": "Creates a record of an individual's education which includes their level of education, and a\ncollection of qualifications that have been achieved.  \n\nA `CONFLICT 409` response is returned if there is already an education record for the individual.\n\n**Role Requirements:**\nAccess to this endpoint requires one of the following roles:\n  - `ROLE_EDUCATION_AND_WORK_PLAN__EDUCATION__RW` (Read-Write)\n",
         "operationId": "create-education",
-        "tags": [
-          "Education"
-        ],
+        "tags": ["Education"],
         "requestBody": {
           "$ref": "#/components/requestBodies/CreateEducation"
         },
@@ -69,9 +65,7 @@
         "summary": "Updates an individual's education.",
         "description": "Updates an individual's education.  \n\nThe entire education record is updated as one. Updating just the level of education, or individual\nqualifications (including adding, removing or updating) is not currently supported.\n\nA `NOT_FOUND 404` response is returned if the specified individual does not currently have an education record.\n\n**Role Requirements:**\nAccess to this endpoint requires one of the following roles:\n  - `ROLE_EDUCATION_AND_WORK_PLAN__EDUCATION__RW` (Read-Write)\n",
         "operationId": "update-education",
-        "tags": [
-          "Education"
-        ],
+        "tags": ["Education"],
         "requestBody": {
           "$ref": "#/components/requestBodies/UpdateEducation"
         },
@@ -92,9 +86,7 @@
       "post": {
         "summary": "Retrieves a list of Action Plans for a given list of Prisoners.",
         "description": "Retrieves a list of Action Plans for a given list of Prisoners. This is a POST, rather than a GET, to allow a long list of prison numbers.\n\n**Role Requirements:**\nAccess to this endpoint requires one of the following roles:\n  - `ROLE_EDUCATION_AND_WORK_PLAN__ACTIONPLANS__RW` (Read-Write)\n",
-        "tags": [
-          "Action Plans"
-        ],
+        "tags": ["Action Plans"],
         "responses": {
           "200": {
             "$ref": "#/components/responses/ActionPlanSummaryList"
@@ -118,9 +110,7 @@
       "post": {
         "summary": "Creates an Action Plan.",
         "description": "Creates an Action Plan with at least one or more Goals.\n**Role Requirements:**\nAccess to this endpoint requires one of the following roles:\n  - `ROLE_EDUCATION_AND_WORK_PLAN__ACTIONPLANS__RW` (Read-Write)\n",
-        "tags": [
-          "Action Plans"
-        ],
+        "tags": ["Action Plans"],
         "responses": {
           "201": {
             "description": "The Action Plan was created successfully."
@@ -140,9 +130,7 @@
       "get": {
         "summary": "Return a Prisoner's Action Plan",
         "description": "Return a Prisoner's Action Plan with the goals ordered in chronological order (oldest first). If the prisoner does not yet have any goals set, a 404 is returned.\n\n**Role Requirements:**  \nAccess to this endpoint requires one of the following roles:\n  - `ROLE_EDUCATION_AND_WORK_PLAN__ACTIONPLANS__RO` (Read-Only)\n  - `ROLE_EDUCATION_AND_WORK_PLAN__ACTIONPLANS__RW` (Read-Write)\n",
-        "tags": [
-          "Action Plans"
-        ],
+        "tags": ["Action Plans"],
         "responses": {
           "200": {
             "$ref": "#/components/responses/ActionPlan"
@@ -163,9 +151,7 @@
       "get": {
         "summary": "Lists all Action Plan Reviews (past and scheduled) for a prisoner",
         "description": "Returns all Action Plan Reviews for the specified prisoner. The response data will contain all previously\ncompleted reviews (if any), plus the next scheduled review.\n\nThe prisoner must have an Action Plan (consisting of their completed Induction plus at least 1 Goal) in order to\nhave any Reviews. If the prisoner does not yet have an Action Plan a 404 is returned.\n\nGiven a prisoner has an Action Plan they will have exactly 1 scheduled review, and zero or more completed reviews.\n\n**Role Requirements:**\nAccess to this endpoint requires one of the following roles:\n  - `ROLE_EDUCATION_AND_WORK_PLAN__REVIEWS__RO` (Read-Only)\n  - `ROLE_EDUCATION_AND_WORK_PLAN__REVIEWS__RW` (Read-Write)\n",
-        "tags": [
-          "Action Plan Reviews"
-        ],
+        "tags": ["Action Plan Reviews"],
         "responses": {
           "200": {
             "$ref": "#/components/responses/GetActionPlanReviews"
@@ -179,9 +165,7 @@
       "post": {
         "summary": "Creates an Action Plan Review for a prisoner",
         "description": "Submits and records an Action Plan Reviews for the specified prisoner.\n\nThe prisoner must have an Action Plan (consisting of their completed Induction plus at least 1 Goal) in order to\nhave a Review. If the prisoner does not yet have an Action Plan a 404 is returned.\n\nGiven a prisoner has an Action Plan they will have exactly 1 scheduled review, and zero or more completed reviews.\n\n**Role Requirements:**\nAccess to this endpoint requires the following role:\n  - `ROLE_EDUCATION_AND_WORK_PLAN__REVIEWS__RW` (Read-Write)\n",
-        "tags": [
-          "Action Plan Reviews"
-        ],
+        "tags": ["Action Plan Reviews"],
         "requestBody": {
           "$ref": "#/components/requestBodies/CreateActionPlanReview"
         },
@@ -208,9 +192,7 @@
       "put": {
         "summary": "updates the status for the current review schedule.",
         "description": "This is used to exempt or remove an exemption from a review schedule.\n\n**Role Requirements:**\nAccess to this endpoint requires one of the following roles:\n  - `ROLE_EDUCATION_AND_WORK_PLAN__REVIEWS__RW` (Read-Write)\n",
-        "tags": [
-          "Action Plan Reviews"
-        ],
+        "tags": ["Action Plan Reviews"],
         "responses": {
           "204": {
             "description": "The review schedule status update request was processed successfully."
@@ -237,9 +219,7 @@
       "get": {
         "summary": "Lists all Action Plan Review Schedules (past and scheduled) for a prisoner",
         "description": "Returns all Action Plan Review schedules for the specified prisoner. \n\nThe data will be returned as a list ordered by last updated date then by version number. \n\nIt is possible for a review schedule to be updated therefore this endpoint will return all versions of a\nreview schedule - the highest version number will be the most recent schedule. \n      \n**Role Requirements:**\nAccess to this endpoint requires one of the following roles:\n  - `ROLE_EDUCATION_AND_WORK_PLAN__REVIEWS__RO` (Read-Only)\n  - `ROLE_EDUCATION_AND_WORK_PLAN__REVIEWS__RW` (Read-Write)\n",
-        "tags": [
-          "Action Plan Reviews"
-        ],
+        "tags": ["Action Plan Reviews"],
         "responses": {
           "200": {
             "$ref": "#/components/responses/GetActionPlanReviewSchedules"
@@ -260,9 +240,7 @@
       "put": {
         "summary": "updates the status for the induction schedule.",
         "description": "This is used to exempt or remove an exemption from a induction schedule.\n\n**Role Requirements:**\nAccess to this endpoint requires the following role:\n  - `ROLE_EDUCATION_AND_WORK_PLAN__INDUCTIONS__RW` (Read-Write)\n",
-        "tags": [
-          "Action Plan Inductions"
-        ],
+        "tags": ["Action Plan Inductions"],
         "responses": {
           "204": {
             "description": "The induction schedule status update request was processed successfully."
@@ -289,9 +267,7 @@
       "get": {
         "summary": "Lists Induction Schedule history for a prisoner",
         "description": "It is possible for an induction schedule to be updated therefore this endpoint will return all versions of a\ninduction schedule - the highest version number will be the most recent. \n\n**Role Requirements:**\nAccess to this endpoint requires one of the following roles:\n  - `ROLE_EDUCATION_AND_WORK_PLAN__REVIEWS__RO` (Read-Only)\n  - `ROLE_EDUCATION_AND_WORK_PLAN__REVIEWS__RW` (Read-Write)\n",
-        "tags": [
-          "Action Plan Inductions"
-        ],
+        "tags": ["Action Plan Inductions"],
         "responses": {
           "200": {
             "$ref": "#/components/responses/GetInductionSchedules"
@@ -333,9 +309,7 @@
             "required": false
           }
         ],
-        "tags": [
-          "Goals"
-        ],
+        "tags": ["Goals"],
         "responses": {
           "200": {
             "$ref": "#/components/responses/GetGoals"
@@ -352,9 +326,7 @@
       "post": {
         "summary": "Creates one or more Goals.",
         "description": "Creates one or more Goals and saves them to the Prisoner's Action Plan. Returns a 404 if the Prisoner does not have an Action Plan.\n\n**Role Requirements:**\nAccess to this endpoint requires one of the following roles:\n  - `ROLE_EDUCATION_AND_WORK_PLAN__GOALS__RW` (Read-Write)\n",
-        "tags": [
-          "Goals"
-        ],
+        "tags": ["Goals"],
         "responses": {
           "201": {
             "description": "The Goal(s) were created successfully."
@@ -384,9 +356,7 @@
       "get": {
         "summary": "Returns a single goal identified by the prisoner and the goal reference.",
         "description": "Returns a single Goal identified by the specified prison number and goal reference.  \n\n* If the goal identified by both the prison number and goal reference is found a 200 response is returned with the goal as the response body.  \n* If a goal that matches both the prison number and goal reference cannot be found a 404 response is returned.\n\n**Role Requirements:**\nAccess to this endpoint requires one of the following roles:\n  - `ROLE_EDUCATION_AND_WORK_PLAN__GOALS__RO` (Read-Only)\n  - `ROLE_EDUCATION_AND_WORK_PLAN__GOALS__RW` (Read-Write)\n",
-        "tags": [
-          "Goals"
-        ],
+        "tags": ["Goals"],
         "responses": {
           "200": {
             "$ref": "#/components/responses/Goal"
@@ -400,9 +370,7 @@
       "put": {
         "summary": "Updates a Goal",
         "description": "Updates a single Goal and its list of Steps (including their sequential order if relevant). Note that the whole of a Goal's data should be provided, otherwise the absence of any data (such as a Step) will result in it being removed.\n\n**Role Requirements:**\nAccess to this endpoint requires one of the following roles:\n  - `ROLE_EDUCATION_AND_WORK_PLAN__GOALS__RW` (Read-Write)\n",
-        "tags": [
-          "Goals"
-        ],
+        "tags": ["Goals"],
         "responses": {
           "204": {
             "description": "The Goal was updated successfully."
@@ -432,9 +400,7 @@
       "put": {
         "summary": "Archives a Goal",
         "description": "Changes a goals status to 'ARCHIVED' and records the archival reason.\n\n**Role Requirements:**\nAccess to this endpoint requires one of the following roles:\n  - `ROLE_EDUCATION_AND_WORK_PLAN__GOALS__RW` (Read-Write)\n",
-        "tags": [
-          "Goals"
-        ],
+        "tags": ["Goals"],
         "responses": {
           "204": {
             "description": "The Goal was archived successfully."
@@ -467,9 +433,7 @@
       "put": {
         "summary": "Unarchives a Goal",
         "description": "Changes an archived goals status back to 'ACTIVE'\n\n**Role Requirements:**\n        Access to this endpoint requires one of the following roles:\n          - `ROLE_EDUCATION_AND_WORK_PLAN__GOALS__RW` (Read-Write)\n",
-        "tags": [
-          "Goals"
-        ],
+        "tags": ["Goals"],
         "responses": {
           "204": {
             "description": "The Goal was unarchived successfully."
@@ -502,9 +466,7 @@
       "put": {
         "summary": "Completes a Goal",
         "description": "Changes a goals status to 'COMPLETE' and records the completion note.\n\n**Role Requirements:**\nAccess to this endpoint requires one of the following roles:\n  - `ROLE_EDUCATION_AND_WORK_PLAN__GOALS__RW` (Read-Write)\n",
-        "tags": [
-          "Goals"
-        ],
+        "tags": ["Goals"],
         "responses": {
           "204": {
             "description": "The Goal was completed successfully."
@@ -589,9 +551,7 @@
       "get": {
         "summary": "Return a Prisoner's Timeline.",
         "description": "Returns a Prisoner's Timeline data, consisting of one or more 'events' of interest in chronological order. For example, it could include events such as when they completed an Induction, or updated a Goal. The prisonNumber is the unique identifier of the Timeline.\n\n**Role Requirements:**\n        Access to this endpoint requires one of the following roles:\n          - `ROLE_EDUCATION_AND_WORK_PLAN__TIMELINE__RO` (Read-Only)\n",
-        "tags": [
-          "Timelines"
-        ],
+        "tags": ["Timelines"],
         "responses": {
           "200": {
             "$ref": "#/components/responses/Timeline"
@@ -608,9 +568,7 @@
         "deprecated": true,
         "summary": "Returns summary CIAG Inductions for a specified list of prisoners.",
         "description": "Given a list of prisoner identifiers (Prison Numbers) returns summary CIAG Induction data for each specified\nprisoner. If the returned data does not include summary data for a given prisoner it can be inferred that the\nprisoner does not have a CIAG Induction.\nThis endpoint has been migrated from the `hmpps-ciag-careers-induction-api` and the data structure has been \nkept the same in order to prevent breaking the UI when it points to this endpoint.\n\n**Role Requirements:**\nAccess to this endpoint requires one of the following roles:\n  - `ROLE_EDUCATION_AND_WORK_PLAN__INDUCTIONS__RO` (Read-Only)\n  - `ROLE_EDUCATION_AND_WORK_PLAN__INDUCTIONS__RW` (Read-Write)\n",
-        "tags": [
-          "Legacy Inductions"
-        ],
+        "tags": ["Legacy Inductions"],
         "responses": {
           "200": {
             "$ref": "#/components/responses/CiagInductionSummaryList"
@@ -634,9 +592,7 @@
       "post": {
         "summary": "Creates an Induction for a Prisoner.",
         "description": "Creates an Induction for a Prisoner (if it does not already exist).\n\n**Role Requirements:**\nAccess to this endpoint requires one of the following roles:\n  - `ROLE_EDUCATION_AND_WORK_PLAN__INDUCTIONS__RW` (Read-Write)\n",
-        "tags": [
-          "Inductions"
-        ],
+        "tags": ["Inductions"],
         "responses": {
           "201": {
             "description": "The Induction was created successfully."
@@ -653,9 +609,7 @@
       "get": {
         "summary": "Return a Prisoner's Induction.",
         "description": "Returns a Prisoner's Induction.\n",
-        "tags": [
-          "Inductions"
-        ],
+        "tags": ["Inductions"],
         "responses": {
           "200": {
             "$ref": "#/components/responses/Induction"
@@ -669,9 +623,7 @@
       "put": {
         "summary": "Updates an Induction for a Prisoner.",
         "description": "Provides the ability to update a Prisoner's Induction. If a field (or \"child\" object) is provided in the request,\nit will completely overwrite the existing value. Conversely, if a field is not included in the request, then\nthe existing value will remain untouched (including its updatedAt/updatedBy values).\n\n**Role Requirements:**\nAccess to this endpoint requires one of the following roles:\n  - `ROLE_EDUCATION_AND_WORK_PLAN__INDUCTIONS__RW` (Read-Write)\n",
-        "tags": [
-          "Inductions"
-        ],
+        "tags": ["Inductions"],
         "responses": {
           "204": {
             "description": "Induction updated successfully."
@@ -698,9 +650,7 @@
       "get": {
         "summary": "Return a Prisoner's Induction schedule.",
         "description": "Returns a Prisoner's Induction schedule.\n\n**Role Requirements:**\nAccess to this endpoint requires one of the following roles:\n  - `ROLE_EDUCATION_AND_WORK_PLAN__INDUCTIONS__RO` (Read-Only)\n  - `ROLE_EDUCATION_AND_WORK_PLAN__INDUCTIONS__RW` (Read-Write)\n",
-        "tags": [
-          "Inductions"
-        ],
+        "tags": ["Inductions"],
         "responses": {
           "200": {
             "$ref": "#/components/responses/InductionSchedule"
@@ -715,9 +665,7 @@
     "/subject-access-request": {
       "get": {
         "summary": "Retrieves PLP SAR data",
-        "tags": [
-          "Subject Access Request"
-        ],
+        "tags": ["Subject Access Request"],
         "parameters": [
           {
             "$ref": "#/components/parameters/prnQueryStringParameter"
@@ -751,9 +699,7 @@
     "/session/{prisonId}/summary": {
       "get": {
         "summary": "Get summary of reviews and inductions sessions for a prison",
-        "tags": [
-          "Session reporting"
-        ],
+        "tags": ["Session reporting"],
         "description": "Returns counts of overdue, due, and exempt reviews and inductions for a given prison.",
         "parameters": [
           {
@@ -770,9 +716,7 @@
     "/session/summary": {
       "post": {
         "summary": "Retrieve a list of session summary details for a given list of prison numbers",
-        "tags": [
-          "Session reporting"
-        ],
+        "tags": ["Session reporting"],
         "description": "Returns details of overdue, due, and exempt reviews and inductions for a given list of prison numbers.",
         "parameters": [
           {
@@ -878,14 +822,7 @@
             "description": "Column to sort by",
             "schema": {
               "type": "string",
-              "enum": [
-                "prisonerName",
-                "cellLocation",
-                "releaseDate",
-                "nextActionDate",
-                "planLastUpdated",
-                "hasPlan"
-              ]
+              "enum": ["prisonerName", "cellLocation", "releaseDate", "nextActionDate", "planLastUpdated", "hasPlan"]
             }
           },
           {
@@ -894,10 +831,7 @@
             "description": "Sort direction (ascending or descending)",
             "schema": {
               "type": "string",
-              "enum": [
-                "asc",
-                "desc"
-              ]
+              "enum": ["asc", "desc"]
             }
           },
           {
@@ -945,9 +879,7 @@
       "get": {
         "summary": "Returns education assessments' eligibility of a prisoner",
         "description": "Returns eligibility to education assessment of a prisoner\n\n**Role Requirements**: Access to this endpoint requires one of the following roles:\n* `ROLE_EDUCATION_AND_WORK_PLAN__ASSESSMENTS__RO` (Read-Only)\n",
-        "tags": [
-          "Assessments"
-        ],
+        "tags": ["Assessments"],
         "parameters": [
           {
             "$ref": "#/components/parameters/prisonNumberPathParameter"
@@ -1032,9 +964,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "status"
-        ]
+        "required": ["status"]
       },
       "AuditedResource": {
         "title": "AuditedResource",
@@ -1107,9 +1037,7 @@
             }
           }
         },
-        "required": [
-          "actionPlanSummaries"
-        ]
+        "required": ["actionPlanSummaries"]
       },
       "ActionPlanSummaryResponse": {
         "title": "ActionPlanSummaryResponse",
@@ -1128,10 +1056,7 @@
             "example": "A1234BC"
           }
         },
-        "required": [
-          "reference",
-          "prisonNumber"
-        ]
+        "required": ["reference", "prisonNumber"]
       },
       "ActionPlanResponse": {
         "title": "ActionPlanResponse",
@@ -1157,11 +1082,7 @@
             }
           }
         },
-        "required": [
-          "reference",
-          "prisonNumber",
-          "goals"
-        ]
+        "required": ["reference", "prisonNumber", "goals"]
       },
       "GetGoalsResponse": {
         "title": "GetGoalsResponse",
@@ -1176,9 +1097,7 @@
             }
           }
         },
-        "required": [
-          "goals"
-        ]
+        "required": ["goals"]
       },
       "GoalResponse": {
         "title": "GoalResponse",
@@ -1318,12 +1237,7 @@
             "example": 1
           }
         },
-        "required": [
-          "stepReference",
-          "title",
-          "status",
-          "sequenceNumber"
-        ]
+        "required": ["stepReference", "title", "status", "sequenceNumber"]
       },
       "TimelineResponse": {
         "title": "TimelineResponse",
@@ -1350,11 +1264,7 @@
             }
           }
         },
-        "required": [
-          "reference",
-          "prisonNumber",
-          "events"
-        ]
+        "required": ["reference", "prisonNumber", "events"]
       },
       "TimelineEventResponse": {
         "title": "TimelineEventResponse",
@@ -1411,16 +1321,7 @@
             "example": "113d1833-0ce1-45ad-ab44-878c9d589358"
           }
         },
-        "required": [
-          "reference",
-          "sourceReference",
-          "eventType",
-          "contextualInfo",
-          "prisonId",
-          "actionedBy",
-          "timestamp",
-          "correlationId"
-        ]
+        "required": ["reference", "sourceReference", "eventType", "contextualInfo", "prisonId", "actionedBy", "timestamp", "correlationId"]
       },
       "CiagInductionSummaryListResponse": {
         "title": "CiagInductionSummaryListResponse",
@@ -1435,9 +1336,7 @@
             }
           }
         },
-        "required": [
-          "ciagProfileList"
-        ]
+        "required": ["ciagProfileList"]
       },
       "CiagInductionSummaryResponse": {
         "title": "CiagInductionSummaryResponse",
@@ -1480,15 +1379,7 @@
             "example": "2023-06-19T09:39:44Z"
           }
         },
-        "required": [
-          "offenderId",
-          "desireToWork",
-          "hopingToGetWork",
-          "createdBy",
-          "createdDateTime",
-          "modifiedBy",
-          "modifiedDateTime"
-        ]
+        "required": ["offenderId", "desireToWork", "hopingToGetWork", "createdBy", "createdDateTime", "modifiedBy", "modifiedDateTime"]
       },
       "InductionResponse": {
         "title": "InductionResponse",
@@ -2210,13 +2101,7 @@
             "description": "the version number of this schedule (the highest number is the most recent version of this induction schedule)"
           }
         },
-        "required": [
-          "reference",
-          "prisonNumber",
-          "deadlineDate",
-          "scheduleCalculationRule",
-          "scheduleStatus"
-        ]
+        "required": ["reference", "prisonNumber", "deadlineDate", "scheduleCalculationRule", "scheduleStatus"]
       },
       "EducationResponse": {
         "title": "EducationResponse",
@@ -2245,11 +2130,7 @@
             }
           }
         },
-        "required": [
-          "reference",
-          "educationLevel",
-          "qualifications"
-        ]
+        "required": ["reference", "educationLevel", "qualifications"]
       },
       "GetActionPlanSummariesRequest": {
         "title": "GetActionPlanSummariesRequest",
@@ -2266,9 +2147,7 @@
             }
           }
         },
-        "required": [
-          "prisonNumbers"
-        ]
+        "required": ["prisonNumbers"]
       },
       "PrisonerSearchCriteria": {
         "title": "Prisoner search Criteria",
@@ -2314,23 +2193,13 @@
           },
           "sortBy": {
             "type": "string",
-            "enum": [
-              "prisonerName",
-              "cellLocation",
-              "releaseDate",
-              "nextActionDate",
-              "planLastUpdated",
-              "hasPlan"
-            ],
+            "enum": ["prisonerName", "cellLocation", "releaseDate", "nextActionDate", "planLastUpdated", "hasPlan"],
             "default": "prisonerName",
             "description": "Column to sort by"
           },
           "sortDirection": {
             "type": "string",
-            "enum": [
-              "asc",
-              "desc"
-            ],
+            "enum": ["asc", "desc"],
             "default": "asc",
             "description": "Sort direction (ascending or descending)"
           },
@@ -2392,12 +2261,7 @@
             "$ref": "#/components/schemas/PrisonId"
           }
         },
-        "required": [
-          "title",
-          "targetCompletionDate",
-          "steps",
-          "prisonId"
-        ]
+        "required": ["title", "targetCompletionDate", "steps", "prisonId"]
       },
       "CreateGoalsRequest": {
         "title": "CreateGoalsRequest",
@@ -2413,9 +2277,7 @@
             }
           }
         },
-        "required": [
-          "goals"
-        ]
+        "required": ["goals"]
       },
       "UpdateGoalRequest": {
         "title": "UpdateGoalRequest",
@@ -2456,14 +2318,7 @@
             "$ref": "#/components/schemas/PrisonId"
           }
         },
-        "required": [
-          "goalReference",
-          "title",
-          "targetCompletionDate",
-          "status",
-          "steps",
-          "prisonId"
-        ]
+        "required": ["goalReference", "title", "targetCompletionDate", "status", "steps", "prisonId"]
       },
       "CreateStepRequest": {
         "title": "CreateStepRequest",
@@ -2481,10 +2336,7 @@
             "example": 1
           }
         },
-        "required": [
-          "title",
-          "sequenceNumber"
-        ]
+        "required": ["title", "sequenceNumber"]
       },
       "UpdateStepRequest": {
         "title": "UpdateStepRequest",
@@ -2506,9 +2358,7 @@
             "$ref": "#/components/schemas/StepStatus"
           }
         },
-        "required": [
-          "status"
-        ]
+        "required": ["status"]
       },
       "ArchiveGoalRequest": {
         "title": "ArchiveGoalRequest",
@@ -2536,11 +2386,7 @@
             "$ref": "#/components/schemas/PrisonId"
           }
         },
-        "required": [
-          "goalReference",
-          "reason",
-          "prisonId"
-        ]
+        "required": ["goalReference", "reason", "prisonId"]
       },
       "CompleteGoalRequest": {
         "title": "CompleteGoalRequest",
@@ -2561,10 +2407,7 @@
             "$ref": "#/components/schemas/PrisonId"
           }
         },
-        "required": [
-          "goalReference",
-          "prisonId"
-        ]
+        "required": ["goalReference", "prisonId"]
       },
       "NoteResponse": {
         "title": "NoteResponse",
@@ -2590,34 +2433,20 @@
             "$ref": "#/components/schemas/NoteType"
           }
         },
-        "required": [
-          "reference",
-          "content",
-          "type"
-        ]
+        "required": ["reference", "content", "type"]
       },
       "SessionStatusType": {
         "title": "Session type",
         "description": "Enum of the different session status types.",
         "type": "string",
-        "enum": [
-          "ON_HOLD",
-          "DUE",
-          "OVERDUE"
-        ]
+        "enum": ["ON_HOLD", "DUE", "OVERDUE"]
       },
       "NoteType": {
         "title": "NoteType",
         "description": "Enum describing the various note types.",
         "type": "string",
         "example": "GOAL",
-        "enum": [
-          "GOAL",
-          "GOAL_ARCHIVAL",
-          "GOAL_COMPLETION",
-          "REVIEW",
-          "INDUCTION"
-        ]
+        "enum": ["GOAL", "GOAL_ARCHIVAL", "GOAL_COMPLETION", "REVIEW", "INDUCTION"]
       },
       "UnarchiveGoalRequest": {
         "title": "UnarchiveGoalRequest",
@@ -2634,30 +2463,19 @@
             "$ref": "#/components/schemas/PrisonId"
           }
         },
-        "required": [
-          "goalReference",
-          "prisonId"
-        ]
+        "required": ["goalReference", "prisonId"]
       },
       "GoalStatus": {
         "title": "GoalStatus",
         "description": "Enum describing the various statuses of a Goal's lifecycle.",
         "type": "string",
-        "enum": [
-          "ACTIVE",
-          "COMPLETED",
-          "ARCHIVED"
-        ]
+        "enum": ["ACTIVE", "COMPLETED", "ARCHIVED"]
       },
       "StepStatus": {
         "title": "StepStatus",
         "description": "Enum describing the various statuses of a Step's lifecycle.",
         "type": "string",
-        "enum": [
-          "NOT_STARTED",
-          "ACTIVE",
-          "COMPLETE"
-        ]
+        "enum": ["NOT_STARTED", "ACTIVE", "COMPLETE"]
       },
       "TimelineEventType": {
         "title": "TimelineEventType",
@@ -2721,9 +2539,7 @@
             "maxLength": 512
           }
         },
-        "required": [
-          "experienceType"
-        ]
+        "required": ["experienceType"]
       },
       "InPrisonWorkInterest": {
         "title": "InPrisonWorkInterest",
@@ -2739,9 +2555,7 @@
             "maxLength": 255
           }
         },
-        "required": [
-          "workType"
-        ]
+        "required": ["workType"]
       },
       "InPrisonTrainingInterest": {
         "title": "InPrisonTrainingInterest",
@@ -2757,9 +2571,7 @@
             "maxLength": 255
           }
         },
-        "required": [
-          "trainingType"
-        ]
+        "required": ["trainingType"]
       },
       "PersonalSkill": {
         "title": "PersonalSkill",
@@ -2775,9 +2587,7 @@
             "maxLength": 255
           }
         },
-        "required": [
-          "skillType"
-        ]
+        "required": ["skillType"]
       },
       "PersonalInterest": {
         "title": "PersonalInterest",
@@ -2793,9 +2603,7 @@
             "maxLength": 255
           }
         },
-        "required": [
-          "interestType"
-        ]
+        "required": ["interestType"]
       },
       "FutureWorkInterest": {
         "title": "FutureWorkInterest",
@@ -2816,19 +2624,13 @@
             "maxLength": 512
           }
         },
-        "required": [
-          "workType"
-        ]
+        "required": ["workType"]
       },
       "HopingToWork": {
         "title": "HopingToWork",
         "type": "string",
         "description": "Whether the Prisoner hopes to get work.",
-        "enum": [
-          "YES",
-          "NO",
-          "NOT_SURE"
-        ]
+        "enum": ["YES", "NO", "NOT_SURE"]
       },
       "AffectAbilityToWork": {
         "title": "AffectAbilityToWork",
@@ -2983,11 +2785,7 @@
         "title": "HasWorkedBefore",
         "description": "Whether the prisoner has worked before or it may not be relevant in some scenarios.",
         "type": "string",
-        "enum": [
-          "YES",
-          "NO",
-          "NOT_RELEVANT"
-        ]
+        "enum": ["YES", "NO", "NOT_RELEVANT"]
       },
       "CreateAchievedQualificationRequest": {
         "title": "CreateAchievedQualificationRequest",
@@ -3010,11 +2808,7 @@
             "maxLength": 50
           }
         },
-        "required": [
-          "subject",
-          "level",
-          "grade"
-        ]
+        "required": ["subject", "level", "grade"]
       },
       "CreateOrUpdateAchievedQualificationRequest": {
         "title": "CreateOrUpdateAchievedQualificationRequest",
@@ -3038,17 +2832,7 @@
         "title": "QualificationLevel",
         "type": "string",
         "description": "The level of an educational qualification.  \nThe levels represent the [gov.uk qualification levels](https://www.gov.uk/what-different-qualification-levels-mean/list-of-qualification-levels).\n",
-        "enum": [
-          "ENTRY_LEVEL",
-          "LEVEL_1",
-          "LEVEL_2",
-          "LEVEL_3",
-          "LEVEL_4",
-          "LEVEL_5",
-          "LEVEL_6",
-          "LEVEL_7",
-          "LEVEL_8"
-        ]
+        "enum": ["ENTRY_LEVEL", "LEVEL_1", "LEVEL_2", "LEVEL_3", "LEVEL_4", "LEVEL_5", "LEVEL_6", "LEVEL_7", "LEVEL_8"]
       },
       "AchievedQualificationResponse": {
         "title": "AchievedQualificationResponse",
@@ -3137,9 +2921,7 @@
             }
           }
         },
-        "required": [
-          "offenderIds"
-        ]
+        "required": ["offenderIds"]
       },
       "PrisonerIdsRequest": {
         "title": "PrisonerIdsRequest",
@@ -3156,9 +2938,7 @@
             }
           }
         },
-        "required": [
-          "prisonNumbers"
-        ]
+        "required": ["prisonNumbers"]
       },
       "CreateInductionRequest": {
         "title": "CreateInductionRequest",
@@ -3211,10 +2991,7 @@
             "example": "Peer mentor"
           }
         },
-        "required": [
-          "prisonId",
-          "workOnRelease"
-        ]
+        "required": ["prisonId", "workOnRelease"]
       },
       "CreateWorkOnReleaseRequest": {
         "title": "CreateWorkOnReleaseRequest",
@@ -3237,9 +3014,7 @@
             "maxLength": 512
           }
         },
-        "required": [
-          "hopingToWork"
-        ]
+        "required": ["hopingToWork"]
       },
       "CreatePreviousQualificationsRequest": {
         "title": "CreatePreviousQualificationsRequest",
@@ -3276,9 +3051,7 @@
             "maxLength": 512
           }
         },
-        "required": [
-          "trainingTypes"
-        ]
+        "required": ["trainingTypes"]
       },
       "CreatePreviousWorkExperiencesRequest": {
         "title": "CreatePreviousWorkExperiencesRequest",
@@ -3302,9 +3075,7 @@
             }
           }
         },
-        "required": [
-          "hasWorkedBefore"
-        ]
+        "required": ["hasWorkedBefore"]
       },
       "CreateInPrisonInterestsRequest": {
         "title": "CreateInPrisonInterestsRequest",
@@ -3326,10 +3097,7 @@
             }
           }
         },
-        "required": [
-          "inPrisonWorkInterests",
-          "inPrisonTrainingInterests"
-        ]
+        "required": ["inPrisonWorkInterests", "inPrisonTrainingInterests"]
       },
       "CreatePersonalSkillsAndInterestsRequest": {
         "title": "CreatePersonalSkillsAndInterestsRequest",
@@ -3351,10 +3119,7 @@
             }
           }
         },
-        "required": [
-          "skills",
-          "interests"
-        ]
+        "required": ["skills", "interests"]
       },
       "CreateFutureWorkInterestsRequest": {
         "title": "CreateFutureWorkInterestsRequest",
@@ -3369,9 +3134,7 @@
             }
           }
         },
-        "required": [
-          "interests"
-        ]
+        "required": ["interests"]
       },
       "UpdateInductionRequest": {
         "title": "UpdateInductionRequest",
@@ -3409,10 +3172,7 @@
             "$ref": "#/components/schemas/UpdateFutureWorkInterestsRequest"
           }
         },
-        "required": [
-          "reference",
-          "prisonId"
-        ]
+        "required": ["reference", "prisonId"]
       },
       "UpdateWorkOnReleaseRequest": {
         "description": "A request to update a Prisoner's views on obtaining work after release.",
@@ -3429,9 +3189,7 @@
             "example": "c88a6c48-97e2-4c04-93b5-98619966447b"
           }
         },
-        "required": [
-          "reference"
-        ]
+        "required": ["reference"]
       },
       "UpdatePreviousQualificationsRequest": {
         "description": "A request to update a Prisoner's qualifications.",
@@ -3579,11 +3337,7 @@
             }
           }
         },
-        "required": [
-          "prisonId",
-          "educationLevel",
-          "qualifications"
-        ]
+        "required": ["prisonId", "educationLevel", "qualifications"]
       },
       "UpdateEducationRequest": {
         "description": "A request to update an individual's education record.",
@@ -3609,12 +3363,7 @@
             }
           }
         },
-        "required": [
-          "reference",
-          "prisonId",
-          "educationLevel",
-          "qualifications"
-        ]
+        "required": ["reference", "prisonId", "educationLevel", "qualifications"]
       },
       "CreateActionPlanReviewRequest": {
         "title": "CreateActionPlanReviewRequest",
@@ -3646,11 +3395,7 @@
             "example": "Peer mentor"
           }
         },
-        "required": [
-          "prisonId",
-          "note",
-          "conductedAt"
-        ]
+        "required": ["prisonId", "note", "conductedAt"]
       },
       "UpdateReviewScheduleStatusRequest": {
         "title": "UpdateReviewScheduleStatusRequest",
@@ -3668,10 +3413,7 @@
             "description": "An optional reason as to why the Review Schedule is exempted.\n\nOnly relevant and processed when the `status` field is one of the `EXEMPTION_` statuses.  \nThis field is not mandatory, even when the `status` field is one of the `EXEMPTION_` statuses.\n"
           }
         },
-        "required": [
-          "prisonId",
-          "status"
-        ]
+        "required": ["prisonId", "status"]
       },
       "CreateActionPlanReviewResponse": {
         "title": "CreateActionPlanReviewResponse",
@@ -3686,10 +3428,7 @@
             "$ref": "#/components/schemas/ScheduledActionPlanReviewResponse"
           }
         },
-        "required": [
-          "wasLastReviewBeforeRelease",
-          "latestReviewSchedule"
-        ]
+        "required": ["wasLastReviewBeforeRelease", "latestReviewSchedule"]
       },
       "ActionPlanReviewsResponse": {
         "title": "ActionPlanReviewsResponse",
@@ -3707,10 +3446,7 @@
             }
           }
         },
-        "required": [
-          "latestReviewSchedule",
-          "completedReviews"
-        ]
+        "required": ["latestReviewSchedule", "completedReviews"]
       },
       "ActionPlanReviewSchedulesResponse": {
         "title": "ActionPlanReviewSchedulesResponse",
@@ -3725,9 +3461,7 @@
             }
           }
         },
-        "required": [
-          "reviewSchedules"
-        ]
+        "required": ["reviewSchedules"]
       },
       "InductionSchedulesResponse": {
         "title": "InductionSchedulesResponse",
@@ -3742,9 +3476,7 @@
             }
           }
         },
-        "required": [
-          "inductionSchedules"
-        ]
+        "required": ["inductionSchedules"]
       },
       "SessionResponses": {
         "title": "SessionResponse",
@@ -3759,9 +3491,7 @@
             }
           }
         },
-        "required": [
-          "sessions"
-        ]
+        "required": ["sessions"]
       },
       "PersonSearchResult": {
         "title": "personSearchResult",
@@ -3779,10 +3509,7 @@
             }
           }
         },
-        "required": [
-          "people",
-          "pagination"
-        ]
+        "required": ["people", "pagination"]
       },
       "Pagination": {
         "description": "Pagination details for search results.",
@@ -3813,14 +3540,7 @@
             "description": "Number of items per page"
           }
         },
-        "required": [
-          "totalElements",
-          "totalPages",
-          "page",
-          "last",
-          "first",
-          "pageSize"
-        ]
+        "required": ["totalElements", "totalPages", "page", "last", "first", "pageSize"]
       },
       "PersonResponse": {
         "title": "PersonResponse",
@@ -3870,12 +3590,7 @@
             "example": "2023-06-19T09:39:44Z"
           }
         },
-        "required": [
-          "name",
-          "prisonNumber",
-          "dateOfBirth",
-          "hasPlan"
-        ]
+        "required": ["name", "prisonNumber", "dateOfBirth", "hasPlan"]
       },
       "SessionResponse": {
         "title": "SessionResponse",
@@ -3884,10 +3599,7 @@
         "properties": {
           "sessionType": {
             "type": "string",
-            "enum": [
-              "REVIEW",
-              "INDUCTION"
-            ]
+            "enum": ["REVIEW", "INDUCTION"]
           },
           "prisonNumber": {
             "type": "string",
@@ -3918,12 +3630,7 @@
             "example": "c88a6c48-97e2-4c04-93b5-98619966447b"
           }
         },
-        "required": [
-          "reference",
-          "deadlineDate",
-          "sessionType",
-          "prisonNumber"
-        ]
+        "required": ["reference", "deadlineDate", "sessionType", "prisonNumber"]
       },
       "SessionSummaryResponse": {
         "title": "SessionSummaryResponse",
@@ -4107,13 +3814,7 @@
             "description": "the version number of this schedule (the highest number is the most recent version of this review schedule)"
           }
         },
-        "required": [
-          "reference",
-          "reviewDateFrom",
-          "reviewDateTo",
-          "status",
-          "calculationRule"
-        ]
+        "required": ["reference", "reviewDateFrom", "reviewDateTo", "status", "calculationRule"]
       },
       "UpdateInductionScheduleStatusRequest": {
         "title": "UpdateInductionScheduleStatusRequest",
@@ -4131,10 +3832,7 @@
             "description": "An optional reason as to why the Induction Schedule is exempted.\n\nOnly relevant and processed when the `status` field is one of the `EXEMPTION_` statuses.  \nThis field is not mandatory, even when the `status` field is one of the `EXEMPTION_` statuses.\n"
           }
         },
-        "required": [
-          "prisonId",
-          "status"
-        ]
+        "required": ["prisonId", "status"]
       },
       "ReviewScheduleStatus": {
         "title": "ReviewScheduleStatus",
@@ -4182,10 +3880,7 @@
         "title": "InductionScheduleCalculationRule",
         "description": "Enum of the rules that are used to calculate a prisoner's Induction Schedule",
         "type": "string",
-        "enum": [
-          "NEW_PRISON_ADMISSION",
-          "EXISTING_PRISONER"
-        ]
+        "enum": ["NEW_PRISON_ADMISSION", "EXISTING_PRISONER"]
       },
       "InductionScheduleStatus": {
         "title": "InductionScheduleStatus",
