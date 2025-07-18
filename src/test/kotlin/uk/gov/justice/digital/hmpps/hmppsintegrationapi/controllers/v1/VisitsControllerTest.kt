@@ -120,6 +120,7 @@ class VisitsControllerTest(
                   "visitRoom": "Room",
                   "visitType": "Type",
                   "visitStatus": "Status",
+                   "visitSubStatus":"AUTO_APPROVED",
                   "outcomeStatus": "Outcome",
                   "visitRestriction": "Restriction",
                   "startTimestamp": "Start",
