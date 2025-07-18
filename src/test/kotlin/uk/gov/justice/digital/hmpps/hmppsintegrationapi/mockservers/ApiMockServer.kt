@@ -21,7 +21,7 @@ class ApiMockServer(
       val apiMockerServerConfig =
         when (upstreamApi) {
           UpstreamApi.PRISONER_OFFENDER_SEARCH -> ApiMockServerConfig(4000)
-          UpstreamApi.HEALTH_AND_MEDICATION -> ApiMockServerConfig(4001)
+          UpstreamApi.HEALTH_AND_MEDICATION -> ApiMockServerConfig(4001, "health-and-medication.json")
           UpstreamApi.MANAGE_POM_CASE -> ApiMockServerConfig(4002)
           UpstreamApi.PLP -> ApiMockServerConfig(4003, "plp.json")
           UpstreamApi.ACTIVITIES -> ApiMockServerConfig(4004, "activities.json")

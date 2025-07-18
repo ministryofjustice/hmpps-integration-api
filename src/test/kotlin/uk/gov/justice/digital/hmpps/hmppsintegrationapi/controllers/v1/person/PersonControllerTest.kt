@@ -101,6 +101,12 @@ internal class PersonControllerTest(
       val contactDetails = person.contactDetails
       val identifiers = person.identifiers
 
+      fun notFoundErrors(vararg upstreamApi: UpstreamApi) = upstreamApi.map { UpstreamApiError(causedBy = it, type = UpstreamApiError.Type.ENTITY_NOT_FOUND, description = "MockError") }.toList()
+
+      fun <T> notFoundErrorResponse(vararg upstreamApi: UpstreamApi) = Response<T?>(data = null, errors = notFoundErrors(*upstreamApi))
+
+      fun <T> notFoundErrorResponseEmptyList(vararg upstreamApi: UpstreamApi) = Response<List<T>>(data = emptyList(), errors = notFoundErrors(*upstreamApi))
+
       describe("GET $basePath") {
         beforeTest {
           Mockito.reset(getPersonsService)
@@ -280,18 +286,8 @@ internal class PersonControllerTest(
           }
 
           it("returns a 404 status code when a person cannot be found in both upstream APIs") {
-            whenever(getPersonService.getCombinedDataForPerson(idThatDoesNotExist)).thenReturn(
-              Response(
-                data = OffenderSearchResponse(null, null),
-                errors =
-                  listOf(
-                    UpstreamApiError(
-                      causedBy = UpstreamApi.NDELIUS,
-                      type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-                    ),
-                  ),
-              ),
-            )
+            whenever(getPersonService.getCombinedDataForPerson(idThatDoesNotExist))
+              .thenReturn(notFoundErrorResponse(UpstreamApi.NDELIUS))
 
             val encodedIdThatDoesNotExist = URLEncoder.encode(idThatDoesNotExist, StandardCharsets.UTF_8)
             val result = mockMvc.performAuthorised("$basePath/$encodedIdThatDoesNotExist")
@@ -302,13 +298,7 @@ internal class PersonControllerTest(
             whenever(getPersonService.getCombinedDataForPerson(idThatDoesNotExist)).thenReturn(
               Response(
                 data = OffenderSearchResponse(prisonerOffenderSearch = null, probationOffenderSearch = PersonOnProbation(Person("someFirstName", "someLastName"), underActiveSupervision = false)),
-                errors =
-                  listOf(
-                    UpstreamApiError(
-                      causedBy = UpstreamApi.PRISON_API,
-                      type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-                    ),
-                  ),
+                errors = notFoundErrors(UpstreamApi.PRISONER_OFFENDER_SEARCH),
               ),
             )
 
@@ -515,18 +505,8 @@ internal class PersonControllerTest(
           }
 
           it("returns a 404 status code when a person cannot be found in both upstream APIs") {
-            whenever(getNameForPersonService.execute(idThatDoesNotExist, filters)).thenReturn(
-              Response(
-                data = null,
-                errors =
-                  listOf(
-                    UpstreamApiError(
-                      causedBy = UpstreamApi.NDELIUS,
-                      type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-                    ),
-                  ),
-              ),
-            )
+            whenever(getNameForPersonService.execute(idThatDoesNotExist, filters))
+              .thenReturn(notFoundErrorResponse(UpstreamApi.NDELIUS))
 
             val result = mockMvc.performAuthorised("$basePath/$idThatDoesNotExist/name")
             result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
@@ -645,18 +625,8 @@ internal class PersonControllerTest(
         }
 
         it("returns a 404 NOT FOUND status code") {
-          whenever(getImageMetadataForPersonService.execute(sanitisedHmppsId, filters)).thenReturn(
-            Response(
-              data = emptyList(),
-              errors =
-                listOf(
-                  UpstreamApiError(
-                    causedBy = UpstreamApi.PRISON_API,
-                    type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-                  ),
-                ),
-            ),
-          )
+          whenever(getImageMetadataForPersonService.execute(sanitisedHmppsId, filters))
+            .thenReturn(notFoundErrorResponseEmptyList(UpstreamApi.PRISON_API))
 
           val result = mockMvc.performAuthorised("$basePath/$sanitisedHmppsId/images")
           result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
@@ -738,18 +708,8 @@ internal class PersonControllerTest(
 
         it("returns a 404 status code when a person cannot be found in both upstream APIs") {
           val idThatDoesNotExist = "blablabla"
-          whenever(getPrisonerContactsService.execute(idThatDoesNotExist, page = 1, size = 10, filter = null)).thenReturn(
-            Response(
-              data = null,
-              errors =
-                listOf(
-                  UpstreamApiError(
-                    causedBy = UpstreamApi.PERSONAL_RELATIONSHIPS,
-                    type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-                  ),
-                ),
-            ),
-          )
+          whenever(getPrisonerContactsService.execute(idThatDoesNotExist, page = 1, size = 10, filter = null))
+            .thenReturn(notFoundErrorResponse(UpstreamApi.PERSONAL_RELATIONSHIPS))
 
           val result = mockMvc.performAuthorised("$basePath/$idThatDoesNotExist/contacts")
           result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
@@ -1085,18 +1045,8 @@ internal class PersonControllerTest(
         }
 
         it("returns a 404 not found") {
-          whenever(getIEPLevelService.execute(sanitisedHmppsId, filter = null)).thenReturn(
-            Response(
-              data = null,
-              errors =
-                listOf(
-                  UpstreamApiError(
-                    causedBy = UpstreamApi.PRISON_API,
-                    type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-                  ),
-                ),
-            ),
-          )
+          whenever(getIEPLevelService.execute(sanitisedHmppsId, filter = null))
+            .thenReturn(notFoundErrorResponse(UpstreamApi.PRISON_API))
 
           val result = mockMvc.performAuthorised(path)
           result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
@@ -1128,18 +1078,8 @@ internal class PersonControllerTest(
         }
 
         it("returns a 404 when no prisoner visit orders found") {
-          whenever(getVisitOrdersForPersonService.execute(sanitisedHmppsId)).thenReturn(
-            Response(
-              data = null,
-              errors =
-                listOf(
-                  UpstreamApiError(
-                    causedBy = UpstreamApi.PRISON_API,
-                    type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-                  ),
-                ),
-            ),
-          )
+          whenever(getVisitOrdersForPersonService.execute(sanitisedHmppsId))
+            .thenReturn(notFoundErrorResponse(UpstreamApi.PRISON_API))
 
           val result = mockMvc.performAuthorised("$basePath/$sanitisedHmppsId/visit-orders")
           result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
@@ -1267,18 +1207,8 @@ internal class PersonControllerTest(
         }
 
         it("returns a 404 not found") {
-          whenever(getPhysicalCharacteristicsForPersonService.execute(sanitisedHmppsId, filters)).thenReturn(
-            Response(
-              data = null,
-              errors =
-                listOf(
-                  UpstreamApiError(
-                    causedBy = UpstreamApi.PRISONER_OFFENDER_SEARCH,
-                    type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-                  ),
-                ),
-            ),
-          )
+          whenever(getPhysicalCharacteristicsForPersonService.execute(sanitisedHmppsId, filters))
+            .thenReturn(notFoundErrorResponse(UpstreamApi.PRISONER_OFFENDER_SEARCH))
 
           val result = mockMvc.performAuthorised(path)
           result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
@@ -1338,18 +1268,8 @@ internal class PersonControllerTest(
         }
 
         it("returns a 404 not found") {
-          whenever(getNumberOfChildrenForPersonService.execute(sanitisedHmppsId, filters)).thenReturn(
-            Response(
-              data = null,
-              errors =
-                listOf(
-                  UpstreamApiError(
-                    causedBy = UpstreamApi.PERSONAL_RELATIONSHIPS,
-                    type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-                  ),
-                ),
-            ),
-          )
+          whenever(getNumberOfChildrenForPersonService.execute(sanitisedHmppsId, filters))
+            .thenReturn(notFoundErrorResponse(UpstreamApi.PERSONAL_RELATIONSHIPS))
 
           val result = mockMvc.performAuthorised(path)
           result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
@@ -1381,18 +1301,8 @@ internal class PersonControllerTest(
         }
 
         it("returns a 404 when no prisoner visit orders found") {
-          whenever(getVisitOrdersForPersonService.execute(sanitisedHmppsId)).thenReturn(
-            Response(
-              data = null,
-              errors =
-                listOf(
-                  UpstreamApiError(
-                    causedBy = UpstreamApi.PRISON_API,
-                    type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-                  ),
-                ),
-            ),
-          )
+          whenever(getVisitOrdersForPersonService.execute(sanitisedHmppsId))
+            .thenReturn(notFoundErrorResponse(UpstreamApi.PRISON_API))
 
           val result = mockMvc.performAuthorised("$basePath/$sanitisedHmppsId/visit-orders")
           result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
@@ -1489,18 +1399,8 @@ internal class PersonControllerTest(
         }
 
         it("returns a 404 not found") {
-          whenever(getCareNeedsForPersonService.execute(sanitisedHmppsId, filters)).thenReturn(
-            Response(
-              data = null,
-              errors =
-                listOf(
-                  UpstreamApiError(
-                    causedBy = UpstreamApi.PRISONER_OFFENDER_SEARCH,
-                    type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-                  ),
-                ),
-            ),
-          )
+          whenever(getCareNeedsForPersonService.execute(sanitisedHmppsId, filters))
+            .thenReturn(notFoundErrorResponse(UpstreamApi.PRISONER_OFFENDER_SEARCH))
 
           val result = mockMvc.performAuthorised(path)
           result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
@@ -1576,18 +1476,8 @@ internal class PersonControllerTest(
         }
 
         it("returns a 404 not found") {
-          whenever(getLanguagesForPersonService.execute(sanitisedHmppsId, filters)).thenReturn(
-            Response(
-              data = null,
-              errors =
-                listOf(
-                  UpstreamApiError(
-                    causedBy = UpstreamApi.PRISONER_OFFENDER_SEARCH,
-                    type = UpstreamApiError.Type.ENTITY_NOT_FOUND,
-                  ),
-                ),
-            ),
-          )
+          whenever(getLanguagesForPersonService.execute(sanitisedHmppsId, filters))
+            .thenReturn(notFoundErrorResponse(UpstreamApi.PRISONER_OFFENDER_SEARCH))
           val result = mockMvc.performAuthorised(path)
           result.response.status.shouldBe(HttpStatus.NOT_FOUND.value())
         }
